@@ -23,7 +23,7 @@ import { fromFile } from 'geotiff';
 import { LAT_BOTTOM_DEG, LAT_TOP_DEG, project, unproject } from '../../src/sim/data/projection';
 import { ADMIN1_Q, encodeAdmin1, type Admin1Meta, type QPolygon, type QProvince } from '../../src/shared/admin1';
 import { encodeElevation, halveElevation, OCEAN_QUANTUM_M, quantizeOcean } from '../../src/shared/elevation';
-import { clearBits, rasterizePolygon, setBits } from '../../src/sim/data/rasterize';
+import { clearBits, rasterizePolygon, setBits } from '../../src/shared/rasterize';
 import { encodePng } from './png';
 import { buildCities, type CityRules, type NePlace } from './cities';
 import { buildTerrain, halveTerrain, landFraction, terrainPreview } from './terrain';

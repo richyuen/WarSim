@@ -18,7 +18,7 @@
 import { fromFile, type GeoTIFFImage } from 'geotiff';
 import { Terrain } from '../../src/shared/terrain';
 import { millerLat, project, Y_TOP } from '../../src/sim/data/projection';
-import { rasterizePolygon } from '../../src/sim/data/rasterize';
+import { rasterizePolygon } from '../../src/shared/rasterize';
 
 /** Labelled sites (lon, lat): their mean NE1 colour (31×31 px) is the class exemplar. */
 export const REFERENCE_SITES: readonly [string, number, number, number][] = [
