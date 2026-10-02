@@ -164,3 +164,23 @@
   stripe path). `hash32` is tested equal to xxHash32 of the LE words.
   - Gotcha found by that test: 4 words = 16 bytes takes the stripe path, not the short path. Fixed.
   - Avalanche: ~16 of 32 output bits flip per input-bit change.
+
+## 2026-10-02 — PLAN 0.11: SoA tables, sections, state hash
+- `sim/core/sections.ts`: a named typed-array `Section` (8 dtypes) and the binary codec.
+  - Layout: 'WSEC' magic, version, then per section: name, dtype, length, data padded to 8 bytes.
+  - The codec rejects bad magic, versions, dtypes, truncation and trailing bytes.
+  - `hashSections` chains name, dtype, length and xxHash32(data) per section, so it is order- and name-sensitive.
+- `sim/core/table.ts`: `Table<Schema>` is a growable SoA.
+  - Ids start at 1 (0 = none). The free list is LIFO and is serialized, so allocation after a load matches an
+    uninterrupted run.
+  - Rows are zeroed on create/remove (canonical bytes). `forEach` iterates in ascending id order.
+  - Serialization covers rows [0, highWater): meta, alive, free, plus one section per column (sorted names).
+- `sim/core/state.ts`: `Stateful` interface, `collectSections`, `stateHash`, `saveBytes`, `loadBytes`.
+- Tests (8):
+  - id allocation and reuse order;
+  - zeroing; growth;
+  - serialize→bytes→deserialize→serialize gives identical bytes;
+  - load-then-continue equals an uninterrupted run over 3000 churn ops (free list included);
+  - flipping one bit in each of 2000+ bytes, across every column, alive map and free list, changes the hash;
+  - name/order/dtype sensitivity;
+  - codec round trip of all dtypes incl. -0 and NaN.

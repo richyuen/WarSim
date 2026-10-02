@@ -26,7 +26,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: max abs error < 1e-9 vs Math on 1e5 samples; golden-value test (exact bit patterns hard-coded) passes in Node and in Chromium (Playwright).
 - [x] 0.10 `sim/core/rng` (PCG32 + streams) and `hash32/xxhash32`.
   AT: known-answer vectors; stream independence (adding a stream doesn't change other streams' sequences).
-- [ ] 0.11 `sim/core/tables`: SoA growable tables with free lists, id-ordered iteration, serialize/deserialize to sections, `stateHash()`.
+- [x] 0.11 `sim/core/tables`: SoA growable tables with free lists, id-ordered iteration, serialize/deserialize to sections, `stateHash()`.
   AT: round trip yields identical bytes; hash changes on any single-byte mutation.
 - [ ] 0.12 Toy world + tick loop (grid 256×128, two nations, random-walk formations) running in Node and in the worker.
   AT: determinism invariants I1, I2, I3, I5 pass on the toy world.
