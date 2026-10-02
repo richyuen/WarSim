@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import type {} from '../../src/app/bench/benchApi';
 
 // PLAN 0.16: camera-relative precision at close zoom (1 m/px) near lon 179° (x ≈ 2042 of 2048
@@ -11,7 +11,7 @@ const SY = 300.123456789;
 const KM_PER_CELL = 40075 / 2048;
 const PX_PER_CELL = KM_PER_CELL * 1000;
 
-async function panSequence(page: import('@playwright/test').Page, mode: 'relative' | 'naive', shotDir?: string): Promise<number> {
+async function panSequence(page: Page, mode: 'relative' | 'naive', shotDir?: string): Promise<number> {
   await page.evaluate(({ mode, sx, sy }) => window.__precision!.setup(mode, sx, sy), { mode, sx: SX, sy: SY });
   const devs: [number, number][] = [];
   for (let k = 0; k < 60; k++) {
