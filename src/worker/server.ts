@@ -60,9 +60,6 @@ export class SimServer {
   private owed = 0;
   private lastPump = -1;
 
-  /** Count of snapshots posted (stats/tests). */
-  snapshotsSent = 0;
-
   constructor(private readonly post: Post) {}
 
   handle(msg: ToWorker, nowMs: number): void {
@@ -264,7 +261,6 @@ export class SimServer {
     this.inFlight = true;
     this.forceSend = false;
     this.sentTick = world.tick;
-    this.snapshotsSent++;
     this.post({ type: 'snapshot', snap }, transfer);
   }
 

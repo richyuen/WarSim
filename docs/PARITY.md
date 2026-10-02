@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 0.0%** (verified 0 · partial 0 · not started 80 · total 80)
+**Parity score: 4.4%** (verified 0 · partial 7 · not started 73 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -65,7 +65,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 47 | Map import | Import greyscale images made in other tools, up to 4M px (warning above 500k) [TEXT 2026-10-02] | Import image → terrain/ownership raster | not started |  | Baseline: "map import" |
 | 48 | Flag editor with presets | 36×24 pixel flag painter: grid, presets for all nations, bucket, lines, circles, undo; flag packs (1938 etc.), random flags, wavy flag display [TEXT+VISUAL 2026-10-02] | SVG flag spec + editor with presets and random flags (PLAN 1.6) | not started |  | Baseline: "flag editor with presets" |
 | 49 | Scenario save/load and sharing | Scenarios saved as folders (scenario file + flags.png + flagNames.txt); shared through the Steam Workshop [TEXT 2026-10-02] | .warsim-scenario gzip files, download/upload (SPEC §2.7) | not started |  | Baseline: "scenarios save/load as shareable files" |
-| 50 | Political map mode | Flat nation colours with a dark outline inside borders, occupation tint/stripes, faint peacetime borders [TEXT+VISUAL 2026-10-02] | T0 renderer with smooth borders (PLAN 1.28, 1.30) | not started |  |  |
+| 50 | Political map mode | Flat nation colours with a dark outline inside borders, occupation tint/stripes, faint peacetime borders [TEXT+VISUAL 2026-10-02] | T0 renderer with smooth borders (PLAN 1.28, 1.30) | partial | `docs/bench/A-webgl2-map-z1-region.png`, `tests/e2e/mapview.spec.ts` | Phase 0: nation fills, smooth dark borders, occupation hatching from live snapshots. Missing: names, map-mode switcher |
 | 51 | Terrain map mode | Terrain view, switched on automatically when editing terrain [TEXT+VISUAL 2026-10-02] | Terrain mode (PLAN 1.30) | not started |  |  |
 | 52 | Wars map mode | Each war gets one colour based on the primary attacker [TEXT 2026-10-02] | Wars mode (PLAN 1.30) | not started |  |  |
 | 53 | Diplomacy map mode | Selected nation's allies, enemies, puppets (purple) [TEXT+VISUAL 2026-10-02] | Diplomacy mode (PLAN 1.30) | not started |  |  |
@@ -78,24 +78,24 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 60 | Nation view | Nation panel: flag, age, previous lives, wars, diplomacy list, puppets, economy tab [TEXT+VISUAL 2026-10-02] | Nation panel | not started |  |  |
 | 61 | History log | Full history panel (v3.3.2): every event, filter by type, text search, optional in saves; export to a text file; grouped by year [TEXT 2026-10-02] | Filterable, exportable history log (Phase 1) | not started |  | Baseline: "history log … filterable and exportable" |
 | 62 | Event popups | Colour-chipped clickable nation names in event popups ("X was conquered by Y"); per-type filters saved [TEXT+VISUAL 2026-10-02] | Event feed with nation chips and filters | not started |  |  |
-| 63 | Camera controls | Arrow keys, numpad +/−, Q/E zoom, middle-mouse drag, wheel, zoom sensitivity; touch on mobile [TEXT 2026-10-02] | Keyboard/drag/wheel/touch-pinch camera (PLAN 0.17) | not started |  | Baseline: "pan/zoom with keyboard, drag and touch" |
+| 63 | Camera controls | Arrow keys, numpad +/−, Q/E zoom, middle-mouse drag, wheel, zoom sensitivity; touch on mobile [TEXT 2026-10-02] | Keyboard/drag/wheel/touch-pinch camera (PLAN 0.17) | partial | `tests/e2e/camera.spec.ts`, `tests/unit/camera.test.ts` | Baseline: "pan/zoom with keyboard, drag and touch". Phase 0: arrows/WASD, E/Q, +/−, numpad, wheel at cursor, drag, touch pinch, continuous zoom. Missing: zoom-sensitivity setting |
 | 64 | Speed and pause | Speed up to 5× plus pause; 1 month per 0.5 s at 1×; optional days timescale [TEXT+VISUAL 2026-10-02] | Speeds up to max + pause, persisted (PLAN 1.8) | not started |  | Baseline: "speeds up to max plus pause (persisted)" |
 | 65 | Save/load and autosave | Save/load games (Steam Cloud); editor autosave every 2 minutes [TEXT 2026-10-02] | Full save/load + IndexedDB autosave (PLAN 1.27) | not started |  | Baseline: "autosave" |
 | 66 | Screenshot key | F11 saves a PNG of the map in the current map mode [TEXT 2026-10-02] | Screenshot hotkey → PNG download | not started |  |  |
 | 67 | UI size setting | UI size setting (v3.2.3) [TEXT 2026-10-02] | rem-based UI scale setting | not started |  |  |
-| 68 | Localisation | 14 languages, auto-detected; CJK, Cyrillic and Arabic input [TEXT 2026-10-02] | i18n t() + en.json from day one (PLAN 0.21) | not started |  | Baseline: "i18n from day one (English first)" |
-| 69 | Looping map | World AI setting: nations can expand across the left/right edge [TEXT 2026-10-02] | loopingMap with wrap rendering (PLAN 0.17) | not started |  |  |
+| 68 | Localisation | 14 languages, auto-detected; CJK, Cyrillic and Arabic input [TEXT 2026-10-02] | i18n t() + en.json from day one (PLAN 0.21) | partial | `tests/e2e/i18n.spec.ts`, `tests/unit/i18n.test.ts`, `docs/evidence/0.21/i18n-en.png` | Baseline: "i18n from day one (English first)". Phase 0: t() + en.json + picker + pseudo-locale + lint against literal strings. Only English so far |
+| 69 | Looping map | World AI setting: nations can expand across the left/right edge [TEXT 2026-10-02] | loopingMap with wrap rendering (PLAN 0.17) | partial | `tests/e2e/camera.spec.ts`, `docs/evidence/0.17/dateline-seam.png` | Phase 0: seamless wrap rendering and camera; toy sim wraps x. Missing: the loopingMap setting and real-scenario expansion across the seam |
 | 70 | Map sizes | World Map normal and XL; editor maps up to 360k px, imports up to 4M px [TEXT 2026-10-02] | Map sizes S/M/L/XL up to 6144×3072 (SPEC §3.1) | not started |  | Baseline: "selectable map sizes up to very large" |
 | 71 | Unit size setting | Unit-visual density, speed and unit flag size settings (v4.5) [TEXT 2026-10-02] | Unit-size setting for markers and proxies | not started |  | Baseline: "unit-size setting" |
 | 72 | Nation names on the map | Big semi-transparent nation names stretched and curved along territory (v4.5.1); small-names toggle [TEXT+VISUAL 2026-10-02] | Curved, area-sized labels (PLAN 1.29) | not started |  | Baseline: "curved or well-placed nation names" |
-| 73 | Readable borders and map polish | Dark border outline, map frame, coloured sea, flags in lists (wavy), pixel-art UI [TEXT+VISUAL 2026-10-02] | Smooth shader borders, coasts, flags (PLAN 1.28) | not started |  | Baseline: "good visual polish"; AoC zoom is blocky, ours must not be |
+| 73 | Readable borders and map polish | Dark border outline, map frame, coloured sea, flags in lists (wavy), pixel-art UI [TEXT+VISUAL 2026-10-02] | Smooth shader borders, coasts, flags (PLAN 1.28) | partial | `docs/bench/A-webgl2-map-z2-close.png`, `docs/bench/A-webgl2-map-z0-world.png` | Baseline: "good visual polish"; AoC zoom is blocky, ours must not be. Phase 0: C2-smooth borders at every zoom (never blocky). Missing: flags, frame, sea styling |
 | 74 | Unit visuals | Cosmetic unit sprites along active fronts, reinforced from cores, no stats; strength number next to the nation name [TEXT+VISUAL 2026-10-02] | Real sim-driven formations and elements at every tier (Table 2) | not started |  |  |
 | 75 | Random simulation setup | Random simulation: map + nation count, random cities, random names (cultures), random flags [TEXT 2026-10-02] | Seeded randomisation options (Phase 1) | not started |  | Baseline: "randomisation options" |
-| 76 | Seeded deterministic runs | No seed or replay is described [TEXT 2026-10-02] | PCG32 streams, dmath, invariants I1–I5 (PLAN 0.9–0.13) | not started |  | Baseline: "seeded, deterministic runs" |
+| 76 | Seeded deterministic runs | No seed or replay is described [TEXT 2026-10-02] | PCG32 streams, dmath, invariants I1–I5 (PLAN 0.9–0.13) | partial | `tests/unit/determinism.test.ts`, `tests/e2e/worker.spec.ts`, `tests/unit/server.test.ts` | Baseline: "seeded, deterministic runs". Phase 0: invariants I1–I5 on the toy world (Node == worker). Missing: seed UI and the 1938 scenario |
 | 77 | 1938 world scenario | World Map 1938 scenario with a historical 1938 flag pack and preset diplomacy [TEXT 2026-10-02] | 1938 world from Natural Earth + hand assignment (PLAN 1.3–1.7) | not started |  | Baseline: start scenario |
 | 78 | Data-driven maps and years | Many default maps and scenarios (1792, 1914, 1938, 1956, current day; Europe, Asia, US …) [TEXT 2026-10-02] | JSON scenario data: new maps and years need no code changes (PLAN 1.1) | not started |  |  |
 | 79 | Audio | Music tracks, war-declaration trumpet, sounds quieter when zoomed out [TEXT 2026-10-02] | Not in the PROMPT baseline; planned for Phase 7 polish | not started |  |  |
-| 80 | Scale and performance | v1.0: up to 100 nations; maps above 500k px "might not run well" [TEXT 2026-10-02] | At least 100 nations at 60 fps on a 2048×1024 map (SPEC §8, PLAN 0.14) | not started |  | Baseline: performance budget |
+| 80 | Scale and performance | v1.0: up to 100 nations; maps above 500k px "might not run well" [TEXT 2026-10-02] | At least 100 nations at 60 fps on a 2048×1024 map (SPEC §8, PLAN 0.14) | partial | `docs/bench/A-webgl2-map.json`, `docs/bench/B-webgl2-proxies.json` | Baseline: performance budget. Phase 0: 150-nation map 0.46 ms GPU/frame, 30k proxies 0.47 ms (RTX 4070 Ti; ADR-4 budget translation). Real-scenario sim budget pending |
 
 ## Table 2 — Our additions (unscored)
 
@@ -109,6 +109,6 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 6 | AI nuclear weapons | AI research, build, stockpile and use with doctrine, retaliation and escalation logic; delivery, blast, fallout, MAD; God toggles | not started |  | SPEC §6.4, Phase 6 |
 | 7 | Supply and attrition | Supply network from capitals, cities and ports; encirclement attrition | not started |  | PLAN 1.12 |
 | 8 | Production, manpower and tech | Production queues, manpower, a 1936–1990+ tech tree gating unit types | not started |  | SPEC §3.7 |
-| 9 | Deterministic worker sim | Pure seeded engine in a Web Worker; bit-identical save/load; replayable command log | not started |  | SPEC §2, ADR-2, ADR-5 |
-| 10 | Resolution-independent real-geography map | Natural Earth coastlines and provinces; smooth borders and real detail at every zoom (no blocky pixels) | not started |  | ADR-1, ADR-7 |
+| 9 | Deterministic worker sim | Pure seeded engine in a Web Worker; bit-identical save/load; replayable command log | partial | `tests/unit/determinism.test.ts`, `tests/e2e/worker.spec.ts`, `tests/e2e/snapshots.spec.ts` | SPEC §2, ADR-2, ADR-5. Phase 0: worker-hosted Sim, acked snapshots, I1–I5 on the toy world |
+| 10 | Resolution-independent real-geography map | Natural Earth coastlines and provinces; smooth borders and real detail at every zoom (no blocky pixels) | partial | `tests/unit/data-manifest.test.ts`, `docs/bench/R-provinces-M-europe.png`, `docs/bench/A-webgl2-map-z2-close.png` | ADR-1, ADR-7. Phase 0: NE land mask, ETOPO elevation, 4596 admin-1 provinces at load time, smooth borders |
 | 11 | Headless runner, soak and sweep tooling | Node runner with metrics, 30-minute soak, multi-seed multi-decade sweep | not started |  | SPEC §10 |

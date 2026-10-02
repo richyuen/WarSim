@@ -48,7 +48,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: toy world 10 years runs and writes metrics; tick ms is reported.
 - [x] 0.21 i18n skeleton: `t()`, `en.json`, locale picker, ESLint no-literal-string on `src/ui`.
   AT: a lint fixture with a literal UI string fails; the UI renders keys from en.json.
-- [ ] 0.22 Phase 0 review: re-read SPEC for drift, update DECISIONS with the benchmark outcomes.
+- [x] 0.22 Phase 0 review: re-read SPEC for drift, update DECISIONS with the benchmark outcomes.
   AT: Gate green; DECISIONS has ADR-4 final status.
 
 ## Phase 1 — Baseline parity

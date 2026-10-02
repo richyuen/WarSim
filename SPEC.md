@@ -1,6 +1,6 @@
 # WarSim — Specification & Architecture
 
-Status: v0.1 (2026-10-02). Living document: update when decisions change and
+Status: v0.2 (2026-10-02, Phase 0 review: §2, §5.3, §8, §9, §10 synced with the implementation). Living document: update when decisions change and
 record the *why* in `DECISIONS.md` (ADR numbers referenced as `[ADR-n]`).
 
 ---
@@ -69,39 +69,43 @@ fixture paths). Sim purity uses `no-restricted-globals`, `no-restricted-properti
 
 ### 2.2 Repo layout
 ```
-src/sim/core/      world tables (SoA), ids, rng, dmath, hash, serialize, time
+src/sim/core/      table.ts (SoA + free lists), sections.ts (typed-array sections codec), state.ts
+                   (save/hash over sections), rng.ts (PCG32 streams), hash.ts (xxHash32), dmath.ts
 src/sim/systems/   economy, production, supply, movement, engagement, combat,
                    territory, diplomacy, revolts, naval, air, nuclear, buffs, history
 src/sim/ai/        strategic, operational, economic, nuclear
-src/sim/data/      zod schemas + loaders + map rasterizer
+src/sim/data/      projection.ts (Miller), rasterize.ts, provinces.ts; later zod schemas + loaders
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
 src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
 src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums
-src/worker/        entry, scheduler (speed/pause), snapshot builder, pools, derive/
-src/render/        gl helpers, camera, map/, units/, fx/, labels/, lod/
+src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, derive/
+src/render/        camera.ts, gl/ (gpuTimer), map/ (MapRenderer), units/ (ProxyRenderer, atlas), fx/, labels/, lod/
 src/ui/            panels, i18n/{index.ts: t(), locale signal, pseudo-locale 'qps'; en.json = source of truth}, theme
 src/editor/        paint tools, undo stack, flag editor, scenario IO
-src/app/           bootstrap, input, settings, autosave, screenshot, __warsim test API
-tools/             data/, headless/, soak/, sweep/, parity/, bench/
+src/app/           main.tsx, MapView.ts, simClient.ts, input/ (CameraController), testApi.ts (__warsim),
+                   bench/ (bench.html pages); later settings, autosave, screenshot
+tools/             data/, headless/, parity/, bench/, dmath/, eslint/; later soak/, sweep/
 data/              units/, tech/, traits/, buildings/, scenarios/1938/, maps/earth/
 public/data/       generated map assets + manifest.json (sha256)
 tests/unit, tests/e2e
 ```
 
 ### 2.3 Worker protocol (`src/shared/protocol.ts`) [ADR-2]
-Main → worker:
-- `init {scenarioUrl | scenarioBytes, mapSize, seed, settings}`
+Main → worker (implemented: init, step, cmd, hash, save, load, speed, pause, subscribe, ack,
+buildProvinces; requests carry a `reqId` and get a `reply`, `provinces` or `error` back):
+- `init {init: {scenario, seed}}` (later: scenario bytes/URL, map size, settings). A fresh sim starts paused.
 - `cmd {cmd: Command}`: applied at the next tick boundary, stamped with that tick,
   and appended to `commandLog`.
 - `speed {ticksPerSecond | 'max'}`, `pause {paused}`, `step {n}`
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`
-- `ack {snapshotSeq, returnedBuffers: ArrayBuffer[]}`: rAF handshake + buffer pool return
+- `ack {seq, buffers: ArrayBuffer[]}`: rAF handshake + buffer pool return
+- `buildProvinces {assetBase, w, h, withIds}`: load-time province raster (PLAN 0.19)
 - `save`, `load {bytes}`, `requestHistory {filter}`, `requestStats {kind}`
 
 Worker → main:
-- `snapshot {seq, tick, tickFrac, buffers}` (transferable; layout in §2.4)
-- `saved {bytes}`, `history {rows}`, `stats {series}`, `error {msg, stack}`
+- `snapshot {snap}` (transferable; layout in §2.4), `reply {reqId, status: {tick, hash}, bytes?}`,
+  `provinces {reqId, result}`, `error {reqId, message, stack}`; later `history {rows}`, `stats {series}`
 
 The worker sends **at most one snapshot per ack**. When main is slow, intermediate
 ticks are coalesced: dirty tiles accumulate, and events stay in a ring with a
@@ -150,21 +154,24 @@ id, color, cells, capitalX, capitalY), `formations` (id, nation, x, y, prevX, pr
 11. nuclear: launches in flight, impacts, fallout decay (hourly)
 12. buff/debuff timers · history events · stats sampling (daily)
 ```
-Every system is a function `(world, ctx) => void`. `ctx` holds RNG streams and the
-event sink. Systems never read wall-clock time, render state or subscriptions.
+Every system is a function `(world) => void` (`src/sim/tick.ts`). RNG streams live in
+`world.rng` and derived outputs (dirty tiles, events) in `world.out`. Systems never read
+wall-clock time, render state or subscriptions.
 
 ### 2.6 Determinism [ADR-5]
 - Numbers: f64 using only `+ − × ÷`, `Math.sqrt`, `Math.floor/ceil/round/abs/min/max/
   trunc/imul/fround` (all exactly specified by ECMAScript). Trig, exp, log and pow come from
   `dmath` (table + polynomial, identical in every engine).
 - RNG: PCG32 implemented with `Math.imul` and 32-bit ops. One stream per subsystem
-  (`combat`, `ai`, `diplomacy`, `revolt`, `weather`, `nuclear`, `naval`, `air`,
-  `scenario`) is seeded by `hash(seed, streamId)`, so a new subsystem doesn't perturb
+  (`scenario`, `combat`, `ai`, `diplomacy`, `revolt`, `weather`, `nuclear`, `naval`, `air`,
+  `toy`) is seeded from `xxhash32(name, worldSeed ^ k)` only, so a new subsystem doesn't perturb
   existing ones. Order-independent draws use `hash32(seed, tick, entityId, salt)`.
+  `dmath` = fdlibm ports (polynomial kernels + atan table), golden bits pinned in Node and Chromium.
 - Iteration is always in ascending id order. Entity ids come from free lists in
   deterministic order. `Map`/`Set` are allowed only with insertion order derived from id order.
-- **State hash**: xxhash32 over every authoritative typed array, scalar globals,
-  RNG states and the tick. Events and derived outputs are excluded.
+- **State hash**: `hashSections` chains (name, dtype, length, xxhash32(data)) over every
+  authoritative section (`World.parts()`: meta incl. tick and seed, RNG states, command log and
+  pending commands, cell layers, entity tables). Events and derived outputs are excluded.
 - **Invariant tests** (must always pass): (I1) same seed + commands → same hash
   at N ticks; (I2) save → load → continue == uninterrupted, bit-identical bytes;
   (I3) Node run == worker run; (I4) random viewport/subscription churn leaves the hash
@@ -177,6 +184,8 @@ event sink. Systems never read wall-clock time, render state or subscriptions.
 - **Scenario** (`.warsim-scenario`): `gzip(JSON meta + RLE rasters (terrain, owner,
   controller, province) + flags SVG)`. Shareable.
 - **Autosave**: IndexedDB, 3 rotating slots, every N sim months (setting) and on page hide.
+- _Phase 0 state:_ `Sim.save()` returns the raw WSEC section stream (`src/sim/core/sections.ts`);
+  the gzip container and header above arrive with PLAN 1.27.
 - Settings (speed, paused, UI size, locale, unit size, map mode, etc.): localStorage.
 
 ---
@@ -347,12 +356,17 @@ bombardment) participants join through their missions.
 5. Each fire volley emits `FireEvent {tick, subtick u8, shooter, target, weapon,
    dmg, x0,y0,x1,y1}` into the events ring (not sim state).
 
-### 5.3 Combat-efficiency modes (global setting, AoC parity)
-- **dynamic**: efficiency drifts with experience, supply and recent wins/losses.
-- **progressive**: efficiency grows slowly over time for every nation.
-- **static**: per-nation value from the scenario, constant.
-- **locked**: all nations at 1.0.
-- **random**: per-nation random walk (hash-seeded), re-rolled yearly.
+### 5.3 Combat-efficiency modes (global setting, AoC parity; TEXT 2026-10-02, AoC v4.3)
+- **dynamic** (default, as in AoC): low and cheap in peace, high and costly at war (cost
+  scales with nation size), plus drift from experience, supply and recent wins/losses.
+- **progressive** (as AoC v4.3): moves toward the dynamic target by one step per economic
+  tick instead of jumping.
+- **static**: per-nation value from the scenario, constant (cost still follows the
+  dynamic formula, as in AoC).
+- **locked**: all nations at 1.0. Separately, any nation's efficiency can be locked in God
+  Mode (the AoC per-nation CE lock).
+- **random**: per-nation value re-rolled (hash-seeded) every economic tick, the original AoC
+  behaviour.
 
 ### 5.4 Major Battles
 When total committed strength in a battle exceeds a threshold (relative to the
@@ -506,11 +520,14 @@ This never affects sim state (invariant I4).
 and upload f32 positions relative to it. The vertex shader never sees absolute world coordinates.
 
 **Rendering techniques.**
-- Ownership: tiled `R16UI` textures (owner, controller) + palette `RGBA8` texture
-  (nation colours, map-mode colours). Smooth borders come from sampling a 3×3 neighbourhood
-  and computing a signed distance to the same-owner boundary with bilinear
-  interpolation of indicator fields, plus bounded domain-warp noise (< 0.5 cell).
-  The coastline comes from the fine land-mask pyramid.
+- Ownership: `R16UI` textures (owner, controller; tiled only if a size exceeds
+  MAX_TEXTURE_SIZE) + a 256×256 palette `RGBA8` texture (nation and map-mode colours).
+  Smooth borders (`src/render/map/mapShader.ts`): every distinct id in the 4×4 cell
+  neighbourhood accumulates cubic B-spline weight (a C2-smooth indicator field). The max
+  wins; the border is where the best and second weights meet, at a constant screen-px width
+  (d / fwidth(d)). A bounded value-noise domain warp (≤ 0.32 cell) makes borders organic.
+  Occupation hatching uses the same weights. The coastline will come from the fine land-mask
+  pyramid.
 - Map modes are palette swaps or derived per-province textures (no reupload of the cell grid).
 - Labels: MSDF font atlas. The curve comes from the worker's `derive/labels` (largest
   connected component → skeleton/PCA → quadratic Bézier, size by area), throttled
@@ -521,7 +538,10 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
 
 **Performance budgets.** T0 ≥ 60 fps with 100+ nations at M size. T2 ≥ 30 fps with
 10 000 visible proxies. Snapshot build ≤ 2 ms. Main-thread frame CPU ≤ 6 ms.
-Sim tick ≤ 1.5 ms average (Node, M, 1938).
+Sim tick ≤ 1.5 ms average (Node, M, 1938). Dev-GPU translation (ADR-4): T0 frame ≤ 1.0 ms
+GPU and T2 frame with 10k proxies ≤ 2.0 ms GPU at 1080p on the bench machine (Phase 0:
+0.46 and 0.41 ms). The map view redraws only when the camera, a snapshot or an
+interpolation changes something.
 
 ---
 
@@ -544,7 +564,7 @@ Sim tick ≤ 1.5 ms average (Node, M, 1938).
   casualties, warheads), ranking list, charts.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
-- **QoL**: keyboard (WASD/arrows pan, +/- zoom, space pause, 1–5 speed), drag,
+- **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,
   wheel and touch pinch. Speed and pause persist. Autosave. Screenshot key (F2 → PNG).
   UI size (rem scale). Unit-size setting. Looping map. Map size picker. Locale
   picker (en first; all strings through `t()`).
@@ -558,8 +578,9 @@ Sim tick ≤ 1.5 ms average (Node, M, 1938).
 - **Unit (vitest)**: dmath accuracy and determinism, RNG, hash, every system's rules,
   data schema validation of all JSON, save/load round trip, determinism invariants
   I1–I5.
-- **Headless runner** (`tools/headless`): `npm run sim -- --scenario 1938 --seed 7
-  --years 30 --out run.json` (metrics per year).
+- **Headless runner** (`tools/headless`): `npm run sim -- --scenario <id> --seed 7
+  --years 30 --out run.json` (metrics per year: hash, per-nation controlled/owned cells,
+  formations, flipped cells, events, tick ms mean/p95/max). Phase 0 scenario: `toy`.
 - **Soak** (`npm run soak`): 30 min wall-clock at max speed with save/load every
   5 min, comparing hashes against an uninterrupted twin. Fails on any exception or desync.
 - **Sweep** (`npm run sweep`): ≥ 10 seeds × ≥ 50 sim-years. Pass when, for every seed:
@@ -570,10 +591,14 @@ Sim tick ≤ 1.5 ms average (Node, M, 1938).
   scripted seamless zoom world → close (8 stops) on a spawned battle; tank, naval and air
   battle scenes; AI nuclear strike scene (seeded scenario with forced escalation
   conditions, AI-decided rather than God-forced); editor round trip; save/load.
-  The test API is `window.__warsim` (`seed`, `pause`, `step(n)`, `camera.zoomTo(x,y,z)`,
-  `god(cmd)`, `hash()`, `fps()`).
-- **Bench** (`npm run bench`): headed Chromium with GPU. T0 and T2 fps, tick ms,
-  snapshot ms. Results go to `docs/bench/*.json`.
+  The test API is `window.__warsim`: now `sim` (SimClient: init/step/command/hash/save/load/
+  speed/pause/subscribe/buildProvinces) and `view` (camera, controller.set/zoomTo, frames,
+  draw); later `god(cmd)`, `fps()`. URL options: `?seed=`, `?paused=1`, `?view=0`.
+- **Bench** (`npm run bench [-- A B BP R]`): Chromium on the real GPU (headless with
+  `--use-angle=d3d11 --enable-gpu --ignore-gpu-blocklist`; without them it is SwiftShader).
+  GPU time comes from EXT_disjoint_timer_query_webgl2 (gl.finish does not block under ANGLE).
+  Pages: `bench.html?b=A` (map), `B`/`BP` (proxies raw/Pixi), `P` (precision probe, e2e),
+  `R` (province raster). Results and screenshots go to `docs/bench/`.
 - **Gate** (`npm run check`): `tsc -b` → `eslint .` → `vitest run` → `vite build` →
   `playwright test` (against `vite preview` of the build) → `npm run parity`.
   Must be green before every commit.
