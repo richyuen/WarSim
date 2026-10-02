@@ -184,3 +184,32 @@
   - flipping one bit in each of 2000+ bytes, across every column, alive map and free list, changes the hash;
   - name/order/dtype sensitivity;
   - codec round trip of all dtypes incl. -0 and NaN.
+
+## 2026-10-02 — PLAN 0.12: toy world + tick loop in Node and in the worker
+- `sim/world.ts`: `World` holds the seed, tick, `RngStreams`, `CellLayers` (owner, controller, terrain), the
+  `nations` and `formations` tables, the command log and pending commands.
+  - `parts()` fixes the save/hash layout: core (meta, rng, JSON log + pending), cells, nations, formations.
+  - Pending commands are serialized, so a save taken between enqueue and the next tick loses nothing.
+- `sim/tick.ts`: `step` applies pending commands in seq order (stamped with the tick into the log), runs the
+  systems in order, then increments the tick.
+- `sim/sim.ts`: the `Sim` facade (init/step/command/hash/save/load), shared by the worker, Node and tests.
+- `Command` and the protocol types live in `src/shared` (commands.ts, protocol.ts), so app/render can use them
+  without importing sim.
+- `sim/toy.ts` (256×128):
+  - lakes from the `scenario` stream; two nations split the map;
+  - 60 formations each random-walk via dmath cos/sin and the `toy` stream, bounce off water, capture crossed
+    cells and lose strength on captures;
+  - daily: dead formations disband and are replaced (free-list churn), and cell counts update.
+- `src/worker/entry.ts` hosts `Sim`. `src/app/simClient.ts` provides promise request/reply with transferable
+  saves. `window.__warsim.sim` is the test API (`src/app/testApi.ts`).
+- Tests:
+  - `tests/unit/determinism.test.ts`: the toy world evolves (≥ 200 cells flipped, formations die and respawn).
+    I1: same seed + commands → same hash/bytes; a different seed or missing command → a different hash.
+    I2: save at ticks 1/99/100/101/777, load into a different-seed Sim and continue = uninterrupted bytes, plus
+    a save with a queued command. I5: save → load → save bytes identical.
+  - `tests/e2e/worker.spec.ts`, I3: the worker run in Chromium (init, 300 ticks, command, 780 ticks) matches
+    Node's hash at both points and its save bytes exactly; worker bytes loaded in Node continue identically.
+    Worker errors reject the promise.
+- Gotchas:
+  - LIFO id reuse keeps `highWater` flat even with churn, so test churn with spies, not highWater.
+  - TS 6 typed arrays are generic: fields that go into sections must be typed `Uint16Array<ArrayBuffer>`.

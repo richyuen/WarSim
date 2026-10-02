@@ -75,8 +75,9 @@ src/sim/systems/   economy, production, supply, movement, engagement, combat,
 src/sim/ai/        strategic, operational, economic, nuclear
 src/sim/data/      zod schemas + loaders + map rasterizer
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
-src/sim/commands.ts
-src/shared/        protocol.ts (messages, snapshot layout), constants, enums
+src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
+src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
+src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums
 src/worker/        entry, scheduler (speed/pause), snapshot builder, pools, derive/
 src/render/        gl helpers, camera, map/, units/, fx/, labels/, lod/
 src/ui/            panels, i18n/{en.json}, theme

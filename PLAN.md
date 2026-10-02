@@ -28,7 +28,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: known-answer vectors; stream independence (adding a stream doesn't change other streams' sequences).
 - [x] 0.11 `sim/core/tables`: SoA growable tables with free lists, id-ordered iteration, serialize/deserialize to sections, `stateHash()`.
   AT: round trip yields identical bytes; hash changes on any single-byte mutation.
-- [ ] 0.12 Toy world + tick loop (grid 256×128, two nations, random-walk formations) running in Node and in the worker.
+- [x] 0.12 Toy world + tick loop (grid 256×128, two nations, random-walk formations) running in Node and in the worker.
   AT: determinism invariants I1, I2, I3, I5 pass on the toy world.
 - [ ] 0.13 Worker protocol: commands, subscribe, rAF-acked snapshots, buffer pool, coalescing of dirty tiles + event ring cursor.
   AT: I4 (random subscription churn → same hash); a stress test sends no snapshot without an ack; no buffer leaks after 10k frames (pool size stable).

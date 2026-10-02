@@ -1,5 +1,7 @@
 import { render } from 'preact';
 import { App } from './App';
+import { SimClient } from './simClient';
+import { installTestApi } from './testApi';
 import './style.css';
 
 const canvas = document.getElementById('map');
@@ -17,3 +19,6 @@ window.addEventListener('resize', () => resizeCanvas(canvas));
 
 const uiRoot = document.getElementById('ui');
 if (uiRoot) render(<App />, uiRoot);
+
+const sim = new SimClient();
+installTestApi({ sim });

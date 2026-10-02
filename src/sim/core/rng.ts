@@ -155,7 +155,7 @@ export class RngStreams {
   }
 
   /** All stream states in STREAM_NAMES order (4 words each). */
-  save(): Uint32Array {
+  save(): Uint32Array<ArrayBuffer> {
     const out = new Uint32Array(STREAM_NAMES.length * 4);
     STREAM_NAMES.forEach((n, i) => this.streams[n].saveState(out, i * 4));
     return out;

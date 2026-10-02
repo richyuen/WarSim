@@ -22,6 +22,8 @@
     "playwright.config.ts",
     "tests/e2e",
     "src/sim",
-    "src/shared"
+    "src/shared",
+    "src/app/testApi.ts",
+    "src/app/simClient.ts"
   ]
 }
