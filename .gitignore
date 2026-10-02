@@ -1,0 +1,12 @@
+# User-provided private AoC reference material: NEVER commit, publish or ship.
+reference/
+# Raw data downloads (Natural Earth, ETOPO, ...)
+.cache/
+node_modules/
+dist/
+test-results/
+playwright-report/
+coverage/
+*.local
+.DS_Store
+Thumbs.db
