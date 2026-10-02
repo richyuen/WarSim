@@ -4,7 +4,7 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { earthAsset } from '../helpers/earth';
+import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.9a: the app boots the 1938 world in the sim worker (`?scenario=1938`). The worker's
 // state hash equals a Node build from the same assets, and the map view renders it.
@@ -20,11 +20,7 @@ test('the 1938 scenario boots in the worker == Node and renders', async ({ page 
   const node = new Sim({
     scenario: '1938',
     seed: 1938,
-    assets: {
-      admin1Geometry: new Uint8Array(earthAsset('admin1-geometry')),
-      admin1Meta: new Uint8Array(earthAsset('admin1-meta')),
-      terrain: new Uint8Array(earthAsset('terrain', SIZE_1938.w)),
-    },
+    assets: assets1938(SIZE_1938.w),
   });
   const worker = await page.evaluate(() => window.__warsim!.sim.hash());
   expect(worker.hash).toBe(node.hash());

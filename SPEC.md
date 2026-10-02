@@ -71,24 +71,30 @@ fixture paths). Sim purity uses `no-restricted-globals`, `no-restricted-properti
 ```
 src/sim/core/      table.ts (SoA + free lists), sections.ts (typed-array sections codec), state.ts
                    (save/hash over sections), rng.ts (PCG32 streams), hash.ts (xxHash32), dmath.ts
-src/sim/systems/   economy, production, supply, movement, engagement, combat,
+src/sim/systems/   economy.ts (PLAN 1.9); later production, supply, movement, engagement, combat,
                    territory, diplomacy, revolts, naval, air, nuclear, buffs, history
 src/sim/ai/        strategic, operational, economic, nuclear
 src/sim/data/      projection.ts (Miller), provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet),
-                   terrain.ts (crossings), ownership.ts, cities.ts, politicalMap.ts (the whole map build chain)
+                   terrain.ts (crossings), ownership.ts, cities.ts, oob.ts, politicalMap.ts (the whole map build chain)
+src/sim/scenario1938.ts  the 1938 world builder (map inputs, cells, nations, cities, OOB, economy values)
+src/sim/toy.ts     the Phase 0 toy world (determinism suites)
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
 src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
 src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums,
-                   rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts
+                   rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts,
+                   calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, derive/
 src/render/        camera.ts, gl/ (gpuTimer), map/ (MapRenderer), units/ (ProxyRenderer, atlas), fx/, labels/, lod/
-src/ui/            panels, i18n/{index.ts: t(), locale signal, pseudo-locale 'qps'; en.json = source of truth}, theme
+src/ui/            TopBar, BottomBar (date/pause/speed), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
+                   en.json = source of truth}; later panels, theme
 src/editor/        paint tools, undo stack, flag editor, scenario IO
-src/app/           main.tsx, MapView.ts, simClient.ts, input/ (CameraController), testApi.ts (__warsim),
-                   bench/ (bench.html pages); later settings, autosave, screenshot
+src/app/           main.tsx (?scenario=toy|1938), MapView.ts, simClient.ts, hud.ts (persisted speed/pause), input/
+                   (CameraController), testApi.ts (__warsim), bench/ (bench.html pages: A B BP P R T W F);
+                   later settings, autosave, screenshot
 tools/             data/, headless/, parity/, bench/, dmath/, eslint/; later soak/, sweep/
-data/              terrain.json, units/, tech/, traits/, buildings/, maps/<id>/map.json, scenarios/<id>/scenario.json
+data/              terrain.json, units/, templates/, tech/, traits/, buildings/, flags/presets.json, maps/<id>/{map,straits}.json,
+                   scenarios/<id>/{scenario,nations,ownership,diplomacy,cities,city-rules,flags,oob,economy}.json
                    (every file validated by tests/unit/data-schemas.test.ts; unknown paths are rejected)
 public/data/       generated map assets + manifest.json (sha256)
 tests/unit, tests/e2e (timing specs: *.perf.spec.ts, run after the parallel suite), tests/helpers (shared Node asset/map access), tests/fixtures

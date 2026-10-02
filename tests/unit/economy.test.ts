@@ -18,7 +18,7 @@ import {
   type EconomyTables,
 } from '../../src/sim/systems/economy';
 import { World } from '../../src/sim/world';
-import { earthAsset } from '../helpers/earth';
+import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.9: one test per economic rule on a tiny world, plus the 1938 income ranking.
 
@@ -120,11 +120,7 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
   const sim = new Sim({
     scenario: '1938',
     seed: 1938,
-    assets: {
-      admin1Geometry: new Uint8Array(earthAsset('admin1-geometry')),
-      admin1Meta: new Uint8Array(earthAsset('admin1-meta')),
-      terrain: new Uint8Array(earthAsset('terrain', SIZE_1938.w)),
-    },
+    assets: assets1938(SIZE_1938.w),
   });
   const { gross } = monthlyAccounts(sim.world, ECONOMY_TABLES_1938);
   const tags = NATIONS_1938.map((n) => n.tag);

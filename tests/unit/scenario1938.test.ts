@@ -4,16 +4,12 @@ import { xxhash32View } from '../../src/sim/core/hash';
 import type { ScenarioAssets } from '../../src/shared/protocol';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { CITIES_1938, earthAsset, OOB_1938, politicalMap1938 } from '../helpers/earth';
+import { CITIES_1938, assets1938, OOB_1938, politicalMap1938 } from '../helpers/earth';
 
 // PLAN 1.9a: the 1938 scenario boots as sim state (Node here; the worker in e2e), carrying the
 // political map, nations, cities and starting OOB, and is deterministic and saveable.
 
-const assets: ScenarioAssets = {
-  admin1Geometry: new Uint8Array(earthAsset('admin1-geometry')),
-  admin1Meta: new Uint8Array(earthAsset('admin1-meta')),
-  terrain: new Uint8Array(earthAsset('terrain', SIZE_1938.w)),
-};
+const assets: ScenarioAssets = assets1938(SIZE_1938.w);
 
 describe('1938 world (PLAN 1.9a)', () => {
   const t0 = performance.now();

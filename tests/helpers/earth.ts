@@ -3,18 +3,14 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
-import straitsJson from '../../data/maps/earth/straits.json' with { type: 'json' };
 import citiesJson from '../../data/scenarios/1938/cities.json' with { type: 'json' };
-import nationsJson from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oobJson from '../../data/scenarios/1938/oob.json' with { type: 'json' };
-import rulesJson from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
 import { decodeAdmin1, type Admin1Geometry, type Admin1Meta } from '../../src/shared/admin1';
 import type { CityDef } from '../../src/sim/data/cities';
 import type { OobGroup } from '../../src/sim/data/oob';
-import type { OwnershipRules } from '../../src/sim/data/ownership';
 import { buildPoliticalMap, type PoliticalMap } from '../../src/sim/data/politicalMap';
-import type { NationDef } from '../../src/sim/data/schemas';
-import type { StraitDef } from '../../src/sim/data/terrain';
+import { NATIONS_1938, politicalMapInput1938 } from '../../src/sim/scenario1938';
+import type { ScenarioAssets } from '../../src/shared/protocol';
 
 export const EARTH_DIR = path.resolve(import.meta.dirname, '../../public/data/earth');
 
@@ -38,21 +34,26 @@ export function earthAdmin1(): { geo: Admin1Geometry; meta: Admin1Meta[] } {
   return admin1;
 }
 
-export const STRAITS = straitsJson.straits as unknown as StraitDef[];
-export const NATIONS_1938 = nationsJson.nations as unknown as NationDef[];
-export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
-export const RULES_1938 = rulesJson as unknown as OwnershipRules;
+export { NATIONS_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 export const CITIES_1938 = citiesJson.cities as unknown as CityDef[];
 export const OOB_1938 = oobJson.groups as unknown as OobGroup[];
 export const OVERLORDS_1938: ReadonlyMap<string, string> = new Map(NATIONS_1938.flatMap((n) => (n.overlord ? [[n.tag, n.overlord.tag] as const] : [])));
+
+/** The decoded map assets the 1938 world is built from, at map width w. */
+export function assets1938(w: number): ScenarioAssets {
+  return {
+    admin1Geometry: new Uint8Array(earthAsset('admin1-geometry')),
+    admin1Meta: new Uint8Array(earthAsset('admin1-meta')),
+    terrain: new Uint8Array(earthAsset('terrain', w)),
+  };
+}
 
 const maps = new Map<number, PoliticalMap>();
 /** The 1938 political map at w×(w/2), built once per test file. */
 export function politicalMap1938(w: number): PoliticalMap {
   let m = maps.get(w);
   if (!m) {
-    const { geo, meta } = earthAdmin1();
-    m = buildPoliticalMap({ w, h: w / 2, geo, meta, terrainRaw: new Uint8Array(earthAsset('terrain', w)), straits: STRAITS, tags: TAGS_1938, rules: RULES_1938, cities: CITIES_1938, oob: OOB_1938, overlordOf: OVERLORDS_1938 });
+    m = buildPoliticalMap(politicalMapInput1938(assets1938(w), w, w / 2));
     maps.set(w, m);
   }
   return m;

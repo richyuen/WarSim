@@ -22,7 +22,7 @@ import { dayOfIso } from '../shared/calendar';
 import type { CityDef } from './data/cities';
 import { templateStrength, type OobGroup, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
-import { buildPoliticalMap } from './data/politicalMap';
+import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
 import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
 import { cellWeight, ECON_PER_BN, industrialCapacity, monthlyAccounts, type EconomyTables } from './systems/economy';
@@ -104,25 +104,33 @@ function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: readonly
   }
 }
 
-export function createWorld1938(seed: number, assets: ScenarioAssets): World {
-  const { w, h } = SIZE_1938;
-  const world = new World(seed, w, h);
-  world.startDay = dayOfIso(scenario1938.startDate);
-  const tags = NATIONS_1938.map((n) => n.tag);
-  const meta = JSON.parse(new TextDecoder().decode(assets.admin1Meta)) as Admin1Meta[];
-  const map = buildPoliticalMap({
+export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
+
+/** Inputs of the 1938 map build chain at w×h (shared by the sim world and the worker's views). */
+export function politicalMapInput1938(assets: ScenarioAssets, w: number, h: number): PoliticalMapInput {
+  return {
     w,
     h,
     geo: decodeAdmin1(assets.admin1Geometry),
-    meta,
+    meta: JSON.parse(new TextDecoder().decode(assets.admin1Meta)) as Admin1Meta[],
     terrainRaw: assets.terrain,
     straits: earthStraits.straits as unknown as StraitDef[],
-    tags,
+    tags: TAGS_1938,
     rules: ownership1938 as unknown as OwnershipRules,
     cities: cities1938.cities as unknown as CityDef[],
     oob: oob1938.groups as unknown as OobGroup[],
     overlordOf: new Map(NATIONS_1938.flatMap((n) => (n.overlord ? [[n.tag, n.overlord.tag] as const] : []))),
-  });
+  };
+}
+
+export function createWorld1938(seed: number, assets: ScenarioAssets): World {
+  const { w, h } = SIZE_1938;
+  const world = new World(seed, w, h);
+  world.startDay = dayOfIso(scenario1938.startDate);
+  const tags = TAGS_1938;
+  const input = politicalMapInput1938(assets, w, h);
+  const meta = input.meta;
+  const map = buildPoliticalMap(input);
   if (map.unplacedGroups.length) throw new Error(`1938 OOB: ${map.unplacedGroups.length} groups found no land`);
   const c = world.cells;
   c.owner.set(map.owner);

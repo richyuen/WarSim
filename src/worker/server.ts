@@ -23,14 +23,8 @@ import { xxhash32View } from '../sim/core/hash';
 import { buildProvinceRaster } from '../sim/data/provinces';
 import { loadTerrain, type StraitDef } from '../sim/data/terrain';
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
-import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
-import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
-import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
-import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
-import type { OobGroup } from '../sim/data/oob';
-import type { CityDef } from '../sim/data/cities';
-import type { OwnershipRules } from '../sim/data/ownership';
 import { buildPoliticalMap } from '../sim/data/politicalMap';
+import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { Sim } from '../sim/sim';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -241,20 +235,10 @@ export class SimServer {
       const t0 = performance.now();
       const store = new AssetStore(msg.assetBase);
       const [geoAsset, metaAsset, terrainAsset] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', msg.w)]);
-      const tags = nations1938.nations.map((n) => n.tag);
-      const r = buildPoliticalMap({
-        w: msg.w,
-        h: msg.h,
-        geo: decodeAdmin1(geoAsset.bytes),
-        meta: JSON.parse(new TextDecoder().decode(metaAsset.bytes)) as Admin1Meta[],
-        terrainRaw: terrainAsset.bytes,
-        straits: earthStraits.straits as unknown as StraitDef[],
-        tags,
-        rules: ownership1938 as unknown as OwnershipRules,
-        cities: cities1938.cities as unknown as CityDef[],
-        oob: oob1938.groups as unknown as OobGroup[],
-        overlordOf: new Map(nations1938.nations.flatMap((n) => ('overlord' in n && n.overlord ? [[n.tag, n.overlord.tag] as const] : []))),
-      });
+      const tags = TAGS_1938;
+      const r = buildPoliticalMap(
+        politicalMapInput1938({ admin1Geometry: geoAsset.bytes, admin1Meta: metaAsset.bytes, terrain: terrainAsset.bytes }, msg.w, msg.h),
+      );
       const cells = new Array<number>(tags.length + 1).fill(0);
       for (const v of r.owner) cells[v]!++;
       const cities = r.cities.map((c) => ({

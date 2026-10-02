@@ -967,3 +967,20 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   headless: unit tests + a full-year run.
 - **Parity:** rows 22 (income bonus) and 23 (economy tick) → partial. Score 8.8% → 10.0%.
 - **Next:** a step 9 review pass is due (5 tasks since the last: 1.6, 1.7, 1.8, 1.9a, 1.9).
+
+## 2026-10-02 — Step 9 review pass after PLAN 1.6–1.9
+- **Duplication:** the 1938 map inputs (straits, nations, ownership, cities, OOB, overlords) were
+  hand-assembled in three places: `createWorld1938`, the worker's `buildPolitical`, and the test
+  helper/ownership test. Now there is one `politicalMapInput1938(assets, w, h)` in
+  `src/sim/scenario1938.ts` (+ `TAGS_1938`).
+  - The worker drops eight imports.
+  - The test helper gains `assets1938(w)`, used by four tests in place of inline asset objects,
+    and re-exports NATIONS/TAGS from the sim. The dead `STRAITS` and `RULES_1938` were removed.
+  - The ownership determinism check still runs a fresh, independent build against the memoised one.
+- **SPEC drift fixed in §2.2:** systems/economy, scenario1938/toy, data/oob, shared
+  calendar/speed/scenarios, ui BottomBar, app hud and bench pages, the data tree (templates,
+  flags, straits, scenario files).
+- **Tests:** coverage for 1.6–1.9 is complete (flags, OOB, calendar/speed + e2e, boot e2e,
+  economy rules + AT); no gaps found.
+- **Open items, unchanged:** renderer dashed-stair artifact (PLAN 1.28); OOB dots blend into nation
+  fills (Phase 2 counters).
