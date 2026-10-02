@@ -37,9 +37,10 @@ const mustFail: [string, string][] = [
   ['render-imports-sim.ts', 'warsim/module-boundaries'],
   ['shared-imports-sim.ts', 'warsim/module-boundaries'],
   ['ui-imports-worker.ts', 'warsim/module-boundaries'],
+  ['ui-literal-string.tsx', 'warsim/no-literal-ui-string'],
 ];
 
-const mustPass = ['sim-clean.ts', 'worker-imports-sim.ts', 'app-uses-browser.ts'];
+const mustPass = ['sim-clean.ts', 'worker-imports-sim.ts', 'app-uses-browser.ts', 'ui-translated.tsx'];
 
 describe('ESLint sim purity and module boundaries (SPEC §2.1)', () => {
   it.each(mustFail)('%s fails with %s', async (name, rule) => {
@@ -48,6 +49,11 @@ describe('ESLint sim purity and module boundaries (SPEC §2.1)', () => {
 
   it.each(mustPass)('%s is clean', async (name) => {
     expect(await lintFixture(name)).toEqual([]);
+  });
+
+  it('every literal in the UI fixture is reported (JSX text, title, aria-label, string child)', async () => {
+    const rules = await lintFixture('ui-literal-string.tsx');
+    expect(rules.filter((r) => r === 'warsim/no-literal-ui-string')).toHaveLength(4);
   });
 
   it('Math.atan2 and Math.sin are both reported', async () => {

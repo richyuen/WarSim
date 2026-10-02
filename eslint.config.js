@@ -49,6 +49,12 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
+    // i18n from day one (PROMPT.md, PLAN 0.21): no literal user-facing text in UI components.
+    files: ['src/ui/**/*.tsx', 'src/editor/**/*.tsx', 'src/app/**/*.tsx'],
+    ignores: ['src/app/bench/**'],
+    rules: { 'warsim/no-literal-ui-string': 'error' },
+  },
+  {
     files: ['src/worker/**'],
     languageOptions: { globals: { ...globals.worker } },
   },

@@ -80,7 +80,7 @@ src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all seri
 src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums
 src/worker/        entry, scheduler (speed/pause), snapshot builder, pools, derive/
 src/render/        gl helpers, camera, map/, units/, fx/, labels/, lod/
-src/ui/            panels, i18n/{en.json}, theme
+src/ui/            panels, i18n/{index.ts: t(), locale signal, pseudo-locale 'qps'; en.json = source of truth}, theme
 src/editor/        paint tools, undo stack, flag editor, scenario IO
 src/app/           bootstrap, input, settings, autosave, screenshot, __warsim test API
 tools/             data/, headless/, soak/, sweep/, parity/, bench/

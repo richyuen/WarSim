@@ -117,7 +117,61 @@ const moduleBoundaries = {
   },
 };
 
+/** JSX attributes whose values are shown to users and must come from t() (i18n, PLAN 0.21). */
+const USER_FACING_ATTRS = new Set(['title', 'alt', 'placeholder', 'label', 'aria-label', 'aria-description', 'aria-placeholder']);
+const HAS_LETTER = /\p{L}/u;
+
+/** @param {unknown} v */
+const isUserText = (v) => typeof v === 'string' && HAS_LETTER.test(v);
+
+/** @type {import('eslint').Rule.RuleModule} */
+const noLiteralUiString = {
+  meta: {
+    type: 'problem',
+    docs: { description: 'UI text must come from t() (i18n from day one, PROMPT.md)' },
+    schema: [],
+    messages: { literal: "Literal UI text '{{text}}': use t('key') with a key in src/ui/i18n/en.json." },
+  },
+  create(context) {
+    /** @param {import('estree').Node} node @param {string} text */
+    const report = (node, text) =>
+      context.report({ node, messageId: 'literal', data: { text: text.trim().slice(0, 40) } });
+    /** @param {any} node */
+    const checkExpr = (node) => {
+      if (!node) return;
+      if (node.type === 'Literal' && isUserText(node.value)) report(node, String(node.value));
+      if (node.type === 'TemplateLiteral') {
+        const raw = node.quasis.map((/** @type {any} */ q) => q.value.cooked ?? '').join('');
+        if (isUserText(raw)) report(node, raw);
+      }
+      if (node.type === 'ConditionalExpression') {
+        checkExpr(node.consequent);
+        checkExpr(node.alternate);
+      }
+      if (node.type === 'LogicalExpression') checkExpr(node.right);
+    };
+    return {
+      /** @param {any} node */
+      JSXText(node) {
+        if (isUserText(node.value)) report(node, node.value);
+      },
+      /** @param {any} node */
+      JSXExpressionContainer(node) {
+        const parent = node.parent;
+        if (parent && (parent.type === 'JSXElement' || parent.type === 'JSXFragment')) checkExpr(node.expression);
+      },
+      /** @param {any} node */
+      JSXAttribute(node) {
+        const name = node.name.type === 'JSXIdentifier' ? node.name.name : '';
+        if (!USER_FACING_ATTRS.has(name) || !node.value) return;
+        if (node.value.type === 'Literal' && isUserText(node.value.value)) report(node.value, String(node.value.value));
+        if (node.value.type === 'JSXExpressionContainer') checkExpr(node.value.expression);
+      },
+    };
+  },
+};
+
 export default {
   meta: { name: 'warsim' },
-  rules: { 'module-boundaries': moduleBoundaries },
+  rules: { 'module-boundaries': moduleBoundaries, 'no-literal-ui-string': noLiteralUiString },
 };

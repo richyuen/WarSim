@@ -444,3 +444,29 @@
   ~2.7–4.3k cells flipped per year, 120 formations steady, final hash 04c3638d. Metrics JSON written.
 - `tests/unit/headless.test.ts`: 2-year run has the expected structure, and its final hash equals a plain
   `Sim` stepped the same number of ticks.
+
+## 2026-10-02 — PLAN 0.21: i18n skeleton
+- `src/ui/i18n/index.ts`:
+  - `t(key, params)` over flat JSON catalogs with `{name}` interpolation. `MessageKey = keyof en.json`, so
+    an unknown key is a type error.
+  - `locale` is a Preact signal, so components re-render on change. `setLocale` persists to localStorage
+    and sets `<html lang>`; the first visit follows `navigator.language`.
+  - `qps` is a generated pseudo-locale (accented, padded ~30%, bracketed ⟦…⟧, placeholders kept). It
+    exposes hard-coded strings and truncation without a translator.
+- `src/ui/i18n/en.json` (English first). `src/ui/TopBar.tsx` shows the title, a tagline and the language
+  picker; `App` renders it. Styled as a dark, gold-trimmed panel (AoC-like palette).
+- Lint: local rule `warsim/no-literal-ui-string` (`tools/eslint/warsim-plugin.js`) on `src/{ui,editor,app}`
+  `.tsx`, excluding bench pages.
+  - It flags JSX text with letters, string/template literals as JSX children (including both branches of
+    ternaries and the right side of `&&`), and user-facing attributes (title, alt, placeholder, label,
+    aria-*).
+  - Fixtures: `ui-literal-string.tsx` must fail, with all 4 literals reported; `ui-translated.tsx` must pass.
+    Mutation check: a literal tagline in the real TopBar is reported.
+- Tests:
+  - `tests/unit/i18n.test.ts`: interpolation, pseudo-locale and reactivity, catalog sanity.
+  - `tests/e2e/i18n.spec.ts`: the UI shows en.json strings with no raw keys. Switching to qps changes the
+    label, title and `<html lang>`, and the choice survives a reload.
+- Screenshots `docs/evidence/0.21/i18n-{en,qps}.png` viewed: the top bar renders over the live toy map in
+  both locales.
+- Gotcha: Playwright's ESM loader needs `with { type: 'json' }` for JSON imports, so the e2e test reads the
+  catalog with fs.
