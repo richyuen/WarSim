@@ -102,15 +102,15 @@ export class MapView {
     return (lift(pal[o]!) << 16) | (lift(pal[o + 1]!) << 8) | lift(pal[o + 2]!);
   }
 
-  private resize(): number {
+  /** Matches the backing store to the CSS size; returns true when it changed. */
+  private resize(): boolean {
     const dpr = window.devicePixelRatio || 1;
     const w = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
     const h = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
-    if (this.canvas.width !== w || this.canvas.height !== h) {
-      this.canvas.width = w;
-      this.canvas.height = h;
-    }
-    return dpr;
+    if (this.canvas.width === w && this.canvas.height === h) return false;
+    this.canvas.width = w;
+    this.canvas.height = h;
+    return true;
   }
 
   private frame(now: number): void {
@@ -122,10 +122,7 @@ export class MapView {
     const c = this.controller.cam;
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
     const interpolating = this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5;
-    const resized =
-      this.canvas.width !== Math.round(this.canvas.clientWidth * (window.devicePixelRatio || 1)) ||
-      this.canvas.height !== Math.round(this.canvas.clientHeight * (window.devicePixelRatio || 1));
-    if (this.dirty || camMoved || interpolating || resized) {
+    if (this.resize() || this.dirty || camMoved || interpolating) {
       this.draw(now);
       this.dirty = false;
       this.lastCam = { ...c };
@@ -135,7 +132,8 @@ export class MapView {
 
   /** Renders one frame (also used by tests for deterministic screenshots). */
   draw(now = performance.now()): void {
-    const dpr = this.resize();
+    this.resize();
+    const dpr = window.devicePixelRatio || 1;
     const cam = this.controller.cam;
     const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);

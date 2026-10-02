@@ -518,3 +518,32 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 | 7 Commit, tick, PROGRESS, parity | Every task: one commit, PLAN tick and a PROGRESS entry. `npm run parity` ran in every `check` from 0.8 on. | PARITY rows touched by 0.17, 0.20 and 0.21 were updated in the 0.22 review, not at each task. 0.5/0.6/0.7 were docs-only commits made without a full `check`. 0.16 was committed with a lint error, fixed in the next commit; since then commits are gated on the `check` exit code. |
 | 8 Blockers after 3 failed attempts | Never triggered; no task needed 3 attempts. | — |
 | 9 Review every ~5 iterations | Full review at 0.22: SPEC drift fixes (v0.2), dead code removed, missing end-to-end test added. Lighter refactors happened during tasks (bench helpers deduplicated in 0.15, `halveElevation` shared in 0.18). | Only one formal review over 19 tasks; the cadence asks for ~4. Phase 1 will hold a review every 5 tasks (after 1.5, 1.10, …). |
+
+## 2026-10-02 — Phase 0 audit remediation (gaps closed where they can still be acted on)
+- **Step 1:** re-read PROMPT.md EVERY ITERATION, the PLAN status (all 0.x ticked), the PROGRESS tail,
+  BLOCKERS (no open items) and `critic/` (absent) before this pass.
+- **Step 7 (ungated docs commits):** `git diff-tree` shows b0ab326 (0.5), 0aba4cb (0.6) and e2bc184
+  (0.7) changed only `.md` files. Their code is byte-identical to 3ba274f (0.4), which passed
+  `npm run check`. The 0.16 lint slip was fixed in ec41751. PARITY rows for 0.17/0.20/0.21 were updated
+  in 0.22.
+- **Step 6 (snapshot build ≤ 2 ms not measured):** `tests/unit/snapshot-perf.test.ts` measures it at M
+  size (2048×1024, 150 nations, 4000 formations, 32 dirty tiles + 200 events per snapshot): steady median
+  **0.32 ms**, p95 0.62 ms. The one-off full sync of 512 tiles takes 8.1 ms (load/save only). The test
+  asserts median < 2 ms.
+- **Step 5 (no reference comparison after 0.6):** compared AoC trailer frame `0014` (Central Europe)
+  side by side with our `A-webgl2-map-z1-region` render. The composite stays in the scratchpad because
+  it contains AoC material.
+  - AoC's ~2-tile dark outlines make nations read instantly; our constant 1.25 px line read weakly at
+    operational zoom.
+  - Fixed: `borderWidthPx` (`src/render/map/MapRenderer.ts`) grows border width with sqrt(px per
+    cell) from 1.25 px to a 3.5 px cap. Re-benched (GPU 0.41–0.47 ms, unchanged) and re-viewed
+    `docs/bench/A-webgl2-map-z{1,2}`: borders are now clearly legible and still smooth. A faint
+    anti-aliasing speckle inside the line at 48 px/cell is noted for 1.28.
+  - Other differences belong to later tasks: AoC occupation is a darker occupier tint with its own
+    outline (ours: hatching; to revisit in 1.15/1.28 against TEXT "stripes"); name labels + strength
+    numbers + city dots (1.5, 1.29, Phase 2 T1 markers).
+- **Step 9 (one review instead of ~4):** an additional review pass.
+  - Removed duplicated resize detection in `MapView.frame` (`resize()` now reports changes).
+  - Added a unit test for the border width.
+  - Re-checked exported helpers for dead code (none besides the stat removed in 0.22).
+  - From Phase 1 on, a review pass runs every 5 tasks.

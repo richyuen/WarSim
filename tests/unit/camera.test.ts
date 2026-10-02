@@ -70,3 +70,12 @@ describe('camera math', () => {
     expect(wrapOffsets({ cx: 10, cy: 0, scale: 10 }, { ...GEO, wrapX: false }, VW)).toEqual([0]);
   });
 });
+
+describe('map border width', () => {
+  it('grows with zoom from the base width and caps at 3.5 px', async () => {
+    const { borderWidthPx } = await import('../../src/render/map/MapRenderer');
+    expect(borderWidthPx(1.25, 0.5)).toBe(1.25);
+    expect(borderWidthPx(1.25, 8)).toBeCloseTo(2.5, 9);
+    expect(borderWidthPx(1.25, 100)).toBe(3.5);
+  });
+});

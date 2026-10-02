@@ -13,6 +13,15 @@ export interface MapRendererOptions {
   warp?: number;
 }
 
+/**
+ * Border width in CSS px for a zoom level: the base width at overview scales, growing with
+ * sqrt(px per cell) up to 3.5 px at operational zoom. AoC's thick dark outlines are what make
+ * nations readable (reference comparison, Phase 0 audit); a constant hairline reads weakly.
+ */
+export function borderWidthPx(base: number, scale: number): number {
+  return Math.min(3.5, base * Math.max(1, Math.sqrt(scale / 2)));
+}
+
 export class MapRenderer {
   readonly gl: WebGL2RenderingContext;
   readonly w: number;
@@ -121,7 +130,7 @@ export class MapRenderer {
       uViewport: [gl.drawingBufferWidth, gl.drawingBufferHeight],
       uDpr: dpr,
       uWrapX: this.opts.wrapX ? 1 : 0,
-      uBorderPx: this.opts.borderPx,
+      uBorderPx: borderWidthPx(this.opts.borderPx, cam.scale),
       uWarp: this.opts.warp,
     });
     gl.bindVertexArray(this.vao);
