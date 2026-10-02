@@ -224,6 +224,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     }
     n.fightToDeath[id] = def.fightToDeath ? 1 : 0;
     n.ceStatic[id] = staticCe(def.aggression);
+    n.aggression[id] = def.aggression;
     n.efficiency[id] = 1;
   });
 

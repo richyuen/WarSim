@@ -14,7 +14,7 @@ describe('headless runner (PLAN 0.20)', () => {
       expect(m.nations).toHaveLength(2);
       expect(m.nations.reduce((a, n) => a + n.controlled, 0)).toBeGreaterThan(0);
       expect(m.cellsFlipped).toBeGreaterThan(0);
-      expect(m.events['formationDestroyed']).toBeGreaterThan(0);
+      expect(m.events['FormationDestroyed']).toBeGreaterThan(0);
       expect(m.tickMs.mean).toBeGreaterThan(0);
       expect(m.tickMs.p95).toBeGreaterThanOrEqual(0);
       expect(m.tickMs.max).toBeGreaterThanOrEqual(m.tickMs.p95);

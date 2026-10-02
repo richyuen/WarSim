@@ -57,6 +57,9 @@ export const NATION_SCHEMA = {
   origin: 'u32',
   /** Revivals left and the earliest revival tick (PLAN 1.20); consecutive bankrupt months. */
   revivalsLeft: 'u8',
+  /** Strategic AI (PLAN 1.24): aggression 0..100 (scenario; spawned nations get REBEL_AGGRESSION) and God switch-off. */
+  aggression: 'u8',
+  aiOff: 'u8',
   /** Combat efficiency (PLAN 1.22): current value, scenario (static-mode) value, God lock. */
   efficiency: 'f64',
   ceStatic: 'f64',
@@ -264,7 +267,7 @@ class WorldCore implements Stateful {
 
   serialize(): Section[] {
     const w = this.world;
-    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0, w.settings.revoltMode === 'region' ? 1 : 0, CE_MODES.indexOf(w.settings.ceMode)]);
+    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0, w.settings.revoltMode === 'region' ? 1 : 0, CE_MODES.indexOf(w.settings.ceMode), w.settings.aiEnabled ? 0 : 1]);
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
@@ -278,13 +281,13 @@ class WorldCore implements Stateful {
   deserialize(sections: readonly Section[]): void {
     const w = this.world;
     const meta = takeSection(sections, 'world.meta', 'f64');
-    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0, revoltRegion = 0, ceMode = 0] = meta;
+    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0, revoltRegion = 0, ceMode = 0, aiOff = 0] = meta;
     if (cw !== w.cells.w || ch !== w.cells.h) throw new Error(`map size mismatch: save ${cw}×${ch}, world ${w.cells.w}×${w.cells.h}`);
     w.seed = seed;
     w.tick = tick;
     w.nextCommandSeq = nextSeq;
     w.startDay = startDay;
-    w.settings = { winnerTakesAll: winnerTakesAll === 1, revoltMode: revoltRegion === 1 ? 'region' : 'province', ceMode: CE_MODES[ceMode] ?? 'dynamic' };
+    w.settings = { winnerTakesAll: winnerTakesAll === 1, revoltMode: revoltRegion === 1 ? 'region' : 'province', ceMode: CE_MODES[ceMode] ?? 'dynamic', aiEnabled: aiOff !== 1 };
     w.rng.load(takeSection(sections, 'world.rng', 'u32'));
     const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'world.commandLog', 'u8'))) as {
       log: LoggedCommand[];
@@ -297,6 +300,7 @@ class WorldCore implements Stateful {
     w.elementIndex = null;
     w.nav = null;
     w.frontier = null;
+    w.flipping = null;
     w.supplyDirty = true;
     w.out.fires.length = 0;
     w.out.markAllDirty();
@@ -337,9 +341,16 @@ export class World {
    */
   supplyDirty = true;
   /** Global settings (state, saved in world.meta). */
-  settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode } = { winnerTakesAll: false, revoltMode: 'province', ceMode: 'dynamic' };
+  settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode; aiEnabled: boolean } = {
+    winnerTakesAll: false,
+    revoltMode: 'province',
+    ceMode: 'dynamic',
+    aiEnabled: true,
+  };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
+  /** Derived (not state): cells with non-zero `cells.flip`; null = rebuild by scan. */
+  flipping: Set<number> | null = null;
   frontierWars = -1;
   /** Derived (not state): live element ids per formation, ascending; null = rebuild. */
   elementIndex: Map<number, number[]> | null = null;

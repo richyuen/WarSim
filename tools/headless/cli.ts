@@ -1,4 +1,4 @@
-// `npm run sim -- [--scenario toy] [--seed 7] [--years 10] [--out run.json]`
+// `npm run sim -- [--scenario toy|1938] [--seed 7] [--years 10] [--out run.json]`
 // Runs a scenario headless in Node and writes per-year metrics JSON (SPEC §10, PLAN 0.20).
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -14,7 +14,7 @@ const scenario = arg('scenario', 'toy') as ScenarioId;
 const seed = Number(arg('seed', '7'));
 const years = Number(arg('years', '10'));
 const out = arg('out', `.cache/runs/${scenario}-seed${seed}-${years}y.json`);
-if (scenario !== 'toy') throw new Error(`unknown scenario '${scenario}' (available: toy)`);
+if (scenario !== 'toy' && scenario !== '1938') throw new Error(`unknown scenario '${scenario}' (available: toy, 1938)`);
 if (!Number.isInteger(seed) || !Number.isInteger(years) || years < 1) throw new Error('--seed and --years must be integers, years ≥ 1');
 
 const result = runHeadless({

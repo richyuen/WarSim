@@ -10,7 +10,7 @@
  *  3. Pays tribute: TRIBUTE × (1 − autonomy/100) × last month's gross income, in gold.
  *  4. Integrates when autonomy < INTEGRATE_BELOW: progress += INTEGRATION_RATE ×
  *     (INTEGRATE_BELOW − autonomy)/INTEGRATE_BELOW; at 100 the overlord annexes all its land,
- *     takes its formations and the puppet ends (`PuppetIntegrated`).
+ *     takes its formations and cores, and the puppet ends (`PuppetIntegrated`).
  *  5. Autonomy drifts up by AUTONOMY_DRIFT (puppets drift toward independence), and loyalty
  *     relaxes by LOYALTY_PULL toward loyaltyTarget: LOYALTY_BASE + LOYALTY_PER_AUTONOMY ×
  *     autonomy (freer subjects are content), minus LOSING_PENALTY while the overlord is losing a
@@ -94,6 +94,10 @@ export function integratePuppet(world: World, subject: number): void {
   world.formations.forEach((id) => {
     if (f.nation[id] === subject) f.nation[id] = overlord;
   });
+  // Integration makes the land rightfully the overlord's: its cores pass on (PLAN 1.24 review:
+  // otherwise whole integrated colonies turned non-core and revolted together).
+  const pv = world.provinces;
+  for (let p = 1; p < pv.count; p++) if (pv.core[p] === subject) pv.core[p] = overlord;
   world.out.emit(world.tick, EventKind.PuppetIntegrated, subject, overlord, NaN, NaN);
   nc.overlord[subject] = 0;
   eliminateNation(world, subject);

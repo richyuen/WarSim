@@ -3,7 +3,10 @@
  * facade as the worker and records per-year metrics. Used by `npm run sim`, soak and sweep.
  */
 import type { ScenarioId } from '../../src/shared/protocol';
+import { EventKind } from '../../src/shared/events';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { loadAssets1938 } from './assets';
 import type { World } from '../../src/sim/world';
 
 export const TICKS_PER_YEAR = 24 * 365;
@@ -53,7 +56,8 @@ export interface HeadlessResult {
   yearly: YearMetrics[];
 }
 
-const EVENT_NAMES: Record<number, string> = { 1: 'formationSpawned', 2: 'formationDestroyed', 3: 'commandApplied' };
+/** Event names for the metrics (EventKind keys, e.g. WarDeclared). */
+const EVENT_NAMES: Record<number, string> = Object.fromEntries(Object.entries(EventKind).map(([k, v]) => [v, k]));
 
 function nationStats(world: World): NationYear[] {
   const { owner, controller } = world.cells;
@@ -82,7 +86,7 @@ function nationStats(world: World): NationYear[] {
 
 export function runHeadless(opts: HeadlessOptions): HeadlessResult {
   const now = opts.now ?? (() => performance.now());
-  const sim = new Sim({ scenario: opts.scenario, seed: opts.seed });
+  const sim = new Sim(opts.scenario === '1938' ? { scenario: '1938', seed: opts.seed, assets: loadAssets1938(SIZE_1938.w) } : { scenario: opts.scenario, seed: opts.seed });
   const world = sim.world;
   const yearly: YearMetrics[] = [];
   const start = now();
@@ -100,6 +104,7 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
           events[name] = (events[name] ?? 0) + 1;
         }
         ev.length = 0;
+        w.out.fires.length = 0;
       });
       times[t] = now() - t0;
     }

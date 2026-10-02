@@ -4,8 +4,9 @@
  * A province's holder is the owner of its representative (centre) cell; it is occupied when
  * that cell's controller differs. Monthly (00:00 of day 1), for every province with a living
  * holder, in id order:
- *   unrest += NON_CORE (holder ≠ core) + OCCUPIED (occupied) + AT_WAR (holder at war)
- *             + BANKRUPT (holder bankrupt) − DECAY − SUPPRESS × suppression(holder), clamped
+ *   unrest += NON_CORE (holder ≠ core) + OCCUPIED (occupied) + AT_WAR (holder at war, non-core
+ *             only) + BANKRUPT (holder bankrupt, non-core only) − DECAY − SUPPRESS × suppression,
+ *             clamped
  * A province held and controlled by its owner with unrest ≥ REVOLT_FROM revolts with
  *   p = MAX_P × (unrest − REVOLT_FROM)/(100 − REVOLT_FROM) × (1 − SUPPRESS_P × suppression)
  * drawn with hash32(seed, tick, province). Suppression (0..1 per nation, `setSuppression`)
@@ -40,9 +41,12 @@ export const SUPPRESSION_COST = 0.15;
 export const REGION_JOIN = 40;
 export const REGION_MAX = 8;
 export const AFTER_REVOLT = 10;
-export const MILITIA_PER_CELLS = 15;
+export const MILITIA_PER_CELLS = 40;
 export const MILITIA_MAX = 4;
-export const START_GOLD = 50;
+/** Start gold of rebels (≈ two years of one militia division's upkeep at 1938 prices). */
+export const START_GOLD = 150;
+/** Aggression of new rebel nations (strategic AI). */
+export const REBEL_AGGRESSION = 40;
 const SALT_REVOLT = 0x7e01;
 const SALT_WAR = 0x7e02;
 
@@ -95,7 +99,10 @@ export function revoltSystem(world: World): void {
     if (o === 0 || nc.living[o] !== 1) continue;
     const supp = nc.suppression[o]!;
     const occupied = controller[c] !== o;
-    const delta = (o !== pv.core[p] ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (atWar(world, o) ? AT_WAR : 0) + (nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
+    // Core land stays loyal through war and bankruptcy; only non-core land feels them (PLAN 1.24
+    // review: a bankrupt empire at war otherwise revolted everywhere at once).
+    const nonCore = o !== pv.core[p];
+    const delta = (nonCore ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (nonCore && atWar(world, o) ? AT_WAR : 0) + (nonCore && nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
     pv.unrest[p] = Math.max(0, Math.min(100, pv.unrest[p]! + delta));
     if (revolted[p] || occupied || pv.unrest[p]! < REVOLT_FROM) continue;
     const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp);
@@ -141,6 +148,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     nc.incomeMult[id] = 1;
     nc.manpowerMult[id] = 1;
     nc.origin[id] = area[0]!;
+    nc.aggression[id] = REBEL_AGGRESSION;
   }
   nc.living[id] = 1;
   nc.bankrupt[id] = 0;

@@ -69,10 +69,11 @@ export function reviveOnCores(world: World, n: number): boolean {
 export function collapseNation(world: World, c: number): void {
   const nc = world.nations.cols;
   if (!world.nations.has(c) || nc.living[c] !== 1) return;
-  world.out.emit(world.tick, EventKind.NationCollapsed, c, 0, NaN, NaN);
-  world.nations.forEach((p) => {
-    if (nc.overlord[p] === c && nc.living[p] === 1) releasePuppet(world, p);
-  });
+  // A collapse is a default: debts are void afterwards (PLAN 1.24 review: without it a broke
+  // nation re-collapsed every COLLAPSE_MONTHS forever).
+  nc.gold[c] = Math.max(0, nc.gold[c]!);
+  nc.bankrupt[c] = 0;
+  nc.brokeMonths[c] = 0;
   const pv = world.provinces;
   const g = navOf(world).graph;
   const held: number[] = [];
@@ -80,6 +81,16 @@ export function collapseNation(world: World, c: number): void {
     const cell = g.centre[p] ?? -1;
     if (cell >= 0 && world.cells.owner[cell] === c) held.push(p);
   }
+  // Nothing to fragment (no puppets, dead claimants or restless provinces): the default alone.
+  let puppets = false;
+  world.nations.forEach((p) => {
+    if (nc.overlord[p] === c && nc.living[p] === 1) puppets = true;
+  });
+  if (!puppets && !held.some((p) => deadClaimant(world, p) !== 0 || pv.unrest[p]! >= REVOLT_FROM)) return;
+  world.out.emit(world.tick, EventKind.NationCollapsed, c, 0, NaN, NaN);
+  world.nations.forEach((p) => {
+    if (nc.overlord[p] === c && nc.living[p] === 1) releasePuppet(world, p);
+  });
   // 1. Dead claimants revive on their provinces.
   const byClaimant = new Map<number, number[]>();
   for (const p of held) {

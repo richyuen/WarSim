@@ -57,7 +57,8 @@ function applyCommand(world: World, cmd: Command): void {
     case 'setSetting':
       if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;
       else if (cmd.key === 'revoltMode') world.settings.revoltMode = cmd.value;
-      else world.settings.ceMode = cmd.value;
+      else if (cmd.key === 'ceMode') world.settings.ceMode = cmd.value;
+      else world.settings.aiEnabled = cmd.value;
       return;
     case 'setEfficiency':
       if (world.nations.has(cmd.nation)) world.nations.cols.efficiency[cmd.nation] = Math.max(MIN_CE, Math.min(MAX_CE, cmd.value));
@@ -87,6 +88,9 @@ function applyCommand(world: World, cmd: Command): void {
       addCorridor(world, cmd.nation, cmd.x, cmd.y, cmd.toX - cmd.x, cmd.toY - cmd.y);
       return;
     }
+    case 'setAi':
+      if (world.nations.has(cmd.nation)) world.nations.cols.aiOff[cmd.nation] = cmd.enabled ? 0 : 1;
+      return;
     case 'reviveNation':
       reviveOnCores(world, cmd.nation);
       return;

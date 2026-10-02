@@ -104,7 +104,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: unit test per mode's evolution.
 - [x] 1.23 Major Battles + breakthrough corridor.
   AT: a concentration test triggers a Major Battle; the corridor flips cells faster for D days; history entry.
-- [ ] 1.24 Strategic AI v1 (war/peace/alliance/puppets/coalitions), traits/aggression.
+- [x] 1.24 Strategic AI v1 (war/peace/alliance/puppets/coalitions), traits/aggression.
   AT: 10-year headless runs on 3 seeds produce ≥ 3 wars, ≥ 1 peace, ≥ 1 alliance change each.
 - [ ] 1.25 Operational AI v1 (front allocation, offensives, reserves).
   AT: in a scripted 2-nation war, the larger nation advances; formations are spread along the front (coverage metric).

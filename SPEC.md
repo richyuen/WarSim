@@ -779,6 +779,21 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   opportunity (the target is at war elsewhere or weak), aggression and traits, war exhaustion,
   gold (broke → peace), core claims, threat from the largest nation (coalition),
   fightToDeath.
+  *Implemented v1 (PLAN 1.24, ADR-36; `src/sim/ai/strategic.ts`), runs first in the tick:*
+  - *Cadence:* each nation acts weekly (staggered by id), with hash-seeded draws.
+  - *War:* a nation needs aggression ≥ 15, must not be a puppet or broke, and may have at most
+    2 wars. utility = aggression/100 × (min(3, own strength/target defence incl. allies and
+    guarantors) − 1) + 0.3 if the target is at war + 0.3 for claims − exhaustion/100 − 0.4 ×
+    wars. It declares on the best target with utility > 0.5, with probability 0.25 ×
+    aggression/100.
+  - *Stalemate peace:* a war older than 720 days, with |score| < 15 and both sides' exhaustion
+    above 40, ends in peace.
+  - *Alliances:* an unaligned nation bordering an aggressive neighbour more than 1.5× stronger
+    joins a neighbour's alliance or forms one (30%).
+  - *Coalitions:* monthly, the unaligned neighbours of a nation earning > 25% of world income
+    form or join a coalition.
+  - *Switches:* `setAi` per nation; setting `aiEnabled`.
+  - *10-year AT:* `tests/sweep/` runs 3 seeds as its own `npm run check` stage.
 - **Operational AI** (every 6 h): assigns formations to fronts proportionally to
   threat, keeps reserves, launches offensives at local superiority ≥ k (with armour
   spearheads), sets defensive postures, tasks fleets (sea control around coasts, convoy

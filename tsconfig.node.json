@@ -16,9 +16,11 @@
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
+    "vitest.sweep.config.ts",
     "eslint.config.js",
     "tools",
     "tests/unit",
+    "tests/sweep",
     "tests/helpers",
     "playwright.config.ts",
     "tests/e2e",

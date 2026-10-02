@@ -103,8 +103,11 @@ describe('collapse and revival (PLAN 1.20)', () => {
   it(`${COLLAPSE_MONTHS} bankrupt months in a row collapse a nation`, () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const w = s.world;
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false }); // isolate the mechanic
     let collapsed = false;
     for (let m = 0; m < COLLAPSE_MONTHS + 2 && !collapsed; m++) {
+      // A collapse needs something to fragment (PLAN 1.24): keep some Polish provinces restless.
+      for (const p of heldProvinces(w, POL!).slice(0, 8)) w.provinces.unrest[p] = 95;
       w.nations.cols.gold[POL!] = -1e12; // deep in debt all along
       collapsed = kinds(run(s, 24 * 31), EventKind.NationCollapsed).some(([n]) => n === POL);
     }

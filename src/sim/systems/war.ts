@@ -135,7 +135,9 @@ function menOf(world: World): Map<number, number> {
 }
 
 export function warSystem(world: World): void {
-  if (!isDayStart(world.tick) || world.wars.list.length === 0) return;
+  if (!isDayStart(world.tick)) return;
+  if (world.wars.truces.some((t) => t.untilTick <= world.tick)) world.wars.truces = world.wars.truces.filter((t) => t.untilTick > world.tick);
+  if (world.wars.list.length === 0) return;
   const land = countLand(world);
   const men = menOf(world);
   const nc = world.nations.cols;

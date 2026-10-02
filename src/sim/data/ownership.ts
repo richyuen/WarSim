@@ -173,9 +173,13 @@ export function nearestCellWhere(pred: (cell: number) => boolean, x: number, y: 
     for (let dy = -r; dy <= r; dy++) {
       const yy = cy + dy;
       if (yy < 0 || yy >= h) continue;
-      for (let dx = -r; dx <= r; dx++) {
-        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-        const c = yy * w + ((cx + dx + w) % w);
+      // Only the ring's perimeter, in the same (dy, dx) order as a full square scan: full rows at
+      // |dy| = r, the two edge cells otherwise. (Scanning the square was O(r³) overall; a nation
+      // left without land searched to r = 2048 for ~12 s.)
+      const edge = Math.abs(dy) === r;
+      const step = edge || r === 0 ? 1 : 2 * r;
+      for (let dx = -r; dx <= r; dx += step) {
+        const c = yy * w + ((((cx + dx) % w) + w) % w);
         if (!pred(c)) continue;
         const ddx = cx + dx + 0.5 - x;
         const ddy = yy + 0.5 - y;

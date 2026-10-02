@@ -1402,3 +1402,52 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   2. The supply refresh perf test read a 60.3 ms mean against its 60 ms limit; the refresh takes
      ~10 ms alone. It now asserts the fastest of 5 runs against the same 60 ms limit, measuring
      the code rather than contention.
+
+## 2026-10-02 — PLAN 1.24: strategic AI v1 (war, peace, alliances, coalitions), aggression
+- **Strategic AI** (`src/sim/ai/strategic.ts`, first in the tick):
+  - weekly, staggered;
+  - war utility from strength (target with allies and guarantors), aggression, claims,
+    opportunity, exhaustion and wars;
+  - pacifist floor and capped strength ratio;
+  - stalemate peace;
+  - alliance joining and forming against threats;
+  - monthly coalitions against a hegemon (> 25% of world income);
+  - `setAi` and the `aiEnabled` setting.
+- **State:** nation columns aggression and aiOff.
+- **Headless runner:** now runs `--scenario 1938` (`tools/headless/assets.ts`) and records events
+  by EventKind name.
+- **Perf:**
+  - territory restricted to frontier cells under pressure or holding progress, with identical
+    outcomes: tick 2.58 → 1.40 ms;
+  - `nearestCellWhere` scans ring perimeters only: O(r³) took 12 s per relocation of a landless
+    nation;
+  - expired truces are pruned.
+- **Long-run fixes (ADR-36):**
+  1. cores are loyal through war and bankruptcy;
+  2. integration passes cores;
+  3. collapse voids debt and fires only when something fragments;
+  4. rebel militia and gold resized.
+  Before: 850 wars, 1,000 collapses and 700 nations per 10 years. After: ~85 wars, ~67 peaces,
+  30–40 alliance joins, 2 collapses.
+- **AT (`tests/sweep/aiSweep{1,2,3}.test.ts`, own gate stage `npm run test:sweep`):** 10 years
+  each, all well above the AT minimums:
+
+  | seed | wars | peaces | alliance changes |
+  |---|---|---|---|
+  | 1 | 83 | 65 | 44 |
+  | 2 | 87 | 69 | 41 |
+  | 3 | 84 | 66 | 63 |
+
+  Evidence: `docs/evidence/1.24/sweep-seed{1,2,3}.json` (per-year counts).
+- **Unit tests (`tests/unit/strategicAi.test.ts`, 6 tests):**
+  - neighbours;
+  - aggressors declare and pacifists never do;
+  - the global and per-nation AI switches;
+  - a coalition against a buffed Germany;
+  - stalemate peace.
+- **Test adjustments for the AI:**
+  - the alliance-unity test and the bankruptcy-collapse test switch the AI off (isolation);
+  - the collapse test keeps provinces restless (collapse needs something to fragment);
+  - the one-year economy test gets a 120 s budget;
+  - the headless test reads `FormationDestroyed`.
+- Parity: row 3 (AI war declaration) → partial; rows 1 and 21 notes updated.

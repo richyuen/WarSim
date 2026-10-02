@@ -42,6 +42,16 @@ function onFrontier(world: World, c: number): boolean {
   return false;
 }
 
+/** Cells with non-zero hold progress (derived from `cells.flip`; rebuilt by a scan when null). */
+function flippingOf(world: World): Set<number> {
+  if (world.flipping) return world.flipping;
+  const s = new Set<number>();
+  const flip = world.cells.flip;
+  for (let c = 0; c < flip.length; c++) if (flip[c] !== 0) s.add(c);
+  world.flipping = s;
+  return s;
+}
+
 /** The frontier set, rebuilt by a grid scan only when invalidated. */
 export function frontierOf(world: World): Set<number> {
   if (world.frontier && world.frontierWars === world.wars.version) return world.frontier;
@@ -57,6 +67,7 @@ export function frontierOf(world: World): Set<number> {
   }
   world.frontier = f;
   world.frontierWars = world.wars.version;
+  world.flipping = null; // the rebuild cleared progress on uncontested cells
   return f;
 }
 
@@ -82,6 +93,7 @@ export function territorySystem(world: World): void {
         const d = Math.max(Math.abs(dx), Math.abs(dy));
         const p = base * (1 - d / (PRESSURE_RADIUS + 1));
         const c = y * w + ((cx + dx + w) % w);
+        if (!frontier.has(c)) continue; // only frontier cells can flip
         let m = pressure.get(c);
         if (!m) pressure.set(c, (m = new Map()));
         m.set(nation, (m.get(nation) ?? 0) + p);
@@ -92,7 +104,17 @@ export function territorySystem(world: World): void {
   // Decide on start-of-tick control; apply afterwards.
   const flips: [number, number][] = [];
   const nb: number[] = [];
-  for (const c of [...frontier].sort((p, q) => p - q)) {
+  // Candidates: frontier cells under pressure, plus cells holding progress (which may reset).
+  // Every other frontier cell would compute best = 0 with flip already 0: a no-op.
+  const flipping = flippingOf(world);
+  const candidates = new Set(pressure.keys());
+  for (const c of flipping) candidates.add(c);
+  for (const c of [...candidates].sort((p, q) => p - q)) {
+    if (!frontier.has(c)) {
+      flip[c] = 0;
+      flipping.delete(c);
+      continue;
+    }
     const d = controller[c]!;
     const m = pressure.get(c);
     let defence = GARRISON;
@@ -114,20 +136,26 @@ export function territorySystem(world: World): void {
     }
     if (bestNation !== 0 && best > defence) {
       flip[c] = Math.min(255, flip[c]! + (inCorridor(world, bestNation, c) ? CORRIDOR_RATE : 1));
+      flipping.add(c);
       if (flip[c]! >= HOLD_TICKS) flips.push([c, bestNation]);
     } else {
       flip[c] = 0;
+      flipping.delete(c);
     }
   }
   for (const [c, n] of flips) {
     flip[c] = 0;
+    flipping.delete(c);
     world.setController(c, n, true);
   }
   // Local frontier upkeep around flipped cells.
   for (const [c] of flips) {
     for (const k of [c, ...neighbours(world, c, nb)]) {
       if (onFrontier(world, k)) frontier.add(k);
-      else if (frontier.delete(k)) flip[k] = 0;
+      else if (frontier.delete(k)) {
+        flip[k] = 0;
+        flipping.delete(k);
+      }
     }
   }
 }

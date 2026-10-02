@@ -17,6 +17,8 @@ export type Command =
   | { kind: 'setSetting'; key: 'revoltMode'; value: 'province' | 'region' }
   /** PLAN 1.22: combat-efficiency mode. */
   | { kind: 'setSetting'; key: 'ceMode'; value: 'dynamic' | 'progressive' | 'static' | 'locked' | 'random' }
+  /** PLAN 1.24 God Mode: the strategic AI for all nations. */
+  | { kind: 'setSetting'; key: 'aiEnabled'; value: boolean }
   /** God Mode: set a nation's CE; lock or unlock it (a locked CE never changes). */
   | { kind: 'setEfficiency'; nation: number; value: number }
   | { kind: 'lockEfficiency'; nation: number; locked: boolean }
@@ -29,6 +31,8 @@ export type Command =
   /** PLAN 1.21 (God Mode, events): a timed buff/debuff lasting `hours` from the tick applied. */
   | { kind: 'grantBuff'; targetKind: 'nation' | 'formation' | 'province'; target: number; buff: 'income' | 'manpower' | 'attack' | 'defense' | 'speed' | 'unrest'; magnitude: number; hours: number; nameKey: string }
   | { kind: 'removeBuff'; id: number }
+  /** PLAN 1.24 God Mode: switch a nation's AI on or off. */
+  | { kind: 'setAi'; nation: number; enabled: boolean }
   /** PLAN 1.23 God Mode: a custom Major Battle won by `nation`: a corridor from (x, y) to (toX, toY). */
   | { kind: 'forceBreakthrough'; nation: number; x: number; y: number; toX: number; toY: number }
   | { kind: 'collapseNation'; nation: number }

@@ -30,6 +30,7 @@ describe('alliances (PLAN 1.17)', () => {
   it('low unity: loyalty sinks and the members leave within months; the alliance dissolves', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const ac = s.world.alliances.allianceOf(GER)!;
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false }); // isolate the unity mechanic from AI wars
     s.command({ kind: 'setUnity', alliance: ac.id, value: 5 });
     const ev = run(s, 1 + MONTH_TICKS.slice(0, 6).reduce((a, b) => a + b, 0)); // through 1 July
     expect(kinds(ev, EventKind.AllianceLeft).map((e) => e[0]).sort()).toEqual([ITA, JAP].sort());

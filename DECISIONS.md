@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-36 · 2026-10-02 · accepted — Strategic AI v1 and the long-run stability fixes it forced
+**Decision.**
+- Utility-based weekly AI with hash draws, a pacifist floor (aggression < 15) and a capped
+  strength ratio.
+- Long runs exposed a cascade. Fixed by:
+  1. Core provinces feel war and bankruptcy as no unrest (only occupation).
+  2. Integration passes the puppet's cores to the overlord.
+  3. A collapse voids debt and fires only when something fragments.
+  4. Rebels get 1 militia division per 40 cells and 150 gold.
+  5. Expired truces are pruned.
+  6. `nearestCellWhere` scans ring perimeters only. It was O(r³): 12 s whenever a nation without
+     land relocated its capital.
+- The 3-seed 10-year sweep is its own stage of the gate.
+
+**Why.**
+- The first 10-year runs reached 850 wars, 1,000 collapses and 700 nations. Bankrupt empires at
+  war revolted everywhere; integrated colonies were non-core and revolted together; broke rebels
+  re-collapsed every 6 months.
+- Each fix restores the intended rule rather than tuning a constant. Cores are loyal. Integration
+  makes land rightful, as in AoC. A default clears debt.
+- After the fixes: ~85 wars, ~67 peaces, 30–40 alliance joins, 2 collapses and 2–3 revolts per
+  10 years, at a steady ~11–15 s per simulated year.
+- Running the sweep alongside the unit tests made timing-sensitive tests fail from CPU
+  contention, so it runs as a separate stage.
+
 ### ADR-35 · 2026-10-02 · accepted — Major Battles by absolute concentration; winner by men still standing
 **Decision.**
 - A battle becomes Major at a fixed 120,000 committed men, rather than "relative to the local

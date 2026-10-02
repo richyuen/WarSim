@@ -147,5 +147,5 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
       expect(nc.bankrupt[id], t).toBe(0);
       expect(nc.income[id], t).toBeGreaterThan(0);
     }
-  });
+  }, 120_000); // a simulated year (8,760 ticks) with AI wars since PLAN 1.24
 });
