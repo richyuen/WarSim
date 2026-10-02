@@ -552,7 +552,10 @@ Sim tick ≤ 1.5 ms average (Node, M, 1938).
 - **Bench** (`npm run bench`): headed Chromium with GPU. T0 and T2 fps, tick ms,
   snapshot ms. Results go to `docs/bench/*.json`.
 - **Gate** (`npm run check`): `tsc -b` → `eslint .` → `vitest run` → `vite build` →
-  `playwright test` (against `vite preview` of the build) → `npm run parity` (added in PLAN 0.8).
+  `playwright test` (against `vite preview` of the build) → `npm run parity`.
   Must be green before every commit.
-- **Parity** (`npm run parity`): parses `docs/PARITY.md`, recomputes the score and checks
-  that the evidence paths exist for verified rows.
+- **Parity** (`npm run parity`, `tools/parity`): parses `docs/PARITY.md` (Table 1 scored: verified 1,
+  partial 0.5; Table 2 validated), checks the column layout, consecutive row numbers, a dated
+  `[TEXT|VISUAL|TEXT+VISUAL YYYY-MM-DD]` tag on every AoC behaviour, and that every backticked
+  evidence path of a verified row exists. Fails if the generated header score line disagrees;
+  `npm run parity -- --write` regenerates it. Tools run TypeScript through `tsx`.

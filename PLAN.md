@@ -20,7 +20,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `reference/frames/` has ≥ 30 PNGs; PROGRESS logs observations (VISUAL, dated).
 - [x] 0.7 Fetch itch page, devlog index + all posts, Steam page; write `docs/PARITY.md` Table 1 (numbered AoC rows, TEXT/VISUAL source, all `not started`) + Table 2 (our additions).
   AT: every PROMPT.md baseline bullet maps to ≥ 1 row; each row has a source tag and an observation date.
-- [ ] 0.8 `npm run parity` (tools/parity): parse the tables, compute the score, check evidence paths for `verified` rows, compare against the header score.
+- [x] 0.8 `npm run parity` (tools/parity): parse the tables, compute the score, check evidence paths for `verified` rows, compare against the header score.
   AT: vitest on fixtures: a header mismatch fails, a missing evidence path fails, a valid file passes.
 - [ ] 0.9 `sim/core/dmath`: sin, cos, atan2, exp, log, pow via tables + polynomials.
   AT: max abs error < 1e-9 vs Math on 1e5 samples; golden-value test (exact bit patterns hard-coded) passes in Node and in Chromium (Playwright).
