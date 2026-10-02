@@ -126,7 +126,11 @@ export class ProxyRenderer {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.colors, 0, count * 4);
   }
 
-  draw(cam: Camera, dpr: number, t: number, minPx = 3): void {
+  /**
+   * Draws all instances; `wrapOffsets` are world x-shifts (cells) of extra copies for a looping
+   * map (see camera.wrapOffsets), so sprites near the seam appear on both sides.
+   */
+  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0]): void {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
@@ -134,14 +138,17 @@ export class ProxyRenderer {
     gl.useProgram(this.program.program);
     twgl.setUniforms(this.program, {
       uAtlas: this.atlas,
-      uCam: [cam.cx - this.originX, cam.cy - this.originY],
       uScale: cam.scale * dpr,
       uViewport: [gl.drawingBufferWidth, gl.drawingBufferHeight],
       uT: Math.min(1, Math.max(0, t)),
       uMinPx: minPx * dpr,
     });
     gl.bindVertexArray(this.vao);
-    gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, this.count);
+    for (const off of wrapOffsets) {
+      // A copy shifted by +off appears where the camera is shifted by −off.
+      twgl.setUniforms(this.program, { uCam: [cam.cx - off - this.originX, cam.cy - this.originY] });
+      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, this.count);
+    }
     gl.bindVertexArray(null);
     gl.disable(gl.BLEND);
   }

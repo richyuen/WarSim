@@ -6,11 +6,12 @@
  */
 import { cos, sin, TAU } from './core/dmath';
 import { EventKind } from '../shared/events';
+import { SCENARIO_GEOMETRY } from '../shared/scenarios';
 import type { System } from './tick';
 import { TERRAIN_LAND, TERRAIN_WATER, World } from './world';
 
-export const TOY_W = 256;
-export const TOY_H = 128;
+export const TOY_W = SCENARIO_GEOMETRY.toy.w;
+export const TOY_H = SCENARIO_GEOMETRY.toy.h;
 const FORMATIONS_PER_NATION = 60;
 const SPEED_CELLS = 0.45;
 

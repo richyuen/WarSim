@@ -85,7 +85,10 @@ export class SimServer {
   private handleInner(msg: ToWorker, nowMs: number): void {
     switch (msg.type) {
       case 'init':
+        // A fresh sim always starts paused; the host unpauses explicitly.
         this.sim = new Sim(msg.init);
+        this.paused = true;
+        this.owed = 0;
         this.resetStreams();
         this.reply(msg.reqId);
         break;

@@ -323,3 +323,39 @@
 - Gotcha: the first probe (thresholded centroid) had ±0.5 px quantisation noise of its own. The weighted
   centroid then counted the orange map as "red" (0.68 px). Thresholding redness above every map colour fixed
   it.
+
+## 2026-10-02 — PLAN 0.17: camera controller + looping-x wrap; the game page now shows the live map
+- `src/render/camera.ts`: pure camera math, unit-tested in `tests/unit/camera.test.ts`.
+  - `zoomLevel`, i.e. z = log2(px per km), and `scaleForZoom`.
+  - min/max scale: the map height fits at the low end; 1 m/px at the high end.
+  - `normalize`: wraps x on looping maps, clamps y and zoom, clamps x on non-looping maps.
+  - `zoomAt` keeps the point under the cursor fixed; `panBy`; screen/world transforms.
+  - `wrapOffsets`: the map copies that intersect the view.
+- `src/app/input/CameraController.ts`:
+  - mouse drag (left/middle) with pointer capture, and wheel zoom anchored at the cursor;
+  - continuous zoom via exponential easing toward a target scale;
+  - held-key pan (arrows/WASD, 900 px/s) and zoom (E/+/numpad+, Q/−/numpad−), ignored while typing;
+  - touch: one-finger pan, two-finger pinch about the midpoint; `touch-action: none`.
+- `ProxyRenderer.draw` takes wrap offsets and draws extra copies, so sprites near the seam show on both
+  sides. The map shader already wraps cells.
+- `src/app/MapView.ts`: the real game view.
+  - Snapshots map to dirty-tile texture uploads, nation colours to the palette and formations to instanced
+    markers; markers unwrap across the seam so interpolation never sweeps the map.
+  - The rAF loop runs camera update → draw with t = (now − arrival)/tickMs.
+- `main.tsx` boots the toy world (`?seed=`, `?paused=1`, `?view=0`) at 12 ticks/s. `window.__warsim` now
+  has `view` (camera, controller, frames, draw).
+- Worker `init` now always starts paused, so an auto-running app can't interfere with a test's init.
+- `tests/e2e/camera.spec.ts` (5 tests):
+  - keyboard pan and zoom;
+  - a drag moves exactly the pointer delta;
+  - wheel ×1.25³ with ≥ 1 intermediate frame (continuity), and the world point under the cursor stays fixed
+    (1e-4 cells);
+  - synthetic touch pinch ×2 about the midpoint, then a one-finger pan;
+  - a drag from cx 250 past the dateline gives cx 14 (wrapped). The border pixel profile at the seam matches
+    an ordinary border (same two fills, dark-line width within 2 px).
+- Evidence: `docs/evidence/0.17/dateline-seam.png`. Viewed: a lake crossing the seam continues smoothly.
+  SwiftShader showed a few 1-px dark specks near borders; the same view on the real GPU (close-up comparison
+  of the seam vs the x=128 border) is clean and identical, so this is a SwiftShader derivative artifact.
+- Test-suite hygiene: sim-only e2e tests open `/?paused=1&view=0` (no rendering, no auto-run). The worker
+  error test now uses a corrupt load. The snapshot-count floor was lowered to 5, because rAF slows under
+  parallel SwiftShader load.

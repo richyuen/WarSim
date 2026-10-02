@@ -21,12 +21,6 @@
     "tests/unit",
     "playwright.config.ts",
     "tests/e2e",
-    "src/sim",
-    "src/shared",
-    "src/app/testApi.ts",
-    "src/app/simClient.ts",
-    "src/worker/server.ts",
-    "src/worker/pool.ts",
-    "src/app/bench/benchApi.ts"
+    "src/**/*.ts"
   ]
 }

@@ -22,7 +22,7 @@ function nodeRun(): { sim: Sim; mid: number } {
 test('I3: Node and worker runs produce identical hashes and save bytes', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
+  await page.goto('/?paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
 
   const browser = await page.evaluate(
@@ -60,15 +60,16 @@ test('I3: Node and worker runs produce identical hashes and save bytes', async (
 });
 
 test('worker reports errors as rejected promises', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
   const message = await page.evaluate(async () => {
     try {
-      await window.__warsim!.sim.step(1); // not initialised yet
+      await window.__warsim!.sim.init({ scenario: 'toy', seed: 1 });
+      await window.__warsim!.sim.load(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]));
       return 'no error';
     } catch (e) {
       return (e as Error).message;
     }
   });
-  expect(message).toContain('sim not initialised');
+  expect(message).toContain('bad magic');
 });
