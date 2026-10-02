@@ -494,6 +494,15 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - **Occupation vs owner**: `controller` changes on flip and `owner` changes only through peace
   terms, annexation, integration or God Mode. Occupied cells give the occupier
   reduced income and raise unrest.
+- *Implemented v1 (PLAN 1.15; `src/sim/systems/capitals.ts`):*
+  - Capture: an enemy at war holding a capital city → `CapitalCaptured`. The capital relocates to
+    the largest owned and controlled city (`CapitalMoved`); without one it becomes a field capital
+    on the nearest held cell. A nation with no land left is eliminated (formations, production
+    and wars removed).
+  - `winnerTakesAll` (a saved setting; command `setSetting`) annexes everything the loser
+    controls, plus the loser's land the capturer already occupies.
+  - God brush `paintControl {nation, x, y, r}` sets control on land cells.
+  - The war-score jump comes with 1.16.
 - **Capital capture**: the war score jumps, the capital relocates to the largest owned city, and with
   the `winnerTakesAll` setting the capturer annexes all of the loser's controlled territory.
 - **Cores**: provinces list core nations. Revival spawns a dead nation from its cores

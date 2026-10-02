@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-28 · 2026-10-02 · accepted — Capital loss without cores: relocate, field capital, eliminate on no land
+**Decision.**
+- Until cores exist (PLAN 1.21), a nation that loses its capital city moves it to its largest
+  city it owns and controls. Failing that, it moves to a field capital on the nearest held cell.
+- A nation dies only when it holds no land, or under winner-takes-all.
+- Winner-takes-all also transfers the loser's land that the capturer occupies.
+
+**Why.**
+- AoC kills a nation without cores on capital loss. Without cores, that would kill most minors
+  at the first lost city, which is too brittle for the sim's fronts.
+- The AoC death rule returns with cores and collapse (1.21), recorded as a deviation in PARITY
+  rows 14 and 20.
+- Annexing only the loser's still-controlled land would leave the capturer's own occupied
+  districts owned by a dead nation. The first test run found exactly that: 5 cells around Warsaw.
+
 ### ADR-27 · 2026-10-02 · accepted — Fronts: adjacency-only flips with a hold time; advance gated by control
 **Decision.**
 - A cell can flip only to a nation at war with its holder that holds a 4-neighbour.

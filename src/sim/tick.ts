@@ -11,6 +11,22 @@ import type { World } from './world';
 
 export type System = (world: World) => void;
 
+/** Sets the controller of land cells within r cells of (x, y) (wrapping x; water untouched). */
+function paintControl(world: World, nation: number, x: number, y: number, r: number): void {
+  const { w, h, terrain } = world.cells;
+  if (nation !== 0 && !world.nations.has(nation)) return;
+  const rr = Math.min(Math.max(0, r), 64);
+  for (let dy = Math.ceil(-rr); dy <= rr; dy++) {
+    const cy = Math.floor(y + dy);
+    if (cy < 0 || cy >= h) continue;
+    for (let dx = Math.ceil(-rr); dx <= rr; dx++) {
+      if (dx * dx + dy * dy > rr * rr) continue;
+      const cell = cy * w + ((Math.floor(x + dx) % w) + w) % w;
+      if (terrain[cell] !== 0) world.setController(cell, nation);
+    }
+  }
+}
+
 function applyCommand(world: World, cmd: Command): void {
   switch (cmd.kind) {
     case 'spawnFormation': {
@@ -31,6 +47,12 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     case 'moveFormation':
       orderMove(world, cmd.id, cmd.x, cmd.y);
+      return;
+    case 'setSetting':
+      world.settings[cmd.key] = cmd.value;
+      return;
+    case 'paintControl':
+      paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r);
       return;
   }
 }

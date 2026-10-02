@@ -1149,3 +1149,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - strength = Σ elements, no orphans, the derived index equals the table, through battle,
     attrition, removal and load into a live sim;
   - destroying a formation removes its elements and emits one event.
+
+## 2026-10-02 — PLAN 1.15: occupation vs owner, capital capture and relocation, winner-takes-all
+- **Capitals system** (`src/sim/systems/capitals.ts`, runs after territory):
+  - capture by an enemy at war → relocation to the largest held city, a field capital, or
+    elimination;
+  - field capitals are checked hourly;
+  - `eliminateNation` clears formations, production, capital flags and wars.
+- **Commands:** `setSetting {winnerTakesAll}` (saved in `world.meta`) and the God brush
+  `paintControl`. New events: CapitalCaptured, CapitalMoved, NationEliminated.
+  `Wars.endAllOf`.
+- **Bugs found by the tests:**
+  1. Winner-takes-all left the capturer's own occupied cells owned by the dead loser.
+  2. A nation reduced to a field capital could lose every cell and stay alive.
+- **AT (unit, `tests/unit/capitals.test.ts`, 7 tests):**
+  - a 4-day front flips only controllers (owner layer unchanged, 28+ occupied cells);
+  - Warsaw captured → capital to the largest held Polish city;
+  - no capture without war;
+  - winner-takes-all annexes all of Poland and ends its wars;
+  - Luxembourg: field capital, then eliminated;
+  - the setting survives save/load;
+  - every living 1938 nation starts with a held capital city (no moves on day 1).
+- **AT (e2e, `tests/e2e/occupation1938.spec.ts`):** German control painted over central Poland
+  renders hatched in the occupier's colour family (≥ 80% of sampled pixels, two shades), while
+  untouched Poland keeps its fill. Evidence: `docs/evidence/1.15/occupation-poland.png`, viewed.
+- **Parity:** rows 13 (occupation), 14 (capital capture) and 15 (winner-takes-all) → partial.
+  The deviation from AoC's death rule is in ADR-28.

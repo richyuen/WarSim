@@ -251,6 +251,11 @@ export class Wars implements Stateful {
     else this.keys.delete(Wars.key(a, b));
     this.version++;
   }
+  /** Ends every war of nation `n`. */
+  endAllOf(n: number): void {
+    for (const k of [...this.keys]) if (Math.floor(k / 65536) === n || k % 65536 === n) this.keys.delete(k);
+    this.version++;
+  }
   /** Nations in at least one war. */
   nations(): Set<number> {
     const s = new Set<number>();
@@ -278,7 +283,7 @@ class WorldCore implements Stateful {
 
   serialize(): Section[] {
     const w = this.world;
-    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay]);
+    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0]);
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
@@ -292,12 +297,13 @@ class WorldCore implements Stateful {
   deserialize(sections: readonly Section[]): void {
     const w = this.world;
     const meta = takeSection(sections, 'world.meta', 'f64');
-    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0] = meta;
+    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0] = meta;
     if (cw !== w.cells.w || ch !== w.cells.h) throw new Error(`map size mismatch: save ${cw}×${ch}, world ${w.cells.w}×${w.cells.h}`);
     w.seed = seed;
     w.tick = tick;
     w.nextCommandSeq = nextSeq;
     w.startDay = startDay;
+    w.settings = { winnerTakesAll: winnerTakesAll === 1 };
     w.rng.load(takeSection(sections, 'world.rng', 'u32'));
     const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'world.commandLog', 'u8'))) as {
       log: LoggedCommand[];
@@ -345,6 +351,8 @@ export class World {
    * Code that writes `cells.controller` directly must set it (setController does).
    */
   supplyDirty = true;
+  /** Global settings (state, saved in world.meta). */
+  settings = { winnerTakesAll: false };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
   frontierWars = -1;

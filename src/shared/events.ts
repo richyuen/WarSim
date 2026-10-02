@@ -20,6 +20,12 @@ export const EventKind = {
   MoveRejected: 7,
   /** a = formation id, b = nation, (x, y) = arrival position. */
   FormationArrived: 8,
+  /** a = losing nation, b = capturer, (x, y) = the captured capital (PLAN 1.15). */
+  CapitalCaptured: 9,
+  /** a = nation, b = new capital city row (0 = a plain cell), (x, y) = new capital. */
+  CapitalMoved: 10,
+  /** a = nation (global). */
+  NationEliminated: 11,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

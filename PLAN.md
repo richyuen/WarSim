@@ -86,7 +86,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: Lanchester sanity tests (2:1 force wins with expected loss ratio ±20%); terrain defence matters; FireEvents emitted with valid ids.
 - [x] 1.14 Territory pressure + frontier-set flips + connectivity rule.
   AT: a front advances like a wave (cells flipped/day within band); no "teleport" flips behind a defended line; frontier-set size bounded (perf test).
-- [ ] 1.15 Occupation vs owner, capital capture/relocation, winner-takes-all option.
+- [x] 1.15 Occupation vs owner, capital capture/relocation, winner-takes-all option.
   AT: unit tests; e2e map shows the occupation tint.
 - [ ] 1.16 Wars: declaration, war score, exhaustion, peace settlement, broke/exhausted sue for peace, fightToDeath.
   AT: scripted scenarios end in peace with expected terms; fightToDeath never accepts peace.
