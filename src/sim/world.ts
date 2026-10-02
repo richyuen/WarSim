@@ -10,6 +10,7 @@ import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
 import { Table } from './core/table';
+import { Alliances } from './alliances';
 import { Wars } from './wars';
 
 export interface PendingCommand {
@@ -306,6 +307,7 @@ export class World {
   production = new Table('production', PRODUCTION_SCHEMA, 16);
   elements = new Table('elements', ELEMENT_SCHEMA, 1024);
   wars = new Wars();
+  alliances = new Alliances();
   /**
    * Derived (not state): true when control, cities or overlords may have changed since the last
    * supply refresh. Skipping an unneeded refresh leaves exactly the layer a refresh would write.
@@ -373,7 +375,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances];
   }
 
   cellIndex(x: number, y: number): number {

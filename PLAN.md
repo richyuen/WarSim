@@ -90,7 +90,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: unit tests; e2e map shows the occupation tint.
 - [x] 1.16 Wars: declaration, war score, exhaustion, peace settlement, broke/exhausted sue for peace, fightToDeath.
   AT: scripted scenarios end in peace with expected terms; fightToDeath never accepts peace.
-- [ ] 1.17 Alliances/unions with unity & loyalty; join/leave/dissolve.
+- [x] 1.17 Alliances/unions with unity & loyalty; join/leave/dissolve.
   AT: low unity → member leaves (test); alliance mode screenshot.
 - [ ] 1.18 Puppets with autonomy: create/release/integrate/revolt.
   AT: tests per transition; puppet map mode screenshot.

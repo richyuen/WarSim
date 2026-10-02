@@ -381,6 +381,18 @@ tag → spec.
   - *God commands:* `forcePeace`, `setWarFightToDeath`.
 - **Alliance / union** {id, nameKey, members[], leader, unity 0..100, loyalty per
   member}. Low unity → members leave and the alliance can dissolve.
+  *Implemented v1 (PLAN 1.17, ADR-30; `src/sim/alliances.ts`, `src/sim/systems/alliances.ts`):*
+  - *Records:* alliances and guarantees are saved as JSON, seeded from `diplomacy.json`.
+  - *Monthly:* unity += 3 × (wars with ≥ 2 members on one side) + 0.25 × (members − 1) − 1, and
+    loyalty += 0.25 × (unity − loyalty).
+  - *Leaving:* a non-leader below loyalty 25 leaves; under two members, the alliance dissolves.
+    When the leader leaves, the lead passes on.
+  - *Union:* at unity ≥ 80, kept until it drops below 70.
+  - *Wars:* a declaration brings each leader's alliance and puppets, and the defender's
+    guarantors (not chained further). Allies cannot declare on each other.
+  - *Commands:* create, join and leave alliances; setUnity, setLoyalty.
+  - *Alliance map mode:* a palette swap in the bottom bar, persisted. Members take their leader's
+    colour; non-aligned nations are grey.
 - **Puppet** relation {overlord, subject, autonomy 0..100, integration progress}.
   Puppets can be created (peace term or God Mode), released, integrated, or revolt.
 - **Buff** {id, target (nation|formation|province), kind, magnitude, expiresTick}.

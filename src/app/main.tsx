@@ -24,6 +24,10 @@ const scenario = SCENARIO_INFO[scenarioId];
 const view = params.get('view') === '0' ? null : new MapView(canvas, scenario.geometry, sim);
 const hud = new Hud(sim, scenario.startDay);
 hud.installKeys(window);
+if (view) {
+  hud.onMapMode = (m) => view.setMapMode(m);
+  view.setMapMode(hud.mapMode.value);
+}
 installTestApi({ sim, view, hud });
 
 const uiRoot = document.getElementById('ui');

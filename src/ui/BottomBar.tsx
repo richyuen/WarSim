@@ -1,9 +1,12 @@
 import type { SimDate } from '../shared/calendar';
+import type { MapMode } from '../shared/mapModes';
 import { SPEED_LEVELS } from '../shared/speed';
 import { t, type MessageKey } from './i18n';
 
 export interface BottomBarProps {
   date: SimDate;
+  mapMode: MapMode;
+  onCycleMapMode: () => void;
   speedLevel: number;
   paused: boolean;
   onTogglePause: () => void;
@@ -11,7 +14,7 @@ export interface BottomBarProps {
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
@@ -33,6 +36,9 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed }: 
         onClick={() => onSpeed(speedLevel + 1)}
       >
         +
+      </button>
+      <button type="button" class="bar-btn" data-testid="mapmode-btn" data-mode={mapMode} onClick={onCycleMapMode}>
+        {t('bar.mapMode', { mode: t(`mapMode.${mapMode}` as MessageKey) })}
       </button>
       <span class="bar-date" data-testid="date-label">
         {t('date.format', { day: date.day, month: t(`month.${date.month}` as MessageKey), year: date.year })}

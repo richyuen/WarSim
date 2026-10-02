@@ -1,8 +1,9 @@
 /**
  * Wars v1 (SPEC §3.5, §7 Peace; PLAN 1.16): declaration, war score, exhaustion, peace.
  *
- * Declaration (`declareWar`): rejected for dead nations, self, an existing war, a truce, or an
- * overlord–puppet pair. Each leader brings its puppets. A side fights to the death when any
+ * Declaration (`declareWar`): rejected for dead nations, self, an existing war, a truce, an
+ * overlord–puppet pair or allies. Each leader brings its puppets and its alliance (PLAN 1.17);
+ * the defender also gains its guarantors (each with its puppets). A side fights to the death when any
  * member's nation flag is set (God Mode can change it per war with `setWarFightToDeath`).
  *
  * Daily (00:00), when any war exists, one grid pass counts land owned per nation and land
@@ -54,13 +55,31 @@ export function declareWar(world: World, attacker: number, defender: number): Wa
     !world.wars.atWar(attacker, defender) &&
     !world.wars.inTruce(attacker, defender, world.tick) &&
     nc.overlord[attacker] !== defender &&
-    nc.overlord[defender] !== attacker;
+    nc.overlord[defender] !== attacker &&
+    !world.alliances.allied(attacker, defender);
   if (!ok) {
     world.out.emit(world.tick, EventKind.WarRejected, attacker, defender, NaN, NaN);
     return null;
   }
-  const a = withPuppets(world, attacker).filter((m) => !world.wars.atWar(m, defender));
-  const d = withPuppets(world, defender).filter((m) => !a.includes(m));
+  // Each side: leader + puppets, then its alliance (+ their puppets); defenders also gain their
+  // guarantors. Nobody joins against its own ally, a truce partner, or twice.
+  const al = world.alliances;
+  const allies = (n: number): number[] => al.allianceOf(n)?.members.filter((m) => m !== n) ?? [];
+  const live = (m: number): boolean => world.nations.has(m) && nc.living[m] === 1;
+  const a: number[] = [];
+  const d: number[] = [];
+  const add = (side: number[], other: number[], enemyLeader: number, m: number): void => {
+    for (const x of withPuppets(world, m)) {
+      if (!live(x) || side.includes(x) || other.includes(x)) continue;
+      if (x !== attacker && x !== defender && (al.allied(x, enemyLeader) || world.wars.inTruce(x, enemyLeader, world.tick) || nc.overlord[enemyLeader] === x)) continue;
+      side.push(x);
+    }
+  };
+  add(a, d, defender, attacker);
+  add(d, a, attacker, defender);
+  for (const m of allies(defender)) add(d, a, attacker, m);
+  for (const g of al.guarantorsOf(defender)) add(d, a, attacker, g);
+  for (const m of allies(attacker)) add(a, d, defender, m);
   const ftd = (side: number[]): boolean => side.some((m) => nc.fightToDeath[m] === 1);
   const war = world.wars.start(a, d, world.tick, [ftd(a), ftd(d)]);
   world.out.emit(world.tick, EventKind.WarDeclared, attacker, defender, NaN, NaN);

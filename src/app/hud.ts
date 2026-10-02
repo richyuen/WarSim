@@ -6,11 +6,13 @@
  */
 import { signal } from '@preact/signals';
 import { dateOfTick } from '../shared/calendar';
+import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { SimClient } from './simClient';
 
 const KEY_LEVEL = 'warsim.speedLevel';
 const KEY_PAUSED = 'warsim.paused';
+const KEY_MAP_MODE = 'warsim.mapMode';
 
 function load(key: string): string | null {
   try {
@@ -32,6 +34,9 @@ export class Hud {
   readonly tick = signal(0);
   readonly speedLevel = signal(DEFAULT_SPEED_LEVEL);
   readonly paused = signal(true);
+  /** Map mode (PLAN 1.17), persisted; `onMapMode` applies it to the map view. */
+  readonly mapMode = signal<MapMode>('political');
+  onMapMode: (mode: MapMode) => void = () => {};
   /** Speed and pause as last reported by the worker (snapshots), for tests and diagnostics. */
   readonly worker = signal<{ speed: number | 'max'; paused: boolean } | null>(null);
 
@@ -42,6 +47,8 @@ export class Hud {
     const lvl = load(KEY_LEVEL);
     this.speedLevel.value = lvl === null ? DEFAULT_SPEED_LEVEL : clampSpeedLevel(Number(lvl));
     this.paused.value = load(KEY_PAUSED) === '1';
+    const mode = load(KEY_MAP_MODE);
+    this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
     sim.onSnapshotReceived((s) => {
       this.tick.value = s.tick;
       this.worker.value = { speed: s.speed, paused: s.paused };
@@ -64,6 +71,18 @@ export class Hud {
     this.speedLevel.value = l;
     store(KEY_LEVEL, String(l));
     this.sim.setSpeed(speedOfLevel(l));
+  }
+
+  setMapMode(mode: MapMode): void {
+    this.mapMode.value = mode;
+    store(KEY_MAP_MODE, mode);
+    this.onMapMode(mode);
+  }
+
+  /** Next map mode in MAP_MODES order (the bottom-bar button). */
+  cycleMapMode(): void {
+    const i = MAP_MODES.indexOf(this.mapMode.value);
+    this.setMapMode(MAP_MODES[(i + 1) % MAP_MODES.length]!);
   }
 
   togglePause(): void {

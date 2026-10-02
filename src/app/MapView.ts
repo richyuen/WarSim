@@ -3,6 +3,7 @@
  * formations → instanced markers) and renders every animation frame with GPU interpolation
  * between the previous and current tick.
  */
+import { modeColor, type MapMode } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { MapRenderer } from '../render/map/MapRenderer';
@@ -17,6 +18,10 @@ const MARKER_CELLS = 0.9;
 export class MapView {
   readonly gl: WebGL2RenderingContext;
   readonly controller: CameraController;
+  /** Current map mode and the nation data it is derived from (latest snapshot). */
+  mapMode: MapMode = 'political';
+  private readonly ownColor = new Map<number, number>();
+  private readonly allianceLeader = new Map<number, number>();
   private readonly map: MapRenderer;
   private readonly proxies: ProxyRenderer;
   private snapArrival = 0;
@@ -61,8 +66,11 @@ export class MapView {
     }
     for (let i = 0; i < s.nations.count; i++) {
       const o = i * NATION_STRIDE;
-      this.map.setColor(s.nations.data[o + NationField.id]!, s.nations.data[o + NationField.color]!);
+      const id = s.nations.data[o + NationField.id]!;
+      this.ownColor.set(id, s.nations.data[o + NationField.color]!);
+      this.allianceLeader.set(id, s.nations.data[o + NationField.alliance]!);
     }
+    this.applyPalette();
     const f = s.formations;
     const p = this.proxies;
     p.reserve(f.count);
@@ -92,6 +100,22 @@ export class MapView {
     this.snapArrival = performance.now();
     this.tickMs = s.tickMs;
     this.lastTick = s.tick;
+  }
+
+  /** Switches the map mode (a palette swap: no id texture is re-uploaded). */
+  setMapMode(mode: MapMode): void {
+    if (mode === this.mapMode) return;
+    this.mapMode = mode;
+    this.applyPalette();
+    this.dirty = true;
+  }
+
+  private applyPalette(): void {
+    for (const [id, own] of this.ownColor) {
+      const leader = this.allianceLeader.get(id) ?? 0;
+      const leaderColor = leader !== 0 ? (this.ownColor.get(leader) ?? null) : null;
+      this.map.setColor(id, modeColor(this.mapMode, own, leaderColor));
+    }
   }
 
   private nationColor(id: number): number {

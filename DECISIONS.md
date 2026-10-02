@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-30 · 2026-10-02 · accepted — Alliances join wars on declaration; unity and loyalty drift monthly
+**Decision.**
+- When war is declared, each leader's alliance joins its side and the defender's guarantors join
+  the defence. Joining is not chained beyond that in v1: a guarantor's own allies stay out.
+- Unity is a monthly drift: shared wars, size and decay. Loyalty relaxes toward unity, and
+  members below 25 leave.
+- Map modes are palette swaps driven by a nation → alliance-leader field in the snapshot.
+
+**Why.**
+- In AoC alliances fight together, which is what makes the bloc map matter. Chained joining
+  would turn every 1938 war into a world war on day one; the AI and coalition logic (1.24) will
+  decide escalation instead.
+- A simple, legible drift makes the AT ("low unity → a member leaves") predictable. Donations,
+  revolts and disloyalty events plug into the same unity and loyalty values later.
+- SPEC §8 forbids re-uploading the grid for map modes. The palette swap costs one 256-entry
+  upload.
+
 ### ADR-29 · 2026-10-02 · accepted — War score from occupation; peace terms by score share
 **Decision.**
 - War score is territorial: the occupied-share difference × 200 plus capital-capture swings.

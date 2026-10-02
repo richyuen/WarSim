@@ -84,8 +84,9 @@ export interface SimStatus {
 }
 
 /** Per-nation record in `Snapshot.nations` (stride NATION_STRIDE). */
-export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4 } as const;
-export const NATION_STRIDE = 5;
+/** `alliance` = the nation's alliance leader id (0 = none; PLAN 1.17 alliance map mode). */
+export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5 } as const;
+export const NATION_STRIDE = 6;
 
 export interface SnapshotTiles {
   /** Tile side in cells. */

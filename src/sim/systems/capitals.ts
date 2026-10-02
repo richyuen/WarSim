@@ -109,5 +109,6 @@ export function eliminateNation(world: World, n: number): void {
     if (world.cities.cols.capitalOf[id] === n) world.cities.cols.capitalOf[id] = 0;
   });
   world.wars.endAllOf(n);
+  world.alliances.removeNation(n);
   world.out.emit(world.tick, EventKind.NationEliminated, n, 0, NaN, NaN);
 }

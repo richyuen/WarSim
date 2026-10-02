@@ -20,7 +20,14 @@ export type Command =
   /** God Mode: conclude war `war` now on its current score. */
   | { kind: 'forcePeace'; war: number }
   /** God Mode "To Death": side 0 = attackers, 1 = defenders. */
-  | { kind: 'setWarFightToDeath'; war: number; side: 0 | 1; value: boolean };
+  | { kind: 'setWarFightToDeath'; war: number; side: 0 | 1; value: boolean }
+  /** PLAN 1.17: a new alliance led by `leader` with `members` (none may already be allied). */
+  | { kind: 'createAlliance'; leader: number; members: number[]; nameKey: string }
+  | { kind: 'joinAlliance'; nation: number; alliance: number }
+  | { kind: 'leaveAlliance'; nation: number }
+  /** God Mode edits. */
+  | { kind: 'setUnity'; alliance: number; value: number }
+  | { kind: 'setLoyalty'; nation: number; value: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

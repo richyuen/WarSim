@@ -416,6 +416,7 @@ export class SimServer {
       nations[o + NationField.cells] = nt.cols.cells[id]!;
       nations[o + NationField.capitalX] = nt.cols.capitalX[id]!;
       nations[o + NationField.capitalY] = nt.cols.capitalY[id]!;
+      nations[o + NationField.alliance] = world.alliances.allianceOf(id)?.leader ?? 0;
       n++;
     });
 

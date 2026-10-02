@@ -26,9 +26,16 @@ function events(s: Sim, ticks: number): number[][] {
 }
 const ofKind = (ev: number[][], k: number): number[][] => ev.filter((e) => e[1] === k).map((e) => [e[2]!, e[3]!]);
 
-/** A sim at war GER→POL (declared by command, applied at tick 0). */
+/**
+ * A sim at war GER→POL, one on one (declared by command, applied at tick 0). The terms tests
+ * isolate the pair from alliances and guarantees (PLAN 1.17), whose members would join.
+ */
 function atWar(seed = 1): Sim {
   const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
+  for (const n of [GER, POL]) {
+    s.world.alliances.leave(n);
+    s.world.alliances.guarantees = s.world.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+  }
   s.command({ kind: 'declareWar', attacker: GER, defender: POL });
   return s;
 }

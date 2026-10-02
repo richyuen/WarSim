@@ -250,6 +250,12 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     equipFormation(world, id, ti); // sets strength from the elements
   }
 
+  // Alliances and guarantees (diplomacy.json).
+  for (const a of diplomacy1938.alliances) {
+    world.alliances.create(tags.indexOf(a.leader) + 1, a.members.map((t) => tags.indexOf(t) + 1), a.nameKey, a.unity);
+  }
+  for (const g of diplomacy1938.guarantees) world.alliances.guarantees.push({ guarantor: tags.indexOf(g.guarantor) + 1, target: tags.indexOf(g.target) + 1 });
+
   // Wars in progress (diplomacy.json), started before tick 0 (scores and exhaustion build from it).
   for (const war of diplomacy1938.wars) {
     const a = war.attackers.map((t) => tags.indexOf(t) + 1);

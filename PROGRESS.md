@@ -1206,3 +1206,35 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **1938 check:** after 180 days both starting wars continue (fight to the death). Spain's score
   is +4 and Japan–China's +16, with exhaustion rising.
 - Parity: rows 4 (peace and truces) and 5 (fight to the death) → partial.
+
+## 2026-10-02 — PLAN 1.17: alliances and unions with unity and loyalty; join, leave, dissolve
+- **Alliances** (`src/sim/alliances.ts`, saved): seeded from `diplomacy.json` (7 alliances,
+  guarantees).
+- **Monthly dynamics** (`src/sim/systems/alliances.ts`):
+  - unity and loyalty drift;
+  - disloyal members leave (lead passes on when the leader leaves);
+  - an alliance under two members dissolves;
+  - union at ≥ 80.
+- **Commands:** createAlliance, joinAlliance, leaveAlliance, setUnity, setLoyalty. New events:
+  AllianceJoined, AllianceLeft, AllianceDissolved, UnionFormed.
+- **Wars:**
+  - declarations bring each side's alliance and the defender's guarantors;
+  - allies can't declare on each other;
+  - elimination drops a nation from its alliance and guarantees;
+  - the 1.16 terms tests isolate the GER–POL pair from alliances and guarantees in setup.
+- **Alliance map mode:** snapshot `NationField.alliance` (stride 6), `MapView.setMapMode` palette
+  swap, persisted `hud.mapMode`, and a bottom-bar "Map: …" button.
+- **AT (`tests/unit/alliances.test.ts`, 7 tests):**
+  - seeded alliances;
+  - unity 5 → Italy and Japan leave by 1 July and the Anti-Comintern dissolves;
+  - a disloyal Japan leaves alone;
+  - Germany's war on Poland brings Italy, Japan and France (guarantor), not Britain, and raises
+    unity over a peace twin;
+  - allies can't fight each other;
+  - create, join and leader-leave;
+  - union at 95;
+  - save/load.
+- **e2e (`tests/e2e/alliances1938.spec.ts`):** the button switches to alliances. Germany and
+  Italy show Germany's colour, France shows Britain's, Switzerland is non-aligned grey, and the
+  mode persists. Evidence: `docs/evidence/1.17/alliances-europe.png`, viewed.
+- Parity: rows 6 (alliances) and 7 (unions, unity, loyalty) → partial.

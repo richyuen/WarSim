@@ -6,6 +6,7 @@ import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation } from './systems/elements';
 import { declareWar, makePeace } from './systems/war';
+import { leaveAlliance } from './systems/alliances';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -61,6 +62,29 @@ function applyCommand(world: World, cmd: Command): void {
     case 'forcePeace': {
       const war = world.wars.list.find((w) => w.id === cmd.war);
       if (war) makePeace(world, war);
+      return;
+    }
+    case 'createAlliance': {
+      const a = world.alliances.create(cmd.leader, cmd.members, cmd.nameKey, 50);
+      if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
+      return;
+    }
+    case 'joinAlliance': {
+      const a = world.alliances.list.find((x) => x.id === cmd.alliance);
+      if (a && world.nations.has(cmd.nation) && world.alliances.join(cmd.nation, a)) world.out.emit(world.tick, EventKind.AllianceJoined, cmd.nation, a.id, NaN, NaN);
+      return;
+    }
+    case 'leaveAlliance':
+      leaveAlliance(world, cmd.nation);
+      return;
+    case 'setUnity': {
+      const a = world.alliances.list.find((x) => x.id === cmd.alliance);
+      if (a) a.unity = Math.max(0, Math.min(100, cmd.value));
+      return;
+    }
+    case 'setLoyalty': {
+      const a = world.alliances.allianceOf(cmd.nation);
+      if (a) a.loyalty[a.members.indexOf(cmd.nation)] = Math.max(0, Math.min(100, cmd.value));
       return;
     }
     case 'setWarFightToDeath': {

@@ -32,6 +32,14 @@ export const EventKind = {
   WarRejected: 13,
   /** a = winning leader, b = losing leader (global). */
   PeaceSigned: 14,
+  /** a = nation, b = alliance id (global; PLAN 1.17). */
+  AllianceLeft: 15,
+  /** a = alliance id, b = last leader (global). */
+  AllianceDissolved: 16,
+  /** a = alliance id, b = leader (global). */
+  UnionFormed: 17,
+  /** a = nation, b = alliance id (global). */
+  AllianceJoined: 18,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

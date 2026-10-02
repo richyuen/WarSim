@@ -12,6 +12,8 @@ export function App({ hud }: { hud: Hud }) {
         paused={hud.paused.value}
         onTogglePause={() => hud.togglePause()}
         onSpeed={(l) => hud.setSpeedLevel(l)}
+        mapMode={hud.mapMode.value}
+        onCycleMapMode={() => hud.cycleMapMode()}
       />
     </>
   );
