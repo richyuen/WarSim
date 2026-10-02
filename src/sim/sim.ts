@@ -5,7 +5,7 @@
 import type { Command } from '../shared/commands';
 import type { SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
-import { run, type System } from './tick';
+import { step, type System } from './tick';
 import { createToyWorld, TOY_SYSTEMS } from './toy';
 import type { World } from './world';
 
@@ -26,8 +26,16 @@ export class Sim {
     return this.world.tick;
   }
 
-  step(n = 1): void {
-    run(this.world, this.systems, n);
+  /**
+   * Advances n ticks. `afterTick` runs after each tick to consume derived outputs (events,
+   * dirty tiles); without it, events are discarded each tick so headless runs stay bounded.
+   */
+  step(n = 1, afterTick?: (world: World) => void): void {
+    for (let i = 0; i < n; i++) {
+      step(this.world, this.systems);
+      if (afterTick) afterTick(this.world);
+      else this.world.out.events.length = 0;
+    }
   }
 
   command(cmd: Command): void {

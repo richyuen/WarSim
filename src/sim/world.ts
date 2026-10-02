@@ -3,6 +3,7 @@
  * nothing outside this object influences a tick except queued commands.
  */
 import type { Command, LoggedCommand } from '../shared/commands';
+import type { EventKind } from '../shared/events';
 import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
@@ -66,6 +67,36 @@ export class CellLayers implements Stateful {
   }
 }
 
+/** Side length of a dirty tile in cells (SPEC §2.4). */
+export const TILE = 64;
+
+/**
+ * Derived, non-authoritative outputs of a tick: which 64×64 tiles changed and which events
+ * happened. Never serialized or hashed; consumers (the snapshot server) drain them.
+ */
+export class TickOutputs {
+  readonly tilesX: number;
+  readonly tilesY: number;
+  /** 1 = tile changed since the consumer last cleared it. */
+  readonly dirtyTiles: Uint8Array;
+  /** Flat [tick, kind, a, b, x, y] records since the consumer last drained. */
+  events: number[] = [];
+
+  constructor(w: number, h: number) {
+    this.tilesX = Math.ceil(w / TILE);
+    this.tilesY = Math.ceil(h / TILE);
+    this.dirtyTiles = new Uint8Array(this.tilesX * this.tilesY);
+  }
+
+  markAllDirty(): void {
+    this.dirtyTiles.fill(1);
+  }
+
+  emit(tick: number, kind: EventKind, a: number, b: number, x: number, y: number): void {
+    this.events.push(tick, kind, a, b, x, y);
+  }
+}
+
 export const TERRAIN_LAND = 1;
 export const TERRAIN_WATER = 0;
 
@@ -101,6 +132,7 @@ class WorldCore implements Stateful {
     };
     w.commandLog = parsed.log;
     w.pending = parsed.pending;
+    w.out.markAllDirty();
   }
 }
 
@@ -116,12 +148,26 @@ export class World {
   /** Commands queued since the last tick boundary, applied in seq order at the next tick. */
   pending: PendingCommand[] = [];
   nextCommandSeq = 0;
+  /** Derived outputs (dirty tiles, events): not state. */
+  readonly out: TickOutputs;
   private readonly core = new WorldCore(this);
 
   constructor(seed: number, w: number, h: number) {
     this.seed = seed >>> 0;
     this.rng = new RngStreams(this.seed);
     this.cells = new CellLayers(w, h);
+    this.out = new TickOutputs(w, h);
+    this.out.markAllDirty();
+  }
+
+  /** Sets the controller of cell `i`, marking its tile dirty when it changes. */
+  setController(i: number, nation: number): void {
+    const c = this.cells;
+    if (c.controller[i] === nation) return;
+    c.controller[i] = nation;
+    const x = i % c.w;
+    const y = (i - x) / c.w;
+    this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;
   }
 
   /** Queue a command for the next tick boundary. */

@@ -1,67 +1,35 @@
 /// <reference lib="webworker" />
 /**
- * Sim worker entry (ADR-2): hosts the same `Sim` facade that Node tests use.
- * Requests are processed strictly in arrival order (one message at a time).
+ * Sim worker entry (ADR-2): wires `SimServer` to postMessage and a timer. Messages are
+ * handled one at a time in arrival order; the timer runs the scheduler while unpaused.
  */
-import type { FromWorker, SimStatus, ToWorker } from '../shared/protocol';
-import { Sim } from '../sim/sim';
+import type { FromWorker, ToWorker } from '../shared/protocol';
+import { SimServer } from './server';
 
 declare const self: DedicatedWorkerGlobalScope;
 
-let sim: Sim | null = null;
+/** Timer period while running at a fixed speed (ms). */
+const PUMP_MS = 4;
 
-function status(s: Sim): SimStatus {
-  return { tick: s.tick, hash: s.hash() };
-}
+const now = (): number => performance.now();
+const server = new SimServer((msg: FromWorker, transfer: Transferable[]) => self.postMessage(msg, transfer));
 
-function requireSim(): Sim {
-  if (!sim) throw new Error('sim not initialised');
-  return sim;
-}
+let timer: ReturnType<typeof setTimeout> | null = null;
 
-function post(msg: FromWorker, transfer: Transferable[] = []): void {
-  self.postMessage(msg, transfer);
-}
-
-function handle(msg: ToWorker): void {
-  switch (msg.type) {
-    case 'init':
-      sim = new Sim(msg.init);
-      post({ type: 'reply', reqId: msg.reqId, status: status(sim) });
-      return;
-    case 'step': {
-      const s = requireSim();
-      s.step(msg.n);
-      post({ type: 'reply', reqId: msg.reqId, status: status(s) });
-      return;
-    }
-    case 'cmd':
-      requireSim().command(msg.cmd);
-      return;
-    case 'hash':
-      post({ type: 'reply', reqId: msg.reqId, status: status(requireSim()) });
-      return;
-    case 'save': {
-      const s = requireSim();
-      const bytes = s.save();
-      post({ type: 'reply', reqId: msg.reqId, status: status(s), bytes }, [bytes.buffer]);
-      return;
-    }
-    case 'load': {
-      const s = requireSim();
-      s.load(msg.bytes);
-      post({ type: 'reply', reqId: msg.reqId, status: status(s) });
-      return;
-    }
-  }
+function schedule(): void {
+  if (timer !== null || !server.running) return;
+  // At 'max' yield to the message queue between slices (setTimeout 0); otherwise pace.
+  timer = setTimeout(
+    () => {
+      timer = null;
+      server.pump(now(), now);
+      schedule();
+    },
+    server.speed === 'max' ? 0 : PUMP_MS,
+  );
 }
 
 self.onmessage = (e: MessageEvent<ToWorker>) => {
-  const msg = e.data;
-  try {
-    handle(msg);
-  } catch (err) {
-    const error = err instanceof Error ? err : new Error(String(err));
-    post({ type: 'error', reqId: 'reqId' in msg ? msg.reqId : -1, message: error.message, stack: error.stack ?? '' });
-  }
+  server.handle(e.data, now());
+  schedule();
 };

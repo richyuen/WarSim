@@ -1,19 +1,30 @@
 /**
- * Main-thread handle to the sim worker: request/reply over postMessage with promise results.
+ * Main-thread handle to the sim worker: promise request/reply, and snapshot flow control.
+ *
+ * Snapshots are acked from requestAnimationFrame (SPEC §2.3): the worker sends the next one
+ * only after main has had a frame to consume the previous one, and the snapshot's buffers
+ * are transferred back for reuse.
  */
 import type { Command } from '../shared/commands';
-import type { FromWorker, SimInit, SimStatus, ToWorker } from '../shared/protocol';
+import type { FromWorker, SimInit, SimStatus, Snapshot, Speed, Subscription, ToWorker } from '../shared/protocol';
 
 type Pending = { resolve: (r: { status: SimStatus; bytes?: Uint8Array }) => void; reject: (e: Error) => void };
 
 /** Distributive Omit so each union member keeps its own fields. */
 type WithoutReqId<T> = T extends unknown ? Omit<T, 'reqId'> : never;
-type Request = WithoutReqId<Exclude<ToWorker, { type: 'cmd' }>>;
+type Request = WithoutReqId<Extract<ToWorker, { reqId: number }>>;
+
+export type SnapshotListener = (snap: Snapshot) => void;
 
 export class SimClient {
   private readonly worker: Worker;
   private nextReq = 1;
   private readonly pending = new Map<number, Pending>();
+  private readonly listeners = new Set<SnapshotListener>();
+  private latest: Snapshot | null = null;
+  private ackScheduled = false;
+  /** Snapshots received (stats/tests). */
+  received = 0;
 
   constructor() {
     this.worker = new Worker(new URL('../worker/entry.ts', import.meta.url), { type: 'module', name: 'warsim-sim' });
@@ -26,6 +37,10 @@ export class SimClient {
   }
 
   private onMessage(msg: FromWorker): void {
+    if (msg.type === 'snapshot') {
+      this.onSnapshot(msg.snap);
+      return;
+    }
     const p = this.pending.get(msg.reqId);
     if (!p) return;
     this.pending.delete(msg.reqId);
@@ -38,12 +53,37 @@ export class SimClient {
     }
   }
 
+  private onSnapshot(snap: Snapshot): void {
+    this.received++;
+    this.latest = snap;
+    for (const l of this.listeners) l(snap);
+    if (this.ackScheduled) return;
+    this.ackScheduled = true;
+    requestAnimationFrame(() => {
+      this.ackScheduled = false;
+      const s = this.latest;
+      if (!s) return;
+      this.latest = null;
+      this.worker.postMessage({ type: 'ack', seq: s.seq, buffers: s.buffers } satisfies ToWorker, s.buffers);
+    });
+  }
+
+  /** Listeners must copy what they need: the snapshot's arrays are returned to the worker on the next frame. */
+  onSnapshotReceived(l: SnapshotListener): () => void {
+    this.listeners.add(l);
+    return () => this.listeners.delete(l);
+  }
+
   private request(req: Request, transfer: Transferable[] = []): Promise<{ status: SimStatus; bytes?: Uint8Array }> {
     const reqId = this.nextReq++;
     return new Promise((resolve, reject) => {
       this.pending.set(reqId, { resolve, reject });
       this.worker.postMessage({ ...req, reqId } as ToWorker, transfer);
     });
+  }
+
+  private send(msg: Exclude<ToWorker, { reqId: number }>): void {
+    this.worker.postMessage(msg);
   }
 
   async init(init: SimInit): Promise<SimStatus> {
@@ -55,7 +95,19 @@ export class SimClient {
   }
 
   command(cmd: Command): void {
-    this.worker.postMessage({ type: 'cmd', cmd } satisfies ToWorker);
+    this.send({ type: 'cmd', cmd });
+  }
+
+  setSpeed(speed: Speed): void {
+    this.send({ type: 'speed', speed });
+  }
+
+  setPaused(paused: boolean): void {
+    this.send({ type: 'pause', paused });
+  }
+
+  subscribe(sub: Subscription): void {
+    this.send({ type: 'subscribe', sub });
   }
 
   async hash(): Promise<SimStatus> {

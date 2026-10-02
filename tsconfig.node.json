@@ -24,6 +24,8 @@
     "src/sim",
     "src/shared",
     "src/app/testApi.ts",
-    "src/app/simClient.ts"
+    "src/app/simClient.ts",
+    "src/worker/server.ts",
+    "src/worker/pool.ts"
   ]
 }

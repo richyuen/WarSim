@@ -213,3 +213,37 @@
 - Gotchas:
   - LIFO id reuse keeps `highWater` flat even with churn, so test churn with spies, not highWater.
   - TS 6 typed arrays are generic: fields that go into sections must be typed `Uint16Array<ArrayBuffer>`.
+
+## 2026-10-02 — PLAN 0.13: worker protocol (subscribe, rAF-acked snapshots, pool, coalescing, events)
+- Protocol (`src/shared/protocol.ts`):
+  - New messages: speed (ticks/s or 'max'), pause, subscribe (bbox, z, tier, wantsElements), ack (seq + returned
+    buffers), and snapshot. A snapshot carries header, dirty tiles, nations, formations with prev positions, events
+    and its buffer list.
+  - `src/shared/events.ts` holds the event kinds and the f64 record layout.
+- Sim side: `World.out` (`TickOutputs`) holds the dirty-tile bitmap and the event sink. These are derived: not
+  serialized, not hashed, and all tiles are marked dirty on load. `World.setController` marks tiles; the toy
+  emits spawn/destroy events and command application emits a global event.
+  - `Sim.step(n, afterTick)` lets the host drain outputs each tick. Without a hook, events are discarded so
+    headless runs stay bounded.
+- `SimServer` (`src/worker/server.ts`):
+  - scheduler with owed-tick accumulation at fixed speeds and 12 ms wall-clock slices at max;
+  - a send happens only when no snapshot is in flight and something is due (tick moved, events, forced);
+  - ack seq is validated; prevX/prevY/prevAlive are captured before every tick;
+  - `BufferPool` (`src/worker/pool.ts`) recycles buffers by power-of-two size class.
+- `src/worker/entry.ts` uses a timer loop. `SimClient` acks on rAF and adds `onSnapshotReceived`, `setSpeed`,
+  `setPaused` and `subscribe`.
+- Tests (`tests/unit/server.test.ts`, 7):
+  - I4: 4000 random ops (subscribe churn, acks, pumps, commands) end with a hash and command log identical to a
+    plain Sim replaying the same commands at the same ticks.
+  - Flow control: no snapshot without an ack, over 10k frames.
+  - Pool: pooled + outstanding = allocated; at most 4 allocations after warm-up. Mutation check: a no-op
+    `release` makes it fail with 117k extra allocations.
+  - Coalescing: 1000 unacked ticks give exactly one snapshot afterwards; a main-side tile mirror equals the sim
+    layers exactly; event seqs are contiguous.
+  - Wrap-aware bbox event filtering, with global events always delivered.
+  - prevX is exactly one tick behind; error replies for unknown state and stale acks; bounded max-speed slices.
+- e2e (`tests/e2e/snapshots.spec.ts`): in Chromium, subscription churn while stepping gives Node's hash at tick
+  700. At max speed for 1.5 s, snapshots arrive with seq strictly +1 and monotonic ticks, and the final hash
+  equals Node's at the same tick.
+- Gotcha: a payload can legitimately outgrow its size class, so the leak check asserts accounting plus flat
+  allocation rather than "zero new buffers".

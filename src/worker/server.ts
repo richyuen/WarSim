@@ -1,0 +1,343 @@
+/**
+ * Worker-side sim host (SPEC §2.3/§2.4): scheduler (speed/pause), request handling and
+ * rAF-acked snapshots with a recycled buffer pool. Environment-agnostic: the worker entry
+ * supplies `post` and drives `pump(nowMs)` from a timer; tests drive it directly in Node.
+ *
+ * Subscriptions only change what is *sent*; the sim never sees them (invariant I4).
+ */
+import { EVENT_STRIDE } from '../shared/events';
+import {
+  NATION_STRIDE,
+  NationField,
+  type FromWorker,
+  type SimStatus,
+  type Snapshot,
+  type Speed,
+  type Subscription,
+  type ToWorker,
+} from '../shared/protocol';
+import { Sim } from '../sim/sim';
+import { TILE, type World } from '../sim/world';
+import { BufferPool } from './pool';
+
+export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
+
+/** Max wall-clock ms spent ticking per pump at 'max' speed, so messages stay responsive. */
+const MAX_SLICE_MS = 12;
+/** Hard cap on queued (unsent) events; beyond it the oldest are dropped and counted. */
+const EVENT_QUEUE_CAP = 1 << 20;
+/** Never schedule more than this many ticks in one pump at a fixed speed (avoid spirals). */
+const MAX_TICKS_PER_PUMP = 2000;
+
+const DEFAULT_SUB: Subscription = { bbox: [0, 0, Infinity, Infinity], z: 0, tier: 0, wantsElements: false };
+
+export class SimServer {
+  sim: Sim | null = null;
+  readonly pool = new BufferPool();
+  speed: Speed = 24;
+  paused = true;
+  sub: Subscription = DEFAULT_SUB;
+
+  /** Snapshot sequence of the last snapshot sent; awaiting its ack while `inFlight`. */
+  private seq = 0;
+  private inFlight = false;
+  /** Tick of the last snapshot sent (a new snapshot is due when the tick moves on). */
+  private sentTick = -1;
+  private forceSend = true;
+  /** Unsent events, flat [seq, tick, kind, a, b, x, y]. */
+  private eventQueue: number[] = [];
+  private nextEventSeq = 1;
+  private droppedEvents = 0;
+  /** Positions one tick before the current tick, indexed by formation id. */
+  private prevX = new Float64Array(0);
+  private prevY = new Float64Array(0);
+  private prevAlive = new Uint8Array(0);
+  /** Fractional ticks owed at fixed speed. */
+  private owed = 0;
+  private lastPump = -1;
+
+  /** Count of snapshots posted (stats/tests). */
+  snapshotsSent = 0;
+
+  constructor(private readonly post: Post) {}
+
+  handle(msg: ToWorker, nowMs: number): void {
+    try {
+      this.handleInner(msg, nowMs);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      this.post({ type: 'error', reqId: 'reqId' in msg ? msg.reqId : -1, message: error.message, stack: error.stack ?? '' }, []);
+    }
+  }
+
+  private requireSim(): Sim {
+    if (!this.sim) throw new Error('sim not initialised');
+    return this.sim;
+  }
+
+  private reply(reqId: number, bytes?: Uint8Array): void {
+    const s = this.requireSim();
+    const status: SimStatus = { tick: s.tick, hash: s.hash() };
+    if (bytes) this.post({ type: 'reply', reqId, status, bytes }, [bytes.buffer]);
+    else this.post({ type: 'reply', reqId, status }, []);
+  }
+
+  private handleInner(msg: ToWorker, nowMs: number): void {
+    switch (msg.type) {
+      case 'init':
+        this.sim = new Sim(msg.init);
+        this.resetStreams();
+        this.reply(msg.reqId);
+        break;
+      case 'step':
+        this.advance(msg.n);
+        this.reply(msg.reqId);
+        break;
+      case 'cmd':
+        this.requireSim().command(msg.cmd);
+        break;
+      case 'hash':
+        this.reply(msg.reqId);
+        break;
+      case 'save':
+        this.reply(msg.reqId, this.requireSim().save());
+        break;
+      case 'load':
+        this.requireSim().load(msg.bytes);
+        this.resetStreams();
+        this.reply(msg.reqId);
+        break;
+      case 'speed':
+        this.speed = msg.speed;
+        this.owed = 0;
+        this.lastPump = nowMs;
+        this.forceSend = true;
+        break;
+      case 'pause':
+        this.paused = msg.paused;
+        this.owed = 0;
+        this.lastPump = nowMs;
+        this.forceSend = true;
+        break;
+      case 'subscribe':
+        this.sub = msg.sub;
+        this.forceSend = true;
+        break;
+      case 'ack':
+        if (msg.seq !== this.seq) throw new Error(`ack for snapshot ${msg.seq}, expected ${this.seq}`);
+        for (const b of msg.buffers) this.pool.release(b);
+        this.inFlight = false;
+        break;
+    }
+    this.maybeSend();
+  }
+
+  /** New sim state: drop queued events, resend every tile. */
+  private resetStreams(): void {
+    this.eventQueue = [];
+    this.sim!.world.out.markAllDirty();
+    this.sim!.world.out.events.length = 0;
+    this.snapshotPrev(this.sim!.world);
+    this.forceSend = true;
+  }
+
+  /** Whether the scheduler wants `pump` to be called again soon. */
+  get running(): boolean {
+    return this.sim !== null && !this.paused;
+  }
+
+  /**
+   * Called by the host timer: runs the ticks owed since the last pump, then maybe sends.
+   * `clock` is read during 'max' speed to bound the slice to MAX_SLICE_MS of wall time.
+   */
+  pump(nowMs: number, clock: () => number): void {
+    if (!this.running) {
+      this.lastPump = nowMs;
+      return;
+    }
+    if (this.lastPump < 0) this.lastPump = nowMs;
+    if (this.speed === 'max') {
+      const start = clock();
+      do this.advance(1);
+      while (clock() - start < MAX_SLICE_MS);
+    } else {
+      this.owed += ((nowMs - this.lastPump) * this.speed) / 1000;
+      const n = Math.min(MAX_TICKS_PER_PUMP, Math.floor(this.owed));
+      this.owed -= n;
+      if (n > 0) this.advance(n);
+    }
+    this.lastPump = nowMs;
+    this.maybeSend();
+  }
+
+  private advance(n: number): void {
+    const sim = this.requireSim();
+    for (let i = 0; i < n; i++) {
+      this.snapshotPrev(sim.world);
+      sim.step(1, (w) => this.drainEvents(w));
+    }
+  }
+
+  private snapshotPrev(world: World): void {
+    const f = world.formations;
+    if (this.prevX.length < f.capacity) {
+      this.prevX = new Float64Array(f.capacity);
+      this.prevY = new Float64Array(f.capacity);
+      this.prevAlive = new Uint8Array(f.capacity);
+    }
+    this.prevX.set(f.cols.x.subarray(0, f.highWater));
+    this.prevY.set(f.cols.y.subarray(0, f.highWater));
+    this.prevAlive.set(f.alive.subarray(0, f.highWater));
+  }
+
+  private drainEvents(world: World): void {
+    const ev = world.out.events;
+    for (let i = 0; i < ev.length; i += 6) {
+      this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, ev[i + 3]!, ev[i + 4]!, ev[i + 5]!);
+    }
+    ev.length = 0;
+    const over = this.eventQueue.length / EVENT_STRIDE - EVENT_QUEUE_CAP;
+    if (over > 0) {
+      this.eventQueue.splice(0, over * EVENT_STRIDE);
+      this.droppedEvents += over;
+    }
+  }
+
+  private inBbox(x: number, y: number, world: World): boolean {
+    const [x0, y0, x1, y1] = this.sub.bbox;
+    if (y < y0 || y > y1) return false;
+    const w = world.cells.w;
+    if (x1 - x0 >= w) return true;
+    const dx = (((x - x0) % w) + w) % w;
+    return dx <= x1 - x0;
+  }
+
+  private maybeSend(): void {
+    if (!this.sim || this.inFlight) return;
+    const world = this.sim.world;
+    const due = this.forceSend || world.tick !== this.sentTick || this.eventQueue.length > 0;
+    if (!due) return;
+    const { snap, transfer } = this.build(world);
+    this.inFlight = true;
+    this.forceSend = false;
+    this.sentTick = world.tick;
+    this.snapshotsSent++;
+    this.post({ type: 'snapshot', snap }, transfer);
+  }
+
+  private view<T extends Float64Array | Uint32Array | Uint16Array | Float32Array>(
+    ctor: { new (buf: ArrayBuffer, off: number, len: number): T; BYTES_PER_ELEMENT: number },
+    length: number,
+    buffers: ArrayBuffer[],
+  ): T {
+    const buf = this.pool.acquire(Math.max(1, length) * ctor.BYTES_PER_ELEMENT);
+    buffers.push(buf);
+    return new ctor(buf, 0, length);
+  }
+
+  private build(world: World): { snap: Snapshot; transfer: ArrayBuffer[] } {
+    const buffers: ArrayBuffer[] = [];
+    const out = world.out;
+    const { w, h } = world.cells;
+
+    // Dirty tiles (coalesced since the last snapshot).
+    let tileCount = 0;
+    for (let i = 0; i < out.dirtyTiles.length; i++) if (out.dirtyTiles[i] === 1) tileCount++;
+    const ids = this.view(Uint32Array, tileCount, buffers);
+    const owner = this.view(Uint16Array, tileCount * TILE * TILE, buffers);
+    const controller = this.view(Uint16Array, tileCount * TILE * TILE, buffers);
+    owner.fill(0);
+    controller.fill(0);
+    let k = 0;
+    for (let t = 0; t < out.dirtyTiles.length; t++) {
+      if (out.dirtyTiles[t] !== 1) continue;
+      out.dirtyTiles[t] = 0;
+      ids[k] = t;
+      const tx = t % out.tilesX;
+      const ty = (t - tx) / out.tilesX;
+      const x0 = tx * TILE;
+      const rowLen = Math.min(TILE, w - x0);
+      for (let r = 0; r < TILE; r++) {
+        const y = ty * TILE + r;
+        if (y >= h) break;
+        const src = y * w + x0;
+        const dst = (k * TILE + r) * TILE;
+        owner.set(world.cells.owner.subarray(src, src + rowLen), dst);
+        controller.set(world.cells.controller.subarray(src, src + rowLen), dst);
+      }
+      k++;
+    }
+
+    // Nations.
+    const nt = world.nations;
+    const nations = this.view(Float64Array, nt.count * NATION_STRIDE, buffers);
+    let n = 0;
+    nt.forEach((id) => {
+      const o = n * NATION_STRIDE;
+      nations[o + NationField.id] = id;
+      nations[o + NationField.color] = nt.cols.color[id]!;
+      nations[o + NationField.cells] = nt.cols.cells[id]!;
+      nations[o + NationField.capitalX] = nt.cols.capitalX[id]!;
+      nations[o + NationField.capitalY] = nt.cols.capitalY[id]!;
+      n++;
+    });
+
+    // Formations (all; elements arrive with Phase 2 when the subscription asks for them).
+    const ft = world.formations;
+    const fc = ft.count;
+    const fid = this.view(Uint32Array, fc, buffers);
+    const fnat = this.view(Uint16Array, fc, buffers);
+    const fx = this.view(Float64Array, fc, buffers);
+    const fy = this.view(Float64Array, fc, buffers);
+    const fpx = this.view(Float64Array, fc, buffers);
+    const fpy = this.view(Float64Array, fc, buffers);
+    const ffacing = this.view(Float32Array, fc, buffers);
+    const fstr = this.view(Uint32Array, fc, buffers);
+    let j = 0;
+    ft.forEach((id) => {
+      fid[j] = id;
+      fnat[j] = ft.cols.nation[id]!;
+      fx[j] = ft.cols.x[id]!;
+      fy[j] = ft.cols.y[id]!;
+      // A formation created during the last tick has no previous position: use the current one.
+      const born = id >= this.prevAlive.length || this.prevAlive[id] !== 1;
+      fpx[j] = born ? fx[j]! : this.prevX[id]!;
+      fpy[j] = born ? fy[j]! : this.prevY[id]!;
+      ffacing[j] = ft.cols.facing[id]!;
+      fstr[j] = ft.cols.strength[id]!;
+      j++;
+    });
+
+    // Events: global ones always, spatial ones only inside the subscribed bbox.
+    const q = this.eventQueue;
+    let ec = 0;
+    for (let i = 0; i < q.length; i += EVENT_STRIDE) {
+      const x = q[i + 5]!;
+      if (x !== x || this.inBbox(x, q[i + 6]!, world)) ec++;
+    }
+    const events = this.view(Float64Array, ec * EVENT_STRIDE, buffers);
+    let e = 0;
+    for (let i = 0; i < q.length; i += EVENT_STRIDE) {
+      const x = q[i + 5]!;
+      if (x !== x || this.inBbox(x, q[i + 6]!, world)) {
+        for (let c = 0; c < EVENT_STRIDE; c++) events[e * EVENT_STRIDE + c] = q[i + c]!;
+        e++;
+      }
+    }
+    this.eventQueue = [];
+
+    const snap: Snapshot = {
+      seq: ++this.seq,
+      tick: world.tick,
+      speed: this.speed,
+      paused: this.paused,
+      tickMs: this.paused || this.speed === 'max' ? 0 : 1000 / this.speed,
+      tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
+      nations: { count: n, data: nations },
+      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, facing: ffacing, strength: fstr },
+      events: { count: ec, data: events, dropped: this.droppedEvents },
+      buffers,
+    };
+    return { snap, transfer: buffers };
+  }
+}

@@ -107,6 +107,18 @@ The worker sends **at most one snapshot per ack**. When main is slow, intermedia
 ticks are coalesced: dirty tiles accumulate, and events stay in a ring with a
 sequence cursor, so they are never lost. **No SharedArrayBuffer** [ADR-6].
 
+Implementation (PLAN 0.13):
+- `src/worker/server.ts` `SimServer` is environment-agnostic (injected `post`, driven by `pump(now, clock)`).
+  `src/worker/entry.ts` wires it to `postMessage` and a timer (4 ms pacing at a fixed speed, 12 ms
+  slices at `'max'`). `src/app/simClient.ts` acks from `requestAnimationFrame` and transfers the
+  snapshot's `buffers` back.
+- Dirty tiles: the sim marks 64×64 tiles through `World.setController` into `World.out`
+  (`TickOutputs`, derived and never hashed). The server clears them when it sends.
+- Events: systems call `World.out.emit`. After every tick the server moves them into an unsent queue
+  with a global `seq`; spatial events outside the subscription bbox are skipped, and global ones (x = NaN)
+  are always sent. Queue hard cap 2^20 records; overflow is counted in `events.dropped`.
+- Buffer pool: power-of-two size classes. Leak test: 10k frames, allocation stays flat.
+
 ### 2.4 Snapshot layout
 | Section | Content | Size bound |
 |---|---|---|
@@ -117,6 +129,10 @@ sequence cursor, so they are never lost. **No SharedArrayBuffer** [ADR-6].
 | elements | **only** for formations intersecting the subscribed bbox when tier ≥ T1.5: type, strength, x, y, prevX, prevY, facing, state | ≤ 40k × 32 B |
 | events | ring slice since the last ack, filtered by bbox/tier for spatial events (fire, death, explosion), global events always included | bounded ring |
 | derived | label curves, map-mode textures (throttled, optional) | when changed |
+
+_As of PLAN 0.13 the snapshot carries `tiles` (ids + owner/controller u16 per tile), `nations` (f64 stride 5:
+id, color, cells, capitalX, capitalY), `formations` (id, nation, x, y, prevX, prevY, facing, strength) and
+`events` (f64 stride 7: seq, tick, kind, a, b, x, y); see `src/shared/protocol.ts`. Other rows arrive with their systems._
 
 ### 2.5 Tick order (1 tick = 1 sim hour) [ADR-5]
 ```

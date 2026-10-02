@@ -5,6 +5,7 @@
  * so invariants I1–I5 can be tested before real systems exist.
  */
 import { cos, sin, TAU } from './core/dmath';
+import { EventKind } from '../shared/events';
 import type { System } from './tick';
 import { TERRAIN_LAND, TERRAIN_WATER, World } from './world';
 
@@ -66,6 +67,7 @@ function spawnNear(world: World, nation: number, dx: number, dy: number): number
   f.cols.y[id] = clampY(world.nations.cols.capitalY[nation]! + dy);
   f.cols.facing[id] = nation === 1 ? 0 : TAU / 2;
   f.cols.strength[id] = 300;
+  world.out.emit(world.tick, EventKind.FormationSpawned, id, nation, f.cols.x[id]!, f.cols.y[id]!);
   return id;
 }
 
@@ -96,7 +98,7 @@ const toyMovement: System = (world) => {
     f.cols.y[id] = ny;
     f.cols.facing[id] = facing;
     if (cells.controller[ci] !== nation) {
-      cells.controller[ci] = nation;
+      world.setController(ci, nation);
       const loss = 1 + rng.nextInt(8);
       f.cols.strength[id] = Math.max(0, f.cols.strength[id]! - loss);
     }
@@ -110,8 +112,10 @@ const toyReinforce: System = (world) => {
   const rng = world.rng.get('toy');
   const perNation = [0, 0, 0];
   f.forEach((id) => {
-    if (f.cols.strength[id] === 0) f.remove(id);
-    else perNation[f.cols.nation[id]!]!++;
+    if (f.cols.strength[id] === 0) {
+      world.out.emit(world.tick, EventKind.FormationDestroyed, id, f.cols.nation[id]!, f.cols.x[id]!, f.cols.y[id]!);
+      f.remove(id);
+    } else perNation[f.cols.nation[id]!]!++;
   });
   for (let n = 1; n <= 2; n++) {
     for (let k = perNation[n]!; k < FORMATIONS_PER_NATION; k++) spawnNear(world, n, rng.nextFloat() * 6 - 3, rng.nextFloat() * 6 - 3);

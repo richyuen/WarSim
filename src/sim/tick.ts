@@ -3,6 +3,7 @@
  * and reads no wall-clock time, render state or subscriptions.
  */
 import type { Command } from '../shared/commands';
+import { EventKind } from '../shared/events';
 import type { World } from './world';
 
 export type System = (world: World) => void;
@@ -33,6 +34,7 @@ export function applyPendingCommands(world: World): void {
   queue.sort((a, b) => a.seq - b.seq);
   for (const { seq, cmd } of queue) {
     world.commandLog.push({ tick: world.tick, seq, cmd });
+    world.out.emit(world.tick, EventKind.CommandApplied, seq, 0, NaN, NaN);
     applyCommand(world, cmd);
   }
 }
@@ -42,8 +44,4 @@ export function step(world: World, systems: readonly System[]): void {
   applyPendingCommands(world);
   for (const s of systems) s(world);
   world.tick++;
-}
-
-export function run(world: World, systems: readonly System[], ticks: number): void {
-  for (let i = 0; i < ticks; i++) step(world, systems);
 }
