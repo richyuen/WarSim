@@ -18,7 +18,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: the files exist; PROGRESS has a dated entry.
 - [x] 0.6 Extract trailer frames: `ffmpeg -i reference/video/*.mp4 -vf fps=0.5 reference/frames/%04d.png` (+ scene-change frames `scene_%03d.png`, since the only clip is 42 s); view a sample and record observations.
   AT: `reference/frames/` has ≥ 30 PNGs; PROGRESS logs observations (VISUAL, dated).
-- [ ] 0.7 Fetch itch page, devlog index + all posts, Steam page; write `docs/PARITY.md` Table 1 (numbered AoC rows, TEXT/VISUAL source, all `not started`) + Table 2 (our additions).
+- [x] 0.7 Fetch itch page, devlog index + all posts, Steam page; write `docs/PARITY.md` Table 1 (numbered AoC rows, TEXT/VISUAL source, all `not started`) + Table 2 (our additions).
   AT: every PROMPT.md baseline bullet maps to ≥ 1 row; each row has a source tag and an observation date.
 - [ ] 0.8 `npm run parity` (tools/parity): parse the tables, compute the score, check evidence paths for `verified` rows, compare against the header score.
   AT: vitest on fixtures: a header mismatch fails, a missing evidence path fails, a valid file passes.
