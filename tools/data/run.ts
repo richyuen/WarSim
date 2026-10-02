@@ -8,18 +8,24 @@
 //    - elev-<w>x<h>.i16d.wsz: elevation pyramid (metres; src/shared/elevation.ts codec) from ETOPO
 //      2022 60″, box-averaged into Miller cells at 4096×2048 and halved down to 512×256. The
 //      4096×2048 level stays in .cache/data/derived/ (ADR-13: shipped-asset budget).
+//    - terrain-<w>x<h>.u8.wsz: terrain classes at 2048×1024 and 1024×512 (PLAN 1.2,
+//      tools/data/terrain.ts) from the land mask, NE1 land cover, ETOPO relief and wetlands.
+//      The land mask has natural lakes (NE 10m lakes, scalerank <= 7, no reservoirs) cut out.
 // 3. Writes manifest.json (sizes, dims, sha256 of every asset and source). Deterministic: files
 //    are rewritten only when their bytes change, so a second run changes nothing.
 // `--check` builds everything in memory and fails if any output would change.
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { fromFile } from 'geotiff';
 import { LAT_BOTTOM_DEG, LAT_TOP_DEG, project, unproject } from '../../src/sim/data/projection';
 import { ADMIN1_Q, encodeAdmin1, type Admin1Meta, type QPolygon, type QProvince } from '../../src/shared/admin1';
 import { encodeElevation, halveElevation, OCEAN_QUANTUM_M, quantizeOcean } from '../../src/shared/elevation';
-import { rasterizePolygon, setBits } from '../../src/sim/data/rasterize';
+import { clearBits, rasterizePolygon, setBits } from '../../src/sim/data/rasterize';
+import { encodePng } from './png';
+import { buildTerrain, halveTerrain, landFraction, terrainPreview } from './terrain';
+import { extractZipEntry } from './zip';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const cacheDir = path.join(root, '.cache/data');
@@ -42,6 +48,8 @@ interface Source {
   id: string;
   url: string;
   file: string;
+  /** For zip sources: the entry extracted next to the archive (`<cache>/<id>/<entry>`). */
+  extract?: string;
   license: string;
   sha256: string;
 }
@@ -95,8 +103,11 @@ function polygonsOf(g: Geometry): Position[][][] {
   return g.type === 'Polygon' ? [g.coordinates as Position[][]] : (g.coordinates as Position[][][]);
 }
 
-function buildLandMask(geojson: Uint8Array): Uint8Array {
-  const fc = JSON.parse(new TextDecoder().decode(geojson)) as { features: { geometry: Geometry }[] };
+/** Natural lakes kept as water: NE `Lake`/`Alkaline Lake` (reservoirs are mostly post-1938). */
+const LAKE_MAX_SCALERANK = 7;
+
+function buildLandMask(landJson: Uint8Array, lakesJson: Uint8Array): Uint8Array {
+  const fc = JSON.parse(new TextDecoder().decode(landJson)) as { features: { geometry: Geometry }[] };
   const bits = new Uint8Array((MASK_W * MASK_H) / 8);
   let polys = 0;
   for (const f of fc.features) {
@@ -105,8 +116,44 @@ function buildLandMask(geojson: Uint8Array): Uint8Array {
       polys++;
     }
   }
-  console.log(`  land mask: ${polys} polygons rasterized at ${MASK_W}×${MASK_H}`);
+  const lakes = JSON.parse(new TextDecoder().decode(lakesJson)) as { features: { geometry: Geometry; properties: { featurecla: string; scalerank: number } }[] };
+  let lakeCount = 0;
+  for (const f of lakes.features) {
+    const p = f.properties;
+    if (p.featurecla === 'Reservoir' || p.scalerank > LAKE_MAX_SCALERANK) continue;
+    // Islands inside lakes (inner rings) stay land: the even-odd fill skips them.
+    for (const poly of polygonsOf(f.geometry)) {
+      rasterizePolygon(projectPolygon(poly, MASK_W, MASK_H), MASK_W, MASK_H, (y, x0, x1) => clearBits(bits, MASK_W, y, x0, x1));
+    }
+    lakeCount++;
+  }
+  console.log(`  land mask: ${polys} land polygons, ${lakeCount} lakes cut out, at ${MASK_W}×${MASK_H}`);
   return bits;
+}
+
+/** Wetland polygons (lon/lat rings): NE regions `Wetlands` + `Delta`, plus tools/data/wetlands.json. */
+function wetlandPolygons(regionsJson: Uint8Array): number[][][][] {
+  const fc = JSON.parse(new TextDecoder().decode(regionsJson)) as { features: { geometry: Geometry; properties: { FEATURECLA: string } }[] };
+  const out: number[][][][] = [];
+  for (const f of fc.features) {
+    if (f.properties.FEATURECLA !== 'Wetlands' && f.properties.FEATURECLA !== 'Delta') continue;
+    out.push(...polygonsOf(f.geometry));
+  }
+  const own = JSON.parse(readFileSync(path.join(root, 'tools/data/wetlands.json'), 'utf8')) as { wetlands: { ring: number[][] }[] };
+  for (const wl of own.wetlands) out.push([wl.ring]);
+  return out;
+}
+
+/** Extracts a zip source's entry into the cache once (re-extracted when missing or empty). */
+function extracted(src: Source, zip: Uint8Array): string {
+  const dir = path.join(cacheDir, src.id);
+  const file = path.join(dir, src.extract!);
+  mkdirSync(dir, { recursive: true });
+  if (!existsSync(file) || statSync(file).size === 0) {
+    console.log(`  extracting ${src.extract}`);
+    writeFileSync(file, extractZipEntry(zip, src.extract!));
+  }
+  return file;
 }
 
 /** Box-averages ETOPO (21600×10800, 1′ cells from 90°N, 180°W) into Miller cells. */
@@ -160,7 +207,7 @@ async function buildElevation(tifPath: string, w: number, h: number): Promise<In
 
 interface Asset {
   path: string;
-  kind: 'landmask' | 'elevation' | 'admin1-geometry' | 'admin1-meta';
+  kind: 'landmask' | 'elevation' | 'admin1-geometry' | 'admin1-meta' | 'terrain';
   /** Raster width/height, or for admin-1 assets: province count × 1. */
   width: number;
   height: number;
@@ -248,6 +295,8 @@ async function main(): Promise<void> {
   const files = new Map<string, Uint8Array>();
   const assets: Asset[] = [];
   const derived = new Map<string, Uint8Array>();
+  /** Preview images (not shipped) written to .cache/data/derived/. */
+  const derivedPng = new Map<string, Uint8Array>();
   const add = (name: string, kind: Asset['kind'], width: number, height: number, encoding: string, data: Uint8Array, ship = true): void => {
     const gz = gzip(data);
     if (!ship) {
@@ -259,7 +308,8 @@ async function main(): Promise<void> {
   };
 
   console.log('products:');
-  add(`landmask-${MASK_W}x${MASK_H}.bits.wsz`, 'landmask', MASK_W, MASK_H, 'gzip(bitset, LSB-first, row-major)', buildLandMask(raw.get('ne_10m_land')!));
+  const landBits = buildLandMask(raw.get('ne_10m_land')!, raw.get('ne_10m_lakes')!);
+  add(`landmask-${MASK_W}x${MASK_H}.bits.wsz`, 'landmask', MASK_W, MASK_H, 'gzip(bitset, LSB-first, row-major)', landBits);
   const admin1 = buildAdmin1(raw.get('ne_10m_admin_1_states_provinces')!);
   console.log(`  admin-1: ${admin1.meta.length} provinces, ${admin1.vertices} vertices`);
   add('admin1-geometry.wsz', 'admin1-geometry', admin1.meta.length, 1, `gzip(WAD1 varint stream, Q = ${ADMIN1_Q})`, admin1.geometry);
@@ -273,6 +323,23 @@ async function main(): Promise<void> {
     add(`elev-${w}x${h}.i16d.wsz`, 'elevation', w, h, enc, encodeElevation(elev, w, h), w <= SHIP_MAX_W);
   }
 
+  const src = (id: string): Source => lock.sources.find((s) => s.id === id)!;
+  const tb = await buildTerrain(2048, 1024, {
+    ne1Path: extracted(src('ne1_hr_lc'), raw.get('ne1_hr_lc')!),
+    etopoPath: path.join(cacheDir, src('etopo_2022_60s_surface').file),
+    landBits,
+    maskW: MASK_W,
+    maskH: MASK_H,
+    wetlands: wetlandPolygons(raw.get('ne_10m_geography_regions_polys')!),
+  });
+  for (const e of tb.exemplars) console.log(`    site ${e.name}: rgb ${e.rgb.map((v) => v.toFixed(0)).join(',')}`);
+  const terrainColors = (JSON.parse(readFileSync(path.join(root, 'data/terrain.json'), 'utf8')) as { terrain: { color: string }[] }).terrain.map((t) => t.color);
+  const terrainS = halveTerrain(tb.terrain, 2048, 1024, landFraction(landBits, MASK_W, MASK_H, 1024, 512));
+  for (const [t, w2, h2] of [[tb.terrain, 2048, 1024], [terrainS, 1024, 512]] as const) {
+    add(`terrain-${w2}x${h2}.u8.wsz`, 'terrain', w2, h2, 'gzip(u8 terrain class per cell, row-major; src/shared/terrain.ts)', t);
+    derivedPng.set(`terrain-${w2}x${h2}.png`, encodePng(terrainPreview(t, terrainColors), w2, h2));
+  }
+
   const manifest = {
     version: 1,
     projection: { type: 'miller', latTopDeg: LAT_TOP_DEG, latBottomDeg: Number(LAT_BOTTOM_DEG.toFixed(6)), lonWestDeg: -180, aspect: 2 },
@@ -284,6 +351,7 @@ async function main(): Promise<void> {
   const derivedDir = path.join(cacheDir, 'derived');
   mkdirSync(derivedDir, { recursive: true });
   for (const [name, bytes] of derived) writeFileSync(path.join(derivedDir, name), bytes);
+  for (const [name, bytes] of derivedPng) writeFileSync(path.join(derivedDir, name), bytes);
 
   let changed = 0;
   for (const [name, bytes] of files) {

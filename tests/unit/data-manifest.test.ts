@@ -64,8 +64,14 @@ describe('data manifest', () => {
     let land = 0;
     for (const b of bits) for (let k = 0; k < 8; k++) land += (b >> k) & 1;
     const frac = land / (maskAsset.width * maskAsset.height);
-    expect(frac).toBeGreaterThan(0.3); // Miller inflates high-latitude land (Greenland, Siberia)
+    // Miller inflates high-latitude land (Greenland, Siberia). PLAN 1.2 cut natural lakes out of
+    // the mask: 0.3015 → 0.2990 (−0.83% of land; lakes are ~1–2% of Earth's land area).
+    expect(frac).toBeGreaterThan(0.29);
     expect(frac).toBeLessThan(0.45);
+    // Natural lakes are water (PLAN 1.2), and lake islands stay land.
+    const lakePts: [number, number][] = [[-87.5, 47.6], [31.5, 60.8], [33, -1], [108, 53.5], [-82.5, 44.8], [-69.4, -15.8]];
+    for (const [lon, lat] of lakePts) expect(isLand(lon, lat), `lake at ${lon},${lat}`).toBe(false);
+    expect(isLand(-88.9, 48), 'Isle Royale (Lake Superior)').toBe(true);
     const landPts: [number, number][] = [[2.35, 48.85], [13.4, 52.52], [37.6, 55.75], [139.7, 35.7], [-74, 40.75], [10, 25], [-60, -10], [134, -25]];
     const seaPts: [number, number][] = [[-30, 30], [-150, 0], [80, -20], [18, 35], [5, 55], [-90, 25]];
     for (const [lon, lat] of landPts) expect(isLand(lon, lat), `land at ${lon},${lat}`).toBe(true);

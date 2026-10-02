@@ -104,6 +104,11 @@ export function setBits(bits: Uint8Array, w: number, y: number, x0: number, x1: 
   }
 }
 
+/** Clears bits [x0, x1) of row y (used to cut lakes out of the land mask). */
+export function clearBits(bits: Uint8Array, w: number, y: number, x0: number, x1: number): void {
+  for (let i = y * w + x0, end = y * w + x1; i < end; i++) bits[i >> 3]! &= ~(1 << (i & 7));
+}
+
 export function getBit(bits: Uint8Array, w: number, x: number, y: number): boolean {
   const i = y * w + x;
   return ((bits[i >> 3]! >> (i & 7)) & 1) === 1;

@@ -11,15 +11,12 @@
  *   Invalid input: expected number, received string`.
  */
 import { z } from 'zod';
+import { TERRAIN_IDS } from '../../shared/terrain';
 
 // ── shared vocab ─────────────────────────────────────────────────────────────
 
 /** Terrain classes in cell-layer enum order (SPEC §3.2): the array index is the u8 value. */
-export const TERRAIN_IDS = [
-  'water', 'crossing', 'plains', 'grassland', 'forest', 'hills',
-  'mountains', 'desert', 'tundra', 'marsh', 'urban', 'ice',
-] as const;
-export type TerrainId = (typeof TERRAIN_IDS)[number];
+export { TERRAIN_IDS, type TerrainId } from '../../shared/terrain';
 
 export const LAND_CLASSES = ['inf', 'art', 'at', 'aa', 'armor_l', 'armor_m', 'armor_h', 'mech', 'mot'] as const;
 export const SEA_CLASSES = ['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'] as const;
@@ -185,6 +182,14 @@ export const MapMeta = z
     });
   });
 
+// ── straits (data/maps/<id>/straits.json) ────────────────────────────────────
+
+const lonLat = z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)]);
+
+/** AoC-style walkable crossings: water cells on the segment a→b become Terrain.Crossing (PLAN 1.2). */
+export const StraitDef = z.strictObject({ id, nameKey: key, a: lonLat, b: lonLat });
+export const StraitsFile = z.strictObject({ straits: z.array(StraitDef) });
+
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
 
 export const ScenarioSettings = z.strictObject({
@@ -225,6 +230,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^traits\/[a-z0-9_]+\.json$/, schema: TraitsFile },
   { pattern: /^buildings\/[a-z0-9_]+\.json$/, schema: BuildingsFile },
   { pattern: /^maps\/[a-z0-9_]+\/map\.json$/, schema: MapMeta },
+  { pattern: /^maps\/[a-z0-9_]+\/straits\.json$/, schema: StraitsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
 ];
 
@@ -348,10 +354,15 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
   unique('buildings', of<z.infer<typeof BuildingsFile>>(/^buildings\//).map(([f, x]) => [f, x.buildings]));
 
   const maps = new Map<string, MapMeta>();
-  for (const [f, m] of of<MapMeta>(/^maps\//)) {
+  for (const [f, m] of of<MapMeta>(/^maps\/[a-z0-9_]+\/map\.json$/)) {
     const dir = f.split('/')[1];
     if (m.id !== dir) errors.push(`${f}: id: '${m.id}' must match its directory '${dir}'`);
     maps.set(m.id, m);
+  }
+  for (const [f, st] of of<z.infer<typeof StraitsFile>>(/^maps\/[a-z0-9_]+\/straits\.json$/)) {
+    const dir = f.split('/')[1]!;
+    if (!(`maps/${dir}/map.json` in files)) errors.push(`${f}: no map.json next to this file`);
+    unique('straits', [[f, st.straits]]);
   }
   for (const [f, s] of of<ScenarioMeta>(/^scenarios\//)) {
     const dir = f.split('/')[1];

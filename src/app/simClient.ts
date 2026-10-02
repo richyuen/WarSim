@@ -6,9 +6,9 @@
  * are transferred back for reuse.
  */
 import type { Command } from '../shared/commands';
-import type { FromWorker, ProvinceBuildResult, SimInit, SimStatus, Snapshot, Speed, Subscription, ToWorker } from '../shared/protocol';
+import type { FromWorker, ProvinceBuildResult, SimInit, SimStatus, Snapshot, Speed, Subscription, TerrainBuildResult, ToWorker } from '../shared/protocol';
 
-type Reply = { status: SimStatus; bytes?: Uint8Array } | { provinces: ProvinceBuildResult };
+type Reply = { status: SimStatus; bytes?: Uint8Array } | { provinces: ProvinceBuildResult } | { terrain: TerrainBuildResult };
 type Pending = { resolve: (r: Reply) => void; reject: (e: Error) => void };
 
 /** Distributive Omit so each union member keeps its own fields. */
@@ -51,6 +51,8 @@ export class SimClient {
       p.reject(err);
     } else if (msg.type === 'provinces') {
       p.resolve({ provinces: msg.result });
+    } else if (msg.type === 'terrain') {
+      p.resolve({ terrain: msg.result });
     } else {
       p.resolve(msg.bytes ? { status: msg.status, bytes: msg.bytes } : { status: msg.status });
     }
@@ -109,6 +111,14 @@ export class SimClient {
     const r = await this.request({ type: 'buildProvinces', assetBase, w, h, withIds });
     if (!('provinces' in r)) throw new Error('unexpected reply to buildProvinces');
     return r.provinces;
+  }
+
+  /** Loads the terrain raster (with crossings) in the worker (PLAN 1.2). */
+  async buildTerrain(w: number, h: number): Promise<TerrainBuildResult> {
+    const assetBase = new URL('data/earth/', document.baseURI).href;
+    const r = await this.request({ type: 'buildTerrain', assetBase, w, h });
+    if (!('terrain' in r)) throw new Error('unexpected reply to buildTerrain');
+    return r.terrain;
   }
 
   command(cmd: Command): void {

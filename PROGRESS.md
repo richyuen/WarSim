@@ -617,3 +617,55 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - Python on Windows writes CRLF unless `newline='\n'` is passed (git normalises on commit).
 - **Parity:** row 78 (data-driven maps/years) and additions row 8 (tech) → partial. Score 4.4% → 5.0%
   via `npm run parity -- --write`.
+
+## 2026-10-02 — PLAN 1.2: terrain derivation + strait crossings
+- **Sources:** added three pinned sources and our own wetland outlines (DATA_SOURCES).
+  - NE1_HR_LC (Natural Earth I land cover, 21600×10800). `tools/data/zip.ts` extracts it into `.cache/`.
+  - NE 10m lakes and NE 10m geography regions.
+  - `tools/data/wetlands.json` (ours).
+- **Pipeline (`tools/data/terrain.ts`, ADR-15):** one pass over NE1 + ETOPO, which share the 1′
+  grid. Per-cell inputs are:
+  - mean land-cover colour, matched to 30 labelled reference sites sampled from NE1 (no
+    hand-picked RGB);
+  - forest-pixel share;
+  - elevation standard deviation, giving mountains (≥ 280 m) and hills (≥ 110 m, or mean ≥ 3000 m);
+  - wetland polygons → marsh, on flat ground only.
+
+  Plausibility rules: no desert poleward of 52° (Arctic browns), ice only poleward of 58° (salt
+  flats, glaciers). S is the 2×2 mode of M. Shipped: `terrain-2048x1024.u8.wsz` (0.12 MB) and
+  `terrain-1024x512.u8.wsz` (0.04 MB). Natural lakes are now cut from the land mask.
+- **Crossings:** `data/maps/earth/straits.json` holds 24 straits (Bosporus, Dardanelles, Gibraltar,
+  Øresund, Belts, Kerch, Messina, Bab-el-Mandeb, Palk, Japan's straits, Sunda, Cook, …) with
+  schema + en.json names. `applyCrossings` (`src/sim/data/terrain.ts`) extends each segment 4 cells past
+  both shores and paints the water between the first and last land cell. All 24 link land at both M
+  and S. Crossings stay data and are applied in the worker (`buildTerrain` request).
+- **Terrain ids** moved to `src/shared/terrain.ts` (the renderer needs them). The toy world now uses
+  Terrain.Plains/Water instead of ad-hoc 1/0.
+- **AT:**
+  - `tests/unit/terrain.test.ts` (11 tests, both sizes):
+    - 22 known places (Sahara/Gobi desert, Amazon/Congo/taiga forest, Everest/Alps/Caucasus mountains,
+      Pripyat/Sudd marsh, Taymyr tundra, Greenland ice, Lake Superior water, …);
+    - golden class counts ±10% (`tests/unit/terrain-golden.json`);
+    - area-weighted shares within literature bounds. M: forest 17.4% (FAO 31%, forested relief counts
+      as hills), hills+mountains 20.9% (UNEP-WCMC ~24%), desert 11.6% (arid+hyper-arid ~19%, steppe =
+      grassland), ice 1.3% (Greenland), tundra 6.0%;
+    - straits linked; date-line and 4-connectivity of the segment walker.
+  - `tests/e2e/terrain.spec.ts`: Chromium worker load == Node (xxHash), class colours read back at
+    7 uniform sites, and screenshots `docs/evidence/1.2/terrain-{world,europe,straits-turkey}.png`
+    (`EVIDENCE=1` writes them there).
+- **Viewed screenshots:**
+  - World: biomes, lakes and mountain chains read correctly.
+  - Europe: Alps, Carpathians, Pripyat marsh, taiga/plains split.
+  - Turkey close-up: the Dardanelles crossing lane; the Bosporus is land-bridged at M.
+  - Iterated once on the previews: Arctic desert speckles, Saharan "ice" and Everest-as-ice were
+    fixed with the plausibility rules.
+- **Reference comparison** (logged; composite not saved, AoC material): trailer frames "Create your
+  own"/"Paint scenarios" show AoC's greyscale editor code. The palette is Basic Land, Desert/Tundra,
+  Hills, Mountains, Crossing, Water; long crossing bands span seas. Ours: 12 natural-colour classes,
+  passable mountains, straits-only crossings. These are deliberate deviations, recorded in ADR-15.
+- **Test change, logged:** the `data-manifest` land-fraction floor moved 0.30 → 0.29, because lakes
+  are now water (0.3015 → 0.2990, −0.83% of land). The test gained lake-is-water points (Superior,
+  Ladoga, Victoria, Baikal, Huron, Titicaca) and a lake-island check (Isle Royale).
+- **Known limits (ADR-15):** modern Aral/Chad outlines; boxy hand-drawn marshes; city cells
+  become URBAN in 1.5.
+- **Parity:** row 25 (terrain) → partial. Score 5.0% → 5.6%.

@@ -19,6 +19,8 @@ import {
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
 import { xxhash32View } from '../sim/core/hash';
 import { buildProvinceRaster } from '../sim/data/provinces';
+import { loadTerrain, type StraitDef } from '../sim/data/terrain';
+import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
 import { Sim } from '../sim/sim';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -135,6 +137,9 @@ export class SimServer {
       case 'buildProvinces':
         void this.buildProvinces(msg);
         break;
+      case 'buildTerrain':
+        void this.buildTerrain(msg);
+        break;
     }
     this.maybeSend();
   }
@@ -166,6 +171,30 @@ export class SimServer {
         ...(msg.withIds ? { ids: r.ids } : {}),
       };
       this.post({ type: 'provinces', reqId: msg.reqId, result }, msg.withIds ? [r.ids.buffer] : []);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);
+    }
+  }
+
+  private async buildTerrain(msg: Extract<ToWorker, { type: 'buildTerrain' }>): Promise<void> {
+    try {
+      const t0 = performance.now();
+      const asset = await new AssetStore(msg.assetBase).load('terrain', msg.w);
+      const { terrain, crossings } = loadTerrain(asset.bytes, msg.w, msg.h, earthStraits.straits as unknown as StraitDef[]);
+      const counts: number[] = [];
+      for (const v of terrain) counts[v] = (counts[v] ?? 0) + 1;
+      for (let k = 0; k < counts.length; k++) counts[k] ??= 0;
+      const result = {
+        w: msg.w,
+        h: msg.h,
+        counts,
+        crossings,
+        hash: xxhash32View(terrain),
+        ms: { fetch: asset.fetchMs, decode: asset.decodeMs, total: performance.now() - t0 },
+        terrain,
+      };
+      this.post({ type: 'terrain', reqId: msg.reqId, result }, [terrain.buffer]);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);

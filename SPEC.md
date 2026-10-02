@@ -201,7 +201,8 @@ wall-clock time, render state or subscriptions.
   XL 6144×3072. Sim memory budget at XL is ≤ 160 MB.
 - Per-row scale table `kx[y]` and `ky[y]` (projected → true km) is used for movement speed,
   ranges, blast radii and per-cell area (economy weight).
-- **Fine land mask** (static): 1-bit 16384×8192 from Natural Earth 10m land. It is used by
+- **Fine land mask** (static): 1-bit 16384×8192 from Natural Earth 10m land, minus natural lakes
+  (NE 10m lakes, scalerank ≤ 7, no reservoirs; PLAN 1.2). It is used by
   the sim for element placement and naval passability at sub-cell scale, and by the
   renderer for coastlines. Both read the same bytes, so they never disagree.
 - Elevation: ETOPO 2022 60″ box-averaged into Miller cells. The 4096×2048 int16 level is a derived
@@ -217,6 +218,23 @@ wall-clock time, render state or subscriptions.
 | province | u16 | province id (0 = water) |
 | flags | u8 | COAST, RIVER, FALLOUT(level 0–3 in 2 bits), FORT, ... |
 | pressure | i16 | transient, frontier cells only (stored in a sparse frontier table, not a full array) |
+
+**Terrain raster (PLAN 1.2, ADR-15).** `terrain-<w>x<h>.u8.wsz` (M and S shipped) is derived
+offline by `tools/data/terrain.ts`:
+- land/water from land-mask coverage ≥ 50%;
+- biome from the cell's mean Natural Earth I land-cover colour, matched to the nearest of 30
+  labelled reference sites (forest, plains, grassland, desert, tundra, ice), with plausibility rules
+  (no desert poleward of 52°, ice only poleward of 58°) and a forest-pixel-majority override;
+- relief from the ETOPO elevation standard deviation inside the cell (mountains ≥ 280 m,
+  hills ≥ 110 m or mean ≥ 3000 m);
+- marsh from NE wetland/delta polygons plus `tools/data/wetlands.json`, on flat ground only;
+- priority: ice > mountains > hills > marsh > biome; S is the 2×2 mode of M.
+
+URBAN is assigned to city cells in PLAN 1.5. Crossings are not baked in: `data/maps/<map>/straits.json`
+lists land-to-land segments, and `applyCrossings` (`src/sim/data/terrain.ts`) paints the water cells
+between the first and last land cell of each segment (extended 4 cells past both shores) at load time.
+Cells that have a province but water terrain (or the reverse) are reconciled when ownership is built
+(PLAN 1.3).
 
 Terrain table (`data/terrain.json`, in enum order): moveCost per mobility class (foot, motor,
 tracked; null = impassable), defence modifier, attack modifiers per unit class, supply attrition,

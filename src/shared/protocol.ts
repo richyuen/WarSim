@@ -44,7 +44,9 @@ export type ToWorker =
   | { type: 'subscribe'; sub: Subscription }
   | { type: 'ack'; seq: number; buffers: ArrayBuffer[] }
   /** Builds the admin-1 province raster at w×h from the map assets under `assetBase`. */
-  | { type: 'buildProvinces'; reqId: number; assetBase: string; w: number; h: number; withIds: boolean };
+  | { type: 'buildProvinces'; reqId: number; assetBase: string; w: number; h: number; withIds: boolean }
+  /** Loads the w×h terrain raster from `assetBase` and applies the map's crossings (PLAN 1.2). */
+  | { type: 'buildTerrain'; reqId: number; assetBase: string; w: number; h: number };
 
 /** Result of `buildProvinces` (PLAN 0.19). */
 export interface ProvinceBuildResult {
@@ -120,8 +122,23 @@ export interface Snapshot {
   buffers: ArrayBuffer[];
 }
 
+/** Result of `buildTerrain` (PLAN 1.2). */
+export interface TerrainBuildResult {
+  w: number;
+  h: number;
+  /** Cells per class, indexed by Terrain (src/shared/terrain.ts). */
+  counts: number[];
+  crossings: { id: string; cells: number; linked: boolean }[];
+  /** xxHash32 of the class raster. */
+  hash: number;
+  ms: { fetch: number; decode: number; total: number };
+  /** Class per cell (u8). */
+  terrain: Uint8Array;
+}
+
 export type FromWorker =
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }
-  | { type: 'provinces'; reqId: number; result: ProvinceBuildResult };
+  | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
+  | { type: 'terrain'; reqId: number; result: TerrainBuildResult };

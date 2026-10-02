@@ -14,8 +14,8 @@
       "width": 16384,
       "height": 8192,
       "encoding": "gzip(bitset, LSB-first, row-major)",
-      "bytes": 377289,
-      "sha256": "6a5c95eb567bba7d311e441ebced24a986b4ae0fbf4ceba6be9a95bcf13f53d9"
+      "bytes": 429953,
+      "sha256": "006bb9948dfad8bb42e8550357083d5ea6bdfd1c774f851427869b1f610cab3d"
     },
     {
       "path": "admin1-geometry.wsz",
@@ -61,6 +61,24 @@
       "encoding": "gzip(byte-planes(row-delta(int16 metres))), ocean quantised to 10 m",
       "bytes": 155394,
       "sha256": "41929055daf792e5abe25cb7cdc69f333d8b6781e93f0b64853a6558e5bdb808"
+    },
+    {
+      "path": "terrain-2048x1024.u8.wsz",
+      "kind": "terrain",
+      "width": 2048,
+      "height": 1024,
+      "encoding": "gzip(u8 terrain class per cell, row-major; src/shared/terrain.ts)",
+      "bytes": 120448,
+      "sha256": "d01d5103bae4e40eeaaa902aa853eead83436fde81b04711d80f0b63c28ed93c"
+    },
+    {
+      "path": "terrain-1024x512.u8.wsz",
+      "kind": "terrain",
+      "width": 1024,
+      "height": 512,
+      "encoding": "gzip(u8 terrain class per cell, row-major; src/shared/terrain.ts)",
+      "bytes": 34934,
+      "sha256": "3d888c4fa84e850e27609cb2b2d5f1e3a12e7ddd628525406fb577a3dec46a2c"
     }
   ],
   "sources": [
@@ -99,6 +117,24 @@
       "url": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO2022/data/60s/60s_surface_elev_gtif/ETOPO_2022_v1_60s_N90W180_surface.tif",
       "license": "Public domain (NOAA NCEI, US Government work)",
       "sha256": "9d27d4b8ea8e76977e2988bca667d7c8fa68b927355feffcddd6b4875a7fd08e"
+    },
+    {
+      "id": "ne_10m_lakes",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_lakes.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9"
+    },
+    {
+      "id": "ne_10m_geography_regions_polys",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_geography_regions_polys.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "b7b26e50ea917d3696aec87f932def2bf5f890f5770e441d59c162c6f4c92a77"
+    },
+    {
+      "id": "ne1_hr_lc",
+      "url": "https://naciscdn.org/naturalearth/10m/raster/NE1_HR_LC.zip",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "6a6d5b9b79b33d449aedd380916e977922ea69b6935b4585960e9310e60a1fb1"
     }
   ]
 }

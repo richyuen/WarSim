@@ -56,7 +56,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 ### 1A Data & scenario
 - [x] 1.1 zod schemas for terrain, unit types, tech, traits, buildings, scenario, map meta; validate all `data/**`.
   AT: `npm test` validates every JSON file; an invalid fixture fails with a readable path.
-- [ ] 1.2 Terrain derivation (elevation + latitude/biome from NE raster) → terrain classes; CROSSING lanes data (straits list).
+- [x] 1.2 Terrain derivation (elevation + latitude/biome from NE raster) → terrain classes; CROSSING lanes data (straits list).
   AT: golden counts per class within ±10% of expected; screenshot of terrain mode compared to reference editor shot (logged).
 - [ ] 1.3 1938 ownership: admin-1 → nation table + split polylines for interwar borders; colonies; mandates.
   AT: tests on known points (Danzig = Free City, Lwów = Poland, Königsberg = Germany, Manchukuo exists, Ethiopia = Italy); screenshot of the political map vs a historical atlas description logged.

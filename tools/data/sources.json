@@ -42,6 +42,28 @@
       "file": "ETOPO_2022_v1_60s_N90W180_surface.tif",
       "license": "Public domain (NOAA NCEI, US Government work)",
       "sha256": "9d27d4b8ea8e76977e2988bca667d7c8fa68b927355feffcddd6b4875a7fd08e"
+    },
+    {
+      "id": "ne_10m_lakes",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_lakes.geojson",
+      "file": "ne_10m_lakes.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9"
+    },
+    {
+      "id": "ne_10m_geography_regions_polys",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_geography_regions_polys.geojson",
+      "file": "ne_10m_geography_regions_polys.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "b7b26e50ea917d3696aec87f932def2bf5f890f5770e441d59c162c6f4c92a77"
+    },
+    {
+      "id": "ne1_hr_lc",
+      "url": "https://naciscdn.org/naturalearth/10m/raster/NE1_HR_LC.zip",
+      "file": "NE1_HR_LC.zip",
+      "extract": "NE1_HR_LC.tif",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "6a6d5b9b79b33d449aedd380916e977922ea69b6935b4585960e9310e60a1fb1"
     }
   ]
 }

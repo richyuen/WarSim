@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 5.0%** (verified 0 · partial 8 · not started 72 · total 80)
+**Parity score: 5.6%** (verified 0 · partial 9 · not started 71 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -40,7 +40,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 22 | Income bonus | Custom permanent income bonus per nation, editable, limited to -100..100 [TEXT 2026-10-02] | incomeBonus -100..100 as % of income (PLAN 1.9) | not started |  |  |
 | 23 | Economy tick: income and expenses | Economic tick every 5 s: land, core and city income; expenses for combat efficiency (war), cities, revolt suppression; gold may go negative; economy tab lists every line [TEXT 2026-10-02] | Monthly economy tick with income lines, upkeep, admin cost, bankruptcy (PLAN 1.9) | not started |  | Baseline: "economy (gold, income, expenses, production)"; production is ours (Table 2) |
 | 24 | Temporary buffs and debuffs | v4.3: timed buffs/debuffs (war reparations, harsh winter) shown as boxes with timers; custom ones can be assigned [TEXT 2026-10-02] | Buffs with expiresTick on nation/formation/province (PLAN 1.21) | not started |  |  |
-| 25 | Terrain types and effects | Land, Water, Mountains (impassable), Desert, Hills, Forest, Tundra, Grassland, Crossings; terrain affects income, defence (forest) and first-conquest speed [TEXT+VISUAL 2026-10-02] | Terrain classes from elevation/biome affecting movement, combat, supply, income (PLAN 1.2) | not started |  | VISUAL: editor palette in the trailer |
+| 25 | Terrain types and effects | Land, Water, Mountains (impassable), Desert, Hills, Forest, Tundra, Grassland, Crossings; terrain affects income, defence (forest) and first-conquest speed [TEXT+VISUAL 2026-10-02] | Terrain classes from elevation/biome affecting movement, combat, supply, income (PLAN 1.2) | partial | `tests/unit/terrain.test.ts`, `tests/e2e/terrain.spec.ts`, `docs/evidence/1.2/terrain-world.png`, `docs/evidence/1.2/terrain-europe.png`, `docs/evidence/1.2/terrain-straits-turkey.png` | VISUAL: editor palette in the trailer. 2026-10-02 (PLAN 1.2): 12 classes derived for the whole world + 24 strait crossings; terrain table data (move/defence/attack/attrition/econ). Effects on movement, combat and income are not applied yet (systems 1.8+). Deviations: passable mountains, straits-only crossings (ADR-15) |
 | 26 | Crossings | Painted sea lanes (pale bands) that land expansion can cross; ownable [TEXT+VISUAL 2026-10-02] | CROSSING lanes in the nav graph, editable (PLAN 1.2, 1.11) | not started |  |  |
 | 27 | Cities and capitals with names | Named cities on land (not mountains or water) give income and revolts; capital is special; cities spawnable; names shown when zoomed in [TEXT+VISUAL 2026-10-02] | Natural Earth populated places + capitals, named, rendered at T1 (PLAN 1.5) | not started |  |  |
 | 28 | Change capital | Change or "Turn into Capital" in editor and game; capital returns to the original city when reclaimed [TEXT 2026-10-02] | God/editor capital change; capital restore on reclaim (PLAN 1.15) | not started |  |  |

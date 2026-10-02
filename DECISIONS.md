@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-15 · 2026-10-02 · accepted — Terrain derived from land cover + relief; crossings as data
+**Decision.**
+- Terrain is derived per cell offline (SPEC §3.2). Sources:
+  - land-cover colour from Natural Earth I (NE1_HR_LC, public domain), matched to labelled reference
+    sites sampled from the raster itself, so there are no hand-picked RGB values;
+  - relief from the ETOPO standard deviation within the cell;
+  - marsh from NE wetlands/deltas plus our own outlines of 10 missing major wetlands.
+- The land mask now excludes natural lakes (Great Lakes, Ladoga, Victoria, Baikal …).
+- Crossings are a data list of 24 real straits (`data/maps/earth/straits.json`), applied at load.
+
+**Deviations from AoC (logged per PROMPT).**
+- *Colour terrain view instead of AoC's greyscale editor code.* AoC's editor palette (VISUAL,
+  trailer "Create your own"/"Paint scenarios", 2026-10-02): Basic Land, Desert/Tundra, Hills,
+  Mountains, Crossing, Water in grey shades. Ours has 12 classes in natural colours. A derived world
+  needs more classes (forest, grassland, marsh, ice) to drive SPEC §5 combat and §6 armour, and
+  natural colours read better in a terrain mode.
+- *Mountains are passable* (move ×2.5 foot / ×4 motor / ×5 tracked, defence ×1.6, armour attack
+  ×0.4–0.5), while AoC mountains are impassable (TEXT). The 1938 world's decisive mountain fronts
+  (Alps, Caucasus, Apennines, Burma) were fought through. Chokepoints still emerge from the cost.
+- *Crossings are real narrow straits only.* AoC's painted crossings can be long bands across seas
+  (VISUAL). Longer gaps are for naval transport and amphibious invasion (Phase 4), which AoC lacks.
+  The straits list is editable data, so a scenario can add AoC-style lanes.
+
+**Known limits.**
+- NE lakes are modern: the Aral Sea and Lake Chad are their shrunken outlines. Reservoirs are
+  excluded (mostly post-1938).
+- Hand-drawn wetland outlines are coarse, so the Pripyat, Vasyugan and Hudson Bay marshes show
+  rounded-box shapes. They can be refined in `tools/data/wetlands.json` without code changes.
+- Paris and other large cities read as grassland/plains until PLAN 1.5 makes city cells URBAN.
+
 ### ADR-14 · 2026-10-02 · accepted — Data schemas: zod v4, strict objects, one validator for every `data/` file
 **Decision.**
 - Every JSON file under `data/` has a zod schema in `src/sim/data/schemas.ts`. `DATA_FILES` maps

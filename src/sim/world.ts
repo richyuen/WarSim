@@ -97,8 +97,6 @@ export class TickOutputs {
   }
 }
 
-export const TERRAIN_LAND = 1;
-export const TERRAIN_WATER = 0;
 
 /** Scalar globals + RNG + command log. */
 class WorldCore implements Stateful {

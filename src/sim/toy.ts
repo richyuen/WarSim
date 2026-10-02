@@ -8,7 +8,8 @@ import { cos, sin, TAU } from './core/dmath';
 import { EventKind } from '../shared/events';
 import { SCENARIO_GEOMETRY } from '../shared/scenarios';
 import type { System } from './tick';
-import { TERRAIN_LAND, TERRAIN_WATER, World } from './world';
+import { Terrain } from '../shared/terrain';
+import { World } from './world';
 
 export const TOY_W = SCENARIO_GEOMETRY.toy.w;
 export const TOY_H = SCENARIO_GEOMETRY.toy.h;
@@ -21,7 +22,7 @@ export function createToyWorld(seed: number): World {
   const { cells } = world;
 
   // Land everywhere, plus a few elliptical lakes.
-  cells.terrain.fill(TERRAIN_LAND);
+  cells.terrain.fill(Terrain.Plains);
   for (let k = 0; k < 6; k++) {
     const cx = rng.nextInt(TOY_W);
     const cy = 10 + rng.nextInt(TOY_H - 20);
@@ -32,7 +33,7 @@ export function createToyWorld(seed: number): World {
         if (y < 0 || y >= TOY_H) continue;
         const dx = (x - cx) / rx;
         const dy = (y - cy) / ry;
-        if (dx * dx + dy * dy <= 1) cells.terrain[world.cellIndex(((x % TOY_W) + TOY_W) % TOY_W, y)] = TERRAIN_WATER;
+        if (dx * dx + dy * dy <= 1) cells.terrain[world.cellIndex(((x % TOY_W) + TOY_W) % TOY_W, y)] = Terrain.Water;
       }
     }
   }
@@ -47,7 +48,7 @@ export function createToyWorld(seed: number): World {
   for (let y = 0; y < TOY_H; y++) {
     for (let x = 0; x < TOY_W; x++) {
       const i = world.cellIndex(x, y);
-      if (cells.terrain[i] === TERRAIN_WATER) continue;
+      if (cells.terrain[i] === Terrain.Water) continue;
       const owner = x < TOY_W / 2 ? 1 : 2;
       cells.owner[i] = owner;
       cells.controller[i] = owner;
@@ -91,7 +92,7 @@ const toyMovement: System = (world) => {
     const nx = wrapX(f.cols.x[id]! + cos(facing) * SPEED_CELLS);
     const ny = clampY(f.cols.y[id]! + sin(facing) * SPEED_CELLS);
     const ci = world.cellIndex(Math.floor(nx), Math.floor(ny));
-    if (cells.terrain[ci] === TERRAIN_WATER) {
+    if (cells.terrain[ci] === Terrain.Water) {
       f.cols.facing[id] = facing + TAU / 2; // bounce off water
       return;
     }
