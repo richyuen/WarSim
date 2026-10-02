@@ -5,11 +5,12 @@ import { slotGrid, slotPose } from '../../src/sim/core/pose';
 import { cellOf } from '../../src/sim/data/terrain';
 import { boundKm, Mobility, type MobilityId } from '../../src/sim/nav/grid';
 import { findRoute } from '../../src/sim/nav/provinceGraph';
-import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { MARCH_DUTY } from '../../src/sim/systems/movement';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
+import { nationId } from '../helpers/sim1938';
 
 // PLAN 1.11: land movement over the coarse province graph + cell A*, with mobility × terrain
 // costs. AT: a route across the Alps is slower than one across the plains; a formation never
@@ -32,7 +33,7 @@ function spawn(world: World, nation: string, template: number, lon: number, lat:
   const f = world.formations;
   const id = f.create();
   const [x, y] = cellOf(lon, lat, W, H);
-  f.cols.nation[id] = NATIONS_1938.findIndex((n) => n.tag === nation) + 1;
+  f.cols.nation[id] = nationId(nation);
   f.cols.template[id] = template;
   f.cols.x[id] = Math.floor(x) + 0.5;
   f.cols.y[id] = Math.floor(y) + 0.5;

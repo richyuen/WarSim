@@ -50,23 +50,38 @@ export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: bo
   return { w, h, wrapX, terrain, kx, ky, component: labelComponents(terrain, w, h, wrapX) };
 }
 
+/**
+ * The 4-neighbours of cell `c` on a w×h grid (north, south, west, east; x wraps when `wrapX`),
+ * written into `out` (reused to avoid allocation) and returned.
+ */
+export function neighbours4(c: number, w: number, h: number, wrapX: boolean, out: number[]): number[] {
+  const x = c % w;
+  const y = (c - x) / w;
+  out.length = 0;
+  if (y > 0) out.push(c - w);
+  if (y < h - 1) out.push(c + w);
+  if (x > 0) out.push(c - 1);
+  else if (wrapX) out.push(c + w - 1);
+  if (x < w - 1) out.push(c + 1);
+  else if (wrapX) out.push(c - w + 1);
+  return out;
+}
+
 /** Labels 4-connected components of land + crossing cells (water is impassable to every mobility). */
 function labelComponents(terrain: Uint8Array, w: number, h: number, wrapX: boolean): Uint32Array {
   const water = MOVE_COST[0]!;
   const comp = new Uint32Array(w * h);
   let next = 1;
   const stack: number[] = [];
+  const nb: number[] = [];
   for (let s = 0; s < w * h; s++) {
     if (comp[s] !== 0 || !Number.isFinite(water[terrain[s]!]!)) continue;
     comp[s] = next;
     stack.push(s);
     while (stack.length) {
       const c = stack.pop()!;
-      const x = c % w;
-      const y = (c - x) / w;
-      const ns = [y > 0 ? c - w : -1, y < h - 1 ? c + w : -1, x > 0 ? c - 1 : wrapX ? c + w - 1 : -1, x < w - 1 ? c + 1 : wrapX ? c - w + 1 : -1];
-      for (const n of ns) {
-        if (n >= 0 && comp[n] === 0 && Number.isFinite(water[terrain[n]!]!)) {
+      for (const n of neighbours4(c, w, h, wrapX, nb)) {
+        if (comp[n] === 0 && Number.isFinite(water[terrain[n]!]!)) {
           comp[n] = next;
           stack.push(n);
         }

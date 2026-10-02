@@ -58,8 +58,6 @@ export interface TemplateRule {
   manpower: number;
   /** Training days. */
   days: number;
-  /** Full strength (men). */
-  strength: number;
   /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked) and march speed, km/h. */
   mobility: number;
   speedKmh: number;
@@ -312,6 +310,7 @@ class WorldCore implements Stateful {
     w.elementIndex = null;
     w.nav = null;
     w.frontier = null;
+    w.supplyDirty = true;
     w.out.fires.length = 0;
     w.out.markAllDirty();
   }
@@ -340,6 +339,12 @@ export class World {
   production = new Table('production', PRODUCTION_SCHEMA, 16);
   elements = new Table('elements', ELEMENT_SCHEMA, 1024);
   wars = new Wars();
+  /**
+   * Derived (not state): true when control, cities or overlords may have changed since the last
+   * supply refresh. Skipping an unneeded refresh leaves exactly the layer a refresh would write.
+   * Code that writes `cells.controller` directly must set it (setController does).
+   */
+  supplyDirty = true;
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
   frontierWars = -1;
@@ -374,6 +379,7 @@ export class World {
     const c = this.cells;
     if (c.controller[i] === nation) return;
     c.controller[i] = nation;
+    this.supplyDirty = true;
     if (!keepFrontier) this.frontier = null;
     const x = i % c.w;
     const y = (i - x) / c.w;

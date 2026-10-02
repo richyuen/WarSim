@@ -6,7 +6,8 @@
  * controls. A multi-source flood (4-connected) spreads over cells the bloc controls and over
  * unclaimed crossing lanes; `cells.supply` stores the bloc id that reached each cell (blocs in
  * ascending id order; a lane reached first by one bloc is not shared in v1). The layer is state,
- * so a load between refreshes behaves exactly like the original run.
+ * so a load between refreshes behaves exactly like the original run. A refresh is skipped when
+ * nothing it reads has changed (`World.supplyDirty`), which writes the same layer for free.
  *
  * Formations (hourly): a formation on a cell of its own bloc's network gains SUPPLY_RATE per hour
  * towards 1; otherwise it loses SUPPLY_RATE towards 0. At 0 it attrits: (BASE_ATTRITION_PER_DAY +
@@ -15,7 +16,7 @@
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { Terrain } from '../../shared/terrain';
 import type { World } from '../world';
-import { applyLoss, elementIndex, settleFormation } from './elements';
+import { bleedFormation } from './elements';
 
 export const SUPPLY_REFRESH_HOURS = 6;
 /** Per hour; a power of two so the level steps exactly between 0 and 1 (8 h to drain or refill). */
@@ -32,6 +33,7 @@ export function blocOf(world: World, nation: number): number {
 /** Recomputes `cells.supply` from the current cities and control. */
 export function refreshSupplyNetwork(world: World): void {
   const { w, h, controller, owner, terrain, supply } = world.cells;
+  world.supplyDirty = false;
   supply.fill(0);
   const blocOfNation = new Uint16Array(world.nations.highWater);
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
@@ -62,6 +64,8 @@ export function refreshSupplyNetwork(world: World): void {
       const c = queue[head++]!;
       const x = c % w;
       const y = (c - x) / w;
+      // Inlined 4-neighbours (wrapping x): this flood covers the map every 6 h, and the shared
+      // nav/grid neighbours4 helper made it 3.3× slower (review after PLAN 1.14).
       for (let k = 0; k < 4; k++) {
         const n = k === 0 ? (y > 0 ? c - w : -1) : k === 1 ? (y < h - 1 ? c + w : -1) : k === 2 ? (x > 0 ? c - 1 : c + w - 1) : x < w - 1 ? c + 1 : c - w + 1;
         if (n < 0 || supply[n] !== 0) continue;
@@ -77,11 +81,10 @@ export function refreshSupplyNetwork(world: World): void {
 }
 
 export function supplySystem(world: World): void {
-  if (world.tick % SUPPLY_REFRESH_HOURS === 0) refreshSupplyNetwork(world);
+  if (world.tick % SUPPLY_REFRESH_HOURS === 0 && world.supplyDirty) refreshSupplyNetwork(world);
   const f = world.formations;
   const c = f.cols;
   const { w, supply, terrain } = world.cells;
-  const idx = elementIndex(world);
   f.forEach((id) => {
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const inSupply = supply[cell] !== 0 && supply[cell] === blocOf(world, c.nation[id]!);
@@ -89,14 +92,7 @@ export function supplySystem(world: World): void {
     c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE);
     if (c.supply[id] === 0) {
       const perHour = (BASE_ATTRITION_PER_DAY + (TERRAIN_ATTRITION[terrain[cell]!] ?? 0)) / 24;
-      const els = idx.get(id);
-      if (els) {
-        // Losses land on the elements (with carried fractions); strength is their sum.
-        for (const e of els) applyLoss(world, e, world.elements.cols.strength[e]! * perHour);
-        settleFormation(world, id);
-      } else {
-        c.strength[id] = Math.floor(c.strength[id]! * (1 - perHour));
-      }
+      bleedFormation(world, id, perHour);
     }
   });
 }

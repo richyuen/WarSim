@@ -1124,3 +1124,28 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     after 3 days, and the cost per tick is small;
   - a front survives save/load into a live sim.
 - Parity: row 1 (AI expansion and conquest) → partial.
+
+## 2026-10-02 — Review pass after PLAN 1.10–1.14
+- **Bug fixed:** bankruptcy desertion (PLAN 1.9) still cut formation strength directly, bypassing
+  the elements added in 1.13, so strength and Σ elements drifted apart for bankrupt nations from
+  tick 0. Desertion and supply attrition now share `bleedFormation`. Found by the new element
+  invariant test.
+- **Perf:**
+  - the supply network refresh is skipped when control, cities and overlords are unchanged
+    (`World.supplyDirty`, derived; skipping writes the same layer), cutting a 1938 tick from
+    3.07 to 1.61 ms;
+  - routing the supply flood through a shared neighbour helper made it 3.3× slower (33 vs
+    9.6 ms), so it stays inline, with a comment explaining why.
+- **SPEC drift:** the system order now follows SPEC §2.5 (production/economy, supply, movement,
+  combat, territory). Before, movement ran last.
+- **Debt:**
+  - dead `TemplateRule.strength` removed (the production test now asserts the template's men total
+    and the produced division's elements);
+  - one `neighbours4` helper in nav/grid replaces copies in the province graph, territory and
+    component labelling;
+  - shared test helpers `tests/helpers/sim1938.ts` (`nationId`, `addDivision`) replace copies in
+    the combat, territory, supply and movement tests.
+- **Missing tests added** (`tests/unit/elements.test.ts`):
+  - strength = Σ elements, no orphans, the derived index equals the table, through battle,
+    attrition, removal and load into a live sim;
+  - destroying a formation removes its elements and emits one event.

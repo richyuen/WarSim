@@ -1,0 +1,78 @@
+import { describe, expect, it } from 'vitest';
+import { cellOf } from '../../src/sim/data/terrain';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { destroyFormation, elementIndex } from '../../src/sim/systems/elements';
+import type { World } from '../../src/sim/world';
+import { assets1938 } from '../helpers/earth';
+import { addDivision, nationId } from '../helpers/sim1938';
+
+// Review pass after PLAN 1.10–1.14: invariants of the element table (SPEC §3.6): a formation's
+// strength is always the sum of its elements; no element outlives its formation; the derived
+// element index matches the table after any mix of battle, attrition, removal and load.
+
+const W = SIZE_1938.w;
+
+function checkInvariants(w: World): void {
+  const units = w.rules!.units;
+  const ec = w.elements.cols;
+  const fresh = new Map<number, number[]>();
+  w.elements.forEach((e) => {
+    expect(w.formations.has(ec.formation[e]!)).toBe(true); // no orphans
+    expect(ec.strength[e]!).toBeGreaterThan(0); // dead elements are removed
+    const list = fresh.get(ec.formation[e]!) ?? [];
+    list.push(e);
+    fresh.set(ec.formation[e]!, list);
+  });
+  const idx = elementIndex(w);
+  for (const [f, list] of fresh) {
+    expect(idx.get(f)).toEqual(list);
+    const men = Math.round(list.reduce((s, e) => s + ec.strength[e]! * units[ec.unit[e]!]!.menPerUnit, 0));
+    expect(w.formations.cols.strength[f]).toBe(men);
+  }
+}
+
+describe('element invariants (review after PLAN 1.14)', () => {
+  it('hold through battle, encirclement attrition, removal and save/load', () => {
+    const s = new Sim({ scenario: '1938', seed: 21, assets: assets1938(W) });
+    const w = s.world;
+    checkInvariants(w); // the 1938 start
+    const [x, y] = cellOf(30.0, 50.0, W, H());
+    const GER = nationId('GER');
+    const POL = nationId('POL');
+    w.wars.set(GER, POL, true);
+    const a = addDivision(w, GER, Math.floor(x) + 0.5, Math.floor(y) + 0.5);
+    addDivision(w, POL, Math.floor(x) + 1.5, Math.floor(y) + 0.5);
+    addDivision(w, POL, Math.floor(x) + 1.5, Math.floor(y) + 1.2);
+    s.step(24 * 3); // fighting, out of supply far from home
+    checkInvariants(w);
+    s.command({ kind: 'removeFormation', id: a });
+    s.step(1);
+    expect(elementIndex(w).has(a)).toBe(false);
+    checkInvariants(w);
+    const t = new Sim({ scenario: '1938', seed: 3, assets: assets1938(W) });
+    t.step(1);
+    t.load(s.save());
+    checkInvariants(t.world);
+    t.step(24);
+    checkInvariants(t.world);
+    expect(t.hash()).toBe((s.step(24), s.hash()));
+  });
+
+  it('destroying a formation removes its elements and emits one FormationDestroyed', () => {
+    const s = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
+    const w = s.world;
+    const before = w.elements.count;
+    const id = w.formations.ids()[0]!;
+    const n = elementIndex(w).get(id)!.length;
+    w.out.events.length = 0;
+    destroyFormation(w, id);
+    expect(w.elements.count).toBe(before - n);
+    expect(w.out.events.length).toBe(6);
+    checkInvariants(w);
+  });
+});
+
+function H(): number {
+  return SIZE_1938.h;
+}

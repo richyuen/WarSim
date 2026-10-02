@@ -5,12 +5,12 @@ import { Sim } from '../../src/sim/sim';
 import { blocOf, refreshSupplyNetwork } from '../../src/sim/systems/supply';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
+import { nationId } from '../helpers/sim1938';
 
 // PLAN 1.12 supply v1. AT: an encircled formation's supply → 0 within a day and it attrits.
 
 const W = SIZE_1938.w;
 const H = SIZE_1938.h;
-const nationId = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const INF = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
 const cellAt = (lon: number, lat: number): number => {
   const [x, y] = cellOf(lon, lat, W, H);
@@ -109,6 +109,7 @@ describe('supply v1 (PLAN 1.12)', () => {
     s.step(24);
     expect(s.world.formations.cols.supply[id]).toBe(0);
     s.world.cells.controller.set(before);
+    s.world.supplyDirty = true; // raw layer writes must notify (setController does)
     s.step(24);
     expect(s.world.formations.cols.supply[id]).toBe(1);
   });

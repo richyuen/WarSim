@@ -3,6 +3,7 @@ import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_LAND, ECONOMY_TABLES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { MANPOWER_CAP_SHARE, MANPOWER_MONTHLY_RATE, monthlyAccounts, runEconomyMonth, UPKEEP_SCALE } from '../../src/sim/systems/economy';
+import { elementIndex } from '../../src/sim/systems/elements';
 import { productionSystem, queueFormation, spawnPoint } from '../../src/sim/systems/production';
 import { assets1938 } from '../helpers/earth';
 
@@ -53,7 +54,8 @@ describe('production (PLAN 1.10 AT)', () => {
     const fid = spawned[0]![2]!;
     expect(w.formations.cols.nation[fid]).toBe(GER);
     expect(w.formations.cols.template[fid]).toBe(INF);
-    expect(w.formations.cols.strength[fid]).toBe(rule.strength);
+    expect(w.formations.cols.strength[fid]).toBe(ECONOMY_TABLES_1938.templateStrength[INF]); // full template men
+    expect(elementIndex(w).get(fid)?.length).toBe(TEMPLATES_LAND[INF]!.elements.reduce((n, e) => n + e.count, 0)); // equipped
     expect([w.formations.cols.x[fid], w.formations.cols.y[fid]]).toEqual([nc.capitalX[GER], nc.capitalY[GER]]);
     // Day 90 is 1 April: production runs before the economy, so the new division already pays its
     // first month of upkeep. The twin is richer by exactly the order cost plus that upkeep.

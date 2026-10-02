@@ -66,6 +66,22 @@ export function applyLoss(world: World, id: number, units: number): number {
   return whole;
 }
 
+/**
+ * Removes the share `fraction` of a formation's strength: from every element (with carried
+ * fractions) when it has elements, else from its bare strength. Used by attrition and desertion,
+ * so strength stays the sum of the elements.
+ */
+export function bleedFormation(world: World, fid: number, fraction: number): void {
+  const els = elementIndex(world).get(fid);
+  if (!els) {
+    const c = world.formations.cols;
+    c.strength[fid] = Math.floor(c.strength[fid]! * (1 - fraction));
+    return;
+  }
+  for (const e of els) applyLoss(world, e, world.elements.cols.strength[e]! * fraction);
+  settleFormation(world, fid);
+}
+
 /** Removes dead elements of `fid`, recomputes strength; destroys the formation if none remain. */
 export function settleFormation(world: World, fid: number): void {
   const list = elementIndex(world).get(fid);

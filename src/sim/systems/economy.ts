@@ -23,6 +23,7 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { pow } from '../core/dmath';
 import type { World } from '../world';
+import { bleedFormation } from './elements';
 
 /** `cells.econ` unit: millions of 1990 $ (GDP per year, industrial-weighted). */
 export const ECON_PER_BN = 1000;
@@ -139,6 +140,6 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
     if (nc.bankrupt[n] === 1) deserting[n] = 1;
   });
   world.formations.forEach((id) => {
-    if (deserting[fc.nation[id]!]) fc.strength[id] = Math.floor(fc.strength[id]! * (1 - DESERTION));
+    if (deserting[fc.nation[id]!]) bleedFormation(world, id, DESERTION); // through the elements
   });
 }

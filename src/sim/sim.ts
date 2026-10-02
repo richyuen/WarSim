@@ -30,8 +30,9 @@ export class Sim {
         if (!init.assets) throw new Error("scenario '1938' needs its map assets");
         this.world = createWorld1938(init.seed, init.assets);
         this.world.rules = RULES_1938;
-        // SPEC §2.5 order: production and economy (3), supply (4), movement.
-        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, combatSystem, territorySystem, movementSystem];
+        // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
+        // engagement and combat (8), territory (9).
+        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, movementSystem, combatSystem, territorySystem];
         break;
     }
   }

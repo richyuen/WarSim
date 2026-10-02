@@ -77,13 +77,12 @@ export const RULES_1938: ScenarioRules = {
     piercing: u.stats.piercing,
     hpPerUnit: u.stats.hpPerUnit,
   })),
-  templates: TEMPLATES_LAND.map((t, i) => ({
+  templates: TEMPLATES_LAND.map((t) => ({
     ...templateMobility(t),
     elements: t.elements.map((e) => ({ unit: unitIndex.get(e.type)!, count: e.count })),
     gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitCost.get(e.type)!.gold * e.count, 0),
     manpower: t.elements.reduce((s, e) => s + unitCost.get(e.type)!.manpower * e.count, 0),
     days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitCost.get(e.type)!.days)),
-    strength: ECONOMY_TABLES_1938.templateStrength[i]!,
   })),
 };
 const traitManpower = new Map((traitsJson.traits as { id: string; modifiers: { manpower?: number } }[]).map((t) => [t.id, t.modifiers.manpower ?? 0]));

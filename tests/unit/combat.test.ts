@@ -3,20 +3,19 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
-import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
-import { destroyFormation, elementIndex, equipFormation } from '../../src/sim/systems/elements';
+import { destroyFormation, elementIndex } from '../../src/sim/systems/elements';
 import { FIRE_STRIDE, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
+import { addDivision, nationId } from '../helpers/sim1938';
 
 // PLAN 1.13 engagement + element combat v1. AT: Lanchester sanity (2:1 force wins with the
 // expected loss ratio ±20%); terrain defence matters; FireEvents carry valid ids.
 
 const W = SIZE_1938.w;
 const H = SIZE_1938.h;
-const nationId = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
-const INF = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
 const GER = nationId('GER');
 const POL = nationId('POL');
 
@@ -29,17 +28,7 @@ function emptyWar(seed = 1): Sim {
   return s;
 }
 
-function spawn(world: World, nation: number, x: number, y: number): number {
-  const id = world.formations.create();
-  const c = world.formations.cols;
-  c.nation[id] = nation;
-  c.template[id] = INF;
-  c.x[id] = x;
-  c.y[id] = y;
-  c.supply[id] = 1;
-  equipFormation(world, id, INF);
-  return id;
-}
+const spawn = (world: World, nation: number, x: number, y: number): number => addDivision(world, nation, x, y);
 
 /** Paints a 7×7 block of cells around (x, y) with one terrain. */
 function paint(world: World, x: number, y: number, t: number): void {

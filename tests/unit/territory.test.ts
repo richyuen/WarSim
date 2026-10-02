@@ -2,12 +2,13 @@ import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
-import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { destroyFormation, equipFormation } from '../../src/sim/systems/elements';
+import { destroyFormation } from '../../src/sim/systems/elements';
 import { frontierOf, HOLD_TICKS, territorySystem } from '../../src/sim/systems/territory';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
+import { addDivision, nationId } from '../helpers/sim1938';
 
 // PLAN 1.14 territory pressure + frontier-set flips + connectivity rule. AT: a front advances
 // like a wave (cells flipped per day within a band); no "teleport" flips behind a defended line;
@@ -15,8 +16,6 @@ import { assets1938 } from '../helpers/earth';
 
 const W = SIZE_1938.w;
 const H = SIZE_1938.h;
-const nationId = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
-const INF = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
 const GER = nationId('GER');
 const POL = nationId('POL');
 const [X0, Y0] = cellOf(30.0, 50.0, W, H).map(Math.floor) as [number, number];
@@ -39,17 +38,8 @@ function block(seed = 1): Sim {
   return s;
 }
 
-function spawn(world: World, nation: number, x: number, y: number): number {
-  const id = world.formations.create();
-  const c = world.formations.cols;
-  c.nation[id] = nation;
-  c.template[id] = INF;
-  c.x[id] = x + 0.5;
-  c.y[id] = y + 0.5;
-  c.supply[id] = 1;
-  equipFormation(world, id, INF);
-  return id;
-}
+/** A division centred in cell (x, y). */
+const spawn = (world: World, nation: number, x: number, y: number): number => addDivision(world, nation, x + 0.5, y + 0.5);
 
 const gerCells = (w: World): number => {
   let n = 0;

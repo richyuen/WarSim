@@ -6,7 +6,7 @@
  * province), so it is rebuilt identically after a load and never saved.
  */
 import { Terrain } from '../../shared/terrain';
-import { boundKm, findPath, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type PathResult } from './grid';
+import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type PathResult } from './grid';
 
 export interface ProvinceGraph {
   /** Node per cell (0 = none: water or province-less land). */
@@ -39,7 +39,7 @@ export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceG
     nodeOf[c] = id;
     while (stack.length) {
       const k = stack.pop()!;
-      for (const m of neighbours4(g, k)) {
+      for (const m of neighbours4g(g, k)) {
         if (g.terrain[m] === Terrain.Crossing && nodeOf[m] === 0) {
           nodeOf[m] = id;
           stack.push(m);
@@ -62,7 +62,7 @@ export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceG
     sy[a]! += (c - x) / g.w;
     cnt[a]!++;
     for (let m = 0; m < MOVE_COST.length; m++) costSum[m]![a]! += MOVE_COST[m]![g.terrain[c]!]!;
-    for (const k of neighbours4(g, c)) {
+    for (const k of neighbours4g(g, c)) {
       const b = nodeOf[k]!;
       if (b !== 0 && b !== a) {
         const key = a < b ? a * nodeCount + b : b * nodeCount + a;
@@ -93,17 +93,8 @@ export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceG
   return { nodeOf, nodeCount, centre, meanCost, adj };
 }
 
-function neighbours4(g: NavGrid, c: number): number[] {
-  const x = c % g.w;
-  const y = (c - x) / g.w;
-  const out: number[] = [];
-  if (y > 0) out.push(c - g.w);
-  if (y < g.h - 1) out.push(c + g.w);
-  if (x > 0) out.push(c - 1);
-  else if (g.wrapX) out.push(c + g.w - 1);
-  if (x < g.w - 1) out.push(c + 1);
-  else if (g.wrapX) out.push(c - g.w + 1);
-  return out;
+function neighbours4g(g: NavGrid, c: number): number[] {
+  return neighbours4(c, g.w, g.h, g.wrapX, []);
 }
 
 /** Coarse A* over nodes; returns the node sequence or null. */

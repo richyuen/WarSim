@@ -18,6 +18,7 @@
  * cannot matter and a front advances at most one cell per HOLD_TICKS: a wave.
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
+import { neighbours4 } from '../nav/grid';
 import type { World } from '../world';
 import { blocOf } from './supply';
 
@@ -28,15 +29,7 @@ export const HOLD_TICKS = 16;
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 
 function neighbours(world: World, c: number, out: number[]): number[] {
-  const { w, h } = world.cells;
-  const x = c % w;
-  const y = (c - x) / w;
-  out.length = 0;
-  if (y > 0) out.push(c - w);
-  if (y < h - 1) out.push(c + w);
-  out.push(x > 0 ? c - 1 : c + w - 1);
-  out.push(x < w - 1 ? c + 1 : c - w + 1);
-  return out;
+  return neighbours4(c, world.cells.w, world.cells.h, true, out);
 }
 
 const scratch: number[] = [];
