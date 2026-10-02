@@ -80,7 +80,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: a queued division appears after N days at the capital with cost deducted.
 - [x] 1.11 Land movement: coarse nav graph (province adjacency + CROSSING) + cell-level A*, mobility × terrain costs, slotted poses.
   AT: a path test across the Alps is slower than across the plains; a formation never enters water except via crossing.
-- [ ] 1.12 Supply v1: from capital/cities through the controlled network; attrition when cut.
+- [x] 1.12 Supply v1: from capital/cities through the controlled network; attrition when cut.
   AT: an encircled formation's supply → 0 within a day and it attrits.
 - [ ] 1.13 Engagement + element combat v1 (§5.2) for inf/art/AT/AA.
   AT: Lanchester sanity tests (2:1 force wins with expected loss ratio ±20%); terrain defence matters; FireEvents emitted with valid ids.

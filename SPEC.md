@@ -163,7 +163,7 @@ proleptic Gregorian, so 1938 = 8760 ticks and 1940 = 8784 (`src/shared/calendar.
  1. apply queued commands (sorted by arrival seq)
  2. AI: operational (every 6h, staggered by nation id), strategic & nuclear (daily, staggered)
  3. production / research (daily) · economy (monthly on day 1, 00:00)
- 4. supply network refresh (daily) · supply consumption (hourly)
+ 4. supply network refresh (every 6 h) · supply consumption (hourly)
  5. air: mission scheduling, sorties, air combat, bombing
  6. naval: movement, detection, fleet battles, blockade/convoy/raid
  7. land movement (formations along paths; slotted element poses implied)
@@ -436,6 +436,16 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 ---
 
 ## 4. Territory, fronts and the strategic layer
+
+**Supply v1 (PLAN 1.12, ADR-25; `src/sim/systems/supply.ts`).**
+- *Blocs:* a nation and its puppets (`nations.overlord`) share one supply bloc, the overlord's id.
+- *Network* (every 6 h): sources are cities a bloc member owns and controls. A 4-connected flood
+  spreads over cells the bloc controls and over unclaimed crossing lanes. `cells.supply` holds the
+  bloc that reached each cell. The layer is state, so a load between refreshes is exact. A refresh
+  takes well under 60 ms at M.
+- *Formations* (hourly): on their own bloc's network, supply rises by 1/8 per hour towards 1;
+  off it, it falls by 1/8 towards 0. At 0 a formation loses (2% + terrain `supplyAttrition`) of its
+  strength per day, applied hourly. An encircled division is dry within 8–14 h.
 
 **Land movement (PLAN 1.11, ADR-24; `src/sim/nav/`, `src/sim/systems/movement.ts`).**
 - *Grid:* the true km per cell row comes from the Miller geometry. Move cost per [mobility][terrain]

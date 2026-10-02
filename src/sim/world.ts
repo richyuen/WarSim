@@ -38,6 +38,8 @@ export const NATION_SCHEMA = {
   manpower: 'f64',
   /** Multiplier on manpower growth from traits (1 = none). */
   manpowerMult: 'f64',
+  /** Overlord nation id (0 = independent); puppets share their overlord's supply bloc. */
+  overlord: 'u16',
 } as const;
 
 /** Production queue rows (PLAN 1.10): one formation in training. */
@@ -81,6 +83,8 @@ export const FORMATION_SCHEMA = {
   /** Index of the last path cell reached, and the fraction of the way to the next one. */
   pathStep: 'u32',
   stepFrac: 'f64',
+  /** Supply level 0..1 (PLAN 1.12). */
+  supply: 'f64',
 } as const;
 
 /** Cities (PLAN 1.5/1.9a). Names and other static facts live in scenario data at `def`. */
@@ -108,6 +112,8 @@ export class CellLayers implements Stateful {
   econ: Uint32Array<ArrayBuffer>;
   /** Population per cell, thousands (PLAN 1.10: manpower). */
   pop: Uint32Array<ArrayBuffer>;
+  /** Supply bloc whose network reaches the cell (0 = none; PLAN 1.12, refreshed every 6 h). */
+  supply: Uint16Array<ArrayBuffer>;
 
   constructor(w: number, h: number) {
     this.w = w;
@@ -118,6 +124,7 @@ export class CellLayers implements Stateful {
     this.province = new Uint16Array(w * h);
     this.econ = new Uint32Array(w * h);
     this.pop = new Uint32Array(w * h);
+    this.supply = new Uint16Array(w * h);
   }
 
   serialize(): Section[] {
@@ -128,6 +135,7 @@ export class CellLayers implements Stateful {
       { name: 'cells.province', dtype: 'u16', data: this.province },
       { name: 'cells.econ', dtype: 'u32', data: this.econ },
       { name: 'cells.pop', dtype: 'u32', data: this.pop },
+      { name: 'cells.supply', dtype: 'u16', data: this.supply },
     ];
   }
 
@@ -139,7 +147,8 @@ export class CellLayers implements Stateful {
     const province = takeSection(sections, 'cells.province', 'u16');
     const econ = takeSection(sections, 'cells.econ', 'u32');
     const pop = takeSection(sections, 'cells.pop', 'u32');
-    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n || pop.length !== n) {
+    const supply = takeSection(sections, 'cells.supply', 'u16');
+    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n || pop.length !== n || supply.length !== n) {
       throw new Error(`cell layers: expected ${n} cells`);
     }
     this.owner = owner.slice();
@@ -148,6 +157,7 @@ export class CellLayers implements Stateful {
     this.province = province.slice();
     this.econ = econ.slice();
     this.pop = pop.slice();
+    this.supply = supply.slice();
   }
 }
 

@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-25 · 2026-10-02 · accepted — Supply v1: city-sourced flood over controlled land, 6-hourly
+**Decision.**
+- Supply is a reachability question: can a formation trace controlled land (or a strait lane) to a
+  city its bloc owns and controls?
+- The network is recomputed every 6 game hours and stored as a cell layer.
+- Formation supply moves by 1/8 per hour, an exact binary step. Attrition at 0 is 2%/day plus
+  terrain.
+- No throughput, depots or consumption yet.
+
+**Why.**
+- AoC has no logistics. Its armies simply cannot hold land beyond the front. WarSim needs
+  encirclement to matter (PLAN 1.12 AT) before combat (1.13) and fronts (1.14) exist, and a
+  reachability flood is the minimum that gives pockets meaning.
+- Six hours keeps cut-off detection inside a day (AT) at a quarter of the hourly cost.
+- Storing the layer makes save/load between refreshes exact without replaying.
+- The 1/12 rate first used left formations at 0.9999… after a refill (float accumulation), which a
+  test caught; 1/8 is exact.
+
 ### ADR-24 · 2026-10-02 · accepted — Hierarchical land navigation; march duty; manoeuvre-element mobility
 **Decision.**
 - Routes are planned on the admin-1 province graph (crossing groups are nodes), then refined by

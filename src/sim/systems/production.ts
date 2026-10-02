@@ -81,6 +81,7 @@ export function productionSystem(world: World): void {
     f.cols.y[fid] = at[1];
     f.cols.template[fid] = t;
     f.cols.strength[fid] = rules.templates[t]!.strength;
+    f.cols.supply[fid] = 1;
     p.remove(id);
     world.out.emit(world.tick, EventKind.FormationSpawned, fid, nation, at[0], at[1]);
   }

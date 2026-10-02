@@ -1047,3 +1047,23 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **e2e:** a Berlin → Munich order run in the worker for 5 days equals the same run in Node (hash).
 - **Perf:** Berlin → Moscow 9 ms, Paris → Rome 1 ms, Lisbon → Khabarovsk 83 ms.
 - **Parity:** row 26 (crossings) → partial; row 25 note updated.
+
+## 2026-10-02 — PLAN 1.12: supply v1 (city-sourced network, encirclement attrition)
+- `src/sim/systems/supply.ts`:
+  - supply blocs (nation + puppets via the new `nations.overlord`, set from the scenario);
+  - a 6-hourly multi-source flood from owned+controlled cities over the bloc's controlled cells and
+    unclaimed crossing lanes, stored in the saved `cells.supply` layer;
+  - hourly formation supply ±1/8 with attrition at 0 (2%/day + terrain `supplyAttrition`).
+- New and spawned formations start at supply 1. System order is now production, economy, supply,
+  movement (SPEC §2.5).
+- Bug found by the tests: a 1/12 hourly rate summed to 0.9999… after a refill. Switched to an
+  exact 1/8.
+- **AT (`tests/unit/supply.test.ts`, 6 tests):**
+  - separate GER and POL networks, with sea unsupplied;
+  - puppets share the overlord's bloc;
+  - an encircled Soviet division (city-free pocket) is at 0 supply within 24 h and attrits (> 8%
+    over 5 more days), while a supplied Polish one is untouched;
+  - relieving the pocket restores supply;
+  - save/load mid-interval is deterministic;
+  - a refresh takes < 60 ms.
+- Parity: additions row 7 (supply and attrition) → partial.

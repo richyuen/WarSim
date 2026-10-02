@@ -198,6 +198,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     n.incomeBonus[id] = def.incomeBonus;
     n.incomeMult[id] = 1 + def.traits.reduce((s, t) => s + (traitIncome.get(t) ?? 0), 0);
     n.manpowerMult[id] = 1 + def.traits.reduce((s, t) => s + (traitManpower.get(t) ?? 0), 0);
+    if (def.overlord) n.overlord[id] = tags.indexOf(def.overlord.tag) + 1;
   });
 
   // Cities keep their index into cities.json (`def`), so names resolve without state.
@@ -230,6 +231,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     f.facing[id] = 0;
     f.template[id] = ti;
     f.strength[id] = menOf[ti]!;
+    f.supply[id] = 1;
   }
 
   // Starting treasury and manpower pool.
