@@ -94,6 +94,7 @@ describe('land movement (PLAN 1.11)', () => {
 
   it('infantry marches ~30 km a day on the plains; armour is faster', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false; // isolate the mechanism from the AI (PLAN 1.24–1.26)
     const inf = spawn(s.world, 'POL', INF, 21.0, 52.23);
     const pz = spawn(s.world, 'POL', PZ, 21.0, 52.0);
     const [tx, ty] = cellOf(16.92, 52.41, W, H);

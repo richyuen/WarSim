@@ -11,7 +11,8 @@
  *             OCCUPIED_SHARE ($M)
  *   gross   = land / 1000 × INCOME_PER_BN × incomeMult × (1 + incomeBonus / 100) × (1 + income buffs)
  *   upkeep  = UPKEEP_SCALE × Σ formation upkeep (template gold upkeep × current / full strength)
- *   admin   = ADMIN_BASE × (cells held / 1000) ^ ADMIN_EXP   (superlinear: anti-hegemon)
+ *   admin   = min(ADMIN_BASE × (cells held / 1000) ^ ADMIN_EXP, ADMIN_CAP_SHARE × gross)
+ *             (superlinear: anti-hegemon; capped so barren land cannot bankrupt a nation)
  *   gold   += gross − upkeep − admin
  *   manpower += MANPOWER_MONTHLY_RATE × manpowerMult × owned population, up to MANPOWER_CAP_SHARE
  *               of it (a pool already above the cap after losing land is kept, not cut)
@@ -35,6 +36,8 @@ export const OCCUPIED_SHARE = 0.5;
 export const UPKEEP_SCALE = 0.35;
 export const ADMIN_BASE = 0.25;
 export const ADMIN_EXP = 1.35;
+/** Admin never exceeds this share of gross income (PLAN 1.26: barren land must not bankrupt). */
+export const ADMIN_CAP_SHARE = 0.5;
 export const BANKRUPT_MONTHS = 3;
 /** Manpower (PLAN 1.10): monthly growth and cap as shares of owned, controlled population. */
 export const MANPOWER_MONTHLY_RATE = 0.0005;
@@ -111,7 +114,7 @@ export function monthlyAccounts(
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;
     gross[n] = (((land[n]! / ECON_PER_BN) * INCOME_PER_BN * nc.incomeMult[n]! * (100 + nc.incomeBonus[n]!)) / 100) * (1 + world.buffs.sum('income', 'nation', n));
-    expenses[n] = upkeep[n]! + adminCost(held[n]!);
+    expenses[n] = upkeep[n]! + Math.min(adminCost(held[n]!), ADMIN_CAP_SHARE * gross[n]!);
   });
   return { gross, expenses, upkeep, held, population };
 }

@@ -70,6 +70,13 @@ function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number 
 type UnitStats = { id: string; class: string; elementSize: number; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number } };
 const UNITS_LAND = unitsLand.types as unknown as UnitStats[];
 const unitIndex = new Map(UNITS_LAND.map((u, i) => [u.id, i]));
+/** Template indices of the economic AI's build mix (PLAN 1.26). */
+export const BUILD_MIX_1938 = {
+  infantry: TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div'),
+  cadre: TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div_cadre'),
+  motorised: TEMPLATES_LAND.findIndex((t) => t.id === 'motorised_div'),
+  panzer: TEMPLATES_LAND.findIndex((t) => t.id === 'panzer_div'),
+};
 export const RULES_1938: ScenarioRules = {
   units: UNITS_LAND.map((u) => ({
     cls: u.class,

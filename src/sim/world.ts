@@ -60,6 +60,8 @@ export const NATION_SCHEMA = {
   /** Strategic AI (PLAN 1.24): aggression 0..100 (scenario; spawned nations get REBEL_AGGRESSION) and God switch-off. */
   aggression: 'u8',
   aiOff: 'u8',
+  /** Formations ordered by the economic AI (PLAN 1.26: build-mix rotation). */
+  builds: 'u32',
   /** Combat efficiency (PLAN 1.22): current value, scenario (static-mode) value, God lock. */
   efficiency: 'f64',
   ceStatic: 'f64',

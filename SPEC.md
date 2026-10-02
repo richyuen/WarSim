@@ -359,7 +359,7 @@ tag → spec.
   - gross = Σ controlled cells (occupied at 50%) / 1000 × 6 gold per bn × trait income ×
     (1 + incomeBonus %);
   - upkeep = 0.35 × template unit upkeep × strength / full strength;
-  - admin = 0.25 × (cells / 1000)^1.35;
+  - admin = 0.25 × (cells / 1000)^1.35, capped at 50% of gross (since PLAN 1.26);
   - gold += gross − upkeep − admin.
 - *Bankruptcy*: gold < −3 × gross. Formations then lose 5% strength per month; recovery at gold
   ≥ 0. Both transitions emit a `Bankruptcy` event.
@@ -815,6 +815,18 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - **Economic AI** (daily): a budget split between army, navy, air, industry, research, nukes,
   revolt suppression and reserve gold. The production mix is adapted to enemies (AT vs armour-heavy
   enemies, fighters when bombed).
+  *Implemented v1 (PLAN 1.26, ADR-38; `src/sim/ai/economic.ts`), monthly, just before the economy
+  charges the month, on projected accounts (gross − upkeep − admin − CE cost − suppression −
+  tribute):*
+  - *Disbanding:* idle divisions go, weakest first, until the balance covers a 5% margin plus
+    debt repaid within a year. Half their men return to the manpower pool.
+  - *Suppression:* 0.5 while held non-core land has unrest ≥ 40 and the budget has room.
+  - *Building:* at most one order a month, none while one is pending. It needs army upkeep under
+    35% of income (60% at war), a positive balance after the new upkeep, and 3 months of income
+    in reserve.
+  - *Build mix:* cadre divisions if income < 20; motorised divisions against armour-heavy
+    enemies (≥ 20% tanks); a panzer division every third order for rich nations (≥ 200) at war;
+    infantry otherwise.
 - **Peace**: settlement by war score. Terms are cells/provinces up to score, puppet creation,
   and white peace. Broke or exhausted nations sue for peace.
 - **Anti-hegemon dynamics** (long-run requirement): administrative cost rises

@@ -1503,3 +1503,39 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     two days.
 - **SPEC drift fixed:** §2.5 implemented order (buffs, both AIs first, efficiency) with costs;
   supply refresh period and partial refresh.
+
+## 2026-10-02 — PLAN 1.26: economic AI v1 (budget split, build mix)
+- **Economic AI** (`src/sim/ai/economic.ts`, monthly, before the economy, on projected
+  accounts):
+  - disbands weakest idle divisions to balance (half their men return);
+  - suppression when held non-core land is restless;
+  - one build a month within army-upkeep shares (35% peace, 60% war) and a 3-month reserve;
+  - build mix: cadre (poor), motorised (vs armour), panzer every third order (rich, at war),
+    infantry.
+  - Nation column `builds`; `BUILD_MIX_1938`.
+- **Economy:** admin cost capped at 50% of gross (ADR-38).
+- **Bugs found:**
+  1. Mongolia's 1938 army costs ~10× its income, and the AI first ran after the economy had
+     already charged the month. Fixed by running before the economy on projected accounts.
+  2. Barren Mongolia was insolvent even with no army (admin 3.8 vs income 0.7). Fixed by the
+     admin cap.
+- **AT (`tests/sweep/econSweep{1,2,3}.test.ts`):** 10 peaceful years (aggression 0, the 1938 wars
+  ended) with no bankruptcy on any seed: 361 orders, 263 disbands, 1,148 formations at the end.
+  ~4 s each, since peace leaves combat, territory and supply idle. The seeds give identical
+  results, because without wars or revolts no seeded draw is taken. Evidence:
+  `docs/evidence/1.26/`.
+- **Unit tests (`tests/unit/economicAi.test.ts`, 5 tests):**
+  - Mongolia disbands before its first month;
+  - infantry vs cadre orders;
+  - motorised against a panzer army;
+  - suppression on restless non-core land;
+  - no actions with the AI off.
+- **War-world sweeps with the economic AI** (10 years, 3 seeds): 0 bankruptcies (was 121–304),
+  261–383 wars, 238–351 peaces, 215–387 revolts, 40–91 capital captures, ~450 production
+  orders; 100–130 s per seed.
+- **Test isolation:**
+  - the economic AI was disbanding test divisions and resetting suppression, so four more
+    pre-AI tests run with the AI off: movement speed, revolt statistics, suppression cost (and
+    its twin), and the earlier three;
+  - the three files that `prettier --write` had reformatted in PLAN 1.25 (no prettier config in
+    the repo: double quotes) are restored to the house style.

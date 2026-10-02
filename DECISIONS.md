@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-38 · 2026-10-02 · accepted — Economic AI on projected accounts; admin cost capped at half of gross
+**Decision.**
+- The economic AI runs before the economy, on projected accounts for the coming month. It
+  disbands to balance, sets suppression, and builds within upkeep shares and reserves.
+- Admin cost is capped at 50% of gross income.
+
+**Why.**
+- The 1938 order of battle gives some nations armies they cannot pay for: Mongolia's upkeep is
+  ~10× its income. Run after the economy, the AI disbanded only after the first month had already
+  bankrupted them. Projecting the month fixes that by construction.
+- Barren giants (Mongolia: 7,488 cells, 0.7 gold income, 3.8 admin) were insolvent with no army
+  at all. The superlinear admin is anti-hegemon pressure on large empires, not a tax on steppe.
+  The cap only binds where admin exceeds half of income; majors (SOV 22%, CHI 4%) are unaffected.
+- Results: 10 peaceful years with no bankruptcy on 3 seeds (the AT). In the war-world sweeps,
+  bankruptcies fall from 121–304 to 0, and wars from ~1,000 to 261–383 per decade.
+
 ### ADR-37 · 2026-10-02 · accepted — Operational AI v1: sector allotment with sticky orders; supply refresh 12 h
 **Decision.**
 - Fronts are cut into 4×4-cell sectors and formations are allotted by threat. Every sector gets
