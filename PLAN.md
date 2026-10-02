@@ -36,7 +36,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `npm run bench` records fps at T0; screenshot at 3 zooms shows smooth, non-blocky borders (viewed + logged).
 - [x] 0.15 Render benchmark B: instanced proxies with GPU interpolation, 10k / 30k sprites; same scene in PixiJS v8.
   AT: bench JSON for both stacks; decision + numbers recorded in DECISIONS (ADR-4 finalised).
-- [ ] 0.16 Camera-relative precision test at close zoom (1 m/px) at lon 179°.
+- [x] 0.16 Camera-relative precision test at close zoom (1 m/px) at lon 179°.
   AT: a Playwright screenshot sequence while panning shows no jitter (sprite positions stable to ≤ 0.5 px across frames, measured via readPixels).
 - [ ] 0.17 Camera controller: wheel/drag/keyboard/touch pinch, continuous z, looping-x wrap rendering.
   AT: e2e drives keys/drag/wheel and asserts camera state; panning past the dateline shows a seamless wrap (screenshot).

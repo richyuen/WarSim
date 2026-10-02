@@ -43,8 +43,20 @@ export interface BenchApi {
   setCamera: (cx: number, cy: number, scale: number) => Promise<void>;
 }
 
+/** One frame of the precision probe (PLAN 0.16, `bench.html?b=P`). */
+export interface PrecisionFrame {
+  expected: [number, number];
+  actual: [number, number] | null;
+}
+
+export interface PrecisionApi {
+  setup: (mode: 'relative' | 'naive', spriteX: number, spriteY: number) => void;
+  frame: (cx: number, cy: number) => PrecisionFrame;
+}
+
 declare global {
   interface Window {
     __bench?: BenchApi;
+    __precision?: PrecisionApi;
   }
 }

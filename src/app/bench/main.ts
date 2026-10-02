@@ -4,6 +4,7 @@ const loaders: Record<string, () => Promise<unknown>> = {
   A: () => import('./benchA'),
   B: () => import('./benchB'),
   BP: () => import('./benchBP'),
+  P: () => import('./precision'),
 };
 const load = loaders[which];
 if (!load) throw new Error(`unknown benchmark ${which}`);

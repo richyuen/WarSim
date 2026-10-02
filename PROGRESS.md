@@ -306,3 +306,20 @@
   (same scene). Visually equivalent; B's mipmapped atlas looks cleaner at small sizes.
 - e2e guards for the B and BP pages run in the gate.
 - Follow-up recorded in ADR-4: move the instance-buffer fill into the worker snapshot builder in Phase 2.
+
+## 2026-10-02 — PLAN 0.16: camera-relative precision at 1 m/px, lon 179°
+- `bench.html?b=P` (`src/app/bench/precision.ts`): the M map (19.57 km per cell) viewed at 1 m/px (19 568 px
+  per cell), with a 40 px red tank sprite at lon 179° (x = 2042.31 cells), drawn by the production
+  `ProxyRenderer` over the `MapRenderer`.
+  - `window.__precision.frame(cx, cy)` renders one frame and returns the f64-expected and measured screen
+    positions. The measurement is a coverage-weighted centroid from `readPixels`.
+  - Two modes: 'relative' (production: integer origin + f32 offsets) and 'naive' (origin 0, absolute f32).
+- `tests/e2e/precision.spec.ts`: 60-frame pan in 0.37 m × 0.21 m steps. Stability = max deviation of
+  (actual − expected) from its mean. Measured: **camera-relative 0.161 px** (≤ 0.5 required) vs naive
+  absolute-f32 1.25 px. The test also requires naive > 4× relative, proving the probe detects f32 loss
+  (ulp at x ≈ 2042 is 2.4 m).
+  - Screenshots `docs/evidence/0.16/precision-relative-{0,40}.png` (viewed: sprite 150 px right of centre as
+    expected).
+- Gotcha: the first probe (thresholded centroid) had ±0.5 px quantisation noise of its own. The weighted
+  centroid then counted the orange map as "red" (0.68 px). Thresholding redness above every map colour fixed
+  it.
