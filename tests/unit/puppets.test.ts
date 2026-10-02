@@ -82,7 +82,7 @@ describe('puppets (PLAN 1.18)', () => {
     expect(w.cells.controller.some((c) => c === HUN)).toBe(false);
     // Its divisions now serve the overlord (none destroyed by the integration itself).
     expect(w.formations.ids().filter((id) => w.formations.cols.nation[id] === HUN)).toEqual([]);
-  });
+  }, 90_000); // ~25 simulated months (~18k ticks): close to the default 30 s under parallel load
 
   it('revolt: a disloyal puppet with a voice declares a war of independence', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });

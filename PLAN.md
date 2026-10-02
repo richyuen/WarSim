@@ -100,7 +100,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: a dead nation revives at most N times, never before cooldown.
 - [x] 1.21 Buffs/debuffs with timers.
   AT: the buff applies and expires exactly at expiresTick.
-- [ ] 1.22 Combat-efficiency modes (dynamic/progressive/static/locked/random).
+- [x] 1.22 Combat-efficiency modes (dynamic/progressive/static/locked/random).
   AT: unit test per mode's evolution.
 - [ ] 1.23 Major Battles + breakthrough corridor.
   AT: a concentration test triggers a Major Battle; the corridor flips cells faster for D days; history entry.

@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 20.6%** (verified 0 · partial 33 · not started 47 · total 80)
+**Parity score: 21.3%** (verified 0 · partial 34 · not started 46 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -45,7 +45,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 27 | Cities and capitals with names | Named cities on land (not mountains or water) give income and revolts; capital is special; cities spawnable; names shown when zoomed in [TEXT+VISUAL 2026-10-02] | Natural Earth populated places + capitals, named, rendered at T1 (PLAN 1.5) | partial | `tests/unit/cities.test.ts`, `tests/e2e/political.spec.ts`, `docs/evidence/1.5/city-names-t1-central-europe.png`, `docs/evidence/1.5/city-names-t1-north-china.png` | 2026-10-02 (PLAN 1.5): 5774 named 1938 cities and 102 capitals; dots from T0, names fade in through T1 with collision culling. Missing: city income/revolts (1.9, 1.19), spawn/remove cities (God Mode/editor) |
 | 28 | Change capital | Change or "Turn into Capital" in editor and game; capital returns to the original city when reclaimed [TEXT 2026-10-02] | God/editor capital change; capital restore on reclaim (PLAN 1.15) | not started |  |  |
 | 29 | Major Battles | v4.3: events that pierce the frontline and swing a section of front; popup animation; God Mode spawns custom ones [TEXT 2026-10-02] | Concentration-triggered Major Battle + breakthrough corridor + God spawn (PLAN 1.23) | not started |  |  |
-| 30 | Combat-efficiency modes | Per-nation CE with modes Random, Progressive, Static, Dynamic (default); CE editable and lockable per nation [TEXT 2026-10-02] | Modes dynamic/progressive/static/locked/random (PLAN 1.22) | not started |  | Baseline lists "locked" as a mode; AoC locks per nation |
+| 30 | Combat-efficiency modes | Per-nation CE with modes Random, Progressive, Static, Dynamic (default); CE editable and lockable per nation [TEXT 2026-10-02] | Modes dynamic/progressive/static/locked/random (PLAN 1.22) | partial | `tests/unit/efficiency.test.ts` | Baseline lists "locked" as a mode; AoC locks per nation 2026-10-02 (PLAN 1.22, ADR-34): all five modes (setting ceMode), per-nation God set and lock, monthly re-evaluation, CE multiplies damage dealt, cost by the dynamic formula. Missing: CE display and editing UI. |
 | 31 | Long-run dynamism | "The world can continue to change for thousands of years"; revolts counter runaway conquest [TEXT 2026-10-02] | Sweep: 10+ seeds × 50 years, no hegemon, borders still moving (SPEC §10, Phase 7) | not started |  |  |
 | 32 | Observer-first play | No required action; the player watches and may intervene; God Mode is "not intended to be a playable mode" [TEXT 2026-10-02] | Observer default; God Mode and nation control optional (Phase 1 UI) | not started |  |  |
 | 33 | God Mode: diplomatic actions | Attack, Peace, Ally, Break alliance, To Death, Revolt (choose nation), Donate, Kill, Puppet/Release; Shift chains actions [TEXT 2026-10-02] | God command set over the command log (Phase 1 God Mode) | not started |  | Baseline: "force war/peace/alliance/collapse" |

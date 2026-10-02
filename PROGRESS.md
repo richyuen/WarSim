@@ -1351,3 +1351,24 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - a province unrest buff adds 10m;
   - removeBuff and save/load.
 - Parity: row 24 → partial.
+
+## 2026-10-02 — PLAN 1.22: combat-efficiency modes
+- **Efficiency system** (`src/sim/systems/efficiency.ts`, monthly after the economy):
+  - dynamic target (peace or war, war score, supply);
+  - modes dynamic, progressive, static (0.8 + aggression/250), locked and random;
+  - God `setEfficiency`/`lockEfficiency`;
+  - cost by the dynamic formula, added to expenses.
+- **Wiring:** CE multiplies damage dealt in combat. `settings.ceMode` is saved in `world.meta`;
+  nation columns efficiency, ceStatic, ceLocked.
+- **AT (`tests/unit/efficiency.test.ts`, 7 tests):**
+  - dynamic: Sweden 0.7 in peace, Germany ≈ 1.0 at war;
+  - progressive: 0.95, 0.90, 0.85, 0.80 over four months;
+  - static: constant scenario values;
+  - locked: all 1.0;
+  - random: within 0.6–1.4, changing, deterministic, per nation;
+  - a God lock holds;
+  - war costs more than peace, and CE 1.2 vs 0.6 deals exactly 2× the damage.
+- **Test budget:** the Hungary integration test (≈ 25 simulated months) ran 23 s alone and timed
+  out at 31 s under parallel load. It now has an explicit 90 s budget, assertions unchanged. The
+  tick profile is unchanged (0.74 ms).
+- Parity: row 30 → partial.

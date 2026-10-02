@@ -15,6 +15,11 @@ export type Command =
   | { kind: 'setSetting'; key: 'winnerTakesAll'; value: boolean }
   /** PLAN 1.19: revolts take one province or a restless region. */
   | { kind: 'setSetting'; key: 'revoltMode'; value: 'province' | 'region' }
+  /** PLAN 1.22: combat-efficiency mode. */
+  | { kind: 'setSetting'; key: 'ceMode'; value: 'dynamic' | 'progressive' | 'static' | 'locked' | 'random' }
+  /** God Mode: set a nation's CE; lock or unlock it (a locked CE never changes). */
+  | { kind: 'setEfficiency'; nation: number; value: number }
+  | { kind: 'lockEfficiency'; nation: number; locked: boolean }
   /** PLAN 1.19: revolt suppression level 0..1 (God Mode / AI budget). */
   | { kind: 'setSuppression'; nation: number; level: number }
   /** God Mode: set a province's unrest 0..100. */

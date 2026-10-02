@@ -9,6 +9,7 @@ import { declareWar, makePeace } from './systems/war';
 import { leaveAlliance } from './systems/alliances';
 import { makePuppet, releasePuppet } from './systems/puppets';
 import { collapseNation, reviveOnCores } from './systems/revival';
+import { MAX_CE, MIN_CE } from './systems/efficiency';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -54,7 +55,14 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     case 'setSetting':
       if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;
-      else world.settings.revoltMode = cmd.value;
+      else if (cmd.key === 'revoltMode') world.settings.revoltMode = cmd.value;
+      else world.settings.ceMode = cmd.value;
+      return;
+    case 'setEfficiency':
+      if (world.nations.has(cmd.nation)) world.nations.cols.efficiency[cmd.nation] = Math.max(MIN_CE, Math.min(MAX_CE, cmd.value));
+      return;
+    case 'lockEfficiency':
+      if (world.nations.has(cmd.nation)) world.nations.cols.ceLocked[cmd.nation] = cmd.locked ? 1 : 0;
       return;
     case 'setSuppression':
       if (world.nations.has(cmd.nation)) world.nations.cols.suppression[cmd.nation] = Math.max(0, Math.min(1, cmd.level));

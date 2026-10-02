@@ -187,7 +187,9 @@ export function combatSystem(world: World): void {
         const atk = TERRAIN_ATK[terrain]![us.cls] ?? 1;
         const def = f.moving[tf] === 1 ? 1 : (TERRAIN_DEF[terrain] ?? 1);
         const bf = world.buffs;
-        const buffAtk = Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
+        // Combat efficiency (PLAN 1.22; 0 = unset, e.g. toy nations, counts as 1).
+        const ce = world.nations.cols.efficiency[f.nation[sf]!] || 1;
+        const buffAtk = ce * Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
         const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
         const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;

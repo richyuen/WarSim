@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-34 · 2026-10-02 · accepted — CE re-evaluated monthly; static CE from aggression; cost from gross income
+**Decision.**
+- Combat efficiency updates at our economic tick, which is monthly; AoC's economic tick is every
+  5 real seconds.
+- Static mode uses 0.8 + aggression/250, because the scenario data has no CE field.
+- The cost is a share of gross income, proportional to CE above the peace level.
+
+**Why.**
+- The economy is monthly (ADR-22), and CE is part of the same budget, so the two tick together.
+- Deriving static CE from aggression is deterministic and makes the mode meaningful without
+  inventing a new data field. One can be added to `nations.json` later without changing the
+  mode logic.
+- Scaling the cost with income ("cost scales with nation size", SPEC §5.3) keeps war expensive
+  for large and small nations alike.
+
 ### ADR-33 · 2026-10-02 · accepted — Finite revival with cooldown; collapse by bankruptcy; AoC's core death rule restored
 **Decision.**
 - Each nation can revive at most 2 times, each no sooner than 2 years after its death, and only on

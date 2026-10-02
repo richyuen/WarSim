@@ -30,6 +30,7 @@ import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, mont
 import { equipFormation } from './systems/elements';
 import { initProvinceCores } from './systems/revolts';
 import { REVIVALS } from './systems/revival';
+import { staticCe } from './systems/efficiency';
 import { LOYALTY_BASE, LOYALTY_PER_AUTONOMY } from './systems/puppets';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import { Mobility } from './nav/grid';
@@ -222,6 +223,8 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
       n.loyalty[id] = LOYALTY_BASE + LOYALTY_PER_AUTONOMY * def.overlord.autonomy;
     }
     n.fightToDeath[id] = def.fightToDeath ? 1 : 0;
+    n.ceStatic[id] = staticCe(def.aggression);
+    n.efficiency[id] = 1;
   });
 
   // Cities keep their index into cities.json (`def`), so names resolve without state.

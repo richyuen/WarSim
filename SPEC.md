@@ -659,6 +659,15 @@ bombardment) participants join through their missions.
 - **random**: per-nation value re-rolled (hash-seeded) every economic tick, the original AoC
   behaviour.
 
+*Implemented v1 (PLAN 1.22, ADR-34; `src/sim/systems/efficiency.ts`):*
+- *Effect and timing:* CE multiplies damage dealt and is re-evaluated monthly after the economy.
+- *Dynamic target:* 0.7 in peace, 1.0 at war, + 0.15 × mean war score/100 − 0.1 × (1 − mean
+  supply), clamped to 0.5–1.5.
+- *Modes:* progressive steps 0.05 a month toward the target; static = 0.8 + aggression/250 (the
+  scenario has no CE field); random re-rolls 0.6–1.4 by hash; locked = 1.
+- *Commands:* God `setEfficiency`/`lockEfficiency`; setting `ceMode` is saved.
+- *Cost:* in every mode, 20% × (CE − 0.7)/0.3 of gross income per month.
+
 ### 5.4 Major Battles
 When total committed strength in a battle exceeds a threshold (relative to the
 local front), the battle becomes **Major**. It gets a name (nearest city), a war-banner UI entry
