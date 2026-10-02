@@ -906,3 +906,34 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - Screenshot `docs/evidence/1.8/bottom-bar-paused.png` viewed.
 - **Deviation (ADR-21):** AoC's 1× ≈ 1 month per 0.5 s. Our fixed levels are finer and slower
   because of the hourly tick, and AoC pace needs Max (Phase 7 check). Parity row 64 → partial.
+
+## 2026-10-02 — PLAN 1.9a (split from 1.9): the 1938 world boots as sim state
+- **Why the split:** 1.9's AT (a plausible 1938 income ranking) needs the real world in the sim, and
+  no PLAN task booted it (1.27 already assumes it exists). 1.9a is recorded in PLAN; the economy
+  stays 1.9.
+- **World:**
+  - province cell layer;
+  - nations `living`, formations `template`, a new `cities` table (`def` index into cities.json);
+  - all saved and hashed;
+  - `Table.reserve` added, because growth replaces `cols`.
+- **Scenario:** `src/sim/scenario1938.ts` `createWorld1938(seed, assets)` runs `buildPoliticalMap`.
+  `placeCities` now returns each city's `def` index, since names are not unique.
+  `Sim({scenario: '1938', assets})` starts with no systems yet.
+- **Protocol / worker / app:**
+  - `ScenarioId` adds '1938'; `SimInit.assets`; `init {assetBase}`;
+  - the worker loads and verifies the assets, then builds;
+  - `SCENARIO_INFO['1938']` (geometry M, start day); the app takes `?scenario=1938` (default
+    stays toy: the determinism e2e suites use it).
+- **Bugs found and fixed while testing:**
+  1. The builder cached `table.cols` before creating rows. Growth swapped the arrays, so only 15 of
+     102 capitals were recorded. Fixed with `Table.reserve`, with a unit test that `cols` stays
+     stable.
+  2. vitest `toEqual` on 2–15 MB typed arrays took 10–30 s, and timed out once. The tests now compare
+     xxHash / `Buffer.equals`. The sim itself: build 192 ms, hash 10 ms, save 2 ms, load 5 ms.
+- **AT:**
+  - `tests/unit/scenario1938.test.ts`: layers == political map; nations, colours, living flags and
+    capitals; cities and formations from data; deterministic; save/load bit-identical; assets
+    required.
+  - `tests/e2e/boot1938.spec.ts`: worker hash == Node hash; date label 1 January 1938.
+  - Screenshot `docs/evidence/1.9a/app-1938-boot.png` viewed: the full 1938 world in the real app,
+    with the starting armies drawn by the proxy renderer.

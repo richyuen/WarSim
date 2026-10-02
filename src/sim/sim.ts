@@ -6,6 +6,7 @@ import type { Command } from '../shared/commands';
 import type { SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
 import { step, type System } from './tick';
+import { createWorld1938 } from './scenario1938';
 import { createToyWorld, TOY_SYSTEMS } from './toy';
 import type { World } from './world';
 
@@ -18,6 +19,11 @@ export class Sim {
       case 'toy':
         this.world = createToyWorld(init.seed);
         this.systems = TOY_SYSTEMS;
+        break;
+      case '1938':
+        if (!init.assets) throw new Error("scenario '1938' needs its map assets");
+        this.world = createWorld1938(init.seed, init.assets);
+        this.systems = []; // core systems arrive from PLAN 1.9b on
         break;
     }
   }

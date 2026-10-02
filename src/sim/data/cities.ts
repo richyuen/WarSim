@@ -15,6 +15,8 @@ export interface CityDef {
 }
 
 export interface PlacedCity {
+  /** Index of the city in the input list (cities.json). */
+  def: number;
   name: string;
   /** True position, cells (fractional). */
   x: number;
@@ -33,7 +35,8 @@ export const CITY_SNAP_CELLS = 2;
 export function placeCities(defs: readonly CityDef[], tags: readonly string[], owner: Uint16Array, w: number, h: number): PlacedCity[] {
   const idOf = new Map(tags.map((t, i) => [t, i + 1]));
   const out: PlacedCity[] = [];
-  for (const d of defs) {
+  for (let di = 0; di < defs.length; di++) {
+    const d = defs[di]!;
     const [x, y] = cellOf(d.lonLat[0], d.lonLat[1], w, h);
     const capitalOf = d.capitalOf === undefined ? 0 : (idOf.get(d.capitalOf) ?? 0);
     // A capital belongs to its own nation; other cities to whoever owns the nearest land.
@@ -42,7 +45,7 @@ export function placeCities(defs: readonly CityDef[], tags: readonly string[], o
         ? nearestOwnedCell(owner, capitalOf, x, y, w, h, CITY_SNAP_CELLS)
         : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, CITY_SNAP_CELLS);
     if (cell < 0) continue;
-    out.push({ name: d.name, x, y, cell, size: d.size, owner: owner[cell]!, capitalOf });
+    out.push({ def: di, name: d.name, x, y, cell, size: d.size, owner: owner[cell]!, capitalOf });
   }
   return out;
 }

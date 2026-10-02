@@ -146,3 +146,14 @@ describe('section codec', () => {
     expect(() => decodeSections(bytes.slice(0, bytes.length - 8))).toThrow();
   });
 });
+
+describe('Table.reserve', () => {
+  it('pre-grows so cached columns stay valid through bulk creates', () => {
+    const t = new Table('r', { v: 'u32' } as const, 2);
+    t.reserve(100);
+    const cols = t.cols;
+    for (let i = 0; i < 100; i++) cols.v[t.create()] = i + 1;
+    expect(t.cols).toBe(cols);
+    expect(t.cols.v[100]).toBe(100);
+  });
+});

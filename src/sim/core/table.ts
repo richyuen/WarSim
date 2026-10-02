@@ -61,7 +61,15 @@ export class Table<S extends Schema> {
     this.alive = alive;
   }
 
-  /** Allocates a zeroed row and returns its id. */
+  /**
+   * Ensures room for `rows` more creates without growing. Growth replaces `cols`, so bulk
+   * loaders reserve first and may then hold on to `cols` while creating rows.
+   */
+  reserve(rows: number): void {
+    if (this.highWater + rows > this.capacity) this.grow(this.highWater + rows);
+  }
+
+  /** Allocates a zeroed row and returns its id. Note: may replace `cols` (see `reserve`). */
   create(): number {
     let id: number;
     if (this.freeLen > 0) {

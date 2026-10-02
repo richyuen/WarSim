@@ -43,6 +43,7 @@ export function createToyWorld(seed: number): World {
   for (let n = 1; n <= 2; n++) {
     const id = world.nations.create();
     world.nations.cols.color[id] = colors[n]!;
+    world.nations.cols.living[id] = 1;
     world.nations.cols.capitalX[id] = n === 1 ? TOY_W * 0.25 : TOY_W * 0.75;
     world.nations.cols.capitalY[id] = TOY_H * 0.5;
   }

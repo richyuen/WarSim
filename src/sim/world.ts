@@ -19,6 +19,8 @@ export const NATION_SCHEMA = {
   capitalX: 'f64',
   capitalY: 'f64',
   cells: 'u32',
+  /** 1 = exists on the map; 0 = dead (revivable through cores, PLAN 1.20). */
+  living: 'u8',
 } as const;
 
 export const FORMATION_SCHEMA = {
@@ -27,6 +29,20 @@ export const FORMATION_SCHEMA = {
   y: 'f64',
   facing: 'f64',
   strength: 'u32',
+  /** Index into the scenario's template list (0 for toy formations). */
+  template: 'u16',
+} as const;
+
+/** Cities (PLAN 1.5/1.9a). Names and other static facts live in scenario data at `def`. */
+export const CITY_SCHEMA = {
+  /** Index into the scenario's cities.json. */
+  def: 'u32',
+  x: 'f64',
+  y: 'f64',
+  cell: 'u32',
+  size: 'u8',
+  /** Nation id whose capital this is (0 = none). */
+  capitalOf: 'u16',
 } as const;
 
 /** Per-cell layers (SPEC §3.2), each of length W·H, row-major. */
@@ -36,6 +52,8 @@ export class CellLayers implements Stateful {
   owner: Uint16Array<ArrayBuffer>;
   controller: Uint16Array<ArrayBuffer>;
   terrain: Uint8Array<ArrayBuffer>;
+  /** Admin-1 province id per cell (0 = none; SPEC §3.3). */
+  province: Uint16Array<ArrayBuffer>;
 
   constructor(w: number, h: number) {
     this.w = w;
@@ -43,6 +61,7 @@ export class CellLayers implements Stateful {
     this.owner = new Uint16Array(w * h);
     this.controller = new Uint16Array(w * h);
     this.terrain = new Uint8Array(w * h);
+    this.province = new Uint16Array(w * h);
   }
 
   serialize(): Section[] {
@@ -50,6 +69,7 @@ export class CellLayers implements Stateful {
       { name: 'cells.owner', dtype: 'u16', data: this.owner },
       { name: 'cells.controller', dtype: 'u16', data: this.controller },
       { name: 'cells.terrain', dtype: 'u8', data: this.terrain },
+      { name: 'cells.province', dtype: 'u16', data: this.province },
     ];
   }
 
@@ -58,12 +78,14 @@ export class CellLayers implements Stateful {
     const owner = takeSection(sections, 'cells.owner', 'u16');
     const controller = takeSection(sections, 'cells.controller', 'u16');
     const terrain = takeSection(sections, 'cells.terrain', 'u8');
-    if (owner.length !== n || controller.length !== n || terrain.length !== n) {
+    const province = takeSection(sections, 'cells.province', 'u16');
+    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n) {
       throw new Error(`cell layers: expected ${n} cells`);
     }
     this.owner = owner.slice();
     this.controller = controller.slice();
     this.terrain = terrain.slice();
+    this.province = province.slice();
   }
 }
 
@@ -145,6 +167,7 @@ export class World {
   cells: CellLayers;
   nations = new Table('nations', NATION_SCHEMA, 8);
   formations = new Table('formations', FORMATION_SCHEMA, 128);
+  cities = new Table('cities', CITY_SCHEMA, 16);
   commandLog: LoggedCommand[] = [];
   /** Commands queued since the last tick boundary, applied in seq order at the next tick. */
   pending: PendingCommand[] = [];
@@ -178,7 +201,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations];
+    return [this.core, this.cells, this.nations, this.formations, this.cities];
   }
 
   cellIndex(x: number, y: number): number {

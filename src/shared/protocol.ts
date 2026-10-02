@@ -8,11 +8,22 @@
  */
 import type { Command } from './commands';
 
-export type ScenarioId = 'toy';
+export type ScenarioId = 'toy' | '1938';
+
+/** Decoded map assets a real-map scenario is built from (PLAN 1.9a). */
+export interface ScenarioAssets {
+  admin1Geometry: Uint8Array;
+  /** JSON Admin1Meta[] bytes. */
+  admin1Meta: Uint8Array;
+  /** Terrain raster at the scenario's map size. */
+  terrain: Uint8Array;
+}
 
 export interface SimInit {
   scenario: ScenarioId;
   seed: number;
+  /** Required for '1938'. In the worker, `init` loads them from `assetBase` when absent. */
+  assets?: ScenarioAssets;
 }
 
 /** Ticks per second, or 'max' (as fast as the worker can run). */
@@ -33,7 +44,8 @@ export interface Subscription {
 
 /** Requests that expect a `reply` carry a caller-chosen `reqId`. */
 export type ToWorker =
-  | { type: 'init'; reqId: number; init: SimInit }
+  /** `assetBase`: URL of the map asset directory, for scenarios built from map assets. */
+  | { type: 'init'; reqId: number; init: SimInit; assetBase?: string }
   | { type: 'step'; reqId: number; n: number }
   | { type: 'cmd'; cmd: Command }
   | { type: 'hash'; reqId: number }

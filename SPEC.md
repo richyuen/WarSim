@@ -288,6 +288,18 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   `crossing` (AoC-style land-unit-walkable lanes, editable).
 - **Air zone**: a cluster of about 8–20 provinces. Air superiority is tracked per side per zone.
 
+**Sim boot (PLAN 1.9a).** `Sim({scenario: '1938', seed, assets})` builds the world with
+`createWorld1938` (`src/sim/scenario1938.ts`), which runs `buildPoliticalMap`:
+- cells: owner, controller, terrain and province (saved);
+- nations: id = index + 1, with colour, cells, capital and `living`;
+- cities: `def` → cities.json, plus position, cell, size and capitalOf;
+- formations: from the OOB, with template index and divisional strength.
+
+Static facts (names, traits, templates) are looked up by id from scenario data and are not state.
+The worker fetches and sha256-checks the assets before constructing the Sim (`init {assetBase}`),
+and the app boots it with `?scenario=1938`. The world builds in ~0.2 s at M, saves in 2 ms
+(14.9 MB raw; gzip in PLAN 1.27) and loads in 5 ms.
+
 **Scenario ownership (PLAN 1.3, ADR-16).** `data/scenarios/1938/nations.json` (id = index + 1)
 and `ownership.json` drive `buildOwnership` (`src/sim/data/ownership.ts`), run at load in the worker:
 - each province takes `byProvince[adm1] ?? byCountry[adm0]`;

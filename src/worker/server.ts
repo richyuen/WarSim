@@ -14,8 +14,10 @@ import {
   type Snapshot,
   type Speed,
   type Subscription,
+  type SimInit,
   type ToWorker,
 } from '../shared/protocol';
+import { SCENARIO_GEOMETRY } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
 import { xxhash32View } from '../sim/core/hash';
 import { buildProvinceRaster } from '../sim/data/provinces';
@@ -96,12 +98,11 @@ export class SimServer {
   private handleInner(msg: ToWorker, nowMs: number): void {
     switch (msg.type) {
       case 'init':
-        // A fresh sim always starts paused; the host unpauses explicitly.
-        this.sim = new Sim(msg.init);
-        this.paused = true;
-        this.owed = 0;
-        this.resetStreams();
-        this.reply(msg.reqId);
+        if (msg.init.scenario !== 'toy' && !msg.init.assets) {
+          void this.initWithAssets(msg);
+          break;
+        }
+        this.startSim(msg.init, msg.reqId);
         break;
       case 'step':
         this.advance(msg.n);
@@ -182,6 +183,29 @@ export class SimServer {
         ...(msg.withIds ? { ids: r.ids } : {}),
       };
       this.post({ type: 'provinces', reqId: msg.reqId, result }, msg.withIds ? [r.ids.buffer] : []);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);
+    }
+  }
+
+  /** A fresh sim always starts paused; the host unpauses explicitly. */
+  private startSim(init: SimInit, reqId: number): void {
+    this.sim = new Sim(init);
+    this.paused = true;
+    this.owed = 0;
+    this.resetStreams();
+    this.reply(reqId);
+  }
+
+  /** Real-map scenarios: fetch and verify the map assets, then build the world (PLAN 1.9a). */
+  private async initWithAssets(msg: Extract<ToWorker, { type: 'init' }>): Promise<void> {
+    try {
+      if (!msg.assetBase) throw new Error(`scenario '${msg.init.scenario}' needs assetBase`);
+      const store = new AssetStore(msg.assetBase);
+      const { w } = SCENARIO_GEOMETRY[msg.init.scenario];
+      const [geo, meta, terrain] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w)]);
+      this.startSim({ ...msg.init, assets: { admin1Geometry: geo.bytes, admin1Meta: meta.bytes, terrain: terrain.bytes } }, msg.reqId);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);

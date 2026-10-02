@@ -7,6 +7,8 @@ import { dayOfIso } from './calendar';
 import type { ScenarioId } from './protocol';
 import toyMap from '../../data/maps/toy/map.json' with { type: 'json' };
 import toyScenario from '../../data/scenarios/toy/scenario.json' with { type: 'json' };
+import earthMap from '../../data/maps/earth/map.json' with { type: 'json' };
+import scenario1938 from '../../data/scenarios/1938/scenario.json' with { type: 'json' };
 
 export interface ScenarioGeometry {
   w: number;
@@ -42,8 +44,10 @@ function geometry(map: MapJson, scenario: ScenarioJson): ScenarioGeometry {
 
 export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   toy: geometry(toyMap, toyScenario),
+  '1938': geometry(earthMap, scenario1938),
 };
 
 export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
   toy: { geometry: SCENARIO_GEOMETRY.toy, startDay: dayOfIso(toyScenario.startDate) },
+  '1938': { geometry: SCENARIO_GEOMETRY['1938'], startDay: dayOfIso(scenario1938.startDate) },
 };

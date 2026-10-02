@@ -114,8 +114,10 @@ export class SimClient {
     return r;
   }
 
+  /** Starts a sim; real-map scenarios load their assets in the worker from `data/earth/`. */
   async init(init: SimInit): Promise<SimStatus> {
-    return (await this.status({ type: 'init', init })).status;
+    const assetBase = new URL('data/earth/', document.baseURI).href;
+    return (await this.status({ type: 'init', init, assetBase })).status;
   }
 
   async step(n: number): Promise<SimStatus> {
