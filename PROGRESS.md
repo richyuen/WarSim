@@ -791,3 +791,31 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Renderer artifact:** dashed stair-step lines inside nations are clearly visible in these shots,
   even far from borders. This is the Phase 0 issue queued for PLAN 1.28; it is not label-related.
 - **Parity:** row 27 (cities and capitals with names) → partial. Score 6.9% → 7.5%.
+
+## 2026-10-02 — Step 9 review pass after PLAN 1.1–1.5
+- **Duplication removed:**
+  - The map build chain (province raster → terrain + crossings → islands → ownership → cities)
+    was copy-pasted in the worker, three unit tests and one e2e spec. It is now one pure
+    `buildPoliticalMap` (`src/sim/data/politicalMap.ts`), used by all of them.
+  - The manifest/gunzip helper was duplicated in 7 test files. New `tests/helpers/earth.ts` has
+    `earthAsset`, `earthAdmin1`, `politicalMap1938` (memoised per file) and the typed 1938 data;
+    `tsconfig.node.json` includes `tests/helpers`. The ownership determinism test compares the
+    memoised map with a fresh `buildPoliticalMap` call, so it still checks two independent builds.
+- **Missing tests added:** the PLAN 1.3–1.5 cross-checks had no failing fixtures. `data-schemas.test.ts`
+  gains 5 negative cases (mutated copies of the real data), each asserting its exact message:
+  - mutually exclusive traits;
+  - a puppet of a puppet;
+  - a nation in two alliances or on both sides of a war, and a dead nation in a guarantee;
+  - a capital city with the wrong name, and a living nation without a capital;
+  - ownership naming an unknown tag.
+- **Dead code scan:** no value export in `src/` is referenced nowhere. The exports used only in
+  their own module are documented constants or helpers (`STRAIT_EXTEND_CELLS`, `CITY_SNAP_CELLS`,
+  `forEachCellInRing`), kept as API.
+- **SPEC drift fixed:** the §2.2 layout now lists terrain/ownership/cities/politicalMap, the test
+  layout (perf specs, helpers, fixtures) and the §2.3 protocol (`buildTerrain`, `buildPolitical`
+  and their replies).
+- **Open item, unchanged:** the renderer's dashed stair-line artifact (PLAN 1.28).
+- **Flake found during the review gate:** `precision.spec.ts` timed out once at the 30 s default.
+  It normally takes 25.5 s under SwiftShader, and parallel load pushed it over. Its time budget is
+  now 90 s (`test.setTimeout`); the ≤ 0.5 px assertions are unchanged. Two clean reruns of the
+  full e2e suite took ~36 s.

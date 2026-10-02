@@ -1,38 +1,18 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import straitsJson from '../../data/maps/earth/straits.json';
-import nationsJson from '../../data/scenarios/1938/nations.json';
-import rulesJson from '../../data/scenarios/1938/ownership.json';
-import { decodeAdmin1, type Admin1Meta } from '../../src/shared/admin1';
 import { Terrain } from '../../src/shared/terrain';
 import { xxhash32View } from '../../src/sim/core/hash';
-import { buildOwnership, reconcileIslands, type OwnershipRules } from '../../src/sim/data/ownership';
-import { buildProvinceRaster } from '../../src/sim/data/provinces';
-import { cellOf, loadTerrain, type StraitDef } from '../../src/sim/data/terrain';
+import { buildPoliticalMap } from '../../src/sim/data/politicalMap';
+import { cellOf } from '../../src/sim/data/terrain';
+import { CITIES_1938, earthAdmin1, earthAsset, NATIONS_1938, politicalMap1938, RULES_1938, STRAITS, TAGS_1938 } from '../helpers/earth';
 
 // PLAN 1.3: 1 January 1938 ownership from admin-1 provinces + interwar border regions +
 // occupation. Known places are checked against the historical record (atlas facts as of
 // 1938-01-01: before the Anschluss, Munich, the Vienna Award and the Memel ultimatum).
 
-const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
-const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')) as { assets: { kind: string; path: string; width: number }[] };
-const file = (kind: string, w?: number): Buffer =>
-  gunzipSync(readFileSync(path.join(dir, manifest.assets.find((a) => a.kind === kind && (w === undefined || a.width === w))!.path)));
-const geo = decodeAdmin1(file('admin1-geometry'));
-const meta = JSON.parse(file('admin1-meta').toString('utf8')) as Admin1Meta[];
-const tags = nationsJson.nations.map((n) => n.tag);
+const tags = TAGS_1938;
 /** Dead nations (e.g. Ethiopia, conquered 1936) exist only through their cores and own nothing. */
-const alive = nationsJson.nations.map((n) => (n as { alive?: boolean }).alive !== false);
-const rules = rulesJson as unknown as OwnershipRules;
-
-function build(w: number, h: number) {
-  const pr = buildProvinceRaster(geo, meta, w, h);
-  const { terrain } = loadTerrain(new Uint8Array(file('terrain', w)), w, h, straitsJson.straits as unknown as StraitDef[]);
-  const islands = reconcileIslands(terrain, pr.ids, meta, w, h);
-  return { terrain, islands, ...buildOwnership({ w, h, provinceIds: pr.ids, provinces: meta, terrain, tags, rules }) };
-}
+const alive = NATIONS_1938.map((n) => n.alive !== false);
+const build = (w: number) => politicalMap1938(w);
 
 /** [place, lon, lat, owner, controller (if occupied)] — chosen inland, away from 1-cell borders. */
 const KNOWN: [string, number, number, string, string?][] = [
@@ -119,7 +99,7 @@ const KNOWN: [string, number, number, string, string?][] = [
 ];
 
 describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
-  const r = build(2048, 1024);
+  const r = build(2048);
   const W = 2048;
   const cell = (lon: number, lat: number): number => {
     const [x, y] = cellOf(lon, lat, W, 1024);
@@ -161,7 +141,8 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
 
   it('island territories keep one land cell, and the build is deterministic', () => {
     expect(r.islands).toEqual(expect.arrayContaining(['MLT', 'BMU', 'MDV', 'GIB']));
-    const again = build(2048, 1024);
+    const { geo, meta } = earthAdmin1();
+    const again = buildPoliticalMap({ w: 2048, h: 1024, geo, meta, terrainRaw: new Uint8Array(earthAsset('terrain', 2048)), straits: STRAITS, tags, rules: RULES_1938, cities: CITIES_1938 });
     expect(xxhash32View(again.owner)).toBe(xxhash32View(r.owner));
     expect(xxhash32View(again.controller)).toBe(xxhash32View(r.controller));
   });
@@ -169,7 +150,7 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
 
 describe('1938 ownership at 1024×512', () => {
   it('every living nation still owns land at the small map size', () => {
-    const r = build(1024, 512);
+    const r = build(1024);
     const cells = new Array<number>(tags.length + 1).fill(0);
     for (const v of r.owner) cells[v]!++;
     expect(tags.filter((_, i) => alive[i] && cells[i + 1] === 0)).toEqual([]);

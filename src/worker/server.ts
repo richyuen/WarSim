@@ -24,8 +24,9 @@ import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
-import { placeCities, type CityDef } from '../sim/data/cities';
-import { buildOwnership, reconcileIslands, type OwnershipRules } from '../sim/data/ownership';
+import type { CityDef } from '../sim/data/cities';
+import type { OwnershipRules } from '../sim/data/ownership';
+import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { Sim } from '../sim/sim';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -214,15 +215,21 @@ export class SimServer {
       const t0 = performance.now();
       const store = new AssetStore(msg.assetBase);
       const [geoAsset, metaAsset, terrainAsset] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', msg.w)]);
-      const meta = JSON.parse(new TextDecoder().decode(metaAsset.bytes)) as Admin1Meta[];
-      const pr = buildProvinceRaster(decodeAdmin1(geoAsset.bytes), meta, msg.w, msg.h);
-      const { terrain } = loadTerrain(terrainAsset.bytes, msg.w, msg.h, earthStraits.straits as unknown as StraitDef[]);
-      reconcileIslands(terrain, pr.ids, meta, msg.w, msg.h);
       const tags = nations1938.nations.map((n) => n.tag);
-      const r = buildOwnership({ w: msg.w, h: msg.h, provinceIds: pr.ids, provinces: meta, terrain, tags, rules: ownership1938 as unknown as OwnershipRules });
+      const r = buildPoliticalMap({
+        w: msg.w,
+        h: msg.h,
+        geo: decodeAdmin1(geoAsset.bytes),
+        meta: JSON.parse(new TextDecoder().decode(metaAsset.bytes)) as Admin1Meta[],
+        terrainRaw: terrainAsset.bytes,
+        straits: earthStraits.straits as unknown as StraitDef[],
+        tags,
+        rules: ownership1938 as unknown as OwnershipRules,
+        cities: cities1938.cities as unknown as CityDef[],
+      });
       const cells = new Array<number>(tags.length + 1).fill(0);
       for (const v of r.owner) cells[v]!++;
-      const cities = placeCities(cities1938.cities as unknown as CityDef[], tags, r.owner, msg.w, msg.h).map((c) => ({
+      const cities = r.cities.map((c) => ({
         name: c.name,
         x: c.x,
         y: c.y,

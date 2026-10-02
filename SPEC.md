@@ -74,7 +74,8 @@ src/sim/core/      table.ts (SoA + free lists), sections.ts (typed-array section
 src/sim/systems/   economy, production, supply, movement, engagement, combat,
                    territory, diplomacy, revolts, naval, air, nuclear, buffs, history
 src/sim/ai/        strategic, operational, economic, nuclear
-src/sim/data/      projection.ts (Miller), rasterize.ts, provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet)
+src/sim/data/      projection.ts (Miller), rasterize.ts, provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet),
+                   terrain.ts (crossings), ownership.ts, cities.ts, politicalMap.ts (the whole map build chain)
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
 src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
@@ -89,12 +90,13 @@ tools/             data/, headless/, parity/, bench/, dmath/, eslint/; later soa
 data/              terrain.json, units/, tech/, traits/, buildings/, maps/<id>/map.json, scenarios/<id>/scenario.json
                    (every file validated by tests/unit/data-schemas.test.ts; unknown paths are rejected)
 public/data/       generated map assets + manifest.json (sha256)
-tests/unit, tests/e2e
+tests/unit, tests/e2e (timing specs: *.perf.spec.ts, run after the parallel suite), tests/helpers (shared Node asset/map access), tests/fixtures
 ```
 
 ### 2.3 Worker protocol (`src/shared/protocol.ts`) [ADR-2]
 Main → worker (implemented: init, step, cmd, hash, save, load, speed, pause, subscribe, ack,
-buildProvinces; requests carry a `reqId` and get a `reply`, `provinces` or `error` back):
+buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and get a `reply`, `provinces`,
+`terrain`, `political` or `error` back):
 - `init {init: {scenario, seed}}` (later: scenario bytes/URL, map size, settings). A fresh sim starts paused.
 - `cmd {cmd: Command}`: applied at the next tick boundary, stamped with that tick,
   and appended to `commandLog`.
@@ -102,11 +104,15 @@ buildProvinces; requests carry a `reqId` and get a `reply`, `provinces` or `erro
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`
 - `ack {seq, buffers: ArrayBuffer[]}`: rAF handshake + buffer pool return
 - `buildProvinces {assetBase, w, h, withIds}`: load-time province raster (PLAN 0.19)
+- `buildTerrain {assetBase, w, h}`: terrain raster with crossings (PLAN 1.2)
+- `buildPolitical {assetBase, w, h}`: the 1938 political map via `buildPoliticalMap`: owner,
+  controller, placed cities (PLAN 1.3–1.5). Bench views `?b=T` and `?b=W` use these until the
+  1938 scenario boots in the app.
 - `save`, `load {bytes}`, `requestHistory {filter}`, `requestStats {kind}`
 
 Worker → main:
 - `snapshot {snap}` (transferable; layout in §2.4), `reply {reqId, status: {tick, hash}, bytes?}`,
-  `provinces {reqId, result}`, `error {reqId, message, stack}`; later `history {rows}`, `stats {series}`
+  `provinces | terrain | political {reqId, result}`, `error {reqId, message, stack}`; later `history {rows}`, `stats {series}`
 
 The worker sends **at most one snapshot per ack**. When main is slow, intermediate
 ticks are coalesced: dirty tiles accumulate, and events stay in a ring with a

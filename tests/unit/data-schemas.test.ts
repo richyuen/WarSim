@@ -121,3 +121,56 @@ describe('invalid data fails with readable paths (PLAN 1.1)', () => {
     expect(validateFile('misc/notes.json', {})[0]).toMatch(/^misc\/notes\.json: no schema matches this path/);
   });
 });
+
+describe('scenario cross-checks catch broken nation, diplomacy, city and ownership data (PLAN 1.3–1.5)', () => {
+  type Nations = { nations: { tag: string; traits: string[]; overlord?: { tag: string; autonomy: number }; capital: { name: string } }[] };
+  type Dip = { alliances: { members: string[] }[]; wars: { attackers: string[]; defenders: string[] }[]; guarantees: { guarantor: string; target: string }[] };
+  type Cities = { cities: { name: string; capitalOf?: string }[] };
+  const base = 'scenarios/1938/';
+  const withEdits = (edit: (f: { n: Nations; d: Dip; c: Cities; o: { byCountry: Record<string, string | null> } }) => void): string[] => {
+    const f = {
+      n: structuredClone(data[`${base}nations.json`]) as Nations,
+      d: structuredClone(data[`${base}diplomacy.json`]) as Dip,
+      c: structuredClone(data[`${base}cities.json`]) as Cities,
+      o: structuredClone(data[`${base}ownership.json`]) as { byCountry: Record<string, string | null> },
+    };
+    edit(f);
+    return validateDataSet({ ...data, [`${base}nations.json`]: f.n, [`${base}diplomacy.json`]: f.d, [`${base}cities.json`]: f.c, [`${base}ownership.json`]: f.o });
+  };
+  const idx = (n: Nations, tag: string): number => n.nations.findIndex((x) => x.tag === tag);
+
+  it('mutually exclusive traits', () => {
+    const e = withEdits(({ n }) => n.nations[idx(n, 'GER')]!.traits.push('pacifist'));
+    expect(e).toContain(`${base}nations.json: nations[${idx(data[`${base}nations.json`] as Nations, 'GER')}].traits: 'militarist' excludes 'pacifist'`);
+  });
+
+  it('puppets of puppets', () => {
+    const e = withEdits(({ n }) => (n.nations[idx(n, 'MAN')]!.overlord = { tag: 'CAN', autonomy: 10 }));
+    expect(e.some((m) => m.endsWith("overlord.tag: 'CAN' is itself a puppet"))).toBe(true);
+  });
+
+  it('a nation in two alliances, on both sides of a war, or a dead nation in diplomacy', () => {
+    const e = withEdits(({ d }) => {
+      d.alliances[1]!.members.push('GER');
+      d.wars[0]!.defenders.push('NSP');
+      d.guarantees.push({ guarantor: 'ETH', target: 'ITA' });
+    });
+    expect(e.some((m) => /alliances\[1\]\.members\[\d+\]: 'GER' is already in 'anti_comintern'/.test(m))).toBe(true);
+    expect(e.some((m) => /wars\[0\]\.defenders\[\d+\]: 'NSP' is on both sides/.test(m))).toBe(true);
+    expect(e.some((m) => /guarantees\[\d+\]\.guarantor: 'ETH' is not alive/.test(m))).toBe(true);
+  });
+
+  it('a capital city with the wrong name, or a living nation without one', () => {
+    const e = withEdits(({ c }) => {
+      c.cities.find((x) => x.capitalOf === 'GER')!.name = 'Bonn';
+      delete c.cities.find((x) => x.capitalOf === 'POL')!.capitalOf;
+    });
+    expect(e.some((m) => m.endsWith("is not GER's capital 'Berlin'"))).toBe(true);
+    expect(e.some((m) => /no capital city for nations\[\d+\] 'POL'/.test(m))).toBe(true);
+  });
+
+  it('ownership that names an unknown nation', () => {
+    const e = withEdits(({ o }) => (o.byCountry['DEU'] = 'XXX'));
+    expect(e).toContain(`${base}ownership.json: byCountry.DEU: unknown nation 'XXX'`);
+  });
+});

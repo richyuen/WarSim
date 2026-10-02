@@ -1,37 +1,21 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import straitsJson from '../../data/maps/earth/straits.json';
 import diplomacyJson from '../../data/scenarios/1938/diplomacy.json';
-import nationsJson from '../../data/scenarios/1938/nations.json';
-import rulesJson from '../../data/scenarios/1938/ownership.json';
-import { decodeAdmin1, type Admin1Meta } from '../../src/shared/admin1';
 import { deltaE, parseHex, rgbToLab } from '../../src/shared/color';
-import { buildOwnership, nearestOwnedCell, reconcileIslands, type OwnershipRules } from '../../src/sim/data/ownership';
-import { buildProvinceRaster } from '../../src/sim/data/provinces';
-import type { NationDef } from '../../src/sim/data/schemas';
-import { cellOf, loadTerrain, type StraitDef } from '../../src/sim/data/terrain';
+import { nearestOwnedCell } from '../../src/sim/data/ownership';
+import { cellOf } from '../../src/sim/data/terrain';
+import { earthAdmin1, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
 
 // PLAN 1.4: ≥ 100 nations incl. colonies/dominions as puppets, with traits, aggression, cores,
 // capitals and alliances. AT: schema pass (data-schemas.test.ts), every nation's capital lies in
 // its own territory, and neighbouring nations differ in colour by ΔE > 15.
 
-const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
-const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')) as { assets: { kind: string; path: string; width: number }[] };
-const file = (kind: string, w?: number): Buffer =>
-  gunzipSync(readFileSync(path.join(dir, manifest.assets.find((a) => a.kind === kind && (w === undefined || a.width === w))!.path)));
-const meta = JSON.parse(file('admin1-meta').toString('utf8')) as Admin1Meta[];
-const nations = nationsJson.nations as unknown as NationDef[];
-const tags = nations.map((n) => n.tag);
+const { meta } = earthAdmin1();
+const nations = NATIONS_1938;
+const tags = TAGS_1938;
 const living = nations.filter((n) => n.alive !== false);
 const W = 2048;
 const H = 1024;
-
-const pr = buildProvinceRaster(decodeAdmin1(file('admin1-geometry')), meta, W, H);
-const { terrain } = loadTerrain(new Uint8Array(file('terrain', W)), W, H, straitsJson.straits as unknown as StraitDef[]);
-reconcileIslands(terrain, pr.ids, meta, W, H);
-const { owner } = buildOwnership({ w: W, h: H, provinceIds: pr.ids, provinces: meta, terrain, tags, rules: rulesJson as unknown as OwnershipRules });
+const { owner } = politicalMap1938(W);
 
 describe('1938 nations (PLAN 1.4)', () => {
   it('has at least 100 living nations, colonies and dominions among them as puppets', () => {

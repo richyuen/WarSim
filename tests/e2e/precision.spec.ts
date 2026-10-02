@@ -28,6 +28,9 @@ async function panSequence(page: Page, mode: 'relative' | 'naive', shotDir?: str
 }
 
 test('sprite positions are stable to ≤ 0.5 px while panning at 1 m/px at lon 179°', async ({ page }, info) => {
+  // Hundreds of sequential frames take ~25 s under SwiftShader, close to the 30 s default, so
+  // contention from parallel workers timed it out once (2026-10-02). Only the time budget changes.
+  test.setTimeout(90_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/bench.html?b=P');

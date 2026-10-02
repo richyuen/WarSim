@@ -1,38 +1,16 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import straitsJson from '../../data/maps/earth/straits.json';
-import citiesJson from '../../data/scenarios/1938/cities.json';
-import nationsJson from '../../data/scenarios/1938/nations.json';
-import rulesJson from '../../data/scenarios/1938/ownership.json';
 import { layoutCityLabels, priorityOrder, type CityPoint } from '../../src/render/labels/cityLabels';
-import { decodeAdmin1, type Admin1Meta } from '../../src/shared/admin1';
-import { placeCities, type CityDef } from '../../src/sim/data/cities';
-import { buildOwnership, reconcileIslands, type OwnershipRules } from '../../src/sim/data/ownership';
-import { buildProvinceRaster } from '../../src/sim/data/provinces';
-import type { NationDef } from '../../src/sim/data/schemas';
-import { loadTerrain, type StraitDef } from '../../src/sim/data/terrain';
+import { CITIES_1938, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
 
 // PLAN 1.5: cities from Natural Earth (1938 names, filtered), every capital is a city of its
 // own nation, and city names appear at T1 without overlapping.
 
-const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
-const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')) as { assets: { kind: string; path: string; width: number }[] };
-const file = (kind: string, w?: number): Buffer =>
-  gunzipSync(readFileSync(path.join(dir, manifest.assets.find((a) => a.kind === kind && (w === undefined || a.width === w))!.path)));
 const W = 2048;
 const H = 1024;
-const nations = nationsJson.nations as unknown as NationDef[];
-const tags = nations.map((n) => n.tag);
-const defs = citiesJson.cities as unknown as CityDef[];
-
-const meta = JSON.parse(file('admin1-meta').toString('utf8')) as Admin1Meta[];
-const pr = buildProvinceRaster(decodeAdmin1(file('admin1-geometry')), meta, W, H);
-const { terrain } = loadTerrain(new Uint8Array(file('terrain', W)), W, H, straitsJson.straits as unknown as StraitDef[]);
-reconcileIslands(terrain, pr.ids, meta, W, H);
-const { owner } = buildOwnership({ w: W, h: H, provinceIds: pr.ids, provinces: meta, terrain, tags, rules: rulesJson as unknown as OwnershipRules });
-const placed = placeCities(defs, tags, owner, W, H);
+const nations = NATIONS_1938;
+const tags = TAGS_1938;
+const defs = CITIES_1938;
+const { owner, cities: placed } = politicalMap1938(W);
 
 describe('1938 cities (PLAN 1.5)', () => {
   it('every living nation has exactly one capital city, in its own territory, named as its capital', () => {
