@@ -39,13 +39,47 @@ which would break determinism.
 elements worst case). Individual positions within an element footprint are
 presentational, and this is documented in SPEC §8.
 
-### ADR-4 · 2026-10-02 · proposed (finalise in PLAN 0.15) — LOD tiers & render stack
-**Decision.** Four tiers T0–T3 over continuous zoom with opacity curves and hysteresis.
-The render stack hypothesis is raw WebGL2 + twgl.js with instanced sprites and GPU
-interpolation; PixiJS v8 is the alternative. Camera-relative f32 coordinates.
-**Why.** The map needs custom shaders (id texture → smooth borders, map modes), which
-are simplest in raw GL. The 10k–30k proxy budget needs instancing without per-sprite JS.
-**Consequences.** Benchmark both in Phase 0 and record the numbers here.
+### ADR-4 · 2026-10-02 · accepted (finalised in PLAN 0.15) — LOD tiers & render stack: raw WebGL2 + twgl.js
+**Decision.**
+- Four tiers T0–T3 over continuous zoom, with opacity curves and hysteresis.
+- Render stack: **raw WebGL2 + twgl.js** (MIT); PixiJS is not used at runtime.
+- Map: one full-screen pass over R16UI owner/controller textures with cubic B-spline indicator
+  smoothing (`src/render/map`).
+- Units: one instanced draw per atlas with GPU prev→cur interpolation (`src/render/units`).
+- Camera-relative f32 coordinates: integer origin + f32 offsets, with the camera offset computed in f64.
+
+**Why.** Measured with `npm run bench` on 2026-10-02 (`docs/bench/*.json`). Setup: RTX 4070 Ti, ANGLE/D3D11,
+1920×1080, vsync off, GPU time from EXT_disjoint_timer_query_webgl2. Pixi rows use a ParticleContainer
+(Pixi's fastest path) with CPU interpolation; the map in the Pixi scene is a pre-rendered texture.
+
+| case | stack | uncapped fps | CPU ms/frame p50 / p95 | GPU ms/frame | GPU ms units only |
+|---|---|---|---|---|---|
+| T0 map, 150 nations | raw | ~5000 | ≈0 | 0.43–0.46 | — |
+| 10k proxies + map | raw | 2957 | 0.00 / 0.10 | 0.41 | 0.016 |
+| 30k proxies + map | raw | 2487 | 0.00 / 0.10 | 0.47 | 0.059 |
+| 10k proxies + map sprite | Pixi 8.22 | 2336 | 0.20 / 1.10 | 0.12 | ≈0.07 (frame − sprite) |
+| 30k proxies + map sprite | Pixi 8.22 | 1412 | 0.40 / 1.40 | 0.32 | ≈0.27 (frame − sprite) |
+
+- Raw instancing with GPU interpolation draws 30k proxies in about 0.06 ms GPU and ~0 ms per-frame CPU.
+  Pixi needs CPU interpolation every frame: 0.4–1.4 ms at 30k on this CPU, likely 1–4 ms on a laptop, which
+  is a large part of the 6 ms main-thread budget. It also spends about 4× more GPU time on the same sprites.
+- The map must use custom integer-texture shaders anyway. In Pixi that means custom Mesh/Shader code with no
+  benefit from the library.
+- twgl adds only thin helpers (uniform setting, program and texture creation), so we keep full control.
+
+**Budget translation (mid-range laptop).** A mid-range laptop iGPU (e.g. Iris Xe) is roughly 15–20× slower
+than the dev GPU. Dev-GPU guards, checked by `npm run bench` in Phase 7:
+- T0 full frame ≤ 1.0 ms GPU at 1080p (now 0.46);
+- T2 frame with 10k proxies ≤ 2.0 ms GPU (now 0.41);
+- per-frame main-thread CPU ≤ 1 ms with 30k proxies (now ≈ 0.1 p95).
+
+Uncapped fps on the dev machine is recorded but is not the budget metric.
+
+**Consequences.**
+- Map modes, occupation hatching and borders live in GLSL.
+- Instance buffers are refilled once per snapshot: 1.2 ms for 30k proxies on the main thread. Phase 2 moves
+  the fill into the worker's snapshot builder (the instance layout becomes part of `shared/protocol`).
+- `pixi.js` stays a devDependency only for the BP benchmark page.
 
 ### ADR-5 · 2026-10-02 · accepted — 1 tick = 1 sim hour; f64 + dmath + PCG32 determinism
 **Decision.** Fixed 1 h tick with staggered AI and daily/monthly subsystems. Fire events carry

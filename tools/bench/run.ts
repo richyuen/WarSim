@@ -35,6 +35,15 @@ const BENCHES: Record<string, BenchSpec> = {
       { name: 'z2-close', cx: 1100.3, cy: 330.7, scale: 48 },
     ],
   },
+  B: {
+    id: 'B',
+    file: 'B-webgl2-proxies',
+    shots: [
+      { name: 'tactical', cx: 1100, cy: 330, scale: 24 },
+      { name: 'close', cx: 1100, cy: 330, scale: 96 },
+    ],
+  },
+  BP: { id: 'BP', file: 'BP-pixi-proxies', shots: [{ name: 'tactical', cx: 1100, cy: 330, scale: 24 }] },
 };
 
 async function waitForServer(url: string, ms: number): Promise<void> {

@@ -5,7 +5,8 @@
 import type { Camera } from '../../render/camera';
 import { GpuTimer } from '../../render/gl/gpuTimer';
 import { MapRenderer } from '../../render/map/MapRenderer';
-import type { BenchAResult, FrameStats } from './benchApi';
+import type { BenchAResult } from './benchApi';
+import { runFrames } from './benchUtil';
 import { makeSyntheticWorld } from './synthetic';
 
 const W = 2048;
@@ -51,31 +52,6 @@ async function measureDraw(n: number): Promise<number> {
   return ms;
 }
 
-function percentile(xs: number[], p: number): number {
-  const s = [...xs].sort((a, b) => a - b);
-  return s[Math.min(s.length - 1, Math.floor(p * s.length))] ?? 0;
-}
-
-function runFrames(seconds: number, perFrame?: () => void): Promise<FrameStats> {
-  return new Promise((resolve) => {
-    const times: number[] = [];
-    let last = -1;
-    const start = performance.now();
-    const loop = (now: number): void => {
-      perFrame?.();
-      frame();
-      if (last >= 0) times.push(now - last);
-      last = now;
-      if (now - start < seconds * 1000) requestAnimationFrame(loop);
-      else {
-        const total = times.reduce((a, b) => a + b, 0) / 1000;
-        resolve({ frames: times.length, seconds: total, fps: times.length / total, frameMsP50: percentile(times, 0.5), frameMsP95: percentile(times, 0.95) });
-      }
-    };
-    requestAnimationFrame(loop);
-  });
-}
-
 async function run(): Promise<BenchAResult> {
   const drawMs: Record<string, number> = {};
   const views: [string, Camera][] = [
@@ -88,7 +64,7 @@ async function run(): Promise<BenchAResult> {
     drawMs[name] = await measureDraw(60);
   }
   cam = views[0]![1];
-  const t0Stats = await runFrames(3);
+  const t0Stats = await runFrames(3, frame);
 
   // Dirty-tile churn: 32 tiles per frame re-uploaded from the source grids.
   const tile = 64;
@@ -110,7 +86,10 @@ async function run(): Promise<BenchAResult> {
       map.updateTile(tx, ty, tile, tOwner, tCtrl, 0);
     }
   };
-  const churnStats = await runFrames(3, churn);
+  const churnStats = await runFrames(3, () => {
+    churn();
+    frame();
+  });
 
   return {
     renderer: rendererName,

@@ -2,6 +2,8 @@
 const which = new URLSearchParams(location.search).get('b') ?? 'A';
 const loaders: Record<string, () => Promise<unknown>> = {
   A: () => import('./benchA'),
+  B: () => import('./benchB'),
+  BP: () => import('./benchBP'),
 };
 const load = loaders[which];
 if (!load) throw new Error(`unknown benchmark ${which}`);

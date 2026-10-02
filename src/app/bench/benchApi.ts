@@ -24,6 +24,19 @@ export interface BenchAResult {
   t0TileChurn: FrameStats & { tilesPerFrame: number };
 }
 
+/** One proxy-count case of benchmark B/BP. */
+export interface ProxyBenchCase extends FrameStats {
+  proxies: number;
+  cpuMsP50: number;
+  cpuMsP95: number;
+  /** GPU ms per full frame (map + units for B; map sprite + particles for BP). */
+  gpuFrameMs: number;
+  /** GPU ms for the unit draw alone (B only). */
+  gpuUnitsMs: number;
+  /** CPU ms per simulated tick: scene step (+ instance fill and upload for B). */
+  tickUploadMsP50: number;
+}
+
 export interface BenchApi {
   ready: Promise<void>;
   run: () => Promise<unknown>;

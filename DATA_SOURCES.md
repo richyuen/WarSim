@@ -20,7 +20,7 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 | Source | What | License | Status | Notes |
 |---|---|---|---|---|
 | Flags (SVG specs) | all nation flags + presets | Our own work | planned (PLAN 1.6) | Germany 1938 = black-white-red tricolour (ADR-10) |
-| Unit/ship/plane sprites | proxy and close-tier sprites | Our own work (procedural/SVG) | planned (Phase 2) | |
+| Unit/ship/plane sprites | proxy and close-tier sprites | Our own work (procedural Canvas2D, `src/render/units/atlas.ts`) | in use (benchmarks); full atlas Phase 2 | |
 
 ## Fonts
 
@@ -34,3 +34,4 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 |---|---|---|
 | preact, @preact/signals | MIT | in use |
 | twgl.js | MIT | in use (WebGL2 helpers, PLAN 0.14) |
+| pixi.js (devDependency) | MIT | benchmark page BP only, not shipped in the game bundle (ADR-4) |

@@ -281,3 +281,28 @@
   - No cell stairs at any zoom. At 48 px/cell the borders are smooth curves (data steps show as gentle waves).
   - Occupation hatching has smooth edges; x-wrap shows land past the map edges.
 - `tests/e2e/bench-pages.spec.ts` keeps the bench page compiling and drawing in the normal gate (SwiftShader).
+
+## 2026-10-02 — PLAN 0.15: render benchmark B (instanced proxies) vs PixiJS v8; ADR-4 finalised
+- `src/render/units/ProxyRenderer.ts`:
+  - One instanced TRIANGLE_STRIP draw per atlas.
+  - Per-instance prev/cur positions (f32 offsets from an integer origin), facing, size, frame, alpha, plus
+    a u8 tint.
+  - The vertex shader interpolates prev→cur with a uniform `uT` and rotates the quad, with a minimum on-screen
+    size.
+- `src/render/units/atlas.ts`: procedural 4-frame atlas (infantry, tank, ship, aircraft) of white silhouettes
+  with dark outlines, mipmapped and tinted per nation.
+- Shared scene: `src/app/bench/proxyScene.ts` (N proxies walking in the tactical view, 10 Hz ticks).
+  - B (`benchB.ts`) draws it with our map + proxies.
+  - BP (`benchBP.ts`) draws it with Pixi 8.22 ParticleContainer + CPU interpolation over a pre-rendered map
+    texture.
+- Frame helpers were factored into `benchUtil.ts`; bench A now uses them too.
+- Results (RTX 4070 Ti, 1080p):
+  - Raw, 30k proxies: 0.059 ms GPU for units, 0.47 ms per full frame, ~0 ms per-frame CPU, 1.2 ms per tick
+    to refill and upload the instance buffer.
+  - Pixi, 30k: ~0.27 ms GPU for units, 0.4/1.4 ms CPU per frame (p50/p95).
+  - Decision: raw WebGL2 + twgl. ADR-4 is accepted, with the table and the dev-GPU budget guards.
+- Screenshots viewed: `docs/bench/B-webgl2-proxies-tactical.png` (30k proxies over the map),
+  `-close.png` (rotated, tinted, outlined sprites, smooth borders beneath) and `BP-pixi-proxies-tactical.png`
+  (same scene). Visually equivalent; B's mipmapped atlas looks cleaner at small sizes.
+- e2e guards for the B and BP pages run in the gate.
+- Follow-up recorded in ADR-4: move the instance-buffer fill into the worker snapshot builder in Phase 2.

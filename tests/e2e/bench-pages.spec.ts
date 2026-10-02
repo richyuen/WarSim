@@ -25,3 +25,16 @@ test('bench A (WebGL2 map) compiles and draws land and water', async ({ page }) 
   expect(colours).toBeGreaterThan(10); // water + many nation colours
   expect(errors).toEqual([]);
 });
+
+for (const b of ['B', 'BP']) {
+  test(`bench ${b} (unit proxies) draws many distinct colours`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(`/bench.html?b=${b}`);
+    await page.waitForFunction(() => window.__bench !== undefined, null, { timeout: 60_000 });
+    await page.evaluate(() => window.__bench!.setCamera(1100, 330, 24));
+    const shot = await page.screenshot();
+    expect(shot.byteLength).toBeGreaterThan(50_000); // a dense, varied image, not a blank canvas
+    expect(errors).toEqual([]);
+  });
+}
