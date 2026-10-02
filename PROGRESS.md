@@ -1310,3 +1310,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - Noted, not changed: the systems war ↔ puppets ↔ capitals ↔ revolts import each other in a
   cycle. They only reference functions at call time (safe in ESM). A shared diplomacy module
   would remove the cycle when the AI (1.24) adds more callers.
+
+## 2026-10-02 — PLAN 1.20: collapse and revival (finite, cooldown) from cores
+- **Cores:** `Provinces.claims` resolves scenario `extraCores` (admin-0/admin-1 codes) at
+  creation; saved. Helpers `coresOf`/`provincesOf`.
+- **Revival** (`src/sim/systems/revival.ts`):
+  - `canRevive` (`revivalsLeft` > 0 and the cooldown passed);
+  - `reviveNation` reuses `spawnRebels` with an existing id;
+  - revolts route to dead claimants;
+  - God `reviveNation` uses all of the nation's cores;
+  - `eliminateNation` starts the 2-year cooldown.
+- **Collapse:** a monthly bankruptcy streak (6 months) or God `collapseNation` frees puppets,
+  revives claimants and turns restless provinces into rebel groups.
+- **Death rule:** capital loss without core land is death (ADR-28's deferral resolved).
+- **New events:** NationRevived, NationCollapsed.
+- **AT (`tests/unit/revival.test.ts`, 7 tests):**
+  - claims resolved (Ethiopia on 6+ Italian provinces, the Soviets on Bessarabia);
+  - Ethiopia revives 2 times. It is rejected right after each death and one hour before the
+    cooldown ends, and accepted exactly at it. The 3rd death is final;
+  - a revolt on Ethiopian land revives Ethiopia;
+  - God collapse of Italy frees Albania, revives Ethiopia and spawns rebels;
+  - 6 bankrupt months collapse Poland;
+  - capital loss with no cores kills Poland;
+  - save/load.
+- Two test-setup mistakes fixed on the way: a missing first command, and a shortcut death that
+  left Ethiopia owning its land.
+- Parity: rows 19 and 20 → partial; row 14 note updated.

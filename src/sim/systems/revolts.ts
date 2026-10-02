@@ -23,6 +23,7 @@ import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { navOf, type World } from '../world';
 import { relocateCapital } from './capitals';
+import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
 import { declareWar } from './war';
 
@@ -46,7 +47,7 @@ const SALT_REVOLT = 0x7e01;
 const SALT_WAR = 0x7e02;
 
 /** Sets each province's core to the owner of its centre cell (scenario creation). */
-export function initProvinceCores(world: World): void {
+export function initProvinceCores(world: World, claims: readonly { nation: number; adm0?: readonly string[]; adm1?: readonly string[] }[] = [], meta: readonly { id: number; adm0: string; adm1: string }[] = []): void {
   const g = navOf(world).graph;
   let max = 0;
   for (let c = 0; c < world.cells.province.length; c++) if (world.cells.province[c]! > max) max = world.cells.province[c]!;
@@ -54,6 +55,12 @@ export function initProvinceCores(world: World): void {
   for (let p = 1; p <= max; p++) {
     const c = g.centre[p] ?? -1;
     if (c >= 0) world.provinces.core[p] = world.cells.owner[c]!;
+  }
+  // Extra cores (scenario `extraCores`: whole countries by admin-0 code, or single provinces).
+  for (const cl of claims) {
+    const a0 = new Set(cl.adm0 ?? []);
+    const a1 = new Set(cl.adm1 ?? []);
+    for (const m of meta) if (m.id <= max && (a0.has(m.adm0) || a1.has(m.adm1))) world.provinces.addClaim(m.id, cl.nation);
   }
 }
 
@@ -95,7 +102,9 @@ export function revoltSystem(world: World): void {
     if (hashToUnit(hash32(world.seed, world.tick, p, SALT_REVOLT)) >= chance) continue;
     const area = revoltArea(world, p, o);
     for (const q of area) revolted[q] = 1;
-    spawnRebels(world, area, o);
+    // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
+    const claimant = deadClaimant(world, p);
+    if (claimant === 0 || !reviveNation(world, claimant, area)) spawnRebels(world, area, o);
   }
 }
 
@@ -118,17 +127,24 @@ function revoltArea(world: World, p: number, holder: number): number[] {
   return area;
 }
 
-/** Creates the rebel nation on `area` (province ids) and returns its id. */
-export function spawnRebels(world: World, area: number[], holder: number): number {
+/**
+ * Creates the rebel nation on `area` (province ids) and returns its id; with `revive`, that dead
+ * nation returns instead (PLAN 1.20, called by `reviveNation`).
+ */
+export function spawnRebels(world: World, area: number[], holder: number, revive = 0): number {
   const nt = world.nations;
-  const id = nt.create();
   const nc = nt.cols;
-  nc.color[id] = rebelColor(world, id);
+  let id = revive;
+  if (id === 0) {
+    id = nt.create();
+    nc.color[id] = rebelColor(world, id);
+    nc.incomeMult[id] = 1;
+    nc.manpowerMult[id] = 1;
+    nc.origin[id] = area[0]!;
+  }
   nc.living[id] = 1;
-  nc.gold[id] = START_GOLD;
-  nc.incomeMult[id] = 1;
-  nc.manpowerMult[id] = 1;
-  nc.origin[id] = area[0]!;
+  nc.bankrupt[id] = 0;
+  nc.gold[id] = Math.max(nc.gold[id]!, START_GOLD);
   const inArea = new Set(area);
   const { owner, province, w } = world.cells;
   let cells = 0;

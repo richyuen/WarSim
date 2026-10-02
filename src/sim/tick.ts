@@ -8,6 +8,7 @@ import { destroyFormation } from './systems/elements';
 import { declareWar, makePeace } from './systems/war';
 import { leaveAlliance } from './systems/alliances';
 import { makePuppet, releasePuppet } from './systems/puppets';
+import { collapseNation, reviveOnCores } from './systems/revival';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -57,6 +58,12 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     case 'setSuppression':
       if (world.nations.has(cmd.nation)) world.nations.cols.suppression[cmd.nation] = Math.max(0, Math.min(1, cmd.level));
+      return;
+    case 'reviveNation':
+      reviveOnCores(world, cmd.nation);
+      return;
+    case 'collapseNation':
+      collapseNation(world, cmd.nation);
       return;
     case 'setUnrest':
       if (cmd.province > 0 && cmd.province < world.provinces.count) world.provinces.unrest[cmd.province] = Math.max(0, Math.min(100, cmd.value));

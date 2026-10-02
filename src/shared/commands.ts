@@ -19,6 +19,9 @@ export type Command =
   | { kind: 'setSuppression'; nation: number; level: number }
   /** God Mode: set a province's unrest 0..100. */
   | { kind: 'setUnrest'; province: number; value: number }
+  /** PLAN 1.20 God Mode: revive a dead nation on its cores; collapse ("Kill") a living one. */
+  | { kind: 'reviveNation'; nation: number }
+  | { kind: 'collapseNation'; nation: number }
   /** God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y). */
   | { kind: 'paintControl'; nation: number; x: number; y: number; r: number }
   /** PLAN 1.16: `attacker` declares war on `defender` (each brings its puppets). */

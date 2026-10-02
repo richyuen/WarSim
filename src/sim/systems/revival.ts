@@ -1,0 +1,138 @@
+/**
+ * Collapse and revival from cores (SPEC §4, PLAN 1.20).
+ *
+ * Revival: a dead nation can return at most `revivalsLeft` times (REVIVALS at the start), and
+ * never before `revivalAt` (set to death + REVIVAL_COOLDOWN; 0 for nations dead at the start).
+ * It returns on provinces where it holds a core (core or claim) through a revolt (the revolt
+ * area goes to the eligible dead claimant with the lowest id instead of a new rebel nation),
+ * through a collapse of the holder, or by God Mode (`reviveNation`: all its core provinces).
+ *
+ * Collapse: a nation bankrupt for COLLAPSE_MONTHS consecutive months (counted monthly), or by
+ * God Mode (`collapseNation`), fragments: its puppets go free; each province it holds with an
+ * eligible dead claimant goes to that nation (one revival per claimant); held provinces with
+ * unrest ≥ REVOLT_FROM revolt (one rebel nation per connected group). `NationCollapsed` event.
+ *
+ * Capital loss without cores (AoC's death rule, deferred in ADR-28): a nation that loses its
+ * capital while holding no province it has a core on dies; the capturer annexes what it held.
+ */
+import { isMonthStart } from '../../shared/calendar';
+import { EventKind } from '../../shared/events';
+import { navOf, type World } from '../world';
+import { releasePuppet } from './puppets';
+import { REVOLT_FROM, spawnRebels } from './revolts';
+
+export const REVIVALS = 2;
+export const REVIVAL_COOLDOWN = 24 * 730;
+export const COLLAPSE_MONTHS = 6;
+
+/** Whether dead nation n may revive now. */
+export function canRevive(world: World, n: number): boolean {
+  const nc = world.nations.cols;
+  return world.nations.has(n) && nc.living[n] === 0 && nc.revivalsLeft[n]! > 0 && world.tick >= nc.revivalAt[n]!;
+}
+
+/** The eligible dead claimant of province p (lowest id), or 0. */
+export function deadClaimant(world: World, p: number): number {
+  let best = 0;
+  for (const n of world.provinces.coresOf(p)) if (canRevive(world, n) && (best === 0 || n < best)) best = n;
+  return best;
+}
+
+/** Brings dead nation n back on `area` (province ids, taken from their holders). */
+export function reviveNation(world: World, n: number, area: number[]): boolean {
+  if (!canRevive(world, n) || area.length === 0) return false;
+  const g = navOf(world).graph;
+  // Group by holder (each holder loses its share); the revived nation is created once.
+  const byHolder = new Map<number, number[]>();
+  for (const p of area) {
+    const c = g.centre[p] ?? -1;
+    const h = c >= 0 ? world.cells.owner[c]! : 0;
+    if (h === 0 || h === n) continue;
+    const l = byHolder.get(h) ?? [];
+    l.push(p);
+    byHolder.set(h, l);
+  }
+  if (byHolder.size === 0) return false;
+  const nc = world.nations.cols;
+  nc.revivalsLeft[n] = nc.revivalsLeft[n]! - 1;
+  for (const [h, ps] of [...byHolder].sort((a, b) => a[0] - b[0])) spawnRebels(world, ps, h, n);
+  world.out.emit(world.tick, EventKind.NationRevived, n, nc.revivalsLeft[n]!, nc.capitalX[n]!, nc.capitalY[n]!);
+  return true;
+}
+
+/** God Mode revival: all provinces where n has a core and someone else holds the land. */
+export function reviveOnCores(world: World, n: number): boolean {
+  return reviveNation(world, n, world.provinces.provincesOf(n));
+}
+
+/** Fragments nation c (see the module comment). */
+export function collapseNation(world: World, c: number): void {
+  const nc = world.nations.cols;
+  if (!world.nations.has(c) || nc.living[c] !== 1) return;
+  world.out.emit(world.tick, EventKind.NationCollapsed, c, 0, NaN, NaN);
+  world.nations.forEach((p) => {
+    if (nc.overlord[p] === c && nc.living[p] === 1) releasePuppet(world, p);
+  });
+  const pv = world.provinces;
+  const g = navOf(world).graph;
+  const held: number[] = [];
+  for (let p = 1; p < pv.count; p++) {
+    const cell = g.centre[p] ?? -1;
+    if (cell >= 0 && world.cells.owner[cell] === c) held.push(p);
+  }
+  // 1. Dead claimants revive on their provinces.
+  const byClaimant = new Map<number, number[]>();
+  for (const p of held) {
+    const d = deadClaimant(world, p);
+    if (d === 0) continue;
+    const l = byClaimant.get(d) ?? [];
+    l.push(p);
+    byClaimant.set(d, l);
+  }
+  const taken = new Set<number>();
+  for (const [d, ps] of [...byClaimant].sort((a, b) => a[0] - b[0])) {
+    if (nc.living[c] !== 1) break;
+    if (reviveNation(world, d, ps)) for (const p of ps) taken.add(p);
+  }
+  // 2. Restless provinces revolt, one rebel nation per connected group.
+  const restless = new Set(held.filter((p) => !taken.has(p) && pv.unrest[p]! >= REVOLT_FROM));
+  for (const start of [...restless].sort((a, b) => a - b)) {
+    if (!restless.has(start) || nc.living[c] !== 1) continue;
+    const group = [start];
+    restless.delete(start);
+    for (let i = 0; i < group.length; i++) {
+      for (const q of g.adj[group[i]!] ?? []) {
+        if (!restless.has(q)) continue;
+        restless.delete(q);
+        group.push(q);
+      }
+    }
+    spawnRebels(world, group, c);
+  }
+}
+
+/** Monthly: bankruptcy streaks and collapse. */
+export function collapseSystem(world: World): void {
+  if (world.provinces.count === 0 || !isMonthStart(world.startDay, world.tick)) return;
+  const nc = world.nations.cols;
+  world.nations.forEach((n) => {
+    if (nc.living[n] !== 1) return;
+    nc.brokeMonths[n] = nc.bankrupt[n] === 1 ? nc.brokeMonths[n]! + 1 : 0;
+    if (nc.brokeMonths[n]! >= COLLAPSE_MONTHS) {
+      nc.brokeMonths[n] = 0;
+      collapseNation(world, n);
+    }
+  });
+}
+
+/** Whether nation n holds (owns and controls the centre of) a province it has a core on. */
+export function holdsCore(world: World, n: number): boolean {
+  const g = navOf(world).graph;
+  const pv = world.provinces;
+  if (pv.count === 0) return true; // no core model (toy): never applies the death rule
+  for (const p of pv.provincesOf(n)) {
+    const c = g.centre[p] ?? -1;
+    if (c >= 0 && world.cells.owner[c] === n && world.cells.controller[c] === n) return true;
+  }
+  return false;
+}

@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-33 · 2026-10-02 · accepted — Finite revival with cooldown; collapse by bankruptcy; AoC's core death rule restored
+**Decision.**
+- Each nation can revive at most 2 times, each no sooner than 2 years after its death, and only on
+  land it has a core or claim on.
+- Bankruptcy for 6 straight months collapses a nation into revived claimants, rebels and freed
+  puppets.
+- A nation that loses its capital while holding no core land dies.
+
+**Why.**
+- PROMPT asks for finite revival with a cooldown. AoC remembers dead nations without a stated
+  limit. That deviation (PARITY row 19) keeps long runs from oscillating forever.
+- Routing revolts on claimed land to the dead claimant makes history visible: Ethiopia returns
+  on Italian East Africa instead of an anonymous rebel state.
+- ADR-28 deferred AoC's death rule until cores existed. With cores it applies as AoC states it:
+  "a nation with cores left moves its capital, otherwise it dies".
+- Stability (SPEC §4) is not modelled yet. Collapse uses the bankruptcy streak alone until it is.
+
 ### ADR-32 · 2026-10-02 · accepted — Province unrest with a monthly revolt chance; rebels as new nations
 **Decision.**
 - Unrest lives per admin-1 province with a saved core nation. Revolts are a monthly hash draw

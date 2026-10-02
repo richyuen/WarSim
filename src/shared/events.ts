@@ -50,6 +50,10 @@ export const EventKind = {
   PuppetIntegrated: 22,
   /** a = rebel nation, b = former holder, (x, y) = rebel capital (PLAN 1.19). */
   RevoltSpawned: 23,
+  /** a = nation, b = revivals left, (x, y) = its new capital (PLAN 1.20). */
+  NationRevived: 24,
+  /** a = nation (global). */
+  NationCollapsed: 25,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

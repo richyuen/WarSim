@@ -553,6 +553,18 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   - The war-score jump comes with 1.16.
 - **Capital capture**: the war score jumps, the capital relocates to the largest owned city, and with
   the `winnerTakesAll` setting the capturer annexes all of the loser's controlled territory.
+- *Cores, collapse and revival implemented v1 (PLAN 1.20, ADR-33; `src/sim/systems/revival.ts`):*
+  - *Cores:* each province has a core (its 1938 owner) plus claims resolved from the scenario's
+    `extraCores` (admin-0 or admin-1 codes), saved.
+  - *Revival:* a dead nation keeps `revivalsLeft` (2 at the start) and `revivalAt`
+    (death + 2 years; 0 for nations dead at the start). It returns through a revolt on a
+    province it has a core on (instead of new rebels), through its holder's collapse, or by God
+    `reviveNation`.
+  - *Collapse:* 6 consecutive bankrupt months, or God `collapseNation`. Puppets go free, dead
+    claimants revive on their provinces, and restless (≥ 50) provinces revolt in connected
+    groups.
+  - *Death rule:* losing the capital while holding no core land is death; the capturer annexes
+    the rest.
 - **Cores**: provinces list core nations. Revival spawns a dead nation from its cores
   (finite `revival.remaining`, `cooldownUntilTick`), seeded with garrison and
   militia formations.

@@ -21,6 +21,7 @@ import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import type { World } from '../world';
 import { destroyFormation } from './elements';
+import { holdsCore, REVIVAL_COOLDOWN } from './revival';
 import { noteCapitalCaptured } from './war';
 
 export function capitalsSystem(world: World): void {
@@ -65,7 +66,8 @@ export function captureCapital(world: World, loser: number, capturer: number, ci
   world.out.emit(world.tick, EventKind.CapitalCaptured, loser, capturer, cc.x[city]!, cc.y[city]!);
   noteCapitalCaptured(world, capturer, loser);
   cc.capitalOf[city] = 0;
-  if (world.settings.winnerTakesAll) {
+  // AoC's death rule (PLAN 1.20): without any core land left, losing the capital is death.
+  if (world.settings.winnerTakesAll || !holdsCore(world, loser)) {
     // A rare event: one grid pass is acceptable here (not the hourly hot loop).
     for (let c = 0; c < controller.length; c++) {
       if (controller[c] === loser) {
@@ -109,6 +111,7 @@ export function eliminateNation(world: World, n: number): void {
   const nc = world.nations.cols;
   if (nc.living[n] !== 1) return;
   nc.living[n] = 0;
+  nc.revivalAt[n] = world.tick + REVIVAL_COOLDOWN; // PLAN 1.20: no revival before the cooldown
   world.formations.forEach((id) => {
     if (world.formations.cols.nation[id] === n) destroyFormation(world, id);
   });

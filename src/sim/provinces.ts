@@ -1,7 +1,8 @@
 /**
- * Per-province state (SPEC §4 Revolts, PLAN 1.19): unrest 0..100 and the rightful (core)
- * nation, indexed by admin-1 province id (`cells.province`). Saved. Sized at scenario creation;
- * an empty table (toy world) disables revolts.
+ * Per-province state (SPEC §4 Revolts and Cores; PLAN 1.19–1.20): unrest 0..100, the rightful
+ * (core) nation, and extra core claims (`extraCores` in the scenario: e.g. Soviet claims on
+ * Bessarabia, dead Ethiopia on Italian East Africa). Indexed by admin-1 province id
+ * (`cells.province`). Saved. An empty table (toy world) disables revolts and revival.
  */
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
@@ -9,6 +10,9 @@ import type { Stateful } from './core/state';
 export class Provinces implements Stateful {
   unrest = new Float64Array(0);
   core = new Uint16Array(0);
+  /** Extra claims as sorted [province, nation] pairs (unique). */
+  claims: [number, number][] = [];
+  private claimIndex = new Map<number, number[]>();
 
   get count(): number {
     return this.core.length;
@@ -17,17 +21,55 @@ export class Provinces implements Stateful {
   resize(n: number): void {
     this.unrest = new Float64Array(n);
     this.core = new Uint16Array(n);
+    this.claims = [];
+    this.claimIndex.clear();
+  }
+
+  addClaim(p: number, n: number): void {
+    if (this.core[p] === n || this.claims.some(([q, m]) => q === p && m === n)) return;
+    this.claims.push([p, n]);
+    this.claims.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    this.reindex();
+  }
+
+  /** Nations with a core on province p: its core nation first, then claimants (ascending). */
+  coresOf(p: number): number[] {
+    const c = this.core[p] ?? 0;
+    const extra = this.claimIndex.get(p) ?? [];
+    return c !== 0 ? [c, ...extra.filter((n) => n !== c)] : extra;
+  }
+
+  /** Provinces on which nation n has a core (core or claim), ascending. */
+  provincesOf(n: number): number[] {
+    const out = new Set<number>();
+    for (let p = 1; p < this.core.length; p++) if (this.core[p] === n) out.add(p);
+    for (const [p, m] of this.claims) if (m === n) out.add(p);
+    return [...out].sort((a, b) => a - b);
+  }
+
+  private reindex(): void {
+    this.claimIndex.clear();
+    for (const [p, n] of this.claims) {
+      const l = this.claimIndex.get(p);
+      if (l) l.push(n);
+      else this.claimIndex.set(p, [n]);
+    }
   }
 
   serialize(): Section[] {
     return [
       { name: 'provinces.unrest', dtype: 'f64', data: this.unrest },
       { name: 'provinces.core', dtype: 'u16', data: this.core },
+      { name: 'provinces.claims', dtype: 'u32', data: Uint32Array.from(this.claims.flat()) },
     ];
   }
 
   deserialize(sections: readonly Section[]): void {
     this.unrest = takeSection(sections, 'provinces.unrest', 'f64').slice();
     this.core = takeSection(sections, 'provinces.core', 'u16').slice();
+    const flat = takeSection(sections, 'provinces.claims', 'u32');
+    this.claims = [];
+    for (let i = 0; i + 1 < flat.length; i += 2) this.claims.push([flat[i]!, flat[i + 1]!]);
+    this.reindex();
   }
 }
