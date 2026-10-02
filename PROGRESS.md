@@ -502,3 +502,19 @@
   - Data: pipeline (NE + ETOPO, Miller) and load-time province raster.
   - Tooling and docs: headless runner, i18n, parity tooling and docs.
   - Next: Phase 1 (1.1 zod schemas).
+
+## 2026-10-02 — Phase 0 process audit against PROMPT.md "EVERY ITERATION"
+How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier session), with the gaps.
+
+| Step | How it was applied | Gaps |
+|---|---|---|
+| 1 Read SPEC, PLAN, PROGRESS tail, BLOCKERS, critic report | Read at session start. `critic/` does not exist; BLOCKERS had no open items. SPEC sections were re-read before the tasks that depend on them: §2 for 0.12/0.13, §3 for 0.18/0.19, §8 for 0.14–0.17, §10 for 0.20; full re-read at 0.22. | One continuous session, so the files were not re-read from scratch before every task. |
+| 2 Full suite first | Ran tsc, eslint, vitest and build at session start (green). `npm run check` before task commits. | — |
+| 2b Critic findings | Not applicable: no `critic/CRITIC_REPORT.json` exists. | — |
+| 3 First unchecked task | Tasks were taken strictly in order, 0.4 → 0.22. One deviation, AT adjusted not split: 0.6's frame-count AT was met with scene-change frames (logged). | — |
+| 4 Implement fully | No stubs or TODOs (grep for TODO/FIXME in src and tools is empty). | — |
+| 5 Verify for real | Every task has tests. Screenshots were viewed for every visual task: 0.6 trailer frames, 0.14 map at 3 zooms, 0.15 proxies, 0.16 precision, 0.17 live map and dateline seam, 0.18 mask/elevation renders, 0.19 province raster at 3 zooms, 0.21 UI in 2 locales. Fixed what they exposed: corner-hatch artifacts (0.14), the `.gz` content-encoding issue (0.19), invisible markers (0.17). | `reference/` frames were compared in 0.6 only; later visuals were not compared side by side with AoC frames (nothing comparable to the 1938 map exists yet). |
+| 6 Performance | Rendering tasks were benchmarked on the GPU (0.14, 0.15, 0.19); sim tick timing in 0.20; snapshot path timing in 0.13. | Snapshot build time (budget ≤ 2 ms) was not measured separately. |
+| 7 Commit, tick, PROGRESS, parity | Every task: one commit, PLAN tick and a PROGRESS entry. `npm run parity` ran in every `check` from 0.8 on. | PARITY rows touched by 0.17, 0.20 and 0.21 were updated in the 0.22 review, not at each task. 0.5/0.6/0.7 were docs-only commits made without a full `check`. 0.16 was committed with a lint error, fixed in the next commit; since then commits are gated on the `check` exit code. |
+| 8 Blockers after 3 failed attempts | Never triggered; no task needed 3 attempts. | — |
+| 9 Review every ~5 iterations | Full review at 0.22: SPEC drift fixes (v0.2), dead code removed, missing end-to-end test added. Lighter refactors happened during tasks (bench helpers deduplicated in 0.15, `halveElevation` shared in 0.18). | Only one formal review over 19 tasks; the cadence asks for ~4. Phase 1 will hold a review every 5 tasks (after 1.5, 1.10, …). |
