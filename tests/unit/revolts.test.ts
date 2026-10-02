@@ -6,7 +6,7 @@ import { Sim } from '../../src/sim/sim';
 import { DECAY, NON_CORE, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { nationId } from '../helpers/sim1938';
+import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 
 // PLAN 1.19: revolts (per province / per region), suppression spending, rebel nation spawn.
 // AT: high unrest → revolt within the expected window; suppression lowers the probability
@@ -18,16 +18,6 @@ const GER = nationId('GER');
 /** 00:00 on 1 March 1938 is tick 24 × (31 + 28); stepping one more runs its assessment. */
 const THROUGH_MARCH = 24 * (31 + 28) + 1;
 
-function run(s: Sim, ticks: number): number[][] {
-  const out: number[][] = [];
-  s.step(ticks, (w) => {
-    for (let i = 0; i < w.out.events.length; i += 6) out.push(w.out.events.slice(i, i + 6));
-    w.out.events.length = 0;
-    w.out.fires.length = 0;
-  });
-  return out;
-}
-const kinds = (ev: number[][], k: number): number[][] => ev.filter((e) => e[1] === k).map((e) => [e[2]!, e[3]!]);
 
 /** Soviet provinces held and controlled by the Soviets, pairwise non-adjacent, no capital. */
 function sampleProvinces(s: Sim, n: number): number[] {

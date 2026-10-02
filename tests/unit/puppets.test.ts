@@ -4,7 +4,7 @@ import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { FREE_ABOVE, INTEGRATION_RATE, puppetTier, TRIBUTE } from '../../src/sim/systems/puppets';
 import { assets1938 } from '../helpers/earth';
-import { nationId } from '../helpers/sim1938';
+import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 
 // PLAN 1.18: puppets with autonomy; create / release / integrate / revolt. AT: a test per
 // transition.
@@ -15,16 +15,6 @@ const [GER, ITA, ALB, AUT, HUN] = ['GER', 'ITA', 'ALB', 'AUT', 'HUN'].map(nation
 const MONTHS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const toMonth = (m: number): number => 24 * MONTHS.slice(0, m).reduce((a, b) => a + b, 0) + 1;
 
-function run(s: Sim, ticks: number): number[][] {
-  const out: number[][] = [];
-  s.step(ticks, (w) => {
-    for (let i = 0; i < w.out.events.length; i += 6) out.push(w.out.events.slice(i, i + 6));
-    w.out.events.length = 0;
-    w.out.fires.length = 0;
-  });
-  return out;
-}
-const kinds = (ev: number[][], k: number): number[][] => ev.filter((e) => e[1] === k).map((e) => [e[2]!, e[3]!]);
 
 describe('puppets (PLAN 1.18)', () => {
   it('the 1938 puppets start with their autonomy; tiers follow autonomy', () => {

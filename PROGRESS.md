@@ -1292,3 +1292,21 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - non-core unrest +2 net and an exact suppression cost;
   - save/load.
 - Parity: rows 16, 17 and 18 → partial.
+
+## 2026-10-02 — Review pass after PLAN 1.15–1.19
+- **Perf** (1938, two months, per system):
+  - the average tick is 0.72 ms, inside the 1.5 ms SPEC budget;
+  - the war system's daily land count used Map operations per land cell (11 ms spike). It now
+    uses typed arrays: 4.8 ms, and the average tick fell from 0.88 to 0.72 ms.
+- **Missing tests added:** `tests/unit/replay1938.test.ts`.
+  - Every command kind added in 1.15–1.19 is logged, and replaying the log on a fresh 1938 world
+    reproduces the hash.
+  - Save → load → save is byte-identical with the JSON sections (wars, alliances) and province
+    state.
+- **Debt:** shared `runEvents`/`eventKinds` test helpers replace four copies (war, alliances,
+  puppets, revolts tests).
+- **SPEC drift:** §2.5 now lists the implemented system order, including capitals, wars,
+  alliances, puppets and revolts, with timings.
+- Noted, not changed: the systems war ↔ puppets ↔ capitals ↔ revolts import each other in a
+  cycle. They only reference functions at call time (safe in ESM). A shared diplomacy module
+  would remove the cycle when the AI (1.24) adds more callers.

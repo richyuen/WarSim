@@ -4,7 +4,7 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { LEAVE_LOYALTY, UNION_AT } from '../../src/sim/systems/alliances';
 import { assets1938 } from '../helpers/earth';
-import { nationId } from '../helpers/sim1938';
+import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 
 // PLAN 1.17: alliances and unions with unity and loyalty; join, leave, dissolve.
 // AT: low unity → a member leaves.
@@ -12,16 +12,6 @@ import { nationId } from '../helpers/sim1938';
 const W = SIZE_1938.w;
 const [GER, ITA, JAP, POL, FRA, ENG] = ['GER', 'ITA', 'JAP', 'POL', 'FRA', 'ENG'].map(nationId) as [number, number, number, number, number, number];
 
-function run(s: Sim, ticks: number): number[][] {
-  const out: number[][] = [];
-  s.step(ticks, (w) => {
-    for (let i = 0; i < w.out.events.length; i += 6) out.push(w.out.events.slice(i, i + 6));
-    w.out.events.length = 0;
-    w.out.fires.length = 0;
-  });
-  return out;
-}
-const kinds = (ev: number[][], k: number): number[][] => ev.filter((e) => e[1] === k).map((e) => [e[2]!, e[3]!]);
 /** Ticks to the next 00:00 on day 1 of a month, from 1 Jan 1938 + `months`. */
 const MONTH_TICKS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31].map((d) => d * 24);
 

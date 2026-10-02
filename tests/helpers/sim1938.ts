@@ -21,3 +21,17 @@ export function addDivision(world: World, nation: number, x: number, y: number, 
   equipFormation(world, id, template);
   return id;
 }
+
+/** Steps `ticks`, collecting every event as a [tick, kind, a, b, x, y] record (fires dropped). */
+export function runEvents(s: { step(n: number, after: (w: World) => void): void }, ticks: number): number[][] {
+  const out: number[][] = [];
+  s.step(ticks, (w) => {
+    for (let i = 0; i < w.out.events.length; i += 6) out.push(w.out.events.slice(i, i + 6));
+    w.out.events.length = 0;
+    w.out.fires.length = 0;
+  });
+  return out;
+}
+
+/** [a, b] of the events of one kind. */
+export const eventKinds = (ev: number[][], kind: number): number[][] => ev.filter((e) => e[1] === kind).map((e) => [e[2]!, e[3]!]);

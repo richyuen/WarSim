@@ -96,19 +96,20 @@ export function noteCapitalCaptured(world: World, capturer: number, loser: numbe
 }
 
 interface LandCounts {
-  owned: Map<number, number>;
+  /** Cells owned, by nation id. */
+  owned: Uint32Array;
   /** key owner·65536 + controller → cells. */
   occupied: Map<number, number>;
 }
 
 function countLand(world: World): LandCounts {
   const { owner, controller } = world.cells;
-  const owned = new Map<number, number>();
+  const owned = new Uint32Array(world.nations.highWater + 1);
   const occupied = new Map<number, number>();
   for (let c = 0; c < owner.length; c++) {
     const o = owner[c]!;
     if (o === 0) continue;
-    owned.set(o, (owned.get(o) ?? 0) + 1);
+    owned[o]!++;
     const k = controller[c]!;
     if (k !== o && k !== 0) occupied.set(o * 65536 + k, (occupied.get(o * 65536 + k) ?? 0) + 1);
   }
@@ -120,7 +121,7 @@ function occShare(land: LandCounts, occupiers: number[], victims: number[]): num
   let own = 0;
   let occ = 0;
   for (const v of victims) {
-    own += land.owned.get(v) ?? 0;
+    own += land.owned[v] ?? 0;
     for (const o of occupiers) occ += land.occupied.get(v * 65536 + o) ?? 0;
   }
   return own > 0 ? occ / own : 0;

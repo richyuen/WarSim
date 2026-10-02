@@ -5,7 +5,7 @@ import { Sim } from '../../src/sim/sim';
 import { CAPITAL_SCORE, PUPPET_SCORE, TRUCE_TICKS } from '../../src/sim/systems/war';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { nationId } from '../helpers/sim1938';
+import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/sim1938';
 
 // PLAN 1.16: declaration, war score, exhaustion, peace settlement, broke/exhausted sue for
 // peace, fightToDeath. AT: scripted scenarios end in peace with the expected terms;
@@ -15,16 +15,6 @@ const W = SIZE_1938.w;
 const GER = nationId('GER');
 const POL = nationId('POL');
 
-function events(s: Sim, ticks: number): number[][] {
-  const out: number[][] = [];
-  s.step(ticks, (w) => {
-    for (let i = 0; i < w.out.events.length; i += 6) out.push(w.out.events.slice(i, i + 6));
-    w.out.events.length = 0;
-    w.out.fires.length = 0;
-  });
-  return out;
-}
-const ofKind = (ev: number[][], k: number): number[][] => ev.filter((e) => e[1] === k).map((e) => [e[2]!, e[3]!]);
 
 /**
  * A sim at war GER→POL, one on one (declared by command, applied at tick 0). The terms tests

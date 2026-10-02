@@ -174,6 +174,12 @@ proleptic Gregorian, so 1938 = 8760 ticks and 1940 = 8784 (`src/shared/calendar.
 11. nuclear: launches in flight, impacts, fallout decay (hourly)
 12. buff/debuff timers · history events · stats sampling (daily)
 ```
+Implemented order for the 1938 world (`src/sim/sim.ts`, review after PLAN 1.19):
+production (daily) → economy (monthly) → supply (6-hourly network, hourly use) → movement →
+engagement and combat → territory → capitals (capture, relocation, elimination) → wars (daily:
+score, exhaustion, peace) → alliances (monthly) → puppets (monthly) → revolts (monthly). Step 10
+of the list above (diplomacy) is spread over the last four. The average tick is 0.72 ms (Node,
+M, two months from 1 January 1938), and the largest daily spike is the war land count at 4.8 ms.
 Every system is a function `(world) => void` (`src/sim/tick.ts`). RNG streams live in
 `world.rng` and derived outputs (dirty tiles, events) in `world.out`. Systems never read
 wall-clock time, render state or subscriptions.
