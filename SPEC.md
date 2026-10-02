@@ -340,6 +340,21 @@ supersampled scanline fill, deterministic). `buildFlagAtlas` packs 48×32 cells 
 aspect kept, transparent letterbox): 103 flags in 20 ms. `data/scenarios/1938/flags.json` maps
 tag → spec.
 
+**Economy (PLAN 1.9, ADR-22; `src/sim/systems/economy.ts`).**
+- *Cell values* (`cells.econ`, u32, $M/yr, saved): each NE admin-0 unit's industrial capacity is
+  spread over its land cells by weight. Capacity = GDP × (GDP per head / US)^0.5, from
+  `data/scenarios/1938/economy.json`. Weight = size-1..5 city weight 1/2.5/6/15/35 + 0.05 ×
+  terrain econWeight × true area.
+- *Monthly* (00:00 of day 1):
+  - gross = Σ controlled cells (occupied at 50%) / 1000 × 6 gold per bn × trait income ×
+    (1 + incomeBonus %);
+  - upkeep = 0.35 × template unit upkeep × strength / full strength;
+  - admin = 0.25 × (cells / 1000)^1.35;
+  - gold += gross − upkeep − admin.
+- *Bankruptcy*: gold < −3 × gross. Formations then lose 5% strength per month; recovery at gold
+  ≥ 0. Both transitions emit a `Bankruptcy` event.
+- Nations start with 6 months of gross. One economic month costs 2.4 ms at M (Node).
+
 ### 3.5 Diplomacy
 - **War** {id, attackers[], defenders[], leaders, goal, startTick, warScore,
   exhaustion per side, fightToDeath per side}

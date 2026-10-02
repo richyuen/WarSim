@@ -294,6 +294,16 @@ export const FlagSpecSchema = z.strictObject({ aspect: z.number().min(0.5).max(3
 export const FlagPresetsFile = z.strictObject({ comment: z.string().optional(), presets: z.record(id, z.array(FlagLayer).min(1)) });
 export const FlagsFile = z.strictObject({ comment: z.string().optional(), flags: z.record(tag, FlagSpecSchema) });
 
+/** 1938 economy calibration (PLAN 1.9): GDP (bn 1990 $) and GDP per head per NE admin-0 unit. */
+const adm0 = z.string().regex(/^[A-Z0-9]{3}$/);
+export const EconomyFile = z.strictObject({
+  comment: z.string().optional(),
+  defaultPerCapita: z.number().positive(),
+  usPerCapita: z.number().positive(),
+  gdp: z.record(adm0, z.number().positive().max(5000)),
+  perCapita: z.record(adm0, z.number().positive().max(20000)),
+});
+
 /** Starting land order of battle (PLAN 1.7). */
 export const OobFile = z.strictObject({
   comment: z.string().optional(),
@@ -364,6 +374,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/city-rules\.json$/, schema: CityRulesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/flags\.json$/, schema: FlagsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/oob\.json$/, schema: OobFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/economy\.json$/, schema: EconomyFile },
   { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
 ];

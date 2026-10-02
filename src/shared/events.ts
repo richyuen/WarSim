@@ -10,6 +10,8 @@ export const EventKind = {
   FormationDestroyed: 2,
   /** a = command seq, b = 0, x = y = NaN (global). */
   CommandApplied: 3,
+  /** a = nation, b = 1 when it goes bankrupt / 0 when it recovers (global). */
+  Bankruptcy: 4,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

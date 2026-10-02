@@ -21,6 +21,17 @@ export const NATION_SCHEMA = {
   cells: 'u32',
   /** 1 = exists on the map; 0 = dead (revivable through cores, PLAN 1.20). */
   living: 'u8',
+  /** Treasury (PLAN 1.9); may go negative. */
+  gold: 'f64',
+  /** Last monthly gross income and expenses (economy panel, AI). */
+  income: 'f64',
+  expenses: 'f64',
+  /** AoC-style income bonus, percent −100..100 (scenario / God Mode). */
+  incomeBonus: 'i16',
+  /** Multiplier from traits and techs (1 = none). */
+  incomeMult: 'f64',
+  /** 1 while bankrupt (gold below −BANKRUPT_MONTHS × gross income). */
+  bankrupt: 'u8',
 } as const;
 
 export const FORMATION_SCHEMA = {
@@ -54,6 +65,8 @@ export class CellLayers implements Stateful {
   terrain: Uint8Array<ArrayBuffer>;
   /** Admin-1 province id per cell (0 = none; SPEC §3.3). */
   province: Uint16Array<ArrayBuffer>;
+  /** Industrial output per cell, $M per year (PLAN 1.9, systems/economy.ts). */
+  econ: Uint32Array<ArrayBuffer>;
 
   constructor(w: number, h: number) {
     this.w = w;
@@ -62,6 +75,7 @@ export class CellLayers implements Stateful {
     this.controller = new Uint16Array(w * h);
     this.terrain = new Uint8Array(w * h);
     this.province = new Uint16Array(w * h);
+    this.econ = new Uint32Array(w * h);
   }
 
   serialize(): Section[] {
@@ -70,6 +84,7 @@ export class CellLayers implements Stateful {
       { name: 'cells.controller', dtype: 'u16', data: this.controller },
       { name: 'cells.terrain', dtype: 'u8', data: this.terrain },
       { name: 'cells.province', dtype: 'u16', data: this.province },
+      { name: 'cells.econ', dtype: 'u32', data: this.econ },
     ];
   }
 
@@ -79,13 +94,15 @@ export class CellLayers implements Stateful {
     const controller = takeSection(sections, 'cells.controller', 'u16');
     const terrain = takeSection(sections, 'cells.terrain', 'u8');
     const province = takeSection(sections, 'cells.province', 'u16');
-    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n) {
+    const econ = takeSection(sections, 'cells.econ', 'u32');
+    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n) {
       throw new Error(`cell layers: expected ${n} cells`);
     }
     this.owner = owner.slice();
     this.controller = controller.slice();
     this.terrain = terrain.slice();
     this.province = province.slice();
+    this.econ = econ.slice();
   }
 }
 

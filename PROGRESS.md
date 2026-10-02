@@ -937,3 +937,33 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - `tests/e2e/boot1938.spec.ts`: worker hash == Node hash; date label 1 January 1938.
   - Screenshot `docs/evidence/1.9a/app-1938-boot.png` viewed: the full 1938 world in the real app,
     with the starting armies drawn by the proxy renderer.
+
+## 2026-10-02 — PLAN 1.9: economy (monthly gold, upkeep, superlinear admin, bankruptcy)
+- **System:** `src/sim/systems/economy.ts`, registered for '1938'.
+  - Pure `monthlyAccounts` and `runEconomyMonth`, run at `isMonthStart` (tick 0 included).
+  - Nation fields: gold, income, expenses, incomeBonus, incomeMult (traits), bankrupt.
+  - The cell layer `econ` is u32 ($M), saved. New event: `Bankruptcy`.
+- **Calibration, two failed attempts first:**
+  1. Terrain × per-capita development × area put Australia 2nd and Canada 4th; land swamped
+     everything.
+  2. A small land weight + city sizes still favoured the USA/Australia 13:1 over Germany, because
+     city sizes come from modern populations.
+  - **Final:** `data/scenarios/1938/economy.json` (1938 GDP + GDP per head per NE country,
+    Maddison-style rounded). Each country's industrial capacity, GDP × (pc/US)^0.5, is spread
+    over its cells by city weight + a 0.05 land base.
+  - Result, gross gold/month: USA 5538, UK 2412, GER 2178, USSR 1156, FRA 1074, JAP 837,
+    ITA 654, RAJ 385, NED 322, CHI 270.
+  - Starting deficits: USSR −181, CHI −113, NSP −87 (large armies or at war); treasuries of 6
+    months cover them.
+- **AT:** `tests/unit/economy.test.ts` (10 tests).
+  - One per rule: controller pays, occupied 50%; bonus and traits; upkeep ∝ strength; admin
+    superlinear; exactly 12 payments a year; bankruptcy enter/desert/recover with events;
+    weights and capacity.
+  - 1938: top 5 = {USA, UK, Germany, USSR, France} with the USA first; every living nation earns;
+    start gold = 6 months; after one simulated year the majors are solvent.
+- **Perf:** an economic month costs 2.4 ms at M; one simulated year (1938 world, economy only)
+  takes 29 ms, 3.3 µs/tick.
+- **Step 5:** no economy UI yet (the nation/economy panel is a later task), so verification is
+  headless: unit tests + a full-year run.
+- **Parity:** rows 22 (income bonus) and 23 (economy tick) → partial. Score 8.8% → 10.0%.
+- **Next:** a step 9 review pass is due (5 tasks since the last: 1.6, 1.7, 1.8, 1.9a, 1.9).

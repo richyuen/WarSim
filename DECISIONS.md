@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-22 · 2026-10-02 · accepted — Economy calibrated to 1938 GDP; monthly tick; superlinear admin **[AoC-DEVIATION]**
+**Decision.** Income comes from land the nation controls, valued from history:
+- Each modern country's 1938 industrial capacity (GDP × (GDP per head / US)^0.5;
+  `economy.json`, Maddison-style rounded figures) is spread over its cells by city size plus a
+  small land base.
+- A monthly tick pays gross income × trait multipliers × (1 + incomeBonus). Occupied land pays
+  the occupier 50%.
+- Upkeep scales with formation strength; admin cost grows with land held to the 1.35 power.
+- Bankruptcy at −3 months of income causes 5%-per-month desertion until gold is back to 0.
+- Nations start with 6 months of income.
+
+**Why.**
+- The first model (terrain × per-capita development × area + modern city sizes) ranked Australia
+  2nd and Canada 4th. Land area and modern populations swamped 1938 reality.
+- Calibrating country totals to 1938 GDP makes the start state plausible by construction:
+  USA ≫ UK ≈ Germany > USSR > France > Japan > Italy > British India. Conquest still moves value,
+  because it moves cells and cities.
+- The ^0.5 industrial weighting turns raw GDP into war-making capacity. It keeps populous agrarian
+  China and India below the industrial powers, and gives the PLAN AT's top five.
+- Superlinear admin is the brake on runaway empires (PROMPT: no hegemon).
+
+**Deviation from AoC.** AoC ticks the economy every 5 s of real time from land, cores and cities,
+with flat costs (TEXT). Ours is monthly sim time (≈ 30 s at ×5) and GDP-calibrated, with
+superlinear admin. The faster, flatter AoC loop would ignore our hourly combat economy and
+make large empires snowball. Numbers are first-pass and get tuned in Phase 7 (sweep: no
+hegemon, borders keep moving).
+
 ### ADR-21 · 2026-10-02 · accepted — Gregorian hourly calendar; speed ladder to Max **[AoC-DEVIATION]**
 **Decision.**
 - 1 tick = 1 hour of the real (proleptic Gregorian) calendar from the scenario start, with leap

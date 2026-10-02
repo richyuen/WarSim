@@ -74,7 +74,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: 1 sim year = 8760 ticks; speed setting persists across reload (e2e).
 - [x] 1.9a Boot the 1938 scenario as sim state (split out of 1.9: the economy needs the real world): cells incl. province layer, nations, cities, OOB formations; worker loads the map assets; `?scenario=1938` in the app.
   AT: Node build == political map; worker hash == Node hash; save/load round trip bit-identical; e2e boot screenshot.
-- [ ] 1.9 Economy: per-cell income weight × terrain × development, monthly tick, gold, expenses (upkeep, admin cost superlinear), incomeBonus −100..100, bankruptcy.
+- [x] 1.9 Economy: per-cell income weight × terrain × development, monthly tick, gold, expenses (upkeep, admin cost superlinear), incomeBonus −100..100, bankruptcy.
   AT: unit tests per rule; 1938 income ranking plausible (USA, UK, Germany, USSR, France top 5).
 - [ ] 1.10 Production & recruitment queue; manpower.
   AT: a queued division appears after N days at the capital with cost deducted.
