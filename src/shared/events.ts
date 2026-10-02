@@ -48,6 +48,8 @@ export const EventKind = {
   PuppetRevolt: 21,
   /** a = puppet, b = overlord: annexed by integration (global). */
   PuppetIntegrated: 22,
+  /** a = rebel nation, b = former holder, (x, y) = rebel capital (PLAN 1.19). */
+  RevoltSpawned: 23,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

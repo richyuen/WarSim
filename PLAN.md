@@ -94,7 +94,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: low unity → member leaves (test); alliance mode screenshot.
 - [x] 1.18 Puppets with autonomy: create/release/integrate/revolt.
   AT: tests per transition; puppet map mode screenshot.
-- [ ] 1.19 Revolts (per province/per region setting), suppression spending, rebel nation spawn.
+- [x] 1.19 Revolts (per province/per region setting), suppression spending, rebel nation spawn.
   AT: high unrest → revolt within the expected window; suppression lowers probability (statistical test with fixed seeds).
 - [ ] 1.20 Collapse & revival (finite, cooldown) from cores.
   AT: a dead nation revives at most N times, never before cooldown.

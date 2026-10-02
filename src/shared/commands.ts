@@ -13,6 +13,12 @@ export type Command =
   | { kind: 'moveFormation'; id: number; x: number; y: number }
   /** Global sim setting (PLAN 1.15): capturing a capital annexes the loser's territory. */
   | { kind: 'setSetting'; key: 'winnerTakesAll'; value: boolean }
+  /** PLAN 1.19: revolts take one province or a restless region. */
+  | { kind: 'setSetting'; key: 'revoltMode'; value: 'province' | 'region' }
+  /** PLAN 1.19: revolt suppression level 0..1 (God Mode / AI budget). */
+  | { kind: 'setSuppression'; nation: number; level: number }
+  /** God Mode: set a province's unrest 0..100. */
+  | { kind: 'setUnrest'; province: number; value: number }
   /** God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y). */
   | { kind: 'paintControl'; nation: number; x: number; y: number; r: number }
   /** PLAN 1.16: `attacker` declares war on `defender` (each brings its puppets). */

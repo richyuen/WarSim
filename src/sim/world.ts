@@ -11,6 +11,7 @@ import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
 import { Table } from './core/table';
 import { Alliances } from './alliances';
+import { Provinces } from './provinces';
 import { Wars } from './wars';
 
 export interface PendingCommand {
@@ -48,6 +49,9 @@ export const NATION_SCHEMA = {
   autonomy: 'f64',
   loyalty: 'f64',
   integration: 'f64',
+  /** Revolt suppression level 0..1 (PLAN 1.19) and, for spawned rebels, the origin province. */
+  suppression: 'f64',
+  origin: 'u32',
 } as const;
 
 /** Production queue rows (PLAN 1.10): one formation in training. */
@@ -249,7 +253,7 @@ class WorldCore implements Stateful {
 
   serialize(): Section[] {
     const w = this.world;
-    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0]);
+    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0, w.settings.revoltMode === 'region' ? 1 : 0]);
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
@@ -263,13 +267,13 @@ class WorldCore implements Stateful {
   deserialize(sections: readonly Section[]): void {
     const w = this.world;
     const meta = takeSection(sections, 'world.meta', 'f64');
-    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0] = meta;
+    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0, revoltRegion = 0] = meta;
     if (cw !== w.cells.w || ch !== w.cells.h) throw new Error(`map size mismatch: save ${cw}×${ch}, world ${w.cells.w}×${w.cells.h}`);
     w.seed = seed;
     w.tick = tick;
     w.nextCommandSeq = nextSeq;
     w.startDay = startDay;
-    w.settings = { winnerTakesAll: winnerTakesAll === 1 };
+    w.settings = { winnerTakesAll: winnerTakesAll === 1, revoltMode: revoltRegion === 1 ? 'region' : 'province' };
     w.rng.load(takeSection(sections, 'world.rng', 'u32'));
     const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'world.commandLog', 'u8'))) as {
       log: LoggedCommand[];
@@ -312,6 +316,7 @@ export class World {
   elements = new Table('elements', ELEMENT_SCHEMA, 1024);
   wars = new Wars();
   alliances = new Alliances();
+  provinces = new Provinces();
   /**
    * Derived (not state): true when control, cities or overlords may have changed since the last
    * supply refresh. Skipping an unneeded refresh leaves exactly the layer a refresh would write.
@@ -319,7 +324,7 @@ export class World {
    */
   supplyDirty = true;
   /** Global settings (state, saved in world.meta). */
-  settings = { winnerTakesAll: false };
+  settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region' } = { winnerTakesAll: false, revoltMode: 'province' };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
   frontierWars = -1;
@@ -379,7 +384,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces];
   }
 
   cellIndex(x: number, y: number): number {

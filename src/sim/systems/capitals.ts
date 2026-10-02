@@ -61,7 +61,6 @@ function relocateToField(world: World, n: number): void {
 
 export function captureCapital(world: World, loser: number, capturer: number, city: number): void {
   const cc = world.cities.cols;
-  const nc = world.nations.cols;
   const { owner, controller } = world.cells;
   world.out.emit(world.tick, EventKind.CapitalCaptured, loser, capturer, cc.x[city]!, cc.y[city]!);
   noteCapitalCaptured(world, capturer, loser);
@@ -79,20 +78,31 @@ export function captureCapital(world: World, loser: number, capturer: number, ci
     eliminateNation(world, loser);
     return;
   }
+  relocateCapital(world, loser);
+}
+
+/**
+ * Moves `n`'s capital to its largest city it owns and controls (lowest id on ties), else to a
+ * field capital; eliminates it without land. Used after capture and when rebels take it.
+ */
+export function relocateCapital(world: World, n: number): void {
+  const cc = world.cities.cols;
+  const nc = world.nations.cols;
+  const { owner, controller } = world.cells;
   let best = 0;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
-    if (owner[cell] !== loser || controller[cell] !== loser) return;
+    if (owner[cell] !== n || controller[cell] !== n || cc.capitalOf[id] !== 0) return;
     if (best === 0 || cc.size[id]! > cc.size[best]!) best = id;
   });
   if (best !== 0) {
-    cc.capitalOf[best] = loser;
-    nc.capitalX[loser] = cc.x[best]!;
-    nc.capitalY[loser] = cc.y[best]!;
-    world.out.emit(world.tick, EventKind.CapitalMoved, loser, best, cc.x[best]!, cc.y[best]!);
+    cc.capitalOf[best] = n;
+    nc.capitalX[n] = cc.x[best]!;
+    nc.capitalY[n] = cc.y[best]!;
+    world.out.emit(world.tick, EventKind.CapitalMoved, n, best, cc.x[best]!, cc.y[best]!);
     return;
   }
-  relocateToField(world, loser);
+  relocateToField(world, n);
 }
 
 export function eliminateNation(world: World, n: number): void {

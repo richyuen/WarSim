@@ -550,6 +550,18 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - **Cores**: provinces list core nations. Revival spawns a dead nation from its cores
   (finite `revival.remaining`, `cooldownUntilTick`), seeded with garrison and
   militia formations.
+- *Revolts implemented v1 (PLAN 1.19, ADR-32; `src/sim/systems/revolts.ts`, `src/sim/provinces.ts`):*
+  - *State:* per-province unrest and core (rightful owner = the 1938 owner of the province's
+    centre cell), saved.
+  - *Monthly unrest:* += non-core 4, occupied 6, war 2, bankrupt 3; −2 decay; −5 × suppression.
+  - *Revolt chance:* a province its holder also controls revolts with p = 0.5 × (unrest − 50)/50 ×
+    (1 − 0.7 × suppression), drawn by hash.
+  - *Suppression:* costs 15% × level of gross income.
+  - *Revolt area:* one province, or (`revoltMode` 'region') adjacent provinces of the same holder
+    and core with unrest ≥ 40, up to 8.
+  - *Rebels:* a new nation (origin province) takes the land and becomes its core. Its capital is
+    the area's largest city; if that was the holder's capital, the holder relocates. It gets 1–4
+    militia divisions and 50 gold. There is a 50% (hash) chance the holder declares war.
 - **Revolts**: per province or per region (setting). Unrest comes from non-core
   occupation, low stability, war exhaustion, bankruptcy and nukes. It is reduced by
   suppression spending and garrison. A revolt spawns a rebel nation (a revived core nation

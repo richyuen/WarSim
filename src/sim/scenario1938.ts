@@ -28,6 +28,7 @@ import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
 import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
 import { equipFormation } from './systems/elements';
+import { initProvinceCores } from './systems/revolts';
 import { LOYALTY_BASE, LOYALTY_PER_AUTONOMY } from './systems/puppets';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import { Mobility } from './nav/grid';
@@ -254,6 +255,9 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     f.supply[id] = 1;
     equipFormation(world, id, ti); // sets strength from the elements
   }
+
+  // Province cores (rightful owners) for unrest and revolts (PLAN 1.19).
+  initProvinceCores(world);
 
   // Alliances and guarantees (diplomacy.json).
   for (const a of diplomacy1938.alliances) {

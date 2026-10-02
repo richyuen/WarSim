@@ -1268,3 +1268,27 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   green, Switzerland grey. Evidence: `docs/evidence/1.18/puppets-world.png`, viewed (French and
   British colonial blocs read clearly).
 - Parity: rows 9, 10 and 11 → partial.
+
+## 2026-10-02 — PLAN 1.19: revolts (province/region), suppression, rebel nation spawn
+- **Province state** (`src/sim/provinces.ts`, saved): unrest and core per admin-1 province;
+  cores are initialised from the 1938 owners (`initProvinceCores`, which builds the nav graph at
+  creation).
+- **Revolt system** (`src/sim/systems/revolts.ts`, monthly):
+  - unrest drift;
+  - suppression cost and effect;
+  - a hash-drawn revolt chance;
+  - province or region area;
+  - `spawnRebels`: a new nation with land, core, capital, militia and gold, plus a 50% war.
+- **Capitals:** `relocateCapital` is factored out of `captureCapital`. Rebels taking a holder's
+  capital relocate the holder.
+- **State, commands and events:** `nations.suppression`/`origin`; setting `revoltMode` (saved in
+  `world.meta`); commands setSuppression, setUnrest, setSetting revoltMode; event RevoltSpawned.
+- **AT (`tests/unit/revolts.test.ts`, 6 tests):**
+  - calm 1938 start with cores;
+  - statistical: 40 non-adjacent Soviet provinces at unrest 100 → 35/40 revolt by 1 March
+    (84% expected), 11/40 under full suppression (29% expected);
+  - a rebel nation spawns with land, core, militia, and a consistent war state;
+  - region mode carries restless neighbours;
+  - non-core unrest +2 net and an exact suppression cost;
+  - save/load.
+- Parity: rows 16, 17 and 18 → partial.

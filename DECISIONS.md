@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-32 · 2026-10-02 · accepted — Province unrest with a monthly revolt chance; rebels as new nations
+**Decision.**
+- Unrest lives per admin-1 province with a saved core nation. Revolts are a monthly hash draw
+  above unrest 50, scaled by unrest and suppression.
+- A revolt creates a new nation with militia; with 50% the old holder declares war.
+- Region mode follows province adjacency.
+
+**Why.**
+- AoC tracks revolt progress per city and fires when the owner ends a war. Provinces are our
+  territorial unit (fronts, peace, cores), and a monthly chance keeps revolts in peacetime
+  empires too. Both are deviations, noted in PARITY row 16.
+- Hash draws make the statistical AT reproducible: 40 provinces in one sim, 35 vs 11 revolts in
+  3 months without and with suppression, against 84% and 29% expected.
+- Province cores are the seed of PLAN 1.20 (revival from cores), which will route revolts on
+  land with a dead rightful owner to that nation's revival.
+
 ### ADR-31 · 2026-10-02 · accepted — Puppet loyalty rises with autonomy; revolts need a push
 **Decision.**
 - Loyalty relaxes toward 40 + 0.6 × autonomy, minus 25 while the overlord is losing a war.

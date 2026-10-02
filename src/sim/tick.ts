@@ -52,7 +52,14 @@ function applyCommand(world: World, cmd: Command): void {
       orderMove(world, cmd.id, cmd.x, cmd.y);
       return;
     case 'setSetting':
-      world.settings[cmd.key] = cmd.value;
+      if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;
+      else world.settings.revoltMode = cmd.value;
+      return;
+    case 'setSuppression':
+      if (world.nations.has(cmd.nation)) world.nations.cols.suppression[cmd.nation] = Math.max(0, Math.min(1, cmd.level));
+      return;
+    case 'setUnrest':
+      if (cmd.province > 0 && cmd.province < world.provinces.count) world.provinces.unrest[cmd.province] = Math.max(0, Math.min(100, cmd.value));
       return;
     case 'paintControl':
       paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r);
