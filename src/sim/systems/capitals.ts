@@ -21,6 +21,7 @@ import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import type { World } from '../world';
 import { destroyFormation } from './elements';
+import { noteCapitalCaptured } from './war';
 
 export function capitalsSystem(world: World): void {
   const cc = world.cities.cols;
@@ -63,15 +64,16 @@ export function captureCapital(world: World, loser: number, capturer: number, ci
   const nc = world.nations.cols;
   const { owner, controller } = world.cells;
   world.out.emit(world.tick, EventKind.CapitalCaptured, loser, capturer, cc.x[city]!, cc.y[city]!);
+  noteCapitalCaptured(world, capturer, loser);
   cc.capitalOf[city] = 0;
   if (world.settings.winnerTakesAll) {
     // A rare event: one grid pass is acceptable here (not the hourly hot loop).
     for (let c = 0; c < controller.length; c++) {
       if (controller[c] === loser) {
-        owner[c] = capturer;
+        world.setOwner(c, capturer);
         world.setController(c, capturer);
       } else if (owner[c] === loser && controller[c] === capturer) {
-        owner[c] = capturer; // the capturer's own occupation of the loser becomes its land
+        world.setOwner(c, capturer); // the capturer's own occupation of the loser becomes its land
       }
     }
     eliminateNation(world, loser);

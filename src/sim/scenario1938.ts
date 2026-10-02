@@ -214,6 +214,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     n.incomeMult[id] = 1 + def.traits.reduce((s, t) => s + (traitIncome.get(t) ?? 0), 0);
     n.manpowerMult[id] = 1 + def.traits.reduce((s, t) => s + (traitManpower.get(t) ?? 0), 0);
     if (def.overlord) n.overlord[id] = tags.indexOf(def.overlord.tag) + 1;
+    n.fightToDeath[id] = def.fightToDeath ? 1 : 0;
   });
 
   // Cities keep their index into cities.json (`def`), so names resolve without state.
@@ -249,9 +250,12 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     equipFormation(world, id, ti); // sets strength from the elements
   }
 
-  // Wars in progress (diplomacy.json): every attacker is at war with every defender.
+  // Wars in progress (diplomacy.json), started before tick 0 (scores and exhaustion build from it).
   for (const war of diplomacy1938.wars) {
-    for (const a of war.attackers) for (const d of war.defenders) world.wars.set(tags.indexOf(a) + 1, tags.indexOf(d) + 1, true);
+    const a = war.attackers.map((t) => tags.indexOf(t) + 1);
+    const d = war.defenders.map((t) => tags.indexOf(t) + 1);
+    const ftd = (side: number[]): boolean => side.some((m) => world.nations.cols.fightToDeath[m] === 1);
+    world.wars.start(a, d, 0, [ftd(a), ftd(d)]);
   }
 
   // Starting treasury and manpower pool.

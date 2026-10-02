@@ -5,6 +5,7 @@
 import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation } from './systems/elements';
+import { declareWar, makePeace } from './systems/war';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -54,6 +55,19 @@ function applyCommand(world: World, cmd: Command): void {
     case 'paintControl':
       paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r);
       return;
+    case 'declareWar':
+      declareWar(world, cmd.attacker, cmd.defender);
+      return;
+    case 'forcePeace': {
+      const war = world.wars.list.find((w) => w.id === cmd.war);
+      if (war) makePeace(world, war);
+      return;
+    }
+    case 'setWarFightToDeath': {
+      const war = world.wars.list.find((w) => w.id === cmd.war);
+      if (war) war.fightToDeath[cmd.side] = cmd.value;
+      return;
+    }
   }
 }
 

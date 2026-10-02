@@ -26,6 +26,12 @@ export const EventKind = {
   CapitalMoved: 10,
   /** a = nation (global). */
   NationEliminated: 11,
+  /** a = attacker, b = defender (global; PLAN 1.16). */
+  WarDeclared: 12,
+  /** a = attacker, b = defender: dead, self, already at war, truce or puppet pair (global). */
+  WarRejected: 13,
+  /** a = winning leader, b = losing leader (global). */
+  PeaceSigned: 14,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

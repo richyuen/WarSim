@@ -14,7 +14,13 @@ export type Command =
   /** Global sim setting (PLAN 1.15): capturing a capital annexes the loser's territory. */
   | { kind: 'setSetting'; key: 'winnerTakesAll'; value: boolean }
   /** God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y). */
-  | { kind: 'paintControl'; nation: number; x: number; y: number; r: number };
+  | { kind: 'paintControl'; nation: number; x: number; y: number; r: number }
+  /** PLAN 1.16: `attacker` declares war on `defender` (each brings its puppets). */
+  | { kind: 'declareWar'; attacker: number; defender: number }
+  /** God Mode: conclude war `war` now on its current score. */
+  | { kind: 'forcePeace'; war: number }
+  /** God Mode "To Death": side 0 = attackers, 1 = defenders. */
+  | { kind: 'setWarFightToDeath'; war: number; side: 0 | 1; value: boolean };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

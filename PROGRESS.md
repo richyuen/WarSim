@@ -1175,3 +1175,34 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   untouched Poland keeps its fill. Evidence: `docs/evidence/1.15/occupation-poland.png`, viewed.
 - **Parity:** rows 13 (occupation), 14 (capital capture) and 15 (winner-takes-all) → partial.
   The deviation from AoC's death rule is in ADR-28.
+
+## 2026-10-02 — PLAN 1.16: wars, war score, exhaustion, peace, fightToDeath
+- **War records** (`src/sim/wars.ts`, saved): sides with leaders, score, capital bonus,
+  exhaustion, per-side fightToDeath, truces. `atWar` is a derived pair set (the old API is kept,
+  so combat, territory and movement are unchanged).
+- **War system** (`src/sim/systems/war.ts`, daily, runs last in the tick):
+  - score and exhaustion;
+  - broke, exhausted or crushed sides sue;
+  - terms: white peace, nearest-first share annexation, puppet at ≥ 90;
+  - a 2-year truce.
+- **Commands:** `declareWar` (puppets join, invalid ones emit WarRejected), `forcePeace`,
+  `setWarFightToDeath`.
+- **Other changes:**
+  - `nations.fightToDeath` comes from the scenario;
+  - the 1938 wars start as records (both are fight-to-the-death on at least one side);
+  - capital captures add ±25 to the war score;
+  - `World.setOwner` marks dirty tiles. This also fixes winner-takes-all owner changes not
+    reaching the renderer.
+- **AT (`tests/unit/war.test.ts`, 8 tests):**
+  - declaration with puppets and rejections;
+  - crushed (60% occupied) → full annexation, Poland a German puppet, truce blocks redeclaring;
+  - broke at score 40 → exactly round(0.4 × occupied) annexed, west (nearest) first, the rest
+    reverted;
+  - white peace at score 4 restores everything;
+  - fightToDeath: 60 days crushed and broke without peace;
+  - Warsaw capture gives +25 and God forcePeace works;
+  - save/load into a live sim is deterministic;
+  - 1938 war records are seeded.
+- **1938 check:** after 180 days both starting wars continue (fight to the death). Spain's score
+  is +4 and Japan–China's +16, with exhaustion rising.
+- Parity: rows 4 (peace and truces) and 5 (fight to the death) → partial.

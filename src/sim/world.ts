@@ -10,6 +10,7 @@ import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
 import { Table } from './core/table';
+import { Wars } from './wars';
 
 export interface PendingCommand {
   seq: number;
@@ -38,6 +39,8 @@ export const NATION_SCHEMA = {
   manpower: 'f64',
   /** Multiplier on manpower growth from traits (1 = none). */
   manpowerMult: 'f64',
+  /** 1 = never accepts peace (scenario flag; sides inherit it at declaration). */
+  fightToDeath: 'u8',
   /** Overlord nation id (0 = independent); puppets share their overlord's supply bloc. */
   overlord: 'u16',
 } as const;
@@ -234,48 +237,6 @@ export class TickOutputs {
 
 export const FIRE_STRIDE = 10;
 
-/** Pairs of nations at war (symmetric), kept as sorted keys lo·65536 + hi. */
-export class Wars implements Stateful {
-  private keys = new Set<number>();
-  private static key(a: number, b: number): number {
-    return a < b ? a * 65536 + b : b * 65536 + a;
-  }
-  atWar(a: number, b: number): boolean {
-    return a !== b && this.keys.has(Wars.key(a, b));
-  }
-  /** Bumped on every change (derived caches compare against it; not state). */
-  version = 0;
-  set(a: number, b: number, war: boolean): void {
-    if (a === b) return;
-    if (war) this.keys.add(Wars.key(a, b));
-    else this.keys.delete(Wars.key(a, b));
-    this.version++;
-  }
-  /** Ends every war of nation `n`. */
-  endAllOf(n: number): void {
-    for (const k of [...this.keys]) if (Math.floor(k / 65536) === n || k % 65536 === n) this.keys.delete(k);
-    this.version++;
-  }
-  /** Nations in at least one war. */
-  nations(): Set<number> {
-    const s = new Set<number>();
-    for (const k of this.keys) {
-      s.add(Math.floor(k / 65536));
-      s.add(k % 65536);
-    }
-    return s;
-  }
-  get size(): number {
-    return this.keys.size;
-  }
-  serialize(): Section[] {
-    return [{ name: 'wars.pairs', dtype: 'u32', data: Uint32Array.from([...this.keys].sort((p, q) => p - q)) }];
-  }
-  deserialize(sections: readonly Section[]): void {
-    this.keys = new Set(takeSection(sections, 'wars.pairs', 'u32'));
-    this.version++;
-  }
-}
 
 /** Scalar globals + RNG + command log. */
 class WorldCore implements Stateful {
@@ -389,6 +350,17 @@ export class World {
     c.controller[i] = nation;
     this.supplyDirty = true;
     if (!keepFrontier) this.frontier = null;
+    const x = i % c.w;
+    const y = (i - x) / c.w;
+    this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;
+  }
+
+  /** Sets the owner of cell `i` (peace terms, annexation, God Mode), marking its tile dirty. */
+  setOwner(i: number, nation: number): void {
+    const c = this.cells;
+    if (c.owner[i] === nation) return;
+    c.owner[i] = nation;
+    this.supplyDirty = true;
     const x = i % c.w;
     const y = (i - x) / c.w;
     this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;

@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-29 · 2026-10-02 · accepted — War score from occupation; peace terms by score share
+**Decision.**
+- War score is territorial: the occupied-share difference × 200 plus capital-capture swings.
+  It is recomputed daily from one grid pass, so it can't drift.
+- Exhaustion is time, men lost and land lost.
+- Peace terms annex a score-proportional share of the winner's occupation, nearest its own land
+  first; the rest reverts. A puppet at ≥ 90.
+- Fight to the death (per side) blocks peace both ways.
+- `Wars` keeps the hot-path `atWar` as a derived pair set over JSON war records.
+
+**Why.**
+- AoC peace is driven by broke or exhausted nations with land kept as occupied. A score made
+  from the map is legible (it is what the player sees) and deterministic. Score-share annexation
+  gives graded outcomes without per-province bargaining, which the AI will add later.
+- Nearest-first keeps annexed land contiguous with the winner instead of leaving islands.
+- The derived pair set keeps combat, territory and movement lookups O(1).
+- Test-design note: front flips need 16 h, so scripted occupations are applied right before a
+  00:00 assessment. A first attempt painted them a day earlier, and Polish divisions retook some
+  cells before the assessment.
+
 ### ADR-28 · 2026-10-02 · accepted — Capital loss without cores: relocate, field capital, eliminate on no land
 **Decision.**
 - Until cores exist (PLAN 1.21), a nation that loses its capital city moves it to its largest

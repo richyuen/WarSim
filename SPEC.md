@@ -364,6 +364,21 @@ tag → spec.
 ### 3.5 Diplomacy
 - **War** {id, attackers[], defenders[], leaders, goal, startTick, warScore,
   exhaustion per side, fightToDeath per side}
+  *Implemented v1 (PLAN 1.16, ADR-29; `src/sim/wars.ts`, `src/sim/systems/war.ts`):*
+  - *Records:* war records are saved as JSON. `atWar` is a derived pair set.
+  - *Declaration* (`declareWar`): each leader brings its puppets. It is rejected for self, dead
+    nations, an existing war, a truce, or an overlord–puppet pair.
+  - *Daily score:* 200 × (occupied share of the enemy's land − occupied share of own land) ±
+    25 per capital capture, clamped to ±100.
+  - *Exhaustion:* 0.1 per day + 80 × share of men lost since the war's first assessment +
+    60 × occupied share of own land.
+  - *Suing:* a side sues when broke (gold < 0 or bankrupt), exhausted (≥ 80) or crushed
+    (≤ −90). Neither side sues if either fights to the death.
+  - *Terms by |score|:* below 10 a white peace (all occupation reverts). Otherwise the winner
+    annexes round(|score|% of the loser's land it occupies), nearest its own land first (BFS),
+    and the rest reverts. At ≥ 90 it annexes all of it, and the loser's leader becomes a puppet.
+  - *After peace:* a 2-year truce between the leaders.
+  - *God commands:* `forcePeace`, `setWarFightToDeath`.
 - **Alliance / union** {id, nameKey, members[], leader, unity 0..100, loyalty per
   member}. Low unity → members leave and the alliance can dissolve.
 - **Puppet** relation {overlord, subject, autonomy 0..100, integration progress}.
