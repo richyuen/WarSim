@@ -675,6 +675,18 @@ and a history-log entry. The winner gets a **breakthrough corridor**: a temporar
 multiplier along the attack axis for D days that pierces the front. Losses on both sides
 are amplified. At strategic zoom this shows as a pulsing marker with crossed swords.
 
+*Implemented v1 (PLAN 1.23, ADR-35; `src/sim/systems/majorBattles.ts`, `src/sim/battles.ts`):*
+- *Trigger:* a derived battle group with ≥ 120,000 men becomes a saved Major Battle, named after
+  the nearest city. Later groups within 3 cells continue it, and its losses are amplified 1.5×.
+- *End:* when no group matches, it ends. The winner is the camp with more men still within 5 cells
+  (ties use the last observation); its strongest nation gets a corridor.
+- *Corridor:* from the battle toward the loser's centroid, 10 days, cells −1…8 along the axis and
+  ±2.5 across. Inside it the winner's pressure is ×2 and flip progress ×4.
+- *History:* start and end entries go to the saved history log. God `forceBreakthrough` creates a
+  won battle and its corridor.
+- *Absolute threshold:* the trigger is a fixed men count for now; the "relative to the local
+  front" refinement waits for the front model.
+
 ---
 
 ## 6. Differentiators

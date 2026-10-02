@@ -1372,3 +1372,33 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   out at 31 s under parallel load. It now has an explicit 90 s budget, assertions unchanged. The
   tick profile is unchanged (0.74 ms).
 - Parity: row 30 → partial.
+
+## 2026-10-02 — PLAN 1.23: Major Battles and the breakthrough corridor
+- **Saved Battles part** (`src/sim/battles.ts`): Major Battles, corridors and the history log.
+- **`updateMajorBattles`** (`src/sim/systems/majorBattles.ts`, called by combat):
+  - promotion at ≥ 120k men with 1.5× losses;
+  - ending by men still standing;
+  - a corridor for the winner;
+  - history and events.
+- **Territory:** corridor pressure ×2 and flip progress ×4.
+- **God `forceBreakthrough`.**
+- **Bug found:** winning by the last observation awarded the battle to a side that had just been
+  destroyed. The winner is now decided by men still standing near the battle.
+- **AT (`tests/unit/majorBattles.test.ts`, 4 tests):**
+  - 5 vs 5 divisions (132k men) start a Major Battle named after a city, with German infantry
+    shots exactly 1.5× those of a 1 vs 1;
+  - after Poland's army is destroyed it ends with Germany winning, and the history shows
+    start and end;
+  - the corridor points east for 10 days;
+  - a corridor makes the first flip happen at least 3× sooner, and 3+ flips in 12 hours where
+    the plain front has none;
+  - it is active at untilTick − 1 and gone at untilTick;
+  - save/load.
+- **Infra:** a parallel run once read an earth asset as corrupted ("incorrect data check",
+  unchanged file; two reruns clean). `tests/helpers/earth.ts` now retries the read up to 3 times.
+- Parity: row 29 → partial.
+- **Gate flakes under machine load** (e2e at 50–53 s against the usual 25 s):
+  1. The camera e2e page setup timed out once and passed on rerun.
+  2. The supply refresh perf test read a 60.3 ms mean against its 60 ms limit; the refresh takes
+     ~10 ms alone. It now asserts the fastest of 5 runs against the same 60 ms limit, measuring
+     the code rather than contention.

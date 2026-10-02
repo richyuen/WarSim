@@ -29,6 +29,8 @@ export type Command =
   /** PLAN 1.21 (God Mode, events): a timed buff/debuff lasting `hours` from the tick applied. */
   | { kind: 'grantBuff'; targetKind: 'nation' | 'formation' | 'province'; target: number; buff: 'income' | 'manpower' | 'attack' | 'defense' | 'speed' | 'unrest'; magnitude: number; hours: number; nameKey: string }
   | { kind: 'removeBuff'; id: number }
+  /** PLAN 1.23 God Mode: a custom Major Battle won by `nation`: a corridor from (x, y) to (toX, toY). */
+  | { kind: 'forceBreakthrough'; nation: number; x: number; y: number; toX: number; toY: number }
   | { kind: 'collapseNation'; nation: number }
   /** God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y). */
   | { kind: 'paintControl'; nation: number; x: number; y: number; r: number }

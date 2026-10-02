@@ -58,6 +58,10 @@ export const EventKind = {
   BuffGranted: 26,
   /** a = buff id, b = target: expired or removed (global). */
   BuffExpired: 27,
+  /** a = Major Battle id, b = nearest city row, (x, y) = battle centre (PLAN 1.23). */
+  MajorBattleStarted: 28,
+  /** a = Major Battle id, b = winning nation (0 = none), (x, y) = battle centre. */
+  MajorBattleEnded: 29,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

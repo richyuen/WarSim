@@ -19,6 +19,7 @@
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { neighbours4 } from '../nav/grid';
+import { CORRIDOR_PRESSURE, CORRIDOR_RATE, inCorridor } from './majorBattles';
 import type { World } from '../world';
 import { blocOf } from './supply';
 
@@ -103,7 +104,8 @@ export function territorySystem(world: World): void {
       for (const a of neighbours(world, c, nb)) {
         const an = controller[a]!;
         if (an === 0 || an === bestNation || !world.wars.atWar(an, d)) continue;
-        const p = (m.get(an) ?? 0) / (TERRAIN_DEF[terrain[c]!] ?? 1);
+        const corridor = inCorridor(world, an, c) ? CORRIDOR_PRESSURE : 1; // PLAN 1.23 breakthrough
+        const p = ((m.get(an) ?? 0) * corridor) / (TERRAIN_DEF[terrain[c]!] ?? 1);
         if (p > best || (p === best && an < bestNation)) {
           best = p;
           bestNation = an;
@@ -111,7 +113,7 @@ export function territorySystem(world: World): void {
       }
     }
     if (bestNation !== 0 && best > defence) {
-      flip[c] = flip[c]! + 1;
+      flip[c] = Math.min(255, flip[c]! + (inCorridor(world, bestNation, c) ? CORRIDOR_RATE : 1));
       if (flip[c]! >= HOLD_TICKS) flips.push([c, bestNation]);
     } else {
       flip[c] = 0;

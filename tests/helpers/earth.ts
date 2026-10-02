@@ -25,7 +25,15 @@ const manifest = JSON.parse(readFileSync(path.join(EARTH_DIR, 'manifest.json'), 
 export function earthAsset(kind: string, width?: number): Buffer {
   const a = manifest.assets.find((x) => x.kind === kind && (width === undefined || x.width === width));
   if (!a) throw new Error(`no asset ${kind}${width === undefined ? '' : ` @${width}`}`);
-  return gunzipSync(readFileSync(path.join(EARTH_DIR, a.path)));
+  // Retry: once (review after PLAN 1.22) a parallel suite run read a corrupted buffer of an
+  // unchanged asset ("incorrect data check") on Windows; re-reading the file succeeds.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return gunzipSync(readFileSync(path.join(EARTH_DIR, a.path)));
+    } catch (err) {
+      if (attempt >= 3) throw err;
+    }
+  }
 }
 
 let admin1: { geo: Admin1Geometry; meta: Admin1Meta[] } | undefined;

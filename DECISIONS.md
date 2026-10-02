@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-35 · 2026-10-02 · accepted — Major Battles by absolute concentration; winner by men still standing
+**Decision.**
+- A battle becomes Major at a fixed 120,000 committed men, rather than "relative to the local
+  front" as SPEC says.
+- The winner is decided by the men still standing near the battle when it ends.
+- The corridor speeds up flips (×4) and doubles pressure along a fixed strip for 10 days.
+
+**Why.**
+- There is no front-strength model yet to define "relative to the local front". An absolute
+  threshold is deterministic and testable, and a relative one can replace it with the fronts
+  layer.
+- The first rule, using the last observation, named the side that had just been wiped out as the
+  winner: its strength was still on record from the hour before. The test caught it.
+- Flip speed is how AoC's Major Battles "pierce the frontline". Speed, not reach, is the effect,
+  so the AT measures time to the first flip (16 h vs 4 h).
+
 ### ADR-34 · 2026-10-02 · accepted — CE re-evaluated monthly; static CE from aggression; cost from gross income
 **Decision.**
 - Combat efficiency updates at our economic tick, which is monthly; AoC's economic tick is every

@@ -25,6 +25,7 @@ import { sqrt } from '../core/dmath';
 import { slotPose } from '../core/pose';
 import type { World } from '../world';
 import { applyLoss, elementIndex, settleFormation } from './elements';
+import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
 export const CONTACT_CELLS = 1.5;
 const BUCKET_CELLS = 2;
@@ -110,6 +111,7 @@ export function findBattles(world: World): number[][] {
 
 export function combatSystem(world: World): void {
   const battles = findBattles(world);
+  const inMajor = updateMajorBattles(world, battles); // PLAN 1.23: also ends unmatched ones
   if (battles.length === 0) return;
   const rules = world.rules!;
   const units = rules.units;
@@ -123,6 +125,7 @@ export function combatSystem(world: World): void {
 
   for (const battle of battles) {
     const pending = new Map<number, number>();
+    const lossMult = inMajor.has(battle[0]!) ? MAJOR_LOSS_MULT : 1;
     for (const sf of battle) {
       const enemies = battle.filter((o) => world.wars.atWar(f.nation[sf]!, f.nation[o]!));
       const supplyFactor = 0.5 + 0.5 * f.supply[sf]!;
@@ -191,7 +194,7 @@ export function combatSystem(world: World): void {
         const ce = world.nations.cols.efficiency[f.nation[sf]!] || 1;
         const buffAtk = ce * Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
         const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
-        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk) / def / buffDef / ut.hpPerUnit;
+        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;

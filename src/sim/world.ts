@@ -13,6 +13,7 @@ import { Table } from './core/table';
 import { Alliances } from './alliances';
 import { Provinces } from './provinces';
 import { Buffs } from './buffs';
+import { Battles } from './battles';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 
@@ -328,6 +329,7 @@ export class World {
   alliances = new Alliances();
   provinces = new Provinces();
   buffs = new Buffs();
+  battles = new Battles();
   /**
    * Derived (not state): true when control, cities or overlords may have changed since the last
    * supply refresh. Skipping an unneeded refresh leaves exactly the layer a refresh would write.
@@ -395,7 +397,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles];
   }
 
   cellIndex(x: number, y: number): number {

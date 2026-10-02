@@ -10,6 +10,7 @@ import { leaveAlliance } from './systems/alliances';
 import { makePuppet, releasePuppet } from './systems/puppets';
 import { collapseNation, reviveOnCores } from './systems/revival';
 import { MAX_CE, MIN_CE } from './systems/efficiency';
+import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -76,6 +77,14 @@ function applyCommand(world: World, cmd: Command): void {
     case 'removeBuff': {
       const b = world.buffs.remove(cmd.id);
       if (b) world.out.emit(world.tick, EventKind.BuffExpired, b.id, b.target, NaN, NaN);
+      return;
+    }
+    case 'forceBreakthrough': {
+      if (!world.nations.has(cmd.nation)) return;
+      const id = world.battles.nextId++;
+      world.battles.history.push({ tick: world.tick, kind: EventKind.MajorBattleEnded, a: id, b: cmd.nation, x: cmd.x, y: cmd.y });
+      world.out.emit(world.tick, EventKind.MajorBattleEnded, id, cmd.nation, cmd.x, cmd.y);
+      addCorridor(world, cmd.nation, cmd.x, cmd.y, cmd.toX - cmd.x, cmd.toY - cmd.y);
       return;
     }
     case 'reviveNation':
