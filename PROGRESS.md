@@ -547,3 +547,23 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - Added a unit test for the border width.
   - Re-checked exported helpers for dead code (none besides the stat removed in 0.22).
   - From Phase 1 on, a review pass runs every 5 tasks.
+
+## 2026-10-02 — Phase 0 per-task verification iteration + boundary reviews
+- Ran an EVERY ITERATION pass over each Phase 0 task at HEAD:
+  - steps 1/2: state re-read, suite run;
+  - steps 3–5: the task's acceptance test re-executed via `npm run verify:phase0`
+    (`tools/verify-phase0.sh`, one AT command per task);
+  - step 7: this entry.
+- Result: **22/22 PASS**. Included:
+  - lint fixtures, the Playwright smoke test, ≥ 30 frames, parity validity, dmath golden bits in Node and
+    Chromium, PCG/xxHash vectors;
+  - table round trip and mutation hashing, I1–I5, the snapshot flow and pool, bench artefacts and ADR-4;
+  - precision ≤ 0.5 px, camera and wrap, data `--check` and manifest, province raster in Chromium == Node;
+  - the 10-year headless run, i18n, and the full gate.
+- Step 9 review passes at the 5-task boundaries, each over the code that group produced:
+  - 0.1–0.5 (config/tooling) and 0.6–0.10 (dmath/rng/hash): no debt found.
+  - 0.11–0.15: `Table` called `Object.keys(schema)` on every create/remove/zero-row (an allocation on a
+    hot path); the key list is now cached.
+  - 0.16–0.20: the bench runner triggered Node DEP0190 (`spawn` with `shell: true` + an args array);
+    it now passes one command string, and the warning count is 0.
+  - 0.21–0.22: covered by the 0.22 review and the audit remediation.

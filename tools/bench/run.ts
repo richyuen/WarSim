@@ -90,7 +90,8 @@ async function main(): Promise<void> {
   });
   mkdirSync(outDir, { recursive: true });
   execSync('npm run build', { cwd: root, stdio: 'inherit' });
-  const server: ChildProcess = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort', '--host', '127.0.0.1'], {
+  // One command string (no args array) with shell: true avoids Node's DEP0190 warning.
+  const server: ChildProcess = spawn(`npx vite preview --port ${PORT} --strictPort --host 127.0.0.1`, {
     cwd: root,
     shell: true,
     stdio: 'ignore',

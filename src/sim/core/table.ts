@@ -16,6 +16,8 @@ export type Columns<S extends Schema> = { [K in keyof S]: ArrayOf<S[K]> };
 export class Table<S extends Schema> {
   readonly name: string;
   readonly schema: S;
+  /** Column names in schema order, cached (create/remove are hot paths). */
+  private readonly keys: (keyof S & string)[];
   cols: Columns<S>;
   /** 1 = live row. */
   alive: Uint8Array;
@@ -29,6 +31,7 @@ export class Table<S extends Schema> {
   constructor(name: string, schema: S, initialCapacity = 64) {
     this.name = name;
     this.schema = schema;
+    this.keys = Object.keys(schema) as (keyof S & string)[];
     const cap = Math.max(2, initialCapacity);
     this.cols = Table.allocCols(schema, cap);
     this.alive = new Uint8Array(cap);
@@ -51,9 +54,7 @@ export class Table<S extends Schema> {
     let cap = this.capacity;
     while (cap < minCap) cap *= 2;
     const cols = Table.allocCols(this.schema, cap);
-    for (const key of Object.keys(this.schema) as (keyof S & string)[]) {
-      (cols[key] as ArrayOf<DType>).set(this.cols[key] as ArrayOf<DType>);
-    }
+    for (const key of this.keys) (cols[key] as ArrayOf<DType>).set(this.cols[key] as ArrayOf<DType>);
     this.cols = cols;
     const alive = new Uint8Array(cap);
     alive.set(this.alive);
@@ -93,7 +94,7 @@ export class Table<S extends Schema> {
   }
 
   private zeroRow(id: number): void {
-    for (const key of Object.keys(this.schema) as (keyof S & string)[]) (this.cols[key] as ArrayOf<DType>)[id] = 0;
+    for (const key of this.keys) (this.cols[key] as ArrayOf<DType>)[id] = 0;
   }
 
   /** Calls fn for every live id in ascending order. Rows created during iteration beyond the
@@ -134,7 +135,7 @@ export class Table<S extends Schema> {
     const alive = new Uint8Array(cap);
     alive.set(takeSection(sections, `${this.name}.alive`, 'u8'));
     const cols = Table.allocCols(this.schema, cap);
-    for (const key of Object.keys(this.schema) as (keyof S & string)[]) {
+    for (const key of this.keys) {
       const src = takeSection(sections, `${this.name}.${key}`, this.schema[key]!);
       if (src.length !== hw) throw new Error(`${this.name}.${key}: length ${src.length}, expected ${hw}`);
       (cols[key] as ArrayOf<DType>).set(src);

@@ -16,7 +16,8 @@
     "parity": "tsx tools/parity/cli.ts",
     "bench": "tsx tools/bench/run.ts",
     "data": "tsx tools/data/run.ts",
-    "sim": "tsx tools/headless/cli.ts"
+    "sim": "tsx tools/headless/cli.ts",
+    "verify:phase0": "bash tools/verify-phase0.sh"
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",
