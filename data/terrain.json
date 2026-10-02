@@ -1,0 +1,84 @@
+{
+  "terrain": [
+    {
+      "id": "water", "nameKey": "terrain.water", "color": "#24476b",
+      "moveCost": { "foot": null, "motor": null, "tracked": null },
+      "defense": 1, "attack": {}, "supplyAttrition": 0, "econWeight": 0
+    },
+    {
+      "id": "crossing", "nameKey": "terrain.crossing", "color": "#4f7397",
+      "moveCost": { "foot": 3, "motor": 4, "tracked": 4 },
+      "defense": 1.5,
+      "attack": { "armor_l": 0.7, "armor_m": 0.6, "armor_h": 0.5, "mech": 0.7, "art": 0.8 },
+      "supplyAttrition": 0.02, "econWeight": 0
+    },
+    {
+      "id": "plains", "nameKey": "terrain.plains", "color": "#9cae6b",
+      "moveCost": { "foot": 1, "motor": 1, "tracked": 1 },
+      "defense": 1, "attack": {}, "supplyAttrition": 0, "econWeight": 1
+    },
+    {
+      "id": "grassland", "nameKey": "terrain.grassland", "color": "#b4bf75",
+      "moveCost": { "foot": 1, "motor": 0.9, "tracked": 0.9 },
+      "defense": 0.95,
+      "attack": { "armor_l": 1.1, "armor_m": 1.1, "armor_h": 1.05, "mech": 1.1, "mot": 1.05, "cas": 1.1 },
+      "supplyAttrition": 0, "econWeight": 0.8
+    },
+    {
+      "id": "forest", "nameKey": "terrain.forest", "color": "#4d7a45",
+      "moveCost": { "foot": 1.5, "motor": 2, "tracked": 2 },
+      "defense": 1.25,
+      "attack": { "armor_l": 0.8, "armor_m": 0.75, "armor_h": 0.7, "mech": 0.85, "art": 0.9, "cas": 0.7, "bomber_tac": 0.8 },
+      "supplyAttrition": 0.01, "econWeight": 0.6
+    },
+    {
+      "id": "hills", "nameKey": "terrain.hills", "color": "#a89a6a",
+      "moveCost": { "foot": 1.5, "motor": 1.75, "tracked": 1.75 },
+      "defense": 1.3,
+      "attack": { "armor_l": 0.85, "armor_m": 0.8, "armor_h": 0.75, "mech": 0.85, "art": 0.9 },
+      "supplyAttrition": 0.01, "econWeight": 0.6
+    },
+    {
+      "id": "mountains", "nameKey": "terrain.mountains", "color": "#8a7f74",
+      "moveCost": { "foot": 2.5, "motor": 4, "tracked": 5 },
+      "defense": 1.6,
+      "attack": { "armor_l": 0.5, "armor_m": 0.45, "armor_h": 0.4, "mech": 0.6, "mot": 0.7, "art": 0.8, "cas": 0.8 },
+      "supplyAttrition": 0.03, "econWeight": 0.25
+    },
+    {
+      "id": "desert", "nameKey": "terrain.desert", "color": "#dcc58a",
+      "moveCost": { "foot": 1.2, "motor": 1.3, "tracked": 1.3 },
+      "defense": 1,
+      "attack": { "armor_l": 1.05, "armor_m": 1.05, "cas": 1.15 },
+      "supplyAttrition": 0.04, "econWeight": 0.15
+    },
+    {
+      "id": "tundra", "nameKey": "terrain.tundra", "color": "#a3b1a8",
+      "moveCost": { "foot": 1.4, "motor": 1.6, "tracked": 1.6 },
+      "defense": 1.05,
+      "attack": { "armor_l": 0.9, "armor_m": 0.9, "armor_h": 0.85 },
+      "supplyAttrition": 0.03, "econWeight": 0.2
+    },
+    {
+      "id": "marsh", "nameKey": "terrain.marsh", "color": "#6f8a6e",
+      "moveCost": { "foot": 2, "motor": 3, "tracked": 3.5 },
+      "defense": 1.3,
+      "attack": { "armor_l": 0.55, "armor_m": 0.5, "armor_h": 0.4, "mech": 0.6, "mot": 0.7, "art": 0.85 },
+      "supplyAttrition": 0.02, "econWeight": 0.3
+    },
+    {
+      "id": "urban", "nameKey": "terrain.urban", "color": "#8c8c8c",
+      "moveCost": { "foot": 1.1, "motor": 1.2, "tracked": 1.5 },
+      "defense": 1.5,
+      "attack": { "armor_l": 0.65, "armor_m": 0.6, "armor_h": 0.6, "mech": 0.8, "art": 0.85, "cas": 0.75, "bomber_str": 1.2 },
+      "supplyAttrition": 0, "econWeight": 3
+    },
+    {
+      "id": "ice", "nameKey": "terrain.ice", "color": "#e8eef2",
+      "moveCost": { "foot": 3, "motor": 5, "tracked": 5 },
+      "defense": 1.2,
+      "attack": { "armor_l": 0.6, "armor_m": 0.55, "armor_h": 0.5, "mech": 0.6 },
+      "supplyAttrition": 0.1, "econWeight": 0
+    }
+  ]
+}

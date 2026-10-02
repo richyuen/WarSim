@@ -1,0 +1,11 @@
+{
+  "techs": [
+    { "id": "destroyers_1", "nameKey": "tech.destroyers_1", "category": "naval", "year": 1936, "cost": { "gold": 60, "industry": 30, "days": 120 }, "prereqs": [], "modifiers": {} },
+    { "id": "cruisers_1", "nameKey": "tech.cruisers_1", "category": "naval", "year": 1936, "cost": { "gold": 80, "industry": 40, "days": 140 }, "prereqs": [], "modifiers": {} },
+    { "id": "battleships_1", "nameKey": "tech.battleships_1", "category": "naval", "year": 1936, "cost": { "gold": 110, "industry": 60, "days": 180 }, "prereqs": ["cruisers_1"], "modifiers": {} },
+    { "id": "carriers_1", "nameKey": "tech.carriers_1", "category": "naval", "year": 1936, "cost": { "gold": 120, "industry": 60, "days": 200 }, "prereqs": ["cruisers_1"], "modifiers": {} },
+    { "id": "submarines_1", "nameKey": "tech.submarines_1", "category": "naval", "year": 1936, "cost": { "gold": 60, "industry": 30, "days": 120 }, "prereqs": [], "modifiers": {} },
+    { "id": "sonar", "nameKey": "tech.sonar", "category": "naval", "year": 1940, "cost": { "gold": 90, "industry": 35, "days": 150 }, "prereqs": ["destroyers_1", "radio"], "modifiers": { "navalAttack": 0.05 } },
+    { "id": "naval_aviation", "nameKey": "tech.naval_aviation", "category": "naval", "year": 1939, "cost": { "gold": 100, "industry": 40, "days": 170 }, "prereqs": ["carriers_1", "fighters_1"], "modifiers": { "navalAttack": 0.05 } }
+  ]
+}

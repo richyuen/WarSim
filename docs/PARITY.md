@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 4.4%** (verified 0 · partial 7 · not started 73 · total 80)
+**Parity score: 5.0%** (verified 0 · partial 8 · not started 72 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -93,7 +93,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 75 | Random simulation setup | Random simulation: map + nation count, random cities, random names (cultures), random flags [TEXT 2026-10-02] | Seeded randomisation options (Phase 1) | not started |  | Baseline: "randomisation options" |
 | 76 | Seeded deterministic runs | No seed or replay is described [TEXT 2026-10-02] | PCG32 streams, dmath, invariants I1–I5 (PLAN 0.9–0.13) | partial | `tests/unit/determinism.test.ts`, `tests/e2e/worker.spec.ts`, `tests/unit/server.test.ts` | Baseline: "seeded, deterministic runs". Phase 0: invariants I1–I5 on the toy world (Node == worker). Missing: seed UI and the 1938 scenario |
 | 77 | 1938 world scenario | World Map 1938 scenario with a historical 1938 flag pack and preset diplomacy [TEXT 2026-10-02] | 1938 world from Natural Earth + hand assignment (PLAN 1.3–1.7) | not started |  | Baseline: start scenario |
-| 78 | Data-driven maps and years | Many default maps and scenarios (1792, 1914, 1938, 1956, current day; Europe, Asia, US …) [TEXT 2026-10-02] | JSON scenario data: new maps and years need no code changes (PLAN 1.1) | not started |  |  |
+| 78 | Data-driven maps and years | Many default maps and scenarios (1792, 1914, 1938, 1956, current day; Europe, Asia, US …) [TEXT 2026-10-02] | JSON scenario data: new maps and years need no code changes (PLAN 1.1) | partial | `tests/unit/data-schemas.test.ts`, `data/maps/earth/map.json`, `data/scenarios/1938/scenario.json` | 2026-10-02 (PLAN 1.1): maps (`map.json`) and scenarios (`scenario.json`) are zod-validated JSON and drive map geometry. Missing: a scenario registry read from `data/` (the `ScenarioId` union is still code), plus nations/ownership/OOB files (PLAN 1.3–1.7) |
 | 79 | Audio | Music tracks, war-declaration trumpet, sounds quieter when zoomed out [TEXT 2026-10-02] | Not in the PROMPT baseline; planned for Phase 7 polish | not started |  |  |
 | 80 | Scale and performance | v1.0: up to 100 nations; maps above 500k px "might not run well" [TEXT 2026-10-02] | At least 100 nations at 60 fps on a 2048×1024 map (SPEC §8, PLAN 0.14) | partial | `docs/bench/A-webgl2-map.json`, `docs/bench/B-webgl2-proxies.json` | Baseline: performance budget. Phase 0: 150-nation map 0.46 ms GPU/frame, 30k proxies 0.47 ms (RTX 4070 Ti; ADR-4 budget translation). Real-scenario sim budget pending |
 
@@ -108,7 +108,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 5 | Aircraft | Fighters, bombers, CAS, transports, airbases, range, air superiority, interception, strategic bombing, carrier air groups | not started |  | SPEC §6.3, Phase 5 |
 | 6 | AI nuclear weapons | AI research, build, stockpile and use with doctrine, retaliation and escalation logic; delivery, blast, fallout, MAD; God toggles | not started |  | SPEC §6.4, Phase 6 |
 | 7 | Supply and attrition | Supply network from capitals, cities and ports; encirclement attrition | not started |  | PLAN 1.12 |
-| 8 | Production, manpower and tech | Production queues, manpower, a 1936–1990+ tech tree gating unit types | not started |  | SPEC §3.7 |
+| 8 | Production, manpower and tech | Production queues, manpower, a 1936–1990+ tech tree gating unit types | partial | `data/tech/`, `tests/unit/data-schemas.test.ts` | SPEC §3.7. PLAN 1.1: 43-tech tree (1936–1952, 7 categories, acyclic, year-ordered) gates 28 unit types via `techReq`. No research or production system yet |
 | 9 | Deterministic worker sim | Pure seeded engine in a Web Worker; bit-identical save/load; replayable command log | partial | `tests/unit/determinism.test.ts`, `tests/e2e/worker.spec.ts`, `tests/e2e/snapshots.spec.ts` | SPEC §2, ADR-2, ADR-5. Phase 0: worker-hosted Sim, acked snapshots, I1–I5 on the toy world |
 | 10 | Resolution-independent real-geography map | Natural Earth coastlines and provinces; smooth borders and real detail at every zoom (no blocky pixels) | partial | `tests/unit/data-manifest.test.ts`, `docs/bench/R-provinces-M-europe.png`, `docs/bench/A-webgl2-map-z2-close.png` | ADR-1, ADR-7. Phase 0: NE land mask, ETOPO elevation, 4596 admin-1 provinces at load time, smooth borders |
 | 11 | Headless runner, soak and sweep tooling | Node runner with metrics, 30-minute soak, multi-seed multi-decade sweep | not started |  | SPEC §10 |

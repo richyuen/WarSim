@@ -1,0 +1,7 @@
+{
+  "techs": [
+    { "id": "radio", "nameKey": "tech.radio", "category": "electronics", "year": 1936, "cost": { "gold": 60, "industry": 20, "days": 110 }, "prereqs": [], "modifiers": { "org": 0.03 } },
+    { "id": "radar", "nameKey": "tech.radar", "category": "electronics", "year": 1939, "cost": { "gold": 110, "industry": 40, "days": 170 }, "prereqs": ["radio"], "modifiers": { "airDefense": 0.1, "aaStrength": 0.1 } },
+    { "id": "computing", "nameKey": "tech.computing", "category": "electronics", "year": 1943, "cost": { "gold": 150, "industry": 40, "days": 220 }, "prereqs": ["radar"], "modifiers": { "research": 0.1 } }
+  ]
+}

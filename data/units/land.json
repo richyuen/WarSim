@@ -1,0 +1,97 @@
+{
+  "types": [
+    {
+      "id": "infantry", "nameKey": "unit.infantry", "class": "inf", "domain": "land", "elementSize": 500, "mobility": "foot",
+      "stats": { "soft": 6, "hard": 1, "defense": 20, "breakthrough": 3, "armor": 0, "piercing": 2, "aa": 0.5, "range_km": 1, "speed_kmh": 4, "org": 60, "hpPerUnit": 1, "detection": 5, "stealth": 5, "fuelPerHour": 0, "supplyPerHour": 0.1 },
+      "cost": { "gold": 10, "industry": 5, "manpower": 500, "days": 30 },
+      "upkeep": { "gold": 0.5, "supply": 0.1 },
+      "terrainMods": { "forest": { "atk": 1, "def": 1.1, "speed": 1 }, "urban": { "atk": 1.05, "def": 1.15, "speed": 1 } }
+    },
+    {
+      "id": "infantry_motorised", "nameKey": "unit.infantry_motorised", "class": "mot", "domain": "land", "elementSize": 500, "mobility": "motor",
+      "stats": { "soft": 6, "hard": 1, "defense": 18, "breakthrough": 4, "armor": 0, "piercing": 2, "aa": 0.5, "range_km": 1, "speed_kmh": 12, "org": 60, "hpPerUnit": 1, "detection": 6, "stealth": 4, "fuelPerHour": 0.2, "supplyPerHour": 0.15 },
+      "cost": { "gold": 18, "industry": 10, "manpower": 500, "days": 40 },
+      "upkeep": { "gold": 0.9, "supply": 0.15 },
+      "terrainMods": { "mountains": { "atk": 0.9, "def": 1, "speed": 0.6 }, "marsh": { "atk": 0.9, "def": 1, "speed": 0.6 } },
+      "techReq": "motorisation"
+    },
+    {
+      "id": "infantry_mechanised", "nameKey": "unit.infantry_mechanised", "class": "mech", "domain": "land", "elementSize": 500, "mobility": "tracked",
+      "stats": { "soft": 8, "hard": 3, "defense": 22, "breakthrough": 8, "armor": 4, "piercing": 6, "aa": 1, "range_km": 1, "speed_kmh": 14, "org": 65, "hpPerUnit": 1.3, "detection": 6, "stealth": 3, "fuelPerHour": 0.4, "supplyPerHour": 0.2 },
+      "cost": { "gold": 30, "industry": 22, "manpower": 500, "days": 60 },
+      "upkeep": { "gold": 1.5, "supply": 0.2 },
+      "terrainMods": {},
+      "techReq": "mechanisation"
+    },
+    {
+      "id": "artillery", "nameKey": "unit.artillery", "class": "art", "domain": "land", "elementSize": 12, "mobility": "foot",
+      "stats": { "soft": 25, "hard": 3, "defense": 4, "breakthrough": 2, "armor": 0, "piercing": 5, "aa": 0, "range_km": 12, "speed_kmh": 4, "org": 30, "hpPerUnit": 6, "detection": 3, "stealth": 3, "fuelPerHour": 0, "supplyPerHour": 0.3 },
+      "cost": { "gold": 12, "industry": 10, "manpower": 120, "days": 30 },
+      "upkeep": { "gold": 0.6, "supply": 0.3 },
+      "terrainMods": {}
+    },
+    {
+      "id": "artillery_heavy", "nameKey": "unit.artillery_heavy", "class": "art", "domain": "land", "elementSize": 12, "mobility": "motor",
+      "stats": { "soft": 34, "hard": 6, "defense": 4, "breakthrough": 3, "armor": 0, "piercing": 8, "aa": 0, "range_km": 20, "speed_kmh": 8, "org": 30, "hpPerUnit": 8, "detection": 3, "stealth": 2, "fuelPerHour": 0.2, "supplyPerHour": 0.45 },
+      "cost": { "gold": 20, "industry": 18, "manpower": 150, "days": 45 },
+      "upkeep": { "gold": 1, "supply": 0.45 },
+      "terrainMods": {},
+      "techReq": "artillery_2"
+    },
+    {
+      "id": "anti_tank", "nameKey": "unit.anti_tank", "class": "at", "domain": "land", "elementSize": 12, "mobility": "foot",
+      "stats": { "soft": 4, "hard": 18, "defense": 6, "breakthrough": 1, "armor": 0, "piercing": 45, "aa": 0, "range_km": 1.5, "speed_kmh": 4, "org": 30, "hpPerUnit": 5, "detection": 3, "stealth": 6, "fuelPerHour": 0, "supplyPerHour": 0.15 },
+      "cost": { "gold": 10, "industry": 9, "manpower": 100, "days": 25 },
+      "upkeep": { "gold": 0.5, "supply": 0.15 },
+      "terrainMods": { "urban": { "atk": 1.1, "def": 1.2, "speed": 1 }, "forest": { "atk": 1.05, "def": 1.15, "speed": 1 } },
+      "techReq": "anti_tank_guns"
+    },
+    {
+      "id": "anti_air", "nameKey": "unit.anti_air", "class": "aa", "domain": "land", "elementSize": 12, "mobility": "foot",
+      "stats": { "soft": 3, "hard": 4, "defense": 4, "breakthrough": 1, "armor": 0, "piercing": 20, "aa": 30, "range_km": 4, "speed_kmh": 4, "org": 30, "hpPerUnit": 5, "detection": 8, "stealth": 3, "fuelPerHour": 0, "supplyPerHour": 0.15 },
+      "cost": { "gold": 10, "industry": 9, "manpower": 100, "days": 25 },
+      "upkeep": { "gold": 0.5, "supply": 0.15 },
+      "terrainMods": {}
+    },
+    {
+      "id": "tank_light", "nameKey": "unit.tank_light", "class": "armor_l", "domain": "land", "elementSize": 10, "mobility": "tracked",
+      "stats": { "soft": 14, "hard": 6, "defense": 6, "breakthrough": 18, "armor": 15, "piercing": 18, "aa": 0.5, "range_km": 1, "speed_kmh": 16, "org": 40, "hpPerUnit": 30, "detection": 5, "stealth": 3, "fuelPerHour": 1, "supplyPerHour": 0.3 },
+      "cost": { "gold": 25, "industry": 25, "manpower": 40, "days": 60 },
+      "upkeep": { "gold": 1.2, "supply": 0.3 },
+      "terrainMods": {},
+      "techReq": "armor_light_1"
+    },
+    {
+      "id": "tank_medium", "nameKey": "unit.tank_medium", "class": "armor_m", "domain": "land", "elementSize": 10, "mobility": "tracked",
+      "stats": { "soft": 20, "hard": 14, "defense": 9, "breakthrough": 28, "armor": 45, "piercing": 50, "aa": 0.5, "range_km": 1.5, "speed_kmh": 13, "org": 40, "hpPerUnit": 45, "detection": 5, "stealth": 2, "fuelPerHour": 1.5, "supplyPerHour": 0.4 },
+      "cost": { "gold": 40, "industry": 45, "manpower": 50, "days": 75 },
+      "upkeep": { "gold": 2, "supply": 0.4 },
+      "terrainMods": {},
+      "techReq": "armor_medium_1"
+    },
+    {
+      "id": "tank_medium_2", "nameKey": "unit.tank_medium_2", "class": "armor_m", "domain": "land", "elementSize": 10, "mobility": "tracked",
+      "stats": { "soft": 24, "hard": 20, "defense": 11, "breakthrough": 34, "armor": 70, "piercing": 80, "aa": 0.5, "range_km": 1.8, "speed_kmh": 14, "org": 45, "hpPerUnit": 55, "detection": 6, "stealth": 2, "fuelPerHour": 1.6, "supplyPerHour": 0.45 },
+      "cost": { "gold": 50, "industry": 55, "manpower": 50, "days": 80 },
+      "upkeep": { "gold": 2.4, "supply": 0.45 },
+      "terrainMods": {},
+      "techReq": "armor_medium_2"
+    },
+    {
+      "id": "tank_heavy", "nameKey": "unit.tank_heavy", "class": "armor_h", "domain": "land", "elementSize": 10, "mobility": "tracked",
+      "stats": { "soft": 22, "hard": 26, "defense": 14, "breakthrough": 32, "armor": 110, "piercing": 120, "aa": 0.5, "range_km": 2, "speed_kmh": 9, "org": 35, "hpPerUnit": 70, "detection": 5, "stealth": 1, "fuelPerHour": 2.5, "supplyPerHour": 0.6 },
+      "cost": { "gold": 70, "industry": 85, "manpower": 55, "days": 110 },
+      "upkeep": { "gold": 3.5, "supply": 0.6 },
+      "terrainMods": { "marsh": { "atk": 0.8, "def": 1, "speed": 0.7 } },
+      "techReq": "armor_heavy_1"
+    },
+    {
+      "id": "tank_mbt", "nameKey": "unit.tank_mbt", "class": "armor_m", "domain": "land", "elementSize": 10, "mobility": "tracked",
+      "stats": { "soft": 30, "hard": 34, "defense": 16, "breakthrough": 40, "armor": 140, "piercing": 160, "aa": 1, "range_km": 2.5, "speed_kmh": 16, "org": 50, "hpPerUnit": 80, "detection": 8, "stealth": 2, "fuelPerHour": 2, "supplyPerHour": 0.6 },
+      "cost": { "gold": 80, "industry": 95, "manpower": 45, "days": 120 },
+      "upkeep": { "gold": 4, "supply": 0.6 },
+      "terrainMods": {},
+      "techReq": "armor_mbt"
+    }
+  ]
+}

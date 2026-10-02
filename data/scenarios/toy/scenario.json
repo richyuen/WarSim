@@ -1,0 +1,15 @@
+{
+  "id": "toy",
+  "nameKey": "scenario.toy",
+  "descKey": "scenario.toy.desc",
+  "map": "toy",
+  "startDate": "1938-01-01",
+  "settings": {
+    "combatEfficiency": "dynamic",
+    "winnerTakesAll": false,
+    "loopingMap": true,
+    "nukesEnabled": false,
+    "aiEnabled": true,
+    "revival": { "maxPerNation": 0, "cooldownDays": 0 }
+  }
+}

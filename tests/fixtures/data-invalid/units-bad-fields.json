@@ -1,0 +1,47 @@
+{
+  "types": [
+    {
+      "id": "bad_ship",
+      "nameKey": "unit.infantry",
+      "class": "dd",
+      "domain": "land",
+      "elementSize": 500,
+      "mobility": "foot",
+      "stats": {
+        "soft": 6,
+        "hard": 1,
+        "defense": 20,
+        "breakthrough": 3,
+        "armor": 0,
+        "piercing": 2,
+        "aa": 0.5,
+        "range_km": 1,
+        "speed_kmh": 4,
+        "org": 60,
+        "hpPerUnit": 1,
+        "detection": 5,
+        "stealth": 5,
+        "fuelPerHour": 0,
+        "supplyPerHour": 0.1
+      },
+      "cost": {
+        "gold": 10,
+        "industry": 5,
+        "manpower": 500,
+        "days": 30
+      },
+      "upkeep": {
+        "gold": 0.5,
+        "supply": 0.1
+      },
+      "terrainMods": {
+        "lava": {
+          "atk": 1,
+          "def": 1,
+          "speed": 1
+        }
+      },
+      "speed": 3
+    }
+  ]
+}

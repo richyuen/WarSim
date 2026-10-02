@@ -1,0 +1,10 @@
+{
+  "buildings": [
+    { "id": "industry", "nameKey": "building.industry", "maxLevel": 10, "cost": { "gold": 60, "industry": 30, "days": 180 }, "upkeep": { "gold": 0.5 }, "coastalOnly": false, "perLevel": { "industryOutput": 1 } },
+    { "id": "fort", "nameKey": "building.fort", "maxLevel": 5, "cost": { "gold": 40, "industry": 25, "days": 120 }, "upkeep": { "gold": 0.3 }, "coastalOnly": false, "perLevel": { "defense": 0.15 } },
+    { "id": "airbase", "nameKey": "building.airbase", "maxLevel": 5, "cost": { "gold": 35, "industry": 20, "days": 90 }, "upkeep": { "gold": 0.4 }, "coastalOnly": false, "perLevel": { "airCapacity": 50 } },
+    { "id": "port", "nameKey": "building.port", "maxLevel": 5, "cost": { "gold": 30, "industry": 20, "days": 120 }, "upkeep": { "gold": 0.3 }, "coastalOnly": true, "perLevel": { "supplyThroughput": 2 } },
+    { "id": "navalBase", "nameKey": "building.navalBase", "maxLevel": 5, "cost": { "gold": 60, "industry": 40, "days": 240 }, "upkeep": { "gold": 0.6 }, "coastalOnly": true, "perLevel": { "shipCapacity": 8, "shipRepair": 0.02 } },
+    { "id": "aa", "nameKey": "building.aa", "maxLevel": 5, "cost": { "gold": 25, "industry": 15, "days": 60 }, "upkeep": { "gold": 0.2 }, "coastalOnly": false, "perLevel": { "aaStrength": 0.2 } }
+  ]
+}

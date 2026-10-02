@@ -1,0 +1,18 @@
+{
+  "traits": [
+    { "id": "militarist", "nameKey": "trait.militarist", "descKey": "trait.militarist.desc", "modifiers": { "landAttack": 0.1, "org": 0.05, "stability": -0.05 }, "aggressionBias": 20, "excludes": ["pacifist"] },
+    { "id": "pacifist", "nameKey": "trait.pacifist", "descKey": "trait.pacifist.desc", "modifiers": { "stability": 0.1, "income": 0.05, "warExhaustion": 0.25 }, "aggressionBias": -25, "excludes": ["militarist"] },
+    { "id": "expansionist", "nameKey": "trait.expansionist", "descKey": "trait.expansionist.desc", "modifiers": { "warExhaustion": -0.15 }, "aggressionBias": 15, "excludes": ["isolationist"] },
+    { "id": "isolationist", "nameKey": "trait.isolationist", "descKey": "trait.isolationist.desc", "modifiers": { "landDefense": 0.05, "stability": 0.05 }, "aggressionBias": -15, "excludes": ["expansionist"] },
+    { "id": "industrial", "nameKey": "trait.industrial", "descKey": "trait.industrial.desc", "modifiers": { "industry": 0.15, "buildSpeed": 0.1 }, "aggressionBias": 0, "excludes": [] },
+    { "id": "mercantile", "nameKey": "trait.mercantile", "descKey": "trait.mercantile.desc", "modifiers": { "income": 0.15 }, "aggressionBias": -5, "excludes": [] },
+    { "id": "naval_tradition", "nameKey": "trait.naval_tradition", "descKey": "trait.naval_tradition.desc", "modifiers": { "navalAttack": 0.15 }, "aggressionBias": 0, "excludes": [] },
+    { "id": "air_minded", "nameKey": "trait.air_minded", "descKey": "trait.air_minded.desc", "modifiers": { "airAttack": 0.1, "airDefense": 0.05 }, "aggressionBias": 0, "excludes": [] },
+    { "id": "armored_doctrine", "nameKey": "trait.armored_doctrine", "descKey": "trait.armored_doctrine.desc", "modifiers": { "armorAttack": 0.15 }, "aggressionBias": 5, "excludes": [] },
+    { "id": "mass_mobilisation", "nameKey": "trait.mass_mobilisation", "descKey": "trait.mass_mobilisation.desc", "modifiers": { "manpower": 0.25, "org": -0.05 }, "aggressionBias": 0, "excludes": [] },
+    { "id": "fortifier", "nameKey": "trait.fortifier", "descKey": "trait.fortifier.desc", "modifiers": { "fortStrength": 0.25, "landDefense": 0.05 }, "aggressionBias": -5, "excludes": [] },
+    { "id": "authoritarian", "nameKey": "trait.authoritarian", "descKey": "trait.authoritarian.desc", "modifiers": { "revoltSuppression": 0.2, "research": -0.05 }, "aggressionBias": 5, "excludes": ["democratic"] },
+    { "id": "democratic", "nameKey": "trait.democratic", "descKey": "trait.democratic.desc", "modifiers": { "stability": 0.1, "research": 0.05, "warExhaustion": 0.15 }, "aggressionBias": -10, "excludes": ["authoritarian"] },
+    { "id": "revolutionary", "nameKey": "trait.revolutionary", "descKey": "trait.revolutionary.desc", "modifiers": { "manpower": 0.1, "stability": -0.1 }, "aggressionBias": 10, "excludes": [] }
+  ]
+}

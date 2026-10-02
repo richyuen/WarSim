@@ -1,0 +1,15 @@
+{
+  "id": "earth",
+  "nameKey": "mapdef.earth",
+  "projection": { "type": "miller", "latTopDeg": 80, "latBottomDeg": -64.16507274496172 },
+  "widthKm": 40075,
+  "sizes": [
+    { "id": "S", "w": 1024, "h": 512 },
+    { "id": "M", "w": 2048, "h": 1024 },
+    { "id": "L", "w": 4096, "h": 2048 },
+    { "id": "XL", "w": 6144, "h": 3072 }
+  ],
+  "defaultSize": "M",
+  "wrapX": true,
+  "assets": "data/earth/manifest.json"
+}

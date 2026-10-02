@@ -166,3 +166,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 **Consequences.** L/XL maps derive terrain from the cached 4096 level offline (scenario build), never at
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
+
+### ADR-14 · 2026-10-02 · accepted — Data schemas: zod v4, strict objects, one validator for every `data/` file
+**Decision.**
+- Every JSON file under `data/` has a zod schema in `src/sim/data/schemas.ts`. `DATA_FILES` maps
+  path patterns to schemas, and a file under an unknown path fails validation. The sim may import
+  `zod` (ADR-2 allowlist).
+- Objects are `strictObject`: an unknown key is an error, which catches typos such as `speed` vs `speed_kmh`.
+- The cross-file checks that one schema cannot express live in `validateDataSet`:
+  - unique ids;
+  - references: techReq, prereqs, trait excludes (both ways), scenario map and size;
+  - the tech graph is acyclic and prereqs are not later than the tech;
+  - the terrain table is in cell-enum order.
+- The i18n catalog check (every nameKey/descKey in `en.json`) runs in the test, because the sim may
+  not import UI code.
+- Errors read `<file>: <path>: <message>`, using zod's own messages.
+- Map geometry is data: `data/maps/<id>/map.json` + `data/scenarios/<id>/scenario.json` drive
+  `SCENARIO_GEOMETRY` (toy today, earth/1938 from PLAN 1.3). JSON imports in `src/` carry
+  `with { type: 'json' }`, because Playwright loads `src/` in plain Node ESM.
+- The unit `sprite` field (SPEC §3.6) is deferred to the Phase 2 unit atlas. Under strict schemas it
+  must be added to schema and data together.
+
+**Why.** Data-driven design (PROMPT) only works if bad data fails loudly and points at the field. zod
+v4 gives typed inference from the same schema, and is pure and deterministic (allowed in the sim).
+
+**Consequences.** All stats in `data/units`, `data/tech` and `data/terrain.json` are first-pass values,
+original to this project. Balance is tuned in Phase 3–7 against the SPEC §5 combat model. Starting
+tech per nation arrives with the nations file (PLAN 1.4).

@@ -1,0 +1,12 @@
+{
+  "techs": [
+    { "id": "infantry_weapons_1", "nameKey": "tech.infantry_weapons_1", "category": "land", "year": 1936, "cost": { "gold": 50, "industry": 15, "days": 100 }, "prereqs": [], "modifiers": { "landAttack": 0.05 } },
+    { "id": "infantry_weapons_2", "nameKey": "tech.infantry_weapons_2", "category": "land", "year": 1939, "cost": { "gold": 80, "industry": 25, "days": 140 }, "prereqs": ["infantry_weapons_1"], "modifiers": { "landAttack": 0.05, "landDefense": 0.05 } },
+    { "id": "motorisation", "nameKey": "tech.motorisation", "category": "land", "year": 1936, "cost": { "gold": 60, "industry": 25, "days": 120 }, "prereqs": [], "modifiers": {} },
+    { "id": "mechanisation", "nameKey": "tech.mechanisation", "category": "land", "year": 1940, "cost": { "gold": 110, "industry": 45, "days": 180 }, "prereqs": ["motorisation", "armor_light_1"], "modifiers": {} },
+    { "id": "artillery_1", "nameKey": "tech.artillery_1", "category": "land", "year": 1936, "cost": { "gold": 50, "industry": 20, "days": 100 }, "prereqs": [], "modifiers": { "landAttack": 0.03 } },
+    { "id": "artillery_2", "nameKey": "tech.artillery_2", "category": "land", "year": 1940, "cost": { "gold": 90, "industry": 35, "days": 150 }, "prereqs": ["artillery_1", "motorisation"], "modifiers": {} },
+    { "id": "anti_tank_guns", "nameKey": "tech.anti_tank_guns", "category": "land", "year": 1937, "cost": { "gold": 60, "industry": 25, "days": 110 }, "prereqs": ["artillery_1"], "modifiers": {} },
+    { "id": "fortification", "nameKey": "tech.fortification", "category": "land", "year": 1936, "cost": { "gold": 60, "industry": 30, "days": 120 }, "prereqs": [], "modifiers": { "fortStrength": 0.15 } }
+  ]
+}

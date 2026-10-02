@@ -74,7 +74,7 @@ src/sim/core/      table.ts (SoA + free lists), sections.ts (typed-array section
 src/sim/systems/   economy, production, supply, movement, engagement, combat,
                    territory, diplomacy, revolts, naval, air, nuclear, buffs, history
 src/sim/ai/        strategic, operational, economic, nuclear
-src/sim/data/      projection.ts (Miller), rasterize.ts, provinces.ts; later zod schemas + loaders
+src/sim/data/      projection.ts (Miller), rasterize.ts, provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet)
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
 src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
@@ -86,7 +86,8 @@ src/editor/        paint tools, undo stack, flag editor, scenario IO
 src/app/           main.tsx, MapView.ts, simClient.ts, input/ (CameraController), testApi.ts (__warsim),
                    bench/ (bench.html pages); later settings, autosave, screenshot
 tools/             data/, headless/, parity/, bench/, dmath/, eslint/; later soak/, sweep/
-data/              units/, tech/, traits/, buildings/, scenarios/1938/, maps/earth/
+data/              terrain.json, units/, tech/, traits/, buildings/, maps/<id>/map.json, scenarios/<id>/scenario.json
+                   (every file validated by tests/unit/data-schemas.test.ts; unknown paths are rejected)
 public/data/       generated map assets + manifest.json (sha256)
 tests/unit, tests/e2e
 ```
@@ -217,9 +218,17 @@ wall-clock time, render state or subscriptions.
 | flags | u8 | COAST, RIVER, FALLOUT(level 0–3 in 2 bits), FORT, ... |
 | pressure | i16 | transient, frontier cells only (stored in a sparse frontier table, not a full array) |
 
-Terrain table (`data/terrain.json`): moveCost per mobility class (foot, motor,
-tracked), defence modifier, attack modifiers per unit class, supply attrition,
+Terrain table (`data/terrain.json`, in enum order): moveCost per mobility class (foot, motor,
+tracked; null = impassable), defence modifier, attack modifiers per unit class, supply attrition,
 econ weight, colour.
+
+**Data files (PLAN 1.1).** zod schemas in `src/sim/data/schemas.ts`, strict objects (unknown keys
+are errors). Cross-file checks: unique ids per kind, `techReq`/`prereqs`/`excludes` references,
+prereq years ≤ tech year, acyclic tech graph, scenario → map/size, `loopingMap` only on wrapping maps,
+and every `nameKey`/`descKey` present in `en.json`. Map meta: `data/maps/<id>/map.json` (projection,
+widthKm, sizes, defaultSize, wrapX, assets manifest). Scenario meta: `data/scenarios/<id>/scenario.json`
+(map, size, startDate, settings). Nations, ownership, cities and OOB files join the scenario in
+PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
 
 ### 3.3 Provinces, cities, sea zones, air zones
 - **Province raster** (PLAN 0.19): built at load time in the worker from `admin1-geometry.wsz` +
@@ -272,7 +281,9 @@ UnitType (data/units/*.json) {
   stats {soft, hard, defense, breakthrough, armor, piercing, aa, range_km,
          speed_kmh, org, hpPerUnit, detection, stealth, fuelPerHour, supplyPerHour};
   cost {gold, industry, manpower, days}; upkeep {gold, supply};
-  terrainMods {[terrain]: {atk, def, speed}}; techReq?; sprite {atlas, frames}
+  terrainMods {[terrain]: {atk, def, speed}}; techReq?
+  // sprite {atlas, frames} is added with the unit atlas (Phase 2); schemas are strict, so the
+  // field must land in schemas.ts and the data together.
 }
 Formation {
   id u32; nation; kind: 'land'|'fleet'|'airwing'; templateId; x,y f64; facing f32;

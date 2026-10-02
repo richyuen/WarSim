@@ -1,0 +1,10 @@
+{
+  "techs": [
+    { "id": "armor_light_1", "nameKey": "tech.armor_light_1", "category": "armor", "year": 1936, "cost": { "gold": 70, "industry": 30, "days": 120 }, "prereqs": [], "modifiers": {} },
+    { "id": "armor_medium_1", "nameKey": "tech.armor_medium_1", "category": "armor", "year": 1938, "cost": { "gold": 110, "industry": 50, "days": 170 }, "prereqs": ["armor_light_1"], "modifiers": {} },
+    { "id": "armor_medium_2", "nameKey": "tech.armor_medium_2", "category": "armor", "year": 1941, "cost": { "gold": 140, "industry": 60, "days": 200 }, "prereqs": ["armor_medium_1"], "modifiers": { "armorAttack": 0.05 } },
+    { "id": "armor_heavy_1", "nameKey": "tech.armor_heavy_1", "category": "armor", "year": 1942, "cost": { "gold": 170, "industry": 75, "days": 240 }, "prereqs": ["armor_medium_1"], "modifiers": {} },
+    { "id": "armored_doctrine", "nameKey": "tech.armored_doctrine", "category": "armor", "year": 1939, "cost": { "gold": 90, "industry": 20, "days": 150 }, "prereqs": ["armor_medium_1", "radio"], "modifiers": { "armorAttack": 0.1, "org": 0.05 } },
+    { "id": "armor_mbt", "nameKey": "tech.armor_mbt", "category": "armor", "year": 1950, "cost": { "gold": 260, "industry": 110, "days": 320 }, "prereqs": ["armor_heavy_1", "armor_medium_2"], "modifiers": {} }
+  ]
+}

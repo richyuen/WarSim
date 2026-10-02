@@ -1,0 +1,16 @@
+{
+  "id": "1938",
+  "nameKey": "scenario.1938",
+  "descKey": "scenario.1938.desc",
+  "map": "earth",
+  "size": "M",
+  "startDate": "1938-01-01",
+  "settings": {
+    "combatEfficiency": "dynamic",
+    "winnerTakesAll": false,
+    "loopingMap": true,
+    "nukesEnabled": true,
+    "aiEnabled": true,
+    "revival": { "maxPerNation": 3, "cooldownDays": 1825 }
+  }
+}

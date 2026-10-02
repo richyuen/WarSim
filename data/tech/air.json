@@ -1,0 +1,13 @@
+{
+  "techs": [
+    { "id": "fighters_1", "nameKey": "tech.fighters_1", "category": "air", "year": 1936, "cost": { "gold": 70, "industry": 30, "days": 120 }, "prereqs": [], "modifiers": {} },
+    { "id": "fighters_2", "nameKey": "tech.fighters_2", "category": "air", "year": 1940, "cost": { "gold": 110, "industry": 45, "days": 170 }, "prereqs": ["fighters_1"], "modifiers": { "airAttack": 0.05 } },
+    { "id": "jet_engines", "nameKey": "tech.jet_engines", "category": "air", "year": 1944, "cost": { "gold": 200, "industry": 80, "days": 260 }, "prereqs": ["fighters_2"], "modifiers": {} },
+    { "id": "bombers_tac_1", "nameKey": "tech.bombers_tac_1", "category": "air", "year": 1936, "cost": { "gold": 70, "industry": 30, "days": 120 }, "prereqs": [], "modifiers": {} },
+    { "id": "bombers_str_1", "nameKey": "tech.bombers_str_1", "category": "air", "year": 1938, "cost": { "gold": 120, "industry": 55, "days": 190 }, "prereqs": ["bombers_tac_1"], "modifiers": {} },
+    { "id": "cas_1", "nameKey": "tech.cas_1", "category": "air", "year": 1937, "cost": { "gold": 70, "industry": 30, "days": 120 }, "prereqs": ["bombers_tac_1"], "modifiers": {} },
+    { "id": "naval_bombers_1", "nameKey": "tech.naval_bombers_1", "category": "air", "year": 1939, "cost": { "gold": 90, "industry": 35, "days": 150 }, "prereqs": ["bombers_tac_1", "naval_aviation"], "modifiers": {} },
+    { "id": "air_transport", "nameKey": "tech.air_transport", "category": "air", "year": 1938, "cost": { "gold": 70, "industry": 30, "days": 120 }, "prereqs": ["fighters_1"], "modifiers": {} },
+    { "id": "air_doctrine", "nameKey": "tech.air_doctrine", "category": "air", "year": 1939, "cost": { "gold": 90, "industry": 20, "days": 150 }, "prereqs": ["fighters_1", "radio"], "modifiers": { "airAttack": 0.05, "airDefense": 0.05 } }
+  ]
+}

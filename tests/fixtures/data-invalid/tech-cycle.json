@@ -1,0 +1,49 @@
+{
+  "techs": [
+    {
+      "id": "tech_a",
+      "nameKey": "tech.tech_a",
+      "category": "industry",
+      "year": 1936,
+      "cost": {
+        "gold": 1,
+        "industry": 1,
+        "days": 1
+      },
+      "prereqs": [
+        "tech_b"
+      ],
+      "modifiers": {}
+    },
+    {
+      "id": "tech_b",
+      "nameKey": "tech.tech_b",
+      "category": "industry",
+      "year": 1936,
+      "cost": {
+        "gold": 1,
+        "industry": 1,
+        "days": 1
+      },
+      "prereqs": [
+        "tech_a"
+      ],
+      "modifiers": {}
+    },
+    {
+      "id": "tech_c",
+      "nameKey": "tech.tech_c",
+      "category": "industry",
+      "year": 1936,
+      "cost": {
+        "gold": 1,
+        "industry": 1,
+        "days": 1
+      },
+      "prereqs": [
+        "missing_tech"
+      ],
+      "modifiers": {}
+    }
+  ]
+}

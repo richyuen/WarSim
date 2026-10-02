@@ -15,6 +15,12 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 | CShapes 2.0 | historical state borders | CC BY-NC-SA 4.0 | rejected | non-commercial clause (ADR-8) |
 | aourednik/historical-basemaps | historical world borders | GPL-3.0 | rejected | copyleft would spread to project data (ADR-8) |
 
+## Game data
+
+| Source | What | License | Status | Notes |
+|---|---|---|---|---|
+| Our own work | `data/terrain.json`, `data/units/*`, `data/tech/*`, `data/traits/*`, `data/buildings/*`, `data/maps/*/map.json`, `data/scenarios/*/scenario.json` (PLAN 1.1) | project license | in use | first-pass values from general military-history knowledge; no AoC data (ADR-14) |
+
 ## Art
 
 | Source | What | License | Status | Notes |

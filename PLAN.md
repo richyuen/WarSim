@@ -54,7 +54,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 ## Phase 1 — Baseline parity
 
 ### 1A Data & scenario
-- [ ] 1.1 zod schemas for terrain, unit types, tech, traits, buildings, scenario, map meta; validate all `data/**`.
+- [x] 1.1 zod schemas for terrain, unit types, tech, traits, buildings, scenario, map meta; validate all `data/**`.
   AT: `npm test` validates every JSON file; an invalid fixture fails with a readable path.
 - [ ] 1.2 Terrain derivation (elevation + latitude/biome from NE raster) → terrain classes; CROSSING lanes data (straits list).
   AT: golden counts per class within ±10% of expected; screenshot of terrain mode compared to reference editor shot (logged).

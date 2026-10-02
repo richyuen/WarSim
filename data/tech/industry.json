@@ -1,0 +1,8 @@
+{
+  "techs": [
+    { "id": "basic_industry", "nameKey": "tech.basic_industry", "category": "industry", "year": 1936, "cost": { "gold": 60, "industry": 20, "days": 120 }, "prereqs": [], "modifiers": { "industry": 0.05 } },
+    { "id": "assembly_line", "nameKey": "tech.assembly_line", "category": "industry", "year": 1938, "cost": { "gold": 90, "industry": 30, "days": 150 }, "prereqs": ["basic_industry"], "modifiers": { "industry": 0.1, "buildSpeed": 0.05 } },
+    { "id": "synthetic_fuel", "nameKey": "tech.synthetic_fuel", "category": "industry", "year": 1940, "cost": { "gold": 110, "industry": 40, "days": 180 }, "prereqs": ["assembly_line"], "modifiers": { "supply": 0.1 } },
+    { "id": "industrial_automation", "nameKey": "tech.industrial_automation", "category": "industry", "year": 1944, "cost": { "gold": 160, "industry": 60, "days": 220 }, "prereqs": ["synthetic_fuel", "computing"], "modifiers": { "industry": 0.15, "research": 0.05 } }
+  ]
+}

@@ -583,3 +583,37 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   fetch 8).
 - **Gotcha:** any future e2e timing assertion must go in a `.perf.spec.ts` file, or it will flake
   under parallel SwiftShader load.
+
+## 2026-10-02 — PLAN 1.1: zod schemas + first `data/` tree
+- **Steps 1/2:** state re-read; gate green at ed5f6b9. `critic/` is absent.
+- **Built:**
+  - `src/sim/data/schemas.ts` (zod 4.6, ADR-14) defines the schemas, the `DATA_FILES` path table,
+    `validateFile`, `validateDataSet` (cross-file checks) and `collectKeys`. Schemas cover:
+    terrain, unit types, tech, traits, buildings, map meta and scenario meta.
+  - Data, all our own (DATA_SOURCES "Game data"):
+    - `data/terrain.json`: 12 classes in enum order;
+    - `data/units/{land,sea,air}.json`: 28 types covering all 23 SPEC classes;
+    - `data/tech/*.json`: 43 techs, 1936–1952, including the nuclear chain atomic_research → … →
+      ballistic_missiles/thermonuclear;
+    - `data/traits/traits.json`: 14 traits; `data/buildings/buildings.json`: 6 buildings;
+    - `data/maps/{earth,toy}/map.json` and `data/scenarios/{1938,toy}/scenario.json`.
+  - `SCENARIO_GEOMETRY.toy` is now derived from the toy map and scenario JSON. Determinism hashes are
+    unchanged (same numbers).
+  - en.json gains 122 data keys.
+- **AT:** `tests/unit/data-schemas.test.ts` (29 tests) passes.
+  - Positive: every `data/**` file validates, the set passes the cross-file checks, and every
+    nameKey/descKey is in en.json. Every unit class has a type, the heavy tank is gated at ≥ 1942, and
+    the earth map matches the `projection.ts` constants.
+  - Negative fixtures (`tests/fixtures/data-invalid/`) assert exact readable errors, e.g.
+    `units/bad.json: types[1].stats.speed_kmh: Invalid input: expected number, received string`, and
+    `tech: prerequisite cycle tech_a → tech_b → tech_a`.
+- **Step 5:** there is no visual change (data/validation only), so no screenshots. The e2e suite is
+  green at 18/18.
+- **Gotchas:**
+  - Playwright loads `src/` as plain Node ESM, so JSON imports need `with { type: 'json' }`. Without it
+    every e2e test died at import time.
+  - `latBottomDeg` is derived (`-64.16507274496172`): data must carry the exact double for the
+    equality check.
+  - Python on Windows writes CRLF unless `newline='\n'` is passed (git normalises on commit).
+- **Parity:** row 78 (data-driven maps/years) and additions row 8 (tech) → partial. Score 4.4% → 5.0%
+  via `npm run parity -- --write`.

@@ -1,0 +1,59 @@
+{
+  "types": [
+    {
+      "id": "destroyer", "nameKey": "unit.destroyer", "class": "dd", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 4, "hard": 6, "defense": 10, "breakthrough": 0, "armor": 5, "piercing": 15, "aa": 6, "range_km": 12, "speed_kmh": 65, "org": 50, "hpPerUnit": 150, "detection": 30, "stealth": 8, "fuelPerHour": 3, "supplyPerHour": 0.5 },
+      "cost": { "gold": 40, "industry": 40, "manpower": 250, "days": 180 },
+      "upkeep": { "gold": 1.5, "supply": 0.5 },
+      "terrainMods": {},
+      "techReq": "destroyers_1"
+    },
+    {
+      "id": "cruiser_light", "nameKey": "unit.cruiser_light", "class": "cl", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 8, "hard": 14, "defense": 18, "breakthrough": 0, "armor": 15, "piercing": 30, "aa": 10, "range_km": 18, "speed_kmh": 60, "org": 50, "hpPerUnit": 400, "detection": 25, "stealth": 5, "fuelPerHour": 5, "supplyPerHour": 0.9 },
+      "cost": { "gold": 80, "industry": 85, "manpower": 700, "days": 300 },
+      "upkeep": { "gold": 3, "supply": 0.9 },
+      "terrainMods": {},
+      "techReq": "cruisers_1"
+    },
+    {
+      "id": "cruiser_heavy", "nameKey": "unit.cruiser_heavy", "class": "ca", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 10, "hard": 24, "defense": 26, "breakthrough": 0, "armor": 35, "piercing": 55, "aa": 10, "range_km": 25, "speed_kmh": 59, "org": 50, "hpPerUnit": 700, "detection": 22, "stealth": 4, "fuelPerHour": 7, "supplyPerHour": 1.2 },
+      "cost": { "gold": 120, "industry": 130, "manpower": 1000, "days": 400 },
+      "upkeep": { "gold": 4.5, "supply": 1.2 },
+      "terrainMods": {},
+      "techReq": "cruisers_1"
+    },
+    {
+      "id": "battleship", "nameKey": "unit.battleship", "class": "bb", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 14, "hard": 55, "defense": 50, "breakthrough": 0, "armor": 90, "piercing": 120, "aa": 14, "range_km": 32, "speed_kmh": 50, "org": 50, "hpPerUnit": 2000, "detection": 18, "stealth": 2, "fuelPerHour": 14, "supplyPerHour": 2.5 },
+      "cost": { "gold": 300, "industry": 350, "manpower": 2000, "days": 900 },
+      "upkeep": { "gold": 10, "supply": 2.5 },
+      "terrainMods": {},
+      "techReq": "battleships_1"
+    },
+    {
+      "id": "carrier", "nameKey": "unit.carrier", "class": "cv", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 0, "hard": 0, "defense": 30, "breakthrough": 0, "armor": 20, "piercing": 0, "aa": 12, "range_km": 0, "speed_kmh": 58, "org": 50, "hpPerUnit": 1500, "detection": 40, "stealth": 3, "fuelPerHour": 12, "supplyPerHour": 2 },
+      "cost": { "gold": 260, "industry": 300, "manpower": 2200, "days": 800 },
+      "upkeep": { "gold": 9, "supply": 2 },
+      "terrainMods": {},
+      "techReq": "carriers_1"
+    },
+    {
+      "id": "submarine", "nameKey": "unit.submarine", "class": "ss", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 0, "hard": 18, "defense": 6, "breakthrough": 0, "armor": 0, "piercing": 60, "aa": 0, "range_km": 8, "speed_kmh": 30, "org": 50, "hpPerUnit": 100, "detection": 12, "stealth": 40, "fuelPerHour": 1.5, "supplyPerHour": 0.3 },
+      "cost": { "gold": 30, "industry": 30, "manpower": 50, "days": 150 },
+      "upkeep": { "gold": 1, "supply": 0.3 },
+      "terrainMods": {},
+      "techReq": "submarines_1"
+    },
+    {
+      "id": "transport", "nameKey": "unit.transport", "class": "tp", "domain": "sea", "elementSize": 1, "mobility": "ship",
+      "stats": { "soft": 0, "hard": 0, "defense": 4, "breakthrough": 0, "armor": 0, "piercing": 0, "aa": 2, "range_km": 0, "speed_kmh": 30, "org": 30, "hpPerUnit": 120, "detection": 10, "stealth": 4, "fuelPerHour": 2, "supplyPerHour": 0.2 },
+      "cost": { "gold": 15, "industry": 12, "manpower": 60, "days": 90 },
+      "upkeep": { "gold": 0.5, "supply": 0.2 },
+      "terrainMods": {}
+    }
+  ]
+}

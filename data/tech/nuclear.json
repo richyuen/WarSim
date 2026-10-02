@@ -1,0 +1,10 @@
+{
+  "techs": [
+    { "id": "atomic_research", "nameKey": "tech.atomic_research", "category": "nuclear", "year": 1939, "cost": { "gold": 150, "industry": 40, "days": 240 }, "prereqs": ["radio"], "modifiers": {} },
+    { "id": "nuclear_reactor", "nameKey": "tech.nuclear_reactor", "category": "nuclear", "year": 1942, "cost": { "gold": 300, "industry": 120, "days": 360 }, "prereqs": ["atomic_research"], "modifiers": {} },
+    { "id": "atomic_bomb", "nameKey": "tech.atomic_bomb", "category": "nuclear", "year": 1945, "cost": { "gold": 600, "industry": 300, "days": 540 }, "prereqs": ["nuclear_reactor", "computing"], "modifiers": {} },
+    { "id": "rocketry", "nameKey": "tech.rocketry", "category": "nuclear", "year": 1942, "cost": { "gold": 180, "industry": 70, "days": 260 }, "prereqs": ["synthetic_fuel"], "modifiers": {} },
+    { "id": "ballistic_missiles", "nameKey": "tech.ballistic_missiles", "category": "nuclear", "year": 1950, "cost": { "gold": 500, "industry": 220, "days": 480 }, "prereqs": ["rocketry", "atomic_bomb"], "modifiers": {} },
+    { "id": "thermonuclear", "nameKey": "tech.thermonuclear", "category": "nuclear", "year": 1952, "cost": { "gold": 800, "industry": 350, "days": 600 }, "prereqs": ["atomic_bomb"], "modifiers": { "nukeYield": 2 } }
+  ]
+}

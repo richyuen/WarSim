@@ -1,0 +1,87 @@
+{
+  "types": [
+    {
+      "id": "infantry",
+      "nameKey": "unit.infantry",
+      "class": "inf",
+      "domain": "land",
+      "elementSize": 500,
+      "mobility": "foot",
+      "stats": {
+        "soft": 6,
+        "hard": 1,
+        "defense": 20,
+        "breakthrough": 3,
+        "armor": 0,
+        "piercing": 2,
+        "aa": 0.5,
+        "range_km": 1,
+        "speed_kmh": 4,
+        "org": 60,
+        "hpPerUnit": 1,
+        "detection": 5,
+        "stealth": 5,
+        "fuelPerHour": 0,
+        "supplyPerHour": 0.1
+      },
+      "cost": {
+        "gold": 10,
+        "industry": 5,
+        "manpower": 500,
+        "days": 30
+      },
+      "upkeep": {
+        "gold": 0.5,
+        "supply": 0.1
+      },
+      "terrainMods": {
+        "forest": {
+          "atk": 1,
+          "def": 1.1,
+          "speed": 1
+        },
+        "urban": {
+          "atk": 1.05,
+          "def": 1.15,
+          "speed": 1
+        }
+      }
+    },
+    {
+      "id": "artillery",
+      "nameKey": "unit.artillery",
+      "class": "art",
+      "domain": "land",
+      "elementSize": 12,
+      "mobility": "foot",
+      "stats": {
+        "soft": 25,
+        "hard": 3,
+        "defense": 4,
+        "breakthrough": 2,
+        "armor": 0,
+        "piercing": 5,
+        "aa": 0,
+        "range_km": 12,
+        "speed_kmh": "fast",
+        "org": 30,
+        "hpPerUnit": 6,
+        "detection": 3,
+        "stealth": 3,
+        "fuelPerHour": 0,
+        "supplyPerHour": 0.3
+      },
+      "cost": {
+        "gold": 12,
+        "industry": 10,
+        "manpower": 120,
+        "days": 30
+      },
+      "upkeep": {
+        "gold": 0.6,
+        "supply": 0.3
+      },
+      "terrainMods": {}
+    }
+  ]
+}
