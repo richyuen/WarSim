@@ -28,6 +28,7 @@ import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
 import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
 import { equipFormation } from './systems/elements';
+import { LOYALTY_BASE, LOYALTY_PER_AUTONOMY } from './systems/puppets';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import { Mobility } from './nav/grid';
 import type { ScenarioRules } from './world';
@@ -213,7 +214,11 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     n.incomeBonus[id] = def.incomeBonus;
     n.incomeMult[id] = 1 + def.traits.reduce((s, t) => s + (traitIncome.get(t) ?? 0), 0);
     n.manpowerMult[id] = 1 + def.traits.reduce((s, t) => s + (traitManpower.get(t) ?? 0), 0);
-    if (def.overlord) n.overlord[id] = tags.indexOf(def.overlord.tag) + 1;
+    if (def.overlord) {
+      n.overlord[id] = tags.indexOf(def.overlord.tag) + 1;
+      n.autonomy[id] = def.overlord.autonomy;
+      n.loyalty[id] = LOYALTY_BASE + LOYALTY_PER_AUTONOMY * def.overlord.autonomy;
+    }
     n.fightToDeath[id] = def.fightToDeath ? 1 : 0;
   });
 

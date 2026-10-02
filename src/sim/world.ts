@@ -44,6 +44,10 @@ export const NATION_SCHEMA = {
   fightToDeath: 'u8',
   /** Overlord nation id (0 = independent); puppets share their overlord's supply bloc. */
   overlord: 'u16',
+  /** Puppet autonomy, loyalty and integration progress, 0..100 (PLAN 1.18). */
+  autonomy: 'f64',
+  loyalty: 'f64',
+  integration: 'f64',
 } as const;
 
 /** Production queue rows (PLAN 1.10): one formation in training. */

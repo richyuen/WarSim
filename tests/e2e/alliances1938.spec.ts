@@ -65,6 +65,7 @@ test('alliance map mode colours members by alliance and non-aligned nations grey
   await page.evaluate(({ x, y }) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 3.2 }), { x: ex, y: ey });
   await page.waitForTimeout(400);
   await page.screenshot({ path: path.join(out, 'alliances-europe.png') });
-  await btn.click(); // back to political for later tests sharing storage
+  // Cycle back to political for later tests sharing storage (modes cycle in MAP_MODES order).
+  for (let i = 0; i < 4 && (await btn.getAttribute('data-mode')) !== 'political'; i++) await btn.click();
   await expect(btn).toHaveAttribute('data-mode', 'political');
 });

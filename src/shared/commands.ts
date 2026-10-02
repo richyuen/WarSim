@@ -27,7 +27,12 @@ export type Command =
   | { kind: 'leaveAlliance'; nation: number }
   /** God Mode edits. */
   | { kind: 'setUnity'; alliance: number; value: number }
-  | { kind: 'setLoyalty'; nation: number; value: number };
+  | { kind: 'setLoyalty'; nation: number; value: number }
+  /** PLAN 1.18 (God Mode / AI): puppets. */
+  | { kind: 'createPuppet'; overlord: number; subject: number; autonomy: number }
+  | { kind: 'releasePuppet'; subject: number }
+  | { kind: 'setAutonomy'; subject: number; value: number }
+  | { kind: 'setPuppetLoyalty'; subject: number; value: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

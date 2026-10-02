@@ -24,6 +24,7 @@
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { neighbours4 } from '../nav/grid';
+import { makePuppet } from './puppets';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { World } from '../world';
 
@@ -33,6 +34,8 @@ export const EXHAUSTED = 80;
 export const CRUSHED = 90;
 export const CAPITAL_SCORE = 25;
 export const TRUCE_TICKS = 24 * 730;
+/** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
+export const PEACE_PUPPET_AUTONOMY = 30;
 
 /** Leaders' puppets join their side. */
 function withPuppets(world: World, leader: number): number[] {
@@ -185,7 +188,7 @@ export function makePeace(world: World, war: War): void {
   }
   const wl = W[0]!;
   const ll = L[0]!;
-  if (s >= PUPPET_SCORE && world.nations.cols.living[ll] === 1) world.nations.cols.overlord[ll] = wl;
+  if (s >= PUPPET_SCORE && world.nations.cols.living[ll] === 1) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.end(war);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
   world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);

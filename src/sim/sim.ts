@@ -12,6 +12,7 @@ import { capitalsSystem } from './systems/capitals';
 import { combatSystem } from './systems/combat';
 import { movementSystem } from './systems/movement';
 import { productionSystem } from './systems/production';
+import { puppetSystem } from './systems/puppets';
 import { supplySystem } from './systems/supply';
 import { territorySystem } from './systems/territory';
 import { warSystem } from './systems/war';
@@ -35,7 +36,7 @@ export class Sim {
         this.world.rules = RULES_1938;
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
         // engagement and combat (8), territory (9).
-        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, movementSystem, combatSystem, territorySystem, capitalsSystem, warSystem, allianceSystem];
+        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, movementSystem, combatSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem];
         break;
     }
   }

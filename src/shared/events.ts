@@ -40,6 +40,14 @@ export const EventKind = {
   UnionFormed: 17,
   /** a = nation, b = alliance id (global). */
   AllianceJoined: 18,
+  /** a = puppet, b = overlord (global; PLAN 1.18). */
+  PuppetCreated: 19,
+  /** a = puppet, b = former overlord: released or left freely (global). */
+  PuppetReleased: 20,
+  /** a = puppet, b = overlord: loyalty broke, war of independence (global). */
+  PuppetRevolt: 21,
+  /** a = puppet, b = overlord: annexed by integration (global). */
+  PuppetIntegrated: 22,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

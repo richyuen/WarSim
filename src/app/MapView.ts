@@ -22,6 +22,7 @@ export class MapView {
   mapMode: MapMode = 'political';
   private readonly ownColor = new Map<number, number>();
   private readonly allianceLeader = new Map<number, number>();
+  private readonly overlordOf = new Map<number, number>();
   private readonly map: MapRenderer;
   private readonly proxies: ProxyRenderer;
   private snapArrival = 0;
@@ -69,6 +70,7 @@ export class MapView {
       const id = s.nations.data[o + NationField.id]!;
       this.ownColor.set(id, s.nations.data[o + NationField.color]!);
       this.allianceLeader.set(id, s.nations.data[o + NationField.alliance]!);
+      this.overlordOf.set(id, s.nations.data[o + NationField.overlord]!);
     }
     this.applyPalette();
     const f = s.formations;
@@ -111,10 +113,11 @@ export class MapView {
   }
 
   private applyPalette(): void {
+    const overlords = new Set(this.overlordOf.values());
+    const colorOf = (id: number): number | null => (id !== 0 ? (this.ownColor.get(id) ?? null) : null);
     for (const [id, own] of this.ownColor) {
-      const leader = this.allianceLeader.get(id) ?? 0;
-      const leaderColor = leader !== 0 ? (this.ownColor.get(leader) ?? null) : null;
-      this.map.setColor(id, modeColor(this.mapMode, own, leaderColor));
+      const n = { own, allianceLeader: colorOf(this.allianceLeader.get(id) ?? 0), overlord: colorOf(this.overlordOf.get(id) ?? 0), hasPuppets: overlords.has(id) };
+      this.map.setColor(id, modeColor(this.mapMode, n));
     }
   }
 

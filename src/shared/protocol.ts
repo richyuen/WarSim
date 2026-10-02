@@ -84,9 +84,12 @@ export interface SimStatus {
 }
 
 /** Per-nation record in `Snapshot.nations` (stride NATION_STRIDE). */
-/** `alliance` = the nation's alliance leader id (0 = none; PLAN 1.17 alliance map mode). */
-export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5 } as const;
-export const NATION_STRIDE = 6;
+/**
+ * `alliance` = the nation's alliance leader id (0 = none; PLAN 1.17 alliance map mode);
+ * `overlord` = its overlord id (0 = independent; PLAN 1.18 puppet map mode).
+ */
+export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5, overlord: 6 } as const;
+export const NATION_STRIDE = 7;
 
 export interface SnapshotTiles {
   /** Tile side in cells. */

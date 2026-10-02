@@ -92,7 +92,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: scripted scenarios end in peace with expected terms; fightToDeath never accepts peace.
 - [x] 1.17 Alliances/unions with unity & loyalty; join/leave/dissolve.
   AT: low unity → member leaves (test); alliance mode screenshot.
-- [ ] 1.18 Puppets with autonomy: create/release/integrate/revolt.
+- [x] 1.18 Puppets with autonomy: create/release/integrate/revolt.
   AT: tests per transition; puppet map mode screenshot.
 - [ ] 1.19 Revolts (per province/per region setting), suppression spending, rebel nation spawn.
   AT: high unrest → revolt within the expected window; suppression lowers probability (statistical test with fixed seeds).

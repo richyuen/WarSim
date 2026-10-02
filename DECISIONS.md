@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-31 · 2026-10-02 · accepted — Puppet loyalty rises with autonomy; revolts need a push
+**Decision.**
+- Loyalty relaxes toward 40 + 0.6 × autonomy, minus 25 while the overlord is losing a war.
+- Revolt needs loyalty < 20 and autonomy ≥ 10. Above 90 a puppet leaves freely.
+- Autonomy drifts up 0.25 a month, and integration runs below 50.
+- Tiers are named satellite, puppet and vassal from low to high autonomy.
+
+**Why.**
+- The first model (loyalty → 100 − autonomy) made the freest subjects (Ireland, Iceland at 90)
+  the least loyal. Seven 1938 puppets revolted on the first tick; the suite caught it through the
+  1.16 declaration test.
+- Content, autonomous vassals and restless satellites matches AoC v4.4's tiers (low autonomy
+  "cannot protest", high autonomy "leaves freely").
+- The upward drift is the anti-hegemon pressure from SPEC §7. Integration offers a counter-path
+  for overlords who keep autonomy low.
+- AoC's tier names are not ordered in the text; we order them by control. This deviation is
+  noted in PARITY row 10.
+
 ### ADR-30 · 2026-10-02 · accepted — Alliances join wars on declaration; unity and loyalty drift monthly
 **Decision.**
 - When war is declared, each leader's alliance joins its side and the defender's guarantors join

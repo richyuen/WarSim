@@ -1238,3 +1238,33 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   Italy show Germany's colour, France shows Britain's, Switzerland is non-aligned grey, and the
   mode persists. Evidence: `docs/evidence/1.17/alliances-europe.png`, viewed.
 - Parity: rows 6 (alliances) and 7 (unions, unity, loyalty) → partial.
+
+## 2026-10-02 — PLAN 1.18: puppets with autonomy; create, release, integrate, revolt
+- **Puppet system** (`src/sim/systems/puppets.ts`, monthly):
+  - leave freely above autonomy 90;
+  - revolt (loyalty < 20, autonomy ≥ 10) → war of independence;
+  - tribute;
+  - integration (annex land and army at 100);
+  - autonomy drift and loyalty relaxation.
+- **State:** nation columns autonomy, loyalty, integration (from scenario overlord autonomy).
+  Peace terms ≥ 90 now create the puppet through `makePuppet` (autonomy 30).
+- **Commands:** createPuppet, releasePuppet, setAutonomy, setPuppetLoyalty. Events
+  PuppetCreated/Released/Revolt/Integrated.
+- **Bug found:** loyalty = 100 − autonomy made seven 1938 puppets revolt on tick 0. Replaced by
+  ADR-31.
+- **Puppet map mode:** snapshot `NationField.overlord` (stride 7), a `modeColor` refactor, and
+  `lighten`. The alliance e2e now cycles back to political through three modes.
+- **AT (`tests/unit/puppets.test.ts`, 9 tests):**
+  - 1938 autonomy and tiers;
+  - create plus exact tribute;
+  - release is free (the tribute stays home);
+  - leave above 90;
+  - integration of Hungary (land, army, nation ends);
+  - Albania's revolt declares war on Italy;
+  - a voiceless satellite can't revolt;
+  - a crushing peace creates a puppet;
+  - no revolts in the first months of 1938.
+- **e2e (`tests/e2e/puppets1938.spec.ts`):** Italy in its colour, Albania in lightened Italian
+  green, Switzerland grey. Evidence: `docs/evidence/1.18/puppets-world.png`, viewed (French and
+  British colonial blocs read clearly).
+- Parity: rows 9, 10 and 11 → partial.

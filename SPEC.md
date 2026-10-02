@@ -395,6 +395,21 @@ tag → spec.
     colour; non-aligned nations are grey.
 - **Puppet** relation {overlord, subject, autonomy 0..100, integration progress}.
   Puppets can be created (peace term or God Mode), released, integrated, or revolt.
+  *Implemented v1 (PLAN 1.18, ADR-31; `src/sim/systems/puppets.ts`):*
+  - *State:* nation columns autonomy, loyalty and integration. Tiers: satellite < 30 ≤ puppet
+    < 70 ≤ vassal.
+  - *Monthly, in this order:*
+    1. A puppet above autonomy 90 leaves freely.
+    2. Loyalty < 20 with autonomy ≥ 10 means a revolt and a war of independence.
+    3. Tribute: 25% × (1 − autonomy/100) × gross income goes to the overlord.
+    4. Below autonomy 50, integration grows by 4 × (50 − autonomy)/50 a month; at 100 the
+       overlord annexes the puppet's land and formations.
+    5. Autonomy drifts up 0.25, and loyalty relaxes toward 40 + 0.6 × autonomy, or 25 lower while
+       the overlord is losing a war (side score ≤ −30).
+  - *Peace:* a crushing peace creates a puppet at autonomy 30.
+  - *Commands:* createPuppet, releasePuppet, setAutonomy, setPuppetLoyalty.
+  - *Puppet map mode:* overlords keep their colour, puppets take it lightened 45%, others are
+    grey.
 - **Buff** {id, target (nation|formation|province), kind, magnitude, expiresTick}.
 
 ### 3.6 Military

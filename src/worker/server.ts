@@ -417,6 +417,7 @@ export class SimServer {
       nations[o + NationField.capitalX] = nt.cols.capitalX[id]!;
       nations[o + NationField.capitalY] = nt.cols.capitalY[id]!;
       nations[o + NationField.alliance] = world.alliances.allianceOf(id)?.leader ?? 0;
+      nations[o + NationField.overlord] = nt.cols.living[id] === 1 ? nt.cols.overlord[id]! : 0;
       n++;
     });
 

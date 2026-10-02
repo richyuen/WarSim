@@ -7,6 +7,7 @@ import { EventKind } from '../shared/events';
 import { destroyFormation } from './systems/elements';
 import { declareWar, makePeace } from './systems/war';
 import { leaveAlliance } from './systems/alliances';
+import { makePuppet, releasePuppet } from './systems/puppets';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -87,6 +88,18 @@ function applyCommand(world: World, cmd: Command): void {
       if (a) a.loyalty[a.members.indexOf(cmd.nation)] = Math.max(0, Math.min(100, cmd.value));
       return;
     }
+    case 'createPuppet':
+      makePuppet(world, cmd.overlord, cmd.subject, cmd.autonomy);
+      return;
+    case 'releasePuppet':
+      releasePuppet(world, cmd.subject);
+      return;
+    case 'setAutonomy':
+      if (world.nations.has(cmd.subject)) world.nations.cols.autonomy[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
+      return;
+    case 'setPuppetLoyalty':
+      if (world.nations.has(cmd.subject)) world.nations.cols.loyalty[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
+      return;
     case 'setWarFightToDeath': {
       const war = world.wars.list.find((w) => w.id === cmd.war);
       if (war) war.fightToDeath[cmd.side] = cmd.value;
