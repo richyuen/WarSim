@@ -42,3 +42,11 @@
 - `tsconfig.node.json` now covers `playwright.config.ts` + `tests/e2e` and adds the DOM lib (for
   `evaluate` callbacks); `src/sim` is type-checked by the app config, so this doesn't loosen sim purity.
 - Verified: `npm run check` green (tsc, eslint, 20 vitest, build, 1 e2e).
+
+## 2026-10-02 — PLAN 0.5: iteration docs
+- Created `BLOCKERS.md` (open list empty; watch list) and `DATA_SOURCES.md` (Natural Earth + ETOPO planned,
+  own-work flags/sprites/1938 split lines planned, CShapes and historical-basemaps recorded as rejected with
+  reasons, shipped npm deps with licenses).
+- **`reference/NOTES.md` is missing** (checked 2026-10-02: `reference/` has only `screens/` and `video/`).
+  Per PROMPT.md, visual/feel claims rely on screenshots, the trailer and text sources, and are marked lower
+  confidence; also noted in SPEC §1 and the BLOCKERS watch list.
