@@ -33,6 +33,13 @@ export interface NavGrid {
    * cannot cut corners, so two cells are mutually reachable iff they share a component.
    */
   component: Uint32Array;
+  /**
+   * True when kx and ky never increase away from the equator row (checked at build): the minimum
+   * over a row range is then the smaller endpoint, so `boundKm` needs no loop (same value).
+   */
+  endpointMin: boolean;
+  /** A* scratch, reused across searches (derived; generation-stamped so it is never cleared). */
+  scratch: { g: Float64Array; came: Int32Array; seen: Uint32Array; closed: Uint32Array; gen: number } | null;
 }
 
 /** Row scales for a Miller w×h grid (cell height in radians of latitude × R, width × cos φ). */
@@ -47,7 +54,15 @@ export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: bo
     kx[r] = EARTH_R * dLon * cos(mid);
     ky[r] = EARTH_R * (lat0 - lat1);
   }
-  return { w, h, wrapX, terrain, kx, ky, component: labelComponents(terrain, w, h, wrapX) };
+  return { w, h, wrapX, terrain, kx, ky, component: labelComponents(terrain, w, h, wrapX), endpointMin: unimodal(kx) && unimodal(ky), scratch: null };
+}
+
+/** Whether `a` rises to a single maximum and falls after it (non-strict): its range minima lie at the ends. */
+function unimodal(a: Float64Array): boolean {
+  let i = 1;
+  while (i < a.length && a[i]! >= a[i - 1]!) i++;
+  while (i < a.length && a[i]! <= a[i - 1]!) i++;
+  return i >= a.length;
 }
 
 /**
@@ -113,9 +128,14 @@ export function boundKm(g: NavGrid, a: number, b: number): number {
   const r1 = Math.max(ay, by);
   let kx = Infinity;
   let ky = Infinity;
-  for (let r = r0; r <= r1; r++) {
-    if (g.kx[r]! < kx) kx = g.kx[r]!;
-    if (g.ky[r]! < ky) ky = g.ky[r]!;
+  if (g.endpointMin) {
+    kx = Math.min(g.kx[r0]!, g.kx[r1]!);
+    ky = Math.min(g.ky[r0]!, g.ky[r1]!);
+  } else {
+    for (let r = r0; r <= r1; r++) {
+      if (g.kx[r]! < kx) kx = g.kx[r]!;
+      if (g.ky[r]! < ky) ky = g.ky[r]!;
+    }
   }
   const ex = dx * kx;
   const ey = dy * ky;
@@ -195,20 +215,29 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
   const passable = (c: number): boolean => Number.isFinite(costRow[g.terrain[c]!]!) && (allowed === undefined || allowed(c));
   if (!passable(start) || !passable(goal) || g.component[start] !== g.component[goal]) return null;
   const hScale = MIN_COST[mobility]!;
-  const gScore = new Map<number, number>();
-  const came = new Map<number, number>();
-  const closed = new Set<number>();
+  // Typed scratch with generation stamps instead of Maps (review after PLAN 1.25: pathfinding
+  // was a quarter of the tick); the search and its tie-breaking are unchanged.
+  const n0 = g.w * g.h;
+  if (!g.scratch || g.scratch.g.length !== n0) g.scratch = { g: new Float64Array(n0), came: new Int32Array(n0), seen: new Uint32Array(n0), closed: new Uint32Array(n0), gen: 0 };
+  const sc = g.scratch;
+  if (++sc.gen === 0xffffffff) {
+    sc.seen.fill(0);
+    sc.closed.fill(0);
+    sc.gen = 1;
+  }
+  const gen = sc.gen;
   const open = new Heap();
-  gScore.set(start, 0);
+  sc.g[start] = 0;
+  sc.seen[start] = gen;
   open.push(boundKm(g, start, goal) * hScale, start);
   while (open.size > 0) {
     const c = open.pop();
     if (c === goal) break;
-    if (closed.has(c)) continue;
-    closed.add(c);
+    if (sc.closed[c] === gen) continue;
+    sc.closed[c] = gen;
     const cx = c % g.w;
     const cy = (c - cx) / g.w;
-    const gc = gScore.get(c)!;
+    const gc = sc.g[c]!;
     for (const [dx, dy] of DIRS) {
       const ny = cy + dy;
       if (ny < 0 || ny >= g.h) continue;
@@ -218,7 +247,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
         nx = (nx + g.w) % g.w;
       }
       const n = ny * g.w + nx;
-      if (closed.has(n) || !passable(n)) continue;
+      if (sc.closed[n] === gen || !passable(n)) continue;
       // No corner cutting: a diagonal step needs both orthogonal neighbours passable.
       if (dx !== 0 && dy !== 0) {
         const ox = (cx + dx + g.w) % g.w;
@@ -226,19 +255,19 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
       }
       const step = stepKm(g, dy > 0 ? cy : ny, dx, dy) * costRow[g.terrain[n]!]!;
       const t = gc + step;
-      const old = gScore.get(n);
-      if (old === undefined || t < old) {
-        gScore.set(n, t);
-        came.set(n, c);
+      if (sc.seen[n] !== gen || t < sc.g[n]!) {
+        sc.g[n] = t;
+        sc.seen[n] = gen;
+        sc.came[n] = c;
         open.push(t + boundKm(g, n, goal) * hScale, n);
       }
     }
   }
-  const total = gScore.get(goal);
-  if (total === undefined) return null;
+  if (sc.seen[goal] !== gen) return null;
+  const total = sc.g[goal]!;
   const cells = [goal];
   for (let c = goal; c !== start; ) {
-    c = came.get(c)!;
+    c = sc.came[c]!;
     cells.push(c);
   }
   cells.reverse();

@@ -23,7 +23,7 @@ import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
 import { sqrt } from '../core/dmath';
 import { slotPose } from '../core/pose';
-import type { World } from '../world';
+import type { UnitRule, World } from '../world';
 import { applyLoss, elementIndex, settleFormation } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
@@ -58,9 +58,11 @@ export function findBattles(world: World): number[][] {
   const bw = Math.ceil(w / BUCKET_CELLS);
   const buckets = new Map<number, number[]>();
   const fighters: number[] = [];
+  // Only formations of nations at war can make contact (review after PLAN 1.25).
+  const atWar = world.wars.nations();
   f.forEach((id) => {
     c.engaged[id] = 0;
-    if (!idx.has(id)) return;
+    if (!idx.has(id) || !atWar.has(c.nation[id]!)) return;
     fighters.push(id);
     const k = Math.floor(c.y[id]! / BUCKET_CELLS) * bw + Math.floor(c.x[id]! / BUCKET_CELLS);
     let b = buckets.get(k);
@@ -109,6 +111,12 @@ export function findBattles(world: World): number[][] {
   return [...groups.values()].sort((p, q) => p[0]! - q[0]!);
 }
 
+/** Attack value of a shooter type against a target type (SPEC §5.2 step 2). */
+function effectiveness(us: UnitRule, ut: UnitRule): number {
+  const base = ut.armor > 0 ? us.hard : us.soft;
+  return ut.armor > us.piercing ? base * ARMOR_PEN : base;
+}
+
 export function combatSystem(world: World): void {
   const battles = findBattles(world);
   const inMajor = updateMajorBattles(world, battles); // PLAN 1.23: also ends unmatched ones
@@ -135,11 +143,7 @@ export function combatSystem(world: World): void {
         const us = units[ec.unit[s]!]!;
         const fullness = ec.strength[s]! / us.size;
         if (fullness <= 0) continue;
-        const eff = (t: number): number => {
-          const ut = units[ec.unit[t]!]!;
-          const base = ut.armor > 0 ? us.hard : us.soft;
-          return ut.armor > us.piercing ? base * ARMOR_PEN : base;
-        };
+        const eff = (t: number): number => effectiveness(us, units[ec.unit[t]!]!);
         // Keep the cached target while it lives and stays hostile in this battle.
         let t = ec.target[s]!;
         const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && hostile.has(ec.formation[t]!);

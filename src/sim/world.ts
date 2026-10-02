@@ -335,11 +335,13 @@ export class World {
   buffs = new Buffs();
   battles = new Battles();
   /**
-   * Derived (not state): true when control, cities or overlords may have changed since the last
-   * supply refresh. Skipping an unneeded refresh leaves exactly the layer a refresh would write.
-   * Code that writes `cells.controller` directly must set it (setController does).
+   * Derived (not state): a full supply refresh is needed (load, overlords, raw layer writes; code
+   * that writes `cells.controller` directly must set it). Cell-level changes through
+   * setController/setOwner instead record the nations involved in `supplyDirtyNations`, and only
+   * their blocs are reflooded (review after PLAN 1.25).
    */
   supplyDirty = true;
+  supplyDirtyNations = new Set<number>();
   /** Global settings (state, saved in world.meta). */
   settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode; aiEnabled: boolean } = {
     winnerTakesAll: false,
@@ -382,8 +384,9 @@ export class World {
   setController(i: number, nation: number, keepFrontier = false): void {
     const c = this.cells;
     if (c.controller[i] === nation) return;
+    this.supplyDirtyNations.add(c.controller[i]!);
+    this.supplyDirtyNations.add(nation);
     c.controller[i] = nation;
-    this.supplyDirty = true;
     if (!keepFrontier) this.frontier = null;
     const x = i % c.w;
     const y = (i - x) / c.w;
@@ -394,8 +397,9 @@ export class World {
   setOwner(i: number, nation: number): void {
     const c = this.cells;
     if (c.owner[i] === nation) return;
+    this.supplyDirtyNations.add(c.owner[i]!);
+    this.supplyDirtyNations.add(nation);
     c.owner[i] = nation;
-    this.supplyDirty = true;
     const x = i % c.w;
     const y = (i - x) / c.w;
     this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;

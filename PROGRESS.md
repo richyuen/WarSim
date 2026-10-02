@@ -1480,3 +1480,26 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   supply, operational AI and combat.
 - **Observation:** the churn is high (~100 wars a year, mostly involving rebel states). Long-run
   tuning belongs to the Phase 7 sweep (SPEC §10).
+
+## 2026-10-02 — Review pass after PLAN 1.20–1.25 (performance)
+- **Profiled** a war-heavy 200-day 1938 run (`node --cpu-prof`). Supply refresh was 31%, A* about
+  24% and `findBattles` 7.5%.
+- **Optimisations**, all with an identical state hash after 200 days (`bd8c8d13`):
+  - A* uses generation-stamped typed scratch instead of Map/Set;
+  - `boundKm` reads endpoint minima, since row scales are unimodal (checked at grid build, with
+    a loop fallback);
+  - a reused 8 MB supply flood queue;
+  - partial supply refresh, reflooding only the blocs of nations whose cells changed (full
+    refresh on load, overlord changes and raw writes);
+  - `findBattles` only buckets formations of nations at war;
+  - the combat effectiveness closure is hoisted.
+- **Result:** 3.50 → 2.60 ms per tick in a war-heavy run.
+- **Perf debt (PLAN 7.1, budget 1.5 ms):**
+  - the supply flood over large warring blocs (~20%);
+  - A* for operational-AI orders (~22%);
+  - combat (~16%).
+  - Ideas: route caching per (origin sector, target sector), a coarser supply graph for
+    connectivity with cell refinement only near fronts, and staggering the operational AI over
+    two days.
+- **SPEC drift fixed:** §2.5 implemented order (buffs, both AIs first, efficiency) with costs;
+  supply refresh period and partial refresh.

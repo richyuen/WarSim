@@ -174,15 +174,13 @@ proleptic Gregorian, so 1938 = 8760 ticks and 1940 = 8784 (`src/shared/calendar.
 11. nuclear: launches in flight, impacts, fallout decay (hourly)
 12. buff/debuff timers · history events · stats sampling (daily)
 ```
-Implemented order for the 1938 world (`src/sim/sim.ts`, review after PLAN 1.19):
-production (daily) → economy (monthly) → supply (6-hourly network, hourly use) → movement →
-engagement and combat → territory → capitals (capture, relocation, elimination) → wars (daily:
-score, exhaustion, peace) → alliances (monthly) → puppets (monthly) → revolts (monthly). Step 10
-of the list above (diplomacy) is spread over the last four. The average tick is 0.72 ms (Node,
-M, two months from 1 January 1938), and the largest daily spike is the war land count at 4.8 ms.
-Every system is a function `(world) => void` (`src/sim/tick.ts`). RNG streams live in
-`world.rng` and derived outputs (dirty tiles, events) in `world.out`. Systems never read
-wall-clock time, render state or subscriptions.
+Implemented order for the 1938 world (`src/sim/sim.ts`, review after PLAN 1.25):
+buff expiry → strategic AI (weekly per nation) → operational AI (6-hourly, daily per nation) →
+production (daily) → economy (monthly) → combat efficiency (monthly) → supply (12-hourly
+network, hourly use) → movement → engagement and combat (incl. Major Battles) → territory →
+capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly). The average tick is
+2.6 ms in a war-heavy 200-day run (Node, M; budget 1.5 ms, PLAN 7.1). The main costs are the
+supply flood over warring blocs (~20%), A* for AI orders (~22%) and combat (~16%).
 
 ### 2.6 Determinism [ADR-5]
 - Numbers: f64 using only `+ − × ÷`, `Math.sqrt`, `Math.floor/ceil/round/abs/min/max/
@@ -499,7 +497,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 
 **Supply v1 (PLAN 1.12, ADR-25; `src/sim/systems/supply.ts`; refresh 12 h since PLAN 1.25).**
 - *Blocs:* a nation and its puppets (`nations.overlord`) share one supply bloc, the overlord's id.
-- *Network* (every 6 h): sources are cities a bloc member owns and controls. A 4-connected flood
+- *Network* (every 12 h since PLAN 1.25): sources are cities a bloc member owns and controls.
+  Since the review after 1.25, a refresh after cell-level changes refloods only the blocs of the
+  nations whose cells changed. Load, overlord changes and raw layer writes force a full refresh. A 4-connected flood
   spreads over cells the bloc controls and over unclaimed crossing lanes. `cells.supply` holds the
   bloc that reached each cell. The layer is state, so a load between refreshes is exact. A refresh
   takes well under 60 ms at M.

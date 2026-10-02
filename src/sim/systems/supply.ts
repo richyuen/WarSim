@@ -31,13 +31,27 @@ export function blocOf(world: World, nation: number): number {
   return o !== 0 ? o : nation;
 }
 
-/** Recomputes `cells.supply` from the current cities and control. */
+let queueScratch: Int32Array | null = null;
+
+/**
+ * Recomputes `cells.supply` from the current cities and control: everything after a full-dirty
+ * change, else only the blocs of the nations whose cells changed (their cells are cleared and
+ * reflooded; other blocs keep their networks). A partial refresh can resolve a crossing lane
+ * contested by two blocs differently from a full one; it stays deterministic and saved.
+ */
 export function refreshSupplyNetwork(world: World): void {
   const { w, h, controller, owner, terrain, supply } = world.cells;
-  world.supplyDirty = false;
-  supply.fill(0);
-  const blocOfNation = new Uint16Array(world.nations.highWater);
+  const blocOfNation = new Uint16Array(world.nations.highWater + 1);
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
+  const full = world.supplyDirty;
+  const only = new Uint8Array(world.nations.highWater + 1);
+  if (full) supply.fill(0);
+  else {
+    for (const n of world.supplyDirtyNations) if (n !== 0) only[blocOfNation[n] || n] = 1;
+    for (let c = 0; c < supply.length; c++) if (only[supply[c]!] === 1) supply[c] = 0;
+  }
+  world.supplyDirty = false;
+  world.supplyDirtyNations.clear();
   // Sources per bloc: cities owned and controlled by a member.
   const sources = new Map<number, number[]>();
   const cc = world.cities.cols;
@@ -46,12 +60,16 @@ export function refreshSupplyNetwork(world: World): void {
     const ctl = controller[cell]!;
     if (ctl === 0 || owner[cell] !== ctl) return;
     const b = blocOfNation[ctl]!;
+    if (!full && only[b] !== 1) return;
     let list = sources.get(b);
     if (!list) sources.set(b, (list = []));
     list.push(cell);
   });
   const blocs = [...sources.keys()].sort((a, b) => a - b);
-  const queue = new Int32Array(w * h);
+  // Reused flood queue (review after PLAN 1.25: allocating and zeroing 8 MB per refresh cost
+  // a quarter of it); contents are always written before being read.
+  if (!queueScratch || queueScratch.length !== w * h) queueScratch = new Int32Array(w * h);
+  const queue = queueScratch;
   for (const b of blocs) {
     let head = 0;
     let tail = 0;
@@ -82,7 +100,7 @@ export function refreshSupplyNetwork(world: World): void {
 }
 
 export function supplySystem(world: World): void {
-  if (world.tick % SUPPLY_REFRESH_HOURS === 0 && world.supplyDirty) refreshSupplyNetwork(world);
+  if (world.tick % SUPPLY_REFRESH_HOURS === 0 && (world.supplyDirty || world.supplyDirtyNations.size > 0)) refreshSupplyNetwork(world);
   const f = world.formations;
   const c = f.cols;
   const { w, supply, terrain } = world.cells;
