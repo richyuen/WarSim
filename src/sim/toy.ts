@@ -6,7 +6,7 @@
  */
 import { cos, sin, TAU } from './core/dmath';
 import { EventKind } from '../shared/events';
-import { SCENARIO_GEOMETRY } from '../shared/scenarios';
+import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import type { System } from './tick';
 import { Terrain } from '../shared/terrain';
 import { World } from './world';
@@ -18,6 +18,7 @@ const SPEED_CELLS = 0.45;
 
 export function createToyWorld(seed: number): World {
   const world = new World(seed, TOY_W, TOY_H);
+  world.startDay = SCENARIO_INFO.toy.startDay;
   const rng = world.rng.get('scenario');
   const { cells } = world;
 

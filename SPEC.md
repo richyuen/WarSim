@@ -147,6 +147,12 @@ id, color, cells, capitalX, capitalY), `formations` (id, nation, x, y, prevX, pr
 `events` (f64 stride 7: seq, tick, kind, a, b, x, y); see `src/shared/protocol.ts`. Other rows arrive with their systems._
 
 ### 2.5 Tick order (1 tick = 1 sim hour) [ADR-5]
+Calendar (PLAN 1.8, ADR-21): tick 0 = 00:00 of the scenario start date (`World.startDay`, saved);
+proleptic Gregorian, so 1938 = 8760 ticks and 1940 = 8784 (`src/shared/calendar.ts`, integer-only;
+`isDayStart` and `isMonthStart` gate the daily and monthly systems). Speed levels
+(`src/shared/speed.ts`): 1, 3, 6, 12, 24 (default, 1 day/s), 48, 96, 256 h/s and Max. The bottom bar
+(`src/ui/BottomBar.tsx`, app `hud.ts`) shows the date and has Pause, −/+ and Speed ×N. Space pauses,
+`,`/`.` change speed. Speed level and pause persist in localStorage.
 ```
  1. apply queued commands (sorted by arrival seq)
  2. AI: operational (every 6h, staggered by nation id), strategic & nuclear (daily, staggered)

@@ -882,3 +882,27 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Perf:** placement takes 8 ms at M.
 - **Parity:** row 78 note updated (the scenario is fully data-driven except the ScenarioId registry).
   Score unchanged at 8.1%.
+
+## 2026-10-02 — PLAN 1.8: calendar, speed levels, bottom bar (persisted)
+- **Calendar (`src/shared/calendar.ts`):** integer Gregorian (Hinnant's days↔civil), with
+  `dateOfTick`, `tickOfDate`, `isDayStart`, `isMonthStart` and `ticksInYear`.
+  - `World.startDay` is set from scenario.json (toy: 1938-01-01) and saved in `world.meta`.
+  - `SCENARIO_INFO` gives the main thread the start day.
+- **Speed (`src/shared/speed.ts`):** 8 levels (1–256 h/s) + Max; default ×5 = 24 h/s (was a
+  hard-coded 12).
+- **UI:**
+  - `src/ui/BottomBar.tsx`: Pause/Resume, −, "Speed ×N"/"Speed Max", +, and a localised date
+    ("5 January 1938"; month names in en.json), with a Paused marker.
+  - `src/app/hud.ts`: signals fed by snapshots; persists level and pause in localStorage; applies
+    them to the worker at start (`?paused=1` still forces pause); keys Space and `,`/`.` (+/−
+    zoom). It also records the worker-reported speed/pause so tests check the worker, not only the
+    label.
+- **AT:**
+  - `tests/unit/calendar.test.ts`: 1938 = 8760 ticks; 1938-12-31 23:00 → 1939-01-01 00:00; 1940 =
+    8784 with 29 February; known day numbers; round trip over ±164 years; 12 month starts and 365
+    day starts in 1938; startDay survives save/load; speed clamping.
+  - `tests/e2e/speed.spec.ts`: speed changed by buttons and keyboard and paused → reload → same
+    level, the worker reports 48 h/s and paused, Space resumes, and the date advances.
+  - Screenshot `docs/evidence/1.8/bottom-bar-paused.png` viewed.
+- **Deviation (ADR-21):** AoC's 1× ≈ 1 month per 0.5 s. Our fixed levels are finer and slower
+  because of the hourly tick, and AoC pace needs Max (Phase 7 check). Parity row 64 → partial.

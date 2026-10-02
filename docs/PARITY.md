@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 8.1%** (verified 0 · partial 13 · not started 67 · total 80)
+**Parity score: 8.8%** (verified 0 · partial 14 · not started 66 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -79,7 +79,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 61 | History log | Full history panel (v3.3.2): every event, filter by type, text search, optional in saves; export to a text file; grouped by year [TEXT 2026-10-02] | Filterable, exportable history log (Phase 1) | not started |  | Baseline: "history log … filterable and exportable" |
 | 62 | Event popups | Colour-chipped clickable nation names in event popups ("X was conquered by Y"); per-type filters saved [TEXT+VISUAL 2026-10-02] | Event feed with nation chips and filters | not started |  |  |
 | 63 | Camera controls | Arrow keys, numpad +/−, Q/E zoom, middle-mouse drag, wheel, zoom sensitivity; touch on mobile [TEXT 2026-10-02] | Keyboard/drag/wheel/touch-pinch camera (PLAN 0.17) | partial | `tests/e2e/camera.spec.ts`, `tests/unit/camera.test.ts` | Baseline: "pan/zoom with keyboard, drag and touch". Phase 0: arrows/WASD, E/Q, +/−, numpad, wheel at cursor, drag, touch pinch, continuous zoom. Missing: zoom-sensitivity setting |
-| 64 | Speed and pause | Speed up to 5× plus pause; 1 month per 0.5 s at 1×; optional days timescale [TEXT+VISUAL 2026-10-02] | Speeds up to max + pause, persisted (PLAN 1.8) | not started |  | Baseline: "speeds up to max plus pause (persisted)" |
+| 64 | Speed and pause | Speed up to 5× plus pause; 1 month per 0.5 s at 1×; optional days timescale [TEXT+VISUAL 2026-10-02] | Speeds up to max + pause, persisted (PLAN 1.8) | partial | `tests/e2e/speed.spec.ts`, `tests/unit/calendar.test.ts`, `docs/evidence/1.8/bottom-bar-paused.png` | Baseline: "speeds up to max plus pause (persisted)". 2026-10-02 (PLAN 1.8): 8 speed levels + Max, pause, both persisted; Gregorian date in the bottom bar. Deviation (ADR-21): finer, slower fixed levels (hourly ticks); AoC pace (≈1 month/0.5 s) only at Max, to be confirmed on the 1938 world in Phase 7 |
 | 65 | Save/load and autosave | Save/load games (Steam Cloud); editor autosave every 2 minutes [TEXT 2026-10-02] | Full save/load + IndexedDB autosave (PLAN 1.27) | not started |  | Baseline: "autosave" |
 | 66 | Screenshot key | F11 saves a PNG of the map in the current map mode [TEXT 2026-10-02] | Screenshot hotkey → PNG download | not started |  |  |
 | 67 | UI size setting | UI size setting (v3.2.3) [TEXT 2026-10-02] | rem-based UI scale setting | not started |  |  |

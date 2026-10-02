@@ -65,3 +65,52 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.25rem;
 }
+
+/* Bottom bar (PLAN 1.8): date, pause, speed. */
+.bottombar {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(20, 24, 32, 0.85);
+  border: 1px solid rgba(214, 178, 94, 0.55);
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.bar-btn {
+  min-width: 2rem;
+  padding: 0.2rem 0.6rem;
+  color: #f3e3b5;
+  background: #3a2f22;
+  border: 1px solid #8a6d3b;
+  border-radius: 0.25rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.bar-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.bar-speed {
+  min-width: 6.5rem;
+  text-align: center;
+  color: #e9c46a;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-date {
+  min-width: 10rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-paused {
+  color: #e76f51;
+}

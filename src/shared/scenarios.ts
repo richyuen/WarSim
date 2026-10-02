@@ -3,6 +3,7 @@
  * size before the first snapshot). Read from `data/scenarios/<id>/scenario.json` and its map's
  * `data/maps/<id>/map.json` (PLAN 1.1; both validated by tests/unit/data-schemas.test.ts).
  */
+import { dayOfIso } from './calendar';
 import type { ScenarioId } from './protocol';
 import toyMap from '../../data/maps/toy/map.json' with { type: 'json' };
 import toyScenario from '../../data/scenarios/toy/scenario.json' with { type: 'json' };
@@ -14,6 +15,13 @@ export interface ScenarioGeometry {
   wrapX: boolean;
 }
 
+/** What the main thread needs about a scenario before the first snapshot. */
+export interface ScenarioInfo {
+  geometry: ScenarioGeometry;
+  /** Start date as days since 1970-01-01 (shared/calendar). */
+  startDay: number;
+}
+
 interface MapJson {
   widthKm: number;
   sizes: { id: string; w: number; h: number }[];
@@ -21,6 +29,7 @@ interface MapJson {
 }
 interface ScenarioJson {
   size?: string;
+  startDate: string;
   settings: { loopingMap: boolean };
 }
 
@@ -33,4 +42,8 @@ function geometry(map: MapJson, scenario: ScenarioJson): ScenarioGeometry {
 
 export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   toy: geometry(toyMap, toyScenario),
+};
+
+export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
+  toy: { geometry: SCENARIO_GEOMETRY.toy, startDay: dayOfIso(toyScenario.startDate) },
 };

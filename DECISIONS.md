@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-21 · 2026-10-02 · accepted — Gregorian hourly calendar; speed ladder to Max **[AoC-DEVIATION]**
+**Decision.**
+- 1 tick = 1 hour of the real (proleptic Gregorian) calendar from the scenario start, with leap
+  years: 1940 has 8784 ticks. Integer day arithmetic is shared by the sim and the UI.
+- Speed levels: ×1…×8 = 1, 3, 6, 12, 24, 48, 96, 256 sim-hours per second, plus Max (as fast as
+  the machine allows, in 12 ms slices).
+  - The default is ×5 (1 day/s).
+  - Level and pause persist in localStorage; `?paused=1` forces a paused start.
+  - Keys: Space = pause, `,` / `.` = slower/faster (+/− already zoom the camera).
+
+**Deviation from AoC.** AoC's 1× is about 1 month per 0.5 s (≈ 1,440 h/s; TEXT), and it tops
+out at 5×. Our hourly tick drives battles, element combat and semantic zoom (ADR-3, ADR-5), so
+the fixed levels are slower and finer. AoC's pace is reachable at Max on the 1938 world once the
+sim meets its tick budget (SPEC §8; checked in Phase 7).
+
+**Why.** Real dates read naturally (1 September 1939) and leap years cost nothing with integer
+day numbers. A day per second at the default lets the tactical zoom show battles moving.
+
 ### ADR-20 · 2026-10-02 · accepted — 1938 land OOB: one formation ≈ one division, strengths in documented ranges
 **Decision.**
 - A formation is one division or brigade of a data template. Strength is the sum of its elements

@@ -70,7 +70,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: total strengths per major power within the documented ranges in SPEC/DECISIONS; all formations on owned land.
 
 ### 1B Core sim
-- [ ] 1.8 Calendar/time (1938-01-01, hourly ticks), scheduler (speed, pause, max).
+- [x] 1.8 Calendar/time (1938-01-01, hourly ticks), scheduler (speed, pause, max).
   AT: 1 sim year = 8760 ticks; speed setting persists across reload (e2e).
 - [ ] 1.9 Economy: per-cell income weight × terrain × development, monthly tick, gold, expenses (upkeep, admin cost superlinear), incomeBonus −100..100, bankruptcy.
   AT: unit tests per rule; 1938 income ranking plausible (USA, UK, Germany, USSR, France top 5).

@@ -104,7 +104,7 @@ class WorldCore implements Stateful {
 
   serialize(): Section[] {
     const w = this.world;
-    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq]);
+    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay]);
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
@@ -118,11 +118,12 @@ class WorldCore implements Stateful {
   deserialize(sections: readonly Section[]): void {
     const w = this.world;
     const meta = takeSection(sections, 'world.meta', 'f64');
-    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0] = meta;
+    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0] = meta;
     if (cw !== w.cells.w || ch !== w.cells.h) throw new Error(`map size mismatch: save ${cw}×${ch}, world ${w.cells.w}×${w.cells.h}`);
     w.seed = seed;
     w.tick = tick;
     w.nextCommandSeq = nextSeq;
+    w.startDay = startDay;
     w.rng.load(takeSection(sections, 'world.rng', 'u32'));
     const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'world.commandLog', 'u8'))) as {
       log: LoggedCommand[];
@@ -138,6 +139,8 @@ export class World {
   seed: number;
   /** Ticks elapsed; 1 tick = 1 sim hour (ADR-5). */
   tick = 0;
+  /** Scenario start date as days since 1970-01-01 (shared/calendar): tick 0 is its 00:00. */
+  startDay = 0;
   rng: RngStreams;
   cells: CellLayers;
   nations = new Table('nations', NATION_SCHEMA, 8);
