@@ -360,6 +360,15 @@ Element (authoritative unit proxy) {
 ```
 - Element sizes (initial): infantry/mot/mech 500 men, artillery/AT/AA 12 guns,
   armour 10 tanks, each ship 1, air 4–12 planes. Typical division: 20–30 elements.
+- **Templates and starting OOB (PLAN 1.7, ADR-20).**
+  - `data/templates/land.json`: 15 land templates, from infantry (12.5k men) and square (20.9k)
+    divisions to panzer (340 tanks), Soviet tank corps (450), cavalry and garrison units.
+  - `data/scenarios/1938/oob.json`: 225 groups, 1054 formations.
+  - `placeOob` (`src/sim/data/oob.ts`, part of `buildPoliticalMap`) floods each group out from its
+    anchor over land the nation controls, or that its puppets own and control, keeping formations
+    one cell apart; it places all of them in 8 ms at M.
+  - Strength = Σ element manpower / tanks / guns (`templateStrength`). Fleets and air wings start in
+    Phases 4–5.
 - **Slotted pose** is `slotPose(formation, slot, aliveMask)`, a pure function. It is the same
   code in the sim (for engagement start positions) and in the snapshot builder.
 - **Engaged pose** is integrated per tick inside a battle (advance or withdraw toward

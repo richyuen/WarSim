@@ -3,7 +3,7 @@ import { Terrain } from '../../src/shared/terrain';
 import { xxhash32View } from '../../src/sim/core/hash';
 import { buildPoliticalMap } from '../../src/sim/data/politicalMap';
 import { cellOf } from '../../src/sim/data/terrain';
-import { CITIES_1938, earthAdmin1, earthAsset, NATIONS_1938, politicalMap1938, RULES_1938, STRAITS, TAGS_1938 } from '../helpers/earth';
+import { CITIES_1938, earthAdmin1, earthAsset, NATIONS_1938, OOB_1938, OVERLORDS_1938, politicalMap1938, RULES_1938, STRAITS, TAGS_1938 } from '../helpers/earth';
 
 // PLAN 1.3: 1 January 1938 ownership from admin-1 provinces + interwar border regions +
 // occupation. Known places are checked against the historical record (atlas facts as of
@@ -142,7 +142,7 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
   it('island territories keep one land cell, and the build is deterministic', () => {
     expect(r.islands).toEqual(expect.arrayContaining(['MLT', 'BMU', 'MDV', 'GIB']));
     const { geo, meta } = earthAdmin1();
-    const again = buildPoliticalMap({ w: 2048, h: 1024, geo, meta, terrainRaw: new Uint8Array(earthAsset('terrain', 2048)), straits: STRAITS, tags, rules: RULES_1938, cities: CITIES_1938 });
+    const again = buildPoliticalMap({ w: 2048, h: 1024, geo, meta, terrainRaw: new Uint8Array(earthAsset('terrain', 2048)), straits: STRAITS, tags, rules: RULES_1938, cities: CITIES_1938, oob: OOB_1938, overlordOf: OVERLORDS_1938 });
     expect(xxhash32View(again.owner)).toBe(xxhash32View(r.owner));
     expect(xxhash32View(again.controller)).toBe(xxhash32View(r.controller));
   });

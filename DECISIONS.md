@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-20 · 2026-10-02 · accepted — 1938 land OOB: one formation ≈ one division, strengths in documented ranges
+**Decision.**
+- A formation is one division or brigade of a data template. Strength is the sum of its elements
+  (SPEC §3.6), and the model counts *divisional* manpower; rear services and depots are abstracted
+  into economy and supply.
+- The 1938 OOB (`data/scenarios/1938/oob.json`) places 1054 formations at their peacetime or front
+  locations of January 1938:
+  - Germany: 39 inf + 3 panzer + 1 light + 4 mot + 1 mountain + tank units;
+  - USSR: 96 rifle + 32 cavalry + 4 tank corps + 30 tank brigades, West and Far East;
+  - France: metropole + Algeria; Italy: incl. Libya and East Africa;
+  - Japan: square divisions in Japan, Korea, Manchukuo and occupied China;
+  - China: ~140 weak NRA divisions on the free side of the front;
+  - Poland, Czechoslovakia, the US and every other living nation.
+- Units may deploy on land the nation controls, or on land its puppets own and control. So the
+  Kwantung Army stands in Manchukuo, Japanese divisions in occupied China, and Chinese divisions
+  only on Chinese-held land.
+
+**Documented ranges** (AT for PLAN 1.7; checked by `tests/unit/oob.test.ts`). Rounded spans around
+standard histories of the peacetime and early-1938 armies, in model units:
+
+| Nation | Formations | Divisional men | Tanks |
+|---|---|---|---|
+| Germany | 45–60 | 0.45–0.8 M | 1,000–3,500 |
+| Soviet Union | 140–200 | 1.2–2.0 M | 8,000–20,000 |
+| France | 50–80 | 0.45–0.9 M | 1,500–3,500 |
+| United Kingdom | 8–16 | 60–200 k | 200–700 |
+| Italy | 70–95 | 0.7–1.2 M | 500–1,800 |
+| Japan | 28–40 | 0.45–0.9 M | 500–2,000 |
+| United States | 10–18 | 60–200 k | 100–400 |
+| China | 120–200 | 0.8–1.6 M | 0–200 |
+| Poland | 35–50 | 0.3–0.5 M | 400–900 |
+| Czechoslovakia | 20–40 | 0.2–0.45 M | 300–700 |
+
+Current values: GER 50 / 563 k / 1,570; SOV 162 / 1.52 M / 10,680; FRA 57 / 528 k / 2,300;
+ENG 12 / 90 k / 400; ITA 82 / 926 k / 750; JAP 33 / 604 k / 800; USA 14 / 82 k / 200;
+CHI 140 / 997 k / 0; POL 44 / 419 k / 600; CZS 24 / 269 k / 600.
+
+**Why.** PROMPT asks for historically plausible starting forces. Division-sized formations keep
+~1000 units worldwide (manageable for the AI and markers) while letting elements carry the
+semantic-zoom detail (ADR-3). Ranges, not single numbers, reflect real uncertainty: tank counts
+depend on whether tankettes count.
+
 ### ADR-19 · 2026-10-02 · accepted — Flags as layered data → polygons → SVG and a CPU-rasterized atlas
 **Decision.**
 - Flags are data, not images: a `FlagSpec` of 11 layer types plus presets. Presets cover the Union

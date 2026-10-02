@@ -148,6 +148,14 @@ export interface CityInfo {
   capitalOf: number;
 }
 
+/** A starting formation marker (PLAN 1.7): position in cells, nation id, template id. */
+export interface FormationInfo {
+  x: number;
+  y: number;
+  nation: number;
+  template: string;
+}
+
 /** Result of `buildPolitical` (PLAN 1.3). */
 export interface PoliticalBuildResult {
   w: number;
@@ -161,6 +169,7 @@ export interface PoliticalBuildResult {
   owner: Uint16Array;
   controller: Uint16Array;
   cities: CityInfo[];
+  formations: FormationInfo[];
 }
 
 export type FromWorker =

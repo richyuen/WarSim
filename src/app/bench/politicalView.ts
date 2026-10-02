@@ -2,12 +2,13 @@
  * 1938 political map view (PLAN 1.3, `bench.html?b=W[&size=S|M]`): the sim worker builds the
  * province raster, terrain and 1938 ownership, and the production MapRenderer draws owner and
  * controller (occupation hatching) in each nation's data colour, with the 1938 cities on a
- * label overlay (PLAN 1.5). The visual check for the ownership and city data until the real
+ * label overlay (PLAN 1.5) and the starting formations as dots (PLAN 1.7). The visual check for the ownership and city data until the real
  * 1938 scenario boots in the app (PLAN 1.8+).
  */
 import type { Camera } from '../../render/camera';
 import { CityLabelLayer } from '../../render/labels/cityLabels';
 import { MapRenderer } from '../../render/map/MapRenderer';
+import { FormationDotLayer } from '../../render/units/formationDots';
 import nationsJson from '../../../data/scenarios/1938/nations.json' with { type: 'json' };
 import { SimClient } from '../simClient';
 
@@ -28,7 +29,12 @@ const sim = new SimClient();
 const result = await sim.buildPolitical(W, H);
 map.setGrid(result.owner, result.controller);
 
-// City dots and names (PLAN 1.5) on a 2D overlay.
+// Starting formations (PLAN 1.7) and city dots/names (PLAN 1.5) on 2D overlays.
+const unitOverlay = document.createElement('canvas');
+unitOverlay.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none';
+document.body.appendChild(unitOverlay);
+const units = new FormationDotLayer(unitOverlay, { w: W, h: H, kmPerCell: 40075 / W, wrapX: true }, ['#888', ...nationsJson.nations.map((n) => n.color)]);
+units.dots = result.formations;
 const overlay = document.createElement('canvas');
 overlay.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none';
 document.body.appendChild(overlay);
@@ -37,17 +43,19 @@ labels.setCities(result.cities.map((c) => ({ name: c.name, x: c.x, y: c.y, size:
 
 let cam: Camera = { cx: W / 2, cy: H / 2, scale: Math.min(canvas.clientWidth / W, canvas.clientHeight / H) };
 map.draw(cam, dpr);
+let unitsDrawn = units.draw(cam, dpr);
 labels.draw(cam, dpr);
 
 window.__bench = {
   ready: Promise.resolve(),
   run: async () => {
-    const { owner: _o, controller: _c, cities, ...summary } = result;
-    return { ...summary, cities: cities.length, capitals: cities.filter((c) => c.capitalOf !== 0).length };
+    const { owner: _o, controller: _c, cities, formations: _f, ...summary } = result;
+    return { ...summary, cities: cities.length, capitals: cities.filter((c) => c.capitalOf !== 0).length, formations: result.formations.length, unitsDrawn };
   },
   setCamera: async (cx, cy, scale) => {
     cam = { cx, cy, scale };
     map.draw(cam, dpr);
+    unitsDrawn = units.draw(cam, dpr);
     labels.draw(cam, dpr);
     await new Promise((r) => requestAnimationFrame(() => r(undefined)));
   },

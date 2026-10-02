@@ -40,7 +40,7 @@ export function placeCities(defs: readonly CityDef[], tags: readonly string[], o
     const cell =
       capitalOf !== 0
         ? nearestOwnedCell(owner, capitalOf, x, y, w, h, CITY_SNAP_CELLS)
-        : nearestCellWhere(owner, (o) => o !== 0, x, y, w, h, CITY_SNAP_CELLS);
+        : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, CITY_SNAP_CELLS);
     if (cell < 0) continue;
     out.push({ name: d.name, x, y, cell, size: d.size, owner: owner[cell]!, capitalOf });
   }

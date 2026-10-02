@@ -66,7 +66,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: every capital is a city; city names render at T1 (screenshot).
 - [x] 1.6 Flags: SVG flag spec + preset renderer; 1938 flags for all nations (own designs); flag atlas generation.
   AT: the atlas builds; screenshot of a flag grid reviewed; DATA_SOURCES/DECISIONS note the German flag choice.
-- [ ] 1.7 Starting OOB per nation (formations of unit templates at historical-ish locations, scaled).
+- [x] 1.7 Starting OOB per nation (formations of unit templates at historical-ish locations, scaled).
   AT: total strengths per major power within the documented ranges in SPEC/DECISIONS; all formations on owned land.
 
 ### 1B Core sim

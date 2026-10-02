@@ -851,3 +851,34 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Gotcha:** commit 34e314b left `tools/data/{run,terrain}.ts` unstaged (their rasterize imports),
   because the stage list named `src tests docs …` but not `tools`; fixed in 6960cdd. Commits now
   stage with `git add -A` minus `CLAUDE.md`, and check `git status` is clean except `CLAUDE.md`.
+
+## 2026-10-02 — PLAN 1.7: starting land order of battle
+- **Data:**
+  - `data/templates/land.json` (15 templates) and a new `cavalry` unit type;
+  - `data/scenarios/1938/oob.json`: 225 groups, 1054 formations for every living nation, at
+    January 1938 peacetime or front locations;
+  - schemas + cross-checks for template unit types, OOB nations and templates; en.json names.
+- **Code:** `src/sim/data/oob.ts`.
+  - `templateStrength`: men = Σ element manpower; tanks/guns from armour and gun classes.
+  - `placeOob`: nearest allowed cell to the anchor, then a 4-way flood over allowed land, keeping
+    used cells 8-apart and stacking only if the area runs out. Allowed land is land the nation
+    controls, or land its puppets own and control.
+  - It runs inside `buildPoliticalMap` (so worker == Node). `nearestCellWhere` now takes a cell
+    predicate, so the OOB search reuses it.
+- **Correction from the first probe:** Japan's 1938 divisions were square (~20–25k men), double the
+  standard template. Added `infantry_div_square` for Japan (JAP 368k → 604k men).
+- **AT (`tests/unit/oob.test.ts`):**
+  - every group placed;
+  - all 10 major powers within the ADR-20 ranges (formations / divisional men / tanks);
+  - every formation on land its nation controls or its puppet holds;
+  - Japanese divisions in occupied China (≥ 15) and Manchukuo (≥ 6), Chinese ones only on
+    Chinese-held land;
+  - deterministic with zero stacking; template maths.
+- **Visual:** `FormationDotLayer` (stand-in for the Phase 2 counters) draws on `bench.html?b=W`;
+  `docs/evidence/1.7/oob-1938-{europe,china}.png` were viewed. Deployments look right:
+  - Germany's Wehrkreise; Polish and Soviet concentrations along their border; the Soviet Far East
+    group;
+  - Chinese armies along the Xuzhou–Wuhan front, and Japanese divisions inside the occupation hatch.
+- **Perf:** placement takes 8 ms at M.
+- **Parity:** row 78 note updated (the scenario is fully data-driven except the ScenarioId registry).
+  Score unchanged at 8.1%.

@@ -8,6 +8,13 @@
       "terrainMods": { "forest": { "atk": 1, "def": 1.1, "speed": 1 }, "urban": { "atk": 1.05, "def": 1.15, "speed": 1 } }
     },
     {
+      "id": "cavalry", "nameKey": "unit.cavalry", "class": "inf", "domain": "land", "elementSize": 500, "mobility": "foot",
+      "stats": { "soft": 6, "hard": 0.5, "defense": 14, "breakthrough": 5, "armor": 0, "piercing": 2, "aa": 0.3, "range_km": 1, "speed_kmh": 7, "org": 55, "hpPerUnit": 1.2, "detection": 8, "stealth": 4, "fuelPerHour": 0, "supplyPerHour": 0.15 },
+      "cost": { "gold": 14, "industry": 4, "manpower": 500, "days": 35 },
+      "upkeep": { "gold": 0.7, "supply": 0.15 },
+      "terrainMods": { "forest": { "atk": 0.9, "def": 1, "speed": 0.8 }, "mountains": { "atk": 0.8, "def": 1, "speed": 0.7 } }
+    },
+    {
       "id": "infantry_motorised", "nameKey": "unit.infantry_motorised", "class": "mot", "domain": "land", "elementSize": 500, "mobility": "motor",
       "stats": { "soft": 6, "hard": 1, "defense": 18, "breakthrough": 4, "armor": 0, "piercing": 2, "aa": 0.5, "range_km": 1, "speed_kmh": 12, "org": 60, "hpPerUnit": 1, "detection": 6, "stealth": 4, "fuelPerHour": 0.2, "supplyPerHour": 0.15 },
       "cost": { "gold": 18, "industry": 10, "manpower": 500, "days": 40 },

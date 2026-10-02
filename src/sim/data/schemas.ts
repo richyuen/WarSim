@@ -152,6 +152,16 @@ export const BuildingDef = z.strictObject({
 });
 export const BuildingsFile = z.strictObject({ buildings: z.array(BuildingDef).min(1) });
 
+// ── formation templates (data/templates/*.json) ──────────────────────────────
+
+/** A land formation template (PLAN 1.7): elements of unit types (SPEC §3.6). */
+export const TemplateDef = z.strictObject({
+  id,
+  nameKey: key,
+  elements: z.array(z.strictObject({ type: id, count: z.number().int().min(1).max(200) })).min(1),
+});
+export const TemplatesFile = z.strictObject({ comment: z.string().optional(), templates: z.array(TemplateDef).min(1) });
+
 // ── maps (data/maps/<id>/map.json) ───────────────────────────────────────────
 
 const Projection = z.discriminatedUnion('type', [
@@ -284,6 +294,14 @@ export const FlagSpecSchema = z.strictObject({ aspect: z.number().min(0.5).max(3
 export const FlagPresetsFile = z.strictObject({ comment: z.string().optional(), presets: z.record(id, z.array(FlagLayer).min(1)) });
 export const FlagsFile = z.strictObject({ comment: z.string().optional(), flags: z.record(tag, FlagSpecSchema) });
 
+/** Starting land order of battle (PLAN 1.7). */
+export const OobFile = z.strictObject({
+  comment: z.string().optional(),
+  groups: z.array(
+    z.strictObject({ nation: tag, template: id, count: z.number().int().min(1).max(100), at: lonLat, note: z.string().optional() }),
+  ),
+});
+
 /** City-list inputs (PLAN 1.5): keys are 'NE NAME|ADM0_A3'; read by tools/data/cities.ts. */
 const placeKey = z.string().regex(/^[^|]+\|[A-Z0-9]{3}$/, "place keys are 'NAME|ADM0'");
 export const CityRulesFile = z.strictObject({
@@ -336,6 +354,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^tech\/[a-z0-9_]+\.json$/, schema: TechFile },
   { pattern: /^traits\/[a-z0-9_]+\.json$/, schema: TraitsFile },
   { pattern: /^buildings\/[a-z0-9_]+\.json$/, schema: BuildingsFile },
+  { pattern: /^templates\/[a-z0-9_]+\.json$/, schema: TemplatesFile },
   { pattern: /^maps\/[a-z0-9_]+\/map\.json$/, schema: MapMeta },
   { pattern: /^maps\/[a-z0-9_]+\/straits\.json$/, schema: StraitsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
@@ -344,6 +363,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/diplomacy\.json$/, schema: DiplomacyFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/city-rules\.json$/, schema: CityRulesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/flags\.json$/, schema: FlagsFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/oob\.json$/, schema: OobFile },
   { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
 ];
@@ -467,6 +487,17 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
 
   unique('buildings', of<z.infer<typeof BuildingsFile>>(/^buildings\//).map(([f, x]) => [f, x.buildings]));
 
+  const unitIds = new Set(unitFiles.flatMap(([, x]) => x.types.map((u) => u.id)));
+  const templateFiles = of<z.infer<typeof TemplatesFile>>(/^templates\//);
+  const templates = unique('templates', templateFiles.map(([f, x]) => [f, x.templates]));
+  for (const [f, x] of templateFiles) {
+    x.templates.forEach((t, i) =>
+      t.elements.forEach((e, j) => {
+        if (!unitIds.has(e.type)) errors.push(`${f}: templates[${i}].elements[${j}].type: unknown unit type '${e.type}'`);
+      }),
+    );
+  }
+
   const maps = new Map<string, MapMeta>();
   for (const [f, m] of of<MapMeta>(/^maps\/[a-z0-9_]+\/map\.json$/)) {
     const dir = f.split('/')[1];
@@ -563,6 +594,15 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       };
       for (const t of Object.keys(fl.flags).sort()) walk(fl.flags[t]!.layers, `flags.${t}.layers`);
     }
+    const oobF = f.replace(/nations\.json$/, 'oob.json');
+    const oob = ok[oobF] as z.infer<typeof OobFile> | undefined;
+    if (oob) {
+      oob.groups.forEach((g, i) => {
+        const n = byTag.get(g.nation);
+        if (!n || n.alive === false) errors.push(`${oobF}: groups[${i}].nation: '${g.nation}' is not a living nation`);
+        if (!templates.has(g.template)) errors.push(`${oobF}: groups[${i}].template: unknown template '${g.template}'`);
+      });
+    }
     const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;
     if (!own) continue;
     const of2 = f.replace(/nations\.json$/, 'ownership.json');
@@ -580,8 +620,8 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       check(o.owner, `occupation[${i}].owner`);
     });
   }
-  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities|flags)\.json$/)) {
-    if (!(f.replace(/(ownership|diplomacy|cities|flags)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
+  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities|flags|oob)\.json$/)) {
+    if (!(f.replace(/(ownership|diplomacy|cities|flags|oob)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
   }
   for (const [f, s] of of<ScenarioMeta>(/^scenarios\/[a-z0-9_]+\/scenario\.json$/)) {
     const dir = f.split('/')[1];

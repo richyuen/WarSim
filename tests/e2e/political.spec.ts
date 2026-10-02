@@ -55,5 +55,17 @@ test('1938 political map: worker == Node, rendered at three zooms', async ({ pag
   await page.evaluate(([cx, cy]) => window.__bench!.setCamera(cx!, cy!, 16), [ex, ey]);
   expect((await page.evaluate(() => window.__bench!.labels!())).names).toEqual(expect.arrayContaining(['Peiping', 'Tientsin', 'Kalgan']));
   await page.screenshot({ path: path.join(t1, 'city-names-t1-north-china.png') });
+
+  // PLAN 1.7: starting formations are drawn on their nations' land.
+  const o17 = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.7') : out;
+  mkdirSync(o17, { recursive: true });
+  const [gx, gy] = cellOf(17, 51, W, H);
+  await page.evaluate(([cx, cy]) => window.__bench!.setCamera(cx!, cy!, 6), [gx, gy]);
+  const s17 = (await page.evaluate(() => window.__bench!.run())) as { formations: number; unitsDrawn: number };
+  expect(s17.formations).toBeGreaterThan(1000);
+  expect(s17.unitsDrawn).toBeGreaterThan(150);
+  await page.screenshot({ path: path.join(o17, 'oob-1938-europe.png') });
+  await page.evaluate(([cx, cy]) => window.__bench!.setCamera(cx!, cy!, 3.2), cellOf(115, 36, W, H));
+  await page.screenshot({ path: path.join(o17, 'oob-1938-china.png') });
   expect(errors).toEqual([]);
 });
