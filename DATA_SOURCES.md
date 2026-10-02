@@ -31,7 +31,7 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 
 | Source | What | License | Status | Notes |
 |---|---|---|---|---|
-| Flags (SVG specs) | all nation flags + presets | Our own work | planned (PLAN 1.6) | Germany 1938 = black-white-red tricolour (ADR-10) |
+| Flags (`data/scenarios/1938/flags.json`, `data/flags/presets.json`) | 103 nation flags + 8 presets as FlagSpec layer data | Our own work (simplified designs from public-domain vexillology) | in use (PLAN 1.6) | Germany 1938 = black-white-red tricolour, not the swastika flag (ADR-10); emblems simplified (ADR-19) |
 | Unit/ship/plane sprites | proxy and close-tier sprites | Our own work (procedural Canvas2D, `src/render/units/atlas.ts`) | in use (benchmarks); full atlas Phase 2 | |
 
 ## Fonts

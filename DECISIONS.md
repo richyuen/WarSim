@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-19 · 2026-10-02 · accepted — Flags as layered data → polygons → SVG and a CPU-rasterized atlas
+**Decision.**
+- Flags are data, not images: a `FlagSpec` of 11 layer types plus presets. Presets cover the Union
+  Jack, the blue and red ensigns, the French and Portuguese colonial patterns, and Nordic crosses.
+- One expander (`flagShapes`) feeds both the SVG writer and a deterministic supersampled
+  rasterizer. The GPU atlas is built at load from data (Node and browser give identical bytes), so
+  the flag editor (PLAN 1.6 baseline, editor UI later) edits data rather than pixels.
+- All 103 designs are our own simplifications at AoC's 36×24 scale. Complex arms and scripts
+  become symbols:
+  - Albania's eagle and the Soviet hammer and sickle are polygons, Saudi Arabia's shahada is bars;
+  - Tibet's snow lions are omitted; Mongolia's soyombo is a stylised column.
+- Germany uses the 1933–35 black-white-red tricolour (ADR-10).
+
+**Why.** PROMPT asks for a flag editor with presets and our own art. A layered spec gives presets,
+random flags and editing for free, renders crisply at any size, and needs no image assets or
+licences. The supersampled CPU rasterizer keeps the atlas byte-identical across platforms (unlike
+browser SVG rasterization) and builds in 20 ms.
+
 ### ADR-18 · 2026-10-02 · accepted — 1938 cities from Natural Earth; point labels on a Canvas2D overlay
 **Decision.**
 - Cities are generated from NE populated places, with 1938 names. The rename table covers 89

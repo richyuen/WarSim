@@ -74,12 +74,13 @@ src/sim/core/      table.ts (SoA + free lists), sections.ts (typed-array section
 src/sim/systems/   economy, production, supply, movement, engagement, combat,
                    territory, diplomacy, revolts, naval, air, nuclear, buffs, history
 src/sim/ai/        strategic, operational, economic, nuclear
-src/sim/data/      projection.ts (Miller), rasterize.ts, provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet),
+src/sim/data/      projection.ts (Miller), provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet),
                    terrain.ts (crossings), ownership.ts, cities.ts, politicalMap.ts (the whole map build chain)
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
 src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
-src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums
+src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums,
+                   rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, derive/
 src/render/        camera.ts, gl/ (gpuTimer), map/ (MapRenderer), units/ (ProxyRenderer, atlas), fx/, labels/, lod/
 src/ui/            panels, i18n/{index.ts: t(), locale signal, pseudo-locale 'qps'; en.json = source of truth}, theme
@@ -312,6 +313,14 @@ overlord {tag, autonomy}, extraCores {countries, provinces} and alive. Cores = s
 extraCores. The capital snaps to the nearest owned cell within 2 cells (coastal capitals);
 PLAN 1.5 binds it to a city. `diplomacy.json` holds alliances (one per nation, unity), guarantees
 and wars in progress. Neighbouring nations differ in colour by ΔE*ab > 15 (`src/shared/color.ts`).
+
+**Flags (PLAN 1.6, ADR-19).** `FlagSpec = {aspect, layers}` (`src/shared/flags.ts`), with layers:
+stripes, rect, cross (Nordic/Greek), saltire, hoist triangle, disc, star, crescent, poly, canton
+(nested layers) and preset (`data/flags/presets.json`, `$n` colour parameters). `flagShapes`
+expands a spec into coloured polygons, which feed `flagSvg` (UI) and `rasterizeFlag` (4×4
+supersampled scanline fill, deterministic). `buildFlagAtlas` packs 48×32 cells (1 px gutter,
+aspect kept, transparent letterbox): 103 flags in 20 ms. `data/scenarios/1938/flags.json` maps
+tag → spec.
 
 ### 3.5 Diplomacy
 - **War** {id, attackers[], defenders[], leaders, goal, startTick, warScore,

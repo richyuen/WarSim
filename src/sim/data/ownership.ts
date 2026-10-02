@@ -14,7 +14,7 @@
  */
 import { Terrain } from '../../shared/terrain';
 import { project } from './projection';
-import { rasterizePolygon } from './rasterize';
+import { rasterizePolygon } from '../../shared/rasterize';
 
 type LonLat = readonly [number, number];
 

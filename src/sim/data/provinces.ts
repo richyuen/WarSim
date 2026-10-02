@@ -13,7 +13,7 @@
  * Integer and exact-float arithmetic only, so Node and every browser build identical rasters.
  */
 import type { Admin1Geometry } from '../../shared/admin1';
-import { rasterizePolygon } from './rasterize';
+import { rasterizePolygon } from '../../shared/rasterize';
 
 export interface ProvinceSeed {
   /** Label point, normalised Miller (u, v). */

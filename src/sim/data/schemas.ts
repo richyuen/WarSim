@@ -11,6 +11,7 @@
  *   Invalid input: expected number, received string`.
  */
 import { z } from 'zod';
+import type { FlagLayer as FlagLayerT, FlagSpec } from '../../shared/flags';
 import { TERRAIN_IDS } from '../../shared/terrain';
 
 // ── shared vocab ─────────────────────────────────────────────────────────────
@@ -255,6 +256,34 @@ export const DiplomacyFile = z.strictObject({
   wars: z.array(z.strictObject({ id, nameKey: key, attackers: z.array(tag).min(1), defenders: z.array(tag).min(1), startDate: date })),
 });
 
+// ── flags (data/flags/presets.json, data/scenarios/<id>/flags.json) ──────────
+
+const flagColor = z.string().regex(/^(#[0-9a-f]{6}|\$[1-9])$/, "flag colours are #rrggbb or a preset parameter '$1'..'$9'");
+const frac = z.number().min(-0.5).max(1.5);
+const pos = z.number().positive().max(2);
+/** Recursive (cantons nest layers); typed loosely here, `FlagLayer` in shared/flags.ts is the code type. */
+export const FlagLayer: z.ZodType = z.lazy(() =>
+  z.discriminatedUnion('t', [
+    z.strictObject({ t: z.literal('stripes'), dir: z.enum(['h', 'v']), colors: z.array(flagColor).min(1).max(20), weights: z.array(z.number().positive().max(100)).optional() }),
+    z.strictObject({ t: z.literal('rect'), x: frac, y: frac, w: pos, h: pos, color: flagColor }),
+    z.strictObject({ t: z.literal('cross'), color: flagColor, width: pos, cx: frac.optional(), cy: frac.optional(), length: pos.optional() }),
+    z.strictObject({ t: z.literal('saltire'), color: flagColor, width: pos }),
+    z.strictObject({ t: z.literal('triangle'), color: flagColor, depth: pos }),
+    z.strictObject({ t: z.literal('disc'), cx: frac, cy: frac, r: pos, color: flagColor }),
+    z.strictObject({
+      t: z.literal('star'), cx: frac, cy: frac, r: pos, color: flagColor,
+      points: z.number().int().min(3).max(24).optional(), inner: z.number().positive().max(1).optional(), rotation: z.number().optional(),
+    }),
+    z.strictObject({ t: z.literal('crescent'), cx: frac, cy: frac, r: pos, color: flagColor, cut: flagColor, offset: z.number().min(-1).max(1), cutR: pos.optional() }),
+    z.strictObject({ t: z.literal('poly'), points: z.array(z.tuple([frac, frac])).min(3), color: flagColor }),
+    z.strictObject({ t: z.literal('canton'), x: frac, y: frac, w: pos, h: pos, layers: z.array(FlagLayer).min(1) }),
+    z.strictObject({ t: z.literal('preset'), name: id, colors: z.array(flagColor).optional() }),
+  ]),
+);
+export const FlagSpecSchema = z.strictObject({ aspect: z.number().min(0.5).max(3), layers: z.array(FlagLayer).min(1) });
+export const FlagPresetsFile = z.strictObject({ comment: z.string().optional(), presets: z.record(id, z.array(FlagLayer).min(1)) });
+export const FlagsFile = z.strictObject({ comment: z.string().optional(), flags: z.record(tag, FlagSpecSchema) });
+
 /** City-list inputs (PLAN 1.5): keys are 'NE NAME|ADM0_A3'; read by tools/data/cities.ts. */
 const placeKey = z.string().regex(/^[^|]+\|[A-Z0-9]{3}$/, "place keys are 'NAME|ADM0'");
 export const CityRulesFile = z.strictObject({
@@ -296,6 +325,7 @@ export type NationDef = z.infer<typeof NationDef>;
 export type OwnershipFile = z.infer<typeof OwnershipFile>;
 export type DiplomacyFile = z.infer<typeof DiplomacyFile>;
 export type CitiesFile = z.infer<typeof CitiesFile>;
+export type FlagsFile = { flags: Record<string, FlagSpec> };
 
 // ── file table + validation ──────────────────────────────────────────────────
 
@@ -313,6 +343,8 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/ownership\.json$/, schema: OwnershipFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/diplomacy\.json$/, schema: DiplomacyFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/city-rules\.json$/, schema: CityRulesFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/flags\.json$/, schema: FlagsFile },
+  { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
 ];
 
@@ -515,6 +547,22 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
         if (n.alive !== false && !capitalOf.has(n.tag)) errors.push(`${citF}: no capital city for nations[${i}] '${n.tag}'`);
       });
     }
+    const flF = f.replace(/nations\.json$/, 'flags.json');
+    const fl = ok[flF] as FlagsFile | undefined;
+    if (fl) {
+      nf.nations.forEach((n, i) => {
+        if (!fl.flags[n.tag]) errors.push(`${flF}: flags: no flag for nations[${i}] '${n.tag}'`);
+      });
+      for (const t of Object.keys(fl.flags).sort()) if (!byTag.has(t)) errors.push(`${flF}: flags.${t}: unknown nation`);
+      const presets = (ok['flags/presets.json'] as { presets: Record<string, unknown> } | undefined)?.presets ?? {};
+      const walk = (layers: readonly FlagLayerT[], where: string): void => {
+        layers.forEach((l, i) => {
+          if (l.t === 'preset' && !(l.name in presets)) errors.push(`${flF}: ${where}[${i}].name: unknown flag preset '${l.name}'`);
+          if (l.t === 'canton') walk(l.layers, `${where}[${i}].layers`);
+        });
+      };
+      for (const t of Object.keys(fl.flags).sort()) walk(fl.flags[t]!.layers, `flags.${t}.layers`);
+    }
     const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;
     if (!own) continue;
     const of2 = f.replace(/nations\.json$/, 'ownership.json');
@@ -532,8 +580,8 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       check(o.owner, `occupation[${i}].owner`);
     });
   }
-  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities)\.json$/)) {
-    if (!(f.replace(/(ownership|diplomacy|cities)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
+  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities|flags)\.json$/)) {
+    if (!(f.replace(/(ownership|diplomacy|cities|flags)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
   }
   for (const [f, s] of of<ScenarioMeta>(/^scenarios\/[a-z0-9_]+\/scenario\.json$/)) {
     const dir = f.split('/')[1];

@@ -1,0 +1,42 @@
+{
+  "comment": "Reusable flag building blocks (PLAN 1.6). Our own simplified geometry. '$1'.. are colour parameters.",
+  "presets": {
+    "union_jack": [
+      { "t": "stripes", "dir": "h", "colors": ["#012169"] },
+      { "t": "saltire", "color": "#ffffff", "width": 0.2 },
+      { "t": "saltire", "color": "#c8102e", "width": 0.07 },
+      { "t": "cross", "color": "#ffffff", "width": 0.333 },
+      { "t": "cross", "color": "#c8102e", "width": 0.2 }
+    ],
+    "blue_ensign": [
+      { "t": "stripes", "dir": "h", "colors": ["#012169"] },
+      { "t": "canton", "x": 0, "y": 0, "w": 0.5, "h": 0.5, "layers": [{ "t": "preset", "name": "union_jack" }] },
+      { "t": "disc", "cx": 0.75, "cy": 0.5, "r": 0.2, "color": "$1" }
+    ],
+    "red_ensign": [
+      { "t": "stripes", "dir": "h", "colors": ["#c8102e"] },
+      { "t": "canton", "x": 0, "y": 0, "w": 0.5, "h": 0.5, "layers": [{ "t": "preset", "name": "union_jack" }] },
+      { "t": "disc", "cx": 0.75, "cy": 0.5, "r": 0.2, "color": "$1" }
+    ],
+    "french_tricolour": [{ "t": "stripes", "dir": "v", "colors": ["#002395", "#ffffff", "#ed2939"] }],
+    "french_colony": [
+      { "t": "stripes", "dir": "h", "colors": ["$1"] },
+      { "t": "canton", "x": 0, "y": 0, "w": 0.4, "h": 0.5, "layers": [{ "t": "preset", "name": "french_tricolour" }] },
+      { "t": "star", "cx": 0.72, "cy": 0.6, "r": 0.2, "color": "$2" }
+    ],
+    "portuguese_colony": [
+      { "t": "stripes", "dir": "v", "colors": ["#046a38", "#da291c"], "weights": [2, 3] },
+      { "t": "disc", "cx": 0.4, "cy": 0.5, "r": 0.24, "color": "#ffe900" },
+      { "t": "rect", "x": 0.33, "y": 0.36, "w": 0.14, "h": 0.28, "color": "$1" }
+    ],
+    "nordic": [
+      { "t": "stripes", "dir": "h", "colors": ["$1"] },
+      { "t": "cross", "color": "$2", "width": 0.22, "cx": 0.36 }
+    ],
+    "nordic_bordered": [
+      { "t": "stripes", "dir": "h", "colors": ["$1"] },
+      { "t": "cross", "color": "$2", "width": 0.26, "cx": 0.36 },
+      { "t": "cross", "color": "$3", "width": 0.13, "cx": 0.36 }
+    ]
+  }
+}

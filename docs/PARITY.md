@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 7.5%** (verified 0 · partial 12 · not started 68 · total 80)
+**Parity score: 8.1%** (verified 0 · partial 13 · not started 67 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -63,7 +63,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 45 | Scenario editor: alliances, unions, puppets, annex | Create and manage alliances (name, status, unity, disband/unify) and puppets; annex nations [TEXT 2026-10-02] | Editor diplomacy tools | not started |  | Baseline: "alliances, puppets, annex" |
 | 46 | Scenario editor: preset revolts, revive, preset wars | Pre-set revolt nations as rightful owners of cities; revive dead nations; pre-set wars with sides [TEXT 2026-10-02] | Editor preset revolts and wars | not started |  | Baseline: "preset revolts" |
 | 47 | Map import | Import greyscale images made in other tools, up to 4M px (warning above 500k) [TEXT 2026-10-02] | Import image → terrain/ownership raster | not started |  | Baseline: "map import" |
-| 48 | Flag editor with presets | 36×24 pixel flag painter: grid, presets for all nations, bucket, lines, circles, undo; flag packs (1938 etc.), random flags, wavy flag display [TEXT+VISUAL 2026-10-02] | SVG flag spec + editor with presets and random flags (PLAN 1.6) | not started |  | Baseline: "flag editor with presets" |
+| 48 | Flag editor with presets | 36×24 pixel flag painter: grid, presets for all nations, bucket, lines, circles, undo; flag packs (1938 etc.), random flags, wavy flag display [TEXT+VISUAL 2026-10-02] | SVG flag spec + editor with presets and random flags (PLAN 1.6) | partial | `tests/unit/flags.test.ts`, `tests/e2e/flags.spec.ts`, `docs/evidence/1.6/flag-grid-1938.png` | Baseline: "flag editor with presets". 2026-10-02 (PLAN 1.6): FlagSpec layers + 8 presets, 103 own-design 1938 flags, SVG + deterministic atlas. Missing: the editor UI and random flags |
 | 49 | Scenario save/load and sharing | Scenarios saved as folders (scenario file + flags.png + flagNames.txt); shared through the Steam Workshop [TEXT 2026-10-02] | .warsim-scenario gzip files, download/upload (SPEC §2.7) | not started |  | Baseline: "scenarios save/load as shareable files" |
 | 50 | Political map mode | Flat nation colours with a dark outline inside borders, occupation tint/stripes, faint peacetime borders [TEXT+VISUAL 2026-10-02] | T0 renderer with smooth borders (PLAN 1.28, 1.30) | partial | `docs/bench/A-webgl2-map-z1-region.png`, `tests/e2e/mapview.spec.ts` | Phase 0: nation fills, smooth dark borders, occupation hatching from live snapshots. PLAN 1.3: the real 1938 world renders (`docs/evidence/1.3/political-world.png`, `political-europe.png`). Missing: names, map-mode switcher |
 | 51 | Terrain map mode | Terrain view, switched on automatically when editing terrain [TEXT+VISUAL 2026-10-02] | Terrain mode (PLAN 1.30) | not started |  |  |

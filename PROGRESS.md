@@ -819,3 +819,32 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   It normally takes 25.5 s under SwiftShader, and parallel load pushed it over. Its time budget is
   now 90 s (`test.setTimeout`); the ≤ 0.5 px assertions are unchanged. Two clean reruns of the
   full e2e suite took ~36 s.
+
+## 2026-10-02 — PLAN 1.6: flags (FlagSpec data, presets, 103 own-design 1938 flags, atlas)
+- **`src/shared/flags.ts`:**
+  - `FlagSpec` = aspect + layers. Layer types: stripes, rect, Nordic/Greek cross, saltire, hoist
+    triangle, disc, star, crescent, poly, canton (nested) and preset (`$n` colour params).
+  - `flagShapes` → polygons; `flagSvg` → SVG; `rasterizeFlag` → 4×4 supersampled, deterministic,
+    aspect kept in the cell with a transparent letterbox; `buildFlagAtlas` → 48×32 grid with
+    1 px gutters.
+  - `rasterize.ts` moved from `src/sim/data/` to `src/shared/` so flags can use the same
+    scanline fill (shared may not import the sim); importers updated.
+- **Data:**
+  - `data/flags/presets.json`: Union Jack, blue/red ensign, French tricolour, French and
+    Portuguese colony patterns, Nordic crosses.
+  - `data/scenarios/1938/flags.json`: one flag per nation, Germany per ADR-10.
+  - Zod schemas: a recursive layer union; cross-checks for every nation having a flag, unknown tags
+    and preset references.
+- **AT:**
+  - The atlas builds: `tests/unit/flags.test.ts`, deterministic, one cell per nation, every flag
+    fills its fitted area, no two nations share a flag. Colour probes check GER, FRA, JAP, the
+    St George centre and SWI's letterbox. SVG polygon count equals the shapes; preset parameters
+    and errors are covered.
+  - Grid reviewed: `bench.html?b=F` draws the atlas 2× with names, and
+    `docs/evidence/1.6/flag-grid-1938.png` was viewed. The first view caught the 10th column off
+    screen (viewport widened) and an unreadable Soviet emblem (redrawn: crescent sickle, hammer,
+    star).
+  - DATA_SOURCES and DECISIONS note the German flag choice (ADR-10, ADR-19).
+- **Perf:** the atlas builds in 20 ms in Chromium and 21 ms in Node.
+- **Parity:** row 48 (flag editor with presets) → partial; editor UI and random flags are still to
+  come. Score 7.5% → 8.1%.

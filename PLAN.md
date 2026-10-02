@@ -64,7 +64,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: schema pass; every nation has a capital in owned territory; colour contrast check between neighbours (ΔE > 15).
 - [x] 1.5 Cities (NE populated places, filtered and named) with capitals.
   AT: every capital is a city; city names render at T1 (screenshot).
-- [ ] 1.6 Flags: SVG flag spec + preset renderer; 1938 flags for all nations (own designs); flag atlas generation.
+- [x] 1.6 Flags: SVG flag spec + preset renderer; 1938 flags for all nations (own designs); flag atlas generation.
   AT: the atlas builds; screenshot of a flag grid reviewed; DATA_SOURCES/DECISIONS note the German flag choice.
 - [ ] 1.7 Starting OOB per nation (formations of unit templates at historical-ish locations, scaled).
   AT: total strengths per major power within the documented ranges in SPEC/DECISIONS; all formations on owned land.

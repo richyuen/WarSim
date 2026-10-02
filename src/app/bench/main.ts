@@ -8,6 +8,7 @@ const loaders: Record<string, () => Promise<unknown>> = {
   R: () => import('./provincesView'),
   T: () => import('./terrainView'),
   W: () => import('./politicalView'),
+  F: () => import('./flagGrid'),
 };
 const load = loaders[which];
 if (!load) throw new Error(`unknown benchmark ${which}`);

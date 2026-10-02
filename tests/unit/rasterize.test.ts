@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getBit, rasterizePolygon, setBits } from '../../src/sim/data/rasterize';
+import { getBit, rasterizePolygon, setBits } from '../../src/shared/rasterize';
 import { kmPerCell, LAT_BOTTOM_DEG, project, rowScales, unproject } from '../../src/sim/data/projection';
 
 function raster(rings: number[][], w: number, h: number): Uint8Array {
