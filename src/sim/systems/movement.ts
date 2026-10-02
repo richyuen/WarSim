@@ -80,7 +80,7 @@ export function movementSystem(world: World): void {
   const nav = navOf(world);
   const w = world.cells.w;
   f.forEach((id) => {
-    if (c.moving[id] !== 1) return;
+    if (c.moving[id] !== 1 || c.engaged[id] === 1) return; // in contact: holds and fights (PLAN 1.13)
     const path = formationPath(world, id);
     const rule = world.rules?.templates[c.template[id]!];
     if (!path || !rule) {

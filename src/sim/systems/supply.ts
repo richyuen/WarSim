@@ -15,6 +15,7 @@
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { Terrain } from '../../shared/terrain';
 import type { World } from '../world';
+import { applyLoss, elementIndex, settleFormation } from './elements';
 
 export const SUPPLY_REFRESH_HOURS = 6;
 /** Per hour; a power of two so the level steps exactly between 0 and 1 (8 h to drain or refill). */
@@ -80,6 +81,7 @@ export function supplySystem(world: World): void {
   const f = world.formations;
   const c = f.cols;
   const { w, supply, terrain } = world.cells;
+  const idx = elementIndex(world);
   f.forEach((id) => {
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const inSupply = supply[cell] !== 0 && supply[cell] === blocOf(world, c.nation[id]!);
@@ -87,7 +89,14 @@ export function supplySystem(world: World): void {
     c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE);
     if (c.supply[id] === 0) {
       const perHour = (BASE_ATTRITION_PER_DAY + (TERRAIN_ATTRITION[terrain[cell]!] ?? 0)) / 24;
-      c.strength[id] = Math.floor(c.strength[id]! * (1 - perHour));
+      const els = idx.get(id);
+      if (els) {
+        // Losses land on the elements (with carried fractions); strength is their sum.
+        for (const e of els) applyLoss(world, e, world.elements.cols.strength[e]! * perHour);
+        settleFormation(world, id);
+      } else {
+        c.strength[id] = Math.floor(c.strength[id]! * (1 - perHour));
+      }
     }
   });
 }

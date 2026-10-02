@@ -12,6 +12,7 @@
  * capital. If the capital is not under the nation's control, it appears at the nearest
  * cell the nation controls (within SPAWN_REACH_CELLS); with none, the order waits.
  */
+import { equipFormation } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
@@ -80,8 +81,8 @@ export function productionSystem(world: World): void {
     f.cols.x[fid] = at[0];
     f.cols.y[fid] = at[1];
     f.cols.template[fid] = t;
-    f.cols.strength[fid] = rules.templates[t]!.strength;
     f.cols.supply[fid] = 1;
+    equipFormation(world, fid, t); // elements + strength
     p.remove(id);
     world.out.emit(world.tick, EventKind.FormationSpawned, fid, nation, at[0], at[1]);
   }

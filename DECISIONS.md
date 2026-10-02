@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-26 · 2026-10-02 · accepted — Element combat v1: simultaneous volleys, health-weighted targeting, derived battles
+**Decision.**
+- Elements are saved rows. Formation strength is derived from them.
+- Each hour every element fires once at a target drawn by hash (no RNG stream).
+- Losses are applied after all volleys.
+- Targets are weighted by health (strength × hpPerUnit).
+- Battles are recomputed each tick from contacts; no battle table yet.
+- War state is a saved pair set.
+
+**Why.**
+- Simultaneous fire makes results independent of element order, and total fire ∝ surviving
+  strength gives Lanchester's square law. That is the AT, and it measures within 2%.
+- Health weighting: by element count, a 12-gun battery would draw as much fire as a 500-man
+  battalion and die 7× faster.
+- Hash draws keep combat order-independent and replayable.
+- A persistent battle record matters only for names, history and major battles (§5.4), so it
+  waits for them.
+- Bug found on the way: `Sim.load` kept derived caches (paths) from the previous state. Load now
+  clears paths, the element index and nav.
+
 ### ADR-25 · 2026-10-02 · accepted — Supply v1: city-sourced flood over controlled land, 6-hourly
 **Decision.**
 - Supply is a reachability question: can a formation trace controlled land (or a strait lane) to a

@@ -63,9 +63,25 @@ export interface TemplateRule {
   /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked) and march speed, km/h. */
   mobility: number;
   speedKmh: number;
+  /** Elements per unit type (PLAN 1.13): unit = index into ScenarioRules.units. */
+  elements: readonly { unit: number; count: number }[];
+}
+
+/** Combat-relevant unit type stats (PLAN 1.13; from data/units, per full element). */
+export interface UnitRule {
+  cls: string;
+  /** Men, guns or vehicles per element, and men per such unit (manpower ÷ elementSize). */
+  size: number;
+  menPerUnit: number;
+  soft: number;
+  hard: number;
+  armor: number;
+  piercing: number;
+  hpPerUnit: number;
 }
 export interface ScenarioRules {
   templates: readonly TemplateRule[];
+  units: readonly UnitRule[];
 }
 
 export const FORMATION_SCHEMA = {
@@ -85,6 +101,24 @@ export const FORMATION_SCHEMA = {
   stepFrac: 'f64',
   /** Supply level 0..1 (PLAN 1.12). */
   supply: 'f64',
+  /** 1 while in contact with an enemy (PLAN 1.13): holds position and fights. */
+  engaged: 'u8',
+} as const;
+
+/** Authoritative unit proxies (SPEC §3.6, PLAN 1.13). */
+export const ELEMENT_SCHEMA = {
+  formation: 'u32',
+  /** Position in the formation's slotted block. */
+  slot: 'u16',
+  /** Index into ScenarioRules.units. */
+  unit: 'u16',
+  /** Live men / guns / vehicles. */
+  strength: 'u16',
+  /** Damage carried towards the next lost unit (0..1 units). */
+  wound: 'f64',
+  /** Current target element (0 = none) and hours before re-targeting. */
+  target: 'u32',
+  cooldown: 'u8',
 } as const;
 
 /** Cities (PLAN 1.5/1.9a). Names and other static facts live in scenario data at `def`. */
@@ -175,6 +209,8 @@ export class TickOutputs {
   readonly dirtyTiles: Uint8Array;
   /** Flat [tick, kind, a, b, x, y] records since the consumer last drained. */
   events: number[] = [];
+  /** Flat FIRE_STRIDE records [tick, subtick, shooter, target, unit, dmg, x0, y0, x1, y1] (SPEC §5.2.5). */
+  fires: number[] = [];
 
   constructor(w: number, h: number) {
     this.tilesX = Math.ceil(w / TILE);
@@ -191,6 +227,33 @@ export class TickOutputs {
   }
 }
 
+
+export const FIRE_STRIDE = 10;
+
+/** Pairs of nations at war (symmetric), kept as sorted keys lo·65536 + hi. */
+export class Wars implements Stateful {
+  private keys = new Set<number>();
+  private static key(a: number, b: number): number {
+    return a < b ? a * 65536 + b : b * 65536 + a;
+  }
+  atWar(a: number, b: number): boolean {
+    return a !== b && this.keys.has(Wars.key(a, b));
+  }
+  set(a: number, b: number, war: boolean): void {
+    if (a === b) return;
+    if (war) this.keys.add(Wars.key(a, b));
+    else this.keys.delete(Wars.key(a, b));
+  }
+  get size(): number {
+    return this.keys.size;
+  }
+  serialize(): Section[] {
+    return [{ name: 'wars.pairs', dtype: 'u32', data: Uint32Array.from([...this.keys].sort((p, q) => p - q)) }];
+  }
+  deserialize(sections: readonly Section[]): void {
+    this.keys = new Set(takeSection(sections, 'wars.pairs', 'u32'));
+  }
+}
 
 /** Scalar globals + RNG + command log. */
 class WorldCore implements Stateful {
@@ -225,6 +288,11 @@ class WorldCore implements Stateful {
     };
     w.commandLog = parsed.log;
     w.pending = parsed.pending;
+    // Derived caches describe the previous state: drop them (rebuilt on demand).
+    w.paths.clear();
+    w.elementIndex = null;
+    w.nav = null;
+    w.out.fires.length = 0;
     w.out.markAllDirty();
   }
 }
@@ -250,6 +318,10 @@ export class World {
   formations = new Table('formations', FORMATION_SCHEMA, 128);
   cities = new Table('cities', CITY_SCHEMA, 16);
   production = new Table('production', PRODUCTION_SCHEMA, 16);
+  elements = new Table('elements', ELEMENT_SCHEMA, 1024);
+  wars = new Wars();
+  /** Derived (not state): live element ids per formation, ascending; null = rebuild. */
+  elementIndex: Map<number, number[]> | null = null;
   /** Scenario rules for commands (set by the Sim; not state). */
   rules: ScenarioRules | null = null;
   /** Derived caches (not state): formation paths and the navigation graph. */
@@ -288,7 +360,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars];
   }
 
   cellIndex(x: number, y: number): number {

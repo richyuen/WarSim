@@ -4,6 +4,7 @@
  */
 import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
+import { destroyFormation } from './systems/elements';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import type { World } from './world';
@@ -23,10 +24,7 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     }
     case 'removeFormation':
-      if (world.formations.has(cmd.id)) {
-        world.formations.remove(cmd.id);
-        world.paths.delete(cmd.id); // ids are reused: drop the derived path with the row
-      }
+      if (world.formations.has(cmd.id)) destroyFormation(world, cmd.id); // with its elements and cached path
       return;
     case 'queueFormation':
       queueFormation(world, cmd.nation, cmd.template);

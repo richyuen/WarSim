@@ -14,6 +14,7 @@ import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type
 import scenario1938 from '../../data/scenarios/1938/scenario.json' with { type: 'json' };
 import templatesLand from '../../data/templates/land.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
+import diplomacy1938 from '../../data/scenarios/1938/diplomacy.json' with { type: 'json' };
 import economy1938 from '../../data/scenarios/1938/economy.json' with { type: 'json' };
 import traitsJson from '../../data/traits/traits.json' with { type: 'json' };
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
@@ -26,6 +27,7 @@ import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
 import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
 import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
+import { equipFormation } from './systems/elements';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import { Mobility } from './nav/grid';
 import type { ScenarioRules } from './world';
@@ -61,9 +63,23 @@ function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number 
   const mobility = els.some((u) => u.mobility === 'foot') ? Mobility.foot : els.some((u) => u.mobility === 'tracked') ? Mobility.tracked : Mobility.motor;
   return { mobility, speedKmh: Math.min(...els.map((u) => u.stats.speed_kmh)) };
 }
+type UnitStats = { id: string; class: string; elementSize: number; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number } };
+const UNITS_LAND = unitsLand.types as unknown as UnitStats[];
+const unitIndex = new Map(UNITS_LAND.map((u, i) => [u.id, i]));
 export const RULES_1938: ScenarioRules = {
+  units: UNITS_LAND.map((u) => ({
+    cls: u.class,
+    size: u.elementSize,
+    menPerUnit: u.cost.manpower / u.elementSize,
+    soft: u.stats.soft,
+    hard: u.stats.hard,
+    armor: u.stats.armor,
+    piercing: u.stats.piercing,
+    hpPerUnit: u.stats.hpPerUnit,
+  })),
   templates: TEMPLATES_LAND.map((t, i) => ({
     ...templateMobility(t),
+    elements: t.elements.map((e) => ({ unit: unitIndex.get(e.type)!, count: e.count })),
     gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitCost.get(e.type)!.gold * e.count, 0),
     manpower: t.elements.reduce((s, e) => s + unitCost.get(e.type)!.manpower * e.count, 0),
     days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitCost.get(e.type)!.days)),
@@ -219,7 +235,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   }
 
   const templateIndex = new Map(TEMPLATES_LAND.map((t, i) => [t.id, i]));
-  const menOf = ECONOMY_TABLES_1938.templateStrength;
+  world.rules = RULES_1938;
   world.formations.reserve(map.formations.length);
   const f = world.formations.cols;
   for (const p of map.formations) {
@@ -230,8 +246,13 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     f.y[id] = p.y;
     f.facing[id] = 0;
     f.template[id] = ti;
-    f.strength[id] = menOf[ti]!;
     f.supply[id] = 1;
+    equipFormation(world, id, ti); // sets strength from the elements
+  }
+
+  // Wars in progress (diplomacy.json): every attacker is at war with every defender.
+  for (const war of diplomacy1938.wars) {
+    for (const a of war.attackers) for (const d of war.defenders) world.wars.set(tags.indexOf(a) + 1, tags.indexOf(d) + 1, true);
   }
 
   // Starting treasury and manpower pool.

@@ -273,6 +273,7 @@ export class SimServer {
     this.eventQueue = [];
     this.sim!.world.out.markAllDirty();
     this.sim!.world.out.events.length = 0;
+    this.sim!.world.out.fires.length = 0;
     this.snapshotPrev(this.sim!.world);
     this.forceSend = true;
   }
@@ -332,6 +333,7 @@ export class SimServer {
       this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, ev[i + 3]!, ev[i + 4]!, ev[i + 5]!);
     }
     ev.length = 0;
+    world.out.fires.length = 0; // fire events reach the renderer with the tactical view (Phase 2)
     const over = this.eventQueue.length / EVENT_STRIDE - EVENT_QUEUE_CAP;
     if (over > 0) {
       this.eventQueue.splice(0, over * EVENT_STRIDE);

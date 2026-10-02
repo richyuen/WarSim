@@ -1067,3 +1067,38 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - save/load mid-interval is deterministic;
   - a refresh takes < 60 ms.
 - Parity: additions row 7 (supply and attrition) → partial.
+
+## 2026-10-02 — PLAN 1.13: engagement + element combat v1
+- **Elements** (`src/sim/systems/elements.ts`, saved table):
+  - every 1938 and produced formation is equipped from its template (infantry division =
+    24 inf + 3 art + 1 AT);
+  - strength (men) = Σ elements;
+  - losses go through `applyLoss` (wound carry), dead elements are removed, and an empty
+    formation is destroyed with `FormationDestroyed`;
+  - `removeFormation` and supply attrition now go through elements.
+- **Wars** (saved pair set): seeded from `diplomacy.json` (Spanish Civil War, Sino-Japanese War).
+- **Combat** (`src/sim/systems/combat.ts`):
+  - contact within 1.5 cells between nations at war, using a spatial hash;
+  - battles are the connected contacts, and engaged formations pause movement;
+  - hourly simultaneous element volleys with health-weighted, hash-drawn targets held 4 h, and
+    terrain attack/defence and supply factors;
+  - FireEvents go to `TickOutputs.fires` (drained by the Sim and the worker).
+- **System order:** production, economy, supply, combat, movement.
+- **Bugs found:**
+  1. `Sim.load` kept derived caches from the previous state (stale paths could steer reused
+     formation ids). Load now clears them, covered by a load-into-a-live-sim test.
+  2. A first damage rule let batteries die 7× faster than battalions; switched to health-weighted
+     targeting.
+- **Perf:** a naive targeting scan cost 9.6 ms per tick in an 80-division battle. Per (formation,
+  unit) weight tables with binary search bring it to 3.2 ms, with an identical result.
+- **AT (`tests/unit/combat.test.ts`, 6 tests):**
+  - 2:1 Lanchester: loss ratio 0.263 vs 0.268 expected (±20% allowed), 300 h battle;
+  - hills ÷1.3 and mountains defend better than plains;
+  - 56 FireEvents per hour for two divisions, all with live, hostile ids and positions at the
+    battle;
+  - neutrals don't engage, and contact pauses a march in the full sim;
+  - save/load into a live sim is deterministic;
+  - the 1938 wars are seeded and every division is equipped.
+- No battles at the 1938 start: the starting armies are not placed in contact. Fronts come with
+  1.14 and the AI.
+- Parity: additions row 2 (element combat) → partial.

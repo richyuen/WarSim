@@ -7,6 +7,7 @@ import type { SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
 import { step, type System } from './tick';
 import { createWorld1938, ECONOMY_TABLES_1938, RULES_1938 } from './scenario1938';
+import { combatSystem } from './systems/combat';
 import { movementSystem } from './systems/movement';
 import { productionSystem } from './systems/production';
 import { supplySystem } from './systems/supply';
@@ -29,7 +30,7 @@ export class Sim {
         this.world = createWorld1938(init.seed, init.assets);
         this.world.rules = RULES_1938;
         // SPEC §2.5 order: production and economy (3), supply (4), movement.
-        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, movementSystem];
+        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, combatSystem, movementSystem];
         break;
     }
   }
@@ -46,7 +47,10 @@ export class Sim {
     for (let i = 0; i < n; i++) {
       step(this.world, this.systems);
       if (afterTick) afterTick(this.world);
-      else this.world.out.events.length = 0;
+      else {
+        this.world.out.events.length = 0;
+        this.world.out.fires.length = 0;
+      }
     }
   }
 

@@ -102,7 +102,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | # | addition | description | status | evidence | notes |
 |---|---|---|---|---|---|
 | 1 | Semantic zoom (4 LOD tiers) | Strategic → operational → tactical proxies → close individuals, smooth transitions, the same sim state at every tier | not started |  | SPEC §8, Phase 2 |
-| 2 | Element-level authoritative combat | Unit proxies (N soldiers/tanks/ships/planes) fight in every battle; casualties at tactical zoom = strength at strategic zoom | not started |  | SPEC §5, ADR-3 |
+| 2 | Element-level authoritative combat | Unit proxies (N soldiers/tanks/ships/planes) fight in every battle; casualties at tactical zoom = strength at strategic zoom | partial | `tests/unit/combat.test.ts` | 2026-10-02 (PLAN 1.13): land formations carry elements (an infantry division has 28); contact between nations at war forms battles; hourly simultaneous element fire with hash-seeded targeting; formation strength = Σ elements; the 2:1 Lanchester loss ratio is 0.263 against 0.268 in theory; terrain defence; FireEvents. Missing: org and retreat, combined arms, entrenchment, persistent and major battles, naval and air, rendering of fire |
 | 3 | Naval warfare | Sea zones and lanes, ports, fleets with DD/CL/CA/BB/CV/SS/TP, fleet battles, blockades, convoys, amphibious invasions, sea control | not started |  | SPEC §6.2, Phase 4 |
 | 4 | Armour | Light/medium/heavy tanks, production and upkeep, terrain and supply effects, combined arms | not started |  | SPEC §6.1, Phase 3 |
 | 5 | Aircraft | Fighters, bombers, CAS, transports, airbases, range, air superiority, interception, strategic bombing, carrier air groups | not started |  | SPEC §6.3, Phase 5 |

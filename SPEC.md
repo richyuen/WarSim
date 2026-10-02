@@ -505,6 +505,26 @@ participants, startTick, kind: normal|major}. Air (CAS) and naval (shore
 bombardment) participants join through their missions.
 
 ### 5.2 Element combat (per tick = 1 h, per battle)
+*Implemented v1 (PLAN 1.13, ADR-26; `src/sim/systems/{elements,combat}.ts`):*
+- *Elements and engagement:*
+  - Elements are a saved table: formation, slot, unit, strength, wound carry, target, cooldown.
+  - Formation strength (men) is Σ element strength × men per unit.
+  - Engagement: formations of nations at war within 1.5 cells are in contact. Contacts are joined
+    into battles each tick (derived), and engaged formations pause their march.
+  - Wars are a saved pair set, seeded from `diplomacy.json`.
+- *Targeting:*
+  - Weight = eff × target health (strength × hpPerUnit) × proximity, drawn by
+    `hash32(seed, tick, element)` and held for 4 h.
+  - Weighting by health makes every element type bleed at the same rate.
+  - Weights are tabled per (formation, unit type), and the draw is a binary search.
+- *Damage* (target units) = eff × fullness × 0.1 × terrain attack × (0.5 + 0.5 supply) ÷ terrain
+  defence (when the target holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys.
+- *Measured:*
+  - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
+    (square law: 0.268).
+  - An 80-division battle costs 3.2 ms per tick.
+- *Deferred:* org and retreat (step 4), combined arms, entrenchment, experience, night and
+  weather, and persistent or major battles (§5.4).
 1. **Target selection** (deterministic): each element scores enemy elements in range
    by `typeMatch(weapon, targetArmor) × proximity × threat` and picks a target with
    `hash32(seed, tick, element.id)` (weighted). Targets are cached for `cooldown` ticks.
