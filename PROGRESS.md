@@ -1336,3 +1336,18 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - Two test-setup mistakes fixed on the way: a missing first command, and a shortcut death that
   left Ethiopia owning its land.
 - Parity: rows 19 and 20 → partial; row 14 note updated.
+
+## 2026-10-02 — PLAN 1.21: buffs and debuffs with timers
+- **Buff records** (`src/sim/buffs.ts`, saved JSON, cached sums) with six kinds, applied in
+  economy (income, manpower), combat (attack, defense), movement (speed) and revolts (unrest).
+- **Expiry system** first in the tick. Commands grantBuff and removeBuff; events BuffGranted and
+  BuffExpired.
+- **AT (`tests/unit/buffs.test.ts`, 4 tests):**
+  - a +50% income buff granted on 1 January gives exactly 1.5× the twin's income. It is still
+    summed after tick 743, expires with its event at tick 744 (1 February 00:00), and February
+    income equals the twin's;
+  - attack +25% → damage dealt exactly ×1.25, and defense +25% → exactly ÷1.25;
+  - double speed halves a march (0.45–0.55×);
+  - a province unrest buff adds 10m;
+  - removeBuff and save/load.
+- Parity: row 24 → partial.

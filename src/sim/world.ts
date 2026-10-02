@@ -12,6 +12,7 @@ import type { Stateful } from './core/state';
 import { Table } from './core/table';
 import { Alliances } from './alliances';
 import { Provinces } from './provinces';
+import { Buffs } from './buffs';
 import { Wars } from './wars';
 
 export interface PendingCommand {
@@ -321,6 +322,7 @@ export class World {
   wars = new Wars();
   alliances = new Alliances();
   provinces = new Provinces();
+  buffs = new Buffs();
   /**
    * Derived (not state): true when control, cities or overlords may have changed since the last
    * supply refresh. Skipping an unneeded refresh leaves exactly the layer a refresh would write.
@@ -388,7 +390,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs];
   }
 
   cellIndex(x: number, y: number): number {

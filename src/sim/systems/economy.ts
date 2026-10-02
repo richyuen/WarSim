@@ -9,7 +9,7 @@
  * Per nation n each month:
  *   land    = Σ cells.econ over cells n controls; cells it occupies but does not own count
  *             OCCUPIED_SHARE ($M)
- *   gross   = land / 1000 × INCOME_PER_BN × incomeMult × (1 + incomeBonus / 100)
+ *   gross   = land / 1000 × INCOME_PER_BN × incomeMult × (1 + incomeBonus / 100) × (1 + income buffs)
  *   upkeep  = UPKEEP_SCALE × Σ formation upkeep (template gold upkeep × current / full strength)
  *   admin   = ADMIN_BASE × (cells held / 1000) ^ ADMIN_EXP   (superlinear: anti-hegemon)
  *   gold   += gross − upkeep − admin
@@ -110,7 +110,7 @@ export function monthlyAccounts(
   const expenses = new Float64Array(size);
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;
-    gross[n] = ((land[n]! / ECON_PER_BN) * INCOME_PER_BN * nc.incomeMult[n]! * (100 + nc.incomeBonus[n]!)) / 100;
+    gross[n] = (((land[n]! / ECON_PER_BN) * INCOME_PER_BN * nc.incomeMult[n]! * (100 + nc.incomeBonus[n]!)) / 100) * (1 + world.buffs.sum('income', 'nation', n));
     expenses[n] = upkeep[n]! + adminCost(held[n]!);
   });
   return { gross, expenses, upkeep, held, population };
@@ -128,7 +128,7 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
     nc.expenses[n] = expenses[n]!;
     nc.gold[n] = nc.gold[n]! + gross[n]! - expenses[n]!;
     const cap = MANPOWER_CAP_SHARE * population[n]!;
-    nc.manpower[n] = Math.min(Math.max(cap, nc.manpower[n]!), nc.manpower[n]! + MANPOWER_MONTHLY_RATE * nc.manpowerMult[n]! * population[n]!);
+    nc.manpower[n] = Math.min(Math.max(cap, nc.manpower[n]!), nc.manpower[n]! + MANPOWER_MONTHLY_RATE * nc.manpowerMult[n]! * (1 + world.buffs.sum('manpower', 'nation', n)) * population[n]!);
     const wasBankrupt = nc.bankrupt[n] === 1;
     if (!wasBankrupt && nc.gold[n]! < -BANKRUPT_MONTHS * gross[n]!) {
       nc.bankrupt[n] = 1;

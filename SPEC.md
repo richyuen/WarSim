@@ -417,6 +417,18 @@ tag → spec.
   - *Puppet map mode:* overlords keep their colour, puppets take it lightened 45%, others are
     grey.
 - **Buff** {id, target (nation|formation|province), kind, magnitude, expiresTick}.
+  *Implemented v1 (PLAN 1.21; `src/sim/buffs.ts`, `src/sim/systems/buffs.ts`):*
+  - *Timing:* active on ticks [grant, expiresTick). The expiry system runs first in each tick.
+  - *Kinds and effects* (m is the magnitude, a fraction):
+    - income: gross × (1 + m);
+    - manpower: growth × (1 + m);
+    - attack: damage dealt × (1 + m);
+    - defense: damage taken ÷ (1 + m);
+    - speed: march speed × (1 + m);
+    - unrest: +10m per month.
+  - *Targets and storage:* nation and formation (attack, defense, speed), nation or province
+    (unrest). Saved as JSON; per-target sums are cached.
+  - *Commands:* `grantBuff {targetKind, target, buff, magnitude, hours, nameKey}`, `removeBuff`.
 
 ### 3.6 Military
 ```ts

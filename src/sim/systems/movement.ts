@@ -90,7 +90,7 @@ export function movementSystem(world: World): void {
       return;
     }
     const costRow = MOVE_COST[rule.mobility]!;
-    const kmPerHour = rule.speedKmh * MARCH_DUTY;
+    const kmPerHour = rule.speedKmh * MARCH_DUTY * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
     let i = c.pathStep[id]!;
     let frac = c.stepFrac[id]!;
     let budget = 1; // hours this tick

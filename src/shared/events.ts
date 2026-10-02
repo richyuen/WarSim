@@ -54,6 +54,10 @@ export const EventKind = {
   NationRevived: 24,
   /** a = nation (global). */
   NationCollapsed: 25,
+  /** a = buff id, b = target (global; PLAN 1.21). */
+  BuffGranted: 26,
+  /** a = buff id, b = target: expired or removed (global). */
+  BuffExpired: 27,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

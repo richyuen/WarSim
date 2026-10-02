@@ -59,6 +59,17 @@ function applyCommand(world: World, cmd: Command): void {
     case 'setSuppression':
       if (world.nations.has(cmd.nation)) world.nations.cols.suppression[cmd.nation] = Math.max(0, Math.min(1, cmd.level));
       return;
+    case 'grantBuff': {
+      if (!(cmd.hours > 0) || !Number.isFinite(cmd.magnitude)) return;
+      const b = world.buffs.add({ targetKind: cmd.targetKind, target: cmd.target, kind: cmd.buff, magnitude: cmd.magnitude, expiresTick: world.tick + Math.ceil(cmd.hours), nameKey: cmd.nameKey });
+      world.out.emit(world.tick, EventKind.BuffGranted, b.id, b.target, NaN, NaN);
+      return;
+    }
+    case 'removeBuff': {
+      const b = world.buffs.remove(cmd.id);
+      if (b) world.out.emit(world.tick, EventKind.BuffExpired, b.id, b.target, NaN, NaN);
+      return;
+    }
     case 'reviveNation':
       reviveOnCores(world, cmd.nation);
       return;

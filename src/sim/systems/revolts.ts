@@ -95,7 +95,7 @@ export function revoltSystem(world: World): void {
     if (o === 0 || nc.living[o] !== 1) continue;
     const supp = nc.suppression[o]!;
     const occupied = controller[c] !== o;
-    const delta = (o !== pv.core[p] ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (atWar(world, o) ? AT_WAR : 0) + (nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp;
+    const delta = (o !== pv.core[p] ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (atWar(world, o) ? AT_WAR : 0) + (nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
     pv.unrest[p] = Math.max(0, Math.min(100, pv.unrest[p]! + delta));
     if (revolted[p] || occupied || pv.unrest[p]! < REVOLT_FROM) continue;
     const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp);

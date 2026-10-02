@@ -98,7 +98,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: high unrest → revolt within the expected window; suppression lowers probability (statistical test with fixed seeds).
 - [x] 1.20 Collapse & revival (finite, cooldown) from cores.
   AT: a dead nation revives at most N times, never before cooldown.
-- [ ] 1.21 Buffs/debuffs with timers.
+- [x] 1.21 Buffs/debuffs with timers.
   AT: the buff applies and expires exactly at expiresTick.
 - [ ] 1.22 Combat-efficiency modes (dynamic/progressive/static/locked/random).
   AT: unit test per mode's evolution.

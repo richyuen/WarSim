@@ -21,6 +21,9 @@ export type Command =
   | { kind: 'setUnrest'; province: number; value: number }
   /** PLAN 1.20 God Mode: revive a dead nation on its cores; collapse ("Kill") a living one. */
   | { kind: 'reviveNation'; nation: number }
+  /** PLAN 1.21 (God Mode, events): a timed buff/debuff lasting `hours` from the tick applied. */
+  | { kind: 'grantBuff'; targetKind: 'nation' | 'formation' | 'province'; target: number; buff: 'income' | 'manpower' | 'attack' | 'defense' | 'speed' | 'unrest'; magnitude: number; hours: number; nameKey: string }
+  | { kind: 'removeBuff'; id: number }
   | { kind: 'collapseNation'; nation: number }
   /** God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y). */
   | { kind: 'paintControl'; nation: number; x: number; y: number; r: number }

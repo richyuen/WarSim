@@ -186,7 +186,10 @@ export function combatSystem(world: World): void {
         const terrain = world.cells.terrain[cell]!;
         const atk = TERRAIN_ATK[terrain]![us.cls] ?? 1;
         const def = f.moving[tf] === 1 ? 1 : (TERRAIN_DEF[terrain] ?? 1);
-        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor) / def / ut.hpPerUnit;
+        const bf = world.buffs;
+        const buffAtk = Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
+        const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
+        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;
