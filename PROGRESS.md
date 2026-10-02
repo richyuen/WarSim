@@ -848,3 +848,6 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Perf:** the atlas builds in 20 ms in Chromium and 21 ms in Node.
 - **Parity:** row 48 (flag editor with presets) → partial; editor UI and random flags are still to
   come. Score 7.5% → 8.1%.
+- **Gotcha:** commit 34e314b left `tools/data/{run,terrain}.ts` unstaged (their rasterize imports),
+  because the stage list named `src tests docs …` but not `tools`; fixed in 6960cdd. Commits now
+  stage with `git add -A` minus `CLAUDE.md`, and check `git status` is clean except `CLAUDE.md`.
