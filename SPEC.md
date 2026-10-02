@@ -437,6 +437,28 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 
 ## 4. Territory, fronts and the strategic layer
 
+**Land movement (PLAN 1.11, ADR-24; `src/sim/nav/`, `src/sim/systems/movement.ts`).**
+- *Grid:* the true km per cell row comes from the Miller geometry. Move cost per [mobility][terrain]
+  comes from `terrain.json` (water = ∞; crossings walkable).
+- *Components:* 4-connected land components make unreachable targets an O(1) reject.
+- *Province graph:* admin-1 provinces plus one virtual node per crossing group, built in 80 ms at
+  M. It is derived, never saved.
+- *Routes:* `findRoute` uses straight cell A* below 500 km. Above that, it runs coarse A* on the
+  province graph, then cell A* inside the corridor of route provinces and their neighbours, with a
+  flat fallback. Cell A* is 8-connected with no corner cutting, and its heuristic (straight km ×
+  min cost) is admissible. Berlin → Moscow takes 9 ms, Lisbon → Khabarovsk (840 cells) 83 ms.
+- *Orders:* `moveFormation {id, x, y}`.
+  - A target unreachable from the formation snaps to the nearest reachable cell within 3;
+    otherwise the order is rejected (`MoveRejected`).
+  - Order state is moving, originCell, targetCell, pathStep and stepFrac. The path is a cache,
+    recomputed from origin and target after a load.
+- *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
+  (speed × 0.3 march duty). It faces its travel direction, and emits `FormationArrived` at the end.
+- *Mobility:* a template moves like its slowest manoeuvre element (inf, cav, mot, mech, armour);
+  support guns are towed. Infantry marches ≈ 29 km/day on plains.
+- *Slotted poses:* `slotPose` (`src/sim/core/pose.ts`) places elements in a ≈ 2:1 block, front row
+  first, rotated to the facing; it is shared by the sim and the snapshot builder.
+
 - **Pressure field.** Each land formation projects control pressure into cells within
   `r = f(type, strength, org)` km. Pressure is weighted by strength × org × terrain-defence
   inverse × supply. Only cells in the **frontier set** are updated: cells whose

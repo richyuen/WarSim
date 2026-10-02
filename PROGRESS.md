@@ -1010,3 +1010,40 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     save/load deterministically.
 - **Step 5:** no production UI yet, so verification is headless on the real 1938 sim.
 - **Parity:** additions row 8 updated.
+
+## 2026-10-02 — PLAN 1.11: land movement (province graph + cell A*), terrain costs, slotted poses
+- **Nav** (`src/sim/nav/grid.ts`, `provinceGraph.ts`):
+  - true-km row scales and MOVE_COST[mobility][terrain];
+  - deterministic heap A* (8-connected, no corner cutting, admissible heuristic);
+  - 4-connected land components;
+  - a province graph with crossing groups as virtual nodes;
+  - hierarchical `findRoute` (coarse above 500 km, corridor-restricted cell A*, flat fallback).
+  - The nav cache is built lazily per world (80–100 ms at M) and never saved.
+- **Movement** (`src/sim/systems/movement.ts`):
+  - `moveFormation` command, with targets snapped to reachable land within 3 cells, else
+    `MoveRejected`;
+  - hourly `movementSystem` (speed × 0.3 march duty ÷ terrain cost, facing, `FormationArrived`);
+  - order state saved, path cache recomputed from origin and target.
+- **Rules:** per-template mobility and speed from the manoeuvre elements; slotted poses in
+  `src/sim/core/pose.ts`.
+- **Bugs found by the tests:**
+  1. Panzer and motorised divisions marched at foot speed, because the towed artillery and AT were
+     foot units. Fixed twice over: those templates now use motorised artillery, and support guns no
+     longer set the pace.
+  2. Lisbon → Vladivostok took 373–480 ms to fail. Vladivostok's cell is an isolated speck at M,
+     and the province graph thought it was reachable. Added land components (O(1) reject) and
+     target snapping.
+- **AT (`tests/unit/movement.test.ts`, 8 tests):**
+  - Munich → Milan costs more per km than Warsaw → Poznań, and the Alps penalty is larger for
+    tracked units;
+  - a Danish division marches Jutland → Zealand over the belts, never standing on water and using
+    crossing cells;
+  - no route France → Britain (rejected);
+  - infantry ≈ 18–29 km/day across Poland, with armour arriving first;
+  - a march is deterministic across save/load;
+  - the coarse graph links Sicily to Italy, but not to Britain;
+  - unreachable pairs are rejected in < 5 ms; coastal-speck targets snap;
+  - slotted poses: layout, rotation and determinism.
+- **e2e:** a Berlin → Munich order run in the worker for 5 days equals the same run in Node (hash).
+- **Perf:** Berlin → Moscow 9 ms, Paris → Rome 1 ms, Lisbon → Khabarovsk 83 ms.
+- **Parity:** row 26 (crossings) → partial; row 25 note updated.

@@ -7,6 +7,7 @@ import type { SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
 import { step, type System } from './tick';
 import { createWorld1938, ECONOMY_TABLES_1938, RULES_1938 } from './scenario1938';
+import { movementSystem } from './systems/movement';
 import { productionSystem } from './systems/production';
 import { economySystem } from './systems/economy';
 import { createToyWorld, TOY_SYSTEMS } from './toy';
@@ -26,7 +27,7 @@ export class Sim {
         if (!init.assets) throw new Error("scenario '1938' needs its map assets");
         this.world = createWorld1938(init.seed, init.assets);
         this.world.rules = RULES_1938;
-        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938)];
+        this.systems = [productionSystem, movementSystem, economySystem(ECONOMY_TABLES_1938)];
         break;
     }
   }

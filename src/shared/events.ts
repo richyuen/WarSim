@@ -16,6 +16,10 @@ export const EventKind = {
   ProductionQueued: 5,
   /** a = template index, b = nation: not enough gold or manpower, or no such template (global). */
   ProductionRejected: 6,
+  /** a = formation id, b = nation: no land route to the ordered target (global). */
+  MoveRejected: 7,
+  /** a = formation id, b = nation, (x, y) = arrival position. */
+  FormationArrived: 8,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

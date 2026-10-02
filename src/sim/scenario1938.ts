@@ -27,6 +27,7 @@ import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
 import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
+import { Mobility } from './nav/grid';
 import type { ScenarioRules } from './world';
 import { sin } from './core/dmath';
 import { millerLat, Y_TOP } from './data/projection';
@@ -46,8 +47,23 @@ export const ECONOMY_TABLES_1938: EconomyTables = {
 };
 /** Command rules: template cost and training time (PLAN 1.10, ADR-23). */
 const unitCost = new Map((unitsLand.types as unknown as { id: string; cost: { gold: number; manpower: number; days: number } }[]).map((u) => [u.id, u.cost]));
+const unitMove = new Map((unitsLand.types as unknown as { id: string; class: string; mobility: string; stats: { speed_kmh: number } }[]).map((u) => [u.id, u]));
+const SUPPORT = new Set(['art', 'at', 'aa']);
+/**
+ * A formation moves like its slowest manoeuvre element (infantry, cavalry, motorised, mechanised,
+ * armour): foot if any walks, else tracked if any is tracked, else motor. Support guns (artillery,
+ * AT, AA) are towed or carried by the formation's own transport, so they do not slow it.
+ */
+function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number } {
+  const all = t.elements.map((e) => unitMove.get(e.type)!);
+  const manoeuvre = all.filter((u) => !SUPPORT.has(u.class));
+  const els = manoeuvre.length > 0 ? manoeuvre : all;
+  const mobility = els.some((u) => u.mobility === 'foot') ? Mobility.foot : els.some((u) => u.mobility === 'tracked') ? Mobility.tracked : Mobility.motor;
+  return { mobility, speedKmh: Math.min(...els.map((u) => u.stats.speed_kmh)) };
+}
 export const RULES_1938: ScenarioRules = {
   templates: TEMPLATES_LAND.map((t, i) => ({
+    ...templateMobility(t),
     gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitCost.get(e.type)!.gold * e.count, 0),
     manpower: t.elements.reduce((s, e) => s + unitCost.get(e.type)!.manpower * e.count, 0),
     days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitCost.get(e.type)!.days)),

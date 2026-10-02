@@ -2,6 +2,8 @@
  * The authoritative world state (SPEC §3). Everything here is serialized and hashed;
  * nothing outside this object influences a tick except queued commands.
  */
+import { makeNavGrid, type NavGrid } from './nav/grid';
+import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import type { Command, LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { RngStreams } from './core/rng';
@@ -56,6 +58,9 @@ export interface TemplateRule {
   days: number;
   /** Full strength (men). */
   strength: number;
+  /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked) and march speed, km/h. */
+  mobility: number;
+  speedKmh: number;
 }
 export interface ScenarioRules {
   templates: readonly TemplateRule[];
@@ -69,6 +74,13 @@ export const FORMATION_SCHEMA = {
   strength: 'u32',
   /** Index into the scenario's template list (0 for toy formations). */
   template: 'u16',
+  /** Move order (PLAN 1.11): 1 while moving; path from originCell to targetCell (derived). */
+  moving: 'u8',
+  originCell: 'u32',
+  targetCell: 'u32',
+  /** Index of the last path cell reached, and the fraction of the way to the next one. */
+  pathStep: 'u32',
+  stepFrac: 'f64',
 } as const;
 
 /** Cities (PLAN 1.5/1.9a). Names and other static facts live in scenario data at `def`. */
@@ -207,6 +219,15 @@ class WorldCore implements Stateful {
   }
 }
 
+/** The navigation grid and province graph for the world's static layers (built once, cached). */
+export function navOf(world: World): { grid: NavGrid; graph: ProvinceGraph } {
+  if (!world.nav) {
+    const grid = makeNavGrid(world.cells.terrain, world.cells.w, world.cells.h, true);
+    world.nav = { grid, graph: buildProvinceGraph(grid, world.cells.province) };
+  }
+  return world.nav;
+}
+
 export class World {
   seed: number;
   /** Ticks elapsed; 1 tick = 1 sim hour (ADR-5). */
@@ -221,6 +242,9 @@ export class World {
   production = new Table('production', PRODUCTION_SCHEMA, 16);
   /** Scenario rules for commands (set by the Sim; not state). */
   rules: ScenarioRules | null = null;
+  /** Derived caches (not state): formation paths and the navigation graph. */
+  paths = new Map<number, Int32Array>();
+  nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
   commandLog: LoggedCommand[] = [];
   /** Commands queued since the last tick boundary, applied in seq order at the next tick. */
   pending: PendingCommand[] = [];

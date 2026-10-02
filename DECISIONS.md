@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-24 · 2026-10-02 · accepted — Hierarchical land navigation; march duty; manoeuvre-element mobility
+**Decision.**
+- Routes are planned on the admin-1 province graph (crossing groups are nodes), then refined by
+  cell A* inside that corridor. Short trips use cell A* alone.
+- Reachability is precomputed as 4-connected land components.
+- Paths are a derived cache, recomputed from (origin, target) after a load, so saves stay small
+  and deterministic.
+- Speed: the slowest manoeuvre element's km/h × 0.3 march duty ÷ terrain cost.
+
+**Why.**
+- Flat A* across Eurasia is fine for one order but not for an AI issuing hundreds. The province
+  corridor cuts the search to the relevant strip.
+- The component check turns "no land route" (the Channel, coastal specks at 20 km cells) from a
+  half-second flood into an O(1) answer.
+- March duty turns unit road speeds into realistic daily advances (infantry ~30 km, panzers ~115 km).
+- Support guns must not slow a motorised or panzer division to walking pace; the first test run
+  caught exactly that.
+
 ### ADR-23 · 2026-10-02 · accepted — Pay-on-order parallel production; manpower from 1938 population **[AoC-DEVIATION]**
 **Decision.**
 - Formations are bought, not grown:

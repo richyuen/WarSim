@@ -78,7 +78,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: unit tests per rule; 1938 income ranking plausible (USA, UK, Germany, USSR, France top 5).
 - [x] 1.10 Production & recruitment queue; manpower.
   AT: a queued division appears after N days at the capital with cost deducted.
-- [ ] 1.11 Land movement: coarse nav graph (province adjacency + CROSSING) + cell-level A*, mobility × terrain costs, slotted poses.
+- [x] 1.11 Land movement: coarse nav graph (province adjacency + CROSSING) + cell-level A*, mobility × terrain costs, slotted poses.
   AT: a path test across the Alps is slower than across the plains; a formation never enters water except via crossing.
 - [ ] 1.12 Supply v1: from capital/cities through the controlled network; attrition when cut.
   AT: an encircled formation's supply → 0 within a day and it attrits.

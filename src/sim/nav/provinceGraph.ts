@@ -1,0 +1,173 @@
+/**
+ * Coarse navigation graph (PLAN 1.11, SPEC §4): nodes are admin-1 provinces plus one virtual node
+ * per connected group of crossing cells (straits), edges join nodes whose cells touch (4-way,
+ * wrapping). Long routes are planned on this graph first; cell A* then runs inside the corridor
+ * of provinces on the coarse route and their neighbours. Derived from static layers (terrain,
+ * province), so it is rebuilt identically after a load and never saved.
+ */
+import { Terrain } from '../../shared/terrain';
+import { boundKm, findPath, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type PathResult } from './grid';
+
+export interface ProvinceGraph {
+  /** Node per cell (0 = none: water or province-less land). */
+  nodeOf: Uint32Array;
+  nodeCount: number;
+  /** Representative (centroid-nearest) cell per node. */
+  centre: Int32Array;
+  /** Mean move cost of the node's cells per mobility. */
+  meanCost: readonly Float64Array[];
+  /** Sorted neighbour lists. */
+  adj: readonly number[][];
+}
+
+export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceGraph {
+  const n = g.w * g.h;
+  const nodeOf = new Uint32Array(n);
+  let maxProv = 0;
+  for (let c = 0; c < n; c++) {
+    if (g.terrain[c]! >= Terrain.Plains && province[c]! > 0) {
+      nodeOf[c] = province[c]!;
+      if (province[c]! > maxProv) maxProv = province[c]!;
+    }
+  }
+  // Crossing components become nodes maxProv+1, maxProv+2, ... (flood fill in index order).
+  let next = maxProv + 1;
+  for (let c = 0; c < n; c++) {
+    if (g.terrain[c] !== Terrain.Crossing || nodeOf[c] !== 0) continue;
+    const id = next++;
+    const stack = [c];
+    nodeOf[c] = id;
+    while (stack.length) {
+      const k = stack.pop()!;
+      for (const m of neighbours4(g, k)) {
+        if (g.terrain[m] === Terrain.Crossing && nodeOf[m] === 0) {
+          nodeOf[m] = id;
+          stack.push(m);
+        }
+      }
+    }
+  }
+  const nodeCount = next;
+  const sx = new Float64Array(nodeCount);
+  const sy = new Float64Array(nodeCount);
+  const cnt = new Float64Array(nodeCount);
+  const costSum = MOVE_COST.map(() => new Float64Array(nodeCount));
+  const edges = new Set<number>();
+  const adjSets: Set<number>[] = Array.from({ length: nodeCount }, () => new Set<number>());
+  for (let c = 0; c < n; c++) {
+    const a = nodeOf[c]!;
+    if (a === 0) continue;
+    const x = c % g.w;
+    sx[a]! += x;
+    sy[a]! += (c - x) / g.w;
+    cnt[a]!++;
+    for (let m = 0; m < MOVE_COST.length; m++) costSum[m]![a]! += MOVE_COST[m]![g.terrain[c]!]!;
+    for (const k of neighbours4(g, c)) {
+      const b = nodeOf[k]!;
+      if (b !== 0 && b !== a) {
+        const key = a < b ? a * nodeCount + b : b * nodeCount + a;
+        if (!edges.has(key)) {
+          edges.add(key);
+          adjSets[a]!.add(b);
+          adjSets[b]!.add(a);
+        }
+      }
+    }
+  }
+  const centre = new Int32Array(nodeCount).fill(-1);
+  const best = new Float64Array(nodeCount).fill(Infinity);
+  for (let c = 0; c < n; c++) {
+    const a = nodeOf[c]!;
+    if (a === 0) continue;
+    const x = c % g.w;
+    const dx = x - sx[a]! / cnt[a]!;
+    const dy = (c - x) / g.w - sy[a]! / cnt[a]!;
+    const d = dx * dx + dy * dy;
+    if (d < best[a]!) {
+      best[a] = d;
+      centre[a] = c;
+    }
+  }
+  const meanCost = costSum.map((s) => s.map((v, i) => (cnt[i]! > 0 ? v / cnt[i]! : Infinity)));
+  const adj = adjSets.map((s) => [...s].sort((p, q) => p - q));
+  return { nodeOf, nodeCount, centre, meanCost, adj };
+}
+
+function neighbours4(g: NavGrid, c: number): number[] {
+  const x = c % g.w;
+  const y = (c - x) / g.w;
+  const out: number[] = [];
+  if (y > 0) out.push(c - g.w);
+  if (y < g.h - 1) out.push(c + g.w);
+  if (x > 0) out.push(c - 1);
+  else if (g.wrapX) out.push(c + g.w - 1);
+  if (x < g.w - 1) out.push(c + 1);
+  else if (g.wrapX) out.push(c - g.w + 1);
+  return out;
+}
+
+/** Coarse A* over nodes; returns the node sequence or null. */
+export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, from: number, to: number): number[] | null {
+  const cost = pg.meanCost[mobility]!;
+  if (!Number.isFinite(cost[from]!) || !Number.isFinite(cost[to]!)) return null;
+  const h = (a: number): number => boundKm(g, pg.centre[a]!, pg.centre[to]!) * MIN_COST[mobility]!;
+  const dist = new Float64Array(pg.nodeCount).fill(Infinity);
+  const came = new Int32Array(pg.nodeCount).fill(-1);
+  const done = new Uint8Array(pg.nodeCount);
+  dist[from] = 0;
+  // Small graph (~5k nodes): an O(V²)-free open list sorted by insertion is enough.
+  const open: number[] = [from];
+  const f = new Float64Array(pg.nodeCount).fill(Infinity);
+  f[from] = h(from);
+  while (open.length) {
+    let bi = 0;
+    for (let i = 1; i < open.length; i++) if (f[open[i]!]! < f[open[bi]!]!) bi = i;
+    const a = open.splice(bi, 1)[0]!;
+    if (a === to) break;
+    if (done[a]) continue;
+    done[a] = 1;
+    for (const b of pg.adj[a]!) {
+      if (done[b] || !Number.isFinite(cost[b]!)) continue;
+      const t = dist[a]! + boundKm(g, pg.centre[a]!, pg.centre[b]!) * 0.5 * (cost[a]! + cost[b]!);
+      if (t < dist[b]!) {
+        dist[b] = t;
+        came[b] = a;
+        f[b] = t + h(b);
+        open.push(b);
+      }
+    }
+  }
+  if (!Number.isFinite(dist[to]!)) return null;
+  const route = [to];
+  for (let a = to; a !== from; ) {
+    a = came[a]!;
+    route.push(a);
+  }
+  return route.reverse();
+}
+
+/** Above this straight-line distance (km) routes are planned on the province graph first. */
+export const COARSE_ABOVE_KM = 500;
+
+/**
+ * Land route for a mobility class: direct cell A* for short trips; for long ones, cell A*
+ * restricted to the coarse route's provinces and their neighbours, with an unrestricted search
+ * as the fallback if the corridor is too tight.
+ */
+export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number): PathResult | null {
+  if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return null; // O(1) unreachable
+  const a = pg.nodeOf[start]!;
+  const b = pg.nodeOf[goal]!;
+  if (a !== 0 && b !== 0 && a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM) {
+    const route = coarseRoute(g, pg, mobility, a, b);
+    if (!route) return null;
+    const corridor = new Uint8Array(pg.nodeCount);
+    for (const node of route) {
+      corridor[node] = 1;
+      for (const nb of pg.adj[node]!) corridor[nb] = 1;
+    }
+    const inCorridor = findPath(g, mobility, start, goal, (c) => corridor[pg.nodeOf[c]!] === 1);
+    if (inCorridor) return inCorridor;
+  }
+  return findPath(g, mobility, start, goal);
+}
