@@ -39,6 +39,7 @@ export const BUILDING_EFFECT_KEYS = [
 ] as const;
 
 export const COMBAT_EFFICIENCY_MODES = ['dynamic', 'progressive', 'static', 'locked', 'random'] as const;
+export const GOVERNMENTS = ['democracy', 'fascism', 'communism', 'monarchy', 'authoritarian', 'colonial'] as const;
 export const TECH_CATEGORIES = ['industry', 'land', 'armor', 'naval', 'air', 'electronics', 'nuclear'] as const;
 
 const id = z.string().regex(/^[a-z][a-z0-9_]*$/, 'ids are lower snake_case');
@@ -216,11 +217,43 @@ export const ScenarioMeta = z.strictObject({
 
 const tag = z.string().regex(/^[A-Z]{3}$/, 'nation tags are three upper-case letters');
 
-/** Nation registry (PLAN 1.3; traits, cores, puppets and alliances join in PLAN 1.4). Id = index + 1. */
-export const NationDef = z.strictObject({ tag, nameKey: key, color });
+/** Scenario nation (PLAN 1.3/1.4, SPEC §3.4). Nation id = index + 1. */
+export const NationDef = z.strictObject({
+  tag,
+  nameKey: key,
+  adjectiveKey: key,
+  color,
+  government: z.enum(GOVERNMENTS),
+  traits: z.array(id).max(4),
+  /** 0 = never starts wars … 100 = attacks at any chance (AI, SPEC §7). */
+  aggression: z.number().int().min(0).max(100),
+  /** AoC-style income bonus, percent. */
+  incomeBonus: z.number().int().min(-100).max(100),
+  fightToDeath: z.boolean(),
+  /** Seat of government; PLAN 1.5 binds it to the nearest city. */
+  capital: z.strictObject({ name: z.string().min(1), lonLat }),
+  /** Puppet relation (SPEC §3.5). */
+  overlord: z.strictObject({ tag, autonomy: z.number().int().min(0).max(100) }).optional(),
+  /** Cores beyond the territory the nation owns at start (admin-0 / admin-1 codes). */
+  extraCores: z
+    .strictObject({ countries: z.array(z.string().regex(/^[A-Z0-9]{3}$/)).optional(), provinces: z.array(z.string()).optional() })
+    .optional(),
+  /** false = a dead nation that exists only through its cores (revivable, PLAN 1.20). */
+  alive: z.boolean().optional(),
+});
 export const NationsFile = z.strictObject({ nations: z.array(NationDef).min(1).max(65535) });
 
 const ring = z.array(lonLat).min(3);
+
+/** Starting diplomacy (PLAN 1.4, SPEC §3.5): one alliance per nation, guarantees, wars in progress. */
+export const DiplomacyFile = z.strictObject({
+  comment: z.string().optional(),
+  alliances: z.array(
+    z.strictObject({ id, nameKey: key, leader: tag, members: z.array(tag).min(2), unity: z.number().int().min(0).max(100) }),
+  ),
+  guarantees: z.array(z.strictObject({ guarantor: tag, target: tag, note: z.string().optional() })),
+  wars: z.array(z.strictObject({ id, nameKey: key, attackers: z.array(tag).min(1), defenders: z.array(tag).min(1), startDate: date })),
+});
 
 /** 1938 ownership rules (PLAN 1.3): country → tag, province overrides, polygon regions, occupation. */
 export const OwnershipFile = z.strictObject({
@@ -244,6 +277,7 @@ export type MapMeta = z.infer<typeof MapMeta>;
 export type ScenarioMeta = z.infer<typeof ScenarioMeta>;
 export type NationDef = z.infer<typeof NationDef>;
 export type OwnershipFile = z.infer<typeof OwnershipFile>;
+export type DiplomacyFile = z.infer<typeof DiplomacyFile>;
 
 // ── file table + validation ──────────────────────────────────────────────────
 
@@ -259,6 +293,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
   { pattern: /^scenarios\/[a-z0-9_]+\/nations\.json$/, schema: NationsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ownership\.json$/, schema: OwnershipFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/diplomacy\.json$/, schema: DiplomacyFile },
 ];
 
 export function schemaFor(file: string): z.ZodType | undefined {
@@ -397,6 +432,53 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       if (tags.has(n.tag)) errors.push(`${f}: nations[${i}].tag: duplicate tag '${n.tag}' (also nations[${tags.get(n.tag)}])`);
       tags.set(n.tag, i);
     });
+    // Traits exist and are compatible; puppet relations are one level deep and point at the living.
+    const byTag = new Map(nf.nations.map((n) => [n.tag, n]));
+    nf.nations.forEach((n, i) => {
+      n.traits.forEach((t, j) => {
+        const def = traits.get(t);
+        if (!def) errors.push(`${f}: nations[${i}].traits[${j}]: unknown trait '${t}'`);
+        else for (const e of def.excludes) if (n.traits.includes(e)) errors.push(`${f}: nations[${i}].traits: '${t}' excludes '${e}'`);
+      });
+      if (n.overlord) {
+        const o = byTag.get(n.overlord.tag);
+        if (!o) errors.push(`${f}: nations[${i}].overlord.tag: unknown nation '${n.overlord.tag}'`);
+        else if (o.tag === n.tag) errors.push(`${f}: nations[${i}].overlord.tag: a nation cannot be its own overlord`);
+        else if (o.overlord) errors.push(`${f}: nations[${i}].overlord.tag: '${o.tag}' is itself a puppet`);
+        else if (o.alive === false || n.alive === false) errors.push(`${f}: nations[${i}].overlord: dead nations have no puppet relations`);
+      }
+    });
+    const dipF = f.replace(/nations\.json$/, 'diplomacy.json');
+    const dip = ok[dipF] as DiplomacyFile | undefined;
+    if (dip) {
+      const living = (t: string, where: string): void => {
+        const n = byTag.get(t);
+        if (!n) errors.push(`${dipF}: ${where}: unknown nation '${t}'`);
+        else if (n.alive === false) errors.push(`${dipF}: ${where}: '${t}' is not alive`);
+      };
+      const inAlliance = new Map<string, string>();
+      dip.alliances.forEach((a, i) => {
+        living(a.leader, `alliances[${i}].leader`);
+        if (!a.members.includes(a.leader)) errors.push(`${dipF}: alliances[${i}].leader: '${a.leader}' is not a member`);
+        a.members.forEach((m, j) => {
+          living(m, `alliances[${i}].members[${j}]`);
+          if (inAlliance.has(m)) errors.push(`${dipF}: alliances[${i}].members[${j}]: '${m}' is already in '${inAlliance.get(m)}'`);
+          inAlliance.set(m, a.id);
+        });
+      });
+      dip.guarantees.forEach((g, i) => {
+        living(g.guarantor, `guarantees[${i}].guarantor`);
+        living(g.target, `guarantees[${i}].target`);
+        if (g.guarantor === g.target) errors.push(`${dipF}: guarantees[${i}]: a nation cannot guarantee itself`);
+      });
+      dip.wars.forEach((war, i) => {
+        war.attackers.forEach((t, j) => living(t, `wars[${i}].attackers[${j}]`));
+        war.defenders.forEach((t, j) => {
+          living(t, `wars[${i}].defenders[${j}]`);
+          if (war.attackers.includes(t)) errors.push(`${dipF}: wars[${i}].defenders[${j}]: '${t}' is on both sides`);
+        });
+      });
+    }
     const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;
     if (!own) continue;
     const of2 = f.replace(/nations\.json$/, 'ownership.json');
@@ -414,8 +496,8 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       check(o.owner, `occupation[${i}].owner`);
     });
   }
-  for (const [f] of of<OwnershipFile>(/^scenarios\/[a-z0-9_]+\/ownership\.json$/)) {
-    if (!(f.replace(/ownership\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
+  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy)\.json$/)) {
+    if (!(f.replace(/(ownership|diplomacy)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
   }
   for (const [f, s] of of<ScenarioMeta>(/^scenarios\/[a-z0-9_]+\/scenario\.json$/)) {
     const dir = f.split('/')[1];

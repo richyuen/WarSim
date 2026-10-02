@@ -290,6 +290,14 @@ Nation {
   allianceId?; relations i8[nations] (−100..100); opinionModifiers[]
 }
 ```
+**Scenario nation data (PLAN 1.4, ADR-17).** `data/scenarios/1938/nations.json` holds 103 nations
+(102 alive, plus Ethiopia as a dead nation with cores). Fields: tag, name/adjective keys, colour,
+government, traits, aggression, incomeBonus, fightToDeath, capital {name, lonLat}, optional
+overlord {tag, autonomy}, extraCores {countries, provinces} and alive. Cores = start territory +
+extraCores. The capital snaps to the nearest owned cell within 2 cells (coastal capitals);
+PLAN 1.5 binds it to a city. `diplomacy.json` holds alliances (one per nation, unity), guarantees
+and wars in progress. Neighbouring nations differ in colour by ΔE*ab > 15 (`src/shared/color.ts`).
+
 ### 3.5 Diplomacy
 - **War** {id, attackers[], defenders[], leaders, goal, startTick, warScore,
   exhaustion per side, fightToDeath per side}

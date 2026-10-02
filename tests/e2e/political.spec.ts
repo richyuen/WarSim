@@ -38,7 +38,8 @@ test('1938 political map: worker == Node, rendered at three zooms', async ({ pag
   const node = buildOwnership({ w: W, h: H, provinceIds: pr.ids, provinces: meta, terrain, tags: nationsJson.nations.map((n) => n.tag), rules: rulesJson as unknown as OwnershipRules });
   expect(r.ownerHash).toBe(xxhash32View(node.owner));
   expect(r.controllerHash).toBe(xxhash32View(node.controller));
-  expect(r.cells.slice(1).every((c) => c > 0)).toBe(true);
+  const alive = nationsJson.nations.map((n) => (n as { alive?: boolean }).alive !== false);
+  expect(r.cells.slice(1).every((c, i) => (alive[i] ? c > 0 : c === 0))).toBe(true);
   console.log(`political build in worker: ${r.ms.total.toFixed(0)} ms`);
 
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.3') : info.outputPath();

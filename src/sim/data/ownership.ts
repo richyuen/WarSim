@@ -160,6 +160,37 @@ export function buildOwnership(inp: OwnershipInput): OwnershipResult {
   return { owner, controller, unmappedCountries: [...unmapped].sort(), unknownProvinces, regionCells };
 }
 
+/**
+ * The cell owned by `nation` nearest to (x, y) (cell units) within `maxR` cells (Chebyshev
+ * rings, row-major order inside a ring), or -1. Capitals on a coast often fall in a sea cell at M.
+ */
+export function nearestOwnedCell(owner: Uint16Array, nation: number, x: number, y: number, w: number, h: number, maxR: number): number {
+  const cx = Math.floor(x);
+  const cy = Math.floor(y);
+  for (let r = 0; r <= maxR; r++) {
+    let best = -1;
+    let bestD = Infinity;
+    for (let dy = -r; dy <= r; dy++) {
+      const yy = cy + dy;
+      if (yy < 0 || yy >= h) continue;
+      for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const c = yy * w + ((cx + dx + w) % w);
+        if (owner[c] !== nation) continue;
+        const ddx = cx + dx + 0.5 - x;
+        const ddy = yy + 0.5 - y;
+        const d = ddx * ddx + ddy * ddy;
+        if (d < bestD) {
+          bestD = d;
+          best = c;
+        }
+      }
+    }
+    if (best >= 0) return best;
+  }
+  return -1;
+}
+
 /** Land cells marked UNSET take the most common owner among their resolved land neighbours. */
 function fillFromNeighbours(owner: Uint16Array, terrain: Uint8Array, w: number, h: number): void {
   for (let pass = 0; pass < 64; pass++) {

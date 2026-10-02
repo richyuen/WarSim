@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-17 · 2026-10-02 · accepted — 1938 nations: puppets for dominions and colonial blocs, one alliance each
+**Decision.**
+- 102 living nations + Ethiopia (dead; cores on its 1935 territory, revivable).
+- 40 are puppets with autonomy, set by real 1938 status:
+  - dominions 85–90: Canada, Australia, New Zealand, South Africa, Ireland; Iceland under Denmark;
+  - protectorates and treaty states 50–70: Egypt, Transjordan, Oman, Sarawak, Albania under Italy,
+    Southern Rhodesia, the Levant mandates, the Philippines Commonwealth, Xinjiang under the USSR;
+  - Japanese puppet states 20: Manchukuo, Mengjiang;
+  - crown colonies and colonial federations 20–40.
+- Gold Coast, Ceylon and Sarawak were split out of direct UK ownership to reach ≥ 100 nations
+  with real 1938 polities. They were distinct administrations.
+- Alliances (AoC allows one per nation):
+  - Anti-Comintern Pact (GER, ITA, JAP);
+  - Anglo-French Entente (not a formal alliance until 1939, but Locarno and staff talks made it the
+    de facto bloc);
+  - Little, Balkan and Baltic Ententes;
+  - Comintern (SOV + Mongolia, Tuva);
+  - Second United Front (CHI + CCP).
+- Romania and Yugoslavia also belonged to the Balkan Entente. They stay in the Little Entente, and
+  the Balkan Entente keeps Turkey and Greece.
+- Guarantees model the French treaty system (CZS, POL, BEL), the Soviet–Czech pact, Anglo–Portugal,
+  Anglo–Iraq and Soviet aid to China.
+- Wars in progress: the Spanish Civil War and the Second Sino-Japanese War (with Manchukuo and
+  Mengjiang).
+- Aggression, traits and income bonus are first-pass values, tuned in Phase 7. Colours are
+  historical where conventional (German grey, Soviet dark red, British pink-red, French blue,
+  Italian green). Seven conflicting neighbour pairs were recoloured to meet ΔE > 15.
+
 ### ADR-16 · 2026-10-02 · accepted — 1938 start state: 1 January 1938, colonies split by role, Spain divided
 **Decision.**
 - The scenario starts on **1 January 1938**: after Italy's conquest of Ethiopia and the fall of

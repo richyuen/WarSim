@@ -719,3 +719,36 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   (`political-danzig-corridor.png`). This is the speckle already noted for PLAN 1.28, now more
   visible; the cause is not ownership.
 - **Parity:** row 13 (rightful vs occupation) → partial; row 50 gains 1938 evidence. Score 5.6% → 6.3%.
+
+## 2026-10-02 — PLAN 1.4: 1938 nations data (traits, capitals, puppets, alliances, cores)
+- **Data:**
+  - `data/scenarios/1938/nations.json` now holds 103 nations: 102 alive, plus Ethiopia as a dead
+    nation with cores on ETH.
+  - Each nation has adjective, government, traits, aggression, incomeBonus, fightToDeath, capital
+    {name, lonLat}, overlord {tag, autonomy} and extraCores.
+  - 40 puppets: dominions, protectorates, mandates and colonial blocs; Manchukuo and Mengjiang under
+    Japan; Mongolia, Tuva and Xinjiang under the USSR; Albania under Italy.
+  - New ownership units: Gold Coast (GHA), Ceylon (LKA), Sarawak (MYS-1187).
+  - `diplomacy.json` holds 7 alliances (Anti-Comintern, Anglo-French, Little/Balkan/Baltic Ententes,
+    Comintern, United Front), 8 guarantees, and 2 wars in progress (Spain, China).
+  - en.json gains nation adjectives, governments, alliance and war names.
+- **Schema cross-checks:**
+  - traits exist and don't exclude each other;
+  - puppet chains are one level deep; dead nations have no relations;
+  - one alliance per nation, and the leader is a member;
+  - war sides are disjoint, and every diplomacy tag is a living nation.
+- **Code:**
+  - `src/shared/color.ts` (sRGB → CIELAB, ΔE76);
+  - `nearestOwnedCell` in `ownership.ts`: coastal capitals sit in sea cells at M, so a capital snaps
+    to its nation's nearest cell within 2.
+- **AT (`tests/unit/nations.test.ts`):**
+  - schema pass;
+  - ≥ 100 living nations, ≥ 35 puppets;
+  - every capital lies in its own territory: 87 exact, 15 coastal ones 1–2 cells off;
+  - all 206 neighbour pairs at M have ΔE > 15. Seven pairs were recoloured to get there:
+    AOF/FMO, AOF/AEF, PAL/TRJ, RAJ/BUR, HON/ELS, MON/TAN, PRU/CHL;
+  - extraCores resolve to real admin units; diplomacy anchors; CIELAB reference values.
+- **Test update:** the ownership tests (unit "every nation owns land", e2e cells check) now apply to
+  living nations. Each also asserts that dead nations own nothing, so coverage is stricter, not looser.
+- **Evidence:** `docs/evidence/1.3/political-*.png` regenerated with the new colours.
+- **Parity:** row 21 (aggression and traits) → partial. Score 6.3% → 6.9%.

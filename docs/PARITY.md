@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 6.3%** (verified 0 · partial 10 · not started 70 · total 80)
+**Parity score: 6.9%** (verified 0 · partial 11 · not started 69 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -36,7 +36,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 18 | Revolt suppression spending | v4.3: Revolt Suppression is a nation expense with a cost limit [TEXT 2026-10-02] | Suppression budget lowers revolt probability (PLAN 1.19) | not started |  |  |
 | 19 | Revival of dead nations | Dead nations are remembered and can return as revolts on their rightful land; no stated limit or cooldown [TEXT 2026-10-02] | Revival from cores, finite count with cooldown (PLAN 1.20) | not started |  | Deliberate deviation (finite + cooldown, per PROMPT); log in DECISIONS when implemented |
 | 20 | Collapse | Nations die on capital loss without cores; God Mode "Kill" collapses a nation with a click [TEXT 2026-10-02] | Collapse on capital loss with no cores + God collapse (PLAN 1.15, 1.20) | not started |  |  |
-| 21 | Aggression and traits | No per-nation aggression trait is described; behaviour knobs are AI disable, CE lock, revolt chance, income bonus; constant nation modifiers exist (e.g. harsh environment) [TEXT 2026-10-02] | Per-nation aggression 0..100 + traits from data (PLAN 1.4, 1.24) | not started |  | PROMPT requires traits; goes beyond AoC |
+| 21 | Aggression and traits | No per-nation aggression trait is described; behaviour knobs are AI disable, CE lock, revolt chance, income bonus; constant nation modifiers exist (e.g. harsh environment) [TEXT 2026-10-02] | Per-nation aggression 0..100 + traits from data (PLAN 1.4, 1.24) | partial | `tests/unit/nations.test.ts`, `data/scenarios/1938/nations.json` | PROMPT requires traits; goes beyond AoC. 2026-10-02 (PLAN 1.4): 103 nations with aggression, traits, income bonus, fight-to-death, puppets and alliances as data. The AI that uses them comes in PLAN 1.24 |
 | 22 | Income bonus | Custom permanent income bonus per nation, editable, limited to -100..100 [TEXT 2026-10-02] | incomeBonus -100..100 as % of income (PLAN 1.9) | not started |  |  |
 | 23 | Economy tick: income and expenses | Economic tick every 5 s: land, core and city income; expenses for combat efficiency (war), cities, revolt suppression; gold may go negative; economy tab lists every line [TEXT 2026-10-02] | Monthly economy tick with income lines, upkeep, admin cost, bankruptcy (PLAN 1.9) | not started |  | Baseline: "economy (gold, income, expenses, production)"; production is ours (Table 2) |
 | 24 | Temporary buffs and debuffs | v4.3: timed buffs/debuffs (war reparations, harsh winter) shown as boxes with timers; custom ones can be assigned [TEXT 2026-10-02] | Buffs with expiresTick on nation/formation/province (PLAN 1.21) | not started |  |  |

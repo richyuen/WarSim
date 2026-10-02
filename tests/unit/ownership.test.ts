@@ -23,6 +23,8 @@ const file = (kind: string, w?: number): Buffer =>
 const geo = decodeAdmin1(file('admin1-geometry'));
 const meta = JSON.parse(file('admin1-meta').toString('utf8')) as Admin1Meta[];
 const tags = nationsJson.nations.map((n) => n.tag);
+/** Dead nations (e.g. Ethiopia, conquered 1936) exist only through their cores and own nothing. */
+const alive = nationsJson.nations.map((n) => (n as { alive?: boolean }).alive !== false);
 const rules = rulesJson as unknown as OwnershipRules;
 
 function build(w: number, h: number) {
@@ -140,10 +142,11 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
     expect(wrong).toEqual([]);
   });
 
-  it('every nation owns land, Manchukuo is a real state, and water is unowned', () => {
+  it('every living nation owns land, dead ones own none, Manchukuo is a real state, water is unowned', () => {
     const cells = new Array<number>(tags.length + 1).fill(0);
     for (const v of r.owner) cells[v]!++;
-    expect(tags.filter((_, i) => cells[i + 1] === 0)).toEqual([]);
+    expect(tags.filter((_, i) => alive[i] && cells[i + 1] === 0)).toEqual([]);
+    expect(tags.filter((_, i) => !alive[i] && cells[i + 1]! > 0)).toEqual([]);
     expect(cells[tags.indexOf('MAN') + 1]).toBeGreaterThan(5000); // ~1.3 M km² at ~400 km²/cell
     expect(cells[tags.indexOf('DAN') + 1]).toBeGreaterThanOrEqual(3);
     for (let c = 0; c < r.owner.length; c++) if (r.terrain[c]! < Terrain.Plains) expect(r.owner[c]).toBe(0);
@@ -165,10 +168,10 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
 });
 
 describe('1938 ownership at 1024×512', () => {
-  it('every nation still owns land at the small map size', () => {
+  it('every living nation still owns land at the small map size', () => {
     const r = build(1024, 512);
     const cells = new Array<number>(tags.length + 1).fill(0);
     for (const v of r.owner) cells[v]!++;
-    expect(tags.filter((_, i) => cells[i + 1] === 0)).toEqual([]);
+    expect(tags.filter((_, i) => alive[i] && cells[i + 1] === 0)).toEqual([]);
   });
 });

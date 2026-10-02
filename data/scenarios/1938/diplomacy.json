@@ -1,0 +1,26 @@
+{
+  "comment": "Diplomatic state on 1 January 1938 (PLAN 1.4, ADR-17). One alliance per nation (AoC model); puppets follow their overlord through nations.json. Guarantees are defensive pledges (guarantor joins a war against the target). Our own summary of public history.",
+  "alliances": [
+    { "id": "anti_comintern", "nameKey": "alliance.anti_comintern", "leader": "GER", "members": ["GER", "ITA", "JAP"], "unity": 55 },
+    { "id": "anglo_french", "nameKey": "alliance.anglo_french", "leader": "ENG", "members": ["ENG", "FRA"], "unity": 50 },
+    { "id": "little_entente", "nameKey": "alliance.little_entente", "leader": "CZS", "members": ["CZS", "ROM", "YUG"], "unity": 40 },
+    { "id": "balkan_entente", "nameKey": "alliance.balkan_entente", "leader": "TUR", "members": ["TUR", "GRE"], "unity": 35 },
+    { "id": "baltic_entente", "nameKey": "alliance.baltic_entente", "leader": "LAT", "members": ["LAT", "EST", "LIT"], "unity": 35 },
+    { "id": "comintern", "nameKey": "alliance.comintern", "leader": "SOV", "members": ["SOV", "MON", "TAN"], "unity": 70 },
+    { "id": "united_front", "nameKey": "alliance.united_front", "leader": "CHI", "members": ["CHI", "CCP"], "unity": 30 }
+  ],
+  "guarantees": [
+    { "guarantor": "FRA", "target": "CZS", "note": "Franco-Czechoslovak treaty (1925)" },
+    { "guarantor": "SOV", "target": "CZS", "note": "Soviet-Czechoslovak pact (1935)" },
+    { "guarantor": "FRA", "target": "POL", "note": "Franco-Polish alliance (1921)" },
+    { "guarantor": "FRA", "target": "BEL", "note": "Anglo-French guarantee of Belgium (1937)" },
+    { "guarantor": "ENG", "target": "BEL", "note": "Anglo-French guarantee of Belgium (1937)" },
+    { "guarantor": "ENG", "target": "POR", "note": "Anglo-Portuguese alliance" },
+    { "guarantor": "ENG", "target": "IRQ", "note": "Anglo-Iraqi treaty (1930)" },
+    { "guarantor": "SOV", "target": "CHI", "note": "Sino-Soviet non-aggression pact and aid (1937)" }
+  ],
+  "wars": [
+    { "id": "spanish_civil_war", "nameKey": "war.spanish_civil_war", "attackers": ["NSP"], "defenders": ["REP"], "startDate": "1936-07-17" },
+    { "id": "second_sino_japanese_war", "nameKey": "war.second_sino_japanese_war", "attackers": ["JAP", "MAN", "MEN"], "defenders": ["CHI", "CCP"], "startDate": "1937-07-07" }
+  ]
+}

@@ -60,7 +60,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: golden counts per class within ±10% of expected; screenshot of terrain mode compared to reference editor shot (logged).
 - [x] 1.3 1938 ownership: admin-1 → nation table + split polylines for interwar borders; colonies; mandates.
   AT: tests on known points (Danzig = Free City, Lwów = Poland, Königsberg = Germany, Manchukuo exists, Ethiopia = Italy); screenshot of the political map vs a historical atlas description logged.
-- [ ] 1.4 Nations data (≥ 100 incl. colonies/dominions as puppets): colours, names, traits, aggression, cores, capitals, alliances (Axis-precursor, Allied guarantees, Comintern), puppets.
+- [x] 1.4 Nations data (≥ 100 incl. colonies/dominions as puppets): colours, names, traits, aggression, cores, capitals, alliances (Axis-precursor, Allied guarantees, Comintern), puppets.
   AT: schema pass; every nation has a capital in owned territory; colour contrast check between neighbours (ΔE > 15).
 - [ ] 1.5 Cities (NE populated places, filtered and named) with capitals.
   AT: every capital is a city; city names render at T1 (screenshot).
