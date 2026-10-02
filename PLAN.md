@@ -106,7 +106,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: a concentration test triggers a Major Battle; the corridor flips cells faster for D days; history entry.
 - [x] 1.24 Strategic AI v1 (war/peace/alliance/puppets/coalitions), traits/aggression.
   AT: 10-year headless runs on 3 seeds produce ≥ 3 wars, ≥ 1 peace, ≥ 1 alliance change each.
-- [ ] 1.25 Operational AI v1 (front allocation, offensives, reserves).
+- [x] 1.25 Operational AI v1 (front allocation, offensives, reserves).
   AT: in a scripted 2-nation war, the larger nation advances; formations are spread along the front (coverage metric).
 - [ ] 1.26 Economic AI v1 (budget split, build mix).
   AT: no AI nation goes bankrupt in 10 peaceful years on 3 seeds.

@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-37 · 2026-10-02 · accepted — Operational AI v1: sector allotment with sticky orders; supply refresh 12 h
+**Decision.**
+- Fronts are cut into 4×4-cell sectors and formations are allotted by threat. Every sector gets
+  at least one formation while they last. Sectors with ≥ 1.5× superiority attack; the rest hold.
+- Formations keep their sector while marching into it, are not re-routed for target shifts under
+  a sector, and are not deployed from beyond 60 cells.
+- The supply network refreshes every 12 h, not 6.
+
+**Why.**
+- The AT: in an isolated, sustained GER–POL war, Germany takes 763 Polish cells to Poland's 4 by
+  day 60, and front coverage is 73–88%.
+- The first version re-routed every formation daily, including Siberian divisions sent to Europe.
+  It averaged 32.5 ms per tick in year 1. Sticky assignment, the re-route threshold and the
+  deployment range cut that to 1.2 ms.
+- With armies in motion the supply layer is always dirty, so a 6 h refresh cost 1.7 ms per tick.
+  At 12 h an encircled division is still dry within 12 + 8 h (the 1.12 AT holds).
+- Without forced fight-to-the-death, Poland sues by exhaustion around day 39, while Germany is
+  still catching up from its western deployment. The AT therefore measures a sustained war.
+
 ### ADR-36 · 2026-10-02 · accepted — Strategic AI v1 and the long-run stability fixes it forced
 **Decision.**
 - Utility-based weekly AI with hash draws, a pacifist floor (aggression < 15) and a capped

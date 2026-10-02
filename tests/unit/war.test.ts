@@ -22,6 +22,7 @@ const POL = nationId('POL');
  */
 function atWar(seed = 1): Sim {
   const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
+  s.world.settings.aiEnabled = false; // isolate the mechanism from the AI (PLAN 1.24–1.25)
   for (const n of [GER, POL]) {
     s.world.alliances.leave(n);
     s.world.alliances.guarantees = s.world.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);

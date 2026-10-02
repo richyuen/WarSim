@@ -8,6 +8,7 @@ import { loadBytes, saveBytes, stateHash } from './core/state';
 import { step, type System } from './tick';
 import { createWorld1938, ECONOMY_TABLES_1938, RULES_1938 } from './scenario1938';
 import { allianceSystem } from './systems/alliances';
+import { operationalAi } from './ai/operational';
 import { strategicAi } from './ai/strategic';
 import { buffSystem } from './systems/buffs';
 import { efficiencySystem } from './systems/efficiency';
@@ -42,7 +43,7 @@ export class Sim {
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
         // engagement and combat (8), territory (9).
         // AI decides first (SPEC §2.5 step 2), on the state left by the previous tick.
-        this.systems = [buffSystem, strategicAi, productionSystem, economySystem(ECONOMY_TABLES_1938), efficiencySystem, supplySystem, movementSystem, combatSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem, revoltSystem, collapseSystem];
+        this.systems = [buffSystem, strategicAi, operationalAi, productionSystem, economySystem(ECONOMY_TABLES_1938), efficiencySystem, supplySystem, movementSystem, combatSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem, revoltSystem, collapseSystem];
         break;
     }
   }

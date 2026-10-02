@@ -26,6 +26,7 @@ const SPLIT = X0 + 20;
 /** A sim with no formations and a GER|POL test block on plains, the two at war. */
 function block(seed = 1): Sim {
   const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
+  s.world.settings.aiEnabled = false; // isolate the mechanism from the AI (PLAN 1.24–1.25)
   const w = s.world;
   w.formations.ids().forEach((id) => destroyFormation(w, id));
   for (let y = Y0; y < Y0 + BH; y++) {

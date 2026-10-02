@@ -1,0 +1,220 @@
+/**
+ * Operational AI v1 (SPEC §7, PLAN 1.25): front allocation, offensives, reserves.
+ *
+ * Every 6 hours, nation n (AI on, at war) plans when (tick/6 + n) mod STAGGER = 0, i.e. once a
+ * day. Its front cells are the frontier cells it controls that touch an enemy's cell; they are
+ * grouped into sectors of SECTOR_CELLS × SECTOR_CELLS cells (ascending key). A sector's threat is
+ * the enemy strength in its 3 × 3 sector neighbourhood.
+ *
+ * Free formations (not engaged) within DEPLOY_RANGE_CELLS of a sector are ranked by distance to
+ * the nearest one; the farthest RESERVE share stays put as the reserve (farther ones garrison).
+ * A formation already marching into a sector keeps it; others fill sectors nearest-first. The rest are allotted to sectors in proportion to
+ * 1 + threat/THREAT_UNIT (largest remainders; every sector gets one while formations last) and
+ * filled nearest-first. A sector whose allotted strength ≥ OFFENSIVE_RATIO × its threat attacks:
+ * its formations march on the enemy cell next to the sector's front nearest its centre;
+ * otherwise they hold the own front cell nearest the centre. Orders already being followed
+ * (target within one sector) or already reached are not re-issued.
+ */
+import { orderMove } from '../systems/movement';
+import { frontierOf } from '../systems/territory';
+import { neighbours4 } from '../nav/grid';
+import type { World } from '../world';
+
+export const STAGGER = 4;
+export const SECTOR_CELLS = 4;
+export const RESERVE = 0.15;
+export const OFFENSIVE_RATIO = 1.5;
+/** Threat (men) worth one extra formation's share in a sector. */
+export const THREAT_UNIT = 10_000;
+/** Formations farther than this from every front sector stay where they are (garrisons). */
+export const DEPLOY_RANGE_CELLS = 60;
+
+interface Sector {
+  key: number;
+  cells: number[];
+  cx: number;
+  cy: number;
+  threat: number;
+  formations: number[];
+  strength: number;
+}
+
+export function operationalAi(world: World): void {
+  if (!world.settings.aiEnabled || world.tick % 6 !== 0 || world.wars.list.length === 0) return;
+  const step = world.tick / 6;
+  const nc = world.nations.cols;
+  const fighting = world.wars.nations();
+  const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0).sort((a, b) => a - b);
+  if (actors.length === 0) return;
+  const frontier = frontierOf(world);
+  const { w, h, controller } = world.cells;
+  const nb: number[] = [];
+  const f = world.formations.cols;
+  for (const n of actors) planNation(world, n, frontier, w, h, controller, nb, f);
+}
+
+function planNation(world: World, n: number, frontier: Set<number>, w: number, h: number, controller: Uint16Array, nb: number[], f: World['formations']['cols']): void {
+  const enemy = (m: number): boolean => m !== 0 && world.wars.atWar(n, m);
+  const bw = Math.ceil(w / SECTOR_CELLS);
+  const sectors = new Map<number, Sector>();
+  for (const c of frontier) {
+    if (controller[c] !== n) continue;
+    if (!neighbours4(c, w, h, true, nb).some((k) => enemy(controller[k]!))) continue;
+    const x = c % w;
+    const y = (c - x) / w;
+    const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
+    let s = sectors.get(key);
+    if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0 }));
+    s.cells.push(c);
+  }
+  if (sectors.size === 0) return;
+  const list = [...sectors.values()].sort((a, b) => a.key - b.key);
+  for (const s of list) {
+    s.cells.sort((a, b) => a - b);
+    let sx = 0;
+    let sy = 0;
+    for (const c of s.cells) {
+      sx += (c % w) + 0.5;
+      sy += Math.floor(c / w) + 0.5;
+    }
+    s.cx = sx / s.cells.length;
+    s.cy = sy / s.cells.length;
+  }
+  // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood.
+  const enemyByBucket = new Map<number, number>();
+  const mine: number[] = [];
+  world.formations.forEach((id) => {
+    const m = f.nation[id]!;
+    if (m === n) {
+      if (f.engaged[id] !== 1) mine.push(id);
+      return;
+    }
+    if (!enemy(m)) return;
+    const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
+    enemyByBucket.set(k, (enemyByBucket.get(k) ?? 0) + f.strength[id]!);
+  });
+  for (const s of list) {
+    const sy = Math.floor(s.key / bw);
+    const sx = s.key - sy * bw;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s.threat += enemyByBucket.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
+  }
+  if (mine.length === 0) return;
+  const dist2 = (id: number, s: Sector): number => {
+    let dx = Math.abs(f.x[id]! - s.cx);
+    if (dx > w / 2) dx = w - dx;
+    const dy = f.y[id]! - s.cy;
+    return dx * dx + dy * dy;
+  };
+  // Reserve: the farthest RESERVE share of free formations within range stays put.
+  const nearest = new Map<number, number>();
+  for (const id of mine) {
+    let d = Infinity;
+    for (const s of list) d = Math.min(d, dist2(id, s));
+    if (d <= DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS) nearest.set(id, d);
+  }
+  const ranked = [...nearest.keys()].sort((a, b) => nearest.get(a)! - nearest.get(b)! || a - b);
+  const active = ranked.slice(0, ranked.length - Math.floor(ranked.length * RESERVE));
+  // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT.
+  const weights = list.map((s) => 1 + s.threat / THREAT_UNIT);
+  const total = weights.reduce((a, b) => a + b, 0);
+  const quota = weights.map((wt) => (active.length * wt) / total);
+  const counts = quota.map((q) => Math.floor(q));
+  let left = active.length - counts.reduce((a, b) => a + b, 0);
+  const order = quota.map((q, i) => [q - Math.floor(q), i] as const).sort((a, b) => b[0] - a[0] || a[1] - b[1]);
+  for (const [, i] of order) {
+    if (left <= 0) break;
+    counts[i]!++;
+    left--;
+  }
+  // Every sector gets one while formations last: take from the largest allotments.
+  for (let i = 0; i < list.length; i++) {
+    if (counts[i]! > 0) continue;
+    let j = -1;
+    for (let k = 0; k < counts.length; k++) if (counts[k]! > 1 && (j < 0 || counts[k]! > counts[j]!)) j = k;
+    if (j < 0) break;
+    counts[j]!--;
+    counts[i] = 1;
+  }
+  // Sticky first: a formation already marching into a sector keeps it (no daily re-pathing).
+  const free = new Set(active);
+  const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
+  const index = new Map(list.map((s, i) => [s.key, i] as const));
+  for (const id of active) {
+    if (f.moving[id] !== 1) continue;
+    const i = index.get(sectorOfCell(f.targetCell[id]!));
+    if (i === undefined || list[i]!.formations.length >= counts[i]!) continue;
+    free.delete(id);
+    list[i]!.formations.push(id);
+    list[i]!.strength += f.strength[id]!;
+  }
+  // Then nearest-first, most threatened sectors first.
+  const byThreat = list.map((s, i) => [s, i] as const).sort((a, b) => b[0].threat - a[0].threat || a[0].key - b[0].key);
+  for (const [s, i] of byThreat) {
+    for (let k = s.formations.length; k < counts[i]!; k++) {
+      let best = -1;
+      for (const id of free) if (best < 0 || dist2(id, s) < dist2(best, s) || (dist2(id, s) === dist2(best, s) && id < best)) best = id;
+      if (best < 0) break;
+      free.delete(best);
+      s.formations.push(best);
+      s.strength += f.strength[best]!;
+    }
+  }
+  // Orders.
+  for (const s of list) {
+    if (s.formations.length === 0) continue;
+    const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
+    const target = attack ? attackCell(world, s, enemy, nb) : holdCell(s, w);
+    if (target < 0) continue;
+    const tx = (target % w) + 0.5;
+    const ty = Math.floor(target / w) + 0.5;
+    for (const id of s.formations) {
+      // Already heading there, or to a cell within one sector of it: no new route.
+      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, target, w) <= SECTOR_CELLS) continue;
+      const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
+      if (here === target) continue;
+      orderMove(world, id, tx, ty);
+    }
+  }
+}
+
+function cellDist(a: number, b: number, w: number): number {
+  let dx = Math.abs((a % w) - (b % w));
+  if (dx > w / 2) dx = w - dx;
+  return Math.max(dx, Math.abs(Math.floor(a / w) - Math.floor(b / w)));
+}
+
+/** The own front cell nearest the sector centre (lowest id on ties). */
+function holdCell(s: Sector, w: number): number {
+  let best = -1;
+  let bd = Infinity;
+  for (const c of s.cells) {
+    const ex = (c % w) + 0.5 - s.cx;
+    const ey = Math.floor(c / w) + 0.5 - s.cy;
+    const d = ex * ex + ey * ey;
+    if (d < bd) {
+      bd = d;
+      best = c;
+    }
+  }
+  return best;
+}
+
+/** The enemy cell touching the sector's front nearest its centre (lowest id on ties). */
+function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb: number[]): number {
+  const { w, h, controller } = world.cells;
+  let best = -1;
+  let bd = Infinity;
+  for (const c of s.cells) {
+    for (const k of neighbours4(c, w, h, true, nb)) {
+      if (!enemy(controller[k]!)) continue;
+      const ex = (k % w) + 0.5 - s.cx;
+      const ey = Math.floor(k / w) + 0.5 - s.cy;
+      const d = ex * ex + ey * ey;
+      if (d < bd || (d === bd && k < best)) {
+        bd = d;
+        best = k;
+      }
+    }
+  }
+  return best;
+}

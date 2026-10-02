@@ -18,7 +18,8 @@ import { Terrain } from '../../shared/terrain';
 import type { World } from '../world';
 import { bleedFormation } from './elements';
 
-export const SUPPLY_REFRESH_HOURS = 6;
+/** Network refresh period (12 h since PLAN 1.25: armies in motion keep it dirty; dry within 12 + 8 h). */
+export const SUPPLY_REFRESH_HOURS = 12;
 /** Per hour; a power of two so the level steps exactly between 0 and 1 (8 h to drain or refill). */
 export const SUPPLY_RATE = 1 / 8;
 export const BASE_ATTRITION_PER_DAY = 0.02;
@@ -64,7 +65,7 @@ export function refreshSupplyNetwork(world: World): void {
       const c = queue[head++]!;
       const x = c % w;
       const y = (c - x) / w;
-      // Inlined 4-neighbours (wrapping x): this flood covers the map every 6 h, and the shared
+      // Inlined 4-neighbours (wrapping x): this flood covers the map every refresh, and the shared
       // nav/grid neighbours4 helper made it 3.3× slower (review after PLAN 1.14).
       for (let k = 0; k < 4; k++) {
         const n = k === 0 ? (y > 0 ? c - w : -1) : k === 1 ? (y < h - 1 ? c + w : -1) : k === 2 ? (x > 0 ? c - 1 : c + w - 1) : x < w - 1 ? c + 1 : c - w + 1;

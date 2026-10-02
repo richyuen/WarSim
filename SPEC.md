@@ -497,7 +497,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 
 ## 4. Territory, fronts and the strategic layer
 
-**Supply v1 (PLAN 1.12, ADR-25; `src/sim/systems/supply.ts`).**
+**Supply v1 (PLAN 1.12, ADR-25; `src/sim/systems/supply.ts`; refresh 12 h since PLAN 1.25).**
 - *Blocs:* a nation and its puppets (`nations.overlord`) share one supply bloc, the overlord's id.
 - *Network* (every 6 h): sources are cities a bloc member owns and controls. A 4-connected flood
   spreads over cells the bloc controls and over unclaimed crossing lanes. `cells.supply` holds the
@@ -799,6 +799,19 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   spearheads), sets defensive postures, tasks fleets (sea control around coasts, convoy
   escort, raiding, invasion), tasks air wings (superiority over active fronts, CAS on
   Major Battles, strategic bombing when superiority is high).
+  *Implemented v1 (PLAN 1.25, ADR-37; `src/sim/ai/operational.ts`):*
+  - *Cadence:* each 6 h, a nation at war plans once a day (staggered).
+  - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a
+    sector's 3×3 neighbourhood.
+  - *Who deploys:* free (not engaged) formations within 60 cells of the front. The farthest 15%
+    stay in reserve.
+  - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
+    sector getting one while formations last. Formations already marching into a sector keep it;
+    the rest fill nearest-first.
+  - *Orders:* a sector at ≥ 1.5× local superiority attacks the enemy cell next to its centre;
+    otherwise it holds its front cell. A formation is not re-ordered if its target is within a
+    sector of the current one.
+  - *Tick cost* with 10-year AI wars: 2–3 ms (above the 1.5 ms budget); see PROGRESS perf debt.
 - **Economic AI** (daily): a budget split between army, navy, air, industry, research, nukes,
   revolt suppression and reserve gold. The production mix is adapted to enemies (AT vs armour-heavy
   enemies, fighters when bombed).

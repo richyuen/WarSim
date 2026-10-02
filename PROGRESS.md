@@ -1451,3 +1451,32 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - the one-year economy test gets a 120 s budget;
   - the headless test reads `FormationDestroyed`.
 - Parity: row 3 (AI war declaration) → partial; rows 1 and 21 notes updated.
+
+## 2026-10-02 — PLAN 1.25: operational AI v1 (front allocation, offensives, reserves)
+- **Operational AI** (`src/sim/ai/operational.ts`, every 6 h, staggered daily per nation):
+  - front sectors with threat;
+  - a 15% reserve;
+  - allotment by largest remainders with every sector covered;
+  - sticky assignment;
+  - attack at ≥ 1.5× local superiority, else hold;
+  - re-route threshold and deployment range.
+- **Perf:**
+  - the first version took 32.5 ms per tick (daily re-routing, transcontinental orders). Sticky
+    orders and range bring it to 1.2 ms;
+  - supply refresh every 12 h (1.7 → 0.8 ms per tick).
+- **AT (`tests/unit/operationalAi.test.ts`):** an isolated GER–POL war (no alliances or
+  guarantees, other AIs off, no new wars), sustained (fight to the death):
+  - Poland raids early (East Prussia, Silesia) while Germany redeploys from the west;
+  - by day 60 Germany holds 763 Polish cells to Poland's 4;
+  - front coverage (sectors with a division within 2 sectors) is 0.73/0.85 at day 10 and
+    0.88/0.73 at day 30, all ≥ 0.6.
+- **Isolation:** six pre-AI mechanism tests now run with the AI off (`settings.aiEnabled = false`
+  in setup): the production, territory wave, war terms, capitals front, puppet integration and
+  revolt spawn tests. The AI was moving their scripted armies.
+- **10-year sweeps** (3 seeds, now with moving armies): 912–1,150 wars, 787–973 peaces,
+  162–390 alliance joins, 491–697 revolts, 128–207 capital captures, 8–16 Major Battles; ~4 min
+  per seed. AT minimums met.
+- **Perf debt:** with AI wars the average tick is 2–3 ms (SPEC budget 1.5 ms); the main costs are
+  supply, operational AI and combat.
+- **Observation:** the churn is high (~100 wars a year, mostly involving rebel states). Long-run
+  tuning belongs to the Phase 7 sweep (SPEC §10).

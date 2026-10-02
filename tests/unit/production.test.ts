@@ -12,7 +12,12 @@ import { assets1938 } from '../helpers/earth';
 
 const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
 const INF = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
-const sim1938 = (): Sim => new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+/** A 1938 sim with the AI off, so only production changes the formations (PLAN 1.24–1.25). */
+const sim1938 = (): Sim => {
+  const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+  s.world.settings.aiEnabled = false;
+  return s;
+};
 
 /** Events of `kind` emitted while stepping `n` ticks. */
 function stepCollect(sim: Sim, n: number, kind: number): number[][] {
