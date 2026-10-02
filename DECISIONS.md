@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-16 · 2026-10-02 · accepted — 1938 start state: 1 January 1938, colonies split by role, Spain divided
+**Decision.**
+- The scenario starts on **1 January 1938**: after Italy's conquest of Ethiopia and the fall of
+  Nanjing, before the Anschluss, Munich, the First Vienna Award, the Memel ultimatum and the Hatay
+  State.
+- Ownership data (`data/scenarios/1938/ownership.json`, our own work) maps NE admin-0 → owner, with
+  admin-1 overrides and 25 polygon regions for borders that cut modern provinces:
+  - the 1937 German–Polish line, East Prussia, Danzig, Riga-line Poland;
+  - Finnish Karelia, Salla and Petsamo; Petseri, Narva-east and Abrene;
+  - Budjak and Transnistria; Rapallo Italy and the Dodecanese;
+  - Spanish Morocco, Ifni and Cape Juby; Manchukuo/Jehol, Kwantung, Mengjiang, Shaan-Gan-Ning,
+    Karafuto and the Kurils.
+- **Spain** is two nations at war:
+  - The *Spanish Republic* holds Catalonia, Valencia, Murcia, Madrid, New Castile, Almería,
+    Jaén and Menorca.
+  - *Nationalist Spain* holds the rest plus Spanish Morocco, Ifni, Sahara and Guinea.
+  - The split is at province level, so the Teruel salient and the La Serena pocket are not modelled.
+- **China**: the Japanese-held North China and Yangtze delta are *occupation* (owner China,
+  controller Japan), not new owners. Mengjiang and Manchukuo are separate states. So are Tibet
+  and Xinjiang (de facto independent) and the Communist border region.
+- **Colonies**: settler-style or legally integral territories are owned by the metropole:
+  - Algeria → France; Libya and Italian East Africa → Italy, which satisfies "Ethiopia = Italy";
+  - Korea, Taiwan, Karafuto and the South Seas → Japan;
+  - small islands → their metropole.
+  Large colonial blocs and dominions are their own nations (puppets with autonomy in PLAN 1.4):
+  British India, Burma, Malaya, the Dutch East Indies, French Indochina, the French West and
+  Equatorial Africa federations, Madagascar, the Belgian Congo, Angola, Mozambique, the dominions,
+  Egypt, the mandates, Manchukuo, Mongolia and Tannu Tuva. This gives revolts and independence
+  something to work with.
+- **Simplifications.**
+  - Micro-states are folded into neighbours: Andorra and Monaco → France, San Marino and Vatican →
+    Italy, Liechtenstein → Switzerland.
+  - Tangier is part of the Spanish zone; Lastovo and Zara are sub-cell at M.
+  - Each landless island territory gets exactly one land cell (`reconcileIslands`). Force-placed
+    province cells alone would inflate Malta to 68 cells.
+
+**Why.** No permissive 1938 dataset exists (ADR-8). Start-of-year avoids mid-year transfers. The
+AT anchors (Danzig, Lwów, Königsberg, Manchukuo, Ethiopia) and 76 other places are tested.
+
 ### ADR-15 · 2026-10-02 · accepted — Terrain derived from land cover + relief; crossings as data
 **Decision.**
 - Terrain is derived per cell offline (SPEC §3.2). Sources:

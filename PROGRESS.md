@@ -669,3 +669,53 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Known limits (ADR-15):** modern Aral/Chad outlines; boxy hand-drawn marshes; city cells
   become URBAN in 1.5.
 - **Parity:** row 25 (terrain) → partial. Score 5.0% → 5.6%.
+
+## 2026-10-02 — PLAN 1.3: 1938 ownership (admin-1 → nations, interwar border regions, colonies, occupation)
+- **Data (ADR-16):**
+  - `data/scenarios/1938/nations.json` lists 99 owner nations (tag, name key, colour; PLAN 1.4 adds
+    traits, cores, puppets and alliances).
+  - `ownership.json` holds:
+    - `byCountry` for all 251 NE admin-0 units;
+    - 55 `byProvince` overrides;
+    - 25 polygon `regions`, each guarded by `onlyFrom` (so a coarse ring changes only one side of a
+      border);
+    - 2 `occupation` rings (Japanese-held North China and the Yangtze delta: owner China, controller
+      Japan).
+  - Zod schemas and cross-checks cover both files, and nation names are in en.json.
+- **Code:** `src/sim/data/ownership.ts` adds two functions.
+  - `reconcileIslands` gives each landless island territory one land cell. Malta's 68 force-placed
+    province cells would otherwise inflate it.
+  - `buildOwnership` applies province owners, a neighbour fill for province-less land, the guarded
+    regions, then occupation.
+
+  The worker gained a `buildPolitical` request and the bench view `bench.html?b=W`. Builds in
+  229 ms at M in Chromium (province raster included).
+- **AT (`tests/unit/ownership.test.ts`, 6 tests, M and S):**
+  - Danzig = DAN, Lwów = POL, Königsberg = GER, Harbin = MAN and Addis Ababa = ITA, plus 76 more
+    places, all checked as of 1938-01-01. Examples: Vienna AUT, Uzhhorod CZS, Gleiwitz GER,
+    Kattowitz POL, Wilno POL, Memel LIT, Viipuri/Petsamo FIN, Kishinev/Izmail ROM, Camenca SOV,
+    Dobrich ROM, Pazin/Rhodes ITA, Antioch SYR, Barcelona/Madrid/Valencia REP, Seville/Burgos/Tétouan
+    NSP, Peking/Nanking CHI under JAP, Hankou CHI, Yan'an CCP, Kalgan MEN, Chengde MAN, Dairen and
+    Toyohara JAP, Buea NIG, Windhoek SAF, Valletta ENG.
+  - Every adm0 and override key is mapped; every nation owns land at both sizes; water is unowned;
+    every region changes cells; occupation touches only China; deterministic.
+  - e2e `tests/e2e/political.spec.ts`: worker owner and controller hashes == Node; screenshots in
+    `docs/evidence/1.3/`.
+- **Viewed vs an atlas description of 1 Jan 1938:**
+  - **Europe:** Germany within its 1937 borders, East Prussia cut off by the Corridor, Danzig Free
+    City at the Vistula mouth. Austria and the whole of Czechoslovakia (incl. Carpathian Ruthenia)
+    are independent. Poland reaches past Wilno, Pinsk and Równe. Lithuania holds Memel but not
+    Wilno. Greater Romania has Bessarabia, N. Bukovina and S. Dobruja. Italy has Istria, Fiume and
+    the Dodecanese. Finland has Karelia to the Sestra. Spain is split, with the Republic holding the
+    east and Madrid.
+  - **Asia:** Manchukuo with Jehol and Hsingan, Mengjiang, Korea, Taiwan and Karafuto Japanese.
+    Hatched occupation over Hebei, northern Shanxi, northern Shandong and the Shanghai–Nanking–Hangzhou
+    triangle. Tibet, Xinjiang, the Mongolian PR and Tuva are separate.
+  - **Empires:** British India incl. Pakistan and Bangladesh, Burma separate, French West and
+    Equatorial Africa as blocs, Italian East Africa, South West Africa under South Africa, the Belgian
+    Congo with Ruanda-Urundi.
+  - All match. One fix from viewing: the Shaan-Gan-Ning ring was redrawn from a box to its outline.
+- **Renderer note:** at 22 px/cell, faint dashed stair lines show inside nations, parallel to borders
+  (`political-danzig-corridor.png`). This is the speckle already noted for PLAN 1.28, now more
+  visible; the cause is not ownership.
+- **Parity:** row 13 (rightful vs occupation) → partial; row 50 gains 1938 evidence. Score 5.6% → 6.3%.

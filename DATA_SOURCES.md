@@ -16,7 +16,7 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 | Natural Earth 10m `geography_regions_polys` (same tag) | wetland + delta polygons → marsh | Public domain | in use (`npm run data`) | |
 | Wetland outlines (`tools/data/wetlands.json`) | 10 major wetlands missing from NE | Our own work | in use | coarse outlines from public geographic knowledge |
 | Straits list (`data/maps/earth/straits.json`) | 24 walkable crossings | Our own work | in use | shore points from public geography |
-| 1938 border split polylines | interwar borders that cut modern admin-1 units | Our own work | planned (PLAN 1.3) | drawn by hand from public-domain historical knowledge |
+| 1938 ownership (`data/scenarios/1938/ownership.json`, `nations.json`) | admin-0/1 → 1938 owner, 25 interwar border polygons, occupation | Our own work | in use (PLAN 1.3) | drawn from public historical knowledge (ADR-8, ADR-16); approximate inside modern admin-1 units |
 | CShapes 2.0 | historical state borders | CC BY-NC-SA 4.0 | rejected | non-commercial clause (ADR-8) |
 | aourednik/historical-basemaps | historical world borders | GPL-3.0 | rejected | copyleft would spread to project data (ADR-8) |
 

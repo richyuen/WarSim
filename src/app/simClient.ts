@@ -6,9 +6,24 @@
  * are transferred back for reuse.
  */
 import type { Command } from '../shared/commands';
-import type { FromWorker, ProvinceBuildResult, SimInit, SimStatus, Snapshot, Speed, Subscription, TerrainBuildResult, ToWorker } from '../shared/protocol';
+import type {
+  FromWorker,
+  PoliticalBuildResult,
+  ProvinceBuildResult,
+  SimInit,
+  SimStatus,
+  Snapshot,
+  Speed,
+  Subscription,
+  TerrainBuildResult,
+  ToWorker,
+} from '../shared/protocol';
 
-type Reply = { status: SimStatus; bytes?: Uint8Array } | { provinces: ProvinceBuildResult } | { terrain: TerrainBuildResult };
+type Reply =
+  | { status: SimStatus; bytes?: Uint8Array }
+  | { provinces: ProvinceBuildResult }
+  | { terrain: TerrainBuildResult }
+  | { political: PoliticalBuildResult };
 type Pending = { resolve: (r: Reply) => void; reject: (e: Error) => void };
 
 /** Distributive Omit so each union member keeps its own fields. */
@@ -53,6 +68,8 @@ export class SimClient {
       p.resolve({ provinces: msg.result });
     } else if (msg.type === 'terrain') {
       p.resolve({ terrain: msg.result });
+    } else if (msg.type === 'political') {
+      p.resolve({ political: msg.result });
     } else {
       p.resolve(msg.bytes ? { status: msg.status, bytes: msg.bytes } : { status: msg.status });
     }
@@ -119,6 +136,14 @@ export class SimClient {
     const r = await this.request({ type: 'buildTerrain', assetBase, w, h });
     if (!('terrain' in r)) throw new Error('unexpected reply to buildTerrain');
     return r.terrain;
+  }
+
+  /** Builds the 1938 political map in the worker (PLAN 1.3). */
+  async buildPolitical(w: number, h: number): Promise<PoliticalBuildResult> {
+    const assetBase = new URL('data/earth/', document.baseURI).href;
+    const r = await this.request({ type: 'buildPolitical', assetBase, w, h });
+    if (!('political' in r)) throw new Error('unexpected reply to buildPolitical');
+    return r.political;
   }
 
   command(cmd: Command): void {

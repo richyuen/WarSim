@@ -266,6 +266,17 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   `crossing` (AoC-style land-unit-walkable lanes, editable).
 - **Air zone**: a cluster of about 8–20 provinces. Air superiority is tracked per side per zone.
 
+**Scenario ownership (PLAN 1.3, ADR-16).** `data/scenarios/1938/nations.json` (id = index + 1)
+and `ownership.json` drive `buildOwnership` (`src/sim/data/ownership.ts`), run at load in the worker:
+- each province takes `byProvince[adm1] ?? byCountry[adm0]`;
+- land cells (terrain ≥ Plains) take their province's owner, and province-less land takes its
+  neighbours' majority;
+- polygon `regions` are applied in order, each only to cells owned by its `onlyFrom` tags;
+- `occupation` rings set the controller.
+
+`reconcileIslands` first gives each landless island territory one land cell (Malta, Bermuda, …).
+Builds in ~230 ms at M in Chromium (province raster included).
+
 ### 3.4 Nations
 ```ts
 Nation {

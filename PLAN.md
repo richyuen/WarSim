@@ -58,7 +58,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `npm test` validates every JSON file; an invalid fixture fails with a readable path.
 - [x] 1.2 Terrain derivation (elevation + latitude/biome from NE raster) → terrain classes; CROSSING lanes data (straits list).
   AT: golden counts per class within ±10% of expected; screenshot of terrain mode compared to reference editor shot (logged).
-- [ ] 1.3 1938 ownership: admin-1 → nation table + split polylines for interwar borders; colonies; mandates.
+- [x] 1.3 1938 ownership: admin-1 → nation table + split polylines for interwar borders; colonies; mandates.
   AT: tests on known points (Danzig = Free City, Lwów = Poland, Königsberg = Germany, Manchukuo exists, Ethiopia = Italy); screenshot of the political map vs a historical atlas description logged.
 - [ ] 1.4 Nations data (≥ 100 incl. colonies/dominions as puppets): colours, names, traits, aggression, cores, capitals, alliances (Axis-precursor, Allied guarantees, Comintern), puppets.
   AT: schema pass; every nation has a capital in owned territory; colour contrast check between neighbours (ΔE > 15).

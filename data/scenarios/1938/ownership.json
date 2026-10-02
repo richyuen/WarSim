@@ -1,0 +1,212 @@
+{
+  "comment": "1 January 1938 ownership (PLAN 1.3, ADR-8). Natural Earth admin-0 (adm0_a3) -> 1938 owner tag, then admin-1 overrides (adm1_code), then polygon regions in order (lon/lat rings, applied only to land cells currently owned by one of onlyFrom), then occupation (controller differs from owner). null = unowned. Our own work from public historical knowledge; borders inside modern admin-1 units are approximations.",
+  "byCountry": {
+    "ABW": "NED", "AFG": "AFG", "AGO": "ANG", "AIA": "ENG", "ALB": "ALB", "ALD": "FIN", "AND": "FRA", "ARE": "ENG",
+    "ARG": "ARG", "ARM": "SOV", "ASM": "USA", "ATA": null, "ATC": "AST", "ATF": "FRA", "ATG": "ENG", "AUS": "AST",
+    "AUT": "AUT", "AZE": "SOV", "BDI": "BCO", "BEL": "BEL", "BEN": "AOF", "BFA": "AOF", "BGD": "RAJ", "BGR": "BUL",
+    "BHR": "ENG", "BHS": "ENG", "BIH": "YUG", "BLM": "FRA", "BLR": "SOV", "BLZ": "ENG", "BMU": "ENG", "BOL": "BOL",
+    "BRA": "BRA", "BRB": "ENG", "BRN": "ENG", "BTN": "RAJ", "BWA": "ENG", "CAF": "AEF", "CAN": "CAN", "CHE": "SWI",
+    "CHL": "CHL", "CHN": "CHI", "CIV": "AOF", "CLP": "FRA", "CMR": "AEF", "COD": "BCO", "COG": "AEF", "COK": "NZL",
+    "COL": "COL", "COM": "MAD", "CPV": "POR", "CRI": "COS", "CSI": "AST", "CUB": "CUB", "CUW": "NED", "CYM": "ENG",
+    "CYN": "ENG", "CYP": "ENG", "CZE": "CZS", "DEU": "GER", "DJI": "FRA", "DMA": "ENG", "DNK": "DEN", "DOM": "DOM",
+    "DZA": "FRA", "ECU": "ECU", "EGY": "EGY", "ERI": "ITA", "ESB": "ENG", "ESP": "NSP", "EST": "EST", "ETH": "ITA",
+    "FIN": "FIN", "FJI": "ENG", "FLK": "ENG", "FRA": "FRA", "FRO": "DEN", "FSM": "JAP", "GAB": "AEF", "GBR": "ENG",
+    "GEO": "SOV", "GGY": "ENG", "GHA": "ENG", "GIB": "ENG", "GIN": "AOF", "GMB": "ENG", "GNB": "POR", "GNQ": "NSP",
+    "GRC": "GRE", "GRD": "ENG", "GRL": "DEN", "GTM": "GUA", "GUM": "USA", "GUY": "ENG", "HKG": "ENG", "HMD": "AST",
+    "HND": "HON", "HRV": "YUG", "HTI": "HAI", "HUN": "HUN", "IDN": "DEI", "IMN": "ENG", "IND": "RAJ", "IOA": "AST",
+    "IOT": "ENG", "IRL": "IRE", "IRN": "IRN", "IRQ": "IRQ", "ISL": "ICE", "ISR": "PAL", "ITA": "ITA", "JAM": "ENG",
+    "JEY": "ENG", "JOR": "TRJ", "JPN": "JAP", "KAB": "SOV", "KAS": "RAJ", "KAZ": "SOV", "KEN": "BEA", "KGZ": "SOV",
+    "KHM": "INC", "KIR": "ENG", "KNA": "ENG", "KOR": "JAP", "KOS": "YUG", "KWT": "ENG", "LAO": "INC", "LBN": "LEB",
+    "LBR": "LIB", "LBY": "ITA", "LCA": "ENG", "LIE": "SWI", "LKA": "ENG", "LSO": "ENG", "LTU": "LIT", "LUX": "LUX",
+    "LVA": "LAT", "MAC": "POR", "MAF": "FRA", "MAR": "FMO", "MCO": "FRA", "MDA": "ROM", "MDG": "MAD", "MDV": "ENG",
+    "MEX": "MEX", "MHL": "JAP", "MKD": "YUG", "MLI": "AOF", "MLT": "ENG", "MMR": "BUR", "MNE": "YUG", "MNG": "MON",
+    "MNP": "JAP", "MOZ": "MOZ", "MRT": "AOF", "MSR": "ENG", "MUS": "ENG", "MWI": "ENG", "MYS": "MAL", "NAM": "SAF",
+    "NCL": "FRA", "NER": "AOF", "NFK": "AST", "NGA": "NIG", "NIC": "NIC", "NIU": "NZL", "NLD": "NED", "NOR": "NOR",
+    "NPL": "NEP", "NRU": "AST", "NZL": "NZL", "OMN": "OMN", "PAK": "RAJ", "PAN": "PAN", "PCN": "ENG", "PER": "PRU",
+    "PGA": null, "PHL": "PHI", "PLW": "JAP", "PNG": "AST", "POL": "POL", "PRI": "USA", "PRK": "JAP", "PRT": "POR",
+    "PRY": "PAR", "PSX": "PAL", "PYF": "FRA", "QAT": "ENG", "ROU": "ROM", "RUS": "SOV", "RWA": "BCO", "SAH": "NSP",
+    "SAU": "SAU", "SDN": "SUD", "SDS": "SUD", "SEN": "AOF", "SGP": "MAL", "SGS": "ENG", "SHN": "ENG", "SLB": "ENG",
+    "SLE": "ENG", "SLV": "ELS", "SMR": "ITA", "SOL": "ENG", "SOM": "ITA", "SPM": "FRA", "SRB": "YUG", "STP": "POR",
+    "SUR": "NED", "SVK": "CZS", "SVN": "YUG", "SWE": "SWE", "SWZ": "ENG", "SXM": "NED", "SYC": "ENG", "SYR": "SYR",
+    "TCA": "ENG", "TCD": "AEF", "TGO": "AOF", "THA": "SIA", "TJK": "SOV", "TKM": "SOV", "TLS": "POR", "TON": "ENG",
+    "TTO": "ENG", "TUN": "TUN", "TUR": "TUR", "TUV": "ENG", "TWN": "JAP", "TZA": "BEA", "UGA": "BEA", "UKR": "SOV",
+    "UMI": "USA", "URY": "URU", "USA": "USA", "USG": "USA", "UZB": "SOV", "VAT": "ITA", "VCT": "ENG", "VEN": "VEN",
+    "VGB": "ENG", "VIR": "USA", "VNM": "INC", "VUT": "ENG", "WLF": "FRA", "WSB": "ENG", "WSM": "NZL", "YEM": "YEM",
+    "ZAF": "SAF", "ZMB": "ENG", "ZWE": "SRH"
+  },
+  "byProvince": {
+    "RUS-2324": "GER",
+    "LTU-1075": "POL",
+    "BLR-2338": "POL", "BLR-2344": "POL",
+    "UKR-318": "POL", "UKR-286": "POL", "UKR-291": "POL", "UKR-292": "POL", "UKR-289": "POL",
+    "UKR-293": "CZS",
+    "UKR-288": "ROM", "BGR-2259": "ROM", "BGR-2261": "ROM",
+    "TUR-2289": "SYR",
+    "RUS-2605": "TAN",
+    "CAN-686": "NFL",
+    "CMR-1477": "NIG", "CMR-799": "NIG",
+    "IND-3265": "POR", "IND-2445": "POR", "IND-3262": "FRA",
+    "MYS-1186": "ENG", "MYS-1187": "ENG", "MYS-4833": "ENG",
+    "YEM-3510": "ENG", "YEM-157": "ENG", "YEM-3511": "ENG", "YEM-336": "ENG", "YEM-3497": "ENG", "YEM-332": "ENG", "YEM-334": "ENG",
+    "MAR-1445": "NSP", "MAR-3456": "NSP", "MAR-3469": "NSP",
+    "CHN-1839": "MAN", "CHN-1828": "MAN", "CHN-1813": "MAN",
+    "CHN-1756": "SIN", "CHN-1662": "TIB",
+    "ESP-5809": "REP", "ESP-5820": "REP", "ESP-5846": "REP", "ESP-5831": "REP", "ESP-5814": "REP", "ESP-5849": "REP",
+    "ESP-5803": "REP", "ESP-5836": "REP", "ESP-5804": "REP", "ESP-5826": "REP", "ESP-5802": "REP", "ESP-5816": "REP",
+    "ESP-5818": "REP", "ESP-5833": "REP", "ESP-5822": "REP"
+  },
+  "regions": [
+    {
+      "id": "germany_east_1937", "owner": "GER", "onlyFrom": ["POL"],
+      "note": "Pomerania, Grenzmark, Lower Silesia and German Upper Silesia west of the 1922 line",
+      "ring": [[17.93, 54.83], [17.95, 54.5], [17.85, 54.25], [17.65, 54.0], [17.45, 53.85], [17.45, 53.6], [17.35, 53.4],
+        [17.15, 53.25], [16.95, 53.12], [16.7, 53.05], [16.4, 52.98], [16.1, 52.9], [15.85, 52.75], [15.8, 52.55],
+        [15.8, 52.35], [15.85, 52.2], [16.05, 52.05], [16.2, 51.9], [16.45, 51.75], [16.75, 51.62], [16.9, 51.57],
+        [17.25, 51.58], [17.55, 51.42], [17.75, 51.25], [17.95, 51.1], [18.15, 50.98], [18.4, 50.85], [18.6, 50.7],
+        [18.72, 50.55], [18.82, 50.4], [18.93, 50.33], [18.8, 50.27], [18.68, 50.25], [18.55, 50.2], [18.4, 50.1],
+        [18.3, 50.0], [18.3, 49.9], [17.0, 50.2], [14.5, 50.9], [14.0, 54.5]]
+    },
+    {
+      "id": "east_prussia", "owner": "GER", "onlyFrom": ["POL"],
+      "note": "East Prussia incl. West Prussia east of the Vistula; Soldau (Dzialdowo) stays Polish",
+      "ring": [[19.0, 54.6], [23.0, 54.6], [22.78, 54.38], [22.5, 54.2], [22.55, 53.95], [22.5, 53.75], [22.1, 53.55],
+        [21.5, 53.47], [21.0, 53.38], [20.6, 53.3], [20.35, 53.3], [20.0, 53.36], [19.75, 53.55], [19.5, 53.57],
+        [19.2, 53.55], [18.95, 53.5], [18.85, 53.62], [18.9, 53.85], [19.0, 54.1]]
+    },
+    {
+      "id": "danzig", "owner": "DAN", "onlyFrom": ["POL", "GER"],
+      "note": "Free City of Danzig (Gdansk, Sopot, Vistula delta west of the Nogat)",
+      "ring": [[18.43, 54.43], [18.6, 54.47], [18.95, 54.36], [19.15, 54.37], [19.1, 54.22], [19.0, 54.13], [18.8, 54.12],
+        [18.55, 54.2], [18.43, 54.33]]
+    },
+    {
+      "id": "poland_east_riga_line", "owner": "POL", "onlyFrom": ["SOV"],
+      "note": "Western Belarus per the 1921 Riga border (Vileyka, Maladzyechna, Nesvizh, Pinsk regions)",
+      "ring": [[23.0, 56.0], [27.6, 56.0], [28.3, 55.7], [28.3, 55.45], [28.0, 55.1], [27.85, 54.85], [27.55, 54.5],
+        [27.25, 54.2], [27.1, 53.95], [26.95, 53.75], [26.9, 53.4], [27.05, 53.05], [27.15, 52.75], [27.35, 52.3],
+        [27.45, 52.0], [27.55, 51.5], [23.0, 51.5]]
+    },
+    {
+      "id": "transnistria", "owner": "SOV", "onlyFrom": ["ROM"],
+      "note": "Moldavian ASSR east of the Dniester (Bender/Tighina on the right bank stays Romanian)",
+      "ring": [[27.6, 48.6], [30.5, 48.6], [30.5, 46.4], [30.1, 46.42], [29.9, 46.6], [29.55, 46.84], [29.22, 47.15],
+        [29.1, 47.3], [28.98, 47.76], [28.3, 48.2], [27.75, 48.45]]
+    },
+    {
+      "id": "budjak", "owner": "ROM", "onlyFrom": ["SOV"],
+      "note": "Southern Bessarabia (Budjak) between the Prut, Danube and Dniester estuary",
+      "ring": [[28.15, 46.6], [29.95, 46.6], [30.5, 46.3], [30.0, 45.6], [29.8, 45.3], [28.2, 45.2]]
+    },
+    {
+      "id": "finland_karelia", "owner": "FIN", "onlyFrom": ["SOV"],
+      "note": "Karelian Isthmus north of the Sestra and Ladoga Karelia per the 1920 Tartu treaty",
+      "ring": [[27.5, 60.0], [29.82, 60.12], [30.15, 60.28], [30.55, 60.45], [31.0, 60.6], [32.4, 61.2], [32.65, 61.5],
+        [32.75, 61.9], [33.0, 62.4], [31.0, 63.3], [27.0, 63.3]]
+    },
+    {
+      "id": "finland_salla", "owner": "FIN", "onlyFrom": ["SOV"],
+      "note": "Salla/Kuolajarvi area ceded in 1940",
+      "ring": [[29.0, 67.4], [30.6, 67.2], [30.6, 66.6], [29.0, 66.6]]
+    },
+    {
+      "id": "finland_petsamo", "owner": "FIN", "onlyFrom": ["SOV"],
+      "note": "Petsamo corridor incl. the western Rybachy peninsula",
+      "ring": [[28.5, 68.9], [30.9, 68.9], [31.5, 69.4], [32.1, 69.65], [32.0, 69.95], [28.5, 69.95]]
+    },
+    {
+      "id": "estonia_petseri", "owner": "EST", "onlyFrom": ["SOV"],
+      "ring": [[27.3, 58.0], [27.9, 58.0], [28.15, 57.75], [27.85, 57.55], [27.35, 57.55]]
+    },
+    {
+      "id": "estonia_narva_east", "owner": "EST", "onlyFrom": ["SOV"],
+      "ring": [[28.15, 59.45], [28.6, 59.45], [28.6, 59.0], [28.15, 59.0]]
+    },
+    {
+      "id": "latvia_abrene", "owner": "LAT", "onlyFrom": ["SOV"],
+      "ring": [[27.7, 57.35], [28.15, 57.35], [28.2, 56.95], [27.75, 56.95]]
+    },
+    {
+      "id": "italy_julian_march", "owner": "ITA", "onlyFrom": ["YUG"],
+      "note": "Rapallo border: Slovene Littoral, Inner Carniola, Istria, Fiume, Cres and Losinj",
+      "ring": [[13.4, 46.6], [13.75, 46.52], [13.85, 46.38], [13.97, 46.2], [14.12, 46.03], [14.2, 45.9], [14.28, 45.75],
+        [14.45, 45.62], [14.5, 45.45], [14.45, 45.31], [14.52, 45.2], [14.48, 44.95], [14.55, 44.5], [14.2, 44.4],
+        [13.4, 44.8]]
+    },
+    {
+      "id": "italy_zara", "owner": "ITA", "onlyFrom": ["YUG"],
+      "ring": [[15.17, 44.15], [15.27, 44.15], [15.27, 44.08], [15.17, 44.08]]
+    },
+    {
+      "id": "italy_lagosta", "owner": "ITA", "onlyFrom": ["YUG"],
+      "ring": [[16.7, 42.8], [16.98, 42.8], [16.98, 42.68], [16.7, 42.68]]
+    },
+    {
+      "id": "italy_dodecanese", "owner": "ITA", "onlyFrom": ["GRE"],
+      "ring": [[26.25, 37.45], [27.3, 37.45], [28.5, 36.5], [28.5, 35.3], [26.7, 35.2], [26.25, 36.4]]
+    },
+    {
+      "id": "republican_menorca", "owner": "REP", "onlyFrom": ["NSP"],
+      "ring": [[3.75, 40.1], [4.4, 40.1], [4.4, 39.75], [3.75, 39.75]]
+    },
+    {
+      "id": "spanish_morocco", "owner": "NSP", "onlyFrom": ["FMO"],
+      "note": "Spanish protectorate zone (held by the Nationalists); Tangier folded in",
+      "ring": [[-6.4, 35.95], [-2.3, 35.95], [-2.35, 35.12], [-2.6, 35.0], [-3.2, 34.95], [-3.6, 34.88], [-4.0, 34.85],
+        [-4.5, 34.8], [-5.0, 34.85], [-5.4, 34.95], [-5.7, 34.95], [-6.0, 34.93], [-6.3, 34.9]]
+    },
+    {
+      "id": "spanish_ifni", "owner": "NSP", "onlyFrom": ["FMO"],
+      "ring": [[-10.35, 29.55], [-9.95, 29.55], [-9.95, 29.15], [-10.35, 29.15]]
+    },
+    {
+      "id": "spanish_cape_juby", "owner": "NSP", "onlyFrom": ["FMO"],
+      "note": "Southern protectorate strip between the Draa and 27 deg 40' N",
+      "ring": [[-13.5, 28.7], [-8.6, 28.7], [-8.6, 27.67], [-13.5, 27.67]]
+    },
+    {
+      "id": "manchukuo_west", "owner": "MAN", "onlyFrom": ["CHI"],
+      "note": "Jehol and the Hinggan/Hulunbuir provinces of Manchukuo",
+      "ring": [[115.4, 53.0], [126.0, 53.0], [126.0, 39.9], [119.7, 40.0], [118.5, 40.3], [117.5, 40.6], [116.5, 40.9],
+        [115.9, 41.3], [116.5, 42.5], [117.5, 43.6], [118.8, 44.6], [119.5, 45.5], [118.5, 46.8], [117.0, 47.4],
+        [115.4, 47.6]]
+    },
+    {
+      "id": "kwantung", "owner": "JAP", "onlyFrom": ["MAN"],
+      "note": "Kwantung Leased Territory (Port Arthur, Dairen)",
+      "ring": [[120.95, 39.4], [122.1, 39.4], [122.1, 38.7], [120.95, 38.7]]
+    },
+    {
+      "id": "mengjiang", "owner": "MEN", "onlyFrom": ["CHI"],
+      "note": "Mengjiang (South Chahar, North Shanxi, Suiyuan north of the Yellow River)",
+      "ring": [[109.0, 46.5], [118.0, 46.5], [117.0, 42.5], [116.0, 41.0], [115.8, 40.35], [114.6, 40.05], [113.8, 39.7],
+        [112.6, 39.3], [112.0, 39.6], [111.6, 40.0], [110.8, 40.25], [109.7, 40.45], [109.0, 40.6]]
+    },
+    {
+      "id": "shaan_gan_ning", "owner": "CCP", "onlyFrom": ["CHI"],
+      "note": "Shaan-Gan-Ning Border Region around Yan'an",
+      "ring": [[107.3, 37.85], [108.6, 37.75], [109.4, 37.45], [110.1, 37.65], [110.45, 37.3], [110.35, 36.75], [110.05, 36.2],
+        [109.55, 35.95], [109.0, 35.65], [108.35, 35.55], [107.75, 35.4], [107.3, 35.85], [107.0, 36.4], [107.1, 37.2]]
+    },
+    {
+      "id": "karafuto_kuriles", "owner": "JAP", "onlyFrom": ["SOV"],
+      "note": "South Sakhalin (Karafuto) below 50 N and the Kuril Islands",
+      "ring": [[141.5, 50.0], [144.8, 50.0], [145.0, 45.6], [149.5, 46.8], [156.3, 50.75], [157.0, 50.4], [148.5, 43.4],
+        [145.0, 43.4], [141.5, 45.8]]
+    }
+  ],
+  "occupation": [
+    {
+      "id": "japan_north_china", "controller": "JAP", "owner": "CHI",
+      "note": "Japanese-held North China by January 1938: Hebei, Beijing/Tianjin, northern Shanxi to Taiyuan, northern Shandong incl. Jinan and Qingdao",
+      "ring": [[111.6, 39.5], [112.0, 37.6], [113.6, 37.2], [113.8, 36.0], [114.9, 35.7], [116.0, 36.4], [116.5, 35.4],
+        [117.6, 35.6], [119.0, 36.0], [120.5, 35.95], [122.8, 37.4], [118.5, 39.0], [119.5, 40.0], [116.0, 41.0],
+        [113.0, 40.5]]
+    },
+    {
+      "id": "japan_yangtze_delta", "controller": "JAP", "owner": "CHI",
+      "note": "Shanghai, Nanjing, Hangzhou and the Wuhu-Xuancheng area",
+      "ring": [[118.3, 32.2], [119.6, 32.5], [120.8, 32.0], [122.0, 31.8], [122.0, 30.5], [121.0, 30.2], [120.0, 30.15],
+        [119.6, 30.4], [118.9, 30.7], [118.3, 31.2], [118.0, 31.6]]
+    }
+  ]
+}

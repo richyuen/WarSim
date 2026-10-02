@@ -212,6 +212,29 @@ export const ScenarioMeta = z.strictObject({
   settings: ScenarioSettings,
 });
 
+// ── scenario nations + ownership (data/scenarios/<id>/{nations,ownership}.json) ─
+
+const tag = z.string().regex(/^[A-Z]{3}$/, 'nation tags are three upper-case letters');
+
+/** Nation registry (PLAN 1.3; traits, cores, puppets and alliances join in PLAN 1.4). Id = index + 1. */
+export const NationDef = z.strictObject({ tag, nameKey: key, color });
+export const NationsFile = z.strictObject({ nations: z.array(NationDef).min(1).max(65535) });
+
+const ring = z.array(lonLat).min(3);
+
+/** 1938 ownership rules (PLAN 1.3): country → tag, province overrides, polygon regions, occupation. */
+export const OwnershipFile = z.strictObject({
+  comment: z.string().optional(),
+  /** adm0_a3 → owner tag (null = unowned). Every adm0 in the admin-1 data must be listed. */
+  byCountry: z.record(z.string().regex(/^[A-Z0-9]{3}$/), tag.nullable()),
+  /** adm1_code → owner tag. */
+  byProvince: z.record(z.string(), tag),
+  /** Applied in order to land cells currently owned by one of `onlyFrom`. */
+  regions: z.array(z.strictObject({ id, owner: tag, onlyFrom: z.array(tag).min(1), note: z.string().optional(), ring })),
+  /** Sets the controller of `owner`'s cells inside the ring (occupation). */
+  occupation: z.array(z.strictObject({ id, controller: tag, owner: tag, note: z.string().optional(), ring })),
+});
+
 export type TerrainDef = z.infer<typeof TerrainDef>;
 export type UnitTypeDef = z.infer<typeof UnitTypeDef>;
 export type TechDef = z.infer<typeof TechDef>;
@@ -219,6 +242,8 @@ export type TraitDef = z.infer<typeof TraitDef>;
 export type BuildingDef = z.infer<typeof BuildingDef>;
 export type MapMeta = z.infer<typeof MapMeta>;
 export type ScenarioMeta = z.infer<typeof ScenarioMeta>;
+export type NationDef = z.infer<typeof NationDef>;
+export type OwnershipFile = z.infer<typeof OwnershipFile>;
 
 // ── file table + validation ──────────────────────────────────────────────────
 
@@ -232,6 +257,8 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^maps\/[a-z0-9_]+\/map\.json$/, schema: MapMeta },
   { pattern: /^maps\/[a-z0-9_]+\/straits\.json$/, schema: StraitsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
+  { pattern: /^scenarios\/[a-z0-9_]+\/nations\.json$/, schema: NationsFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/ownership\.json$/, schema: OwnershipFile },
 ];
 
 export function schemaFor(file: string): z.ZodType | undefined {
@@ -364,7 +391,33 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
     if (!(`maps/${dir}/map.json` in files)) errors.push(`${f}: no map.json next to this file`);
     unique('straits', [[f, st.straits]]);
   }
-  for (const [f, s] of of<ScenarioMeta>(/^scenarios\//)) {
+  for (const [f, nf] of of<z.infer<typeof NationsFile>>(/^scenarios\/[a-z0-9_]+\/nations\.json$/)) {
+    const tags = new Map<string, number>();
+    nf.nations.forEach((n, i) => {
+      if (tags.has(n.tag)) errors.push(`${f}: nations[${i}].tag: duplicate tag '${n.tag}' (also nations[${tags.get(n.tag)}])`);
+      tags.set(n.tag, i);
+    });
+    const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;
+    if (!own) continue;
+    const of2 = f.replace(/nations\.json$/, 'ownership.json');
+    const check = (t: string | null, where: string): void => {
+      if (t !== null && !tags.has(t)) errors.push(`${of2}: ${where}: unknown nation '${t}'`);
+    };
+    for (const k of Object.keys(own.byCountry).sort()) check(own.byCountry[k]!, `byCountry.${k}`);
+    for (const k of Object.keys(own.byProvince).sort()) check(own.byProvince[k]!, `byProvince.${k}`);
+    own.regions.forEach((r, i) => {
+      check(r.owner, `regions[${i}].owner`);
+      r.onlyFrom.forEach((t, j) => check(t, `regions[${i}].onlyFrom[${j}]`));
+    });
+    own.occupation.forEach((o, i) => {
+      check(o.controller, `occupation[${i}].controller`);
+      check(o.owner, `occupation[${i}].owner`);
+    });
+  }
+  for (const [f] of of<OwnershipFile>(/^scenarios\/[a-z0-9_]+\/ownership\.json$/)) {
+    if (!(f.replace(/ownership\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
+  }
+  for (const [f, s] of of<ScenarioMeta>(/^scenarios\/[a-z0-9_]+\/scenario\.json$/)) {
     const dir = f.split('/')[1];
     if (s.id !== dir) errors.push(`${f}: id: '${s.id}' must match its directory '${dir}'`);
     const m = maps.get(s.map);

@@ -46,7 +46,9 @@ export type ToWorker =
   /** Builds the admin-1 province raster at w×h from the map assets under `assetBase`. */
   | { type: 'buildProvinces'; reqId: number; assetBase: string; w: number; h: number; withIds: boolean }
   /** Loads the w×h terrain raster from `assetBase` and applies the map's crossings (PLAN 1.2). */
-  | { type: 'buildTerrain'; reqId: number; assetBase: string; w: number; h: number };
+  | { type: 'buildTerrain'; reqId: number; assetBase: string; w: number; h: number }
+  /** Builds the 1938 political map (provinces + terrain + ownership) at w×h (PLAN 1.3). */
+  | { type: 'buildPolitical'; reqId: number; assetBase: string; w: number; h: number };
 
 /** Result of `buildProvinces` (PLAN 0.19). */
 export interface ProvinceBuildResult {
@@ -136,9 +138,24 @@ export interface TerrainBuildResult {
   terrain: Uint8Array;
 }
 
+/** Result of `buildPolitical` (PLAN 1.3). */
+export interface PoliticalBuildResult {
+  w: number;
+  h: number;
+  /** Owned cells per nation id (index 0 = unowned/water). */
+  cells: number[];
+  /** xxHash32 of owner and controller rasters. */
+  ownerHash: number;
+  controllerHash: number;
+  ms: { total: number };
+  owner: Uint16Array;
+  controller: Uint16Array;
+}
+
 export type FromWorker =
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }
   | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
-  | { type: 'terrain'; reqId: number; result: TerrainBuildResult };
+  | { type: 'terrain'; reqId: number; result: TerrainBuildResult }
+  | { type: 'political'; reqId: number; result: PoliticalBuildResult };
