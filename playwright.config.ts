@@ -16,7 +16,12 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${PORT}`,
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: /\.perf\.spec\.ts$/ },
+    // Timing-budget specs run only after the parallel suite has finished, so SwiftShader pages in
+    // other workers cannot starve them (contention measured at 5–30× the solo time).
+    { name: 'perf', use: { ...devices['Desktop Chrome'] }, testMatch: /\.perf\.spec\.ts$/, dependencies: ['chromium'] },
+  ],
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort --host 127.0.0.1`,
     url: `http://127.0.0.1:${PORT}`,

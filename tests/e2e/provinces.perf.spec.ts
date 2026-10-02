@@ -9,7 +9,8 @@ import { buildProvinceRaster } from '../../src/sim/data/provinces';
 
 // PLAN 0.19: the admin-1 → province raster is built at load time in the sim worker, from the
 // shipped assets (fetched, sha256-verified, gunzipped). The M raster must build in < 1.5 s in
-// Chromium, contain every source province, and equal the Node build bit for bit.
+// Chromium, contain every source province, and equal the Node build bit for bit. A `.perf` spec:
+// it runs in the `perf` project after the parallel suite, so the budget is measured uncontended.
 
 const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
 const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')) as { assets: { kind: string; path: string }[] };

@@ -567,3 +567,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - 0.16–0.20: the bench runner triggered Node DEP0190 (`spawn` with `shell: true` + an args array);
     it now passes one command string, and the warning count is 0.
   - 0.21–0.22: covered by the 0.22 review and the audit remediation.
+
+## 2026-10-02 — Gate repair: province-raster timing budget measured under contention
+- **Step 2:** `npm run check` failed on `tests/e2e/provinces.spec.ts`: the M raster decode+raster took
+  3926 ms against the 1.5 s budget (PLAN 0.19).
+- **Diagnosis:** this is contention, not a regression.
+  - Run alone: 120–125 ms.
+  - Inside the 4-worker parallel suite: 600–900 ms, and once 3.9 s. The other workers' SwiftShader
+    pages starve its worker. On contended runs the 1024 fetch also stretched to 4–5 s.
+- **Fix:** the budget is unchanged. Timing specs now use the `*.perf.spec.ts` naming and run in a
+  Playwright `perf` project with `dependencies: ['chromium']`, so they start only after the parallel
+  suite has finished. The spec was renamed to `provinces.perf.spec.ts`, and `tools/verify-phase0.sh` was
+  updated to match.
+- **Result:** gate green, 18/18 e2e. The perf run measured M at 131 ms (decode 55 + raster 67, plus
+  fetch 8).
+- **Gotcha:** any future e2e timing assertion must go in a `.perf.spec.ts` file, or it will flake
+  under parallel SwiftShader load.

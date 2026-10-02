@@ -26,7 +26,7 @@ row 0.15 "bench JSON for both stacks; ADR-4 accepted" "[ -f docs/bench/B-webgl2-
 row 0.16 "sprite jitter <= 0.5 px at 1 m/px near lon 179" "npx playwright test tests/e2e/precision.spec.ts"
 row 0.17 "camera keys/drag/wheel/pinch + seamless dateline wrap" "npx vitest run tests/unit/camera.test.ts && npx playwright test tests/e2e/camera.spec.ts"
 row 0.18 "npm run data idempotent (--check); manifest verified by test" "npm run data -- --check && npx vitest run tests/unit/data-manifest.test.ts"
-row 0.19 "M raster < 1.5 s in Chromium; every province present; == Node" "npx vitest run tests/unit/provinces.test.ts && npx playwright test tests/e2e/provinces.spec.ts"
+row 0.19 "M raster < 1.5 s in Chromium; every province present; == Node" "npx vitest run tests/unit/provinces.test.ts && npx playwright test tests/e2e/provinces.perf.spec.ts"
 row 0.20 "toy world 10 years writes metrics with tick ms" "npm run sim -- --years 10 --out .cache/runs/verify.json && grep -q '\"tickMs\"' .cache/runs/verify.json"
 row 0.21 "literal UI string fixture fails lint; UI renders en.json" "npx vitest run tests/unit/lint-rules.test.ts tests/unit/i18n.test.ts && npx playwright test tests/e2e/i18n.spec.ts"
 row 0.22 "gate green; ADR-4 final" "npm run check && grep -q 'ADR-4 · 2026-10-02 · accepted' DECISIONS.md"
