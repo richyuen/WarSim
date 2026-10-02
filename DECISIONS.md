@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-23 · 2026-10-02 · accepted — Pay-on-order parallel production; manpower from 1938 population **[AoC-DEVIATION]**
+**Decision.**
+- Formations are bought, not grown:
+  - an order pays the template's gold and manpower immediately;
+  - it trains for 3× its slowest element's build days, with no cap on parallel orders;
+  - it appears at the capital;
+  - bankruptcy stalls training.
+- Manpower comes from owned, controlled population: 0.05%/month, cap 3%, start 1%.
+  Populations are 1938 GDP ÷ GDP per head, spread with the economy, so China and India have deep
+  pools and small budgets.
+
+**Why.** PROMPT asks for production and recruitment. Paying up front makes the AI's choice a
+budget decision, and makes the "queued division appears after N days with cost deducted" AT
+exact. Storing a ready day rather than a countdown makes N days exact whatever the tick order.
+Gold and manpower as separate constraints give rich-small and poor-populous nations different
+strategies.
+
+**Deviation from AoC.** In AoC armies grow on their own with land, cores and gold (TEXT). There
+is no production queue or manpower pool. Ours adds both, because tanks, ships, aircraft and nukes
+(the differentiators) must be built, and starting forces must be replenished from somewhere.
+
 ### ADR-22 · 2026-10-02 · accepted — Economy calibrated to 1938 GDP; monthly tick; superlinear admin **[AoC-DEVIATION]**
 **Decision.** Income comes from land the nation controls, valued from history:
 - Each modern country's 1938 industrial capacity (GDP × (GDP per head / US)^0.5;

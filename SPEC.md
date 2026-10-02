@@ -419,6 +419,20 @@ by gold and industry. Tech gates unit types (tank generations, jets, radar, miss
 nuclear programme stages). Production queue per nation (AI-managed or player):
 items take days and draw gold, industry and manpower. Upkeep runs monthly.
 
+**Implemented (PLAN 1.10, ADR-23; `src/sim/systems/production.ts`).**
+- Command `queueFormation {nation, template}`: pays the template's gold
+  (3.5 × Σ element unit gold) and manpower (Σ element manpower) at once. It is rejected (event
+  `ProductionRejected`) without funds.
+- Rows (`world.production`: nation, template, readyDay) are ready 3 × the slowest element's days
+  later (infantry division 90 days, panzer division 225). All orders train in parallel.
+- Daily at 00:00: bankrupt nations' orders slip a day. Ready ones appear at full strength at the
+  capital, or the nearest held cell within 40 if it is lost (`FormationSpawned`).
+- Manpower: `cells.pop` (thousands) is each country's 1938 population (GDP ÷ GDP per head),
+  spread like the economy. Monthly gain = 0.05% × trait manpower multiplier × owned and
+  controlled population, capped at 3% of it. Nations start with 1%.
+- Command rules (template cost and time) reach the sim as `world.rules`, set by the Sim and not
+  state. Industry as a production input arrives with tech/research.
+
 ---
 
 ## 4. Territory, fronts and the strategic layer

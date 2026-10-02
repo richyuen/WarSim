@@ -984,3 +984,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   economy rules + AT); no gaps found.
 - **Open items, unchanged:** renderer dashed-stair artifact (PLAN 1.28); OOB dots blend into nation
   fills (Phase 2 counters).
+
+## 2026-10-02 — PLAN 1.10: production queue, recruitment, manpower
+- **Sim:**
+  - `src/sim/systems/production.ts`: `queueFormation` (command `queueFormation {nation, template}`:
+    pays gold + manpower at once, rejects with `ProductionRejected` otherwise); daily
+    `productionSystem`; `spawnPoint` (capital, else nearest held cell ≤ 40).
+  - New `production` table (nation, template, readyDay); nation manpower and manpowerMult;
+    `cells.pop` layer (thousands); events `ProductionQueued` and `ProductionRejected`.
+  - `world.rules` (template cost and time) set by the Sim; `RULES_1938` derives it from unit data.
+    Cost scale 3.5 → infantry division 1001 gold / 12,460 men / 90 days.
+  - Systems for '1938': production, then economy.
+- **Manpower:** owned, controlled population × 0.05%/month × trait multiplier, cap 3%, start 1%.
+  Population is 1938 GDP ÷ GDP per head, spread like the economy (Germany ≈ 68 M).
+- **Design note:** a countdown lost a day, because commands apply before systems on the queue
+  tick. Rows now store an absolute `readyDay`, so "after N days" is exact.
+- **AT (`tests/unit/production.test.ts`, real 1938 world):**
+  - GER orders an infantry division at 00:00 on 1 January. Against a twin sim without the order,
+    gold and manpower differ by exactly the cost. No spawn before day 90; at 00:00 on day 90
+    (1 April) it appears at Berlin's capital position, at full strength, with the right template.
+  - That day it already pays its first upkeep: the twin is richer by exactly cost + one month's
+    upkeep.
+  - Also covered: rejection without gold or manpower or for an unknown template; bankruptcy stall;
+    spawn moves when the capital is lost; manpower growth and cap; queued orders survive
+    save/load deterministically.
+- **Step 5:** no production UI yet, so verification is headless on the real 1938 sim.
+- **Parity:** additions row 8 updated.

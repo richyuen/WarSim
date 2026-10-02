@@ -4,6 +4,7 @@
  */
 import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
+import { queueFormation } from './systems/production';
 import type { World } from './world';
 
 export type System = (world: World) => void;
@@ -22,6 +23,9 @@ function applyCommand(world: World, cmd: Command): void {
     }
     case 'removeFormation':
       if (world.formations.has(cmd.id)) world.formations.remove(cmd.id);
+      return;
+    case 'queueFormation':
+      queueFormation(world, cmd.nation, cmd.template);
       return;
   }
 }

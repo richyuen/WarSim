@@ -25,7 +25,9 @@ import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
 import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
-import { cellWeight, ECON_PER_BN, industrialCapacity, monthlyAccounts, type EconomyTables } from './systems/economy';
+import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
+import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
+import type { ScenarioRules } from './world';
 import { sin } from './core/dmath';
 import { millerLat, Y_TOP } from './data/projection';
 import { World } from './world';
@@ -42,6 +44,17 @@ export const ECONOMY_TABLES_1938: EconomyTables = {
   templateUpkeep: TEMPLATES_LAND.map((t) => t.elements.reduce((s, e) => s + (unitUpkeep.get(e.type) ?? 0) * e.count, 0)),
   templateStrength: TEMPLATES_LAND.map((t) => templateStrength(t, unitTypes).men),
 };
+/** Command rules: template cost and training time (PLAN 1.10, ADR-23). */
+const unitCost = new Map((unitsLand.types as unknown as { id: string; cost: { gold: number; manpower: number; days: number } }[]).map((u) => [u.id, u.cost]));
+export const RULES_1938: ScenarioRules = {
+  templates: TEMPLATES_LAND.map((t, i) => ({
+    gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitCost.get(e.type)!.gold * e.count, 0),
+    manpower: t.elements.reduce((s, e) => s + unitCost.get(e.type)!.manpower * e.count, 0),
+    days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitCost.get(e.type)!.days)),
+    strength: ECONOMY_TABLES_1938.templateStrength[i]!,
+  })),
+};
+const traitManpower = new Map((traitsJson.traits as { id: string; modifiers: { manpower?: number } }[]).map((t) => [t.id, t.modifiers.manpower ?? 0]));
 const traitIncome = new Map((traitsJson.traits as { id: string; modifiers: { income?: number } }[]).map((t) => [t.id, t.modifiers.income ?? 0]));
 
 const sizeId = scenario1938.size ?? earthMap.defaultSize;
@@ -97,10 +110,26 @@ function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: readonly
   adm0s.forEach((a, k) => {
     if (gdp[a] === undefined) capacity[k] = countryWeight[k]! * perWeight;
   });
+  // Population (thousands) = GDP / GDP per head; unlisted units from their weight at the listed
+  // average people per unit of weight.
+  const people = new Float64Array(adm0s.length);
+  let listedPeople = 0;
+  adm0s.forEach((a, k) => {
+    const g = gdp[a];
+    if (g === undefined) return;
+    people[k] = (g * 1e6) / (perCapita[a] ?? economy1938.defaultPerCapita);
+    listedPeople += people[k]!;
+  });
+  adm0s.forEach((a, k) => {
+    if (gdp[a] === undefined) people[k] = (countryWeight[k]! * listedPeople) / listedWeight;
+  });
+  const { pop } = world.cells;
   for (let i = 0; i < w * h; i++) {
     const k = provCountry[province[i]!]!;
     if (weight[i] === 0 || k < 0 || countryWeight[k] === 0) continue;
-    econ[i] = Math.round(((weight[i]! / countryWeight[k]!) * capacity[k]! * ECON_PER_BN));
+    const share = weight[i]! / countryWeight[k]!;
+    econ[i] = Math.round(share * capacity[k]! * ECON_PER_BN);
+    pop[i] = Math.round(share * people[k]!);
   }
 }
 
@@ -152,6 +181,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     n.living[id] = def.alive === false ? 0 : 1;
     n.incomeBonus[id] = def.incomeBonus;
     n.incomeMult[id] = 1 + def.traits.reduce((s, t) => s + (traitIncome.get(t) ?? 0), 0);
+    n.manpowerMult[id] = 1 + def.traits.reduce((s, t) => s + (traitManpower.get(t) ?? 0), 0);
   });
 
   // Cities keep their index into cities.json (`def`), so names resolve without state.
@@ -186,10 +216,11 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     f.strength[id] = menOf[ti]!;
   }
 
-  // Starting treasury: START_GOLD_MONTHS of gross income.
-  const { gross } = monthlyAccounts(world, ECONOMY_TABLES_1938);
+  // Starting treasury and manpower pool.
+  const { gross, population } = monthlyAccounts(world, ECONOMY_TABLES_1938);
   world.nations.forEach((id) => {
     world.nations.cols.gold[id] = START_GOLD_MONTHS * gross[id]!;
+    world.nations.cols.manpower[id] = MANPOWER_START_SHARE * population[id]!;
   });
   return world;
 }

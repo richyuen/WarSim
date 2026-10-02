@@ -12,6 +12,10 @@ export const EventKind = {
   CommandApplied: 3,
   /** a = nation, b = 1 when it goes bankrupt / 0 when it recovers (global). */
   Bankruptcy: 4,
+  /** a = production row, b = nation; (x, y) = NaN (global). */
+  ProductionQueued: 5,
+  /** a = template index, b = nation: not enough gold or manpower, or no such template (global). */
+  ProductionRejected: 6,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

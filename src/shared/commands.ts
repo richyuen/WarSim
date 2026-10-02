@@ -6,7 +6,9 @@
 
 export type Command =
   | { kind: 'spawnFormation'; nation: number; x: number; y: number; strength: number }
-  | { kind: 'removeFormation'; id: number };
+  | { kind: 'removeFormation'; id: number }
+  /** Queue a formation of scenario template `template` (index) for `nation` (PLAN 1.10). */
+  | { kind: 'queueFormation'; nation: number; template: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

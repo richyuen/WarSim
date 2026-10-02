@@ -32,7 +32,34 @@ export const NATION_SCHEMA = {
   incomeMult: 'f64',
   /** 1 while bankrupt (gold below −BANKRUPT_MONTHS × gross income). */
   bankrupt: 'u8',
+  /** Recruitable men (PLAN 1.10). */
+  manpower: 'f64',
+  /** Multiplier on manpower growth from traits (1 = none). */
+  manpowerMult: 'f64',
 } as const;
+
+/** Production queue rows (PLAN 1.10): one formation in training. */
+export const PRODUCTION_SCHEMA = {
+  nation: 'u16',
+  /** Index into the scenario's template list. */
+  template: 'u16',
+  /** Day (ticks / 24) on whose 00:00 the formation is ready. */
+  readyDay: 'u32',
+} as const;
+
+/** Scenario rules the sim needs to apply commands (not state: fixed by the scenario). */
+export interface TemplateRule {
+  /** Gold and manpower paid when queued. */
+  gold: number;
+  manpower: number;
+  /** Training days. */
+  days: number;
+  /** Full strength (men). */
+  strength: number;
+}
+export interface ScenarioRules {
+  templates: readonly TemplateRule[];
+}
 
 export const FORMATION_SCHEMA = {
   nation: 'u16',
@@ -67,6 +94,8 @@ export class CellLayers implements Stateful {
   province: Uint16Array<ArrayBuffer>;
   /** Industrial output per cell, $M per year (PLAN 1.9, systems/economy.ts). */
   econ: Uint32Array<ArrayBuffer>;
+  /** Population per cell, thousands (PLAN 1.10: manpower). */
+  pop: Uint32Array<ArrayBuffer>;
 
   constructor(w: number, h: number) {
     this.w = w;
@@ -76,6 +105,7 @@ export class CellLayers implements Stateful {
     this.terrain = new Uint8Array(w * h);
     this.province = new Uint16Array(w * h);
     this.econ = new Uint32Array(w * h);
+    this.pop = new Uint32Array(w * h);
   }
 
   serialize(): Section[] {
@@ -85,6 +115,7 @@ export class CellLayers implements Stateful {
       { name: 'cells.terrain', dtype: 'u8', data: this.terrain },
       { name: 'cells.province', dtype: 'u16', data: this.province },
       { name: 'cells.econ', dtype: 'u32', data: this.econ },
+      { name: 'cells.pop', dtype: 'u32', data: this.pop },
     ];
   }
 
@@ -95,7 +126,8 @@ export class CellLayers implements Stateful {
     const terrain = takeSection(sections, 'cells.terrain', 'u8');
     const province = takeSection(sections, 'cells.province', 'u16');
     const econ = takeSection(sections, 'cells.econ', 'u32');
-    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n) {
+    const pop = takeSection(sections, 'cells.pop', 'u32');
+    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n || pop.length !== n) {
       throw new Error(`cell layers: expected ${n} cells`);
     }
     this.owner = owner.slice();
@@ -103,6 +135,7 @@ export class CellLayers implements Stateful {
     this.terrain = terrain.slice();
     this.province = province.slice();
     this.econ = econ.slice();
+    this.pop = pop.slice();
   }
 }
 
@@ -185,6 +218,9 @@ export class World {
   nations = new Table('nations', NATION_SCHEMA, 8);
   formations = new Table('formations', FORMATION_SCHEMA, 128);
   cities = new Table('cities', CITY_SCHEMA, 16);
+  production = new Table('production', PRODUCTION_SCHEMA, 16);
+  /** Scenario rules for commands (set by the Sim; not state). */
+  rules: ScenarioRules | null = null;
   commandLog: LoggedCommand[] = [];
   /** Commands queued since the last tick boundary, applied in seq order at the next tick. */
   pending: PendingCommand[] = [];
@@ -218,7 +254,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production];
   }
 
   cellIndex(x: number, y: number): number {

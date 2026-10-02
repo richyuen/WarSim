@@ -13,6 +13,8 @@
  *   upkeep  = UPKEEP_SCALE × Σ formation upkeep (template gold upkeep × current / full strength)
  *   admin   = ADMIN_BASE × (cells held / 1000) ^ ADMIN_EXP   (superlinear: anti-hegemon)
  *   gold   += gross − upkeep − admin
+ *   manpower += MANPOWER_MONTHLY_RATE × manpowerMult × owned population, up to MANPOWER_CAP_SHARE
+ *               of it (a pool already above the cap after losing land is kept, not cut)
  * Bankruptcy: gold < −BANKRUPT_MONTHS × gross → bankrupt; each bankrupt month every formation
  * loses DESERTION of its strength. Recovery when gold ≥ 0. Changes emit `Bankruptcy` events.
  */
@@ -33,6 +35,10 @@ export const UPKEEP_SCALE = 0.35;
 export const ADMIN_BASE = 0.25;
 export const ADMIN_EXP = 1.35;
 export const BANKRUPT_MONTHS = 3;
+/** Manpower (PLAN 1.10): monthly growth and cap as shares of owned, controlled population. */
+export const MANPOWER_MONTHLY_RATE = 0.0005;
+export const MANPOWER_CAP_SHARE = 0.03;
+export const MANPOWER_START_SHARE = 0.01;
 export const DESERTION = 0.05;
 /** City weight by size 1..5, relative to one plains cell of land at LAND_WEIGHT 1. */
 export const CITY_WEIGHT = [0, 1, 2.5, 6, 15, 35] as const;
@@ -72,18 +78,25 @@ export function economySystem(tables: EconomyTables) {
 }
 
 /** Gross income and expenses per nation id for the current state (no side effects). */
-export function monthlyAccounts(world: World, tables: EconomyTables): { gross: Float64Array; expenses: Float64Array; upkeep: Float64Array; held: Float64Array } {
+export function monthlyAccounts(
+  world: World,
+  tables: EconomyTables,
+): { gross: Float64Array; expenses: Float64Array; upkeep: Float64Array; held: Float64Array; population: Float64Array } {
   const nc = world.nations.cols;
   const size = world.nations.highWater;
   const land = new Float64Array(size);
   const held = new Float64Array(size);
-  const { owner, controller, econ } = world.cells;
+  /** People on land the nation both owns and controls (recruitable). */
+  const population = new Float64Array(size);
+  const { owner, controller, econ, pop } = world.cells;
   for (let c = 0; c < controller.length; c++) {
     const n = controller[c]!;
     if (n === 0) continue;
     held[n]!++;
     const v = econ[c]!;
-    if (v !== 0) land[n]! += owner[c] === n ? v : v * OCCUPIED_SHARE;
+    const own = owner[c] === n;
+    if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
+    if (own) population[n]! += pop[c]! * 1000;
   }
   const upkeep = new Float64Array(size);
   const fc = world.formations.cols;
@@ -99,20 +112,22 @@ export function monthlyAccounts(world: World, tables: EconomyTables): { gross: F
     gross[n] = ((land[n]! / ECON_PER_BN) * INCOME_PER_BN * nc.incomeMult[n]! * (100 + nc.incomeBonus[n]!)) / 100;
     expenses[n] = upkeep[n]! + adminCost(held[n]!);
   });
-  return { gross, expenses, upkeep, held };
+  return { gross, expenses, upkeep, held, population };
 }
 
 /** One economic month (exported for tests and God Mode). */
 export function runEconomyMonth(world: World, tables: EconomyTables): void {
   const nc = world.nations.cols;
   const fc = world.formations.cols;
-  const { gross, expenses } = monthlyAccounts(world, tables);
+  const { gross, expenses, population } = monthlyAccounts(world, tables);
   const deserting = new Uint8Array(world.nations.highWater);
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;
     nc.income[n] = gross[n]!;
     nc.expenses[n] = expenses[n]!;
     nc.gold[n] = nc.gold[n]! + gross[n]! - expenses[n]!;
+    const cap = MANPOWER_CAP_SHARE * population[n]!;
+    nc.manpower[n] = Math.min(Math.max(cap, nc.manpower[n]!), nc.manpower[n]! + MANPOWER_MONTHLY_RATE * nc.manpowerMult[n]! * population[n]!);
     const wasBankrupt = nc.bankrupt[n] === 1;
     if (!wasBankrupt && nc.gold[n]! < -BANKRUPT_MONTHS * gross[n]!) {
       nc.bankrupt[n] = 1;

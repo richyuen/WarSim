@@ -76,7 +76,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: Node build == political map; worker hash == Node hash; save/load round trip bit-identical; e2e boot screenshot.
 - [x] 1.9 Economy: per-cell income weight × terrain × development, monthly tick, gold, expenses (upkeep, admin cost superlinear), incomeBonus −100..100, bankruptcy.
   AT: unit tests per rule; 1938 income ranking plausible (USA, UK, Germany, USSR, France top 5).
-- [ ] 1.10 Production & recruitment queue; manpower.
+- [x] 1.10 Production & recruitment queue; manpower.
   AT: a queued division appears after N days at the capital with cost deducted.
 - [ ] 1.11 Land movement: coarse nav graph (province adjacency + CROSSING) + cell-level A*, mobility × terrain costs, slotted poses.
   AT: a path test across the Alps is slower than across the plains; a formation never enters water except via crossing.
