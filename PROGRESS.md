@@ -148,3 +148,19 @@
   - Mutation check: flipping one golden value made both runners fail.
 - `tsconfig.node.json` now includes `src/sim` and `src/shared`, so Node-side tools can type-check their imports
   of sim code.
+
+## 2026-10-02 — PLAN 0.10: `sim/core/rng` (PCG32 + streams) and `sim/core/hash` (xxHash32)
+- PCG32 XSH-RR with 64-bit state held in u32 halves. The 64×64 multiply uses 16-bit limbs in f64 (exact) plus
+  `Math.imul` for the cross terms.
+  - Helpers: `nextU32`, `nextFloat` (53 bits), unbiased `nextInt` (rejection), `range`, `chance`, `nextNormal`
+    (Box–Muller via dmath), and save/load of state.
+  - Verified against the pcg32-demo vector (42/54 → a15c02b7 7b47f409 …) and an independent BigInt
+    transcription of pcg32_random_r over 4 seeds × 2000 draws, including all-ones 64-bit seeds.
+- `RngStreams`: named subsystem streams (`STREAM_NAMES`). Each is seeded only from `xxhash32(name, worldSeed ^ k)`.
+  Tests: adding a new stream leaves existing sequences unchanged; draws on one stream don't affect another;
+  save/load round trip.
+- xxHash32 over bytes and typed-array views, `hashString`, and an allocation-free `hash32(seed, a, b, c[, d])`
+  for order-independent draws. Known vectors pass: "" → 02cc5d05, "a", "abc", "Nobody inspects…" (39 bytes,
+  stripe path). `hash32` is tested equal to xxHash32 of the LE words.
+  - Gotcha found by that test: 4 words = 16 bytes takes the stripe path, not the short path. Fixed.
+  - Avalanche: ~16 of 32 output bits flip per input-bit change.
