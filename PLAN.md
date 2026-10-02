@@ -10,7 +10,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `git status --ignored` lists `reference/` as ignored; `git ls-files` has no `reference/` path.
 - [x] 0.2 Vite + TypeScript strict (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`) + Preact; `npm run dev/build/preview`.
   AT: `npm run build` succeeds; the preview serves a page with a canvas and the title "WarSim".
-- [ ] 0.3 ESLint flat config incl. sim purity rules (§2.1 SPEC) and `import/no-restricted-paths`.
+- [x] 0.3 ESLint flat config incl. sim purity rules (§2.1 SPEC) and module-boundary rule (local `warsim/module-boundaries`, see ADR-12).
   AT: a fixture file in `tests/lint-fixtures/` using `Math.random` inside `src/sim` fails lint (vitest runs ESLint API on fixtures).
 - [ ] 0.4 vitest + Playwright installed; `npm test`, `npm run e2e`, `npm run check` (= tsc + eslint + vitest + build + parity).
   AT: `npm run check` is green; one Playwright smoke test loads the page and finds the canvas.

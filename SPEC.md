@@ -52,11 +52,20 @@ claims are lower confidence. Observations from the screenshots (VISUAL, 2026-10-
 ### 2.1 Module rules (enforced by ESLint) [ADR-2]
 | Module | May import | Forbidden |
 |---|---|---|
-| `src/sim/**` | `src/sim/**`, `src/shared/**` | DOM, `window`, `self`, `Math.random`, `Date`, `performance`, `Math.sin/cos/tan/exp/log/pow/atan2/...` (use `sim/core/dmath`), `setTimeout`, iteration over unordered keys |
-| `src/shared/**` | nothing except itself | everything else |
+| `src/sim/**` | `src/sim/**`, `src/shared/**`, `data/**` (JSON), package `zod` | other packages, Node builtins, DOM, `window`, `self`, `Math.random`, `Date`, `performance`, `Math.sin/cos/tan/exp/log/pow/atan2/...` (use `sim/core/dmath`), `setTimeout`, iteration over unordered keys |
+| `src/shared/**` | itself, `data/**` | everything else (incl. all packages) |
 | `src/worker/**` | sim, shared | render, ui |
 | `src/render/**` | shared | sim internals (types come via `shared/protocol`) |
-| `src/ui/**`, `src/editor/**`, `src/app/**` | shared, render, ui | sim internals |
+| `src/ui/**` | shared, render | sim, worker, editor, app |
+| `src/editor/**` | shared, render, ui | sim, worker, app |
+| `src/app/**` | shared, render, ui, editor (worker only via `new Worker(new URL(...))`) | sim |
+
+Enforcement (`eslint.config.js`): the layer table is the local rule `warsim/module-boundaries`
+(`tools/eslint/warsim-plugin.js`, lexical path resolution, so it also works on virtual
+fixture paths). Sim purity uses `no-restricted-globals`, `no-restricted-properties`
+(`Math.random`, non-exact `Math.*`, `localeCompare`, `toLocaleString`) and
+`no-restricted-syntax` (`for-in`, `**`, Math destructuring/computed access). Fixtures in
+`tests/lint-fixtures/` are linted by `tests/unit/lint-rules.test.ts`.
 
 ### 2.2 Repo layout
 ```

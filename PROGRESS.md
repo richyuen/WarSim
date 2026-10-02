@@ -16,3 +16,18 @@
 - Gotcha: `npm run parity` does not exist yet (PLAN 0.8); PARITY.md is created in 0.7. No critic report yet.
 - PROGRESS.md was created here (ahead of 0.5) because every iteration must log; 0.5 still owns
   BLOCKERS.md / DATA_SOURCES.md and the `reference/NOTES.md`-missing note.
+
+## 2026-10-02 — PLAN 0.3: ESLint flat config + sim purity + module boundaries
+- ESLint 10.11 + typescript-eslint 8.71 (recommended, non-type-checked) + `globals`; `npm run lint`, `npm test`
+  (vitest 5.0.3, installed now because the AT needs it; 0.4 still owns Playwright and `npm run check`).
+- TypeScript downgraded 7.0.2 → 6.0.3: TS 7 has no JS API, typescript-eslint needs `<6.1` (ADR-12).
+- `tools/eslint/warsim-plugin.js`: `warsim/module-boundaries` (layer table + sim/shared package allowlist,
+  lexical resolution). SPEC §2.1 table updated (app may import editor; ui/editor/app rows split).
+- Sim rules: forbidden globals (Date, performance, window, self, timers, Intl, WeakRef, ...), `Math.random` +
+  non-exact `Math.*`, `localeCompare`/`toLocaleString`, `for-in`, `**`, Math destructuring/computed access.
+- `tests/lint-fixtures/` (ignored by `eslint .` and tsc) linted via the ESLint API at virtual `src/<layer>/` paths:
+  16 must-fail + 3 must-pass cases, 20 tests green. Also checked the CLI: a real `src/sim/probe.ts` with
+  `Math.random() ** 2` fails `eslint src` with exit 1 (probe deleted).
+- `tsconfig.node.json` now type-checks `tools/`, `tests/unit/`, `vitest.config.ts`, `eslint.config.js` (checkJs).
+- Gotcha: no-undef is off for TS files (typescript-eslint), but `no-restricted-globals` still reports implicit
+  global references, so `window` in sim is caught even though the app tsconfig includes DOM libs.

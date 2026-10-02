@@ -91,3 +91,15 @@ grounded and recognisable. The flag editor lets users change it in their scenari
 **Why.** Built-in i18n, text layout, accessibility and UI-size scaling (`rem`) come for
 free. Panels update at low frequency, so DOM cost is negligible. The canvas is reserved
 for the map and units.
+
+### ADR-12 · 2026-10-02 · accepted — TypeScript pinned to 6.0; local module-boundary lint rule
+**Decision.** Pin `typescript` to `~6.0` (was 7.0.2). Enforce SPEC §2.1 layers with a local
+ESLint rule (`warsim/module-boundaries`) instead of `import-x/no-restricted-paths`.
+**Why.** TypeScript 7 is the native (Go) compiler and ships no JS API; typescript-eslint
+8.71 requires `typescript >=4.8.4 <6.1.0`. 6.0 is the last JS-API release with the same
+language semantics, so `tsc -b` and ESLint share one compiler. `import-x` resolves imports
+through the filesystem, so it cannot check fixture files linted at virtual paths or imports
+of modules that don't exist yet; a lexical resolver is about 100 lines, has no native
+dependency (`unrs-resolver`) and also lets the sim have a package allowlist (`zod` only).
+**Consequences.** Revisit when typescript-eslint supports TS 7 (it can then move to the
+native compiler). The rule does not follow path aliases; none are used (relative imports only).
