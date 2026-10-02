@@ -255,6 +255,23 @@ export const DiplomacyFile = z.strictObject({
   wars: z.array(z.strictObject({ id, nameKey: key, attackers: z.array(tag).min(1), defenders: z.array(tag).min(1), startDate: date })),
 });
 
+/** City-list inputs (PLAN 1.5): keys are 'NE NAME|ADM0_A3'; read by tools/data/cities.ts. */
+const placeKey = z.string().regex(/^[^|]+\|[A-Z0-9]{3}$/, "place keys are 'NAME|ADM0'");
+export const CityRulesFile = z.strictObject({
+  comment: z.string().optional(),
+  maxScalerank: z.number().int().min(0).max(10),
+  minSpacingCells: z.number().positive().max(20),
+  include: z.array(placeKey),
+  renames: z.record(placeKey, z.string().min(1)),
+  exclude: z.array(placeKey),
+});
+
+/** Generated city list (PLAN 1.5): one capital city per living nation. */
+export const CitiesFile = z.strictObject({
+  comment: z.string().optional(),
+  cities: z.array(z.strictObject({ name: z.string().min(1), lonLat, size: z.number().int().min(1).max(5), capitalOf: tag.optional() })).min(1),
+});
+
 /** 1938 ownership rules (PLAN 1.3): country → tag, province overrides, polygon regions, occupation. */
 export const OwnershipFile = z.strictObject({
   comment: z.string().optional(),
@@ -278,6 +295,7 @@ export type ScenarioMeta = z.infer<typeof ScenarioMeta>;
 export type NationDef = z.infer<typeof NationDef>;
 export type OwnershipFile = z.infer<typeof OwnershipFile>;
 export type DiplomacyFile = z.infer<typeof DiplomacyFile>;
+export type CitiesFile = z.infer<typeof CitiesFile>;
 
 // ── file table + validation ──────────────────────────────────────────────────
 
@@ -294,6 +312,8 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/nations\.json$/, schema: NationsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ownership\.json$/, schema: OwnershipFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/diplomacy\.json$/, schema: DiplomacyFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/city-rules\.json$/, schema: CityRulesFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
 ];
 
 export function schemaFor(file: string): z.ZodType | undefined {
@@ -479,6 +499,22 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
         });
       });
     }
+    const citF = f.replace(/nations\.json$/, 'cities.json');
+    const cit = ok[citF] as CitiesFile | undefined;
+    if (cit) {
+      const capitalOf = new Map<string, number>();
+      cit.cities.forEach((c, i) => {
+        if (c.capitalOf === undefined) return;
+        const n = byTag.get(c.capitalOf);
+        if (!n || n.alive === false) errors.push(`${citF}: cities[${i}].capitalOf: '${c.capitalOf}' is not a living nation`);
+        else if (n.capital.name !== c.name) errors.push(`${citF}: cities[${i}].name: '${c.name}' is not ${n.tag}'s capital '${n.capital.name}'`);
+        if (capitalOf.has(c.capitalOf)) errors.push(`${citF}: cities[${i}].capitalOf: '${c.capitalOf}' already has a capital (cities[${capitalOf.get(c.capitalOf)}])`);
+        capitalOf.set(c.capitalOf, i);
+      });
+      nf.nations.forEach((n, i) => {
+        if (n.alive !== false && !capitalOf.has(n.tag)) errors.push(`${citF}: no capital city for nations[${i}] '${n.tag}'`);
+      });
+    }
     const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;
     if (!own) continue;
     const of2 = f.replace(/nations\.json$/, 'ownership.json');
@@ -496,8 +532,8 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       check(o.owner, `occupation[${i}].owner`);
     });
   }
-  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy)\.json$/)) {
-    if (!(f.replace(/(ownership|diplomacy)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
+  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities)\.json$/)) {
+    if (!(f.replace(/(ownership|diplomacy|cities)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
   }
   for (const [f, s] of of<ScenarioMeta>(/^scenarios\/[a-z0-9_]+\/scenario\.json$/)) {
     const dir = f.split('/')[1];

@@ -23,6 +23,8 @@ import { loadTerrain, type StraitDef } from '../sim/data/terrain';
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
+import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
+import { placeCities, type CityDef } from '../sim/data/cities';
 import { buildOwnership, reconcileIslands, type OwnershipRules } from '../sim/data/ownership';
 import { Sim } from '../sim/sim';
 import { AssetStore } from './assets';
@@ -220,6 +222,14 @@ export class SimServer {
       const r = buildOwnership({ w: msg.w, h: msg.h, provinceIds: pr.ids, provinces: meta, terrain, tags, rules: ownership1938 as unknown as OwnershipRules });
       const cells = new Array<number>(tags.length + 1).fill(0);
       for (const v of r.owner) cells[v]!++;
+      const cities = placeCities(cities1938.cities as unknown as CityDef[], tags, r.owner, msg.w, msg.h).map((c) => ({
+        name: c.name,
+        x: c.x,
+        y: c.y,
+        size: c.size,
+        owner: c.owner,
+        capitalOf: c.capitalOf,
+      }));
       const result = {
         w: msg.w,
         h: msg.h,
@@ -229,6 +239,7 @@ export class SimServer {
         ms: { total: performance.now() - t0 },
         owner: r.owner,
         controller: r.controller,
+        cities,
       };
       this.post({ type: 'political', reqId: msg.reqId, result }, [r.owner.buffer, r.controller.buffer]);
     } catch (err) {

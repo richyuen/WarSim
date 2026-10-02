@@ -752,3 +752,42 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   living nations. Each also asserts that dead nations own nothing, so coverage is stricter, not looser.
 - **Evidence:** `docs/evidence/1.3/political-*.png` regenerated with the new colours.
 - **Parity:** row 21 (aggression and traits) → partial. Score 6.3% → 6.9%.
+
+## 2026-10-02 — PLAN 1.5: 1938 cities with capitals, names rendered at T1
+- **Data:** `npm run data` now also writes `data/scenarios/1938/cities.json`: 5774 cities, 102 of
+  them capitals. The generator is `tools/data/cities.ts`, fed by NE populated places +
+  `city-rules.json`:
+  - 89 renames to 1938 names, 14 post-1938 exclusions, 9 forced includes;
+  - stale rule keys fail the build;
+  - capitals are bound from nations.json.
+  Zod schemas cover city-rules/cities, plus cross-checks: one capital per living nation, named as
+  its capital. `--check` covers the generated file.
+- **First pass was too sparse:** scalerank ≤ 6 dropped Leipzig, Hanover, the Ruhr, Breslau and
+  Mukden ("Shenyeng" in NE). NE scalerank is per-country relative, so the fix was:
+  - scalerank ≤ 8 + 2.5-cell spacing;
+  - size = max(rank tier, population tier);
+  - forced includes for cities that mattered more in 1938;
+  - an added "Shenyeng" rename.
+- **Sim:** `placeCities` (`src/sim/data/cities.ts`) gives each city its land cell (capitals snap to
+  their own nation, others to any owned land within 2 cells) and owner. `nearestCellWhere`
+  generalises the nearest-cell search (`nearestOwnedCell` is now a wrapper).
+- **Render:** `src/render/labels/cityLabels.ts`.
+  - A pure `layoutCityLabels` decides zoom fades per size, greedy collision in priority order
+    (capitals → size) and wrap copies.
+  - `CityLabelLayer` draws on a Canvas2D overlay: haloed text, gold capital dots.
+  - Layout costs ≤ 0.19 ms per frame at any zoom (5774 cities, Node).
+  - Wired into `bench.html?b=W` via the worker's `buildPolitical` (now returns placed cities).
+- **AT:**
+  - `tests/unit/cities.test.ts`: every living nation has exactly one capital city, on its own land,
+    with the capital's name. 1938 names are present (Stalingrad, Königsberg, Danzig, Breslau, Lwów,
+    Wilno, Peiping, Hsinking, Mukden, Batavia, …) and modern ones absent. Owners are right (Breslau
+    GER, Lwów/Wilno POL, Danzig DAN, Hsinking MAN). Layout: no names at T0; names at T1 without
+    overlap; closer zoom names smaller cities.
+  - e2e: at T1 (16 px/cell ≈ 1.2 km/px) the page renders Berlin, Warsaw, Prague, Danzig, Königsberg,
+    Breslau, Peiping, Tientsin and Kalgan. Screenshots are in `docs/evidence/1.5/`.
+- **Viewed:** Central Europe (German grid of Hamburg/Hanover/Essen/Leipzig/Dresden/Breslau; Polish
+  Poznań/Łódź/Kraków; gold capital dots) and North China (Peiping/Tientsin under occupation hatch,
+  Kalgan, Kweisui, Yan'an, Mukden, Dairen). Readable and uncluttered.
+- **Renderer artifact:** dashed stair-step lines inside nations are clearly visible in these shots,
+  even far from borders. This is the Phase 0 issue queued for PLAN 1.28; it is not label-related.
+- **Parity:** row 27 (cities and capitals with names) → partial. Score 6.9% → 7.5%.

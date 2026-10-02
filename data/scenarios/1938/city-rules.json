@@ -1,0 +1,35 @@
+{
+  "comment": "Inputs for the 1938 city list (PLAN 1.5): Natural Earth populated places renamed to their 1938 names and filtered for places founded or made capitals after 1938. Keys are 'NE NAME|ADM0_A3'. Our own work from public historical gazetteers.",
+  "maxScalerank": 8,
+  "minSpacingCells": 2.5,
+  "include": [
+    "Wrocław|POL", "Szczecin|POL", "Trieste|ITA", "Klaipėda|LTU", "Rijeka|HRV", "Chernivtsi|UKR", "Hrodna|BLR", "Pinsk|BLR", "Vyborg|RUS"
+  ],
+  "renames": {
+    "St.  Petersburg|RUS": "Leningrad", "Volgograd|RUS": "Stalingrad", "Kaliningrad|RUS": "Königsberg", "Nizhny Novgorod|RUS": "Gorky",
+    "Yekaterinburg|RUS": "Sverdlovsk", "Samara|RUS": "Kuibyshev", "Tver|RUS": "Kalinin", "Vladikavkaz|RUS": "Ordzhonikidze",
+    "Gdańsk|POL": "Danzig", "Wrocław|POL": "Breslau", "Szczecin|POL": "Stettin", "Lviv|UKR": "Lwów", "Vilnius|LTU": "Wilno",
+    "Klaipėda|LTU": "Memel", "Tbilisi|GEO": "Tiflis", "Donetsk|UKR": "Stalino", "Luhansk|UKR": "Voroshilovgrad",
+    "Dnipro|UKR": "Dnepropetrovsk", "Zaporizhzhya|UKR": "Zaporozhye", "Kharkiv|UKR": "Kharkov", "Kyiv|UKR": "Kiev",
+    "Chișinău|MDA": "Kishinev", "Chernivtsi|UKR": "Czernowitz", "Bishkek|KGZ": "Frunze", "Dushanbe|TJK": "Stalinabad",
+    "Almaty|KAZ": "Alma-Ata", "Nur-Sultan|KAZ": "Akmolinsk", "Ashgabat|TKM": "Ashkhabad", "Skopje|MKD": "Skoplje",
+    "Thessaloniki|GRC": "Salonika", "Rijeka|HRV": "Fiume", "Zadar|HRV": "Zara", "Pula|HRV": "Pola",
+    "Mumbai|IND": "Bombay", "Chennai|IND": "Madras", "Kolkata|IND": "Calcutta", "Bengaluru|IND": "Bangalore", "Pune|IND": "Poona",
+    "Varanasi|IND": "Benares", "Kanpur|IND": "Cawnpore", "Vadodara|IND": "Baroda", "Thiruvananthapuram|IND": "Trivandrum",
+    "Kochi|IND": "Cochin", "Dhaka|BGD": "Dacca", "Faisalabad|PAK": "Lyallpur", "Yangon|MMR": "Rangoon",
+    "Ho Chi Minh City|VNM": "Saigon", "Da Nang|VNM": "Tourane", "Jakarta|IDN": "Batavia", "Bogor|IDN": "Buitenzorg",
+    "Jayapura|IDN": "Hollandia", "Seoul|KOR": "Keijō", "Pyongyang|PRK": "Heijō", "Busan|KOR": "Fusan", "Incheon|KOR": "Jinsen",
+    "Taipei|TWN": "Taihoku", "Kaohsiung|TWN": "Takao", "Changchun|CHN": "Hsinking", "Dalian|CHN": "Dairen",
+    "Beijing|CHN": "Peiping", "Guangzhou|CHN": "Canton", "Tianjin|CHN": "Tientsin", "Qingdao|CHN": "Tsingtao", "Wuhan|CHN": "Hankow",
+    "Chongqing|CHN": "Chungking", "Xiamen|CHN": "Amoy", "Shantou|CHN": "Swatow", "Nanjing|CHN": "Nanking", "Fuzhou|CHN": "Foochow",
+    "Ürümqi|CHN": "Dihua", "Zhangjiakou|CHN": "Kalgan", "Hohhot|CHN": "Kweisui", "Kinshasa|COD": "Léopoldville",
+    "Lubumbashi|COD": "Élisabethville", "Kisangani|COD": "Stanleyville", "Kananga|COD": "Luluabourg", "Mbandaka|COD": "Coquilhatville",
+    "Maputo|MOZ": "Lourenço Marques", "Harare|ZWE": "Salisbury", "N'Djamena|TCD": "Fort-Lamy", "Banjul|GMB": "Bathurst",
+    "Antananarivo|MDG": "Tananarive", "Bujumbura|BDI": "Usumbura", "Huambo|AGO": "Nova Lisboa", "Ulaanbaatar|MNG": "Ulan Bator",
+    "Shenyeng|CHN": "Mukden", "Hrodna|BLR": "Grodno", "Vyborg|RUS": "Viipuri", "Brest|BLR": "Brest-Litovsk"
+  },
+  "exclude": [
+    "Brasília|BRA", "Islamabad|PAK", "Abuja|NGA", "Naypyidaw|MMR", "Gaborone|BWA", "Nouakchott|MRT", "Belmopan|BLZ",
+    "Yamoussoukro|CIV", "Putrajaya|MYS", "Chandigarh|IND", "Gandhinagar|IND", "Tolyatti|RUS", "New Taipei|TWN", "Shenzhen|CHN"
+  ]
+}

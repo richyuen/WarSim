@@ -161,10 +161,10 @@ export function buildOwnership(inp: OwnershipInput): OwnershipResult {
 }
 
 /**
- * The cell owned by `nation` nearest to (x, y) (cell units) within `maxR` cells (Chebyshev
- * rings, row-major order inside a ring), or -1. Capitals on a coast often fall in a sea cell at M.
+ * The cell nearest to (x, y) (cell units) whose owner satisfies `pred`, within `maxR` cells
+ * (Chebyshev rings; nearest centre inside a ring, first in row-major order on ties), or -1.
  */
-export function nearestOwnedCell(owner: Uint16Array, nation: number, x: number, y: number, w: number, h: number, maxR: number): number {
+export function nearestCellWhere(owner: Uint16Array, pred: (o: number) => boolean, x: number, y: number, w: number, h: number, maxR: number): number {
   const cx = Math.floor(x);
   const cy = Math.floor(y);
   for (let r = 0; r <= maxR; r++) {
@@ -176,7 +176,7 @@ export function nearestOwnedCell(owner: Uint16Array, nation: number, x: number, 
       for (let dx = -r; dx <= r; dx++) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
         const c = yy * w + ((cx + dx + w) % w);
-        if (owner[c] !== nation) continue;
+        if (!pred(owner[c]!)) continue;
         const ddx = cx + dx + 0.5 - x;
         const ddy = yy + 0.5 - y;
         const d = ddx * ddx + ddy * ddy;
@@ -189,6 +189,11 @@ export function nearestOwnedCell(owner: Uint16Array, nation: number, x: number, 
     if (best >= 0) return best;
   }
   return -1;
+}
+
+/** The cell owned by `nation` nearest to (x, y) within `maxR` cells, or -1 (coastal capitals). */
+export function nearestOwnedCell(owner: Uint16Array, nation: number, x: number, y: number, w: number, h: number, maxR: number): number {
+  return nearestCellWhere(owner, (o) => o === nation, x, y, w, h, maxR);
 }
 
 /** Land cells marked UNSET take the most common owner among their resolved land neighbours. */

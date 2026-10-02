@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-18 · 2026-10-02 · accepted — 1938 cities from Natural Earth; point labels on a Canvas2D overlay
+**Decision.**
+- Cities are generated from NE populated places, with 1938 names. The rename table covers 89
+  places, e.g. Stalingrad, Königsberg, Danzig, Breslau, Lwów, Wilno, Peiping, Hsinking, Mukden,
+  Batavia, Bombay, Saigon, Léopoldville, Keijō.
+- Places founded or made capitals after 1938 are excluded (Brasília, Islamabad, Abuja,
+  Naypyidaw, Shenzhen …).
+- NE scalerank is relative within each country (most German cities rank 7–8, the same as small
+  towns elsewhere). So the cut-off is scalerank ≤ 8, and size takes the larger of the rank and
+  modern-population tiers. A greedy 2.5-cell (~50 km) spacing thins the list to 5,774 cities.
+  Cities that mattered more in 1938 than today are force-included: Breslau, Stettin, Trieste,
+  Memel, Fiume, Czernowitz, Grodno, Pinsk, Viipuri.
+- Every living nation's capital is bound to the nearest NE place within 40 km under the nation's
+  capital name. Yan'an has no NE place, so it is created at the given coordinates.
+- City names render as point labels on a Canvas2D overlay, not as MSDF glyphs:
+  - any script renders crisply with system fonts;
+  - the visible count is small after culling, so the cost is well under 1 ms;
+  - MSDF stays the plan for curved nation names (PLAN 1.29).
+
+**Why.** PROMPT asks for named cities and capitals readable when zoomed in. AoC shows names when
+zoomed in (TEXT). Modern populations misjudge 1938 importance, and the forced includes and size
+tiers correct the worst cases.
+
+**Consequences.**
+- Population and industry per city are not 1938 figures; the economy (PLAN 1.9) derives
+  them from size and province.
+- Modern spellings remain where no 1938 exonym is in the table (e.g. Katowice rather than
+  Kattowitz, which is correct for Polish 1938 anyway).
+
 ### ADR-17 · 2026-10-02 · accepted — 1938 nations: puppets for dominions and colonial blocs, one alliance each
 **Decision.**
 - 102 living nations + Ethiopia (dead; cores on its 1935 territory, revivable).

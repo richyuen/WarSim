@@ -138,6 +138,16 @@ export interface TerrainBuildResult {
   terrain: Uint8Array;
 }
 
+/** A placed city (PLAN 1.5): true position in cells, owning nation, capital role (0 = none). */
+export interface CityInfo {
+  name: string;
+  x: number;
+  y: number;
+  size: number;
+  owner: number;
+  capitalOf: number;
+}
+
 /** Result of `buildPolitical` (PLAN 1.3). */
 export interface PoliticalBuildResult {
   w: number;
@@ -150,6 +160,7 @@ export interface PoliticalBuildResult {
   ms: { total: number };
   owner: Uint16Array;
   controller: Uint16Array;
+  cities: CityInfo[];
 }
 
 export type FromWorker =

@@ -62,7 +62,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: tests on known points (Danzig = Free City, Lwów = Poland, Königsberg = Germany, Manchukuo exists, Ethiopia = Italy); screenshot of the political map vs a historical atlas description logged.
 - [x] 1.4 Nations data (≥ 100 incl. colonies/dominions as puppets): colours, names, traits, aggression, cores, capitals, alliances (Axis-precursor, Allied guarantees, Comintern), puppets.
   AT: schema pass; every nation has a capital in owned territory; colour contrast check between neighbours (ΔE > 15).
-- [ ] 1.5 Cities (NE populated places, filtered and named) with capitals.
+- [x] 1.5 Cities (NE populated places, filtered and named) with capitals.
   AT: every capital is a city; city names render at T1 (screenshot).
 - [ ] 1.6 Flags: SVG flag spec + preset renderer; 1938 flags for all nations (own designs); flag atlas generation.
   AT: the atlas builds; screenshot of a flag grid reviewed; DATA_SOURCES/DECISIONS note the German flag choice.

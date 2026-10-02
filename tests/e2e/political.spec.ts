@@ -13,6 +13,7 @@ import { buildProvinceRaster } from '../../src/sim/data/provinces';
 import { cellOf, loadTerrain, type StraitDef } from '../../src/sim/data/terrain';
 
 // PLAN 1.3: the 1938 political map builds in the sim worker bit-identical to Node, and renders.
+// PLAN 1.5: city dots and names are drawn on top; names appear at T1.
 // Screenshots go to docs/evidence/1.3/ when EVIDENCE=1, else to the test output folder.
 
 const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
@@ -53,5 +54,19 @@ test('1938 political map: worker == Node, rendered at three zooms', async ({ pag
   await shot('political-europe', 18, 50, 3.2);
   await shot('political-east-asia', 115, 37, 2.6);
   await shot('political-danzig-corridor', 19.5, 53.5, 22);
+
+  // PLAN 1.5: city names render at T1 (300–2000 m/px; scale 16 px/cell ≈ 1.2 km/px at M).
+  const t1 = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.5') : out;
+  mkdirSync(t1, { recursive: true });
+  const [bx, by] = cellOf(13.4, 52.52, W, H);
+  await page.evaluate(([cx, cy]) => window.__bench!.setCamera(cx!, cy!, 16), [bx, by]);
+  const labels = await page.evaluate(() => window.__bench!.labels!());
+  expect(labels.names).toEqual(expect.arrayContaining(['Berlin', 'Warsaw', 'Prague', 'Danzig', 'Königsberg', 'Breslau']));
+  expect(labels.names.length).toBeGreaterThan(20);
+  await page.screenshot({ path: path.join(t1, 'city-names-t1-central-europe.png') });
+  const [ex, ey] = cellOf(116.4, 39.9, W, H);
+  await page.evaluate(([cx, cy]) => window.__bench!.setCamera(cx!, cy!, 16), [ex, ey]);
+  expect((await page.evaluate(() => window.__bench!.labels!())).names).toEqual(expect.arrayContaining(['Peiping', 'Tientsin', 'Kalgan']));
+  await page.screenshot({ path: path.join(t1, 'city-names-t1-north-china.png') });
   expect(errors).toEqual([]);
 });

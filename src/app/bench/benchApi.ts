@@ -41,6 +41,8 @@ export interface BenchApi {
   ready: Promise<void>;
   run: () => Promise<unknown>;
   setCamera: (cx: number, cy: number, scale: number) => Promise<void>;
+  /** City labels placed by the last draw (pages with a label layer). */
+  labels?: () => { dots: number; names: string[] };
 }
 
 /** One frame of the precision probe (PLAN 0.16, `bench.html?b=P`). */
