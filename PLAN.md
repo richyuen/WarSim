@@ -40,7 +40,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: a Playwright screenshot sequence while panning shows no jitter (sprite positions stable to ≤ 0.5 px across frames, measured via readPixels).
 - [x] 0.17 Camera controller: wheel/drag/keyboard/touch pinch, continuous z, looping-x wrap rendering.
   AT: e2e drives keys/drag/wheel and asserts camera state; panning past the dateline shows a seamless wrap (screenshot).
-- [ ] 0.18 Data pipeline v0 (`tools/data`): download NE 10m land, admin-0, admin-1, populated places, marine polys, and ETOPO into `.cache/`; produce the fine land mask, elevation pyramid and `manifest.json` with sha256; DATA_SOURCES updated.
+- [x] 0.18 Data pipeline v0 (`tools/data`): download NE 10m land, admin-0, admin-1, populated places, marine polys, and ETOPO into `.cache/`; produce the fine land mask, elevation pyramid and `manifest.json` with sha256; DATA_SOURCES updated.
   AT: `npm run data` is idempotent (second run makes no changes); the manifest is verified by a test.
 - [ ] 0.19 Load-time vector rasterizer (admin-1 → province raster) at S/M sizes in the worker.
   AT: the M raster builds in < 1.5 s in Chromium; the province count matches source minus water; visual check screenshot.

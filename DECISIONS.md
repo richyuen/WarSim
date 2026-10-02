@@ -97,7 +97,10 @@ in both Node and Chromium.
 Transferable buffers with a recycled pool give equivalent throughput at our snapshot
 sizes.
 
-### ADR-7 · 2026-10-02 · accepted — Miller cylindrical projection, cropped 80°N–60°S, per-row scale tables **[AoC-DEVIATION]**
+### ADR-7 · 2026-10-02 · accepted (crop refined in PLAN 0.18) — Miller cylindrical projection, cropped 80°N–64.165°S, per-row scale tables **[AoC-DEVIATION]**
+**Refinement (PLAN 0.18).** The southern crop is 64.165°S instead of ~60°S. This makes the projected extent
+exactly 2π × π, so every map size is W = 2H with square cells (`src/sim/data/projection.ts`). It also keeps
+the tip of the Antarctic Peninsula at the bottom edge.
 **Why.** A familiar world shape, a simple wrap for the looping map, and correct km-based
 speeds and blast radii via `kx/ky[y]`. Antarctica is excluded by default (it adds no
 gameplay). AoC appears to use an equirectangular-like stretch (VISUAL, low confidence).
@@ -137,3 +140,23 @@ of modules that don't exist yet; a lexical resolver is about 100 lines, has no n
 dependency (`unrs-resolver`) and also lets the sim have a package allowlist (`zod` only).
 **Consequences.** Revisit when typescript-eslint supports TS 7 (it can then move to the
 native compiler). The rule does not follow path aliases; none are used (relative imports only).
+
+### ADR-13 · 2026-10-02 · accepted — Shipped map-asset budget and elevation codec
+**Decision.**
+- `npm run data` produces assets that are committed under `public/data/earth/`, so a fresh clone builds and
+  runs offline: the 16384×8192 land mask (0.38 MB) and elevation at 2048×1024, 1024×512 and 512×256
+  (2.9 MB total).
+- The 4096×2048 elevation level is a local derived product only (`.cache/data/derived/`, ~8 MB), for
+  offline scenario and terrain tools.
+- Elevation encoding: gzip(byte-planes(row-delta(int16 m))), with ocean depths quantised to 10 m.
+- gzip headers are normalised (mtime 0, OS byte 255) so outputs are byte-identical across platforms. Raw
+  sources are pinned by URL tag and sha256 (`tools/data/sources.json`).
+
+**Why.** Raw int16 + gzip was 13.8 MB at 4096 and 3.5 MB at 2048. Delta + byte-planes halves that: elevation
+is smooth along rows, and the high byte is almost constant. Coarse bathymetry is enough for sea shading.
+A shipped budget of ~5 MB keeps the static site and the repo light. M-size maps (2048×1024) use the 2048
+level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3), so a 4096 level adds little.
+
+**Consequences.** L/XL maps derive terrain from the cached 4096 level offline (scenario build), never at
+runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
+`tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.

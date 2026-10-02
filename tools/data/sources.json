@@ -1,0 +1,47 @@
+{
+  "comment": "Pinned raw data sources for `npm run data`. sha256 is filled on first download and verified afterwards. Licenses: see DATA_SOURCES.md.",
+  "sources": [
+    {
+      "id": "ne_10m_land",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_land.geojson",
+      "file": "ne_10m_land.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "1ac90796408bc6ad6911d69448485d3c4dbf2190370080368a09976e1c9f7416"
+    },
+    {
+      "id": "ne_10m_admin_0_countries",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson",
+      "file": "ne_10m_admin_0_countries.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255"
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_1_states_provinces.geojson",
+      "file": "ne_10m_admin_1_states_provinces.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "22d0e3ad85eb3e27f17cabf8ba2d50e554fbc27a87796ff891d958185da62fb5"
+    },
+    {
+      "id": "ne_10m_populated_places",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_populated_places.geojson",
+      "file": "ne_10m_populated_places.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "9b8e3de09048ef00dfc70357dbb9fa324493f214b5e0ae4daf1aa79a8d10116b"
+    },
+    {
+      "id": "ne_10m_geography_marine_polys",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_geography_marine_polys.geojson",
+      "file": "ne_10m_geography_marine_polys.geojson",
+      "license": "Public domain (Natural Earth)",
+      "sha256": "53f865e8ffa966cdd402145c82c5cd14ee7ce974cd0eb9a3f59f03a4cfd2d66c"
+    },
+    {
+      "id": "etopo_2022_60s_surface",
+      "url": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO2022/data/60s/60s_surface_elev_gtif/ETOPO_2022_v1_60s_N90W180_surface.tif",
+      "file": "ETOPO_2022_v1_60s_N90W180_surface.tif",
+      "license": "Public domain (NOAA NCEI, US Government work)",
+      "sha256": "9d27d4b8ea8e76977e2988bca667d7c8fa68b927355feffcddd6b4875a7fd08e"
+    }
+  ]
+}

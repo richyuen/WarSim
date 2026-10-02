@@ -14,7 +14,8 @@
     "e2e": "playwright test",
     "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run e2e && npm run parity",
     "parity": "tsx tools/parity/cli.ts",
-    "bench": "tsx tools/bench/run.ts"
+    "bench": "tsx tools/bench/run.ts",
+    "data": "tsx tools/data/run.ts"
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",
@@ -27,6 +28,7 @@
     "@preact/preset-vite": "^2.10.6",
     "@types/node": "^26.6.4",
     "eslint": "^10.11.0",
+    "geotiff": "^3.0.5",
     "globals": "^17.13.0",
     "pixi.js": "^8.22.0",
     "tsx": "^4.23.15",

@@ -359,3 +359,36 @@
 - Test-suite hygiene: sim-only e2e tests open `/?paused=1&view=0` (no rendering, no auto-run). The worker
   error test now uses a corrupt load. The snapshot-count floor was lowered to 5, because rAF slows under
   parallel SwiftShader load.
+
+## 2026-10-02 — PLAN 0.18: data pipeline v0 (`npm run data`)
+- Sources pinned in `tools/data/sources.json` (URL + sha256 written on first download, verified afterwards)
+  and cached in `.cache/data/`:
+  - Natural Earth 10m land, admin-0, admin-1, populated places and marine polys (GeoJSON, nvkelso tag v5.1.2);
+  - ETOPO 2022 60″ surface GeoTIFF (466 MB; the old THREDDS GeoTIFF URL is a 404, the `/mgg/global/relief/`
+    path works).
+- `src/sim/data/projection.ts` (dmath, deterministic):
+  - Miller cropped at 80°N…64.165°S, so the projection is exactly 2:1 (ADR-7 refined);
+  - `project`/`unproject`, `kmPerCell`, and per-row kx = cos φ, ky = cos 0.8φ.
+- `src/sim/data/rasterize.ts`: deterministic even-odd scanline fill over cell centres with an active edge
+  list; LSB-first bitset helpers. Shared by the tools and (next) the worker.
+- Products in `public/data/earth/` (committed, 3.3 MB total; ADR-13):
+  - `landmask-16384x8192.bits.gz`: 6837 polygons, 0.38 MB;
+  - elevation 2048/1024/512 `.i16d.gz` (2.18 / 0.58 / 0.16 MB), box-averaged from ETOPO into Miller cells.
+    Codec `src/shared/elevation.ts`: row-delta + byte planes + gzip, ocean quantised to 10 m. Raw int16 was
+    13.8 MB at 4096; the 4096 level is now a local derived product;
+  - `manifest.json`: projection, assets (dims, encoding, bytes, sha256), sources (url, license, sha256).
+  - gzip OS byte normalised for cross-platform byte identity.
+- Idempotency verified: a second `npm run data` → "data: no changes"; `npm run data -- --check` exits 0. A full
+  run takes ~2 min, mostly reading ETOPO.
+- Visual check (scratch renders, viewed): the land mask is a clean Miller world; elevation shows the Andes,
+  Himalaya/Tibet, Alps, Scandinavia and ocean ridges/trenches, aligned with the mask.
+- `tests/unit/data-manifest.test.ts`:
+  - sha256 and sizes of every asset; sources pinned and public domain;
+  - land fraction (0.3–0.45, Miller inflates high latitudes);
+  - 8 known land points and 6 known sea points;
+  - Tibet > 4000 m, Atlantic < −3000 m, Mariana < −6000 m, Alps > 1000 m;
+  - land mask vs elevation sign agreement > 93%;
+  - each pyramid level equals `halveElevation` of the level above;
+  - codec round trip.
+  `tests/unit/rasterize.test.ts` covers the rasterizer (squares, holes, orientation, clipping, triangle area)
+  and the projection (2:1 crop, round trip, row scales).

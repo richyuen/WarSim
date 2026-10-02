@@ -184,7 +184,8 @@ event sink. Systems never read wall-clock time, render state or subscriptions.
 ## 3. World model & data schemas
 
 ### 3.1 Coordinates & map [ADR-1, ADR-7]
-- Projection: **Miller cylindrical**, latitude cropped to about 80°N … 60°S. World units
+- Projection: **Miller cylindrical**, latitude cropped to 80°N … 64.165°S (exactly 2:1, square cells;
+  `src/sim/data/projection.ts`, ADR-7). World units
   are projected km at the equator (`W_km ≈ 40 075`). `x` wraps when `loopingMap` is on.
 - The grid has `W×H` cells. Sizes: S 1024×512, **M 2048×1024 (default)**, L 4096×2048,
   XL 6144×3072. Sim memory budget at XL is ≤ 160 MB.
@@ -193,8 +194,9 @@ event sink. Systems never read wall-clock time, render state or subscriptions.
 - **Fine land mask** (static): 1-bit 16384×8192 from Natural Earth 10m land. It is used by
   the sim for element placement and naval passability at sub-cell scale, and by the
   renderer for coastlines. Both read the same bytes, so they never disagree.
-- Elevation: ETOPO 2022 downsampled to a 4096×2048 u16 pyramid for hillshade and
-  terrain derivation.
+- Elevation: ETOPO 2022 60″ box-averaged into Miller cells. The 4096×2048 int16 level is a derived
+  product for offline tools. 2048/1024/512 levels ship in `public/data/earth/` (ADR-13 codec), and
+  `manifest.json` lists sizes and sha256 for all assets and sources (`npm run data`).
 
 ### 3.2 Cell layer (SoA, length W·H)
 | field | type | meaning |
