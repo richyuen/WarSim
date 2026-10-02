@@ -16,7 +16,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `npm run check` is green; one Playwright smoke test loads the page and finds the canvas.
 - [x] 0.5 Iteration docs: PROGRESS.md, BLOCKERS.md, DATA_SOURCES.md (stub entries), note in PROGRESS that `reference/NOTES.md` is missing.
   AT: the files exist; PROGRESS has a dated entry.
-- [ ] 0.6 Extract trailer frames: `ffmpeg -i reference/video/*.mp4 -vf fps=0.5 reference/frames/%04d.png`; view a sample and record observations.
+- [x] 0.6 Extract trailer frames: `ffmpeg -i reference/video/*.mp4 -vf fps=0.5 reference/frames/%04d.png` (+ scene-change frames `scene_%03d.png`, since the only clip is 42 s); view a sample and record observations.
   AT: `reference/frames/` has ≥ 30 PNGs; PROGRESS logs observations (VISUAL, dated).
 - [ ] 0.7 Fetch itch page, devlog index + all posts, Steam page; write `docs/PARITY.md` Table 1 (numbered AoC rows, TEXT/VISUAL source, all `not started`) + Table 2 (our additions).
   AT: every PROMPT.md baseline bullet maps to ≥ 1 row; each row has a source tag and an observation date.

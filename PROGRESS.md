@@ -50,3 +50,37 @@
 - **`reference/NOTES.md` is missing** (checked 2026-10-02: `reference/` has only `screens/` and `video/`).
   Per PROMPT.md, visual/feel claims rely on screenshots, the trailer and text sources, and are marked lower
   confidence; also noted in SPEC §1 and the BLOCKERS watch list.
+
+## 2026-10-02 — PLAN 0.6: trailer frames + VISUAL observations
+- Only clip: `reference/video/steam-trailer-2024.mp4` (42.0 s, 1920×1080). `fps=0.5` gives 21 frames
+  (`0001–0021.png`), short of the AT's 30, because the trailer is short and fast-cut. Added scene-change frames
+  (`select='gt(scene,0.25)'` → `scene_001–018.png`) so each distinct shot is captured: 39 PNGs total. Contact
+  sheets `reference/sheet_fixed.png`, `reference/sheet_scene.png` and two full-res crops were viewed.
+  All of this is under ignored `reference/` and is never committed.
+- Observations (VISUAL, 2026-10-02, trailer 2024; confidence medium, no NOTES.md):
+  - **Map is an unapologetic pixel raster.** Zoomed into Central Europe, each tile is ~12 screen px and borders
+    are stair-stepped. Nation borders are drawn as a 1–2 tile dark (near-black) outline *inside* the owner's
+    edge; coasts have no outline. Zoom only enlarges pixels: this is exactly the "blocky" failure mode our
+    ADR-1 render layer must beat.
+  - **Occupation**: occupied land keeps the occupier's colour but with a darker/desaturated variant blended
+    in (Netherlands frame: dark-red ring of occupied cells along the front; Denmark: purple occupier cells in a
+    red nation). A white/black checker strip marks an active front line (Germany–Netherlands).
+  - **Labels at close zoom**: country name in a dark sans font, under it a red capital dot + gold coin icon +
+    number (army/strength value, e.g. "Germany 786", "Poland 526"), on a dark pill. Small coloured dots
+    (green/white/red) are cities. A translucent dark circle with red dots = battle; a yellow glow = selected or
+    recently captured capital.
+  - **Battle marker**: a large pixel-art sword icon on the frontline (Italy frame); war banners at the bottom.
+  - **Terrain** shows as grey shades (mountains/hills) where land is unowned; editor palette: Basic Land,
+    Desert/Tundra, Hills, Mountains, Crossing, Water; tools Brush/Bucket with "use terrain mask".
+  - **Crossings**: wide pale-grey/blue translucent bands across seas link continents (world shots).
+  - **UI**: dark-brown framed panels with gold trim; bottom bar (Display Options, Text Popups, Pause, God Mode,
+    Statistics, Speed ×N, date "Month, Year N", Nations count, Menu); left nation panel (flag, war/peace/
+    alliance buttons, Statistics icons, Diplomacy row, "Disable Nation AI"); right God Mode panel (Spawn Nations,
+    Edit Territory brush size, Spawn Cities, Edit Terrain, World AI Settings); a right-side ranked bar chart
+    (nation colour bars with land counts); bottom-left event log with coloured nation chips ("X was conquered by
+    Y", "X formed an alliance", "joined ... Commonwealth").
+  - **Scenarios**: main menu with scenario list + preview ("World Map 750×400, Nations 167"), also US states,
+    China, fantasy maps; Workshop sharing. Statistics: per-nation ranked bars.
+  - Takeaways for us: (1) match the readable dark border outline and occupation tint, but render it smoothly
+    (SPEC §8 T0); (2) per-nation strength number next to the name at operational zoom; (3) the bar-chart
+    statistics panel and colour-chipped event log are core to the "feel"; (4) crossings must be visible bands.
