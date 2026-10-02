@@ -12,7 +12,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `npm run build` succeeds; the preview serves a page with a canvas and the title "WarSim".
 - [x] 0.3 ESLint flat config incl. sim purity rules (§2.1 SPEC) and module-boundary rule (local `warsim/module-boundaries`, see ADR-12).
   AT: a fixture file in `tests/lint-fixtures/` using `Math.random` inside `src/sim` fails lint (vitest runs ESLint API on fixtures).
-- [ ] 0.4 vitest + Playwright installed; `npm test`, `npm run e2e`, `npm run check` (= tsc + eslint + vitest + build + parity).
+- [x] 0.4 vitest + Playwright installed; `npm test`, `npm run e2e`, `npm run check` (= tsc + eslint + vitest + build + parity).
   AT: `npm run check` is green; one Playwright smoke test loads the page and finds the canvas.
 - [ ] 0.5 Iteration docs: PROGRESS.md, BLOCKERS.md, DATA_SOURCES.md (stub entries), note in PROGRESS that `reference/NOTES.md` is missing.
   AT: the files exist; PROGRESS has a dated entry.

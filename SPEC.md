@@ -551,5 +551,8 @@ Sim tick ≤ 1.5 ms average (Node, M, 1938).
   `god(cmd)`, `hash()`, `fps()`).
 - **Bench** (`npm run bench`): headed Chromium with GPU. T0 and T2 fps, tick ms,
   snapshot ms. Results go to `docs/bench/*.json`.
+- **Gate** (`npm run check`): `tsc -b` → `eslint .` → `vitest run` → `vite build` →
+  `playwright test` (against `vite preview` of the build) → `npm run parity` (added in PLAN 0.8).
+  Must be green before every commit.
 - **Parity** (`npm run parity`): parses `docs/PARITY.md`, recomputes the score and checks
   that the evidence paths exist for verified rows.

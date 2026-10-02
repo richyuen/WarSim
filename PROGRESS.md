@@ -31,3 +31,14 @@
 - `tsconfig.node.json` now type-checks `tools/`, `tests/unit/`, `vitest.config.ts`, `eslint.config.js` (checkJs).
 - Gotcha: no-undef is off for TS files (typescript-eslint), but `no-restricted-globals` still reports implicit
   global references, so `window` in sim is caught even though the app tsconfig includes DOM libs.
+
+## 2026-10-02 — PLAN 0.4: Playwright + `npm run check`
+- `@playwright/test` 1.63 (Chromium already in the local ms-playwright cache). `playwright.config.ts` runs
+  `tests/e2e` against `vite preview` of a fresh build on 127.0.0.1:4173 (tests see what ships).
+- `tests/e2e/smoke.spec.ts`: title "WarSim", visible `canvas#map` with a non-trivial backing size, and zero
+  page errors / console errors (catches bundle crashes, not just DOM presence).
+- Scripts: `e2e` = `playwright test`; `check` = typecheck → lint → vitest → build → e2e. Parity joins `check`
+  in PLAN 0.8 (the script does not exist yet). SPEC §10 documents the gate.
+- `tsconfig.node.json` now covers `playwright.config.ts` + `tests/e2e` and adds the DOM lib (for
+  `evaluate` callbacks); `src/sim` is type-checked by the app config, so this doesn't loosen sim purity.
+- Verified: `npm run check` green (tsc, eslint, 20 vitest, build, 1 e2e).
