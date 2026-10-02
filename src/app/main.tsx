@@ -2,6 +2,7 @@ import { render } from 'preact';
 import type { ScenarioId } from '../shared/protocol';
 import { SCENARIO_INFO } from '../shared/scenarios';
 import { App } from './App';
+import { Autosave } from './autosave';
 import { Hud } from './hud';
 import { MapView } from './MapView';
 import { SimClient } from './simClient';
@@ -14,7 +15,7 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 }
 
 // URL options: ?scenario=toy|1938 (default toy until the 1938 HUD lands), ?seed=N (world seed),
-// ?paused=1 (start paused), ?view=0 (no map view; tests that only drive the sim worker use it).
+// ?paused=1 (start paused), ?continue=1 (resume the autosave), ?view=0 (no map view; tests that only drive the sim worker use it).
 const params = new URLSearchParams(location.search);
 const seed = Number(params.get('seed') ?? 1938) >>> 0;
 
@@ -28,11 +29,18 @@ if (view) {
   hud.onMapMode = (m) => view.setMapMode(m);
   view.setMapMode(hud.mapMode.value);
 }
-installTestApi({ sim, view, hud });
+const autosave = new Autosave(sim, scenarioId);
+installTestApi({ sim, view, hud, autosave });
 
 const uiRoot = document.getElementById('ui');
 if (uiRoot) render(<App hud={hud} />, uiRoot);
 
 await sim.init({ scenario: scenarioId, seed });
+// ?continue=1 resumes the autosave of this scenario (PLAN 1.27).
+if (params.get('continue') === '1') {
+  const tick = await autosave.restore().catch(() => null);
+  if (tick !== null) console.info(`WarSim: resumed autosave at tick ${tick}`);
+}
+autosave.start(() => !hud.paused.value);
 // Persisted speed and pause (PLAN 1.8); ?paused=1 forces a paused start (tests).
 hud.apply(params.get('paused') === '1');

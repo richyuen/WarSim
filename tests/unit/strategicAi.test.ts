@@ -30,7 +30,7 @@ describe('strategic AI (PLAN 1.24)', () => {
     for (const [a] of declared) expect(aggression(a!), NATIONS_1938[a! - 1]?.tag).toBeGreaterThanOrEqual(PACIFIST_BELOW);
     const meanAggression = declared.reduce((m, [a]) => m + aggression(a!), 0) / declared.length;
     expect(meanAggression).toBeGreaterThan(40);
-  });
+  }, 120_000); // six simulated months with AI wars
 
   it('with the AI switched off globally, nobody declares war', () => {
     const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });

@@ -1539,3 +1539,28 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     its twin), and the earlier three;
   - the three files that `prettier --write` had reformatted in PLAN 1.25 (no prettier config in
     the repo: double quotes) are restored to the house style.
+
+## 2026-10-02 — PLAN 1.27: save/load full state + command log, gzip; autosave to IndexedDB
+- **Save codec** (`src/shared/saveCodec.ts`): gzip via CompressionStream; raw saves pass through.
+- **Autosave** (`src/app/autosave.ts`):
+  - IndexedDB slot with scenario, tick and bytes;
+  - every 60 s of real time while running, and on page hide;
+  - `?continue=1` resumes;
+  - exposed on `__warsim.autosave`.
+  - `SimClient.saveWithStatus` returns bytes and tick from one worker reply, so a running game
+    cannot skew them.
+- **AT:**
+  - `tests/sweep/saveYear.test.ts`: after one year of 1938 AI play (seed 3), save → load into a
+    live sim → save is byte-identical (I5), and both continue 40 days to the same hash (I2,
+    across the 1 February economy month). Raw 38.6 MB → gzip 0.79 MB. Evidence:
+    `docs/evidence/1.27/save-1939.json`.
+  - `tests/e2e/autosave1938.spec.ts`: 72 ticks, `saveNow` (gzip record at tick 72), then a reload
+    with `?continue=1` in a new worker resumes at tick 72 with the same hash. 48 more ticks equal
+    a Node run of 120 ticks.
+  - `tests/unit/saveCodec.test.ts`: round trip, compression, raw passthrough.
+- **Test budgets:** the unit suite's default timeout is raised to 90 s. Multi-day 1938 sims with
+  three AIs reached 30 s under parallel load: replay, AI 6-month and capitals front tests timed
+  out one after another. No assertions changed.
+- **Observation:** after a year of AI play the world has 603 divisions (from 1,054): war losses
+  plus deficit disbanding. Army size will be balanced with the Phase 7 sweep.
+- Parity: rows 49 (save/load) and 38 (AI switches and persisted settings) → partial.

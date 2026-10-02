@@ -174,6 +174,13 @@ export class SimClient {
     return r.bytes;
   }
 
+  /** Save bytes with the status at the same tick (the worker replies synchronously after saving). */
+  async saveWithStatus(): Promise<{ bytes: Uint8Array; status: SimStatus }> {
+    const r = await this.status({ type: 'save' });
+    if (!r.bytes) throw new Error('save reply without bytes');
+    return { bytes: r.bytes, status: r.status };
+  }
+
   async load(bytes: Uint8Array): Promise<SimStatus> {
     const copy = bytes.slice();
     return (await this.status({ type: 'load', bytes: copy }, [copy.buffer])).status;

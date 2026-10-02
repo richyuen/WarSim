@@ -2,6 +2,7 @@
  * `window.__warsim`: the automation surface for Playwright and the critic (SPEC §10).
  * It grows with the game (god commands, fps …).
  */
+import type { Autosave } from './autosave';
 import type { Hud } from './hud';
 import type { MapView } from './MapView';
 import type { SimClient } from './simClient';
@@ -11,6 +12,8 @@ export interface WarsimTestApi {
   /** Null when the page was opened with ?view=0. */
   view: MapView | null;
   hud: Hud;
+  /** PLAN 1.27: IndexedDB autosave (saveNow / read / restore). */
+  autosave: Autosave;
 }
 
 declare global {

@@ -110,7 +110,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: in a scripted 2-nation war, the larger nation advances; formations are spread along the front (coverage metric).
 - [x] 1.26 Economic AI v1 (budget split, build mix).
   AT: no AI nation goes bankrupt in 10 peaceful years on 3 seeds.
-- [ ] 1.27 Save/load full state + command log, gzip; autosave to IndexedDB.
+- [x] 1.27 Save/load full state + command log, gzip; autosave to IndexedDB.
   AT: I2/I5 pass on the full 1938 world after 1 year; e2e autosave → reload → continue.
 
 ### 1C Presentation & tools

@@ -182,6 +182,16 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly). T
 2.6 ms in a war-heavy 200-day run (Node, M; budget 1.5 ms, PLAN 7.1). The main costs are the
 supply flood over warring blocs (~20%), A* for AI orders (~22%) and combat (~16%).
 
+**Save files and autosave (PLAN 1.27).**
+- *Format:* a save is the sim's section bytes (all of `World.parts()`, the command log included),
+  gzipped (`src/shared/saveCodec.ts`; raw bytes still load). A 1938 world after one year of AI
+  play is 38.6 MB raw and 0.79 MB gzipped.
+- *Autosave* (`src/app/autosave.ts`): IndexedDB `warsim`/`saves`, slot `autosave`, holding
+  {scenario, tick, savedAt, bytes}. It runs every 60 s of real time while the game runs, and when
+  the page is hidden.
+- *Resume:* `?continue=1` restores the slot for the same scenario after init.
+- *Status:* the worker's save reply carries the status taken at the same tick.
+
 ### 2.6 Determinism [ADR-5]
 - Numbers: f64 using only `+ − × ÷`, `Math.sqrt`, `Math.floor/ceil/round/abs/min/max/
   trunc/imul/fround` (all exactly specified by ECMAScript). Trig, exp, log and pow come from

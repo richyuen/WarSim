@@ -52,7 +52,7 @@ describe('1938 command-log replay (review after PLAN 1.19)', () => {
       b.step(1);
     }
     expect(b.hash()).toBe(a.hash());
-  });
+  }, 120_000); // two 70-day AI runs
 
   it('save → load → save is byte-identical after diplomacy, puppets and revolts', () => {
     const a = scripted(13);
