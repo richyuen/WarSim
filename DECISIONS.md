@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-27 · 2026-10-02 · accepted — Fronts: adjacency-only flips with a hold time; advance gated by control
+**Decision.**
+- A cell can flip only to a nation at war with its holder that holds a 4-neighbour.
+- The attacker's pressure must beat the holder's plus a garrison for 16 consecutive hours.
+- All flips in a tick are decided on start-of-tick control.
+- Land formations cannot enter an enemy-held cell until it flips.
+- The frontier set is a derived cache with local upkeep.
+
+**Why.**
+- Adjacency is the simplest exact connectivity rule: no flip can jump a line, and a defended
+  cell blocks everything behind it (AT).
+- The hold time turns pressure into AoC's pixel-by-pixel wave, with a hard speed bound.
+- Without the movement gate, the first test run showed infantry (2.3 cells/day) outrunning its
+  own front (1.5 cells/day) until its pressure no longer reached the line, and the wave stalled
+  on day 5. HOI-style gating makes armies advance with their front.
+- Two-phase decisions make the result independent of frontier iteration order. Incremental
+  frontier upkeep is checked against a full rebuild in tests.
+
 ### ADR-26 · 2026-10-02 · accepted — Element combat v1: simultaneous volleys, health-weighted targeting, derived battles
 **Decision.**
 - Elements are saved rows. Formation strength is derived from them.

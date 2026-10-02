@@ -148,6 +148,8 @@ export class CellLayers implements Stateful {
   pop: Uint32Array<ArrayBuffer>;
   /** Supply bloc whose network reaches the cell (0 = none; PLAN 1.12, refreshed every 6 h). */
   supply: Uint16Array<ArrayBuffer>;
+  /** Consecutive hours an attacker has out-pressured the holder (PLAN 1.14). */
+  flip: Uint8Array<ArrayBuffer>;
 
   constructor(w: number, h: number) {
     this.w = w;
@@ -159,6 +161,7 @@ export class CellLayers implements Stateful {
     this.econ = new Uint32Array(w * h);
     this.pop = new Uint32Array(w * h);
     this.supply = new Uint16Array(w * h);
+    this.flip = new Uint8Array(w * h);
   }
 
   serialize(): Section[] {
@@ -170,6 +173,7 @@ export class CellLayers implements Stateful {
       { name: 'cells.econ', dtype: 'u32', data: this.econ },
       { name: 'cells.pop', dtype: 'u32', data: this.pop },
       { name: 'cells.supply', dtype: 'u16', data: this.supply },
+      { name: 'cells.flip', dtype: 'u8', data: this.flip },
     ];
   }
 
@@ -182,7 +186,8 @@ export class CellLayers implements Stateful {
     const econ = takeSection(sections, 'cells.econ', 'u32');
     const pop = takeSection(sections, 'cells.pop', 'u32');
     const supply = takeSection(sections, 'cells.supply', 'u16');
-    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n || pop.length !== n || supply.length !== n) {
+    const flip = takeSection(sections, 'cells.flip', 'u8');
+    if (owner.length !== n || controller.length !== n || terrain.length !== n || province.length !== n || econ.length !== n || pop.length !== n || supply.length !== n || flip.length !== n) {
       throw new Error(`cell layers: expected ${n} cells`);
     }
     this.owner = owner.slice();
@@ -192,6 +197,7 @@ export class CellLayers implements Stateful {
     this.econ = econ.slice();
     this.pop = pop.slice();
     this.supply = supply.slice();
+    this.flip = flip.slice();
   }
 }
 
@@ -239,10 +245,22 @@ export class Wars implements Stateful {
   atWar(a: number, b: number): boolean {
     return a !== b && this.keys.has(Wars.key(a, b));
   }
+  /** Bumped on every change (derived caches compare against it; not state). */
+  version = 0;
   set(a: number, b: number, war: boolean): void {
     if (a === b) return;
     if (war) this.keys.add(Wars.key(a, b));
     else this.keys.delete(Wars.key(a, b));
+    this.version++;
+  }
+  /** Nations in at least one war. */
+  nations(): Set<number> {
+    const s = new Set<number>();
+    for (const k of this.keys) {
+      s.add(Math.floor(k / 65536));
+      s.add(k % 65536);
+    }
+    return s;
   }
   get size(): number {
     return this.keys.size;
@@ -252,6 +270,7 @@ export class Wars implements Stateful {
   }
   deserialize(sections: readonly Section[]): void {
     this.keys = new Set(takeSection(sections, 'wars.pairs', 'u32'));
+    this.version++;
   }
 }
 
@@ -292,6 +311,7 @@ class WorldCore implements Stateful {
     w.paths.clear();
     w.elementIndex = null;
     w.nav = null;
+    w.frontier = null;
     w.out.fires.length = 0;
     w.out.markAllDirty();
   }
@@ -320,6 +340,9 @@ export class World {
   production = new Table('production', PRODUCTION_SCHEMA, 16);
   elements = new Table('elements', ELEMENT_SCHEMA, 1024);
   wars = new Wars();
+  /** Derived (not state): territory frontier cells and the wars version it was built for. */
+  frontier: Set<number> | null = null;
+  frontierWars = -1;
   /** Derived (not state): live element ids per formation, ascending; null = rebuild. */
   elementIndex: Map<number, number[]> | null = null;
   /** Scenario rules for commands (set by the Sim; not state). */
@@ -343,11 +366,15 @@ export class World {
     this.out.markAllDirty();
   }
 
-  /** Sets the controller of cell `i`, marking its tile dirty when it changes. */
-  setController(i: number, nation: number): void {
+  /**
+   * Sets the controller of cell `i`, marking its tile dirty when it changes. Invalidates the
+   * frontier set unless the caller (the territory system) maintains it itself.
+   */
+  setController(i: number, nation: number, keepFrontier = false): void {
     const c = this.cells;
     if (c.controller[i] === nation) return;
     c.controller[i] = nation;
+    if (!keepFrontier) this.frontier = null;
     const x = i % c.w;
     const y = (i - x) / c.w;
     this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;

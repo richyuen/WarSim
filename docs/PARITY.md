@@ -10,13 +10,13 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 10.6%** (verified 0 · partial 17 · not started 63 · total 80)
+**Parity score: 11.3%** (verified 0 · partial 18 · not started 62 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
 | # | feature | AoC behaviour | our behaviour | status | evidence | notes |
 |---|---|---|---|---|---|---|
-| 1 | AI free-for-all expansion and conquest | AI-only sandbox: nations expand tile by tile into empty land, then conquer each other; "not a strategy game", the player watches and intervenes [TEXT+VISUAL 2026-10-02] | Strategic + operational AI drive all nations; territory flips from front pressure (PLAN 1.14, 1.24, 1.25) | not started |  | Baseline: "mostly-AI-driven free-for-all" |
+| 1 | AI free-for-all expansion and conquest | AI-only sandbox: nations expand tile by tile into empty land, then conquer each other; "not a strategy game", the player watches and intervenes [TEXT+VISUAL 2026-10-02] | Strategic + operational AI drive all nations; territory flips from front pressure (PLAN 1.14, 1.24, 1.25) | partial | `tests/unit/territory.test.ts` | Baseline: "mostly-AI-driven free-for-all". 2026-10-02 (PLAN 1.14): territory flips cell by cell from front pressure in a wave (≤ 1.5 cells per row per day), never past a defended line, and armies advance with their front. Missing: AI that declares wars and drives armies (1.24, 1.25), expansion into empty land |
 | 2 | Conflict hotspots | Since v4.0.0 an action by one nation likely triggers actions by nearby nations, so hotspots form; random events elsewhere still happen [TEXT 2026-10-02] | Strategic AI weights neighbour wars and threat; daily staggered decisions (PLAN 1.24) | not started |  |  |
 | 3 | AI war declaration | AI declares on neighbours above a minimum gold level; war popup + trumpet sound; v1.01 capped self-started wars at 2 [TEXT 2026-10-02] | War declaration with goals, cost/threat evaluation, history + popup (PLAN 1.16, 1.24) | not started |  |  |
 | 4 | Peace, bankruptcy and truces | Broke nations (< 20 gold, war at least 3 s old) end wars; truces exist; peace popup optional [TEXT 2026-10-02] | War score + exhaustion; broke/exhausted sue for peace; truce timer (PLAN 1.16) | not started |  | Baseline: "broke or exhausted nations sue for peace" |

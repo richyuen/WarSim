@@ -469,6 +469,18 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Slotted poses:* `slotPose` (`src/sim/core/pose.ts`) places elements in a ≈ 2:1 block, front row
   first, rotated to the facing; it is shared by the sim and the snapshot builder.
 
+*Implemented v1 (PLAN 1.14, ADR-27; `src/sim/systems/territory.ts`):*
+- *Pressure:* each formation of a nation at war projects strength/1000 × (0.5 + 0.5 supply) ×
+  (1 − d/3) into cells within 2 cells.
+- *Frontier:* the frontier set is derived. It is rebuilt by one scan only when invalidated (load,
+  a war change, or an outside controller change); flips maintain it locally.
+- *Flips:* a frontier cell flips to the strongest adjacent enemy holder when that enemy's pressure
+  ÷ terrain defence beats the holder bloc's pressure + garrison 1 for 16 consecutive hours
+  (`cells.flip`, saved). Decisions use start-of-tick control and are applied together.
+- *Advance:* formations wait at enemy-held cells until those flip, so a front advances at most
+  1.5 cells per row per day.
+- *Not yet modelled:* org and terrain-dependent radius, garrison from spending, unrest.
+
 - **Pressure field.** Each land formation projects control pressure into cells within
   `r = f(type, strength, org)` km. Pressure is weighted by strength × org × terrain-defence
   inverse × supply. Only cells in the **frontier set** are updated: cells whose

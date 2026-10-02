@@ -11,6 +11,7 @@ import { combatSystem } from './systems/combat';
 import { movementSystem } from './systems/movement';
 import { productionSystem } from './systems/production';
 import { supplySystem } from './systems/supply';
+import { territorySystem } from './systems/territory';
 import { economySystem } from './systems/economy';
 import { createToyWorld, TOY_SYSTEMS } from './toy';
 import type { World } from './world';
@@ -30,7 +31,7 @@ export class Sim {
         this.world = createWorld1938(init.seed, init.assets);
         this.world.rules = RULES_1938;
         // SPEC §2.5 order: production and economy (3), supply (4), movement.
-        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, combatSystem, movementSystem];
+        this.systems = [productionSystem, economySystem(ECONOMY_TABLES_1938), supplySystem, combatSystem, territorySystem, movementSystem];
         break;
     }
   }

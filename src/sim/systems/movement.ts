@@ -6,6 +6,8 @@
  * `findRoute` from origin to target when ordered and recomputed identically after a load
  * (it depends only on static layers). Formations move along cell centres; the time to enter a
  * cell is step km × terrain move cost for the template's mobility ÷ (speed × MARCH_DUTY).
+ * A formation waits before a cell held by a nation it is at war with until the territory system
+ * flips it, so armies advance with their front instead of running ahead of it.
  * Water is impassable to land formations; crossing cells are walkable (straits). A target cell not
  * reachable from the formation (a coastal speck at map resolution) snaps to the nearest reachable
  * cell within TARGET_SNAP_CELLS; beyond that the order is rejected.
@@ -92,9 +94,13 @@ export function movementSystem(world: World): void {
     let i = c.pathStep[id]!;
     let frac = c.stepFrac[id]!;
     let budget = 1; // hours this tick
+    const nation = c.nation[id]!;
     while (budget > 0 && i < path.length - 1) {
       const a = path[i]!;
       const b = path[i + 1]!;
+      // Enemy-held ground is entered only once it flips (PLAN 1.14): the advance follows the front.
+      const holder = world.cells.controller[b]!;
+      if (holder !== 0 && world.wars.atWar(nation, holder)) break;
       const ay = Math.floor(a / w);
       const by = Math.floor(b / w);
       let dx = (b % w) - (a % w);

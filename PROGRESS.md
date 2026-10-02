@@ -1102,3 +1102,25 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - No battles at the 1938 start: the starting armies are not placed in contact. Fronts come with
   1.14 and the AI.
 - Parity: additions row 2 (element combat) → partial.
+
+## 2026-10-02 — PLAN 1.14: territory pressure, frontier-set flips, connectivity rule
+- **Territory system** (`src/sim/systems/territory.ts`):
+  - pressure stamped by formations of nations at war (radius 2, linear falloff, supply-scaled);
+  - a derived frontier set (rebuilt only when invalidated, with local upkeep after flips);
+  - adjacency-only flips after 16 h of attacker pressure ÷ terrain defence > holder bloc +
+    garrison;
+  - two-phase decisions.
+- **State and cache changes:** new saved `cells.flip` layer; `Wars.version`/`nations()`;
+  `World.setController(…, keepFrontier)`; load clears the frontier.
+- **Movement:** formations wait at enemy-held cells until they flip.
+- **Bug found by the wave test:** the front stalled on day 5 because divisions outran it (ADR-27).
+  Fixed by the movement gate.
+- **AT (`tests/unit/territory.test.ts`, 5 tests):**
+  - three divisions advance through a 12-row test block at 12 then 24 cells on alternating days
+    (1.5 cells per row per day), every flip adjacent to German-held land;
+  - an army behind a Polish line flips nothing beyond it in 4 days;
+  - equal forces hold the border;
+  - the 1938 GER–POL frontier is bounded (50–6000 cells), incremental upkeep equals a rebuild
+    after 3 days, and the cost per tick is small;
+  - a front survives save/load into a live sim.
+- Parity: row 1 (AI expansion and conquest) → partial.
