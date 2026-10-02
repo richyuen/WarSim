@@ -127,3 +127,24 @@
 - Tools now run TypeScript through `tsx` (4.23); later tools also need it to import the extensionless sim
   sources in Node. `check` = typecheck → lint → vitest → build → e2e → parity. SPEC §10 updated.
 - Verified: the CLI fails on the freshly generated PARITY.md (header 0/0 vs 80 rows), and passes after `--write`.
+
+## 2026-10-02 — PLAN 0.9: `sim/core/dmath`
+- `src/sim/core/dmath.ts` provides sin, cos, tan, atan, atan2, asin, acos, exp, log, log2, log10, pow, ldexp,
+  sqrt and hypot.
+  - Ports of the fdlibm algorithms: Cody–Waite π/2 reduction (33+33-bit split plus tail), the k_sin/k_cos
+    minimax kernels, the s_atan table plus polynomial, the e_exp and e_log rational kernels, and integer-power
+    squaring.
+  - Bits are read and written through a little-endian DataView, and only exact IEEE ops are used. JS never fuses
+    multiply-add, so the results are engine-independent.
+- Accuracy (1e5 samples per case, `tests/unit/dmath.test.ts`): max abs error < 1e-9 for sin/cos (|x| ≤ 1e6),
+  atan, atan2 (all quadrants), asin, acos, log, log2 and log10; relative error < 1e-9 for tan, exp (±700) and pow.
+  Measured: ≤ 1 ulp. V8's own Math uses fdlibm ports, so exp, log and atan2 match it bit-for-bit; sin differs from
+  V8 in about 1% of inputs by 1 ulp.
+- ECMAScript special cases are covered: signed zeros in atan2, infinities, NaN, subnormal log/exp, negative bases
+  in pow.
+- Golden values: `tools/dmath/gen-golden.ts` wrote 138 hex bit patterns to `tests/unit/dmath-golden.json`.
+  - `tests/unit/dmath.test.ts` (Node) and `tests/e2e/dmath.spec.ts` (Chromium) must reproduce them exactly. The
+    e2e test transpiles `dmath.ts` with the TS API and imports it into the page from a data: URL.
+  - Mutation check: flipping one golden value made both runners fail.
+- `tsconfig.node.json` now includes `src/sim` and `src/shared`, so Node-side tools can type-check their imports
+  of sim code.

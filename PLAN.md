@@ -22,7 +22,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: every PROMPT.md baseline bullet maps to ≥ 1 row; each row has a source tag and an observation date.
 - [x] 0.8 `npm run parity` (tools/parity): parse the tables, compute the score, check evidence paths for `verified` rows, compare against the header score.
   AT: vitest on fixtures: a header mismatch fails, a missing evidence path fails, a valid file passes.
-- [ ] 0.9 `sim/core/dmath`: sin, cos, atan2, exp, log, pow via tables + polynomials.
+- [x] 0.9 `sim/core/dmath`: sin, cos, atan2, exp, log, pow via tables + polynomials.
   AT: max abs error < 1e-9 vs Math on 1e5 samples; golden-value test (exact bit patterns hard-coded) passes in Node and in Chromium (Playwright).
 - [ ] 0.10 `sim/core/rng` (PCG32 + streams) and `hash32/xxhash32`.
   AT: known-answer vectors; stream independence (adding a stream doesn't change other streams' sequences).
