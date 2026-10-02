@@ -44,7 +44,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: `npm run data` is idempotent (second run makes no changes); the manifest is verified by a test.
 - [x] 0.19 Load-time vector rasterizer (admin-1 → province raster) at S/M sizes in the worker.
   AT: the M raster builds in < 1.5 s in Chromium; the province count matches source minus water; visual check screenshot.
-- [ ] 0.20 Headless runner `npm run sim` (Node) with per-year metrics JSON.
+- [x] 0.20 Headless runner `npm run sim` (Node) with per-year metrics JSON.
   AT: toy world 10 years runs and writes metrics; tick ms is reported.
 - [ ] 0.21 i18n skeleton: `t()`, `en.json`, locale picker, ESLint no-literal-string on `src/ui`.
   AT: a lint fixture with a literal UI string fails; the UI renders keys from en.json.

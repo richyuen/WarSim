@@ -433,3 +433,14 @@
   - `MapView` now redraws only on snapshot, camera change, resize or active interpolation, so an idle map
     costs nothing;
   - e2e time fell from ~1 min to ~20 s.
+
+## 2026-10-02 — PLAN 0.20: headless runner `npm run sim`
+- `tools/headless/runner.ts` `runHeadless({scenario, seed, years})` drives the same `Sim` facade as the
+  worker. Per year it records: tick, state hash, per-nation controlled/owned cells, formation count and
+  strength, cells flipped during the year, event counts by kind, and tick ms (mean/p95/max) plus wall ms.
+- `tools/headless/cli.ts`: `npm run sim -- --scenario toy --seed 7 --years 10 [--out file]`, default
+  `.cache/runs/<scenario>-seed<seed>-<years>y.json`.
+- Verified: toy, seed 7, 10 years = 87 600 ticks in 2.9 s wall. Mean tick 0.033 ms, p95 ≈ 0.075 ms;
+  ~2.7–4.3k cells flipped per year, 120 formations steady, final hash 04c3638d. Metrics JSON written.
+- `tests/unit/headless.test.ts`: 2-year run has the expected structure, and its final hash equals a plain
+  `Sim` stepped the same number of ticks.

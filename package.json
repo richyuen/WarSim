@@ -15,7 +15,8 @@
     "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run e2e && npm run parity",
     "parity": "tsx tools/parity/cli.ts",
     "bench": "tsx tools/bench/run.ts",
-    "data": "tsx tools/data/run.ts"
+    "data": "tsx tools/data/run.ts",
+    "sim": "tsx tools/headless/cli.ts"
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",
