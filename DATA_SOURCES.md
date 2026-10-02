@@ -33,3 +33,4 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 | Package | License | Status |
 |---|---|---|
 | preact, @preact/signals | MIT | in use |
+| twgl.js | MIT | in use (WebGL2 helpers, PLAN 0.14) |

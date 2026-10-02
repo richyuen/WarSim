@@ -6,5 +6,10 @@ export default defineConfig({
   base: './',
   plugins: [preact()],
   worker: { format: 'es' },
-  build: { target: 'es2022', sourcemap: true },
+  build: {
+    target: 'es2022',
+    sourcemap: true,
+    // bench.html hosts the render benchmarks (PLAN 0.14/0.15, `npm run bench`).
+    rollupOptions: { input: { main: 'index.html', bench: 'bench.html' } },
+  },
 });

@@ -13,11 +13,13 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run e2e && npm run parity",
-    "parity": "tsx tools/parity/cli.ts"
+    "parity": "tsx tools/parity/cli.ts",
+    "bench": "tsx tools/bench/run.ts"
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",
-    "preact": "^11.0.0"
+    "preact": "^11.0.0",
+    "twgl.js": "^7.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

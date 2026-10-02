@@ -247,3 +247,37 @@
   equals Node's at the same tick.
 - Gotcha: a payload can legitimately outgrow its size class, so the leak check asserts accounting plus flat
   allocation rather than "zero new buffers".
+
+## 2026-10-02 — PLAN 0.14: render benchmark A (raw WebGL2 + twgl id-map renderer)
+- `src/render/map/MapRenderer.ts` + `mapShader.ts`:
+  - Owner and controller grids are R16UI textures; the palette is a 256×256 RGBA8 texture.
+  - One full-screen-triangle pass. Dirty 64×64 tiles upload with `texSubImage2D` (UNPACK_ROW_LENGTH).
+  - Camera precision: the integer centre cell and an f32 fraction are uniforms, and noise coordinates are
+    periodic. This is the SPEC §8 camera-relative scheme; `src/render/camera.ts` has the split.
+- Smooth borders:
+  - Each distinct controller id in the 4×4 neighbourhood accumulates cubic B-spline weight, and the max wins.
+    Contours are C2-smooth curves at any zoom.
+  - A ≤ 0.32-cell value-noise domain warp keeps the drawn owner within half a cell of the sim.
+  - Border width is constant in CSS px (d / fwidth(d)) and fades out below ~1.5 px per cell. Coasts are softer.
+  - Occupation is the same weighted indicator (controller ≠ owner) with screen-space diagonal hatching.
+- First version used a 3×3 quadratic B-spline and nearest-cell occupation. The close-zoom screenshot showed
+  hatched squares at cell corners along borders, from a mismatch between the smooth winner and the
+  nearest-cell owner. Fixed by smoothing occupation with the same weights; I moved to cubic for smoother
+  mid-zoom borders at the same time.
+- `bench.html?b=A` + `src/app/bench/` (synthetic world: fBm continents, 150 nations from a noise-warped
+  jittered Voronoi, occupation strips). `npm run bench` (`tools/bench/run.ts`) builds, serves, launches
+  Chromium with `--use-angle=d3d11 --enable-gpu --ignore-gpu-blocklist` (headless gets the real GPU this way;
+  without the flags it is SwiftShader), and writes `docs/bench/A-webgl2-map.json` + 3 screenshots.
+- Gotcha: `gl.finish()` does not wait for the GPU under ANGLE (it measured 0.003 ms per full-screen draw).
+  GPU time now uses EXT_disjoint_timer_query_webgl2 (`src/render/gl/gpuTimer.ts`).
+- Results (RTX 4070 Ti, 1920×1080, 2048×1024 map, 150 nations):
+  - 0.43–0.46 ms GPU per full map draw (0.22 ms with the 3×3 variant).
+  - Uncapped rAF over 3 s: about 5000 fps, and about 1160 fps while uploading 32 dirty tiles per frame.
+  - Grid upload 2 ms; synthetic generation 430 ms (bench only).
+  - Budget translation: a mid-range laptop iGPU is ~15–20× slower, so ≈ 9 ms, which is within the 16.7 ms
+    T0 frame. A dev-GPU guard of ≤ 1 ms per map draw at 1080p is recorded for ADR-4.
+- Screenshots viewed (`docs/bench/A-webgl2-map-z0-world.png`, `-z1-region.png` at 6 px/cell, `-z2-close.png`
+  at 48 px/cell):
+  - No cell stairs at any zoom. At 48 px/cell the borders are smooth curves (data steps show as gentle waves).
+  - Occupation hatching has smooth edges; x-wrap shows land past the map edges.
+- `tests/e2e/bench-pages.spec.ts` keeps the bench page compiling and drawing in the normal gate (SwiftShader).
