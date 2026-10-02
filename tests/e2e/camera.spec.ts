@@ -22,7 +22,7 @@ async function settle(page: Page): Promise<void> {
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 960, height: 540 });
   await page.goto('/?paused=1');
-  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 3 && window.__warsim!.view!.lastTick >= 0);
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick >= 0);
 });
 
 test('keyboard pans with arrows/WASD and zooms with E/Q', async ({ page }) => {

@@ -16,7 +16,11 @@ import {
   type Subscription,
   type ToWorker,
 } from '../shared/protocol';
+import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
+import { xxhash32View } from '../sim/core/hash';
+import { buildProvinceRaster } from '../sim/data/provinces';
 import { Sim } from '../sim/sim';
+import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
 
@@ -131,8 +135,44 @@ export class SimServer {
         for (const b of msg.buffers) this.pool.release(b);
         this.inFlight = false;
         break;
+      case 'buildProvinces':
+        void this.buildProvinces(msg);
+        break;
     }
     this.maybeSend();
+  }
+
+  private async buildProvinces(msg: Extract<ToWorker, { type: 'buildProvinces' }>): Promise<void> {
+    try {
+      const t0 = performance.now();
+      const store = new AssetStore(msg.assetBase);
+      const geoAsset = await store.load('admin1-geometry');
+      const metaAsset = await store.load('admin1-meta');
+      const t1 = performance.now();
+      const geo = decodeAdmin1(geoAsset.bytes);
+      const meta = JSON.parse(new TextDecoder().decode(metaAsset.bytes)) as Admin1Meta[];
+      const t2 = performance.now();
+      const r = buildProvinceRaster(geo, meta, msg.w, msg.h);
+      const t3 = performance.now();
+      let present = 0;
+      for (let i = 1; i < r.cells.length; i++) if (r.cells[i]! > 0) present++;
+      const result = {
+        w: msg.w,
+        h: msg.h,
+        provinces: meta.length,
+        present,
+        forced: r.forced.length,
+        missing: r.missing.length,
+        landCells: msg.w * msg.h - r.cells[0]!,
+        hash: xxhash32View(r.ids),
+        ms: { fetch: geoAsset.fetchMs + metaAsset.fetchMs, decode: t2 - t1 + geoAsset.decodeMs + metaAsset.decodeMs, raster: t3 - t2, total: t3 - t0 },
+        ...(msg.withIds ? { ids: r.ids } : {}),
+      };
+      this.post({ type: 'provinces', reqId: msg.reqId, result }, msg.withIds ? [r.ids.buffer] : []);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);
+    }
   }
 
   /** New sim state: drop queued events, resend every tile. */

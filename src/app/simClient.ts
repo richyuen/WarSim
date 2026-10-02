@@ -6,9 +6,10 @@
  * are transferred back for reuse.
  */
 import type { Command } from '../shared/commands';
-import type { FromWorker, SimInit, SimStatus, Snapshot, Speed, Subscription, ToWorker } from '../shared/protocol';
+import type { FromWorker, ProvinceBuildResult, SimInit, SimStatus, Snapshot, Speed, Subscription, ToWorker } from '../shared/protocol';
 
-type Pending = { resolve: (r: { status: SimStatus; bytes?: Uint8Array }) => void; reject: (e: Error) => void };
+type Reply = { status: SimStatus; bytes?: Uint8Array } | { provinces: ProvinceBuildResult };
+type Pending = { resolve: (r: Reply) => void; reject: (e: Error) => void };
 
 /** Distributive Omit so each union member keeps its own fields. */
 type WithoutReqId<T> = T extends unknown ? Omit<T, 'reqId'> : never;
@@ -48,6 +49,8 @@ export class SimClient {
       const err = new Error(msg.message);
       err.stack = msg.stack;
       p.reject(err);
+    } else if (msg.type === 'provinces') {
+      p.resolve({ provinces: msg.result });
     } else {
       p.resolve(msg.bytes ? { status: msg.status, bytes: msg.bytes } : { status: msg.status });
     }
@@ -74,7 +77,7 @@ export class SimClient {
     return () => this.listeners.delete(l);
   }
 
-  private request(req: Request, transfer: Transferable[] = []): Promise<{ status: SimStatus; bytes?: Uint8Array }> {
+  private request(req: Request, transfer: Transferable[] = []): Promise<Reply> {
     const reqId = this.nextReq++;
     return new Promise((resolve, reject) => {
       this.pending.set(reqId, { resolve, reject });
@@ -86,12 +89,26 @@ export class SimClient {
     this.worker.postMessage(msg);
   }
 
+  private async status(req: Request, transfer: Transferable[] = []): Promise<{ status: SimStatus; bytes?: Uint8Array }> {
+    const r = await this.request(req, transfer);
+    if (!('status' in r)) throw new Error(`unexpected reply to ${req.type}`);
+    return r;
+  }
+
   async init(init: SimInit): Promise<SimStatus> {
-    return (await this.request({ type: 'init', init })).status;
+    return (await this.status({ type: 'init', init })).status;
   }
 
   async step(n: number): Promise<SimStatus> {
-    return (await this.request({ type: 'step', n })).status;
+    return (await this.status({ type: 'step', n })).status;
+  }
+
+  /** Builds the admin-1 province raster in the worker (PLAN 0.19). */
+  async buildProvinces(w: number, h: number, withIds = false): Promise<ProvinceBuildResult> {
+    const assetBase = new URL('data/earth/', document.baseURI).href;
+    const r = await this.request({ type: 'buildProvinces', assetBase, w, h, withIds });
+    if (!('provinces' in r)) throw new Error('unexpected reply to buildProvinces');
+    return r.provinces;
   }
 
   command(cmd: Command): void {
@@ -111,18 +128,18 @@ export class SimClient {
   }
 
   async hash(): Promise<SimStatus> {
-    return (await this.request({ type: 'hash' })).status;
+    return (await this.status({ type: 'hash' })).status;
   }
 
   async save(): Promise<Uint8Array> {
-    const r = await this.request({ type: 'save' });
+    const r = await this.status({ type: 'save' });
     if (!r.bytes) throw new Error('save reply without bytes');
     return r.bytes;
   }
 
   async load(bytes: Uint8Array): Promise<SimStatus> {
     const copy = bytes.slice();
-    return (await this.request({ type: 'load', bytes: copy }, [copy.buffer])).status;
+    return (await this.status({ type: 'load', bytes: copy }, [copy.buffer])).status;
   }
 
   terminate(): void {

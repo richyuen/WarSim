@@ -9,7 +9,7 @@
   },
   "assets": [
     {
-      "path": "landmask-16384x8192.bits.gz",
+      "path": "landmask-16384x8192.bits.wsz",
       "kind": "landmask",
       "width": 16384,
       "height": 8192,
@@ -18,7 +18,25 @@
       "sha256": "6a5c95eb567bba7d311e441ebced24a986b4ae0fbf4ceba6be9a95bcf13f53d9"
     },
     {
-      "path": "elev-2048x1024.i16d.gz",
+      "path": "admin1-geometry.wsz",
+      "kind": "admin1-geometry",
+      "width": 4596,
+      "height": 1,
+      "encoding": "gzip(WAD1 varint stream, Q = 1048576)",
+      "bytes": 3081216,
+      "sha256": "25a4d4fed6eedbb7244b4b59e1ad6dfc33a2c703ceafe6b0567799bfb805f042"
+    },
+    {
+      "path": "admin1-meta.json.wsz",
+      "kind": "admin1-meta",
+      "width": 4596,
+      "height": 1,
+      "encoding": "gzip(JSON Admin1Meta[])",
+      "bytes": 127278,
+      "sha256": "9cfa4fdd10858da761b79757f2e2059944edecc10b4bab92e0a96b6bd9fa59a6"
+    },
+    {
+      "path": "elev-2048x1024.i16d.wsz",
       "kind": "elevation",
       "width": 2048,
       "height": 1024,
@@ -27,7 +45,7 @@
       "sha256": "40f7a17b9302186095ed4101a424fc223d4f8ac1ff3b4944e021a31ffacadb6d"
     },
     {
-      "path": "elev-1024x512.i16d.gz",
+      "path": "elev-1024x512.i16d.wsz",
       "kind": "elevation",
       "width": 1024,
       "height": 512,
@@ -36,7 +54,7 @@
       "sha256": "427e6484a0e8b88064fbbc4e1023fb4d619f57bdbd29b37fb9753858acaa998d"
     },
     {
-      "path": "elev-512x256.i16d.gz",
+      "path": "elev-512x256.i16d.wsz",
       "kind": "elevation",
       "width": 512,
       "height": 256,

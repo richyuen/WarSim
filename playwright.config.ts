@@ -7,6 +7,8 @@ export default defineConfig({
   testDir: 'tests/e2e',
   outputDir: 'test-results',
   fullyParallel: true,
+  // Pages render with SwiftShader (CPU); more parallel workers starve each other into timeouts.
+  workers: 4,
   forbidOnly: !!process.env['CI'],
   retries: 0,
   reporter: [['list']],

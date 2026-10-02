@@ -18,7 +18,7 @@ function transpile(file: string): string {
 }
 
 test('dmath golden bit patterns match in Chromium', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?paused=1&view=0');
   const dmathJs = transpile('src/sim/core/dmath.ts');
   const goldenJs = transpile('tests/unit/dmath-golden.ts');
   const mismatches = await page.evaluate(

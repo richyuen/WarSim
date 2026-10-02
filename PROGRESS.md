@@ -392,3 +392,44 @@
   - codec round trip.
   `tests/unit/rasterize.test.ts` covers the rasterizer (squares, holes, orientation, clipping, triangle area)
   and the projection (2:1 crop, round trip, row scales).
+
+## 2026-10-02 — PLAN 0.19: load-time admin-1 → province raster in the worker
+- New assets from `npm run data`:
+  - `admin1-geometry.wsz`: 4596 NE admin-1 provinces, 1.29M exact vertices, Miller-projected and
+    quantised to 2⁻²⁰, delta varints (`src/shared/admin1.ts` codec), 3.1 MB;
+  - `admin1-meta.json.wsz`: adm1 code, name, adm0, type, label point, area.
+  - No simplification: independent simplification of neighbours would open gaps or overlaps along shared
+    borders (ADR-13).
+- Shipped files are renamed `.gz` → `.wsz`. `vite preview` (sirv) serves `.gz` with
+  `Content-Encoding: gzip`, so the browser fetched already-decompressed bytes and the sha256 check failed.
+  Found by the first bench run.
+- `src/sim/data/provinces.ts` `buildProvinceRaster`:
+  - scanline-fills every province (exact float ops);
+  - force-places sub-cell provinces, by decreasing area, near the label point. Order: free water at the
+    label cell; then a same-country donor keeping ≥ 1 cell; then free water (island growth); then any
+    donor.
+  - Island-growth fix: the first version left 64 provinces unplaced at M. These were multi-parish
+    micro-islands (Bermuda, Dominica, Anguilla), where every neighbour was a locked one-cell parish in open
+    sea.
+- `src/worker/assets.ts` `AssetStore`: fetch → size + sha256 check (WebCrypto) → DecompressionStream.
+  New protocol request `buildProvinces {assetBase, w, h, withIds}` → reply `provinces` with timings, counts
+  and xxHash of the raster. `SimClient.buildProvinces`.
+- Results (Chromium worker, real GPU machine): M raster 67–69 ms + decode 43–56 ms (total with fetch
+  133–207 ms) vs the 1.5 s budget. All 4596/4596 provinces are present at S and M (forced 1202 / 724, missing
+  0); NE admin-1 has no water features. The Chromium raster hash equals Node's at both sizes
+  (`tests/e2e/provinces.spec.ts`).
+- `tests/unit/provinces.test.ts`: codec round trip; every province present at S and M (cell sums = W·H);
+  known places (Berlin, Polish Warsaw, Kaliningrad, Ukrainian Lviv, French Paris, New York at Albany,
+  Japanese Tokyo, Atlantic = none); deterministic rebuild.
+- Visual check: `bench.html?b=R` draws the worker-built raster with the production MapRenderer (each
+  province coloured). `npm run bench -- R` → `docs/bench/R-provinces-M-{world,europe,britain}.png`, viewed.
+  Provinces are clean with smooth borders. Dense micro-province clusters (London's 33 boroughs, Slovenian
+  and Macedonian municipalities, Malta) become small grids of 1-cell provinces at 19.6 km cells. This is
+  acceptable because PLAN 1.3 merges provinces into 1938 nations; 1.3 should also consider grouping
+  sub-cell provinces into a parent district.
+- Test-suite stability (the gate timed out once):
+  - stale `vite preview` servers from manual checks were killed;
+  - Playwright `workers: 4` (parallel SwiftShader renders starved each other);
+  - `MapView` now redraws only on snapshot, camera change, resize or active interpolation, so an idle map
+    costs nothing;
+  - e2e time fell from ~1 min to ~20 s.

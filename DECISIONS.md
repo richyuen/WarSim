@@ -144,8 +144,14 @@ native compiler). The rule does not follow path aliases; none are used (relative
 ### ADR-13 · 2026-10-02 · accepted — Shipped map-asset budget and elevation codec
 **Decision.**
 - `npm run data` produces assets that are committed under `public/data/earth/`, so a fresh clone builds and
-  runs offline: the 16384×8192 land mask (0.38 MB) and elevation at 2048×1024, 1024×512 and 512×256
-  (2.9 MB total).
+  runs offline: the 16384×8192 land mask (0.38 MB), elevation at 2048×1024, 1024×512 and 512×256
+  (2.9 MB total), and admin-1 geometry (3.1 MB, exact NE vertices quantised to 2⁻²⁰) + metadata (0.13 MB).
+  Total ≈ 6.5 MB.
+- Shipped files use a neutral `.wsz` extension (gzip payload): static servers, including `vite preview`,
+  add `Content-Encoding: gzip` to `.gz` files, so `fetch` would return decompressed bytes and the sha256
+  check would fail.
+- Admin-1 geometry is not simplified: independent per-polygon simplification would open gaps and overlaps
+  along shared borders, while exact shared vertices rasterize gap-free.
 - The 4096×2048 elevation level is a local derived product only (`.cache/data/derived/`, ~8 MB), for
   offline scenario and terrain tools.
 - Elevation encoding: gzip(byte-planes(row-delta(int16 m))), with ocean depths quantised to 10 m.

@@ -22,6 +22,9 @@ export class MapView {
   private snapArrival = 0;
   private tickMs = 0;
   private lastFrame = -1;
+  /** Something changed since the last draw (snapshot, resize, camera). */
+  private dirty = true;
+  private lastCam: Camera = { cx: NaN, cy: NaN, scale: NaN };
   private raf = 0;
   /** Frames rendered (test API / stats). */
   frames = 0;
@@ -85,6 +88,7 @@ export class MapView {
       p.colors[i * 4 + 3] = 255;
     }
     p.upload(f.count);
+    this.dirty = true;
     this.snapArrival = performance.now();
     this.tickMs = s.tickMs;
     this.lastTick = s.tick;
@@ -113,7 +117,19 @@ export class MapView {
     const dt = this.lastFrame < 0 ? 0 : Math.min(0.1, (now - this.lastFrame) / 1000);
     this.lastFrame = now;
     this.controller.update(dt);
-    this.draw(now);
+    // Redraw only when something can have changed: a new snapshot, camera motion, a resize,
+    // or units still interpolating toward the latest tick. An idle map costs nothing.
+    const c = this.controller.cam;
+    const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
+    const interpolating = this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5;
+    const resized =
+      this.canvas.width !== Math.round(this.canvas.clientWidth * (window.devicePixelRatio || 1)) ||
+      this.canvas.height !== Math.round(this.canvas.clientHeight * (window.devicePixelRatio || 1));
+    if (this.dirty || camMoved || interpolating || resized) {
+      this.draw(now);
+      this.dirty = false;
+      this.lastCam = { ...c };
+    }
     this.raf = requestAnimationFrame((t) => this.frame(t));
   }
 

@@ -213,6 +213,10 @@ tracked), defence modifier, attack modifiers per unit class, supply attrition,
 econ weight, colour.
 
 ### 3.3 Provinces, cities, sea zones, air zones
+- **Province raster** (PLAN 0.19): built at load time in the worker from `admin1-geometry.wsz` +
+  `admin1-meta.json.wsz` (`src/sim/data/provinces.ts`). Every NE admin-1 province gets ≥ 1 cell: sub-cell
+  provinces are force-placed near their label point (same-country donor cell, else free water as an
+  island, else any donor). Province id = NE feature index + 1. Builds in ~70 ms at M in Chromium.
 - **Province** (`data/maps/earth/provinces.json` + raster): id, name key, admin-1
   source id, centroid, cell count, area km², terrain mix, `cores: nationId[]`,
   `buildings {industry, fort, airbase, port, navalBase, aa}`, population, unrest,

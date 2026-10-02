@@ -42,7 +42,25 @@ export type ToWorker =
   | { type: 'speed'; speed: Speed }
   | { type: 'pause'; paused: boolean }
   | { type: 'subscribe'; sub: Subscription }
-  | { type: 'ack'; seq: number; buffers: ArrayBuffer[] };
+  | { type: 'ack'; seq: number; buffers: ArrayBuffer[] }
+  /** Builds the admin-1 province raster at w×h from the map assets under `assetBase`. */
+  | { type: 'buildProvinces'; reqId: number; assetBase: string; w: number; h: number; withIds: boolean };
+
+/** Result of `buildProvinces` (PLAN 0.19). */
+export interface ProvinceBuildResult {
+  w: number;
+  h: number;
+  provinces: number;
+  present: number;
+  forced: number;
+  missing: number;
+  landCells: number;
+  /** xxHash32 of the id raster (determinism check against Node). */
+  hash: number;
+  ms: { fetch: number; decode: number; raster: number; total: number };
+  /** Province id per cell, when requested. */
+  ids?: Uint16Array;
+}
 
 export interface SimStatus {
   tick: number;
@@ -105,4 +123,5 @@ export interface Snapshot {
 export type FromWorker =
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array }
   | { type: 'error'; reqId: number; message: string; stack: string }
-  | { type: 'snapshot'; snap: Snapshot };
+  | { type: 'snapshot'; snap: Snapshot }
+  | { type: 'provinces'; reqId: number; result: ProvinceBuildResult };

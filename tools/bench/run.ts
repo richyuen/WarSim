@@ -44,6 +44,16 @@ const BENCHES: Record<string, BenchSpec> = {
     ],
   },
   BP: { id: 'BP', file: 'BP-pixi-proxies', shots: [{ name: 'tactical', cx: 1100, cy: 330, scale: 24 }] },
+  // Province raster (PLAN 0.19): world, Europe, Britain (London boroughs are forced placements).
+  R: {
+    id: 'R',
+    file: 'R-provinces-M',
+    shots: [
+      { name: 'world', cx: 1024, cy: 512, scale: 0.9 },
+      { name: 'europe', cx: 1109, cy: 286, scale: 5 },
+      { name: 'britain', cx: 1020, cy: 268, scale: 22 },
+    ],
+  },
 };
 
 async function waitForServer(url: string, ms: number): Promise<void> {
