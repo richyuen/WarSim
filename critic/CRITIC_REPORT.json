@@ -1,0 +1,29 @@
+{
+  "commit": "bb1dd4fd7f8ffe3b5896d6eda1f2c3dc1421a4e4",
+  "scores": {
+    "mapVisuals": 4,
+    "diplomacyWarDepth": 5,
+    "emergentDynamics": 2,
+    "godMode": 6,
+    "editorScenarios": 4,
+    "statsHistory": 5,
+    "uiUxPolish": 3,
+    "performance": 4,
+    "stability": 6,
+    "semanticZoom": 3,
+    "naval": 0,
+    "tanks": 0,
+    "aircraft": 0,
+    "aiNukes": 0
+  },
+  "blocking": [
+    {"id": "B1", "title": "World is static over decades: top-10 land holders unchanged years 9-40, leader share fixed at 27.2%, China survives 12-year war at start size", "evidence": ["critic/headless_seed99_40y.json", "critic/s1.json", "critic/shots/s1_3_run_y12.png", "critic/shots/s1_4_after_asia.png"], "fix": "Give large nations real vulnerability (overextension, stability, splitting big empires), make occupation convert at peace, add top-10 churn and leader-share variance on unseen seeds to the sweep criteria"},
+    {"id": "B2", "title": "Semantic zoom shows nothing at close range: T2/T3 are dot/icon grids on flat colour, no terrain, combat or motion", "evidence": ["critic/shots/s3_paused_scale0256.png", "critic/shots/s3_paused_scale1024.png", "critic/shots/s3_live_scale256_3.png"], "fix": "Land PLAN 2.4-2.9 (fire visuals, T3 expansion, detail tiles, hillshade, coast) before claiming the feature; scale occupation hatch with zoom"},
+    {"id": "B3", "title": "Differentiators absent: no naval, aircraft or nukes; tanks listed in production but unbuildable", "evidence": ["critic/shots/s4_12_charts.png", "critic/shots/s1_01_1938_boot.png"], "fix": "Phases 3-6; meanwhile hide unbuildable armour templates"},
+    {"id": "B4", "title": "Revolt fragmentation spam: nations 100 -> 258, flagless 'Free <village>' states and 18-nation rebel coalitions", "evidence": ["critic/headless_seed99_40y.json", "critic/shots/s1_4_after_eu.png", "critic/shots/s1_3_run_y12.png"], "fix": "Cap rebel spawns per region/decade, merge into existing claimants, name by region, generate flags for spawned nations"},
+    {"id": "B5", "title": "No game entry point: '/' opens a two-nation toy test world, no menu or scenario select", "evidence": ["critic/shots/s1_00_default_url.png"], "fix": "Title/menu screen with scenario select; move the toy world behind a dev flag"},
+    {"id": "B6", "title": "Editor brush does not paint on drag (drag pans the camera)", "evidence": ["critic/s5.json", "critic/shots/s5_brush_click_then_drag.png"], "fix": "In brush/line mode left-drag paints, pan moves to right/middle drag; add an e2e that drags"},
+    {"id": "B7", "title": "Europe unreadable at world zoom: overlapping counters and translucent ghost duplicates", "evidence": ["critic/shots/s1_01_crop_europe_counters.png", "critic/shots/s4_07_crop_ghost_counters.png"], "fix": "Screen-space decluttering/aggregation at T0, finish split/merge fades while paused"}
+  ],
+  "timestamp": "2026-10-03T11:21:38Z"
+}
