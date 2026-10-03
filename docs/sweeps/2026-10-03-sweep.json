@@ -1,0 +1,5249 @@
+{
+ "date": "2026-10-03",
+ "seeds": 10,
+ "years": 50,
+ "verdicts": [
+  {
+   "seed": 1,
+   "moving": 0.016871798219981495,
+   "topLand": 0.27296760979129714,
+   "topIncome": 0.2874126860391362,
+   "aliveMin": 99,
+   "aliveMax": 150,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 2,
+   "moving": 0.06668779290763427,
+   "topLand": 0.2500047888744868,
+   "topIncome": 0.287275412260012,
+   "aliveMin": 99,
+   "aliveMax": 202,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 3,
+   "moving": 0.028756104979370065,
+   "topLand": 0.2479779411764706,
+   "topIncome": 0.2839821096347759,
+   "aliveMin": 99,
+   "aliveMax": 200,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 4,
+   "moving": 0.025746411856598473,
+   "topLand": 0.2652812242841013,
+   "topIncome": 0.28742957768346705,
+   "aliveMin": 99,
+   "aliveMax": 151,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 5,
+   "moving": 0.05578442316603792,
+   "topLand": 0.24147821132216407,
+   "topIncome": 0.2841064192128794,
+   "aliveMin": 101,
+   "aliveMax": 231,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 6,
+   "moving": 0.023394392416210302,
+   "topLand": 0.27170351615377136,
+   "topIncome": 0.28750322163119324,
+   "aliveMin": 100,
+   "aliveMax": 194,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 7,
+   "moving": 0.011377913948255573,
+   "topLand": 0.2551096901509521,
+   "topIncome": 0.2908313763534798,
+   "aliveMin": 100,
+   "aliveMax": 208,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 8,
+   "moving": 0.028106393448105088,
+   "topLand": 0.2740540876910533,
+   "topIncome": 0.2887282628284521,
+   "aliveMin": 97,
+   "aliveMax": 151,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 9,
+   "moving": 0.029598500567701375,
+   "topLand": 0.26719789130900706,
+   "topIncome": 0.28587733715269387,
+   "aliveMin": 100,
+   "aliveMax": 163,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  },
+  {
+   "seed": 10,
+   "moving": 0.015263443694055936,
+   "topLand": 0.25661723116449847,
+   "topIncome": 0.28679648711811695,
+   "aliveMin": 98,
+   "aliveMax": 168,
+   "warYears": 1,
+   "pass": {
+    "moving": true,
+    "land": true,
+    "income": true,
+    "alive": true,
+    "war": true
+   },
+   "ok": true
+  }
+ ],
+ "results": [
+  {
+   "seed": 1,
+   "wallS": 804.824082,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 99,
+     "topLand": 0.27034431349937643,
+     "topIncome": 0.2856369344996334,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 13765
+    },
+    {
+     "year": 2,
+     "alive": 100,
+     "topLand": 0.27034431349937643,
+     "topIncome": 0.2871293219290684,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 8797
+    },
+    {
+     "year": 3,
+     "alive": 114,
+     "topLand": 0.27071384087068295,
+     "topIncome": 0.2834131519632331,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 9787
+    },
+    {
+     "year": 4,
+     "alive": 120,
+     "topLand": 0.2697614300490719,
+     "topIncome": 0.2879924139618813,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 9980
+    },
+    {
+     "year": 5,
+     "alive": 117,
+     "topLand": 0.26992325620693725,
+     "topIncome": 0.28794852672896326,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 12012
+    },
+    {
+     "year": 6,
+     "alive": 122,
+     "topLand": 0.270039631298204,
+     "topIncome": 0.28794623596821717,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1988
+    },
+    {
+     "year": 7,
+     "alive": 122,
+     "topLand": 0.27073150512847494,
+     "topIncome": 0.2880350725354373,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 3056
+    },
+    {
+     "year": 8,
+     "alive": 117,
+     "topLand": 0.2719335163451207,
+     "topIncome": 0.28670793472789113,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 47506
+    },
+    {
+     "year": 9,
+     "alive": 122,
+     "topLand": 0.2719335163451207,
+     "topIncome": 0.2867107268504961,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1756
+    },
+    {
+     "year": 10,
+     "alive": 125,
+     "topLand": 0.27193525039934446,
+     "topIncome": 0.28670341489987083,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1935
+    },
+    {
+     "year": 11,
+     "alive": 128,
+     "topLand": 0.271697716164125,
+     "topIncome": 0.2868168232569776,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 4486
+    },
+    {
+     "year": 12,
+     "alive": 129,
+     "topLand": 0.2707412024652546,
+     "topIncome": 0.28672577051381487,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 5375
+    },
+    {
+     "year": 13,
+     "alive": 129,
+     "topLand": 0.27074163407872437,
+     "topIncome": 0.28693446701167347,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3996
+    },
+    {
+     "year": 14,
+     "alive": 130,
+     "topLand": 0.27047859239219674,
+     "topIncome": 0.28396505946376444,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 7564
+    },
+    {
+     "year": 15,
+     "alive": 129,
+     "topLand": 0.27040144390978116,
+     "topIncome": 0.28669953642214757,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 6417
+    },
+    {
+     "year": 16,
+     "alive": 132,
+     "topLand": 0.269966166336621,
+     "topIncome": 0.2866747540467618,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2971
+    },
+    {
+     "year": 17,
+     "alive": 136,
+     "topLand": 0.2705018925805104,
+     "topIncome": 0.28669060429967513,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2300
+    },
+    {
+     "year": 18,
+     "alive": 139,
+     "topLand": 0.2705018925805104,
+     "topIncome": 0.2866718424211945,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1650
+    },
+    {
+     "year": 19,
+     "alive": 139,
+     "topLand": 0.2706196872612308,
+     "topIncome": 0.28675318962416224,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 974
+    },
+    {
+     "year": 20,
+     "alive": 138,
+     "topLand": 0.2706196872612308,
+     "topIncome": 0.28670032012445634,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 649
+    },
+    {
+     "year": 21,
+     "alive": 142,
+     "topLand": 0.2708358923720175,
+     "topIncome": 0.2867113213525227,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1832
+    },
+    {
+     "year": 22,
+     "alive": 142,
+     "topLand": 0.27083978087401533,
+     "topIncome": 0.28673228636177694,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 3399
+    },
+    {
+     "year": 23,
+     "alive": 146,
+     "topLand": 0.27083978087401533,
+     "topIncome": 0.2867243253094689,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 3011
+    },
+    {
+     "year": 24,
+     "alive": 147,
+     "topLand": 0.27084107706616084,
+     "topIncome": 0.2867220705748351,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1685
+    },
+    {
+     "year": 25,
+     "alive": 149,
+     "topLand": 0.2706904252943241,
+     "topIncome": 0.2867228974886042,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1846
+    },
+    {
+     "year": 26,
+     "alive": 148,
+     "topLand": 0.27069404762474497,
+     "topIncome": 0.287307059178272,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2860
+    },
+    {
+     "year": 27,
+     "alive": 149,
+     "topLand": 0.27069404762474497,
+     "topIncome": 0.2875519539460932,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1867
+    },
+    {
+     "year": 28,
+     "alive": 149,
+     "topLand": 0.27069404762474497,
+     "topIncome": 0.28754442002156133,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 882
+    },
+    {
+     "year": 29,
+     "alive": 147,
+     "topLand": 0.2708413761418129,
+     "topIncome": 0.2875327023603659,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1803
+    },
+    {
+     "year": 30,
+     "alive": 145,
+     "topLand": 0.27221017597099967,
+     "topIncome": 0.28757776967478726,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1839
+    },
+    {
+     "year": 31,
+     "alive": 145,
+     "topLand": 0.2716041896713495,
+     "topIncome": 0.28756959836129636,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2160
+    },
+    {
+     "year": 32,
+     "alive": 146,
+     "topLand": 0.2714398325152709,
+     "topIncome": 0.28754840620891686,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1914
+    },
+    {
+     "year": 33,
+     "alive": 150,
+     "topLand": 0.2711829247276139,
+     "topIncome": 0.28724213569263135,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 2428
+    },
+    {
+     "year": 34,
+     "alive": 147,
+     "topLand": 0.2711928778079376,
+     "topIncome": 0.2873842776883957,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 2196
+    },
+    {
+     "year": 35,
+     "alive": 148,
+     "topLand": 0.270982926440083,
+     "topIncome": 0.2874723463106834,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 3602
+    },
+    {
+     "year": 36,
+     "alive": 148,
+     "topLand": 0.2710992463614561,
+     "topIncome": 0.2872153553456054,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4450
+    },
+    {
+     "year": 37,
+     "alive": 147,
+     "topLand": 0.2710992463614561,
+     "topIncome": 0.28725017670899367,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1938
+    },
+    {
+     "year": 38,
+     "alive": 143,
+     "topLand": 0.2711096572413353,
+     "topIncome": 0.2872557180633773,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2179
+    },
+    {
+     "year": 39,
+     "alive": 142,
+     "topLand": 0.2710945079916254,
+     "topIncome": 0.2876804498567284,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 5524
+    },
+    {
+     "year": 40,
+     "alive": 144,
+     "topLand": 0.26966310064852167,
+     "topIncome": 0.28732535568332973,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4306
+    },
+    {
+     "year": 41,
+     "alive": 146,
+     "topLand": 0.2696828968576946,
+     "topIncome": 0.28732150563188374,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1155
+    },
+    {
+     "year": 42,
+     "alive": 144,
+     "topLand": 0.26976770916312404,
+     "topIncome": 0.28743358768089644,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 1234
+    },
+    {
+     "year": 43,
+     "alive": 140,
+     "topLand": 0.26976900113344293,
+     "topIncome": 0.2873982181051644,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 1840
+    },
+    {
+     "year": 44,
+     "alive": 141,
+     "topLand": 0.26976900113344293,
+     "topIncome": 0.2874091844895347,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1188
+    },
+    {
+     "year": 45,
+     "alive": 140,
+     "topLand": 0.2698871346242876,
+     "topIncome": 0.2863868100376662,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2075
+    },
+    {
+     "year": 46,
+     "alive": 142,
+     "topLand": 0.2698871346242876,
+     "topIncome": 0.28762700263547436,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4413
+    },
+    {
+     "year": 47,
+     "alive": 146,
+     "topLand": 0.27234399195415143,
+     "topIncome": 0.2875193876349,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 3030
+    },
+    {
+     "year": 48,
+     "alive": 147,
+     "topLand": 0.27232323877332737,
+     "topIncome": 0.28739931365638866,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1439
+    },
+    {
+     "year": 49,
+     "alive": 149,
+     "topLand": 0.2723206303798115,
+     "topIncome": 0.2873968751395796,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 805
+    },
+    {
+     "year": 50,
+     "alive": 146,
+     "topLand": 0.27296760979129714,
+     "topIncome": 0.2874126860391362,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 908
+    }
+   ]
+  },
+  {
+   "seed": 2,
+   "wallS": 980.5121191000001,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 99,
+     "topLand": 0.2689779573807638,
+     "topIncome": 0.28682387715626667,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 13790
+    },
+    {
+     "year": 2,
+     "alive": 101,
+     "topLand": 0.2686576677497024,
+     "topIncome": 0.287232666388043,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 8252
+    },
+    {
+     "year": 3,
+     "alive": 104,
+     "topLand": 0.26864131144616504,
+     "topIncome": 0.2864071916118921,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 10841
+    },
+    {
+     "year": 4,
+     "alive": 110,
+     "topLand": 0.2686652511663542,
+     "topIncome": 0.2863349697553759,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 10971
+    },
+    {
+     "year": 5,
+     "alive": 110,
+     "topLand": 0.2685969961914805,
+     "topIncome": 0.28638420141508253,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 9950
+    },
+    {
+     "year": 6,
+     "alive": 112,
+     "topLand": 0.2687967200215352,
+     "topIncome": 0.2866028642144115,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 11171
+    },
+    {
+     "year": 7,
+     "alive": 116,
+     "topLand": 0.26899582516338566,
+     "topIncome": 0.286245128144488,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 16858
+    },
+    {
+     "year": 8,
+     "alive": 112,
+     "topLand": 0.2689942323222509,
+     "topIncome": 0.2850034092625009,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 48126
+    },
+    {
+     "year": 9,
+     "alive": 117,
+     "topLand": 0.2689424590153489,
+     "topIncome": 0.28506823140455284,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2852
+    },
+    {
+     "year": 10,
+     "alive": 119,
+     "topLand": 0.26896714310518127,
+     "topIncome": 0.28508260386315126,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 4848
+    },
+    {
+     "year": 11,
+     "alive": 118,
+     "topLand": 0.2689089553475271,
+     "topIncome": 0.28518931158640054,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4573
+    },
+    {
+     "year": 12,
+     "alive": 117,
+     "topLand": 0.2689089553475271,
+     "topIncome": 0.28651295561032686,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 16093
+    },
+    {
+     "year": 13,
+     "alive": 123,
+     "topLand": 0.268903814536788,
+     "topIncome": 0.2867271119615179,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 11019
+    },
+    {
+     "year": 14,
+     "alive": 126,
+     "topLand": 0.25011429144876957,
+     "topIncome": 0.28478122981204956,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 13064
+    },
+    {
+     "year": 15,
+     "alive": 138,
+     "topLand": 0.25013421354051335,
+     "topIncome": 0.28552649463231666,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 6218
+    },
+    {
+     "year": 16,
+     "alive": 147,
+     "topLand": 0.25013421354051335,
+     "topIncome": 0.28572330879715085,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 13094
+    },
+    {
+     "year": 17,
+     "alive": 149,
+     "topLand": 0.2501429802663336,
+     "topIncome": 0.2858921288352106,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3347
+    },
+    {
+     "year": 18,
+     "alive": 155,
+     "topLand": 0.2501429802663336,
+     "topIncome": 0.2853595930539649,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 3927
+    },
+    {
+     "year": 19,
+     "alive": 152,
+     "topLand": 0.2501605309071789,
+     "topIncome": 0.28536253013889223,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 4854
+    },
+    {
+     "year": 20,
+     "alive": 154,
+     "topLand": 0.2501605309071789,
+     "topIncome": 0.2852325648836683,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2623
+    },
+    {
+     "year": 21,
+     "alive": 151,
+     "topLand": 0.2501872432377304,
+     "topIncome": 0.2857678653889749,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2408
+    },
+    {
+     "year": 22,
+     "alive": 152,
+     "topLand": 0.2501872432377304,
+     "topIncome": 0.28533817507198467,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1776
+    },
+    {
+     "year": 23,
+     "alive": 144,
+     "topLand": 0.2501912301837722,
+     "topIncome": 0.2858936256479047,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 9102
+    },
+    {
+     "year": 24,
+     "alive": 143,
+     "topLand": 0.2501944198320978,
+     "topIncome": 0.2855700682952707,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 7062
+    },
+    {
+     "year": 25,
+     "alive": 148,
+     "topLand": 0.2501944198320978,
+     "topIncome": 0.2859387230495884,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 3657
+    },
+    {
+     "year": 26,
+     "alive": 155,
+     "topLand": 0.2501944198320978,
+     "topIncome": 0.293809762798784,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 6151
+    },
+    {
+     "year": 27,
+     "alive": 159,
+     "topLand": 0.2502011981048334,
+     "topIncome": 0.2866289973893098,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 10484
+    },
+    {
+     "year": 28,
+     "alive": 170,
+     "topLand": 0.2502011981048334,
+     "topIncome": 0.2861647416579189,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 6031
+    },
+    {
+     "year": 29,
+     "alive": 168,
+     "topLand": 0.2502011981048334,
+     "topIncome": 0.2862687273081365,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4044
+    },
+    {
+     "year": 30,
+     "alive": 174,
+     "topLand": 0.25020159683819665,
+     "topIncome": 0.28606006040233345,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 8042
+    },
+    {
+     "year": 31,
+     "alive": 179,
+     "topLand": 0.25023110663419484,
+     "topIncome": 0.2860823335289607,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 5441
+    },
+    {
+     "year": 32,
+     "alive": 181,
+     "topLand": 0.2503328491408107,
+     "topIncome": 0.286650849303606,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 7409
+    },
+    {
+     "year": 33,
+     "alive": 176,
+     "topLand": 0.25037959259188375,
+     "topIncome": 0.2876166008585561,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 11011
+    },
+    {
+     "year": 34,
+     "alive": 177,
+     "topLand": 0.25024402380906813,
+     "topIncome": 0.2864201957709404,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 6260
+    },
+    {
+     "year": 35,
+     "alive": 178,
+     "topLand": 0.24981377535964883,
+     "topIncome": 0.2862261660028923,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 6639
+    },
+    {
+     "year": 36,
+     "alive": 174,
+     "topLand": 0.2498141738312092,
+     "topIncome": 0.28617674686269784,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 5044
+    },
+    {
+     "year": 37,
+     "alive": 177,
+     "topLand": 0.2498145723040408,
+     "topIncome": 0.286432432917949,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 4228
+    },
+    {
+     "year": 38,
+     "alive": 174,
+     "topLand": 0.24983489610418613,
+     "topIncome": 0.28642242231691095,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 3889
+    },
+    {
+     "year": 39,
+     "alive": 179,
+     "topLand": 0.24983489610418613,
+     "topIncome": 0.2863735373764829,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 2699
+    },
+    {
+     "year": 40,
+     "alive": 181,
+     "topLand": 0.24988352724186128,
+     "topIncome": 0.2863713493530211,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 2818
+    },
+    {
+     "year": 41,
+     "alive": 185,
+     "topLand": 0.24988272985745694,
+     "topIncome": 0.287905268947975,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 5600
+    },
+    {
+     "year": 42,
+     "alive": 186,
+     "topLand": 0.24989548861863078,
+     "topIncome": 0.28721445645302396,
+     "topNation": 10,
+     "wars": 24,
+     "warDays": 365,
+     "changed": 4879
+    },
+    {
+     "year": 43,
+     "alive": 191,
+     "topLand": 0.2500143671738811,
+     "topIncome": 0.2869784404958418,
+     "topNation": 10,
+     "wars": 24,
+     "warDays": 365,
+     "changed": 4331
+    },
+    {
+     "year": 44,
+     "alive": 189,
+     "topLand": 0.25007784194970534,
+     "topIncome": 0.286933997359443,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3468
+    },
+    {
+     "year": 45,
+     "alive": 191,
+     "topLand": 0.2500898219369921,
+     "topIncome": 0.2867651048161968,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 2093
+    },
+    {
+     "year": 46,
+     "alive": 195,
+     "topLand": 0.24998842764404391,
+     "topIncome": 0.28209680334349396,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 10347
+    },
+    {
+     "year": 47,
+     "alive": 202,
+     "topLand": 0.25005508313561947,
+     "topIncome": 0.2866799724154343,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 7798
+    },
+    {
+     "year": 48,
+     "alive": 200,
+     "topLand": 0.2500658631101119,
+     "topIncome": 0.28685714786721517,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 5498
+    },
+    {
+     "year": 49,
+     "alive": 201,
+     "topLand": 0.2500087797433761,
+     "topIncome": 0.28356916833313844,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 10363
+    },
+    {
+     "year": 50,
+     "alive": 200,
+     "topLand": 0.2500047888744868,
+     "topIncome": 0.287275412260012,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 7872
+    }
+   ]
+  },
+  {
+   "seed": 3,
+   "wallS": 1005.7973998,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 99,
+     "topLand": 0.26822749506633176,
+     "topIncome": 0.28662317794750114,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 12216
+    },
+    {
+     "year": 2,
+     "alive": 101,
+     "topLand": 0.2716137674430458,
+     "topIncome": 0.28680957496591425,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 7525
+    },
+    {
+     "year": 3,
+     "alive": 100,
+     "topLand": 0.2736605030987737,
+     "topIncome": 0.28700208546374306,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 6497
+    },
+    {
+     "year": 4,
+     "alive": 104,
+     "topLand": 0.2753122267368981,
+     "topIncome": 0.28718136283840023,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 6213
+    },
+    {
+     "year": 5,
+     "alive": 112,
+     "topLand": 0.2729701595560678,
+     "topIncome": 0.28757059503903565,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 23426
+    },
+    {
+     "year": 6,
+     "alive": 119,
+     "topLand": 0.2728614697911685,
+     "topIncome": 0.28590139868810305,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 10103
+    },
+    {
+     "year": 7,
+     "alive": 127,
+     "topLand": 0.2714135851872164,
+     "topIncome": 0.2879082332989004,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 8228
+    },
+    {
+     "year": 8,
+     "alive": 126,
+     "topLand": 0.27069874815858785,
+     "topIncome": 0.28661331393089867,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 50482
+    },
+    {
+     "year": 9,
+     "alive": 128,
+     "topLand": 0.2707426574452278,
+     "topIncome": 0.28661650028370855,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2417
+    },
+    {
+     "year": 10,
+     "alive": 130,
+     "topLand": 0.2708349278024389,
+     "topIncome": 0.28831791545176394,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 2509
+    },
+    {
+     "year": 11,
+     "alive": 135,
+     "topLand": 0.27079347160569417,
+     "topIncome": 0.2866042532385288,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 2851
+    },
+    {
+     "year": 12,
+     "alive": 147,
+     "topLand": 0.2708249291658229,
+     "topIncome": 0.286678293932982,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 3462
+    },
+    {
+     "year": 13,
+     "alive": 152,
+     "topLand": 0.27081197514664407,
+     "topIncome": 0.28670378672270774,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3166
+    },
+    {
+     "year": 14,
+     "alive": 153,
+     "topLand": 0.27081526314446797,
+     "topIncome": 0.28669513930825535,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 1996
+    },
+    {
+     "year": 15,
+     "alive": 152,
+     "topLand": 0.27121689659849835,
+     "topIncome": 0.28712928217987427,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 2833
+    },
+    {
+     "year": 16,
+     "alive": 158,
+     "topLand": 0.27130529705885637,
+     "topIncome": 0.2871699124923647,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 1644
+    },
+    {
+     "year": 17,
+     "alive": 157,
+     "topLand": 0.27131306422100376,
+     "topIncome": 0.2872199344751391,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 2522
+    },
+    {
+     "year": 18,
+     "alive": 156,
+     "topLand": 0.27209454939110356,
+     "topIncome": 0.287398184696952,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2313
+    },
+    {
+     "year": 19,
+     "alive": 184,
+     "topLand": 0.2719345587859588,
+     "topIncome": 0.284168803911394,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 5460
+    },
+    {
+     "year": 20,
+     "alive": 189,
+     "topLand": 0.272032535643743,
+     "topIncome": 0.28730598936203827,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 5701
+    },
+    {
+     "year": 21,
+     "alive": 195,
+     "topLand": 0.2717498586582596,
+     "topIncome": 0.28711637990510624,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2598
+    },
+    {
+     "year": 22,
+     "alive": 193,
+     "topLand": 0.27165204669022047,
+     "topIncome": 0.28433034528237927,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 3076
+    },
+    {
+     "year": 23,
+     "alive": 188,
+     "topLand": 0.2705088763445498,
+     "topIncome": 0.2870557337620391,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 3111
+    },
+    {
+     "year": 24,
+     "alive": 179,
+     "topLand": 0.27049355777555567,
+     "topIncome": 0.2876931474081248,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 6389
+    },
+    {
+     "year": 25,
+     "alive": 180,
+     "topLand": 0.2704847588346363,
+     "topIncome": 0.2870591830692209,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 6439
+    },
+    {
+     "year": 26,
+     "alive": 185,
+     "topLand": 0.2704847588346363,
+     "topIncome": 0.28706482123783233,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1574
+    },
+    {
+     "year": 27,
+     "alive": 185,
+     "topLand": 0.27049469710645246,
+     "topIncome": 0.2872095519727307,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 1883
+    },
+    {
+     "year": 28,
+     "alive": 184,
+     "topLand": 0.27050117898153886,
+     "topIncome": 0.2818582821515305,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 9652
+    },
+    {
+     "year": 29,
+     "alive": 194,
+     "topLand": 0.25397416274975315,
+     "topIncome": 0.2873726447774087,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 15163
+    },
+    {
+     "year": 30,
+     "alive": 190,
+     "topLand": 0.2528242743001024,
+     "topIncome": 0.28807481524288486,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3776
+    },
+    {
+     "year": 31,
+     "alive": 187,
+     "topLand": 0.25280359422457194,
+     "topIncome": 0.2843056946061988,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2390
+    },
+    {
+     "year": 32,
+     "alive": 186,
+     "topLand": 0.2509518339279466,
+     "topIncome": 0.2875368007720899,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4652
+    },
+    {
+     "year": 33,
+     "alive": 187,
+     "topLand": 0.25118632585695067,
+     "topIncome": 0.28753455126839844,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 2700
+    },
+    {
+     "year": 34,
+     "alive": 193,
+     "topLand": 0.2511851294415392,
+     "topIncome": 0.2878355600994713,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 4850
+    },
+    {
+     "year": 35,
+     "alive": 193,
+     "topLand": 0.25115205164259236,
+     "topIncome": 0.2874577667767246,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 5422
+    },
+    {
+     "year": 36,
+     "alive": 196,
+     "topLand": 0.24952061974279652,
+     "topIncome": 0.28725529303336966,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 5414
+    },
+    {
+     "year": 37,
+     "alive": 197,
+     "topLand": 0.2495964739010506,
+     "topIncome": 0.2881369629988856,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 5234
+    },
+    {
+     "year": 38,
+     "alive": 198,
+     "topLand": 0.2495968727875947,
+     "topIncome": 0.28759762812782613,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 7194
+    },
+    {
+     "year": 39,
+     "alive": 196,
+     "topLand": 0.24959727167541376,
+     "topIncome": 0.28739891472494317,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 6183
+    },
+    {
+     "year": 40,
+     "alive": 192,
+     "topLand": 0.24961003675883012,
+     "topIncome": 0.28737332456913045,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 2564
+    },
+    {
+     "year": 41,
+     "alive": 197,
+     "topLand": 0.24961003675883012,
+     "topIncome": 0.28742119545060385,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 3987
+    },
+    {
+     "year": 42,
+     "alive": 195,
+     "topLand": 0.24961003675883012,
+     "topIncome": 0.28736894702625215,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 9585
+    },
+    {
+     "year": 43,
+     "alive": 193,
+     "topLand": 0.24961522294693672,
+     "topIncome": 0.28737578741503444,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4142
+    },
+    {
+     "year": 44,
+     "alive": 195,
+     "topLand": 0.24961522294693672,
+     "topIncome": 0.2873763444132855,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1898
+    },
+    {
+     "year": 45,
+     "alive": 195,
+     "topLand": 0.24961522294693672,
+     "topIncome": 0.2833453538582528,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 11858
+    },
+    {
+     "year": 46,
+     "alive": 198,
+     "topLand": 0.24794346054816546,
+     "topIncome": 0.2877025634342072,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 9610
+    },
+    {
+     "year": 47,
+     "alive": 200,
+     "topLand": 0.24794346054816546,
+     "topIncome": 0.28770247391256576,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1188
+    },
+    {
+     "year": 48,
+     "alive": 199,
+     "topLand": 0.2479391016113205,
+     "topIncome": 0.2877815342650099,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1753
+    },
+    {
+     "year": 49,
+     "alive": 196,
+     "topLand": 0.2479779411764706,
+     "topIncome": 0.2877610531151716,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1487
+    },
+    {
+     "year": 50,
+     "alive": 199,
+     "topLand": 0.2479779411764706,
+     "topIncome": 0.2839821096347759,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4020
+    }
+   ]
+  },
+  {
+   "seed": 4,
+   "wallS": 842.6303018,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 100,
+     "topLand": 0.2696610064205381,
+     "topIncome": 0.28561312628534696,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 14892
+    },
+    {
+     "year": 2,
+     "alive": 100,
+     "topLand": 0.2713828128359792,
+     "topIncome": 0.2861589387233293,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 7575
+    },
+    {
+     "year": 3,
+     "alive": 99,
+     "topLand": 0.27170127548663175,
+     "topIncome": 0.2882118730645473,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 10312
+    },
+    {
+     "year": 4,
+     "alive": 104,
+     "topLand": 0.271594238456281,
+     "topIncome": 0.28815410573780487,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 4327
+    },
+    {
+     "year": 5,
+     "alive": 106,
+     "topLand": 0.2704729979479205,
+     "topIncome": 0.2880920058906672,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 14157
+    },
+    {
+     "year": 6,
+     "alive": 109,
+     "topLand": 0.2718084021617212,
+     "topIncome": 0.2880974798944173,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5238
+    },
+    {
+     "year": 7,
+     "alive": 112,
+     "topLand": 0.27059115937595596,
+     "topIncome": 0.2880768585368006,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 2865
+    },
+    {
+     "year": 8,
+     "alive": 105,
+     "topLand": 0.27050757911306694,
+     "topIncome": 0.28761994736351515,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 43789
+    },
+    {
+     "year": 9,
+     "alive": 108,
+     "topLand": 0.27047095013628447,
+     "topIncome": 0.28619524352137155,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 5219
+    },
+    {
+     "year": 10,
+     "alive": 110,
+     "topLand": 0.26954698748349215,
+     "topIncome": 0.28690039534668993,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4761
+    },
+    {
+     "year": 11,
+     "alive": 116,
+     "topLand": 0.26954698748349215,
+     "topIncome": 0.28694203975286786,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2144
+    },
+    {
+     "year": 12,
+     "alive": 117,
+     "topLand": 0.2695091838847912,
+     "topIncome": 0.2869476090887681,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2592
+    },
+    {
+     "year": 13,
+     "alive": 114,
+     "topLand": 0.2695091838847912,
+     "topIncome": 0.28705281294175033,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 3165
+    },
+    {
+     "year": 14,
+     "alive": 119,
+     "topLand": 0.266831280964746,
+     "topIncome": 0.28690191712840707,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 3048
+    },
+    {
+     "year": 15,
+     "alive": 119,
+     "topLand": 0.26785879279307984,
+     "topIncome": 0.28766366825213613,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4303
+    },
+    {
+     "year": 16,
+     "alive": 121,
+     "topLand": 0.26704793462157295,
+     "topIncome": 0.28816799632458867,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 4169
+    },
+    {
+     "year": 17,
+     "alive": 121,
+     "topLand": 0.2666445748006156,
+     "topIncome": 0.2869862112059887,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1371
+    },
+    {
+     "year": 18,
+     "alive": 120,
+     "topLand": 0.2666445748006156,
+     "topIncome": 0.2871237882995439,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 793
+    },
+    {
+     "year": 19,
+     "alive": 121,
+     "topLand": 0.2666397953103642,
+     "topIncome": 0.28716230850980534,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 4660
+    },
+    {
+     "year": 20,
+     "alive": 123,
+     "topLand": 0.2666397953103642,
+     "topIncome": 0.28704115034052935,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4438
+    },
+    {
+     "year": 21,
+     "alive": 121,
+     "topLand": 0.2667130808275528,
+     "topIncome": 0.28712613075141374,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2919
+    },
+    {
+     "year": 22,
+     "alive": 120,
+     "topLand": 0.26884154715285763,
+     "topIncome": 0.28697970388938593,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 734
+    },
+    {
+     "year": 23,
+     "alive": 122,
+     "topLand": 0.26884154715285763,
+     "topIncome": 0.2871318698083732,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2053
+    },
+    {
+     "year": 24,
+     "alive": 128,
+     "topLand": 0.26730414445531336,
+     "topIncome": 0.28718032820641043,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5652
+    },
+    {
+     "year": 25,
+     "alive": 134,
+     "topLand": 0.2673866737615883,
+     "topIncome": 0.2874486685055633,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 6922
+    },
+    {
+     "year": 26,
+     "alive": 131,
+     "topLand": 0.26739306380483824,
+     "topIncome": 0.28698547736133295,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 220
+    },
+    {
+     "year": 27,
+     "alive": 131,
+     "topLand": 0.26739306380483824,
+     "topIncome": 0.28698160552566115,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1387
+    },
+    {
+     "year": 28,
+     "alive": 131,
+     "topLand": 0.26739306380483824,
+     "topIncome": 0.287184383564153,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1933
+    },
+    {
+     "year": 29,
+     "alive": 132,
+     "topLand": 0.26735164036809506,
+     "topIncome": 0.2871059729596938,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2829
+    },
+    {
+     "year": 30,
+     "alive": 133,
+     "topLand": 0.26756035076091667,
+     "topIncome": 0.2870018490460099,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2510
+    },
+    {
+     "year": 31,
+     "alive": 139,
+     "topLand": 0.2675842488974993,
+     "topIncome": 0.28714800788757816,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5223
+    },
+    {
+     "year": 32,
+     "alive": 145,
+     "topLand": 0.26758152979307226,
+     "topIncome": 0.28685078815191273,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 5516
+    },
+    {
+     "year": 33,
+     "alive": 145,
+     "topLand": 0.26803407472090407,
+     "topIncome": 0.2869749175080323,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 1961
+    },
+    {
+     "year": 34,
+     "alive": 146,
+     "topLand": 0.2686481300875197,
+     "topIncome": 0.2870145446731989,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2319
+    },
+    {
+     "year": 35,
+     "alive": 150,
+     "topLand": 0.2683134772659183,
+     "topIncome": 0.28698874851479744,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 1938
+    },
+    {
+     "year": 36,
+     "alive": 151,
+     "topLand": 0.2683134772659183,
+     "topIncome": 0.2869012118071612,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 2008
+    },
+    {
+     "year": 37,
+     "alive": 151,
+     "topLand": 0.26840201559359106,
+     "topIncome": 0.2872657517114151,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 926
+    },
+    {
+     "year": 38,
+     "alive": 149,
+     "topLand": 0.26857505428319084,
+     "topIncome": 0.28725066250870623,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1193
+    },
+    {
+     "year": 39,
+     "alive": 149,
+     "topLand": 0.2685790180265503,
+     "topIncome": 0.2874602897124148,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 1623
+    },
+    {
+     "year": 40,
+     "alive": 146,
+     "topLand": 0.26858030271866423,
+     "topIncome": 0.2873151832476281,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1606
+    },
+    {
+     "year": 41,
+     "alive": 142,
+     "topLand": 0.26862202439786503,
+     "topIncome": 0.2872872360532722,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 830
+    },
+    {
+     "year": 42,
+     "alive": 140,
+     "topLand": 0.26856649946267247,
+     "topIncome": 0.2874892936717587,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2010
+    },
+    {
+     "year": 43,
+     "alive": 138,
+     "topLand": 0.26860723767609845,
+     "topIncome": 0.2874625078374194,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3392
+    },
+    {
+     "year": 44,
+     "alive": 141,
+     "topLand": 0.26860723767609845,
+     "topIncome": 0.28746946460083883,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 1952
+    },
+    {
+     "year": 45,
+     "alive": 143,
+     "topLand": 0.26860723767609845,
+     "topIncome": 0.28770531314715864,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1426
+    },
+    {
+     "year": 46,
+     "alive": 145,
+     "topLand": 0.26858969759302226,
+     "topIncome": 0.2878235076447161,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2072
+    },
+    {
+     "year": 47,
+     "alive": 146,
+     "topLand": 0.2675133743133456,
+     "topIncome": 0.287656110493148,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2750
+    },
+    {
+     "year": 48,
+     "alive": 148,
+     "topLand": 0.2653559440949716,
+     "topIncome": 0.2874401889277824,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2277
+    },
+    {
+     "year": 49,
+     "alive": 147,
+     "topLand": 0.2653944539777113,
+     "topIncome": 0.28758948998134115,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4491
+    },
+    {
+     "year": 50,
+     "alive": 149,
+     "topLand": 0.2652812242841013,
+     "topIncome": 0.28742957768346705,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4578
+    }
+   ]
+  },
+  {
+   "seed": 5,
+   "wallS": 962.1254564999999,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 101,
+     "topLand": 0.2686702907957422,
+     "topIncome": 0.28643953732265764,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 12475
+    },
+    {
+     "year": 2,
+     "alive": 101,
+     "topLand": 0.26957658852967925,
+     "topIncome": 0.28661279370767756,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4768
+    },
+    {
+     "year": 3,
+     "alive": 103,
+     "topLand": 0.26957658852967925,
+     "topIncome": 0.28716873040598395,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 7467
+    },
+    {
+     "year": 4,
+     "alive": 102,
+     "topLand": 0.2701269397108082,
+     "topIncome": 0.28824502899668214,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 13801
+    },
+    {
+     "year": 5,
+     "alive": 106,
+     "topLand": 0.2700871017398039,
+     "topIncome": 0.2882054031038179,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 19296
+    },
+    {
+     "year": 6,
+     "alive": 109,
+     "topLand": 0.26988317339594714,
+     "topIncome": 0.2883674571796749,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2580
+    },
+    {
+     "year": 7,
+     "alive": 111,
+     "topLand": 0.26988317339594714,
+     "topIncome": 0.2885042391905648,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2523
+    },
+    {
+     "year": 8,
+     "alive": 103,
+     "topLand": 0.2698870479165038,
+     "topIncome": 0.2871445857631373,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 46800
+    },
+    {
+     "year": 9,
+     "alive": 108,
+     "topLand": 0.2698904920281706,
+     "topIncome": 0.2869827093317297,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2300
+    },
+    {
+     "year": 10,
+     "alive": 113,
+     "topLand": 0.2698904920281706,
+     "topIncome": 0.2885553404507487,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 21885
+    },
+    {
+     "year": 11,
+     "alive": 120,
+     "topLand": 0.2658722752614074,
+     "topIncome": 0.28714239777805484,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 21327
+    },
+    {
+     "year": 12,
+     "alive": 127,
+     "topLand": 0.2610995461759944,
+     "topIncome": 0.2870711283922941,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 7711
+    },
+    {
+     "year": 13,
+     "alive": 122,
+     "topLand": 0.26110246168374573,
+     "topIncome": 0.28710107642565996,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1967
+    },
+    {
+     "year": 14,
+     "alive": 121,
+     "topLand": 0.26110329469791954,
+     "topIncome": 0.2873485434412631,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2925
+    },
+    {
+     "year": 15,
+     "alive": 121,
+     "topLand": 0.2607395189091147,
+     "topIncome": 0.28729579156524515,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 6119
+    },
+    {
+     "year": 16,
+     "alive": 122,
+     "topLand": 0.25958898317929374,
+     "topIncome": 0.2869102214961719,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4599
+    },
+    {
+     "year": 17,
+     "alive": 122,
+     "topLand": 0.2597070456151771,
+     "topIncome": 0.2827652567355264,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 6046
+    },
+    {
+     "year": 18,
+     "alive": 124,
+     "topLand": 0.25967390211958835,
+     "topIncome": 0.2870622891682842,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 7633
+    },
+    {
+     "year": 19,
+     "alive": 127,
+     "topLand": 0.26003339281528226,
+     "topIncome": 0.28682913705603635,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 5989
+    },
+    {
+     "year": 20,
+     "alive": 134,
+     "topLand": 0.26003339281528226,
+     "topIncome": 0.29168940857926084,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 3203
+    },
+    {
+     "year": 21,
+     "alive": 148,
+     "topLand": 0.26000353980607604,
+     "topIncome": 0.28783992100165057,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 2671
+    },
+    {
+     "year": 22,
+     "alive": 149,
+     "topLand": 0.2600085148315929,
+     "topIncome": 0.2875015531129212,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1917
+    },
+    {
+     "year": 23,
+     "alive": 144,
+     "topLand": 0.2600313194681431,
+     "topIncome": 0.2833634534086533,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 1930
+    },
+    {
+     "year": 24,
+     "alive": 144,
+     "topLand": 0.26004210123433164,
+     "topIncome": 0.28842746507877376,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 6862
+    },
+    {
+     "year": 25,
+     "alive": 157,
+     "topLand": 0.2564546662264942,
+     "topIncome": 0.2878642610606692,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4551
+    },
+    {
+     "year": 26,
+     "alive": 164,
+     "topLand": 0.25656193828580176,
+     "topIncome": 0.28754300550895245,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2085
+    },
+    {
+     "year": 27,
+     "alive": 163,
+     "topLand": 0.25658005965197694,
+     "topIncome": 0.28757989995243877,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1080
+    },
+    {
+     "year": 28,
+     "alive": 165,
+     "topLand": 0.2576957675670848,
+     "topIncome": 0.28752338623385215,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 1418
+    },
+    {
+     "year": 29,
+     "alive": 163,
+     "topLand": 0.2573420929650205,
+     "topIncome": 0.28786621158563114,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 2103
+    },
+    {
+     "year": 30,
+     "alive": 161,
+     "topLand": 0.25692715303620733,
+     "topIncome": 0.2880591620759352,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 5014
+    },
+    {
+     "year": 31,
+     "alive": 167,
+     "topLand": 0.2584959683529665,
+     "topIncome": 0.2878689980315842,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4874
+    },
+    {
+     "year": 32,
+     "alive": 173,
+     "topLand": 0.25823915522838026,
+     "topIncome": 0.2884878516542902,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5705
+    },
+    {
+     "year": 33,
+     "alive": 178,
+     "topLand": 0.25852536473470794,
+     "topIncome": 0.2851699459552371,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 10450
+    },
+    {
+     "year": 34,
+     "alive": 174,
+     "topLand": 0.26247353904416726,
+     "topIncome": 0.28803307612616,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 8085
+    },
+    {
+     "year": 35,
+     "alive": 175,
+     "topLand": 0.25858287110817585,
+     "topIncome": 0.2885244275171079,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 8246
+    },
+    {
+     "year": 36,
+     "alive": 176,
+     "topLand": 0.25819995756648584,
+     "topIncome": 0.2886278090253876,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 6548
+    },
+    {
+     "year": 37,
+     "alive": 173,
+     "topLand": 0.25763444016232356,
+     "topIncome": 0.2880046565875216,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 9398
+    },
+    {
+     "year": 38,
+     "alive": 173,
+     "topLand": 0.25760130419732685,
+     "topIncome": 0.28796711176052026,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2381
+    },
+    {
+     "year": 39,
+     "alive": 168,
+     "topLand": 0.25760459154781296,
+     "topIncome": 0.2850307076292534,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2734
+    },
+    {
+     "year": 40,
+     "alive": 165,
+     "topLand": 0.25760623525451953,
+     "topIncome": 0.288039132405807,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 3812
+    },
+    {
+     "year": 41,
+     "alive": 164,
+     "topLand": 0.25760623525451953,
+     "topIncome": 0.28842439854242474,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 3090
+    },
+    {
+     "year": 42,
+     "alive": 165,
+     "topLand": 0.2573191021667382,
+     "topIncome": 0.28796029260558315,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4483
+    },
+    {
+     "year": 43,
+     "alive": 163,
+     "topLand": 0.2573191021667382,
+     "topIncome": 0.2881644950152113,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4469
+    },
+    {
+     "year": 44,
+     "alive": 169,
+     "topLand": 0.24454487012810922,
+     "topIncome": 0.28460515189912244,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 12230
+    },
+    {
+     "year": 45,
+     "alive": 176,
+     "topLand": 0.24455501299331112,
+     "topIncome": 0.2867155031984281,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 6272
+    },
+    {
+     "year": 46,
+     "alive": 184,
+     "topLand": 0.24463891894307152,
+     "topIncome": 0.28728201612001586,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 4094
+    },
+    {
+     "year": 47,
+     "alive": 184,
+     "topLand": 0.2447181946322331,
+     "topIncome": 0.2870016303965405,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 2328
+    },
+    {
+     "year": 48,
+     "alive": 192,
+     "topLand": 0.24314742123385527,
+     "topIncome": 0.2927118856762517,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 7419
+    },
+    {
+     "year": 49,
+     "alive": 225,
+     "topLand": 0.24310395735410298,
+     "topIncome": 0.2944962278820636,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 9072
+    },
+    {
+     "year": 50,
+     "alive": 231,
+     "topLand": 0.24147821132216407,
+     "topIncome": 0.2841064192128794,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 12118
+    }
+   ]
+  },
+  {
+   "seed": 6,
+   "wallS": 861.293816,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 101,
+     "topLand": 0.26972153245549346,
+     "topIncome": 0.28594297319022965,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 11460
+    },
+    {
+     "year": 2,
+     "alive": 100,
+     "topLand": 0.26972153245549346,
+     "topIncome": 0.28666942256699857,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 5266
+    },
+    {
+     "year": 3,
+     "alive": 111,
+     "topLand": 0.269264401612541,
+     "topIncome": 0.28671441235747425,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 10975
+    },
+    {
+     "year": 4,
+     "alive": 115,
+     "topLand": 0.269366340197729,
+     "topIncome": 0.27951772591341395,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 6287
+    },
+    {
+     "year": 5,
+     "alive": 112,
+     "topLand": 0.26941467672468716,
+     "topIncome": 0.2867093258839352,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 15460
+    },
+    {
+     "year": 6,
+     "alive": 114,
+     "topLand": 0.2693955630877443,
+     "topIncome": 0.28708939628428815,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5463
+    },
+    {
+     "year": 7,
+     "alive": 118,
+     "topLand": 0.2703576161472005,
+     "topIncome": 0.2872132393665942,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5945
+    },
+    {
+     "year": 8,
+     "alive": 112,
+     "topLand": 0.27027956879635057,
+     "topIncome": 0.2865180037658336,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 49119
+    },
+    {
+     "year": 9,
+     "alive": 117,
+     "topLand": 0.26995304416524374,
+     "topIncome": 0.2865639801187161,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4767
+    },
+    {
+     "year": 10,
+     "alive": 119,
+     "topLand": 0.2697396085527154,
+     "topIncome": 0.28668674375569625,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2419
+    },
+    {
+     "year": 11,
+     "alive": 117,
+     "topLand": 0.2708790631142658,
+     "topIncome": 0.286612643070254,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 4114
+    },
+    {
+     "year": 12,
+     "alive": 122,
+     "topLand": 0.27084760342163533,
+     "topIncome": 0.28659480355695127,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3621
+    },
+    {
+     "year": 13,
+     "alive": 126,
+     "topLand": 0.2706946811730411,
+     "topIncome": 0.28657826538846204,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1599
+    },
+    {
+     "year": 14,
+     "alive": 129,
+     "topLand": 0.26994516890589504,
+     "topIncome": 0.28661082074823485,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1804
+    },
+    {
+     "year": 15,
+     "alive": 134,
+     "topLand": 0.2697157767632131,
+     "topIncome": 0.28685279584260825,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1594
+    },
+    {
+     "year": 16,
+     "alive": 138,
+     "topLand": 0.2699113422920367,
+     "topIncome": 0.2823896434044988,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 7506
+    },
+    {
+     "year": 17,
+     "alive": 140,
+     "topLand": 0.2699113422920367,
+     "topIncome": 0.28677412355651855,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 7619
+    },
+    {
+     "year": 18,
+     "alive": 146,
+     "topLand": 0.26974990201920107,
+     "topIncome": 0.2870074425696985,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 4425
+    },
+    {
+     "year": 19,
+     "alive": 152,
+     "topLand": 0.26974990201920107,
+     "topIncome": 0.2868439749617219,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2930
+    },
+    {
+     "year": 20,
+     "alive": 158,
+     "topLand": 0.2697593570959704,
+     "topIncome": 0.2866838533691867,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4348
+    },
+    {
+     "year": 21,
+     "alive": 158,
+     "topLand": 0.2697593570959704,
+     "topIncome": 0.28659578614084535,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2388
+    },
+    {
+     "year": 22,
+     "alive": 158,
+     "topLand": 0.2698092221004054,
+     "topIncome": 0.28663655668556826,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2796
+    },
+    {
+     "year": 23,
+     "alive": 154,
+     "topLand": 0.2698092221004054,
+     "topIncome": 0.2866773325988012,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2697
+    },
+    {
+     "year": 24,
+     "alive": 155,
+     "topLand": 0.2705413089068645,
+     "topIncome": 0.28703462178658423,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 5062
+    },
+    {
+     "year": 25,
+     "alive": 154,
+     "topLand": 0.2705413089068645,
+     "topIncome": 0.2867483308398423,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2292
+    },
+    {
+     "year": 26,
+     "alive": 150,
+     "topLand": 0.2705434645767166,
+     "topIncome": 0.28682124048237323,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1950
+    },
+    {
+     "year": 27,
+     "alive": 155,
+     "topLand": 0.2699083592318113,
+     "topIncome": 0.28748713389844655,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4192
+    },
+    {
+     "year": 28,
+     "alive": 164,
+     "topLand": 0.26990357797434056,
+     "topIncome": 0.2867712147013085,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 938
+    },
+    {
+     "year": 29,
+     "alive": 165,
+     "topLand": 0.26990357797434056,
+     "topIncome": 0.2867969762223263,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1129
+    },
+    {
+     "year": 30,
+     "alive": 170,
+     "topLand": 0.26990357797434056,
+     "topIncome": 0.2866485343577562,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 2389
+    },
+    {
+     "year": 31,
+     "alive": 165,
+     "topLand": 0.2699716307535382,
+     "topIncome": 0.2869895016372057,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2155
+    },
+    {
+     "year": 32,
+     "alive": 164,
+     "topLand": 0.2699716307535382,
+     "topIncome": 0.28698813756062985,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 300
+    },
+    {
+     "year": 33,
+     "alive": 163,
+     "topLand": 0.2699716307535382,
+     "topIncome": 0.2870582326633105,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1006
+    },
+    {
+     "year": 34,
+     "alive": 166,
+     "topLand": 0.26996335887108985,
+     "topIncome": 0.28699141181198173,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1948
+    },
+    {
+     "year": 35,
+     "alive": 169,
+     "topLand": 0.2699891771614197,
+     "topIncome": 0.28705981951276427,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2634
+    },
+    {
+     "year": 36,
+     "alive": 169,
+     "topLand": 0.26997325529873417,
+     "topIncome": 0.2871272255219159,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1503
+    },
+    {
+     "year": 37,
+     "alive": 172,
+     "topLand": 0.2699620680861915,
+     "topIncome": 0.2874402010475692,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 624
+    },
+    {
+     "year": 38,
+     "alive": 172,
+     "topLand": 0.26995409919673596,
+     "topIncome": 0.28742417277380633,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1143
+    },
+    {
+     "year": 39,
+     "alive": 175,
+     "topLand": 0.26995409919673596,
+     "topIncome": 0.28740300942686015,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 435
+    },
+    {
+     "year": 40,
+     "alive": 178,
+     "topLand": 0.26996012278738846,
+     "topIncome": 0.28761801181440466,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3061
+    },
+    {
+     "year": 41,
+     "alive": 179,
+     "topLand": 0.2713354861950136,
+     "topIncome": 0.2874027595181334,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1554
+    },
+    {
+     "year": 42,
+     "alive": 182,
+     "topLand": 0.2715087912806053,
+     "topIncome": 0.2873729390049658,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 619
+    },
+    {
+     "year": 43,
+     "alive": 181,
+     "topLand": 0.27150922404531846,
+     "topIncome": 0.2873902959276333,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1510
+    },
+    {
+     "year": 44,
+     "alive": 182,
+     "topLand": 0.271433580923842,
+     "topIncome": 0.2874654917495422,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2017
+    },
+    {
+     "year": 45,
+     "alive": 184,
+     "topLand": 0.2716285727493134,
+     "topIncome": 0.2874843413619384,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1541
+    },
+    {
+     "year": 46,
+     "alive": 184,
+     "topLand": 0.27163030466295474,
+     "topIncome": 0.2875895441585745,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 4125
+    },
+    {
+     "year": 47,
+     "alive": 183,
+     "topLand": 0.27175261018570174,
+     "topIncome": 0.2876225192175468,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4819
+    },
+    {
+     "year": 48,
+     "alive": 189,
+     "topLand": 0.2719251682137067,
+     "topIncome": 0.287438040289987,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1225
+    },
+    {
+     "year": 49,
+     "alive": 190,
+     "topLand": 0.2716820974121946,
+     "topIncome": 0.28744318734672425,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 1202
+    },
+    {
+     "year": 50,
+     "alive": 194,
+     "topLand": 0.27170351615377136,
+     "topIncome": 0.28750322163119324,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 3320
+    }
+   ]
+  },
+  {
+   "seed": 7,
+   "wallS": 1005.737232,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 100,
+     "topLand": 0.26884390494864047,
+     "topIncome": 0.28683426076361207,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 17447
+    },
+    {
+     "year": 2,
+     "alive": 101,
+     "topLand": 0.26879452844644003,
+     "topIncome": 0.28761909207593117,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 7138
+    },
+    {
+     "year": 3,
+     "alive": 102,
+     "topLand": 0.26988559258443257,
+     "topIncome": 0.28790271349880736,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 6274
+    },
+    {
+     "year": 4,
+     "alive": 104,
+     "topLand": 0.2699318719953506,
+     "topIncome": 0.2881732427685353,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 10452
+    },
+    {
+     "year": 5,
+     "alive": 108,
+     "topLand": 0.2697354870745193,
+     "topIncome": 0.28180106862158755,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 25127
+    },
+    {
+     "year": 6,
+     "alive": 113,
+     "topLand": 0.2697431868840732,
+     "topIncome": 0.28773829362095843,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 8830
+    },
+    {
+     "year": 7,
+     "alive": 118,
+     "topLand": 0.2696717660001501,
+     "topIncome": 0.2881897016627356,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3685
+    },
+    {
+     "year": 8,
+     "alive": 112,
+     "topLand": 0.26990224913218563,
+     "topIncome": 0.2867300478696101,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 46637
+    },
+    {
+     "year": 9,
+     "alive": 126,
+     "topLand": 0.2700341863957315,
+     "topIncome": 0.2868722817981317,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 8771
+    },
+    {
+     "year": 10,
+     "alive": 133,
+     "topLand": 0.26700047450987285,
+     "topIncome": 0.2876383918459834,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 6978
+    },
+    {
+     "year": 11,
+     "alive": 141,
+     "topLand": 0.26700047450987285,
+     "topIncome": 0.28955507342606135,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 13031
+    },
+    {
+     "year": 12,
+     "alive": 149,
+     "topLand": 0.24987458180621372,
+     "topIncome": 0.289991210292463,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 7997
+    },
+    {
+     "year": 13,
+     "alive": 163,
+     "topLand": 0.24994526384425206,
+     "topIncome": 0.2890730574007387,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 9056
+    },
+    {
+     "year": 14,
+     "alive": 162,
+     "topLand": 0.25021936308786513,
+     "topIncome": 0.28871103156022226,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 4048
+    },
+    {
+     "year": 15,
+     "alive": 155,
+     "topLand": 0.25011268064865694,
+     "topIncome": 0.284314861977942,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 5251
+    },
+    {
+     "year": 16,
+     "alive": 161,
+     "topLand": 0.25014305031215334,
+     "topIncome": 0.288592732169243,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 6406
+    },
+    {
+     "year": 17,
+     "alive": 164,
+     "topLand": 0.25016583946739557,
+     "topIncome": 0.30877970294143386,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 5369
+    },
+    {
+     "year": 18,
+     "alive": 166,
+     "topLand": 0.2502329774599303,
+     "topIncome": 0.3019671583417291,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 3775
+    },
+    {
+     "year": 19,
+     "alive": 165,
+     "topLand": 0.2502421775841068,
+     "topIncome": 0.2961244634369622,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4735
+    },
+    {
+     "year": 20,
+     "alive": 168,
+     "topLand": 0.2533723186909105,
+     "topIncome": 0.2958048917571288,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2955
+    },
+    {
+     "year": 21,
+     "alive": 175,
+     "topLand": 0.2534261029717406,
+     "topIncome": 0.293344856918691,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 3627
+    },
+    {
+     "year": 22,
+     "alive": 169,
+     "topLand": 0.253477663010457,
+     "topIncome": 0.2916991787760571,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 5387
+    },
+    {
+     "year": 23,
+     "alive": 174,
+     "topLand": 0.2535186041044651,
+     "topIncome": 0.2926480637506884,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 6108
+    },
+    {
+     "year": 24,
+     "alive": 178,
+     "topLand": 0.2535250910358658,
+     "topIncome": 0.29228737405325406,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5521
+    },
+    {
+     "year": 25,
+     "alive": 178,
+     "topLand": 0.2639949974171447,
+     "topIncome": 0.29098199712572853,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 9173
+    },
+    {
+     "year": 26,
+     "alive": 184,
+     "topLand": 0.2640076641711196,
+     "topIncome": 0.2910850742366158,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 3660
+    },
+    {
+     "year": 27,
+     "alive": 186,
+     "topLand": 0.2640059752003595,
+     "topIncome": 0.29120552564736213,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 2563
+    },
+    {
+     "year": 28,
+     "alive": 175,
+     "topLand": 0.25319709047174277,
+     "topIncome": 0.28928533366439463,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 11694
+    },
+    {
+     "year": 29,
+     "alive": 179,
+     "topLand": 0.2533937448185575,
+     "topIncome": 0.2912334710180769,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 6559
+    },
+    {
+     "year": 30,
+     "alive": 183,
+     "topLand": 0.25832823838592067,
+     "topIncome": 0.29151565303767263,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 6539
+    },
+    {
+     "year": 31,
+     "alive": 184,
+     "topLand": 0.25836421408162125,
+     "topIncome": 0.28773522499337106,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 3313
+    },
+    {
+     "year": 32,
+     "alive": 187,
+     "topLand": 0.25815002088825506,
+     "topIncome": 0.2915308004592383,
+     "topNation": 10,
+     "wars": 20,
+     "warDays": 365,
+     "changed": 5888
+    },
+    {
+     "year": 33,
+     "alive": 190,
+     "topLand": 0.2690120261299808,
+     "topIncome": 0.29117375602207346,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 5142
+    },
+    {
+     "year": 34,
+     "alive": 185,
+     "topLand": 0.2693194602024961,
+     "topIncome": 0.2911715789999538,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2511
+    },
+    {
+     "year": 35,
+     "alive": 182,
+     "topLand": 0.2693237700654994,
+     "topIncome": 0.29151662948578805,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2255
+    },
+    {
+     "year": 36,
+     "alive": 186,
+     "topLand": 0.2585131664226218,
+     "topIncome": 0.2909518228412781,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 10478
+    },
+    {
+     "year": 37,
+     "alive": 191,
+     "topLand": 0.25853674931341103,
+     "topIncome": 0.29133824169668715,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 3531
+    },
+    {
+     "year": 38,
+     "alive": 194,
+     "topLand": 0.25790436498600383,
+     "topIncome": 0.2919863901427862,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4687
+    },
+    {
+     "year": 39,
+     "alive": 193,
+     "topLand": 0.2578851592396445,
+     "topIncome": 0.29116384164914366,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 2752
+    },
+    {
+     "year": 40,
+     "alive": 204,
+     "topLand": 0.25451134979585893,
+     "topIncome": 0.29170884267988867,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4625
+    },
+    {
+     "year": 41,
+     "alive": 208,
+     "topLand": 0.25453131102304233,
+     "topIncome": 0.29158385531705033,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 2323
+    },
+    {
+     "year": 42,
+     "alive": 203,
+     "topLand": 0.25453235797864676,
+     "topIncome": 0.29180075886006634,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 4133
+    },
+    {
+     "year": 43,
+     "alive": 202,
+     "topLand": 0.26502587852466786,
+     "topIncome": 0.2876035155548266,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 6637
+    },
+    {
+     "year": 44,
+     "alive": 200,
+     "topLand": 0.26503394257547197,
+     "topIncome": 0.29081776169991247,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1941
+    },
+    {
+     "year": 45,
+     "alive": 197,
+     "topLand": 0.2546505669079495,
+     "topIncome": 0.29096332131660635,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 9745
+    },
+    {
+     "year": 46,
+     "alive": 198,
+     "topLand": 0.2551030050273308,
+     "topIncome": 0.29092806174676095,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2861
+    },
+    {
+     "year": 47,
+     "alive": 198,
+     "topLand": 0.2550757783233796,
+     "topIncome": 0.29098139693627245,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 838
+    },
+    {
+     "year": 48,
+     "alive": 200,
+     "topLand": 0.2550757783233796,
+     "topIncome": 0.29103990537679214,
+     "topNation": 10,
+     "wars": 7,
+     "warDays": 365,
+     "changed": 882
+    },
+    {
+     "year": 49,
+     "alive": 196,
+     "topLand": 0.2550868088923057,
+     "topIncome": 0.2908933108421656,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1589
+    },
+    {
+     "year": 50,
+     "alive": 193,
+     "topLand": 0.2551096901509521,
+     "topIncome": 0.2908313763534798,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 975
+    }
+   ]
+  },
+  {
+   "seed": 8,
+   "wallS": 768.3522322,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 97,
+     "topLand": 0.2689362556402478,
+     "topIncome": 0.2877972993443243,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 13660
+    },
+    {
+     "year": 2,
+     "alive": 97,
+     "topLand": 0.2690605762088303,
+     "topIncome": 0.28888137025443844,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4868
+    },
+    {
+     "year": 3,
+     "alive": 106,
+     "topLand": 0.2686362556767553,
+     "topIncome": 0.2893109835038644,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 9426
+    },
+    {
+     "year": 4,
+     "alive": 107,
+     "topLand": 0.26867132443543285,
+     "topIncome": 0.28952780478389983,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 6223
+    },
+    {
+     "year": 5,
+     "alive": 108,
+     "topLand": 0.2702557513772699,
+     "topIncome": 0.2896852638798896,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 19753
+    },
+    {
+     "year": 6,
+     "alive": 110,
+     "topLand": 0.271308483204394,
+     "topIncome": 0.28978180387515684,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 3391
+    },
+    {
+     "year": 7,
+     "alive": 113,
+     "topLand": 0.2712925352330557,
+     "topIncome": 0.28978176134107514,
+     "topNation": 10,
+     "wars": 7,
+     "warDays": 365,
+     "changed": 2828
+    },
+    {
+     "year": 8,
+     "alive": 107,
+     "topLand": 0.2712925352330557,
+     "topIncome": 0.2886274391903641,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 38860
+    },
+    {
+     "year": 9,
+     "alive": 110,
+     "topLand": 0.2714552045407064,
+     "topIncome": 0.28859821596856633,
+     "topNation": 10,
+     "wars": 7,
+     "warDays": 365,
+     "changed": 3319
+    },
+    {
+     "year": 10,
+     "alive": 113,
+     "topLand": 0.2714552045407064,
+     "topIncome": 0.2885954329843001,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1921
+    },
+    {
+     "year": 11,
+     "alive": 119,
+     "topLand": 0.27001510272885737,
+     "topIncome": 0.288943301865088,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 5914
+    },
+    {
+     "year": 12,
+     "alive": 123,
+     "topLand": 0.2698476490298052,
+     "topIncome": 0.2886701563250301,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 6817
+    },
+    {
+     "year": 13,
+     "alive": 123,
+     "topLand": 0.2699114409151584,
+     "topIncome": 0.2885818279056531,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2681
+    },
+    {
+     "year": 14,
+     "alive": 126,
+     "topLand": 0.2695207156173699,
+     "topIncome": 0.2885745868994701,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 929
+    },
+    {
+     "year": 15,
+     "alive": 128,
+     "topLand": 0.26948722487755944,
+     "topIncome": 0.2885744786288725,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 1087
+    },
+    {
+     "year": 16,
+     "alive": 129,
+     "topLand": 0.26948722487755944,
+     "topIncome": 0.2885696426250392,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1758
+    },
+    {
+     "year": 17,
+     "alive": 129,
+     "topLand": 0.26948722487755944,
+     "topIncome": 0.28457210525410487,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 668
+    },
+    {
+     "year": 18,
+     "alive": 131,
+     "topLand": 0.26961321385113207,
+     "topIncome": 0.2885710546131359,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2269
+    },
+    {
+     "year": 19,
+     "alive": 132,
+     "topLand": 0.2696256838008963,
+     "topIncome": 0.28857459141074676,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1394
+    },
+    {
+     "year": 20,
+     "alive": 131,
+     "topLand": 0.26949011977480425,
+     "topIncome": 0.28865403655865424,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 2722
+    },
+    {
+     "year": 21,
+     "alive": 130,
+     "topLand": 0.26949011977480425,
+     "topIncome": 0.2885720109835299,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 2352
+    },
+    {
+     "year": 22,
+     "alive": 129,
+     "topLand": 0.269489260173649,
+     "topIncome": 0.28864814396396093,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 1251
+    },
+    {
+     "year": 23,
+     "alive": 129,
+     "topLand": 0.269489260173649,
+     "topIncome": 0.28858298262946436,
+     "topNation": 10,
+     "wars": 7,
+     "warDays": 365,
+     "changed": 781
+    },
+    {
+     "year": 24,
+     "alive": 130,
+     "topLand": 0.269489260173649,
+     "topIncome": 0.288592252335438,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 863
+    },
+    {
+     "year": 25,
+     "alive": 131,
+     "topLand": 0.269489260173649,
+     "topIncome": 0.2886601442578968,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 2739
+    },
+    {
+     "year": 26,
+     "alive": 130,
+     "topLand": 0.269489260173649,
+     "topIncome": 0.28864807377786006,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 3099
+    },
+    {
+     "year": 27,
+     "alive": 131,
+     "topLand": 0.270021945353518,
+     "topIncome": 0.2885823440225185,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 1516
+    },
+    {
+     "year": 28,
+     "alive": 129,
+     "topLand": 0.2700585554618002,
+     "topIncome": 0.28840348073110916,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 2212
+    },
+    {
+     "year": 29,
+     "alive": 134,
+     "topLand": 0.2700555401366013,
+     "topIncome": 0.2887630916178255,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1745
+    },
+    {
+     "year": 30,
+     "alive": 143,
+     "topLand": 0.2700555401366013,
+     "topIncome": 0.2891692703457933,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 14544
+    },
+    {
+     "year": 31,
+     "alive": 142,
+     "topLand": 0.2700555401366013,
+     "topIncome": 0.28858701352037186,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 12331
+    },
+    {
+     "year": 32,
+     "alive": 141,
+     "topLand": 0.2690982523974504,
+     "topIncome": 0.2885479838729031,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1135
+    },
+    {
+     "year": 33,
+     "alive": 142,
+     "topLand": 0.2690982523974504,
+     "topIncome": 0.2885877904381854,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 1878
+    },
+    {
+     "year": 34,
+     "alive": 144,
+     "topLand": 0.2690982523974504,
+     "topIncome": 0.28860012456370554,
+     "topNation": 10,
+     "wars": 7,
+     "warDays": 365,
+     "changed": 1247
+    },
+    {
+     "year": 35,
+     "alive": 143,
+     "topLand": 0.2690982523974504,
+     "topIncome": 0.2886319517388409,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 715
+    },
+    {
+     "year": 36,
+     "alive": 144,
+     "topLand": 0.26910855458356464,
+     "topIncome": 0.2886153806960069,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 1016
+    },
+    {
+     "year": 37,
+     "alive": 146,
+     "topLand": 0.2691098424122931,
+     "topIncome": 0.2885989017965381,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 1963
+    },
+    {
+     "year": 38,
+     "alive": 147,
+     "topLand": 0.2691098424122931,
+     "topIncome": 0.28859984932738786,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 1052
+    },
+    {
+     "year": 39,
+     "alive": 144,
+     "topLand": 0.269110271691275,
+     "topIncome": 0.2885734381074593,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 430
+    },
+    {
+     "year": 40,
+     "alive": 145,
+     "topLand": 0.269110271691275,
+     "topIncome": 0.2885891922199113,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 615
+    },
+    {
+     "year": 41,
+     "alive": 144,
+     "topLand": 0.26904959778466525,
+     "topIncome": 0.2885871303725461,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 790
+    },
+    {
+     "year": 42,
+     "alive": 143,
+     "topLand": 0.26904959778466525,
+     "topIncome": 0.28859272946213677,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 863
+    },
+    {
+     "year": 43,
+     "alive": 143,
+     "topLand": 0.26908350669406406,
+     "topIncome": 0.2886171406020724,
+     "topNation": 10,
+     "wars": 9,
+     "warDays": 365,
+     "changed": 708
+    },
+    {
+     "year": 44,
+     "alive": 147,
+     "topLand": 0.26908350669406406,
+     "topIncome": 0.2885858265061586,
+     "topNation": 10,
+     "wars": 6,
+     "warDays": 365,
+     "changed": 1001
+    },
+    {
+     "year": 45,
+     "alive": 146,
+     "topLand": 0.26908350669406406,
+     "topIncome": 0.28858614232046537,
+     "topNation": 10,
+     "wars": 8,
+     "warDays": 365,
+     "changed": 70
+    },
+    {
+     "year": 46,
+     "alive": 148,
+     "topLand": 0.26908350669406406,
+     "topIncome": 0.2886027591883998,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1346
+    },
+    {
+     "year": 47,
+     "alive": 150,
+     "topLand": 0.26908350669406406,
+     "topIncome": 0.2856056296513339,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2323
+    },
+    {
+     "year": 48,
+     "alive": 150,
+     "topLand": 0.26908350669406406,
+     "topIncome": 0.28894614402821434,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 4781
+    },
+    {
+     "year": 49,
+     "alive": 151,
+     "topLand": 0.2737147907546616,
+     "topIncome": 0.2882721893349375,
+     "topNation": 10,
+     "wars": 7,
+     "warDays": 365,
+     "changed": 4028
+    },
+    {
+     "year": 50,
+     "alive": 147,
+     "topLand": 0.2740540876910533,
+     "topIncome": 0.2887282628284521,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 5172
+    }
+   ]
+  },
+  {
+   "seed": 9,
+   "wallS": 899.1617401000001,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 100,
+     "topLand": 0.2702514967770304,
+     "topIncome": 0.28625784702519275,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 9667
+    },
+    {
+     "year": 2,
+     "alive": 100,
+     "topLand": 0.2731303430718102,
+     "topIncome": 0.28629048058716533,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 5052
+    },
+    {
+     "year": 3,
+     "alive": 104,
+     "topLand": 0.2747564029849795,
+     "topIncome": 0.28809210885370395,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 6009
+    },
+    {
+     "year": 4,
+     "alive": 105,
+     "topLand": 0.27467824152640274,
+     "topIncome": 0.28659399506888245,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 4799
+    },
+    {
+     "year": 5,
+     "alive": 105,
+     "topLand": 0.274081994957785,
+     "topIncome": 0.2864959913489752,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 12404
+    },
+    {
+     "year": 6,
+     "alive": 115,
+     "topLand": 0.2729971745064948,
+     "topIncome": 0.2876474115882951,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4039
+    },
+    {
+     "year": 7,
+     "alive": 119,
+     "topLand": 0.2727326330954054,
+     "topIncome": 0.286614630962971,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2845
+    },
+    {
+     "year": 8,
+     "alive": 113,
+     "topLand": 0.2726226731112779,
+     "topIncome": 0.28560378559375393,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 48396
+    },
+    {
+     "year": 9,
+     "alive": 117,
+     "topLand": 0.27248446215139444,
+     "topIncome": 0.2861313798826453,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 9341
+    },
+    {
+     "year": 10,
+     "alive": 119,
+     "topLand": 0.2724382470119522,
+     "topIncome": 0.2828024874381017,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 9077
+    },
+    {
+     "year": 11,
+     "alive": 119,
+     "topLand": 0.2724382470119522,
+     "topIncome": 0.28609556116927864,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 4382
+    },
+    {
+     "year": 12,
+     "alive": 120,
+     "topLand": 0.27246560212419735,
+     "topIncome": 0.28631664974963783,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 13248
+    },
+    {
+     "year": 13,
+     "alive": 123,
+     "topLand": 0.26879989544767047,
+     "topIncome": 0.28614304041619226,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 7833
+    },
+    {
+     "year": 14,
+     "alive": 125,
+     "topLand": 0.26880460803345735,
+     "topIncome": 0.28630529034520746,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2473
+    },
+    {
+     "year": 15,
+     "alive": 122,
+     "topLand": 0.26866359153200997,
+     "topIncome": 0.28621144253264086,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 6364
+    },
+    {
+     "year": 16,
+     "alive": 123,
+     "topLand": 0.2686837193214006,
+     "topIncome": 0.28153110047221286,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 8774
+    },
+    {
+     "year": 17,
+     "alive": 122,
+     "topLand": 0.26868543246401116,
+     "topIncome": 0.28605400217104204,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 6375
+    },
+    {
+     "year": 18,
+     "alive": 126,
+     "topLand": 0.26877469725686104,
+     "topIncome": 0.2860565384271115,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3689
+    },
+    {
+     "year": 19,
+     "alive": 127,
+     "topLand": 0.2697741441339482,
+     "topIncome": 0.2820510979543976,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 3667
+    },
+    {
+     "year": 20,
+     "alive": 127,
+     "topLand": 0.26977457415843886,
+     "topIncome": 0.28659376458165,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2827
+    },
+    {
+     "year": 21,
+     "alive": 128,
+     "topLand": 0.26636591159076056,
+     "topIncome": 0.28623889851148443,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 11141
+    },
+    {
+     "year": 22,
+     "alive": 128,
+     "topLand": 0.26636591159076056,
+     "topIncome": 0.2811191616380049,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 9949
+    },
+    {
+     "year": 23,
+     "alive": 128,
+     "topLand": 0.26637822602629446,
+     "topIncome": 0.2860712557172797,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4521
+    },
+    {
+     "year": 24,
+     "alive": 134,
+     "topLand": 0.26637822602629446,
+     "topIncome": 0.2860616689254672,
+     "topNation": 10,
+     "wars": 19,
+     "warDays": 365,
+     "changed": 3149
+    },
+    {
+     "year": 25,
+     "alive": 135,
+     "topLand": 0.2664228223018738,
+     "topIncome": 0.28352492256195966,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 7456
+    },
+    {
+     "year": 26,
+     "alive": 137,
+     "topLand": 0.2664228223018738,
+     "topIncome": 0.28673100833257126,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 4350
+    },
+    {
+     "year": 27,
+     "alive": 142,
+     "topLand": 0.26639781474093105,
+     "topIncome": 0.28672054669224983,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 6455
+    },
+    {
+     "year": 28,
+     "alive": 142,
+     "topLand": 0.2664063110457653,
+     "topIncome": 0.28657855947266364,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2581
+    },
+    {
+     "year": 29,
+     "alive": 142,
+     "topLand": 0.2664067358752332,
+     "topIncome": 0.283580627598481,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 10165
+    },
+    {
+     "year": 30,
+     "alive": 140,
+     "topLand": 0.2664624002526481,
+     "topIncome": 0.286001423168022,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 8189
+    },
+    {
+     "year": 31,
+     "alive": 140,
+     "topLand": 0.2664624002526481,
+     "topIncome": 0.2860627239952492,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 830
+    },
+    {
+     "year": 32,
+     "alive": 140,
+     "topLand": 0.2664624002526481,
+     "topIncome": 0.2861011551180992,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1679
+    },
+    {
+     "year": 33,
+     "alive": 142,
+     "topLand": 0.2664624002526481,
+     "topIncome": 0.2862328138399602,
+     "topNation": 10,
+     "wars": 17,
+     "warDays": 365,
+     "changed": 4558
+    },
+    {
+     "year": 34,
+     "alive": 148,
+     "topLand": 0.2705743118768532,
+     "topIncome": 0.2854438339224313,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 9403
+    },
+    {
+     "year": 35,
+     "alive": 148,
+     "topLand": 0.2705743118768532,
+     "topIncome": 0.2856974004196814,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 6046
+    },
+    {
+     "year": 36,
+     "alive": 147,
+     "topLand": 0.26819426568229193,
+     "topIncome": 0.2856547323183949,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 8663
+    },
+    {
+     "year": 37,
+     "alive": 149,
+     "topLand": 0.2672038303213572,
+     "topIncome": 0.285744818475691,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3327
+    },
+    {
+     "year": 38,
+     "alive": 152,
+     "topLand": 0.26698213867051995,
+     "topIncome": 0.28570120540097427,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 1063
+    },
+    {
+     "year": 39,
+     "alive": 152,
+     "topLand": 0.26701791157624744,
+     "topIncome": 0.2826697035987656,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 3222
+    },
+    {
+     "year": 40,
+     "alive": 155,
+     "topLand": 0.26701791157624744,
+     "topIncome": 0.28564423856397486,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4189
+    },
+    {
+     "year": 41,
+     "alive": 147,
+     "topLand": 0.2670758499434408,
+     "topIncome": 0.2855712986652652,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2708
+    },
+    {
+     "year": 42,
+     "alive": 145,
+     "topLand": 0.2704231329484011,
+     "topIncome": 0.2857063797633177,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3498
+    },
+    {
+     "year": 43,
+     "alive": 146,
+     "topLand": 0.2704231329484011,
+     "topIncome": 0.28310709058579625,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 8054
+    },
+    {
+     "year": 44,
+     "alive": 149,
+     "topLand": 0.26585362351443326,
+     "topIncome": 0.28555791114176804,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 8424
+    },
+    {
+     "year": 45,
+     "alive": 151,
+     "topLand": 0.26585362351443326,
+     "topIncome": 0.28577840176157016,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1953
+    },
+    {
+     "year": 46,
+     "alive": 153,
+     "topLand": 0.2658527752029012,
+     "topIncome": 0.2858658639264965,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3990
+    },
+    {
+     "year": 47,
+     "alive": 158,
+     "topLand": 0.2665156807800084,
+     "topIncome": 0.28664533566826256,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 4050
+    },
+    {
+     "year": 48,
+     "alive": 162,
+     "topLand": 0.26692211087474693,
+     "topIncome": 0.28596929531722204,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2597
+    },
+    {
+     "year": 49,
+     "alive": 163,
+     "topLand": 0.26760450572827227,
+     "topIncome": 0.28030980734128497,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 4074
+    },
+    {
+     "year": 50,
+     "alive": 163,
+     "topLand": 0.26719789130900706,
+     "topIncome": 0.28587733715269387,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3876
+    }
+   ]
+  },
+  {
+   "seed": 10,
+   "wallS": 852.3144278000001,
+   "landCells": 627971,
+   "samples": [
+    {
+     "year": 1,
+     "alive": 98,
+     "topLand": 0.26822713384035507,
+     "topIncome": 0.28693619175912294,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 11899
+    },
+    {
+     "year": 2,
+     "alive": 99,
+     "topLand": 0.26822713384035507,
+     "topIncome": 0.2876846374840308,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 17508
+    },
+    {
+     "year": 3,
+     "alive": 99,
+     "topLand": 0.2594493068543518,
+     "topIncome": 0.2872810851662169,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 13493
+    },
+    {
+     "year": 4,
+     "alive": 108,
+     "topLand": 0.2594493068543518,
+     "topIncome": 0.2875231188694605,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 9097
+    },
+    {
+     "year": 5,
+     "alive": 105,
+     "topLand": 0.2594493068543518,
+     "topIncome": 0.28776714219175153,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 18771
+    },
+    {
+     "year": 6,
+     "alive": 106,
+     "topLand": 0.2594493068543518,
+     "topIncome": 0.287773972389958,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 4247
+    },
+    {
+     "year": 7,
+     "alive": 108,
+     "topLand": 0.2594493068543518,
+     "topIncome": 0.2856458098374574,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 3426
+    },
+    {
+     "year": 8,
+     "alive": 101,
+     "topLand": 0.2595191769885698,
+     "topIncome": 0.28676857747462225,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 45141
+    },
+    {
+     "year": 9,
+     "alive": 102,
+     "topLand": 0.2595191769885698,
+     "topIncome": 0.28676278238700803,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1970
+    },
+    {
+     "year": 10,
+     "alive": 109,
+     "topLand": 0.25947328171302936,
+     "topIncome": 0.28694385423246677,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 10049
+    },
+    {
+     "year": 11,
+     "alive": 110,
+     "topLand": 0.2576458592231463,
+     "topIncome": 0.2867854043701976,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 7136
+    },
+    {
+     "year": 12,
+     "alive": 115,
+     "topLand": 0.2576458592231463,
+     "topIncome": 0.28714596593040775,
+     "topNation": 10,
+     "wars": 21,
+     "warDays": 365,
+     "changed": 13041
+    },
+    {
+     "year": 13,
+     "alive": 120,
+     "topLand": 0.25763470668833444,
+     "topIncome": 0.2867428364307265,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5807
+    },
+    {
+     "year": 14,
+     "alive": 120,
+     "topLand": 0.25763470668833444,
+     "topIncome": 0.28692112389157165,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 3296
+    },
+    {
+     "year": 15,
+     "alive": 124,
+     "topLand": 0.25794152792161235,
+     "topIncome": 0.28679282725088046,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 5894
+    },
+    {
+     "year": 16,
+     "alive": 127,
+     "topLand": 0.2575970250793838,
+     "topIncome": 0.28676808723186425,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 3981
+    },
+    {
+     "year": 17,
+     "alive": 133,
+     "topLand": 0.2575970250793838,
+     "topIncome": 0.2867612079803075,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 6787
+    },
+    {
+     "year": 18,
+     "alive": 138,
+     "topLand": 0.2575970250793838,
+     "topIncome": 0.2867043993175828,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 5089
+    },
+    {
+     "year": 19,
+     "alive": 140,
+     "topLand": 0.25764546339691075,
+     "topIncome": 0.2866326147318254,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 4657
+    },
+    {
+     "year": 20,
+     "alive": 140,
+     "topLand": 0.25764546339691075,
+     "topIncome": 0.28649847035458526,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 2012
+    },
+    {
+     "year": 21,
+     "alive": 144,
+     "topLand": 0.25764546339691075,
+     "topIncome": 0.28392282773825095,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 5425
+    },
+    {
+     "year": 22,
+     "alive": 149,
+     "topLand": 0.2560837825821595,
+     "topIncome": 0.28670415920148024,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 6506
+    },
+    {
+     "year": 23,
+     "alive": 152,
+     "topLand": 0.2560837825821595,
+     "topIncome": 0.28659894739262187,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 3045
+    },
+    {
+     "year": 24,
+     "alive": 152,
+     "topLand": 0.2560915363898583,
+     "topIncome": 0.28676027585598124,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 2840
+    },
+    {
+     "year": 25,
+     "alive": 154,
+     "topLand": 0.2560915363898583,
+     "topIncome": 0.2865960521346268,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2457
+    },
+    {
+     "year": 26,
+     "alive": 152,
+     "topLand": 0.2560915363898583,
+     "topIncome": 0.28662864384152076,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1915
+    },
+    {
+     "year": 27,
+     "alive": 154,
+     "topLand": 0.2560915363898583,
+     "topIncome": 0.2866578748212401,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 1729
+    },
+    {
+     "year": 28,
+     "alive": 154,
+     "topLand": 0.2561082698906241,
+     "topIncome": 0.28667040007734995,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1810
+    },
+    {
+     "year": 29,
+     "alive": 156,
+     "topLand": 0.2561082698906241,
+     "topIncome": 0.28663825374970486,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1768
+    },
+    {
+     "year": 30,
+     "alive": 156,
+     "topLand": 0.2561082698906241,
+     "topIncome": 0.28674767819014474,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 5017
+    },
+    {
+     "year": 31,
+     "alive": 157,
+     "topLand": 0.2561082698906241,
+     "topIncome": 0.2867411449364715,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 5704
+    },
+    {
+     "year": 32,
+     "alive": 156,
+     "topLand": 0.2561082698906241,
+     "topIncome": 0.2871342660045649,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 2232
+    },
+    {
+     "year": 33,
+     "alive": 157,
+     "topLand": 0.25655148191607396,
+     "topIncome": 0.286694202637361,
+     "topNation": 10,
+     "wars": 16,
+     "warDays": 365,
+     "changed": 3715
+    },
+    {
+     "year": 34,
+     "alive": 159,
+     "topLand": 0.25655148191607396,
+     "topIncome": 0.2867754410492367,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1139
+    },
+    {
+     "year": 35,
+     "alive": 162,
+     "topLand": 0.25655148191607396,
+     "topIncome": 0.28681958189720275,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 1708
+    },
+    {
+     "year": 36,
+     "alive": 158,
+     "topLand": 0.2567446538470749,
+     "topIncome": 0.2869631658154272,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 2651
+    },
+    {
+     "year": 37,
+     "alive": 162,
+     "topLand": 0.2567446538470749,
+     "topIncome": 0.28676665258012624,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1964
+    },
+    {
+     "year": 38,
+     "alive": 162,
+     "topLand": 0.2567446538470749,
+     "topIncome": 0.2868319032322025,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 1420
+    },
+    {
+     "year": 39,
+     "alive": 162,
+     "topLand": 0.2567446538470749,
+     "topIncome": 0.2867704195734277,
+     "topNation": 10,
+     "wars": 12,
+     "warDays": 365,
+     "changed": 2723
+    },
+    {
+     "year": 40,
+     "alive": 164,
+     "topLand": 0.25559999042122655,
+     "topIncome": 0.28676171912628906,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 2129
+    },
+    {
+     "year": 41,
+     "alive": 164,
+     "topLand": 0.2556865275251408,
+     "topIncome": 0.2868307205198569,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 850
+    },
+    {
+     "year": 42,
+     "alive": 166,
+     "topLand": 0.2556865275251408,
+     "topIncome": 0.2871735090286225,
+     "topNation": 10,
+     "wars": 15,
+     "warDays": 365,
+     "changed": 4454
+    },
+    {
+     "year": 43,
+     "alive": 168,
+     "topLand": 0.2556865275251408,
+     "topIncome": 0.2867667549911651,
+     "topNation": 10,
+     "wars": 14,
+     "warDays": 365,
+     "changed": 3669
+    },
+    {
+     "year": 44,
+     "alive": 167,
+     "topLand": 0.25655689402130083,
+     "topIncome": 0.2867785550136353,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 573
+    },
+    {
+     "year": 45,
+     "alive": 167,
+     "topLand": 0.2566958332601374,
+     "topIncome": 0.2867652856223962,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 376
+    },
+    {
+     "year": 46,
+     "alive": 165,
+     "topLand": 0.25678574566132367,
+     "topIncome": 0.28679329082023286,
+     "topNation": 10,
+     "wars": 10,
+     "warDays": 365,
+     "changed": 1554
+    },
+    {
+     "year": 47,
+     "alive": 166,
+     "topLand": 0.256883181190151,
+     "topIncome": 0.28678510867572465,
+     "topNation": 10,
+     "wars": 11,
+     "warDays": 365,
+     "changed": 497
+    },
+    {
+     "year": 48,
+     "alive": 165,
+     "topLand": 0.25673143733378057,
+     "topIncome": 0.28677363762587577,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 1368
+    },
+    {
+     "year": 49,
+     "alive": 163,
+     "topLand": 0.25661723116449847,
+     "topIncome": 0.2868072362334193,
+     "topNation": 10,
+     "wars": 18,
+     "warDays": 365,
+     "changed": 3512
+    },
+    {
+     "year": 50,
+     "alive": 165,
+     "topLand": 0.25661723116449847,
+     "topIncome": 0.28679648711811695,
+     "topNation": 10,
+     "wars": 13,
+     "warDays": 365,
+     "changed": 2654
+    }
+   ]
+  }
+ ]
+}

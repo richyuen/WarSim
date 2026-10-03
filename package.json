@@ -18,6 +18,7 @@
     "bench": "tsx tools/bench/run.ts",
     "data": "tsx tools/data/run.ts",
     "sim": "tsx tools/headless/cli.ts",
+    "sweep": "tsx tools/sweep/run.ts",
     "verify:phase0": "bash tools/verify-phase0.sh"
   },
   "dependencies": {

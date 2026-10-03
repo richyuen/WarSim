@@ -299,5 +299,8 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     world.nations.cols.expenses[id] = expenses[id]!;
     world.nations.cols.manpower[id] = MANPOWER_START_SHARE * population[id]!;
   });
+  // Scenario settings that seed the world's (PLAN 1.40: revolts by region keep the nation count
+  // in SPEC §10's range; one rebel state per province fragmented the world into 300–600 states).
+  world.settings.revoltMode = scenario1938.settings.revoltMode as 'province' | 'region';
   return world;
 }

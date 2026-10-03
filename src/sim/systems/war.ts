@@ -24,7 +24,7 @@
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { neighbours4 } from '../nav/grid';
-import { makePuppet } from './puppets';
+import { annexNation, makePuppet } from './puppets';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { World } from '../world';
 
@@ -36,6 +36,8 @@ export const CAPITAL_SCORE = 25;
 export const TRUCE_TICKS = 24 * 730;
 /** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
 export const PEACE_PUPPET_AUTONOMY = 30;
+/** A losing leader smaller than this (owned cells, ≈ 15,000 km² at M) is annexed by a decisive winner. */
+export const SMALL_STATE_CELLS = 40;
 /** Player peace offers (PLAN 1.33b) are accepted when the offering side leads by this score… */
 export const PEACE_ACCEPT_SCORE = 25;
 /** …or the other side's exhaustion exceeds this (the AI's stalemate threshold). */
@@ -87,7 +89,9 @@ export function declareWar(world: World, attacker: number, defender: number): Wa
   for (const m of allies(defender)) add(d, a, attacker, m);
   for (const g of al.guarantorsOf(defender)) add(d, a, attacker, g);
   for (const m of allies(attacker)) add(a, d, defender, m);
-  const ftd = (side: number[]): boolean => side.some((m) => nc.fightToDeath[m] === 1);
+  // A side fights to the death when its leader does (PLAN 1.40 tuning: any member used to pass it
+  // on, so whole alliance blocs fought every later war forever and fronts froze).
+  const ftd = (side: number[]): boolean => nc.fightToDeath[side[0]!] === 1;
   const war = world.wars.start(a, d, world.tick, [ftd(a), ftd(d)]);
   world.out.emit(world.tick, EventKind.WarDeclared, attacker, defender, NaN, NaN);
   return war;
@@ -216,8 +220,12 @@ export function makePeace(world: World, war: War): void {
   }
   const wl = W[0]!;
   const ll = L[0]!;
-  if (s >= PUPPET_SCORE && world.nations.cols.living[ll] === 1) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
+  const nc = world.nations.cols;
   world.wars.end(war);
+  // A small losing leader is annexed outright by a decisive winner (PLAN 1.40 tuning: losing
+  // rebels otherwise survived as rump states or puppets, and 50 years ended with 300–600 nations).
+  if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && nc.cells[ll]! < SMALL_STATE_CELLS) annexNation(world, wl, ll);
+  else if (s >= PUPPET_SCORE && nc.living[ll] === 1) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
   world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
 }

@@ -2142,3 +2142,34 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Decision (ADR-43):** M only in Phase 1. Map sizes become PLAN 7.1b, after the performance
   pass, with the audit list as its starting point.
 - PLAN, SPEC and PARITY row 70 updated. No code change in this iteration.
+
+## 2026-10-03 — PLAN 1.40: dynamism tuning; 10 seeds × 50 years all green
+- **Tool:** `npm run sweep` (`tools/sweep/run.ts`, `seed.ts`, `criteria.ts`): parallel child
+  processes, daily war sampling, yearly metrics; report `docs/sweeps/2026-10-03-sweep.{md,json}`.
+  Unit tests for the criteria.
+- **First sweep failed:** 300–600 nations by year 50 on every seed; two seeds with frozen fronts.
+- **Diagnosis** by ledgers and per-war dumps:
+  - revolts outpaced deaths;
+  - half the revolts started in peace;
+  - losing rebels survived as rumps or puppets;
+  - conquered land never became core;
+  - fight-to-death spread to whole alliance blocs (18-year wars at exhaustion 100/100);
+  - the year-8 burst of land changes is the colonial puppets' integration, which is legitimate.
+- **Changes (ADR-44),** each measured by 10 × 20-year sweeps:
+  - revolts are always wars;
+  - decisive peace annexes small losing leaders;
+  - coring after 10 years;
+  - garrison effect (SPEC §4);
+  - fight-to-death only from the leader;
+  - 1938 revolts by region (new scenario setting `revoltMode`; toy keeps "province").
+- **Result:** all 10 seeds green over 50 years. Nations 97–231, largest land 24–27%, largest
+  income 28–29%, land moving 1.1–6.7% in the last 5 years, wars every year. 16.8 min with 10
+  processes.
+- **Kept, not weakened:**
+  - I tried making fight-to-death sides surrender when crushed. It contradicted PLAN 1.16's AT
+    ("never accepts peace, however crushed"), so I reverted it.
+  - Two existing tests had setups tied to the old behaviour; their assertions are unchanged:
+    - the bankruptcy-collapse test now sets `revoltMode: 'province'`, which it was written for;
+    - the unrest-buff test picks an ungarrisoned core province (province 200 now has a
+      garrison).
+- **Logged (BLOCKERS):** most scenario settings in `scenario.json` aren't applied by the code.

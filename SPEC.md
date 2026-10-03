@@ -621,7 +621,14 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     and core with unrest ≥ 40, up to 8.
   - *Rebels:* a new nation (origin province) takes the land and becomes its core. Its capital is
     the area's largest city; if that was the holder's capital, the holder relocates. It gets 1–4
-    militia divisions and 50 gold. There is a 50% (hash) chance the holder declares war.
+    militia divisions and 50 gold. The holder always declares war on them (PLAN 1.40, ADR-44;
+    it was a 50% chance).
+  - *Tuning (PLAN 1.40, ADR-44):*
+    - The 1938 scenario revolts by region (`revoltMode`).
+    - A province held for 10 years becomes its holder's core (the old owner keeps a claim).
+    - A garrison within 3 cells gives −3 unrest a month and −70% revolt chance.
+    - A decisive peace annexes a losing leader under 40 cells.
+    - Fight-to-death passes only from a side's leader.
 - **Revolts**: per province or per region (setting). Unrest comes from non-core
   occupation, low stability, war exhaustion, bankruptcy and nukes. It is reduced by
   suppression spending and garrison. A revolt spawns a rebel nation (a revived core nation
@@ -1106,6 +1113,8 @@ interpolation changes something.
   cells changing controller in the last 5 years > threshold, largest nation < 35% of
   land and < 40% of income, alive nations stay in [20, 250], and no permanent freeze
   (≥ 1 war active in ≥ 80% of the years).
+  Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of land
+  cells over the last 5 years; reports in `docs/sweeps/` (sweeps\2026-10-03-sweep.md all green).
 - **Playwright e2e**: boot, start 1938, run 1 year, screenshot every map mode;
   scripted seamless zoom world → close (8 stops) on a spawned battle; tank, naval and air
   battle scenes; AI nuclear strike scene (seeded scenario with forced escalation

@@ -104,6 +104,9 @@ describe('collapse and revival (PLAN 1.20)', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const w = s.world;
     s.command({ kind: 'setSetting', key: 'aiEnabled', value: false }); // isolate the mechanic
+    // Written for per-province revolts: with the 1938 default 'region' (PLAN 1.40), the monthly
+    // revolt pass turns all eight restless provinces into rebels before the collapse check.
+    s.command({ kind: 'setSetting', key: 'revoltMode', value: 'province' });
     let collapsed = false;
     for (let m = 0; m < COLLAPSE_MONTHS + 2 && !collapsed; m++) {
       // A collapse needs something to fragment (PLAN 1.24): keep some Polish provinces restless.

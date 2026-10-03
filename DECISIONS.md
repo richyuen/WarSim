@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-44 · 2026-10-03 · accepted — Dynamism tuning for the 50-year sweep (PLAN 1.40)
+
+- **Context:** the first 10-seed × 50-year sweep (SPEC §10) failed. Every seed ended with
+  300–600 nations, and two seeds had frozen fronts. Ledgers showed revolts (30–80 a year) far
+  outpacing deaths:
+  - half the revolts started in peace and stayed independent;
+  - losing rebels survived as rumps or puppets;
+  - conquered land stayed non-core forever, so it kept revolting;
+  - fight-to-death passed from any side member to whole alliance blocs, so wars never ended.
+- **Decision** (each change measured with 10 × 20-year sweeps, then the full 10 × 50):
+  1. A revolt always starts a war of independence (was 50%).
+  2. A peace in which the winner scores ≥ WHITE_PEACE annexes a losing leader smaller than
+     SMALL_STATE_CELLS (40 cells ≈ 15,000 km²), instead of leaving a rump or a puppet.
+  3. Coring: a province held (owned and controlled) by one nation for CORE_YEARS (10) becomes
+     its core; the former rightful owner keeps a claim.
+  4. Garrison (SPEC §4, now implemented): a holder's formation within GARRISON_CELLS (3) of a
+     province centre lowers its unrest by 3 a month and its revolt chance by 70%.
+  5. Fight-to-death passes to a war side only from its leader (it was any member).
+  6. The 1938 scenario sets `revoltMode: "region"` (new scenario setting): a restless region
+     of up to 8 provinces revolts as one nation.
+- **Criteria threshold:** SPEC gives "> threshold" for border movement; set before tuning to 1% of
+  land cells over the last 5 years and not changed afterwards.
+- **Result:** sweeps\2026-10-03-sweep.md: all 10 seeds green. Nations 97–231; largest land 24–27%; largest income
+  28–29%; land moving 1.1–6.7%; wars in every year.
+- **Not done:** fight-to-death sides still never surrender (PLAN 1.16's AT keeps it so), so the
+  scenario's to-the-death wars can run all 50 years.
+
 ### ADR-43 · 2026-10-03 · accepted — Map sizes S–XL move to Phase 7 (after km-based sim distances)
 
 - **Context:** PLAN 1.39b2 asked for a map-size picker (S–XL) for the 1938 world. An audit found

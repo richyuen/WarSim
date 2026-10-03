@@ -170,7 +170,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: e2e starts games with each option and verifies the effect in the sim.
   (1.39b2, map size S–XL: moved to PLAN 7.1b on 2026-10-03, ADR-43. The sim is tuned in cells
   for the M map; sizes need km-based distances, re-tuning, L/XL assets and XL performance.)
-- [ ] 1.40 Dynamism tuning: `npm run sweep` (10 seeds × 50 years) passes the SPEC §10 criteria.
+- [x] 1.40 Dynamism tuning: `npm run sweep` (10 seeds × 50 years) passes the SPEC §10 criteria.
   AT: sweep report committed in `docs/sweeps/` with all criteria green.
 - [ ] 1.41 Phase 1 review + PARITY rows updated with evidence.
   AT: Gate green; parity score recomputed.

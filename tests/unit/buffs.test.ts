@@ -5,7 +5,8 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { combatSystem } from '../../src/sim/systems/combat';
 import { destroyFormation } from '../../src/sim/systems/elements';
-import { FIRE_STRIDE } from '../../src/sim/world';
+import { FIRE_STRIDE, navOf } from '../../src/sim/world';
+import { GARRISON_CELLS } from '../../src/sim/systems/revolts';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
 
@@ -79,9 +80,29 @@ describe('buffs and debuffs (PLAN 1.21)', () => {
     expect(fast).toBeGreaterThan(slow * 0.45);
 
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
-    s.command({ kind: 'grantBuff', targetKind: 'province', target: 200, buff: 'unrest', magnitude: 0.5, hours: 24 * 400, nameKey: 'buff.harsh_winter' });
+    // A core province of its holder with no garrison nearby (PLAN 1.40 added garrisons, which
+    // lower unrest by 3): only the buff and the decay act on it. Province 200 has a garrison.
+    const g = navOf(s.world).graph;
+    const near = (c: number, n: number): boolean => {
+      let hit = false;
+      s.world.formations.forEach((f) => {
+        const fc = s.world.formations.cols;
+        if (fc.nation[f] === n && Math.abs(fc.x[f]! - (c % W)) <= 2 * GARRISON_CELLS && Math.abs(fc.y[f]! - Math.floor(c / W)) <= 2 * GARRISON_CELLS) hit = true;
+      });
+      return hit;
+    };
+    let p = 200;
+    for (let q = 200; q < s.world.provinces.count; q++) {
+      const c = g.centre[q] ?? -1;
+      const o = c >= 0 ? s.world.cells.owner[c]! : 0;
+      if (o !== 0 && s.world.cells.controller[c] === o && s.world.provinces.core[q] === o && !near(c, o)) {
+        p = q;
+        break;
+      }
+    }
+    s.command({ kind: 'grantBuff', targetKind: 'province', target: p, buff: 'unrest', magnitude: 0.5, hours: 24 * 400, nameKey: 'buff.harsh_winter' });
     runEvents(s, 1);
-    expect(s.world.provinces.unrest[200]).toBe(Math.max(0, 5 - 2)); // +10 × 0.5, −2 decay
+    expect(s.world.provinces.unrest[p]).toBe(Math.max(0, 5 - 2)); // +10 × 0.5, −2 decay
   });
 
   it('removeBuff ends a buff early; buffs survive save/load', () => {

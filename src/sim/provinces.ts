@@ -10,6 +10,9 @@ import type { Stateful } from './core/state';
 export class Provinces implements Stateful {
   unrest = new Float64Array(0);
   core = new Uint16Array(0);
+  /** Who has held the province (owned and controlled its centre) since `heldSince` (PLAN 1.40 coring). */
+  heldBy = new Uint16Array(0);
+  heldSince = new Uint32Array(0);
   /** Extra claims as sorted [province, nation] pairs (unique). */
   claims: [number, number][] = [];
   private claimIndex = new Map<number, number[]>();
@@ -23,6 +26,8 @@ export class Provinces implements Stateful {
   resize(n: number): void {
     this.unrest = new Float64Array(n);
     this.core = new Uint16Array(n);
+    this.heldBy = new Uint16Array(n);
+    this.heldSince = new Uint32Array(n);
     this.claims = [];
     this.claimIndex.clear();
   }
@@ -69,6 +74,8 @@ export class Provinces implements Stateful {
       { name: 'provinces.unrest', dtype: 'f64', data: this.unrest },
       { name: 'provinces.core', dtype: 'u16', data: this.core },
       { name: 'provinces.claims', dtype: 'u32', data: Uint32Array.from(this.claims.flat()) },
+      { name: 'provinces.heldBy', dtype: 'u16', data: this.heldBy },
+      { name: 'provinces.heldSince', dtype: 'u32', data: this.heldSince },
     ];
   }
 
@@ -76,6 +83,11 @@ export class Provinces implements Stateful {
     this.unrest = takeSection(sections, 'provinces.unrest', 'f64').slice();
     this.version++;
     this.core = takeSection(sections, 'provinces.core', 'u16').slice();
+    // Saves from before PLAN 1.40 have no holding record: it starts over (nobody holds yet).
+    const by = sections.find((s) => s.name === 'provinces.heldBy');
+    const since = sections.find((s) => s.name === 'provinces.heldSince');
+    this.heldBy = by ? (by.data as Uint16Array).slice() : new Uint16Array(this.core.length);
+    this.heldSince = since ? (since.data as Uint32Array).slice() : new Uint32Array(this.core.length);
     const flat = takeSection(sections, 'provinces.claims', 'u32');
     this.claims = [];
     for (let i = 0; i + 1 < flat.length; i += 2) this.claims.push([flat[i]!, flat[i + 1]!]);

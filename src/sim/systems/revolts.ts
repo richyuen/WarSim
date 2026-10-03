@@ -35,6 +35,13 @@ export const BANKRUPT = 3;
 export const DECAY = 2;
 export const SUPPRESS = 5;
 export const REVOLT_FROM = 50;
+/** Years of uninterrupted holding after which conquered land becomes a core (PLAN 1.40). */
+export const CORE_YEARS = 10;
+/** Garrison (SPEC §4; PLAN 1.40): a holder's formation within GARRISON_CELLS of a province's
+ *  centre lowers its unrest by GARRISON_UNREST a month and its revolt chance by GARRISON_P. */
+export const GARRISON_CELLS = 3;
+export const GARRISON_UNREST = 3;
+export const GARRISON_P = 0.7;
 export const MAX_P = 0.5;
 export const SUPPRESS_P = 0.7;
 export const SUPPRESSION_COST = 0.15;
@@ -48,7 +55,6 @@ export const START_GOLD = 150;
 /** Aggression of new rebel nations (strategic AI). */
 export const REBEL_AGGRESSION = 40;
 const SALT_REVOLT = 0x7e01;
-const SALT_WAR = 0x7e02;
 
 /** Sets each province's core to the owner of its centre cell (scenario creation). */
 export function initProvinceCores(world: World, claims: readonly { nation: number; adm0?: readonly string[]; adm1?: readonly string[] }[] = [], meta: readonly { id: number; adm0: string; adm1: string }[] = []): void {
@@ -93,6 +99,23 @@ export function revoltSystem(world: World): void {
   });
   pv.version++; // unrest is updated below
   const revolted = new Uint8Array(pv.count);
+  // Garrison lookup: formations by nation in GARRISON_CELLS-sized buckets.
+  const fc = world.formations.cols;
+  const bw = Math.ceil(world.cells.w / GARRISON_CELLS);
+  const buckets = new Map<number, Set<number>>();
+  world.formations.forEach((f) => {
+    const k = Math.floor(fc.y[f]! / GARRISON_CELLS) * bw + Math.floor(fc.x[f]! / GARRISON_CELLS);
+    const set = buckets.get(k) ?? new Set<number>();
+    set.add(fc.nation[f]!);
+    buckets.set(k, set);
+  });
+  const garrisoned = (cell: number, n: number): boolean => {
+    const w = world.cells.w;
+    const bx = Math.floor((cell % w) / GARRISON_CELLS);
+    const by = Math.floor(Math.floor(cell / w) / GARRISON_CELLS);
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (buckets.get((by + dy) * bw + ((bx + dx + bw) % bw))?.has(n)) return true;
+    return false;
+  };
   for (let p = 1; p < pv.count; p++) {
     const c = g.centre[p] ?? -1;
     if (c < 0) continue;
@@ -100,13 +123,24 @@ export function revoltSystem(world: World): void {
     if (o === 0 || nc.living[o] !== 1) continue;
     const supp = nc.suppression[o]!;
     const occupied = controller[c] !== o;
+    // Coring (PLAN 1.40): land held (owned and controlled) by one nation for CORE_YEARS becomes
+    // its core; the former rightful owner keeps a claim (revival, preset revolts).
+    if (occupied || pv.heldBy[p] !== o) {
+      pv.heldBy[p] = occupied ? 0 : o;
+      pv.heldSince[p] = world.tick;
+    } else if (pv.core[p] !== o && world.tick - pv.heldSince[p]! >= CORE_YEARS * 24 * 365) {
+      const old = pv.core[p]!;
+      pv.core[p] = o;
+      if (old !== 0) pv.addClaim(p, old);
+    }
     // Core land stays loyal through war and bankruptcy; only non-core land feels them (PLAN 1.24
     // review: a bankrupt empire at war otherwise revolted everywhere at once).
     const nonCore = o !== pv.core[p];
-    const delta = (nonCore ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (nonCore && atWar(world, o) ? AT_WAR : 0) + (nonCore && nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
+    const guard = garrisoned(c, o);
+    const delta = (guard ? -GARRISON_UNREST : 0) + (nonCore ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (nonCore && atWar(world, o) ? AT_WAR : 0) + (nonCore && nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
     pv.unrest[p] = Math.max(0, Math.min(100, pv.unrest[p]! + delta));
     if (revolted[p] || occupied || pv.unrest[p]! < REVOLT_FROM) continue;
-    const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp);
+    const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp) * (guard ? 1 - GARRISON_P : 1);
     if (hashToUnit(hash32(world.seed, world.tick, p, SALT_REVOLT)) >= chance) continue;
     for (const q of revolt(world, p, o)) revolted[q] = 1;
   }
@@ -230,6 +264,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     }
   }
   world.out.emit(world.tick, EventKind.RevoltSpawned, id, holder, nc.capitalX[id]!, nc.capitalY[id]!);
-  if (hashToUnit(hash32(world.seed, world.tick, id, SALT_WAR)) < 0.5) declareWar(world, holder, id);
+  // A revolt is a war of independence (AoC; PLAN 1.40 tuning): rebels keep their land only by
+  // winning it. (Half of the revolts used to start in peace and stayed independent for good: the
+  // 50-year sweep counted 300–600 nations.)
+  declareWar(world, holder, id);
   return id;
 }
