@@ -30,6 +30,10 @@ export interface EditorPanelProps {
   /** Flag editor (PLAN 1.37b): the nation's current flag pixels, and saving or resetting it. */
   flagOf: (nation: number) => Uint32Array;
   onFlag: (nation: number, pixels: Uint32Array | null) => void;
+  /** Scenario files (PLAN 1.38): export under a name, import a file; the result line. */
+  onExportScenario: (name: string) => void;
+  onImportScenario: (file: File) => void;
+  scenarioStatus: string;
 }
 
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
@@ -39,7 +43,8 @@ const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLa
  * paint, brush radius, an optional target mask, and undo/redo (also Ctrl+Z / Ctrl+Y). While it is
  * open, map clicks paint.
  */
-export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag }: EditorPanelProps) {
+export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag, onExportScenario, onImportScenario, scenarioStatus }: EditorPanelProps) {
+  const [scenarioName, setScenarioName] = useState('');
   const [flagOpen, setFlagOpen] = useState(false);
   const [importLayer, setImportLayer] = useState<'terrain' | 'nation'>('terrain');
   const [gold, setGold] = useState('');
@@ -201,6 +206,33 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
           }}
         />
       </div>
+      <div class="panel-sub">{t('scenario.file')}</div>
+      <div class="god-row">
+        <input data-testid="scenario-name" placeholder={t('scenario.name')} value={scenarioName} onInput={(e) => setScenarioName((e.currentTarget as HTMLInputElement).value)} />
+        <button type="button" class="god-btn" data-testid="scenario-export" onClick={() => onExportScenario(scenarioName)}>
+          {t('scenario.export')}
+        </button>
+      </div>
+      <div class="god-row">
+        <span>{t('scenario.import')}</span>
+        <input
+          data-testid="scenario-import"
+          type="file"
+          accept=".warsim-scenario"
+          aria-label={t('scenario.import')}
+          onChange={(e) => {
+            const input = e.currentTarget as HTMLInputElement;
+            const f = input.files?.[0];
+            if (f) onImportScenario(f);
+            input.value = '';
+          }}
+        />
+      </div>
+      {scenarioStatus ? (
+        <div class="panel-note" data-testid="scenario-status">
+          {scenarioStatus}
+        </div>
+      ) : null}
       <div class="panel-note" data-testid="editor-hint">
         {t(state.tool === 'line' && lineStarted ? 'editor.hint.lineEnd' : (`editor.hint.${state.tool}` as MessageKey))}
       </div>

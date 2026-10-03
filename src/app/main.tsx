@@ -52,7 +52,7 @@ const autosave = new Autosave(sim, scenarioId);
 installTestApi({ sim, view, hud, autosave, player });
 
 const uiRoot = document.getElementById('ui');
-if (uiRoot) render(<App hud={hud} player={player} view={view} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
+if (uiRoot) render(<App hud={hud} player={player} view={view} base={scenarioId} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
 
 await sim.init({ scenario: scenarioId, seed });
 // ?continue=1 resumes the autosave of this scenario (PLAN 1.27).

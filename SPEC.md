@@ -1021,6 +1021,13 @@ interpolation changes something.
   - The worker reports `terrainLayer.landChanged` (land/water differs from the start); the
     renderer then draws cell coasts with water taken from the terrain layer.
   - Cities and formations stay where they are.
+- **Scenario files** (PLAN 1.38, `src/shared/scenarioFile.ts`, `src/app/scenarioFiles.ts`):
+  - A `.warsim-scenario` file is gzip of the magic line, a JSON header (format, name, base,
+    w, h, tick, hash) and the state bytes.
+  - `Sim.exportScenario` saves the world without its run history (command log, pending,
+    history log, statistics, undo stack) and leaves the running game untouched.
+  - Import checks the base and map size, loads the bytes, and compares the state hash with
+    the header. The editor's "Scenario file" section exports a download and loads files.
 - **Flags in play** (PLAN 1.37b, `src/shared/flagPixels.ts`, `src/app/flagStore.ts`,
   `src/ui/FlagEditor.tsx`):
   - `setFlag {nation, runs}` stores a 36×24 pixel flag in the world, saved with the names;

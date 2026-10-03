@@ -2052,3 +2052,24 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     flags.
 - **Evidence:** `docs/evidence/1.37/flag-editor.png`, viewed.
 - **Parity:** row 48 → partial.
+
+## 2026-10-03 — PLAN 1.38: shareable scenario files
+- **Sim:** `Sim.exportScenario()` returns the state without run history (command log, pending,
+  history log, stats, undo stack) and its hash, then restores the running game.
+- **Worker/client:** `exportScenario` request; replies may carry `scenarioHash`.
+- **Shared:** `scenarioFile.ts`: magic, JSON header (format 1, name, base, w, h, tick, hash), the
+  state bytes, gzip; readable errors for other files and future formats.
+- **App:** `scenarioFiles.ts`: export to a download named from the scenario; import validates
+  base, size and state hash. The editor's "Scenario file" section has a name, Export and Load,
+  and a status line (errors are shown, not swallowed).
+- **AT:**
+  - Unit: export leaves the running game intact; the scenario has no run history yet keeps the
+    world (rename, war, tick); the file round trip and a load in a fresh sim give the
+    identical hash; bad files are rejected.
+  - e2e (`tests/e2e/scenarioFile1938.spec.ts`): edit (rename, war, paint), play a month, export
+    through the UI, open a fresh game, load the file through the input. Equal state hash,
+    tick and rasters; the edits are there with an empty history. A damaged file and a non-file
+    are refused with messages.
+- **Bug found by the e2e:** the client dropped extra reply fields (`scenarioHash`), so the
+  export failed silently. Fixed, and export errors now reach the status line.
+- **Parity:** row 49 → partial.

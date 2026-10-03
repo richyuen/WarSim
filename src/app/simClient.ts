@@ -26,7 +26,7 @@ export type NationStats = Extract<FromWorker, { type: 'nationStats' }>;
 export type MapLayers = Extract<FromWorker, { type: 'mapLayers' }>;
 
 type Reply =
-  | { status: SimStatus; bytes?: Uint8Array }
+  | { status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }
   | { provinces: ProvinceBuildResult }
   | { terrain: TerrainBuildResult }
   | { political: PoliticalBuildResult };
@@ -110,7 +110,7 @@ export class SimClient {
     } else if (msg.type === 'political') {
       p.resolve({ political: msg.result });
     } else {
-      p.resolve(msg.bytes ? { status: msg.status, bytes: msg.bytes } : { status: msg.status });
+      p.resolve({ status: msg.status, ...(msg.bytes ? { bytes: msg.bytes } : {}), ...(msg.scenarioHash !== undefined ? { scenarioHash: msg.scenarioHash } : {}) });
     }
   }
 
@@ -206,7 +206,7 @@ export class SimClient {
     this.worker.postMessage(msg);
   }
 
-  private async status(req: Request, transfer: Transferable[] = []): Promise<{ status: SimStatus; bytes?: Uint8Array }> {
+  private async status(req: Request, transfer: Transferable[] = []): Promise<{ status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }> {
     const r = await this.request(req, transfer);
     if (!('status' in r)) throw new Error(`unexpected reply to ${req.type}`);
     return r;
@@ -265,6 +265,13 @@ export class SimClient {
 
   async hash(): Promise<SimStatus> {
     return (await this.status({ type: 'hash' })).status;
+  }
+
+  /** The world as a scenario (PLAN 1.38): state bytes without run history, and their hash. */
+  async exportScenario(): Promise<{ bytes: Uint8Array; hash: number; tick: number }> {
+    const r = await this.status({ type: 'exportScenario' });
+    if (!r.bytes || r.scenarioHash === undefined) throw new Error('exportScenario reply without bytes');
+    return { bytes: r.bytes, hash: r.scenarioHash, tick: r.status.tick };
   }
 
   /** Statistics series (PLAN 1.34b): flat STAT_STRIDE f32 records. */

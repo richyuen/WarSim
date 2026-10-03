@@ -12,11 +12,13 @@ import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
 import type { MapView } from './MapView';
+import { downloadBytes, exportScenarioFile, importScenarioFile, scenarioFileName } from './scenarioFiles';
 import { useEffect, useState } from 'preact/hooks';
 import { encodeRuns } from '../shared/mapImport';
 import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
-export function App({ hud, player, view, nameOf }: { hud: Hud; player: PlayerControl | null; view: MapView | null; nameOf: (id: number) => string | null }) {
+export function App({ hud, player, view, base, nameOf }: { hud: Hud; player: PlayerControl | null; view: MapView | null; base: string; nameOf: (id: number) => string | null }) {
+  const [scenarioStatus, setScenarioStatus] = useState('');
   // Re-render when custom flags change (the flag store is outside the signals).
   const [flagVersion, setFlagVersion] = useState(0);
   useEffect(() => hud.sim.onFlags(() => setFlagVersion((v) => v + 1)), []);
@@ -60,6 +62,26 @@ export function App({ hud, player, view, nameOf }: { hud: Hud; player: PlayerCon
           onAnnex={(annexer, target) => hud.command({ kind: 'annexNation', annexer, target })}
           flagOf={(n) => view?.flags.pixelsOf(n) ?? new Uint32Array(36 * 24)}
           onFlag={(nation, px) => hud.command({ kind: 'setFlag', nation, runs: px ? encodeRuns(px) : [] })}
+          scenarioStatus={scenarioStatus}
+          onExportScenario={(name) => {
+            const geo = hud.sim.mapLayers?.terrain;
+            if (!geo) return;
+            void exportScenarioFile(hud.sim, name, base, geo.w, geo.h)
+              .then(({ file, header }) => {
+                downloadBytes(file, scenarioFileName(header.name));
+                setScenarioStatus(t('scenario.exported', { name: header.name }));
+              })
+              .catch((e: unknown) => setScenarioStatus(t('scenario.exportFailed', { error: e instanceof Error ? e.message : String(e) })));
+          }}
+          onImportScenario={(file) => {
+            const geo = hud.sim.mapLayers?.terrain;
+            if (!geo) return;
+            void file
+              .arrayBuffer()
+              .then((buf) => importScenarioFile(hud.sim, new Uint8Array(buf), base, geo.w, geo.h))
+              .then((h) => setScenarioStatus(t('scenario.loaded', { name: h.name })))
+              .catch((e: unknown) => setScenarioStatus(t('scenario.failed', { error: e instanceof Error ? e.message : String(e) })));
+          }}
           onImport={(file, layer) => {
             const geo = hud.sim.mapLayers?.terrain;
             if (!geo) return;

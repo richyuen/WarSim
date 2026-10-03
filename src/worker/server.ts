@@ -166,6 +166,12 @@ export class SimServer {
         this.reply(msg.reqId, new Uint8Array(rows.buffer));
         break;
       }
+      case 'exportScenario': {
+        const sim = this.requireSim();
+        const { bytes, hash } = sim.exportScenario();
+        this.post({ type: 'reply', reqId: msg.reqId, status: { tick: sim.tick, hash: sim.hash() }, bytes, scenarioHash: hash }, [bytes.buffer]);
+        break;
+      }
       case 'save':
         this.reply(msg.reqId, this.requireSim().save());
         break;

@@ -95,6 +95,32 @@ export class Sim {
     return saveBytes(this.world.parts());
   }
 
+  /**
+   * The world as a scenario (PLAN 1.38): the same state with its run history dropped (command log
+   * and pending commands, history log, statistics, editor undo stack), so a shared scenario starts
+   * clean at its date. The running game is left as it was. Returns the state bytes and their hash.
+   */
+  exportScenario(): { bytes: Uint8Array; hash: number } {
+    const w = this.world;
+    const keep = { log: w.commandLog, pending: w.pending, history: w.history.rows, stats: w.stats.rows, undo: w.edits.undo, redo: w.edits.redo };
+    w.commandLog = [];
+    w.pending = [];
+    w.history.rows = [];
+    w.stats.rows = [];
+    w.edits.undo = [];
+    w.edits.redo = [];
+    try {
+      return { bytes: this.save(), hash: this.hash() };
+    } finally {
+      w.commandLog = keep.log;
+      w.pending = keep.pending;
+      w.history.rows = keep.history;
+      w.stats.rows = keep.stats;
+      w.edits.undo = keep.undo;
+      w.edits.redo = keep.redo;
+    }
+  }
+
   /** Replaces the state with a save produced by a Sim of the same scenario and map size. */
   load(bytes: Uint8Array): void {
     loadBytes(this.world.parts(), bytes);

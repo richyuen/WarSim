@@ -160,7 +160,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: importing a fixture PNG yields expected cell counts.
 - [x] 1.37b Flag editor with presets.
   AT: a flag edited in the editor is shown on the map.
-- [ ] 1.38 Scenario files save/load (shareable `.warsim-scenario`).
+- [x] 1.38 Scenario files save/load (shareable `.warsim-scenario`).
   AT: round trip yields an identical scenario hash.
 - [ ] 1.39 Settings: UI size, unit size, looping map, map size (S–XL), speed/pause persistence, screenshot key, seed + randomisation options.
   AT: e2e toggles each and verifies the effect; F2 downloads a PNG.

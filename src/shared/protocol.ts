@@ -60,6 +60,8 @@ export type ToWorker =
   /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
   | { type: 'stats'; reqId: number }
   | { type: 'save'; reqId: number }
+  /** PLAN 1.38: the world as a scenario (run history dropped): state bytes + their hash. */
+  | { type: 'exportScenario'; reqId: number }
   | { type: 'load'; reqId: number; bytes: Uint8Array }
   | { type: 'speed'; speed: Speed }
   | { type: 'pause'; paused: boolean }
@@ -204,7 +206,8 @@ export interface PoliticalBuildResult {
 import type { LandCoverage } from './landCoverage';
 
 export type FromWorker =
-  | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array }
+  /** `scenarioHash`: the state hash of exported scenario bytes (PLAN 1.38). */
+  | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }
   | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
