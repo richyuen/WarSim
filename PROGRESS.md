@@ -2571,3 +2571,23 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   The budget (1.5 and 2.4 ms) is not met by this step.
 - **Watch list:** a unit test failed once under load (`scenarioFile.test.ts`, BLOCKERS).
 - **Next:** step 2, the rule (a marching formation keeps its sector).
+
+## 2026-10-03 — PLAN 1.42f, step 2: a marching formation keeps its front sector (ADR-53)
+- **Rule:** the sticky pass of the operational AI no longer frees a marching formation because
+  its sector's allotment of the day is full. One condition removed; the header comment and SPEC
+  §7 already described the rule this way.
+- **Test (new):** over 14 days of the Germany–Poland duel, more than 50 marches into sectors
+  that still exist are watched across a plan and none changes its target by more than a sector.
+  The same test under the old rule: 29 countermanded. The other operational AI tests pass.
+- **Seed 99, 5 years** (`npm run sim`): year 1 **1.95 ms** (budget 2.4, was 3.15 after step 1 and
+  3.36 before); 5-year mean **1.56 ms** (budget 1.5, was 1.54 and 1.69). Hash f57f70ac (year 1
+  2cb270e6). Years 2–5: 1.51, 1.65, 1.50, 1.18 ms.
+- **The acceptance test of 1.42f is not met:** the mean is 0.06 ms over. The world after the rule
+  has more wars (19 at the end of year 5, 13 before), so the two means are not the same load.
+  What the planner still costs is route searches (0.3–0.4 ms): marches whose sector has gone and
+  first orders over long distances. PLAN 1.42f stays open with that written in it.
+- **Quick sweep before and after** (scratch, seeds 1–3 × 20 years, run before step 1): 6.5 →
+  4.6 min; no limit flipped. Numbers in ADR-53. Three seeds could not tell the rule from noise,
+  which is why the quick sweep goes to 10 seeds (next entry).
+- **Not verified in the browser:** an AI rule; the e2e stage of the gate runs.
+- **Next:** gate and sweep tooling, then the sweep criteria (the user's request of today).

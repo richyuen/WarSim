@@ -236,6 +236,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   Done before 1.42e (2026-10-03): every sweep that 1.42e and 1.42 need is paid in tick time.
   Step 1, no behaviour change (hash 93effc58): the operational AI skips nations with no free
   formation and reads the frontier by holder. Mean 1.69 → 1.54 ms, year 1 3.36 → 3.15 ms.
+  Step 2, a rule (ADR-53, hash f57f70ac): a marching formation keeps its sector. Year 1
+  1.95 ms (met); mean 1.56 ms (**not met**, 0.06 ms over, in a world with more wars).
+  Left: marches whose sector has gone are re-planned (about 2,000 long searches in year 1),
+  0.3–0.4 ms a tick of route searches in all.
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km

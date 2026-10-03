@@ -876,8 +876,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Who deploys:* free (not engaged) formations within 60 cells of the front. The farthest 15%
     stay in reserve.
   - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
-    sector getting one while formations last. Formations already marching into a sector keep it;
-    the rest fill nearest-first.
+    sector getting one while formations last. Formations already marching into a sector keep it,
+    also beyond the sector's allotment of the day [ADR-53]; the rest fill what is left
+    nearest-first.
   - *Orders:* a sector at ≥ 1.5× local superiority attacks the enemy cell next to its centre;
     otherwise it holds its front cell. A formation is not re-ordered if its target is within a
     sector of the current one.

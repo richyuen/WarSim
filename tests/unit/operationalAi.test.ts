@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { SECTOR_CELLS } from '../../src/sim/ai/operational';
+import { SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
@@ -130,4 +130,55 @@ describe('allied fronts (PLAN 1.42b)', () => {
     expect(alive.some(nearPoland)).toBe(true);
     for (const id of alive) expect(f.supply[id]).toBeGreaterThan(0);
   });
+});
+
+describe('marches are not countermanded (PLAN 1.42f, ADR-53)', () => {
+  it('a formation marching into a front sector that still exists keeps its target at the next plan', () => {
+    const s = duel();
+    const w = s.world;
+    const f = w.formations.cols;
+    const mw = w.cells.w;
+    const bw = Math.ceil(mw / SECTOR_CELLS);
+    const sectorOf = (c: number): number => Math.floor(Math.floor(c / mw) / SECTOR_CELLS) * bw + Math.floor((c % mw) / SECTOR_CELLS);
+    const dist = (a: number, b: number): number => {
+      let dx = Math.abs((a % mw) - (b % mw));
+      if (dx > mw / 2) dx = mw - dx;
+      return Math.max(dx, Math.abs(Math.floor(a / mw) - Math.floor(b / mw)));
+    };
+    /** Sector keys of `n`'s front against its enemy, as the planner builds them. */
+    const frontSectors = (n: number): Set<number> => {
+      const nb: number[] = [];
+      const keys = new Set<number>();
+      for (const c of frontierOf(w)) {
+        if (w.cells.controller[c] !== n) continue;
+        if (neighbours4(c, mw, w.cells.h, true, nb).some((k) => w.cells.controller[k] !== 0 && w.wars.atWar(n, w.cells.controller[k]!))) keys.add(sectorOf(c));
+      }
+      return keys;
+    };
+    runEvents(s, 1);
+    w.wars.between(GER, POL)!.war.fightToDeath = [true, true];
+    // Before each German plan: its free formations on the march into a sector that is still a
+    // front sector. After the plan: their targets, which must be within one sector of the old ones.
+    let watched = new Map<number, number>();
+    let marches = 0;
+    let countermanded = 0;
+    s.step(24 * 14, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const [id, target] of watched) {
+        if (!ww.formations.has(id) || f.moving[id] !== 1) continue; // destroyed, or arrived and stopped
+        marches++;
+        if (dist(f.targetCell[id]!, target) > SECTOR_CELLS) countermanded++;
+      }
+      watched = new Map();
+      // The planner runs in tick T when T is a multiple of 6 and (T / 6 + nation) is a multiple of STAGGER.
+      if (ww.tick % 6 !== 0 || (ww.tick / 6 + GER) % STAGGER !== 0) return;
+      const sectors = frontSectors(GER);
+      for (const id of ww.formations.ids()) {
+        if (f.nation[id] === GER && f.moving[id] === 1 && f.engaged[id] !== 1 && sectors.has(sectorOf(f.targetCell[id]!))) watched.set(id, f.targetCell[id]!);
+      }
+    });
+    expect(marches).toBeGreaterThan(50);
+    expect(countermanded).toBe(0);
+  }, 180_000);
 });

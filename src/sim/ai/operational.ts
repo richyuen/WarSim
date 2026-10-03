@@ -10,9 +10,11 @@
  *
  * Free formations (not engaged) within DEPLOY_RANGE_CELLS of a sector are ranked by distance to
  * the nearest one; the farthest RESERVE share stays put as the reserve (farther ones garrison).
- * A formation already marching into a sector keeps it; others fill sectors nearest-first. The rest are allotted to sectors in proportion to
- * 1 + threat/THREAT_UNIT (largest remainders; every sector gets one while formations last) and
- * filled nearest-first. A sector whose allotted strength ≥ OFFENSIVE_RATIO × its threat attacks:
+ * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
+ * sector gets one while formations last). A formation already marching into a sector keeps it,
+ * whatever the sector's allotment is today (ADR-53: the allotment moves every day with the threat,
+ * and a march of weeks that is re-planned daily never arrives); the others fill what is left of
+ * the allotments nearest-first. A sector whose allotted strength ≥ OFFENSIVE_RATIO × its threat attacks:
  * its formations march on the enemy cell next to the sector's front nearest its centre;
  * otherwise they hold the own front cell nearest the centre. Orders already being followed
  * (target within one sector) or already reached are not re-issued.
@@ -172,14 +174,15 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     counts[j]!--;
     counts[i] = 1;
   }
-  // Sticky first: a formation already marching into a sector keeps it (no daily re-pathing).
+  // Sticky first: a formation already marching into a sector keeps it, also beyond the sector's
+  // allotment of today (ADR-53). It counts towards the allotment, so fewer others are sent.
   const free = new Set(active);
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
   const index = new Map(list.map((s, i) => [s.key, i] as const));
   for (const id of active) {
     if (f.moving[id] !== 1) continue;
     const i = index.get(sectorOfCell(f.targetCell[id]!));
-    if (i === undefined || list[i]!.formations.length >= counts[i]!) continue;
+    if (i === undefined) continue;
     free.delete(id);
     list[i]!.formations.push(id);
     list[i]!.strength += f.strength[id]!;

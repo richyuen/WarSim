@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-53 · 2026-10-03 · accepted — A marching formation keeps its front sector (PLAN 1.42f)
+
+- **Context:** tick time on seed 99 was over budget again after ADR-50 and ADR-51 (5-year mean
+  1.69 ms against 1.5; year 1 3.36 ms against 2.4). In year 1 the operational AI ran 15,900
+  route searches. The 6,030 longer than 60 cells took 13.5 of 13.9 s (about 20,000 cells
+  expanded each), and 5,584 of those were for formations already on the march, which had
+  walked 8.5 cells of a 220-cell route on average before being sent elsewhere. A march of
+  weeks was re-planned almost every day and seldom arrived.
+- **Cause:** the planner kept a marching formation in its sector only while the sector's
+  allotment of that day was not yet full. The allotment follows the threat and moves daily, so
+  the formation was freed and given to another sector, often a far one. SPEC §7 and the file's
+  own header already said "formations already marching into a sector keep it": the code
+  disagreed with the stated rule.
+- **Decision:** a formation marching into a sector that is still a front sector keeps it,
+  whatever the allotment is today. It counts towards the allotment, so fewer others are sent
+  there, and towards the sector's strength when it decides to attack or hold.
+- **Result, seed 99** (`npm run sim`, with step 1 of PLAN 1.42f, which changed no behaviour):
+  year 1 3.15 → 1.95 ms; cells expanded by route searches in year 1 120 M → 31 M. The
+  5-year mean is 1.56 ms (1.54 before the rule): the world is a different one from year 2
+  on (19 wars at the end of year 5 instead of 13). State hash after 5 years 93effc58 →
+  f57f70ac; after 1 year dd3096af → 2cb270e6.
+- **Check on dynamics** (scratch quick sweep, seen seeds 1–3 × 20 years, before and after;
+  not a pass claim): wall time 6.5 → 4.6 min; no limit changed between pass and fail; land
+  moving in the last 5 years 9.7–14.5% → 11.0–13.4%; the leader-share range moved both ways
+  (2.1 → 0.5, 2.9 → 2.4, 0.5 → 1.2 points), which three seeds cannot tell from noise.
+- **Test:** in the Germany–Poland duel no march into a sector that still exists is
+  countermanded at the next plan (29 were under the old rule in 14 days).
+- **Not solved:** a march whose sector is gone (the front moved) is still re-planned, about
+  2,000 times in year 1 with the new target more than 12 cells from the old one, and those
+  searches are most of what the planner still costs (0.3–0.4 ms a tick). The mean stays
+  0.06 ms over budget: PLAN 1.42f is not closed.
+
 ### ADR-52 · 2026-10-03 · accepted — Land is measured by area, not by cells (the user's decision; PLAN 1.42d)
 
 - **Context:** the map grid is a Miller projection: a cell covers `kx[y] × ky[y]` km², which
