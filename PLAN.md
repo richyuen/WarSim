@@ -137,7 +137,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   nation/revolt/battle, buffs, AI) + `sim.inspect()`. Nukes go with PLAN 6.1, control with 1.33.
   (Split from 1.32, 2026-10-02.)
   AT: an e2e test per command asserts the sim effect via `__warsim`.
-- [ ] 1.32b God Mode UI: a God panel (bottom bar toggle) issuing those commands on the selected
+- [x] 1.32b God Mode UI: a God panel (bottom bar toggle) issuing those commands on the selected
   nation (and map picks for revolt/battle/brush).
   AT: e2e drives each God action through the UI and sees its effect via `sim.inspect()`.
 - [ ] 1.33 Take control of a nation (player orders: move/attack formations, diplomacy actions, production).

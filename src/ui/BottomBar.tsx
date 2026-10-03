@@ -14,10 +14,13 @@ export interface BottomBarProps {
   /** Statistics ranking toggle (PLAN 1.31b); omitted where no stats exist. */
   showStats?: boolean;
   onToggleStats?: (() => void) | undefined;
+  /** God Mode toggle (PLAN 1.32b); omitted where no stats exist. */
+  godMode?: boolean;
+  onToggleGod?: (() => void) | undefined;
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
@@ -46,6 +49,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       {onToggleStats ? (
         <button type="button" class="bar-btn" data-testid="stats-btn" aria-pressed={showStats} onClick={onToggleStats}>
           {t('bar.statistics')}
+        </button>
+      ) : null}
+      {onToggleGod ? (
+        <button type="button" class={godMode ? 'bar-btn bar-god active' : 'bar-btn bar-god'} data-testid="god-btn" aria-pressed={godMode} onClick={onToggleGod}>
+          {t('bar.god')}
         </button>
       ) : null}
       <span class="bar-date" data-testid="date-label">

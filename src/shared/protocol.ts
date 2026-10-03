@@ -47,7 +47,11 @@ export type ToWorker =
   /** `assetBase`: URL of the map asset directory, for scenarios built from map assets. */
   | { type: 'init'; reqId: number; init: SimInit; assetBase?: string }
   | { type: 'step'; reqId: number; n: number }
-  | { type: 'cmd'; cmd: Command }
+  /**
+   * A command for the next tick boundary. `now` (God Mode UI, PLAN 1.32b) applies it at once,
+   * between ticks, as `Sim.applyNow` does in Node; a plain `cmd` stays pending until the next step.
+   */
+  | { type: 'cmd'; cmd: Command; now?: boolean }
   | { type: 'hash'; reqId: number }
   /** PLAN 1.32: a JSON summary of the world (`Inspection`) for tests and the critic. */
   | { type: 'inspect'; reqId: number }
@@ -221,7 +225,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[] };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string }[]; aiEnabled: boolean };
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
 export interface NationStat {
@@ -239,7 +243,7 @@ export interface NationStat {
   men: number;
   formations: number;
   efficiency: number;
-  alliance: { name: string; leader: number; unity: number; loyalty: number } | null;
+  alliance: { id: number; name: string; leader: number; unity: number; loyalty: number } | null;
   overlord: number;
   autonomy: number;
   loyalty: number;

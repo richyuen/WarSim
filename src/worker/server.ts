@@ -86,6 +86,7 @@ export class SimServer {
   private labelVersion = -1;
   private lastLabelMs = -1;
   private unrestVersion = -1;
+  private labelNames = -1;
   private statsTick = -1;
   private lastStatsMs = -1;
 
@@ -125,9 +126,23 @@ export class SimServer {
         this.advance(msg.n);
         this.reply(msg.reqId);
         break;
-      case 'cmd':
-        this.requireSim().command(msg.cmd);
+      case 'cmd': {
+        const sim = this.requireSim();
+        sim.command(msg.cmd);
+        // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
+        // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
+        if (msg.now) {
+          sim.applyNow((w) => this.drainEvents(w));
+          this.forceSend = true;
+          // God actions skip the (cheap) stats throttle, so panels update on the click. Labels
+          // keep theirs (~40 ms a derivation; brush strokes come in bursts) and follow within
+          // LABEL_INTERVAL_MS through the paused flush pump.
+          this.statsTick = -1;
+          this.lastStatsMs = -1;
+          this.maybeSend();
+        }
         break;
+      }
       case 'hash':
         this.reply(msg.reqId);
         break;
@@ -355,7 +370,7 @@ export class SimServer {
   private get derivedPending(): boolean {
     const sim = this.sim;
     if (!sim || !this.provinceNames) return false;
-    return sim.world.tick !== this.statsTick || sim.world.controlChanges !== this.labelVersion;
+    return sim.world.tick !== this.statsTick || sim.world.controlChanges !== this.labelVersion || sim.world.namesVersion !== this.labelNames;
   }
 
   /**
@@ -403,7 +418,11 @@ export class SimServer {
     this.statsTick = world.tick;
     this.lastStatsMs = nowMs;
     const { nations, wars } = this.buildStats(world, false);
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars }, []);
+    const dead: { id: number; name: string }[] = [];
+    world.nations.forEach((id) => {
+      if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id) });
+    });
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled }, []);
   }
 
   /**
@@ -421,10 +440,11 @@ export class SimServer {
       for (let p = 0; p < unrest.length; p++) unrest[p] = Math.round(world.provinces.unrest[p]!);
       this.post({ type: 'provinceStats', unrest }, [unrest.buffer]);
     }
-    const changed = world.controlChanges !== this.labelVersion;
+    const changed = world.controlChanges !== this.labelVersion || world.namesVersion !== this.labelNames;
     if (!changed || (this.lastLabelMs >= 0 && nowMs - this.lastLabelMs < LABEL_INTERVAL_MS)) return;
     this.lastLabelMs = nowMs;
     this.labelVersion = world.controlChanges;
+    this.labelNames = world.namesVersion;
     const capitals = new Map<number, number>();
     const nc = world.nations.cols;
     world.nations.forEach((id) => {
@@ -483,7 +503,7 @@ export class SimServer {
         men: men.get(id) ?? 0,
         formations: count.get(id) ?? 0,
         efficiency: nc.efficiency[id]!,
-        alliance: al ? { name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
+        alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
         overlord: nc.overlord[id]!,
         autonomy: nc.autonomy[id]!,
         loyalty: nc.loyalty[id]!,

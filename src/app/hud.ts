@@ -8,12 +8,17 @@ import { signal } from '@preact/signals';
 import { dateOfTick } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
+import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
 const KEY_LEVEL = 'warsim.speedLevel';
 const KEY_PAUSED = 'warsim.paused';
 const KEY_MAP_MODE = 'warsim.mapMode';
+/** God territory brush radius in cells. */
+const BRUSH_RADIUS = 5;
+
+export type GodTool = 'revolt' | 'battle' | 'brush';
 const KEY_SHOW_STATS = 'warsim.showStats';
 const KEY_RANK_METRIC = 'warsim.rankMetric';
 
@@ -109,6 +114,52 @@ export class Hud {
   cycleMapMode(): void {
     const i = MAP_MODES.indexOf(this.mapMode.value);
     this.setMapMode(MAP_MODES[(i + 1) % MAP_MODES.length]!);
+  }
+
+  /** God Mode (PLAN 1.32b): the God tab in the nation panel and map tools. */
+  readonly godMode = signal(false);
+  /** Active God map tool and, for a breakthrough, its first point. */
+  readonly godTool = signal<GodTool | null>(null);
+  private battleStart: [number, number] | null = null;
+
+  toggleGod(): void {
+    this.godMode.value = !this.godMode.value;
+    if (!this.godMode.value) this.setGodTool(null);
+  }
+
+  /** Issues a God command, applied at once (also while paused). */
+  command(cmd: Command): void {
+    this.sim.command(cmd, true);
+  }
+
+  setGodTool(tool: GodTool | null): void {
+    this.godTool.value = this.godTool.value === tool ? null : tool;
+    this.battleStart = null;
+  }
+
+  /**
+   * A map click while a God tool is active (cell x, y; its province). Returns true when the
+   * tool used the click (the map then does not select).
+   */
+  pick(x: number, y: number, province: number): boolean {
+    const tool = this.godTool.value;
+    const nation = this.selected.value;
+    if (!tool) return false;
+    if (tool === 'revolt') {
+      if (province > 0) this.command({ kind: 'spawnRevolt', province });
+      this.godTool.value = null;
+    } else if (tool === 'battle') {
+      if (!this.battleStart) {
+        this.battleStart = [x, y];
+        return true;
+      }
+      if (nation !== 0) this.command({ kind: 'forceBreakthrough', nation, x: this.battleStart[0], y: this.battleStart[1], toX: x, toY: y });
+      this.battleStart = null;
+      this.godTool.value = null;
+    } else if (nation !== 0) {
+      this.command({ kind: 'paintControl', nation, x, y, r: BRUSH_RADIUS }); // brush stays active
+    }
+    return true;
   }
 
   togglePause(): void {

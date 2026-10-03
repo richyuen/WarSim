@@ -1774,3 +1774,36 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Unit:** `tests/unit/godMode.test.ts`.
 - **Parity:** rows 20, 33–36 and 38 updated.
 - **Plan change:** 1.32 split; 1.32b is the God Mode UI.
+
+## 2026-10-02 — PLAN 1.32b: God Mode UI
+- **Bottom bar:** God Mode button (a nowrap fix keeps the bar on one line).
+- **God tab** in the nation panel (`GodTab`): rename, income bonus ±10, nation/world AI, war/
+  ally/puppet on a target, peace per war, buffs, revive a dead nation, Kill (two-click confirm,
+  no dialog).
+- **Map tools** (`hud.pick` via `MapView.onPick`; `cellAt`, `provinceAt` from the province
+  raster): revolt (one shot), breakthrough (two clicks), territory brush (until toggled off). A
+  tool click does not change the selection.
+- **Immediate God actions:** `cmd` gains `now` (God UI only). The worker applies it between ticks
+  (`Sim.applyNow`, stamped like the next step) and sends a snapshot and stats at once.
+  - My first version applied every paused command at once. It broke I3: the worker e2e checks
+    that a paused command is still pending at the mid-point, the same as in Node. Plain
+    commands keep that.
+  - Unit test: applyNow then stepping hashes equal to applying at the next step.
+  - Stats skip their throttle for God clicks; labels keep theirs (an existing unit test pins
+    it; a rename's label follows within 2 s).
+- **Labels follow renames:** `world.namesVersion`, derived.
+- **Stats:** gain `dead` nations and `aiEnabled`; `NationStat.alliance` gains `id`.
+- **AT** (`tests/e2e/godUi1938.spec.ts`): every action driven through the UI, effects via
+  `sim.inspect()`:
+  - rename (also the curved map label);
+  - bonus, AI switches;
+  - war then peace (the row disappears at once);
+  - ally, puppet, buff;
+  - revolt by map click in Bavaria;
+  - breakthrough by two clicks;
+  - brush on Poland;
+  - revive Ethiopia;
+  - Kill Yugoslavia (the first click only arms);
+  - God Mode off hides the tab.
+- **Evidence:** `docs/evidence/1.32/god-tab.png`, viewed. The first shot showed the stale label,
+  stale war row and wrapped bar fixed above.

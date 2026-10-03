@@ -29,6 +29,7 @@ if (view) {
   hud.onMapMode = (m) => view.setMapMode(m);
   view.onSelect = (id) => (hud.selected.value = id);
   hud.onSelectNation = (id) => view.select(id);
+  view.onPick = (x, y) => hud.pick(x, y, view.provinceAt(x, y));
   view.setMapMode(hud.mapMode.value);
 }
 const autosave = new Autosave(sim, scenarioId);

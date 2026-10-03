@@ -302,6 +302,7 @@ class WorldCore implements Stateful {
     w.pending = parsed.pending;
     // God Mode names (PLAN 1.32); saves from before it have no section.
     const names = sections.find((s) => s.name === 'world.names');
+    w.namesVersion++;
     w.names = new Map(names ? (JSON.parse(new TextDecoder().decode(names.data as Uint8Array)) as [number, string][]) : []);
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.paths.clear();
@@ -352,6 +353,8 @@ export class World {
   supplyDirtyNations = new Set<number>();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
+  /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
+  namesVersion = 0;
   /** Global settings (state, saved in world.meta). */
   settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode; aiEnabled: boolean } = {
     winnerTakesAll: false,

@@ -158,6 +158,7 @@ function applyCommand(world: World, cmd: Command): void {
       const name = cmd.name.trim().slice(0, MAX_NAME);
       if (name === '') world.names.delete(cmd.nation);
       else world.names.set(cmd.nation, name);
+      world.namesVersion++;
       return;
     }
     case 'spawnRevolt':

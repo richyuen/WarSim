@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import type { NationStat } from '../shared/protocol';
+import { GodTab, type GodTabProps } from './GodTab';
 import { t, type MessageKey } from './i18n';
 
 /** Display name of an i18n key, or of a '=' + literal name (spawned nations). */
@@ -11,7 +12,7 @@ const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
 const num = (v: number): string => Math.round(v).toLocaleString('en-US');
 const signed = (v: number): string => (v >= 0 ? '+' : '−') + num(Math.abs(v));
 
-type Tab = 'overview' | 'economy';
+type Tab = 'overview' | 'economy' | 'god';
 
 /**
  * Left nation panel (PLAN 1.31a): the selected nation's name and colour, then an Overview tab
@@ -19,8 +20,10 @@ type Tab = 'overview' | 'economy';
  * balance, treasury, bonus, manpower). Nation chips select that nation. Actions (bonus −/+,
  * war, peace…) arrive with God Mode and player control (PLAN 1.32/1.33).
  */
-export function NationPanel({ nation, byId, onSelect }: { nation: NationStat; byId: Map<number, NationStat>; onSelect: (id: number) => void }) {
-  const [tab, setTab] = useState<Tab>('overview');
+export function NationPanel({ nation, byId, onSelect, god }: { nation: NationStat; byId: Map<number, NationStat>; onSelect: (id: number) => void; god?: Omit<GodTabProps, 'nation'> | null }) {
+  const [chosen, setTab] = useState<Tab>('overview');
+  // The God tab exists only in God Mode (PLAN 1.32b).
+  const tab: Tab = !god && chosen === 'god' ? 'overview' : chosen;
   const chip = (id: number) => {
     const n = byId.get(id);
     return (
@@ -48,13 +51,15 @@ export function NationPanel({ nation, byId, onSelect }: { nation: NationStat; by
         </button>
       </header>
       <nav class="panel-tabs">
-        {(['overview', 'economy'] as const).map((k) => (
+        {(god ? (['overview', 'economy', 'god'] as const) : (['overview', 'economy'] as const)).map((k) => (
           <button key={k} class={tab === k ? 'tab active' : 'tab'} data-testid={`tab-${k}`} onClick={() => setTab(k)}>
             {t(`panel.${k}` as MessageKey)}
           </button>
         ))}
       </nav>
-      {tab === 'overview' ? (
+      {tab === 'god' && god ? (
+        <GodTab nation={nation} {...god} />
+      ) : tab === 'overview' ? (
         <section data-testid="panel-overview">
           {row('panel.land', num(nation.cells), 'stat-land')}
           {row('panel.army', `${num(nation.men)} (${nation.formations})`, 'stat-army')}

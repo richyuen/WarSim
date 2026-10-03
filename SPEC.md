@@ -969,6 +969,12 @@ interpolation changes something.
   rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
   `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
   (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.
+- **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
+  tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
+  ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).
+  Map tools (revolt, breakthrough from two clicks, territory brush) take the next map clicks.
+  God commands are sent with `now`: applied at once between ticks with the next step's tick
+  stamp (`Sim.applyNow`), so they show while paused and replay identically.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes
   globally or per nation; grant warheads; force a strike. All of these are Commands.

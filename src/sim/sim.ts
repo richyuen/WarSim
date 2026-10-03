@@ -5,7 +5,7 @@
 import type { Command } from '../shared/commands';
 import type { SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
-import { step, type System } from './tick';
+import { applyPendingCommands, step, type System } from './tick';
 import { BUILD_MIX_1938, createWorld1938, ECONOMY_TABLES_1938, RULES_1938 } from './scenario1938';
 import { allianceSystem } from './systems/alliances';
 import { economicAi } from './ai/economic';
@@ -57,6 +57,20 @@ export class Sim {
    * Advances n ticks. `afterTick` runs after each tick to consume derived outputs (events,
    * dirty tiles); without it, events are discarded each tick so headless runs stay bounded.
    */
+  /**
+   * Applies queued commands now, without advancing (PLAN 1.32b: God actions while paused). They
+   * are stamped with the current tick, exactly as the next step would apply them, so saves and
+   * replays are unchanged. `after` consumes derived outputs as in `step`.
+   */
+  applyNow(after?: (world: World) => void): void {
+    applyPendingCommands(this.world);
+    if (after) after(this.world);
+    else {
+      this.world.out.events.length = 0;
+      this.world.out.fires.length = 0;
+    }
+  }
+
   step(n = 1, afterTick?: (world: World) => void): void {
     for (let i = 0; i < n; i++) {
       step(this.world, this.systems);

@@ -41,6 +41,7 @@ export class MapView {
   private readonly atWar = new Set<number>();
   private readonly warPairs = new Set<number>();
   private readonly controlGrid: Uint16Array;
+  private provinceGrid: Uint16Array | null = null;
   /** Selected nation (0 = none; PLAN 1.30) and the hook the app uses to show it. */
   selected = 0;
   onSelect: (id: number) => void = () => {};
@@ -77,7 +78,11 @@ export class MapView {
     canvas.addEventListener('pointerup', (e) => {
       if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 5) {
         const r = canvas.getBoundingClientRect();
-        this.select(this.nationAt(e.clientX - r.left, e.clientY - r.top));
+        const sx = e.clientX - r.left;
+        const sy = e.clientY - r.top;
+        const cell = this.cellAt(sx, sy);
+        // A God Mode map tool consumes the click (PLAN 1.32b); otherwise it selects.
+        if (!(this.onPick && cell && this.onPick(cell[0], cell[1]))) this.select(this.nationAt(sx, sy));
       }
       down = null;
     });
@@ -103,6 +108,7 @@ export class MapView {
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
       this.cityLabels.setCities(m.cities);
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
+      this.provinceGrid = m.province;
       this.hasFineCoast = true;
       this.dirty = true;
     });
@@ -237,6 +243,22 @@ export class MapView {
   }
 
   /** The nation controlling the cell under a CSS-px point, 0 for none. */
+  /** God Mode map tool (PLAN 1.32b): gets clicked cells; returns true to consume the click. */
+  onPick: ((x: number, y: number) => boolean) | null = null;
+
+  /** The cell under a CSS-px point (x wrapped), or null off the map. */
+  cellAt(sx: number, sy: number): [number, number] | null {
+    const [wx, wy] = screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight);
+    const y = Math.floor(wy);
+    if (y < 0 || y >= this.geo.h) return null;
+    return [((Math.floor(wx) % this.geo.w) + this.geo.w) % this.geo.w, y];
+  }
+
+  /** Admin-1 province of a cell (0 = none or not yet known). */
+  provinceAt(x: number, y: number): number {
+    return this.provinceGrid?.[y * this.geo.w + x] ?? 0;
+  }
+
   nationAt(sx: number, sy: number): number {
     const [wx, wy] = screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight);
     const y = Math.floor(wy);

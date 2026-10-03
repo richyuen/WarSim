@@ -209,8 +209,9 @@ export class SimClient {
     return r.political;
   }
 
-  command(cmd: Command): void {
-    this.send({ type: 'cmd', cmd });
+  /** Queues `cmd`; with `now` it is applied at once (between ticks; God Mode UI). */
+  command(cmd: Command, now = false): void {
+    this.send(now ? { type: 'cmd', cmd, now } : { type: 'cmd', cmd });
   }
 
   setSpeed(speed: Speed): void {

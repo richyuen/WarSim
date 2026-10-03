@@ -77,6 +77,22 @@ describe('God Mode commands (PLAN 1.32a)', () => {
     expectCountsMatch(s.world);
   });
 
+  it('applyNow (God UI while paused) is replay-identical to applying at the next step', () => {
+    const a = new Sim({ scenario: '1938', seed: 3, assets: assets1938(W) });
+    const b = new Sim({ scenario: '1938', seed: 3, assets: assets1938(W) });
+    a.step(30);
+    b.step(30);
+    const cmd = { kind: 'declareWar', attacker: GER!, defender: POL! } as const;
+    a.command(cmd);
+    a.applyNow();
+    b.command(cmd);
+    expect(a.world.commandLog.at(-1)!.tick).toBe(30);
+    a.step(48);
+    b.step(48);
+    expect(b.world.commandLog.at(-1)!.tick).toBe(30);
+    expect(a.hash()).toBe(b.hash());
+  }, 120_000);
+
   it('owned-cell counts match the owner grid after two months of AI wars', () => {
     const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
     s.step(24 * 60);
