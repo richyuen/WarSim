@@ -1637,3 +1637,17 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   date-line component, too-small territories.
 - **Parity:** row 50 (political map mode) evidence and notes updated. Row 54 (alliances map mode)
   corrected to partial: it was built in 1.17 and the row had been left stale.
+
+## 2026-10-02 — Review pass after PLAN 1.26–1.29
+- **Gap fixed:** city dots and names (PLAN 1.5) were only wired into the bench view; the game itself
+  showed none, yet PARITY row 27 counted them. The worker now sends the city list in `mapLayers`,
+  and `MapView` draws a `CityLabelLayer` overlay under the nation names. e2e: ≥ 5 named cities
+  around Berlin at T1. Evidence `docs/evidence/1.29/cities-berlin.png`, viewed: Berlin (capital,
+  gold), Hamburg, Leipzig, Dresden, Poznań, Breslau.
+- **Missing test added:** `tests/unit/workerLabels.test.ts` drives the worker in Node. Labels
+  follow init, are not re-derived without change, wait out the 2 s throttle after a God brush,
+  and follow a load. The worker now takes province names from `init.assets`, so Node-initialised
+  servers derive labels too.
+- **SPEC drift:** §2.3 lists the `mapLayers` and `labels` messages.
+- **Test hygiene:** the nation-label overlay has its own class (`map-nations`), so the ink check no
+  longer matches the city canvas.

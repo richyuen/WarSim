@@ -3,6 +3,7 @@
  * formations → instanced markers) and renders every animation frame with GPU interpolation
  * between the previous and current tick.
  */
+import { CityLabelLayer } from '../render/labels/cityLabels';
 import { drawNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode } from '../shared/mapModes';
@@ -29,6 +30,7 @@ export class MapView {
   private readonly overlay: HTMLCanvasElement;
   private labelData: { data: Float64Array; names: string[] } | null = null;
   nationLabels: PlacedNationLabel[] = [];
+  readonly cityLabels: CityLabelLayer;
   /** True once the worker's fine coast and terrain layers arrived (PLAN 1.28b). */
   hasFineCoast = false;
   private readonly ownColor = new Map<number, number>();
@@ -61,8 +63,14 @@ export class MapView {
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
     this.overlay = document.createElement('canvas');
-    this.overlay.className = 'map-labels';
+    this.overlay.className = 'map-labels map-nations';
     canvas.insertAdjacentElement('afterend', this.overlay);
+    // City dots and names (PLAN 1.5) under the nation names (review after 1.29: they had only
+    // been wired into the bench view).
+    const cityCanvas = document.createElement('canvas');
+    cityCanvas.className = 'map-labels map-cities';
+    canvas.insertAdjacentElement('afterend', cityCanvas);
+    this.cityLabels = new CityLabelLayer(cityCanvas, geo);
     sim.onLabels((m) => {
       this.labelData = { data: m.data, names: m.names.map((k) => (k.startsWith('=') ? k.slice(1) : t(k as MessageKey))) };
       this.dirty = true;
@@ -70,6 +78,7 @@ export class MapView {
     sim.onMapLayers((m) => {
       this.map.setLand(m.land.w, m.land.h, m.land.data);
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
+      this.cityLabels.setCities(m.cities);
       this.hasFineCoast = true;
       this.dirty = true;
     });
@@ -190,6 +199,7 @@ export class MapView {
     const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);
     this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth));
+    this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
     this.frames++;
   }

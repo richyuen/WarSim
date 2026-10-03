@@ -9,6 +9,7 @@ import { LABEL_STRIDE } from '../shared/nationLabels';
 import { NATIONS_1938 } from '../sim/scenario1938';
 import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
+import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
 import { EVENT_STRIDE } from '../shared/events';
 import {
@@ -201,6 +202,10 @@ export class SimServer {
   /** A fresh sim always starts paused; the host unpauses explicitly. */
   private startSim(init: SimInit, reqId: number): void {
     this.sim = new Sim(init);
+    // Real-map scenarios get nation labels; province names name spawned nations.
+    this.provinceNames = init.assets ? (JSON.parse(new TextDecoder().decode(init.assets.admin1Meta)) as { name: string }[]).map((m) => m.name) : null;
+    this.labelVersion = -1;
+    this.lastLabelMs = -1;
     this.paused = true;
     this.owed = 0;
     this.resetStreams();
@@ -214,7 +219,6 @@ export class SimServer {
       const store = new AssetStore(msg.assetBase);
       const { w } = SCENARIO_GEOMETRY[msg.init.scenario];
       const [geo, meta, terrain] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w)]);
-      this.provinceNames = (JSON.parse(new TextDecoder().decode(meta.bytes)) as { name: string }[]).map((m) => m.name);
       this.startSim({ ...msg.init, assets: { admin1Geometry: geo.bytes, admin1Meta: meta.bytes, terrain: terrain.bytes } }, msg.reqId);
       void this.sendMapLayers(store);
     } catch (err) {
@@ -232,7 +236,13 @@ export class SimServer {
       const land = buildLandCoverage(mask.bytes, mask.asset.width, mask.asset.height ?? mask.asset.width / 2, factor);
       const terrain = { w: world.cells.w, h: world.cells.h, data: world.cells.terrain.slice() };
       const terrainColors = terrainJson.terrain.map((t) => parseInt(t.color.slice(1), 16));
-      this.post({ type: 'mapLayers', land, terrain, terrainColors }, [land.data.buffer, terrain.data.buffer]);
+      const cc = world.cities.cols;
+      const cities: { name: string; x: number; y: number; size: number; capital: boolean }[] = [];
+      world.cities.forEach((id) => {
+        const def = cities1938.cities[cc.def[id]!];
+        if (def) cities.push({ name: def.name, x: cc.x[id]!, y: cc.y[id]!, size: cc.size[id]!, capital: cc.capitalOf[id] !== 0 });
+      });
+      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities }, [land.data.buffer, terrain.data.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
     }

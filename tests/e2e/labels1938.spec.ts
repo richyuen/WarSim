@@ -61,7 +61,7 @@ test('curved, area-sized nation labels without overlaps', async ({ page }, info)
   }
   // The overlay really shows text: dark pixels on the label canvas.
   const ink = await page.evaluate(() => {
-    const o = document.querySelector('canvas.map-labels') as HTMLCanvasElement;
+    const o = document.querySelector('canvas.map-nations') as HTMLCanvasElement;
     const d = o.getContext('2d')!.getImageData(0, 0, o.width, o.height).data;
     let n = 0;
     for (let i = 3; i < d.length; i += 4) if (d[i]! > 200) n++;
@@ -69,11 +69,26 @@ test('curved, area-sized nation labels without overlaps', async ({ page }, info)
   });
   expect(ink).toBeGreaterThan(2000);
 
+  // City names in the main app (review after 1.29): around Berlin at T1 zoom, named cities.
+  await page.waitForFunction(() => window.__warsim!.view!.hasFineCoast, null, { timeout: 60_000 });
+  const [bx, by] = cellOf(13.4, 52.5, W, H);
+  const named = await page.evaluate(
+    ({ bx, by }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx: bx, cy: by, scale: 24 });
+      v.draw();
+      return v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0.5).length;
+    },
+    { bx, by },
+  );
+  expect(named).toBeGreaterThanOrEqual(5);
+
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.29') : info.outputPath();
   mkdirSync(out, { recursive: true });
   for (const [name, lon, lat, scale] of [
     ['labels-europe', 15, 48, 3.2],
     ['labels-world', 30, 25, 1.2],
+    ['cities-berlin', 13.4, 52.5, 24],
   ] as const) {
     await view(page, lon, lat, scale);
     await page.waitForTimeout(300);

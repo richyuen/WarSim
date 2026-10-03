@@ -120,6 +120,10 @@ buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and get a
 Worker → main:
 - `snapshot {snap}` (transferable; layout in §2.4), `reply {reqId, status: {tick, hash}, bytes?}`,
   `provinces | terrain | political {reqId, result}`, `error {reqId, message, stack}`; later `history {rows}`, `stats {series}`
+- `mapLayers {land, terrain, terrainColors, cities}` once after a real-geography init (PLAN 1.28b):
+  the fine land coverage, the terrain layer and city dots and names for the renderer.
+- `labels {data, names}`: nation label curves (PLAN 1.29), after init or load and when control
+  changed, at most every 2 s of wall time.
 
 The worker sends **at most one snapshot per ack**. When main is slow, intermediate
 ticks are coalesced: dirty tiles accumulate, and events stay in a ring with a
