@@ -1021,6 +1021,15 @@ interpolation changes something.
   - The worker reports `terrainLayer.landChanged` (land/water differs from the start); the
     renderer then draws cell coasts with water taken from the terrain layer.
   - Cities and formations stay where they are.
+- **Flags in play** (PLAN 1.37b, `src/shared/flagPixels.ts`, `src/app/flagStore.ts`,
+  `src/ui/FlagEditor.tsx`):
+  - `setFlag {nation, runs}` stores a 36×24 pixel flag in the world, saved with the names;
+    empty runs restore the scenario flag.
+  - The app resolves each nation's flag: custom, else its scenario FlagSpec rasterized to 36×24
+    (stretched to 3:2), else plain colour. Flags are drawn at capitals from 3 px per cell, and
+    in the nation panel.
+  - The editor's flag tool offers pencil, bucket, colour picker and 11 presets. The editor
+    panel docks right, hiding the ranking, so the map centre stays free.
 - **Scenario editing** (PLAN 1.36, `src/sim/scenarioEdit.ts`):
   - Commands `spawnCity` (a named city on land; adds 20 × size × mean land-cell economy to its
     cell, stored on the row and taken back by `removeCity`), `removeCity` (a capital

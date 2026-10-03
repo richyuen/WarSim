@@ -35,6 +35,7 @@ export function NationPanel({
   god,
   control,
   actions,
+  flagUrl,
 }: {
   nation: NationStat;
   byId: Map<number, NationStat>;
@@ -43,6 +44,8 @@ export function NationPanel({
   control?: ControlProps | null;
   /** Actions of the controlled nation (PLAN 1.33b); only for the nation the player controls. */
   actions?: Omit<ActionsTabProps, 'nation'> | null;
+  /** The nation's flag as an image URL (PLAN 1.37b). */
+  flagUrl?: string | null;
 }) {
   const [chosen, setTab] = useState<Tab>('overview');
   // The God tab exists only in God Mode (PLAN 1.32b).
@@ -66,7 +69,7 @@ export function NationPanel({
   return (
     <aside class="nation-panel" data-testid="nation-panel" data-nation={nation.id}>
       <header class="panel-head">
-        <span class="panel-swatch" style={{ background: hex(nation.color) }} />
+        {flagUrl ? <img class="panel-flag" data-testid="nation-flag" src={flagUrl} alt="" width={36} height={24} /> : <span class="panel-swatch" style={{ background: hex(nation.color) }} />}
         <span class="panel-name" data-testid="nation-name">
           {displayName(nation.name)}
         </span>

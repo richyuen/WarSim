@@ -158,7 +158,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: e2e builds a mini scenario using each tool, saves it, loads it and verifies.
 - [x] 1.37a Editor: map import (image → terrain/owner palette mapping). (Split from 1.37, 2026-10-03.)
   AT: importing a fixture PNG yields expected cell counts.
-- [ ] 1.37b Flag editor with presets.
+- [x] 1.37b Flag editor with presets.
   AT: a flag edited in the editor is shown on the map.
 - [ ] 1.38 Scenario files save/load (shareable `.warsim-scenario`).
   AT: round trip yields an identical scenario hash.

@@ -11,9 +11,15 @@ import { WarBanners } from '../ui/WarBanners';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
+import type { MapView } from './MapView';
+import { useEffect, useState } from 'preact/hooks';
+import { encodeRuns } from '../shared/mapImport';
 import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
-export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl | null; nameOf: (id: number) => string | null }) {
+export function App({ hud, player, view, nameOf }: { hud: Hud; player: PlayerControl | null; view: MapView | null; nameOf: (id: number) => string | null }) {
+  // Re-render when custom flags change (the flag store is outside the signals).
+  const [flagVersion, setFlagVersion] = useState(0);
+  useEffect(() => hud.sim.onFlags(() => setFlagVersion((v) => v + 1)), []);
   const stats = hud.stats.value;
   const byId = new Map((stats?.nations ?? []).map((n) => [n.id, n]));
   const nation = byId.get(hud.selected.value) ?? null;
@@ -52,6 +58,8 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
           onClose={() => hud.toggleEditor()}
           onGold={(nation, value) => hud.command({ kind: 'setGold', nation, value })}
           onAnnex={(annexer, target) => hud.command({ kind: 'annexNation', annexer, target })}
+          flagOf={(n) => view?.flags.pixelsOf(n) ?? new Uint32Array(36 * 24)}
+          onFlag={(nation, px) => hud.command({ kind: 'setFlag', nation, runs: px ? encodeRuns(px) : [] })}
           onImport={(file, layer) => {
             const geo = hud.sim.mapLayers?.terrain;
             if (!geo) return;
@@ -86,13 +94,14 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
         />
       ) : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} /> : null}
-      {stats && hud.showStats.value ? (
+      {stats && hud.showStats.value && !hud.showEditor.value ? (
         <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />
       ) : null}
       {nation ? (
         <NationPanel
           nation={nation}
           byId={byId}
+          flagUrl={view && flagVersion >= 0 ? view.flags.urlOf(nation.id) : null}
           onSelect={(id) => hud.onSelectNation(id)}
           actions={
             player && stats && player.nation.value === nation.id

@@ -59,6 +59,19 @@ export function encodeRuns(values: ArrayLike<number>): number[] {
   return runs;
 }
 
+/** As decodeRuns, for 24-bit values (flag pixels; values masked to 0xFFFFFF). */
+export function decodeRunsU32(runs: readonly number[], n: number): Uint32Array | null {
+  const out = new Uint32Array(n);
+  let o = 0;
+  for (let i = 0; i + 1 < runs.length; i += 2) {
+    const count = runs[i + 1]!;
+    if (!Number.isInteger(count) || count <= 0 || o + count > n) return null;
+    out.fill(runs[i]! & 0xffffff, o, o + count);
+    o += count;
+  }
+  return o === n ? out : null;
+}
+
 /** Decodes runs into exactly `n` values (null if they do not cover n). */
 export function decodeRuns(runs: readonly number[], n: number): Uint16Array | null {
   const out = new Uint16Array(n);

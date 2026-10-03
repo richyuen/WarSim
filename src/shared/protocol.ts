@@ -226,6 +226,8 @@ export type FromWorker =
       /** Buildable land templates (index = command template id; PLAN 1.33b). */
       templates: TemplateInfo[];
     }
+  /** Custom pixel flags (PLAN 1.37b): [nation, runs][] (runs as in `setFlag`), after init and on change. */
+  | { type: 'flags'; custom: [number, number[]][] }
   /** City dots and names again after editor city edits (PLAN 1.36). */
   | { type: 'cityLayer'; cities: { id: number; name: string; x: number; y: number; size: number; capital: boolean }[] }
   /** The terrain layer again after editor terrain edits (PLAN 1.35). */

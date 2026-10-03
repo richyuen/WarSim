@@ -495,8 +495,15 @@ body {
 
 /* Map editor (PLAN 1.35). */
 .editor-panel {
+  /* Docked right (in place of the ranking) so the map centre stays free to edit (PLAN 1.37b). */
+  left: auto;
+  right: 0.5rem;
+  top: 0.5rem;
+  transform: none;
   width: 26rem;
   min-width: 0;
+  max-height: calc(100% - 5rem);
+  overflow-y: auto;
 }
 .editor-radius {
   display: inline-flex;
@@ -506,4 +513,25 @@ body {
 .editor-radius input {
   width: 3.5rem;
   flex: 0 0 auto;
+}
+
+/* Flags (PLAN 1.37b). */
+.panel-flag {
+  width: 2.2rem;
+  height: auto;
+  image-rendering: pixelated;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+}
+.flag-canvas {
+  image-rendering: pixelated;
+  border: 1px solid rgba(214, 178, 94, 0.55);
+  cursor: crosshair;
+  touch-action: none;
+}
+.flag-editor input[type='color'] {
+  width: 2rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  background: none;
 }

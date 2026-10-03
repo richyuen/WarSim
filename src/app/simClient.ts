@@ -68,6 +68,11 @@ export class SimClient {
       for (const l of this.unrestListeners) l(msg.unrest);
       return;
     }
+    if (msg.type === 'flags') {
+      this.customFlags = msg.custom;
+      for (const l of this.flagListeners) l(msg.custom);
+      return;
+    }
     if (msg.type === 'cityLayer') {
       for (const l of this.cityListeners) l(msg.cities);
       return;
@@ -132,6 +137,15 @@ export class SimClient {
     this.unrestListeners.add(l);
     if (this.unrest) l(this.unrest);
     return () => this.unrestListeners.delete(l);
+  }
+
+  /** Custom pixel flags (PLAN 1.37b); late listeners get the last set at once. */
+  customFlags: [number, number[]][] | null = null;
+  private readonly flagListeners = new Set<(custom: [number, number[]][]) => void>();
+  onFlags(l: (custom: [number, number[]][]) => void): () => void {
+    this.flagListeners.add(l);
+    if (this.customFlags) l(this.customFlags);
+    return () => this.flagListeners.delete(l);
   }
 
   /** City dots and names after editor edits (PLAN 1.36). */

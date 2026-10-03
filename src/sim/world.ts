@@ -286,7 +286,8 @@ class WorldCore implements Stateful {
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
     const sorted = (m: Map<number, string>): [number, string][] => [...m].sort((a, b) => a[0] - b[0]);
-    const names = new TextEncoder().encode(JSON.stringify({ nations: sorted(w.names), cities: sorted(w.cityNames) }));
+    const flags = [...w.flags].sort((a, b) => a[0] - b[0]).map(([n, px]) => [n, Array.from(px)] as [number, number[]]);
+    const names = new TextEncoder().encode(JSON.stringify({ nations: sorted(w.names), cities: sorted(w.cityNames), flags }));
     return [
       { name: 'world.meta', dtype: 'f64', data: meta },
       { name: 'world.rng', dtype: 'u32', data: w.rng.save() },
@@ -316,9 +317,11 @@ class WorldCore implements Stateful {
     const names = sections.find((s) => s.name === 'world.names');
     w.namesVersion++;
     // PLAN 1.32 saves hold a bare array of nation names; PLAN 1.36 adds city names.
-    const nm = names ? (JSON.parse(new TextDecoder().decode(names.data as Uint8Array)) as [number, string][] | { nations: [number, string][]; cities: [number, string][] }) : [];
+    const nm = names ? (JSON.parse(new TextDecoder().decode(names.data as Uint8Array)) as [number, string][] | { nations: [number, string][]; cities: [number, string][]; flags?: [number, number[]][] }) : [];
     w.names = new Map(Array.isArray(nm) ? nm : nm.nations);
     w.cityNames = new Map(Array.isArray(nm) ? [] : nm.cities);
+    w.flags = new Map((Array.isArray(nm) ? [] : (nm.flags ?? [])).map(([n, px]) => [n, Uint32Array.from(px)]));
+    w.flagsVersion++;
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.paths.clear();
     w.elementIndex = null;
@@ -364,6 +367,10 @@ export class World {
   history = new History();
   /** Monthly statistics series (PLAN 1.34b). */
   stats = new StatSeries();
+  /** Custom 36×24 pixel flags by nation (PLAN 1.37b), saved in the names section. */
+  flags = new Map<number, Uint32Array>();
+  /** Derived: bumped when flags change (the UI re-fetches them). */
+  flagsVersion = 0;
   /** Editor undo/redo stack (PLAN 1.35). */
   edits = new EditStack();
   /** Derived: bumped when the editor changes terrain (the renderer re-fetches the layer). */

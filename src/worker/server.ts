@@ -13,6 +13,7 @@ import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'jso
 import { buildLandCoverage } from '../shared/landCoverage';
 import { EVENT_STRIDE } from '../shared/events';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
+import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import {
@@ -92,6 +93,7 @@ export class SimServer {
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
+  private flagsSent = -1;
   /** Land (1) / water (0) per cell at init, for `terrainLayer.landChanged`. */
   private startLand: Uint8Array | null = null;
   private statsTick = -1;
@@ -253,6 +255,9 @@ export class SimServer {
     this.unrestVersion = -1;
     this.statsTick = -1;
     this.lastStatsMs = -1;
+    this.flagsSent = -1;
+    this.citiesSent = -1;
+    this.terrainSent = -1;
     this.paused = true;
     this.owed = 0;
     this.resetStreams();
@@ -447,6 +452,12 @@ export class SimServer {
     const sim = this.sim;
     if (!sim || !this.provinceNames) return;
     const world = sim.world;
+    // Custom flags (PLAN 1.37b), after init/load and when changed.
+    if (world.flagsVersion !== this.flagsSent) {
+      this.flagsSent = world.flagsVersion;
+      const custom = [...world.flags].sort((x, y) => x[0] - y[0]).map(([n, px]) => [n, encodeRuns(px)] as [number, number[]]);
+      this.post({ type: 'flags', custom }, []);
+    }
     // Cities after editor edits (PLAN 1.36): dots and names follow.
     if (this.citiesSent >= 0 && world.citiesVersion !== this.citiesSent) {
       this.citiesSent = world.citiesVersion;

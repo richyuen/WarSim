@@ -16,7 +16,8 @@ import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import { forceRevolt } from './systems/revolts';
 import { importLayer, paint, redoEdit, undoEdit } from './editor';
-import { decodeRuns } from '../shared/mapImport';
+import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
+import { FLAG_H, FLAG_W } from '../shared/flagPixels';
 import type { World } from './world';
 
 export type System = (world: World) => void;
@@ -198,6 +199,17 @@ function applyCommand(world: World, cmd: Command): void {
     case 'annexNation':
       annexNation(world, cmd.annexer, cmd.target);
       return;
+    case 'setFlag': {
+      if (!world.nations.has(cmd.nation)) return;
+      if (cmd.runs.length === 0) world.flags.delete(cmd.nation);
+      else {
+        const px = decodeRunsU32(cmd.runs, FLAG_W * FLAG_H);
+        if (!px) return;
+        world.flags.set(cmd.nation, px);
+      }
+      world.flagsVersion++;
+      return;
+    }
     case 'editPaint':
       paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask);
       return;

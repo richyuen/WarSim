@@ -2025,3 +2025,30 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Evidence:** `docs/evidence/1.37/imported.png`, viewed. Known gap (BLOCKERS): cities and
   formations stay on new water.
 - **Parity:** row 47 → partial.
+
+## 2026-10-03 — PLAN 1.37b: flag editor with presets; flags on the map
+- **Shared** (`flagPixels.ts`): 36×24 `specToPixels` (stretched to 3:2), `plainFlag`, 11 editor
+  presets (`presetSpec`), `fillFlag`; `decodeRunsU32`.
+- **Sim:** command `setFlag {nation, runs}` (empty runs restore). `world.flags` is saved in the
+  names section; `flagsVersion` is derived.
+- **Worker:** `flags` message after init/load and on change. Init now also resets the
+  terrain/city/flag send markers.
+- **App:**
+  - `FlagStore`: custom, else the 1938 FlagSpec, else plain colour; canvases and data URLs.
+  - `MapView` keeps capitals from snapshots and draws flags there from 3 px per cell
+    (`flagRects` for tests).
+  - The nation panel shows the flag. `FlagEditor` lives in the editor panel for the chosen
+    nation.
+- **UX fix:** the editor panel grew tall enough to cover the map centre; the scenario-editor e2e
+  "lost" its city click to it. The panel now docks right (hiding the ranking while open).
+- **AT:**
+  - Unit (`tests/unit/flagPixels.test.ts`): German stripes, every preset, the vertical
+    tricolour's columns, bucket fill, custom flags saved/loaded/reset, bad runs ignored.
+  - e2e (`tests/e2e/flags1938.spec.ts`): Poland's flag at Warsaw on the map is first
+    white/red. A preset tricolour plus one blue pencil pixel is saved through the UI, and the
+    overlay pixels at Warsaw are green/white/red with the blue pixel; the panel image matches;
+    restore brings the scenario flag back.
+  - My first test version raced: after the restore it polled a pixel that is white in both
+    flags.
+- **Evidence:** `docs/evidence/1.37/flag-editor.png`, viewed.
+- **Parity:** row 48 → partial.

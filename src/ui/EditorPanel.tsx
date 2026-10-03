@@ -4,6 +4,7 @@ import type { NationStat } from '../shared/protocol';
 import { isLand, TERRAIN_IDS } from '../shared/terrain';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
+import { FlagEditor } from './FlagEditor';
 
 
 const SCENARIO_TOOLS = ['city', 'removeCity', 'capital', 'core', 'uncore'] as const;
@@ -26,6 +27,9 @@ export interface EditorPanelProps {
   onAnnex: (annexer: number, target: number) => void;
   /** Map import (PLAN 1.37a): an image file mapped onto a layer. */
   onImport: (file: File, layer: 'terrain' | 'nation') => void;
+  /** Flag editor (PLAN 1.37b): the nation's current flag pixels, and saving or resetting it. */
+  flagOf: (nation: number) => Uint32Array;
+  onFlag: (nation: number, pixels: Uint32Array | null) => void;
 }
 
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
@@ -35,7 +39,8 @@ const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLa
  * paint, brush radius, an optional target mask, and undo/redo (also Ctrl+Z / Ctrl+Y). While it is
  * open, map clicks paint.
  */
-export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport }: EditorPanelProps) {
+export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag }: EditorPanelProps) {
+  const [flagOpen, setFlagOpen] = useState(false);
   const [importLayer, setImportLayer] = useState<'terrain' | 'nation'>('terrain');
   const [gold, setGold] = useState('');
   const [annexTarget, setAnnexTarget] = useState(0);
@@ -165,6 +170,16 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
               {t('editor.annex', { name: displayName(me.name) })}
             </button>
           </div>
+        </>
+      ) : null}
+      {state.nation !== 0 ? (
+        <>
+          <div class="god-row">
+            <button type="button" class={flagOpen ? 'god-btn active' : 'god-btn'} data-testid="editor-flag-open" onClick={() => setFlagOpen(!flagOpen)}>
+              {t('flag.edit')}
+            </button>
+          </div>
+          {flagOpen ? <FlagEditor initial={flagOf(state.nation)} onSave={(px) => onFlag(state.nation, px)} onReset={() => onFlag(state.nation, null)} /> : null}
         </>
       ) : null}
       <div class="panel-sub">{t('editor.import')}</div>

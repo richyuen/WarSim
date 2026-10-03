@@ -5,6 +5,12 @@
  */
 import { CityLabelLayer } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
+import { FlagStore } from './flagStore';
+
+/** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
+const FLAG_MIN_SCALE = 3;
+const FLAG_PX_W = 24;
+const FLAG_PX_H = 16;
 import { drawNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
@@ -118,6 +124,10 @@ export class MapView {
       this.labelData = { data: m.data, names: m.names.map((k) => (k.startsWith('=') ? k.slice(1) : t(k as MessageKey))) };
       this.dirty = true;
     });
+    sim.onFlags((custom) => {
+      this.flags.setCustom(custom);
+      this.dirty = true;
+    });
     sim.onCities((cities) => {
       this.cityLabels.setCities(cities);
       this.cities = cities;
@@ -186,6 +196,7 @@ export class MapView {
       this.allianceLeader.set(id, s.nations.data[o + NationField.alliance]!);
       this.overlordOf.set(id, s.nations.data[o + NationField.overlord]!);
       this.income.set(id, s.nations.data[o + NationField.income]!);
+      this.capitals.set(id, [s.nations.data[o + NationField.capitalX]!, s.nations.data[o + NationField.capitalY]!]);
     }
     this.applyPalette();
     const f = s.formations;
@@ -335,6 +346,37 @@ export class MapView {
     return best;
   }
 
+  /** Nation flags (PLAN 1.37b): custom pixel flags, else the scenario's, else plain colour. */
+  readonly flags = new FlagStore((id) => this.ownColor.get(id));
+  private readonly capitals = new Map<number, [number, number]>();
+  /** Where flags were drawn last frame, CSS px (tests). */
+  flagRects: { id: number; x: number; y: number; w: number; h: number }[] = [];
+
+  /** Flags above living nations' capitals once zoomed in (FLAG_MIN_SCALE px per cell). */
+  private drawFlags(cam: Camera): void {
+    this.flagRects = [];
+    if (cam.scale < FLAG_MIN_SCALE || this.capitals.size === 0) return;
+    const ctx = this.overlay.getContext('2d')!;
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    for (const [id, [cx, cy]] of this.capitals) {
+      if (!this.ownColor.has(id)) continue;
+      for (const off of wrapOffsets(cam, this.geo, w)) {
+        const [px, py] = worldToScreen(cam, cx + off, cy, w, h);
+        const x = Math.round(px - FLAG_PX_W / 2);
+        const y = Math.round(py - FLAG_PX_H - 8);
+        if (x < -FLAG_PX_W || y < -FLAG_PX_H || x > w || y > h) continue;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(x - 1, y - 1, FLAG_PX_W + 2, FLAG_PX_H + 2);
+        ctx.drawImage(this.flags.canvasOf(id), x, y, FLAG_PX_W, FLAG_PX_H);
+        this.flagRects.push({ id, x, y, w: FLAG_PX_W, h: FLAG_PX_H });
+      }
+    }
+    ctx.restore();
+  }
+
   /** Rings around the selected formations (PLAN 1.33a). */
   private drawSelection(cam: Camera): void {
     if (this.selectedFormations.size === 0) return;
@@ -426,6 +468,7 @@ export class MapView {
     this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth));
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
+    this.drawFlags(cam);
     this.drawSelection(cam);
     this.frames++;
   }

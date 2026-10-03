@@ -83,7 +83,9 @@ export type Command =
   | { kind: 'setGold'; nation: number; value: number }
   /** Core (or claim) of `nation` on `province`; a dead nation's claim presets a revolt. */
   | { kind: 'setCore'; province: number; nation: number; on: boolean }
-  | { kind: 'annexNation'; annexer: number; target: number };
+  | { kind: 'annexNation'; annexer: number; target: number }
+  /** PLAN 1.37b: a 36×24 pixel flag as runs [rgb, count, …]; empty runs restore the scenario flag. */
+  | { kind: 'setFlag'; nation: number; runs: number[] };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */
