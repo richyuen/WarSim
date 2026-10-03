@@ -89,6 +89,7 @@ export class SimServer {
   private lastLabelMs = -1;
   private unrestVersion = -1;
   private labelNames = -1;
+  private terrainSent = -1;
   private statsTick = -1;
   private lastStatsMs = -1;
 
@@ -434,7 +435,7 @@ export class SimServer {
     world.nations.forEach((id) => {
       if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id), color: world.nations.cols.color[id]! });
     });
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length } }, []);
   }
 
   /**
@@ -445,6 +446,14 @@ export class SimServer {
     const sim = this.sim;
     if (!sim || !this.provinceNames) return;
     const world = sim.world;
+    // Terrain after editor edits (PLAN 1.35): the renderer's terrain layer follows.
+    if (world.terrainVersion !== this.terrainSent) {
+      if (this.terrainSent >= 0) {
+        const data = world.cells.terrain.slice();
+        this.post({ type: 'terrainLayer', data }, [data.buffer]);
+      }
+      this.terrainSent = world.terrainVersion;
+    }
     // Province unrest for the revolts map mode (cheap: a byte per province), when it changed.
     if (world.provinces.version !== this.unrestVersion && world.provinces.count > 0) {
       this.unrestVersion = world.provinces.version;
@@ -573,6 +582,8 @@ export class SimServer {
       majors: world.battles.majors.map((m) => ({ id: m.id, camps: [[...m.camps[0]], [...m.camps[1]]] })),
       corridors: world.battles.corridors.length,
       unrest: Array.from(world.provinces.unrest, (u) => Math.round(u * 100) / 100),
+      rasters: { owner: xxhash32View(world.cells.owner), controller: xxhash32View(world.cells.controller), terrain: xxhash32View(world.cells.terrain) },
+      edits: { undo: world.edits.undo.length, redo: world.edits.redo.length },
     };
     return new TextEncoder().encode(JSON.stringify(out));
   }

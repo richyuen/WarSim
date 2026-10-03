@@ -11,6 +11,7 @@ import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/sp
 import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
 import type { TemplateInfo } from '../shared/protocol';
+import type { EditorState } from '../shared/editorState';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
 const KEY_LEVEL = 'warsim.speedLevel';
@@ -96,6 +97,41 @@ export class Hud {
     this.speedLevel.value = l;
     store(KEY_LEVEL, String(l));
     this.sim.setSpeed(speedOfLevel(l));
+  }
+
+  /** Map editor (PLAN 1.35): open, its settings and a started line's first point. */
+  readonly showEditor = signal(false);
+  readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0 });
+  readonly lineStart = signal<[number, number] | null>(null);
+
+  toggleEditor(): void {
+    this.showEditor.value = !this.showEditor.value;
+    this.lineStart.value = null;
+    // Paint with the selected nation by default.
+    if (this.showEditor.value && this.editor.value.nation === 0) this.editor.value = { ...this.editor.value, nation: this.selected.value, maskNation: this.selected.value };
+  }
+
+  setEditor(s: EditorState): void {
+    if (s.tool !== this.editor.value.tool) this.lineStart.value = null;
+    this.editor.value = s;
+  }
+
+  /** A map click while the editor is open: paints (a line needs two clicks). */
+  editorClick(x: number, y: number): boolean {
+    if (!this.showEditor.value) return false;
+    const s = this.editor.value;
+    const mask = s.mask === 'none' ? null : { kind: s.mask, value: s.mask === 'terrain' ? s.maskTerrain : s.maskNation };
+    const value = s.layer === 'nation' ? s.nation : s.terrain;
+    const cx = x + 0.5;
+    const cy = y + 0.5;
+    if (s.tool === 'line' && !this.lineStart.value) {
+      this.lineStart.value = [cx, cy];
+      return true;
+    }
+    const [x0, y0] = s.tool === 'line' ? this.lineStart.value! : [cx, cy];
+    this.command({ kind: 'editPaint', layer: s.layer, tool: s.tool, x: x0, y: y0, x2: cx, y2: cy, r: s.r, value, mask });
+    this.lineStart.value = null;
+    return true;
   }
 
   /** Statistics charts panel (PLAN 1.34b). */

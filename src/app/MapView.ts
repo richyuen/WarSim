@@ -42,6 +42,7 @@ export class MapView {
   private readonly warPairs = new Set<number>();
   private readonly controlGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
+  private terrainColors: number[] | null = null;
   /** Selected nation (0 = none; PLAN 1.30) and the hook the app uses to show it. */
   selected = 0;
   onSelect: (id: number) => void = () => {};
@@ -100,6 +101,11 @@ export class MapView {
       this.labelData = { data: m.data, names: m.names.map((k) => (k.startsWith('=') ? k.slice(1) : t(k as MessageKey))) };
       this.dirty = true;
     });
+    sim.onTerrain((data) => {
+      if (!this.terrainColors) return;
+      this.map.setTerrain(this.geo.w, this.geo.h, data, this.terrainColors);
+      this.dirty = true;
+    });
     sim.onUnrest((u) => {
       this.map.setUnrest(u);
       this.dirty = true;
@@ -107,6 +113,7 @@ export class MapView {
     sim.onMapLayers((m) => {
       this.map.setLand(m.land.w, m.land.h, m.land.data);
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
+      this.terrainColors = m.terrainColors;
       this.cityLabels.setCities(m.cities);
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;

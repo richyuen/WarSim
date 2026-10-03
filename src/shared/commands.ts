@@ -66,7 +66,14 @@ export type Command =
   | { kind: 'offerPeace'; war: number; from: number }
   | { kind: 'proposeAlliance'; from: number; to: number }
   /** PLAN 1.33: the player takes control of `nation` (0 = release): its AI goes off, the previous one's back on. */
-  | { kind: 'setPlayer'; nation: number };
+  | { kind: 'setPlayer'; nation: number }
+  /**
+   * PLAN 1.35 editor: paint `value` (nation id, 0 = unowned; or a land terrain class) with a tool;
+   * `x2, y2` end a line; `mask` limits it to cells of one terrain or nation. Undoable.
+   */
+  | { kind: 'editPaint'; layer: 'nation' | 'terrain'; tool: 'brush' | 'line' | 'bucket'; x: number; y: number; x2: number; y2: number; r: number; value: number; mask: { kind: 'terrain' | 'nation'; value: number } | null }
+  | { kind: 'editUndo' }
+  | { kind: 'editRedo' };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

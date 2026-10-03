@@ -1919,3 +1919,28 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - My first expectation of 3 points forgot the 1 January sample.
 - **Evidence:** `docs/evidence/1.34/charts.png`, viewed. Both axis labels read "1938" on short
   runs, so they now show month and year.
+
+## 2026-10-02 — PLAN 1.35: editor (brush, line, bucket, undo/redo, target mask)
+- **Sim** (`src/sim/editor.ts`, ADR-42):
+  - Commands `editPaint` (nation or terrain layer; brush, line, bucket; radius; mask by terrain
+    or nation), `editUndo` and `editRedo`.
+  - The `EditStack` (diffs, ≤ 50 edits / 2 M cells) is a saved world part.
+  - Land cells only (terrain land ↔ land; water ↔ land waits for 1.37). Terrain edits drop
+    nav/paths/frontier and bump `terrainVersion`; the worker resends `terrainLayer`.
+- **Inspect / stats:** `inspect()` gains `rasters` (xxhash of owner/controller/terrain) and stack
+  depths; `nationStats.edits`.
+- **UI:** `EditorPanel` (bottom-bar Editor): tools, radius, layer and value, mask, Undo/Redo with
+  counts, hints. Map clicks paint (editor first, then God tools, then player). Ctrl+Z,
+  Ctrl+Y / Ctrl+Shift+Z.
+- **AT:**
+  - Unit (`tests/unit/editor.test.ts`): shapes (disc, wrap, clip, line, bucket over connected
+    Polish land); paint/undo/redo restore exact rasters and a new edit clears redo; the mask
+    limits the paint; terrain edits invalidate nav; depth cap; save/load keeps the stack and
+    undo after load replays.
+  - e2e (`tests/e2e/editor1938.spec.ts`): a click paints Germany into Poland. Ctrl+Z, Ctrl+Y and
+    the buttons return identical owner/controller/terrain hashes. A two-click line, then a
+    plains-masked bucket erase of Polish land; terrain mountains plus four undos restore the
+    start.
+  - The first bucket assertion assumed Poland was one connected piece; 5 cells lie apart.
+- **Evidence:** `docs/evidence/1.35/editor.png`, viewed.
+- **Parity:** rows 40–42 → partial.

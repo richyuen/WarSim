@@ -492,3 +492,18 @@ body {
 .chart-legend {
   margin-top: 0.3rem;
 }
+
+/* Map editor (PLAN 1.35). */
+.editor-panel {
+  width: 26rem;
+  min-width: 0;
+}
+.editor-radius {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.editor-radius input {
+  width: 3.5rem;
+  flex: 0 0 auto;
+}

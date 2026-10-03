@@ -152,7 +152,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.34b Statistics: per-nation series (land, income, gold, military size by domain,
   casualties) sampled monthly + charts.
   AT: series match the sim at sampled months (unit); e2e chart renders the selected nations.
-- [ ] 1.35 Editor: brush/bucket/line, undo/redo, target mask.
+- [x] 1.35 Editor: brush/bucket/line, undo/redo, target mask.
   AT: unit tests on the undo stack; e2e paints, undoes and redoes, with identical raster hashes.
 - [ ] 1.36 Editor: cities, gold & core costs, alliances, puppets, annex, preset revolts.
   AT: e2e builds a mini scenario using each tool, saves it, loads it and verifies.

@@ -14,6 +14,7 @@ import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import { forceRevolt } from './systems/revolts';
+import { paint, redoEdit, undoEdit } from './editor';
 import type { World } from './world';
 
 export type System = (world: World) => void;
@@ -177,6 +178,15 @@ function applyCommand(world: World, cmd: Command): void {
       world.settings.player = cmd.nation;
       return;
     }
+    case 'editPaint':
+      paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask);
+      return;
+    case 'editUndo':
+      undoEdit(world);
+      return;
+    case 'editRedo':
+      redoEdit(world);
+      return;
     case 'offerPeace':
       offerPeace(world, cmd.war, cmd.from);
       return;

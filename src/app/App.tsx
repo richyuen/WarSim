@@ -2,6 +2,7 @@ import { BottomBar } from '../ui/BottomBar';
 import { MapLegend } from '../ui/MapLegend';
 import { HistoryPanel } from '../ui/HistoryPanel';
 import { StatsChart } from '../ui/StatsChart';
+import { EditorPanel } from '../ui/EditorPanel';
 import { dateOfTick } from '../shared/calendar';
 import { t, type MessageKey } from '../ui/i18n';
 import { NationPanel } from '../ui/NationPanel';
@@ -32,8 +33,23 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
         onToggleGod={stats ? () => hud.toggleGod() : undefined}
         showHistory={hud.showHistory.value}
         onToggleHistory={stats ? () => hud.toggleHistory() : undefined}
+        showEditor={hud.showEditor.value}
+        onToggleEditor={stats ? () => hud.toggleEditor() : undefined}
         playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
+      {stats && hud.showEditor.value ? (
+        <EditorPanel
+          state={hud.editor.value}
+          nations={stats.nations}
+          undo={stats.edits.undo}
+          redo={stats.edits.redo}
+          lineStarted={hud.lineStart.value !== null}
+          onChange={(s) => hud.setEditor(s)}
+          onUndo={() => hud.command({ kind: 'editUndo' })}
+          onRedo={() => hud.command({ kind: 'editRedo' })}
+          onClose={() => hud.toggleEditor()}
+        />
+      ) : null}
       {stats && hud.showCharts.value ? (
         <StatsChart
           load={() => hud.sim.statSeries()}

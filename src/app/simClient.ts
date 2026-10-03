@@ -68,6 +68,10 @@ export class SimClient {
       for (const l of this.unrestListeners) l(msg.unrest);
       return;
     }
+    if (msg.type === 'terrainLayer') {
+      for (const l of this.terrainListeners) l(msg.data);
+      return;
+    }
     if (msg.type === 'nationStats') {
       this.stats = msg;
       for (const l of this.statsListeners) l(msg);
@@ -124,6 +128,13 @@ export class SimClient {
     this.unrestListeners.add(l);
     if (this.unrest) l(this.unrest);
     return () => this.unrestListeners.delete(l);
+  }
+
+  /** Terrain layer after editor edits (PLAN 1.35). */
+  private readonly terrainListeners = new Set<(data: Uint8Array) => void>();
+  onTerrain(l: (data: Uint8Array) => void): () => void {
+    this.terrainListeners.add(l);
+    return () => this.terrainListeners.delete(l);
   }
 
   /** Nation panel / war banner data (PLAN 1.31); late listeners get the last ones at once. */

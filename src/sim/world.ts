@@ -16,6 +16,7 @@ import { Buffs } from './buffs';
 import { Battles } from './battles';
 import { History } from './history';
 import { StatSeries } from './stats';
+import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 
@@ -317,6 +318,7 @@ class WorldCore implements Stateful {
     w.elementIndex = null;
     w.nav = null;
     w.frontier = null;
+    w.terrainVersion++;
     w.flipping = null;
     w.supplyDirty = true;
     w.out.fires.length = 0;
@@ -355,6 +357,10 @@ export class World {
   history = new History();
   /** Monthly statistics series (PLAN 1.34b). */
   stats = new StatSeries();
+  /** Editor undo/redo stack (PLAN 1.35). */
+  edits = new EditStack();
+  /** Derived: bumped when the editor changes terrain (the renderer re-fetches the layer). */
+  terrainVersion = 0;
   /**
    * Derived (not state): a full supply refresh is needed (load, overlords, raw layer writes; code
    * that writes `cells.controller` directly must set it). Cell-level changes through
@@ -448,7 +454,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history, this.stats];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history, this.stats, this.edits];
   }
 
   cellIndex(x: number, y: number): number {

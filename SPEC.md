@@ -1000,6 +1000,14 @@ interpolation changes something.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes
   globally or per nation; grant warheads; force a strike. All of these are Commands.
+- **Editor** (paint tools implemented PLAN 1.35, `src/sim/editor.ts`, `src/ui/EditorPanel.tsx`):
+  - Commands `editPaint` (layer nation = owner + controller, or terrain; tool brush / line /
+    bucket; radius ≤ 32; mask by terrain or nation), `editUndo` and `editRedo`.
+  - The diff stack is world state (`edits.*` sections, ≤ 50 edits and 2 M cells), so a save
+    plus a log with undos replays exactly.
+  - Land cells only: terrain edits are land ↔ land until map import (1.37) can regenerate the
+    fine coastline. Terrain edits drop nav and paths; the worker resends `terrainLayer`.
+  - UI: the bottom bar's Editor button; map clicks paint; Ctrl+Z / Ctrl+Y.
 - **Editor**: brush, bucket, line; undo/redo (command-pattern diff stack); target
   mask (paint only over a selected terrain or nation); cities; gold and core costs; alliances;
   puppets; annex; preset revolts; map import (image → terrain/owner via palette

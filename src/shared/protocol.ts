@@ -226,12 +226,14 @@ export type FromWorker =
       /** Buildable land templates (index = command template id; PLAN 1.33b). */
       templates: TemplateInfo[];
     }
+  /** The terrain layer again after editor terrain edits (PLAN 1.35). */
+  | { type: 'terrainLayer'; data: Uint8Array }
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number; edits: { undo: number; redo: number } };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
@@ -283,6 +285,10 @@ export interface Inspection {
   corridors: number;
   /** Unrest per province id. */
   unrest: number[];
+  /** xxhash32 of the cell layers (PLAN 1.35 editor AT). */
+  rasters: { owner: number; controller: number; terrain: number };
+  /** Editor stack depths. */
+  edits: { undo: number; redo: number };
 }
 
 /** An active war (PLAN 1.31): side leaders first; score > 0 favours the attackers. */

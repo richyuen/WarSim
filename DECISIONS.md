@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-42 · 2026-10-02 · accepted — Editor edits are commands; the undo stack is world state
+
+- **Context:** the editor needs undo/redo (SPEC §9). Edits change state the sim hashes.
+- **Decision:**
+  - Paint, undo and redo are commands. The diff stack (cells with values before and after; the
+    nation layer also keeps controllers) is a saved world part.
+  - The stack is capped at 50 edits / 2 M cells, oldest dropped. A new edit clears redo.
+- **Why not in the UI:** a UI-side stack would need CPU copies of every layer. Worse, a save
+  plus a later command log containing undos would not replay.
+- **Consequences:** saves carry up to the capped diffs. Water ↔ land edits wait for map import
+  (the fine coastline comes from the 16k land mask).
+
 ### ADR-41 · 2026-10-02 · accepted — God Kill is a forced collapse; God revival keeps the revival rules
 
 - **Context:** the God `collapseNation` reused the bankruptcy collapse, which fragments only
