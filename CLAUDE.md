@@ -20,10 +20,16 @@ There is no memory between sessions. Read these files:
 
 ## Commands
 
-- `npm run check`: the full gate (typecheck, lint, unit, build, e2e, parity). It must pass before
-  every commit.
+- `npm run check`: the gate (typecheck, lint, unit, 10-year sweep tests when a sim input changed
+  since HEAD, build, e2e, parity). It must pass before every commit.
+- `npm run check:full`: the same, always with the sweep tests.
 - `npm run dev`: toy world at `/`; benches at `/bench.html?b=A|P|R`.
-- `npm run sim -- --scenario toy --seed 7 --years 10`: headless runner.
+- `npm run sim -- --scenario toy --seed 7 --years 10`: headless runner (`--save` / `--load` a
+  checkpoint).
+- `npm run diag -- --seed 99 --at 5,12,20`: wars and great-power state dumps (`--load` a checkpoint).
+- `npm run sweep` (10 seeds × 50 years, report in `docs/sweeps/`; `--first`, `--tag`) and
+  `npm run sweep:quick` (3 × 20, report in `.cache/`).
+- See "KEEPING ITERATIONS SHORT" in `PROMPT.md` for when to use which.
 - `npm run data` / `npm run data -- --check`: data pipeline.
 - `npm run bench`.
 - `npm run parity`.

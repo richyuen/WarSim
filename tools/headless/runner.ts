@@ -19,6 +19,10 @@ export interface HeadlessOptions {
   onYear?: (m: YearMetrics) => void;
   /** Wall-clock source (injectable for tests). */
   now?: () => number;
+  /** A save to start from instead of the scenario's first tick (a checkpoint; same scenario). */
+  load?: Uint8Array;
+  /** Called with the final state's save bytes (to write a checkpoint). */
+  onSave?: (bytes: Uint8Array) => void;
 }
 
 export interface NationYear {
@@ -87,11 +91,13 @@ function nationStats(world: World): NationYear[] {
 export function runHeadless(opts: HeadlessOptions): HeadlessResult {
   const now = opts.now ?? (() => performance.now());
   const sim = new Sim(opts.scenario === '1938' ? { scenario: '1938', seed: opts.seed, assets: loadAssets1938(SIZE_1938.w) } : { scenario: opts.scenario, seed: opts.seed });
+  if (opts.load) sim.load(opts.load);
   const world = sim.world;
+  const firstYear = Math.floor(world.tick / TICKS_PER_YEAR);
   const yearly: YearMetrics[] = [];
   const start = now();
   const times = new Float64Array(TICKS_PER_YEAR);
-  for (let y = 1; y <= opts.years; y++) {
+  for (let y = firstYear + 1; y <= firstYear + opts.years; y++) {
     const y0 = now();
     const before = world.cells.controller.slice();
     const events: Record<string, number> = {};
@@ -129,6 +135,7 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
     opts.onYear?.(m);
   }
   const totalWallMs = now() - start;
+  opts.onSave?.(sim.save());
   return {
     scenario: opts.scenario,
     seed: opts.seed,

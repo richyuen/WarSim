@@ -174,6 +174,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: sweep report committed in `docs/sweeps/` with all criteria green.
 - [x] 1.41 Phase 1 review + PARITY rows updated with evidence.
   AT: Gate green; parity score recomputed.
+- [ ] 1.42a Tick time back under control before the next full sweep (ADR-48). Profile of year 1,
+  seed 99: supply reflood 20%, pathfinding 23%, combat 13%; mean 4.6–5.9 ms after ADR-47 (2.4 ms
+  before).
+  AT: `npm run sim -- --scenario 1938 --seed 99 --years 5` reports a 5-year mean tick ≤ 1.5 ms and
+  a year-1 mean ≤ 2.4 ms on this machine, with the same final hash as before the change
+  (5d08e5dd) unless a rule change is logged in DECISIONS.
 - [ ] 1.42 Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails

@@ -26,4 +26,16 @@ describe('headless runner (PLAN 0.20)', () => {
     expect(r.finalHash).toBe(plain.hash());
     expect(r.yearly[1]!.hash).toBe(r.finalHash);
   });
+
+  it('a checkpoint continues the run: year 1 saved, then loaded for year 2, equals two years straight', () => {
+    let checkpoint: Uint8Array | undefined;
+    runHeadless({ scenario: 'toy', seed: 3, years: 1, onSave: (bytes) => (checkpoint = bytes) });
+    expect(checkpoint).toBeDefined();
+    const years: number[] = [];
+    const resumed = runHeadless({ scenario: 'toy', seed: 3, years: 1, load: checkpoint!, onYear: (m) => years.push(m.year) });
+    expect(years).toEqual([2]); // years stay absolute
+    const straight = runHeadless({ scenario: 'toy', seed: 3, years: 2 });
+    expect(resumed.finalHash).toBe(straight.finalHash);
+    expect(resumed.yearly[0]!.tick).toBe(2 * TICKS_PER_YEAR);
+  });
 });

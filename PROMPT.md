@@ -181,6 +181,32 @@ added without code changes.
 9. Every ~5 iterations do a review pass: refactor debt, delete dead code,
    re-read SPEC.md for drift, add missing tests.
 
+# KEEPING ITERATIONS SHORT
+
+Added 2026-10-03 after an iteration that took three hours, most of it waiting
+on simulation runs (DECISIONS ADR-48).
+
+- One cause per commit. When a task or a critic finding has several causes,
+  split it in PLAN.md and fix, gate and commit them one at a time.
+- Tune on small runs. `npm run sweep:quick` (3 seeds × 20 years, report in
+  `.cache/`) while changing rules or constants. The full sweep
+  (`npm run sweep -- --first <unseen> --tag <name>`) runs once per task, on
+  the final code, on seeds no tuning has seen.
+- Gate before the final sweep, never after. A gate failure changes the code,
+  and a sweep of code that then changes is wasted.
+- Diagnose from checkpoints. `npm run sim -- --save` / `--load` and
+  `npm run diag -- --load` start from a saved year instead of 1938. Save a
+  checkpoint once and reuse it for every question about later years. A
+  checkpoint is only valid for the code that wrote it: after changing sim
+  rules, rewrite it.
+- `npm run check` skips the 10-year sweep tests when nothing they depend on
+  changed since HEAD. `npm run check:full` always runs them: use it for the
+  DONE CONDITION and whenever the working tree was not gated commit by
+  commit (after a pull or a rebase).
+- Simulation speed is iteration speed. A change that makes the tick slower
+  is logged with numbers in PROGRESS.md, and a tick over budget is fixed
+  before the next task that needs a full sweep.
+
 # RULES
 
 - Correctness over speed; never mark a task done unless verified.

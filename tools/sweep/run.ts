@@ -3,10 +3,11 @@
  * processes, judged by tools/sweep/criteria.ts. Writes docs/sweeps/<date>-sweep.json and .md and
  * exits non-zero when any seed fails.
  *
- *   npm run sweep -- [--seeds 10] [--years 50] [--parallel 10] [--first 1] [--tag name]
+ *   npm run sweep -- [--seeds 10] [--years 50] [--parallel 10] [--first 1] [--tag name] [--scratch]
  *
  * `--tag` names the report docs/sweeps/<date>-sweep-<tag>, so a second run on one day keeps the
- * first report.
+ * first report. `--scratch` writes the report to .cache/sweep/reports instead (tuning runs:
+ * `npm run sweep:quick` is 3 seeds × 20 years there; only the final sweep belongs in docs/).
  */
 import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -26,7 +27,7 @@ const first = arg('first', 1);
 const tagAt = process.argv.indexOf('--tag');
 const tag = tagAt >= 0 ? `-${(process.argv[tagAt + 1] ?? '').replace(/[^a-z0-9-]/gi, '')}` : '';
 const parallel = Math.max(1, Math.min(arg('parallel', 10), os.cpus().length));
-const outDir = path.join(ROOT, 'docs/sweeps');
+const outDir = path.join(ROOT, process.argv.includes('--scratch') ? '.cache/sweep/reports' : 'docs/sweeps');
 const tmp = path.join(ROOT, '.cache/sweep');
 mkdirSync(outDir, { recursive: true });
 mkdirSync(tmp, { recursive: true });

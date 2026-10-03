@@ -1167,9 +1167,15 @@ interpolation changes something.
   GPU time comes from EXT_disjoint_timer_query_webgl2 (gl.finish does not block under ANGLE).
   Pages: `bench.html?b=A` (map), `B`/`BP` (proxies raw/Pixi), `P` (precision probe, e2e),
   `R` (province raster). Results and screenshots go to `docs/bench/`.
-- **Gate** (`npm run check`): `tsc -b` → `eslint .` → `vitest run` → `vite build` →
-  `playwright test` (against `vite preview` of the build) → `npm run parity`.
-  Must be green before every commit.
+- **Gate** (`npm run check`): `tsc -b` → `eslint .` → `vitest run` → the 10-year sweep tests
+  (`tests/sweep/`, only when a sim input changed since HEAD: `tools/gate/sweepIfSimChanged.ts`,
+  ADR-48) → `vite build` → `playwright test` (against `vite preview` of the build) →
+  `npm run parity`. Must be green before every commit. `npm run check:full` always runs the
+  sweep tests.
+- **Checkpoints and diagnostics** (ADR-48): `npm run sim -- --save f` writes the final state and
+  `--load f` continues from it (bit-identical saves: tested on the toy world). `npm run diag`
+  prints wars and great-power state at chosen years, from 1938 or from a checkpoint.
+  `npm run sweep:quick` (3 seeds × 20 years, report in `.cache/sweep/reports`) is for tuning.
 - **Parity** (`npm run parity`, `tools/parity`): parses `docs/PARITY.md` (Table 1 scored: verified 1,
   partial 0.5; Table 2 validated), checks the column layout, consecutive row numbers, a dated
   `[TEXT|VISUAL|TEXT+VISUAL YYYY-MM-DD]` tag on every AoC behaviour, and that every backticked

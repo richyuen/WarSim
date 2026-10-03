@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-48 · 2026-10-03 · accepted — Shorter iterations: conditional sweep tests, checkpoints, quick sweeps (user request)
+
+- **Context:** the ADR-47 iteration took almost three hours. About 95 minutes were three full
+  sweeps, 35 the gate (three runs), 35 diagnostic runs that each re-simulated from 1938. One
+  sweep was repeated because the gate ran after it and found a bug. The user asked for all the
+  remedies proposed.
+- **Decision:**
+  1. `npm run check` runs the 10-year sweep tests only when the working tree differs from HEAD
+     under `src/sim`, `src/shared`, `data`, `public/data`, `tests/sweep`, `tests/helpers`,
+     `tools/headless`, the sweep vitest config or the package files. `npm run check:full` always
+     runs them. The user approved this change to the gate. It relies on every commit being
+     gated; after a pull or rebase, and for the DONE condition, use `check:full`.
+  2. Checkpoints: `npm run sim -- --save / --load`; `npm run diag` (the B1 diagnostic, now a
+     tool) takes `--load` and `--save`.
+  3. `npm run sweep:quick` (3 seeds × 20 years) writes to `.cache/`; only final sweeps go to
+     `docs/sweeps/`.
+  4. Working rules in PROMPT.md "KEEPING ITERATIONS SHORT": one cause per commit, tune on quick
+     sweeps, gate before the final sweep, diagnose from checkpoints, fix an over-budget tick
+     before the next task that needs a full sweep.
+  5. PLAN 1.42a (tick time) goes before 1.42 (the rest of critic B1), because 1.42 needs full
+     sweeps and each now takes 36 minutes. This puts a non-blocking critic finding (N2) ahead of
+     a blocking one for one iteration, as its means.
+- **Not changed:** the sweep criteria, the test assertions, and what `check:full` covers.
+
 ### ADR-47 · 2026-10-03 · accepted — Wars that resolve, armies that recover, empires that strain (critic B1)
 
 - **Context:** the critic (report at bb1dd4f) found the world static: on an unseen seed the ten

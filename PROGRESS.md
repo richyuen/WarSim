@@ -2305,3 +2305,15 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Next for B1:** seed 109's leader (the Soviet Union) keeps ~25–27%: check why it affords
   suppression through its wars. Japan and Britain still cannot move armies overseas (PLAN 4.5).
 - `critic/` is still untracked (30 MB of screenshots); left as found.
+
+## 2026-10-03 — Shorter iterations (user request, ADR-48)
+- The user stopped the loop, asked why the iteration took three hours, and asked for all the
+  proposed remedies.
+- **Gate:** `npm run check` skips the 10-year sweep tests when no sim input changed since HEAD;
+  `npm run check:full` always runs them.
+- **Tools:** `npm run sim -- --save / --load` (checkpoints; unit-tested on the toy world),
+  `npm run diag` (wars and great-power dumps, from 1938 or a checkpoint), `npm run sweep:quick`
+  (3 × 20, report in `.cache/`).
+- **Rules:** PROMPT.md has a new section "KEEPING ITERATIONS SHORT"; CLAUDE.md lists the commands.
+- **PLAN:** 1.42a (tick time ≤ 1.5 ms mean over 5 years, seed 99) now comes before 1.42.
+- No sim rule changed in this commit.

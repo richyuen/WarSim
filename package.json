@@ -13,12 +13,16 @@
     "test": "vitest run",
     "test:sweep": "vitest run --config vitest.sweep.config.ts",
     "e2e": "playwright test",
-    "check": "npm run typecheck && npm run lint && npm test && npm run test:sweep && npm run build && npm run e2e && npm run parity",
+    "test:sweep:changed": "tsx tools/gate/sweepIfSimChanged.ts",
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:sweep:changed && npm run build && npm run e2e && npm run parity",
+    "check:full": "npm run typecheck && npm run lint && npm test && npm run test:sweep && npm run build && npm run e2e && npm run parity",
     "parity": "tsx tools/parity/cli.ts",
     "bench": "tsx tools/bench/run.ts",
     "data": "tsx tools/data/run.ts",
     "sim": "tsx tools/headless/cli.ts",
     "sweep": "tsx tools/sweep/run.ts",
+    "sweep:quick": "tsx tools/sweep/run.ts --seeds 3 --years 20 --scratch",
+    "diag": "tsx tools/diag/nations.ts",
     "verify:phase0": "bash tools/verify-phase0.sh"
   },
   "dependencies": {

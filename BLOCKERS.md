@@ -16,3 +16,6 @@ _None._
   cores and the stage took 2.9 min instead of 1.4. The expect timeout is now 15 s.
 - Tick time after ADR-47 (2026-10-03): year-1 mean 4.6–5.9 ms on seed 99 against the 1.5 ms
   budget (PLAN 7.1). Hot spots: supply reflood, pathfinding, combat.
+- e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
+  in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
+  involved. If it recurs, look at the page boot under 4 parallel workers.
