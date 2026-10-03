@@ -18,6 +18,23 @@
  * becomes its core, gets its largest city as capital, MILITIA_PER_CELLS militia divisions
  * (1..MILITIA_MAX) and START_GOLD; with probability 1/2 (hash) the former holder declares war.
  * Unrest in the area resets to AFTER_REVOLT. Event `RevoltSpawned` (a = rebel, b = former holder).
+ *
+ * Defection (critic B1/B4, 2026-10-03): when the area's core nation is alive and is neither the
+ * holder nor bound to it (ally, overlord, puppet), the area returns to that nation instead of
+ * founding a new state: conquests a holder cannot keep quiet go back to their rightful owner.
+ * Same event, with a = the core nation.
+ * Otherwise, when a province next to the area belongs to rebels (a spawned nation, not bound to
+ * the holder), the area joins them and becomes their core: an uprising spreads as one state
+ * instead of founding a new one per revolt. The holder declares war on them unless already at
+ * war or in a truce.
+ *
+ * Overextension (critic B1, 2026-10-03): a holder with share s of the world's owned land above
+ * OVEREXT_SHARE strains to hold its far provinces (centre more than OVEREXT_CELLS cells from the
+ * capital), core or not: each gains OVEREXT_UNREST × min(OVEREXT_MAX, s/OVEREXT_SHARE − 1) a
+ * month, plus AT_WAR on core land while a war of the holder has exhausted its side to
+ * OVEREXT_EXHAUSTION or more (a phoney war does not count). Suppression and garrisons hold it
+ * down, so a solvent empire at peace keeps its periphery, and one that cannot pay for
+ * suppression or is worn down by war loses it in large pieces over the years.
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -35,6 +52,11 @@ export const BANKRUPT = 3;
 export const DECAY = 2;
 export const SUPPRESS = 5;
 export const REVOLT_FROM = 50;
+export const OVEREXT_SHARE = 0.04;
+export const OVEREXT_UNREST = 1.25;
+export const OVEREXT_MAX = 2;
+export const OVEREXT_CELLS = 80;
+export const OVEREXT_EXHAUSTION = 60;
 /** Years of uninterrupted holding after which conquered land becomes a core (PLAN 1.40). */
 export const CORE_YEARS = 10;
 /** Garrison (SPEC §4; PLAN 1.40): a holder's formation within GARRISON_CELLS of a province's
@@ -98,6 +120,21 @@ export function revoltSystem(world: World): void {
     if (nc.living[n] === 1 && nc.suppression[n]! > 0) nc.gold[n] = nc.gold[n]! - SUPPRESSION_COST * nc.suppression[n]! * Math.max(0, nc.income[n]!);
   });
   pv.version++; // unrest is updated below
+  // Overextension factor per nation (0 for nations at or below OVEREXT_SHARE of the owned land).
+  let ownedLand = 0;
+  world.nations.forEach((n) => {
+    if (nc.living[n] === 1) ownedLand += nc.cells[n]!;
+  });
+  const overext = (n: number): number => (ownedLand > 0 ? Math.min(OVEREXT_MAX, Math.max(0, nc.cells[n]! / ownedLand / OVEREXT_SHARE - 1)) : 0);
+  const worn = new Set<number>();
+  for (const war of world.wars.list) for (const side of [0, 1] as const) if (war.exhaustion[side] >= OVEREXT_EXHAUSTION) for (const m of war.sides[side]) worn.add(m);
+  const farFromCapital = (cell: number, n: number): boolean => {
+    const w = world.cells.w;
+    let dx = Math.abs((cell % w) + 0.5 - nc.capitalX[n]!);
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    const dy = Math.floor(cell / w) + 0.5 - nc.capitalY[n]!;
+    return dx * dx + dy * dy > OVEREXT_CELLS * OVEREXT_CELLS;
+  };
   const revolted = new Uint8Array(pv.count);
   // Garrison lookup: formations by nation in GARRISON_CELLS-sized buckets.
   const fc = world.formations.cols;
@@ -137,7 +174,8 @@ export function revoltSystem(world: World): void {
     // review: a bankrupt empire at war otherwise revolted everywhere at once).
     const nonCore = o !== pv.core[p];
     const guard = garrisoned(c, o);
-    const delta = (guard ? -GARRISON_UNREST : 0) + (nonCore ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (nonCore && atWar(world, o) ? AT_WAR : 0) + (nonCore && nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
+    const strain = overext(o) > 0 && farFromCapital(c, o) ? OVEREXT_UNREST * overext(o) + (!nonCore && worn.has(o) ? AT_WAR : 0) : 0;
+    const delta = strain + (guard ? -GARRISON_UNREST : 0) + (nonCore ? NON_CORE : 0) + (occupied ? OCCUPIED : 0) + (nonCore && atWar(world, o) ? AT_WAR : 0) + (nonCore && nc.bankrupt[o] === 1 ? BANKRUPT : 0) - DECAY - SUPPRESS * supp + 10 * (world.buffs.sum('unrest', 'nation', o) + world.buffs.sum('unrest', 'province', p));
     pv.unrest[p] = Math.max(0, Math.min(100, pv.unrest[p]! + delta));
     if (revolted[p] || occupied || pv.unrest[p]! < REVOLT_FROM) continue;
     const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp) * (guard ? 1 - GARRISON_P : 1);
@@ -149,10 +187,69 @@ export function revoltSystem(world: World): void {
 /** Province p (held by `holder`) revolts: returns the provinces that left. */
 function revolt(world: World, p: number, holder: number): number[] {
   const area = revoltArea(world, p, holder);
+  const core = world.provinces.core[p]!;
+  const nc = world.nations.cols;
+  if (core !== 0 && core !== holder && nc.living[core] === 1 && nc.overlord[core] !== holder && nc.overlord[holder] !== core && !world.alliances.allied(core, holder)) {
+    defect(world, area, holder, core);
+    return area;
+  }
+  const rising = risingNeighbour(world, area, holder);
+  if (rising !== 0) {
+    defect(world, area, holder, rising);
+    for (const q of area) world.provinces.core[q] = rising;
+    if (!world.wars.atWar(holder, rising) && !world.wars.inTruce(holder, rising, world.tick)) declareWar(world, holder, rising);
+    return area;
+  }
   // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
   const claimant = deadClaimant(world, p);
   if (claimant === 0 || !reviveNation(world, claimant, area)) spawnRebels(world, area, holder);
   return area;
+}
+
+/** The rebel nation (lowest id), not bound to `holder`, that owns a province next to `area`, or 0. */
+function risingNeighbour(world: World, area: number[], holder: number): number {
+  const g = navOf(world).graph;
+  const nc = world.nations.cols;
+  let best = 0;
+  for (const p of area) {
+    for (const q of g.adj[p] ?? []) {
+      const c = g.centre[q] ?? -1;
+      const n = c >= 0 ? world.cells.owner[c]! : 0;
+      if (n === 0 || n === holder || nc.living[n] !== 1 || nc.origin[n] === 0) continue;
+      if (nc.overlord[n] !== 0 || nc.overlord[holder] === n || world.alliances.allied(n, holder)) continue;
+      if (best === 0 || n < best) best = n;
+    }
+  }
+  return best;
+}
+
+/** The holder's land in `area` goes to living nation `to` (module comment: defection). */
+function defect(world: World, area: number[], holder: number, to: number): void {
+  const inArea = new Set(area);
+  const { owner, province, w } = world.cells;
+  let cells = 0;
+  let sx = 0;
+  let sy = 0;
+  for (let c = 0; c < owner.length; c++) {
+    if (owner[c] !== holder || !inArea.has(province[c]!)) continue;
+    world.setOwner(c, to);
+    world.setController(c, to);
+    cells++;
+    sx += (c % w) + 0.5;
+    sy += Math.floor(c / w) + 0.5;
+  }
+  for (const q of area) world.provinces.unrest[q] = AFTER_REVOLT;
+  // The holder's capital in the area is lost with it.
+  const cc = world.cities.cols;
+  let lostCapital = false;
+  world.cities.forEach((ci) => {
+    if (cc.capitalOf[ci] === holder && owner[cc.cell[ci]!] === to) {
+      cc.capitalOf[ci] = 0;
+      lostCapital = true;
+    }
+  });
+  if (lostCapital) relocateCapital(world, holder);
+  world.out.emit(world.tick, EventKind.RevoltSpawned, to, holder, cells > 0 ? sx / cells : NaN, cells > 0 ? sy / cells : NaN);
 }
 
 /**

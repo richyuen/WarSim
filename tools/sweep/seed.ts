@@ -17,6 +17,8 @@ export interface YearSample {
   topLand: number;
   topIncome: number;
   topNation: number;
+  /** The ten largest living nations by owned land, largest first. */
+  top10: number[];
   wars: number;
   /** Days of the year with at least one war. */
   warDays: number;
@@ -66,11 +68,14 @@ function main(): void {
     w.nations.forEach((n) => {
       if (nc.living[n] === 1) topIncome = Math.max(topIncome, Math.max(0, nc.income[n]!));
     });
+    const byLand: number[] = [];
+    w.nations.forEach((n) => nc.living[n] === 1 && byLand.push(n));
+    byLand.sort((a, b) => nc.cells[b]! - nc.cells[a]! || a - b);
     let changed = 0;
     land.forEach((c, i) => {
       if (w.cells.controller[c] !== before[i]) changed++;
     });
-    samples.push({ year: y + 1, alive, topLand: owned > 0 ? nc.cells[top]! / owned : 0, topIncome: income > 0 ? topIncome / income : 0, topNation: top, wars: w.wars.list.length, warDays, changed });
+    samples.push({ year: y + 1, alive, topLand: owned > 0 ? nc.cells[top]! / owned : 0, topIncome: income > 0 ? topIncome / income : 0, topNation: top, top10: byLand.slice(0, 10), wars: w.wars.list.length, warDays, changed });
     process.stdout.write(`seed ${seed} year ${y + 1}/${years}: alive ${alive}, top land ${(samples.at(-1)!.topLand * 100).toFixed(1)}%, wars ${w.wars.list.length}, changed ${changed}\n`);
   }
   const result: SeedResult = { seed, years, wallS: (performance.now() - t0) / 1000, landCells: land.length, samples };

@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-47 · 2026-10-03 · accepted — Wars that resolve, armies that recover, empires that strain (critic B1)
+
+- **Context:** the critic (report at bb1dd4f) found the world static: on an unseen seed the ten
+  largest land holders were the same from year 9 to year 40 and the leader's share stayed at
+  27%. A diagnostic run on that seed showed why:
+  - fight-to-the-death wars never ended (Japan–China and France–Nationalist Spain ran 14+
+    years at exhaustion 100), pinning their members' war slots and exhaustion;
+  - the war score was the occupied share of the *victim's* land, so nothing taken from a large
+    nation ever scored above a white peace;
+  - a target counted its whole alliance and its guarantors in full and the attacker counted
+    nobody, so after a few years of alliance-building no attack had positive utility;
+  - one production order at a time meant ~36 new divisions a year worldwide, while wars killed
+    60–95% of the armies in them, and winners' formations left on returned land starved there;
+  - new formations appeared at the capital, so Japan's sat on the home islands.
+- **Decision:**
+  1. *Relative score:* occupied land counts against min(victim's land, 2 × occupiers' land).
+     Puppets still need 30% of the losers' land in true share.
+  2. *Capitulation:* a side 75% occupied (or a leader 75% occupied by anyone) loses at once.
+  3. *Deadlock:* any war ends on its score after 5 years. **Deviation from AoC** ("To Death"
+     lasts until one side dies): without sea transport many of our to-the-death wars cannot be
+     finished by either side; revisit after PLAN 4.5. PLAN 1.16's AT (never accepts peace,
+     however crushed or broke) still holds within those 5 years and below capitulation.
+  4. *Capital bonus* capped at ± 50 per war (field capitals fell repeatedly: 178 captures).
+  5. *Strength comparison:* both sides add 40% of their partners.
+  6. *Parallel production:* 1 + income/400 orders at once, at most 6; the peacetime army cap
+     scales with aggression (35% × (0.3 + 0.7 × aggression/100) of income).
+  7. *Repatriation* of idle formations on foreign land they are not at war with.
+  8. *Overseas muster:* reinforcements for an overseas front are raised in the theatre. An
+     abstraction of sealift, to be replaced by transports in PLAN 4.5.
+  9. *Defection and spreading revolts:* a revolt returns land to its living core nation, or
+     joins a neighbouring rebel state, before it founds a new nation (also part of critic B4).
+  10. *Overextension:* far provinces of nations above 4% of the land gain unrest (SPEC §4).
+      Tried at 3 and 2 per month first: the Soviet Union lost three quarters of its land within
+      5 years on seed 99, too fast for a 1938 start. At 1.25, with the war term tied to
+      exhaustion ≥ 60, it shrinks over decades.
+- **Sweep criteria:** two new ones, fixed before the first run with them: ≥ 2 new nations in
+  the top ten by land at the end, and a leader-share range ≥ 3 points. Tuning used seeds 1–10
+  and 99; the report is on seeds 101–110, which the tuning never saw.
+- **Bug found by the gate:** `declareWar` kept a nation off a side only when it was allied to
+  the enemy *leader*. A puppet sitting in another alliance than its overlord could be pulled in
+  against its own ally (10-year AI sweep, seed 1: "allies 11 and 14 at war"). More puppets exist
+  now, so it surfaced. Nobody joins against an ally on the other side any more (unit test).
+- **Result** (`docs/sweeps/2026-10-03-sweep-b1.md`, seeds 101–110 × 50 years, final code): 9 of
+  10 seeds pass all seven criteria. Land moving in the last 5 years 3.6–15.9% (was 1.1–6.7% on
+  seeds 1–10), 2–4 new nations in the top ten, leader share range 4.9–8.6 points on nine seeds
+  and 2.7 on seed 109 (**fails** the 3-point bar), nations alive 95–146 (was 97–231). The
+  report is marked FAILING and PLAN 1.42 stays open; the thresholds were not moved.
+- **Cost:** more wars, moves and flips. The tick mean in year 1 of seed 99 rose from 2.4 ms to
+  4.6–5.9 ms (a profile shows supply reflood 20%, pathfinding 23%, combat 13%; the new systems
+  are under 2%). The 1.5 ms budget is PLAN 7.1.
+- **Tests isolated from the AI** (assertions unchanged): the speed-buff march (a war now
+  reaches Poland within the march) and the region-revolt test (the AI now suppresses core
+  unrest, which calmed the neighbours before the revolt fired).
+
 ### ADR-46 · 2026-10-03 · accepted — Element snapshots from slot poses; procedural walk/drive animation (PLAN 2.3)
 
 **Context.** T2 needs element sprites at real positions, interest-managed, interpolated on the

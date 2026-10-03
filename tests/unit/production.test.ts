@@ -4,7 +4,8 @@ import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_LAND, ECONOMY_TABLES_193
 import { Sim } from '../../src/sim/sim';
 import { MANPOWER_CAP_SHARE, MANPOWER_MONTHLY_RATE, monthlyAccounts, runEconomyMonth, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { elementIndex } from '../../src/sim/systems/elements';
-import { productionSystem, queueFormation, spawnPoint } from '../../src/sim/systems/production';
+import { musterPoint, productionSystem, queueFormation, spawnPoint } from '../../src/sim/systems/production';
+import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.10: production queue, recruitment and manpower. AT: a queued division appears after N
@@ -127,5 +128,23 @@ describe('production (PLAN 1.10 AT)', () => {
     c.load(b.save());
     c.step(20 * 24);
     expect(c.hash()).toBe(a.hash());
+  });
+
+  it('overseas muster: Japan, at war in China, raises its divisions on the mainland; Germany at home', () => {
+    const sim = sim1938();
+    const w = sim.world;
+    const JAP = NATIONS_1938.findIndex((n) => n.tag === 'JAP') + 1;
+    const comp = navOf(w).grid.component;
+    const cellAt = (p: [number, number]): number => Math.floor(p[1]) * w.cells.w + Math.floor(p[0]);
+    expect(w.wars.list.some((x) => x.sides[0]!.includes(JAP))).toBe(true);
+    const home = cellAt(spawnPoint(w, JAP)!);
+    const at = cellAt(musterPoint(w, JAP)!);
+    expect(comp[at]).not.toBe(comp[home]); // not on the home islands
+    expect(w.cells.controller[at]).toBe(JAP);
+    expect(musterPoint(w, GER)).toEqual(spawnPoint(w, GER)); // at peace
+    // A front on the home landmass keeps the capital.
+    const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
+    w.wars.set(GER, POL, true);
+    expect(musterPoint(w, GER)).toEqual(spawnPoint(w, GER));
   });
 });

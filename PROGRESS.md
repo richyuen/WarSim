@@ -2265,3 +2265,43 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - A unit timing budget (`territory.test.ts`) exceeded 25 ms once under load and passed alone and
   on the rerun gate.
 - **The user asked to stop the loop after this task.**
+
+## 2026-10-03 — Critic B1 (static world), part 1: wars resolve, armies recover, empires strain
+- **Loop restarted by the user.** Gate green at the start. The critic report (bb1dd4f) was 1 commit
+  old with 7 blocking issues, so this iteration took B1, the highest (PROMPT step 2b).
+- **Diagnosis** (seed 99, state dumps at years 4, 9, 14; a scripted Germany–Poland war):
+  - Fight-to-the-death wars ran forever (Japan–China 14 years at exhaustion 100/100).
+  - The score divided by the victim's land, so nothing taken from a large nation beat a white
+    peace.
+  - Targets counted their whole alliance in full, attackers nobody: no attack had utility.
+  - One production order at a time: ~36 divisions a year worldwide. Germany sat on 238k gold
+    with 135k men; the USA on 860k gold with 24k men.
+  - After a peace, the winner's formations stood on returned land out of supply and starved.
+  - New formations appeared at the capital: Japan's never reached China.
+- **Changes (ADR-47):** relative war score; capitulation at 75% occupied; 5-year deadlock end;
+  capital bonus cap; 40% ally weight on both sides; parallel production; peace army cap by
+  aggression; repatriation; overseas muster; revolts defect to the living core nation or join a
+  neighbouring rebel state; overextension unrest for nations above 4% of the land.
+- **Bug found by the gate:** allies could be pulled onto opposite war sides through puppets
+  (`aiSweep1` invariant). Fixed in `declareWar`, with a unit test.
+- **Sweep criteria:** two added before any run with them (≥ 2 new in the top ten by land;
+  leader share range ≥ 3 points). `npm run sweep` takes `--tag` so a report does not overwrite
+  the day's earlier one.
+- **Result, seeds 101–110 (never used for tuning), final code:** 9 of 10 green. Seed 109 fails
+  the leader-share range (2.7 points). Land moving 3.6–15.9%, nations 95–146. Report:
+  `docs/sweeps/2026-10-03-sweep-b1.md` (marked FAILING). **B1 is not closed**: PLAN 1.42.
+- **Tuning notes:** overextension at 3 and at 2 unrest a month broke the Soviet Union to a
+  quarter of its land within 5 years; with a plain at-war term Canada collapsed over a phoney
+  war with Newfoundland. Now 1.25, and the war term needs exhaustion ≥ 60.
+- **Performance got worse:** year-1 tick mean 4.6–5.9 ms on seed 99 (was 2.4), 5-year mean
+  2.5 ms (was ~1.5). The sweep takes 36 min (was 17). Profile: supply reflood 20%, pathfinding
+  23%, combat 13%. Budget 1.5 ms (PLAN 7.1); the critic's N2 will get worse until then.
+- **Tests:** 10 new unit tests (score, capitulation, deadlock, capital cap, ally sides, parallel
+  orders, overseas muster, defection, overextension, repatriation). Two existing tests now switch
+  the AI off to isolate their mechanism (assertions unchanged). Gate green (407 unit, 7 sweep,
+  61 e2e).
+- **Not verified in the browser:** no screenshots this iteration; the changes are sim rules and
+  the evidence is the sweep and the tests.
+- **Next for B1:** seed 109's leader (the Soviet Union) keeps ~25–27%: check why it affords
+  suppression through its wars. Japan and Britain still cannot move armies overseas (PLAN 4.5).
+- `critic/` is still untracked (30 MB of screenshots); left as found.

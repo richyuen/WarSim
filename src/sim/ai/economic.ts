@@ -7,11 +7,15 @@
  *    MARGIN × income (pay any debt back within a year, keep a margin). While short, it disbands
  *    idle (not engaged) formations, weakest first (lowest id on ties); a disbanded formation
  *    stops its upkeep at once and returns DISBAND_MANPOWER of its men to the pool.
- * 2. Suppression: SUPPRESS_LEVEL while a non-core province it holds has unrest ≥ SUPPRESS_FROM
+ * 2. Suppression: SUPPRESS_LEVEL while a province it holds has unrest ≥ SUPPRESS_FROM
  *    and the budget has room (B > SUPPRESS_ROOM × income), else 0.
- * 3. Build: at most one order a month, none while one is pending, when army upkeep is below
- *    ARMY_SHARE (peace) / ARMY_SHARE_WAR (war) of income, B stays positive after the new
- *    upkeep, and gold covers the order plus RESERVE_MONTHS of income. Mix: poor nations
+ * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (at most MAX_PARALLEL),
+ *    while army upkeep (with the orders in training) is below ARMY_SHARE × (PEACE_ARMY_BASE +
+ *    (1 − PEACE_ARMY_BASE) × aggression/100) (peace: placid nations keep smaller standing
+ *    armies) / ARMY_SHARE_WAR (war) of income, B stays positive after the new upkeep, and gold covers the
+ *    order plus RESERVE_MONTHS of income. (Critic B1, 2026-10-03: one order at a time for
+ *    everybody meant ~36 divisions a year worldwide; armies never recovered from a war and the
+ *    great powers sat on unspent treasuries.) Mix: poor nations
  *    (income < POOR_INCOME) raise cadre divisions; against armour-heavy enemies (≥ ARMOUR_HEAVY of
  *    their elements are tanks) motorised divisions (AT and heavy guns); rich nations at war add a
  *    panzer division every third order; infantry divisions otherwise.
@@ -33,7 +37,10 @@ export const SUPPRESS_FROM = 40;
 export const SUPPRESS_ROOM = 0.15;
 export const ARMY_SHARE = 0.35;
 export const ARMY_SHARE_WAR = 0.6;
+export const PEACE_ARMY_BASE = 0.3;
 export const RESERVE_MONTHS = 3;
+export const PARALLEL_INCOME = 400;
+export const MAX_PARALLEL = 6;
 export const POOR_INCOME = 20;
 export const RICH_INCOME = 200;
 export const ARMOUR_HEAVY = 0.2;
@@ -59,6 +66,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     // Per nation: own formations and their upkeep.
     const own = new Map<number, number[]>();
     const army = new Map<number, number>();
+    /** Upkeep the orders in training will add. */
+    const training = new Map<number, number>();
     world.formations.forEach((id) => {
       const n = f.nation[id]!;
       const l = own.get(n) ?? [];
@@ -66,8 +75,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       own.set(n, l);
       army.set(n, (army.get(n) ?? 0) + upkeepOf(world, id));
     });
-    const pending = new Set<number>();
-    world.production.forEach((id) => void pending.add(world.production.cols.nation[id]!));
+    const pending = new Map<number, number>();
+    const upkeepOfTemplate = (t: number): number => (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0)) || 0;
+    world.production.forEach((id) => {
+      const n = world.production.cols.nation[id]!;
+      pending.set(n, (pending.get(n) ?? 0) + 1);
+      training.set(n, (training.get(n) ?? 0) + upkeepOfTemplate(world.production.cols.template[id]!));
+    });
     const restless = restlessNations(world);
     const acc = monthlyAccounts(world, tables);
     world.nations.forEach((n) => {
@@ -96,20 +110,29 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // 2. Suppression.
       nc.suppression[n] = restless.has(n) && balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
       // 3. Build.
-      if (pending.has(n) || !world.rules) return;
+      if (!world.rules) return;
       const atWar = world.wars.list.some((w) => w.sides[0].includes(n) || w.sides[1].includes(n));
-      if ((army.get(n) ?? 0) >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE) * income) return;
-      const t = pickTemplate(world, n, income, atWar, mix);
-      const rule = world.rules.templates[t]!;
-      const newUpkeep = (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0)) || 0;
-      if (balance - newUpkeep <= need) return;
-      if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
-      if (queueFormation(world, n, t) !== 0) nc.builds[n] = nc.builds[n]! + 1;
+      const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME));
+      // The orders in training count as army already, and against the balance.
+      let upkeep = (army.get(n) ?? 0) + (training.get(n) ?? 0);
+      balance -= training.get(n) ?? 0;
+      for (let k = pending.get(n) ?? 0; k < slots; k++) {
+        if (upkeep >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * nc.aggression[n]!) / 100)) * income) return;
+        const t = pickTemplate(world, n, income, atWar, mix);
+        const rule = world.rules.templates[t]!;
+        const newUpkeep = upkeepOfTemplate(t);
+        if (balance - newUpkeep <= need) return;
+        if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
+        if (queueFormation(world, n, t) === 0) return;
+        nc.builds[n] = nc.builds[n]! + 1;
+        balance -= newUpkeep;
+        upkeep += newUpkeep;
+      }
     });
   };
 }
 
-/** Nations holding a non-core province with unrest ≥ SUPPRESS_FROM. */
+/** Nations holding a province with unrest ≥ SUPPRESS_FROM (non-core land, or an overextended empire's periphery). */
 function restlessNations(world: World): Set<number> {
   const out = new Set<number>();
   const pv = world.provinces;
@@ -121,7 +144,7 @@ function restlessNations(world: World): Set<number> {
     const c = g.centre[p] ?? -1;
     if (c < 0) continue;
     const o = world.cells.owner[c]!;
-    if (o !== 0 && o !== pv.core[p]) out.add(o);
+    if (o !== 0) out.add(o);
   }
   return out;
 }

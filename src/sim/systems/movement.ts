@@ -11,18 +11,29 @@
  * Water is impassable to land formations; crossing cells are walkable (straits). A target cell not
  * reachable from the formation (a coastal speck at map resolution) snaps to the nearest reachable
  * cell within TARGET_SNAP_CELLS; beyond that the order is rejected.
+ *
+ * Repatriation (daily at 00:00; critic B1, 2026-10-03): an idle formation standing on land held
+ * by a nation outside its supply bloc that it is not at war with (occupied land handed back at a
+ * peace, mostly) marches to the nearest cell its own nation controls within REPATRIATE_CELLS; if
+ * there is none or no route, it is moved to its nation's spawn point. Such formations used to
+ * stay where the peace found them, out of supply, until attrition had killed them: most of an
+ * army that had just won a war.
  */
 import { EventKind } from '../../shared/events';
 import { atan2 } from '../core/dmath';
 import { MOVE_COST, stepKm, type MobilityId } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
 import { findRoute } from '../nav/provinceGraph';
+import { isDayStart } from '../../shared/calendar';
 import { navOf, type World } from '../world';
+import { spawnPoint } from './production';
+import { blocOf } from './supply';
 
 /** Share of each hour a formation marches (rest, forming up, roads): infantry ≈ 29 km/day. */
 export const MARCH_DUTY = 0.3;
 /** A target cell unreachable from the formation snaps to a reachable one within this many cells. */
 export const TARGET_SNAP_CELLS = 3;
+export const REPATRIATE_CELLS = 80;
 
 function centre(world: World, cell: number): [number, number] {
   const x = cell % world.cells.w;
@@ -74,6 +85,27 @@ export function orderMove(world: World, id: number, x: number, y: number): boole
   world.paths.set(id, Int32Array.from(route.cells));
   [c.x[id], c.y[id]] = centre(world, origin);
   return true;
+}
+
+export function repatriationSystem(world: World): void {
+  if (!isDayStart(world.tick)) return;
+  const f = world.formations;
+  const c = f.cols;
+  const { w, h, controller } = world.cells;
+  const comp = navOf(world).grid.component;
+  f.forEach((id) => {
+    if (c.moving[id] === 1 || c.engaged[id] === 1 || !world.rules?.templates[c.template[id]!]) return;
+    const nation = c.nation[id]!;
+    const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    const holder = controller[cell]!;
+    if (holder === 0 || holder === nation || blocOf(world, holder) === blocOf(world, nation) || world.wars.atWar(nation, holder)) return;
+    const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS);
+    if (home >= 0 && orderMove(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5)) return;
+    const at = spawnPoint(world, nation);
+    if (!at) return;
+    c.x[id] = at[0];
+    c.y[id] = at[1];
+  });
 }
 
 export function movementSystem(world: World): void {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { CAPITAL_SCORE, PUPPET_SCORE, TRUCE_TICKS } from '../../src/sim/systems/war';
+import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, MAX_WAR_DAYS, noteCapitalCaptured, PUPPET_SCORE, REL_CAP, TRUCE_TICKS } from '../../src/sim/systems/war';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/sim1938';
@@ -14,6 +14,7 @@ import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/
 const W = SIZE_1938.w;
 const GER = nationId('GER');
 const POL = nationId('POL');
+const SOV = nationId('SOV');
 
 
 /**
@@ -180,5 +181,101 @@ describe('wars and peace (PLAN 1.16)', () => {
     const japan = s.world.wars.between(nationId('JAP'), nationId('CHI'))!;
     expect(japan.war.sides[0]).toEqual(['JAP', 'MAN', 'MEN'].map(nationId));
     expect(japan.war.fightToDeath[1]).toBe(true); // the CCP fights to the death
+  });
+
+  // Critic B1 (2026-10-03): wars against large nations must be winnable, and no war lasts forever.
+  it('the score is relative to the smaller party: half of Germany\'s own size taken from the Soviet Union scores 50', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    for (const n of [GER, SOV]) {
+      s.world.alliances.leave(n);
+      s.world.alliances.guarantees = s.world.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    const w = s.world;
+    // One on one: puppets would add their land to the sides.
+    w.nations.forEach((n) => {
+      if (w.nations.cols.overlord[n] === GER || w.nations.cols.overlord[n] === SOV) w.nations.cols.overlord[n] = 0;
+    });
+    s.command({ kind: 'declareWar', attacker: GER, defender: SOV });
+    s.step(24);
+    const german = w.nations.cols.cells[GER]!;
+    const soviet = w.nations.cols.cells[SOV]!;
+    expect(soviet).toBeGreaterThan(REL_CAP * german);
+    // Far-eastern Soviet cells (no capital, no armies in contact within the hour).
+    const cells: number[] = [];
+    w.cells.owner.forEach((o, c) => o === SOV && cells.push(c));
+    cells.sort((a, b) => (b % W) - (a % W) || a - b);
+    const taken = cells.slice(0, Math.round(0.5 * german));
+    for (const c of taken) w.setController(c, GER);
+    s.step(1); // the 00:00 assessment
+    const war = w.wars.between(GER, SOV)!.war;
+    expect(taken.length / soviet).toBeLessThan(0.02); // by true share this was a white peace
+    expect(war.score).toBeGreaterThanOrEqual(48); // 200 × (0.5 G) ÷ (REL_CAP × G) = 50, ± front flips
+    expect(war.score).toBeLessThanOrEqual(52);
+    // Peace on that score: Germany keeps half of what it took; the Soviet Union stays independent.
+    s.command({ kind: 'forcePeace', war: war.id });
+    s.step(1);
+    const kept = taken.filter((c) => w.cells.owner[c] === GER).length;
+    expect(kept).toBeGreaterThan(0.4 * taken.length);
+    expect(kept).toBeLessThan(0.6 * taken.length);
+    expect(w.nations.cols.overlord[SOV]).toBe(0);
+  });
+
+  it('capitulation: an overrun side loses at once, even when it fights to the death', () => {
+    const s = atWar();
+    s.step(1);
+    const w = s.world;
+    const war = w.wars.list.find((x) => x.sides[0]![0] === GER && x.sides[1]![0] === POL)!;
+    s.command({ kind: 'setWarFightToDeath', war: war.id, side: 1, value: true });
+    s.step(23); // occupy just before the 00:00 assessment at tick 24
+    const taken = occupyWest(w, CAPITULATE + 0.05);
+    const ev = events(s, 1);
+    expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+    for (const c of taken) expect(w.cells.owner[c]).toBe(GER);
+    expect(w.nations.cols.overlord[POL]).toBe(GER);
+  });
+
+  it('deadlock: a fight to the death ends on its score after MAX_WAR_DAYS', () => {
+    const s = atWar();
+    s.step(1);
+    const w = s.world;
+    const war = w.wars.list.find((x) => x.sides[0]![0] === GER && x.sides[1]![0] === POL)!;
+    s.command({ kind: 'setWarFightToDeath', war: war.id, side: 1, value: true });
+    s.step(1);
+    war.startTick = w.tick - 24 * (MAX_WAR_DAYS - 2);
+    expect(ofKind(events(s, 24), EventKind.PeaceSigned)).toEqual([]); // one day short
+    expect(ofKind(events(s, 48), EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+  });
+
+  it('capital captures add to the score up to CAPITAL_BONUS_MAX', () => {
+    const s = atWar();
+    s.step(1);
+    const war = s.world.wars.list.find((x) => x.sides[0]![0] === GER && x.sides[1]![0] === POL)!;
+    for (let i = 0; i < 5; i++) noteCapitalCaptured(s.world, GER, POL);
+    expect(war.capitalBonus).toBe(CAPITAL_BONUS_MAX);
+    for (let i = 0; i < 9; i++) noteCapitalCaptured(s.world, POL, GER);
+    expect(war.capitalBonus).toBe(-CAPITAL_BONUS_MAX);
+    expect(CAPITAL_BONUS_MAX).toBeGreaterThanOrEqual(CAPITAL_SCORE);
+  });
+
+  it('nobody joins a war against its own ally: puppets allied across the sides stay out', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const [AUT, CZS] = [nationId('AUT'), nationId('CZS')];
+    for (const n of [GER, POL, AUT, CZS]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    // Austria is Germany's puppet, Czechoslovakia Poland's; the two puppets are allies.
+    w.nations.cols.overlord[AUT] = GER;
+    w.nations.cols.overlord[CZS] = POL;
+    expect(w.alliances.create(AUT, [CZS], 'alliance.defensive', 50)).not.toBeNull();
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    s.step(1);
+    const war = w.wars.between(GER, POL)!.war;
+    expect(war.sides[0]).toContain(AUT); // joined first, with its overlord
+    expect(war.sides[1]).not.toContain(CZS); // would face its ally
+    expect(w.wars.atWar(AUT, CZS)).toBe(false);
   });
 });

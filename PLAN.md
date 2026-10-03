@@ -174,6 +174,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: sweep report committed in `docs/sweeps/` with all criteria green.
 - [x] 1.41 Phase 1 review + PARITY rows updated with evidence.
   AT: Gate green; parity score recomputed.
+- [ ] 1.42 Critic B1 (static world), continued: every seed passes the two criteria added on
+  2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
+  ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
+  the leader-share range (2.7 points). Do not move the thresholds. Also: the year-1 tick mean
+  rose to ~5 ms (supply reflood and pathfinding under more wars); see PROGRESS 2026-10-03.
+  AT: `npm run sweep -- --first 201 --tag <name>` (seeds no tuning has seen) all green.
 
 ## Phase 2 — Semantic zoom
 

@@ -66,6 +66,7 @@ describe('buffs and debuffs (PLAN 1.21)', () => {
   it('a speed buff shortens a march; an unrest buff raises province unrest', () => {
     const march = (speed: number): number => {
       const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      s.world.settings.aiEnabled = false; // isolate the march from the AI (a war would re-order or engage the division)
       const [x, y] = cellOf(21.0, 52.23, W, H);
       const id = addDivision(s.world, POL, Math.floor(x) + 0.5, Math.floor(y) + 0.5);
       if (speed) s.command({ kind: 'grantBuff', targetKind: 'formation', target: id, buff: 'speed', magnitude: speed, hours: 24 * 60, nameKey: 'buff.test' });

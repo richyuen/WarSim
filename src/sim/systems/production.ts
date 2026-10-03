@@ -11,12 +11,19 @@
  * nation's orders slip by a day (training stalls); ready ones appear at full strength at the
  * capital. If the capital is not under the nation's control, it appears at the nearest
  * cell the nation controls (within SPAWN_REACH_CELLS); with none, the order waits.
+ *
+ * Overseas muster (critic B1, 2026-10-03; an abstraction of sealift until PLAN 4.5): a nation at
+ * war whose fronts all lie on other landmasses than its spawn point raises the formation in the
+ * theatre instead: at the city it owns and controls nearest (and on the same landmass as) its
+ * front cell nearest the capital, or at that front cell without such a city. Japan's divisions
+ * otherwise piled up on the home islands while its army in China withered.
  */
 import { equipFormation } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
-import type { World } from '../world';
+import { navOf, type World } from '../world';
+import { frontierOf } from './territory';
 
 export const SPAWN_REACH_CELLS = 40;
 /** Gold cost = PRODUCTION_COST_SCALE × Σ element unit gold cost (ADR-23). */
@@ -57,6 +64,49 @@ export function spawnPoint(world: World, nation: number): [number, number] | nul
   return [x + 0.5, (c - x) / w + 0.5];
 }
 
+/** Where a formation raised now appears: `spawnPoint`, or the overseas theatre (module comment). */
+export function musterPoint(world: World, nation: number): [number, number] | null {
+  const home = spawnPoint(world, nation);
+  if (!home || world.wars.list.length === 0) return home;
+  const { w, controller, owner } = world.cells;
+  const comp = navOf(world).grid.component;
+  const homeComp = comp[Math.floor(home[1]) * w + Math.floor(home[0])]!;
+  const nc = world.nations.cols;
+  const dist2 = (x: number, y: number, tx: number, ty: number): number => {
+    let dx = Math.abs(x - tx);
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    return dx * dx + (y - ty) * (y - ty);
+  };
+  // The front cell nearest the capital (lowest id on ties); a front on the home landmass wins.
+  let front = -1;
+  let fd = Infinity;
+  for (const c of frontierOf(world)) {
+    if (controller[c] !== nation) continue;
+    if (comp[c] === homeComp) return home;
+    const d = dist2((c % w) + 0.5, Math.floor(c / w) + 0.5, nc.capitalX[nation]!, nc.capitalY[nation]!);
+    if (d < fd || (d === fd && c < front)) {
+      fd = d;
+      front = c;
+    }
+  }
+  if (front < 0) return home;
+  const fx = (front % w) + 0.5;
+  const fy = Math.floor(front / w) + 0.5;
+  const cc = world.cities.cols;
+  let best = 0;
+  let bd = Infinity;
+  world.cities.forEach((id) => {
+    const cell = cc.cell[id]!;
+    if (owner[cell] !== nation || controller[cell] !== nation || comp[cell] !== comp[front]) return;
+    const d = dist2(cc.x[id]!, cc.y[id]!, fx, fy);
+    if (d < bd) {
+      bd = d;
+      best = id;
+    }
+  });
+  return best !== 0 ? [cc.x[best]!, cc.y[best]!] : [fx, fy];
+}
+
 export function productionSystem(world: World): void {
   if (!isDayStart(world.tick) || world.production.count === 0) return;
   const p = world.production;
@@ -72,7 +122,7 @@ export function productionSystem(world: World): void {
       continue;
     }
     if (today < p.cols.readyDay[id]!) continue;
-    const at = spawnPoint(world, nation);
+    const at = musterPoint(world, nation);
     if (!at) continue; // no land to raise it on: the order waits
     const t = p.cols.template[id]!;
     const f = world.formations;

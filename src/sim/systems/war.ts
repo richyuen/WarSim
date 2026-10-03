@@ -8,18 +8,32 @@
  *
  * Daily (00:00), when any war exists, one grid pass counts land owned per nation and land
  * occupied per (owner, controller) pair. Per war, with side A = attackers, D = defenders:
- *   occ(X→Y) = cells owned by Y's side and controlled by X's side ÷ cells owned by Y's side
+ *   held(X→Y)  = cells owned by Y's side and controlled by X's side
+ *   occ(X→Y)   = held(X→Y) ÷ min(land(Y), REL_CAP × land(X)), at most 1
+ *   share(X→Y) = held(X→Y) ÷ land(Y), the true share
  *   score = clamp(200 × (occ(A→D) − occ(D→A)) + capitalBonus, −100, 100)
- *   exhaustion(X) = min(100, 0.1·days + 80·(1 − men/startMen) + 60·occ(other→X))
+ *   exhaustion(X) = min(100, 0.1·days + 80·(1 − men/startMen) + 60·share(other→X))
+ * The score is relative to the smaller party (critic B1, 2026-10-03): against a victim much
+ * larger than the occupiers, a conquest the size of the occupiers' own land counts like half of
+ * an equal's. With the true share alone, no war against a large nation scored above a white
+ * peace, so the largest nations never lost land.
  * A side sues for peace when its leader is broke (gold < 0 or bankrupt), its exhaustion is
  * ≥ EXHAUSTED, or its score is ≤ −CRUSHED, unless either side fights to the death. The side
  * with the higher score (the attackers on a tie) wins and the terms follow |score|:
  *   < WHITE_PEACE: white peace, every occupation between the sides reverts;
  *   otherwise the winner annexes round(|score|/100 × occupied) of the loser's cells it occupies,
  *   nearest its own pre-peace land first (BFS layers, then cell id); the rest reverts;
- *   ≥ PUPPET_SCORE: everything occupied is annexed and the loser's leader becomes a puppet
- *   of the winner's leader.
- * A peace starts a TRUCE_TICKS truce between the leaders. Capital captures add ±CAPITAL_SCORE.
+ *   ≥ PUPPET_SCORE: everything occupied is annexed and, when that is at least PUPPET_SHARE of
+ *   the losers' land, the loser's leader becomes a puppet of the winner's leader.
+ * Capitulation: a side with share(other→side) ≥ CAPITULATE, or whose leader has lost that share
+ * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
+ * the spot. (An overrun fight-to-the-death nation used to stay at war for good and kept its
+ * occupiers' war slots and exhaustion pinned.)
+ * Deadlock: a war older than MAX_WAR_DAYS ends on its score, fight to the death or not. Other
+ * wars end long before (exhaustion grows 0.1 a day); a fight to the death is five years of
+ * total war at most (ADR-47).
+ * A peace starts a TRUCE_TICKS truce between the leaders. Capital captures add ±CAPITAL_SCORE,
+ * at most ±CAPITAL_BONUS_MAX per war (field capitals fall again and again).
  */
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -33,6 +47,14 @@ export const PUPPET_SCORE = 90;
 export const EXHAUSTED = 80;
 export const CRUSHED = 90;
 export const CAPITAL_SCORE = 25;
+export const CAPITAL_BONUS_MAX = 2 * CAPITAL_SCORE;
+/** A victim side's land counts as at most REL_CAP × the occupiers' own land in the score. */
+export const REL_CAP = 2;
+/** True share of the losers' land the winners must hold to make the loser's leader a puppet. */
+export const PUPPET_SHARE = 0.3;
+/** True share of a side's land under enemy occupation at which it capitulates. */
+export const CAPITULATE = 0.75;
+export const MAX_WAR_DAYS = 5 * 365;
 export const TRUCE_TICKS = 24 * 730;
 /** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
 export const PEACE_PUPPET_AUTONOMY = 30;
@@ -80,7 +102,8 @@ export function declareWar(world: World, attacker: number, defender: number): Wa
   const add = (side: number[], other: number[], enemyLeader: number, m: number): void => {
     for (const x of withPuppets(world, m)) {
       if (!live(x) || side.includes(x) || other.includes(x)) continue;
-      if (x !== attacker && x !== defender && (al.allied(x, enemyLeader) || world.wars.inTruce(x, enemyLeader, world.tick) || nc.overlord[enemyLeader] === x)) continue;
+      // Nor against an ally on the other side (a puppet may sit in another alliance than its overlord).
+      if (x !== attacker && x !== defender && (al.allied(x, enemyLeader) || other.some((o) => al.allied(x, o)) || world.wars.inTruce(x, enemyLeader, world.tick) || nc.overlord[enemyLeader] === x)) continue;
       side.push(x);
     }
   };
@@ -100,7 +123,7 @@ export function declareWar(world: World, attacker: number, defender: number): Wa
 /** Records a capital capture in the war between capturer and loser (score swing). */
 export function noteCapitalCaptured(world: World, capturer: number, loser: number): void {
   const w = world.wars.between(capturer, loser);
-  if (w) w.war.capitalBonus += w.side === ATTACKERS ? CAPITAL_SCORE : -CAPITAL_SCORE;
+  if (w) w.war.capitalBonus = Math.max(-CAPITAL_BONUS_MAX, Math.min(CAPITAL_BONUS_MAX, w.war.capitalBonus + (w.side === ATTACKERS ? CAPITAL_SCORE : -CAPITAL_SCORE)));
 }
 
 interface LandCounts {
@@ -108,31 +131,41 @@ interface LandCounts {
   owned: Uint32Array;
   /** key owner·65536 + controller → cells. */
   occupied: Map<number, number>;
+  /** Cells owned but controlled by another nation, by owner. */
+  lost: Uint32Array;
 }
 
 function countLand(world: World): LandCounts {
   const { owner, controller } = world.cells;
   const owned = new Uint32Array(world.nations.highWater + 1);
+  const lost = new Uint32Array(world.nations.highWater + 1);
   const occupied = new Map<number, number>();
   for (let c = 0; c < owner.length; c++) {
     const o = owner[c]!;
     if (o === 0) continue;
     owned[o]!++;
     const k = controller[c]!;
-    if (k !== o && k !== 0) occupied.set(o * 65536 + k, (occupied.get(o * 65536 + k) ?? 0) + 1);
+    if (k !== o && k !== 0) {
+      lost[o]!++;
+      occupied.set(o * 65536 + k, (occupied.get(o * 65536 + k) ?? 0) + 1);
+    }
   }
-  return { owned, occupied };
+  return { owned, occupied, lost };
 }
 
-/** Share of `victims`' land held by `occupiers`. */
-function occShare(land: LandCounts, occupiers: number[], victims: number[]): number {
+function landOf(land: LandCounts, side: number[]): number {
   let own = 0;
+  for (const n of side) own += land.owned[n] ?? 0;
+  return own;
+}
+
+/** `victims`' land held by `occupiers`: the true share, and the share relative to the smaller party. */
+function occShare(land: LandCounts, occupiers: number[], victims: number[]): { share: number; rel: number } {
+  const own = landOf(land, victims);
   let occ = 0;
-  for (const v of victims) {
-    own += land.owned[v] ?? 0;
-    for (const o of occupiers) occ += land.occupied.get(v * 65536 + o) ?? 0;
-  }
-  return own > 0 ? occ / own : 0;
+  for (const v of victims) for (const o of occupiers) occ += land.occupied.get(v * 65536 + o) ?? 0;
+  if (own <= 0) return { share: 0, rel: 0 };
+  return { share: occ / own, rel: Math.min(1, occ / Math.max(1, Math.min(own, REL_CAP * landOf(land, occupiers)))) };
 }
 
 function menOf(world: World): Map<number, number> {
@@ -154,14 +187,27 @@ export function warSystem(world: World): void {
     const [A, D] = war.sides;
     const oAD = occShare(land, A, D);
     const oDA = occShare(land, D, A);
-    war.score = Math.max(-100, Math.min(100, Math.round(200 * (oAD - oDA) + war.capitalBonus)));
+    war.score = Math.max(-100, Math.min(100, Math.round(200 * (oAD.rel - oDA.rel) + war.capitalBonus)));
     const days = (world.tick - war.startTick) / 24;
     for (const s of [ATTACKERS, DEFENDERS]) {
       const m = sideMen(war.sides[s]!);
       if (war.startMen[s] === 0) war.startMen[s] = m;
       const lost = war.startMen[s]! > 0 ? Math.max(0, 1 - m / war.startMen[s]!) : 0;
-      const occ = s === ATTACKERS ? oDA : oAD;
+      const occ = s === ATTACKERS ? oDA.share : oAD.share;
       war.exhaustion[s] = Math.min(100, 0.1 * days + 80 * lost + 60 * occ);
+    }
+    // Capitulation: an overrun side has lost, whatever its stance.
+    const overrun = (leader: number): boolean => (land.owned[leader] ?? 0) > 0 && land.lost[leader]! >= CAPITULATE * land.owned[leader]!;
+    const dDown = oAD.share >= CAPITULATE || overrun(D[0]!);
+    const aDown = oDA.share >= CAPITULATE || overrun(A[0]!);
+    if (dDown || aDown) {
+      war.score = dDown && aDown ? (oAD.share >= oDA.share ? 100 : -100) : dDown ? 100 : -100;
+      makePeace(world, war);
+      continue;
+    }
+    if (days >= MAX_WAR_DAYS) {
+      makePeace(world, war);
+      continue;
     }
     if (war.fightToDeath[0] || war.fightToDeath[1]) continue;
     const sues = [ATTACKERS, DEFENDERS].map((s) => {
@@ -206,9 +252,11 @@ export function makePeace(world: World, war: War): void {
   const inL = new Set(L);
   // One pass: the winner's occupation of the loser (candidates) and the reverse (reverts).
   const candidates: number[] = [];
+  let loserLand = 0;
   for (let c = 0; c < owner.length; c++) {
     const o = owner[c]!;
     const k = controller[c]!;
+    if (inL.has(o)) loserLand++;
     if (inL.has(o) && inW.has(k)) candidates.push(c);
     else if (inW.has(o) && inL.has(k)) world.setController(c, o);
   }
@@ -225,7 +273,7 @@ export function makePeace(world: World, war: War): void {
   // A small losing leader is annexed outright by a decisive winner (PLAN 1.40 tuning: losing
   // rebels otherwise survived as rump states or puppets, and 50 years ended with 300–600 nations).
   if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && nc.cells[ll]! < SMALL_STATE_CELLS) annexNation(world, wl, ll);
-  else if (s >= PUPPET_SCORE && nc.living[ll] === 1) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
+  else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && candidates.length >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
   world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
 }

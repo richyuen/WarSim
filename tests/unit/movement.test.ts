@@ -8,6 +8,7 @@ import { findRoute } from '../../src/sim/nav/provinceGraph';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { MARCH_DUTY } from '../../src/sim/systems/movement';
+import { equipFormation } from '../../src/sim/systems/elements';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -183,5 +184,25 @@ describe('route edge cases', () => {
     expect(s.world.formations.cols.moving[id]).toBe(1);
     const target = s.world.formations.cols.targetCell[id]!;
     expect(g.component[target]).toBe(g.component[s.world.formations.cols.originCell[id]!]);
+  });
+
+  it('repatriation: an idle formation on land of a nation it is not at war with marches home', () => {
+    const s = new Sim({ scenario: '1938', seed: 3, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const GER = nationId('GER');
+    const id = spawn(w, 'GER', INF, 21.0, 52.23); // Warsaw, at peace with Poland
+    equipFormation(w, id, INF);
+    const f = w.formations.cols;
+    const at = (): number => Math.floor(f.y[id]!) * W + Math.floor(f.x[id]!);
+    expect(w.cells.controller[at()]).toBe(nationId('POL'));
+    s.step(1); // 00:00: the daily check orders it home
+    expect(f.moving[id]).toBe(1);
+    const r = march(s, id, 24 * 30);
+    expect(r.arrived).toBe(true);
+    expect(w.cells.controller[at()]).toBe(GER);
+    // At home it stays.
+    s.step(48);
+    expect(f.moving[id]).toBe(0);
   });
 });

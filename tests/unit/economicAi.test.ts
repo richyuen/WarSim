@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
+import { MAX_PARALLEL, PARALLEL_INCOME, SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { navOf } from '../../src/sim/world';
@@ -87,5 +87,23 @@ describe('economic AI (PLAN 1.26)', () => {
     const ev = runEvents(s, 24 * 62);
     expect(eventKinds(ev, EventKind.ProductionQueued)).toEqual([]);
     expect(s.world.formations.count).toBe(n0);
+  });
+
+  it('a rich nation trains several formations at once: 1 + income/PARALLEL_INCOME, at most MAX_PARALLEL', () => {
+    const s = peaceful();
+    const w = s.world;
+    const USA = nationId('USA');
+    w.nations.cols.gold[USA] = 1e7;
+    w.nations.cols.gold[SWE!] = 1e6;
+    w.nations.cols.manpower[SWE!] = 1e7;
+    const income = monthlyAccounts(w, ECONOMY_TABLES_1938).gross[USA]!;
+    expect(income).toBeGreaterThan(MAX_PARALLEL * PARALLEL_INCOME);
+    runEvents(s, 1);
+    const pending = (n: number): number => w.production.ids().filter((id) => w.production.cols.nation[id] === n).length;
+    expect(pending(USA)).toBe(MAX_PARALLEL);
+    expect(pending(SWE!)).toBe(1); // income below PARALLEL_INCOME: one at a time
+    // Nothing more is ordered while the slots are full.
+    runEvents(s, 24 * 31);
+    expect(pending(USA)).toBeLessThanOrEqual(MAX_PARALLEL);
   });
 });

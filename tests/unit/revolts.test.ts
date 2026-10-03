@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { DECAY, NON_CORE, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
+import { DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
@@ -97,6 +97,7 @@ describe('revolts (PLAN 1.19)', () => {
 
   it('region mode: the revolt carries restless neighbours of the same holder and core', () => {
     const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false; // isolate the mechanism from the AI (its suppression would calm the neighbours)
     const g = navOf(s.world).graph;
     const [p] = sampleProvinces(s, 1);
     const neighbours = (g.adj[p!] ?? []).filter((q) => q < s.world.provinces.count && s.world.cells.owner[g.centre[q]!] === SOV);
@@ -144,5 +145,68 @@ describe('revolts (PLAN 1.19)', () => {
       return t.hash();
     };
     expect(run2(true)).toBe(run2(false));
+  });
+
+  it('defection: a restless conquest returns to its living core nation instead of founding a state', () => {
+    const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const POL = nationId('POL');
+    for (const n of [GER, POL]) w.alliances.leave(n);
+    const g = navOf(w).graph;
+    // A Polish province that is not the capital's, annexed by Germany.
+    const capitals = new Set<number>();
+    w.cities.forEach((id) => {
+      if (w.cities.cols.capitalOf[id] !== 0) capitals.add(w.cells.province[w.cities.cols.cell[id]!]!);
+    });
+    let p = 0;
+    for (let q = 1; q < w.provinces.count && p === 0; q++) if (w.cells.owner[g.centre[q] ?? 0] === POL && w.provinces.core[q] === POL && !capitals.has(q)) p = q;
+    expect(p).toBeGreaterThan(0);
+    w.cells.owner.forEach((o, c) => {
+      if (o === POL && w.cells.province[c] === p) {
+        w.setOwner(c, GER);
+        w.setController(c, GER);
+      }
+    });
+    const nations = w.nations.count;
+    s.command({ kind: 'setUnrest', province: p, value: 100 });
+    let ev: number[][] = [];
+    for (let m = 0; m < 12 && kinds(ev, EventKind.RevoltSpawned).length === 0; m++) ev = run(s, 24 * 31);
+    expect(kinds(ev, EventKind.RevoltSpawned)).toEqual([[POL, GER]]);
+    expect(w.nations.count).toBe(nations); // no new nation
+    expect(w.cells.owner[g.centre[p]!]).toBe(POL);
+    expect(w.cells.controller[g.centre[p]!]).toBe(POL);
+    expect(w.provinces.unrest[p]!).toBeLessThan(50);
+  });
+
+  it('overextension: the far provinces of an oversized empire grow restless; suppression holds them', () => {
+    const unrestAfter = (suppression: number): { far: number; near: number; german: number } => {
+      const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      if (suppression > 0) s.command({ kind: 'setSuppression', nation: SOV, level: suppression });
+      run(s, THROUGH_MARCH);
+      const g = navOf(w).graph;
+      const nc = w.nations.cols;
+      const out = { far: 0, near: 0, german: 0 };
+      for (let p = 1; p < w.provinces.count; p++) {
+        const c = g.centre[p] ?? -1;
+        if (c < 0) continue;
+        const o = w.cells.owner[c]!;
+        const u = w.provinces.unrest[p]!;
+        if (o === GER) out.german = Math.max(out.german, u);
+        if (o !== SOV) continue;
+        const d = Math.hypot((c % W) + 0.5 - nc.capitalX[SOV]!, Math.floor(c / W) + 0.5 - nc.capitalY[SOV]!);
+        if (d > OVEREXT_CELLS + 1) out.far = Math.max(out.far, u);
+        else if (d < OVEREXT_CELLS - 1) out.near = Math.max(out.near, u);
+      }
+      return out;
+    };
+    expect(OVEREXT_UNREST * OVEREXT_MAX).toBeGreaterThan(DECAY); // an empire at the cap strains
+    const free = unrestAfter(0);
+    expect(free.far).toBeGreaterThan(0); // Siberia stirs (the Soviet Union holds over a quarter of the land)
+    expect(free.near).toBe(0); // the heartland stays calm
+    expect(free.german).toBe(0); // a nation below OVEREXT_SHARE is not strained
+    expect(unrestAfter(1).far).toBe(0);
   });
 });

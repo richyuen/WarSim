@@ -402,16 +402,26 @@ tag → spec.
   - *Records:* war records are saved as JSON. `atWar` is a derived pair set.
   - *Declaration* (`declareWar`): each leader brings its puppets. It is rejected for self, dead
     nations, an existing war, a truce, or an overlord–puppet pair.
-  - *Daily score:* 200 × (occupied share of the enemy's land − occupied share of own land) ±
-    25 per capital capture, clamped to ±100.
+  - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
+    capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
+    land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
+    a much larger nation can be won (ADR-47). The true share (÷ Y's land) drives exhaustion,
+    puppets and capitulation.
   - *Exhaustion:* 0.1 per day + 80 × share of men lost since the war's first assessment +
-    60 × occupied share of own land.
+    60 × occupied true share of own land.
   - *Suing:* a side sues when broke (gold < 0 or bankrupt), exhausted (≥ 80) or crushed
     (≤ −90). Neither side sues if either fights to the death.
   - *Terms by |score|:* below 10 a white peace (all occupation reverts). Otherwise the winner
     annexes round(|score|% of the loser's land it occupies), nearest its own land first (BFS),
-    and the rest reverts. At ≥ 90 it annexes all of it, and the loser's leader becomes a puppet.
-  - *After peace:* a 2-year truce between the leaders.
+    and the rest reverts. At ≥ 90 it annexes all of it, and the loser's leader becomes a puppet
+    when that is ≥ 30% of the losers' land.
+  - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose
+    leader has lost ≥ 75% of its own land to occupiers of any war, loses at ±100 at once, fight
+    to the death or not.
+  - *Deadlock (ADR-47):* a war older than 5 years ends on its score, fight to the death or not.
+  - *After peace:* a 2-year truce between the leaders. Idle formations left on land of a nation
+    they are not at war with march home (`repatriationSystem`, daily), or are moved to the
+    spawn point when no route exists.
   - *God commands:* `forcePeace`, `setWarFightToDeath`.
 - **Alliance / union** {id, nameKey, members[], leader, unity 0..100, loyalty per
   member}. Low unity → members leave and the alliance can dissolve.
@@ -623,6 +633,12 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     the area's largest city; if that was the holder's capital, the holder relocates. It gets 1–4
     militia divisions and 50 gold. The holder always declares war on them (PLAN 1.40, ADR-44;
     it was a 50% chance).
+  - *Defection and spreading (ADR-47):* a revolt on land whose core nation is alive (and not
+    bound to the holder) returns the area to that nation. Otherwise, next to a rebel state it
+    joins that state. Only otherwise does it found a new nation.
+  - *Overextension (ADR-47):* a holder above 4% of the world's owned land gains, in provinces
+    more than 80 cells from its capital, 1.25 × min(2, share/4% − 1) unrest a month, plus 2 on
+    core land while one of its wars has exhausted its side to ≥ 60.
   - *Tuning (PLAN 1.40, ADR-44):*
     - The 1938 scenario revolts by region (`revoltMode`).
     - A province held for 10 years becomes its holder's core (the old owner keeps a claim).
@@ -819,9 +835,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   *Implemented v1 (PLAN 1.24, ADR-36; `src/sim/ai/strategic.ts`), runs first in the tick:*
   - *Cadence:* each nation acts weekly (staggered by id), with hash-seeded draws.
   - *War:* a nation needs aggression ≥ 15, must not be a puppet or broke, and may have at most
-    2 wars. utility = aggression/100 × (min(3, own strength/target defence incl. allies and
-    guarantors) − 1) + 0.3 if the target is at war + 0.3 for claims − exhaustion/100 − 0.4 ×
-    wars. It declares on the best target with utility > 0.5, with probability 0.25 ×
+    2 wars. utility = aggression/100 × (min(3, attack/defence) − 1) + 0.3 if the target is at
+    war + 0.3 for claims − exhaustion/100 − 0.4 × wars. Attack = own strength + 0.4 × alliance
+    partners; defence = the target's strength + 0.4 × (partners + guarantors) (ADR-47). It declares on the best target with utility > 0.5, with probability 0.25 ×
     aggression/100.
   - *Stalemate peace:* a war older than 720 days, with |score| < 15 and both sides' exhaustion
     above 40, ends in peace.
@@ -857,10 +873,14 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   tribute):*
   - *Disbanding:* idle divisions go, weakest first, until the balance covers a 5% margin plus
     debt repaid within a year. Half their men return to the manpower pool.
-  - *Suppression:* 0.5 while held non-core land has unrest ≥ 40 and the budget has room.
-  - *Building:* at most one order a month, none while one is pending. It needs army upkeep under
-    35% of income (60% at war), a positive balance after the new upkeep, and 3 months of income
-    in reserve.
+  - *Suppression:* 0.5 while a held province has unrest ≥ 40 and the budget has room.
+  - *Building:* up to 1 + income/400 orders in training at once (at most 6; ADR-47). It needs
+    army upkeep, counting the orders in training, under 35% × (0.3 + 0.7 × aggression/100) of
+    income in peace (60% at war), a positive balance after the new upkeep, and 3 months of
+    income in reserve.
+  - *Overseas muster (ADR-47):* a nation whose fronts all lie on other landmasses than its
+    capital raises new formations in the theatre (nearest own city to the front), an abstraction
+    of sealift until PLAN 4.5.
   - *Build mix:* cadre divisions if income < 20; motorised divisions against armour-heavy
     enemies (≥ 20% tanks); a panzer division every third order for rich nations (≥ 200) at war;
     infantry otherwise.
@@ -1128,8 +1148,11 @@ interpolation changes something.
   5 min, comparing hashes against an uninterrupted twin. Fails on any exception or desync.
 - **Sweep** (`npm run sweep`): ≥ 10 seeds × ≥ 50 sim-years. Pass when, for every seed:
   cells changing controller in the last 5 years > threshold, largest nation < 35% of
-  land and < 40% of income, alive nations stay in [20, 250], and no permanent freeze
-  (≥ 1 war active in ≥ 80% of the years).
+  land and < 40% of income, alive nations stay in [20, 250], no permanent freeze
+  (≥ 1 war active in ≥ 80% of the years), ≥ 2 of the ten largest land holders at the end were
+  not among the ten largest after year 1, and the largest nation's land share ranges over
+  ≥ 3 points during the run (the last two since critic B1, 2026-10-03; reports on seeds the
+  tuning never saw: `--first 101 --tag <name>`).
   Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of land
   cells over the last 5 years; reports in `docs/sweeps/` (docs/sweeps/2026-10-03-sweep.md all green).
 - **Playwright e2e**: boot, start 1938, run 1 year, screenshot every map mode;

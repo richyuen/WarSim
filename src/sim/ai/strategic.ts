@@ -3,11 +3,14 @@
  * (day + id ≡ 0 mod STAGGER). Draws are hash32(seed, day, nation, salt), so runs are replayable.
  *
  * Neighbours: owners of adjacent provinces (province graph, centre cells).
- * Strength(n): men in the formations of n and its puppets. A target's defence strength adds its
- * alliance and guarantors (they join, PLAN 1.17).
+ * Strength(n): men in the formations of n and its puppets. Both sides of a prospective war add
+ * ALLY_WEIGHT of their partners: the attacker its alliance, the target its alliance and
+ * guarantors (they join, PLAN 1.17). Partners count for less than their numbers because they
+ * fight on their own fronts. (Critic B1, 2026-10-03: the target used to count its partners in
+ * full and the attacker none, so after a few years of alliance-building nobody could attack.)
  *
  * Declare war (aggression ≥ PACIFIST_BELOW, not a puppet, not broke, in < MAX_WARS wars):
- *   utility(t) = aggression/100 × (min(RATIO_CAP, str(n)/defence(t)) − 1) + OPPORTUNITY (t already at war)
+ *   utility(t) = aggression/100 × (min(RATIO_CAP, attack(n)/defence(t)) − 1) + OPPORTUNITY (t already at war)
  *              + CLAIM (n has a core on land t holds) − exhaustion/100 − WARS_PENALTY × wars
  * over neighbours t that are valid targets; the best t with utility > DECLARE_AT is attacked
  * with probability DECLARE_P × aggression/100.
@@ -32,6 +35,8 @@ export const STAGGER = 7;
 export const PACIFIST_BELOW = 15;
 /** Cap on the strength ratio term (a target without an army is not infinitely attractive). */
 export const RATIO_CAP = 3;
+/** Weight of alliance partners and guarantors in the strength comparison. */
+export const ALLY_WEIGHT = 0.4;
 export const MAX_WARS = 2;
 export const OPPORTUNITY = 0.3;
 export const CLAIM = 0.3;
@@ -123,10 +128,14 @@ export function strategicAi(world: World): void {
   const nb = neighbourMap(world);
   const str = strengths(world);
   const al = world.alliances;
+  const withAllies = (n: number): number => {
+    let s = str[n]!;
+    for (const m of al.allianceOf(n)?.members ?? []) if (m !== n) s += ALLY_WEIGHT * str[m]!;
+    return s;
+  };
   const defence = (t: number): number => {
-    let s = str[t]!;
-    for (const m of al.allianceOf(t)?.members ?? []) if (m !== t) s += str[m]!;
-    for (const g of al.guarantorsOf(t)) s += str[g]!;
+    let s = withAllies(t);
+    for (const g of al.guarantorsOf(t)) s += ALLY_WEIGHT * str[g]!;
     return Math.max(1, s);
   };
   for (const n of actors) {
@@ -134,12 +143,13 @@ export function strategicAi(world: World): void {
     // War.
     const wars = warsOf(world, n);
     if (wars < MAX_WARS && nc.aggression[n]! >= PACIFIST_BELOW && nc.gold[n]! >= 0 && nc.bankrupt[n] !== 1) {
+      const attack = withAllies(n);
       let best = 0;
       let bestU = DECLARE_AT;
       for (const t of neighbours) {
         if (nc.living[t] !== 1 || world.wars.atWar(n, t) || al.allied(n, t) || world.wars.inTruce(n, t, world.tick)) continue;
         if (nc.overlord[t] === n || nc.overlord[n] === t) continue;
-        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, str[n]! / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars;
+        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars;
         if (u > bestU) {
           bestU = u;
           best = t;
