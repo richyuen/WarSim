@@ -2317,3 +2317,14 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Rules:** PROMPT.md has a new section "KEEPING ITERATIONS SHORT"; CLAUDE.md lists the commands.
 - **PLAN:** 1.42a (tick time ≤ 1.5 ms mean over 5 years, seed 99) now comes before 1.42.
 - No sim rule changed in this commit.
+
+## 2026-10-03 — Parity-only gate for document commits; critic count restarts on remediation (user request, ADR-49)
+- **Gate:** `npm run check` is now `tools/gate/check.ts`. Documents only (Markdown, `docs/`) →
+  parity. Code → everything, with the 10-year sweep tests only when a sim input changed.
+  `npm run check:full` runs every stage.
+- **Critic:** PROMPT step 2a counts its 5 commits from the last commit whose subject starts with
+  "Critic " (a remediation commit), not from the report. `npm run critic:due` reports the state.
+  Name every commit that fixes a critic finding "Critic <id>: ...".
+- State now: the report is at bb1dd4f; the last remediation commit is f6d2381 ("Critic B1 part
+  1"); PLAN 1.42a and 1.42 are both critic remediation and should be named so.
+

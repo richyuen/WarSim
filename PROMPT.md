@@ -153,15 +153,22 @@ added without code changes.
    `critic/CRITIC_REPORT.md` if it exists.
 2. Run the full test/lint/typecheck/build suite. If anything is broken,
    fixing it is this iteration's only task.
-2a. Critic run. If `critic/CRITIC_REPORT.json` is missing, or its `commit`
-    is 5 or more commits behind HEAD (`git rev-list --count <commit>..HEAD`),
-    or the last ticked PLAN.md task was a phase review, or you believe the
+2a. Critic run. If `critic/CRITIC_REPORT.json` is missing, or HEAD is 5 or
+    more commits past both its `commit` and the last critic remediation
+    commit (`npm run critic:due` computes this; see below), or the last
+    ticked PLAN.md task was a phase review, or you believe the
     DONE CONDITION is otherwise met, then running the critic is this
     iteration's only task: commit any pending work first, spawn the `critic`
     subagent (Agent tool, subagent_type `critic`) with no hints about what to
     look at, wait for it to finish, and check that `critic/CRITIC_REPORT.json`
     now names HEAD. Append one line to PROGRESS.md with the scores and
     blocking count. Then end the iteration. Never act as the critic yourself.
+    Remediation commits restart the count (added 2026-10-03, ADR-49): every
+    commit that fixes a critic finding has a subject starting with
+    "Critic " (for example "Critic B1: ..."), and the 5 commits are counted
+    from the last such commit after the report, not from the report. The
+    critic therefore returns only after 5 commits of other work, so the
+    phases in PLAN.md get worked on between critic runs.
 2b. If `critic/CRITIC_REPORT.json` exists and its `commit` is not older than
     the last 10 commits, fix its blocking issues first, highest severity
     first. Critic findings override your own priorities. You may dispute a
@@ -199,10 +206,12 @@ on simulation runs (DECISIONS ADR-48).
   checkpoint once and reuse it for every question about later years. A
   checkpoint is only valid for the code that wrote it: after changing sim
   rules, rewrite it.
-- `npm run check` skips the 10-year sweep tests when nothing they depend on
-  changed since HEAD. `npm run check:full` always runs them: use it for the
-  DONE CONDITION and whenever the working tree was not gated commit by
-  commit (after a pull or a rebase).
+- `npm run check` sizes the gate to what changed since HEAD: only
+  `npm run parity` for a commit of documents alone (Markdown, `docs/`), and
+  no 10-year sweep tests when nothing they depend on changed.
+  `npm run check:full` always runs everything: use it for the DONE CONDITION
+  and whenever the working tree was not gated commit by commit (after a pull
+  or a rebase).
 - Simulation speed is iteration speed. A change that makes the tick slower
   is logged with numbers in PROGRESS.md, and a tick over budget is fixed
   before the next task that needs a full sweep.

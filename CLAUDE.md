@@ -20,9 +20,13 @@ There is no memory between sessions. Read these files:
 
 ## Commands
 
-- `npm run check`: the gate (typecheck, lint, unit, 10-year sweep tests when a sim input changed
-  since HEAD, build, e2e, parity). It must pass before every commit.
-- `npm run check:full`: the same, always with the sweep tests.
+- `npm run check`: the gate, sized to what changed since HEAD. It must pass before every commit.
+  - Documents only (Markdown, `docs/`): parity.
+  - Code: typecheck, lint, unit, build, e2e, parity, plus the 10-year sweep tests when a sim
+    input changed.
+- `npm run check:full`: every stage, whatever changed.
+- `npm run critic:due`: whether the critic's commit rule (PROMPT.md step 2a) calls for a run.
+  Commits that fix a critic finding start their subject with "Critic "; they restart the count.
 - `npm run dev`: toy world at `/`; benches at `/bench.html?b=A|P|R`.
 - `npm run sim -- --scenario toy --seed 7 --years 10`: headless runner (`--save` / `--load` a
   checkpoint).

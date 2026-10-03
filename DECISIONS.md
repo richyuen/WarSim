@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-49 · 2026-10-03 · accepted — Parity-only gate for document commits; critic remediation restarts the critic count (user request)
+
+- **Gate:** nothing but `npm run parity` reads Markdown or `docs/`, so a working tree that
+  differs from HEAD only in documents runs parity alone (about a second instead of ~5 minutes).
+  `npm run check` is now `tools/gate/check.ts`, which plans the stages from `git status`: it
+  replaces the separate sweep-stage script of ADR-48. `critic/` is ignored. A clean tree still
+  checks the code. `package.json` no longer triggers the sweep tests (script edits); a
+  dependency change shows in `package-lock.json`, which does.
+- **Critic cadence:** PROMPT step 2a ran the critic once HEAD was 5 commits past the report.
+  Step 2b puts critic findings first, so those 5 commits were all remediation and the critic
+  came straight back with new findings: the PLAN phases would never be reached. Now the 5
+  commits are counted from the last remediation commit after the report. A remediation commit
+  is one whose subject starts with "Critic ". `npm run critic:due` computes it.
+- **Consequence to watch:** step 2b still applies while the report is within the last 10
+  commits. So after a report: up to 10 commits of remediation, then other work, and the critic
+  5 commits after the last remediation. Step 2a's other triggers (phase review, DONE believed)
+  are unchanged.
+
 ### ADR-48 · 2026-10-03 · accepted — Shorter iterations: conditional sweep tests, checkpoints, quick sweeps (user request)
 
 - **Context:** the ADR-47 iteration took almost three hours. About 95 minutes were three full

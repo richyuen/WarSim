@@ -1167,11 +1167,15 @@ interpolation changes something.
   GPU time comes from EXT_disjoint_timer_query_webgl2 (gl.finish does not block under ANGLE).
   Pages: `bench.html?b=A` (map), `B`/`BP` (proxies raw/Pixi), `P` (precision probe, e2e),
   `R` (province raster). Results and screenshots go to `docs/bench/`.
-- **Gate** (`npm run check`): `tsc -b` → `eslint .` → `vitest run` → the 10-year sweep tests
-  (`tests/sweep/`, only when a sim input changed since HEAD: `tools/gate/sweepIfSimChanged.ts`,
-  ADR-48) → `vite build` → `playwright test` (against `vite preview` of the build) →
-  `npm run parity`. Must be green before every commit. `npm run check:full` always runs the
-  sweep tests.
+- **Gate** (`npm run check`, `tools/gate/check.ts`): `tsc -b` → `eslint .` → `vitest run` → the
+  10-year sweep tests (`tests/sweep/`) → `vite build` → `playwright test` (against
+  `vite preview` of the build) → `npm run parity`. Must be green before every commit. It is
+  sized to what changed since HEAD (ADR-48, ADR-49): documents only (Markdown, `docs/`) run
+  parity alone; the sweep tests run only when a sim input changed. `npm run check:full` runs
+  every stage.
+- **Critic cadence** (`npm run critic:due`, `tools/gate/criticDue.ts`, ADR-49): due 5 commits
+  after the later of the report's commit and the last commit whose subject starts with
+  "Critic ".
 - **Checkpoints and diagnostics** (ADR-48): `npm run sim -- --save f` writes the final state and
   `--load f` continues from it (bit-identical saves: tested on the toy world). `npm run diag`
   prints wars and great-power state at chosen years, from 1938 or from a checkpoint.
