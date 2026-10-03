@@ -189,7 +189,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
      of up to 8 provinces revolts as one nation.
 - **Criteria threshold:** SPEC gives "> threshold" for border movement; set before tuning to 1% of
   land cells over the last 5 years and not changed afterwards.
-- **Result:** sweeps\2026-10-03-sweep.md: all 10 seeds green. Nations 97–231; largest land 24–27%; largest income
+- **Result:** docs/sweeps/2026-10-03-sweep.md: all 10 seeds green. Nations 97–231; largest land 24–27%; largest income
   28–29%; land moving 1.1–6.7%; wars in every year.
 - **Not done:** fight-to-death sides still never surrender (PLAN 1.16's AT keeps it so), so the
   scenario's to-the-death wars can run all 50 years.

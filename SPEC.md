@@ -1114,7 +1114,7 @@ interpolation changes something.
   land and < 40% of income, alive nations stay in [20, 250], and no permanent freeze
   (≥ 1 war active in ≥ 80% of the years).
   Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of land
-  cells over the last 5 years; reports in `docs/sweeps/` (sweeps\2026-10-03-sweep.md all green).
+  cells over the last 5 years; reports in `docs/sweeps/` (docs/sweeps/2026-10-03-sweep.md all green).
 - **Playwright e2e**: boot, start 1938, run 1 year, screenshot every map mode;
   scripted seamless zoom world → close (8 stops) on a spawned battle; tank, naval and air
   battle scenes; AI nuclear strike scene (seeded scenario with forced escalation
