@@ -2093,3 +2093,15 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - New game with seed 4242 → `inspect().seed` is 4242. The test resets the sizes afterwards.
 - **Parity:** rows 66, 67 and 71 → partial (appended).
 - **Plan change:** 1.39b is the new-game options (looping map, map size, randomisation).
+
+## 2026-10-03 — Review pass after PLAN 1.37a–1.39a
+- **Perf:** every worker reply computed the full state hash (12 ms on the 1938 map), including
+  `inspect`, `history` and `stats`, which tests poll constantly. Those read-only replies now
+  skip it and report `status.hash` NaN. Hash, step, save, load, init and exportScenario still
+  hash.
+- **SPEC drift:** §2.3 lists `inspect {full}` and its fields, `exportScenario`,
+  `terrainLayer.landChanged` and `flags`.
+- **Process slip found and fixed in 1.37b:** parity row updates had overwritten evidence and
+  baseline markers. Restored; updates now append (also in this pass's rows).
+- **Still open (BLOCKERS):** imports leave cities and formations on new water (decide in 1.41).
+  The e2e stage's length depends on machine load.

@@ -115,9 +115,13 @@ export class SimServer {
     return this.sim;
   }
 
-  private reply(reqId: number, bytes?: Uint8Array): void {
+  /**
+   * Replies with the status. `withHash` false (read-only queries: inspect, history, stats) skips
+   * the 12 ms state hash on the 1938 map and reports NaN (review after PLAN 1.39a).
+   */
+  private reply(reqId: number, bytes?: Uint8Array, withHash = true): void {
     const s = this.requireSim();
-    const status: SimStatus = { tick: s.tick, hash: s.hash() };
+    const status: SimStatus = { tick: s.tick, hash: withHash ? s.hash() : NaN };
     if (bytes) this.post({ type: 'reply', reqId, status, bytes }, [bytes.buffer]);
     else this.post({ type: 'reply', reqId, status }, []);
   }
@@ -156,14 +160,14 @@ export class SimServer {
         this.reply(msg.reqId);
         break;
       case 'inspect':
-        this.reply(msg.reqId, this.inspect(msg.full === true));
+        this.reply(msg.reqId, this.inspect(msg.full === true), false);
         break;
       case 'history':
-        this.reply(msg.reqId, this.historyRows());
+        this.reply(msg.reqId, this.historyRows(), false);
         break;
       case 'stats': {
         const rows = Float32Array.from(this.requireSim().world.stats.rows);
-        this.reply(msg.reqId, new Uint8Array(rows.buffer));
+        this.reply(msg.reqId, new Uint8Array(rows.buffer), false);
         break;
       }
       case 'exportScenario': {

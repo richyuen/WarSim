@@ -206,7 +206,10 @@ export interface PoliticalBuildResult {
 import type { LandCoverage } from './landCoverage';
 
 export type FromWorker =
-  /** `scenarioHash`: the state hash of exported scenario bytes (PLAN 1.38). */
+  /**
+   * `status.hash` is NaN for read-only queries (inspect, history, stats: not computed).
+   * `scenarioHash`: the state hash of exported scenario bytes (PLAN 1.38).
+   */
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }

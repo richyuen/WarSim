@@ -108,8 +108,11 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
 - `cmd {cmd: Command, now?}`: applied at the next tick boundary, stamped with that tick,
   and appended to `commandLog`. `now` (God Mode and player UI, PLAN 1.32b) applies it at once
   between ticks with the same stamp (`Sim.applyNow`); plain commands stay pending (I3).
-- `inspect`: a JSON world summary (`Inspection`: nations incl. dead, wars, alliances, buffs,
-  majors, corridors, unrest, settings) in the reply bytes, for tests and the critic (PLAN 1.32a).
+- `inspect {full?}`: a JSON world summary (`Inspection`: seed, nations incl. dead, wars,
+  alliances, buffs, majors, corridors, settings, terrain counts, raster hashes, editor stack
+  depths; with `full` also cities, cores and unrest, ~600 KB) for tests and the critic (PLAN
+  1.32a). Read-only replies (inspect, history, stats) report `status.hash` NaN: not computed.
+- `exportScenario`: the world without run history as state bytes + `scenarioHash` (PLAN 1.38).
 - `speed {ticksPerSecond | 'max'}`, `pause {paused}`, `step {n}`
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`
 - `ack {seq, buffers: ArrayBuffer[]}`: rAF handshake + buffer pool return
@@ -124,8 +127,9 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
 Worker → main:
 - `snapshot {snap}` (transferable; layout in §2.4), `reply {reqId, status: {tick, hash}, bytes?}`,
   `provinces | terrain | political {reqId, result}`, `error {reqId, message, stack}`
-- `terrainLayer {data}` / `cityLayer {cities}`: the terrain layer and the city list again after
-  editor edits (PLAN 1.35/1.36)
+- `terrainLayer {data, landChanged}` / `cityLayer {cities}`: the terrain layer and the city list
+  again after editor edits (PLAN 1.35/1.36/1.37a)
+- `flags {custom}`: custom pixel flags, after init/load and on change (PLAN 1.37b)
 - `mapLayers {land, terrain, terrainColors, cities, province, templates}` once after a
   real-geography init (PLAN 1.28b): the fine land coverage, the terrain layer, city dots and
   names, the province raster (revolts mode, picking) and the buildable templates (PLAN 1.33b).
