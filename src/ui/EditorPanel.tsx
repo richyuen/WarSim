@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import type { EditorState } from '../shared/editorState';
 import type { NationStat } from '../shared/protocol';
 import { isLand, TERRAIN_IDS } from '../shared/terrain';
@@ -5,9 +6,13 @@ import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 
 
+const SCENARIO_TOOLS = ['city', 'removeCity', 'capital', 'core', 'uncore'] as const;
+
 export interface EditorPanelProps {
   state: EditorState;
   nations: NationStat[];
+  /** Dead nations (cores for preset revolts, PLAN 1.36). */
+  dead: { id: number; name: string }[];
   undo: number;
   redo: number;
   /** A line's first point is set (waiting for the second click). */
@@ -16,6 +21,9 @@ export interface EditorPanelProps {
   onUndo: () => void;
   onRedo: () => void;
   onClose: () => void;
+  /** Scenario actions on the editor's nation (PLAN 1.36). */
+  onGold: (nation: number, value: number) => void;
+  onAnnex: (annexer: number, target: number) => void;
 }
 
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
@@ -25,7 +33,10 @@ const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLa
  * paint, brush radius, an optional target mask, and undo/redo (also Ctrl+Z / Ctrl+Y). While it is
  * open, map clicks paint.
  */
-export function EditorPanel({ state, nations, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose }: EditorPanelProps) {
+export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex }: EditorPanelProps) {
+  const [gold, setGold] = useState('');
+  const [annexTarget, setAnnexTarget] = useState(0);
+  const me = nations.find((n) => n.id === state.nation);
   const set = (p: Partial<EditorState>) => onChange({ ...state, ...p });
   const sorted = [...nations].sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const nationOptions = (
@@ -36,6 +47,13 @@ export function EditorPanel({ state, nations, undo, redo, lineStarted, onChange,
           {displayName(n.name)}
         </option>
       ))}
+      {[...dead]
+        .sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)))
+        .map((n) => (
+          <option key={n.id} value={n.id}>
+            {t('editor.dead', { name: displayName(n.name) })}
+          </option>
+        ))}
     </>
   );
   const terrainOptions = LAND.map(([id, i]) => (
@@ -103,6 +121,49 @@ export function EditorPanel({ state, nations, undo, redo, lineStarted, onChange,
           {t('editor.redo', { n: redo })}
         </button>
       </div>
+      <div class="panel-sub">{t('editor.scenario')}</div>
+      <div class="god-row">
+        {SCENARIO_TOOLS.map((tool) => (
+          <button key={tool} type="button" class={state.tool === tool ? 'god-btn active' : 'god-btn'} data-testid={`editor-tool-${tool}`} onClick={() => set({ tool })}>
+            {t(`editor.tool.${tool}` as MessageKey)}
+          </button>
+        ))}
+      </div>
+      {state.tool === 'city' ? (
+        <div class="god-row">
+          <input data-testid="editor-city-name" placeholder={t('editor.cityName')} value={state.cityName} onInput={(e) => set({ cityName: (e.currentTarget as HTMLInputElement).value })} />
+          <label class="editor-radius">
+            {t('editor.citySize')}
+            <input data-testid="editor-city-size" type="number" min={1} max={5} value={state.citySize} onInput={(e) => set({ citySize: Math.max(1, Math.min(5, Number((e.currentTarget as HTMLInputElement).value) || 1)) })} />
+          </label>
+        </div>
+      ) : null}
+      {me ? (
+        <>
+          <div class="god-row">
+            <span>{t('editor.goldOf', { name: displayName(me.name) })}</span>
+            <input data-testid="editor-gold" type="number" placeholder={String(Math.round(me.gold))} value={gold} onInput={(e) => setGold((e.currentTarget as HTMLInputElement).value)} />
+            <button type="button" class="god-btn" data-testid="editor-gold-set" disabled={gold.trim() === '' || !Number.isFinite(Number(gold))} onClick={() => onGold(me.id, Number(gold))}>
+              {t('editor.set')}
+            </button>
+          </div>
+          <div class="god-row">
+            <select data-testid="editor-annex-target" value={annexTarget} onChange={(e) => setAnnexTarget(num(e))}>
+              <option value={0}>{t('editor.annexPick')}</option>
+              {sorted
+                .filter((n) => n.id !== me.id)
+                .map((n) => (
+                  <option key={n.id} value={n.id}>
+                    {displayName(n.name)}
+                  </option>
+                ))}
+            </select>
+            <button type="button" class="god-btn" data-testid="editor-annex" disabled={annexTarget === 0} onClick={() => onAnnex(me.id, annexTarget)}>
+              {t('editor.annex', { name: displayName(me.name) })}
+            </button>
+          </div>
+        </>
+      ) : null}
       <div class="panel-note" data-testid="editor-hint">
         {t(state.tool === 'line' && lineStarted ? 'editor.hint.lineEnd' : (`editor.hint.${state.tool}` as MessageKey))}
       </div>

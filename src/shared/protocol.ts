@@ -220,12 +220,14 @@ export type FromWorker =
       terrain: { w: number; h: number; data: Uint8Array };
       terrainColors: number[];
       /** City dots and names (positions in cells; size 1..5; capital at send time). */
-      cities: { name: string; x: number; y: number; size: number; capital: boolean }[];
+      cities: { id: number; name: string; x: number; y: number; size: number; capital: boolean }[];
       /** Admin-1 province per cell (revolts map mode, PLAN 1.30b). */
       province: Uint16Array;
       /** Buildable land templates (index = command template id; PLAN 1.33b). */
       templates: TemplateInfo[];
     }
+  /** City dots and names again after editor city edits (PLAN 1.36). */
+  | { type: 'cityLayer'; cities: { id: number; name: string; x: number; y: number; size: number; capital: boolean }[] }
   /** The terrain layer again after editor terrain edits (PLAN 1.35). */
   | { type: 'terrainLayer'; data: Uint8Array }
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
@@ -289,6 +291,10 @@ export interface Inspection {
   rasters: { owner: number; controller: number; terrain: number };
   /** Editor stack depths. */
   edits: { undo: number; redo: number };
+  /** Cities (PLAN 1.36): row, display name, position, size, capital of (0 = none). */
+  cities: { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[];
+  /** Nations with a core or claim per province that has any (PLAN 1.36). */
+  cores: { province: number; nations: number[] }[];
 }
 
 /** An active war (PLAN 1.31): side leaders first; score > 0 favours the attackers. */

@@ -68,6 +68,10 @@ export class SimClient {
       for (const l of this.unrestListeners) l(msg.unrest);
       return;
     }
+    if (msg.type === 'cityLayer') {
+      for (const l of this.cityListeners) l(msg.cities);
+      return;
+    }
     if (msg.type === 'terrainLayer') {
       for (const l of this.terrainListeners) l(msg.data);
       return;
@@ -128,6 +132,13 @@ export class SimClient {
     this.unrestListeners.add(l);
     if (this.unrest) l(this.unrest);
     return () => this.unrestListeners.delete(l);
+  }
+
+  /** City dots and names after editor edits (PLAN 1.36). */
+  private readonly cityListeners = new Set<(cities: MapLayers['cities']) => void>();
+  onCities(l: (cities: MapLayers['cities']) => void): () => void {
+    this.cityListeners.add(l);
+    return () => this.cityListeners.delete(l);
   }
 
   /** Terrain layer after editor edits (PLAN 1.35). */

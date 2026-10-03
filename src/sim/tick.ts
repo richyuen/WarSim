@@ -7,7 +7,8 @@ import { EventKind } from '../shared/events';
 import { destroyFormation } from './systems/elements';
 import { declareWar, makePeace, offerPeace } from './systems/war';
 import { canJoin, leaveAlliance, noWarAmong, proposeAlliance } from './systems/alliances';
-import { makePuppet, releasePuppet } from './systems/puppets';
+import { annexNation, makePuppet, releasePuppet } from './systems/puppets';
+import { removeCity, setCapital, setCore, spawnCity } from './scenarioEdit';
 import { collapseNation, reviveOnCores } from './systems/revival';
 import { MAX_CE, MIN_CE } from './systems/efficiency';
 import { addCorridor } from './systems/majorBattles';
@@ -178,6 +179,24 @@ function applyCommand(world: World, cmd: Command): void {
       world.settings.player = cmd.nation;
       return;
     }
+    case 'spawnCity':
+      spawnCity(world, cmd.x, cmd.y, cmd.name, cmd.size);
+      return;
+    case 'removeCity':
+      removeCity(world, cmd.city);
+      return;
+    case 'setCapital':
+      setCapital(world, cmd.nation, cmd.city);
+      return;
+    case 'setGold':
+      if (world.nations.has(cmd.nation) && Number.isFinite(cmd.value)) world.nations.cols.gold[cmd.nation] = cmd.value;
+      return;
+    case 'setCore':
+      setCore(world, cmd.province, cmd.nation, cmd.on);
+      return;
+    case 'annexNation':
+      annexNation(world, cmd.annexer, cmd.target);
+      return;
     case 'editPaint':
       paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask);
       return;

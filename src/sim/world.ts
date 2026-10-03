@@ -163,6 +163,8 @@ export const CITY_SCHEMA = {
   size: 'u8',
   /** Nation id whose capital this is (0 = none). */
   capitalOf: 'u16',
+  /** Economy added to its cell when placed in the editor (removed with the city; PLAN 1.36). */
+  econ: 'f64',
 } as const;
 
 /** Per-cell layers (SPEC §3.2), each of length W·H, row-major. */
@@ -283,7 +285,8 @@ class WorldCore implements Stateful {
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
-    const names = new TextEncoder().encode(JSON.stringify([...w.names].sort((a, b) => a[0] - b[0])));
+    const sorted = (m: Map<number, string>): [number, string][] => [...m].sort((a, b) => a[0] - b[0]);
+    const names = new TextEncoder().encode(JSON.stringify({ nations: sorted(w.names), cities: sorted(w.cityNames) }));
     return [
       { name: 'world.meta', dtype: 'f64', data: meta },
       { name: 'world.rng', dtype: 'u32', data: w.rng.save() },
@@ -312,13 +315,17 @@ class WorldCore implements Stateful {
     // God Mode names (PLAN 1.32); saves from before it have no section.
     const names = sections.find((s) => s.name === 'world.names');
     w.namesVersion++;
-    w.names = new Map(names ? (JSON.parse(new TextDecoder().decode(names.data as Uint8Array)) as [number, string][]) : []);
+    // PLAN 1.32 saves hold a bare array of nation names; PLAN 1.36 adds city names.
+    const nm = names ? (JSON.parse(new TextDecoder().decode(names.data as Uint8Array)) as [number, string][] | { nations: [number, string][]; cities: [number, string][] }) : [];
+    w.names = new Map(Array.isArray(nm) ? nm : nm.nations);
+    w.cityNames = new Map(Array.isArray(nm) ? [] : nm.cities);
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.paths.clear();
     w.elementIndex = null;
     w.nav = null;
     w.frontier = null;
     w.terrainVersion++;
+    w.citiesVersion++;
     w.flipping = null;
     w.supplyDirty = true;
     w.out.fires.length = 0;
@@ -361,6 +368,8 @@ export class World {
   edits = new EditStack();
   /** Derived: bumped when the editor changes terrain (the renderer re-fetches the layer). */
   terrainVersion = 0;
+  /** Derived: bumped when cities change (placed, removed, capital) for the map's city layer. */
+  citiesVersion = 0;
   /**
    * Derived (not state): a full supply refresh is needed (load, overlords, raw layer writes; code
    * that writes `cells.controller` directly must set it). Cell-level changes through
@@ -397,6 +406,8 @@ export class World {
   commandLog: LoggedCommand[] = [];
   /** Custom nation names from God Mode (PLAN 1.32); state, saved with the core. */
   names = new Map<number, string>();
+  /** Names of cities placed in the editor (PLAN 1.36), by city row; state, saved with `names`. */
+  cityNames = new Map<number, string>();
   /** Commands queued since the last tick boundary, applied in seq order at the next tick. */
   pending: PendingCommand[] = [];
   nextCommandSeq = 0;

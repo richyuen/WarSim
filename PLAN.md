@@ -154,7 +154,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: series match the sim at sampled months (unit); e2e chart renders the selected nations.
 - [x] 1.35 Editor: brush/bucket/line, undo/redo, target mask.
   AT: unit tests on the undo stack; e2e paints, undoes and redoes, with identical raster hashes.
-- [ ] 1.36 Editor: cities, gold & core costs, alliances, puppets, annex, preset revolts.
+- [x] 1.36 Editor: cities, gold & core costs, alliances, puppets, annex, preset revolts.
   AT: e2e builds a mini scenario using each tool, saves it, loads it and verifies.
 - [ ] 1.37 Editor: map import (image → terrain/owner palette mapping) + flag editor with presets.
   AT: importing a fixture PNG yields expected cell counts; a flag edited in the editor is shown on the map.

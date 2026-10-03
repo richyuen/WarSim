@@ -101,7 +101,7 @@ export class Hud {
 
   /** Map editor (PLAN 1.35): open, its settings and a started line's first point. */
   readonly showEditor = signal(false);
-  readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0 });
+  readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0, cityName: '', citySize: 2 });
   readonly lineStart = signal<[number, number] | null>(null);
 
   toggleEditor(): void {
@@ -116,10 +116,30 @@ export class Hud {
     this.editor.value = s;
   }
 
-  /** A map click while the editor is open: paints (a line needs two clicks). */
-  editorClick(x: number, y: number): boolean {
+  /**
+   * A map click while the editor is open: paints (a line needs two clicks) or applies a scenario
+   * tool at the clicked cell (`city` is the nearest city row, `province` the clicked province).
+   */
+  editorClick(x: number, y: number, city = 0, province = 0): boolean {
     if (!this.showEditor.value) return false;
     const s = this.editor.value;
+    switch (s.tool) {
+      case 'city':
+        if (s.cityName.trim() !== '') this.command({ kind: 'spawnCity', x: x + 0.5, y: y + 0.5, name: s.cityName, size: s.citySize });
+        return true;
+      case 'removeCity':
+        if (city !== 0) this.command({ kind: 'removeCity', city });
+        return true;
+      case 'capital':
+        if (city !== 0 && s.nation !== 0) this.command({ kind: 'setCapital', nation: s.nation, city });
+        return true;
+      case 'core':
+      case 'uncore':
+        if (province !== 0 && s.nation !== 0) this.command({ kind: 'setCore', province, nation: s.nation, on: s.tool === 'core' });
+        return true;
+      default:
+        break;
+    }
     const mask = s.mask === 'none' ? null : { kind: s.mask, value: s.mask === 'terrain' ? s.maskTerrain : s.maskNation };
     const value = s.layer === 'nation' ? s.nation : s.terrain;
     const cx = x + 0.5;
@@ -129,7 +149,7 @@ export class Hud {
       return true;
     }
     const [x0, y0] = s.tool === 'line' ? this.lineStart.value! : [cx, cy];
-    this.command({ kind: 'editPaint', layer: s.layer, tool: s.tool, x: x0, y: y0, x2: cx, y2: cy, r: s.r, value, mask });
+    this.command({ kind: 'editPaint', layer: s.layer, tool: s.tool as 'brush' | 'line' | 'bucket', x: x0, y: y0, x2: cx, y2: cy, r: s.r, value, mask });
     this.lineStart.value = null;
     return true;
   }

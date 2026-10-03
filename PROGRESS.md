@@ -1944,3 +1944,33 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - The first bucket assertion assumed Poland was one connected piece; 5 cells lie apart.
 - **Evidence:** `docs/evidence/1.35/editor.png`, viewed.
 - **Parity:** rows 40–42 → partial.
+
+## 2026-10-02 — PLAN 1.36: scenario editor (cities, capital, gold, cores and preset revolts, annex)
+- **Sim** (`src/sim/scenarioEdit.ts`, `systems/puppets.ts`):
+  - Commands `spawnCity` (economy bonus stored on the city row and removed exactly),
+    `removeCity`, `setCapital`, `setGold` and `setCore` (core or claim on; off removes both).
+  - `annexNation`: shares `annexInto` with puppet integration; passes puppets; `NationAnnexed`
+    is in the history.
+  - `world.cityNames` is saved in the names section; PLAN 1.32 saves' bare arrays still load.
+- **Worker:** city list with editor names (map layer, `cityLayer` resend, history, inspect);
+  `inspect` gains `cities` and `cores`.
+- **UI:** the editor panel's Scenario section (place city with name and size, remove city, make
+  capital, add/remove core, gold, annex). Dead nations are listed in the editor's nation
+  pickers (preset revolts). `MapView.cityNear`.
+- **Bugs found by the unit tests:** the city economy bonus was truncated by the u32 economy
+  layer, so removal took back more than was added (the added amount is now stored). Removing a
+  core left a matching claim behind.
+- **AT** (`tests/e2e/scenarioEditor1938.spec.ts`): a mini scenario through the UI.
+  - Steps: place "Nowe Miasto" and make it Poland's capital, set gold, preset Ethiopia's revolt
+    with a core near Kraków, remove Breslau, annex Austria into Germany (the map shows Vienna
+    German and the label goes), Sweden–Norway alliance and Lithuania as Hungary's puppet (God
+    tab).
+  - Then autosave, reload with `?continue=1` and verify all of it: equal rasters, cities and
+    cores; the city layer has the new city and not Breslau.
+- **Unit tests:** `tests/unit/scenarioEdit.test.ts`. `tests/unit/server.test.ts` adds: a paused
+  now-command during an unacked snapshot is drawn right after the ack.
+- **Misdiagnosis:** I read one evidence shot as showing Austria still drawn after the annexation
+  and blamed an owed-snapshot race. The worker already sends after every message, the shot was
+  overwritten before I could recheck, and the new e2e and unit assertions pass with or without
+  my change. So I reverted the change and kept the assertions.
+- **Parity:** rows 43–46 → partial.

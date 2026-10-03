@@ -33,7 +33,7 @@ if (view) {
   hud.onSelectNation = (id) => view.select(id);
   const p = new PlayerControl(hud, view);
   player = p;
-  view.onPick = (x, y, sx, sy, shift) => hud.editorClick(x, y) || hud.pick(x, y, view.provinceAt(x, y)) || p.click(x, y, sx, sy, shift);
+  view.onPick = (x, y, sx, sy, shift) => hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y)) || p.click(x, y, sx, sy, shift);
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') p.clearSelection();
     // Editor undo/redo: Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z (not while typing in a field).

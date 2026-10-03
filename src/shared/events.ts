@@ -66,6 +66,10 @@ export const EventKind = {
   PeaceRejected: 30,
   /** a = proposer, b = the nation that refused the alliance (PLAN 1.33b). */
   AllianceRejected: 31,
+  /** a = annexed nation, b = annexer (global; PLAN 1.36 editor / God). */
+  NationAnnexed: 32,
+  /** a = city row, b = nation holding it, (x, y) = city (PLAN 1.36 editor). */
+  CitySpawned: 33,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

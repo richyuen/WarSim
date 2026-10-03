@@ -85,6 +85,33 @@ export function integratePuppet(world: World, subject: number): void {
   const nc = world.nations.cols;
   const overlord = nc.overlord[subject]!;
   if (overlord === 0) return;
+  annexInto(world, overlord, subject);
+  world.out.emit(world.tick, EventKind.PuppetIntegrated, subject, overlord, NaN, NaN);
+  nc.overlord[subject] = 0;
+  eliminateNation(world, subject);
+}
+
+/**
+ * Annexation (PLAN 1.36 editor and God): `annexer` takes `target`'s land, formations and cores;
+ * its puppets become the annexer's; the target is eliminated (`NationAnnexed`).
+ */
+export function annexNation(world: World, annexer: number, target: number): boolean {
+  const nc = world.nations.cols;
+  if (annexer === target || !world.nations.has(annexer) || !world.nations.has(target) || nc.living[annexer] !== 1 || nc.living[target] !== 1) return false;
+  annexInto(world, annexer, target);
+  world.nations.forEach((p) => {
+    if (nc.overlord[p] === target) nc.overlord[p] = p === annexer ? 0 : annexer;
+  });
+  if (nc.overlord[target] !== 0) nc.overlord[target] = 0;
+  world.out.emit(world.tick, EventKind.NationAnnexed, target, annexer, NaN, NaN);
+  eliminateNation(world, target);
+  return true;
+}
+
+/** Moves `from`'s cells, formations and cores to `to`. */
+function annexInto(world: World, to: number, from: number): void {
+  const overlord = to;
+  const subject = from;
   const { owner, controller } = world.cells;
   for (let c = 0; c < owner.length; c++) {
     if (owner[c] === subject) world.setOwner(c, overlord);
@@ -98,9 +125,6 @@ export function integratePuppet(world: World, subject: number): void {
   // otherwise whole integrated colonies turned non-core and revolted together).
   const pv = world.provinces;
   for (let p = 1; p < pv.count; p++) if (pv.core[p] === subject) pv.core[p] = overlord;
-  world.out.emit(world.tick, EventKind.PuppetIntegrated, subject, overlord, NaN, NaN);
-  nc.overlord[subject] = 0;
-  eliminateNation(world, subject);
 }
 
 export function puppetSystem(world: World): void {

@@ -43,6 +43,23 @@ export class MapView {
   private readonly controlGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
   private terrainColors: number[] | null = null;
+  private cities: { id: number; x: number; y: number }[] = [];
+
+  /** The city row nearest cell (x, y) within `reach` cells, or 0 (editor tools, PLAN 1.36). */
+  cityNear(x: number, y: number, reach = 2): number {
+    let best = 0;
+    let bestD = reach;
+    for (const c of this.cities) {
+      let dx = Math.abs(c.x - (x + 0.5));
+      if (this.geo.wrapX) dx = Math.min(dx, this.geo.w - dx);
+      const d = Math.hypot(dx, c.y - (y + 0.5));
+      if (d <= bestD) {
+        bestD = d;
+        best = c.id;
+      }
+    }
+    return best;
+  }
   /** Selected nation (0 = none; PLAN 1.30) and the hook the app uses to show it. */
   selected = 0;
   onSelect: (id: number) => void = () => {};
@@ -101,6 +118,11 @@ export class MapView {
       this.labelData = { data: m.data, names: m.names.map((k) => (k.startsWith('=') ? k.slice(1) : t(k as MessageKey))) };
       this.dirty = true;
     });
+    sim.onCities((cities) => {
+      this.cityLabels.setCities(cities);
+      this.cities = cities;
+      this.dirty = true;
+    });
     sim.onTerrain((data) => {
       if (!this.terrainColors) return;
       this.map.setTerrain(this.geo.w, this.geo.h, data, this.terrainColors);
@@ -115,6 +137,7 @@ export class MapView {
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
       this.terrainColors = m.terrainColors;
       this.cityLabels.setCities(m.cities);
+      this.cities = m.cities;
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;

@@ -1008,6 +1008,14 @@ interpolation changes something.
   - Land cells only: terrain edits are land ↔ land until map import (1.37) can regenerate the
     fine coastline. Terrain edits drop nav and paths; the worker resends `terrainLayer`.
   - UI: the bottom bar's Editor button; map clicks paint; Ctrl+Z / Ctrl+Y.
+- **Scenario editing** (PLAN 1.36, `src/sim/scenarioEdit.ts`):
+  - Commands `spawnCity` (a named city on land; adds 20 × size × mean land-cell economy to its
+    cell, stored on the row and taken back by `removeCity`), `removeCity` (a capital
+    relocates), `setCapital`, `setGold`, `setCore` (core or claim; a dead nation's claim is a
+    preset revolt) and `annexNation` (land, formations, cores and puppets pass; `NationAnnexed`).
+  - Editor city names are saved with the nation names. The worker resends the city layer
+    (`cityLayer`) when cities change. Alliances and puppets use the God tab's commands.
+  - The core-cost rule waits for a core economy.
 - **Editor**: brush, bucket, line; undo/redo (command-pattern diff stack); target
   mask (paint only over a selected terrain or nation); cities; gold and core costs; alliances;
   puppets; annex; preset revolts; map import (image → terrain/owner via palette

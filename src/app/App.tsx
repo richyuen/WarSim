@@ -41,6 +41,7 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
         <EditorPanel
           state={hud.editor.value}
           nations={stats.nations}
+          dead={stats.dead}
           undo={stats.edits.undo}
           redo={stats.edits.redo}
           lineStarted={hud.lineStart.value !== null}
@@ -48,6 +49,8 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
           onUndo={() => hud.command({ kind: 'editUndo' })}
           onRedo={() => hud.command({ kind: 'editRedo' })}
           onClose={() => hud.toggleEditor()}
+          onGold={(nation, value) => hud.command({ kind: 'setGold', nation, value })}
+          onAnnex={(annexer, target) => hud.command({ kind: 'annexNation', annexer, target })}
         />
       ) : null}
       {stats && hud.showCharts.value ? (

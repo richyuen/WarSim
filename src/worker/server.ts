@@ -90,6 +90,7 @@ export class SimServer {
   private unrestVersion = -1;
   private labelNames = -1;
   private terrainSent = -1;
+  private citiesSent = -1;
   private statsTick = -1;
   private lastStatsMs = -1;
 
@@ -191,7 +192,7 @@ export class SimServer {
       case 'ack':
         if (msg.seq !== this.seq) throw new Error(`ack for snapshot ${msg.seq}, expected ${this.seq}`);
         for (const b of msg.buffers) this.pool.release(b);
-        this.inFlight = false;
+        this.inFlight = false; // an owed snapshot goes at the end of handleInner
         break;
       case 'buildProvinces':
         void this.buildProvinces(msg);
@@ -279,12 +280,8 @@ export class SimServer {
       const land = buildLandCoverage(mask.bytes, mask.asset.width, mask.asset.height ?? mask.asset.width / 2, factor);
       const terrain = { w: world.cells.w, h: world.cells.h, data: world.cells.terrain.slice() };
       const terrainColors = terrainJson.terrain.map((t) => parseInt(t.color.slice(1), 16));
-      const cc = world.cities.cols;
-      const cities: { name: string; x: number; y: number; size: number; capital: boolean }[] = [];
-      world.cities.forEach((id) => {
-        const def = cities1938.cities[cc.def[id]!];
-        if (def) cities.push({ name: def.name, x: cc.x[id]!, y: cc.y[id]!, size: cc.size[id]!, capital: cc.capitalOf[id] !== 0 });
-      });
+      const cities = this.cityList(world).map((c) => ({ id: c.id, name: c.name, x: c.x, y: c.y, size: c.size, capital: c.capitalOf !== 0 }));
+      this.citiesSent = world.citiesVersion;
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
       const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0 }));
@@ -446,6 +443,12 @@ export class SimServer {
     const sim = this.sim;
     if (!sim || !this.provinceNames) return;
     const world = sim.world;
+    // Cities after editor edits (PLAN 1.36): dots and names follow.
+    if (this.citiesSent >= 0 && world.citiesVersion !== this.citiesSent) {
+      this.citiesSent = world.citiesVersion;
+      const cities = this.cityList(world).map((c) => ({ id: c.id, name: c.name, x: c.x, y: c.y, size: c.size, capital: c.capitalOf !== 0 }));
+      this.post({ type: 'cityLayer', cities }, []);
+    }
     // Terrain after editor edits (PLAN 1.35): the renderer's terrain layer follows.
     if (world.terrainVersion !== this.terrainSent) {
       if (this.terrainSent >= 0) {
@@ -547,6 +550,17 @@ export class SimServer {
     return { nations, wars };
   }
 
+  /** Every city with its display name: the scenario's, or the editor's (PLAN 1.36). */
+  private cityList(world: World): { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[] {
+    const cc = world.cities.cols;
+    const out: { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[] = [];
+    world.cities.forEach((id) => {
+      const name = cities1938.cities[cc.def[id]!]?.name ?? world.cityNames.get(id);
+      if (name !== undefined) out.push({ id, name, x: cc.x[id]!, y: cc.y[id]!, size: cc.size[id]!, capitalOf: cc.capitalOf[id]! });
+    });
+    return out;
+  }
+
   /** The history log with a/b names resolved (PLAN 1.34a), as JSON `HistoryRow[]`. */
   private historyRows(): Uint8Array {
     const world = this.requireSim().world;
@@ -556,7 +570,7 @@ export class SimServer {
     const name = (role: HistoryRole, v: number): string => {
       if (role === 'nation') return v !== 0 && world.nations.has(v) ? this.nameOf(v) : '';
       if (role === 'alliance') return alliances.get(v) ?? `=#${v}`;
-      if (role === 'city') return v !== 0 && world.cities.has(v) ? `=${cities1938.cities[cc.def[v]!]?.name ?? ''}` : '';
+      if (role === 'city') return v !== 0 && world.cities.has(v) ? `=${cities1938.cities[cc.def[v]!]?.name ?? world.cityNames.get(v) ?? ''}` : '';
       return '';
     };
     const out: HistoryRow[] = [];
@@ -584,6 +598,8 @@ export class SimServer {
       unrest: Array.from(world.provinces.unrest, (u) => Math.round(u * 100) / 100),
       rasters: { owner: xxhash32View(world.cells.owner), controller: xxhash32View(world.cells.controller), terrain: xxhash32View(world.cells.terrain) },
       edits: { undo: world.edits.undo.length, redo: world.edits.redo.length },
+      cities: this.cityList(world),
+      cores: Array.from({ length: Math.max(0, world.provinces.count - 1) }, (_, i) => ({ province: i + 1, nations: world.provinces.coresOf(i + 1) })).filter((c) => c.nations.length > 0),
     };
     return new TextEncoder().encode(JSON.stringify(out));
   }

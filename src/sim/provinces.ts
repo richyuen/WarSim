@@ -34,6 +34,12 @@ export class Provinces implements Stateful {
     this.reindex();
   }
 
+  removeClaim(p: number, n: number): void {
+    const before = this.claims.length;
+    this.claims = this.claims.filter(([q, m]) => !(q === p && m === n));
+    if (this.claims.length !== before) this.reindex();
+  }
+
   /** Nations with a core on province p: its core nation first, then claimants (ascending). */
   coresOf(p: number): number[] {
     const c = this.core[p] ?? 0;

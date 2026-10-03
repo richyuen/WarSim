@@ -147,6 +147,23 @@ describe('SimServer', () => {
     expect(main.server.pool.outstanding).toBeLessThanOrEqual(16);
   });
 
+  // PLAN 1.36: a paused God/editor command applied while a snapshot is in flight owes the UI a
+  // snapshot; with no ticks running, the ack itself must send it (handleInner's final maybeSend).
+  it('a paused now-command during an unacked snapshot is drawn right after the ack', () => {
+    const main = new FakeMain();
+    main.send({ type: 'init', reqId: 1, init: { scenario: 'toy', seed: 1 } });
+    main.send({ type: 'subscribe', sub: FULL });
+    expect(main.outstanding).not.toBeNull(); // the first snapshot is in flight, unacked
+    const cell = 20 * TOY_W + 30;
+    const before = main.snapshots;
+    main.send({ type: 'cmd', cmd: { kind: 'paintControl', nation: 2, x: 30.5, y: 20.5, r: 2 }, now: true });
+    expect(main.snapshots).toBe(before); // flow control: no second snapshot before the ack
+    main.ack();
+    expect(main.snapshots).toBe(before + 1);
+    expect(main.controller[cell]).toBe(2);
+    expect(main.violations).toBe(0);
+  });
+
   it('coalesces: while unacked, ticks continue; the next snapshot has every dirty tile and event', () => {
     const main = new FakeMain();
     main.send({ type: 'init', reqId: 1, init: { scenario: 'toy', seed: 9 } });

@@ -73,7 +73,15 @@ export type Command =
    */
   | { kind: 'editPaint'; layer: 'nation' | 'terrain'; tool: 'brush' | 'line' | 'bucket'; x: number; y: number; x2: number; y2: number; r: number; value: number; mask: { kind: 'terrain' | 'nation'; value: number } | null }
   | { kind: 'editUndo' }
-  | { kind: 'editRedo' };
+  | { kind: 'editRedo' }
+  /** PLAN 1.36 scenario editing. */
+  | { kind: 'spawnCity'; x: number; y: number; name: string; size: number }
+  | { kind: 'removeCity'; city: number }
+  | { kind: 'setCapital'; nation: number; city: number }
+  | { kind: 'setGold'; nation: number; value: number }
+  /** Core (or claim) of `nation` on `province`; a dead nation's claim presets a revolt. */
+  | { kind: 'setCore'; province: number; nation: number; on: boolean }
+  | { kind: 'annexNation'; annexer: number; target: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */
