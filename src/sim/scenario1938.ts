@@ -29,10 +29,10 @@ import type { StraitDef } from './data/terrain';
 import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
 import { equipFormation } from './systems/elements';
 import { initProvinceCores } from './systems/revolts';
-import { REVIVALS } from './systems/revival';
 import { staticCe } from './systems/efficiency';
 import { LOYALTY_BASE, LOYALTY_PER_AUTONOMY } from './systems/puppets';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
+import type { CeMode } from './systems/efficiency';
 import { Mobility } from './nav/grid';
 import type { ScenarioRules } from './world';
 import { sin } from './core/dmath';
@@ -274,7 +274,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     NATIONS_1938.flatMap((n, i) => (n.extraCores ? [{ nation: i + 1, adm0: n.extraCores.countries ?? [], adm1: n.extraCores.provinces ?? [] }] : [])),
     meta,
   );
-  world.nations.forEach((id) => (world.nations.cols.revivalsLeft[id] = REVIVALS));
+  world.nations.forEach((id) => (world.nations.cols.revivalsLeft[id] = scenario1938.settings.revival.maxPerNation));
 
   // Alliances and guarantees (diplomacy.json).
   for (const a of diplomacy1938.alliances) {
@@ -299,8 +299,14 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     world.nations.cols.expenses[id] = expenses[id]!;
     world.nations.cols.manpower[id] = MANPOWER_START_SHARE * population[id]!;
   });
-  // Scenario settings that seed the world's (PLAN 1.40: revolts by region keep the nation count
-  // in SPEC §10's range; one rebel state per province fragmented the world into 300–600 states).
-  world.settings.revoltMode = scenario1938.settings.revoltMode as 'province' | 'region';
+  // Scenario settings seed the world's (review in PLAN 1.41: only revoltMode was read before).
+  // Revolts by region keep the nation count in SPEC §10's range (PLAN 1.40). The revival
+  // cooldown stays the code's REVIVAL_COOLDOWN; a unit test pins the file to it.
+  const set = scenario1938.settings;
+  world.settings.revoltMode = set.revoltMode as 'province' | 'region';
+  world.settings.ceMode = set.combatEfficiency as CeMode;
+  world.settings.winnerTakesAll = set.winnerTakesAll;
+  world.settings.loopingMap = set.loopingMap;
+  world.settings.aiEnabled = set.aiEnabled;
   return world;
 }

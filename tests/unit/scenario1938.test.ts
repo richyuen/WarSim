@@ -80,3 +80,22 @@ describe('1938 world (PLAN 1.9a)', () => {
     expect(() => new Sim({ scenario: '1938', seed: 1 })).toThrow(/needs its map assets/);
   });
 });
+
+// Review in PLAN 1.41: the scenario file's settings are the world's (they were mostly unread).
+describe('1938 scenario settings are applied', () => {
+  it('settings and revival limits come from scenario.json', async () => {
+    const { default: scen } = await import('../../data/scenarios/1938/scenario.json', { with: { type: 'json' } });
+    const { REVIVAL_COOLDOWN } = await import('../../src/sim/systems/revival');
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+    const set = s.world.settings;
+    expect([set.ceMode, set.winnerTakesAll, set.loopingMap, set.aiEnabled, set.revoltMode]).toEqual([
+      scen.settings.combatEfficiency,
+      scen.settings.winnerTakesAll,
+      scen.settings.loopingMap,
+      scen.settings.aiEnabled,
+      scen.settings.revoltMode,
+    ]);
+    s.world.nations.forEach((n) => expect(s.world.nations.cols.revivalsLeft[n]).toBe(scen.settings.revival.maxPerNation));
+    expect(scen.settings.revival.cooldownDays * 24).toBe(REVIVAL_COOLDOWN);
+  }, 120_000);
+});

@@ -5,8 +5,11 @@ import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import type {} from '../../src/app/testApi';
 import type { Inspection } from '../../src/shared/protocol';
 import { Terrain } from '../../src/shared/terrain';
-import { NATIONS_1938 } from '../../src/sim/scenario1938';
-import { CELLS_PER_PIXEL, nationFixture, NATION_FIXTURE_PIXELS, terrainFixture, TERRAIN_FIXTURE_PIXELS } from '../helpers/importFixture';
+import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { CELLS_PER_PIXEL, decode, FIX_H, FIX_W, importedCounts, nationFixture, NATION_FIXTURE_PIXELS, terrainFixture, TERRAIN_FIXTURE_PIXELS } from '../helpers/importFixture';
+import { paletteMap } from '../../src/shared/mapImport';
+import { Sim } from '../../src/sim/sim';
+import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.37a AT: importing a fixture PNG yields the expected cell counts (terrain, then nations),
 // through the editor's file input; land and water changed, so coasts follow the cells; undo
@@ -29,11 +32,17 @@ test('map import: a fixture PNG becomes terrain and nations with exact cell coun
   const png = terrainFixture({ water: color('water'), plains: color('plains'), forest: color('forest'), mountains: color('mountains') });
   await page.getByTestId('editor-import-layer').selectOption('terrain');
   await page.getByTestId('editor-import-file').setInputFiles({ name: 'terrain.png', mimeType: 'image/png', buffer: png });
-  await expect.poll(async () => (await inspect(page)).terrainCounts[Terrain.Forest], { timeout: 30_000 }).toBe(TERRAIN_FIXTURE_PIXELS.forest * CELLS_PER_PIXEL);
+  // Exact counts: the fixture's, except that city cells keep their land (PLAN 1.41).
+  const node = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+  const cityCells: number[] = [];
+  node.world.cities.forEach((id) => cityCells.push(node.world.cities.cols.cell[id]!));
+  const values = paletteMap(decode(png), FIX_W, FIX_H, SIZE_1938.w, SIZE_1938.h, terrainJson.terrain.map((tt, value) => ({ rgb: parseInt(tt.color.slice(1), 16), value })), 1000, 0);
+  const expected = importedCounts(values, node.world.cells.terrain, cityCells, terrainJson.terrain.length, Terrain.Water);
+  await expect.poll(async () => (await inspect(page)).terrainCounts[Terrain.Forest], { timeout: 30_000 }).toBe(expected[Terrain.Forest]);
   const t = await inspect(page);
-  expect(t.terrainCounts[Terrain.Water]).toBe(TERRAIN_FIXTURE_PIXELS.water * CELLS_PER_PIXEL);
-  expect(t.terrainCounts[Terrain.Plains]).toBe(TERRAIN_FIXTURE_PIXELS.plains * CELLS_PER_PIXEL);
-  expect(t.terrainCounts[Terrain.Mountains]).toBe(TERRAIN_FIXTURE_PIXELS.mountains * CELLS_PER_PIXEL);
+  expect(t.terrainCounts).toEqual(expected);
+  // The fixture's classes dominate: city islands are well under 1% of the imported water.
+  expect(TERRAIN_FIXTURE_PIXELS.water * CELLS_PER_PIXEL - t.terrainCounts[Terrain.Water]!).toBeLessThan(0.01 * TERRAIN_FIXTURE_PIXELS.water * CELLS_PER_PIXEL);
   // Land and water moved: the renderer drops the fine coastline of the original mask.
   await expect.poll(() => page.evaluate(() => window.__warsim!.view!.hasFineCoast)).toBe(false);
 

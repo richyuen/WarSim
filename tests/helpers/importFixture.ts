@@ -6,6 +6,7 @@
  *   nations: black (unowned) except an 8×4 block in Germany's colour at x 44..51, y 16..19 and an
  *   8×4 block in Poland's colour at x 36..43, y 24..27 (both on the plains half).
  */
+import { inflateSync } from 'node:zlib';
 import { encodePng } from '../../tools/data/png';
 
 export const FIX_W = 64;
@@ -44,3 +45,32 @@ export function nationFixture(ger: number, pol: number): Buffer {
 }
 
 export const NATION_FIXTURE_PIXELS = { ger: 8 * 4, pol: 8 * 4 };
+
+/**
+ * Cell counts per terrain class after importing `values` into a world whose cities sit at
+ * `cityCells` over `terrainBefore` (PLAN 1.41: city cells keep their land, never become water).
+ */
+export function importedCounts(values: ArrayLike<number>, terrainBefore: ArrayLike<number>, cityCells: Iterable<number>, classes: number, water: number): number[] {
+  const counts = new Array<number>(classes).fill(0);
+  for (let c = 0; c < values.length; c++) counts[values[c]!]!++;
+  for (const c of new Set(cityCells)) {
+    if (values[c] !== water) continue;
+    counts[water]!--;
+    counts[terrainBefore[c]!]!++;
+  }
+  return counts;
+}
+
+/** Decodes the fixture PNG (8-bit RGB, filter 0 rows, as tools/data/png.ts writes) to RGBA. */
+export function decode(png: Buffer): Uint8Array {
+  const idat = png.subarray(33 + 8, png.length - 12 - 4); // after signature + IHDR, before IEND; strip length+type
+  const raw = inflateSync(idat);
+  const rgba = new Uint8Array(FIX_W * FIX_H * 4);
+  for (let y = 0; y < FIX_H; y++) {
+    for (let x = 0; x < FIX_W; x++) {
+      const s = y * (FIX_W * 3 + 1) + 1 + x * 3;
+      rgba.set([raw[s]!, raw[s + 1]!, raw[s + 2]!, 255], (y * FIX_W + x) * 4);
+    }
+  }
+  return rgba;
+}

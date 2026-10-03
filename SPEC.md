@@ -1031,7 +1031,8 @@ interpolation changes something.
     edit, so undo/redo act on the pair. The undo cap never evicts the two newest edit groups.
   - The worker reports `terrainLayer.landChanged` (land/water differs from the start); the
     renderer then draws cell coasts with water taken from the terrain layer.
-  - Cities and formations stay where they are.
+  - City cells keep their land (a city becomes an island). Formations left on water move to the
+    nearest land within 64 cells, or are removed (PLAN 1.41).
 - **Scenario files** (PLAN 1.38, `src/shared/scenarioFile.ts`, `src/app/scenarioFiles.ts`):
   - A `.warsim-scenario` file is gzip of the magic line, a JSON header (format, name, base,
     w, h, tick, hash) and the state bytes.

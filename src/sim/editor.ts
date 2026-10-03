@@ -13,6 +13,8 @@
  * paints land cells only.
  */
 import { isLand, TERRAIN_IDS } from '../shared/terrain';
+import { nearestCellWhere } from './data/ownership';
+import { destroyFormation } from './systems/elements';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
 import { TILE, type World } from './world';
@@ -228,6 +230,31 @@ function apply(world: World, e: Edit, undo: boolean): void {
   if (e.layer === 'terrain') terrainChanged(world);
 }
 
+/**
+ * Formations left on water by a terrain import march nowhere: they move to the nearest land cell
+ * within STRANDED_REACH cells, or are removed (review in PLAN 1.41). Not part of the undo step.
+ */
+const STRANDED_REACH = 64;
+function strandedToLand(world: World): void {
+  const { w, h, terrain } = world.cells;
+  const fc = world.formations.cols;
+  const gone: number[] = [];
+  world.formations.forEach((f) => {
+    const c = Math.floor(fc.y[f]!) * w + Math.floor(fc.x[f]!);
+    if (isLand(terrain[c]!)) return;
+    const to = nearestCellWhere((i) => isLand(terrain[i]!), fc.x[f]!, fc.y[f]!, w, h, STRANDED_REACH);
+    if (to < 0) {
+      gone.push(f);
+      return;
+    }
+    fc.x[f] = (to % w) + 0.5;
+    fc.y[f] = Math.floor(to / w) + 0.5;
+    world.paths.delete(f);
+    fc.moving[f] = 0;
+  });
+  for (const f of gone) destroyFormation(world, f);
+}
+
 /** Undoes the top edit, with the edits linked to it (newest first). */
 export function undoEdit(world: World): boolean {
   const st = world.edits;
@@ -263,10 +290,13 @@ export function importLayer(world: World, layer: EditLayer, values: Uint16Array)
   const { owner, controller, terrain } = world.cells;
   if (values.length !== terrain.length) return 0;
   const cells: number[] = [];
+  // City cells keep their land (a city becomes an island, never drowns: review in PLAN 1.41).
+  const cityCells = new Set<number>();
+  world.cities.forEach((id) => cityCells.add(world.cities.cols.cell[id]!));
   for (let c = 0; c < values.length; c++) {
     const v = values[c]!;
     if (layer === 'terrain') {
-      if (v < TERRAIN_IDS.length && terrain[c] !== v) cells.push(c);
+      if (v < TERRAIN_IDS.length && terrain[c] !== v && !(cityCells.has(c) && !isLand(v))) cells.push(c);
     } else {
       const n = v !== 0 && world.nations.has(v) ? v : 0;
       if (isLand(terrain[c]!) && (owner[c] !== n || controller[c] !== n)) cells.push(c);
@@ -291,6 +321,7 @@ export function importLayer(world: World, layer: EditLayer, values: Uint16Array)
       apply(world, clear, false);
       world.edits.undo.push(clear); // after push(e): the redo side is already clear
     }
+    strandedToLand(world);
   }
   return cells.length;
 }

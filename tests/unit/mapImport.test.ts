@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { inflateSync } from 'node:zlib';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import { decodeRuns, encodeRuns, paletteMap } from '../../src/shared/mapImport';
 import { Terrain } from '../../src/shared/terrain';
@@ -7,7 +6,7 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { xxhash32View } from '../../src/sim/core/hash';
 import { assets1938 } from '../helpers/earth';
-import { CELLS_PER_PIXEL, FIX_H, FIX_W, nationFixture, NATION_FIXTURE_PIXELS, terrainFixture, TERRAIN_FIXTURE_PIXELS } from '../helpers/importFixture';
+import { CELLS_PER_PIXEL, decode, FIX_H, FIX_W, importedCounts, nationFixture, NATION_FIXTURE_PIXELS, terrainFixture, TERRAIN_FIXTURE_PIXELS } from '../helpers/importFixture';
 import { nationId } from '../helpers/sim1938';
 
 // PLAN 1.37a (unit part): palette mapping, RLE, and importLayer (water ↔ land, linked owner
@@ -18,19 +17,6 @@ const color = (id: string): number => parseInt(terrainJson.terrain.find((t) => t
 const TERRAIN_PALETTE = terrainJson.terrain.map((t, value) => ({ rgb: parseInt(t.color.slice(1), 16), value }));
 const [GER, POL] = ['GER', 'POL'].map(nationId) as number[];
 
-/** Decodes the fixture PNG (8-bit RGB, filter 0 rows, as tools/data/png.ts writes) to RGBA. */
-function decode(png: Buffer): Uint8Array {
-  const idat = png.subarray(33 + 8, png.length - 12 - 4); // after signature + IHDR, before IEND; strip length+type
-  const raw = inflateSync(idat);
-  const rgba = new Uint8Array(FIX_W * FIX_H * 4);
-  for (let y = 0; y < FIX_H; y++) {
-    for (let x = 0; x < FIX_W; x++) {
-      const s = y * (FIX_W * 3 + 1) + 1 + x * 3;
-      rgba.set([raw[s]!, raw[s + 1]!, raw[s + 2]!, 255], (y * FIX_W + x) * 4);
-    }
-  }
-  return rgba;
-}
 
 const count = (a: ArrayLike<number>, v: number): number => {
   let n = 0;
@@ -64,11 +50,15 @@ describe('map import (PLAN 1.37a)', () => {
     const owner0 = s.world.cells.owner.slice();
     const terrain0 = s.world.cells.terrain.slice();
     const rgba = decode(terrainFixture({ water: color('water'), plains: color('plains'), forest: color('forest'), mountains: color('mountains') }));
-    const runs = encodeRuns(paletteMap(rgba, FIX_W, FIX_H, W, H, TERRAIN_PALETTE, 1000, 0));
+    const values = paletteMap(rgba, FIX_W, FIX_H, W, H, TERRAIN_PALETTE, 1000, 0);
+    const runs = encodeRuns(values);
+    const cityCells: number[] = [];
+    s.world.cities.forEach((id) => cityCells.push(s.world.cities.cols.cell[id]!));
+    const expected = importedCounts(values, terrain0, cityCells, TERRAIN_PALETTE.length, Terrain.Water);
     s.command({ kind: 'importLayer', layer: 'terrain', runs });
     s.applyNow();
     const { terrain, owner } = s.world.cells;
-    expect(count(terrain, Terrain.Forest)).toBe(TERRAIN_FIXTURE_PIXELS.forest * CELLS_PER_PIXEL);
+    for (const k of [Terrain.Water, Terrain.Plains, Terrain.Forest, Terrain.Mountains]) expect(count(terrain, k), `class ${k}`).toBe(expected[k]);
     for (let c = 0; c < terrain.length; c += 997) if (terrain[c] === Terrain.Water) expect(owner[c]).toBe(0);
     expect(s.world.edits.undo.length).toBe(2); // terrain + linked owner clearing
     expect(s.world.edits.undo[1]!.linked).toBe(true);
@@ -91,9 +81,30 @@ describe('map import (PLAN 1.37a)', () => {
       expect(xxhash32View(x.world.cells.owner)).toBe(xxhash32View(owner0));
       x.command({ kind: 'editRedo' });
       x.applyNow();
-      expect(count(x.world.cells.terrain, Terrain.Forest)).toBe(TERRAIN_FIXTURE_PIXELS.forest * CELLS_PER_PIXEL);
+      expect(count(x.world.cells.terrain, Terrain.Forest)).toBe(expected[Terrain.Forest]);
       expect(x.world.edits.undo.length).toBe(2);
     }
     expect(t.hash()).toBe(s.hash());
+  }, 120_000);
+});
+
+// Review in PLAN 1.41: a terrain import keeps land under cities (islands, never drowned cities)
+// and moves formations left on water to the nearest land.
+describe('map import keeps cities and formations on land', () => {
+  it('city cells stay land; stranded formations move ashore', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    // All water, as an extreme import.
+    const runs = encodeRuns(new Uint16Array(W * H).fill(Terrain.Water));
+    const cityCells: number[] = [];
+    s.world.cities.forEach((id) => cityCells.push(s.world.cities.cols.cell[id]!));
+    s.command({ kind: 'importLayer', layer: 'terrain', runs });
+    s.applyNow();
+    const t = s.world.cells.terrain;
+    expect(cityCells.every((c) => t[c] !== Terrain.Water)).toBe(true);
+    expect(count(t, Terrain.Water)).toBe(W * H - new Set(cityCells).size);
+    // Every formation stands on land (a city island) or was removed.
+    const fc = s.world.formations.cols;
+    s.world.formations.forEach((f) => expect(t[Math.floor(fc.y[f]!) * W + Math.floor(fc.x[f]!)]).not.toBe(Terrain.Water));
   }, 120_000);
 });

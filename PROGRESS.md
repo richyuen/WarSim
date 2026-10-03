@@ -2173,3 +2173,22 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     - the unrest-buff test picks an ungarrisoned core province (province 200 now has a
       garrison).
 - **Logged (BLOCKERS):** most scenario settings in `scenario.json` aren't applied by the code.
+
+## 2026-10-03 — PLAN 1.41: Phase 1 review
+- **Scenario settings applied** (BLOCKERS item): `createWorld1938` now reads combat efficiency,
+  winner-takes-all, looping map, AI, revolt mode and the revival count from `scenario.json`.
+  - The file's revival block (3 / 1,825 days) never matched the code's tuned values (2 /
+    730 days); corrected to the code's values.
+  - A unit test pins the world's settings, revival count and cooldown to the file.
+  - The applied values equal the previous defaults, so the 1.40 sweep result stands.
+- **Map import and water** (BLOCKERS item): city cells keep their land (islands, so undo stays
+  consistent). Formations left on water move to the nearest land within 64 cells, or are
+  removed.
+  - The 1.37a import tests now expect exact counts including the city islands
+    (`importedCounts`), still exact.
+  - An all-water import test checks cities and formations stay on land.
+- **Parity:** nine implemented features were still "not started": rows 2, 12, 28, 31, 32, 65, 72,
+  74, 77. They are now partial, with evidence appended. Parity 40.6% → 46.3%; 6 rows remain
+  "not started": donations, God nuke, map-mode hotkeys, event popups, map sizes (7.1b), audio.
+- **Gate:** green (391 unit, 7 sweep, 57 e2e). BLOCKERS: both review items closed.
+- **Phase 1 complete.** Next: Phase 2 (semantic zoom).
