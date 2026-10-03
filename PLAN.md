@@ -233,6 +233,9 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   the retry of 1.42.
   AT: as 1.42a (5-year mean ≤ 1.5 ms, year 1 ≤ 2.4 ms), final hash 93effc58 (since 1.42d2;
   ac517acf before it) unless a rule change is logged.
+  Done before 1.42e (2026-10-03): every sweep that 1.42e and 1.42 need is paid in tick time.
+  Step 1, no behaviour change (hash 93effc58): the operational AI skips nations with no free
+  formation and reads the frontier by holder. Mean 1.69 → 1.54 ms, year 1 3.36 → 3.15 ms.
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km

@@ -46,30 +46,63 @@ export function operationalAi(world: World): void {
   const step = world.tick / 6;
   const nc = world.nations.cols;
   const fighting = world.wars.nations();
-  const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0).sort((a, b) => a - b);
-  if (actors.length === 0) return;
-  const frontier = frontierOf(world);
-  const { w, h, controller } = world.cells;
-  const nb: number[] = [];
   const f = world.formations.cols;
-  for (const n of actors) planNation(world, n, frontier, w, h, controller, nb, f);
+  // A nation with no free formation has nothing to plan (most members of a large coalition, most
+  // days): it is skipped before any front is looked at.
+  const free = new Uint32Array(world.nations.highWater);
+  world.formations.forEach((id) => {
+    if (f.engaged[id] !== 1) free[f.nation[id]!]!++;
+  });
+  const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0 && free[n]! > 0).sort((a, b) => a - b);
+  if (actors.length === 0) return;
+  const { w, h, controller } = world.cells;
+  // The frontier by holder, with the holders of each cell's four neighbours, once for all of this
+  // tick's planners. Each planner reads only its own cells and its partners' (PLAN 1.42f:
+  // scanning the whole frontier per planner was a quarter of the tick in a world of many wars).
+  const frontier = new Map<number, Front>();
+  const nb: number[] = [];
+  for (const c of frontierOf(world)) {
+    const holder = controller[c]!;
+    let fr = frontier.get(holder);
+    if (!fr) frontier.set(holder, (fr = { cells: [], near: [] }));
+    fr.cells.push(c);
+    const at = fr.near.length;
+    fr.near.push(0, 0, 0, 0);
+    let k = 0;
+    for (const q of neighbours4(c, w, h, world.settings.loopingMap, nb)) fr.near[at + k++] = controller[q]!;
+  }
+  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f);
 }
 
-function planNation(world: World, n: number, frontier: Set<number>, w: number, h: number, controller: Uint16Array, nb: number[], f: World['formations']['cols']): void {
-  const enemy = (m: number): boolean => m !== 0 && world.wars.atWar(n, m);
+/** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
+interface Front {
+  cells: number[];
+  near: number[];
+}
+
+function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols']): void {
+  const wars = world.wars;
+  // n's enemies as a mask: the tests below run per frontier cell and per formation.
+  const enemyOf = new Uint8Array(world.nations.highWater);
+  for (const m of fighting) if (wars.atWar(n, m)) enemyOf[m] = 1;
+  const enemy = (m: number): boolean => enemyOf[m] === 1;
   const bw = Math.ceil(w / SECTOR_CELLS);
   const sectors = new Map<number, Sector>();
-  const wars = world.wars;
-  for (const c of frontier) {
-    const holder = controller[c]!;
+  for (const [holder, { cells, near }] of frontier) {
     if (holder !== n && !wars.sameSide(holder, n)) continue;
-    if (!neighbours4(c, w, h, world.settings.loopingMap, nb).some((k) => enemy(controller[k]!) && (holder === n || wars.atWar(holder, controller[k]!)))) continue;
-    const x = c % w;
-    const y = (c - x) / w;
-    const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
-    let s = sectors.get(key);
-    if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0 }));
-    s.cells.push(c);
+    for (let i = 0; i < cells.length; i++) {
+      // A front cell touches an enemy of n whom its holder fights too.
+      let front = false;
+      for (let k = 4 * i; k < 4 * i + 4 && !front; k++) front = enemyOf[near[k]!] === 1 && (holder === n || wars.atWar(holder, near[k]!));
+      if (!front) continue;
+      const c = cells[i]!;
+      const x = c % w;
+      const y = (c - x) / w;
+      const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
+      let s = sectors.get(key);
+      if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0 }));
+      s.cells.push(c);
+    }
   }
   if (sectors.size === 0) return;
   const list = [...sectors.values()].sort((a, b) => a.key - b.key);

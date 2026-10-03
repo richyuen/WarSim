@@ -2549,3 +2549,25 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Baseline for later tasks:** seed 99 × 5 years now ends at 93effc58 (PLAN 1.42f updated).
 - **Next (`continue`):** PLAN 1.42e (sim rules by area) is first unchecked; 1.42f (tick time)
   must be done before the 1.42 retry sweep.
+
+## 2026-10-03 — PLAN 1.42f, step 1: the operational AI's planning made cheaper, no behaviour change
+- **Order of work:** 1.42f before 1.42e (the last entry said 1.42e): every quick sweep that 1.42e
+  needs, and the retry of 1.42, cost tick time. The user stopped the loop during this task and
+  then asked for it to be finished, with the iteration speed-ups and a rewrite of the sweep
+  criteria (next entries).
+- **Profile, seed 99 (scratch script, per system):** year 1 3.36 ms, of which the operational AI
+  2.03; years 2–5 1.1–1.4 ms. In year 1 15,900 route searches; 6,030 of them longer than 60 cells
+  take 13.5 of 13.9 s (about 20,000 cells expanded each). 5,584 of those are for formations
+  already marching, which had walked 8.5 of their route's 220 cells on average before being sent
+  elsewhere. That is a rule (step 2). The rest of the planner's time is not routes: every
+  planner scanned the whole frontier (62 M cell visits a year) and built its sectors before
+  finding out that it had no free formation.
+- **Change (this commit):** nations with no free formation are skipped before any front is
+  looked at; the frontier is grouped by holder once per planning tick, with the holders of each
+  cell's four neighbours, and a planner reads only its own cells and its partners'; its enemies
+  are a mask instead of a set lookup per cell and per formation.
+- **Result:** the five yearly hashes of seed 99 are identical (… 93effc58). Mean tick 1.69 →
+  1.54 ms; year 1 3.36 → 3.15 ms; the operational AI in years 2–5 0.48–0.66 → 0.32–0.52 ms.
+  The budget (1.5 and 2.4 ms) is not met by this step.
+- **Watch list:** a unit test failed once under load (`scenarioFile.test.ts`, BLOCKERS).
+- **Next:** step 2, the rule (a marching formation keeps its sector).
