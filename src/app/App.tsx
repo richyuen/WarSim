@@ -15,6 +15,8 @@ import type { MapView } from './MapView';
 import { saveScreenshot, UI_SCALES, UNIT_SCALES, type Settings } from './settings';
 import { SettingsPanel } from '../ui/SettingsPanel';
 import { screenshotLabel } from './screenshotLabel';
+import { newGameUrl } from './gameUrl';
+import type { GameOptions } from '../shared/gameOptions';
 import { downloadBytes, exportScenarioFile, importScenarioFile, scenarioFileName } from './scenarioFiles';
 import { useEffect, useState } from 'preact/hooks';
 import { encodeRuns } from '../shared/mapImport';
@@ -27,6 +29,7 @@ export function App({
   base,
   settings,
   seed,
+  options,
   nameOf,
 }: {
   hud: Hud;
@@ -35,6 +38,7 @@ export function App({
   base: string;
   settings: Settings;
   seed: number;
+  options: GameOptions;
   nameOf: (id: number) => string | null;
 }) {
   const [scenarioStatus, setScenarioStatus] = useState('');
@@ -74,12 +78,13 @@ export function App({
           uiScales={UI_SCALES}
           unitScales={UNIT_SCALES}
           seed={seed}
+          options={options}
           onUiScale={(v) => settings.setUiScale(v)}
           onUnitScale={(v) => settings.setUnitScale(v)}
           onScreenshot={() => {
             if (view) void saveScreenshot(view, screenshotLabel(hud));
           }}
-          onNewGame={(s) => location.assign(`?scenario=${encodeURIComponent(base)}&seed=${s}`)}
+          onNewGame={(s, o) => location.assign(newGameUrl(base, s, o))}
           onClose={() => hud.toggleSettings()}
         />
       ) : null}

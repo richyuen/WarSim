@@ -30,7 +30,7 @@ export const HOLD_TICKS = 16;
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 
 function neighbours(world: World, c: number, out: number[]): number[] {
-  return neighbours4(c, world.cells.w, world.cells.h, true, out);
+  return neighbours4(c, world.cells.w, world.cells.h, world.settings.loopingMap, out);
 }
 
 const scratch: number[] = [];

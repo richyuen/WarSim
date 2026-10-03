@@ -300,6 +300,11 @@ export class MapView {
    */
   onPick: ((x: number, y: number, sx: number, sy: number, shift: boolean) => boolean) | null = null;
 
+  /** Whether the map renders east–west wrap copies (looping map; PLAN 1.39b1 option). */
+  get wrapsX(): boolean {
+    return this.geo.wrapX;
+  }
+
   /** Unit-size setting (PLAN 1.39a): multiplies formation marker sizes. */
   unitScale = 1;
 

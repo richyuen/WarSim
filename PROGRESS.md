@@ -2105,3 +2105,30 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   baseline markers. Restored; updates now append (also in this pass's rows).
 - **Still open (BLOCKERS):** imports leave cities and formations on new water (decide in 1.41).
   The e2e stage's length depends on machine load.
+
+## 2026-10-03 — PLAN 1.39b1: new-game options (1.39b split into b1/b2)
+- **Sim:** `applyGameOptions` (`src/sim/gameOptions.ts`), applied at init from `SimInit.options`
+  and hashed from the seed:
+  - looping map (`settings.loopingMap`, saved in meta; replaces the hardcoded `true` wraps in
+    nav, territory, war and the operational AI);
+  - random aggression;
+  - random traits (multipliers + aggression bias);
+  - gold random/equal;
+  - CE mode.
+- **App:** `optionsFromUrl` / `newGameUrl`; the map geometry's wrap follows the option
+  (`MapView.wrapsX`). The settings panel's "New game options" starts from the current game's
+  options. New games start paused.
+- **`NationStat`:** gains `aggression`, `incomeMult`; `Inspection.settings` gains `loopingMap`.
+- **Bugs found by the tests:**
+  - The scenario build caches a wrapping nav grid before the options apply. Turning looping off
+    now drops it.
+  - The new-game URL dropped `paused`, so the economy ran before the e2e could look. New games
+    start paused now (also better: you see the new world first).
+- **AT:**
+  - Unit: per-seed determinism and distinct seeds, ranges and effects, no-wrap nav, save/load +
+    replay.
+  - e2e: all options chosen in the panel → URL params, seed kept, and in the sim: no looping,
+    static CE, equal gold, aggression and income multipliers differ from the plain game on >10
+    nations, no wrap rendering. Switching back restores the scenario's values.
+- **Parity:** rows 69 and 75 → partial (appended).
+- **Plan change:** 1.39b2 is map size S–XL (needs L/XL assets and per-game geometry).

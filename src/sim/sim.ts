@@ -20,6 +20,7 @@ import { productionSystem } from './systems/production';
 import { puppetSystem } from './systems/puppets';
 import { collapseSystem } from './systems/revival';
 import { statsSystem } from './stats';
+import { applyGameOptions } from './gameOptions';
 import { revoltSystem } from './systems/revolts';
 import { supplySystem } from './systems/supply';
 import { territorySystem } from './systems/territory';
@@ -42,6 +43,7 @@ export class Sim {
         if (!init.assets) throw new Error("scenario '1938' needs its map assets");
         this.world = createWorld1938(init.seed, init.assets);
         this.world.rules = RULES_1938;
+        if (init.options) applyGameOptions(this.world, init.options);
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
         // engagement and combat (8), territory (9).
         // AI decides first (SPEC §2.5 step 2), on the state left by the previous tick.

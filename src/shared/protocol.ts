@@ -1,3 +1,4 @@
+import type { GameOptions } from './gameOptions';
 /**
  * Main ↔ worker messages (SPEC §2.3) and the snapshot layout (SPEC §2.4).
  *
@@ -24,6 +25,8 @@ export interface SimInit {
   seed: number;
   /** Required for '1938'. In the worker, `init` loads them from `assetBase` when absent. */
   assets?: ScenarioAssets;
+  /** New-game options (PLAN 1.39b1): looping map, random aggression/traits/gold, CE mode. */
+  options?: GameOptions;
 }
 
 /** Ticks per second, or 'max' (as fast as the worker can run). */
@@ -278,6 +281,9 @@ export interface NationStat {
   puppets: number[];
   enemies: number[];
   aiOff: boolean;
+  /** AI aggression 0..100 and income multiplier from traits (PLAN 1.39b1 options). */
+  aggression: number;
+  incomeMult: number;
   /** Formations in training: template index and the day (ticks / 24) they are ready. */
   queue: { template: number; readyDay: number }[];
 }
@@ -287,7 +293,7 @@ export interface Inspection {
   tick: number;
   /** World seed (PLAN 1.39a). */
   seed: number;
-  settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean; player: number };
+  settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean; player: number; loopingMap: boolean };
   /** Every nation ever created (dead ones too), with its display name key ('=' + literal). */
   nations: (NationStat & { living: boolean })[];
   wars: WarStat[];

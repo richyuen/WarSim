@@ -6,6 +6,7 @@ import { Autosave } from './autosave';
 import { Hud } from './hud';
 import { MapView } from './MapView';
 import { PlayerControl } from './player';
+import { optionsFromUrl } from './gameUrl';
 import { saveScreenshot, Settings } from './settings';
 import { screenshotLabel } from './screenshotLabel';
 import { SimClient } from './simClient';
@@ -25,7 +26,10 @@ const seed = Number(params.get('seed') ?? 1938) >>> 0;
 const scenarioId: ScenarioId = params.get('scenario') === '1938' ? '1938' : 'toy';
 const sim = new SimClient();
 const scenario = SCENARIO_INFO[scenarioId];
-const view = params.get('view') === '0' ? null : new MapView(canvas, scenario.geometry, sim);
+// New-game options (PLAN 1.39b1); a non-looping map also renders without wrap copies.
+const options = optionsFromUrl(params);
+const geometry = options.loopingMap === false ? { ...scenario.geometry, wrapX: false } : scenario.geometry;
+const view = params.get('view') === '0' ? null : new MapView(canvas, geometry, sim);
 const hud = new Hud(sim, scenario.startDay);
 let player: PlayerControl | null = null;
 hud.installKeys(window);
@@ -61,9 +65,9 @@ window.addEventListener('keydown', (e) => {
 installTestApi({ sim, view, hud, autosave, player, settings });
 
 const uiRoot = document.getElementById('ui');
-if (uiRoot) render(<App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
+if (uiRoot) render(<App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} options={options} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
 
-await sim.init({ scenario: scenarioId, seed });
+await sim.init({ scenario: scenarioId, seed, options });
 // ?continue=1 resumes the autosave of this scenario (PLAN 1.27).
 if (params.get('continue') === '1') {
   const tick = await autosave.restore().catch(() => null);

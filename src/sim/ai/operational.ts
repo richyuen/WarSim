@@ -59,7 +59,7 @@ function planNation(world: World, n: number, frontier: Set<number>, w: number, h
   const sectors = new Map<number, Sector>();
   for (const c of frontier) {
     if (controller[c] !== n) continue;
-    if (!neighbours4(c, w, h, true, nb).some((k) => enemy(controller[k]!))) continue;
+    if (!neighbours4(c, w, h, world.settings.loopingMap, nb).some((k) => enemy(controller[k]!))) continue;
     const x = c % w;
     const y = (c - x) / w;
     const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
@@ -205,7 +205,7 @@ function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb: 
   let best = -1;
   let bd = Infinity;
   for (const c of s.cells) {
-    for (const k of neighbours4(c, w, h, true, nb)) {
+    for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
       if (!enemy(controller[k]!)) continue;
       const ex = (k % w) + 0.5 - s.cx;
       const ey = Math.floor(k / w) + 0.5 - s.cy;

@@ -573,6 +573,8 @@ export class SimServer {
         puppets: puppets.get(id) ?? [],
         enemies: [...(enemies.get(id) ?? [])],
         aiOff: nc.aiOff[id] === 1,
+        aggression: nc.aggression[id]!,
+        incomeMult: nc.incomeMult[id]!,
         living: nc.living[id] === 1,
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
       });

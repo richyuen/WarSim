@@ -1075,7 +1075,13 @@ interpolation changes something.
 - **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
   interface size 85–130% (root font size), unit size 50–200% (marker size multiplier), both
   persisted; F2 or the panel saves a PNG of the map with its overlays; seed field, random seed
-  and New game (reloads with `?seed=`).
+  and New game (reloads with `?seed=`, paused).
+- **New-game options** (PLAN 1.39b1, `src/sim/gameOptions.ts`, `src/app/gameUrl.ts`): looping map
+  (`settings.loopingMap`, saved; off = no wrap in pathing, territory, operational AI or
+  rendering), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
+  manpower multipliers and aggression bias), starting gold (random 0.25–2× or equal = median),
+  CE mode. Applied once at init from the seed; carried in the URL
+  (`looping=0&aggr=random&traits=random&gold=random|equal&ce=…`).
 - **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,
   wheel and touch pinch. Speed and pause persist. Autosave. Screenshot key (F2 → PNG).
   UI size (rem scale). Unit-size setting. Looping map. Map size picker. Locale

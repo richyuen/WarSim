@@ -165,9 +165,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.39a Settings panel: UI size, unit size, screenshot key (F2), seed + new game; speed/pause
   persistence (since 1.8). (Split from 1.39, 2026-10-03.)
   AT: e2e toggles each and verifies the effect; F2 downloads a PNG.
-- [ ] 1.39b Settings for a new game: looping map, map size (S–XL), randomisation options
-  (aggression, traits, starting gold, efficiency mode).
+- [x] 1.39b1 New-game options: looping map, randomisation (aggression, traits, starting gold,
+  efficiency mode). (Split from 1.39b, 2026-10-03.)
   AT: e2e starts games with each option and verifies the effect in the sim.
+- [ ] 1.39b2 Map size S–XL for the 1938 world (L/XL assets from the data pipeline, per-game
+  geometry instead of the SIZE_1938 constant).
+  AT: e2e starts S and L games; cell counts, geometry and pathing match the size.
 - [ ] 1.40 Dynamism tuning: `npm run sweep` (10 seeds × 50 years) passes the SPEC §10 criteria.
   AT: sweep report committed in `docs/sweeps/` with all criteria green.
 - [ ] 1.41 Phase 1 review + PARITY rows updated with evidence.

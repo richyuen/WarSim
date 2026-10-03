@@ -228,12 +228,12 @@ function nearestFirst(world: World, candidates: number[], inW: Set<number>): num
   const isCand = new Set(candidates);
   const dist = new Map<number, number>();
   const nb: number[] = [];
-  let frontier = candidates.filter((c) => neighbours4(c, w, h, true, nb).some((n) => inW.has(owner[n]!)));
+  let frontier = candidates.filter((c) => neighbours4(c, w, h, world.settings.loopingMap, nb).some((n) => inW.has(owner[n]!)));
   for (const c of frontier) dist.set(c, 0);
   for (let d = 1; frontier.length > 0; d++) {
     const next: number[] = [];
     for (const c of frontier) {
-      for (const n of neighbours4(c, w, h, true, nb)) {
+      for (const n of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
         if (!isCand.has(n) || dist.has(n)) continue;
         dist.set(n, d);
         next.push(n);
