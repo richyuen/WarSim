@@ -27,13 +27,14 @@ const hud = new Hud(sim, scenario.startDay);
 hud.installKeys(window);
 if (view) {
   hud.onMapMode = (m) => view.setMapMode(m);
+  view.onSelect = (id) => (hud.selected.value = id);
   view.setMapMode(hud.mapMode.value);
 }
 const autosave = new Autosave(sim, scenarioId);
 installTestApi({ sim, view, hud, autosave });
 
 const uiRoot = document.getElementById('ui');
-if (uiRoot) render(<App hud={hud} />, uiRoot);
+if (uiRoot) render(<App hud={hud} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
 
 await sim.init({ scenario: scenarioId, seed });
 // ?continue=1 resumes the autosave of this scenario (PLAN 1.27).

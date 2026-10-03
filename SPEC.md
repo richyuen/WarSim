@@ -942,7 +942,13 @@ interpolation changes something.
 - **Layout** (parity with the VISUAL reference): left nation panel, Actions/Economy tab panel,
   right Statistics ranking, bottom bar (map modes, pause, God Mode, Statistics, speed,
   date, events counter, history log), and a war-banner strip of active wars.
-- **Map modes**: political, terrain, wars, diplomacy, alliances, puppets, income,
+- **Map modes** (implemented PLAN 1.17–1.30a, `src/shared/mapModes.ts`):
+  - *Implemented:* political, alliances, puppets, terrain, wars (red at war), diplomacy (relations
+    to the nation selected by clicking the map) and income (log ramp).
+  - *How:* palette swaps from snapshot fields (alliance leader, overlord, income, war pairs);
+    terrain uses the shader's terrain layer. Each mode has a legend (`src/ui/MapLegend.tsx`).
+  - *Pending:* revolts (1.30b).
+- **Map modes** (planned): political, terrain, wars, diplomacy, alliances, puppets, income,
   revolts, + sea control, air superiority, fallout, supply.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes

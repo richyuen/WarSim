@@ -493,8 +493,12 @@ export class SimServer {
       nations[o + NationField.capitalY] = nt.cols.capitalY[id]!;
       nations[o + NationField.alliance] = world.alliances.allianceOf(id)?.leader ?? 0;
       nations[o + NationField.overlord] = nt.cols.living[id] === 1 ? nt.cols.overlord[id]! : 0;
+      nations[o + NationField.income] = nt.cols.income[id]!;
       n++;
     });
+    const warPairs: number[] = [];
+    for (const war of world.wars.list) for (const a of war.sides[0]) for (const b of war.sides[1]) warPairs.push(a, b);
+    const wars = Uint16Array.from(warPairs);
 
     // Formations (all; elements arrive with Phase 2 when the subscription asks for them).
     const ft = world.formations;
@@ -548,6 +552,7 @@ export class SimServer {
       tickMs: this.paused || this.speed === 'max' ? 0 : 1000 / this.speed,
       tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
       nations: { count: n, data: nations },
+      wars,
       formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, facing: ffacing, strength: fstr },
       events: { count: ec, data: events, dropped: this.droppedEvents },
       buffers,

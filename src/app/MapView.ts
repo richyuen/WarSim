@@ -4,11 +4,12 @@
  * between the previous and current tick.
  */
 import { CityLabelLayer } from '../render/labels/cityLabels';
+import { LABEL_STRIDE } from '../shared/nationLabels';
 import { drawNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
-import { modeColor, type MapMode } from '../shared/mapModes';
+import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
-import { wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { screenToWorld, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { MapRenderer } from '../render/map/MapRenderer';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
@@ -36,6 +37,13 @@ export class MapView {
   private readonly ownColor = new Map<number, number>();
   private readonly allianceLeader = new Map<number, number>();
   private readonly overlordOf = new Map<number, number>();
+  private readonly income = new Map<number, number>();
+  private readonly atWar = new Set<number>();
+  private readonly warPairs = new Set<number>();
+  private readonly controlGrid: Uint16Array;
+  /** Selected nation (0 = none; PLAN 1.30) and the hook the app uses to show it. */
+  selected = 0;
+  onSelect: (id: number) => void = () => {};
   private readonly map: MapRenderer;
   private readonly proxies: ProxyRenderer;
   private snapArrival = 0;
@@ -62,6 +70,17 @@ export class MapView {
     this.proxies = new ProxyRenderer(gl, drawUnitAtlas());
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
+    this.controlGrid = new Uint16Array(geo.w * geo.h);
+    // Click (no drag) selects the nation under the cursor.
+    let down: [number, number] | null = null;
+    canvas.addEventListener('pointerdown', (e) => (down = [e.clientX, e.clientY]));
+    canvas.addEventListener('pointerup', (e) => {
+      if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 5) {
+        const r = canvas.getBoundingClientRect();
+        this.select(this.nationAt(e.clientX - r.left, e.clientY - r.top));
+      }
+      down = null;
+    });
     this.overlay = document.createElement('canvas');
     this.overlay.className = 'map-labels map-nations';
     canvas.insertAdjacentElement('afterend', this.overlay);
@@ -97,6 +116,23 @@ export class MapView {
       const tx = t % s.tiles.tilesX;
       const ty = (t - tx) / s.tiles.tilesX;
       this.map.updateTile(tx, ty, T, s.tiles.owner, s.tiles.controller, k * T * T);
+      // CPU copy of control for picking (click → nation).
+      for (let r = 0; r < T; r++) {
+        const y = ty * T + r;
+        if (y >= this.geo.h) break;
+        const x0 = tx * T;
+        const n = Math.min(T, this.geo.w - x0);
+        this.controlGrid.set(s.tiles.controller.subarray(k * T * T + r * T, k * T * T + r * T + n), y * this.geo.w + x0);
+      }
+    }
+    this.atWar.clear();
+    this.warPairs.clear();
+    for (let i = 0; i + 1 < s.wars.length; i += 2) {
+      const a = s.wars[i]!;
+      const b = s.wars[i + 1]!;
+      this.atWar.add(a);
+      this.atWar.add(b);
+      this.warPairs.add(a < b ? a * 65536 + b : b * 65536 + a);
     }
     for (let i = 0; i < s.nations.count; i++) {
       const o = i * NATION_STRIDE;
@@ -104,6 +140,7 @@ export class MapView {
       this.ownColor.set(id, s.nations.data[o + NationField.color]!);
       this.allianceLeader.set(id, s.nations.data[o + NationField.alliance]!);
       this.overlordOf.set(id, s.nations.data[o + NationField.overlord]!);
+      this.income.set(id, s.nations.data[o + NationField.income]!);
     }
     this.applyPalette();
     const f = s.formations;
@@ -149,10 +186,58 @@ export class MapView {
   private applyPalette(): void {
     const overlords = new Set(this.overlordOf.values());
     const colorOf = (id: number): number | null => (id !== 0 ? (this.ownColor.get(id) ?? null) : null);
+    let maxIncome = 0;
+    for (const v of this.income.values()) maxIncome = Math.max(maxIncome, v);
+    const sel = this.selected;
     for (const [id, own] of this.ownColor) {
-      const n = { own, allianceLeader: colorOf(this.allianceLeader.get(id) ?? 0), overlord: colorOf(this.overlordOf.get(id) ?? 0), hasPuppets: overlords.has(id) };
+      const n = {
+        own,
+        allianceLeader: colorOf(this.allianceLeader.get(id) ?? 0),
+        overlord: colorOf(this.overlordOf.get(id) ?? 0),
+        hasPuppets: overlords.has(id),
+        atWar: this.atWar.has(id),
+        relation: this.relationTo(sel, id),
+        incomeT: maxIncome > 0 ? Math.log1p(Math.max(0, this.income.get(id) ?? 0)) / Math.log1p(maxIncome) : 0,
+      };
       this.map.setColor(id, modeColor(this.mapMode, n));
     }
+  }
+
+  /** Relation of `id` to the selected nation `sel` (diplomacy mode, PLAN 1.30). */
+  private relationTo(sel: number, id: number): Relation {
+    if (sel === 0) return 'none';
+    if (id === sel) return 'self';
+    if (this.warPairs.has(sel < id ? sel * 65536 + id : id * 65536 + sel)) return 'enemy';
+    const al = this.allianceLeader.get(sel) ?? 0;
+    if (al !== 0 && this.allianceLeader.get(id) === al) return 'ally';
+    if (this.overlordOf.get(id) === sel || this.overlordOf.get(sel) === id) return 'subject';
+    return 'neutral';
+  }
+
+  /** Display name of nation `id` from the label data (null if it has no label). */
+  nationName(id: number): string | null {
+    const d = this.labelData;
+    if (!d) return null;
+    for (let i = 0; i < d.names.length; i++) if (d.data[i * LABEL_STRIDE] === id) return d.names[i]!;
+    return null;
+  }
+
+  /** Selects a nation (0 = none): diplomacy mode colours relations to it. */
+  select(id: number): void {
+    if (id === this.selected) return;
+    this.selected = id;
+    this.onSelect(id);
+    this.applyPalette();
+    this.dirty = true;
+  }
+
+  /** The nation controlling the cell under a CSS-px point, 0 for none. */
+  nationAt(sx: number, sy: number): number {
+    const [wx, wy] = screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight);
+    const y = Math.floor(wy);
+    if (y < 0 || y >= this.geo.h) return 0;
+    const x = ((Math.floor(wx) % this.geo.w) + this.geo.w) % this.geo.w;
+    return this.controlGrid[y * this.geo.w + x] ?? 0;
   }
 
   private nationColor(id: number): number {

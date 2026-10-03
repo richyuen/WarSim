@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { NON_ALIGNED_COLOR } from '../../src/shared/mapModes';
+import { MAP_MODES, NON_ALIGNED_COLOR } from '../../src/shared/mapModes';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 
@@ -66,6 +66,6 @@ test('alliance map mode colours members by alliance and non-aligned nations grey
   await page.waitForTimeout(400);
   await page.screenshot({ path: path.join(out, 'alliances-europe.png') });
   // Cycle back to political for later tests sharing storage (modes cycle in MAP_MODES order).
-  for (let i = 0; i < 4 && (await btn.getAttribute('data-mode')) !== 'political'; i++) await btn.click();
+  for (let i = 0; i < MAP_MODES.length && (await btn.getAttribute('data-mode')) !== 'political'; i++) await btn.click();
   await expect(btn).toHaveAttribute('data-mode', 'political');
 });

@@ -86,10 +86,11 @@ export interface SimStatus {
 /** Per-nation record in `Snapshot.nations` (stride NATION_STRIDE). */
 /**
  * `alliance` = the nation's alliance leader id (0 = none; PLAN 1.17 alliance map mode);
- * `overlord` = its overlord id (0 = independent; PLAN 1.18 puppet map mode).
+ * `overlord` = its overlord id (0 = independent; PLAN 1.18 puppet map mode);
+ * `income` = last month's gross income (PLAN 1.30 income map mode).
  */
-export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5, overlord: 6 } as const;
-export const NATION_STRIDE = 7;
+export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5, overlord: 6, income: 7 } as const;
+export const NATION_STRIDE = 8;
 
 export interface SnapshotTiles {
   /** Tile side in cells. */
@@ -134,6 +135,8 @@ export interface Snapshot {
   tickMs: number;
   tiles: SnapshotTiles;
   nations: { count: number; data: Float64Array };
+  /** Pairs of nations at war, flattened [a0, b0, a1, b1, …] (map modes, PLAN 1.30). */
+  wars: Uint16Array;
   formations: SnapshotFormations;
   events: SnapshotEvents;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */

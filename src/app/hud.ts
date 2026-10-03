@@ -37,6 +37,8 @@ export class Hud {
   /** Map mode (PLAN 1.17), persisted; `onMapMode` applies it to the map view. */
   readonly mapMode = signal<MapMode>('political');
   onMapMode: (mode: MapMode) => void = () => {};
+  /** Selected nation id (0 = none; PLAN 1.30), set by map clicks. */
+  readonly selected = signal(0);
   /** Speed and pause as last reported by the worker (snapshots), for tests and diagnostics. */
   readonly worker = signal<{ speed: number | 'max'; paused: boolean } | null>(null);
 

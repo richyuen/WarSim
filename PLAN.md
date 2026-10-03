@@ -122,8 +122,11 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: screenshots of coasts at T0 zooms viewed (no cell stairs); terrain mode e2e shot.
 - [x] 1.29 Curved nation labels (worker derive + MSDF).
   AT: screenshot shows curved, area-sized names for ≥ 20 nations, no overlaps on major ones.
-- [ ] 1.30 Map modes: political, terrain, wars, diplomacy, alliances, puppets, income, revolts.
-  AT: e2e screenshots of each mode; legend present.
+- [x] 1.30a Map modes political, terrain, wars, diplomacy, alliances, puppets, income + legends,
+  click to select a nation. (Split from 1.30, 2026-10-02.)
+  AT: e2e screenshot of each mode with its legend; wars, diplomacy and income colours checked.
+- [ ] 1.30b Revolts map mode (per-province unrest choropleth: province raster + unrest texture).
+  AT: e2e screenshot with legend; a province set to high unrest renders in the hot colour.
 - [ ] 1.31 UI shell: nation panel, actions/economy panel, stats ranking, bottom bar, war banners, date/speed.
   AT: e2e clicks through each panel; screenshot vs reference layout logged.
 - [ ] 1.32 God Mode: every command in SPEC §9.

@@ -1651,3 +1651,28 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **SPEC drift:** §2.3 lists the `mapLayers` and `labels` messages.
 - **Test hygiene:** the nation-label overlay has its own class (`map-nations`), so the ink check no
   longer matches the city canvas.
+
+## 2026-10-02 — PLAN 1.30a: map modes with legends (1.30 split into a/b)
+- **New modes:**
+  - wars (red at war, grey at peace);
+  - diplomacy (relations to the selected nation: self yellow, allies green, enemies red,
+    overlord/puppets light green, others grey);
+  - income (log-scaled pale-to-green ramp).
+  - Seven modes in all, cycled by the bottom-bar button.
+- **Snapshot:** `NationField.income` (stride 8) and `wars` pairs.
+- **App:** a CPU copy of the controller grid from tiles for picking; a click selects
+  (`MapView.select`, `hud.selected`); `MapView.nationName`.
+- **UI:** a `MapLegend` per mode (with the selected nation's name in diplomacy).
+- **Sim:** 1938 nations record their gross income at creation. It was 0 until the first economy
+  month, so the income map was blank on a paused start; the e2e caught it.
+- **AT (`tests/e2e/mapModes1938.spec.ts`):**
+  - all 7 modes render with legend rows (screenshots in `docs/evidence/1.30/`, viewed);
+  - Spain red and Sweden grey in wars mode;
+  - a real mouse click selects France, and the legend names it;
+  - with Germany selected: Germany yellow, Italy green (ally), Poland grey;
+  - the Soviet Union is darker than Albania in income.
+- **Fixed along the way:** the alliance e2e's cycle-back loop now bounds by `MAP_MODES.length`.
+- **Parity:** rows 51, 52, 53, 55 and 56 → partial. Deviations: one war colour rather than one
+  per war; monthly income rather than a 7-tick average.
+- **Plan change:** 1.30 split. 1.30b is the revolts mode, a per-province choropleth that needs a
+  province raster plus an unrest texture (not a palette swap).

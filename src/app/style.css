@@ -123,3 +123,38 @@ body {
   height: 100%;
   pointer-events: none;
 }
+
+/* Map legend (PLAN 1.30), bottom right above the bar. */
+.map-legend {
+  position: fixed;
+  right: 12px;
+  bottom: 64px;
+  min-width: 160px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(20, 24, 34, 0.86);
+  color: #e8e4d8;
+  font: 12px system-ui, 'Segoe UI', sans-serif;
+  pointer-events: none;
+}
+.legend-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #f0d78c;
+}
+.legend-selected {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 18px;
+}
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}

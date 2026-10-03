@@ -1,8 +1,9 @@
 import { BottomBar } from '../ui/BottomBar';
+import { MapLegend } from '../ui/MapLegend';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 
-export function App({ hud }: { hud: Hud }) {
+export function App({ hud, nameOf }: { hud: Hud; nameOf: (id: number) => string | null }) {
   return (
     <>
       <TopBar />
@@ -15,6 +16,7 @@ export function App({ hud }: { hud: Hud }) {
         mapMode={hud.mapMode.value}
         onCycleMapMode={() => hud.cycleMapMode()}
       />
+      <MapLegend mode={hud.mapMode.value} selected={hud.selected.value ? nameOf(hud.selected.value) : null} />
     </>
   );
 }
