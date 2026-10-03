@@ -8,7 +8,7 @@ import { assets1938 } from '../helpers/earth';
 // while control is unchanged, are re-derived after control changes (at most every 2 s of wall
 // time) and after a load.
 
-describe('worker nation labels', () => {
+describe('worker derived messages (labels, nation stats)', () => {
   it('derive after init, throttle, follow control changes and loads', () => {
     const msgs: FromWorker[] = [];
     const server = new SimServer((m) => msgs.push(m));
@@ -35,5 +35,32 @@ describe('worker nation labels', () => {
     const saved = msgs.findLast((m): m is Extract<FromWorker, { type: 'reply' }> => m.type === 'reply' && m.reqId === 5)!.bytes!;
     server.handle({ type: 'load', reqId: 6, bytes: saved }, 5000);
     expect(labels().length).toBe(3);
+  }, 120_000);
+
+  // PLAN 1.31b: nation stats are throttled to 1 Hz. A step inside the window while paused must
+  // still reach the UI: the server asks to be pumped until it is sent, without advancing ticks.
+  it('nation stats follow init, and a throttled step while paused is flushed by pumping', () => {
+    const msgs: FromWorker[] = [];
+    const server = new SimServer((m) => msgs.push(m));
+    const stats = (): Extract<FromWorker, { type: 'nationStats' }>[] => msgs.filter((m): m is Extract<FromWorker, { type: 'nationStats' }> => m.type === 'nationStats');
+    server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) } }, 0);
+    expect(stats().length).toBe(1);
+    const GER = TAGS_1938.indexOf('GER') + 1;
+    const ger = stats()[0]!.nations.find((n) => n.id === GER)!;
+    expect(ger.cells).toBeGreaterThan(1000);
+    expect(ger.alliance?.name).toBe('alliance.anti_comintern');
+    expect(stats()[0]!.wars.length).toBeGreaterThan(0);
+    expect(server.running).toBe(false); // paused, nothing owed
+
+    server.handle({ type: 'step', reqId: 2, n: 1 }, 300);
+    expect(stats().length).toBe(1); // throttled
+    expect(server.running).toBe(true); // wants a pump to flush
+    expect(server.ticking).toBe(false);
+    server.pump(600, () => 600);
+    expect(stats().length).toBe(1);
+    server.pump(1100, () => 1100);
+    expect(stats().length).toBe(2);
+    expect(stats()[1]!.tick).toBe(1); // flushed, not advanced
+    expect(server.running).toBe(false);
   }, 120_000);
 });

@@ -9,10 +9,13 @@ import { dateOfTick } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { NationStats, SimClient } from './simClient';
+import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
 const KEY_LEVEL = 'warsim.speedLevel';
 const KEY_PAUSED = 'warsim.paused';
 const KEY_MAP_MODE = 'warsim.mapMode';
+const KEY_SHOW_STATS = 'warsim.showStats';
+const KEY_RANK_METRIC = 'warsim.rankMetric';
 
 function load(key: string): string | null {
   try {
@@ -41,6 +44,9 @@ export class Hud {
   readonly selected = signal(0);
   /** Selects a nation from the UI (panel chips); main wires it to the map view. */
   onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
+  /** Statistics ranking (PLAN 1.31b): shown and metric, both persisted. */
+  readonly showStats = signal(true);
+  readonly rankMetric = signal<RankMetric>('land');
   /** Nation panel / war banner data from the worker (PLAN 1.31). */
   readonly stats = signal<NationStats | null>(null);
   /** Speed and pause as last reported by the worker (snapshots), for tests and diagnostics. */
@@ -56,6 +62,9 @@ export class Hud {
     const mode = load(KEY_MAP_MODE);
     this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
     sim.onStats((m) => (this.stats.value = m));
+    this.showStats.value = load(KEY_SHOW_STATS) !== '0';
+    const metric = load(KEY_RANK_METRIC);
+    if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;
     sim.onSnapshotReceived((s) => {
       this.tick.value = s.tick;
       this.worker.value = { speed: s.speed, paused: s.paused };
@@ -78,6 +87,16 @@ export class Hud {
     this.speedLevel.value = l;
     store(KEY_LEVEL, String(l));
     this.sim.setSpeed(speedOfLevel(l));
+  }
+
+  toggleStats(): void {
+    this.showStats.value = !this.showStats.value;
+    store(KEY_SHOW_STATS, this.showStats.value ? '1' : '0');
+  }
+
+  setRankMetric(m: RankMetric): void {
+    this.rankMetric.value = m;
+    store(KEY_RANK_METRIC, m);
   }
 
   setMapMode(mode: MapMode): void {

@@ -1709,3 +1709,22 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   stepping; close. Screenshots `docs/evidence/1.31/`, viewed.
 - **Plan change:** 1.31 split; 1.31b is the statistics ranking and war banners.
 - Parity: row 60 → partial.
+
+## 2026-10-02 — PLAN 1.31b: statistics ranking and war banners
+- **Ranking** (`StatsRanking`, logic in `src/shared/ranking.ts`): top 15 by land, army, income,
+  treasury or manpower, on the right; rows select nations; the bottom bar's Statistics button
+  toggles it; metric and visibility persist.
+- **War banners** (`WarBanners`): one per active war above the bottom bar (side leaders with
+  colours, ally counts, a score bar); clicking selects the attacker leader; at most 8 + "+N".
+- **Worker fix:** nation stats are throttled to 1 Hz, and while paused nothing pumped again, so
+  a single step inside the window never reached the UI (the e2e caught it: the new war's
+  banner never appeared). The server now reports `running` while a throttled derived message
+  is owed and only flushes (no ticks) when paused; `ticking` keeps 'max' from busy-looping.
+- **Tests:** `tests/unit/ranking.test.ts` (sort order, fields); `tests/unit/workerLabels.test.ts`
+  (stats after init, throttled step flushed by pumping without advancing);
+  `tests/e2e/ranking1938.spec.ts` (sorted by every metric, Soviet Union first by land, row
+  selects, a declared war adds a banner that selects Germany, Statistics toggle).
+- Evidence `docs/evidence/1.31/ui-shell.png` (viewed): nation panel, ranking, three banners,
+  bottom bar. The first shot showed list numbering starting at "3."; rows now carry explicit
+  ranks. Grey stripes at the map's polar edges when fully zoomed out logged in BLOCKERS.
+- Parity: row 59 → partial.

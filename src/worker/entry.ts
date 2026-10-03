@@ -25,7 +25,7 @@ function schedule(): void {
       server.pump(now(), now);
       schedule();
     },
-    server.speed === 'max' ? 0 : PUMP_MS,
+    server.speed === 'max' && server.ticking ? 0 : PUMP_MS,
   );
 }
 

@@ -259,3 +259,106 @@ body {
   height: 0.7rem;
   border-radius: 2px;
 }
+
+/* Statistics ranking (PLAN 1.31b), top right. */
+.stats-ranking {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 15rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(20, 24, 32, 0.88);
+  border: 1px solid rgba(214, 178, 94, 0.55);
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+}
+.ranking-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+  color: #e9c46a;
+}
+.ranking-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rank-pos {
+  display: inline-block;
+  width: 1.6rem;
+  text-align: right;
+  margin-right: 0.35rem;
+  opacity: 0.7;
+}
+.rank-row {
+  cursor: pointer;
+  line-height: 1.35rem;
+}
+.rank-row .chip-swatch {
+  display: inline-block;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+.rank-row.selected {
+  color: #e9c46a;
+  font-weight: 700;
+}
+.rank-value {
+  float: right;
+}
+
+/* War banners (PLAN 1.31b), above the bottom bar. */
+.war-banners {
+  position: absolute;
+  bottom: 3.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem;
+  max-width: 60%;
+}
+.war-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.2rem 0.45rem;
+  background: rgba(60, 18, 14, 0.88);
+  border: 1px solid rgba(231, 111, 81, 0.7);
+  border-radius: 0.3rem;
+  color: #f1e6d2;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.war-title {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.war-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.war-allies {
+  opacity: 0.7;
+}
+.war-swords {
+  color: #e9c46a;
+}
+.war-score {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+}
+.war-score-fill {
+  display: block;
+  height: 100%;
+  background: #e76f51;
+}
+.war-more {
+  align-self: center;
+  color: #f1e6d2;
+}

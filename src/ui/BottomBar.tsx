@@ -11,10 +11,13 @@ export interface BottomBarProps {
   paused: boolean;
   onTogglePause: () => void;
   onSpeed: (level: number) => void;
+  /** Statistics ranking toggle (PLAN 1.31b); omitted where no stats exist. */
+  showStats?: boolean;
+  onToggleStats?: (() => void) | undefined;
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
@@ -40,6 +43,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       <button type="button" class="bar-btn" data-testid="mapmode-btn" data-mode={mapMode} onClick={onCycleMapMode}>
         {t('bar.mapMode', { mode: t(`mapMode.${mapMode}` as MessageKey) })}
       </button>
+      {onToggleStats ? (
+        <button type="button" class="bar-btn" data-testid="stats-btn" aria-pressed={showStats} onClick={onToggleStats}>
+          {t('bar.statistics')}
+        </button>
+      ) : null}
       <span class="bar-date" data-testid="date-label">
         {t('date.format', { day: date.day, month: t(`month.${date.month}` as MessageKey), year: date.year })}
         {paused ? <span class="bar-paused"> · {t('bar.paused')}</span> : null}

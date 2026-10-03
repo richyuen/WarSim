@@ -130,7 +130,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.31a Nation panel (Overview and Economy tabs; chips select nations); worker `nationStats`.
   (Split from 1.31, 2026-10-02.)
   AT: e2e clicks a nation, reads both tabs, follows a chip; screenshots logged.
-- [ ] 1.31b Statistics ranking (right panel, metric dropdown) and war banners strip.
+- [x] 1.31b Statistics ranking (right panel, metric dropdown) and war banners strip.
   AT: e2e ranks by each metric (sorted), banner per active war selects its leader; screenshot vs
   reference layout logged. (Bottom bar, date and speed exist since PLAN 1.8/1.17.)
 - [ ] 1.32 God Mode: every command in SPEC §9.

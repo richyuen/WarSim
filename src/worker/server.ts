@@ -336,7 +336,22 @@ export class SimServer {
 
   /** Whether the scheduler wants `pump` to be called again soon. */
   get running(): boolean {
+    return this.sim !== null && (!this.paused || this.derivedPending);
+  }
+
+  /** Whether ticks are advancing (not just flushing derived messages). */
+  get ticking(): boolean {
     return this.sim !== null && !this.paused;
+  }
+
+  /**
+   * A throttled derived message (labels, stats) still owes the UI an update: while paused the
+   * host keeps pumping until it is sent (e.g. after a single step), without advancing ticks.
+   */
+  private get derivedPending(): boolean {
+    const sim = this.sim;
+    if (!sim || !this.provinceNames) return false;
+    return sim.world.tick !== this.statsTick || sim.world.controlChanges !== this.labelVersion;
   }
 
   /**
@@ -346,6 +361,13 @@ export class SimServer {
   pump(nowMs: number, clock: () => number): void {
     if (!this.running) {
       this.lastPump = nowMs;
+      return;
+    }
+    if (this.paused) {
+      // Only flushing derived messages (see derivedPending).
+      this.lastPump = nowMs;
+      this.maybeLabels(nowMs);
+      this.maybeStats(nowMs);
       return;
     }
     if (this.lastPump < 0) this.lastPump = nowMs;

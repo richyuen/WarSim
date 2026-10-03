@@ -946,6 +946,12 @@ interpolation changes something.
   selected by a map click. Overview and Economy tabs; nation chips select. Data comes from the
   worker's `nationStats` message (every living nation + active wars, at most 1 Hz while ticks
   advance, and after init/load); real-map scenarios only.
+- **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
+  `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
+  treasury, manpower) on the right, toggled by the bottom bar's Statistics button; one banner
+  per active war (side leaders, ally counts, score bar) above the bottom bar, at most 8 + "+N".
+  While paused, the worker keeps pumping (without ticking) until throttled derived messages are
+  flushed, so a single step still updates the UI.
 - **Map modes** (implemented PLAN 1.17–1.30a, `src/shared/mapModes.ts`):
   - *Implemented:* political, alliances, puppets, terrain, wars (red at war), diplomacy (relations
     to the nation selected by clicking the map) and income (log ramp).
