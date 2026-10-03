@@ -195,7 +195,30 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   the 4-seed check (99, 105, 108, 109 × 50 years) is not worse on any criterion.
   Done 2026-10-03: all four seeds pass all seven criteria (seed 108's newcomers 1 → 3). No
   criterion went from pass to fail; individual numbers moved both ways (PROGRESS).
-- [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03).** Critic B1 (static world), continued: every seed passes the two criteria added on
+- [ ] 1.42d Critic B1: land is measured by true area, not by cell count (ADR-52; the user's
+  decision, 2026-10-03). The map is a Miller projection, so a cell near the poles covers far less
+  ground than one at the equator. By cells the Soviet Union starts at 26.8% of the owned land
+  and Denmark (Greenland) is in the top ten; by area they are 15.9% and 1.5% (PROGRESS
+  2026-10-03 has the table).
+  Scope: (a) one shared helper for the area of a cell row, `kx[y] × ky[y]` km² from the nav
+  grid's row scales; (b) every land criterion in `tools/sweep` (land moving, largest land, top
+  ten by land, leader-share range) uses area, with the thresholds unchanged; (c) the land
+  numbers a player sees (statistics series, ranking, nation panel share) use area.
+  Out of scope: sim rules that count cells (overextension share, admin cost, war score,
+  capitulation, SMALL_STATE_CELLS). That is PLAN 1.42e.
+  AT: a unit test on the 1938 start: Soviet Union 21.2 M km² and 15.9% of owned land, USA 9.3,
+  Canada 9.1, Denmark 2.0, Australia 8.1, Brazil 8.5 M km², each within ± 3%; total owned land
+  133 M km² ± 2%; the criteria fixtures in `tests/unit/sweepCriteria.test.ts` cover the area
+  measure; `npm run sim -- --scenario 1938 --seed 99 --years 5` still ends at hash 5d08e5dd (no
+  sim rule changed). No sweep is run for this task: the sweep belongs to 1.42.
+- [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
+  share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
+  Siberia and northern Canada stop weighing like twice their land. This overlaps the km
+  conversion of PLAN 7.1b: do the land-share part here, leave distances and map sizes there.
+  Rule changes: an ADR, and tune only on `npm run sweep:quick`.
+  AT: unit tests per converted rule; hash change logged in DECISIONS; gate green.
+- [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03). Retry after 1.42d
+  (and 1.42e if that is done), judged by area, on seeds from 401.** Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
   the leader-share range (2.7 points). Do not move the thresholds. (The tick time that

@@ -31,7 +31,14 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
      at year 25; no great power other than the Soviet Union is ever near the top share.
   3. Where Soviet formations die (13 lost in 30 months on seed 109, several out of supply on
      land that flipped back under them).
-- **Seen seeds:** 1–10, 99, 101–110, 201–210, 301–310. The next sweep starts at 401.
+- **Found afterwards (2026-10-03, the user's question "is the Soviet Union just too big at the
+  start?"):** the criteria count cells of a Miller map. The Soviet Union is 26.8% of the owned
+  cells and 15.9% of the owned area; Denmark is in the top ten by cells because of Greenland.
+  PLAN 1.42d changes the measure to area (ADR-52), with the thresholds as they are. **Retry
+  1.42 after 1.42d, judged by area.** This does not explain everything: the leader still only
+  shrinks and no rival grows (the items under "Not tried" stand).
+- **Seen seeds:** 1–10, 99, 101–110, 201–210, 301–310. The next sweep starts at 401. Do not
+  re-run seen seeds under the new measure to claim a pass.
 - **Kept anyway:** ADR-47, ADR-50, PLAN 1.42c and ADR-51 each remove a defect found in the
   diagnosis; none of them is a tuning constant chosen to pass a seed.
 

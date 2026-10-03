@@ -2472,3 +2472,37 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   (ADR-50), the build queue (1.42c), peace terms (ADR-51).
 - **Next:** PLAN 2.4 (FireEvent visuals), the first unchecked task that is not blocked and part
   of critic B2. It is a rendering task: screenshots viewed, and the 30 fps budget at T2 checked.
+
+## 2026-10-03 — Loop stopped by the user; next task prepared: land by area (PLAN 1.42d, ADR-52)
+- **The user stopped the loop** after the third sweep and asked whether the Soviet Union is
+  simply too big at the start.
+- **Measured** (scratch script; area of a cell in row y = `kx[y] × ky[y]` km² from
+  `navOf(world).grid`; 1938 start, seed 1; owned land 133 M km²):
+  | Nation | Cells | Area | km² |
+  |---|---|---|---|
+  | SOV | 26.8% | 15.9% | 21.2 M |
+  | CAN | 12.3% | 6.8% | 9.1 M |
+  | USA | 7.3% | 7.0% | 9.3 M |
+  | DEN | 5.4% | 1.5% | 2.0 M |
+  | AST | 4.0% | 6.1% | 8.1 M |
+  | BRA | 3.7% | 6.4% | 8.5 M |
+  | CHI | 2.7% | 3.7% | 4.9 M |
+  | AOF | 2.1% | 3.5% | 4.7 M |
+  The Soviet Union's size is right (21.2 M km²); the count of cells is what is wrong. Moving
+  the leader's share by 3 points of cells means about 19,000 cells, most of them Siberian.
+- **The user decided** to measure land by area in the sweep criteria and the statistics.
+  Written up before any run with it: ADR-52, PLAN 1.42d (measure; no sim rule, hash must stay
+  5d08e5dd) and 1.42e (sim rules that count cells; changes behaviour). PLAN 1.42 is retried
+  after 1.42d on seeds from 401.
+- **Where the cell counts are** (to convert in 1.42d): `tools/sweep/seed.ts` (`nc.cells` for
+  topLand and top10, `changed` as a count over land cells, `landCells`),
+  `tools/sweep/criteria.ts` (moving ÷ landCells), `src/sim/stats.ts` and the ranking / nation
+  panel land figures (check what they read). `nations.cells` is state and is used by sim rules:
+  leave it; add an area figure beside it (derived, or computed where needed).
+- **Not the whole answer:** by area the USA, Canada, Brazil and Australia start within a
+  factor of 2.5 of the Soviet Union and still do nothing for 50 years. The "Not tried" list in
+  BLOCKERS stands.
+- **Critic:** not run since bb1dd4f (11 commits back). Every commit since was a "Critic B1"
+  remediation commit, which restarts the count (ADR-49), and 1.42d will be one too. Whether
+  to run the critic anyway is the user's call.
+- **Next (`continue`):** PLAN 1.42d.

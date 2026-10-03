@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-52 · 2026-10-03 · accepted — Land is measured by area, not by cells (the user's decision; PLAN 1.42d)
+
+- **Context:** the map grid is a Miller projection: a cell covers `kx[y] × ky[y]` km², which
+  shrinks towards the poles. Every land figure so far is a cell count. Measured at the 1938
+  start (seed 1; owned land 133 M km²):
+
+  | Nation | Share of cells | Share of area | Area |
+  |---|---|---|---|
+  | Soviet Union | 26.8% | 15.9% | 21.2 M km² |
+  | Canada | 12.3% | 6.8% | 9.1 M km² |
+  | USA | 7.3% | 7.0% | 9.3 M km² |
+  | Denmark (Greenland) | 5.4% | 1.5% | 2.0 M km² |
+  | Australia | 4.0% | 6.1% | 8.1 M km² |
+  | Brazil | 3.7% | 6.4% | 8.5 M km² |
+
+  By cells Denmark is the fourth-largest nation in the world and the Soviet Union holds more
+  than a quarter of it. Both are artefacts of the projection.
+- **Decision:** land is measured in km² wherever a share or a ranking of land is reported.
+  One rule for all the land criteria of the sweep (SPEC §10): land moving in the last 5 years,
+  largest land share, the ten largest land holders, and the leader-share range all use area.
+  The same for the statistics, the ranking and the nation panel. The thresholds keep their
+  numbers (1% moving, < 35% land, ≥ 2 newcomers, ≥ 3 points of range); the income and war
+  criteria are untouched.
+- **This is a change of what the criteria measure, decided before any run with it.** The case
+  for it is the table above, not a sweep outcome: no run has been judged by area. Only unseen
+  seeds (401 and up) judge PLAN 1.42 under it; the seen seeds (1–10, 99, 101–110, 201–210,
+  301–310) are not re-run or re-judged to claim a pass, and the three FAILING reports stand
+  as they are.
+- **Not in this decision:** sim rules that count cells (overextension, admin cost, war score,
+  capitulation, small-state annexation). They are PLAN 1.42e, with their own ADR, because they
+  change behaviour and the state hash; 1.42d must not (seed 99, 5 years: 5d08e5dd).
+
 ### ADR-51 · 2026-10-03 · accepted — The winner of a peace keeps all the land it occupies (critic B1, PLAN 1.42)
 
 - **Context:** after ADR-47 and ADR-50 two sweeps on unseen seeds failed (9 of 10, then 7 of
