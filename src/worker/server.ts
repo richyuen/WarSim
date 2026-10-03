@@ -22,6 +22,8 @@ import {
   type Subscription,
   type SimInit,
   type ToWorker,
+  type NationStat,
+  type WarStat,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
@@ -49,6 +51,7 @@ const DEFAULT_SUB: Subscription = { bbox: [0, 0, Infinity, Infinity], z: 0, tier
 
 /** Minimum wall time between label derivations (PLAN 1.29). */
 const LABEL_INTERVAL_MS = 2000;
+const STATS_INTERVAL_MS = 1000;
 
 export class SimServer {
   sim: Sim | null = null;
@@ -82,11 +85,14 @@ export class SimServer {
   private labelVersion = -1;
   private lastLabelMs = -1;
   private unrestVersion = -1;
+  private statsTick = -1;
+  private lastStatsMs = -1;
 
   handle(msg: ToWorker, nowMs: number): void {
     try {
       this.handleInner(msg, nowMs);
       this.maybeLabels(nowMs);
+      this.maybeStats(nowMs);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       this.post({ type: 'error', reqId: 'reqId' in msg ? msg.reqId : -1, message: error.message, stack: error.stack ?? '' }, []);
@@ -131,6 +137,8 @@ export class SimServer {
         this.requireSim().load(msg.bytes);
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
+        this.statsTick = -1;
+        this.lastStatsMs = -1;
         this.resetStreams();
         this.reply(msg.reqId);
         break;
@@ -209,6 +217,8 @@ export class SimServer {
     this.labelVersion = -1;
     this.lastLabelMs = -1;
     this.unrestVersion = -1;
+    this.statsTick = -1;
+    this.lastStatsMs = -1;
     this.paused = true;
     this.owed = 0;
     this.resetStreams();
@@ -352,6 +362,76 @@ export class SimServer {
     this.lastPump = nowMs;
     this.maybeSend();
     this.maybeLabels(nowMs);
+    this.maybeStats(nowMs);
+  }
+
+  /**
+   * Nation panel and war banner data (PLAN 1.31): when the tick moved (or after init/load), at
+   * most every STATS_INTERVAL_MS. Real-map scenarios only (names come from the 1938 table).
+   */
+  private maybeStats(nowMs: number): void {
+    const sim = this.sim;
+    if (!sim || !this.provinceNames) return;
+    const world = sim.world;
+    if (world.tick === this.statsTick || (this.lastStatsMs >= 0 && nowMs - this.lastStatsMs < STATS_INTERVAL_MS)) return;
+    this.statsTick = world.tick;
+    this.lastStatsMs = nowMs;
+    const nc = world.nations.cols;
+    const men = new Map<number, number>();
+    const count = new Map<number, number>();
+    const fc = world.formations.cols;
+    world.formations.forEach((f) => {
+      const n = fc.nation[f]!;
+      men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
+      count.set(n, (count.get(n) ?? 0) + 1);
+    });
+    const puppets = new Map<number, number[]>();
+    const enemies = new Map<number, Set<number>>();
+    const wars: WarStat[] = [];
+    for (const war of world.wars.list) {
+      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick });
+      for (const [a, b] of [[war.sides[0], war.sides[1]], [war.sides[1], war.sides[0]]] as const) {
+        for (const x of a) {
+          const set = enemies.get(x) ?? new Set<number>();
+          for (const y of b) set.add(y);
+          enemies.set(x, set);
+        }
+      }
+    }
+    world.nations.forEach((id) => {
+      const o = nc.overlord[id]!;
+      if (nc.living[id] === 1 && o !== 0) puppets.set(o, [...(puppets.get(o) ?? []), id]);
+    });
+    const nations: NationStat[] = [];
+    world.nations.forEach((id) => {
+      if (nc.living[id] !== 1) return;
+      const al = world.alliances.allianceOf(id);
+      const k = al ? al.members.indexOf(id) : -1;
+      nations.push({
+        id,
+        name: this.nameOf(id),
+        color: nc.color[id]!,
+        cells: nc.cells[id]!,
+        gold: nc.gold[id]!,
+        income: nc.income[id]!,
+        expenses: nc.expenses[id]!,
+        incomeBonus: nc.incomeBonus[id]!,
+        bankrupt: nc.bankrupt[id] === 1,
+        manpower: nc.manpower[id]!,
+        men: men.get(id) ?? 0,
+        formations: count.get(id) ?? 0,
+        efficiency: nc.efficiency[id]!,
+        alliance: al ? { name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
+        overlord: nc.overlord[id]!,
+        autonomy: nc.autonomy[id]!,
+        loyalty: nc.loyalty[id]!,
+        integration: nc.integration[id]!,
+        puppets: puppets.get(id) ?? [],
+        enemies: [...(enemies.get(id) ?? [])],
+        aiOff: nc.aiOff[id] === 1,
+      });
+    });
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars }, []);
   }
 
   /**

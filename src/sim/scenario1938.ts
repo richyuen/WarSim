@@ -291,10 +291,12 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   }
 
   // Starting treasury and manpower pool.
-  const { gross, population } = monthlyAccounts(world, ECONOMY_TABLES_1938);
+  const { gross, expenses, population } = monthlyAccounts(world, ECONOMY_TABLES_1938);
   world.nations.forEach((id) => {
     world.nations.cols.gold[id] = START_GOLD_MONTHS * gross[id]!;
-    world.nations.cols.income[id] = gross[id]!; // known before the first economy month (income map mode, PLAN 1.30)
+    // Known before the first economy month (income map mode PLAN 1.30, economy panel PLAN 1.31a).
+    world.nations.cols.income[id] = gross[id]!;
+    world.nations.cols.expenses[id] = expenses[id]!;
     world.nations.cols.manpower[id] = MANPOWER_START_SHARE * population[id]!;
   });
   return world;

@@ -1692,3 +1692,20 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - Evidence `docs/evidence/1.30/mode-revolts-warsaw.png`, viewed.
 - **Known:** province edges are cell-blocky (nearest-cell province lookup).
 - Parity: row 57 → partial (goes beyond AoC, which has no dedicated revolts mode).
+
+## 2026-10-02 — PLAN 1.31a: nation panel (1.31 split into a/b)
+- **Worker:** new `nationStats` message (`NationStat` per living nation + `WarStat` per war), at
+  most once a second while the tick moves, plus after init/load. Fields: name key, colour, land,
+  gold, income, expenses, bonus, bankrupt, manpower, men/formations, CE, alliance (name, leader,
+  unity, member loyalty), overlord, autonomy/loyalty/integration, puppets, enemies, AI off.
+- **App:** `hud.stats` signal; `hud.onSelectNation` → `MapView.select`.
+- **UI:** `NationPanel` on the left: Overview and Economy tabs, nation chips (overlord, puppets,
+  enemies) select that nation, × closes. Actions wait for God Mode / player control (1.32/1.33).
+- **Sim:** 1938 nations also record day-one expenses (they read 0 until the first economy month;
+  seen in the evidence screenshot).
+- **AT** (`tests/e2e/nationPanel1938.spec.ts`): real click on Germany → panel with land > 1000,
+  army > 100k, Anti-Comintern Pact, at peace; Economy shows income, expenses > 0, treasury and a
+  consistent balance; Nationalist Spain's enemy chip selects its enemy; stats refresh after
+  stepping; close. Screenshots `docs/evidence/1.31/`, viewed.
+- **Plan change:** 1.31 split; 1.31b is the statistics ranking and war banners.
+- Parity: row 60 → partial.

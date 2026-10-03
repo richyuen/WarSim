@@ -28,6 +28,7 @@ hud.installKeys(window);
 if (view) {
   hud.onMapMode = (m) => view.setMapMode(m);
   view.onSelect = (id) => (hud.selected.value = id);
+  hud.onSelectNation = (id) => view.select(id);
   view.setMapMode(hud.mapMode.value);
 }
 const autosave = new Autosave(sim, scenarioId);

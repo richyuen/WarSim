@@ -217,4 +217,41 @@ export type FromWorker =
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
-  | { type: 'labels'; data: Float64Array; names: string[] };
+  | { type: 'labels'; data: Float64Array; names: string[] }
+  /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[] };
+
+/** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
+export interface NationStat {
+  id: number;
+  name: string;
+  color: number;
+  cells: number;
+  gold: number;
+  income: number;
+  expenses: number;
+  incomeBonus: number;
+  bankrupt: boolean;
+  manpower: number;
+  /** Men in its formations, and their count. */
+  men: number;
+  formations: number;
+  efficiency: number;
+  alliance: { name: string; leader: number; unity: number; loyalty: number } | null;
+  overlord: number;
+  autonomy: number;
+  loyalty: number;
+  integration: number;
+  puppets: number[];
+  enemies: number[];
+  aiOff: boolean;
+}
+
+/** An active war (PLAN 1.31): side leaders first; score > 0 favours the attackers. */
+export interface WarStat {
+  id: number;
+  attackers: number[];
+  defenders: number[];
+  score: number;
+  startTick: number;
+}

@@ -127,8 +127,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: e2e screenshot of each mode with its legend; wars, diplomacy and income colours checked.
 - [x] 1.30b Revolts map mode (per-province unrest choropleth: province raster + unrest texture).
   AT: e2e screenshot with legend; a province set to high unrest renders in the hot colour.
-- [ ] 1.31 UI shell: nation panel, actions/economy panel, stats ranking, bottom bar, war banners, date/speed.
-  AT: e2e clicks through each panel; screenshot vs reference layout logged.
+- [x] 1.31a Nation panel (Overview and Economy tabs; chips select nations); worker `nationStats`.
+  (Split from 1.31, 2026-10-02.)
+  AT: e2e clicks a nation, reads both tabs, follows a chip; screenshots logged.
+- [ ] 1.31b Statistics ranking (right panel, metric dropdown) and war banners strip.
+  AT: e2e ranks by each metric (sorted), banner per active war selects its leader; screenshot vs
+  reference layout logged. (Bottom bar, date and speed exist since PLAN 1.8/1.17.)
 - [ ] 1.32 God Mode: every command in SPEC §9.
   AT: an e2e test per command asserts the sim effect via `__warsim`.
 - [ ] 1.33 Take control of a nation (player orders: move/attack formations, diplomacy actions, production).

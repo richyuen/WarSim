@@ -8,7 +8,7 @@ import { signal } from '@preact/signals';
 import { dateOfTick } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
-import type { SimClient } from './simClient';
+import type { NationStats, SimClient } from './simClient';
 
 const KEY_LEVEL = 'warsim.speedLevel';
 const KEY_PAUSED = 'warsim.paused';
@@ -39,6 +39,10 @@ export class Hud {
   onMapMode: (mode: MapMode) => void = () => {};
   /** Selected nation id (0 = none; PLAN 1.30), set by map clicks. */
   readonly selected = signal(0);
+  /** Selects a nation from the UI (panel chips); main wires it to the map view. */
+  onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
+  /** Nation panel / war banner data from the worker (PLAN 1.31). */
+  readonly stats = signal<NationStats | null>(null);
   /** Speed and pause as last reported by the worker (snapshots), for tests and diagnostics. */
   readonly worker = signal<{ speed: number | 'max'; paused: boolean } | null>(null);
 
@@ -51,6 +55,7 @@ export class Hud {
     this.paused.value = load(KEY_PAUSED) === '1';
     const mode = load(KEY_MAP_MODE);
     this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
+    sim.onStats((m) => (this.stats.value = m));
     sim.onSnapshotReceived((s) => {
       this.tick.value = s.tick;
       this.worker.value = { speed: s.speed, paused: s.paused };

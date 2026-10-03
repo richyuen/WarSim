@@ -20,6 +20,7 @@ import type {
 } from '../shared/protocol';
 
 /** Static map layers sent by the worker (PLAN 1.28b). */
+export type NationStats = Extract<FromWorker, { type: 'nationStats' }>;
 export type MapLayers = Extract<FromWorker, { type: 'mapLayers' }>;
 
 type Reply =
@@ -63,6 +64,11 @@ export class SimClient {
     if (msg.type === 'provinceStats') {
       this.unrest = msg.unrest;
       for (const l of this.unrestListeners) l(msg.unrest);
+      return;
+    }
+    if (msg.type === 'nationStats') {
+      this.stats = msg;
+      for (const l of this.statsListeners) l(msg);
       return;
     }
     if (msg.type === 'labels') {
@@ -116,6 +122,15 @@ export class SimClient {
     this.unrestListeners.add(l);
     if (this.unrest) l(this.unrest);
     return () => this.unrestListeners.delete(l);
+  }
+
+  /** Nation panel / war banner data (PLAN 1.31); late listeners get the last ones at once. */
+  stats: NationStats | null = null;
+  private readonly statsListeners = new Set<(m: NationStats) => void>();
+  onStats(l: (m: NationStats) => void): () => void {
+    this.statsListeners.add(l);
+    if (this.stats) l(this.stats);
+    return () => this.statsListeners.delete(l);
   }
 
   /** Nation label curves from the worker (PLAN 1.29); late listeners get the last ones at once. */

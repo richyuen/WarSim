@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 28.1%** (verified 0 · partial 45 · not started 35 · total 80)
+**Parity score: 28.8%** (verified 0 · partial 46 · not started 34 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -75,7 +75,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 57 | Revolts map mode | No dedicated mode: cities above 70% revolt progress show smoke + red tint; Alt-hover revolt preview; City Revolts statistics tab [TEXT 2026-10-02] | Revolts mode (unrest heat map) + smoke overlay (PLAN 1.30) | partial | `tests/e2e/mapModes1938.spec.ts`, `docs/evidence/1.30/mode-revolts-warsaw.png` | 2026-10-02 (PLAN 1.30b): per-province unrest choropleth (calm → orange at 50 → dark red at 100) with legend; goes beyond AoC (no dedicated mode). Missing: smoke on restless cities, Alt-hover revolt preview, revolts statistics tab. |
 | 58 | Map mode hotkeys | F1–F6 switch map modes [TEXT 2026-10-02] | Number/F-key shortcuts | not started |  |  |
 | 59 | Statistics | Ranked bar lists: size, age, alliances, income, city revolts, flags, kills, total wars, cities; dead nations marked [TEXT+VISUAL 2026-10-02] | Statistics panel incl. military size (Phase 1 UI) | not started |  | Baseline: "statistics (incl. military size)"; AoC has no military size |
-| 60 | Nation view | Nation panel: flag, age, previous lives, wars, diplomacy list, puppets, economy tab [TEXT+VISUAL 2026-10-02] | Nation panel | not started |  |  |
+| 60 | Nation view | Nation panel: flag, age, previous lives, wars, diplomacy list, puppets, economy tab [TEXT+VISUAL 2026-10-02] | Nation panel | partial | `tests/e2e/nationPanel1938.spec.ts`, `docs/evidence/1.31/panel-overview.png`, `docs/evidence/1.31/panel-economy.png` | 2026-10-02 (PLAN 1.31a): click a nation → panel with Overview (land, army, CE, alliance unity/loyalty, overlord with autonomy/loyalty/integration, puppets, enemies as clickable chips) and Economy (income, expenses, balance, treasury, bonus, manpower, bankrupt). Missing: flag, age, previous lives, diplomacy actions. |
 | 61 | History log | Full history panel (v3.3.2): every event, filter by type, text search, optional in saves; export to a text file; grouped by year [TEXT 2026-10-02] | Filterable, exportable history log (Phase 1) | not started |  | Baseline: "history log … filterable and exportable" |
 | 62 | Event popups | Colour-chipped clickable nation names in event popups ("X was conquered by Y"); per-type filters saved [TEXT+VISUAL 2026-10-02] | Event feed with nation chips and filters | not started |  |  |
 | 63 | Camera controls | Arrow keys, numpad +/−, Q/E zoom, middle-mouse drag, wheel, zoom sensitivity; touch on mobile [TEXT 2026-10-02] | Keyboard/drag/wheel/touch-pinch camera (PLAN 0.17) | partial | `tests/e2e/camera.spec.ts`, `tests/unit/camera.test.ts` | Baseline: "pan/zoom with keyboard, drag and touch". Phase 0: arrows/WASD, E/Q, +/−, numpad, wheel at cursor, drag, touch pinch, continuous zoom. Missing: zoom-sensitivity setting |
