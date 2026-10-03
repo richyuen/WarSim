@@ -24,6 +24,7 @@ import { isDayStart, isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { makePeace, declareWar } from '../systems/war';
+import { canJoin, noWarAmong } from '../systems/alliances';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 7;
@@ -150,11 +151,11 @@ export function strategicAi(world: World): void {
     if (!al.allianceOf(n)) {
       const threat = neighbours.find((t) => nc.aggression[t]! >= THREAT_AGGRESSION && str[t]! > THREAT_RATIO * Math.max(1, str[n]!) && !world.wars.atWar(n, t));
       if (threat !== undefined && hashToUnit(hash32(world.seed, day, n, SALT_ALLY)) < ALLY_P) {
-        const options = neighbours.map((m) => al.allianceOf(m)).filter((a) => a && !a.members.includes(threat));
+        const options = neighbours.map((m) => al.allianceOf(m)).filter((a) => a && !a.members.includes(threat) && canJoin(world, n, a));
         const join = options.sort((a, b) => b!.members.reduce((s, m) => s + str[m]!, 0) - a!.members.reduce((s, m) => s + str[m]!, 0) || a!.id - b!.id)[0];
         if (join && al.join(n, join)) world.out.emit(world.tick, EventKind.AllianceJoined, n, join.id, NaN, NaN);
         else {
-          const partner = [...(nb.get(threat) ?? [])].sort((a, b) => a - b).find((m) => m !== n && nc.living[m] === 1 && !al.allianceOf(m) && nc.overlord[m] === 0);
+          const partner = [...(nb.get(threat) ?? [])].sort((a, b) => a - b).find((m) => m !== n && nc.living[m] === 1 && !al.allianceOf(m) && nc.overlord[m] === 0 && !world.wars.atWar(n, m));
           const a = partner !== undefined ? al.create(n, [partner], 'alliance.defensive', 40) : null;
           if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
         }
@@ -183,12 +184,12 @@ function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array
   for (const m of members) {
     if (al.allianceOf(m)) continue;
     if (existing) {
-      if (al.join(m, existing)) world.out.emit(world.tick, EventKind.AllianceJoined, m, existing.id, NaN, NaN);
+      if (canJoin(world, m, existing) && al.join(m, existing)) world.out.emit(world.tick, EventKind.AllianceJoined, m, existing.id, NaN, NaN);
     }
   }
   if (!existing) {
     const free = members.filter((m) => !al.allianceOf(m));
-    if (free.length >= 2) {
+    if (free.length >= 2 && noWarAmong(world, free)) {
       const a = al.create(free[0]!, free.slice(1), 'alliance.coalition', 50);
       if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
     }

@@ -6,6 +6,7 @@
  * are transferred back for reuse.
  */
 import type { Command } from '../shared/commands';
+import type { HistoryRow } from '../shared/history';
 import type {
   FromWorker,
   Inspection,
@@ -228,6 +229,13 @@ export class SimClient {
 
   async hash(): Promise<SimStatus> {
     return (await this.status({ type: 'hash' })).status;
+  }
+
+  /** The history log (PLAN 1.34a). */
+  async history(): Promise<HistoryRow[]> {
+    const r = await this.status({ type: 'history' });
+    if (!r.bytes) throw new Error('history reply without bytes');
+    return JSON.parse(new TextDecoder().decode(r.bytes)) as HistoryRow[];
   }
 
   /** JSON summary of the world (PLAN 1.32; tests and the critic). */

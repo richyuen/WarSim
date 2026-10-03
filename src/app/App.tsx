@@ -1,5 +1,6 @@
 import { BottomBar } from '../ui/BottomBar';
 import { MapLegend } from '../ui/MapLegend';
+import { HistoryPanel } from '../ui/HistoryPanel';
 import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
@@ -26,8 +27,19 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
         onToggleStats={stats ? () => hud.toggleStats() : undefined}
         godMode={hud.godMode.value}
         onToggleGod={stats ? () => hud.toggleGod() : undefined}
+        showHistory={hud.showHistory.value}
+        onToggleHistory={stats ? () => hud.toggleHistory() : undefined}
         playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
+      {stats && hud.showHistory.value ? (
+        <HistoryPanel
+          load={() => hud.sim.history()}
+          refreshKey={stats.tick}
+          startDay={hud.startDay}
+          nations={[...stats.nations.map((n) => ({ id: n.id, name: n.name })), ...stats.dead]}
+          onClose={() => hud.toggleHistory()}
+        />
+      ) : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} /> : null}
       {stats && hud.showStats.value ? (
         <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} />

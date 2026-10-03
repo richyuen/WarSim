@@ -49,6 +49,20 @@ export function allianceSystem(world: World): void {
  * is not at war with `from`. It then joins `from`'s alliance, or both found a defensive pact.
  * Otherwise `AllianceRejected`.
  */
+/**
+ * Whether nations `ids` may share an alliance: no two of them at war (review in PLAN 1.34a: the
+ * AI joined the alliance of a neighbour it was fighting, so allies were at war with each other).
+ */
+export function noWarAmong(world: World, ids: readonly number[]): boolean {
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) if (world.wars.atWar(ids[i]!, ids[j]!)) return false;
+  return true;
+}
+
+/** Whether `n` may join alliance `a`: in none yet and at war with none of its members. */
+export function canJoin(world: World, n: number, a: Alliance): boolean {
+  return world.alliances.allianceOf(n) === undefined && !a.members.some((m) => world.wars.atWar(n, m));
+}
+
 export function proposeAlliance(world: World, from: number, to: number): boolean {
   const nc = world.nations.cols;
   const al = world.alliances;
@@ -62,7 +76,7 @@ export function proposeAlliance(world: World, from: number, to: number): boolean
     nc.overlord[to] === 0 &&
     !world.wars.atWar(from, to);
   const own = ok ? al.allianceOf(from) : undefined;
-  const joined = !ok ? null : own ? (al.join(to, own) ? own : null) : al.create(from, [to], 'alliance.defensive', 50);
+  const joined = !ok ? null : own ? (canJoin(world, to, own) && al.join(to, own) ? own : null) : al.create(from, [to], 'alliance.defensive', 50);
   if (!joined) {
     world.out.emit(world.tick, EventKind.AllianceRejected, from, to, NaN, NaN);
     return false;

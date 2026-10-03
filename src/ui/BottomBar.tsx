@@ -17,12 +17,15 @@ export interface BottomBarProps {
   /** God Mode toggle (PLAN 1.32b); omitted where no stats exist. */
   godMode?: boolean;
   onToggleGod?: (() => void) | undefined;
+  /** History log toggle (PLAN 1.34a). */
+  showHistory?: boolean;
+  onToggleHistory?: (() => void) | undefined;
   /** The nation the player controls and its selected formations (PLAN 1.33a). */
   playing?: { name: string; selected: number } | null;
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
@@ -51,6 +54,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       {onToggleStats ? (
         <button type="button" class="bar-btn" data-testid="stats-btn" aria-pressed={showStats} onClick={onToggleStats}>
           {t('bar.statistics')}
+        </button>
+      ) : null}
+      {onToggleHistory ? (
+        <button type="button" class="bar-btn" data-testid="history-btn" aria-pressed={showHistory} onClick={onToggleHistory}>
+          {t('bar.history')}
         </button>
       ) : null}
       {onToggleGod ? (

@@ -14,6 +14,7 @@ import { Alliances } from './alliances';
 import { Provinces } from './provinces';
 import { Buffs } from './buffs';
 import { Battles } from './battles';
+import { History } from './history';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 
@@ -255,8 +256,12 @@ export class TickOutputs {
     this.dirtyTiles.fill(1);
   }
 
+  /** The world's history log (state, PLAN 1.34a): historic kinds are recorded on emit. */
+  history: History | null = null;
+
   emit(tick: number, kind: EventKind, a: number, b: number, x: number, y: number): void {
     this.events.push(tick, kind, a, b, x, y);
+    this.history?.record(tick, kind, a, b, x, y);
   }
 }
 
@@ -343,6 +348,8 @@ export class World {
   provinces = new Provinces();
   buffs = new Buffs();
   battles = new Battles();
+  /** History log (PLAN 1.34a). */
+  history = new History();
   /**
    * Derived (not state): a full supply refresh is needed (load, overlords, raw layer writes; code
    * that writes `cells.controller` directly must set it). Cell-level changes through
@@ -391,6 +398,7 @@ export class World {
     this.rng = new RngStreams(this.seed);
     this.cells = new CellLayers(w, h);
     this.out = new TickOutputs(w, h);
+    this.out.history = this.history;
     this.out.markAllDirty();
   }
 
@@ -435,7 +443,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history];
   }
 
   cellIndex(x: number, y: number): number {

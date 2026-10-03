@@ -6,7 +6,7 @@ import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation } from './systems/elements';
 import { declareWar, makePeace, offerPeace } from './systems/war';
-import { leaveAlliance, proposeAlliance } from './systems/alliances';
+import { canJoin, leaveAlliance, noWarAmong, proposeAlliance } from './systems/alliances';
 import { makePuppet, releasePuppet } from './systems/puppets';
 import { collapseNation, reviveOnCores } from './systems/revival';
 import { MAX_CE, MIN_CE } from './systems/efficiency';
@@ -119,13 +119,14 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     }
     case 'createAlliance': {
+      if (!noWarAmong(world, [cmd.leader, ...cmd.members])) return;
       const a = world.alliances.create(cmd.leader, cmd.members, cmd.nameKey, 50);
       if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
       return;
     }
     case 'joinAlliance': {
       const a = world.alliances.list.find((x) => x.id === cmd.alliance);
-      if (a && world.nations.has(cmd.nation) && world.alliances.join(cmd.nation, a)) world.out.emit(world.tick, EventKind.AllianceJoined, cmd.nation, a.id, NaN, NaN);
+      if (a && world.nations.has(cmd.nation) && canJoin(world, cmd.nation, a) && world.alliances.join(cmd.nation, a)) world.out.emit(world.tick, EventKind.AllianceJoined, cmd.nation, a.id, NaN, NaN);
       return;
     }
     case 'leaveAlliance':

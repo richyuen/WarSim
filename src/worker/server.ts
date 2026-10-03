@@ -12,6 +12,8 @@ import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
 import { EVENT_STRIDE } from '../shared/events';
+import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
+import { HISTORY_STRIDE } from '../sim/history';
 import {
   NATION_STRIDE,
   NationField,
@@ -148,6 +150,9 @@ export class SimServer {
         break;
       case 'inspect':
         this.reply(msg.reqId, this.inspect());
+        break;
+      case 'history':
+        this.reply(msg.reqId, this.historyRows());
         break;
       case 'save':
         this.reply(msg.reqId, this.requireSim().save());
@@ -526,6 +531,27 @@ export class SimServer {
       });
     });
     return { nations, wars };
+  }
+
+  /** The history log with a/b names resolved (PLAN 1.34a), as JSON `HistoryRow[]`. */
+  private historyRows(): Uint8Array {
+    const world = this.requireSim().world;
+    const rows = world.history.rows;
+    const alliances = new Map(world.alliances.list.map((a) => [a.id, a.nameKey]));
+    const cc = world.cities.cols;
+    const name = (role: HistoryRole, v: number): string => {
+      if (role === 'nation') return v !== 0 && world.nations.has(v) ? this.nameOf(v) : '';
+      if (role === 'alliance') return alliances.get(v) ?? `=#${v}`;
+      if (role === 'city') return v !== 0 && world.cities.has(v) ? `=${cities1938.cities[cc.def[v]!]?.name ?? ''}` : '';
+      return '';
+    };
+    const out: HistoryRow[] = [];
+    for (let i = 0; i < rows.length; i += HISTORY_STRIDE) {
+      const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
+      const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
+      out.push({ tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b) });
+    }
+    return new TextEncoder().encode(JSON.stringify(out));
   }
 
   /** JSON summary of the world for tests and the critic (PLAN 1.32). */

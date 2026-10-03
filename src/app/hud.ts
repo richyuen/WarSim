@@ -98,6 +98,13 @@ export class Hud {
     this.sim.setSpeed(speedOfLevel(l));
   }
 
+  /** History log panel (PLAN 1.34a). */
+  readonly showHistory = signal(false);
+
+  toggleHistory(): void {
+    this.showHistory.value = !this.showHistory.value;
+  }
+
   toggleStats(): void {
     this.showStats.value = !this.showStats.value;
     store(KEY_SHOW_STATS, this.showStats.value ? '1' : '0');

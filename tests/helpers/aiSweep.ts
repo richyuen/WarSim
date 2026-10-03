@@ -6,7 +6,10 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { assets1938 } from './earth';
 
-/** PLAN 1.24 AT: a 10-year 1938 run on `seed` has ≥ 3 wars, ≥ 1 peace, ≥ 1 alliance change. */
+/**
+ * PLAN 1.24 AT: a 10-year 1938 run on `seed` has ≥ 3 wars, ≥ 1 peace, ≥ 1 alliance change; and,
+ * at every year end, no two members of one alliance are at war.
+ */
 export function aiSweep(seed: number): void {
   const s = new Sim({ scenario: '1938', seed, assets: assets1938(SIZE_1938.w) });
   const counts: Record<string, number> = {};
@@ -26,6 +29,10 @@ export function aiSweep(seed: number): void {
       w.out.fires.length = 0;
     });
     yearly.push(year);
+    // Invariant (review in PLAN 1.34a): no alliance has two members at war with each other.
+    for (const al of s.world.alliances.list) {
+      for (const m of al.members) for (const o of al.members) if (m < o) expect(s.world.wars.atWar(m, o), `seed ${seed} year ${y}: allies ${m} and ${o} at war`).toBe(false);
+    }
   }
   const wars = counts['WarDeclared'] ?? 0;
   const peace = counts['PeaceSigned'] ?? 0;

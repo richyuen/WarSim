@@ -1868,3 +1868,30 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **SPEC drift:** §2.3 lists `cmd now`, `inspect`, `nationStats`, `provinceStats` and the
   `mapLayers` province/templates fields.
 - **Dead code:** none left from the God tab iterations (checked).
+
+## 2026-10-02 — PLAN 1.34a: history log with filters and export (1.34 split into a/b)
+- **Sim:** `History` (`src/sim/history.ts`) is a new world part, saved as `history.rows`; older
+  saves start empty. `TickOutputs.emit` records every event of a `HISTORY_KINDS` kind (18
+  kinds). Emission is deterministic, so the log replays identically.
+- **Worker:** a `history` request returns `HistoryRow[]` with a/b names resolved by role
+  (`src/shared/history.ts`: roles, kind names).
+- **Shared logic:** `filterHistory` (kind; nation in nation roles only; year range), `isoDate`,
+  `toExport`, `toCsv` (RFC 4180).
+- **UI:** `HistoryPanel` (bottom-bar History button): newest 400 shown, type/nation/year
+  filters, a count, Export CSV/JSON of the filtered rows. Each kind has its own sentence
+  (i18n `history.<Kind>`).
+- **AT** (`tests/e2e/history1938.spec.ts`): a God war plus 2 AI months.
+  - The type filter leaves only war declarations, as many as in the log; nation + type
+    narrows further; a 1950+ year range empties the list.
+  - The downloaded CSV (header, row count, first row's date/tick/type/a) and JSON (every
+    record matches the filtered rows; "Germany declared war on Poland") are validated.
+- **Unit tests:** `tests/unit/history.test.ts` (state, save/load replay, filters, CSV quoting).
+- **Sim bug found in the evidence log:** "Poland joined Anti-Comintern Pact" while at war with
+  Germany. The AI's threat-alliance join checked only for the threat, not for members it
+  fought.
+  - New `canJoin` / `noWarAmong` (`systems/alliances.ts`), used by AI joins, coalition joins
+    and creation, God join/create, and player proposals.
+  - The 10-year AI sweeps now assert, at every year end, that no two allies are at war. Seed
+    1 failed in year 0 without the fix; all three pass with it.
+- **Parity:** row 61 → partial.
+- **Plan change:** 1.34 split; 1.34b is statistics series + charts.

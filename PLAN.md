@@ -146,8 +146,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.33b Player Actions tab for the controlled nation: diplomacy (declare war, offer peace,
   ally) and production (queue templates with cost and time; see the queue).
   AT: e2e as Poland queues a formation (gold drops, it appears when ready) and declares war.
-- [ ] 1.34 Statistics (incl. military size by domain) + charts; history log with filters + CSV/JSON export.
+- [x] 1.34a History log (saved), History panel with filters + CSV/JSON export.
+  (Split from 1.34, 2026-10-02.)
   AT: export file contents validated in e2e; filters reduce rows correctly.
+- [ ] 1.34b Statistics: per-nation series (land, income, gold, military size by domain,
+  casualties) sampled monthly + charts.
+  AT: series match the sim at sampled months (unit); e2e chart renders the selected nations.
 - [ ] 1.35 Editor: brush/bucket/line, undo/redo, target mask.
   AT: unit tests on the undo stack; e2e paints, undoes and redoes, with identical raster hashes.
 - [ ] 1.36 Editor: cities, gold & core costs, alliances, puppets, annex, preset revolts.

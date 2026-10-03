@@ -1007,6 +1007,12 @@ interpolation changes something.
   our own SVG set); save/load scenario files.
 - **Stats**: per-nation series (land, income, gold, military size by domain,
   casualties, warheads), ranking list, charts.
+- **History log** (implemented PLAN 1.34a):
+  - `src/sim/history.ts`: state, saved as `history.rows`. Every emitted event of a
+    `HISTORY_KINDS` kind is recorded on emit.
+  - The worker resolves names per `HISTORY_ROLES` (`history` request).
+  - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
+    (RFC 4180) and JSON export of the filtered rows.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
 - **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,

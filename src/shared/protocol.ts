@@ -55,6 +55,8 @@ export type ToWorker =
   | { type: 'hash'; reqId: number }
   /** PLAN 1.32: a JSON summary of the world (`Inspection`) for tests and the critic. */
   | { type: 'inspect'; reqId: number }
+  /** PLAN 1.34a: the history log as JSON `HistoryRow[]` in the reply bytes. */
+  | { type: 'history'; reqId: number }
   | { type: 'save'; reqId: number }
   | { type: 'load'; reqId: number; bytes: Uint8Array }
   | { type: 'speed'; speed: Speed }

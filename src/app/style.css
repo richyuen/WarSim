@@ -430,3 +430,40 @@ body {
   opacity: 0.4;
   cursor: default;
 }
+
+/* History log (PLAN 1.34a), top centre. */
+.history-panel {
+  position: absolute;
+  top: 3.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(36rem, calc(100% - 38rem));
+  min-width: 22rem;
+  max-height: calc(100% - 12rem);
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.7rem;
+  background: rgba(20, 24, 32, 0.92);
+  border: 1px solid rgba(214, 178, 94, 0.55);
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+}
+.history-filters input {
+  width: 5.5rem;
+  flex: 0 0 auto;
+}
+.history-list {
+  margin: 0.3rem 0 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+.history-list li {
+  line-height: 1.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.history-date {
+  display: inline-block;
+  min-width: 7.5rem;
+  opacity: 0.65;
+}
