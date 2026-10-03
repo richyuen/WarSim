@@ -168,9 +168,8 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.39b1 New-game options: looping map, randomisation (aggression, traits, starting gold,
   efficiency mode). (Split from 1.39b, 2026-10-03.)
   AT: e2e starts games with each option and verifies the effect in the sim.
-- [ ] 1.39b2 Map size S–XL for the 1938 world (L/XL assets from the data pipeline, per-game
-  geometry instead of the SIZE_1938 constant).
-  AT: e2e starts S and L games; cell counts, geometry and pathing match the size.
+  (1.39b2, map size S–XL: moved to PLAN 7.1b on 2026-10-03, ADR-43. The sim is tuned in cells
+  for the M map; sizes need km-based distances, re-tuning, L/XL assets and XL performance.)
 - [ ] 1.40 Dynamism tuning: `npm run sweep` (10 seeds × 50 years) passes the SPEC §10 criteria.
   AT: sweep report committed in `docs/sweeps/` with all criteria green.
 - [ ] 1.41 Phase 1 review + PARITY rows updated with evidence.
@@ -271,6 +270,11 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 
 - [ ] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms).
   AT: `docs/bench/` report green on the reference machine.
+- [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
+  hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
+  ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
+  AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
+  tick and memory budgets.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
 - [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.

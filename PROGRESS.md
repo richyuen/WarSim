@@ -2132,3 +2132,13 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     nations, no wrap rendering. Switching back restores the scenario's values.
 - **Parity:** rows 69 and 75 → partial (appended).
 - **Plan change:** 1.39b2 is map size S–XL (needs L/XL assets and per-game geometry).
+
+## 2026-10-03 — PLAN 1.39b2: map sizes deferred to 7.1b (ADR-43)
+- **Audit:** the sim is tuned in cells for the M map: AI sector/deploy, combat
+  contact/buckets, battle radii, corridor, spawn and snap reaches, militia density, territory
+  pressure radius and cell-by-cell flips. Movement is km-based; `kmPerCell` exists but is
+  unused.
+- **Costs:** L/XL terrain isn't shipped (ADR-13). The tick is already over budget at M.
+- **Decision (ADR-43):** M only in Phase 1. Map sizes become PLAN 7.1b, after the performance
+  pass, with the audit list as its starting point.
+- PLAN, SPEC and PARITY row 70 updated. No code change in this iteration.

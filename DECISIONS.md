@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-43 · 2026-10-03 · accepted — Map sizes S–XL move to Phase 7 (after km-based sim distances)
+
+- **Context:** PLAN 1.39b2 asked for a map-size picker (S–XL) for the 1938 world. An audit found
+  the sim tuned for the M map (2048×1024, ~19.6 km per cell). Movement is km-based, but much
+  else is counted in cells:
+  - operational AI sectors (4) and deploy range (60);
+  - combat contact (1.5) and buckets (2);
+  - Major Battle match/end radii (3/5) and corridor length/width (8/2);
+  - movement target snap (3), production spawn reach (40), militia per 40 cells;
+  - city snapping (2), OOB anchor reach (12), strait extension (4);
+  - territory pressure radius (2), and cell-by-cell flips with fixed hold time and garrison.
+    At L, fronts would advance at half the speed in km, and AI/battle reach would halve.
+  - `kmPerCell` exists but no system uses it.
+- **Further costs:** L/XL terrain is not shipped (ADR-13 budget: terrain derives offline from
+  the 4096 elevation level). Ticks already exceed the budget at M (2.6 ms vs 1.5 ms, PLAN 7.1).
+- **Decision:** the 1938 world stays M-sized in Phase 1. Map sizes become PLAN 7.1b, after the
+  performance pass. It covers:
+  - converting every audited cell constant to km (identical at M, hash-checked);
+  - per-km territory hold rates and garrisons, re-checked by the dynamism sweeps;
+  - shipped L/XL terrain (revisiting ADR-13's budget) and XL tick and memory budgets.
+- **Consequences:** PARITY row 70 stays "not started". The settings panel offers no size
+  picker. Looping map and the randomisation options shipped in 1.39b1.
+
 ### ADR-42 · 2026-10-02 · accepted — Editor edits are commands; the undo stack is world state
 
 - **Context:** the editor needs undo/redo (SPEC §9). Edits change state the sim hashes.

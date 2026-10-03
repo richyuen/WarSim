@@ -1084,7 +1084,8 @@ interpolation changes something.
   (`looping=0&aggr=random&traits=random&gold=random|equal&ce=…`).
 - **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,
   wheel and touch pinch. Speed and pause persist. Autosave. Screenshot key (F2 → PNG).
-  UI size (rem scale). Unit-size setting. Looping map. Map size picker. Locale
+  UI size (rem scale). Unit-size setting. Looping map. Map size picker (PLAN 7.1b, ADR-43: the
+  sim is tuned in cells for M until its distances are km-based). Locale
   picker (en first; all strings through `t()`).
 - **Seeds & randomisation**: seed field (shareable), random-seed button, options
   (randomise aggression, traits, starting gold, efficiency mode).
