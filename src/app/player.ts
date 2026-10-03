@@ -1,8 +1,9 @@
 /**
- * Player control of a nation (PLAN 1.33a). Taking control switches the nation's AI off (all
- * three AI layers skip it) and lets map clicks select its formations and order them to move.
- * Moving into enemy land is the attack order: movement stops at enemy cells and combat starts.
- * Releasing control switches its AI back on.
+ * Player control of a nation (PLAN 1.33a). Taking control (`setPlayer`, sim state saved with
+ * the world) switches the nation's AI off (all three AI layers skip it) and lets map clicks
+ * select its formations and order them to move. Moving into enemy land is the attack order:
+ * movement stops at enemy cells and combat starts. Releasing control switches its AI back on.
+ * The controlled nation follows the sim (stats), so a load or resumed autosave keeps it.
  */
 import { signal } from '@preact/signals';
 import type { Hud } from './hud';
@@ -16,21 +17,26 @@ export class PlayerControl {
   constructor(
     private readonly hud: Hud,
     private readonly view: MapView,
-  ) {}
+  ) {
+    // The sim is the truth (a load may change the player): follow it from the stats.
+    hud.sim.onStats((m) => {
+      if (m.player !== this.nation.value) {
+        this.nation.value = m.player;
+        this.clearSelection();
+      }
+    });
+  }
 
   take(id: number): void {
-    const prev = this.nation.value;
-    if (prev === id) return;
-    if (prev !== 0) this.hud.command({ kind: 'setAi', nation: prev, enabled: true });
-    this.hud.command({ kind: 'setAi', nation: id, enabled: false });
+    if (this.nation.value === id) return;
+    this.hud.command({ kind: 'setPlayer', nation: id });
     this.nation.value = id;
     this.clearSelection();
   }
 
   release(): void {
-    const id = this.nation.value;
-    if (id === 0) return;
-    this.hud.command({ kind: 'setAi', nation: id, enabled: true });
+    if (this.nation.value === 0) return;
+    this.hud.command({ kind: 'setPlayer', nation: 0 });
     this.nation.value = 0;
     this.clearSelection();
   }

@@ -424,7 +424,7 @@ export class SimServer {
     world.nations.forEach((id) => {
       if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id) });
     });
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player }, []);
   }
 
   /**

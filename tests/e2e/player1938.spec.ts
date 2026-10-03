@@ -66,6 +66,14 @@ test('take control of Poland, select a formation, order a move: it marches', asy
   });
   await page.screenshot({ path: path.join(out, 'player-moved.png') });
 
+  // Control is sim state: a page reload resuming the autosave keeps Poland under player control.
+  await page.evaluate(() => window.__warsim!.autosave.saveNow());
+  await page.goto('/?scenario=1938&paused=1&seed=1938&continue=1');
+  await page.waitForFunction((t) => window.__warsim?.hud.stats.value !== null && (window.__warsim?.hud.stats.value?.tick ?? 0) >= t, 48, { timeout: 60_000 });
+  await expect(page.getByTestId('player-label')).toContainText('Poland');
+  await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
+  await expect(page.getByTestId('release-control')).toBeVisible();
+
   // Escape clears the selection; releasing control hands Poland back to its AI.
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('player-label')).toContainText('0 selected');

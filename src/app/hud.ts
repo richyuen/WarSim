@@ -61,7 +61,7 @@ export class Hud {
   readonly worker = signal<{ speed: number | 'max'; paused: boolean } | null>(null);
 
   constructor(
-    private readonly sim: SimClient,
+    readonly sim: SimClient,
     readonly startDay: number,
   ) {
     const lvl = load(KEY_LEVEL);

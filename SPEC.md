@@ -101,12 +101,15 @@ tests/unit, tests/e2e (timing specs: *.perf.spec.ts, run after the parallel suit
 ```
 
 ### 2.3 Worker protocol (`src/shared/protocol.ts`) [ADR-2]
-Main → worker (implemented: init, step, cmd, hash, save, load, speed, pause, subscribe, ack,
-buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and get a `reply`, `provinces`,
-`terrain`, `political` or `error` back):
+Main → worker (implemented: init, step, cmd, hash, inspect, save, load, speed, pause, subscribe,
+ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and get a `reply`,
+`provinces`, `terrain`, `political` or `error` back):
 - `init {init: {scenario, seed}}` (later: scenario bytes/URL, map size, settings). A fresh sim starts paused.
-- `cmd {cmd: Command}`: applied at the next tick boundary, stamped with that tick,
-  and appended to `commandLog`.
+- `cmd {cmd: Command, now?}`: applied at the next tick boundary, stamped with that tick,
+  and appended to `commandLog`. `now` (God Mode and player UI, PLAN 1.32b) applies it at once
+  between ticks with the same stamp (`Sim.applyNow`); plain commands stay pending (I3).
+- `inspect`: a JSON world summary (`Inspection`: nations incl. dead, wars, alliances, buffs,
+  majors, corridors, unrest, settings) in the reply bytes, for tests and the critic (PLAN 1.32a).
 - `speed {ticksPerSecond | 'max'}`, `pause {paused}`, `step {n}`
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`
 - `ack {seq, buffers: ArrayBuffer[]}`: rAF handshake + buffer pool return
@@ -120,8 +123,13 @@ buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and get a
 Worker → main:
 - `snapshot {snap}` (transferable; layout in §2.4), `reply {reqId, status: {tick, hash}, bytes?}`,
   `provinces | terrain | political {reqId, result}`, `error {reqId, message, stack}`; later `history {rows}`, `stats {series}`
-- `mapLayers {land, terrain, terrainColors, cities}` once after a real-geography init (PLAN 1.28b):
-  the fine land coverage, the terrain layer and city dots and names for the renderer.
+- `mapLayers {land, terrain, terrainColors, cities, province, templates}` once after a
+  real-geography init (PLAN 1.28b): the fine land coverage, the terrain layer, city dots and
+  names, the province raster (revolts mode, picking) and the buildable templates (PLAN 1.33b).
+- `provinceStats {unrest}`: per-province unrest bytes when `Provinces.version` changes (1.30b).
+- `nationStats {tick, nations, wars, dead, aiEnabled}`: panel, ranking, banner and God/player
+  data (PLAN 1.31–1.33), at most 1 Hz while ticks advance, at once after a `now` command. While
+  paused the worker keeps pumping (without ticking) until owed derived messages are sent.
 - `labels {data, names}`: nation label curves (PLAN 1.29), after init or load and when control
   changed, at most every 2 s of wall time.
 
@@ -969,8 +977,9 @@ interpolation changes something.
   rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
   `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
   (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.
-- **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel turns
-  that nation's AI off (strategic, operational and economic AI all skip it) and makes map
+- **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel
+  (`setPlayer`, saved as `settings.player`, so loads and resumed autosaves keep it) turns that
+  nation's AI off (strategic, operational and economic AI all skip it) and makes map
   clicks player orders. A click on an own formation selects it (Shift toggles, Esc clears;
   rings on the overlay); a click elsewhere orders the selection to march there (into enemy land
   = attack). "Release control" turns the AI back on. The bottom bar shows the nation and count.

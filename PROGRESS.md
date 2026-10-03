@@ -1851,3 +1851,20 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Evidence:** `docs/evidence/1.33/player-actions.png`, viewed.
 - **Known gaps:** every template is offered to every nation (no national template lists); the
   Actions list is long and scrolls.
+
+## 2026-10-02 — Review pass after PLAN 1.32a–1.33b
+- **Bug:** player control lived only in the UI, while its AI-off flag was sim state. After a load
+  or a resumed autosave, the nation stayed AI-less with nobody controlling it.
+  - The controlled nation is now sim state: `setPlayer` command, `settings.player` saved in
+    `world.meta` (older saves default to 0).
+  - Switching players restores the previous nation's AI. `PlayerControl` follows
+    `nationStats.player`.
+  - Tests: unit (switch, save/load, release). The player e2e now reloads the page with
+    `?continue=1` from the autosave and still controls Poland.
+- **Perf check:** building and serialising `nationStats` on the 1938 world (2 months in) costs
+  0.16 ms median and ~42 KB, once a second. No action.
+- **Flake from 1.33a:** `camera.spec.ts` beforeEach gets a 90 s budget (60 s for the first
+  frame) like the 1938 suites; assertions unchanged.
+- **SPEC drift:** §2.3 lists `cmd now`, `inspect`, `nationStats`, `provinceStats` and the
+  `mapLayers` province/templates fields.
+- **Dead code:** none left from the God tab iterations (checked).

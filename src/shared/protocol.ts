@@ -227,7 +227,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string }[]; aiEnabled: boolean };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string }[]; aiEnabled: boolean; player: number };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
@@ -269,7 +269,7 @@ export interface NationStat {
 /** Reply to `inspect` (PLAN 1.32): enough sim state to assert God Mode effects. */
 export interface Inspection {
   tick: number;
-  settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean };
+  settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean; player: number };
   /** Every nation ever created (dead ones too), with its display name key ('=' + literal). */
   nations: (NationStat & { living: boolean })[];
   wars: WarStat[];

@@ -64,7 +64,9 @@ export type Command =
   | { kind: 'setIncomeBonus'; nation: number; value: number }
   /** PLAN 1.33b player diplomacy: offers that the other side may refuse. */
   | { kind: 'offerPeace'; war: number; from: number }
-  | { kind: 'proposeAlliance'; from: number; to: number };
+  | { kind: 'proposeAlliance'; from: number; to: number }
+  /** PLAN 1.33: the player takes control of `nation` (0 = release): its AI goes off, the previous one's back on. */
+  | { kind: 'setPlayer'; nation: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

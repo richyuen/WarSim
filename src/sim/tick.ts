@@ -167,6 +167,15 @@ function applyCommand(world: World, cmd: Command): void {
     case 'setIncomeBonus':
       if (world.nations.has(cmd.nation)) world.nations.cols.incomeBonus[cmd.nation] = Math.round(Math.max(-100, Math.min(100, cmd.value)));
       return;
+    case 'setPlayer': {
+      const nc = world.nations.cols;
+      const prev = world.settings.player;
+      if (cmd.nation !== 0 && (!world.nations.has(cmd.nation) || nc.living[cmd.nation] !== 1)) return;
+      if (prev !== 0 && world.nations.has(prev)) nc.aiOff[prev] = 0;
+      if (cmd.nation !== 0) nc.aiOff[cmd.nation] = 1;
+      world.settings.player = cmd.nation;
+      return;
+    }
     case 'offerPeace':
       offerPeace(world, cmd.war, cmd.from);
       return;

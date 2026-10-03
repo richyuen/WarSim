@@ -20,9 +20,12 @@ async function settle(page: Page): Promise<void> {
 }
 
 test.beforeEach(async ({ page }) => {
+  // Budget for the first frame while the 1938 suites load in parallel (review after PLAN 1.33:
+  // one gate run timed out here at the 30 s default; the assertions are unchanged).
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 960, height: 540 });
   await page.goto('/?paused=1');
-  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick >= 0);
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick >= 0, null, { timeout: 60_000 });
 });
 
 test('keyboard pans with arrows/WASD and zooms with E/Q', async ({ page }) => {

@@ -144,3 +144,28 @@ describe('player diplomacy (PLAN 1.33b)', () => {
     expect(s.world.alliances.allied(POL!, LIT!)).toBe(false);
   });
 });
+
+// Review after PLAN 1.33: player control is sim state, so a load keeps it (the AI-off flag was
+// saved while the player link lived only in the UI, leaving an AI-less nation after a reload).
+describe('player control state', () => {
+  it('setPlayer turns AI off, switching restores the previous one, and save/load keeps it', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const nc = s.world.nations.cols;
+    s.command({ kind: 'setPlayer', nation: POL! });
+    s.step(1);
+    expect(s.world.settings.player).toBe(POL);
+    expect(nc.aiOff[POL!]).toBe(1);
+    s.command({ kind: 'setPlayer', nation: GER! });
+    s.step(1);
+    expect(nc.aiOff[POL!]).toBe(0);
+    expect(nc.aiOff[GER!]).toBe(1);
+    const t = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
+    t.load(s.save());
+    expect(t.world.settings.player).toBe(GER);
+    expect(t.hash()).toBe(s.hash());
+    t.command({ kind: 'setPlayer', nation: 0 });
+    t.step(1);
+    expect(t.world.settings.player).toBe(0);
+    expect(t.world.nations.cols.aiOff[GER!]).toBe(0);
+  });
+});
