@@ -28,6 +28,8 @@ export default tseslint.config(
     ignores: [
       'dist/**', 'node_modules/**', 'reference/**', '.cache/**', 'coverage/**',
       'test-results/**', 'playwright-report/**', 'public/data/**',
+      // Critic-owned output (CRITIC_PROMPT.md); not project source.
+      'critic/**',
       // Deliberately-violating snippets; linted by tests/unit/lint-rules.test.ts.
       'tests/lint-fixtures/**',
     ],

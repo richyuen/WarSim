@@ -153,6 +153,15 @@ added without code changes.
    `critic/CRITIC_REPORT.md` if it exists.
 2. Run the full test/lint/typecheck/build suite. If anything is broken,
    fixing it is this iteration's only task.
+2a. Critic run. If `critic/CRITIC_REPORT.json` is missing, or its `commit`
+    is 5 or more commits behind HEAD (`git rev-list --count <commit>..HEAD`),
+    or the last ticked PLAN.md task was a phase review, or you believe the
+    DONE CONDITION is otherwise met, then running the critic is this
+    iteration's only task: commit any pending work first, spawn the `critic`
+    subagent (Agent tool, subagent_type `critic`) with no hints about what to
+    look at, wait for it to finish, and check that `critic/CRITIC_REPORT.json`
+    now names HEAD. Append one line to PROGRESS.md with the scores and
+    blocking count. Then end the iteration. Never act as the critic yourself.
 2b. If `critic/CRITIC_REPORT.json` exists and its `commit` is not older than
     the last 10 commits, fix its blocking issues first, highest severity
     first. Critic findings override your own priorities. You may dispute a
