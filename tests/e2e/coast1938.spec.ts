@@ -84,3 +84,41 @@ test('the fine land mask draws the coast; terrain mode shows terrain', async ({ 
     await page.screenshot({ path: path.join(out, `${name}.png`) });
   }
 });
+
+// Review after PLAN 1.31: fully zoomed out, the map is shorter than the viewport and bands of
+// off-map rows show above and below it. They are plain sea; clamped land coverage used to
+// stretch the polar rows into grey vertical stripes there.
+test('off-map rows above and below the map render as sea, without stripes', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.hasFineCoast, null, { timeout: 60_000 });
+  const bands = await page.evaluate(
+    ({ W, H }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx: W / 2, cy: H / 2, scale: 0.01 }); // clamped to the minimum zoom
+      v.draw();
+      const c = document.getElementById('map') as HTMLCanvasElement;
+      const mapPx = H * v.controller.cam.scale * (c.width / c.clientWidth);
+      const gap = (c.height - mapPx) / 2; // device px of off-map band at top and bottom
+      const gl = c.getContext('webgl2')!;
+      const p = new Uint8Array(4);
+      const row = (y: number): number[][] => {
+        const out: number[][] = [];
+        for (let i = 1; i < 60; i++) {
+          gl.readPixels(Math.floor((c.width * i) / 60), Math.floor(y), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, p);
+          out.push([p[0]!, p[1]!, p[2]!]);
+        }
+        return out;
+      };
+      return { gap, rows: [row(gap / 2), row(c.height - gap / 2)] };
+    },
+    { W, H },
+  );
+  expect(bands.gap).toBeGreaterThan(8); // the bands exist at this viewport
+  for (const pixels of bands.rows) {
+    const sea = pixels[0]!;
+    for (const p of pixels) expect(Math.hypot(p[0]! - sea[0]!, p[1]! - sea[1]!, p[2]! - sea[2]!), `${p} vs ${sea}`).toBeLessThan(6);
+    expect(sea[2]!).toBeGreaterThan(sea[0]! + 20); // blue sea, not grey land
+  }
+});

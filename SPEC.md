@@ -954,14 +954,15 @@ interpolation changes something.
   flushed, so a single step still updates the UI.
 - **Map modes** (implemented PLAN 1.17–1.30a, `src/shared/mapModes.ts`):
   - *Implemented:* political, alliances, puppets, terrain, wars (red at war), diplomacy (relations
-    to the nation selected by clicking the map) and income (log ramp).
+    to the nation selected by clicking the map), income (log ramp) and revolts.
+  - *Off-map rows* (above/below the map when fully zoomed out) render as sea.
   - *How:* palette swaps from snapshot fields (alliance leader, overlord, income, war pairs);
     terrain uses the shader's terrain layer. Each mode has a legend (`src/ui/MapLegend.tsx`).
   - *Revolts* (1.30b): a per-province unrest choropleth. The worker sends the province raster
     in `mapLayers` and per-province unrest bytes (`provinceStats`) when `Provinces.version`
     changes; the shader colours land by its province's unrest (fill mode 2).
-- **Map modes** (planned): political, terrain, wars, diplomacy, alliances, puppets, income,
-  revolts, + sea control, air superiority, fallout, supply.
+- **Map modes still planned**: sea control, air superiority, fallout, supply (with their
+  phases).
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes
   globally or per nation; grant warheads; force a strike. All of these are Commands.

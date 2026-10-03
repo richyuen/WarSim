@@ -1728,3 +1728,18 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   bottom bar. The first shot showed list numbering starting at "3."; rows now carry explicit
   ranks. Grey stripes at the map's polar edges when fully zoomed out logged in BLOCKERS.
 - Parity: row 59 → partial.
+
+## 2026-10-02 — Review pass after PLAN 1.30a–1.31b
+- **Bug (from BLOCKERS):** fully zoomed out, the map is shorter than the viewport, and the
+  off-map bands above and below it showed grey vertical stripes. The shader sampled clamped
+  land coverage there, stretching the polar rows. Off-map rows are now sea. The new e2e
+  (`coast1938.spec.ts`, "off-map rows…") samples both bands at minimum zoom; it fails on the old
+  shader (grey 158,158,148) and passes now. A first version of the test sampled at a zoom the
+  camera clamps away and proved nothing; probe screenshots found the real band.
+- **Missing tests:** `tests/unit/mapModes.test.ts` covers every `modeColor` rule (alliances,
+  puppets, wars, diplomacy relations, clamped income ramp) and checks every mode's legend and
+  name keys exist in en.json.
+- **SPEC drift:** the map-modes entry lists revolts and off-map sea; the duplicate "planned" list
+  is now the four modes still to come.
+- BLOCKERS: stripes entry removed (fixed). Evidence regenerated (`docs/evidence/1.31/ui-shell.png`
+  no longer shows the stripes).

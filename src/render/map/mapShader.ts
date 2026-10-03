@@ -179,7 +179,10 @@ void main() {
   vec2 luv = vec2(fract(cellPos.x / float(uMapSize.x)), cellPos.y / float(uMapSize.y));
   float cov = texture(uLand, luv).r;
   float covW = max(fwidth(cov), 1e-6);
-  bool water = uHasLand == 1 ? cov <= 0.5 : best == 0u;
+  // Off-map rows (above the top, below the bottom) are sea: clamped coverage would otherwise
+  // stretch the polar rows into grey stripes when fully zoomed out (review after PLAN 1.31).
+  bool offMap = cellPos.y < 0.0 || cellPos.y >= float(uMapSize.y);
+  bool water = offMap || (uHasLand == 1 ? cov <= 0.5 : best == 0u);
   // Land the cell rule called water takes the strongest land id around it.
   uint fid = best != 0u ? best : secondId;
 
