@@ -108,12 +108,33 @@ export function revoltSystem(world: World): void {
     if (revolted[p] || occupied || pv.unrest[p]! < REVOLT_FROM) continue;
     const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp);
     if (hashToUnit(hash32(world.seed, world.tick, p, SALT_REVOLT)) >= chance) continue;
-    const area = revoltArea(world, p, o);
-    for (const q of area) revolted[q] = 1;
-    // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
-    const claimant = deadClaimant(world, p);
-    if (claimant === 0 || !reviveNation(world, claimant, area)) spawnRebels(world, area, o);
+    for (const q of revolt(world, p, o)) revolted[q] = 1;
   }
+}
+
+/** Province p (held by `holder`) revolts: returns the provinces that left. */
+function revolt(world: World, p: number, holder: number): number[] {
+  const area = revoltArea(world, p, holder);
+  // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
+  const claimant = deadClaimant(world, p);
+  if (claimant === 0 || !reviveNation(world, claimant, area)) spawnRebels(world, area, holder);
+  return area;
+}
+
+/**
+ * God Mode "spawn revolt" (PLAN 1.32): province p revolts now, whatever its unrest, if a living
+ * nation owns its centre. Returns whether it did.
+ */
+export function forceRevolt(world: World, p: number): boolean {
+  const pv = world.provinces;
+  if (p <= 0 || p >= pv.count) return false;
+  const c = navOf(world).graph.centre[p] ?? -1;
+  if (c < 0) return false;
+  const o = world.cells.owner[c]!;
+  if (o === 0 || world.nations.cols.living[o] !== 1) return false;
+  pv.version++;
+  revolt(world, p, o);
+  return true;
 }
 
 /** The revolting provinces: p alone, or its restless region (setting `revoltMode`). */
@@ -145,6 +166,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   let id = revive;
   if (id === 0) {
     id = nt.create();
+    world.names.delete(id); // a reused id does not inherit a God Mode name
     nc.color[id] = rebelColor(world, id);
     nc.incomeMult[id] = 1;
     nc.manpowerMult[id] = 1;
@@ -167,7 +189,6 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     sx += (c % w) + 0.5;
     sy += Math.floor(c / w) + 0.5;
   }
-  nc.cells[id] = cells;
   for (const q of area) {
     world.provinces.core[q] = id;
     world.provinces.unrest[q] = AFTER_REVOLT;

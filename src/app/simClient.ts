@@ -8,6 +8,7 @@
 import type { Command } from '../shared/commands';
 import type {
   FromWorker,
+  Inspection,
   PoliticalBuildResult,
   ProvinceBuildResult,
   SimInit,
@@ -226,6 +227,13 @@ export class SimClient {
 
   async hash(): Promise<SimStatus> {
     return (await this.status({ type: 'hash' })).status;
+  }
+
+  /** JSON summary of the world (PLAN 1.32; tests and the critic). */
+  async inspect(): Promise<Inspection> {
+    const r = await this.status({ type: 'inspect' });
+    if (!r.bytes) throw new Error('inspect reply without bytes');
+    return JSON.parse(new TextDecoder().decode(r.bytes)) as Inspection;
   }
 
   async save(): Promise<Uint8Array> {

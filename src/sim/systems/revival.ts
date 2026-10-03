@@ -19,7 +19,8 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { navOf, type World } from '../world';
 import { releasePuppet } from './puppets';
-import { REVOLT_FROM, spawnRebels } from './revolts';
+import { REGION_MAX, REVOLT_FROM, spawnRebels } from './revolts';
+import { eliminateNation } from './capitals';
 
 export const REVIVALS = 2;
 export const REVIVAL_COOLDOWN = 24 * 730;
@@ -65,8 +66,12 @@ export function reviveOnCores(world: World, n: number): boolean {
   return reviveNation(world, n, world.provinces.provincesOf(n));
 }
 
-/** Fragments nation c (see the module comment). */
-export function collapseNation(world: World, c: number): void {
+/**
+ * Fragments nation c (see the module comment). `forced` (God Mode Kill, PLAN 1.32): every
+ * province it holds goes, calm or not: claimants revive, the rest splits into rebel nations of at
+ * most REGION_MAX connected provinces, and c dies.
+ */
+export function collapseNation(world: World, c: number, forced = false): void {
   const nc = world.nations.cols;
   if (!world.nations.has(c) || nc.living[c] !== 1) return;
   // A collapse is a default: debts are void afterwards (PLAN 1.24 review: without it a broke
@@ -86,7 +91,7 @@ export function collapseNation(world: World, c: number): void {
   world.nations.forEach((p) => {
     if (nc.overlord[p] === c && nc.living[p] === 1) puppets = true;
   });
-  if (!puppets && !held.some((p) => deadClaimant(world, p) !== 0 || pv.unrest[p]! >= REVOLT_FROM)) return;
+  if (!forced && !puppets && !held.some((p) => deadClaimant(world, p) !== 0 || pv.unrest[p]! >= REVOLT_FROM)) return;
   world.out.emit(world.tick, EventKind.NationCollapsed, c, 0, NaN, NaN);
   world.nations.forEach((p) => {
     if (nc.overlord[p] === c && nc.living[p] === 1) releasePuppet(world, p);
@@ -102,24 +107,42 @@ export function collapseNation(world: World, c: number): void {
   }
   const taken = new Set<number>();
   for (const [d, ps] of [...byClaimant].sort((a, b) => a[0] - b[0])) {
-    if (nc.living[c] !== 1) break;
+    if (!forced && nc.living[c] !== 1) break;
     if (reviveNation(world, d, ps)) for (const p of ps) taken.add(p);
   }
   // 2. Restless provinces revolt, one rebel nation per connected group.
-  const restless = new Set(held.filter((p) => !taken.has(p) && pv.unrest[p]! >= REVOLT_FROM));
+  // Forced: every remaining province, in groups of at most REGION_MAX.
+  const restless = new Set(held.filter((p) => !taken.has(p) && (forced || pv.unrest[p]! >= REVOLT_FROM)));
+  const groupMax = forced ? REGION_MAX : Infinity;
+  let largest = 0;
+  let largestCells = 0;
   for (const start of [...restless].sort((a, b) => a - b)) {
-    if (!restless.has(start) || nc.living[c] !== 1) continue;
+    if (!restless.has(start) || (!forced && nc.living[c] !== 1)) continue;
     const group = [start];
     restless.delete(start);
-    for (let i = 0; i < group.length; i++) {
+    for (let i = 0; i < group.length && group.length < groupMax; i++) {
       for (const q of g.adj[group[i]!] ?? []) {
-        if (!restless.has(q)) continue;
+        if (!restless.has(q) || group.length >= groupMax) continue;
         restless.delete(q);
         group.push(q);
       }
     }
-    spawnRebels(world, group, c);
+    const r = spawnRebels(world, group, c);
+    if (nc.cells[r]! > largestCells) {
+      largest = r;
+      largestCells = nc.cells[r]!;
+    }
   }
+  if (!forced) return;
+  // Cells outside any province (slivers) go to the largest fragment; then c is gone.
+  const { owner, controller } = world.cells;
+  for (let cell = 0; cell < owner.length; cell++) {
+    if (largest !== 0 && owner[cell] === c) {
+      world.setOwner(cell, largest);
+      if (controller[cell] === c) world.setController(cell, largest);
+    }
+  }
+  eliminateNation(world, c);
 }
 
 /** Monthly: bankruptcy streaks and collapse. */

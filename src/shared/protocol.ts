@@ -49,6 +49,8 @@ export type ToWorker =
   | { type: 'step'; reqId: number; n: number }
   | { type: 'cmd'; cmd: Command }
   | { type: 'hash'; reqId: number }
+  /** PLAN 1.32: a JSON summary of the world (`Inspection`) for tests and the critic. */
+  | { type: 'inspect'; reqId: number }
   | { type: 'save'; reqId: number }
   | { type: 'load'; reqId: number; bytes: Uint8Array }
   | { type: 'speed'; speed: Speed }
@@ -245,6 +247,21 @@ export interface NationStat {
   puppets: number[];
   enemies: number[];
   aiOff: boolean;
+}
+
+/** Reply to `inspect` (PLAN 1.32): enough sim state to assert God Mode effects. */
+export interface Inspection {
+  tick: number;
+  settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean };
+  /** Every nation ever created (dead ones too), with its display name key ('=' + literal). */
+  nations: (NationStat & { living: boolean })[];
+  wars: WarStat[];
+  alliances: { id: number; name: string; leader: number; members: number[]; unity: number }[];
+  buffs: { id: number; kind: string; targetKind: string; target: number; magnitude: number; until: number }[];
+  majors: { id: number; camps: [number[], number[]] }[];
+  corridors: number;
+  /** Unrest per province id. */
+  unrest: number[];
 }
 
 /** An active war (PLAN 1.31): side leaders first; score > 0 favours the attackers. */

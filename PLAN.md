@@ -133,8 +133,13 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.31b Statistics ranking (right panel, metric dropdown) and war banners strip.
   AT: e2e ranks by each metric (sorted), banner per active war selects its leader; screenshot vs
   reference layout logged. (Bottom bar, date and speed exist since PLAN 1.8/1.17.)
-- [ ] 1.32 God Mode: every command in SPEC §9.
+- [x] 1.32a God Mode commands in SPEC §9 (rename, war, peace, alliance, collapse, spawn
+  nation/revolt/battle, buffs, AI) + `sim.inspect()`. Nukes go with PLAN 6.1, control with 1.33.
+  (Split from 1.32, 2026-10-02.)
   AT: an e2e test per command asserts the sim effect via `__warsim`.
+- [ ] 1.32b God Mode UI: a God panel (bottom bar toggle) issuing those commands on the selected
+  nation (and map picks for revolt/battle/brush).
+  AT: e2e drives each God action through the UI and sees its effect via `sim.inspect()`.
 - [ ] 1.33 Take control of a nation (player orders: move/attack formations, diplomacy actions, production).
   AT: e2e takes control of Poland, orders a move, and the formation moves.
 - [ ] 1.34 Statistics (incl. military size by domain) + charts; history log with filters + CSV/JSON export.

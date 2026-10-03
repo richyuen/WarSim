@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-41 · 2026-10-02 · accepted — God Kill is a forced collapse; God revival keeps the revival rules
+
+- **Context:** the God `collapseNation` reused the bankruptcy collapse, which fragments only
+  restless land. On a calm nation it was a silent default, so AoC's "Kill a nation with a click"
+  did nothing visible (found by the PLAN 1.32 e2e).
+- **Decision:**
+  - The God command forces the collapse. Dead claimants revive, every other province splits into
+    rebel nations of at most REGION_MAX (8) connected provinces, and the nation is eliminated.
+    Province-less slivers go to the largest fragment. The bankruptcy collapse is unchanged.
+  - God revival (`reviveNation`) still obeys the revival count and cooldown. The PLAN 1.20
+    acceptance test exercises those limits through it.
+- **Consequences:** Kill always visibly ends a nation. A God-killed nation can come back by God
+  only after the cooldown, like a natural death.
+
 ### ADR-40 · 2026-10-02 · accepted — Curved nation names on a Canvas2D overlay, not an MSDF atlas
 **Decision.**
 - Nation names are drawn glyph by glyph along the worker's Bézier on a 2D canvas overlay. SPEC §8

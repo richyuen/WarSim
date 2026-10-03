@@ -963,6 +963,12 @@ interpolation changes something.
     changes; the shader colours land by its province's unrest (fill mode 2).
 - **Map modes still planned**: sea control, air superiority, fallout, supply (with their
   phases).
+- **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
+  section `world.names`), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God
+  Kill: forced, everything fragments and the nation dies), `reviveNation` (within the revival
+  rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
+  `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
+  (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes
   globally or per nation; grant warheads; force a strike. All of these are Commands.

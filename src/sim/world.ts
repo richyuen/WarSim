@@ -26,6 +26,7 @@ export const NATION_SCHEMA = {
   color: 'u32',
   capitalX: 'f64',
   capitalY: 'f64',
+  /** Owned cells; maintained by World.setOwner. */
   cells: 'u32',
   /** 1 = exists on the map; 0 = dead (revivable through cores, PLAN 1.20). */
   living: 'u8',
@@ -273,10 +274,12 @@ class WorldCore implements Stateful {
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
+    const names = new TextEncoder().encode(JSON.stringify([...w.names].sort((a, b) => a[0] - b[0])));
     return [
       { name: 'world.meta', dtype: 'f64', data: meta },
       { name: 'world.rng', dtype: 'u32', data: w.rng.save() },
       { name: 'world.commandLog', dtype: 'u8', data: log },
+      { name: 'world.names', dtype: 'u8', data: names },
     ];
   }
 
@@ -297,6 +300,9 @@ class WorldCore implements Stateful {
     };
     w.commandLog = parsed.log;
     w.pending = parsed.pending;
+    // God Mode names (PLAN 1.32); saves from before it have no section.
+    const names = sections.find((s) => s.name === 'world.names');
+    w.names = new Map(names ? (JSON.parse(new TextDecoder().decode(names.data as Uint8Array)) as [number, string][]) : []);
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.paths.clear();
     w.elementIndex = null;
@@ -366,6 +372,8 @@ export class World {
   paths = new Map<number, Int32Array>();
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
   commandLog: LoggedCommand[] = [];
+  /** Custom nation names from God Mode (PLAN 1.32); state, saved with the core. */
+  names = new Map<number, string>();
   /** Commands queued since the last tick boundary, applied in seq order at the next tick. */
   pending: PendingCommand[] = [];
   nextCommandSeq = 0;
@@ -404,6 +412,11 @@ export class World {
     if (c.owner[i] === nation) return;
     this.supplyDirtyNations.add(c.owner[i]!);
     this.supplyDirtyNations.add(nation);
+    // Owned-cell counts follow every ownership change (review in PLAN 1.32: they were set once
+    // at scenario creation and went stale, so panel and ranking land never moved).
+    const nc = this.nations.cols;
+    if (c.owner[i] !== 0 && this.nations.has(c.owner[i]!)) nc.cells[c.owner[i]!] = nc.cells[c.owner[i]!]! - 1;
+    if (nation !== 0 && this.nations.has(nation)) nc.cells[nation] = nc.cells[nation]! + 1;
     c.owner[i] = nation;
     const x = i % c.w;
     const y = (i - x) / c.w;

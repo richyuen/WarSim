@@ -1743,3 +1743,34 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   is now the four modes still to come.
 - BLOCKERS: stripes entry removed (fixed). Evidence regenerated (`docs/evidence/1.31/ui-shell.png`
   no longer shows the stripes).
+
+## 2026-10-02 — PLAN 1.32a: God Mode commands (1.32 split into a/b)
+- **New commands:**
+  - `renameNation`: state in `world.names`, saved as an optional `world.names` section; the
+    worker shows '=' + name.
+  - `spawnRevolt`: `forceRevolt`, shared with the monthly revolt pass.
+  - `setIncomeBonus`: clamped to ±100.
+- **God Kill** (`collapseNation`) is now a forced collapse (ADR-41). It used to be a silent
+  default on calm nations.
+- **`sim.inspect()`:** a new `inspect` request returns a JSON world summary (nations incl. dead,
+  wars, alliances, buffs, majors, corridors, unrest, settings) for tests and the critic. The
+  stats builder is shared with `nationStats`.
+- **Bug found by the e2e:**
+  - `nations.cells` was set at scenario creation and never maintained, so the 1.31 panel's land
+    and the land ranking never moved.
+  - `World.setOwner` now keeps it exact. A unit test checks it against a recount after 2 months
+    of AI wars.
+  - `spawnRebels` overwrote a multi-holder revival's count with the last holder's share; fixed.
+- **Kept:** God revival still obeys the revival count/cooldown (PLAN 1.20 AT). The e2e revives
+  Ethiopia, dead at the start.
+- **AT** (`tests/e2e/godMode1938.spec.ts`), one e2e per command, effects read via
+  `sim.inspect()`:
+  - rename (also in the nation panel; '' restores);
+  - war, peace, alliance;
+  - Kill (Yugoslavia gone, ≥ 2 fragments holding its land);
+  - spawn nation, spawn revolt (Warsaw's province; Poland loses exactly its cells);
+  - spawn battle (corridor);
+  - buff, AI per nation/global, income bonus.
+- **Unit:** `tests/unit/godMode.test.ts`.
+- **Parity:** rows 20, 33–36 and 38 updated.
+- **Plan change:** 1.32 split; 1.32b is the God Mode UI.

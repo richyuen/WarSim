@@ -23,6 +23,7 @@ import {
   type SimInit,
   type ToWorker,
   type NationStat,
+  type Inspection,
   type WarStat,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY } from '../shared/scenarios';
@@ -129,6 +130,9 @@ export class SimServer {
         break;
       case 'hash':
         this.reply(msg.reqId);
+        break;
+      case 'inspect':
+        this.reply(msg.reqId, this.inspect());
         break;
       case 'save':
         this.reply(msg.reqId, this.requireSim().save());
@@ -398,61 +402,7 @@ export class SimServer {
     if (world.tick === this.statsTick || (this.lastStatsMs >= 0 && nowMs - this.lastStatsMs < STATS_INTERVAL_MS)) return;
     this.statsTick = world.tick;
     this.lastStatsMs = nowMs;
-    const nc = world.nations.cols;
-    const men = new Map<number, number>();
-    const count = new Map<number, number>();
-    const fc = world.formations.cols;
-    world.formations.forEach((f) => {
-      const n = fc.nation[f]!;
-      men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
-      count.set(n, (count.get(n) ?? 0) + 1);
-    });
-    const puppets = new Map<number, number[]>();
-    const enemies = new Map<number, Set<number>>();
-    const wars: WarStat[] = [];
-    for (const war of world.wars.list) {
-      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick });
-      for (const [a, b] of [[war.sides[0], war.sides[1]], [war.sides[1], war.sides[0]]] as const) {
-        for (const x of a) {
-          const set = enemies.get(x) ?? new Set<number>();
-          for (const y of b) set.add(y);
-          enemies.set(x, set);
-        }
-      }
-    }
-    world.nations.forEach((id) => {
-      const o = nc.overlord[id]!;
-      if (nc.living[id] === 1 && o !== 0) puppets.set(o, [...(puppets.get(o) ?? []), id]);
-    });
-    const nations: NationStat[] = [];
-    world.nations.forEach((id) => {
-      if (nc.living[id] !== 1) return;
-      const al = world.alliances.allianceOf(id);
-      const k = al ? al.members.indexOf(id) : -1;
-      nations.push({
-        id,
-        name: this.nameOf(id),
-        color: nc.color[id]!,
-        cells: nc.cells[id]!,
-        gold: nc.gold[id]!,
-        income: nc.income[id]!,
-        expenses: nc.expenses[id]!,
-        incomeBonus: nc.incomeBonus[id]!,
-        bankrupt: nc.bankrupt[id] === 1,
-        manpower: nc.manpower[id]!,
-        men: men.get(id) ?? 0,
-        formations: count.get(id) ?? 0,
-        efficiency: nc.efficiency[id]!,
-        alliance: al ? { name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
-        overlord: nc.overlord[id]!,
-        autonomy: nc.autonomy[id]!,
-        loyalty: nc.loyalty[id]!,
-        integration: nc.integration[id]!,
-        puppets: puppets.get(id) ?? [],
-        enemies: [...(enemies.get(id) ?? [])],
-        aiOff: nc.aiOff[id] === 1,
-      });
-    });
+    const { nations, wars } = this.buildStats(world, false);
     this.post({ type: 'nationStats', tick: world.tick, nations, wars }, []);
   }
 
@@ -486,8 +436,89 @@ export class SimServer {
     this.post({ type: 'labels', data, names }, [data.buffer]);
   }
 
+  /** Per-nation panel data and active wars (PLAN 1.31); `withDead` adds dead nations (inspect). */
+  private buildStats(world: World, withDead: boolean): { nations: (NationStat & { living: boolean })[]; wars: WarStat[] } {
+    const nc = world.nations.cols;
+    const men = new Map<number, number>();
+    const count = new Map<number, number>();
+    const fc = world.formations.cols;
+    world.formations.forEach((f) => {
+      const n = fc.nation[f]!;
+      men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
+      count.set(n, (count.get(n) ?? 0) + 1);
+    });
+    const puppets = new Map<number, number[]>();
+    const enemies = new Map<number, Set<number>>();
+    const wars: WarStat[] = [];
+    for (const war of world.wars.list) {
+      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick });
+      for (const [a, b] of [[war.sides[0], war.sides[1]], [war.sides[1], war.sides[0]]] as const) {
+        for (const x of a) {
+          const set = enemies.get(x) ?? new Set<number>();
+          for (const y of b) set.add(y);
+          enemies.set(x, set);
+        }
+      }
+    }
+    world.nations.forEach((id) => {
+      const o = nc.overlord[id]!;
+      if (nc.living[id] === 1 && o !== 0) puppets.set(o, [...(puppets.get(o) ?? []), id]);
+    });
+    const nations: (NationStat & { living: boolean })[] = [];
+    world.nations.forEach((id) => {
+      if (!withDead && nc.living[id] !== 1) return;
+      const al = world.alliances.allianceOf(id);
+      const k = al ? al.members.indexOf(id) : -1;
+      nations.push({
+        id,
+        name: this.nameOf(id),
+        color: nc.color[id]!,
+        cells: nc.cells[id]!,
+        gold: nc.gold[id]!,
+        income: nc.income[id]!,
+        expenses: nc.expenses[id]!,
+        incomeBonus: nc.incomeBonus[id]!,
+        bankrupt: nc.bankrupt[id] === 1,
+        manpower: nc.manpower[id]!,
+        men: men.get(id) ?? 0,
+        formations: count.get(id) ?? 0,
+        efficiency: nc.efficiency[id]!,
+        alliance: al ? { name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
+        overlord: nc.overlord[id]!,
+        autonomy: nc.autonomy[id]!,
+        loyalty: nc.loyalty[id]!,
+        integration: nc.integration[id]!,
+        puppets: puppets.get(id) ?? [],
+        enemies: [...(enemies.get(id) ?? [])],
+        aiOff: nc.aiOff[id] === 1,
+        living: nc.living[id] === 1,
+      });
+    });
+    return { nations, wars };
+  }
+
+  /** JSON summary of the world for tests and the critic (PLAN 1.32). */
+  private inspect(): Uint8Array {
+    const world = this.requireSim().world;
+    const { nations, wars } = this.buildStats(world, true);
+    const out: Inspection = {
+      tick: world.tick,
+      settings: { ...world.settings },
+      nations,
+      wars,
+      alliances: world.alliances.list.map((a) => ({ id: a.id, name: a.nameKey, leader: a.leader, members: [...a.members], unity: a.unity })),
+      buffs: world.buffs.list.map((b) => ({ id: b.id, kind: b.kind, targetKind: b.targetKind, target: b.target, magnitude: b.magnitude, until: b.expiresTick })),
+      majors: world.battles.majors.map((m) => ({ id: m.id, camps: [[...m.camps[0]], [...m.camps[1]]] })),
+      corridors: world.battles.corridors.length,
+      unrest: Array.from(world.provinces.unrest, (u) => Math.round(u * 100) / 100),
+    };
+    return new TextEncoder().encode(JSON.stringify(out));
+  }
+
   /** i18n key of a scenario nation, or a literal ('=…') name for a spawned one. */
   private nameOf(id: number): string {
+    const custom = this.sim?.world.names.get(id);
+    if (custom !== undefined) return `=${custom}`; // God Mode rename (PLAN 1.32)
     const def = NATIONS_1938[id - 1];
     if (def) return def.nameKey;
     const origin = this.requireSim().world.nations.cols.origin[id] ?? 0;

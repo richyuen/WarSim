@@ -13,9 +13,13 @@ import { MAX_CE, MIN_CE } from './systems/efficiency';
 import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
+import { forceRevolt } from './systems/revolts';
 import type { World } from './world';
 
 export type System = (world: World) => void;
+
+/** Longest custom nation name (God Mode rename). */
+const MAX_NAME = 40;
 
 /** Sets the controller of land cells within r cells of (x, y) (wrapping x; water untouched). */
 function paintControl(world: World, nation: number, x: number, y: number, r: number): void {
@@ -95,7 +99,7 @@ function applyCommand(world: World, cmd: Command): void {
       reviveOnCores(world, cmd.nation);
       return;
     case 'collapseNation':
-      collapseNation(world, cmd.nation);
+      collapseNation(world, cmd.nation, true); // God Mode Kill: everything fragments
       return;
     case 'setUnrest':
       if (cmd.province > 0 && cmd.province < world.provinces.count) {
@@ -148,6 +152,19 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     case 'setPuppetLoyalty':
       if (world.nations.has(cmd.subject)) world.nations.cols.loyalty[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
+      return;
+    case 'renameNation': {
+      if (!world.nations.has(cmd.nation)) return;
+      const name = cmd.name.trim().slice(0, MAX_NAME);
+      if (name === '') world.names.delete(cmd.nation);
+      else world.names.set(cmd.nation, name);
+      return;
+    }
+    case 'spawnRevolt':
+      forceRevolt(world, cmd.province);
+      return;
+    case 'setIncomeBonus':
+      if (world.nations.has(cmd.nation)) world.nations.cols.incomeBonus[cmd.nation] = Math.round(Math.max(-100, Math.min(100, cmd.value)));
       return;
     case 'setWarFightToDeath': {
       const war = world.wars.list.find((w) => w.id === cmd.war);

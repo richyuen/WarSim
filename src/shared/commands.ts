@@ -55,7 +55,13 @@ export type Command =
   | { kind: 'createPuppet'; overlord: number; subject: number; autonomy: number }
   | { kind: 'releasePuppet'; subject: number }
   | { kind: 'setAutonomy'; subject: number; value: number }
-  | { kind: 'setPuppetLoyalty'; subject: number; value: number };
+  | { kind: 'setPuppetLoyalty'; subject: number; value: number }
+  /** PLAN 1.32 God Mode: rename a nation ('' restores its scenario name). */
+  | { kind: 'renameNation'; nation: number; name: string }
+  /** PLAN 1.32 God Mode: province `province` revolts now (its area per `revoltMode`). */
+  | { kind: 'spawnRevolt'; province: number }
+  /** PLAN 1.32 God Mode: AoC-style income bonus, percent −100..100. */
+  | { kind: 'setIncomeBonus'; nation: number; value: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */
