@@ -9,6 +9,9 @@ import type {} from '../../src/app/testApi';
 const workerState = (page: Page) => page.evaluate(() => window.__warsim!.hud.worker.value);
 
 test('speed and pause persist across reload; the date advances from 1 January 1938', async ({ page }, info) => {
+  // Two page boots under SwiftShader: 21 s alone on a 4-core machine, over the default 30 s while
+  // other specs render (2026-10-03). The assertions and their poll windows are unchanged.
+  test.setTimeout(90_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');

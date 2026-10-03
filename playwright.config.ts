@@ -1,3 +1,4 @@
+import { availableParallelism } from 'node:os';
 import { defineConfig, devices } from '@playwright/test';
 
 // E2E runs against the production build (`vite preview`) so tests see what ships.
@@ -8,7 +9,9 @@ export default defineConfig({
   outputDir: 'test-results',
   fullyParallel: true,
   // Pages render with SwiftShader (CPU); more parallel workers starve each other into timeouts.
-  workers: 4,
+  // Half the cores, at most 4: on a 4-core machine 4 workers timed three UI specs out in every
+  // gate run (2026-10-03, PLAN 1.42f), and 2 do not.
+  workers: Math.max(1, Math.min(4, Math.floor(availableParallelism() / 2))),
   // Assertion polls wait up to 15 s (default 5 s): pages share the CPU with SwiftShader rendering
   // in the other workers (5–30× the solo time, see `perf` below). Assertions are unchanged; only
   // how long a poll may wait. Raised in PLAN 1.37a when an external process held 2.5 cores and

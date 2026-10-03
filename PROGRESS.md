@@ -2639,3 +2639,17 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **State for the next iteration:** PLAN 1.42f is open (5-year mean 1.56 ms against 1.5); then
   1.42e; the retry of 1.42 waits for 1.42f. The quick sweep by realm shows a riser in 6 of 10
   seen seeds at 20 years.
+
+## 2026-10-03 — e2e on a 4-core machine: workers scaled to the cores; the speed spec gets 90 s
+- **Session start:** a fresh clone; `critic/` came in with a pull (report of bb1dd4f, 7 blocking).
+  `npm run critic:due`: not due (3 commits since the last remediation). The container's
+  Playwright browser was older than the pinned @playwright/test 1.63 asks for; fixed in the
+  container only (a link to the installed headless shell), nothing in the repo.
+- **Gate on an unchanged HEAD failed at e2e** on this machine (4 cores, about 1.9× slower than
+  the one that measured the tick budget: seed 99 × 5 years 3.01 ms mean, 1.56 there). With 4
+  workers `precision`, `speed` and `camera` failed in every run: a 90 s timeout, the default 30 s
+  test timeout, and a key held 400 ms zooming less when frames are few. With 2 workers only
+  `speed` failed (alone it takes 21 s of its 30 s).
+- **Change:** workers = half the cores, at most 4 (4 on any machine of 8 or more cores, as
+  before); `speed.spec.ts` gets `test.setTimeout(90_000)` like `precision.spec.ts`. No
+  assertion and no poll window changed.

@@ -71,3 +71,5 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.
+  **Recurred 2026-10-03** on a 4-core machine in every gate run, with `precision` and `camera`:
+  workers now scale to the cores and the spec has a 90 s timeout (PROGRESS of that date).
