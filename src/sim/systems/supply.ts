@@ -13,7 +13,9 @@
  * (`World.supplySpans`, derived), so a partial refresh clears a bloc's network without scanning
  * the grid (PLAN 1.42a).
  *
- * Formations (hourly): a formation on a cell of its own bloc's network gains SUPPLY_RATE per hour
+ * Formations (hourly): a formation on a cell of its own bloc's network, or of the network of a
+ * bloc fighting on its side of a war (PLAN 1.42b: allies feed each other's armies while they
+ * fight together), gains SUPPLY_RATE per hour
  * towards 1; otherwise it loses SUPPLY_RATE towards 0. At 0 it attrits: (BASE_ATTRITION_PER_DAY +
  * terrain supplyAttrition) of its strength per day, applied hourly.
  */
@@ -139,7 +141,9 @@ export function supplySystem(world: World): void {
   const { w, supply, terrain } = world.cells;
   f.forEach((id) => {
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
-    const inSupply = supply[cell] !== 0 && supply[cell] === blocOf(world, c.nation[id]!);
+    const net = supply[cell]!;
+    const bloc = blocOf(world, c.nation[id]!);
+    const inSupply = net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, c.nation[id]!));
     const s = c.supply[id]!;
     c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE);
     if (c.supply[id] === 0) {

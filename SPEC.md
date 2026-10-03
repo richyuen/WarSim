@@ -590,6 +590,12 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   (`cells.flip`, saved). Decisions use start-of-tick control and are applied together.
 - *Advance:* formations wait at enemy-held cells until those flip, so a front advances at most
   1.5 cells per row per day.
+- *Partners* (PLAN 1.42b, ADR-50): nations on the same side of a war (`Wars.sameSide`) fight on
+  each other's fronts. An attacker's pressure on a cell includes that of its partners at war
+  with the holder, and the holder's defence that of its partners; the cell flips to the member
+  that holds the neighbouring cell. A formation on a partner's supply network is in supply, and
+  repatriation leaves it there while the shared war lasts. The operational AI counts a partner's
+  front cells against a common enemy as its own front (within its deploy range).
 - *Not yet modelled:* org and terrain-dependent radius, garrison from spending, unrest.
 
 - **Pressure field.** Each land formation projects control pressure into cells within

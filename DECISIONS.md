@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-50 · 2026-10-03 · accepted — Partners in a war fight on each other's fronts (critic B1, PLAN 1.42b)
+
+- **Context:** seed 109 failed the leader-share range (2.7 points). A dump at year 25 showed the
+  Soviet Union with 78k men and 27% of the land, at war with a coalition of 28 for 557 days at
+  score 0, and with Japan (442k men) for 317 days at score 0. Pressure on a cell counted only
+  for the nation holding the neighbouring cell, a formation was supplied only on its own bloc's
+  network, the operational AI saw only fronts its own nation held, and idle formations on a
+  partner's land were sent home. A coalition therefore fought with its border states alone.
+- **Decision:** nations on the same side of a war are partners (`Wars.sameSide`; not if they
+  are also at war with each other).
+  1. *Territory:* attack pressure on a cell = the neighbouring holder's plus its partners' at
+     war with the defender; defence = the defender's bloc plus its partners. The cell goes to
+     the neighbouring holder, so the connectivity rule is unchanged.
+  2. *Supply:* a partner's network feeds a formation.
+  3. *Repatriation* skips formations standing on a partner's land.
+  4. *Operational AI:* a partner's front cells against a common enemy are front cells.
+- **Why this way:** land taken goes to the member that holds the front, so no new rule is
+  needed for who owns a conquest, and peace terms work as before.
+- **Result:** 50-year runs of seeds 99, 105, 108 and 109 (all seen before; a check, not the
+  sweep): leader-share range 5.4, 8.5, 10.0 and 4.4 points (seed 109 was 2.7). Seed 108 has
+  only 1 new nation in the top ten (was 3), so the full criteria are still not met on every
+  seed: PLAN 1.42 stays open.
+
 ### ADR-49 · 2026-10-03 · accepted — Parity-only gate for document commits; critic remediation restarts the critic count (user request)
 
 - **Gate:** nothing but `npm run parity` reads Markdown or `docs/`, so a working tree that

@@ -15,6 +15,12 @@
  * terrain defence, must exceed D's bloc pressure + GARRISON for HOLD_TICKS consecutive hours
  * (`cells.flip`, saved); C then flips to the strongest such A (lowest id on ties).
  *
+ * Partners (PLAN 1.42b, critic B1): A's pressure on C includes that of the nations fighting D
+ * on A's side (`Wars.together`), and D's defence that of the nations on D's side against any of
+ * the attackers. A coalition's armies count on the front of whichever member holds it, and the
+ * ground they take goes to that member. Before, only the armies of the nation that held the
+ * neighbouring cell counted, so an alliance fought with its border states alone.
+ *
  * Decisions use start-of-tick control and are applied together, so the order of the frontier
  * cannot matter and a front advances at most one cell per HOLD_TICKS: a wave.
  */
@@ -151,12 +157,15 @@ export function territorySystem(world: World): void {
     let bestNation = 0;
     if (m) {
       const dBloc = blocOf(world, d);
-      for (const [n, p] of m) if (blocOf(world, n) === dBloc) defence += p;
+      const wars = world.wars;
+      for (const [n, p] of m) if (blocOf(world, n) === dBloc || wars.sameSide(n, d)) defence += p;
       for (const a of neighbours(world, c, nb)) {
         const an = controller[a]!;
-        if (an === 0 || an === bestNation || !world.wars.atWar(an, d)) continue;
+        if (an === 0 || an === bestNation || !wars.atWar(an, d)) continue;
+        let own = 0;
+        for (const [n, p] of m) if (n === an || wars.together(n, an, d)) own += p;
         const corridor = inCorridor(world, an, c) ? CORRIDOR_PRESSURE : 1; // PLAN 1.23 breakthrough
-        const p = ((m.get(an) ?? 0) * corridor) / (TERRAIN_DEF[terrain[c]!] ?? 1);
+        const p = (own * corridor) / (TERRAIN_DEF[terrain[c]!] ?? 1);
         if (p > best || (p === best && an < bestNation)) {
           best = p;
           bestNation = an;

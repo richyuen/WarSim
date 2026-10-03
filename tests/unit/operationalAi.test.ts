@@ -7,7 +7,9 @@ import { frontierOf } from '../../src/sim/systems/territory';
 import { neighbours4 } from '../../src/sim/nav/grid';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { nationId, runEvents } from '../helpers/sim1938';
+import { addDivision, nationId, runEvents } from '../helpers/sim1938';
+import { cellOf } from '../../src/sim/data/terrain';
+import { destroyFormation } from '../../src/sim/systems/elements';
 
 // PLAN 1.25 operational AI v1. AT: in a scripted 2-nation war the larger nation advances;
 // formations are spread along the front (coverage metric).
@@ -91,4 +93,41 @@ describe('operational AI (PLAN 1.25)', () => {
     for (const c of [...cov10, ...cov30]) expect(c).toBeGreaterThanOrEqual(0.6);
     expect(H).toBe(SIZE_1938.h);
   }, 180_000);
+});
+
+describe('allied fronts (PLAN 1.42b)', () => {
+  it('a nation with no front of its own sends its army to the front of the ally it fights beside', () => {
+    const ITA = nationId('ITA');
+    const s = duel();
+    const w = s.world;
+    const f = w.formations.cols;
+    runEvents(s, 1);
+    const war = w.wars.between(GER, POL)!.war;
+    war.fightToDeath = [true, true];
+    war.sides[0].push(ITA);
+    w.wars.changed();
+    w.nations.cols.aiOff[ITA] = 0;
+    w.nations.cols.aggression[ITA] = 0;
+    for (const id of w.formations.ids()) if (f.nation[id] === ITA) destroyFormation(w, id);
+    // Three Italian divisions in Brandenburg, some 150 km behind the German–Polish border.
+    const [bx, by] = cellOf(13.4, 52.5, W, H);
+    const ids = [-1, 0, 1].map((k) => addDivision(w, ITA, Math.floor(bx) + 0.5, Math.floor(by) + k + 0.5));
+    const x0 = ids.map((id) => f.x[id]!);
+    runEvents(s, 24 * 2);
+    // Each has orders to a front cell: one held by Germany or by Poland, never by Italy.
+    for (const id of ids) {
+      expect(f.moving[id] === 1 || f.x[id] !== x0[ids.indexOf(id)]).toBe(true);
+      expect([GER, POL]).toContain(w.cells.controller[f.targetCell[id]!]);
+    }
+    runEvents(s, 24 * 12);
+    // They reached the front (within 3 cells of Polish-held ground) and stayed in supply.
+    const nearPoland = (id: number): boolean => {
+      for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) if (w.cells.owner[(Math.floor(f.y[id]!) + dy) * W + Math.floor(f.x[id]!) + dx] === POL) return true;
+      return false;
+    };
+    const alive = ids.filter((id) => w.formations.has(id));
+    expect(alive.length).toBeGreaterThan(0);
+    expect(alive.some(nearPoland)).toBe(true);
+    for (const id of alive) expect(f.supply[id]).toBeGreaterThan(0);
+  });
 });

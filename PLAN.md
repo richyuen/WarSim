@@ -182,6 +182,17 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   (5d08e5dd) unless a rule change is logged in DECISIONS.
   Done 2026-10-03: 5-year mean 1.04 ms (was 1.59), year 1 1.92 ms (was 2.74), hash 5d08e5dd, no
   rule change.
+- [x] 1.42b Critic B1: coalition armies fight on their partners' fronts (ADR-50). Seed 109
+  showed a 28-member coalition at war with a Soviet Union of 78k men for 557 days at score 0:
+  only the armies of the nation holding a front counted on it. (Split from 1.42, 2026-10-03.)
+  AT: unit tests (an ally's army pushes and defends a partner's front, is supplied there, is not
+  sent home; the AI sends an army with no front of its own to its partner's); seed 109 × 50
+  years passes the leader-share range (4.4 points; was 2.7).
+- [ ] 1.42c Critic B1: the build queue of a rich nation at war no longer waits for months for a
+  panzer division it cannot afford (seed 109: the Soviet Union built 9 formations in 30 months
+  and lost 13, with idle slots and 5 M men in the pool). (Split from 1.42, 2026-10-03.)
+  AT: a unit test (when the next order is not affordable the cheaper infantry order is placed);
+  the 4-seed check (99, 105, 108, 109 × 50 years) is not worse on any criterion.
 - [ ] 1.42 Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails

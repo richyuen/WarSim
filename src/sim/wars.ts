@@ -1,7 +1,8 @@
 /**
  * War records (SPEC §3.5, PLAN 1.16): sides, start tick, war score, exhaustion and fight-to-the-
  * death per side, plus truces. Saved as one JSON section. The pairwise `atWar` lookup (used in
- * every hot loop) is a derived key set rebuilt whenever the records change.
+ * every hot loop) is a derived key set rebuilt whenever the records change, and so is the set of
+ * pairs fighting on the same side of a war (`sameSide`, PLAN 1.42b).
  */
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
@@ -38,6 +39,7 @@ export class Wars implements Stateful {
   /** Bumped on every change (derived caches compare against it; not state). */
   version = 0;
   private keys = new Set<number>();
+  private sideKeys = new Set<number>();
 
   private static key(a: number, b: number): number {
     return a < b ? a * 65536 + b : b * 65536 + a;
@@ -47,7 +49,24 @@ export class Wars implements Stateful {
   changed(): void {
     this.keys.clear();
     for (const w of this.list) for (const a of w.sides[0]) for (const d of w.sides[1]) if (a !== d) this.keys.add(Wars.key(a, d));
+    this.sideKeys.clear();
+    for (const w of this.list) for (const side of w.sides) for (const a of side) for (const b of side) if (a < b) this.sideKeys.add(Wars.key(a, b));
     this.version++;
+  }
+
+  /** Whether a and b fight on the same side of a war (and are not at war with each other). */
+  sameSide(a: number, b: number): boolean {
+    if (a === b) return false;
+    const k = Wars.key(a, b);
+    return this.sideKeys.has(k) && !this.keys.has(k);
+  }
+
+  /**
+   * Whether a fights enemy `d` together with b: both are at war with d and they share a side
+   * (PLAN 1.42b). a's formations then count on b's front against d, and the other way round.
+   */
+  together(a: number, b: number, d: number): boolean {
+    return this.sameSide(a, b) && this.atWar(a, d) && this.atWar(b, d);
   }
 
   atWar(a: number, b: number): boolean {

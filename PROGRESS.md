@@ -2362,3 +2362,34 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Not verified in the browser:** nothing visible changed; the e2e stage of the gate ran.
 - **Gate:** green (420 unit, 7 sweep, 61 e2e).
 - **Next:** PLAN 1.42 (seed 109's leader-share range), then Phase 2.4.
+
+## 2026-10-03 — PLAN 1.42b (critic B1): partners fight on each other's fronts (ADR-50)
+- **Start:** gate green, critic not due. PLAN 1.42 split into 1.42b, 1.42c and the final sweep.
+- **Diagnosis of seed 109** (`npm run diag`, checkpoint at year 25 in `.cache/ck/`): the Soviet
+  Union keeps 27% of the land with 78k men (792k in year 3). A coalition of 28 has been at war
+  with it for 557 days, Japan for 317, both at score 0.
+  - *Cause 1 (fixed here):* only the armies of the nation holding a front count on it. Belgium,
+    Britain or Japan (behind Manchukuo) contribute nothing to a war against the Soviet Union.
+  - *Cause 2 (PLAN 1.42c, not fixed yet):* every third order of a rich nation at war is a panzer
+    division (3,829 gold against 1,001 for infantry). The economic AI returns from its build
+    loop when it cannot pay, so the other slots stay empty for months: 9 Soviet formations
+    built in 30 months, 13 lost, 5 M men unused in the pool.
+- **Change:** `Wars.sameSide` / `together`; territory pressure and defence pooled over
+  partners; a partner's supply network feeds a formation; no repatriation from a partner's land;
+  the operational AI treats a partner's front against a common enemy as a front.
+- **Tests:** 6 new (pair lookups; an ally's army pushes a partner's front and the ground goes
+  to the partner; an uninvolved army moves nothing; an ally defends; supply and repatriation on
+  a partner's soil; the AI marches Italian divisions from Brandenburg to the Polish front).
+- **Check on four seen seeds, 50 years** (`tools/sweep/seed.ts`, results in `.cache/t1/`):
+  | seed | leader range | new in top ten | alive | land moving, last 5 y |
+  |---|---|---|---|---|
+  | 99 | 5.4 | 2 | 94–114 | 4.2% |
+  | 105 | 8.5 | 4 | 100–136 | 5.7% |
+  | 108 | 10.0 | **1 (fails)** | 95–128 | 5.5% |
+  | 109 | 4.4 (was 2.7) | 3 | 99–132 | 4.3% |
+  Seed 109 now passes; seed 108 lost two of its three newcomers. The leader is still the Soviet
+  Union in every year of every seed, and it only ever shrinks. Not enough for a clean sweep.
+- **Speed:** a 50-year run takes 11–12 min alone-ish (4 in parallel); the sweep took 30–36 min
+  per seed before PLAN 1.42a.
+- **Not verified in the browser:** sim rules only. Gate green (426 unit, 7 sweep, 61 e2e).
+- **Next:** PLAN 1.42c (build queue), the same four seeds again, then the unseen-seed sweep.

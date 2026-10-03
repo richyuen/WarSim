@@ -170,6 +170,20 @@ describe('supply v1 (PLAN 1.12)', () => {
     expect(run(true)).toBe(run(false));
   });
 
+  it('an army on the soil of a nation it fights beside is fed and stays; otherwise it starves and is sent home (PLAN 1.42b)', () => {
+    const run = (together: boolean): { supply: number; moving: number } => {
+      const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      if (together) w.wars.start([nationId('GER'), nationId('ITA')], [nationId('POL')], 0);
+      const id = spawn(w, 'ITA', 10.0, 51.0); // central Germany
+      s.step(20);
+      return { supply: w.formations.cols.supply[id]!, moving: w.formations.cols.moving[id]! };
+    };
+    expect(run(true)).toEqual({ supply: 1, moving: 0 });
+    expect(run(false)).toEqual({ supply: 0, moving: 1 }); // repatriation: marching home
+  });
+
   it('the span flood equals the cell-by-cell rule, for a full and for a partial refresh (PLAN 1.42a)', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const w = s.world;

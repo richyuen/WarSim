@@ -6,6 +6,7 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { frontierOf, HOLD_TICKS, territorySystem } from '../../src/sim/systems/territory';
+import { Wars } from '../../src/sim/wars';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -172,5 +173,70 @@ describe('territory pressure and fronts (PLAN 1.14)', () => {
     };
     expect(run(true)).toBe(run(false));
     expect(H).toBe(SIZE_1938.h);
+  });
+});
+
+// PLAN 1.42b (critic B1): the armies of a coalition count on the front of whichever member
+// holds it. Before, only the holder's own formations pushed or defended a front.
+describe('partners on a front (PLAN 1.42b)', () => {
+  const ITA = nationId('ITA');
+  const itaCells = (w: World): number => w.cells.controller.reduce((n, c) => n + (c === ITA ? 1 : 0), 0);
+
+  it('sameSide and together follow the war records', () => {
+    const wars = new Wars();
+    const war = wars.start([1, 2], [3], 0);
+    expect(wars.sameSide(1, 2)).toBe(true);
+    expect(wars.sameSide(2, 1)).toBe(true);
+    expect(wars.sameSide(1, 3)).toBe(false);
+    expect(wars.sameSide(1, 1)).toBe(false);
+    expect(wars.together(1, 2, 3)).toBe(true);
+    expect(wars.together(1, 2, 4)).toBe(false);
+    // Partners in one war and enemies in another are not partners.
+    const other = wars.start([1], [2], 0);
+    expect(wars.sameSide(1, 2)).toBe(false);
+    wars.end(other);
+    expect(wars.sameSide(1, 2)).toBe(true);
+    wars.end(war);
+    expect(wars.sameSide(1, 2)).toBe(false);
+  });
+
+  it('an ally’s army pushes the front of the member that holds it; the ground goes to that member', () => {
+    const s = block(3);
+    const w = s.world;
+    w.wars.set(GER, POL, false);
+    w.wars.start([GER, ITA], [POL], 0);
+    const before = gerCells(w);
+    const ita0 = itaCells(w);
+    for (const y of [Y0 + 3, Y0 + 8]) spawn(w, ITA, SPLIT - 1, y);
+    s.step(HOLD_TICKS + 2);
+    expect(gerCells(w)).toBeGreaterThan(before);
+    expect(itaCells(w)).toBe(ita0);
+  });
+
+  it('the army of a nation that is not in the war moves no front', () => {
+    const s = block(3);
+    const w = s.world;
+    const before = gerCells(w);
+    for (const y of [Y0 + 3, Y0 + 8]) spawn(w, ITA, SPLIT - 1, y);
+    s.step(HOLD_TICKS + 2);
+    expect(gerCells(w)).toBe(before);
+  });
+
+  it('an ally’s army defends the cells of the member it stands with', () => {
+    const lost = (withAlly: boolean): number => {
+      const s = block(4);
+      const w = s.world;
+      w.wars.set(GER, POL, false);
+      w.wars.start([GER, ITA], [POL], 0);
+      const before = gerCells(w);
+      for (const y of [Y0 + 3, Y0 + 8]) {
+        spawn(w, POL, SPLIT, y);
+        if (withAlly) spawn(w, ITA, SPLIT - 1, y);
+      }
+      s.step(HOLD_TICKS + 2);
+      return before - gerCells(w);
+    };
+    expect(lost(false)).toBeGreaterThan(0);
+    expect(lost(true)).toBe(0);
   });
 });

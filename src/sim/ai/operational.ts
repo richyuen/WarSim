@@ -2,7 +2,9 @@
  * Operational AI v1 (SPEC §7, PLAN 1.25): front allocation, offensives, reserves.
  *
  * Every 6 hours, nation n (AI on, at war) plans when (tick/6 + n) mod STAGGER = 0, i.e. once a
- * day. Its front cells are the frontier cells it controls that touch an enemy's cell; they are
+ * day. Its front cells are the frontier cells that it, or a nation fighting that enemy on its
+ * side, controls and that touch an enemy's cell (PLAN 1.42b: an ally's front is its front too,
+ * within DEPLOY_RANGE_CELLS of its formations); they are
  * grouped into sectors of SECTOR_CELLS × SECTOR_CELLS cells (ascending key). A sector's threat is
  * the enemy strength in its 3 × 3 sector neighbourhood.
  *
@@ -57,9 +59,11 @@ function planNation(world: World, n: number, frontier: Set<number>, w: number, h
   const enemy = (m: number): boolean => m !== 0 && world.wars.atWar(n, m);
   const bw = Math.ceil(w / SECTOR_CELLS);
   const sectors = new Map<number, Sector>();
+  const wars = world.wars;
   for (const c of frontier) {
-    if (controller[c] !== n) continue;
-    if (!neighbours4(c, w, h, world.settings.loopingMap, nb).some((k) => enemy(controller[k]!))) continue;
+    const holder = controller[c]!;
+    if (holder !== n && !wars.sameSide(holder, n)) continue;
+    if (!neighbours4(c, w, h, world.settings.loopingMap, nb).some((k) => enemy(controller[k]!) && (holder === n || wars.atWar(holder, controller[k]!)))) continue;
     const x = c % w;
     const y = (c - x) / w;
     const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
