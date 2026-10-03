@@ -217,19 +217,22 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   Seed 99 × 5 years ends at ac517acf at HEAD (85c2e35) and at ac517acf with this change. The
   statistics series is split off as 1.42d2: it is saved and hashed state, so recording km²
   there moves the hash, which this task must not.
-- [ ] 1.42d2 Critic B1: the monthly statistics series records land in km² (the land chart).
+- [x] 1.42d2 Critic B1: the monthly statistics series records land in km² (the land chart).
   The series is part of the state (`World.parts()`), so the hash moves although no rule does.
   Decide what an older save's cell counts show in the chart (reset the land column, or mark
   the series version).
   AT: `tests/unit/stats.test.ts` asserts the land column equals `landStandings` at the sampled
   months; the state hash with the `stats` part left out is identical before and after on seed
   99 × 5 years; the new full hash is logged in DECISIONS (ADR-52 addendum); e2e chart renders.
+  Done 2026-10-03: without the stats part dd414d91 before and after; full hash ac517acf →
+  93effc58. The section is renamed `stats.km2`, so a save with the old `stats.rows` (cells)
+  starts an empty series.
 - [ ] 1.42f Tick time is over budget again after ADR-50 and ADR-51: seed 99 × 5 years, mean
   1.69 ms (budget 1.5), year 1 3.34 ms (budget 2.4), measured at 85c2e35 on 2026-10-03. PROMPT
   "KEEPING ITERATIONS SHORT": fixed before the next task that needs a full sweep, which is
   the retry of 1.42.
-  AT: as 1.42a (5-year mean ≤ 1.5 ms, year 1 ≤ 2.4 ms), final hash ac517acf unless a rule
-  change is logged.
+  AT: as 1.42a (5-year mean ≤ 1.5 ms, year 1 ≤ 2.4 ms), final hash 93effc58 (since 1.42d2;
+  ac517acf before it) unless a rule change is logged.
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km

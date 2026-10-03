@@ -204,6 +204,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Split off (PLAN 1.42d2):** the monthly statistics series (the land chart) still records
   cells. It is saved and hashed state, so changing what it records moves the state hash
   without any rule changing; that gets its own commit with the hash evidence.
+- **Series in km² (PLAN 1.42d2, 2026-10-03):** the land column of the statistics series is
+  `ownedAreas` at each month start (one scan of the owner raster a month). The series is
+  hashed state, so the hash of seed 99 × 5 years moves from ac517acf to 93effc58; the hash of
+  every part except the series is dd414d91 before and after, so no rule changed. The section
+  is renamed from `stats.rows` to `stats.km2`: a save written before this loads with an
+  empty series (as saves from before PLAN 1.34b do) instead of a land column in mixed units.
+  Everything else in such a save loads as before. Checkpoints in `.cache/ck/` keep working
+  but hash differently from here on.
 - **The hash in the 1.42d acceptance test was stale.** 5d08e5dd is the seed-99 5-year hash
   of PLAN 1.42a; ADR-50, PLAN 1.42c and ADR-51 changed rules after it. The check that was
   meant is "unchanged from HEAD": ac517acf at 85c2e35 and ac517acf with 1.42d.

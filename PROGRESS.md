@@ -2533,3 +2533,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Not converted, out of scope:** `NationField.cells` in the map snapshot (label sizing) and
   every sim rule (PLAN 1.42e).
 - **Next (`continue`):** PLAN 1.42d2.
+
+## 2026-10-03 — PLAN 1.42d2: the statistics series records land in km²
+- **Change:** `statsSystem` samples `ownedAreas` (one raster scan a month) into the land column;
+  the chart label is "Land (km²)". Section renamed `stats.rows` → `stats.km2`: a save with the
+  old series (cells) starts an empty series, the rest of it loads as before.
+- **Hash evidence** (scratch script `.cache/hashNoStats.ts`, seed 99 × 5 years): full hash
+  ac517acf → 93effc58; every part except the series dd414d91 before and after. No rule changed.
+  Mean tick 1.675 → 1.694 ms in the same pair of runs (both over the 1.5 ms budget: PLAN 1.42f).
+- **Tests:** `tests/unit/stats.test.ts` checks the land column against `ownedAreas` at each
+  sampled month and that an old `stats.rows` section yields an empty series. The charts e2e
+  passes (top five lines by land from the series). The evidence shot `docs/evidence/1.34/
+  charts.png` was regenerated and viewed, but it shows the last metric the test selects (army),
+  not the land chart: the land chart itself was not looked at.
+- **Baseline for later tasks:** seed 99 × 5 years now ends at 93effc58 (PLAN 1.42f updated).
+- **Next (`continue`):** PLAN 1.42e (sim rules by area) is first unchecked; 1.42f (tick time)
+  must be done before the 1.42 retry sweep.

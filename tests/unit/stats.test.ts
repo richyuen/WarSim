@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { isMonthStart } from '../../src/shared/calendar';
 import { seriesOf, topNations } from '../../src/shared/statSeries';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { ownedAreas } from '../../src/sim/landArea';
 import { Sim } from '../../src/sim/sim';
-import { STAT_STRIDE } from '../../src/sim/stats';
+import { STAT_STRIDE, StatSeries } from '../../src/sim/stats';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -14,14 +15,14 @@ const W = SIZE_1938.w;
 const [GER, POL] = ['GER', 'POL'].map(nationId) as number[];
 
 /** What a sample of nation n should hold right now. */
-function expected(w: World, n: number, tick: number): number[] {
+function expected(w: World, n: number, tick: number, area: Float64Array): number[] {
   const nc = w.nations.cols;
   let men = 0;
   w.formations.forEach((f) => {
     if (w.formations.cols.nation[f] === n) men += w.formations.cols.strength[f]!;
   });
   const f = Math.fround;
-  return [f(tick), n, f(nc.cells[n]!), f(nc.income[n]!), f(nc.gold[n]!), f(men), f(nc.casualties[n]!)];
+  return [f(tick), n, f(area[n]!), f(nc.income[n]!), f(nc.gold[n]!), f(men), f(nc.casualties[n]!)];
 }
 
 describe('statistics series (PLAN 1.34b)', () => {
@@ -44,8 +45,13 @@ describe('statistics series (PLAN 1.34b)', () => {
         if (w.nations.cols.living[n] === 1) living++;
       });
       expect(at.length, `tick ${t}`).toBe(living);
-      // Sampled by the last system of this tick: the state after it equals the sample.
-      for (const r of at) expect(r.map(Math.fround)).toEqual(expected(w, r[1]!, t));
+      // Sampled by the last system of this tick: the state after it equals the sample. Land is km²
+      // of true area (PLAN 1.42d2, ADR-52), not the count of cells.
+      const area = ownedAreas(w.cells.owner, w.cells.w, w.cells.h, w.nations.highWater);
+      for (const r of at) expect(r.map(Math.fround)).toEqual(expected(w, r[1]!, t, area));
+      const ger = at.find((r) => r[1] === GER)!;
+      expect(ger[2]).toBeGreaterThan(300_000);
+      expect(ger[2]).not.toBe(w.nations.cols.cells[GER!]);
     });
     expect(months).toBeGreaterThanOrEqual(3);
     // A war of three months costs both sides men.
@@ -62,6 +68,10 @@ describe('statistics series (PLAN 1.34b)', () => {
     const t = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
     t.load(s.save());
     expect(t.world.stats.rows).toEqual(s.world.stats.rows);
+    // A save from before PLAN 1.42d2 (land in cells, section `stats.rows`) starts an empty series.
+    const old = new StatSeries();
+    old.deserialize([{ name: 'stats.rows', dtype: 'f32', data: Float32Array.from([0, 1, 5, 0, 0, 0, 0]) }]);
+    expect(old.length).toBe(0);
     s.step(24 * 35);
     t.step(24 * 35);
     expect(t.hash()).toBe(s.hash());

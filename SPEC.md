@@ -1124,7 +1124,7 @@ interpolation changes something.
   - The worker serves the rows raw (`stats` request); `StatsChart` (Charts button in the
     ranking) draws SVG lines for the top 5 at the latest sample + the selected nation.
   - Naval/air military sizes join with their phases.
-- **Stats**: per-nation series (land, income, gold, military size by domain,
+- **Stats**: per-nation series (land in km² [ADR-52], income, gold, military size by domain,
   casualties, warheads), ranking list, charts.
 - **History log** (implemented PLAN 1.34a):
   - `src/sim/history.ts`: state, saved as `history.rows`. Every emitted event of a
