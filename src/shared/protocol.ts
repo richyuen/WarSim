@@ -201,4 +201,6 @@ export type FromWorker =
    * Static map layers for the renderer (PLAN 1.28b), sent once after a real-geography init:
    * land coverage for the fine coastline, the terrain layer and terrain colours (0xRRGGBB).
    */
-  | { type: 'mapLayers'; land: LandCoverage; terrain: { w: number; h: number; data: Uint8Array }; terrainColors: number[] };
+  | { type: 'mapLayers'; land: LandCoverage; terrain: { w: number; h: number; data: Uint8Array }; terrainColors: number[] }
+  /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
+  | { type: 'labels'; data: Float64Array; names: string[] };

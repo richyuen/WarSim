@@ -5,6 +5,9 @@
  *
  * Subscriptions only change what is *sent*; the sim never sees them (invariant I4).
  */
+import { LABEL_STRIDE } from '../shared/nationLabels';
+import { NATIONS_1938 } from '../sim/scenario1938';
+import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
 import { EVENT_STRIDE } from '../shared/events';
@@ -43,6 +46,9 @@ const MAX_TICKS_PER_PUMP = 2000;
 
 const DEFAULT_SUB: Subscription = { bbox: [0, 0, Infinity, Infinity], z: 0, tier: 0, wantsElements: false };
 
+/** Minimum wall time between label derivations (PLAN 1.29). */
+const LABEL_INTERVAL_MS = 2000;
+
 export class SimServer {
   sim: Sim | null = null;
   readonly pool = new BufferPool();
@@ -70,9 +76,15 @@ export class SimServer {
 
   constructor(private readonly post: Post) {}
 
+  /** Label derivation state (PLAN 1.29; not sim state). */
+  private provinceNames: string[] | null = null;
+  private labelVersion = -1;
+  private lastLabelMs = -1;
+
   handle(msg: ToWorker, nowMs: number): void {
     try {
       this.handleInner(msg, nowMs);
+      this.maybeLabels(nowMs);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       this.post({ type: 'error', reqId: 'reqId' in msg ? msg.reqId : -1, message: error.message, stack: error.stack ?? '' }, []);
@@ -115,6 +127,7 @@ export class SimServer {
         break;
       case 'load':
         this.requireSim().load(msg.bytes);
+        this.labelVersion = -1; // the controller layer was replaced wholesale
         this.resetStreams();
         this.reply(msg.reqId);
         break;
@@ -201,6 +214,7 @@ export class SimServer {
       const store = new AssetStore(msg.assetBase);
       const { w } = SCENARIO_GEOMETRY[msg.init.scenario];
       const [geo, meta, terrain] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w)]);
+      this.provinceNames = (JSON.parse(new TextDecoder().decode(meta.bytes)) as { name: string }[]).map((m) => m.name);
       this.startSim({ ...msg.init, assets: { admin1Geometry: geo.bytes, admin1Meta: meta.bytes, terrain: terrain.bytes } }, msg.reqId);
       void this.sendMapLayers(store);
     } catch (err) {
@@ -323,6 +337,39 @@ export class SimServer {
     }
     this.lastPump = nowMs;
     this.maybeSend();
+    this.maybeLabels(nowMs);
+  }
+
+  /**
+   * Nation label curves (PLAN 1.29): re-derived when control changed, at most every
+   * LABEL_INTERVAL_MS (a ~40 ms flood at M), and once after init or load. Real-map scenarios only.
+   */
+  private maybeLabels(nowMs: number): void {
+    const sim = this.sim;
+    if (!sim || !this.provinceNames) return;
+    const world = sim.world;
+    const changed = world.controlChanges !== this.labelVersion;
+    if (!changed || (this.lastLabelMs >= 0 && nowMs - this.lastLabelMs < LABEL_INTERVAL_MS)) return;
+    this.lastLabelMs = nowMs;
+    this.labelVersion = world.controlChanges;
+    const capitals = new Map<number, number>();
+    const nc = world.nations.cols;
+    world.nations.forEach((id) => {
+      if (nc.living[id] === 1) capitals.set(id, Math.floor(nc.capitalY[id]!) * world.cells.w + Math.floor(nc.capitalX[id]!));
+    });
+    const data = deriveNationLabels(world.cells.controller, world.cells.w, world.cells.h, true, capitals);
+    const names: string[] = [];
+    for (let i = 0; i < data.length; i += LABEL_STRIDE) names.push(this.nameOf(data[i]!));
+    this.post({ type: 'labels', data, names }, [data.buffer]);
+  }
+
+  /** i18n key of a scenario nation, or a literal ('=…') name for a spawned one. */
+  private nameOf(id: number): string {
+    const def = NATIONS_1938[id - 1];
+    if (def) return def.nameKey;
+    const origin = this.requireSim().world.nations.cols.origin[id] ?? 0;
+    const province = this.provinceNames?.[origin - 1];
+    return province ? `=Free ${province}` : `=Free state ${id}`;
   }
 
   private advance(n: number): void {

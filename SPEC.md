@@ -907,7 +907,17 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   GPU at 1080p on the bench machine: 0.54 ms T0 world, 0.50 Europe, 0.46 close (was 0.47; a
   full per-id gradient cost 1.30 ms).
 - Map modes are palette swaps or derived per-province textures (no reupload of the cell grid).
-- Labels: MSDF font atlas. The curve comes from the worker's `derive/labels` (largest
+- Labels (implemented PLAN 1.29, ADR-40):
+  - *Derivation:* the worker derives a quadratic Bézier per nation from control
+    (`src/worker/deriveLabels.ts`). It takes the capital's 4-connected component (else the
+    largest), with x unwrapped at the date line; finds the PCA axis; takes the mid-line at
+    10/50/90% of the robust extent; and records half-thickness = 1.2σ.
+  - *Delivery:* it posts `labels` (with i18n keys, or literal names for spawned nations) at most
+    every 2 s, when control changed.
+  - *Drawing:* the app lays the glyphs out along the curve on a Canvas2D overlay
+    (`src/render/labels/nationLabels.ts`). Font ≤ 2 × half-thickness and fits the curve length,
+    9–64 px; greedy glyph-circle collision runs largest first; dark text with a light halo.
+- Labels (original plan): MSDF font atlas. The curve comes from the worker's `derive/labels` (largest
   connected component → skeleton/PCA → quadratic Bézier, size by area), throttled
   and cross-faded on change.
 - Units: one instanced draw per sprite atlas. Instance attributes are prev/cur pos,

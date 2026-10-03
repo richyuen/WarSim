@@ -344,6 +344,8 @@ export class World {
    */
   supplyDirty = true;
   supplyDirtyNations = new Set<number>();
+  /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
+  controlChanges = 0;
   /** Global settings (state, saved in world.meta). */
   settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode; aiEnabled: boolean } = {
     winnerTakesAll: false,
@@ -386,6 +388,7 @@ export class World {
   setController(i: number, nation: number, keepFrontier = false): void {
     const c = this.cells;
     if (c.controller[i] === nation) return;
+    this.controlChanges++;
     this.supplyDirtyNations.add(c.controller[i]!);
     this.supplyDirtyNations.add(nation);
     c.controller[i] = nation;

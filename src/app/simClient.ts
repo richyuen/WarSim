@@ -60,6 +60,11 @@ export class SimClient {
       this.onSnapshot(msg.snap);
       return;
     }
+    if (msg.type === 'labels') {
+      this.labels = msg;
+      for (const l of this.labelListeners) l(msg);
+      return;
+    }
     if (msg.type === 'mapLayers') {
       this.mapLayers = msg;
       for (const l of this.layerListeners) l(msg);
@@ -99,6 +104,15 @@ export class SimClient {
   }
 
   /** Listeners must copy what they need: the snapshot's arrays are returned to the worker on the next frame. */
+  /** Nation label curves from the worker (PLAN 1.29); late listeners get the last ones at once. */
+  labels: Extract<FromWorker, { type: 'labels' }> | null = null;
+  private readonly labelListeners = new Set<(m: Extract<FromWorker, { type: 'labels' }>) => void>();
+  onLabels(l: (m: Extract<FromWorker, { type: 'labels' }>) => void): () => void {
+    this.labelListeners.add(l);
+    if (this.labels) l(this.labels);
+    return () => this.labelListeners.delete(l);
+  }
+
   /** Static map layers from the worker (PLAN 1.28b); late listeners get the last ones at once. */
   mapLayers: MapLayers | null = null;
   private readonly layerListeners = new Set<(m: MapLayers) => void>();

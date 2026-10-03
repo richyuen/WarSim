@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-40 · 2026-10-02 · accepted — Curved nation names on a Canvas2D overlay, not an MSDF atlas
+**Decision.**
+- Nation names are drawn glyph by glyph along the worker's Bézier on a 2D canvas overlay. SPEC §8
+  planned an MSDF font atlas.
+- The labelled territory is the capital's component, else the largest.
+
+**Why.**
+- The repo has no MSDF tooling (msdfgen), and city names already use Canvas2D for crisp text in
+  any script.
+- About 100 curved labels of ~10 glyphs each draw in well under a millisecond, and only on
+  redraws. MSDF can return if T1–T3 label counts grow by orders of magnitude.
+- Using the largest component put "France" in Algeria and "Italy" in Libya. The first evidence
+  shot caught it.
+
 ### ADR-39 · 2026-10-02 · accepted — Border distance from analytic gradients, not fwidth
 **Decision.**
 - The T0 border distance uses the analytic derivative of the B-spline indicator fields.

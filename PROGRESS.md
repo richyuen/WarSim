@@ -1610,3 +1610,30 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Known:** islets more than ~2 cells from owned land show neutral grey (no owned cell in the 4×4
   window). GPU cost on the real 1938 map is not benched; bench A uses a synthetic map without the
   land layer.
+
+## 2026-10-02 — PLAN 1.29: curved nation labels (worker derive + Canvas2D overlay)
+- **Worker** (`src/worker/deriveLabels.ts`): per nation, the capital's component (else the
+  largest; x unwrapped at the date line), the PCA axis, and a mid-line Bézier through
+  10/50/90% of the robust extent, with half-thickness and area. `labels` messages carry i18n keys
+  (or "Free <province>" for spawned nations), sent at most every 2 s when control changed
+  (`World.controlChanges`, derived), and again after init or load.
+- **App** (`src/render/labels/nationLabels.ts`, `MapView`):
+  - a Canvas2D overlay with glyphs placed by arc length along the curve;
+  - font fitted to thickness and length (9–64 px);
+  - greedy glyph-circle collision, largest first;
+  - hidden in terrain mode;
+  - the layout is exposed as `view.nationLabels`.
+- **Bug found by the evidence shot:** the largest component put France's name in Algeria and
+  Italy's in Libya. Fixed by preferring the capital's component.
+- **AT (`tests/e2e/labels1938.spec.ts`):**
+  - ≥ 20 distinct names across the Europe and world views;
+  - ≥ 3 curved;
+  - bigger nations have bigger names;
+  - no glyph overlaps among the 10 largest in either view;
+  - the overlay has ink.
+  - Evidence `docs/evidence/1.29/` viewed: Soviet Union, China, Brazil and Turkey large and
+    curved; the small Baltic and Balkan names fit their borders.
+- **Unit tests (`tests/unit/nationLabels.test.ts`):** axis and direction, capital preference,
+  date-line component, too-small territories.
+- **Parity:** row 50 (political map mode) evidence and notes updated. Row 54 (alliances map mode)
+  corrected to partial: it was built in 1.17 and the row had been left stale.

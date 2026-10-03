@@ -120,7 +120,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: e2e finds no border-coloured pixels inside nations (fails on the old shader); bench A T0 ≤ 1.0 ms.
 - [x] 1.28b T0 renderer: coastline from the fine land-mask pyramid; terrain map mode.
   AT: screenshots of coasts at T0 zooms viewed (no cell stairs); terrain mode e2e shot.
-- [ ] 1.29 Curved nation labels (worker derive + MSDF).
+- [x] 1.29 Curved nation labels (worker derive + MSDF).
   AT: screenshot shows curved, area-sized names for ≥ 20 nations, no overlaps on major ones.
 - [ ] 1.30 Map modes: political, terrain, wars, diplomacy, alliances, puppets, income, revolts.
   AT: e2e screenshots of each mode; legend present.
