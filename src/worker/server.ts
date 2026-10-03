@@ -17,6 +17,7 @@ import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import {
+  FormationFlag,
   NATION_STRIDE,
   NationField,
   type FromWorker,
@@ -27,6 +28,7 @@ import {
   type SimInit,
   type ToWorker,
   type NationStat,
+  type UnitSymbol,
   type Inspection,
   type WarStat,
 } from '../shared/protocol';
@@ -57,6 +59,26 @@ const DEFAULT_SUB: Subscription = { bbox: [0, 0, Infinity, Infinity], z: 0, tier
 /** Minimum wall time between label derivations (PLAN 1.29). */
 const LABEL_INTERVAL_MS = 2000;
 const STATS_INTERVAL_MS = 1000;
+
+/** Marker symbol of a template (PLAN 2.1): by its dominant element type. */
+function symbolOf(t: { id: string; elements: readonly { type: string; count: number }[] }): UnitSymbol {
+  if (t.id.startsWith('garrison')) return 'garrison';
+  if (t.id.startsWith('mountain')) return 'mountain';
+  let tanks = 0;
+  let motor = 0;
+  let horse = 0;
+  let all = 0;
+  for (const e of t.elements) {
+    all += e.count;
+    if (e.type.startsWith('tank')) tanks += e.count;
+    else if (e.type.endsWith('motorised')) motor += e.count;
+    else if (e.type === 'cavalry') horse += e.count;
+  }
+  if (tanks * 2 >= all) return 'armour';
+  if (horse * 2 >= all) return 'cavalry';
+  if ((tanks + motor) * 2 >= all) return 'motorised';
+  return 'infantry';
+}
 
 export class SimServer {
   sim: Sim | null = null;
@@ -303,7 +325,7 @@ export class SimServer {
       this.startLand = Uint8Array.from(world.cells.terrain, (t) => (t >= Terrain.Plains ? 1 : 0));
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
-      const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0 }));
+      const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: symbolOf(t) }));
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
@@ -589,6 +611,18 @@ export class SimServer {
     return counts;
   }
 
+  /** Per formation: its strength and the men summed directly over its elements (PLAN 2.1 AT). */
+  private formationMen(world: World): { id: number; nation: number; strength: number; elementMen: number }[] {
+    const men = new Map<number, number>();
+    const ec = world.elements.cols;
+    const units = world.rules?.units ?? [];
+    world.elements.forEach((e) => men.set(ec.formation[e]!, (men.get(ec.formation[e]!) ?? 0) + ec.strength[e]! * (units[ec.unit[e]!]?.menPerUnit ?? 0)));
+    const out: { id: number; nation: number; strength: number; elementMen: number }[] = [];
+    const fc = world.formations.cols;
+    world.formations.forEach((f) => out.push({ id: f, nation: fc.nation[f]!, strength: fc.strength[f]!, elementMen: Math.round(men.get(f) ?? 0) }));
+    return out;
+  }
+
   /** Every city with its display name: the scenario's, or the editor's (PLAN 1.36). */
   private cityList(world: World): { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[] {
     const cc = world.cities.cols;
@@ -641,6 +675,7 @@ export class SimServer {
       rasters: { owner: xxhash32View(world.cells.owner), controller: xxhash32View(world.cells.controller), terrain: xxhash32View(world.cells.terrain) },
       edits: { undo: world.edits.undo.length, redo: world.edits.redo.length },
       cities: full ? this.cityList(world) : [],
+      formations: full ? this.formationMen(world) : [],
       cores: !full ? [] : Array.from({ length: Math.max(0, world.provinces.count - 1) }, (_, i) => ({ province: i + 1, nations: world.provinces.coresOf(i + 1) })).filter((c) => c.nations.length > 0),
     };
     return new TextEncoder().encode(JSON.stringify(out));
@@ -712,7 +747,7 @@ export class SimServer {
     this.post({ type: 'snapshot', snap }, transfer);
   }
 
-  private view<T extends Float64Array | Uint32Array | Uint16Array | Float32Array>(
+  private view<T extends Float64Array | Uint32Array | Uint16Array | Float32Array | Uint8Array>(
     ctor: { new (buf: ArrayBuffer, off: number, len: number): T; BYTES_PER_ELEMENT: number },
     length: number,
     buffers: ArrayBuffer[],
@@ -786,6 +821,9 @@ export class SimServer {
     const fpy = this.view(Float64Array, fc, buffers);
     const ffacing = this.view(Float32Array, fc, buffers);
     const fstr = this.view(Uint32Array, fc, buffers);
+    const ftpl = this.view(Uint16Array, fc, buffers);
+    const fflags = this.view(Uint8Array, fc, buffers);
+    const ftarget = this.view(Uint32Array, fc, buffers);
     let j = 0;
     ft.forEach((id) => {
       fid[j] = id;
@@ -798,8 +836,13 @@ export class SimServer {
       fpy[j] = born ? fy[j]! : this.prevY[id]!;
       ffacing[j] = ft.cols.facing[id]!;
       fstr[j] = ft.cols.strength[id]!;
+      ftpl[j] = ft.cols.template[id]!;
+      const moving = ft.cols.moving[id] === 1;
+      fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0);
+      ftarget[j] = moving ? ft.cols.targetCell[id]! : 0;
       j++;
     });
+    const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
 
     // Events: global ones always, spatial ones only inside the subscribed bbox.
     const q = this.eventQueue;
@@ -828,7 +871,8 @@ export class SimServer {
       tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
       nations: { count: n, data: nations },
       wars,
-      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, facing: ffacing, strength: fstr },
+      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget },
+      majors,
       events: { count: ec, data: events, dropped: this.droppedEvents },
       buffers,
     };

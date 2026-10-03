@@ -2192,3 +2192,24 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   "not started": donations, God nuke, map-mode hotkeys, event popups, map sizes (7.1b), audio.
 - **Gate:** green (391 unit, 7 sweep, 57 e2e). BLOCKERS: both review items closed.
 - **Phase 1 complete.** Next: Phase 2 (semantic zoom).
+
+## 2026-10-03 — PLAN 2.1: T1 operational markers
+- **Snapshot:** per formation `template`, `flags` (moving, engaged) and `target`; `majors`
+  positions. Templates carry a marker `symbol` (infantry, armour, motorised, cavalry,
+  mountain, garrison) from their elements.
+- **Render** (`src/render/units/markers.ts`): Canvas2D boxes in the nation's own colour, a NATO-style
+  symbol, a flag chip (FlagStore), a strength bar and number, dashed order arrows, a red outline
+  while engaged, crossed swords at Major Battles.
+  - Opacity `markerAlpha(m/px)`: full in 300–2000 m/px with 30% smooth fades.
+  - The T0 sprites stop when markers are fully in.
+  - Capital flags draw above the markers. The flag e2e caught markers covering Warsaw's flag.
+- **Inspect** (full): per formation strength and the men summed independently over its elements.
+- **AT** (`tests/e2e/markers1938.spec.ts`):
+  - none at T0, more than 20 at T1 over Poland;
+  - for every drawn marker the formation's strength equals its element sum and the label equals
+    `strengthText(elementMen)`, also on the Spanish front after two weeks of fighting;
+  - a move order produces an arrow;
+  - none at T2.
+- **Unit:** fade and text formatting. Evidence `docs/evidence/2.1/`, viewed: Poland with an order
+  arrow; Spain with engaged outlines and many arrows. Markers stack where units cluster; T0
+  clustering is PLAN 2.2.

@@ -177,7 +177,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 
 ## Phase 2 — Semantic zoom
 
-- [ ] 2.1 T1 operational markers (symbol, flag chip, strength bar + number, order arrows, battle markers).
+- [x] 2.1 T1 operational markers (symbol, flag chip, strength bar + number, order arrows, battle markers).
   AT: the strength number equals the sim Σ element strength (e2e reads both).
 - [ ] 2.2 T0 aggregated counters with stable multi-level clustering + split/merge animation.
   AT: zooming T0↔T1 shows no frame where a counter vanishes without a matching animation (frame-diff check on a recorded sequence).

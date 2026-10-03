@@ -131,7 +131,16 @@ export interface SnapshotFormations {
   prevY: Float64Array;
   facing: Float32Array;
   strength: Uint32Array;
+  /** Template index (symbol and full strength via `mapLayers.templates`; PLAN 2.1). */
+  template: Uint16Array;
+  /** Bit 0: moving; bit 1: engaged (PLAN 2.1 markers). */
+  flags: Uint8Array;
+  /** Order target cell while moving (row-major index), else 0. */
+  target: Uint32Array;
 }
+
+/** Formation flags in `SnapshotFormations.flags`. */
+export const FormationFlag = { moving: 1, engaged: 2 } as const;
 
 export interface SnapshotEvents {
   count: number;
@@ -153,6 +162,8 @@ export interface Snapshot {
   /** Pairs of nations at war, flattened [a0, b0, a1, b1, …] (map modes, PLAN 1.30). */
   wars: Uint16Array;
   formations: SnapshotFormations;
+  /** Active Major Battles as flat [x, y, …] (battle markers, PLAN 2.1). */
+  majors: Float32Array;
   events: SnapshotEvents;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */
   buffers: ArrayBuffer[];
@@ -255,7 +266,11 @@ export interface TemplateInfo {
   manpower: number;
   days: number;
   men: number;
+  /** Marker symbol class from the template's elements (PLAN 2.1). */
+  symbol: UnitSymbol;
 }
+
+export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison';
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
 export interface NationStat {
@@ -311,6 +326,11 @@ export interface Inspection {
   edits: { undo: number; redo: number };
   /** Cities (PLAN 1.36; `full` only, else empty): row, display name, position, size, capital of. */
   cities: { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[];
+  /**
+   * Formations (`full` only, else empty; PLAN 2.1): the formation's strength and, independently,
+   * the men summed over its elements (Σ element units × men per unit).
+   */
+  formations: { id: number; nation: number; strength: number; elementMen: number }[];
   /** Nations with a core or claim per province that has any (PLAN 1.36; `full` only, else empty). */
   cores: { province: number; nations: number[] }[];
 }

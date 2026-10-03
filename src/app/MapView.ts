@@ -6,6 +6,8 @@
 import { CityLabelLayer } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
+import { drawMarkers, markerAlpha, type MarkerInput, type PlacedMarker } from '../render/units/markers';
+import { FormationFlag, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
 const FLAG_MIN_SCALE = 3;
@@ -151,6 +153,7 @@ export class MapView {
       this.terrainColors = m.terrainColors;
       this.cityLabels.setCities(m.cities);
       this.cities = m.cities;
+      this.templates = m.templates;
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;
@@ -205,6 +208,11 @@ export class MapView {
     this.formNation = f.nation.slice(0, f.count);
     this.formX = f.x.slice(0, f.count);
     this.formY = f.y.slice(0, f.count);
+    this.formStrength = f.strength.slice(0, f.count);
+    this.formTemplate = f.template.slice(0, f.count);
+    this.formFlags = f.flags.slice(0, f.count);
+    this.formTarget = f.target.slice(0, f.count);
+    this.majors = s.majors.slice();
     for (const id of this.selectedFormations) if (!this.formIds.includes(id)) this.selectedFormations.delete(id);
     const p = this.proxies;
     p.reserve(f.count);
@@ -319,6 +327,50 @@ export class MapView {
   private formNation = new Uint16Array(0);
   private formX = new Float64Array(0);
   private formY = new Float64Array(0);
+  private formStrength = new Uint32Array(0);
+  private formTemplate = new Uint16Array(0);
+  private formFlags = new Uint8Array(0);
+  private formTarget = new Uint32Array(0);
+  private majors = new Float32Array(0);
+  private templates: TemplateInfo[] = [];
+  /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
+  markerRects: PlacedMarker[] = [];
+  markerOpacity = 0;
+
+  /** Metres per CSS pixel at the current zoom. */
+  get metresPerPx(): number {
+    return (this.geo.kmPerCell * 1000) / this.controller.cam.scale;
+  }
+
+  /** T1 operational markers (PLAN 2.1) on the overlay. */
+  private drawUnitMarkers(cam: Camera): void {
+    const alpha = markerAlpha(this.metresPerPx);
+    this.markerOpacity = alpha;
+    this.markerRects = [];
+    if (alpha <= 0.01) return;
+    const w = this.geo.w;
+    const markers: MarkerInput[] = [];
+    for (let i = 0; i < this.formIds.length; i++) {
+      const t = this.templates[this.formTemplate[i]!];
+      const moving = (this.formFlags[i]! & FormationFlag.moving) !== 0;
+      const target = this.formTarget[i]!;
+      markers.push({
+        id: this.formIds[i]!,
+        nation: this.formNation[i]!,
+        x: this.formX[i]!,
+        y: this.formY[i]!,
+        strength: this.formStrength[i]!,
+        full: t?.men ?? 0,
+        symbol: t?.symbol ?? 'infantry',
+        engaged: (this.formFlags[i]! & FormationFlag.engaged) !== 0,
+        target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
+      });
+    }
+    const ctx = this.overlay.getContext('2d')!;
+    // The nation's own colour in every map mode (the palette carries the mode's colours).
+    const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
+    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, alpha, hex, (n) => this.flags.canvasOf(n));
+  }
 
   /** Position of formation `id` from the last snapshot, or null. */
   formationPos(id: number): [number, number] | null {
@@ -473,9 +525,12 @@ export class MapView {
     const cam = this.controller.cam;
     const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);
-    this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth), this.unitScale);
+    // T0 sprites give way to the T1 markers (PLAN 2.1) once those are fully in.
+    if (markerAlpha(this.metresPerPx) < 0.99) this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth), this.unitScale);
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
+    // Unit markers below capital flags, so capitals stay readable (PLAN 2.1).
+    this.drawUnitMarkers(cam);
     this.drawFlags(cam);
     this.drawSelection(cam);
     this.frames++;

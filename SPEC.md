@@ -887,6 +887,13 @@ Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresi
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, roads near cities | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
 | **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals (exact for vehicles, ships and planes; ≤ 64 sprites per infantry element, count = strength) |
 
+*T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers fade in over
+2000–2600 m/px and out over 210–300 m/px. Each shows a type symbol (from the template's
+elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
+order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
+The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
+sprites stop once markers are fully in; capital flags draw above the markers.
+
 **One truth.** Every number or sprite derives from sim state: counter strength =
 Σ formation strength = Σ element strength. Sprites are at element positions, and tracers
 come from FireEvents. Close-tier positions inside an element footprint are the only
