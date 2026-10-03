@@ -53,6 +53,12 @@ test('statistics charts: top nations plus the selected one, every metric', async
   mkdirSync(out, { recursive: true });
   await page.getByTestId('chart-metric').selectOption('men');
   await page.screenshot({ path: path.join(out, 'charts.png') });
+  // Top-centre panels are exclusive (review after PLAN 1.36): History closes the charts.
+  await page.getByTestId('history-btn').click();
+  await expect(page.getByTestId('history-panel')).toBeVisible();
+  await expect(page.getByTestId('stats-chart')).toHaveCount(0);
+  await page.getByTestId('ranking-charts').click();
+  await expect(page.getByTestId('history-panel')).toHaveCount(0);
   await page.getByTestId('chart-close').click();
   await expect(page.getByTestId('stats-chart')).toHaveCount(0);
 });

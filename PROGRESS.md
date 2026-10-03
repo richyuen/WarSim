@@ -1974,3 +1974,16 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   overwritten before I could recheck, and the new e2e and unit assertions pass with or without
   my change. So I reverted the change and kept the assertions.
 - **Parity:** rows 43–46 → partial.
+
+## 2026-10-02 — Review pass after PLAN 1.34a–1.36
+- **Bug:** `NationAnnexed` joined the history kinds without its sentence and type name (the log
+  would show a raw key). Added; a new unit test requires roles and both i18n keys for every
+  `HISTORY_KINDS` kind.
+- **Save size:** the undo cap was 2 M cells (up to ~20 MB of diffs in a save); it is now 500 k.
+  A 1-year 1938 save with history (109 rows) and stats (1,207 rows) is 818 KB gzipped, against
+  807 KB before both: +1%. (The sweep stage did not refresh `docs/evidence/1.27/save-1939.json`,
+  so I measured directly.)
+- **UX:** the editor, charts and history panels share the top centre and overlapped; opening one
+  now closes the others (the charts e2e checks it).
+- **SPEC drift:** §2.3 lists `history`, `stats`, `terrainLayer` and `cityLayer`; §2.5's
+  implemented order ends with statistics sampling, and history is recorded on emit.

@@ -17,7 +17,8 @@ import type { Stateful } from './core/state';
 import { TILE, type World } from './world';
 
 export const UNDO_DEPTH = 50;
-export const UNDO_CELLS = 2_000_000;
+/** ~5 MB of diffs at most in a save (review after PLAN 1.36: 2 M cells was ~20 MB). */
+export const UNDO_CELLS = 500_000;
 /** Largest brush radius in cells. */
 export const MAX_BRUSH = 32;
 

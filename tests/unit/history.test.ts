@@ -62,3 +62,19 @@ describe('history log (PLAN 1.34a)', () => {
     expect(json[2]).toMatchObject({ tick: yearTick + 5, type: 'PeaceSigned', bName: 'Poland, "the brave"' });
   });
 });
+
+// Review after PLAN 1.36: NationAnnexed joined the log without its sentence. Every historic kind
+// needs roles, a type name and a sentence.
+describe('history kinds are complete', () => {
+  it('every HISTORY_KINDS kind has roles and both i18n keys', async () => {
+    const { HISTORY_KINDS } = await import('../../src/sim/history');
+    const { HISTORY_ROLES } = await import('../../src/shared/history');
+    const en = (await import('../../src/ui/i18n/en.json', { with: { type: 'json' } })).default as Record<string, string>;
+    for (const k of HISTORY_KINDS) {
+      const name = kindName(k);
+      expect(HISTORY_ROLES[k], name).toBeDefined();
+      expect(en[`history.${name}`], name).toBeDefined();
+      expect(en[`history.type.${name}`], name).toBeDefined();
+    }
+  });
+});

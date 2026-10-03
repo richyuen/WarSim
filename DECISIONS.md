@@ -173,7 +173,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Decision:**
   - Paint, undo and redo are commands. The diff stack (cells with values before and after; the
     nation layer also keeps controllers) is a saved world part.
-  - The stack is capped at 50 edits / 2 M cells, oldest dropped. A new edit clears redo.
+  - The stack is capped at 50 edits / 500 k cells (2 M at first; lowered in the review after PLAN 1.36 to keep saves small), oldest dropped. A new edit clears redo.
 - **Why not in the UI:** a UI-side stack would need CPU copies of every layer. Worse, a save
   plus a later command log containing undos would not replay.
 - **Consequences:** saves carry up to the capped diffs. Water ↔ land edits wait for map import

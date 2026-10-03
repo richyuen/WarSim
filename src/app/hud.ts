@@ -104,7 +104,15 @@ export class Hud {
   readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0, cityName: '', citySize: 2 });
   readonly lineStart = signal<[number, number] | null>(null);
 
+  /** Opening one top-centre panel (editor, charts, history) closes the others. */
+  private closeCentre(except: 'editor' | 'charts' | 'history'): void {
+    if (except !== 'editor') this.showEditor.value = false;
+    if (except !== 'charts') this.showCharts.value = false;
+    if (except !== 'history') this.showHistory.value = false;
+  }
+
   toggleEditor(): void {
+    if (!this.showEditor.value) this.closeCentre('editor');
     this.showEditor.value = !this.showEditor.value;
     this.lineStart.value = null;
     // Paint with the selected nation by default.
@@ -158,6 +166,7 @@ export class Hud {
   readonly showCharts = signal(false);
 
   toggleCharts(): void {
+    if (!this.showCharts.value) this.closeCentre('charts');
     this.showCharts.value = !this.showCharts.value;
   }
 
@@ -165,6 +174,7 @@ export class Hud {
   readonly showHistory = signal(false);
 
   toggleHistory(): void {
+    if (!this.showHistory.value) this.closeCentre('history');
     this.showHistory.value = !this.showHistory.value;
   }
 

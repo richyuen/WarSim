@@ -118,11 +118,14 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
 - `buildPolitical {assetBase, w, h}`: the 1938 political map via `buildPoliticalMap`: owner,
   controller, placed cities (PLAN 1.3–1.5). Bench views `?b=T` and `?b=W` use these until the
   1938 scenario boots in the app.
-- `save`, `load {bytes}`, `requestHistory {filter}`, `requestStats {kind}`
+- `save`, `load {bytes}`, `history` (the log as JSON rows, PLAN 1.34a; filtered in the UI),
+  `stats` (the monthly series as raw f32 bytes, PLAN 1.34b)
 
 Worker → main:
 - `snapshot {snap}` (transferable; layout in §2.4), `reply {reqId, status: {tick, hash}, bytes?}`,
-  `provinces | terrain | political {reqId, result}`, `error {reqId, message, stack}`; later `history {rows}`, `stats {series}`
+  `provinces | terrain | political {reqId, result}`, `error {reqId, message, stack}`
+- `terrainLayer {data}` / `cityLayer {cities}`: the terrain layer and the city list again after
+  editor edits (PLAN 1.35/1.36)
 - `mapLayers {land, terrain, terrainColors, cities, province, templates}` once after a
   real-geography init (PLAN 1.28b): the fine land coverage, the terrain layer, city dots and
   names, the province raster (revolts mode, picking) and the buildable templates (PLAN 1.33b).
@@ -190,7 +193,8 @@ Implemented order for the 1938 world (`src/sim/sim.ts`, review after PLAN 1.25):
 buff expiry → strategic AI (weekly per nation) → operational AI (6-hourly, daily per nation) →
 production (daily) → economy (monthly) → combat efficiency (monthly) → supply (12-hourly
 network, hourly use) → movement → engagement and combat (incl. Major Battles) → territory →
-capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly). The average tick is
+capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) → statistics sampling
+(monthly, last, PLAN 1.34b). History events are recorded as they are emitted (PLAN 1.34a). The average tick is
 2.6 ms in a war-heavy 200-day run (Node, M; budget 1.5 ms, PLAN 7.1). The main costs are the
 supply flood over warring blocs (~20%), A* for AI orders (~22%) and combat (~16%).
 
@@ -1003,7 +1007,7 @@ interpolation changes something.
 - **Editor** (paint tools implemented PLAN 1.35, `src/sim/editor.ts`, `src/ui/EditorPanel.tsx`):
   - Commands `editPaint` (layer nation = owner + controller, or terrain; tool brush / line /
     bucket; radius ≤ 32; mask by terrain or nation), `editUndo` and `editRedo`.
-  - The diff stack is world state (`edits.*` sections, ≤ 50 edits and 2 M cells), so a save
+  - The diff stack is world state (`edits.*` sections, ≤ 50 edits and 500 k cells), so a save
     plus a log with undos replays exactly.
   - Land cells only: terrain edits are land ↔ land until map import (1.37) can regenerate the
     fine coastline. Terrain edits drop nav and paths; the worker resends `terrainLayer`.
