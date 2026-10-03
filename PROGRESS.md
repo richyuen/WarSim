@@ -2213,3 +2213,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Unit:** fade and text formatting. Evidence `docs/evidence/2.1/`, viewed: Poland with an order
   arrow; Spain with engaged outlines and many arrows. Markers stack where units cluster; T0
   clustering is PLAN 2.2.
+
+## 2026-10-03 — PLAN 2.2: T0 counters with stable clustering and split/merge animation
+- **Counters** (`src/render/units/counters.ts`, ADR-45): per nation per cell of a world-aligned
+  2^L grid, sized to ~64 px with ±0.15 hysteresis.
+  - Each counter shows a flag chip and Σ strength. Parents equal the union of their children
+    (unit test).
+  - A level change animates the finer level's counters from or to their parent centroid over
+    250 ms.
+  - T0↔T1 cross-fades with the markers. The unit-size setting scales counters and markers.
+- **AT** (`tests/e2e/counters1938.spec.ts`):
+  - with the whole world in view, Σ drawn counters equals Σ formation strength;
+  - a scripted zoom of 30 km/px → 700 m/px → 30 km/px (3% per 16 ms frame, ≥ 8 level changes)
+    records every counter and marker per frame;
+  - every item continues under its key or is replaced in place, and opacity steps are ≤ 0.3, in
+    both directions.
+  - With the animation disabled (mutation) the check fails, so it detects popping.
+- **Gate fixes:**
+  - The settings e2e reads map + overlay, since units moved to the overlay. It also waits for the
+    camera-jump animation to finish before "same setting, same picture". That was a real race:
+    the test drew mid-animation.
+  - The gate failed three times on the editor e2e. One `inspect` took 19 s, because the counter
+    recording software-rendered the map for 250 frames and starved the parallel workers. The
+    recording now draws only the unit layers.
+- Formation sprites now draw only below T1, until element sprites (2.3).
+- Evidence `docs/evidence/2.2/`, viewed: the world with counters, and Europe at 12 km, 4 km and
+  2.3 km/px.

@@ -894,6 +894,10 @@ order arrow to the target, and a red outline while engaged; Major Battles get cr
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers.
 
+*T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per
+cell of a nested 2^L-cell grid (~64 px), showing Σ strength. Splits and merges animate the child
+level for 250 ms; T0↔T1 is a cross-fade. The unit-size setting scales counters and markers.
+
 **One truth.** Every number or sprite derives from sim state: counter strength =
 Σ formation strength = Σ element strength. Sprites are at element positions, and tracers
 come from FireEvents. Close-tier positions inside an element footprint are the only

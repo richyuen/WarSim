@@ -25,6 +25,11 @@ export interface MarkerInput {
 
 export interface PlacedMarker {
   id: number;
+  nation: number;
+  /** World position in cells. */
+  wx: number;
+  wy: number;
+  alpha: number;
   x: number;
   y: number;
   w: number;
@@ -108,6 +113,8 @@ export function drawMarkers(
   alpha: number,
   colorOf: (nation: number) => string,
   flagOf: (nation: number) => CanvasImageSource | null,
+  /** Unit-size setting (PLAN 1.39a): scales each marker about its position. */
+  size = 1,
 ): PlacedMarker[] {
   const placed: PlacedMarker[] = [];
   if (alpha <= 0.01) return placed;
@@ -153,7 +160,13 @@ export function drawMarkers(
       const [px, py] = worldToScreen(cam, m.x + off, m.y, vw, vh);
       const x = Math.round(px - BOX_W / 2);
       const y = Math.round(py - BOX_H / 2);
-      if (x < -BOX_W || y < -BOX_H || x > vw || y > vh + 12) continue;
+      if (px + BOX_W * size < 0 || py + BOX_H * size < 0 || px - BOX_W * size > vw || py - BOX_H * size > vh) continue;
+      ctx.save();
+      if (size !== 1) {
+        ctx.translate(px, py);
+        ctx.scale(size, size);
+        ctx.translate(-px, -py);
+      }
       ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
       ctx.fillRect(x - 1, y - 1, BOX_W + 2, BOX_H + 13);
       ctx.fillStyle = colorOf(m.nation);
@@ -175,7 +188,8 @@ export function drawMarkers(
       const text = strengthText(m.strength);
       ctx.fillStyle = '#ffe28a';
       ctx.fillText(text, x + BOX_W / 2, y + BOX_H + 3);
-      placed.push({ id: m.id, x, y, w: BOX_W, h: BOX_H + 12, text });
+      ctx.restore();
+      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text });
     }
   }
   // Major Battles: crossed swords.

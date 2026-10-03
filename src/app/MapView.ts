@@ -6,7 +6,8 @@
 import { CityLabelLayer } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { drawMarkers, markerAlpha, type MarkerInput, type PlacedMarker } from '../render/units/markers';
+import { drawMarkers, markerAlpha, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
+import { CounterLayer, counterAlpha, type CounterSource } from '../render/units/counters';
 import { FormationFlag, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -336,17 +337,37 @@ export class MapView {
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
   markerRects: PlacedMarker[] = [];
   markerOpacity = 0;
+  /** T0 counters (PLAN 2.2). */
+  readonly counters = new CounterLayer();
 
   /** Metres per CSS pixel at the current zoom. */
   get metresPerPx(): number {
     return (this.geo.kmPerCell * 1000) / this.controller.cam.scale;
   }
 
-  /** T1 operational markers (PLAN 2.1) on the overlay. */
-  private drawUnitMarkers(cam: Camera): void {
+  /**
+   * Only the unit layers (T0 counters, T1 markers) at `now`, without the map: scripted zoom
+   * recordings check their continuity without software-rendering the map (PLAN 2.2 AT).
+   */
+  drawUnitLayers(now: number): void {
+    this.resize();
+    this.drawUnitMarkers(this.controller.cam, now);
+  }
+
+  /** T1 operational markers (PLAN 2.1) and T0 counters (PLAN 2.2) on the overlay. */
+  private drawUnitMarkers(cam: Camera, now: number): void {
     const alpha = markerAlpha(this.metresPerPx);
     this.markerOpacity = alpha;
     this.markerRects = [];
+    const ctx = this.overlay.getContext('2d')!;
+    // The nation's own colour in every map mode (the palette carries the mode's colours).
+    const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
+    const flagOf = (n: number): CanvasImageSource | null => this.flags.canvasOf(n);
+    const src: CounterSource[] = [];
+    for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: this.formNation[i]!, strength: this.formStrength[i]! });
+    const vw = this.canvas.clientWidth;
+    const vh = this.canvas.clientHeight;
+    this.counters.draw(ctx, src, cam, this.geo, vw, vh, counterAlpha(this.metresPerPx, alpha), now, hex, flagOf, this.unitScale);
     if (alpha <= 0.01) return;
     const w = this.geo.w;
     const markers: MarkerInput[] = [];
@@ -366,10 +387,7 @@ export class MapView {
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
       });
     }
-    const ctx = this.overlay.getContext('2d')!;
-    // The nation's own colour in every map mode (the palette carries the mode's colours).
-    const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
-    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, alpha, hex, (n) => this.flags.canvasOf(n));
+    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, alpha, hex, flagOf, this.unitScale);
   }
 
   /** Position of formation `id` from the last snapshot, or null. */
@@ -509,7 +527,7 @@ export class MapView {
     // or units still interpolating toward the latest tick. An idle map costs nothing.
     const c = this.controller.cam;
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
-    const interpolating = this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5;
+    const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || this.counters.animating(now);
     if (this.resize() || this.dirty || camMoved || interpolating) {
       this.draw(now);
       this.dirty = false;
@@ -525,12 +543,13 @@ export class MapView {
     const cam = this.controller.cam;
     const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);
-    // T0 sprites give way to the T1 markers (PLAN 2.1) once those are fully in.
-    if (markerAlpha(this.metresPerPx) < 0.99) this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth), this.unitScale);
+    // Formation sprites only below T1 (until element sprites, PLAN 2.3): T0 has counters
+    // (PLAN 2.2) and T1 markers (PLAN 2.1).
+    if (this.metresPerPx < T1_MIN_M && markerAlpha(this.metresPerPx) < 0.99) this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth), this.unitScale);
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1).
-    this.drawUnitMarkers(cam);
+    this.drawUnitMarkers(cam, now);
     this.drawFlags(cam);
     this.drawSelection(cam);
     this.frames++;

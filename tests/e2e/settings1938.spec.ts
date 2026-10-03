@@ -15,16 +15,23 @@ async function open(page: Page, query = 'scenario=1938&paused=1&seed=1938'): Pro
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
 }
 
-/** RGBA of a (2r+1)² box at the screen centre, freshly drawn. */
+/**
+ * RGBA of a (2r+1)² box at the screen centre, freshly drawn: the map with the overlay on top
+ * (T0 counters and T1 markers are on the overlay since PLAN 2.1/2.2).
+ */
 const box = (page: Page, r: number): Promise<number[]> =>
   page.evaluate((r) => {
     window.__warsim!.view!.draw();
     const c = document.getElementById('map') as HTMLCanvasElement;
-    const gl = c.getContext('webgl2')!;
+    const o = document.querySelector('canvas.map-nations') as HTMLCanvasElement;
+    const out = document.createElement('canvas');
+    out.width = c.width;
+    out.height = c.height;
+    const ctx = out.getContext('2d')!;
+    ctx.drawImage(c, 0, 0);
+    ctx.drawImage(o, 0, 0, c.width, c.height);
     const n = 2 * r + 1;
-    const px = new Uint8Array(n * n * 4);
-    gl.readPixels(Math.floor(c.width / 2) - r, Math.floor(c.height / 2) - r, n, n, gl.RGBA, gl.UNSIGNED_BYTE, px);
-    return Array.from(px);
+    return Array.from(ctx.getImageData(Math.floor(c.width / 2) - r, Math.floor(c.height / 2) - r, n, n).data);
   }, r);
 const diff = (a: number[], b: number[]): number => {
   let n = 0;
@@ -50,6 +57,9 @@ test('settings: UI size, unit size, screenshot, seed and speed persistence', asy
   const [fx, fy] = (await page.evaluate((id) => window.__warsim!.view!.formationPos(id), f))!;
   await page.evaluate(({ fx, fy }) => window.__warsim!.view!.controller.set({ cx: fx, cy: fy, scale: 6 }), { fx, fy });
   await page.getByTestId('settings-unit-scale').selectOption('0.5');
+  // The camera jump starts a T0 counter split/merge animation (PLAN 2.2): let it finish.
+  await page.evaluate(() => window.__warsim!.view!.draw()); // starts it, if the RAF has not yet
+  await page.waitForFunction(() => !window.__warsim!.view!.counters.animating(performance.now()));
   const small = await box(page, 30);
   expect(diff(small, await box(page, 30))).toBe(0); // same setting, same picture
   await page.getByTestId('settings-unit-scale').selectOption('2');

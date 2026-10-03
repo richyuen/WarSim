@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-45 · 2026-10-03 · accepted — T0 counters: nested 2^L grids, child-level animation, key-tracked continuity check (PLAN 2.2)
+
+**Context.** SPEC §8 asks for stable multi-level clustering with split/merge animation, and the AT
+asks for a frame-diff check that no counter vanishes without an animation.
+
+**Decision.**
+- Clusters are per nation per cell of a world-aligned 2^L-cell grid. The grids nest, so a parent
+  is exactly the union of its children and Σ strength is conserved at every level.
+- L is chosen so that a grid cell is about 64 CSS px on screen, with ±0.15 hysteresis.
+- On a level change, the finer level's counters animate for 250 ms: from the parent centroid when
+  splitting, to it when merging. The target level then replaces them at the same positions. One
+  transition at a time; a multi-level jump is a single transition.
+- T0↔T1 is a cross-fade (counters `1 − α_markers` above 2000 m/px). Clusters near T1 are already
+  small, so the split-to-members animation of SPEC §8 is approximated by the fade.
+- The AT check uses the drawn item lists (counters and markers, world position, key, opacity)
+  per 16 ms frame of a scripted zoom, not pixels. Map pixels change with every zoom step, so a
+  pixel diff cannot separate a pop from camera motion.
+  - An item must continue under the same key (≤ 80 px per frame, i.e. an animation) or be
+    replaced in place (same nation, ≤ 12 px).
+  - Opacity may drop at most 0.3 per frame, in both directions.
+  - Verified by mutation: with the animation disabled, the check fails.
+- The recording draws only the unit layers (`MapView.drawUnitLayers`). Software-rendering the
+  map for 250 frames starved parallel e2e workers: one editor `inspect` took 19 s instead of 15 ms.
+- The unit-size setting now scales counters and markers. The settings e2e reads map + overlay.
+
+**Consequences.** Formation sprites draw only below T1 until element sprites (PLAN 2.3).
+Counters overlap where nations' clusters are adjacent; decluttering can come with 2.7 if needed.
+
 ### ADR-44 · 2026-10-03 · accepted — Dynamism tuning for the 50-year sweep (PLAN 1.40)
 
 - **Context:** the first 10-seed × 50-year sweep (SPEC §10) failed. Every seed ended with
