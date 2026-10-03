@@ -1,5 +1,5 @@
 /** Map modes (SPEC §9): palette swaps over the same id textures (SPEC §8). */
-export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income'] as const;
+export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts'] as const;
 export type MapMode = (typeof MAP_MODES)[number];
 
 /** Nations outside any alliance (alliance mode) or puppet bloc (puppet mode), 0xRRGGBB. */
@@ -51,7 +51,7 @@ const RELATION_COLOR: Record<Exclude<Relation, 'none'>, number> = { self: SELF_C
  * PUPPET_LIGHTEN, everyone else grey. Wars: red at war, grey at peace. Diplomacy: relative to
  * the selected nation (self yellow, allies green, enemies red, overlord/puppets light green,
  * others grey; own colours when nothing is selected). Income: a ramp from pale to deep green.
- * Terrain mode does not use the palette (the shader colours terrain).
+ * Terrain and revolts modes do not use the palette (the shader colours terrain / province unrest).
  */
 export const PUPPET_LIGHTEN = 0.45;
 export function modeColor(mode: MapMode, n: NationColors): number {
@@ -89,5 +89,7 @@ export function legendFor(mode: MapMode): [number | null, string][] {
       return [[SELF_COLOR, 'legend.selected'], [ALLY_COLOR, 'legend.ally'], [ENEMY_COLOR, 'legend.enemy'], [SUBJECT_COLOR, 'legend.subject'], [NEUTRAL_COLOR, 'legend.neutral'], [null, 'legend.selectHint']];
     case 'income':
       return [[INCOME_LOW, 'legend.incomeLow'], [INCOME_HIGH, 'legend.incomeHigh']];
+    case 'revolts':
+      return [[0xe8e3cf, 'legend.calm'], [0xf0a050, 'legend.mayRevolt'], [0x8e1c10, 'legend.revoltLikely']];
   }
 }

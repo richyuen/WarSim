@@ -38,8 +38,10 @@ export class MapRenderer {
   private landTex: WebGLTexture;
   private terrainTex: WebGLTexture;
   private hasLand = false;
+  private provinceTex: WebGLTexture;
+  private unrestTex: WebGLTexture;
   private terrainColors = new Float32Array(12 * 3);
-  /** 0 = palette fills (political, alliances, puppets), 1 = terrain colours. */
+  /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest. */
   fillMode = 0;
 
   constructor(gl: WebGL2RenderingContext, w: number, h: number, opts: MapRendererOptions) {
@@ -57,9 +59,26 @@ export class MapRenderer {
     this.vao = gl.createVertexArray()!;
     this.landTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.LINEAR);
     this.terrainTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
+    this.provinceTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
+    this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
   }
 
-  private makeTexture(internal: number, format: number, type: number, w: number, h: number, data: Uint8Array, filter: number): WebGLTexture {
+  /** Province per cell (map size) for the revolts mode (PLAN 1.30b). */
+  setProvinces(w: number, h: number, data: Uint16Array): void {
+    this.gl.deleteTexture(this.provinceTex);
+    this.provinceTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, w, h, data, this.gl.NEAREST);
+  }
+
+  /** Unrest per province id (0..100), laid out 128 per row. */
+  setUnrest(unrest: Uint8Array): void {
+    const rows = Math.max(1, Math.ceil(unrest.length / 128));
+    const data = new Uint8Array(rows * 128);
+    for (let i = 0; i < unrest.length; i++) data[i] = Math.round((Math.min(100, unrest[i]!) * 255) / 100);
+    this.gl.deleteTexture(this.unrestTex);
+    this.unrestTex = this.makeTexture(this.gl.R8, this.gl.RED, this.gl.UNSIGNED_BYTE, 128, rows, data, this.gl.NEAREST);
+  }
+
+  private makeTexture(internal: number, format: number, type: number, w: number, h: number, data: ArrayBufferView, filter: number): WebGLTexture {
     const gl = this.gl;
     const t = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, t);
@@ -173,6 +192,8 @@ export class MapRenderer {
       uHasLand: this.hasLand ? 1 : 0,
       uTerrain: this.terrainTex,
       uMode: this.fillMode,
+      uProvince: this.provinceTex,
+      uUnrest: this.unrestTex,
       uTerrainCol: this.terrainColors,
     });
     gl.bindVertexArray(this.vao);
@@ -187,6 +208,8 @@ export class MapRenderer {
     gl.deleteTexture(this.paletteTex);
     gl.deleteTexture(this.landTex);
     gl.deleteTexture(this.terrainTex);
+    gl.deleteTexture(this.provinceTex);
+    gl.deleteTexture(this.unrestTex);
     gl.deleteVertexArray(this.vao);
     gl.deleteProgram(this.program.program);
   }

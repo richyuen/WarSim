@@ -91,6 +91,7 @@ export function revoltSystem(world: World): void {
   world.nations.forEach((n) => {
     if (nc.living[n] === 1 && nc.suppression[n]! > 0) nc.gold[n] = nc.gold[n]! - SUPPRESSION_COST * nc.suppression[n]! * Math.max(0, nc.income[n]!);
   });
+  pv.version++; // unrest is updated below
   const revolted = new Uint8Array(pv.count);
   for (let p = 1; p < pv.count; p++) {
     const c = g.centre[p] ?? -1;

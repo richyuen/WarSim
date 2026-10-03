@@ -42,7 +42,9 @@ uniform float uWarp;       // domain-warp amplitude (cells), must stay < 0.5
 uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
 uniform int uHasLand;
 uniform highp usampler2D uTerrain;  // terrain class per cell
-uniform int uMode;         // 0 = palette fills, 1 = terrain colours
+uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest
+uniform highp usampler2D uProvince; // admin-1 province per cell
+uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
 uniform vec3 uTerrainCol[12];
 
 out vec4 outColor;
@@ -68,6 +70,19 @@ uint terrainAt(ivec2 c) {
 
 vec3 terrainCol(uint t) {
   return uTerrainCol[min(int(t), 11)];
+}
+
+uint provinceAt(ivec2 c) {
+  c = wrapCell(c);
+  return inMap(c) ? texelFetch(uProvince, c, 0).r : 0u;
+}
+
+// Unrest ramp: calm (pale) → may revolt at 0.5 (orange) → 1 (dark red).
+vec3 unrestCol(float u) {
+  vec3 calm = vec3(0.91, 0.89, 0.81);
+  vec3 warm = vec3(0.94, 0.63, 0.31);
+  vec3 hot = vec3(0.56, 0.11, 0.06);
+  return u < 0.5 ? mix(calm, warm, u * 2.0) : mix(warm, hot, (u - 0.5) * 2.0);
 }
 
 uint ownerAt(ivec2 c) {
@@ -178,6 +193,10 @@ void main() {
     vec2 tf = tq - floor(tq);
     col = mix(mix(terrainCol(terrainAt(t0)), terrainCol(terrainAt(t0 + ivec2(1, 0))), tf.x),
               mix(terrainCol(terrainAt(t0 + ivec2(0, 1))), terrainCol(terrainAt(t0 + ivec2(1, 1))), tf.x), tf.y);
+  } else if (uMode == 2) {
+    uint pid = provinceAt(ivec2(floor(cellPos)));
+    float u = texelFetch(uUnrest, ivec2(int(pid % 128u), int(pid / 128u)), 0).r;
+    col = unrestCol(u);
   } else {
     col = fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid);
   }

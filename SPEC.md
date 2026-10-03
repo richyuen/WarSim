@@ -947,7 +947,9 @@ interpolation changes something.
     to the nation selected by clicking the map) and income (log ramp).
   - *How:* palette swaps from snapshot fields (alliance leader, overlord, income, war pairs);
     terrain uses the shader's terrain layer. Each mode has a legend (`src/ui/MapLegend.tsx`).
-  - *Pending:* revolts (1.30b).
+  - *Revolts* (1.30b): a per-province unrest choropleth. The worker sends the province raster
+    in `mapLayers` and per-province unrest bytes (`provinceStats`) when `Provinces.version`
+    changes; the shader colours land by its province's unrest (fill mode 2).
 - **Map modes** (planned): political, terrain, wars, diplomacy, alliances, puppets, income,
   revolts, + sea control, air superiority, fallout, supply.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;

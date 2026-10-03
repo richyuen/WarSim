@@ -10,7 +10,7 @@ or `[TEXT+VISUAL …]`. A row is `verified` only with a dated observation of AoC
 screenshot, whose backticked paths in `evidence` must exist. `partial` counts 0.5. The score line is generated
 by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it disagrees with Table 1.
 
-**Parity score: 27.5%** (verified 0 · partial 44 · not started 36 · total 80)
+**Parity score: 28.1%** (verified 0 · partial 45 · not started 35 · total 80)
 
 ## Table 1 — AoC parity rows (scored)
 
@@ -72,7 +72,7 @@ by `npm run parity -- --write`; never hand-edit it. `npm run parity` fails if it
 | 54 | Alliances map mode | Alliance colours and names instead of nation names; unallied faded [TEXT+VISUAL 2026-10-02] | Alliances mode (PLAN 1.30) | partial | `tests/e2e/alliances1938.spec.ts`, `docs/evidence/1.17/alliances-europe.png` | 2026-10-02 (PLAN 1.17): alliance colours (leader colour), non-aligned grey; persisted toggle. Missing: alliance names in place of nation names. |
 | 55 | Puppets map mode | Dedicated puppet view [TEXT 2026-10-02] | Puppets mode (PLAN 1.30) | partial | `tests/e2e/puppets1938.spec.ts`, `docs/evidence/1.18/puppets-world.png` | 2026-10-02 (PLAN 1.18): overlords in their colour, puppets lighter, others grey. |
 | 56 | Income map mode | Income per nation, average of the last 7 ticks, refreshed every 2 s [TEXT 2026-10-02] | Income mode (PLAN 1.30) | partial | `tests/e2e/mapModes1938.spec.ts`, `docs/evidence/1.30/mode-income.png` | 2026-10-02 (PLAN 1.30a): log-scaled pale-to-green ramp of monthly gross income. Deviation: monthly, not a 7-tick average. |
-| 57 | Revolts map mode | No dedicated mode: cities above 70% revolt progress show smoke + red tint; Alt-hover revolt preview; City Revolts statistics tab [TEXT 2026-10-02] | Revolts mode (unrest heat map) + smoke overlay (PLAN 1.30) | not started |  | Baseline lists revolts as a map mode |
+| 57 | Revolts map mode | No dedicated mode: cities above 70% revolt progress show smoke + red tint; Alt-hover revolt preview; City Revolts statistics tab [TEXT 2026-10-02] | Revolts mode (unrest heat map) + smoke overlay (PLAN 1.30) | partial | `tests/e2e/mapModes1938.spec.ts`, `docs/evidence/1.30/mode-revolts-warsaw.png` | 2026-10-02 (PLAN 1.30b): per-province unrest choropleth (calm → orange at 50 → dark red at 100) with legend; goes beyond AoC (no dedicated mode). Missing: smoke on restless cities, Alt-hover revolt preview, revolts statistics tab. |
 | 58 | Map mode hotkeys | F1–F6 switch map modes [TEXT 2026-10-02] | Number/F-key shortcuts | not started |  |  |
 | 59 | Statistics | Ranked bar lists: size, age, alliances, income, city revolts, flags, kills, total wars, cities; dead nations marked [TEXT+VISUAL 2026-10-02] | Statistics panel incl. military size (Phase 1 UI) | not started |  | Baseline: "statistics (incl. military size)"; AoC has no military size |
 | 60 | Nation view | Nation panel: flag, age, previous lives, wars, diplomacy list, puppets, economy tab [TEXT+VISUAL 2026-10-02] | Nation panel | not started |  |  |

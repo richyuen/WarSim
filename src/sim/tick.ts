@@ -98,7 +98,10 @@ function applyCommand(world: World, cmd: Command): void {
       collapseNation(world, cmd.nation);
       return;
     case 'setUnrest':
-      if (cmd.province > 0 && cmd.province < world.provinces.count) world.provinces.unrest[cmd.province] = Math.max(0, Math.min(100, cmd.value));
+      if (cmd.province > 0 && cmd.province < world.provinces.count) {
+        world.provinces.unrest[cmd.province] = Math.max(0, Math.min(100, cmd.value));
+        world.provinces.version++;
+      }
       return;
     case 'paintControl':
       paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r);

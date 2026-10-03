@@ -13,6 +13,8 @@ export class Provinces implements Stateful {
   /** Extra claims as sorted [province, nation] pairs (unique). */
   claims: [number, number][] = [];
   private claimIndex = new Map<number, number[]>();
+  /** Derived (not state): bumped when unrest may have changed (revolts map mode, PLAN 1.30b). */
+  version = 0;
 
   get count(): number {
     return this.core.length;
@@ -66,6 +68,7 @@ export class Provinces implements Stateful {
 
   deserialize(sections: readonly Section[]): void {
     this.unrest = takeSection(sections, 'provinces.unrest', 'f64').slice();
+    this.version++;
     this.core = takeSection(sections, 'provinces.core', 'u16').slice();
     const flat = takeSection(sections, 'provinces.claims', 'u32');
     this.claims = [];

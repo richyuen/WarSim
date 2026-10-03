@@ -60,6 +60,11 @@ export class SimClient {
       this.onSnapshot(msg.snap);
       return;
     }
+    if (msg.type === 'provinceStats') {
+      this.unrest = msg.unrest;
+      for (const l of this.unrestListeners) l(msg.unrest);
+      return;
+    }
     if (msg.type === 'labels') {
       this.labels = msg;
       for (const l of this.labelListeners) l(msg);
@@ -104,6 +109,15 @@ export class SimClient {
   }
 
   /** Listeners must copy what they need: the snapshot's arrays are returned to the worker on the next frame. */
+  /** Province unrest from the worker (PLAN 1.30b); late listeners get the last values at once. */
+  unrest: Uint8Array | null = null;
+  private readonly unrestListeners = new Set<(u: Uint8Array) => void>();
+  onUnrest(l: (u: Uint8Array) => void): () => void {
+    this.unrestListeners.add(l);
+    if (this.unrest) l(this.unrest);
+    return () => this.unrestListeners.delete(l);
+  }
+
   /** Nation label curves from the worker (PLAN 1.29); late listeners get the last ones at once. */
   labels: Extract<FromWorker, { type: 'labels' }> | null = null;
   private readonly labelListeners = new Set<(m: Extract<FromWorker, { type: 'labels' }>) => void>();

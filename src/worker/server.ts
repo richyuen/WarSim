@@ -81,6 +81,7 @@ export class SimServer {
   private provinceNames: string[] | null = null;
   private labelVersion = -1;
   private lastLabelMs = -1;
+  private unrestVersion = -1;
 
   handle(msg: ToWorker, nowMs: number): void {
     try {
@@ -129,6 +130,7 @@ export class SimServer {
       case 'load':
         this.requireSim().load(msg.bytes);
         this.labelVersion = -1; // the controller layer was replaced wholesale
+        this.unrestVersion = -1;
         this.resetStreams();
         this.reply(msg.reqId);
         break;
@@ -206,6 +208,7 @@ export class SimServer {
     this.provinceNames = init.assets ? (JSON.parse(new TextDecoder().decode(init.assets.admin1Meta)) as { name: string }[]).map((m) => m.name) : null;
     this.labelVersion = -1;
     this.lastLabelMs = -1;
+    this.unrestVersion = -1;
     this.paused = true;
     this.owed = 0;
     this.resetStreams();
@@ -242,7 +245,8 @@ export class SimServer {
         const def = cities1938.cities[cc.def[id]!];
         if (def) cities.push({ name: def.name, x: cc.x[id]!, y: cc.y[id]!, size: cc.size[id]!, capital: cc.capitalOf[id] !== 0 });
       });
-      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities }, [land.data.buffer, terrain.data.buffer]);
+      const province = world.cells.province.slice();
+      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
     }
@@ -358,6 +362,13 @@ export class SimServer {
     const sim = this.sim;
     if (!sim || !this.provinceNames) return;
     const world = sim.world;
+    // Province unrest for the revolts map mode (cheap: a byte per province), when it changed.
+    if (world.provinces.version !== this.unrestVersion && world.provinces.count > 0) {
+      this.unrestVersion = world.provinces.version;
+      const unrest = new Uint8Array(world.provinces.count);
+      for (let p = 0; p < unrest.length; p++) unrest[p] = Math.round(world.provinces.unrest[p]!);
+      this.post({ type: 'provinceStats', unrest }, [unrest.buffer]);
+    }
     const changed = world.controlChanges !== this.labelVersion;
     if (!changed || (this.lastLabelMs >= 0 && nowMs - this.lastLabelMs < LABEL_INTERVAL_MS)) return;
     this.lastLabelMs = nowMs;

@@ -94,10 +94,15 @@ export class MapView {
       this.labelData = { data: m.data, names: m.names.map((k) => (k.startsWith('=') ? k.slice(1) : t(k as MessageKey))) };
       this.dirty = true;
     });
+    sim.onUnrest((u) => {
+      this.map.setUnrest(u);
+      this.dirty = true;
+    });
     sim.onMapLayers((m) => {
       this.map.setLand(m.land.w, m.land.h, m.land.data);
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
       this.cityLabels.setCities(m.cities);
+      this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.hasFineCoast = true;
       this.dirty = true;
     });
@@ -178,7 +183,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
-    this.map.fillMode = mode === 'terrain' ? 1 : 0;
+    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : 0;
     this.applyPalette();
     this.dirty = true;
   }
@@ -301,7 +306,7 @@ export class MapView {
     const ctx = o.getContext('2d')!;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
-    if (!this.labelData || this.mapMode === 'terrain') {
+    if (!this.labelData || this.mapMode === 'terrain' || this.mapMode === 'revolts') {
       this.nationLabels = [];
       return;
     }

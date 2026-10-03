@@ -1676,3 +1676,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   per war; monthly income rather than a 7-tick average.
 - **Plan change:** 1.30 split. 1.30b is the revolts mode, a per-province choropleth that needs a
   province raster plus an unrest texture (not a palette swap).
+
+## 2026-10-02 — PLAN 1.30b: revolts map mode (per-province unrest choropleth)
+- **Worker:** sends the province raster in `mapLayers`, and per-province unrest as bytes
+  (`provinceStats`) whenever `Provinces.version` (derived) changes. That happens after the monthly
+  revolt pass, a God `setUnrest`, a load or an init.
+- **Renderer:** R16UI province texture and a 128-wide unrest lookup. Fill mode 2 colours land by
+  province unrest: calm → orange (50, may revolt) → dark red (100). Borders and city names stay;
+  nation names are hidden in this mode.
+- **Mode:** the 8th map mode, `revolts`, with legend.
+- **AT** (`tests/e2e/mapModes1938.spec.ts`):
+  - Warsaw's province set to 100 by God command renders dark red; central Germany is calm.
+  - The step lands on 1 January, so the value seen is 98 after the monthly −2 decay.
+  - Berlin was a poor calm sample: its lakes draw fine coast lines.
+  - Evidence `docs/evidence/1.30/mode-revolts-warsaw.png`, viewed.
+- **Known:** province edges are cell-blocky (nearest-cell province lookup).
+- Parity: row 57 → partial (goes beyond AoC, which has no dedicated revolts mode).

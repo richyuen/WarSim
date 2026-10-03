@@ -125,7 +125,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.30a Map modes political, terrain, wars, diplomacy, alliances, puppets, income + legends,
   click to select a nation. (Split from 1.30, 2026-10-02.)
   AT: e2e screenshot of each mode with its legend; wars, diplomacy and income colours checked.
-- [ ] 1.30b Revolts map mode (per-province unrest choropleth: province raster + unrest texture).
+- [x] 1.30b Revolts map mode (per-province unrest choropleth: province raster + unrest texture).
   AT: e2e screenshot with legend; a province set to high unrest renders in the hot colour.
 - [ ] 1.31 UI shell: nation panel, actions/economy panel, stats ranking, bottom bar, war banners, date/speed.
   AT: e2e clicks through each panel; screenshot vs reference layout logged.

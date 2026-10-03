@@ -211,6 +211,10 @@ export type FromWorker =
       terrainColors: number[];
       /** City dots and names (positions in cells; size 1..5; capital at send time). */
       cities: { name: string; x: number; y: number; size: number; capital: boolean }[];
+      /** Admin-1 province per cell (revolts map mode, PLAN 1.30b). */
+      province: Uint16Array;
     }
+  /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
+  | { type: 'provinceStats'; unrest: Uint8Array }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] };

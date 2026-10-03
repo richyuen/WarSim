@@ -5,9 +5,11 @@ import type {} from '../../src/app/testApi';
 import { ALLY_COLOR, MAP_MODES, NEUTRAL_COLOR, PEACE_COLOR, SELF_COLOR, WAR_COLOR } from '../../src/shared/mapModes';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { assets1938 } from '../helpers/earth';
 
-// PLAN 1.30a: map modes political, alliances, puppets, terrain, wars, diplomacy and income, each
-// with a legend; diplomacy colours relations to the nation selected by clicking the map.
+// PLAN 1.30a/b: map modes political, alliances, puppets, terrain, wars, diplomacy, income and
+// revolts, each with a legend; diplomacy colours relations to the nation selected by clicking the map.
 
 const { w: W, h: H } = SIZE_1938;
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
@@ -70,6 +72,25 @@ test('every map mode renders with a legend; wars, diplomacy and income colour co
   expect(dist(await pixelAt(page, 10.5, 51), rgb(SELF_COLOR))).toBeLessThan(30);
   expect(dist(await pixelAt(page, 12.5, 42.5), rgb(ALLY_COLOR))).toBeLessThan(30); // Italy, Anti-Comintern
   expect(dist(await pixelAt(page, 19.5, 52), rgb(NEUTRAL_COLOR))).toBeLessThan(30); // Poland
+
+  // Revolts (PLAN 1.30b): a province pushed to unrest 100 renders hot; a calm one pale.
+  const node = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+  const [wx, wy] = cellOf(21.0, 52.23, W, H); // Warsaw
+  const warsawProvince = node.world.cells.province[Math.floor(wy) * W + Math.floor(wx)]!;
+  expect(warsawProvince).toBeGreaterThan(0);
+  await page.evaluate((p) => window.__warsim!.sim.command({ kind: 'setUnrest', province: p, value: 100 }), warsawProvince);
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  // The step lands on 1 January: the monthly revolt pass applies its −2 decay (100 → 98).
+  await page.waitForFunction((p) => (window.__warsim!.sim.unrest?.[p] ?? 0) >= 90, warsawProvince, { timeout: 20_000 });
+  await setMode(page, 'revolts');
+  const hot = await pixelAt(page, 21.0, 52.23);
+  const calm = await pixelAt(page, 10.5, 51.0); // central Germany (Berlin's lakes draw fine coast lines)
+  expect(dist(hot, [143, 28, 15]), `Warsaw ${hot}`).toBeLessThan(30);
+  expect(dist(calm, [232, 227, 207]), `central Germany ${calm}`).toBeLessThan(30);
+  const [px, py] = cellOf(19.5, 52, W, H);
+  await page.evaluate(({ px, py }) => window.__warsim!.view!.controller.set({ cx: px, cy: py, scale: 8 }), { px, py });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: path.join(out, 'mode-revolts-warsaw.png') });
 
   // Income: the Soviet Union is darker (richer) than Albania.
   await setMode(page, 'income');
