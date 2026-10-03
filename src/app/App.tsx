@@ -5,8 +5,9 @@ import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
+import type { PlayerControl } from './player';
 
-export function App({ hud, nameOf }: { hud: Hud; nameOf: (id: number) => string | null }) {
+export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl | null; nameOf: (id: number) => string | null }) {
   const stats = hud.stats.value;
   const byId = new Map((stats?.nations ?? []).map((n) => [n.id, n]));
   const nation = byId.get(hud.selected.value) ?? null;
@@ -25,6 +26,7 @@ export function App({ hud, nameOf }: { hud: Hud; nameOf: (id: number) => string 
         onToggleStats={stats ? () => hud.toggleStats() : undefined}
         godMode={hud.godMode.value}
         onToggleGod={stats ? () => hud.toggleGod() : undefined}
+        playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} /> : null}
       {stats && hud.showStats.value ? (
@@ -35,6 +37,15 @@ export function App({ hud, nameOf }: { hud: Hud; nameOf: (id: number) => string 
           nation={nation}
           byId={byId}
           onSelect={(id) => hud.onSelectNation(id)}
+          control={
+            player
+              ? {
+                  controlled: player.nation.value === nation.id,
+                  onTake: () => player.take(nation.id),
+                  onRelease: () => player.release(),
+                }
+              : null
+          }
           god={
             stats && hud.godMode.value
               ? {

@@ -9,7 +9,7 @@ import { drawNationLabels, layoutNationLabels, type Measure, type PlacedNationLa
 import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
-import { screenToWorld, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { MapRenderer } from '../render/map/MapRenderer';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
@@ -81,8 +81,9 @@ export class MapView {
         const sx = e.clientX - r.left;
         const sy = e.clientY - r.top;
         const cell = this.cellAt(sx, sy);
-        // A God Mode map tool consumes the click (PLAN 1.32b); otherwise it selects.
-        if (!(this.onPick && cell && this.onPick(cell[0], cell[1]))) this.select(this.nationAt(sx, sy));
+        // A God Mode map tool or a player order consumes the click (PLAN 1.32b/1.33a); otherwise
+        // it selects the nation.
+        if (!(this.onPick && cell && this.onPick(cell[0], cell[1], sx, sy, e.shiftKey))) this.select(this.nationAt(sx, sy));
       }
       down = null;
     });
@@ -155,6 +156,12 @@ export class MapView {
     }
     this.applyPalette();
     const f = s.formations;
+    // Copies for picking and selection rings (the snapshot buffers go back to the pool).
+    this.formIds = f.id.slice(0, f.count);
+    this.formNation = f.nation.slice(0, f.count);
+    this.formX = f.x.slice(0, f.count);
+    this.formY = f.y.slice(0, f.count);
+    for (const id of this.selectedFormations) if (!this.formIds.includes(id)) this.selectedFormations.delete(id);
     const p = this.proxies;
     p.reserve(f.count);
     p.originX = Math.floor(this.geo.w / 2);
@@ -243,8 +250,81 @@ export class MapView {
   }
 
   /** The nation controlling the cell under a CSS-px point, 0 for none. */
-  /** God Mode map tool (PLAN 1.32b): gets clicked cells; returns true to consume the click. */
-  onPick: ((x: number, y: number) => boolean) | null = null;
+  /**
+   * Map click hook (God tools PLAN 1.32b, player orders PLAN 1.33a): the clicked cell, the CSS-px
+   * point and Shift; returns true to consume the click.
+   */
+  onPick: ((x: number, y: number, sx: number, sy: number, shift: boolean) => boolean) | null = null;
+
+  /** Asks for a redraw on the next frame. */
+  requestDraw(): void {
+    this.dirty = true;
+  }
+
+  /** Player-selected formations (PLAN 1.33a), ringed on the overlay. */
+  readonly selectedFormations = new Set<number>();
+  private formIds = new Uint32Array(0);
+  private formNation = new Uint16Array(0);
+  private formX = new Float64Array(0);
+  private formY = new Float64Array(0);
+
+  /** Position of formation `id` from the last snapshot, or null. */
+  formationPos(id: number): [number, number] | null {
+    const i = this.formIds.indexOf(id);
+    return i < 0 ? null : [this.formX[i]!, this.formY[i]!];
+  }
+
+  /** Formations of `nation` in the last snapshot. */
+  formationsOf(nation: number): number[] {
+    const out: number[] = [];
+    for (let i = 0; i < this.formIds.length; i++) if (this.formNation[i] === nation) out.push(this.formIds[i]!);
+    return out;
+  }
+
+  /** The formation of `nation` nearest a CSS-px point within `radius` px, or 0. */
+  formationAt(sx: number, sy: number, nation: number, radius = 14): number {
+    const cam = this.controller.cam;
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    let best = 0;
+    let bestD = radius;
+    for (let i = 0; i < this.formIds.length; i++) {
+      if (this.formNation[i] !== nation) continue;
+      for (const off of wrapOffsets(cam, this.geo, w)) {
+        const [px, py] = worldToScreen(cam, this.formX[i]! + off, this.formY[i]!, w, h);
+        const d = Math.hypot(px - sx, py - sy);
+        if (d < bestD) {
+          bestD = d;
+          best = this.formIds[i]!;
+        }
+      }
+    }
+    return best;
+  }
+
+  /** Rings around the selected formations (PLAN 1.33a). */
+  private drawSelection(cam: Camera): void {
+    if (this.selectedFormations.size === 0) return;
+    const ctx = this.overlay.getContext('2d')!;
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#ffe28a';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 3;
+    for (let i = 0; i < this.formIds.length; i++) {
+      if (!this.selectedFormations.has(this.formIds[i]!)) continue;
+      for (const off of wrapOffsets(cam, this.geo, w)) {
+        const [px, py] = worldToScreen(cam, this.formX[i]! + off, this.formY[i]!, w, h);
+        if (px < -20 || py < -20 || px > w + 20 || py > h + 20) continue;
+        ctx.beginPath();
+        ctx.arc(px, py, 9, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
 
   /** The cell under a CSS-px point (x wrapped), or null off the map. */
   cellAt(sx: number, sy: number): [number, number] | null {
@@ -313,6 +393,7 @@ export class MapView {
     this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth));
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
+    this.drawSelection(cam);
     this.frames++;
   }
 

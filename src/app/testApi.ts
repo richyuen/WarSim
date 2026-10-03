@@ -5,6 +5,7 @@
 import type { Autosave } from './autosave';
 import type { Hud } from './hud';
 import type { MapView } from './MapView';
+import type { PlayerControl } from './player';
 import type { SimClient } from './simClient';
 
 export interface WarsimTestApi {
@@ -14,6 +15,8 @@ export interface WarsimTestApi {
   hud: Hud;
   /** PLAN 1.27: IndexedDB autosave (saveNow / read / restore). */
   autosave: Autosave;
+  /** PLAN 1.33a: player control (null with ?view=0). */
+  player: PlayerControl | null;
 }
 
 declare global {

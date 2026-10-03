@@ -406,3 +406,13 @@ body {
 .god-war-name {
   flex: 1;
 }
+
+/* Player control (PLAN 1.33a). */
+.panel-control {
+  width: 100%;
+  margin-bottom: 0.4rem;
+}
+.bar-playing {
+  white-space: nowrap;
+  color: #ffe28a;
+}

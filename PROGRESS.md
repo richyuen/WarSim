@@ -1807,3 +1807,21 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   - God Mode off hides the tab.
 - **Evidence:** `docs/evidence/1.32/god-tab.png`, viewed. The first shot showed the stale label,
   stale war row and wrapped bar fixed above.
+
+## 2026-10-02 — PLAN 1.33a: take control of a nation (1.33 split into a/b)
+- **`PlayerControl`** (`src/app/player.ts`): take/release control via `setAi` (now-commands).
+  Map clicks via `MapView.onPick` (God tools first): own formation → select (Shift toggles);
+  elsewhere with a selection → `moveFormation` per selected formation. Esc clears.
+- **`MapView`:** keeps copies of snapshot formation ids/positions for `formationAt` (screen-space
+  hit test, wrap-aware), `formationPos`, `formationsOf`; selection rings on the overlay.
+- **UI:** Take/Release control button in the nation panel; "Playing X · N selected" in the bar.
+- **AT** (`tests/e2e/player1938.spec.ts`):
+  - take control of Poland (AI off via inspect);
+  - a real click selects a formation, a real click 10 cells west orders it;
+  - after 2 days it is > 2 cells closer and the other Polish formations have not moved;
+  - Esc clears; release turns the AI back on.
+  - Evidence `docs/evidence/1.33/`, viewed.
+- **Flake:** the first gate run timed out once in `camera.spec.ts` beforeEach (toy map's first
+  frame > 30 s while 1938 suites ran in parallel). It passed alone (7 s) and in a full rerun.
+  Watching it; if it recurs, give that beforeEach a budget like the 1938 suites.
+- **Plan change:** 1.33 split; 1.33b is player diplomacy + production.

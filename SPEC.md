@@ -969,6 +969,11 @@ interpolation changes something.
   rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
   `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
   (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.
+- **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel turns
+  that nation's AI off (strategic, operational and economic AI all skip it) and makes map
+  clicks player orders. A click on an own formation selects it (Shift toggles, Esc clears;
+  rings on the overlay); a click elsewhere orders the selection to march there (into enemy land
+  = attack). "Release control" turns the AI back on. The bottom bar shows the nation and count.
 - **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).

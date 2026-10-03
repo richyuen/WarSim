@@ -17,10 +17,12 @@ export interface BottomBarProps {
   /** God Mode toggle (PLAN 1.32b); omitted where no stats exist. */
   godMode?: boolean;
   onToggleGod?: (() => void) | undefined;
+  /** The nation the player controls and its selected formations (PLAN 1.33a). */
+  playing?: { name: string; selected: number } | null;
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
@@ -55,6 +57,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
         <button type="button" class={godMode ? 'bar-btn bar-god active' : 'bar-btn bar-god'} data-testid="god-btn" aria-pressed={godMode} onClick={onToggleGod}>
           {t('bar.god')}
         </button>
+      ) : null}
+      {playing ? (
+        <span class="bar-playing" data-testid="player-label">
+          {t('player.playing', { name: playing.name, n: playing.selected })}
+        </span>
       ) : null}
       <span class="bar-date" data-testid="date-label">
         {t('date.format', { day: date.day, month: t(`month.${date.month}` as MessageKey), year: date.year })}

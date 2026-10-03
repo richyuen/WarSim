@@ -5,6 +5,7 @@ import { App } from './App';
 import { Autosave } from './autosave';
 import { Hud } from './hud';
 import { MapView } from './MapView';
+import { PlayerControl } from './player';
 import { SimClient } from './simClient';
 import { installTestApi } from './testApi';
 import './style.css';
@@ -24,19 +25,25 @@ const sim = new SimClient();
 const scenario = SCENARIO_INFO[scenarioId];
 const view = params.get('view') === '0' ? null : new MapView(canvas, scenario.geometry, sim);
 const hud = new Hud(sim, scenario.startDay);
+let player: PlayerControl | null = null;
 hud.installKeys(window);
 if (view) {
   hud.onMapMode = (m) => view.setMapMode(m);
   view.onSelect = (id) => (hud.selected.value = id);
   hud.onSelectNation = (id) => view.select(id);
-  view.onPick = (x, y) => hud.pick(x, y, view.provinceAt(x, y));
+  const p = new PlayerControl(hud, view);
+  player = p;
+  view.onPick = (x, y, sx, sy, shift) => hud.pick(x, y, view.provinceAt(x, y)) || p.click(x, y, sx, sy, shift);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') p.clearSelection();
+  });
   view.setMapMode(hud.mapMode.value);
 }
 const autosave = new Autosave(sim, scenarioId);
-installTestApi({ sim, view, hud, autosave });
+installTestApi({ sim, view, hud, autosave, player });
 
 const uiRoot = document.getElementById('ui');
-if (uiRoot) render(<App hud={hud} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
+if (uiRoot) render(<App hud={hud} player={player} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
 
 await sim.init({ scenario: scenarioId, seed });
 // ?continue=1 resumes the autosave of this scenario (PLAN 1.27).

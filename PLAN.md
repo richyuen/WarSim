@@ -140,8 +140,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.32b God Mode UI: a God panel (bottom bar toggle) issuing those commands on the selected
   nation (and map picks for revolt/battle/brush).
   AT: e2e drives each God action through the UI and sees its effect via `sim.inspect()`.
-- [ ] 1.33 Take control of a nation (player orders: move/attack formations, diplomacy actions, production).
+- [x] 1.33a Take control of a nation; select own formations; move/attack orders by map clicks.
+  (Split from 1.33, 2026-10-02.)
   AT: e2e takes control of Poland, orders a move, and the formation moves.
+- [ ] 1.33b Player Actions tab for the controlled nation: diplomacy (declare war, offer peace,
+  ally) and production (queue templates with cost and time; see the queue).
+  AT: e2e as Poland queues a formation (gold drops, it appears when ready) and declares war.
 - [ ] 1.34 Statistics (incl. military size by domain) + charts; history log with filters + CSV/JSON export.
   AT: export file contents validated in e2e; filters reduce rows correctly.
 - [ ] 1.35 Editor: brush/bucket/line, undo/redo, target mask.

@@ -20,7 +20,26 @@ type Tab = 'overview' | 'economy' | 'god';
  * balance, treasury, bonus, manpower). Nation chips select that nation. Actions (bonus −/+,
  * war, peace…) arrive with God Mode and player control (PLAN 1.32/1.33).
  */
-export function NationPanel({ nation, byId, onSelect, god }: { nation: NationStat; byId: Map<number, NationStat>; onSelect: (id: number) => void; god?: Omit<GodTabProps, 'nation'> | null }) {
+export interface ControlProps {
+  /** Whether the player controls this nation (PLAN 1.33a). */
+  controlled: boolean;
+  onTake: () => void;
+  onRelease: () => void;
+}
+
+export function NationPanel({
+  nation,
+  byId,
+  onSelect,
+  god,
+  control,
+}: {
+  nation: NationStat;
+  byId: Map<number, NationStat>;
+  onSelect: (id: number) => void;
+  god?: Omit<GodTabProps, 'nation'> | null;
+  control?: ControlProps | null;
+}) {
   const [chosen, setTab] = useState<Tab>('overview');
   // The God tab exists only in God Mode (PLAN 1.32b).
   const tab: Tab = !god && chosen === 'god' ? 'overview' : chosen;
@@ -50,6 +69,17 @@ export function NationPanel({ nation, byId, onSelect, god }: { nation: NationSta
           ×
         </button>
       </header>
+      {control ? (
+        control.controlled ? (
+          <button type="button" class="god-btn panel-control" data-testid="release-control" onClick={control.onRelease}>
+            {t('player.release')}
+          </button>
+        ) : (
+          <button type="button" class="god-btn panel-control" data-testid="take-control" onClick={control.onTake}>
+            {t('player.take')}
+          </button>
+        )
+      ) : null}
       <nav class="panel-tabs">
         {(god ? (['overview', 'economy', 'god'] as const) : (['overview', 'economy'] as const)).map((k) => (
           <button key={k} class={tab === k ? 'tab active' : 'tab'} data-testid={`tab-${k}`} onClick={() => setTab(k)}>
