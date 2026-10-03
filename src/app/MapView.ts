@@ -300,6 +300,9 @@ export class MapView {
    */
   onPick: ((x: number, y: number, sx: number, sy: number, shift: boolean) => boolean) | null = null;
 
+  /** Unit-size setting (PLAN 1.39a): multiplies formation marker sizes. */
+  unitScale = 1;
+
   /** Asks for a redraw on the next frame. */
   requestDraw(): void {
     this.dirty = true;
@@ -465,7 +468,7 @@ export class MapView {
     const cam = this.controller.cam;
     const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);
-    this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth));
+    this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth), this.unitScale);
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
     this.drawFlags(cam);

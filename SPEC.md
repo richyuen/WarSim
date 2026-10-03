@@ -1068,6 +1068,10 @@ interpolation changes something.
     (RFC 4180) and JSON export of the filtered rows.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
+- **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
+  interface size 85–130% (root font size), unit size 50–200% (marker size multiplier), both
+  persisted; F2 or the panel saves a PNG of the map with its overlays; seed field, random seed
+  and New game (reloads with `?seed=`).
 - **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,
   wheel and touch pinch. Speed and pause persist. Autosave. Screenshot key (F2 → PNG).
   UI size (rem scale). Unit-size setting. Looping map. Map size picker. Locale

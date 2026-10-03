@@ -622,6 +622,7 @@ export class SimServer {
     const { nations, wars } = this.buildStats(world, true);
     const out: Inspection = {
       tick: world.tick,
+      seed: world.seed,
       settings: { ...world.settings },
       nations,
       wars,

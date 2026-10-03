@@ -282,6 +282,8 @@ export interface NationStat {
 /** Reply to `inspect` (PLAN 1.32): enough sim state to assert God Mode effects. */
 export interface Inspection {
   tick: number;
+  /** World seed (PLAN 1.39a). */
+  seed: number;
   settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean; player: number };
   /** Every nation ever created (dead ones too), with its display name key ('=' + literal). */
   nations: (NationStat & { living: boolean })[];

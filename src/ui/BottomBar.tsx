@@ -17,6 +17,9 @@ export interface BottomBarProps {
   /** God Mode toggle (PLAN 1.32b); omitted where no stats exist. */
   godMode?: boolean;
   onToggleGod?: (() => void) | undefined;
+  /** Settings toggle (PLAN 1.39a). */
+  showSettings?: boolean;
+  onToggleSettings?: (() => void) | undefined;
   /** Map editor toggle (PLAN 1.35). */
   showEditor?: boolean;
   onToggleEditor?: (() => void) | undefined;
@@ -28,7 +31,7 @@ export interface BottomBarProps {
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
@@ -62,6 +65,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       {onToggleHistory ? (
         <button type="button" class="bar-btn" data-testid="history-btn" aria-pressed={showHistory} onClick={onToggleHistory}>
           {t('bar.history')}
+        </button>
+      ) : null}
+      {onToggleSettings ? (
+        <button type="button" class="bar-btn" data-testid="settings-btn" aria-pressed={showSettings} onClick={onToggleSettings}>
+          {t('bar.settings')}
         </button>
       ) : null}
       {onToggleEditor ? (

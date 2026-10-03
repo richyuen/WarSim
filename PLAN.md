@@ -162,8 +162,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: a flag edited in the editor is shown on the map.
 - [x] 1.38 Scenario files save/load (shareable `.warsim-scenario`).
   AT: round trip yields an identical scenario hash.
-- [ ] 1.39 Settings: UI size, unit size, looping map, map size (S–XL), speed/pause persistence, screenshot key, seed + randomisation options.
+- [x] 1.39a Settings panel: UI size, unit size, screenshot key (F2), seed + new game; speed/pause
+  persistence (since 1.8). (Split from 1.39, 2026-10-03.)
   AT: e2e toggles each and verifies the effect; F2 downloads a PNG.
+- [ ] 1.39b Settings for a new game: looping map, map size (S–XL), randomisation options
+  (aggression, traits, starting gold, efficiency mode).
+  AT: e2e starts games with each option and verifies the effect in the sim.
 - [ ] 1.40 Dynamism tuning: `npm run sweep` (10 seeds × 50 years) passes the SPEC §10 criteria.
   AT: sweep report committed in `docs/sweeps/` with all criteria green.
 - [ ] 1.41 Phase 1 review + PARITY rows updated with evidence.

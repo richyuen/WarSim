@@ -6,6 +6,7 @@ import type { Autosave } from './autosave';
 import type { Hud } from './hud';
 import type { MapView } from './MapView';
 import type { PlayerControl } from './player';
+import type { Settings } from './settings';
 import type { SimClient } from './simClient';
 
 export interface WarsimTestApi {
@@ -17,6 +18,8 @@ export interface WarsimTestApi {
   autosave: Autosave;
   /** PLAN 1.33a: player control (null with ?view=0). */
   player: PlayerControl | null;
+  /** PLAN 1.39a: UI and unit size. */
+  settings: Settings;
 }
 
 declare global {

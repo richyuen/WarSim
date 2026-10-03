@@ -6,6 +6,8 @@ import { Autosave } from './autosave';
 import { Hud } from './hud';
 import { MapView } from './MapView';
 import { PlayerControl } from './player';
+import { saveScreenshot, Settings } from './settings';
+import { screenshotLabel } from './screenshotLabel';
 import { SimClient } from './simClient';
 import { installTestApi } from './testApi';
 import './style.css';
@@ -49,10 +51,17 @@ if (view) {
   view.setMapMode(hud.mapMode.value);
 }
 const autosave = new Autosave(sim, scenarioId);
-installTestApi({ sim, view, hud, autosave, player });
+const settings = new Settings(view);
+// F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).
+window.addEventListener('keydown', (e) => {
+  if (e.key !== 'F2' || !view) return;
+  e.preventDefault();
+  void saveScreenshot(view, screenshotLabel(hud));
+});
+installTestApi({ sim, view, hud, autosave, player, settings });
 
 const uiRoot = document.getElementById('ui');
-if (uiRoot) render(<App hud={hud} player={player} view={view} base={scenarioId} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
+if (uiRoot) render(<App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} nameOf={(id) => view?.nationName(id) ?? null} />, uiRoot);
 
 await sim.init({ scenario: scenarioId, seed });
 // ?continue=1 resumes the autosave of this scenario (PLAN 1.27).

@@ -2073,3 +2073,23 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Bug found by the e2e:** the client dropped extra reply fields (`scenarioHash`), so the
   export failed silently. Fixed, and export errors now reach the status line.
 - **Parity:** row 49 → partial.
+
+## 2026-10-03 — PLAN 1.39a: settings panel (1.39 split into a/b)
+- **`Settings`** (`src/app/settings.ts`), persisted:
+  - interface size 85/100/115/130% (root font size; the UI is in rem);
+  - unit size 50–200%, a new `uSizeMul` in the formation marker shader (`MapView.unitScale`).
+- **Screenshot:** `captureMap` draws, then composes the WebGL map with the label/flag overlays into
+  a PNG named by the in-game date (`warsim-1938-01-01.png`). F2 or the panel button. F2 rather
+  than AoC's F11, which browsers reserve for fullscreen.
+- **`SettingsPanel`** (bottom-bar Settings; exclusive with the other centre panels): sizes,
+  screenshot, the current seed, seed input + Random + New game (`?scenario=…&seed=…`).
+  `inspect` gains `seed`.
+- **AT** (`tests/e2e/settings1938.spec.ts`):
+  - UI 130% → root 20.8 px and a ≥ 1.2× taller bar;
+  - unit size: the screen around a Polish formation is unchanged at the same setting and
+    differs at 50% vs 200%;
+  - F2 → a PNG whose header size equals the canvas, and the button downloads one too;
+  - speed level, UI and unit sizes survive a reload;
+  - New game with seed 4242 → `inspect().seed` is 4242. The test resets the sizes afterwards.
+- **Parity:** rows 66, 67 and 71 → partial (appended).
+- **Plan change:** 1.39b is the new-game options (looping map, map size, randomisation).

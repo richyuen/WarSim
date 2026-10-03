@@ -12,12 +12,31 @@ import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
 import type { MapView } from './MapView';
+import { saveScreenshot, UI_SCALES, UNIT_SCALES, type Settings } from './settings';
+import { SettingsPanel } from '../ui/SettingsPanel';
+import { screenshotLabel } from './screenshotLabel';
 import { downloadBytes, exportScenarioFile, importScenarioFile, scenarioFileName } from './scenarioFiles';
 import { useEffect, useState } from 'preact/hooks';
 import { encodeRuns } from '../shared/mapImport';
 import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
-export function App({ hud, player, view, base, nameOf }: { hud: Hud; player: PlayerControl | null; view: MapView | null; base: string; nameOf: (id: number) => string | null }) {
+export function App({
+  hud,
+  player,
+  view,
+  base,
+  settings,
+  seed,
+  nameOf,
+}: {
+  hud: Hud;
+  player: PlayerControl | null;
+  view: MapView | null;
+  base: string;
+  settings: Settings;
+  seed: number;
+  nameOf: (id: number) => string | null;
+}) {
   const [scenarioStatus, setScenarioStatus] = useState('');
   // Re-render when custom flags change (the flag store is outside the signals).
   const [flagVersion, setFlagVersion] = useState(0);
@@ -42,10 +61,28 @@ export function App({ hud, player, view, base, nameOf }: { hud: Hud; player: Pla
         onToggleGod={stats ? () => hud.toggleGod() : undefined}
         showHistory={hud.showHistory.value}
         onToggleHistory={stats ? () => hud.toggleHistory() : undefined}
+        showSettings={hud.showSettings.value}
+        onToggleSettings={() => hud.toggleSettings()}
         showEditor={hud.showEditor.value}
         onToggleEditor={stats ? () => hud.toggleEditor() : undefined}
         playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
+      {hud.showSettings.value ? (
+        <SettingsPanel
+          uiScale={settings.uiScale.value}
+          unitScale={settings.unitScale.value}
+          uiScales={UI_SCALES}
+          unitScales={UNIT_SCALES}
+          seed={seed}
+          onUiScale={(v) => settings.setUiScale(v)}
+          onUnitScale={(v) => settings.setUnitScale(v)}
+          onScreenshot={() => {
+            if (view) void saveScreenshot(view, screenshotLabel(hud));
+          }}
+          onNewGame={(s) => location.assign(`?scenario=${encodeURIComponent(base)}&seed=${s}`)}
+          onClose={() => hud.toggleSettings()}
+        />
+      ) : null}
       {stats && hud.showEditor.value ? (
         <EditorPanel
           state={hud.editor.value}

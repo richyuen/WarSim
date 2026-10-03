@@ -104,11 +104,20 @@ export class Hud {
   readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0, cityName: '', citySize: 2 });
   readonly lineStart = signal<[number, number] | null>(null);
 
-  /** Opening one top-centre panel (editor, charts, history) closes the others. */
-  private closeCentre(except: 'editor' | 'charts' | 'history'): void {
+  /** Settings panel (PLAN 1.39a). */
+  readonly showSettings = signal(false);
+
+  toggleSettings(): void {
+    if (!this.showSettings.value) this.closeCentre('settings');
+    this.showSettings.value = !this.showSettings.value;
+  }
+
+  /** Opening one top-centre panel (editor, charts, history, settings) closes the others. */
+  private closeCentre(except: 'editor' | 'charts' | 'history' | 'settings'): void {
     if (except !== 'editor') this.showEditor.value = false;
     if (except !== 'charts') this.showCharts.value = false;
     if (except !== 'history') this.showHistory.value = false;
+    if (except !== 'settings') this.showSettings.value = false;
   }
 
   toggleEditor(): void {

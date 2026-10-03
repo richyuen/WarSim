@@ -21,11 +21,12 @@ uniform float uScale;       // device px per cell
 uniform vec2 uViewport;     // device px
 uniform float uT;           // interpolation factor in [0, 1]
 uniform float uMinPx;       // minimum sprite size in device px
+uniform float uSizeMul;     // unit-size setting (PLAN 1.39a)
 out vec2 vUv;
 out vec4 vColor;
 void main() {
   vec2 pos = mix(aPrevCur.xy, aPrevCur.zw, uT);
-  float sizePx = max(aMisc.y * uScale, uMinPx);
+  float sizePx = max(aMisc.y * uScale, uMinPx) * uSizeMul;
   float c = cos(aMisc.x);
   float s = sin(aMisc.x);
   vec2 corner = vec2(c * aCorner.x - s * aCorner.y, s * aCorner.x + c * aCorner.y) * sizePx;
@@ -130,7 +131,7 @@ export class ProxyRenderer {
    * Draws all instances; `wrapOffsets` are world x-shifts (cells) of extra copies for a looping
    * map (see camera.wrapOffsets), so sprites near the seam appear on both sides.
    */
-  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0]): void {
+  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1): void {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
@@ -142,6 +143,7 @@ export class ProxyRenderer {
       uViewport: [gl.drawingBufferWidth, gl.drawingBufferHeight],
       uT: Math.min(1, Math.max(0, t)),
       uMinPx: minPx * dpr,
+      uSizeMul: sizeMul,
     });
     gl.bindVertexArray(this.vao);
     for (const off of wrapOffsets) {
