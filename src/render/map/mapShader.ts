@@ -9,7 +9,7 @@
  * bounded so the drawn owner never differs from the sim's by more than half a cell.
  *
  * Borders are drawn where the best and second-best weights meet, with a width that is
- * constant in screen pixels (d / fwidth(d)). Occupied land (controller ≠ owner, smoothed
+ * constant in screen pixels (d / |∇d| from the analytic B-spline derivatives; PLAN 1.28). Occupied land (controller ≠ owner, smoothed
  * the same way) gets screen-space diagonal hatching.
  */
 
@@ -101,6 +101,12 @@ void main() {
   vec2 omt = 1.0 - t;
   vec4 wx = vec4(omt.x * omt.x * omt.x, 3.0 * t3.x - 6.0 * t2.x + 4.0, -3.0 * t3.x + 3.0 * t2.x + 3.0 * t.x + 1.0, t3.x) / 6.0;
   vec4 wy = vec4(omt.y * omt.y * omt.y, 3.0 * t3.y - 6.0 * t2.y + 4.0, -3.0 * t3.y + 3.0 * t2.y + 3.0 * t.y + 1.0, t3.y) / 6.0;
+  // Analytic derivatives of the weights (per cell): the border distance uses the exact gradient
+  // of the indicator fields instead of fwidth, which spiked where the second-strongest id changed
+  // between neighbouring pixels and was undefined inside the n > 1 branch (dashed stair lines
+  // inside nations, PLAN 1.28).
+  vec4 dwx = vec4(-0.5 * omt.x * omt.x, 1.5 * t2.x - 2.0 * t.x, -1.5 * t2.x + t.x + 0.5, 0.5 * t2.x);
+  vec4 dwy = vec4(-0.5 * omt.y * omt.y, 1.5 * t2.y - 2.0 * t.y, -1.5 * t2.y + t.y + 0.5, 0.5 * t2.y);
 
   uint ids[16];
   float acc[16];
@@ -148,10 +154,22 @@ void main() {
   }
 
   // Border between the two strongest ids, constant width in screen px.
-  if (n > 1) {
-    float d = acc[bi] - second;
-    float pxDist = d / max(fwidth(d), 1e-6);
-    float halfW = 0.5 * uBorderPx * uDpr;
+  float d = acc[bi] - second;
+  float halfW = 0.5 * uBorderPx * uDpr;
+  // |∇d| ≤ 2√2 per cell (each axis' derivative weights sum to ≤ 1 in magnitude), so pixels with
+  // d·uScale beyond (halfW + 1)·2√2 are surely off the border and skip the gradient pass.
+  if (n > 1 && d * uScale < (halfW + 1.0) * 2.83) {
+    // Distance to the iso-line d = 0 in device px: d / |∇d|, with ∇ per cell → per px (÷ uScale).
+    vec2 gd = vec2(0.0);
+    for (int j = 0; j < 4; j++) {
+      for (int i = 0; i < 4; i++) {
+        uint id = ctrlAt(base + ivec2(i, j));
+        vec2 dw = vec2(dwx[i] * wy[j], wx[i] * dwy[j]);
+        if (id == best) gd += dw;
+        else if (id == secondId) gd -= dw;
+      }
+    }
+    float pxDist = d * uScale / max(length(gd), 1e-6);
     float a = 1.0 - smoothstep(halfW - 0.5, halfW + 0.5, pxDist);
     // Fade borders out when cells are smaller than ~1.5 px (strategic overview).
     a *= smoothstep(0.35, 1.5, uScale / uDpr);

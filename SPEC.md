@@ -890,6 +890,13 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   (d / fwidth(d)). A bounded value-noise domain warp (≤ 0.32 cell) makes borders organic.
   Occupation hatching uses the same weights. The coastline will come from the fine land-mask
   pyramid.
+  Since PLAN 1.28a the border distance is d/|∇d| with the gradient from the analytic B-spline
+  derivatives, not d/fwidth(d). fwidth spiked where the second-strongest id changed between
+  pixels, and is undefined inside the n > 1 branch; that drew dashed stair lines about 2 cells
+  inside every border. The gradient pass runs only where d·scale < (halfW + 1)·2√2
+  (|∇d| ≤ 2√2 per cell).
+  GPU at 1080p on the bench machine: 0.54 ms T0 world, 0.50 Europe, 0.46 close (was 0.47; a
+  full per-id gradient cost 1.30 ms).
 - Map modes are palette swaps or derived per-province textures (no reupload of the cell grid).
 - Labels: MSDF font atlas. The curve comes from the worker's `derive/labels` (largest
   connected component → skeleton/PCA → quadratic Bézier, size by area), throttled

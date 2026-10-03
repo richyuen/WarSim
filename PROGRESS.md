@@ -1564,3 +1564,27 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Observation:** after a year of AI play the world has 603 divisions (from 1,054): war losses
   plus deficit disbanding. Army size will be balanced with the Phase 7 sweep.
 - Parity: rows 49 (save/load) and 38 (AI switches and persisted settings) → partial.
+
+## 2026-10-02 — PLAN 1.28a: T0 renderer without border artefacts (1.28 split into a/b)
+- **Root cause of the dashed stair lines inside nations** (open since PLAN 1.3): the border
+  distance used `fwidth(d)` inside the `n > 1` branch.
+  - Derivatives are undefined when pixels in a 2×2 quad diverge.
+  - fwidth also spikes where the second-strongest id switches.
+  - The lines sat about 2 cells inside every border, where a neighbour's cells enter the 4×4
+    window.
+- **Fix** (`src/render/map/mapShader.ts`):
+  - d/|∇d| from the analytic B-spline derivatives;
+  - a second 4×4 pass only where d·scale < (halfW + 1)·2√2.
+  - GPU (bench A, 1080p): T0 world 0.54 ms, Europe 0.50, close 0.46. The first full-gradient
+    version cost 1.30 ms; it was 0.47 before.
+- **AT (`tests/e2e/t0map.spec.ts`):** samples 21×21 px patches at 10 px/cell over the band 2–4
+  cells inside Poland, away from formation markers. No border-coloured pixels with the new shader;
+  the old shader gives 14 (checked by stashing it). Evidence shots `docs/evidence/1.28/` (Poland,
+  Europe, world), viewed.
+- **Compared with the AoC reference** (`reference/crop_0005.png`, `crop_0014.png`): AoC draws
+  pixel-art fills with thick black stair borders. Ours keeps the same reading (flat fills, dark
+  borders, lighter coasts) without stairs.
+- **Still to do (1.28b):** the world-zoom coastline is still cell-blocky (fine land-mask pyramid
+  pending), and the terrain map mode.
+- Plan change: 1.28 split into 1.28a (done) and 1.28b (coast, terrain mode), per PROMPT ("split
+  tasks that are too large").

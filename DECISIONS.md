@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-39 · 2026-10-02 · accepted — Border distance from analytic gradients, not fwidth
+**Decision.**
+- The T0 border distance uses the analytic derivative of the B-spline indicator fields.
+- It is computed in a second 4×4 pass only for pixels that can be within a line width of the
+  border.
+
+**Why.**
+- The dashed stair lines inside nations (noted since PLAN 1.3) came from `fwidth(d)` evaluated
+  inside the `n > 1` branch. Within a 2×2 pixel quad some pixels skip that branch, which leaves
+  derivatives undefined. Where the second id switches, fwidth spikes.
+- Analytic derivatives are exact per pixel.
+- Carrying gradients for all 16 ids cost 1.30 ms per frame. The bounded |∇d| lets most pixels
+  skip the pass: 0.54 ms, within the 1.0 ms T0 budget.
+- An e2e regression check samples the band 2–4 cells inside Poland. The old shader leaves 14 dark
+  pixels there, the new one none.
+- Compared with the AoC reference (pixel-art fills and thick black stair borders, `reference/`
+  crops), ours keeps the same reading (flat fills, dark borders, lighter coasts) at any zoom,
+  without stairs (additions row 10).
+
 ### ADR-38 · 2026-10-02 · accepted — Economic AI on projected accounts; admin cost capped at half of gross
 **Decision.**
 - The economic AI runs before the economy, on projected accounts for the coming month. It
