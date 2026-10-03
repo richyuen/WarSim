@@ -6,7 +6,7 @@
  * Subscriptions only change what is *sent*; the sim never sees them (invariant I4).
  */
 import { LABEL_STRIDE } from '../shared/nationLabels';
-import { NATIONS_1938 } from '../sim/scenario1938';
+import { ECONOMY_TABLES_1938, NATIONS_1938, TEMPLATES_LAND } from '../sim/scenario1938';
 import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
@@ -275,7 +275,9 @@ export class SimServer {
         if (def) cities.push({ name: def.name, x: cc.x[id]!, y: cc.y[id]!, size: cc.size[id]!, capital: cc.capitalOf[id] !== 0 });
       });
       const province = world.cells.province.slice();
-      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province }, [land.data.buffer, terrain.data.buffer, province.buffer]);
+      const rules = world.rules?.templates ?? [];
+      const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0 }));
+      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
     }
@@ -467,6 +469,14 @@ export class SimServer {
       men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
       count.set(n, (count.get(n) ?? 0) + 1);
     });
+    const queues = new Map<number, { template: number; readyDay: number }[]>();
+    const pc = world.production.cols;
+    world.production.forEach((p) => {
+      const n = pc.nation[p]!;
+      const q = queues.get(n) ?? [];
+      q.push({ template: pc.template[p]!, readyDay: pc.readyDay[p]! });
+      queues.set(n, q);
+    });
     const puppets = new Map<number, number[]>();
     const enemies = new Map<number, Set<number>>();
     const wars: WarStat[] = [];
@@ -512,6 +522,7 @@ export class SimServer {
         enemies: [...(enemies.get(id) ?? [])],
         aiOff: nc.aiOff[id] === 1,
         living: nc.living[id] === 1,
+        queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
       });
     });
     return { nations, wars };

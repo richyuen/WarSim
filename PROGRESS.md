@@ -1825,3 +1825,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   frame > 30 s while 1938 suites ran in parallel). It passed alone (7 s) and in a full rerun.
   Watching it; if it recurs, give that beforeEach a budget like the 1938 suites.
 - **Plan change:** 1.33 split; 1.33b is player diplomacy + production.
+
+## 2026-10-02 — PLAN 1.33b: player diplomacy and production
+- **Commands:**
+  - `offerPeace` (`war.ts`): accepted when the offering side leads by ≥ PEACE_ACCEPT_SCORE 25
+    or the other side's exhaustion is > 40; never against fight-to-death; otherwise the event
+    `PeaceRejected`.
+  - `proposeAlliance` (`alliances.ts`): accepted when the target is unallied, not a puppet and
+    at peace with the proposer; the target joins the proposer's alliance or they found a
+    defensive pact; otherwise the event `AllianceRejected`.
+- **Worker:** `mapLayers.templates` (name, gold, manpower, days, men per template);
+  `NationStat.queue`.
+- **UI:** Actions tab for the controlled nation only: target picker, Declare war, Propose
+  alliance, Offer peace per war (with my score), Build per template (disabled when
+  unaffordable), training queue with days left.
+- **Tests:**
+  - Unit (`tests/unit/godMode.test.ts`): refused at an even score, accepted when leading, never
+    against fight-to-death; alliance accepted by Switzerland, refused by an enemy.
+  - e2e (`tests/e2e/playerActions1938.spec.ts`), as Poland:
+    - build: gold drops by the cost, a queue row "ready in 90 days", then one more formation;
+    - war on Lithuania; a peace offer at an even score is refused;
+    - an alliance with an unallied nation is accepted. The partner is picked at that moment:
+      the first version used Switzerland, which the AI had allied with someone else while the
+      build's days ran.
+- **Evidence:** `docs/evidence/1.33/player-actions.png`, viewed.
+- **Known gaps:** every template is offered to every nation (no national template lists); the
+  Actions list is long and scrolls.

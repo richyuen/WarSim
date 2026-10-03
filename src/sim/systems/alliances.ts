@@ -44,6 +44,33 @@ export function allianceSystem(world: World): void {
 }
 
 /** Removes `n` from its alliance with events (also the command path). */
+/**
+ * Player alliance proposal (PLAN 1.33b): `to` accepts when it is in no alliance, is no puppet and
+ * is not at war with `from`. It then joins `from`'s alliance, or both found a defensive pact.
+ * Otherwise `AllianceRejected`.
+ */
+export function proposeAlliance(world: World, from: number, to: number): boolean {
+  const nc = world.nations.cols;
+  const al = world.alliances;
+  const ok =
+    from !== to &&
+    world.nations.has(from) &&
+    world.nations.has(to) &&
+    nc.living[from] === 1 &&
+    nc.living[to] === 1 &&
+    al.allianceOf(to) === undefined &&
+    nc.overlord[to] === 0 &&
+    !world.wars.atWar(from, to);
+  const own = ok ? al.allianceOf(from) : undefined;
+  const joined = !ok ? null : own ? (al.join(to, own) ? own : null) : al.create(from, [to], 'alliance.defensive', 50);
+  if (!joined) {
+    world.out.emit(world.tick, EventKind.AllianceRejected, from, to, NaN, NaN);
+    return false;
+  }
+  for (const m of own ? [to] : joined.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, joined.id, NaN, NaN);
+  return true;
+}
+
 export function leaveAlliance(world: World, n: number): void {
   const r = world.alliances.leave(n);
   if (!r) return;

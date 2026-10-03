@@ -36,6 +36,10 @@ export const CAPITAL_SCORE = 25;
 export const TRUCE_TICKS = 24 * 730;
 /** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
 export const PEACE_PUPPET_AUTONOMY = 30;
+/** Player peace offers (PLAN 1.33b) are accepted when the offering side leads by this score… */
+export const PEACE_ACCEPT_SCORE = 25;
+/** …or the other side's exhaustion exceeds this (the AI's stalemate threshold). */
+export const PEACE_ACCEPT_EXHAUSTION = 40;
 
 /** Leaders' puppets join their side. */
 function withPuppets(world: World, leader: number): number[] {
@@ -167,6 +171,27 @@ export function warSystem(world: World): void {
 }
 
 /** Concludes `war` on its current score (see the module comment for the terms). */
+/**
+ * A peace offer by `from` in war `warId` (player diplomacy, PLAN 1.33b). The other side accepts
+ * when the offering side leads the score by PEACE_ACCEPT_SCORE or its own exhaustion exceeds
+ * PEACE_ACCEPT_EXHAUSTION, and never while it fights to the death; peace follows `makePeace` on
+ * the current score. Otherwise `PeaceRejected`.
+ */
+export function offerPeace(world: World, warId: number, from: number): boolean {
+  const war = world.wars.list.find((w) => w.id === warId);
+  if (!war) return false;
+  const side = war.sides[ATTACKERS]!.includes(from) ? ATTACKERS : war.sides[DEFENDERS]!.includes(from) ? DEFENDERS : -1;
+  if (side < 0) return false;
+  const other = 1 - side;
+  const lead = side === ATTACKERS ? war.score : -war.score;
+  if (war.fightToDeath[other] || (lead < PEACE_ACCEPT_SCORE && war.exhaustion[other]! <= PEACE_ACCEPT_EXHAUSTION)) {
+    world.out.emit(world.tick, EventKind.PeaceRejected, war.id, from, NaN, NaN);
+    return false;
+  }
+  makePeace(world, war);
+  return true;
+}
+
 export function makePeace(world: World, war: War): void {
   const winner = war.score >= 0 ? ATTACKERS : DEFENDERS;
   const W = war.sides[winner]!;

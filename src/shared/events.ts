@@ -62,6 +62,10 @@ export const EventKind = {
   MajorBattleStarted: 28,
   /** a = Major Battle id, b = winning nation (0 = none), (x, y) = battle centre. */
   MajorBattleEnded: 29,
+  /** a = war id, b = the nation whose peace offer was refused (PLAN 1.33b). */
+  PeaceRejected: 30,
+  /** a = proposer, b = the nation that refused the alliance (PLAN 1.33b). */
+  AllianceRejected: 31,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

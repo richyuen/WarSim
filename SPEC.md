@@ -974,6 +974,14 @@ interpolation changes something.
   clicks player orders. A click on an own formation selects it (Shift toggles, Esc clears;
   rings on the overlay); a click elsewhere orders the selection to march there (into enemy land
   = attack). "Release control" turns the AI back on. The bottom bar shows the nation and count.
+  The controlled nation gets an Actions tab (PLAN 1.33b, `src/ui/ActionsTab.tsx`):
+  - `declareWar`, `offerPeace` and `proposeAlliance` (refusable, unlike God commands):
+    - peace is accepted when the offering side leads by ≥ 25 or the other side's exhaustion is
+      > 40, never against a side fighting to the death;
+    - an alliance is accepted when the target is unallied, not a puppet and not at war with
+      the proposer.
+  - Production: every template with gold, manpower and training days (`mapLayers.templates`),
+    Build when affordable, and the training queue (`NationStat.queue`).
 - **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).

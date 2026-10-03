@@ -416,3 +416,17 @@ body {
   white-space: nowrap;
   color: #ffe28a;
 }
+
+/* Player actions (PLAN 1.33b). */
+.act-cost {
+  opacity: 0.7;
+  font-size: 0.75rem;
+}
+.act-queue {
+  margin: 0;
+  padding-left: 1rem;
+}
+.god-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

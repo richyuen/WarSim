@@ -99,3 +99,48 @@ describe('God Mode commands (PLAN 1.32a)', () => {
     expectCountsMatch(s.world);
   }, 120_000);
 });
+
+// PLAN 1.33b: player diplomacy is refusable (unlike God commands).
+describe('player diplomacy (PLAN 1.33b)', () => {
+  const [SWI, LIT] = ['SWI', 'LIT'].map(nationId) as number[];
+
+  it('a peace offer is refused at an even score and accepted once the offering side leads', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.command({ kind: 'declareWar', attacker: POL!, defender: LIT! });
+    s.step(1);
+    const war = s.world.wars.list.find((w) => w.sides[0].includes(POL!) && w.sides[1].includes(LIT!))!;
+    expect(war).toBeTruthy();
+    s.command({ kind: 'offerPeace', war: war.id, from: POL! });
+    s.step(1);
+    expect(s.world.wars.list.includes(war)).toBe(true); // refused
+    war.score = 40; // the attackers (Poland) lead
+    s.command({ kind: 'offerPeace', war: war.id, from: POL! });
+    s.step(1);
+    expect(s.world.wars.atWar(POL!, LIT!)).toBe(false);
+  });
+
+  it('a side fighting to the death never accepts', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.command({ kind: 'declareWar', attacker: POL!, defender: LIT! });
+    s.step(1);
+    const war = s.world.wars.list.find((w) => w.sides[0].includes(POL!))!;
+    war.score = 80;
+    war.fightToDeath[1] = true;
+    s.command({ kind: 'offerPeace', war: war.id, from: POL! });
+    s.step(1);
+    expect(s.world.wars.atWar(POL!, LIT!)).toBe(true);
+  });
+
+  it('an alliance proposal is accepted by an unallied neighbour and refused by an enemy', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    expect(s.world.alliances.allianceOf(SWI!)).toBeUndefined();
+    s.command({ kind: 'proposeAlliance', from: POL!, to: SWI! });
+    s.step(1);
+    expect(s.world.alliances.allied(POL!, SWI!)).toBe(true);
+    s.command({ kind: 'declareWar', attacker: POL!, defender: LIT! });
+    s.step(1);
+    s.command({ kind: 'proposeAlliance', from: POL!, to: LIT! });
+    s.step(1);
+    expect(s.world.alliances.allied(POL!, LIT!)).toBe(false);
+  });
+});

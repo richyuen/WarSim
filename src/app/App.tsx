@@ -37,6 +37,11 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
           nation={nation}
           byId={byId}
           onSelect={(id) => hud.onSelectNation(id)}
+          actions={
+            player && stats && player.nation.value === nation.id
+              ? { nations: stats.nations, wars: stats.wars, templates: hud.templates.value, day: Math.floor(hud.tick.value / 24), onCommand: (c) => hud.command(c) }
+              : null
+          }
           control={
             player
               ? {

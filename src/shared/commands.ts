@@ -61,7 +61,10 @@ export type Command =
   /** PLAN 1.32 God Mode: province `province` revolts now (its area per `revoltMode`). */
   | { kind: 'spawnRevolt'; province: number }
   /** PLAN 1.32 God Mode: AoC-style income bonus, percent −100..100. */
-  | { kind: 'setIncomeBonus'; nation: number; value: number };
+  | { kind: 'setIncomeBonus'; nation: number; value: number }
+  /** PLAN 1.33b player diplomacy: offers that the other side may refuse. */
+  | { kind: 'offerPeace'; war: number; from: number }
+  | { kind: 'proposeAlliance'; from: number; to: number };
 
 export interface LoggedCommand {
   /** Tick at which the command was applied. */

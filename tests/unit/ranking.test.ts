@@ -24,6 +24,7 @@ const nation = (id: number, v: number): NationStat => ({
   puppets: [],
   enemies: [],
   aiOff: false,
+  queue: [],
 });
 
 describe('statistics ranking (PLAN 1.31b)', () => {

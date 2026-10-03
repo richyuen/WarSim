@@ -5,8 +5,8 @@
 import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation } from './systems/elements';
-import { declareWar, makePeace } from './systems/war';
-import { leaveAlliance } from './systems/alliances';
+import { declareWar, makePeace, offerPeace } from './systems/war';
+import { leaveAlliance, proposeAlliance } from './systems/alliances';
 import { makePuppet, releasePuppet } from './systems/puppets';
 import { collapseNation, reviveOnCores } from './systems/revival';
 import { MAX_CE, MIN_CE } from './systems/efficiency';
@@ -166,6 +166,12 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     case 'setIncomeBonus':
       if (world.nations.has(cmd.nation)) world.nations.cols.incomeBonus[cmd.nation] = Math.round(Math.max(-100, Math.min(100, cmd.value)));
+      return;
+    case 'offerPeace':
+      offerPeace(world, cmd.war, cmd.from);
+      return;
+    case 'proposeAlliance':
+      proposeAlliance(world, cmd.from, cmd.to);
       return;
     case 'setWarFightToDeath': {
       const war = world.wars.list.find((w) => w.id === cmd.war);

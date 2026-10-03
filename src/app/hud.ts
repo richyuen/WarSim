@@ -10,6 +10,7 @@ import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
+import type { TemplateInfo } from '../shared/protocol';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
 const KEY_LEVEL = 'warsim.speedLevel';
@@ -52,6 +53,8 @@ export class Hud {
   /** Statistics ranking (PLAN 1.31b): shown and metric, both persisted. */
   readonly showStats = signal(true);
   readonly rankMetric = signal<RankMetric>('land');
+  /** Buildable templates of the scenario (PLAN 1.33b), from the worker's map layers. */
+  readonly templates = signal<TemplateInfo[]>([]);
   /** Nation panel / war banner data from the worker (PLAN 1.31). */
   readonly stats = signal<NationStats | null>(null);
   /** Speed and pause as last reported by the worker (snapshots), for tests and diagnostics. */
@@ -67,6 +70,7 @@ export class Hud {
     const mode = load(KEY_MAP_MODE);
     this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
     sim.onStats((m) => (this.stats.value = m));
+    sim.onMapLayers((m) => (this.templates.value = m.templates));
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';
     const metric = load(KEY_RANK_METRIC);
     if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;

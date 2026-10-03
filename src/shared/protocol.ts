@@ -219,6 +219,8 @@ export type FromWorker =
       cities: { name: string; x: number; y: number; size: number; capital: boolean }[];
       /** Admin-1 province per cell (revolts map mode, PLAN 1.30b). */
       province: Uint16Array;
+      /** Buildable land templates (index = command template id; PLAN 1.33b). */
+      templates: TemplateInfo[];
     }
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
@@ -226,6 +228,15 @@ export type FromWorker =
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
   | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string }[]; aiEnabled: boolean };
+
+/** A buildable land template for the production UI (PLAN 1.33b). */
+export interface TemplateInfo {
+  nameKey: string;
+  gold: number;
+  manpower: number;
+  days: number;
+  men: number;
+}
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
 export interface NationStat {
@@ -251,6 +262,8 @@ export interface NationStat {
   puppets: number[];
   enemies: number[];
   aiOff: boolean;
+  /** Formations in training: template index and the day (ticks / 24) they are ready. */
+  queue: { template: number; readyDay: number }[];
 }
 
 /** Reply to `inspect` (PLAN 1.32): enough sim state to assert God Mode effects. */
