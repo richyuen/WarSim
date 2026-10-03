@@ -2591,3 +2591,31 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   which is why the quick sweep goes to 10 seeds (next entry).
 - **Not verified in the browser:** an AI rule; the e2e stage of the gate runs.
 - **Next:** gate and sweep tooling, then the sweep criteria (the user's request of today).
+
+## 2026-10-03 — Sweep criteria rewritten: a riser and a faller by realm, judged over the seeds (ADR-54)
+- **Why:** the user asked whether the two criteria of critic B1 are valid. They aim at a real
+  defect, but as gates they were brittle (every one of ten seeds), looked at one nation (the
+  leader's share) and counted swaps at tenth place (ADR-54 has the reasoning).
+- **New rule:** five limits that every seed keeps (unchanged); a riser and a faller, each
+  needed in 8 of 10 seeds, judged only on runs of 50 years or more. The old two are still
+  computed and shown in every report. `tools/sweep/criteria.ts` (`judge`, `judgeSweep`),
+  `seed.ts` (land per realm after year 1 and at the end), `run.ts` (report).
+- **Quick sweep:** 10 seeds × 20 years (was 3). 4.8–5.2 min of wall time: the seeds run side by
+  side, so ten cost about what three did (4.6 min).
+- **A defect of my first version, found by the first quick sweep:** measured per nation, riser
+  and faller were met in 10 of 10 seeds at 20 years by overlords integrating their puppets
+  (France 3.0 → 12 M km², French West Africa 4.8 → 0, in every seed). Fixed the same hour: the
+  unit is the realm (a nation with its puppets), and a realm that did not exist after year 1
+  is no riser. Thresholds and quorum untouched. The change was made after seeing a run on
+  seen seeds and makes the criteria harder, and ADR-54 says so.
+- **Second quick sweep, by realm** (scratch, seeds 1–10 × 20 years, no verdict at 20 years):
+  limits 10 of 10, riser 6 of 10, faller 10 of 10. The faller will not discriminate: the
+  British realm (35 M km², the largest after year 1) ends at 8.6–12.1 M km² in every seed.
+  The riser does. The realm of the United States grows in all ten (× 1.07–2.07), which the old
+  criteria did not show; the Soviet Union is the largest nation in every year of all ten.
+- **Tests:** `tests/unit/sweepCriteria.test.ts` rewritten with the rule (9 tests: limits, riser,
+  faller, realms versus the yearly lists, churn and swing reported, quorum, horizon).
+- **Not run:** the deciding sweep of PLAN 1.42 on seeds 401–410. PLAN makes it wait for 1.42f,
+  whose 5-year mean is still 0.06 ms over budget; and no 50-year run has been judged by these
+  criteria, on any seed.
+- **Next:** the gate skip for a tree already gated and the pinned baseline hash (ADR-55).

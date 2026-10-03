@@ -195,8 +195,12 @@ on simulation runs (DECISIONS ADR-48).
 
 - One cause per commit. When a task or a critic finding has several causes,
   split it in PLAN.md and fix, gate and commit them one at a time.
-- Tune on small runs. `npm run sweep:quick` (3 seeds × 20 years, report in
-  `.cache/`) while changing rules or constants. The full sweep
+- Tune on small runs. `npm run sweep:quick` (10 seeds × 20 years, report in
+  `.cache/`; seeds run side by side, and three seeds cannot tell a rule from
+  noise) while changing rules or constants. It is judged by the limits only
+  and reports the riser and faller numbers (ADR-54). Do not run the full
+  sweep to find out whether a mechanism works: run it once the quick sweep
+  shows the mechanism working with room to spare. The full sweep
   (`npm run sweep -- --first <unseen> --tag <name>`) runs once per task, on
   the final code, on seeds no tuning has seen.
 - Gate before the final sweep, never after. A gate failure changes the code,

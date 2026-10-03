@@ -35,7 +35,36 @@ export interface SeedResult {
   wallS: number;
   /** km² of all land cells. */
   landKm2: number;
+  /**
+   * km² per realm after year 1 and at the end, as [nation, km²], largest first (ADR-54: riser and
+   * faller). A realm is a living nation with no overlord, with the land of its puppets.
+   */
+  realmStart: [number, number][];
+  realmEnd: [number, number][];
   samples: YearSample[];
+}
+
+/**
+ * Land per realm, largest first (ties by id). An overlord that integrates a puppet changes no
+ * realm's land by that: the puppet's land was the realm's already.
+ */
+function realms(w: Sim['world'], area: Float64Array, living: readonly number[]): [number, number][] {
+  const nc = w.nations.cols;
+  const sum = new Map<number, number>();
+  for (const n of living) {
+    let root = n;
+    // Up the chain of overlords (a dead overlord holds nobody).
+    for (let hops = 0; hops < 8; hops++) {
+      const o = nc.overlord[root]!;
+      if (o === 0 || nc.living[o] !== 1) break;
+      root = o;
+    }
+    sum.set(root, (sum.get(root) ?? 0) + area[n]!);
+  }
+  return [...sum]
+    .filter(([, km2]) => km2 > 0)
+    .map(([n, km2]): [number, number] => [n, Math.round(km2)])
+    .sort((a, b) => b[1] - a[1] || a[0] - b[0]);
 }
 
 function main(): void {
@@ -52,6 +81,8 @@ function main(): void {
   const areaOf = (c: number): number => rowArea[Math.floor(c / w.cells.w)]!;
   const landKm2 = land.reduce((s, c) => s + areaOf(c), 0);
   const samples: YearSample[] = [];
+  let realmStart: [number, number][] = [];
+  let realmEnd: [number, number][] = [];
   for (let y = 0; y < years; y++) {
     const before = Uint16Array.from(land, (c) => w.cells.controller[c]!);
     let warDays = 0;
@@ -62,6 +93,8 @@ function main(): void {
     const nc = w.nations.cols;
     const { area, owned, ranked } = landStandings(w);
     const top = ranked[0] ?? 0;
+    realmEnd = realms(w, area, ranked);
+    if (y === 0) realmStart = realmEnd;
     let income = 0;
     let topIncome = 0;
     for (const n of ranked) {
@@ -75,7 +108,7 @@ function main(): void {
     samples.push({ year: y + 1, alive: ranked.length, topLand: owned > 0 ? area[top]! / owned : 0, topIncome: income > 0 ? topIncome / income : 0, topNation: top, top10: ranked.slice(0, 10), wars: w.wars.list.length, warDays, changedKm2 });
     process.stdout.write(`seed ${seed} year ${y + 1}/${years}: alive ${ranked.length}, top land ${(samples.at(-1)!.topLand * 100).toFixed(1)}%, wars ${w.wars.list.length}, changed ${Math.round(changedKm2)} km²\n`);
   }
-  const result: SeedResult = { seed, years, wallS: (performance.now() - t0) / 1000, landKm2, samples };
+  const result: SeedResult = { seed, years, wallS: (performance.now() - t0) / 1000, landKm2, realmStart, realmEnd, samples };
   writeFileSync(out, JSON.stringify(result));
 }
 

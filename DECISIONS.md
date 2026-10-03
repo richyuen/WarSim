@@ -167,6 +167,85 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-54 · 2026-10-03 · accepted — Sweep dynamism: a riser and a faller, judged over the seeds (the user's decision; PLAN 1.42)
+
+- **Context:** critic B1 (static world) added two criteria on 2026-10-03, required of every
+  seed: ≥ 2 new nations among the ten largest by land, and a range of ≥ 3 points in the
+  largest nation's land share. Three full sweeps on unseen seeds ended at 9, 7 and 8 of 10
+  (25 minutes each) and PLAN 1.42 was blocked. The user asked whether the criteria are valid.
+- **What was wrong with them as gates:**
+  1. *Every seed must pass.* With a pass rate of 80–90% per seed, ten of ten happens in
+     11–35% of sweeps. Results of 9, 7 and 8 are what one unchanged world produces; they did
+     not tell the three versions of the code apart.
+  2. *The leader-share range looks at one nation.* By area all of Europe west of the Soviet
+     Union is about 4% of the owned land, so redrawing it leaves the leader's share alone.
+     Three points is 4 M km², a fifth of the Soviet Union (it was a ninth by cells). The
+     real world from 1938 to 1988 moves it by about one point (21.2 → 22.4 M km²; my
+     figures, not measured here) and would fail.
+  3. *Top-ten churn counts swaps at tenth place.* At the 1938 start France is tenth with
+     3.00 M km² and the next three are within 7% of it; an empire cut in half inside the
+     top ten does not register.
+- **What they were right about:** the Soviet Union leads in every year of every run to date,
+  it only shrinks, and no rival grows. The rewrite keeps that question and asks it directly.
+- **Decision.** The five older criteria stay as limits that every seed must keep. Dynamism is
+  two per-seed measures, by area, between the end of year 1 and the end of the run. The unit
+  is the realm: a living nation with no overlord, with the land of its puppets.
+  - *Riser:* some realm that ends with ≥ 1% of the owned land holds ≥ 1.5 × the land it
+    held after year 1. The 1% floor keeps a city state that doubles from counting. A realm
+    that did not exist after year 1 (a revolt, a released puppet) is not a riser: the
+    question is whether a rival grows, and its land already shows as someone's loss.
+  - *Faller:* some realm among the ten largest after year 1 ends with ≤ 2/3 of its land
+    of then. One that is dead or a puppet by the end counts.
+  A sweep passes when every seed keeps the limits and each of riser and faller holds in
+  ≥ 80% of the seeds (8 of 10). Only runs of ≥ 50 years are judged by riser and faller;
+  shorter runs (the quick sweep) report the numbers and are judged by the limits.
+- **Where the numbers come from** (fixed here, before any run): a factor of 1.5 either way.
+  Checked against the real world of 1938–1988 in this game's partition of 1938 (my figures):
+  China grows from 4.9 to 9.6 M km² (× 1.96), so there is a riser; the French, British and
+  Italian realms each lose over 80% of their land, so there is a faller. A threshold that history
+  itself failed would be the wrong one; these are well inside it, and Ages of Conflict is
+  livelier than history. They were not chosen from any run of this simulation.
+- **This relaxes one thing and tightens another, and both are stated.** Under an 80% quorum
+  the old two criteria would have passed all three failed sweeps (9 and 10, 8 and 8, 8 and 10
+  seeds of 10). That is why the measures are replaced and not only the quorum: a riser and a
+  faller need changes several times larger than a swap at tenth place or three points of
+  leader share. The old two stay in every report as columns, so the reports before and
+  after can be compared.
+- **Corrected the same day, before any deciding run.** The first version measured nations, not
+  realms, and counted new states as risers. The first quick sweep with it (seen seeds 1–10 ×
+  20 years, `.cache/sweep/reports/2026-10-03-sweep-adr54.md`) showed a riser and a faller in
+  10 of 10 seeds for a reason that is no dynamism at all: overlords integrate their puppets.
+  France alone goes from 3.0 to 12 M km² and French West Africa from 4.8 to 0 in every seed;
+  the Netherlands take in the East Indies (× 10). The measure was made stricter (realms; new
+  realms are no risers); the thresholds and the quorum were not touched. This is a change
+  made after seeing a run, in the direction of failing more, on seeds already seen.
+- **The same quick sweep by realm** (`2026-10-03-sweep-adr54b.md`, seeds 1–10 × 20 years,
+  5.2 min; reported, not judged, and no pass claim): limits 10 of 10; a riser in 6 of 10
+  (the United States × 1.55–2.07 in three seeds, Germany × 4.3, Poland × 5.1, Iraq × 4.7;
+  the best in the other four is × 1.20–1.47); a faller in 10 of 10. **The faller will not
+  decide a sweep:** the British realm, the largest after year 1 with 35 M km², ends at
+  8.6–12.1 M km² in every one of the ten seeds, and the Belgian realm loses the Congo in
+  seven. Colonial realms come apart in every seed within 20 years. The faller measures what
+  it says, but it will not tell a lively seed from a quiet one; the riser will. It was left
+  as decided: tightening it would be a second change made after looking at seen seeds, and
+  is the user's call.
+- **What the realm figures show that the old two criteria did not:** on the same ten runs
+  the old measures read 1–2 new nations in the top ten and a leader-share range of 0.3–4.2
+  points, while the British realm lost two thirds to three quarters of its land and the
+  realm of the United States grew in all ten (× 1.07–2.07). The largest single nation is
+  the Soviet Union in every year of all ten.
+- **Not re-judged:** the seen seeds (1–10, 99, 101–110, 201–210, 301–310) and the three
+  FAILING reports stand as they are. Only seeds from 401 judge PLAN 1.42, and no 50-year run
+  has been judged by area or by these criteria at the time of writing.
+- **Quick sweep:** 10 seeds × 20 years (was 3): the seeds run side by side, and three seeds
+  could not tell ADR-53 from noise. The sweep result records each realm's land after year 1
+  and at the end (`realmStart`, `realmEnd`).
+- **Not changed:** the limit on the largest land share stays per nation, as do the two
+  reported columns.
+- **Tests changed with the rule** (not weakened: they assert the new terms): the criteria
+  test no longer fails a seed for churn or swing; it checks that both are still computed, and
+  adds the riser, the faller, the quorum and the 50-year horizon.
+
 ### ADR-53 · 2026-10-03 · accepted — A marching formation keeps its front sector (PLAN 1.42f)
 
 - **Context:** tick time on seed 99 was over budget again after ADR-50 and ADR-51 (5-year mean

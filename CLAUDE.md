@@ -32,7 +32,7 @@ There is no memory between sessions. Read these files:
   checkpoint).
 - `npm run diag -- --seed 99 --at 5,12,20`: wars and great-power state dumps (`--load` a checkpoint).
 - `npm run sweep` (10 seeds × 50 years, report in `docs/sweeps/`; `--first`, `--tag`) and
-  `npm run sweep:quick` (3 × 20, report in `.cache/`).
+  `npm run sweep:quick` (10 × 20, report in `.cache/`; limits only, riser and faller reported).
 - See "KEEPING ITERATIONS SHORT" in `PROMPT.md` for when to use which.
 - `npm run data` / `npm run data -- --check`: data pipeline.
 - `npm run bench`.

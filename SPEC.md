@@ -1165,13 +1165,19 @@ interpolation changes something.
   formations, flipped cells, events, tick ms mean/p95/max). Phase 0 scenario: `toy`.
 - **Soak** (`npm run soak`): 30 min wall-clock at max speed with save/load every
   5 min, comparing hashes against an uninterrupted twin. Fails on any exception or desync.
-- **Sweep** (`npm run sweep`): ≥ 10 seeds × ≥ 50 sim-years. Pass when, for every seed:
-  land changing controller in the last 5 years > threshold, largest nation < 35% of
-  land and < 40% of income, alive nations stay in [20, 250], no permanent freeze
-  (≥ 1 war active in ≥ 80% of the years), ≥ 2 of the ten largest land holders at the end were
-  not among the ten largest after year 1, and the largest nation's land share ranges over
-  ≥ 3 points during the run (the last two since critic B1, 2026-10-03; reports on seeds the
-  tuning never saw: `--first 101 --tag <name>`).
+- **Sweep** (`npm run sweep`): ≥ 10 seeds × ≥ 50 sim-years, on seeds the tuning never saw
+  (`--first <unseen> --tag <name>`). Criteria since 2026-10-03 [ADR-54]:
+  - *Limits, every seed:* land changing controller in the last 5 years ≥ 1%, largest nation
+    < 35% of land and < 40% of income, alive nations stay in [20, 250], no permanent freeze
+    (≥ 1 war active in ≥ 80% of the years).
+  - *Dynamism, each in ≥ 80% of the seeds,* measured on realms (a nation with no overlord,
+    with its puppets' land, so integrating a colony is not growth): a riser (a realm that
+    ends with ≥ 1% of the owned land and ≥ 1.5 × the land it held after year 1; a realm
+    that did not exist then does not count) and a faller (one of the ten largest realms
+    after year 1 that ends with ≤ 2/3 of its land of then; dead or a puppet counts). Only
+    runs of ≥ 50 years are judged by these two.
+  - *Reported, not judged:* new nations in the top ten and the leader's share range (the
+    two criteria of critic B1 that riser and faller replace).
   Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of the land
   over the last 5 years. Land is measured in km² of true area in all four land criteria, in the
   ranking and in the nation panel, never in cells: the map is a Miller projection
@@ -1200,7 +1206,8 @@ interpolation changes something.
 - **Checkpoints and diagnostics** (ADR-48): `npm run sim -- --save f` writes the final state and
   `--load f` continues from it (bit-identical saves: tested on the toy world). `npm run diag`
   prints wars and great-power state at chosen years, from 1938 or from a checkpoint.
-  `npm run sweep:quick` (3 seeds × 20 years, report in `.cache/sweep/reports`) is for tuning.
+  `npm run sweep:quick` (10 seeds × 20 years, report in `.cache/sweep/reports`) is for tuning:
+  it is judged by the limits and reports riser and faller without a verdict (ADR-54).
 - **Parity** (`npm run parity`, `tools/parity`): parses `docs/PARITY.md` (Table 1 scored: verified 1,
   partial 0.5; Table 2 validated), checks the column layout, consecutive row numbers, a dated
   `[TEXT|VISUAL|TEXT+VISUAL YYYY-MM-DD]` tag on every AoC behaviour, and that every backticked

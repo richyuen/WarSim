@@ -263,6 +263,12 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
   Unseen seeds 301–310: **8 of 10** (`docs/sweeps/2026-10-03-sweep-b1d.md`, FAILING): 304 and
   306 fail the leader-share range (2.6 and 1.6 points); every seed has 2–3 newcomers.
+  **Criteria changed 2026-10-03 (ADR-54, the user's decision), before any 50-year run by
+  area:** the two criteria above are reported and no longer judged. A sweep passes when every
+  seed keeps the five limits and at least 8 of 10 seeds have a riser and at least 8 of 10 a
+  faller, both measured on realms (SPEC §10). The three FAILING reports stand as they are and are not re-judged; only
+  seeds from 401 judge this task. The quick sweep (10 seeds × 20 years) comes first: run
+  the deciding sweep when it shows risers and fallers on most seeds, not to find out.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 
 ## Phase 2 — Semantic zoom

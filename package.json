@@ -21,7 +21,7 @@
     "data": "tsx tools/data/run.ts",
     "sim": "tsx tools/headless/cli.ts",
     "sweep": "tsx tools/sweep/run.ts",
-    "sweep:quick": "tsx tools/sweep/run.ts --seeds 3 --years 20 --scratch",
+    "sweep:quick": "tsx tools/sweep/run.ts --seeds 10 --years 20 --scratch",
     "diag": "tsx tools/diag/nations.ts",
     "verify:phase0": "bash tools/verify-phase0.sh"
   },
