@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { MAX_PARALLEL, PARALLEL_INCOME, SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
+import { MAX_PARALLEL, PARALLEL_INCOME, RESERVE_MONTHS, SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
+import { RULES_1938 } from '../../src/sim/scenario1938';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { navOf } from '../../src/sim/world';
@@ -105,5 +106,30 @@ describe('economic AI (PLAN 1.26)', () => {
     // Nothing more is ordered while the slots are full.
     runEvents(s, 24 * 31);
     expect(pending(USA)).toBeLessThanOrEqual(MAX_PARALLEL);
+  });
+
+  it('an order the treasury cannot pay for is replaced by infantry instead of holding up the queue (PLAN 1.42c)', () => {
+    const order = (gold: (income: number) => number): number[] => {
+      const s = peaceful();
+      const w = s.world;
+      const nc = w.nations.cols;
+      w.wars.set(GER!, LUX!, true); // a rich nation at war: every third order is a panzer division
+      nc.aiOff[LUX!] = 1;
+      for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === GER!) destroyFormation(w, id);
+      nc.builds[GER!] = 2; // the next order is the third
+      nc.manpower[GER!] = 1e7;
+      nc.gold[GER!] = gold(Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!));
+      runEvents(s, 1);
+      return w.production.ids().filter((id) => w.production.cols.nation[id] === GER!).map((id) => w.production.cols.template[id]!);
+    };
+    const panzer = RULES_1938.templates[BUILD_MIX_1938.panzer]!.gold;
+    const infantry = RULES_1938.templates[BUILD_MIX_1938.infantry]!.gold;
+    expect(panzer).toBeGreaterThan(infantry);
+    // Enough for the panzer division and the reserve: it is ordered first.
+    expect(order((income) => panzer + RESERVE_MONTHS * income + 1)[0]).toBe(BUILD_MIX_1938.panzer);
+    // Enough for infantry only: infantry is ordered (before PLAN 1.42c nothing was).
+    expect(order((income) => infantry + RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
+    // Not enough for either: nothing.
+    expect(order((income) => RESERVE_MONTHS * income)).toEqual([]);
   });
 });

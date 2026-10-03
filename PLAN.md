@@ -188,11 +188,13 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: unit tests (an ally's army pushes and defends a partner's front, is supplied there, is not
   sent home; the AI sends an army with no front of its own to its partner's); seed 109 × 50
   years passes the leader-share range (4.4 points; was 2.7).
-- [ ] 1.42c Critic B1: the build queue of a rich nation at war no longer waits for months for a
+- [x] 1.42c Critic B1: the build queue of a rich nation at war no longer waits for months for a
   panzer division it cannot afford (seed 109: the Soviet Union built 9 formations in 30 months
   and lost 13, with idle slots and 5 M men in the pool). (Split from 1.42, 2026-10-03.)
   AT: a unit test (when the next order is not affordable the cheaper infantry order is placed);
   the 4-seed check (99, 105, 108, 109 × 50 years) is not worse on any criterion.
+  Done 2026-10-03: all four seeds pass all seven criteria (seed 108's newcomers 1 → 3). No
+  criterion went from pass to fail; individual numbers moved both ways (PROGRESS).
 - [ ] 1.42 Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails

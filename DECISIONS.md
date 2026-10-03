@@ -189,6 +189,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   sweep): leader-share range 5.4, 8.5, 10.0 and 4.4 points (seed 109 was 2.7). Seed 108 has
   only 1 new nation in the top ten (was 3), so the full criteria are still not met on every
   seed: PLAN 1.42 stays open.
+- **Follow-up, PLAN 1.42c (same day):** the economic AI replaces an order it cannot pay for by
+  the infantry division when that one is affordable. Before, the build loop returned and every
+  slot stayed empty until the treasury covered a panzer division (3,829 gold against 1,001)
+  plus three months of income: 9 Soviet formations in 30 months of war on seed 109. Same four
+  seeds: all pass all seven criteria (leader-share range 4.6–14.7 points, 2–4 newcomers).
 
 ### ADR-49 · 2026-10-03 · accepted — Parity-only gate for document commits; critic remediation restarts the critic count (user request)
 

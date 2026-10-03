@@ -18,7 +18,9 @@
  *    great powers sat on unspent treasuries.) Mix: poor nations
  *    (income < POOR_INCOME) raise cadre divisions; against armour-heavy enemies (≥ ARMOUR_HEAVY of
  *    their elements are tanks) motorised divisions (AT and heavy guns); rich nations at war add a
- *    panzer division every third order; infantry divisions otherwise.
+ *    panzer division every third order; infantry divisions otherwise. An order the treasury
+ *    cannot pay for now is replaced by the infantry division if that one can be paid (critic B1,
+ *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  */
 import { isMonthStart } from '../../shared/calendar';
 import { elementIndex, destroyFormation } from '../systems/elements';
@@ -118,8 +120,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       balance -= training.get(n) ?? 0;
       for (let k = pending.get(n) ?? 0; k < slots; k++) {
         if (upkeep >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * nc.aggression[n]!) / 100)) * income) return;
-        const t = pickTemplate(world, n, income, atWar, mix);
-        const rule = world.rules.templates[t]!;
+        let t = pickTemplate(world, n, income, atWar, mix);
+        let rule = world.rules.templates[t]!;
+        const plain = world.rules.templates[mix.infantry];
+        if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
+          t = mix.infantry;
+          rule = plain;
+        }
         const newUpkeep = upkeepOfTemplate(t);
         if (balance - newUpkeep <= need) return;
         if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;

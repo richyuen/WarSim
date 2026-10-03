@@ -2393,3 +2393,23 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   per seed before PLAN 1.42a.
 - **Not verified in the browser:** sim rules only. Gate green (426 unit, 7 sweep, 61 e2e).
 - **Next:** PLAN 1.42c (build queue), the same four seeds again, then the unseen-seed sweep.
+
+## 2026-10-03 — PLAN 1.42c (critic B1): the build queue no longer waits for a division it cannot pay for
+- **Change:** `economicAi` build step: when the picked template costs more than the treasury
+  covers (order + 3 months of income) and the infantry division is cheaper, infantry is
+  ordered. One unit test (panzer when affordable, infantry when only that is, nothing otherwise).
+- **Check, same four seen seeds × 50 years** (`.cache/t2/`; 1.42b alone in brackets):
+  | seed | leader range | new in top ten | alive | land moving, last 5 y | leader at the end |
+  |---|---|---|---|---|---|
+  | 99 | 14.7 (5.4) | 4 (2) | 95–137 | 11.0% | 15% |
+  | 105 | 6.2 (8.5) | 2 (4) | 100–122 | 4.8% | 22% |
+  | 108 | 4.6 (10.0) | 3 (1) | 100–129 | 4.8% | 23% |
+  | 109 | 10.7 (4.4) | 4 (3) | 99–130 | 4.4% | 17% |
+  All four pass all seven criteria. The numbers move both ways between runs: 50 years of this
+  world are chaotic, so a single seed's value is not evidence of much; the unseen-seed sweep is.
+- **Still true:** the leader is the Soviet Union in every year of every run and it only
+  shrinks (27% → 15–23%). Nobody else grows into a rival.
+- **Speed:** 13–17 min per 50-year run with four in parallel (11–12 before this change: more
+  formations alive).
+- **Gate:** green (427 unit, 7 sweep, 61 e2e). Not verified in the browser: sim rule only.
+- **Next:** PLAN 1.42: `npm run sweep -- --first 201 --tag b1c` on the final code.
