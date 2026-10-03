@@ -1198,8 +1198,11 @@ interpolation changes something.
   10-year sweep tests (`tests/sweep/`) → `vite build` → `playwright test` (against
   `vite preview` of the build) → `npm run parity`. Must be green before every commit. It is
   sized to what changed since HEAD (ADR-48, ADR-49): documents only (Markdown, `docs/`) run
-  parity alone; the sweep tests run only when a sim input changed. `npm run check:full` runs
-  every stage.
+  parity alone; the sweep tests run only when a sim input changed; a clean tree that the gate
+  has already passed runs nothing (the passed trees are recorded in `.cache/gate/`, ADR-55).
+  `npm run check:full` runs every stage. The sweep tests include the pinned state hash of
+  seed 99 after one year (`tests/sweep/baselineHash.test.ts`): a change of rules moves the pin
+  and logs it in DECISIONS.
 - **Critic cadence** (`npm run critic:due`, `tools/gate/criticDue.ts`, ADR-49): due 5 commits
   after the later of the report's commit and the last commit whose subject starts with
   "Critic ".

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_STAGES, changedFiles, planGate } from '../../tools/gate/check';
+import { ALL_STAGES, changedFiles, gatedTrees, planGate, worktreeTree } from '../../tools/gate/check';
 import { CRITIC_EVERY, criticDue } from '../../tools/gate/criticDue';
 
 // ADR-48, ADR-49: the gate is sized to what changed since HEAD; the critic comes back only
-// CRITIC_EVERY commits after the last remediation commit.
+// CRITIC_EVERY commits after the last remediation commit. ADR-55: a clean tree that the gate
+// has already passed runs nothing.
 
 describe('gate plan (ADR-48, ADR-49)', () => {
   it('documents only: parity alone', () => {
@@ -28,6 +29,22 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     expect(planGate([])).toEqual(ALL_STAGES.filter((s) => s !== 'test:sweep'));
     expect(planGate(['critic/CRITIC_REPORT.json'])).toEqual(ALL_STAGES.filter((s) => s !== 'test:sweep'));
     expect(planGate(null)).toEqual([...ALL_STAGES]);
+  });
+
+  it('a clean tree the gate has already passed runs nothing; any change runs as before (ADR-55)', () => {
+    expect(planGate([], true)).toEqual([]);
+    expect(planGate(['critic/CRITIC_REPORT.json'], true)).toEqual([]);
+    expect(planGate(['PROGRESS.md'], true)).toEqual(['parity']);
+    expect(planGate(['src/render/units/counters.ts'], true)).toEqual(ALL_STAGES.filter((s) => s !== 'test:sweep'));
+    expect(planGate(['src/sim/systems/war.ts'], true)).toEqual([...ALL_STAGES]);
+    expect(planGate(null, true)).toEqual([...ALL_STAGES]);
+  });
+
+  it('the working tree has a tree id, the same when asked twice; the record of passed trees is a list of ids', () => {
+    const tree = worktreeTree();
+    expect(tree).toMatch(/^[0-9a-f]{40,64}$/);
+    expect(worktreeTree()).toBe(tree);
+    for (const t of gatedTrees()) expect(t).toMatch(/^[0-9a-f]{40,64}$/);
   });
 
   it('a file that only looks like a document is code', () => {

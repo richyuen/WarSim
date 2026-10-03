@@ -212,10 +212,17 @@ on simulation runs (DECISIONS ADR-48).
   rules, rewrite it.
 - `npm run check` sizes the gate to what changed since HEAD: only
   `npm run parity` for a commit of documents alone (Markdown, `docs/`), and
-  no 10-year sweep tests when nothing they depend on changed.
+  no 10-year sweep tests when nothing they depend on changed. On a clean
+  tree that the gate has already passed it runs nothing, so step 2 of an
+  iteration that starts on a gated commit costs seconds (ADR-55).
   `npm run check:full` always runs everything: use it for the DONE CONDITION
   and whenever the working tree was not gated commit by commit (after a pull
   or a rebase).
+- No hand-run hashes. `tests/sweep/baselineHash.test.ts` pins the state hash
+  of seed 99 after one year. A change meant to leave behaviour alone is
+  proved by that test in the gate. A change of rules moves the pin in the
+  same commit, with the old and new hash and the reason in DECISIONS.md
+  (ADR-55).
 - Simulation speed is iteration speed. A change that makes the tick slower
   is logged with numbers in PROGRESS.md, and a tick over budget is fixed
   before the next task that needs a full sweep.

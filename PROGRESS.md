@@ -2619,3 +2619,23 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   whose 5-year mean is still 0.06 ms over budget; and no 50-year run has been judged by these
   criteria, on any seed.
 - **Next:** the gate skip for a tree already gated and the pinned baseline hash (ADR-55).
+
+## 2026-10-03 — Iteration speed: the gate skips a tree it has passed; the baseline hash is a test (ADR-55)
+- **Measured today:** gate on a sim change about 6 min (10-year sweep tests 171–193 s, e2e about
+  100 s, unit 43–77 s). Full sweep 25.5 min, quick sweep 4.6–6.5 min, a 5-year hash check 75 s.
+- **Gate:** a green gate records the tree it passed (`.cache/gate/green.json`). On a clean tree
+  whose HEAD is a recorded tree `npm run check` runs nothing: step 2 of an iteration no longer
+  re-proves the commit the last iteration gated (about 3 min). A HEAD the gate has not seen
+  still gets the code stages, as before. Unit tests for the plan and for the tree id.
+- **Baseline hash:** `tests/sweep/baselineHash.test.ts` pins seed 99 after one year (2cb270e6).
+  It runs beside the 10-year sweep tests, so the stage is no longer for it. A rule change moves
+  the pin in its own commit and logs old and new in DECISIONS. No more before/after runs by
+  hand, and no more stale baseline in an acceptance test (PLAN 1.42d named a hash two rule
+  changes old).
+- **10-year sweep tests: measured, not cut.** Seven files in parallel, so the stage lasts as
+  long as one 10-year AI run. It fell from 193 s to 119 s with PLAN 1.42f. Cutting years would
+  drop years 6–10 of the alliance invariant and the bankruptcy check.
+- **PROMPT.md and CLAUDE.md** say all of this (KEEPING ITERATIONS SHORT; Commands).
+- **State for the next iteration:** PLAN 1.42f is open (5-year mean 1.56 ms against 1.5); then
+  1.42e; the retry of 1.42 waits for 1.42f. The quick sweep by realm shows a riser in 6 of 10
+  seen seeds at 20 years.

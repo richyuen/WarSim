@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-55 · 2026-10-03 · accepted — The gate skips a tree it has passed; the baseline hash is a test (the user's request)
+
+- **Context:** the user asked what slows the iterations. Measured on 2026-10-03: the gate on
+  a sim change takes about 6 minutes (10-year sweep tests 171–193 s, e2e about 100 s, unit
+  43–77 s). Step 2 of every iteration ran it on the commit that the previous iteration had
+  just gated (about 3 minutes for nothing). Every claim of "no behaviour change" was a pair
+  of 5-year runs by hand (75 s each), and the hash written into PLAN 1.42d as the baseline
+  was two rule changes old.
+- **Decision 1:** a green gate records the tree it passed, taken before its stages run
+  (`.cache/gate/green.json`; the tree a commit of everything but `critic/` would have, written
+  through a scratch index). On a clean working tree whose HEAD has one of the recorded trees,
+  `npm run check` runs nothing. A HEAD the gate has not seen (a pull, a rebase, a fresh clone,
+  a commit of files edited while the gate ran) gets the code stages, as before.
+- **Decision 2:** `tests/sweep/baselineHash.test.ts` pins the state hash of seed 99 after one
+  year. It runs with the 10-year sweep tests, in parallel with them, so the gate is no slower.
+  A change of rules, data or recorded state updates the pin in its own commit and logs the old
+  and new hash here; that is a new baseline, not a weakened test.
+- **Not changed: the 10-year sweep tests.** They are seven files run in parallel, so the stage
+  lasts as long as its slowest run, a 10-year AI war run. Cutting years would drop years 6–10
+  of the alliance invariant and of the bankruptcy check. The stage got shorter with the tick
+  instead (PLAN 1.42f): 193 s before, 119 s after.
+- **Limits:** the record is local to the machine and trusts the same thing ADR-48 trusts: that
+  commits are made from the tree the gate saw. `npm run check:full` ignores it.
+
 ### ADR-54 · 2026-10-03 · accepted — Sweep dynamism: a riser and a faller, judged over the seeds (the user's decision; PLAN 1.42)
 
 - **Context:** critic B1 (static world) added two criteria on 2026-10-03, required of every

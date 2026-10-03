@@ -21,9 +21,11 @@ There is no memory between sessions. Read these files:
 ## Commands
 
 - `npm run check`: the gate, sized to what changed since HEAD. It must pass before every commit.
+  - Clean tree that the gate has already passed: nothing.
   - Documents only (Markdown, `docs/`): parity.
   - Code: typecheck, lint, unit, build, e2e, parity, plus the 10-year sweep tests when a sim
-    input changed.
+    input changed. They include the pinned state hash of seed 99 after one year
+    (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
 - `npm run check:full`: every stage, whatever changed.
 - `npm run critic:due`: whether the critic's commit rule (PROMPT.md step 2a) calls for a run.
   Commits that fix a critic finding start their subject with "Critic "; they restart the count.
