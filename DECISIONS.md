@@ -189,6 +189,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   Leader-share range 4.1–16.1 points (was 2.7–8.6 under ADR-47), 2–4 newcomers in the top
   ten, land moving in the last 5 years 4.8–23.0%, largest nation 12–26% at the end. The
   leader is still the Soviet Union in every year of every seed.
+- **Result on unseen seeds 301–310** (`docs/sweeps/2026-10-03-sweep-b1d.md`): **8 of 10**.
+  Every seed has 2–3 newcomers in the top ten (two seeds failed that in the sweep before);
+  seeds 304 and 306 fail the leader-share range (2.6 and 1.6 points: the Soviet Union ends at
+  25.2% and 27.5%). The rule stays: it is what the critic asked for and the three sweeps (9,
+  7 and 8 of 10, each on other seeds) do not show it doing harm. B1 is not closed: BLOCKERS.
 
 ### ADR-50 · 2026-10-03 · accepted — Partners in a war fight on each other's fronts (critic B1, PLAN 1.42b)
 

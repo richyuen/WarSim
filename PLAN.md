@@ -195,7 +195,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   the 4-seed check (99, 105, 108, 109 × 50 years) is not worse on any criterion.
   Done 2026-10-03: all four seeds pass all seven criteria (seed 108's newcomers 1 → 3). No
   criterion went from pass to fail; individual numbers moved both ways (PROGRESS).
-- [ ] 1.42 Critic B1 (static world), continued: every seed passes the two criteria added on
+- [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03).** Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
   the leader-share range (2.7 points). Do not move the thresholds. (The tick time that
@@ -209,7 +209,9 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   failed attempt goes to BLOCKERS (PROMPT step 8).
   Third attempt, 2026-10-03 (ADR-51): the winner of a peace keeps all the land it occupies.
   Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
-  AT: `npm run sweep -- --first 301 --tag <name>` (seeds no tuning has seen) all green.
+  Unseen seeds 301–310: **8 of 10** (`docs/sweeps/2026-10-03-sweep-b1d.md`, FAILING): 304 and
+  306 fail the leader-share range (2.6 and 1.6 points); every seed has 2–3 newcomers.
+  AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 
 ## Phase 2 — Semantic zoom
 

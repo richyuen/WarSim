@@ -2457,3 +2457,18 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Still true:** the leader is the Soviet Union in every year of every seed.
 - **Gate:** green (428 unit, 7 sweep, 61 e2e). Not verified in the browser: sim rule only.
 - **Next:** the deciding sweep on unseen seeds 301–310.
+
+## 2026-10-03 — PLAN 1.42, third sweep on unseen seeds: 8 of 10. Blocked (PROMPT step 8)
+- **Sweep** (`npm run sweep -- --first 301 --tag b1d`, code of b0218f0, 25.5 min): seeds 304 and
+  306 fail the leader-share range (2.6 and 1.6 points). All ten have 2–3 newcomers in the top
+  ten; the other five criteria pass everywhere (land moving 5.1–15.1%, 88–140 nations alive).
+- **Three attempts, three failures** (9, 7 and 8 of 10, on different seeds each time). Written
+  up in BLOCKERS.md with what was not tried. PLAN 1.42 stays unchecked and marked blocked; the
+  next sweep starts at seed 401. No threshold was moved and nothing was tuned on a failing seed.
+- **Lesson:** a pass on seen seeds says little (4 of 4, then 10 of 10, before failing). With
+  ten seeds and a pass rate near 80–90% per sweep, this criterion needs a mechanism that
+  reaches the largest nation on every seed, or it will keep failing one or two.
+- **Today's B1 work that stays:** tick time back under budget (1.42a), partners' fronts
+  (ADR-50), the build queue (1.42c), peace terms (ADR-51).
+- **Next:** PLAN 2.4 (FireEvent visuals), the first unchecked task that is not blocked and part
+  of critic B2. It is a rendering task: screenshots viewed, and the 30 fps budget at T2 checked.

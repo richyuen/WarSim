@@ -5,7 +5,35 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-_None._
+### PLAN 1.42 / critic B1: the leader-share and top-ten criteria do not hold on every unseen seed (2026-10-03)
+Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thresholds
+(≥ 2 newcomers in the top ten by land, leader-share range ≥ 3 points) were never moved.
+
+| Attempt | Changes | Seeds | Result | Failures |
+|---|---|---|---|---|
+| 1 | ADR-47 (wars resolve, armies recover, overextension) | 101–110 | 9 of 10, `docs/sweeps/2026-10-03-sweep-b1.md` | 109: range 2.7 |
+| 2 | ADR-50 (partners' fronts) + PLAN 1.42c (build queue) | 201–210 | 7 of 10, `docs/sweeps/2026-10-03-sweep-b1c.md` | 204: 1 newcomer; 208: 1 newcomer, range 2.4; 209: range 2.6 |
+| 3 | ADR-51 (the winner keeps what it occupies) | 301–310 | 8 of 10, `docs/sweeps/2026-10-03-sweep-b1d.md` | 304: range 2.6; 306: range 1.6 |
+
+- **The pattern:** the Soviet Union is the largest nation in every year of every run (27% at
+  the start). The range criterion passes when revolts and lost wars carve it down (to 12–24%)
+  and fails when they do not (304 and 306 end at 25.2% and 27.5%). Nothing in the sim makes
+  that happen on every seed, and no other nation ever grows towards it. The newcomer criterion
+  passed on all ten seeds in attempt 3, with five other criteria.
+- **Checks on seen seeds do not predict the sweep:** attempt 2 passed 4 of 4 seen seeds and
+  attempt 3 passed 10 of 10 (seeds 101–110) before failing on unseen ones. One seed's 50-year
+  range moves by several points between versions of the code.
+- **Not tried:**
+  1. Measure how fast a front advances against an almost undefended giant (seed 109, year 25:
+     78k Soviet men, 170,000 cells, wars at score 0). The checkpoint `.cache/ck/s109-y25.bin`
+     was written before ADR-50; rewrite it first.
+  2. Rivals that grow: the United States holds 7–9% with aggression 15 and 876k gold unspent
+     at year 25; no great power other than the Soviet Union is ever near the top share.
+  3. Where Soviet formations die (13 lost in 30 months on seed 109, several out of supply on
+     land that flipped back under them).
+- **Seen seeds:** 1–10, 99, 101–110, 201–210, 301–310. The next sweep starts at 401.
+- **Kept anyway:** ADR-47, ADR-50, PLAN 1.42c and ADR-51 each remove a defect found in the
+  diagnosis; none of them is a tuning constant chosen to pass a seed.
 
 ## Watch list (not blocking)
 
