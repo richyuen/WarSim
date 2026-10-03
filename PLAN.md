@@ -156,8 +156,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: unit tests on the undo stack; e2e paints, undoes and redoes, with identical raster hashes.
 - [x] 1.36 Editor: cities, gold & core costs, alliances, puppets, annex, preset revolts.
   AT: e2e builds a mini scenario using each tool, saves it, loads it and verifies.
-- [ ] 1.37 Editor: map import (image → terrain/owner palette mapping) + flag editor with presets.
-  AT: importing a fixture PNG yields expected cell counts; a flag edited in the editor is shown on the map.
+- [x] 1.37a Editor: map import (image → terrain/owner palette mapping). (Split from 1.37, 2026-10-03.)
+  AT: importing a fixture PNG yields expected cell counts.
+- [ ] 1.37b Flag editor with presets.
+  AT: a flag edited in the editor is shown on the map.
 - [ ] 1.38 Scenario files save/load (shareable `.warsim-scenario`).
   AT: round trip yields an identical scenario hash.
 - [ ] 1.39 Settings: UI size, unit size, looping map, map size (S–XL), speed/pause persistence, screenshot key, seed + randomisation options.

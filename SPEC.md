@@ -1012,6 +1012,15 @@ interpolation changes something.
   - Land cells only: terrain edits are land ↔ land until map import (1.37) can regenerate the
     fine coastline. Terrain edits drop nav and paths; the worker resends `terrainLayer`.
   - UI: the bottom bar's Editor button; map clicks paint; Ctrl+Z / Ctrl+Y.
+- **Map import** (PLAN 1.37a):
+  - `src/shared/mapImport.ts` maps an image to the map: nearest-neighbour resample, then the
+    nearest palette colour (terrain colours, or nation colours within 40, else unowned). The
+    result travels as runs in the `importLayer` command.
+  - `importLayer` lets terrain change water ↔ land; owners of new water are cleared in a linked
+    edit, so undo/redo act on the pair. The undo cap never evicts the two newest edit groups.
+  - The worker reports `terrainLayer.landChanged` (land/water differs from the start); the
+    renderer then draws cell coasts with water taken from the terrain layer.
+  - Cities and formations stay where they are.
 - **Scenario editing** (PLAN 1.36, `src/sim/scenarioEdit.ts`):
   - Commands `spawnCity` (a named city on land; adds 20 × size × mean land-cell economy to its
     cell, stored on the row and taken back by `removeCity`), `removeCity` (a capital

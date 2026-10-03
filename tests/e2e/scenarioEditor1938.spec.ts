@@ -14,7 +14,7 @@ import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 const { w: W, h: H } = SIZE_1938;
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const [POL, ETH, GER, AUT, HUN, SWE, NOR, LIT] = ['POL', 'ETH', 'GER', 'AUT', 'HUN', 'SWE', 'NOR', 'LIT'].map(id) as [number, number, number, number, number, number, number, number];
-const inspect = (page: Page): Promise<Inspection> => page.evaluate(() => window.__warsim!.sim.inspect());
+const inspect = (page: Page, full = false): Promise<Inspection> => page.evaluate((f) => window.__warsim!.sim.inspect(f), full); // full: cities and cores
 const nation = (s: Inspection, n: number) => s.nations.find((x) => x.id === n)!;
 
 async function centre(page: Page, lon: number, lat: number, scale = 8): Promise<void> {
@@ -39,10 +39,10 @@ test('scenario editor: build a mini scenario, save, load and verify', async ({ p
   await page.getByTestId('editor-city-name').fill('Nowe Miasto');
   await page.getByTestId('editor-city-size').fill('3');
   await page.mouse.click(700, 400);
-  await expect.poll(async () => (await inspect(page)).cities.some((c) => c.name === 'Nowe Miasto')).toBe(true);
+  await expect.poll(async () => (await inspect(page, true)).cities.some((c) => c.name === 'Nowe Miasto')).toBe(true);
   await page.getByTestId('editor-tool-capital').click();
   await page.mouse.click(700, 400);
-  await expect.poll(async () => (await inspect(page)).cities.find((c) => c.name === 'Nowe Miasto')!.capitalOf).toBe(POL);
+  await expect.poll(async () => (await inspect(page, true)).cities.find((c) => c.name === 'Nowe Miasto')!.capitalOf).toBe(POL);
 
   // 2. Gold.
   await page.getByTestId('editor-gold').fill('54321');
@@ -54,17 +54,17 @@ test('scenario editor: build a mini scenario, save, load and verify', async ({ p
   await page.getByTestId('editor-tool-core').click();
   await centre(page, 20.0, 50.1);
   await page.mouse.click(700, 400);
-  await expect.poll(async () => (await inspect(page)).cores.some((c) => c.nations.includes(ETH) && c.nations.includes(POL))).toBe(true);
-  const etProvince = (await inspect(page)).cores.find((c) => c.nations.includes(ETH) && c.nations.includes(POL))!.province;
+  await expect.poll(async () => (await inspect(page, true)).cores.some((c) => c.nations.includes(ETH) && c.nations.includes(POL))).toBe(true);
+  const etProvince = (await inspect(page, true)).cores.find((c) => c.nations.includes(ETH) && c.nations.includes(POL))!.province;
 
   // 4. Remove a scenario city (Breslau, Germany).
-  const breslau = (await inspect(page)).cities.find((c) => c.name === 'Breslau')!;
+  const breslau = (await inspect(page, true)).cities.find((c) => c.name === 'Breslau')!;
   expect(breslau).toBeTruthy();
   await page.getByTestId('editor-tool-removeCity').click();
   await page.evaluate(({ x, y }) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 8 }), breslau);
   await page.waitForTimeout(150);
   await page.mouse.click(700, 400);
-  await expect.poll(async () => (await inspect(page)).cities.some((c) => c.name === 'Breslau')).toBe(false);
+  await expect.poll(async () => (await inspect(page, true)).cities.some((c) => c.name === 'Breslau')).toBe(false);
 
   // 5. Annexation: Germany annexes Austria.
   await page.getByTestId('editor-nation').selectOption(String(GER));
@@ -97,12 +97,12 @@ test('scenario editor: build a mini scenario, save, load and verify', async ({ p
   await page.screenshot({ path: path.join(out, 'mini-scenario.png') });
 
   // Save (autosave to IndexedDB), reload from it, verify everything came back.
-  const built = await inspect(page);
+  const built = await inspect(page, true);
   await page.evaluate(() => window.__warsim!.autosave.saveNow());
   await page.goto('/?scenario=1938&paused=1&seed=1938&continue=1');
   await page.waitForFunction(() => window.__warsim?.hud.stats.value !== null && window.__warsim?.hud.stats.value !== undefined, null, { timeout: 60_000 });
-  await expect.poll(async () => (await inspect(page)).cities.some((c) => c.name === 'Nowe Miasto'), { timeout: 30_000 }).toBe(true);
-  const loaded = await inspect(page);
+  await expect.poll(async () => (await inspect(page, true)).cities.some((c) => c.name === 'Nowe Miasto'), { timeout: 30_000 }).toBe(true);
+  const loaded = await inspect(page, true);
   expect(loaded.rasters).toEqual(built.rasters);
   expect(loaded.cities).toEqual(built.cities);
   expect(loaded.cores).toEqual(built.cores);

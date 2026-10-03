@@ -24,6 +24,8 @@ export interface EditorPanelProps {
   /** Scenario actions on the editor's nation (PLAN 1.36). */
   onGold: (nation: number, value: number) => void;
   onAnnex: (annexer: number, target: number) => void;
+  /** Map import (PLAN 1.37a): an image file mapped onto a layer. */
+  onImport: (file: File, layer: 'terrain' | 'nation') => void;
 }
 
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
@@ -33,7 +35,8 @@ const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLa
  * paint, brush radius, an optional target mask, and undo/redo (also Ctrl+Z / Ctrl+Y). While it is
  * open, map clicks paint.
  */
-export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex }: EditorPanelProps) {
+export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport }: EditorPanelProps) {
+  const [importLayer, setImportLayer] = useState<'terrain' | 'nation'>('terrain');
   const [gold, setGold] = useState('');
   const [annexTarget, setAnnexTarget] = useState(0);
   const me = nations.find((n) => n.id === state.nation);
@@ -164,6 +167,25 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
           </div>
         </>
       ) : null}
+      <div class="panel-sub">{t('editor.import')}</div>
+      <div class="god-row">
+        <select data-testid="editor-import-layer" value={importLayer} onChange={(e) => setImportLayer((e.currentTarget as HTMLSelectElement).value as 'terrain' | 'nation')}>
+          <option value="terrain">{t('editor.import.terrain')}</option>
+          <option value="nation">{t('editor.import.nation')}</option>
+        </select>
+        <input
+          data-testid="editor-import-file"
+          type="file"
+          accept="image/*"
+          aria-label={t('editor.import')}
+          onChange={(e) => {
+            const input = e.currentTarget as HTMLInputElement;
+            const f = input.files?.[0];
+            if (f) onImport(f, importLayer);
+            input.value = '';
+          }}
+        />
+      </div>
       <div class="panel-note" data-testid="editor-hint">
         {t(state.tool === 'line' && lineStarted ? 'editor.hint.lineEnd' : (`editor.hint.${state.tool}` as MessageKey))}
       </div>

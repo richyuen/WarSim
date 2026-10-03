@@ -73,7 +73,7 @@ export class SimClient {
       return;
     }
     if (msg.type === 'terrainLayer') {
-      for (const l of this.terrainListeners) l(msg.data);
+      for (const l of this.terrainListeners) l(msg.data, msg.landChanged);
       return;
     }
     if (msg.type === 'nationStats') {
@@ -142,8 +142,8 @@ export class SimClient {
   }
 
   /** Terrain layer after editor edits (PLAN 1.35). */
-  private readonly terrainListeners = new Set<(data: Uint8Array) => void>();
-  onTerrain(l: (data: Uint8Array) => void): () => void {
+  private readonly terrainListeners = new Set<(data: Uint8Array, landChanged: boolean) => void>();
+  onTerrain(l: (data: Uint8Array, landChanged: boolean) => void): () => void {
     this.terrainListeners.add(l);
     return () => this.terrainListeners.delete(l);
   }
@@ -268,8 +268,9 @@ export class SimClient {
   }
 
   /** JSON summary of the world (PLAN 1.32; tests and the critic). */
-  async inspect(): Promise<Inspection> {
-    const r = await this.status({ type: 'inspect' });
+  /** `full` adds cities, cores and unrest (bulky: ~600 KB on the 1938 map). */
+  async inspect(full = false): Promise<Inspection> {
+    const r = await this.status(full ? { type: 'inspect', full } : { type: 'inspect' });
     if (!r.bytes) throw new Error('inspect reply without bytes');
     return JSON.parse(new TextDecoder().decode(r.bytes)) as Inspection;
   }

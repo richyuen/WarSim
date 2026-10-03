@@ -89,7 +89,16 @@ export class MapRenderer {
   }
 
   /** Fine land coverage (0..255 land fraction per texel) for the coastline. */
+  /** Uses (true) or ignores (false) the fine land coverage; off, coasts follow the cells. */
+  useLand(on: boolean): void {
+    this.hasLand = on && this.landLoaded;
+  }
+
+  private landLoaded = false;
+  private hasTerrain = false;
+
   setLand(w: number, h: number, data: Uint8Array): void {
+    this.landLoaded = true;
     this.gl.deleteTexture(this.landTex);
     this.landTex = this.makeTexture(this.gl.R8, this.gl.RED, this.gl.UNSIGNED_BYTE, w, h, data, this.gl.LINEAR);
     this.hasLand = true;
@@ -99,6 +108,7 @@ export class MapRenderer {
   setTerrain(w: number, h: number, data: Uint8Array, colors: readonly number[]): void {
     this.gl.deleteTexture(this.terrainTex);
     this.terrainTex = this.makeTexture(this.gl.R8UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_BYTE, w, h, data, this.gl.NEAREST);
+    this.hasTerrain = true;
     colors.slice(0, 12).forEach((c, i) => {
       this.terrainColors[i * 3] = ((c >> 16) & 255) / 255;
       this.terrainColors[i * 3 + 1] = ((c >> 8) & 255) / 255;
@@ -190,6 +200,7 @@ export class MapRenderer {
       uWarp: this.opts.warp,
       uLand: this.landTex,
       uHasLand: this.hasLand ? 1 : 0,
+      uHasTerrain: this.hasTerrain ? 1 : 0,
       uTerrain: this.terrainTex,
       uMode: this.fillMode,
       uProvince: this.provinceTex,

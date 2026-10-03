@@ -1987,3 +1987,41 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   now closes the others (the charts e2e checks it).
 - **SPEC drift:** §2.3 lists `history`, `stats`, `terrainLayer` and `cityLayer`; §2.5's
   implemented order ends with statistics sampling, and history is recorded on emit.
+
+## 2026-10-03 — PLAN 1.37a: map import (1.37 split into a/b)
+- **Shared** (`src/shared/mapImport.ts`): `paletteMap` (nearest-neighbour resample to the map,
+  nearest palette colour within a distance, else a fallback), `encodeRuns` / `decodeRuns`.
+- **Sim** (`editor.ts`):
+  - Command `importLayer {layer, runs}`. Terrain may go water ↔ land; owners on new water are
+    cleared in a linked edit. `Edit.linked`: undo/redo take linked edits together, saves keep
+    the flag, and the cap never splits a group.
+  - The cap never evicts the two newest groups (a terrain import followed by a nation import
+    stays undoable).
+- **Worker/renderer:** `terrainLayer.landChanged` against the initial land mask. `MapRenderer`
+  `useLand(false)` and `uHasTerrain`: without the fine coastline, water comes from the terrain
+  layer (unowned land stays land); the toy map keeps the controller rule.
+- **UI:** the editor's Import section (layer + file input); `src/app/importImage.ts` decodes
+  with `createImageBitmap` and an OffscreenCanvas.
+- **AT:** a 64×32 fixture is generated at test time (`tests/helpers/importFixture.ts`, PNG via
+  `tools/data/png.ts`): each pixel is exactly 32×32 cells.
+  - Unit: exact terrain counts, fallback, runs, linked undo/redo, save/load.
+  - e2e: real file-input uploads give exact water/plains/forest/mountains counts and exactly
+    32,768 cells each for Germany and Poland. The fine coastline goes, and two undos restore
+    the starting rasters and the coastline.
+- **Along the way:**
+  - My first unit run hung: the import was evicted from the undo stack (hence the
+    two-group rule), and `toEqual` on two unequal 2 M-cell arrays built a diff for minutes. The
+    test now compares hashes. Its stopped vitest worker kept running and slowed the next gates,
+    so I killed it (PID 132272, WarSim's own).
+  - Another project's Vite dev server (not ours, left running) held ~2.5 cores. E2E polls after
+    UI commands missed the 5 s window run after run while passing alone. `inspect` heavy parts
+    (cities, cores, unrest, ~600 KB) are now opt-in (`inspect(true)`), and the Playwright
+    expect timeout is 15 s (assertions unchanged).
+  - Real bug: with focus on a dropdown, editor Ctrl+Z/Ctrl+Y were ignored. The shortcut now
+    skips text fields only. The editor e2e focuses the dropdown first; it fails on the old
+    handler and passes now.
+  - The editor e2e's line clicks now go below the editor panel's measured bottom: the Import
+    section made the panel taller.
+- **Evidence:** `docs/evidence/1.37/imported.png`, viewed. Known gap (BLOCKERS): cities and
+  formations stay on new water.
+- **Parity:** row 47 → partial.

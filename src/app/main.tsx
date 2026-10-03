@@ -36,8 +36,10 @@ if (view) {
   view.onPick = (x, y, sx, sy, shift) => hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y)) || p.click(x, y, sx, sy, shift);
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') p.clearSelection();
-    // Editor undo/redo: Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z (not while typing in a field).
-    if (!hud.showEditor.value || !(e.ctrlKey || e.metaKey) || (e.target as HTMLElement | null)?.closest('input, select, textarea')) return;
+    // Editor undo/redo: Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z, except while typing in a text field
+    // (a focused dropdown or checkbox has no text to undo; review in PLAN 1.37a).
+    const typing = (e.target as HTMLElement | null)?.closest('textarea, input:not([type=checkbox]):not([type=radio]):not([type=file])');
+    if (!hud.showEditor.value || !(e.ctrlKey || e.metaKey) || typing) return;
     const k = e.key.toLowerCase();
     if (k === 'z' && !e.shiftKey) hud.command({ kind: 'editUndo' });
     else if (k === 'y' || (k === 'z' && e.shiftKey)) hud.command({ kind: 'editRedo' });

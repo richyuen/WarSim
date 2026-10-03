@@ -123,9 +123,12 @@ export class MapView {
       this.cities = cities;
       this.dirty = true;
     });
-    sim.onTerrain((data) => {
+    sim.onTerrain((data, landChanged) => {
       if (!this.terrainColors) return;
       this.map.setTerrain(this.geo.w, this.geo.h, data, this.terrainColors);
+      // Imported land/water: coasts follow the cells until it matches the start again.
+      this.map.useLand(!landChanged);
+      this.hasFineCoast = !landChanged;
       this.dirty = true;
     });
     sim.onUnrest((u) => {

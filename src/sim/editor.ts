@@ -5,13 +5,14 @@
  *
  * Edits are commands, so they replay; the stack is state (saved) so a save plus its later
  * command log, which may contain undo/redo, replays exactly. The stack keeps at most UNDO_DEPTH
- * edits and UNDO_CELLS cells (oldest dropped first); a new edit clears the redo side.
+ * edits and UNDO_CELLS cells (oldest dropped first), except that the two newest edit groups are
+ * always kept; a new edit clears the redo side.
  *
  * Terrain edits change land into land only (plains → forest, mountains …): water ↔ land also
  * needs the fine coastline regenerated and comes with map import (PLAN 1.37). The nation layer
  * paints land cells only.
  */
-import { isLand } from '../shared/terrain';
+import { isLand, TERRAIN_IDS } from '../shared/terrain';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
 import { TILE, type World } from './world';
@@ -37,6 +38,8 @@ export interface Edit {
   after: Uint16Array;
   /** Nation layer only: controllers before (after = `after`). */
   beforeCtl: Uint16Array | null;
+  /** Applied (and undone) together with the edit below it on the stack (PLAN 1.37a imports). */
+  linked?: boolean;
 }
 
 export class EditStack implements Stateful {
@@ -48,13 +51,20 @@ export class EditStack implements Stateful {
     this.redo = [];
     let cells = 0;
     for (const u of this.undo) cells += u.cells.length;
-    while (this.undo.length > UNDO_DEPTH || (cells > UNDO_CELLS && this.undo.length > 1)) cells -= this.undo.shift()!.cells.length;
+    // The cell cap never evicts the last two edit groups: a terrain import followed by a nation
+    // import (each up to the whole map) stays undoable (PLAN 1.37a).
+    const groups = (): number => this.undo.filter((u) => !u.linked).length;
+    while (this.undo.length > UNDO_DEPTH || (cells > UNDO_CELLS && groups() > 2)) {
+      cells -= this.undo.shift()!.cells.length;
+      // Never keep half of a linked group: its base went, so it goes too.
+      while (this.undo[0]?.linked) cells -= this.undo.shift()!.cells.length;
+    }
   }
 
   serialize(): Section[] {
     // Metadata as JSON; cell data as typed sections in stack order (undo, then redo).
     const all = [...this.undo, ...this.redo];
-    const meta = { undo: this.undo.length, edits: all.map((e) => ({ layer: e.layer, n: e.cells.length, ctl: e.beforeCtl !== null })) };
+    const meta = { undo: this.undo.length, edits: all.map((e) => ({ layer: e.layer, n: e.cells.length, ctl: e.beforeCtl !== null, linked: e.linked === true })) };
     const total = all.reduce((s, e) => s + e.cells.length, 0);
     const cells = new Uint32Array(total);
     const before = new Uint16Array(total);
@@ -85,7 +95,7 @@ export class EditStack implements Stateful {
     this.undo = [];
     this.redo = [];
     if (!sections.some((s) => s.name === 'edits.json')) return; // saves from before PLAN 1.35
-    const meta = JSON.parse(new TextDecoder().decode(takeSection(sections, 'edits.json', 'u8'))) as { undo: number; edits: { layer: EditLayer; n: number; ctl: boolean }[] };
+    const meta = JSON.parse(new TextDecoder().decode(takeSection(sections, 'edits.json', 'u8'))) as { undo: number; edits: { layer: EditLayer; n: number; ctl: boolean; linked?: boolean }[] };
     const cells = takeSection(sections, 'edits.cells', 'u32');
     const before = takeSection(sections, 'edits.before', 'u16');
     const after = takeSection(sections, 'edits.after', 'u16');
@@ -94,6 +104,7 @@ export class EditStack implements Stateful {
     let c = 0;
     meta.edits.forEach((m, i) => {
       const e: Edit = { layer: m.layer, cells: cells.slice(o, o + m.n), before: before.slice(o, o + m.n), after: after.slice(o, o + m.n), beforeCtl: m.ctl ? ctl.slice(c, c + m.n) : null };
+      if (m.linked) e.linked = true;
       o += m.n;
       if (m.ctl) c += m.n;
       (i < meta.undo ? this.undo : this.redo).push(e);
@@ -217,18 +228,69 @@ function apply(world: World, e: Edit, undo: boolean): void {
   if (e.layer === 'terrain') terrainChanged(world);
 }
 
+/** Undoes the top edit, with the edits linked to it (newest first). */
 export function undoEdit(world: World): boolean {
-  const e = world.edits.undo.pop();
-  if (!e) return false;
-  apply(world, e, true);
-  world.edits.redo.push(e);
+  const st = world.edits;
+  if (st.undo.length === 0) return false;
+  for (;;) {
+    const e = st.undo.pop()!;
+    apply(world, e, true);
+    st.redo.push(e);
+    if (!e.linked || st.undo.length === 0) break;
+  }
   return true;
 }
 
+/** Redoes the top undone edit, then the edits linked to it (oldest first). */
 export function redoEdit(world: World): boolean {
-  const e = world.edits.redo.pop();
-  if (!e) return false;
-  apply(world, e, false);
-  world.edits.undo.push(e);
+  const st = world.edits;
+  if (st.redo.length === 0) return false;
+  do {
+    const e = st.redo.pop()!;
+    apply(world, e, false);
+    st.undo.push(e);
+  } while (st.redo.length > 0 && st.redo[st.redo.length - 1]!.linked);
   return true;
+}
+
+/**
+ * Imports a whole layer (PLAN 1.37a; values per cell from `paletteMap`): terrain may turn water
+ * into land and back, and cells that become water lose their owner and controller (a linked
+ * edit); nations paint land cells only, unknown ids as unowned. One undo step. Returns the
+ * number of changed cells.
+ */
+export function importLayer(world: World, layer: EditLayer, values: Uint16Array): number {
+  const { owner, controller, terrain } = world.cells;
+  if (values.length !== terrain.length) return 0;
+  const cells: number[] = [];
+  for (let c = 0; c < values.length; c++) {
+    const v = values[c]!;
+    if (layer === 'terrain') {
+      if (v < TERRAIN_IDS.length && terrain[c] !== v) cells.push(c);
+    } else {
+      const n = v !== 0 && world.nations.has(v) ? v : 0;
+      if (isLand(terrain[c]!) && (owner[c] !== n || controller[c] !== n)) cells.push(c);
+    }
+  }
+  if (cells.length === 0) return 0;
+  const valueOf = (c: number): number => (layer === 'nation' ? (values[c] !== 0 && world.nations.has(values[c]!) ? values[c]! : 0) : values[c]!);
+  const e: Edit = {
+    layer,
+    cells: Uint32Array.from(cells),
+    before: Uint16Array.from(cells, (c) => (layer === 'nation' ? owner[c]! : terrain[c]!)),
+    after: Uint16Array.from(cells, valueOf),
+    beforeCtl: layer === 'nation' ? Uint16Array.from(cells, (c) => controller[c]!) : null,
+  };
+  apply(world, e, false);
+  world.edits.push(e);
+  if (layer === 'terrain') {
+    // New water holds no nation.
+    const wet = cells.filter((c) => !isLand(terrain[c]!) && (owner[c] !== 0 || controller[c] !== 0));
+    if (wet.length > 0) {
+      const clear: Edit = { layer: 'nation', cells: Uint32Array.from(wet), before: Uint16Array.from(wet, (c) => owner[c]!), after: new Uint16Array(wet.length), beforeCtl: Uint16Array.from(wet, (c) => controller[c]!), linked: true };
+      apply(world, clear, false);
+      world.edits.undo.push(clear); // after push(e): the redo side is already clear
+    }
+  }
+  return cells.length;
 }

@@ -39,7 +39,9 @@ test('editor: paint, undo and redo restore identical rasters; line, bucket and m
   await expect.poll(() => page.evaluate(() => window.__warsim!.view!.nationAt(700, 400))).toBe(GER);
   await expect(page.getByTestId('nation-panel')).toHaveCount(0);
 
-  // Undo / redo by keyboard and by buttons: the rasters return exactly.
+  // Undo / redo by keyboard (focus stays on the nation dropdown: the shortcut still works) and by
+  // buttons: the rasters return exactly.
+  await page.getByTestId('editor-nation').focus();
   await page.keyboard.press('Control+z');
   await expect.poll(() => rasters(page)).toEqual(h0);
   await page.keyboard.press('Control+y');
@@ -53,11 +55,14 @@ test('editor: paint, undo and redo restore identical rasters; line, bucket and m
   // Line: two clicks.
   await page.getByTestId('editor-tool-line').click();
   await page.getByTestId('editor-radius').fill('1');
-  await page.mouse.click(560, 300);
+  // A row of map below the editor panel (it grows with the tool's hint and sections).
+  const box = (await page.getByTestId('editor-panel').boundingBox())!;
+  const ly = Math.ceil(box.y + box.height) + 30;
+  await page.mouse.click(560, ly);
   await expect(page.getByTestId('editor-hint')).toContainText('end');
-  await page.mouse.click(840, 300);
+  await page.mouse.click(840, ly);
   await expect.poll(async () => (await edits(page)).undo).toBe(2);
-  await expect.poll(() => page.evaluate(() => window.__warsim!.view!.nationAt(700, 300))).toBe(GER);
+  await expect.poll(() => page.evaluate((y) => window.__warsim!.view!.nationAt(700, y), ly)).toBe(GER);
 
   // Bucket limited by a mask: fill Poland's connected land with "unowned", only on plains.
   await page.getByTestId('editor-tool-bucket').click();

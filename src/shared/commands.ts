@@ -72,6 +72,8 @@ export type Command =
    * `x2, y2` end a line; `mask` limits it to cells of one terrain or nation. Undoable.
    */
   | { kind: 'editPaint'; layer: 'nation' | 'terrain'; tool: 'brush' | 'line' | 'bucket'; x: number; y: number; x2: number; y2: number; r: number; value: number; mask: { kind: 'terrain' | 'nation'; value: number } | null }
+  /** PLAN 1.37a map import: a whole layer as runs [value, count, …] covering every cell. */
+  | { kind: 'importLayer'; layer: 'nation' | 'terrain'; runs: number[] }
   | { kind: 'editUndo' }
   | { kind: 'editRedo' }
   /** PLAN 1.36 scenario editing. */

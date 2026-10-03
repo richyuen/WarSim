@@ -12,6 +12,7 @@ import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
 import { EVENT_STRIDE } from '../shared/events';
+import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import {
@@ -91,6 +92,8 @@ export class SimServer {
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
+  /** Land (1) / water (0) per cell at init, for `terrainLayer.landChanged`. */
+  private startLand: Uint8Array | null = null;
   private statsTick = -1;
   private lastStatsMs = -1;
 
@@ -151,7 +154,7 @@ export class SimServer {
         this.reply(msg.reqId);
         break;
       case 'inspect':
-        this.reply(msg.reqId, this.inspect());
+        this.reply(msg.reqId, this.inspect(msg.full === true));
         break;
       case 'history':
         this.reply(msg.reqId, this.historyRows());
@@ -282,6 +285,7 @@ export class SimServer {
       const terrainColors = terrainJson.terrain.map((t) => parseInt(t.color.slice(1), 16));
       const cities = this.cityList(world).map((c) => ({ id: c.id, name: c.name, x: c.x, y: c.y, size: c.size, capital: c.capitalOf !== 0 }));
       this.citiesSent = world.citiesVersion;
+      this.startLand = Uint8Array.from(world.cells.terrain, (t) => (t >= Terrain.Plains ? 1 : 0));
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
       const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0 }));
@@ -453,7 +457,12 @@ export class SimServer {
     if (world.terrainVersion !== this.terrainSent) {
       if (this.terrainSent >= 0) {
         const data = world.cells.terrain.slice();
-        this.post({ type: 'terrainLayer', data }, [data.buffer]);
+        // The fine coastline comes from the original land mask: once land and water differ
+        // from the start (map import, PLAN 1.37a) the renderer falls back to cell coasts.
+        let landChanged = false;
+        const start = this.startLand;
+        if (start) for (let c = 0; c < data.length && !landChanged; c++) if ((data[c]! >= Terrain.Plains ? 1 : 0) !== start[c]) landChanged = true;
+        this.post({ type: 'terrainLayer', data, landChanged }, [data.buffer]);
       }
       this.terrainSent = world.terrainVersion;
     }
@@ -550,6 +559,13 @@ export class SimServer {
     return { nations, wars };
   }
 
+  private terrainCounts(world: World): number[] {
+    const counts = new Array<number>(TERRAIN_IDS.length).fill(0);
+    const t = world.cells.terrain;
+    for (let c = 0; c < t.length; c++) counts[t[c]!]!++;
+    return counts;
+  }
+
   /** Every city with its display name: the scenario's, or the editor's (PLAN 1.36). */
   private cityList(world: World): { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[] {
     const cc = world.cities.cols;
@@ -583,7 +599,8 @@ export class SimServer {
   }
 
   /** JSON summary of the world for tests and the critic (PLAN 1.32). */
-  private inspect(): Uint8Array {
+  /** `full` adds the bulky parts (cities, cores, unrest: ~600 KB on the 1938 map). */
+  private inspect(full = false): Uint8Array {
     const world = this.requireSim().world;
     const { nations, wars } = this.buildStats(world, true);
     const out: Inspection = {
@@ -595,11 +612,12 @@ export class SimServer {
       buffs: world.buffs.list.map((b) => ({ id: b.id, kind: b.kind, targetKind: b.targetKind, target: b.target, magnitude: b.magnitude, until: b.expiresTick })),
       majors: world.battles.majors.map((m) => ({ id: m.id, camps: [[...m.camps[0]], [...m.camps[1]]] })),
       corridors: world.battles.corridors.length,
-      unrest: Array.from(world.provinces.unrest, (u) => Math.round(u * 100) / 100),
+      unrest: full ? Array.from(world.provinces.unrest, (u) => Math.round(u * 100) / 100) : [],
+      terrainCounts: this.terrainCounts(world),
       rasters: { owner: xxhash32View(world.cells.owner), controller: xxhash32View(world.cells.controller), terrain: xxhash32View(world.cells.terrain) },
       edits: { undo: world.edits.undo.length, redo: world.edits.redo.length },
-      cities: this.cityList(world),
-      cores: Array.from({ length: Math.max(0, world.provinces.count - 1) }, (_, i) => ({ province: i + 1, nations: world.provinces.coresOf(i + 1) })).filter((c) => c.nations.length > 0),
+      cities: full ? this.cityList(world) : [],
+      cores: !full ? [] : Array.from({ length: Math.max(0, world.provinces.count - 1) }, (_, i) => ({ province: i + 1, nations: world.provinces.coresOf(i + 1) })).filter((c) => c.nations.length > 0),
     };
     return new TextEncoder().encode(JSON.stringify(out));
   }

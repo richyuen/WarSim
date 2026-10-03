@@ -15,7 +15,8 @@ import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
 import { forceRevolt } from './systems/revolts';
-import { paint, redoEdit, undoEdit } from './editor';
+import { importLayer, paint, redoEdit, undoEdit } from './editor';
+import { decodeRuns } from '../shared/mapImport';
 import type { World } from './world';
 
 export type System = (world: World) => void;
@@ -200,6 +201,11 @@ function applyCommand(world: World, cmd: Command): void {
     case 'editPaint':
       paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask);
       return;
+    case 'importLayer': {
+      const values = decodeRuns(cmd.runs, world.cells.w * world.cells.h);
+      if (values) importLayer(world, cmd.layer, values);
+      return;
+    }
     case 'editUndo':
       undoEdit(world);
       return;

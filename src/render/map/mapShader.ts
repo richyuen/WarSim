@@ -41,6 +41,7 @@ uniform float uBorderPx;   // border width (CSS px)
 uniform float uWarp;       // domain-warp amplitude (cells), must stay < 0.5
 uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
 uniform int uHasLand;
+uniform int uHasTerrain;           // a real terrain layer is loaded (water from terrain, PLAN 1.37a)
 uniform highp usampler2D uTerrain;  // terrain class per cell
 uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest
 uniform highp usampler2D uProvince; // admin-1 province per cell
@@ -182,7 +183,9 @@ void main() {
   // Off-map rows (above the top, below the bottom) are sea: clamped coverage would otherwise
   // stretch the polar rows into grey stripes when fully zoomed out (review after PLAN 1.31).
   bool offMap = cellPos.y < 0.0 || cellPos.y >= float(uMapSize.y);
-  bool water = offMap || (uHasLand == 1 ? cov <= 0.5 : best == 0u);
+  // Water: fine coverage when loaded; else the terrain layer (unowned land stays land); else the
+  // cell rule (toy map: unowned = sea).
+  bool water = offMap || (uHasLand == 1 ? cov <= 0.5 : uHasTerrain == 1 ? terrainAt(ivec2(floor(cellPos))) == 0u : best == 0u);
   // Land the cell rule called water takes the strongest land id around it.
   uint fid = best != 0u ? best : secondId;
 

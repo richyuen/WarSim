@@ -11,6 +11,7 @@ import { WarBanners } from '../ui/WarBanners';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
+import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
 export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl | null; nameOf: (id: number) => string | null }) {
   const stats = hud.stats.value;
@@ -51,6 +52,15 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
           onClose={() => hud.toggleEditor()}
           onGold={(nation, value) => hud.command({ kind: 'setGold', nation, value })}
           onAnnex={(annexer, target) => hud.command({ kind: 'annexNation', annexer, target })}
+          onImport={(file, layer) => {
+            const geo = hud.sim.mapLayers?.terrain;
+            if (!geo) return;
+            const palette =
+              layer === 'terrain'
+                ? (hud.sim.mapLayers?.terrainColors ?? []).map((rgb, value) => ({ rgb, value }))
+                : stats.nations.map((n) => ({ rgb: n.color, value: n.id }));
+            void imageToRuns(file, geo.w, geo.h, palette, layer === 'terrain' ? TERRAIN_MAX_DIST : NATION_MAX_DIST, 0).then((runs) => hud.command({ kind: 'importLayer', layer, runs }));
+          }}
         />
       ) : null}
       {stats && hud.showCharts.value ? (

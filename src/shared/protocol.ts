@@ -54,7 +54,7 @@ export type ToWorker =
   | { type: 'cmd'; cmd: Command; now?: boolean }
   | { type: 'hash'; reqId: number }
   /** PLAN 1.32: a JSON summary of the world (`Inspection`) for tests and the critic. */
-  | { type: 'inspect'; reqId: number }
+  | { type: 'inspect'; reqId: number; full?: boolean }
   /** PLAN 1.34a: the history log as JSON `HistoryRow[]` in the reply bytes. */
   | { type: 'history'; reqId: number }
   /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
@@ -229,7 +229,7 @@ export type FromWorker =
   /** City dots and names again after editor city edits (PLAN 1.36). */
   | { type: 'cityLayer'; cities: { id: number; name: string; x: number; y: number; size: number; capital: boolean }[] }
   /** The terrain layer again after editor terrain edits (PLAN 1.35). */
-  | { type: 'terrainLayer'; data: Uint8Array }
+  | { type: 'terrainLayer'; data: Uint8Array; landChanged: boolean }
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
@@ -285,15 +285,17 @@ export interface Inspection {
   buffs: { id: number; kind: string; targetKind: string; target: number; magnitude: number; until: number }[];
   majors: { id: number; camps: [number[], number[]] }[];
   corridors: number;
-  /** Unrest per province id. */
+  /** Unrest per province id (`full` only, else empty). */
   unrest: number[];
+  /** Cells per terrain class (PLAN 1.37a import AT). */
+  terrainCounts: number[];
   /** xxhash32 of the cell layers (PLAN 1.35 editor AT). */
   rasters: { owner: number; controller: number; terrain: number };
   /** Editor stack depths. */
   edits: { undo: number; redo: number };
-  /** Cities (PLAN 1.36): row, display name, position, size, capital of (0 = none). */
+  /** Cities (PLAN 1.36; `full` only, else empty): row, display name, position, size, capital of. */
   cities: { id: number; name: string; x: number; y: number; size: number; capitalOf: number }[];
-  /** Nations with a core or claim per province that has any (PLAN 1.36). */
+  /** Nations with a core or claim per province that has any (PLAN 1.36; `full` only, else empty). */
   cores: { province: number; nations: number[] }[];
 }
 

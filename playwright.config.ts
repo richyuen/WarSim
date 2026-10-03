@@ -9,6 +9,11 @@ export default defineConfig({
   fullyParallel: true,
   // Pages render with SwiftShader (CPU); more parallel workers starve each other into timeouts.
   workers: 4,
+  // Assertion polls wait up to 15 s (default 5 s): pages share the CPU with SwiftShader rendering
+  // in the other workers (5–30× the solo time, see `perf` below). Assertions are unchanged; only
+  // how long a poll may wait. Raised in PLAN 1.37a when an external process held 2.5 cores and
+  // UI-command polls missed the 5 s window run after run while passing alone.
+  expect: { timeout: 15_000 },
   forbidOnly: !!process.env['CI'],
   retries: 0,
   reporter: [['list']],
