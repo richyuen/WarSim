@@ -91,24 +91,41 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(w.wars.truces.at(-1)!.untilTick).toBe(24 + TRUCE_TICKS); // signed at tick 24
   });
 
-  it('broke defender at score 40: Germany annexes 40% of what it occupies, nearest its border first; the rest reverts', () => {
+  it('broke defender at score 40: Germany annexes all it occupies; Poland stays independent (ADR-51)', () => {
     const s = atWar();
     s.step(24); // occupy just before the 00:00 assessment at tick 24 (front flips need 16 h)
     const w = s.world;
     const taken = occupyWest(w, 0.2); // score = 200 × 0.2 = 40
+    const others = polishCellsWestFirst(w).filter((c) => w.cells.controller[c] === POL);
     w.nations.cols.gold[POL] = -1e9; // broke
     const ev = events(s, 1);
     expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([[GER, POL]]);
-    const annexed = taken.filter((c) => w.cells.owner[c] === GER);
-    const kept = taken.filter((c) => w.cells.owner[c] === POL);
-    expect(annexed.length).toBe(Math.round(0.4 * taken.length));
-    for (const c of kept) expect(w.cells.controller[c]).toBe(POL); // occupation reverted
-    for (const c of annexed) expect(w.cells.controller[c]).toBe(GER);
-    // Nearest first: annexed cells lie west of (or level with) the kept ones on average.
-    const meanX = (cs: number[]): number => cs.reduce((a, c) => a + (c % W), 0) / cs.length;
-    expect(meanX(annexed)).toBeLessThan(meanX(kept));
+    // Until ADR-51 the winner kept round(40% × occupied), nearest its border first.
+    for (const c of taken) {
+      expect(w.cells.owner[c]).toBe(GER);
+      expect(w.cells.controller[c]).toBe(GER);
+    }
+    for (const c of others) expect(w.cells.owner[c]).toBe(POL);
     expect(w.nations.cols.overlord[POL]).toBe(0); // below the puppet threshold
     expect(PUPPET_SCORE).toBeGreaterThan(40);
+  });
+
+  it('the losers’ occupations of the winners revert at a peace the winners dictate (ADR-51)', () => {
+    const s = atWar();
+    s.step(24);
+    const w = s.world;
+    occupyWest(w, 0.2);
+    // Poland holds a strip of Germany too: fewer cells than Germany holds of Poland.
+    const german: number[] = [];
+    w.cells.owner.forEach((o, c) => o === GER && w.cells.controller[c] === GER && german.push(c));
+    const strip = german.sort((a, b) => (b % W) - (a % W) || a - b).slice(0, 50);
+    for (const c of strip) w.setController(c, POL);
+    w.nations.cols.gold[POL] = -1e9;
+    expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+    for (const c of strip) {
+      expect(w.cells.owner[c]).toBe(GER);
+      expect(w.cells.controller[c]).toBe(GER);
+    }
   });
 
   it('white peace: a broke attacker with a near-even score gives everything back', () => {
@@ -212,12 +229,12 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(taken.length / soviet).toBeLessThan(0.02); // by true share this was a white peace
     expect(war.score).toBeGreaterThanOrEqual(48); // 200 × (0.5 G) ÷ (REL_CAP × G) = 50, ± front flips
     expect(war.score).toBeLessThanOrEqual(52);
-    // Peace on that score: Germany keeps half of what it took; the Soviet Union stays independent.
+    // Peace on that score: Germany keeps what it took (ADR-51; half of it until then); the
+    // Soviet Union stays independent.
     s.command({ kind: 'forcePeace', war: war.id });
     s.step(1);
     const kept = taken.filter((c) => w.cells.owner[c] === GER).length;
-    expect(kept).toBeGreaterThan(0.4 * taken.length);
-    expect(kept).toBeLessThan(0.6 * taken.length);
+    expect(kept).toBe(taken.length);
     expect(w.nations.cols.overlord[SOV]).toBe(0);
   });
 

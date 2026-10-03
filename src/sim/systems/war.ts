@@ -21,10 +21,12 @@
  * ≥ EXHAUSTED, or its score is ≤ −CRUSHED, unless either side fights to the death. The side
  * with the higher score (the attackers on a tie) wins and the terms follow |score|:
  *   < WHITE_PEACE: white peace, every occupation between the sides reverts;
- *   otherwise the winner annexes round(|score|/100 × occupied) of the loser's cells it occupies,
- *   nearest its own pre-peace land first (BFS layers, then cell id); the rest reverts;
- *   ≥ PUPPET_SCORE: everything occupied is annexed and, when that is at least PUPPET_SHARE of
- *   the losers' land, the loser's leader becomes a puppet of the winner's leader.
+ *   otherwise the winner annexes every cell of the losers that it occupies (critic B1, ADR-51:
+ *   until 2026-10-03 only round(|score|/100 × occupied), so a war worth score 20 kept a fifth of
+ *   a conquest that was small to begin with, and the map hardly changed at a peace); the losers'
+ *   occupations of the winners revert;
+ *   ≥ PUPPET_SCORE: when the annexed land is at least PUPPET_SHARE of the losers' land, the
+ *   loser's leader also becomes a puppet of the winner's leader.
  * Capitulation: a side with share(other→side) ≥ CAPITULATE, or whose leader has lost that share
  * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
  * the spot. (An overrun fight-to-the-death nation used to stay at war for good and kept its
@@ -37,7 +39,6 @@
  */
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
-import { neighbours4 } from '../nav/grid';
 import { annexNation, makePuppet } from './puppets';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { World } from '../world';
@@ -270,10 +271,8 @@ export function makePeace(world: World, war: War): void {
     if (inL.has(o) && inW.has(k)) candidates.push(c);
     else if (inW.has(o) && inL.has(k)) world.setController(c, o);
   }
-  const quota = s < WHITE_PEACE ? 0 : s >= PUPPET_SCORE ? candidates.length : Math.round((s / 100) * candidates.length);
-  const annex = new Set(nearestFirst(world, candidates, inW).slice(0, quota));
   for (const c of candidates) {
-    if (annex.has(c)) world.setOwner(c, controller[c]!);
+    if (s >= WHITE_PEACE) world.setOwner(c, controller[c]!);
     else world.setController(c, owner[c]!);
   }
   const wl = W[0]!;
@@ -286,27 +285,4 @@ export function makePeace(world: World, war: War): void {
   else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && candidates.length >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
   world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
-}
-
-/** Candidate cells ordered by 4-step distance from the winner's own land, then by cell id. */
-function nearestFirst(world: World, candidates: number[], inW: Set<number>): number[] {
-  const { w, h, owner } = world.cells;
-  const isCand = new Set(candidates);
-  const dist = new Map<number, number>();
-  const nb: number[] = [];
-  let frontier = candidates.filter((c) => neighbours4(c, w, h, world.settings.loopingMap, nb).some((n) => inW.has(owner[n]!)));
-  for (const c of frontier) dist.set(c, 0);
-  for (let d = 1; frontier.length > 0; d++) {
-    const next: number[] = [];
-    for (const c of frontier) {
-      for (const n of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
-        if (!isCand.has(n) || dist.has(n)) continue;
-        dist.set(n, d);
-        next.push(n);
-      }
-    }
-    frontier = next;
-  }
-  const far = Number.MAX_SAFE_INTEGER;
-  return [...candidates].sort((a, b) => (dist.get(a) ?? far) - (dist.get(b) ?? far) || a - b);
 }

@@ -207,6 +207,8 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   an amount that depends on the seed's luck with revolts: the next attempt needs a mechanism
   that acts on every seed (see PROGRESS 2026-10-03 for candidates), not more tuning. A third
   failed attempt goes to BLOCKERS (PROMPT step 8).
+  Third attempt, 2026-10-03 (ADR-51): the winner of a peace keeps all the land it occupies.
+  Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
   AT: `npm run sweep -- --first 301 --tag <name>` (seeds no tuning has seen) all green.
 
 ## Phase 2 — Semantic zoom

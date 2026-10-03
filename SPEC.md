@@ -413,9 +413,9 @@ tag → spec.
   - *Suing:* a side sues when broke (gold < 0 or bankrupt), exhausted (≥ 80) or crushed
     (≤ −90). Neither side sues if either fights to the death.
   - *Terms by |score|:* below 10 a white peace (all occupation reverts). Otherwise the winner
-    annexes round(|score|% of the loser's land it occupies), nearest its own land first (BFS),
-    and the rest reverts. At ≥ 90 it annexes all of it, and the loser's leader becomes a puppet
-    when that is ≥ 30% of the losers' land.
+    annexes all of the losers' land it occupies, and the losers' occupations of the winners
+    revert (ADR-51; until then round(|score|% of the occupied land), nearest first). At ≥ 90
+    the loser's leader also becomes a puppet when the annexed land is ≥ 30% of the losers' land.
   - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose
     leader has lost ≥ 75% of its own land to occupiers of any war, loses at ±100 at once, fight
     to the death or not.

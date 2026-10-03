@@ -2441,3 +2441,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Report committed** as FAILING. PLAN 1.42 stays unchecked, with the seeds for the next sweep
   moved to 301+ (201–210 are seen now).
 - **Next iteration:** PLAN 1.42, third attempt, starting with the measurement in candidate 2.
+
+## 2026-10-03 — PLAN 1.42, third attempt: the winner of a peace keeps what it occupies (ADR-51)
+- **Start:** gate green, critic not due.
+- **Cause:** peace terms. The winner annexed round(|score|/100 × occupied) and the score is
+  proportional to the occupied land, so the land changing owner went with the square of a
+  conquest. Wars against the Soviet Union ended at score 0–30 and moved almost nothing.
+- **Change:** at |score| ≥ 10 the winner annexes all the losers' land it occupies. White peace
+  and the puppet rule are unchanged; `nearestFirst` is deleted with the quota.
+- **Tests:** two war tests assert the new terms instead of the old quota (listed in ADR-51);
+  one new (the losers' occupations revert).
+- **Scratch sweep, seen seeds 101–110 × 50 years:** 10 of 10. Leader range 4.1–16.1 points,
+  2–4 newcomers, land moving 4.8–23.0% in the last 5 years, largest nation 12–26% at the end.
+  Ten seeds this time, not four: the four-seed check before the last sweep was noise.
+- **Still true:** the leader is the Soviet Union in every year of every seed.
+- **Gate:** green (428 unit, 7 sweep, 61 e2e). Not verified in the browser: sim rule only.
+- **Next:** the deciding sweep on unseen seeds 301–310.

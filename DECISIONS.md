@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-51 · 2026-10-03 · accepted — The winner of a peace keeps all the land it occupies (critic B1, PLAN 1.42)
+
+- **Context:** after ADR-47 and ADR-50 two sweeps on unseen seeds failed (9 of 10, then 7 of
+  10). In every 50-year run the Soviet Union stayed the largest nation and shrank only as far
+  as revolts happened to take it. Wars did not move it: the winner annexed
+  round(|score|/100 × occupied), and the score is itself proportional to the occupied land, so
+  the land that changed owner went with the square of the conquest. A coalition holding 4,000
+  Soviet cells at score 20 kept 800 of 170,000.
+- **Decision:** at a peace with |score| ≥ 10 the winner annexes every cell of the losers that
+  it occupies. Below 10 it is still a white peace, and the losers' occupations of the winners
+  still revert. The puppet rule (≥ 90, ≥ 30% of the losers' land) is unchanged. The
+  nearest-first selection of annexed cells is gone with the quota.
+- **Why:** the critic's report asks for "occupation that converts to ownership at peace", and
+  it is what an observer expects of the map: ground taken in a won war stays taken.
+- **Tests changed with the rule** (not weakened: they assert the new terms): the score-40
+  peace now annexes all occupied cells (it asserted 40%, nearest first); the relative-score
+  test's last lines assert that Germany keeps what it took (was: about half). New: the losers'
+  occupations revert at a dictated peace.
+- **Result on seen seeds 101–110** (scratch sweep, `.cache/sweep/reports`): 10 of 10 pass.
+  Leader-share range 4.1–16.1 points (was 2.7–8.6 under ADR-47), 2–4 newcomers in the top
+  ten, land moving in the last 5 years 4.8–23.0%, largest nation 12–26% at the end. The
+  leader is still the Soviet Union in every year of every seed.
+
 ### ADR-50 · 2026-10-03 · accepted — Partners in a war fight on each other's fronts (critic B1, PLAN 1.42b)
 
 - **Context:** seed 109 failed the leader-share range (2.7 points). A dump at year 25 showed the
