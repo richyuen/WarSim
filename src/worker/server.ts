@@ -18,6 +18,8 @@ import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/hist
 import { HISTORY_STRIDE } from '../sim/history';
 import {
   FormationFlag,
+  MAX_SNAPSHOT_ELEMENTS,
+  type SnapshotElements,
   NATION_STRIDE,
   NationField,
   type FromWorker,
@@ -41,6 +43,9 @@ import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json
 import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { Sim } from '../sim/sim';
+import { elementIndex } from '../sim/systems/elements';
+import { slotPose } from '../sim/core/pose';
+import { SLOT_SPACING } from '../sim/systems/combat';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
@@ -59,6 +64,30 @@ const DEFAULT_SUB: Subscription = { bbox: [0, 0, Infinity, Infinity], z: 0, tier
 /** Minimum wall time between label derivations (PLAN 1.29). */
 const LABEL_INTERVAL_MS = 2000;
 const STATS_INTERVAL_MS = 1000;
+
+const EMPTY_ELEMENTS: SnapshotElements = {
+  count: 0,
+  id: new Uint32Array(0),
+  formation: new Uint32Array(0),
+  nation: new Uint16Array(0),
+  frame: new Uint8Array(0),
+  strength: new Uint16Array(0),
+  x: new Float64Array(0),
+  y: new Float64Array(0),
+  prevX: new Float64Array(0),
+  prevY: new Float64Array(0),
+  facing: new Float32Array(0),
+  flags: new Uint8Array(0),
+  truncated: false,
+};
+
+/** Atlas frame of a unit class (PLAN 2.3): 1 for vehicles and guns on wheels/tracks, else 0. */
+function frameOf(cls: string): number {
+  if (cls.startsWith('armor') || cls === 'mech') return 1;
+  if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return 2;
+  if (['fighter', 'bomber_tac', 'bomber_str', 'cas', 'naval_bomber', 'transport_air'].includes(cls)) return 3;
+  return 0;
+}
 
 /** Marker symbol of a template (PLAN 2.1): by its dominant element type. */
 function symbolOf(t: { id: string; elements: readonly { type: string; count: number }[] }): UnitSymbol {
@@ -612,14 +641,16 @@ export class SimServer {
   }
 
   /** Per formation: its strength and the men summed directly over its elements (PLAN 2.1 AT). */
-  private formationMen(world: World): { id: number; nation: number; strength: number; elementMen: number }[] {
+  private formationMen(world: World): Inspection['formations'] {
     const men = new Map<number, number>();
+    const count = new Map<number, number>();
     const ec = world.elements.cols;
     const units = world.rules?.units ?? [];
+    world.elements.forEach((e) => count.set(ec.formation[e]!, (count.get(ec.formation[e]!) ?? 0) + 1));
     world.elements.forEach((e) => men.set(ec.formation[e]!, (men.get(ec.formation[e]!) ?? 0) + ec.strength[e]! * (units[ec.unit[e]!]?.menPerUnit ?? 0)));
-    const out: { id: number; nation: number; strength: number; elementMen: number }[] = [];
+    const out: Inspection['formations'] = [];
     const fc = world.formations.cols;
-    world.formations.forEach((f) => out.push({ id: f, nation: fc.nation[f]!, strength: fc.strength[f]!, elementMen: Math.round(men.get(f) ?? 0) }));
+    world.formations.forEach((f) => out.push({ id: f, nation: fc.nation[f]!, strength: fc.strength[f]!, elementMen: Math.round(men.get(f) ?? 0), elements: count.get(f) ?? 0, x: fc.x[f]!, y: fc.y[f]! }));
     return out;
   }
 
@@ -724,6 +755,76 @@ export class SimServer {
       this.eventQueue.splice(0, over * EVENT_STRIDE);
       this.droppedEvents += over;
     }
+  }
+
+  /**
+   * Elements of formations inside the subscribed bbox (PLAN 2.3): only when the subscription
+   * wants them at tier ≥ 1.5. Read-only: never touches sim state (I4).
+   */
+  private elementSection(world: World, buffers: ArrayBuffer[]): SnapshotElements {
+    const sub = this.sub;
+    const ft = world.formations;
+    const picked: number[] = [];
+    let total = 0;
+    let truncated = false;
+    const idx = sub.wantsElements && sub.tier >= 1.5 && world.rules ? elementIndex(world) : null;
+    if (idx) {
+      ft.forEach((f) => {
+        if (truncated) return;
+        const list = idx.get(f);
+        if (!list || !this.inBbox(ft.cols.x[f]!, ft.cols.y[f]!, world)) return;
+        if (total + list.length > MAX_SNAPSHOT_ELEMENTS) {
+          truncated = true;
+          return;
+        }
+        picked.push(f);
+        total += list.length;
+      });
+    }
+    // Nothing to send (T0/T1, or no formations in view): empty arrays, no pooled buffers.
+    if (total === 0) return { ...EMPTY_ELEMENTS, truncated };
+    const id = this.view(Uint32Array, total, buffers);
+    const formation = this.view(Uint32Array, total, buffers);
+    const nation = this.view(Uint16Array, total, buffers);
+    const frame = this.view(Uint8Array, total, buffers);
+    const strength = this.view(Uint16Array, total, buffers);
+    const x = this.view(Float64Array, total, buffers);
+    const y = this.view(Float64Array, total, buffers);
+    const prevX = this.view(Float64Array, total, buffers);
+    const prevY = this.view(Float64Array, total, buffers);
+    const facing = this.view(Float32Array, total, buffers);
+    const flags = this.view(Uint8Array, total, buffers);
+    const ec = world.elements.cols;
+    const units = world.rules?.units ?? [];
+    let j = 0;
+    for (const f of picked) {
+      const list = idx!.get(f)!;
+      const fx = ft.cols.x[f]!;
+      const fy = ft.cols.y[f]!;
+      const born = f >= this.prevAlive.length || this.prevAlive[f] !== 1;
+      const px = born ? fx : this.prevX[f]!;
+      const py = born ? fy : this.prevY[f]!;
+      const fa = ft.cols.facing[f]!;
+      const fl = (ft.cols.moving[f] === 1 ? FormationFlag.moving : 0) | (ft.cols.engaged[f] === 1 ? FormationFlag.engaged : 0);
+      for (const e of list) {
+        const slot = ec.slot[e]!;
+        const [cx, cy] = slotPose(fx, fy, fa, slot, list.length, SLOT_SPACING);
+        const [qx, qy] = slotPose(px, py, fa, slot, list.length, SLOT_SPACING);
+        id[j] = e;
+        formation[j] = f;
+        nation[j] = ft.cols.nation[f]!;
+        frame[j] = frameOf(units[ec.unit[e]!]?.cls ?? 'inf');
+        strength[j] = ec.strength[e]!;
+        x[j] = cx;
+        y[j] = cy;
+        prevX[j] = qx;
+        prevY[j] = qy;
+        facing[j] = fa;
+        flags[j] = fl;
+        j++;
+      }
+    }
+    return { count: total, id, formation, nation, frame, strength, x, y, prevX, prevY, facing, flags, truncated };
   }
 
   private inBbox(x: number, y: number, world: World): boolean {
@@ -843,6 +944,7 @@ export class SimServer {
       j++;
     });
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
+    const elements = this.elementSection(world, buffers);
 
     // Events: global ones always, spatial ones only inside the subscribed bbox.
     const q = this.eventQueue;
@@ -873,6 +975,7 @@ export class SimServer {
       wars,
       formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget },
       majors,
+      elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
       buffers,
     };

@@ -898,6 +898,11 @@ sprites stop once markers are fully in; capital flags draw above the markers.
 cell of a nested 2^L-cell grid (~64 px), showing Σ strength. Splits and merges animate the child
 level for 250 ms; T0↔T1 is a cross-fade. The unit-size setting scales counters and markers.
 
+*T2 elements implemented (PLAN 2.3, ADR-46):* the view subscribes with its padded bbox
+and tier at most 10 Hz. The worker sends the elements of the formations inside, at their slot
+poses (`sim/core/pose`, shared with the sim). They are drawn as instanced sprites, interpolated
+on the GPU, with facing and a procedural walk/drive animation, fading in as the markers fade out.
+
 **One truth.** Every number or sprite derives from sim state: counter strength =
 Σ formation strength = Σ element strength. Sprites are at element positions, and tracers
 come from FireEvents. Close-tier positions inside an element footprint are the only

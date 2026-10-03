@@ -181,7 +181,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: the strength number equals the sim Σ element strength (e2e reads both).
 - [x] 2.2 T0 aggregated counters with stable multi-level clustering + split/merge animation.
   AT: zooming T0↔T1 shows no frame where a counter vanishes without a matching animation (frame-diff check on a recorded sequence).
-- [ ] 2.3 Element snapshot path (interest-managed) + GPU-interpolated element sprites at T2 (facing, walk/drive anim).
+- [x] 2.3 Element snapshot path (interest-managed) + GPU-interpolated element sprites at T2 (facing, walk/drive anim).
   AT: 10k visible proxies ≥ 30 fps (bench); I4 still passes.
 - [ ] 2.4 FireEvent visuals: tracers, muzzle flashes, impacts; casualty removal; wrecks.
   AT: e2e counts tracers in the viewport against FireEvents in the same window (equal).

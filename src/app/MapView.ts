@@ -8,7 +8,7 @@ import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
 import { drawMarkers, markerAlpha, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, counterAlpha, type CounterSource } from '../render/units/counters';
-import { FormationFlag, type TemplateInfo } from '../shared/protocol';
+import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
 const FLAG_MIN_SCALE = 3;
@@ -27,6 +27,8 @@ import type { SimClient } from './simClient';
 
 /** Formation marker size in cells (T0/T1 placeholder until the Phase 2 LOD markers). */
 const MARKER_CELLS = 0.9;
+/** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
+const ELEMENT_CELLS = 0.026;
 
 /** Label typeface (system UI stack: every script renders). */
 const LABEL_FONT = 'system-ui, "Segoe UI", Roboto, sans-serif';
@@ -88,14 +90,16 @@ export class MapView {
   constructor(
     private readonly canvas: HTMLCanvasElement,
     readonly geo: MapGeometry,
-    sim: SimClient,
+    private readonly sim: SimClient,
   ) {
     const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is required');
     this.gl = gl;
     this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX });
     this.map.setColor(0, 0x1d3557);
-    this.proxies = new ProxyRenderer(gl, drawUnitAtlas());
+    const atlas = drawUnitAtlas();
+    this.proxies = new ProxyRenderer(gl, atlas);
+    this.elementProxies = new ProxyRenderer(gl, atlas);
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
     this.controlGrid = new Uint16Array(geo.w * geo.h);
@@ -239,6 +243,7 @@ export class MapView {
       p.colors[i * 4 + 3] = 255;
     }
     p.upload(f.count);
+    this.uploadElements(s.elements);
     this.dirty = true;
     this.snapArrival = performance.now();
     this.tickMs = s.tickMs;
@@ -339,6 +344,78 @@ export class MapView {
   markerOpacity = 0;
   /** T0 counters (PLAN 2.2). */
   readonly counters = new CounterLayer();
+
+  /** Element sprites (PLAN 2.3) from the snapshot's interest-managed elements section. */
+  private readonly elementProxies: ProxyRenderer;
+  /** Elements in the last snapshot (tests). */
+  elementCount = 0;
+  elementTruncated = false;
+  elementFormation = new Uint32Array(0);
+  elementX = new Float64Array(0);
+  elementY = new Float64Array(0);
+  elementStrength = new Uint16Array(0);
+  /** The last subscription sent (tests). */
+  subscription: Subscription | null = null;
+  private lastSub = '';
+  private lastSubAt = -1;
+
+  private uploadElements(e: SnapshotElements): void {
+    const p = this.elementProxies;
+    this.elementCount = e.count;
+    this.elementTruncated = e.truncated;
+    // Copies for tests (the snapshot buffers go back to the pool).
+    this.elementFormation = e.formation.slice(0, e.count);
+    this.elementX = e.x.slice(0, e.count);
+    this.elementY = e.y.slice(0, e.count);
+    this.elementStrength = e.strength.slice(0, e.count);
+    p.reserve(e.count);
+    p.originX = Math.floor(this.geo.w / 2);
+    p.originY = Math.floor(this.geo.h / 2);
+    for (let i = 0; i < e.count; i++) {
+      const o = i * PROXY_STRIDE;
+      p.data[o] = e.prevX[i]! - p.originX;
+      p.data[o + 1] = e.prevY[i]! - p.originY;
+      let x = e.x[i]!;
+      if (this.geo.wrapX && Math.abs(x - e.prevX[i]!) > this.geo.w / 2) x += x < e.prevX[i]! ? this.geo.w : -this.geo.w;
+      p.data[o + 2] = x - p.originX;
+      p.data[o + 3] = e.y[i]! - p.originY;
+      p.data[o + 4] = e.facing[i]!;
+      p.data[o + 5] = ELEMENT_CELLS;
+      p.data[o + 6] = e.frame[i]! + ((e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0);
+      // Depleted elements fade a little (an empty one is gone from the sim).
+      p.data[o + 7] = 0.55 + 0.45 * Math.min(1, e.strength[i]! / 8);
+      // Lightened toward white so a sprite stands out on its own nation's fill.
+      const col = this.nationColor(e.nation[i]!);
+      const lift = (v: number): number => Math.round(v + (255 - v) * 0.45);
+      p.colors[i * 4] = lift((col >> 16) & 255);
+      p.colors[i * 4 + 1] = lift((col >> 8) & 255);
+      p.colors[i * 4 + 2] = lift(col & 255);
+      p.colors[i * 4 + 3] = 255;
+    }
+    p.upload(e.count);
+  }
+
+  /**
+   * Interest management (SPEC §8): the camera's bbox padded by 25%, tier and whether elements
+   * are wanted, sent at most 10 times a second and only when it changed.
+   */
+  private maybeSubscribe(now: number): void {
+    if (now - this.lastSubAt < 100) return;
+    const cam = this.controller.cam;
+    const vw = this.canvas.clientWidth;
+    const vh = this.canvas.clientHeight;
+    const hw = (vw / 2 / cam.scale) * 1.25;
+    const hh = (vh / 2 / cam.scale) * 1.25;
+    const tier = tierOf(this.metresPerPx);
+    const sub: Subscription = { bbox: [cam.cx - hw, cam.cy - hh, cam.cx + hw, cam.cy + hh], z: Math.log2(cam.scale), tier, wantsElements: tier >= 1.5 };
+    // Quantise so tiny camera motion does not resend.
+    const key = `${tier}|${sub.bbox.map((v) => Math.round(v * 4)).join(',')}`;
+    if (key === this.lastSub) return;
+    this.lastSub = key;
+    this.lastSubAt = now;
+    this.subscription = sub;
+    this.sim.subscribe(sub);
+  }
 
   /** Metres per CSS pixel at the current zoom. */
   get metresPerPx(): number {
@@ -523,6 +600,7 @@ export class MapView {
     const dt = this.lastFrame < 0 ? 0 : Math.min(0.1, (now - this.lastFrame) / 1000);
     this.lastFrame = now;
     this.controller.update(dt);
+    this.maybeSubscribe(now);
     // Redraw only when something can have changed: a new snapshot, camera motion, a resize,
     // or units still interpolating toward the latest tick. An idle map costs nothing.
     const c = this.controller.cam;
@@ -543,9 +621,15 @@ export class MapView {
     const cam = this.controller.cam;
     const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);
-    // Formation sprites only below T1 (until element sprites, PLAN 2.3): T0 has counters
-    // (PLAN 2.2) and T1 markers (PLAN 2.1).
-    if (this.metresPerPx < T1_MIN_M && markerAlpha(this.metresPerPx) < 0.99) this.proxies.draw(cam, dpr, t, 8, wrapOffsets(cam, this.geo, this.canvas.clientWidth), this.unitScale);
+    // Below T1: element sprites (PLAN 2.3) fading in as the markers fade out; formation sprites
+    // only stand in where no elements arrived yet (element-less formations, before the first
+    // subscribed snapshot). T0 has counters (PLAN 2.2) and T1 markers (PLAN 2.1).
+    const unitsIn = this.metresPerPx < T1_MIN_M ? 1 - markerAlpha(this.metresPerPx) : 0;
+    if (unitsIn > 0.01) {
+      const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
+      if (this.elementCount > 0) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn);
+      else this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn);
+    }
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1).

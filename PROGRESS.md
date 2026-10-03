@@ -2239,3 +2239,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - Formation sprites now draw only below T1, until element sprites (2.3).
 - Evidence `docs/evidence/2.2/`, viewed: the world with counters, and Europe at 12 km, 4 km and
   2.3 km/px.
+
+## 2026-10-03 — PLAN 2.3: interest-managed element snapshots and T2 element sprites
+- **Snapshot `elements`** (ADR-46): the elements of the formations inside the subscribed bbox,
+  only when the subscription wants elements at tier ≥ 1.5, capped at 40k.
+  - Each has id, formation, nation, atlas frame, strength, current and previous slot pose,
+    facing and flags.
+  - An empty section takes no pooled buffers. The first version took 11 per snapshot, which
+    the pool-stability unit test caught.
+- **View:** subscribes from the frame loop (padded bbox, `tierOf`, ≤ 10 Hz, only on change).
+  Element sprites use a second ProxyRenderer, fade in as the markers fade out, and are tinted
+  lighter for contrast.
+  - Proxy shader: `uTime` and a procedural walk/drive animation (`frame + 0.5` = moving), plus a
+    layer `uAlpha`.
+- **AT:**
+  - Bench B (real GPU, every proxy animated): 10k at 2,562 fps, 30k at 1,923 fps, against a
+    30 fps bar.
+  - I4: new e2e with 1938 subscription churn at tiers 1–3 with elements while stepping 240
+    ticks gives the Node hash. The toy I4 tests also pass.
+  - `tests/e2e/elements1938.spec.ts`: no elements at T1. At T2 over Warsaw the set of formations
+    equals those inside the bbox, each with all its elements, each element within 0.18 cells of
+    its formation. Back at T1, none.
+- **Evidence:** `docs/evidence/2.3/` (Warsaw at 120 and 40 m/px), viewed. Infantry blocks stand
+  by their formations.
+- A unit timing budget (`territory.test.ts`) exceeded 25 ms once under load and passed alone and
+  on the rerun gate.
+- **The user asked to stop the loop after this task.**

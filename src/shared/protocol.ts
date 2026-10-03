@@ -139,6 +139,38 @@ export interface SnapshotFormations {
   target: Uint32Array;
 }
 
+/**
+ * Elements of the formations inside the subscribed bbox (PLAN 2.3), only when the subscription
+ * `wantsElements` at tier ≥ 1.5. Positions are slot poses (`sim/core/pose`), the same the sim
+ * uses, so every tier agrees.
+ */
+export interface SnapshotElements {
+  count: number;
+  id: Uint32Array;
+  formation: Uint32Array;
+  nation: Uint16Array;
+  /** Atlas frame (0 infantry, 1 vehicle, 2 ship, 3 aircraft). */
+  frame: Uint8Array;
+  strength: Uint16Array;
+  x: Float64Array;
+  y: Float64Array;
+  prevX: Float64Array;
+  prevY: Float64Array;
+  facing: Float32Array;
+  /** FormationFlag bits of the element's formation. */
+  flags: Uint8Array;
+  /** True when the cap cut the list short. */
+  truncated: boolean;
+}
+
+/** Most elements one snapshot carries (SPEC §6: ≤ 40k). */
+export const MAX_SNAPSHOT_ELEMENTS = 40_000;
+
+/** Tier from metres per CSS pixel (SPEC §8 table; 1.5 is the T1→T2 hand-over band). */
+export function tierOf(mPerPx: number): Tier {
+  return mPerPx > 2000 ? 0 : mPerPx > 450 ? 1 : mPerPx > 300 ? 1.5 : mPerPx > 30 ? 2 : 3;
+}
+
 /** Formation flags in `SnapshotFormations.flags`. */
 export const FormationFlag = { moving: 1, engaged: 2 } as const;
 
@@ -162,6 +194,7 @@ export interface Snapshot {
   /** Pairs of nations at war, flattened [a0, b0, a1, b1, …] (map modes, PLAN 1.30). */
   wars: Uint16Array;
   formations: SnapshotFormations;
+  elements: SnapshotElements;
   /** Active Major Battles as flat [x, y, …] (battle markers, PLAN 2.1). */
   majors: Float32Array;
   events: SnapshotEvents;
@@ -330,7 +363,7 @@ export interface Inspection {
    * Formations (`full` only, else empty; PLAN 2.1): the formation's strength and, independently,
    * the men summed over its elements (Σ element units × men per unit).
    */
-  formations: { id: number; nation: number; strength: number; elementMen: number }[];
+  formations: { id: number; nation: number; strength: number; elementMen: number; elements: number; x: number; y: number }[];
   /** Nations with a core or claim per province that has any (PLAN 1.36; `full` only, else empty). */
   cores: { province: number; nations: number[] }[];
 }

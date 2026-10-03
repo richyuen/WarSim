@@ -50,7 +50,7 @@ function uploadScene(s: ProxyScene): void {
     d[o + 3] = s.y[i]! - proxies.originY;
     d[o + 4] = s.heading[i]!;
     d[o + 5] = s.size[i]!;
-    d[o + 6] = s.frame[i]!;
+    d[o + 6] = s.frame[i]! + 0.5; // moving: the walk/drive animation runs (PLAN 2.3)
     d[o + 7] = 1;
     const col = s.color[i]!;
     c[i * 4] = (col >> 16) & 255;
@@ -64,7 +64,7 @@ function uploadScene(s: ProxyScene): void {
 function drawFrame(now: number): void {
   const t = (now - lastTick) * TICK_HZ / 1000;
   map.draw(cam, dpr);
-  proxies.draw(cam, dpr, t);
+  proxies.draw(cam, dpr, t, 3, [0], 1, now / 1000);
 }
 
 const tickMs: number[] = [];

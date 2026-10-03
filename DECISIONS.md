@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-46 · 2026-10-03 · accepted — Element snapshots from slot poses; procedural walk/drive animation (PLAN 2.3)
+
+**Context.** T2 needs element sprites at real positions, interest-managed, interpolated on the
+GPU, with facing and a walk or drive animation. Elements have no stored position: the sim
+places them by `slotPose` from their formation.
+
+**Decision.**
+- The snapshot's `elements` section lists the elements of the formations whose position is
+  inside the subscribed bbox. It is built only when the subscription wants elements at tier
+  ≥ 1.5, and is capped at 40k (whole formations; `truncated` reports a cut).
+- Positions are `slotPose` of the current and previous formation positions, the same function
+  the sim uses. An empty section uses static empty arrays, so no pooled buffers are taken.
+- The view subscribes from the frame loop: the bbox padded by 25%, `tierOf(m/px)`, at most
+  10 Hz, and only when the quantised bbox or tier changes.
+- The animation is procedural in the proxy shader, because the atlas has no walk frames. A
+  frame value of `frame + 0.5` marks a moving element: infantry sway at walking cadence,
+  vehicles judder, each with a per-instance phase.
+- Elements fade in as the T1 markers fade out (`1 − α_markers` below 300 m/px). Formation
+  sprites stand in only while no elements have arrived. Sprites are lightened 45% toward white
+  so they read on their own nation's fill.
+
+**Consequences.** A T2 snapshot carries about 11 more buffers. PLAN 2.4–2.6 add fire events,
+casualties and T3 expansion on top of this section. A real atlas with walk frames can replace
+the shader animation later.
+
 ### ADR-45 · 2026-10-03 · accepted — T0 counters: nested 2^L grids, child-level animation, key-tracked continuity check (PLAN 2.2)
 
 **Context.** SPEC §8 asks for stable multi-level clustering with split/merge animation, and the AT
