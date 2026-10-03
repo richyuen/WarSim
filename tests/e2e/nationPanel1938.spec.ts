@@ -29,6 +29,13 @@ test('nation panel: click a nation, read its overview and economy, follow a chip
   await expect(panel).toHaveAttribute('data-nation', String(id('GER')));
   await expect(page.getByTestId('nation-name')).toHaveText('Germany');
   expect(int(await page.getByTestId('stat-land').textContent())).toBeGreaterThan(1000);
+  // Land is km², not cells (ADR-52): Germany at the start of 1938 is about 470,000 km².
+  const km2 = int(await page.getByTestId('stat-land').textContent());
+  expect(km2).toBeGreaterThan(400_000);
+  expect(km2).toBeLessThan(560_000);
+  const share = Number.parseFloat((await page.getByTestId('stat-land-share').textContent())!.replace(/[^0-9.]/g, ''));
+  expect(share).toBeGreaterThan(0.2);
+  expect(share).toBeLessThan(0.6);
   expect(int(await page.getByTestId('stat-army').textContent())).toBeGreaterThan(100_000);
   await expect(page.getByTestId('panel-alliance')).toContainText('Anti-Comintern Pact');
   await expect(page.getByTestId('panel-wars')).toContainText('At peace');

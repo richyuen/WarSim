@@ -311,6 +311,9 @@ export interface NationStat {
   name: string;
   color: number;
   cells: number;
+  /** Owned land in km² and as a share of all owned land (ADR-52: area, not cells). */
+  area: number;
+  landShare: number;
   gold: number;
   income: number;
   expenses: number;

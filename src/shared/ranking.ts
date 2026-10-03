@@ -1,10 +1,10 @@
 import type { NationStat } from './protocol';
 
-/** Statistics ranking metrics (PLAN 1.31b), each read from a NationStat. */
+/** Statistics ranking metrics (PLAN 1.31b), each read from a NationStat. Land is km² (ADR-52). */
 export const RANK_METRICS = ['land', 'army', 'income', 'gold', 'manpower'] as const;
 export type RankMetric = (typeof RANK_METRICS)[number];
 const VALUE: Record<RankMetric, (n: NationStat) => number> = {
-  land: (n) => n.cells,
+  land: (n) => n.area,
   army: (n) => n.men,
   income: (n) => n.income,
   gold: (n) => n.gold,

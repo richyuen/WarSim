@@ -11,6 +11,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { ALLY_WEIGHT, neighbourMap, RATIO_CAP } from '../../src/sim/ai/strategic';
+import { landStandings } from '../../src/sim/landArea';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
@@ -45,7 +46,7 @@ function dump(year: number): void {
   const nb = neighbourMap(w);
   const live: number[] = [];
   w.nations.forEach((n) => nc.living[n] === 1 && live.push(n));
-  const owned = live.reduce((s, n) => s + nc.cells[n]!, 0);
+  const { area, owned, ranked } = landStandings(w);
   console.log(`\n=== year ${year}: alive ${live.length}, wars ${w.wars.list.length}, alliances ${al.list.length} (${al.list.map((a) => `${a.nameKey.split('.')[1]}:${a.members.length}`).join(' ')}), guarantees ${al.guarantees.length}, truces ${w.wars.truces.length}`);
   for (const x of w.wars.list.slice(0, 40)) {
     const ftd = x.fightToDeath[0] || x.fightToDeath[1] ? ' FTD' : '';
@@ -61,8 +62,8 @@ function dump(year: number): void {
     for (const g of al.guarantorsOf(t)) s += ALLY_WEIGHT * str[g]!;
     return Math.max(1, s);
   };
-  const pick = new Set([...live].sort((a, b) => str[b]! - str[a]!).slice(0, top).concat([...live].sort((a, b) => nc.cells[b]! - nc.cells[a]!).slice(0, 10)));
-  for (const n of [...pick].sort((a, b) => nc.cells[b]! - nc.cells[a]!)) {
+  const pick = new Set([...live].sort((a, b) => str[b]! - str[a]!).slice(0, top).concat(ranked.slice(0, 10)));
+  for (const n of [...pick].sort((a, b) => area[b]! - area[a]! || a - b)) {
     const wars = w.wars.list.filter((x) => x.sides[0].includes(n) || x.sides[1].includes(n)).length;
     const targets = [...(nb.get(n) ?? [])]
       .filter((t) => nc.living[t] === 1)
@@ -72,7 +73,7 @@ function dump(year: number): void {
         return why ? `${name(t)}[${why}]` : `${name(t)}(${Math.min(RATIO_CAP, withAllies(n) / defence(t)).toFixed(1)})`;
       });
     console.log(
-      `${name(n).padEnd(5)} land ${String(nc.cells[n]).padStart(6)} (${((100 * nc.cells[n]!) / owned).toFixed(1)}%)  men ${k(str[n]!).padStart(6)}  gold ${Math.round(nc.gold[n]!)}  income ${Math.round(nc.income[n]!)}  expenses ${Math.round(nc.expenses[n]!)}` +
+      `${name(n).padEnd(5)} land ${String(Math.round(area[n]! / 1000)).padStart(6)}k km² (${((100 * area[n]!) / owned).toFixed(1)}%, ${nc.cells[n]} cells)  men ${k(str[n]!).padStart(6)}  gold ${Math.round(nc.gold[n]!)}  income ${Math.round(nc.income[n]!)}  expenses ${Math.round(nc.expenses[n]!)}` +
         `${nc.bankrupt[n] === 1 ? '  BANKRUPT' : ''}  aggr ${nc.aggression[n]}  suppr ${nc.suppression[n]}  overlord ${nc.overlord[n] ? name(nc.overlord[n]!) : '-'}  alliance ${al.allianceOf(n)?.id ?? '-'}  wars ${wars}  manpower ${k(nc.manpower[n]!)} | ${targets.join(' ')}`,
     );
   }

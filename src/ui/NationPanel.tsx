@@ -101,7 +101,8 @@ export function NationPanel({
         <GodTab nation={nation} {...god} />
       ) : tab === 'overview' ? (
         <section data-testid="panel-overview">
-          {row('panel.land', num(nation.cells), 'stat-land')}
+          {row('panel.land', num(nation.area), 'stat-land')}
+          {row('panel.landShare', `${(nation.landShare * 100).toFixed(1)}%`, 'stat-land-share')}
           {row('panel.army', `${num(nation.men)} (${nation.formations})`, 'stat-army')}
           {row('panel.efficiency', `${Math.round(nation.efficiency * 100)}%`)}
           {nation.alliance ? (

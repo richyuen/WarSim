@@ -1165,14 +1165,16 @@ interpolation changes something.
 - **Soak** (`npm run soak`): 30 min wall-clock at max speed with save/load every
   5 min, comparing hashes against an uninterrupted twin. Fails on any exception or desync.
 - **Sweep** (`npm run sweep`): ≥ 10 seeds × ≥ 50 sim-years. Pass when, for every seed:
-  cells changing controller in the last 5 years > threshold, largest nation < 35% of
+  land changing controller in the last 5 years > threshold, largest nation < 35% of
   land and < 40% of income, alive nations stay in [20, 250], no permanent freeze
   (≥ 1 war active in ≥ 80% of the years), ≥ 2 of the ten largest land holders at the end were
   not among the ten largest after year 1, and the largest nation's land share ranges over
   ≥ 3 points during the run (the last two since critic B1, 2026-10-03; reports on seeds the
   tuning never saw: `--first 101 --tag <name>`).
-  Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of land
-  cells over the last 5 years; reports in `docs/sweeps/` (docs/sweeps/2026-10-03-sweep.md all green).
+  Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of the land
+  over the last 5 years. Land is measured in km² of true area in all four land criteria, in the
+  ranking and in the nation panel, never in cells: the map is a Miller projection
+  (`src/sim/landArea.ts`, [ADR-52]); reports in `docs/sweeps/` (docs/sweeps/2026-10-03-sweep.md all green).
 - **Playwright e2e**: boot, start 1938, run 1 year, screenshot every map mode;
   scripted seamless zoom world → close (8 stops) on a spawned battle; tank, naval and air
   battle scenes; AI nuclear strike scene (seeded scenario with forced escalation

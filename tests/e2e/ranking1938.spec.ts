@@ -31,6 +31,12 @@ test('statistics ranking and war banners', async ({ page }, info) => {
   await page.getByTestId('rank-metric').selectOption('land');
   await expect(ranking.getByTestId('rank-row').first()).toHaveAttribute('data-nation', String(id('SOV')));
   await expect(ranking.getByTestId('rank-row').first()).toContainText('1.');
+  // Land is km², not cells (ADR-52): the Soviet Union has about 21.2 M km², and Denmark (Greenland,
+  // fourth by cells on the Miller map) is not among the largest.
+  const sov = Number(await ranking.getByTestId('rank-row').first().getAttribute('data-value'));
+  expect(sov).toBeGreaterThan(20.5e6);
+  expect(sov).toBeLessThan(21.9e6);
+  await expect(ranking.locator(`[data-nation="${id('DEN')}"]`)).toHaveCount(0);
   // A row selects its nation (the nation panel opens).
   await ranking.getByTestId('rank-row').nth(1).click();
   const second = await ranking.getByTestId('rank-row').nth(1).getAttribute('data-nation');

@@ -195,6 +195,18 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   seeds (401 and up) judge PLAN 1.42 under it; the seen seeds (1–10, 99, 101–110, 201–210,
   301–310) are not re-run or re-judged to claim a pass, and the three FAILING reports stand
   as they are.
+- **Implemented 2026-10-03 (PLAN 1.42d):** `cellAreaByRow` (`src/sim/nav/grid.ts`, the row
+  scales the nav grid already used) and `src/sim/landArea.ts` (`ownedAreas`, `landStandings`),
+  derived from the owner raster on demand and never state. Used by `tools/sweep`, the ranking,
+  the nation panel (km² and share of owned land) and `npm run diag`. The sweep result fields
+  are now `changedKm2` and `landKm2`; the reports already in `docs/sweeps/` keep their cell
+  counts. Measured: 133.3 M km² owned, Soviet Union 21.19 M km².
+- **Split off (PLAN 1.42d2):** the monthly statistics series (the land chart) still records
+  cells. It is saved and hashed state, so changing what it records moves the state hash
+  without any rule changing; that gets its own commit with the hash evidence.
+- **The hash in the 1.42d acceptance test was stale.** 5d08e5dd is the seed-99 5-year hash
+  of PLAN 1.42a; ADR-50, PLAN 1.42c and ADR-51 changed rules after it. The check that was
+  meant is "unchanged from HEAD": ac517acf at 85c2e35 and ac517acf with 1.42d.
 - **Not in this decision:** sim rules that count cells (overextension, admin cost, war score,
   capitulation, small-state annexation). They are PLAN 1.42e, with their own ADR, because they
   change behaviour and the state hash; 1.42d must not (seed 99, 5 years: 5d08e5dd).

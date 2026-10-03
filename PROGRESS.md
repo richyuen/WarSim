@@ -2506,3 +2506,30 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   remediation commit, which restarts the count (ADR-49), and 1.42d will be one too. Whether
   to run the critic anyway is the user's call.
 - **Next (`continue`):** PLAN 1.42d.
+
+## 2026-10-03 — PLAN 1.42d: land by area in the sweep criteria, the ranking and the nation panel (ADR-52)
+- **Helper:** `cellAreaByRow(w, h)` in `src/sim/nav/grid.ts` (the nav grid's own row scales,
+  factored out as `rowScales`; `makeNavGrid` computes the same numbers) and `src/sim/landArea.ts`
+  (`ownedAreas`, `landStandings`). Derived from the owner raster on demand, not state.
+- **Sweep:** `tools/sweep/seed.ts` ranks and shares by km² and sums the km² that changed
+  controller; fields `changedKm2`, `landKm2` (were `changed`, `landCells`). Thresholds unchanged.
+  Reports already in `docs/sweeps/` keep their cell counts.
+- **UI:** ranking "Land" in km²; nation panel "Land (km²)" plus "Share of world land". The worker
+  scans the owner raster once per stats message (at most once a second).
+- **Measured at the 1938 start:** 133.3 M km² owned; Soviet Union 21.19 M km² (15.9%), USA 9.28,
+  Canada 9.12, Brazil 8.51, Australia 8.14 M km²; Germany 468,102 km² (0.4%). Denmark is out of
+  the top ten.
+- **Tests:** `tests/unit/landArea.test.ts` (4, the PLAN areas within 3%); the criteria fixtures
+  in km²; e2e asserts Germany's km² and share and the Soviet Union's km² in the ranking.
+  Screenshots viewed (`docs/evidence/1.31/panel-overview.png`, `ui-shell.png`, regenerated).
+- **Hash:** the acceptance test named 5d08e5dd, which is the hash of 1.42a, before ADR-50,
+  1.42c and ADR-51. Seed 99 × 5 years: ac517acf at HEAD (85c2e35, run from a stash) and
+  ac517acf with this change. No sim rule changed.
+- **Not done, split off as PLAN 1.42d2:** the statistics series (the land chart) still records
+  cells. It is hashed state, so the change moves the hash and gets its own commit.
+- **Found:** tick time is over budget again since ADR-50/51: seed 99 × 5 years mean 1.69 ms
+  (budget 1.5), year 1 3.34 ms (budget 2.4), the same at HEAD and with this change. New PLAN
+  1.42f, before the retry of 1.42 (a full sweep).
+- **Not converted, out of scope:** `NationField.cells` in the map snapshot (label sizing) and
+  every sim rule (PLAN 1.42e).
+- **Next (`continue`):** PLAN 1.42d2.

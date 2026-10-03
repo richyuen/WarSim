@@ -45,10 +45,9 @@ export interface NavGrid {
 }
 
 /** Row scales for a Miller w×h grid (cell height in radians of latitude × R, width × cos φ). */
-export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: boolean): NavGrid {
+export function rowScales(w: number, h: number): { kx: Float64Array; ky: Float64Array } {
   const kx = new Float64Array(h);
   const ky = new Float64Array(h);
-  const kd = new Float64Array(h);
   const dLon = (2 * PI) / w;
   for (let r = 0; r < h; r++) {
     const lat0 = millerLat(Y_TOP - (r / h) * PI);
@@ -56,8 +55,19 @@ export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: bo
     const mid = millerLat(Y_TOP - ((r + 0.5) / h) * PI);
     kx[r] = EARTH_R * dLon * cos(mid);
     ky[r] = EARTH_R * (lat0 - lat1);
-    kd[r] = sqrt(kx[r]! * kx[r]! + ky[r]! * ky[r]!);
   }
+  return { kx, ky };
+}
+
+/** True area of one cell per row, km² (ADR-52): a Miller cell shrinks towards the poles. */
+export function cellAreaByRow(w: number, h: number): Float64Array {
+  const { kx, ky } = rowScales(w, h);
+  return kx.map((x, r) => x * ky[r]!);
+}
+
+export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: boolean): NavGrid {
+  const { kx, ky } = rowScales(w, h);
+  const kd = kx.map((x, r) => sqrt(x * x + ky[r]! * ky[r]!));
   return { w, h, wrapX, terrain, kx, ky, kd, component: labelComponents(terrain, w, h, wrapX), endpointMin: unimodal(kx) && unimodal(ky), scratch: null };
 }
 

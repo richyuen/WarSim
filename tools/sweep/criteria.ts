@@ -1,7 +1,7 @@
 /**
  * SPEC §10 sweep criteria (PLAN 1.40), per seed:
- *   moving   — land cells changing controller in the last 5 years ≥ MOVING_MIN of the land
- *              (SPEC leaves the threshold open; 1% ≈ 1,200 cells ≈ a mid-sized country);
+ *   moving   — land changing controller in the last 5 years ≥ MOVING_MIN of the land
+ *              (SPEC leaves the threshold open; 1% ≈ 1.35 M km² ≈ a mid-sized country);
  *   land     — the largest nation holds < 35% of owned land at the end;
  *   income   — the largest income is < 40% of world income at the end;
  *   alive    — living nations stay within [20, 250] every year;
@@ -11,6 +11,9 @@
  *   swing    — the largest nation's land share ranges over ≥ LEADER_SWING during the run.
  * Churn and swing answer critic B1 (2026-10-03): the first five criteria passed on a world whose
  * ten largest nations never changed. Both thresholds were fixed before the first run with them.
+ * Land is measured in km², not in cells, in all four land criteria (ADR-52, 2026-10-03): the map
+ * is a Miller projection and a count of cells weighs Siberia and Greenland at twice their land
+ * or more. The thresholds kept their numbers.
  */
 import type { SeedResult } from './seed';
 
@@ -40,7 +43,7 @@ export interface Verdict {
 export function judge(r: SeedResult): Verdict {
   const s = r.samples;
   const last = s.at(-1)!;
-  const moving = s.slice(-5).reduce((a, y) => a + y.changed, 0) / r.landCells;
+  const moving = s.slice(-5).reduce((a, y) => a + y.changedKm2, 0) / r.landKm2;
   const aliveMin = Math.min(...s.map((y) => y.alive));
   const aliveMax = Math.max(...s.map((y) => y.alive));
   const warYears = s.filter((y) => y.warDays > 0).length / s.length;

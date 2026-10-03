@@ -65,7 +65,7 @@ async function main(): Promise<void> {
   const md = [
     `# Sweep ${date}: seeds ${first}–${first + seeds - 1} × ${years} years — ${allOk ? 'ALL GREEN' : 'FAILING'}`,
     '',
-    `Criteria (SPEC §10, tools/sweep/criteria.ts): land changing controller in the last 5 years ≥ ${pct(MOVING_MIN)}; largest nation < ${pct(MAX_LAND)} of land and < ${pct(MAX_INCOME)} of income at the end; ${ALIVE_MIN}–${ALIVE_MAX} nations alive every year; a war active in ≥ ${pct(WAR_YEARS)} of the years; ≥ ${CHURN_MIN} of the ten largest land holders at the end were not among the ten largest after year 1; the largest nation's land share ranges over ≥ ${pct(LEADER_SWING)}.`,
+    `Criteria (SPEC §10, tools/sweep/criteria.ts; land by area in km², ADR-52): land changing controller in the last 5 years ≥ ${pct(MOVING_MIN)}; largest nation < ${pct(MAX_LAND)} of land and < ${pct(MAX_INCOME)} of income at the end; ${ALIVE_MIN}–${ALIVE_MAX} nations alive every year; a war active in ≥ ${pct(WAR_YEARS)} of the years; ≥ ${CHURN_MIN} of the ten largest land holders at the end were not among the ten largest after year 1; the largest nation's land share ranges over ≥ ${pct(LEADER_SWING)}.`,
     '',
     '| Seed | Land moving (last 5 y) | Largest land | Largest income | Alive (min–max) | Years with war | New in top 10 | Leader share range |',
     '|---|---|---|---|---|---|---|---|',
@@ -75,7 +75,7 @@ async function main(): Promise<void> {
     '',
   ].join('\n');
   writeFileSync(`${base}.md`, md);
-  writeFileSync(`${base}.json`, JSON.stringify({ date, seeds, years, verdicts, results: results.map((r) => ({ seed: r.seed, wallS: r.wallS, landCells: r.landCells, samples: r.samples })) }, null, 1));
+  writeFileSync(`${base}.json`, JSON.stringify({ date, seeds, years, verdicts, results: results.map((r) => ({ seed: r.seed, wallS: r.wallS, landKm2: r.landKm2, samples: r.samples })) }, null, 1));
   console.log(md);
   if (!allOk) process.exitCode = 1;
 }

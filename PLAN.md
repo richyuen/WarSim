@@ -195,7 +195,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   the 4-seed check (99, 105, 108, 109 × 50 years) is not worse on any criterion.
   Done 2026-10-03: all four seeds pass all seven criteria (seed 108's newcomers 1 → 3). No
   criterion went from pass to fail; individual numbers moved both ways (PROGRESS).
-- [ ] 1.42d Critic B1: land is measured by true area, not by cell count (ADR-52; the user's
+- [x] 1.42d Critic B1: land is measured by true area, not by cell count (ADR-52; the user's
   decision, 2026-10-03). The map is a Miller projection, so a cell near the poles covers far less
   ground than one at the equator. By cells the Soviet Union starts at 26.8% of the owned land
   and Denmark (Greenland) is in the top ten; by area they are 15.9% and 1.5% (PROGRESS
@@ -211,6 +211,25 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   133 M km² ± 2%; the criteria fixtures in `tests/unit/sweepCriteria.test.ts` cover the area
   measure; `npm run sim -- --scenario 1938 --seed 99 --years 5` still ends at hash 5d08e5dd (no
   sim rule changed). No sweep is run for this task: the sweep belongs to 1.42.
+  Done 2026-10-03 for the helper, the sweep criteria, the ranking and the nation panel: 133.3 M
+  km² owned, Soviet Union 21.19 M km² (15.9%), `tests/unit/landArea.test.ts`. The hash named
+  above was stale: it dates from 1.42a, before the rule changes of ADR-50, 1.42c and ADR-51.
+  Seed 99 × 5 years ends at ac517acf at HEAD (85c2e35) and at ac517acf with this change. The
+  statistics series is split off as 1.42d2: it is saved and hashed state, so recording km²
+  there moves the hash, which this task must not.
+- [ ] 1.42d2 Critic B1: the monthly statistics series records land in km² (the land chart).
+  The series is part of the state (`World.parts()`), so the hash moves although no rule does.
+  Decide what an older save's cell counts show in the chart (reset the land column, or mark
+  the series version).
+  AT: `tests/unit/stats.test.ts` asserts the land column equals `landStandings` at the sampled
+  months; the state hash with the `stats` part left out is identical before and after on seed
+  99 × 5 years; the new full hash is logged in DECISIONS (ADR-52 addendum); e2e chart renders.
+- [ ] 1.42f Tick time is over budget again after ADR-50 and ADR-51: seed 99 × 5 years, mean
+  1.69 ms (budget 1.5), year 1 3.34 ms (budget 2.4), measured at 85c2e35 on 2026-10-03. PROMPT
+  "KEEPING ITERATIONS SHORT": fixed before the next task that needs a full sweep, which is
+  the retry of 1.42.
+  AT: as 1.42a (5-year mean ≤ 1.5 ms, year 1 ≤ 2.4 ms), final hash ac517acf unless a rule
+  change is logged.
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km
@@ -218,7 +237,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   Rule changes: an ADR, and tune only on `npm run sweep:quick`.
   AT: unit tests per converted rule; hash change logged in DECISIONS; gate green.
 - [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03). Retry after 1.42d
-  (and 1.42e if that is done), judged by area, on seeds from 401.** Critic B1 (static world), continued: every seed passes the two criteria added on
+  and 1.42f (and 1.42e if that is done), judged by area, on seeds from 401.** Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
   the leader-share range (2.7 points). Do not move the thresholds. (The tick time that

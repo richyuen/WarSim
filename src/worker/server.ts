@@ -42,6 +42,7 @@ import { loadTerrain, type StraitDef } from '../sim/data/terrain';
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
 import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
+import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
 import { elementIndex } from '../sim/systems/elements';
 import { slotPose } from '../sim/core/pose';
@@ -597,6 +598,7 @@ export class SimServer {
       const o = nc.overlord[id]!;
       if (nc.living[id] === 1 && o !== 0) puppets.set(o, [...(puppets.get(o) ?? []), id]);
     });
+    const land = landStandings(world);
     const nations: (NationStat & { living: boolean })[] = [];
     world.nations.forEach((id) => {
       if (!withDead && nc.living[id] !== 1) return;
@@ -607,6 +609,8 @@ export class SimServer {
         name: this.nameOf(id),
         color: nc.color[id]!,
         cells: nc.cells[id]!,
+        area: land.area[id]!,
+        landShare: nc.living[id] === 1 && land.owned > 0 ? land.area[id]! / land.owned : 0,
         gold: nc.gold[id]!,
         income: nc.income[id]!,
         expenses: nc.expenses[id]!,
