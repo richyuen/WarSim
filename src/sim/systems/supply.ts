@@ -8,6 +8,10 @@
  * ascending id order; a lane reached first by one bloc is not shared in v1). The layer is state,
  * so a load between refreshes behaves exactly like the original run. A refresh is skipped when
  * nothing it reads has changed (`World.supplyDirty`), which writes the same layer for free.
+ * The flood fills row spans (a scanline fill: the network is a connected region, so the order
+ * it is filled in cannot change it), and each bloc's spans are remembered
+ * (`World.supplySpans`, derived), so a partial refresh clears a bloc's network without scanning
+ * the grid (PLAN 1.42a).
  *
  * Formations (hourly): a formation on a cell of its own bloc's network gains SUPPLY_RATE per hour
  * towards 1; otherwise it loses SUPPLY_RATE towards 0. At 0 it attrits: (BASE_ATTRITION_PER_DAY +
@@ -31,7 +35,8 @@ export function blocOf(world: World, nation: number): number {
   return o !== 0 ? o : nation;
 }
 
-let queueScratch: Int32Array | null = null;
+const seeds: number[] = [];
+let spanScratch = new Int32Array(1 << 16);
 
 /**
  * Recomputes `cells.supply` from the current cities and control: everything after a full-dirty
@@ -45,10 +50,19 @@ export function refreshSupplyNetwork(world: World): void {
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
   const full = world.supplyDirty;
   const only = new Uint8Array(world.nations.highWater + 1);
-  if (full) supply.fill(0);
-  else {
-    for (const n of world.supplyDirtyNations) if (n !== 0) only[blocOfNation[n] || n] = 1;
-    for (let c = 0; c < supply.length; c++) if (only[supply[c]!] === 1) supply[c] = 0;
+  const reached = world.supplySpans;
+  if (full) {
+    supply.fill(0);
+    reached.clear();
+  } else {
+    for (const n of world.supplyDirtyNations) {
+      const b = n === 0 ? 0 : blocOfNation[n] || n;
+      if (b === 0 || only[b] === 1) continue;
+      only[b] = 1;
+      const old = reached.get(b);
+      if (old) for (let i = 0; i < old.n; i += 2) supply.fill(0, old.spans[i]!, old.spans[i + 1]!);
+      reached.delete(b);
+    }
   }
   world.supplyDirty = false;
   world.supplyDirtyNations.clear();
@@ -66,36 +80,55 @@ export function refreshSupplyNetwork(world: World): void {
     list.push(cell);
   });
   const blocs = [...sources.keys()].sort((a, b) => a - b);
-  // Reused flood queue (review after PLAN 1.25: allocating and zeroing 8 MB per refresh cost
-  // a quarter of it); contents are always written before being read.
-  if (!queueScratch || queueScratch.length !== w * h) queueScratch = new Int32Array(w * h);
-  const queue = queueScratch;
   for (const b of blocs) {
-    let head = 0;
-    let tail = 0;
-    for (const s of sources.get(b)!) {
-      if (supply[s] === 0) {
-        supply[s] = b;
-        queue[tail++] = s;
+    // Whether the flood of bloc b may enter cell n: not yet in a network, and held by the bloc or
+    // an unclaimed crossing lane.
+    const open = (n: number): boolean => {
+      if (supply[n] !== 0) return false;
+      const ctl = controller[n]!;
+      return ctl !== 0 ? blocOfNation[ctl] === b : terrain[n] === Terrain.Crossing;
+    };
+    let spans = spanScratch;
+    let n = 0;
+    seeds.length = 0;
+    for (const s of sources.get(b)!) seeds.push(s);
+    while (seeds.length > 0) {
+      const s = seeds.pop()!;
+      if (supply[s] !== 0) continue; // filled since it was pushed
+      const row = s - (s % w);
+      const rowEnd = row + w;
+      let l = s;
+      while (l > row && open(l - 1)) l--;
+      let r = s + 1;
+      while (r < rowEnd && open(r)) r++;
+      supply.fill(b, l, r);
+      if (n === spans.length) {
+        spans = new Int32Array(n * 2);
+        spans.set(spanScratch);
+        spanScratch = spans;
+      }
+      spans[n++] = l;
+      spans[n++] = r;
+      // East–west wrap, then one seed per run of open cells in the rows above and below.
+      if (l === row && open(rowEnd - 1)) seeds.push(rowEnd - 1);
+      if (r === rowEnd && open(row)) seeds.push(row);
+      for (let d = -w; d <= w; d += 2 * w) {
+        if (d < 0 ? row === 0 : rowEnd === w * h) continue;
+        let inRun = false;
+        for (let c = l + d; c < r + d; c++) {
+          if (!open(c)) inRun = false;
+          else if (!inRun) {
+            inRun = true;
+            seeds.push(c);
+          }
+        }
       }
     }
-    while (head < tail) {
-      const c = queue[head++]!;
-      const x = c % w;
-      const y = (c - x) / w;
-      // Inlined 4-neighbours (wrapping x): this flood covers the map every refresh, and the shared
-      // nav/grid neighbours4 helper made it 3.3× slower (review after PLAN 1.14).
-      for (let k = 0; k < 4; k++) {
-        const n = k === 0 ? (y > 0 ? c - w : -1) : k === 1 ? (y < h - 1 ? c + w : -1) : k === 2 ? (x > 0 ? c - 1 : c + w - 1) : x < w - 1 ? c + 1 : c - w + 1;
-        if (n < 0 || supply[n] !== 0) continue;
-        const ctl = controller[n]!;
-        const ours = ctl !== 0 && blocOfNation[ctl] === b;
-        const lane = ctl === 0 && terrain[n] === Terrain.Crossing;
-        if (!ours && !lane) continue;
-        supply[n] = b;
-        queue[tail++] = n;
-      }
-    }
+    // Remember the network for the next partial refresh (the buffer is reused when it fits).
+    let kept = reached.get(b);
+    if (!kept || kept.spans.length < n) reached.set(b, (kept = { spans: new Int32Array(n + (n >> 2)), n: 0 }));
+    kept.spans.set(spans.subarray(0, n));
+    kept.n = n;
   }
 }
 

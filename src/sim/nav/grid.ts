@@ -28,6 +28,8 @@ export interface NavGrid {
   /** True km per cell step, horizontally and vertically, per row. */
   kx: Float64Array;
   ky: Float64Array;
+  /** True km per diagonal step, per row: sqrt(kx² + ky²), as `stepKm` computes it. */
+  kd: Float64Array;
   /**
    * Connected land component per cell (4-connected over passable cells; 0 = impassable). Cell A*
    * cannot cut corners, so two cells are mutually reachable iff they share a component.
@@ -46,6 +48,7 @@ export interface NavGrid {
 export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: boolean): NavGrid {
   const kx = new Float64Array(h);
   const ky = new Float64Array(h);
+  const kd = new Float64Array(h);
   const dLon = (2 * PI) / w;
   for (let r = 0; r < h; r++) {
     const lat0 = millerLat(Y_TOP - (r / h) * PI);
@@ -53,8 +56,9 @@ export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: bo
     const mid = millerLat(Y_TOP - ((r + 0.5) / h) * PI);
     kx[r] = EARTH_R * dLon * cos(mid);
     ky[r] = EARTH_R * (lat0 - lat1);
+    kd[r] = sqrt(kx[r]! * kx[r]! + ky[r]! * ky[r]!);
   }
-  return { w, h, wrapX, terrain, kx, ky, component: labelComponents(terrain, w, h, wrapX), endpointMin: unimodal(kx) && unimodal(ky), scratch: null };
+  return { w, h, wrapX, terrain, kx, ky, kd, component: labelComponents(terrain, w, h, wrapX), endpointMin: unimodal(kx) && unimodal(ky), scratch: null };
 }
 
 /** Whether `a` rises to a single maximum and falls after it (non-strict): its range minima lie at the ends. */
@@ -142,62 +146,83 @@ export function boundKm(g: NavGrid, a: number, b: number): number {
   return sqrt(ex * ex + ey * ey);
 }
 
-/** Binary min-heap keyed by f64, tie-broken by insertion order (deterministic). */
+/**
+ * Binary min-heap keyed by f64, tie-broken by insertion order (deterministic: keys with their
+ * sequence numbers are a total order, so the pop order does not depend on the heap's layout).
+ * Typed arrays, reused across searches (PLAN 1.42a: the array-of-numbers heap and its swaps were
+ * half of a search).
+ */
 class Heap {
-  private keys: number[] = [];
-  private vals: number[] = [];
-  private seqs: number[] = [];
+  private keys = new Float64Array(1024);
+  private vals = new Int32Array(1024);
+  private seqs = new Float64Array(1024);
   private seq = 0;
-  get size(): number {
-    return this.vals.length;
+  size = 0;
+  clear(): void {
+    this.size = 0;
+    this.seq = 0;
   }
   push(key: number, val: number): void {
-    this.keys.push(key);
-    this.vals.push(val);
-    this.seqs.push(this.seq++);
-    let i = this.vals.length - 1;
+    if (this.size === this.vals.length) this.grow();
+    const { keys, vals, seqs } = this;
+    const seq = this.seq++;
+    // Sift the hole up; a new entry has the largest sequence, so it stops at an equal key.
+    let i = this.size++;
     while (i > 0) {
       const p = (i - 1) >> 1;
-      if (!this.less(i, p)) break;
-      this.swap(i, p);
+      if (keys[p]! <= key) break;
+      keys[i] = keys[p]!;
+      vals[i] = vals[p]!;
+      seqs[i] = seqs[p]!;
       i = p;
     }
+    keys[i] = key;
+    vals[i] = val;
+    seqs[i] = seq;
   }
   pop(): number {
-    const top = this.vals[0]!;
-    const last = this.vals.length - 1;
-    this.swap(0, last);
-    this.keys.pop();
-    this.vals.pop();
-    this.seqs.pop();
+    const { keys, vals, seqs } = this;
+    const top = vals[0]!;
+    const n = --this.size;
+    if (n === 0) return top;
+    const key = keys[n]!;
+    const val = vals[n]!;
+    const seq = seqs[n]!;
     let i = 0;
     for (;;) {
-      const l = 2 * i + 1;
-      const r = l + 1;
-      let m = i;
-      if (l < this.vals.length && this.less(l, m)) m = l;
-      if (r < this.vals.length && this.less(r, m)) m = r;
-      if (m === i) break;
-      this.swap(i, m);
+      let m = 2 * i + 1;
+      if (m >= n) break;
+      const r = m + 1;
+      if (r < n && (keys[r]! < keys[m]! || (keys[r] === keys[m] && seqs[r]! < seqs[m]!))) m = r;
+      if (!(keys[m]! < key || (keys[m] === key && seqs[m]! < seq))) break;
+      keys[i] = keys[m]!;
+      vals[i] = vals[m]!;
+      seqs[i] = seqs[m]!;
       i = m;
     }
+    keys[i] = key;
+    vals[i] = val;
+    seqs[i] = seq;
     return top;
   }
-  private less(a: number, b: number): boolean {
-    const ka = this.keys[a]!;
-    const kb = this.keys[b]!;
-    return ka < kb || (ka === kb && this.seqs[a]! < this.seqs[b]!);
-  }
-  private swap(a: number, b: number): void {
-    [this.keys[a], this.keys[b]] = [this.keys[b]!, this.keys[a]!];
-    [this.vals[a], this.vals[b]] = [this.vals[b]!, this.vals[a]!];
-    [this.seqs[a], this.seqs[b]] = [this.seqs[b]!, this.seqs[a]!];
+  private grow(): void {
+    const n = this.vals.length * 2;
+    const keys = new Float64Array(n);
+    const vals = new Int32Array(n);
+    const seqs = new Float64Array(n);
+    keys.set(this.keys);
+    vals.set(this.vals);
+    seqs.set(this.seqs);
+    this.keys = keys;
+    this.vals = vals;
+    this.seqs = seqs;
   }
 }
+const OPEN = new Heap();
 
-const DIRS: readonly [number, number][] = [
-  [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1],
-];
+/** The 8 steps in search order (it decides ties between equal routes: do not reorder). */
+const DIR_X = [1, -1, 0, 0, 1, 1, -1, -1];
+const DIR_Y = [0, 0, 1, -1, 1, -1, 1, -1];
 
 export interface PathResult {
   /** Cells from start to goal inclusive. */
@@ -212,12 +237,13 @@ export interface PathResult {
  */
 export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, allowed?: (cell: number) => boolean): PathResult | null {
   const costRow = MOVE_COST[mobility]!;
-  const passable = (c: number): boolean => Number.isFinite(costRow[g.terrain[c]!]!) && (allowed === undefined || allowed(c));
+  const { w, h, wrapX, terrain, kx, ky, kd } = g;
+  const passable = (c: number): boolean => Number.isFinite(costRow[terrain[c]!]!) && (allowed === undefined || allowed(c));
   if (!passable(start) || !passable(goal) || g.component[start] !== g.component[goal]) return null;
   const hScale = MIN_COST[mobility]!;
   // Typed scratch with generation stamps instead of Maps (review after PLAN 1.25: pathfinding
   // was a quarter of the tick); the search and its tie-breaking are unchanged.
-  const n0 = g.w * g.h;
+  const n0 = w * h;
   if (!g.scratch || g.scratch.g.length !== n0) g.scratch = { g: new Float64Array(n0), came: new Int32Array(n0), seen: new Uint32Array(n0), closed: new Uint32Array(n0), gen: 0 };
   const sc = g.scratch;
   if (++sc.gen === 0xffffffff) {
@@ -226,48 +252,67 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
     sc.gen = 1;
   }
   const gen = sc.gen;
-  const open = new Heap();
-  sc.g[start] = 0;
-  sc.seen[start] = gen;
+  const { g: gs, came, seen, closed } = sc;
+  const open = OPEN;
+  open.clear();
+  // boundKm to the goal, inlined for the common grid (row scales shrinking away from the equator).
+  const gx = goal % w;
+  const gy = (goal - gx) / w;
+  const kxGoal = kx[gy]!;
+  const kyGoal = ky[gy]!;
+  const fast = g.endpointMin;
+  const half = w / 2;
+  gs[start] = 0;
+  seen[start] = gen;
   open.push(boundKm(g, start, goal) * hScale, start);
   while (open.size > 0) {
     const c = open.pop();
     if (c === goal) break;
-    if (sc.closed[c] === gen) continue;
-    sc.closed[c] = gen;
-    const cx = c % g.w;
-    const cy = (c - cx) / g.w;
-    const gc = sc.g[c]!;
-    for (const [dx, dy] of DIRS) {
+    if (closed[c] === gen) continue;
+    closed[c] = gen;
+    const cx = c % w;
+    const cy = (c - cx) / w;
+    const gc = gs[c]!;
+    for (let k = 0; k < 8; k++) {
+      const dx = DIR_X[k]!;
+      const dy = DIR_Y[k]!;
       const ny = cy + dy;
-      if (ny < 0 || ny >= g.h) continue;
+      if (ny < 0 || ny >= h) continue;
       let nx = cx + dx;
-      if (nx < 0 || nx >= g.w) {
-        if (!g.wrapX) continue;
-        nx = (nx + g.w) % g.w;
+      if (nx < 0 || nx >= w) {
+        if (!wrapX) continue;
+        nx = (nx + w) % w;
       }
-      const n = ny * g.w + nx;
-      if (sc.closed[n] === gen || !passable(n)) continue;
+      const n = ny * w + nx;
+      if (closed[n] === gen) continue;
+      const cost = costRow[terrain[n]!]!;
+      if (cost === Infinity || (allowed !== undefined && !allowed(n))) continue;
       // No corner cutting: a diagonal step needs both orthogonal neighbours passable.
-      if (dx !== 0 && dy !== 0) {
-        const ox = (cx + dx + g.w) % g.w;
-        if (!passable(cy * g.w + ox) || !passable(ny * g.w + cx)) continue;
-      }
-      const step = stepKm(g, dy > 0 ? cy : ny, dx, dy) * costRow[g.terrain[n]!]!;
-      const t = gc + step;
-      if (sc.seen[n] !== gen || t < sc.g[n]!) {
-        sc.g[n] = t;
-        sc.seen[n] = gen;
-        sc.came[n] = c;
-        open.push(t + boundKm(g, n, goal) * hScale, n);
+      if (dx !== 0 && dy !== 0 && (!passable(cy * w + ((cx + dx + w) % w)) || !passable(ny * w + cx))) continue;
+      // stepKm, inlined: the row scales of the upper of the two rows.
+      const row = dy > 0 ? cy : ny;
+      const t = gc + (dy === 0 ? kx[row]! : dx === 0 ? ky[row]! : kd[row]!) * cost;
+      if (seen[n] !== gen || t < gs[n]!) {
+        gs[n] = t;
+        seen[n] = gen;
+        came[n] = c;
+        let bound: number;
+        if (fast) {
+          let ex = nx > gx ? nx - gx : gx - nx;
+          if (wrapX && ex > half) ex = w - ex;
+          ex *= kx[ny]! < kxGoal ? kx[ny]! : kxGoal;
+          const ey = (ny > gy ? ny - gy : gy - ny) * (ky[ny]! < kyGoal ? ky[ny]! : kyGoal);
+          bound = sqrt(ex * ex + ey * ey);
+        } else bound = boundKm(g, n, goal);
+        open.push(t + bound * hScale, n);
       }
     }
   }
-  if (sc.seen[goal] !== gen) return null;
-  const total = sc.g[goal]!;
+  if (seen[goal] !== gen) return null;
+  const total = gs[goal]!;
   const cells = [goal];
   for (let c = goal; c !== start; ) {
-    c = sc.came[c]!;
+    c = came[c]!;
     cells.push(c);
   }
   cells.reverse();

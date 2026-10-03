@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -63,6 +64,42 @@ function encircle(world: World, centre: number, tag: string, r0: number, r1: num
       if (world.cells.controller[c] !== 0) world.cells.controller[c] = nationId(tag);
     }
   }
+}
+
+/**
+ * The network rule, cell by cell (the flood before PLAN 1.42a): blocs in ascending order, each
+ * spreading 4-connected (wrapping x) from its sources over cells it holds and free crossing lanes.
+ * `layer` is the network so far; with `only`, just those blocs are cleared and flooded again.
+ */
+function referenceNetwork(world: World, layer: Uint16Array, only?: Set<number>): Uint16Array {
+  const { controller, owner, terrain } = world.cells;
+  const out = only ? layer.map((b) => (only.has(b) ? 0 : b)) : new Uint16Array(layer.length);
+  const sources = new Map<number, number[]>();
+  world.cities.forEach((id) => {
+    const cell = world.cities.cols.cell[id]!;
+    const ctl = controller[cell]!;
+    if (ctl === 0 || owner[cell] !== ctl) return;
+    const b = blocOf(world, ctl);
+    if (only && !only.has(b)) return;
+    sources.set(b, [...(sources.get(b) ?? []), cell]);
+  });
+  for (const b of [...sources.keys()].sort((p, q) => p - q)) {
+    const queue = sources.get(b)!.filter((s) => out[s] === 0);
+    for (const s of queue) out[s] = b;
+    for (let head = 0; head < queue.length; head++) {
+      const c = queue[head]!;
+      const x = c % W;
+      const y = (c - x) / W;
+      for (const n of [y > 0 ? c - W : -1, y < H - 1 ? c + W : -1, x > 0 ? c - 1 : c + W - 1, x < W - 1 ? c + 1 : c - W + 1]) {
+        if (n < 0 || out[n] !== 0) continue;
+        const ctl = controller[n]!;
+        if (ctl !== 0 ? blocOf(world, ctl) !== b : terrain[n] !== Terrain.Crossing) continue;
+        out[n] = b;
+        queue.push(n);
+      }
+    }
+  }
+  return out;
 }
 
 describe('supply v1 (PLAN 1.12)', () => {
@@ -131,6 +168,45 @@ describe('supply v1 (PLAN 1.12)', () => {
       return t.hash();
     };
     expect(run(true)).toBe(run(false));
+  });
+
+  it('the span flood equals the cell-by-cell rule, for a full and for a partial refresh (PLAN 1.42a)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    refreshSupplyNetwork(w);
+    expect(w.cells.supply).toEqual(referenceNetwork(w, w.cells.supply));
+    // Partial: Germany takes a ring out of the Soviet north (a pocket) and a ring out of Poland,
+    // and the Soviet cells at the date line (both map edges) go to Japan.
+    const before = new Uint16Array(w.cells.supply);
+    const pocket = quietCell(w, 'SOV', 45.0, 62.0, 4);
+    const ring = (centre: number, tag: string, r0: number, r1: number): void => {
+      for (let dy = -r1; dy <= r1; dy++) {
+        for (let dx = -r1; dx <= r1; dx++) {
+          const c = centre + dy * W + dx;
+          if (Math.max(Math.abs(dx), Math.abs(dy)) >= r0 && w.cells.controller[c] !== 0) w.setController(c, nationId(tag));
+        }
+      }
+    };
+    ring(pocket, 'GER', 2, 4);
+    ring(cellAt(20.0, 52.0), 'GER', 3, 9);
+    let edge = 0;
+    for (let c = 0; c < W * H; c++) {
+      if ((c % W >= 6 && c % W < W - 6) || w.cells.controller[c] !== nationId('SOV')) continue;
+      w.setController(c, nationId('JAP'));
+      edge++;
+    }
+    expect(edge).toBeGreaterThan(0);
+    expect(w.supplyDirty).toBe(false);
+    const dirty = new Set([...w.supplyDirtyNations].filter((n) => n !== 0).map((n) => blocOf(w, n)));
+    expect(dirty.size).toBeGreaterThanOrEqual(4);
+    refreshSupplyNetwork(w);
+    expect(w.cells.supply[pocket]).toBe(0);
+    expect(w.cells.supply).toEqual(referenceNetwork(w, before, dirty));
+    // A second partial refresh of the same blocs clears exactly what the first one filled.
+    for (const n of dirty) w.supplyDirtyNations.add(n);
+    const again = new Uint16Array(w.cells.supply);
+    refreshSupplyNetwork(w);
+    expect(w.cells.supply).toEqual(again);
   });
 
   it('the network refresh is fast enough to run every 6 hours', () => {

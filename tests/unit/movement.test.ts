@@ -3,7 +3,7 @@ import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
 import { slotGrid, slotPose } from '../../src/sim/core/pose';
 import { cellOf } from '../../src/sim/data/terrain';
-import { boundKm, Mobility, type MobilityId } from '../../src/sim/nav/grid';
+import { boundKm, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_COST, stepKm, type MobilityId } from '../../src/sim/nav/grid';
 import { findRoute } from '../../src/sim/nav/provinceGraph';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -167,6 +167,70 @@ describe('slotted poses', () => {
 });
 
 describe('route edge cases', () => {
+  it('cell A* is the same search as a plain open list popped by (f, insertion order) (PLAN 1.42a)', () => {
+    const GW = 24;
+    const GH = 16;
+    let seed = 12345;
+    const rand = (): number => (seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 2 ** 32;
+    const kinds = [Terrain.Water, Terrain.Plains, Terrain.Plains, Terrain.Forest, Terrain.Mountains];
+    const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] as const;
+    for (let trial = 0; trial < 20; trial++) {
+      const terrain = Uint8Array.from({ length: GW * GH }, () => kinds[Math.floor(rand() * kinds.length)]!);
+      const g = makeNavGrid(terrain, GW, GH, trial % 2 === 0);
+      const cost = MOVE_COST[Mobility.foot]!;
+      const land = [...terrain.keys()].filter((c) => terrain[c] !== Terrain.Water);
+      const start = land[Math.floor(rand() * land.length)]!;
+      // The search of PLAN 1.11, written plainly: the heap and the inlined arithmetic of the real
+      // one must not change which route wins a tie.
+      const reference = (goal: number): { cells: number[]; cost: number } | null => {
+        const gs = new Map<number, number>([[start, 0]]);
+        const came = new Map<number, number>();
+        const closed = new Set<number>();
+        const open = [{ key: boundKm(g, start, goal) * MIN_COST[Mobility.foot]!, seq: 0, cell: start }];
+        let seq = 1;
+        while (open.length > 0) {
+          let bi = 0;
+          for (let i = 1; i < open.length; i++) if (open[i]!.key < open[bi]!.key || (open[i]!.key === open[bi]!.key && open[i]!.seq < open[bi]!.seq)) bi = i;
+          const c = open.splice(bi, 1)[0]!.cell;
+          if (c === goal) break;
+          if (closed.has(c)) continue;
+          closed.add(c);
+          const cx = c % GW;
+          const cy = (c - cx) / GW;
+          for (const [dx, dy] of STEPS) {
+            const ny = cy + dy;
+            let nx = cx + dx;
+            if (ny < 0 || ny >= GH) continue;
+            if (nx < 0 || nx >= GW) {
+              if (!g.wrapX) continue;
+              nx = (nx + GW) % GW;
+            }
+            const n = ny * GW + nx;
+            if (closed.has(n) || terrain[n] === Terrain.Water) continue;
+            if (dx !== 0 && dy !== 0 && (terrain[cy * GW + nx] === Terrain.Water || terrain[ny * GW + cx] === Terrain.Water)) continue;
+            const t = gs.get(c)! + stepKm(g, dy > 0 ? cy : ny, dx, dy) * cost[terrain[n]!]!;
+            if (!gs.has(n) || t < gs.get(n)!) {
+              gs.set(n, t);
+              came.set(n, c);
+              open.push({ key: t + boundKm(g, n, goal) * MIN_COST[Mobility.foot]!, seq: seq++, cell: n });
+            }
+          }
+        }
+        if (!gs.has(goal)) return null;
+        const cells = [goal];
+        for (let c = goal; c !== start; ) cells.push((c = came.get(c)!));
+        return { cells: cells.reverse(), cost: gs.get(goal)! };
+      };
+      let routes = 0;
+      for (const goal of land) {
+        const want = reference(goal);
+        expect(findPath(g, Mobility.foot, start, goal)).toEqual(want);
+        if (want) routes++;
+      }
+      expect(routes).toBeGreaterThan(1);
+    }
+  });
+
   it('unreachable pairs are rejected at once; a coastal speck target snaps to reachable land', () => {
     const g = nav.grid;
     const lisbon = cell(-9.0, 39.0);

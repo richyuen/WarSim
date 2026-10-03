@@ -385,6 +385,12 @@ export class World {
    */
   supplyDirty = true;
   supplyDirtyNations = new Set<number>();
+  /**
+   * Derived (not state): per supply bloc, the row spans its last flood filled, as [start, end)
+   * cell pairs (the first `n` entries of `spans`). Valid from a full refresh on; a full refresh
+   * rebuilds it.
+   */
+  supplySpans = new Map<number, { spans: Int32Array; n: number }>();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
@@ -402,6 +408,8 @@ export class World {
   };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
+  /** Derived (not state): the frontier set as a byte per cell (valid whenever `frontier` is). */
+  frontierMask: Uint8Array | null = null;
   /** Derived (not state): cells with non-zero `cells.flip`; null = rebuild by scan. */
   flipping: Set<number> | null = null;
   frontierWars = -1;

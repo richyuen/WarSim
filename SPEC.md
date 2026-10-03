@@ -199,8 +199,9 @@ production (daily) → economy (monthly) → combat efficiency (monthly) → sup
 network, hourly use) → movement → engagement and combat (incl. Major Battles) → territory →
 capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) → statistics sampling
 (monthly, last, PLAN 1.34b). History events are recorded as they are emitted (PLAN 1.34a). The average tick is
-2.6 ms in a war-heavy 200-day run (Node, M; budget 1.5 ms, PLAN 7.1). The main costs are the
-supply flood over warring blocs (~20%), A* for AI orders (~22%) and combat (~16%).
+1.0 ms over the first 5 years of seed 99 and 1.9 ms in its war-heavy first year (Node, M; budget
+1.5 ms, PLAN 7.1; measured after PLAN 1.42a). The main costs in that first year are combat
+(~35%), A* for AI orders (~28%), the supply flood over warring blocs (~15%) and territory (~10%).
 
 **Save files and autosave (PLAN 1.27).**
 - *Format:* a save is the sim's section bytes (all of `World.parts()`, the command log included),
@@ -543,6 +544,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   spreads over cells the bloc controls and over unclaimed crossing lanes. `cells.supply` holds the
   bloc that reached each cell. The layer is state, so a load between refreshes is exact. A refresh
   takes well under 60 ms at M.
+  Since PLAN 1.42a the flood fills row spans (a scanline fill: same network, about twice as fast)
+  and remembers each bloc's spans (`World.supplySpans`, derived), so a partial refresh clears a
+  bloc without scanning the grid. A full refresh takes 6 ms at M.
 - *Formations* (hourly): on their own bloc's network, supply rises by 1/8 per hour towards 1;
   off it, it falls by 1/8 towards 0. At 0 a formation loses (2% + terrain `supplyAttrition`) of its
   strength per day, applied hourly. An encircled division is dry within 8–14 h.
@@ -555,8 +559,14 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   M. It is derived, never saved.
 - *Routes:* `findRoute` uses straight cell A* below 500 km. Above that, it runs coarse A* on the
   province graph, then cell A* inside the corridor of route provinces and their neighbours, with a
-  flat fallback. Cell A* is 8-connected with no corner cutting, and its heuristic (straight km ×
-  min cost) is admissible. Berlin → Moscow takes 9 ms, Lisbon → Khabarovsk (840 cells) 83 ms.
+  flat fallback. Cell A* is 8-connected with no corner cutting. Its heuristic is straight km × min
+  cost, with the km scale of the smaller of the two rows' cell sizes. That is not a strict lower
+  bound (a route may swing poleward of both ends, where cells are narrower) and the search closes
+  a cell when it first pops it, so a route can be slightly longer than the cheapest one: 0.1% on
+  a 16-row test grid, found in PLAN 1.42a; left as it is, because a strict bound would change
+  routes and widen every search. Berlin → Moscow takes 9 ms, Lisbon → Khabarovsk (840 cells)
+  83 ms (before PLAN 1.42a, which made the same search about 40% faster: a typed-array heap
+  reused across searches, the step and bound arithmetic inlined).
 - *Orders:* `moveFormation {id, x, y}`.
   - A target unreachable from the formation snaps to the nearest reachable cell within 3;
     otherwise the order is rejected (`MoveRejected`).
@@ -574,6 +584,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   (1 − d/3) into cells within 2 cells.
 - *Frontier:* the frontier set is derived. It is rebuilt by one scan only when invalidated (load,
   a war change, or an outside controller change); flips maintain it locally.
+  `World.frontierMask` is the same set as a byte per cell, for the pressure loop (PLAN 1.42a).
 - *Flips:* a frontier cell flips to the strongest adjacent enemy holder when that enemy's pressure
   ÷ terrain defence beats the holder bloc's pressure + garrison 1 for 16 consecutive hours
   (`cells.flip`, saved). Decisions use start-of-tick control and are applied together.
@@ -864,7 +875,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Orders:* a sector at ≥ 1.5× local superiority attacks the enemy cell next to its centre;
     otherwise it holds its front cell. A formation is not re-ordered if its target is within a
     sector of the current one.
-  - *Tick cost* with 10-year AI wars: 2–3 ms (above the 1.5 ms budget); see PROGRESS perf debt.
+  - *Tick cost* with 10-year AI wars: 2–3 ms (above the 1.5 ms budget) until PLAN 1.42a; since
+    then 1.0 ms over 5 years of seed 99 (§2.5).
 - **Economic AI** (daily): a budget split between army, navy, air, industry, research, nukes,
   revolt suppression and reserve gold. The production mix is adapted to enemies (AT vs armour-heavy
   enemies, fighters when bombed).

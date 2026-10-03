@@ -4,7 +4,8 @@
  * Frontier set (derived, never saved): cells whose controller is at war with the controller of
  * a 4-neighbour. It is rebuilt by one grid scan only when invalidated (load, a war declared or
  * ended, a controller change outside this system); flips update it locally, so the hourly loop
- * never scans the grid.
+ * never scans the grid. `World.frontierMask` holds the same set as a byte per cell, for the
+ * membership tests of the pressure loop (PLAN 1.42a).
  *
  * Pressure (hourly): every formation of a nation at war projects
  *   strength/1000 × (0.5 + 0.5 supply) × (1 − d/(R+1))
@@ -56,14 +57,41 @@ function flippingOf(world: World): Set<number> {
 export function frontierOf(world: World): Set<number> {
   if (world.frontier && world.frontierWars === world.wars.version) return world.frontier;
   const f = new Set<number>();
+  const { w, h, controller: ctl, flip } = world.cells;
+  const n = w * h;
+  let mask = world.frontierMask;
+  if (!mask || mask.length !== n) mask = world.frontierMask = new Uint8Array(n);
+  else mask.fill(0);
   if (world.wars.size > 0) {
-    const n = world.cells.w * world.cells.h;
+    // The same test as onFrontier, inlined (PLAN 1.42a: this scan was 8% of the tick): cells of
+    // nations at peace are skipped, and a neighbour held by the same nation cannot be hostile.
+    const wars = world.wars;
+    const wrap = world.settings.loopingMap;
+    const fighting = new Uint8Array(65536);
+    for (const m of wars.nations()) fighting[m] = 1;
+    const hostile = (a: number, k: number): boolean => {
+      const b = ctl[k]!;
+      return b !== a && b !== 0 && wars.atWar(a, b);
+    };
     for (let c = 0; c < n; c++) {
-      if (onFrontier(world, c)) f.add(c);
-      else world.cells.flip[c] = 0; // uncontested cells carry no hold progress
+      const a = ctl[c]!;
+      let on = false;
+      if (fighting[a] === 1) {
+        if (c >= w && hostile(a, c - w)) on = true;
+        else if (c < n - w && hostile(a, c + w)) on = true;
+        else {
+          const x = c % w;
+          if (x > 0 ? hostile(a, c - 1) : wrap && hostile(a, c + w - 1)) on = true;
+          else if (x < w - 1 ? hostile(a, c + 1) : wrap && hostile(a, c - w + 1)) on = true;
+        }
+      }
+      if (on) {
+        f.add(c);
+        mask[c] = 1;
+      } else flip[c] = 0; // uncontested cells carry no hold progress
     }
   } else {
-    world.cells.flip.fill(0);
+    flip.fill(0);
   }
   world.frontier = f;
   world.frontierWars = world.wars.version;
@@ -75,6 +103,7 @@ export function territorySystem(world: World): void {
   const frontier = frontierOf(world);
   const { w, h, controller, terrain, flip } = world.cells;
   if (frontier.size === 0) return;
+  const mask = world.frontierMask!;
 
   // Pressure per cell per nation, from formations of nations at war (ascending ids).
   const fighting = world.wars.nations();
@@ -93,7 +122,7 @@ export function territorySystem(world: World): void {
         const d = Math.max(Math.abs(dx), Math.abs(dy));
         const p = base * (1 - d / (PRESSURE_RADIUS + 1));
         const c = y * w + ((cx + dx + w) % w);
-        if (!frontier.has(c)) continue; // only frontier cells can flip
+        if (mask[c] !== 1) continue; // only frontier cells can flip
         let m = pressure.get(c);
         if (!m) pressure.set(c, (m = new Map()));
         m.set(nation, (m.get(nation) ?? 0) + p);
@@ -151,8 +180,11 @@ export function territorySystem(world: World): void {
   // Local frontier upkeep around flipped cells.
   for (const [c] of flips) {
     for (const k of [c, ...neighbours(world, c, nb)]) {
-      if (onFrontier(world, k)) frontier.add(k);
-      else if (frontier.delete(k)) {
+      if (onFrontier(world, k)) {
+        frontier.add(k);
+        mask[k] = 1;
+      } else if (frontier.delete(k)) {
+        mask[k] = 0;
         flip[k] = 0;
         flipping.delete(k);
       }

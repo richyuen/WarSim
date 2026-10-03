@@ -140,6 +140,9 @@ function countLand(world: World): LandCounts {
   const owned = new Uint32Array(world.nations.highWater + 1);
   const lost = new Uint32Array(world.nations.highWater + 1);
   const occupied = new Map<number, number>();
+  // Occupied cells come in runs of one (owner, occupier) pair: count the run, then add it once.
+  let runKey = -1;
+  let run = 0;
   for (let c = 0; c < owner.length; c++) {
     const o = owner[c]!;
     if (o === 0) continue;
@@ -147,9 +150,16 @@ function countLand(world: World): LandCounts {
     const k = controller[c]!;
     if (k !== o && k !== 0) {
       lost[o]!++;
-      occupied.set(o * 65536 + k, (occupied.get(o * 65536 + k) ?? 0) + 1);
+      const key = o * 65536 + k;
+      if (key !== runKey) {
+        if (run > 0) occupied.set(runKey, (occupied.get(runKey) ?? 0) + run);
+        runKey = key;
+        run = 0;
+      }
+      run++;
     }
   }
+  if (run > 0) occupied.set(runKey, (occupied.get(runKey) ?? 0) + run);
   return { owned, occupied, lost };
 }
 

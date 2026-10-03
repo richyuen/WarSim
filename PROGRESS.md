@@ -2328,3 +2328,37 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - State now: the report is at bb1dd4f; the last remediation commit is f6d2381 ("Critic B1 part
   1"); PLAN 1.42a and 1.42 are both critic remediation and should be named so.
 
+
+## 2026-10-03 — PLAN 1.42a: tick time back under budget, with no change in behaviour
+- **Start:** gate green; critic not due (2 commits since the last remediation commit).
+- **Baseline today** (seed 99, 5 years, `npm run sim`): mean 1.59 ms, year 1 2.74 ms, final hash
+  5d08e5dd. (The 4.6–5.9 ms logged after ADR-47 was measured with other work running.)
+- **Profile of year 1** (per system, then `node --cpu-prof` on an unminified esbuild bundle, which
+  gives usable line numbers; under tsx every function reports line 1): operational AI 0.89 ms
+  (all of it `findPath` for its orders), combat 0.66, supply 0.57, territory 0.38, wars 0.13.
+- **Changes, each checked against the yearly hashes (all five identical to the baseline):**
+  - *Pathfinding:* the open list is a typed-array heap reused across searches (the old one kept
+    three `number[]` and swapped by destructuring); steps, diagonal km per row (`NavGrid.kd`) and
+    the bound to the goal are inlined. Same pop order, same routes. 0.89 → 0.54 ms.
+  - *Supply:* the flood fills row spans instead of visiting cells one by one, and each bloc's
+    spans are kept, so a partial refresh no longer scans 2 M cells to clear a bloc. A full
+    refresh 9.2 → 5.7 ms; the system 0.57 → 0.29 ms.
+  - *Territory:* the frontier rebuild inlines its neighbour test and skips nations at peace; the
+    pressure loop tests a byte mask instead of `Set.has` (12,500 lookups a tick). 0.38 → 0.19 ms.
+  - *Wars:* the daily land count adds runs of occupied cells to its map once per run (small).
+- **Result (AT):** 5-year mean **1.04 ms** (≤ 1.5), year 1 **1.92 ms** (≤ 2.4), final hash
+  **5d08e5dd**. 5 years take 46 s of wall time instead of 70 s.
+- **Tests:** 2 new and 1 extended. The span flood equals a cell-by-cell reference of the rule, for
+  a full refresh and for a partial one (pocket, ring, cells across the date line). Cell A* gives
+  the same route and cost as a plain open list popped by (f, insertion order) on 20 random
+  grids. The frontier rebuild equals its definition and the mask equals the set, also after flips.
+- **Found, not fixed:** cell A* is not exactly optimal. My first version of the A* test compared
+  it with Dijkstra and failed by 0.1% on a 16-row grid: the bound uses the narrower of the two
+  rows' cells, but a route may pass through narrower rows still. SPEC said "admissible"; it now
+  says what is true. On the watch list in BLOCKERS.
+- **What is left in year 1:** combat 0.67 ms (target tables per formation and unit type are
+  rebuilt most hours; slot poses and fire events per volley), long AI marches 0.54 ms, supply
+  0.29 ms. PLAN 7.1 owns the rest of the budget.
+- **Not verified in the browser:** nothing visible changed; the e2e stage of the gate ran.
+- **Gate:** green (420 unit, 7 sweep, 61 e2e).
+- **Next:** PLAN 1.42 (seed 109's leader-share range), then Phase 2.4.

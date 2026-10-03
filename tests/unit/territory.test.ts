@@ -138,6 +138,20 @@ describe('territory pressure and fronts (PLAN 1.14)', () => {
     w.frontier = null;
     const rebuilt = [...frontierOf(w)].sort((a, b) => a - b);
     expect(incremental).toEqual(rebuilt);
+    // The rebuild scan is the definition: a held cell with a 4-neighbour its holder is at war with.
+    const ctl = w.cells.controller;
+    const byRule: number[] = [];
+    for (let c = 0; c < W * H; c++) {
+      const x = c % W;
+      const nb = [c - W, c + W, x > 0 ? c - 1 : c + W - 1, x < W - 1 ? c + 1 : c - W + 1].filter((n) => n >= 0 && n < W * H);
+      if (ctl[c] !== 0 && nb.some((n) => ctl[n] !== 0 && w.wars.atWar(ctl[c]!, ctl[n]!))) byRule.push(c);
+    }
+    expect(rebuilt).toEqual(byRule);
+    // The byte mask is the same set (PLAN 1.42a), also after the incremental upkeep of more flips.
+    const maskCells = (): number[] => [...w.frontierMask!.keys()].filter((c) => w.frontierMask![c] === 1);
+    expect(maskCells()).toEqual(rebuilt);
+    s.step(24 * 2);
+    expect(maskCells()).toEqual([...frontierOf(w)].sort((a, b) => a - b));
     expect(perTick).toBeLessThan(25);
   });
 
