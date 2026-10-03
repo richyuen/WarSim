@@ -5,6 +5,8 @@
  *
  * Subscriptions only change what is *sent*; the sim never sees them (invariant I4).
  */
+import terrainJson from '../../data/terrain.json' with { type: 'json' };
+import { buildLandCoverage } from '../shared/landCoverage';
 import { EVENT_STRIDE } from '../shared/events';
 import {
   NATION_STRIDE,
@@ -200,9 +202,25 @@ export class SimServer {
       const { w } = SCENARIO_GEOMETRY[msg.init.scenario];
       const [geo, meta, terrain] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w)]);
       this.startSim({ ...msg.init, assets: { admin1Geometry: geo.bytes, admin1Meta: meta.bytes, terrain: terrain.bytes } }, msg.reqId);
+      void this.sendMapLayers(store);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);
+    }
+  }
+
+  /** Builds and sends the renderer's static layers (fine land coverage, terrain) once. */
+  private async sendMapLayers(store: AssetStore): Promise<void> {
+    try {
+      const mask = await store.load('landmask');
+      const world = this.requireSim().world;
+      const factor = Math.max(1, Math.round(mask.asset.width / (2 * world.cells.w)));
+      const land = buildLandCoverage(mask.bytes, mask.asset.width, mask.asset.height ?? mask.asset.width / 2, factor);
+      const terrain = { w: world.cells.w, h: world.cells.h, data: world.cells.terrain.slice() };
+      const terrainColors = terrainJson.terrain.map((t) => parseInt(t.color.slice(1), 16));
+      this.post({ type: 'mapLayers', land, terrain, terrainColors }, [land.data.buffer, terrain.data.buffer]);
+    } catch {
+      /* the cell-resolution coast stays: no fine layers */
     }
   }
 

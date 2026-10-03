@@ -1,5 +1,5 @@
 /** Map modes (SPEC §9): palette swaps over the same id textures (SPEC §8). */
-export const MAP_MODES = ['political', 'alliances', 'puppets'] as const;
+export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain'] as const;
 export type MapMode = (typeof MAP_MODES)[number];
 
 /** Nations outside any alliance (alliance mode) or puppet bloc (puppet mode), 0xRRGGBB. */

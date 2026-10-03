@@ -34,6 +34,13 @@ export class MapRenderer {
   private paletteDirty = true;
   private readonly vao: WebGLVertexArrayObject;
   opts: Required<MapRendererOptions>;
+  /** Fine land coverage and terrain (PLAN 1.28b); 1×1 placeholders until the worker sends them. */
+  private landTex: WebGLTexture;
+  private terrainTex: WebGLTexture;
+  private hasLand = false;
+  private terrainColors = new Float32Array(12 * 3);
+  /** 0 = palette fills (political, alliances, puppets), 1 = terrain colours. */
+  fillMode = 0;
 
   constructor(gl: WebGL2RenderingContext, w: number, h: number, opts: MapRendererOptions) {
     this.gl = gl;
@@ -48,6 +55,36 @@ export class MapRenderer {
     gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, 256, 256);
     this.setFilter(gl.NEAREST);
     this.vao = gl.createVertexArray()!;
+    this.landTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.LINEAR);
+    this.terrainTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
+  }
+
+  private makeTexture(internal: number, format: number, type: number, w: number, h: number, data: Uint8Array, filter: number): WebGLTexture {
+    const gl = this.gl;
+    const t = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, internal, w, h, 0, format, type, data);
+    this.setFilter(filter);
+    return t;
+  }
+
+  /** Fine land coverage (0..255 land fraction per texel) for the coastline. */
+  setLand(w: number, h: number, data: Uint8Array): void {
+    this.gl.deleteTexture(this.landTex);
+    this.landTex = this.makeTexture(this.gl.R8, this.gl.RED, this.gl.UNSIGNED_BYTE, w, h, data, this.gl.LINEAR);
+    this.hasLand = true;
+  }
+
+  /** Terrain class per cell (w × h = map size) and colours per class (0xRRGGBB). */
+  setTerrain(w: number, h: number, data: Uint8Array, colors: readonly number[]): void {
+    this.gl.deleteTexture(this.terrainTex);
+    this.terrainTex = this.makeTexture(this.gl.R8UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_BYTE, w, h, data, this.gl.NEAREST);
+    colors.slice(0, 12).forEach((c, i) => {
+      this.terrainColors[i * 3] = ((c >> 16) & 255) / 255;
+      this.terrainColors[i * 3 + 1] = ((c >> 8) & 255) / 255;
+      this.terrainColors[i * 3 + 2] = (c & 255) / 255;
+    });
   }
 
   private setFilter(mode: number): void {
@@ -132,6 +169,11 @@ export class MapRenderer {
       uWrapX: this.opts.wrapX ? 1 : 0,
       uBorderPx: borderWidthPx(this.opts.borderPx, cam.scale),
       uWarp: this.opts.warp,
+      uLand: this.landTex,
+      uHasLand: this.hasLand ? 1 : 0,
+      uTerrain: this.terrainTex,
+      uMode: this.fillMode,
+      uTerrainCol: this.terrainColors,
     });
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -143,6 +185,8 @@ export class MapRenderer {
     gl.deleteTexture(this.owner);
     gl.deleteTexture(this.controller);
     gl.deleteTexture(this.paletteTex);
+    gl.deleteTexture(this.landTex);
+    gl.deleteTexture(this.terrainTex);
     gl.deleteVertexArray(this.vao);
     gl.deleteProgram(this.program.program);
   }

@@ -188,10 +188,17 @@ export interface PoliticalBuildResult {
   formations: FormationInfo[];
 }
 
+import type { LandCoverage } from './landCoverage';
+
 export type FromWorker =
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }
   | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
   | { type: 'terrain'; reqId: number; result: TerrainBuildResult }
-  | { type: 'political'; reqId: number; result: PoliticalBuildResult };
+  | { type: 'political'; reqId: number; result: PoliticalBuildResult }
+  /**
+   * Static map layers for the renderer (PLAN 1.28b), sent once after a real-geography init:
+   * land coverage for the fine coastline, the terrain layer and terrain colours (0xRRGGBB).
+   */
+  | { type: 'mapLayers'; land: LandCoverage; terrain: { w: number; h: number; data: Uint8Array }; terrainColors: number[] };

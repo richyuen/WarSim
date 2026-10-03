@@ -1588,3 +1588,25 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   pending), and the terrain map mode.
 - Plan change: 1.28 split into 1.28a (done) and 1.28b (coast, terrain mode), per PROMPT ("split
   tasks that are too large").
+
+## 2026-10-02 — PLAN 1.28b: fine coastline from the land mask; terrain map mode
+- **Coverage texture:** the worker reduces the 16384 × 8192 land mask to a 4096 × 2048 land
+  coverage texture (`buildLandCoverage`, shared) and posts it once with the terrain layer and
+  terrain colours (`mapLayers` message; `SimClient.onMapLayers`, `MapView.hasFineCoast`).
+- **Shader:**
+  - land/water from the bilinear coverage (≤ 0.5 = water);
+  - cell-water on fine land takes the strongest land id nearby;
+  - the coast line from the coverage gradient;
+  - cell-based coast lines are off when the fine layer is present.
+- **Terrain map mode** (4th map mode): bilinear blend of terrain colours, national borders kept.
+- **AT (`tests/e2e/coast1938.spec.ts`):**
+  - over Europe, texels where the mask and the cell grid disagree render by the mask: 12 fine-land
+    texels on water cells are drawn as land, and 12 fine-water texels on owned land cells as sea;
+  - terrain mode shows the desert colour over the Sahara.
+  - My first sampler found no disagreements: it required a whole uniform cell. It now samples
+    texel centres.
+- **Evidence** (`docs/evidence/1.28/`), viewed: Norway's fjords and skerries, the Greek islands,
+  the world coastline, and the terrain world map.
+- **Known:** islets more than ~2 cells from owned land show neutral grey (no owned cell in the 4×4
+  window). GPU cost on the real 1938 map is not benched; bench A uses a synthetic map without the
+  land layer.

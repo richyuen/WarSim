@@ -890,6 +890,15 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   (d / fwidth(d)). A bounded value-noise domain warp (≤ 0.32 cell) makes borders organic.
   Occupation hatching uses the same weights. The coastline will come from the fine land-mask
   pyramid.
+  Since PLAN 1.28b the coastline comes from the 16384 × 8192 land mask:
+  - The worker reduces it once to a 4096 × 2048 coverage texture (land fraction of each 4×4-bit
+    block; `src/shared/landCoverage.ts`) and posts it with the terrain layer (`mapLayers`).
+  - The shader samples coverage bilinearly: water at ≤ 0.5. Land the cell rule called water takes
+    the strongest land id nearby (unclaimed land is neutral grey).
+  - The coast line uses the coverage gradient; the cell-based coast lines are off once the fine
+    layer is present.
+  - Terrain map mode (`fillMode` 1) bilinearly blends the terrain colours of the 4 nearest cells
+    and keeps national borders.
   Since PLAN 1.28a the border distance is d/|∇d| with the gradient from the analytic B-spline
   derivatives, not d/fwidth(d). fwidth spiked where the second-strongest id changed between
   pixels, and is undefined inside the n > 1 branch; that drew dashed stair lines about 2 cells

@@ -19,6 +19,9 @@ import type {
   ToWorker,
 } from '../shared/protocol';
 
+/** Static map layers sent by the worker (PLAN 1.28b). */
+export type MapLayers = Extract<FromWorker, { type: 'mapLayers' }>;
+
 type Reply =
   | { status: SimStatus; bytes?: Uint8Array }
   | { provinces: ProvinceBuildResult }
@@ -57,6 +60,11 @@ export class SimClient {
       this.onSnapshot(msg.snap);
       return;
     }
+    if (msg.type === 'mapLayers') {
+      this.mapLayers = msg;
+      for (const l of this.layerListeners) l(msg);
+      return;
+    }
     const p = this.pending.get(msg.reqId);
     if (!p) return;
     this.pending.delete(msg.reqId);
@@ -91,6 +99,15 @@ export class SimClient {
   }
 
   /** Listeners must copy what they need: the snapshot's arrays are returned to the worker on the next frame. */
+  /** Static map layers from the worker (PLAN 1.28b); late listeners get the last ones at once. */
+  mapLayers: MapLayers | null = null;
+  private readonly layerListeners = new Set<(m: MapLayers) => void>();
+  onMapLayers(l: (m: MapLayers) => void): () => void {
+    this.layerListeners.add(l);
+    if (this.mapLayers) l(this.mapLayers);
+    return () => this.layerListeners.delete(l);
+  }
+
   onSnapshotReceived(l: SnapshotListener): () => void {
     this.listeners.add(l);
     return () => this.listeners.delete(l);

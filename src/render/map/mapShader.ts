@@ -39,6 +39,11 @@ uniform float uDpr;        // device px per CSS px (border width is in CSS px)
 uniform int uWrapX;
 uniform float uBorderPx;   // border width (CSS px)
 uniform float uWarp;       // domain-warp amplitude (cells), must stay < 0.5
+uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
+uniform int uHasLand;
+uniform highp usampler2D uTerrain;  // terrain class per cell
+uniform int uMode;         // 0 = palette fills, 1 = terrain colours
+uniform vec3 uTerrainCol[12];
 
 out vec4 outColor;
 
@@ -54,6 +59,15 @@ bool inMap(ivec2 c) {
 uint ctrlAt(ivec2 c) {
   c = wrapCell(c);
   return inMap(c) ? texelFetch(uController, c, 0).r : 0u;
+}
+
+uint terrainAt(ivec2 c) {
+  c = wrapCell(c);
+  return inMap(c) ? texelFetch(uTerrain, c, 0).r : 0u;
+}
+
+vec3 terrainCol(uint t) {
+  return uTerrainCol[min(int(t), 11)];
 }
 
 uint ownerAt(ivec2 c) {
@@ -144,21 +158,45 @@ void main() {
   for (int k = 0; k < n; k++) if (k != bi && acc[k] > second) { second = acc[k]; secondId = ids[k]; }
   uint best = ids[bi];
 
-  vec3 col = pal(best);
+  // Fine coastline (PLAN 1.28b): land/water from the bilinear coverage of the 16k land mask.
+  // Computed in uniform control flow so its screen derivatives are defined.
+  vec2 cellPos = vec2(uCenterCell) + local;
+  vec2 luv = vec2(fract(cellPos.x / float(uMapSize.x)), cellPos.y / float(uMapSize.y));
+  float cov = texture(uLand, luv).r;
+  float covW = max(fwidth(cov), 1e-6);
+  bool water = uHasLand == 1 ? cov <= 0.5 : best == 0u;
+  // Land the cell rule called water takes the strongest land id around it.
+  uint fid = best != 0u ? best : secondId;
+
+  vec3 col;
+  if (water) {
+    col = pal(0u);
+  } else if (uMode == 1) {
+    // Terrain mode: bilinear blend of the four nearest cells' terrain colours.
+    vec2 tq = cellPos - 0.5;
+    ivec2 t0 = ivec2(floor(tq));
+    vec2 tf = tq - floor(tq);
+    col = mix(mix(terrainCol(terrainAt(t0)), terrainCol(terrainAt(t0 + ivec2(1, 0))), tf.x),
+              mix(terrainCol(terrainAt(t0 + ivec2(0, 1))), terrainCol(terrainAt(t0 + ivec2(1, 1))), tf.x), tf.y);
+  } else {
+    col = fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid);
+  }
 
   // Occupation (controller ≠ rightful owner), smoothed with the same weights so the
   // hatched region has smooth edges and never leaks across the controller border.
-  if (occ[bi] > 0.5 * acc[bi]) {
+  if (!water && uMode == 0 && occ[bi] > 0.5 * acc[bi]) {
     float stripe = step(0.5, fract((gl_FragCoord.x + gl_FragCoord.y) / (7.0 * uDpr)));
     col = mix(col * 0.72, mix(col, pal(occOwner[bi]), 0.35), stripe);
   }
 
-  // Border between the two strongest ids, constant width in screen px.
   float d = acc[bi] - second;
   float halfW = 0.5 * uBorderPx * uDpr;
-  // |∇d| ≤ 2√2 per cell (each axis' derivative weights sum to ≤ 1 in magnitude), so pixels with
-  // d·uScale beyond (halfW + 1)·2√2 are surely off the border and skip the gradient pass.
-  if (n > 1 && d * uScale < (halfW + 1.0) * 2.83) {
+  float fade = smoothstep(0.35, 1.5, uScale / uDpr); // borders fade below ~1.5 px per cell
+  bool cellCoast = best == 0u || secondId == 0u;
+  // Borders between the two strongest ids (land–land only when the fine coast is drawn), constant
+  // width in screen px. |∇d| ≤ 2√2 per cell (each axis' derivative weights sum to ≤ 1), so
+  // pixels with d·uScale beyond (halfW + 1)·2√2 are surely off the border and skip the pass.
+  if (!water && n > 1 && !(uHasLand == 1 && cellCoast) && d * uScale < (halfW + 1.0) * 2.83) {
     // Distance to the iso-line d = 0 in device px: d / |∇d|, with ∇ per cell → per px (÷ uScale).
     vec2 gd = vec2(0.0);
     for (int j = 0; j < 4; j++) {
@@ -170,12 +208,15 @@ void main() {
       }
     }
     float pxDist = d * uScale / max(length(gd), 1e-6);
-    float a = 1.0 - smoothstep(halfW - 0.5, halfW + 0.5, pxDist);
-    // Fade borders out when cells are smaller than ~1.5 px (strategic overview).
-    a *= smoothstep(0.35, 1.5, uScale / uDpr);
-    bool coast = best == 0u || secondId == 0u;
-    vec3 lineCol = coast ? col * 0.8 : mix(col, vec3(0.06, 0.06, 0.08), 0.8);
-    col = mix(col, lineCol, a * (coast ? 0.55 : 1.0));
+    float a = (1.0 - smoothstep(halfW - 0.5, halfW + 0.5, pxDist)) * fade;
+    vec3 lineCol = cellCoast ? col * 0.8 : mix(col, vec3(0.06, 0.06, 0.08), 0.8);
+    col = mix(col, lineCol, a * (cellCoast ? 0.55 : 1.0));
+  }
+  // Fine coast line on the land side.
+  if (uHasLand == 1 && !water) {
+    float cpx = (cov - 0.5) / covW;
+    float a = 1.0 - smoothstep(halfW - 0.5, halfW + 0.5, cpx);
+    col = mix(col, col * 0.62, a * 0.8);
   }
   outColor = vec4(col, 1.0);
 }

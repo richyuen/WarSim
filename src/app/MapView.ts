@@ -20,6 +20,8 @@ export class MapView {
   readonly controller: CameraController;
   /** Current map mode and the nation data it is derived from (latest snapshot). */
   mapMode: MapMode = 'political';
+  /** True once the worker's fine coast and terrain layers arrived (PLAN 1.28b). */
+  hasFineCoast = false;
   private readonly ownColor = new Map<number, number>();
   private readonly allianceLeader = new Map<number, number>();
   private readonly overlordOf = new Map<number, number>();
@@ -49,6 +51,12 @@ export class MapView {
     this.proxies = new ProxyRenderer(gl, drawUnitAtlas());
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
+    sim.onMapLayers((m) => {
+      this.map.setLand(m.land.w, m.land.h, m.land.data);
+      this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
+      this.hasFineCoast = true;
+      this.dirty = true;
+    });
     this.raf = requestAnimationFrame((t) => this.frame(t));
   }
 
@@ -108,6 +116,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
+    this.map.fillMode = mode === 'terrain' ? 1 : 0;
     this.applyPalette();
     this.dirty = true;
   }
