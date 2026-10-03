@@ -73,3 +73,9 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   involved. If it recurs, look at the page boot under 4 parallel workers.
   **Recurred 2026-10-03** on a 4-core machine in every gate run, with `precision` and `camera`:
   workers now scale to the cores and the spec has a 90 s timeout (PROGRESS of that date).
+- e2e boot stall (2026-10-03, 4-core machine, 2 workers): `coast1938.spec.ts:91` and
+  `nationPanel1938.spec.ts:15` waited more than 60 s for the first frame of
+  `/?scenario=1938&paused=1` in one gate run; alone they pass in 5.5 s and 11.6 s, and the gate
+  before and after passed all 61. Paused pages run no tick, so the A* change under test was not
+  involved. Contention does not explain 10×: if it recurs, keep the trace
+  (`test-results/…/trace.zip`) and look at the worker boot handshake.

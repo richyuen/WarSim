@@ -157,7 +157,7 @@ export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, s
       corridor[node] = 1;
       for (const nb of pg.adj[node]!) corridor[nb] = 1;
     }
-    const inCorridor = findPath(g, mobility, start, goal, (c) => corridor[pg.nodeOf[c]!] === 1);
+    const inCorridor = findPath(g, mobility, start, goal, { nodeOf: pg.nodeOf, on: corridor });
     if (inCorridor) return inCorridor;
   }
   return findPath(g, mobility, start, goal);

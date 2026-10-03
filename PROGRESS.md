@@ -2653,3 +2653,21 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Change:** workers = half the cores, at most 4 (4 on any machine of 8 or more cores, as
   before); `speed.spec.ts` gets `test.setTimeout(90_000)` like `precision.spec.ts`. No
   assertion and no poll window changed.
+
+## 2026-10-03 — PLAN 1.42f, step 3: cell A* reads its corridor and its stamps from typed arrays
+- **Measured first** (CPU profile, seed 99, year 1): route searches are 19% of the tick, almost
+  all of it the cell A* loop (`findPath` 18% self); the coarse province search is 1.1%, so a
+  heap for it would not pay. A count of year 1: 5,868 route requests, 2,438 long (province
+  corridor first), no corridor ever too tight, and only 150 repeats of the same request, so a
+  route cache would not pay either.
+- **Change, no behaviour change:** the corridor is passed as `nodeOf` and a node mask, read in
+  the loop, instead of a callback called per neighbour (and twice more per diagonal step); the
+  `seen` and `closed` stamps are one array (2·gen seen, 2·gen + 1 closed), one fewer random read
+  per neighbour in the 2 M-cell grid.
+- **Result:** replaying the 5,868 requests of year 1 (scratch bench, 5 rounds): 6.16–6.49 s →
+  5.86–6.11 s, every route identical. Seed 99 × 5 years on this machine: mean 3.0146 → 2.9852 ms
+  (−1.0%), all five yearly hashes unchanged (f57f70ac). Measured on a machine 1.9× slower than
+  the one of the budget: in its terms about 1.56 → 1.54 ms. **1.42f stays open.**
+- **Next:** a tighter A* bound (octile instead of straight line): 15% off the replay, no route
+  dearer, 221 of 5,868 cheaper (by ≤ 1.4%; the straight-line bound was not quite a lower
+  bound), 112 paths different. A rule change: its own commit, ADR and new pin.

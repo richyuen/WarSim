@@ -40,8 +40,11 @@ export interface NavGrid {
    * over a row range is then the smaller endpoint, so `boundKm` needs no loop (same value).
    */
   endpointMin: boolean;
-  /** A* scratch, reused across searches (derived; generation-stamped so it is never cleared). */
-  scratch: { g: Float64Array; came: Int32Array; seen: Uint32Array; closed: Uint32Array; gen: number } | null;
+  /**
+   * A* scratch, reused across searches (derived; generation-stamped so it is never cleared).
+   * `stamp` is 2·gen when a cell is seen by search `gen`, 2·gen + 1 once it is closed.
+   */
+  scratch: { g: Float64Array; came: Int32Array; stamp: Uint32Array; gen: number } | null;
 }
 
 /** Row scales for a Miller w×h grid (cell height in radians of latitude × R, width × cos φ). */
@@ -241,28 +244,40 @@ export interface PathResult {
   cost: number;
 }
 
+/** Restricts a search to the cells whose node (`nodeOf`) is marked in `on` (a province corridor). */
+export interface Corridor {
+  nodeOf: Uint32Array;
+  on: Uint8Array;
+}
+
 /**
- * Cell A* from `start` to `goal` for a mobility class. `allowed(cell)` further restricts the
- * search (e.g. a province corridor). Returns null when the goal is unreachable.
+ * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search.
+ * Returns null when the goal is unreachable.
  */
-export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, allowed?: (cell: number) => boolean): PathResult | null {
+export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor): PathResult | null {
   const costRow = MOVE_COST[mobility]!;
   const { w, h, wrapX, terrain, kx, ky, kd } = g;
-  const passable = (c: number): boolean => Number.isFinite(costRow[terrain[c]!]!) && (allowed === undefined || allowed(c));
+  // The corridor as two typed arrays read in the loop (PLAN 1.42f: a callback per neighbour and
+  // two more per diagonal step were a share of every long search). Same test as before.
+  const nodeOf = corridor?.nodeOf;
+  const on = corridor?.on;
+  const passable = (c: number): boolean => Number.isFinite(costRow[terrain[c]!]!) && (on === undefined || on[nodeOf![c]!] === 1);
   if (!passable(start) || !passable(goal) || g.component[start] !== g.component[goal]) return null;
   const hScale = MIN_COST[mobility]!;
   // Typed scratch with generation stamps instead of Maps (review after PLAN 1.25: pathfinding
   // was a quarter of the tick); the search and its tie-breaking are unchanged.
   const n0 = w * h;
-  if (!g.scratch || g.scratch.g.length !== n0) g.scratch = { g: new Float64Array(n0), came: new Int32Array(n0), seen: new Uint32Array(n0), closed: new Uint32Array(n0), gen: 0 };
+  // One stamp array for seen and closed (PLAN 1.42f: one fewer random read per neighbour in a
+  // 2 M-cell grid).
+  if (!g.scratch || g.scratch.g.length !== n0) g.scratch = { g: new Float64Array(n0), came: new Int32Array(n0), stamp: new Uint32Array(n0), gen: 0 };
   const sc = g.scratch;
-  if (++sc.gen === 0xffffffff) {
-    sc.seen.fill(0);
-    sc.closed.fill(0);
+  if (++sc.gen === 0x7fffffff) {
+    sc.stamp.fill(0);
     sc.gen = 1;
   }
-  const gen = sc.gen;
-  const { g: gs, came, seen, closed } = sc;
+  const SEEN = 2 * sc.gen;
+  const CLOSED = SEEN + 1;
+  const { g: gs, came, stamp } = sc;
   const open = OPEN;
   open.clear();
   // boundKm to the goal, inlined for the common grid (row scales shrinking away from the equator).
@@ -273,13 +288,13 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
   const fast = g.endpointMin;
   const half = w / 2;
   gs[start] = 0;
-  seen[start] = gen;
+  stamp[start] = SEEN;
   open.push(boundKm(g, start, goal) * hScale, start);
   while (open.size > 0) {
     const c = open.pop();
     if (c === goal) break;
-    if (closed[c] === gen) continue;
-    closed[c] = gen;
+    if (stamp[c] === CLOSED) continue;
+    stamp[c] = CLOSED;
     const cx = c % w;
     const cy = (c - cx) / w;
     const gc = gs[c]!;
@@ -294,17 +309,18 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
         nx = (nx + w) % w;
       }
       const n = ny * w + nx;
-      if (closed[n] === gen) continue;
+      const sn = stamp[n]!;
+      if (sn === CLOSED) continue;
       const cost = costRow[terrain[n]!]!;
-      if (cost === Infinity || (allowed !== undefined && !allowed(n))) continue;
+      if (cost === Infinity || (on !== undefined && on[nodeOf![n]!] !== 1)) continue;
       // No corner cutting: a diagonal step needs both orthogonal neighbours passable.
       if (dx !== 0 && dy !== 0 && (!passable(cy * w + ((cx + dx + w) % w)) || !passable(ny * w + cx))) continue;
       // stepKm, inlined: the row scales of the upper of the two rows.
       const row = dy > 0 ? cy : ny;
       const t = gc + (dy === 0 ? kx[row]! : dx === 0 ? ky[row]! : kd[row]!) * cost;
-      if (seen[n] !== gen || t < gs[n]!) {
+      if (sn !== SEEN || t < gs[n]!) {
         gs[n] = t;
-        seen[n] = gen;
+        stamp[n] = SEEN;
         came[n] = c;
         let bound: number;
         if (fast) {
@@ -318,7 +334,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
       }
     }
   }
-  if (seen[goal] !== gen) return null;
+  if (stamp[goal]! < SEEN) return null;
   const total = gs[goal]!;
   const cells = [goal];
   for (let c = goal; c !== start; ) {
