@@ -57,6 +57,8 @@ export type ToWorker =
   | { type: 'inspect'; reqId: number }
   /** PLAN 1.34a: the history log as JSON `HistoryRow[]` in the reply bytes. */
   | { type: 'history'; reqId: number }
+  /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
+  | { type: 'stats'; reqId: number }
   | { type: 'save'; reqId: number }
   | { type: 'load'; reqId: number; bytes: Uint8Array }
   | { type: 'speed'; speed: Speed }
@@ -229,7 +231,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string }[]; aiEnabled: boolean; player: number };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {

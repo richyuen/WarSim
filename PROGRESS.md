@@ -1895,3 +1895,27 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
     1 failed in year 0 without the fix; all three pass with it.
 - **Parity:** row 61 → partial.
 - **Plan change:** 1.34 split; 1.34b is statistics series + charts.
+
+## 2026-10-02 — PLAN 1.34b: statistics series and charts
+- **Sim:** `StatSeries` (`src/sim/stats.ts`) is a new world part. `statsSystem` runs last in
+  the tick and samples every living nation at each month start: land, income, gold, men,
+  casualties. Saved as f32, with values f32-rounded in memory too, so load equals memory
+  exactly.
+- **Casualties:** new nation column `casualties`, counted in `settleFormation` and in the bare
+  `bleedFormation` path. Disbanding is not counted.
+- **Worker:** `stats` request returns raw f32 bytes; `SimClient.statSeries()`.
+- **Shared:** `seriesOf`, `topNations` (`src/shared/statSeries.ts`).
+- **UI:** `StatsChart` (Charts button in the ranking): metric picker (land, income, treasury,
+  army, casualties), SVG lines in the nations' colours for the top 5 at the latest sample plus
+  the selected nation (thicker), legend, month-year axis labels; an empty note before the
+  first sample.
+- **AT:**
+  - Unit (`tests/unit/stats.test.ts`): every month start of a 92-day run with a God
+    Germany–Poland war holds one sample per living nation equal to the sim at that tick;
+    casualties > 0 and non-decreasing; save/load exact and replay identical; helpers.
+  - e2e (`tests/e2e/charts1938.spec.ts`): empty before a month; after 92 days, 6 lines (top 5
+    by land = the worker rows' top 5, plus Poland highlighted), 4 points each (1 Jan to 1 Apr);
+    every metric renders.
+  - My first expectation of 3 points forgot the 1 January sample.
+- **Evidence:** `docs/evidence/1.34/charts.png`, viewed. Both axis labels read "1938" on short
+  runs, so they now show month and year.

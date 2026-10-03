@@ -467,3 +467,28 @@ body {
   min-width: 7.5rem;
   opacity: 0.65;
 }
+
+/* Statistics charts (PLAN 1.34b). */
+.stats-chart .chart-svg {
+  width: 100%;
+  height: auto;
+  margin-top: 0.3rem;
+}
+.chart-axis {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1;
+}
+.chart-label {
+  fill: rgba(241, 230, 210, 0.75);
+  font-size: 10px;
+}
+.chart-line {
+  fill: none;
+  stroke-width: 1.6;
+}
+.chart-line.selected {
+  stroke-width: 3;
+}
+.chart-legend {
+  margin-top: 0.3rem;
+}

@@ -13,12 +13,15 @@ export function StatsRanking({
   selected,
   onMetric,
   onSelect,
+  onCharts,
 }: {
   nations: NationStat[];
   metric: RankMetric;
   selected: number;
   onMetric: (m: RankMetric) => void;
   onSelect: (id: number) => void;
+  /** Opens the charts (PLAN 1.34b). */
+  onCharts?: () => void;
 }) {
   const v = (n: NationStat): number => rankValue(n, metric);
   return (
@@ -32,6 +35,11 @@ export function StatsRanking({
             </option>
           ))}
         </select>
+        {onCharts ? (
+          <button type="button" class="god-btn" data-testid="ranking-charts" onClick={onCharts}>
+            {t('stats.charts')}
+          </button>
+        ) : null}
       </header>
       <ul class="ranking-list">
         {rankNations(nations, metric)

@@ -1,6 +1,9 @@
 import { BottomBar } from '../ui/BottomBar';
 import { MapLegend } from '../ui/MapLegend';
 import { HistoryPanel } from '../ui/HistoryPanel';
+import { StatsChart } from '../ui/StatsChart';
+import { dateOfTick } from '../shared/calendar';
+import { t, type MessageKey } from '../ui/i18n';
 import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
@@ -31,6 +34,19 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
         onToggleHistory={stats ? () => hud.toggleHistory() : undefined}
         playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
+      {stats && hud.showCharts.value ? (
+        <StatsChart
+          load={() => hud.sim.statSeries()}
+          refreshKey={stats.tick}
+          nations={[...stats.nations.map((n) => ({ id: n.id, name: n.name, color: n.color })), ...stats.dead]}
+          selected={hud.selected.value}
+          labelOf={(tk) => {
+            const d = dateOfTick(hud.startDay, tk);
+            return t('chart.monthYear', { month: t(`month.${d.month}` as MessageKey), year: d.year });
+          }}
+          onClose={() => hud.toggleCharts()}
+        />
+      ) : null}
       {stats && hud.showHistory.value ? (
         <HistoryPanel
           load={() => hud.sim.history()}
@@ -42,7 +58,7 @@ export function App({ hud, player, nameOf }: { hud: Hud; player: PlayerControl |
       ) : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} /> : null}
       {stats && hud.showStats.value ? (
-        <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} />
+        <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />
       ) : null}
       {nation ? (
         <NationPanel

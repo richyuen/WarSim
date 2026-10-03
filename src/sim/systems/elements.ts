@@ -75,7 +75,10 @@ export function bleedFormation(world: World, fid: number, fraction: number): voi
   const els = elementIndex(world).get(fid);
   if (!els) {
     const c = world.formations.cols;
-    c.strength[fid] = Math.floor(c.strength[fid]! * (1 - fraction));
+    const before = c.strength[fid]!;
+    c.strength[fid] = Math.floor(before * (1 - fraction));
+    const n = c.nation[fid]!;
+    if (world.nations.has(n)) world.nations.cols.casualties[n] = world.nations.cols.casualties[n]! + (before - c.strength[fid]!);
     return;
   }
   for (const e of els) applyLoss(world, e, world.elements.cols.strength[e]! * fraction);
@@ -86,6 +89,16 @@ export function bleedFormation(world: World, fid: number, fraction: number): voi
 export function settleFormation(world: World, fid: number): void {
   const list = elementIndex(world).get(fid);
   if (!list) return;
+  const fc = world.formations.cols;
+  const nation = fc.nation[fid]!;
+  const before = fc.strength[fid]!;
+  settleElements(world, fid, list);
+  // Men lost since the last settle count as casualties (PLAN 1.34b statistics).
+  const after = world.formations.has(fid) ? fc.strength[fid]! : 0;
+  if (before > after && world.nations.has(nation)) world.nations.cols.casualties[nation] = world.nations.cols.casualties[nation]! + (before - after);
+}
+
+function settleElements(world: World, fid: number, list: number[]): void {
   const e = world.elements;
   const live = list.filter((id) => {
     if (e.cols.strength[id]! > 0) return true;

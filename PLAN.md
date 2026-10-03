@@ -149,7 +149,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [x] 1.34a History log (saved), History panel with filters + CSV/JSON export.
   (Split from 1.34, 2026-10-02.)
   AT: export file contents validated in e2e; filters reduce rows correctly.
-- [ ] 1.34b Statistics: per-nation series (land, income, gold, military size by domain,
+- [x] 1.34b Statistics: per-nation series (land, income, gold, military size by domain,
   casualties) sampled monthly + charts.
   AT: series match the sim at sampled months (unit); e2e chart renders the selected nations.
 - [ ] 1.35 Editor: brush/bucket/line, undo/redo, target mask.

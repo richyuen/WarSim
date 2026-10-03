@@ -154,6 +154,11 @@ export class SimServer {
       case 'history':
         this.reply(msg.reqId, this.historyRows());
         break;
+      case 'stats': {
+        const rows = Float32Array.from(this.requireSim().world.stats.rows);
+        this.reply(msg.reqId, new Uint8Array(rows.buffer));
+        break;
+      }
       case 'save':
         this.reply(msg.reqId, this.requireSim().save());
         break;
@@ -425,9 +430,9 @@ export class SimServer {
     this.statsTick = world.tick;
     this.lastStatsMs = nowMs;
     const { nations, wars } = this.buildStats(world, false);
-    const dead: { id: number; name: string }[] = [];
+    const dead: { id: number; name: string; color: number }[] = [];
     world.nations.forEach((id) => {
-      if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id) });
+      if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id), color: world.nations.cols.color[id]! });
     });
     this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player }, []);
   }

@@ -98,6 +98,13 @@ export class Hud {
     this.sim.setSpeed(speedOfLevel(l));
   }
 
+  /** Statistics charts panel (PLAN 1.34b). */
+  readonly showCharts = signal(false);
+
+  toggleCharts(): void {
+    this.showCharts.value = !this.showCharts.value;
+  }
+
   /** History log panel (PLAN 1.34a). */
   readonly showHistory = signal(false);
 

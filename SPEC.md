@@ -1005,6 +1005,14 @@ interpolation changes something.
   puppets; annex; preset revolts; map import (image → terrain/owner via palette
   mapping); flag editor with presets (tricolours, crosses, cantons, emblems from
   our own SVG set); save/load scenario files.
+- **Stats** (implemented PLAN 1.34b):
+  - `src/sim/stats.ts`: a monthly sample per living nation [tick, nation, land, income, gold,
+    men, casualties], saved as f32 `stats.rows`. It is the last system of the tick.
+  - Casualties are counted in `settleFormation` as men lost since the last settle (combat,
+    attrition, desertion).
+  - The worker serves the rows raw (`stats` request); `StatsChart` (Charts button in the
+    ranking) draws SVG lines for the top 5 at the latest sample + the selected nation.
+  - Naval/air military sizes join with their phases.
 - **Stats**: per-nation series (land, income, gold, military size by domain,
   casualties, warheads), ranking list, charts.
 - **History log** (implemented PLAN 1.34a):

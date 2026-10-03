@@ -231,6 +231,13 @@ export class SimClient {
     return (await this.status({ type: 'hash' })).status;
   }
 
+  /** Statistics series (PLAN 1.34b): flat STAT_STRIDE f32 records. */
+  async statSeries(): Promise<Float32Array> {
+    const r = await this.status({ type: 'stats' });
+    if (!r.bytes) throw new Error('stats reply without bytes');
+    return new Float32Array(r.bytes.slice().buffer); // own, aligned copy
+  }
+
   /** The history log (PLAN 1.34a). */
   async history(): Promise<HistoryRow[]> {
     const r = await this.status({ type: 'history' });

@@ -15,6 +15,7 @@ import { Provinces } from './provinces';
 import { Buffs } from './buffs';
 import { Battles } from './battles';
 import { History } from './history';
+import { StatSeries } from './stats';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 
@@ -70,6 +71,8 @@ export const NATION_SCHEMA = {
   ceLocked: 'u8',
   revivalAt: 'u32',
   brokeMonths: 'u16',
+  /** Men lost in combat and attrition, cumulative (PLAN 1.34b statistics). */
+  casualties: 'f64',
 } as const;
 
 /** Production queue rows (PLAN 1.10): one formation in training. */
@@ -350,6 +353,8 @@ export class World {
   battles = new Battles();
   /** History log (PLAN 1.34a). */
   history = new History();
+  /** Monthly statistics series (PLAN 1.34b). */
+  stats = new StatSeries();
   /**
    * Derived (not state): a full supply refresh is needed (load, overlords, raw layer writes; code
    * that writes `cells.controller` directly must set it). Cell-level changes through
@@ -443,7 +448,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history, this.stats];
   }
 
   cellIndex(x: number, y: number): number {
