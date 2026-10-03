@@ -194,6 +194,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   slot stayed empty until the treasury covered a panzer division (3,829 gold against 1,001)
   plus three months of income: 9 Soviet formations in 30 months of war on seed 109. Same four
   seeds: all pass all seven criteria (leader-share range 4.6–14.7 points, 2–4 newcomers).
+- **Sweep on unseen seeds 201–210** (`docs/sweeps/2026-10-03-sweep-b1c.md`): **7 of 10** pass;
+  three fail churn or the leader-share range. The four-seed check was noise: these two rules
+  are kept because they remove real defects (coalitions that could not fight, an idle build
+  queue), not because they close B1. They do not.
 
 ### ADR-49 · 2026-10-03 · accepted — Parity-only gate for document commits; critic remediation restarts the critic count (user request)
 

@@ -2413,3 +2413,31 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   formations alive).
 - **Gate:** green (427 unit, 7 sweep, 61 e2e). Not verified in the browser: sim rule only.
 - **Next:** PLAN 1.42: `npm run sweep -- --first 201 --tag b1c` on the final code.
+
+## 2026-10-03 — PLAN 1.42, second sweep on unseen seeds: 7 of 10, B1 still open
+- **Sweep** (`npm run sweep -- --first 201 --tag b1c`, code of d5bd6ea, 20 min for 10 seeds ×
+  50 years; it took 36 min before PLAN 1.42a): seeds 204, 208 and 209 fail.
+  - 204: 1 newcomer in the top ten. 208: 1 newcomer, leader range 2.4. 209: leader range 2.6.
+  - The other five criteria pass on every seed (land moving 3.8–9.8%, 93–145 nations alive).
+- **This is not better than the first attempt** (9 of 10 on seeds 101–110). The four seen seeds
+  all passed before this sweep, and that told me nothing: one seed's 50-year numbers swing by
+  more than the margins I was tuning for (seed 108's leader range was 4.9, 10.0 and 4.6 in
+  three versions of the code).
+- **What every run has in common** (24 runs of 50 years so far): the largest nation is the
+  Soviet Union in every year. It starts at 27% and ends between 14% and 26%. It never grows,
+  and nobody grows towards it: the United States (7–9%, 876k gold unspent at year 25 on seed
+  109, aggression 15) and Canada sit still. The criteria pass when revolts happen to chip
+  enough off the Soviet Union and fail when they do not.
+- **Candidates for the third attempt** (not tried; each acts on every seed):
+  1. *Peace terms that move land.* Wars against the Soviet Union end at score 0–30 and the
+     winner annexes round(|score|/100 × occupied): almost nothing. Check what a won war
+     actually transfers, and whether the 5-year deadlock end returns all occupied land.
+  2. *A giant with no army should fall apart or be carved up.* 21k men holding 170,000 cells:
+     the abstract garrison of 1 per frontier cell and the 16-hour hold are the only defence, and
+     attackers still do not get through. Measure the front's advance against an undefended
+     Soviet border from the year-25 checkpoint of seed 109.
+  3. *Rivals that grow:* aggression and war utility of the other great powers (the USA never
+     acts), so that the top of the table can change hands at all.
+- **Report committed** as FAILING. PLAN 1.42 stays unchecked, with the seeds for the next sweep
+  moved to 301+ (201–210 are seen now).
+- **Next iteration:** PLAN 1.42, third attempt, starting with the measurement in candidate 2.

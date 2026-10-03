@@ -200,7 +200,14 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
   the leader-share range (2.7 points). Do not move the thresholds. (The tick time that
   ADR-47 raised is back under budget since PLAN 1.42a.)
-  AT: `npm run sweep -- --first 201 --tag <name>` (seeds no tuning has seen) all green.
+  Second attempt, 2026-10-03, after 1.42b and 1.42c: seeds 201–210, **7 of 10 green**
+  (`docs/sweeps/2026-10-03-sweep-b1c.md`, FAILING): 204 and 208 have one newcomer in the top
+  ten, 208 and 209 a leader-share range of 2.4 and 2.6 points. Seeds 201–210 are now seen.
+  The leader is the Soviet Union in every year of all 24 runs to date and it only shrinks, by
+  an amount that depends on the seed's luck with revolts: the next attempt needs a mechanism
+  that acts on every seed (see PROGRESS 2026-10-03 for candidates), not more tuning. A third
+  failed attempt goes to BLOCKERS (PROMPT step 8).
+  AT: `npm run sweep -- --first 301 --tag <name>` (seeds no tuning has seen) all green.
 
 ## Phase 2 — Semantic zoom
 
