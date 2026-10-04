@@ -4528,3 +4528,32 @@ of what was done since the last pass.
   the tick's end came 120 ms late for it).
 - **Tests:** 1 e2e restated and widened (4 parts for 3). 607 unit tests in 79 files, 97 e2e.
 - **Next:** PLAN 2.7u (city names keep clear of the T1 markers).
+
+## 2026-10-04 — PLAN 2.7u: city names keep clear of the T1 markers
+
+- **The problem:** at T1 the markers were drawn over the city names. Over central Europe at
+  the 1938 start: something over the letters of 12 of the 30 names shown at 1800 m/px, 8 of 25
+  at 1000, 1 of 13 at 500.
+- **Test first** (`cityNames1938`, a third test): by pixels, at six views; failed with those
+  12 names.
+- **Fix:** the names' obstacles (ADR-76) now include the T1 markers: the box with its bar and
+  number, a stack's tag, the Major Battles. Not the order arrows, by decision.
+- **Now:** nothing drawn over the letters of a name at any of the six views. Names shown, of
+  those shown before: central Europe 28 of 30, 23 of 25, 13 of 13; Poland 21 of 23, 14 of 16,
+  9 of 9. Running at top speed for four seconds at 1000 m/px: no jump; 18 to 25 names shown.
+- **A second cause found by an old spec:** `labelFades1938` failed at 2000 m/px, where the
+  counters hand over to the markers: 23 opacities not at rest after 352 ms. The obstacles
+  changed when the coming layer was half there, so the names began their own fades in the
+  middle of the handover. Which layer counts is now the one that is shown or coming in, from
+  the handover's first frame; the counters of 2.7r are judged the same way. The spec passes
+  unchanged.
+- **Pictures looked at** (`docs/evidence/2.7/city-names-t1-*.png`): at 1800 and 1000 m/px
+  the names stand beside the markers. Prague's name is missing at 1800 and Warsaw's at 1000:
+  their garrisons stand on every place by the dot. Two months into the game the map over
+  Austria is mostly order arrows. Both on the watch list.
+- **Unchanged:** `fades1938`, `handover1938`, `flagsClear1938`, `declutter1938`,
+  `counters1938`, `markers1938`, `markerStacks1938`, `lateFrame1938`.
+- **Tests:** 1 new e2e. 607 unit tests in 79 files, 98 e2e.
+- **No assertion restated** in this task: `labelFades1938` passes as it was.
+- **The five tasks of the third read are done** (2.7v, w, x, y, u). **Next:** the review pass
+  (five iterations since the last: 2.7v to 2.7u), with its independent read; then PLAN 2.8.

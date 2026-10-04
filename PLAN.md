@@ -769,7 +769,7 @@ quick sweep as a smoke test.
   between two readings and 0.60 between two frames; no frame drawn on the way. Now never ahead of
   the clock nor behind it (0.000 and 0.000, in three runs); a frame asked for straight after the
   pause's own is drawn; 3 or 4 frames drawn on the way, the last at 1.
-- [ ] 2.7u City names keep clear of the T1 markers, as they do of the T0 counters (PLAN 2.7r left it; it
+- [x] 2.7u City names keep clear of the T1 markers, as they do of the T0 counters (PLAN 2.7r left it; it
   was on the watch list). Seen in the review pass of 2026-10-04 in the T1 evidence made again
   (`docs/evidence/2.1/markers-poland-1000m.png`: Warsaw and Poznań under markers).
   Measured at the 1938 start by the pixel check of PLAN 2.7t (the overlay inside the letters of each
@@ -780,6 +780,13 @@ quick sweep as a smoke test.
   pixel drawn inside the letters of a city name that is shown; at least four in five of today's names
   are shown (24, 20 and 10 over central Europe); with the game running, no name's box moves while
   it shows; screenshots viewed.
+  Done 2026-10-04 (ADR-76, addendum): the names' obstacles are the unit layer that is shown or coming
+  in: the T1 markers (box, bar and number, a stack's tag) and the Major Battles as the T0 counters
+  were. `tests/e2e/cityNames1938.spec.ts`, the third test. Nothing drawn over the letters of a name
+  at any of the six views; names shown over central Europe 28 of 30, 23 of 25, 13 of 13, over Poland
+  21 of 23, 14 of 16, 9 of 9. Running at top speed at 1000 m/px for four seconds: no jump, 18 to 25
+  names shown. Left out: Prague at 1800 m/px and Warsaw at 1000, with Turin, Kiev and Kraków
+  (BLOCKERS). `docs/evidence/2.7/city-names-t1-*.png`, viewed.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

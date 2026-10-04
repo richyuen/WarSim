@@ -235,7 +235,8 @@ export class CounterLayer {
   /** Counters drawn last frame (tests). */
   drawn: DrawnCounter[] = [];
   /** Every box drawn last frame, CSS px: one per copy of a counter on a looping map (capital flags keep clear of them). */
-  boxes: { x: number; y: number; w: number; h: number; alpha: number }[] = [];
+  /** `alpha`: the opacity drawn; `own`: the counter's own part of it, without the layer's (a fold or a split in flight). */
+  boxes: { x: number; y: number; w: number; h: number; alpha: number; own: number }[] = [];
 
   /** True while a split/merge or a fold animation runs (the view keeps redrawing). */
   animating(now: number): boolean {
@@ -411,7 +412,7 @@ export class CounterLayer {
         const y = Math.round(sy - h / 2);
         if (sx - (w / 2) * size > vw || sy - (h / 2) * size > vh || sx + (w / 2) * size < 0 || sy + (h / 2) * size < 0) continue;
         box ??= [sx + (x - sx) * size, sy + (y - sy) * size];
-        this.boxes.push({ x: sx + (x - sx) * size, y: sy + (y - sy) * size, w: w * size, h: h * size, alpha: a });
+        this.boxes.push({ x: sx + (x - sx) * size, y: sy + (y - sy) * size, w: w * size, h: h * size, alpha: a, own: it.alpha });
         ctx.save();
         ctx.globalAlpha = a;
         if (size !== 1) {

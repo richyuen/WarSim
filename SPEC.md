@@ -361,6 +361,12 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   stands on it; when something does, it takes the first free place at once and cross-fades from
   the old one over 250 ms. A new place must be clear of a counter by 2 px; a place held only has
   to be untouched. The names are laid out after the frame's counters and flags.
+  *At T1 (PLAN 2.7u):* the names keep clear of the markers in the same way: of each marker's box
+  with the bar and the number under it, of a stack's tag, and of the Major Battles; not of the
+  order arrows. Which unit layer counts is the one that is shown or coming in, from the first
+  frame in which the coming layer is drawn (one frame after the camera's step: in that of the
+  step neither layer counts), so that the names change places with the handover and not after
+  it.
   *The order of the label layers (PLAN 2.7t):* on one canvas under the overlay, the curved
   nation names and over them the city dots and names: a small name over a large one reads. On
   the overlay above: the unit layers, then the capital flags.

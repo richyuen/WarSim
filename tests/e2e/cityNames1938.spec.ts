@@ -152,3 +152,118 @@ test('nothing is drawn over the letters of a city name: not a nation name, a cou
     expect(got.covered, `${mPerPx} m/px`).toEqual([]);
   }
 });
+
+// PLAN 2.7u: city names keep clear of the T1 markers, as they do of the T0 counters. The markers
+// are drawn over the city names, and a nation's armies stand where its cities are: over central
+// Europe at the 1938 start something was drawn over the letters of 12 of the 30 names shown at
+// 1800 m/px (Bern and Turin wholly, Berlin by 70%), of 8 of 25 at 1000 m/px and of 1 of 13 at 500.
+//
+// Read from the canvases as in the test above: the overlay has no pixel drawn inside the letters
+// of a name that is shown. And the names are not simply left out: four in five of those that
+// were shown before, covered or not.
+test('city names keep clear of the T1 markers, and are not simply left out', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.7') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  const [PX, PY] = cellOf(20, 52, W, H); // Poland
+
+  // Names shown before, covered or not: central Europe 30, 25 and 13; Poland 23, 16 and 9.
+  const views = [
+    ['central-europe', EX, EY, 1800, 24],
+    ['central-europe', EX, EY, 1000, 20],
+    ['central-europe', EX, EY, 500, 10],
+    ['poland', PX, PY, 1800, 18],
+    ['poland', PX, PY, 1000, 12],
+    ['poland', PX, PY, 500, 7],
+  ] as const;
+  for (const [where, cx, cy, mPerPx, atLeast] of views) {
+    await page.evaluate(({ cx, cy, m }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+    }, { cx, cy, m: mPerPx });
+    await settle(page);
+    const got = await page.evaluate(() => {
+      const v = window.__warsim!.view!;
+      const overlay = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
+      const px = overlay.getContext('2d')!.getImageData(0, 0, overlay.width, overlay.height).data;
+      const dpr = overlay.width / overlay.clientWidth;
+      const names = v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0 && l.box && !l.ghost);
+      const covered: string[] = [];
+      for (const l of names) {
+        // The letters: the box without its padding and its line spacing (`nameTextBox`), whole px inside it.
+        const b = { x: l.box!.x + 2, y: l.box!.y + l.box!.h / 6, w: l.box!.w - 4, h: (l.box!.h * 2) / 3 };
+        let over = 0;
+        let all = 0;
+        for (let y = Math.ceil(b.y * dpr); y < Math.floor((b.y + b.h) * dpr); y++)
+          for (let x = Math.ceil(b.x * dpr); x < Math.floor((b.x + b.w) * dpr); x++) {
+            if (x < 0 || y < 0 || x >= overlay.width || y >= overlay.height) continue;
+            all++;
+            if (px[(y * overlay.width + x) * 4 + 3]! > 16) over++;
+          }
+        if (over > 0) covered.push(`${v.cityLabels.city(l.index).name} ${Math.round((100 * over) / Math.max(1, all))}%`);
+      }
+      return { names: names.length, alphas: [...new Set(names.map((l) => l.nameAlpha))], covered, markers: v.markerRects.length, markerAlphas: [...new Set(v.markerRects.map((r) => r.alpha))] };
+    });
+    console.log(`${where}, ${mPerPx} m/px: ${got.markers} markers, ${got.names} city names; something drawn over the letters of ${got.covered.length}: ${got.covered.join(', ')}`);
+    await page.screenshot({ path: path.join(out, `city-names-t1-${where}-${mPerPx}m.png`) });
+    // At rest a name is in full or absent, and so is a marker.
+    expect(got.alphas, `${where}, ${mPerPx} m/px`).toEqual([1]);
+    expect(got.markerAlphas, `${where}, ${mPerPx} m/px`).toEqual([1]);
+    expect(got.markers, `${where}, ${mPerPx} m/px: markers`).toBeGreaterThan(15);
+    expect(got.covered, `${where}, ${mPerPx} m/px: names with something drawn over their letters`).toEqual([]);
+    expect(got.names, `${where}, ${mPerPx} m/px: names shown`).toBeGreaterThanOrEqual(atLeast);
+  }
+
+  // While the game runs the markers move with their armies, every tick. A name one comes to
+  // stand on goes out by its fade and comes in at another place by its fade; it never jumps and
+  // it does not follow a marker. The view's own frames for four seconds at top speed, the camera
+  // at rest: a name's box may not move at all while it shows.
+  await page.evaluate(({ cx, cy }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / 1000 });
+  }, { cx: EX, cy: EY });
+  await settle(page);
+  const running = await page.evaluate(async () => {
+    const v = window.__warsim!.view!;
+    const hud = window.__warsim!.hud;
+    hud.setSpeedLevel(99);
+    if (hud.paused.value) hud.togglePause();
+    const last = new Map<number, { x: number; y: number; alpha: number }>();
+    const jumps: string[] = [];
+    const shown: number[] = [];
+    let frames = 0;
+    let fades = 0;
+    const tick = v.lastTick;
+    for (const t0 = performance.now(); performance.now() - t0 < 4000; ) {
+      await new Promise((done) => requestAnimationFrame(done));
+      frames++;
+      let names = 0;
+      for (const l of v.cityLabels.lastPlaced) {
+        if (!l.box || l.ghost) continue;
+        if (l.nameAlpha > 0.5) names++;
+        const was = last.get(l.index);
+        if (was) {
+          const moved = Math.hypot(l.box.x - was.x, l.box.y - was.y);
+          if (moved > 0.5 && Math.min(l.nameAlpha, was.alpha) > 0.02) jumps.push(`${v.cityLabels.city(l.index).name}: ${moved.toFixed(0)} px at opacity ${l.nameAlpha.toFixed(2)}`);
+          if ((was.alpha === 1 && l.nameAlpha < 1) || (was.alpha === 0 && l.nameAlpha > 0)) fades++;
+        }
+        last.set(l.index, { x: l.box.x, y: l.box.y, alpha: l.nameAlpha });
+      }
+      shown.push(names);
+    }
+    if (!hud.paused.value) hud.togglePause();
+    hud.setSpeedLevel(4);
+    return { frames, ticks: v.lastTick - tick, fades, jumps, fewest: Math.min(...shown), most: Math.max(...shown), markers: v.markerRects.length };
+  });
+  console.log(`running at top speed, 1000 m/px: ${running.frames} frames, ${running.ticks} ticks; ${running.markers} markers; ${running.fewest} to ${running.most} names shown, ${running.fades} fades begun, ${running.jumps.length} jumps`);
+  expect(running.ticks).toBeGreaterThan(50);
+  expect(running.frames).toBeGreaterThan(8);
+  expect(running.jumps).toEqual([]);
+  // The names are still there while the armies march: four in five of the 25 of before.
+  expect(running.fewest, 'names shown while running').toBeGreaterThanOrEqual(15);
+  await settle(page);
+  await page.screenshot({ path: path.join(out, 'city-names-t1-central-europe-1000m-after-running.png') });
+});

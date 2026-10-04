@@ -771,12 +771,38 @@ export class MapView {
    * and the capital flags where they stand, with their frames. So the names are laid out after
    * both. They have a canvas of their own: when they are drawn does not change what is above what.
    */
-  private nameObstacles(): NameObstacle[] {
+  private nameObstacles(cam: Camera): NameObstacle[] {
     const out: NameObstacle[] = [];
+    // Which unit layer the names keep clear of: the one that is shown or coming in, from the
+    // first frame of a handover (PLAN 2.7u). Judged by the layer's opacity, the names changed
+    // places in the middle of the handover, and were still fading when it was over.
+    const markers = this.handover.near === true && this.tactical.near !== true;
+    const counters = this.handover.near !== true;
     // A counter's box moves by a pixel with its number and with the camera: a name takes a place
     // only with room to spare beside one. A flag stands by its capital's dot, a pixel from the
     // place of the capital's name: no clearance, or no capital's name could stand there.
-    for (const b of this.counters.boxes) if (b.alpha >= 0.5) out.push({ x: b.x, y: b.y, w: b.w, h: b.h, clear: NAME_CLEAR_PX });
+    if (counters) for (const b of this.counters.boxes) if (b.own >= 0.5) out.push({ x: b.x, y: b.y, w: b.w, h: b.h, clear: NAME_CLEAR_PX });
+    if (markers) {
+      // The T1 markers, which move with their armies every tick: the box with its backing (a
+      // pixel around it, and the half pixel its corner is rounded by), the bar and the number
+      // under it, and the tag of a stack. The Major Battles likewise. Not the order arrows: a
+      // dashed line across a name leaves it to be read, and names that gave way to every arrow
+      // would leave a front without names.
+      const edge = 1.5 * this.unitScale;
+      for (const m of this.markerRects) {
+        if (m.own < 0.5) continue;
+        out.push({ x: m.x - edge, y: m.y - edge, w: m.w + 2 * edge, h: m.h + 2 * edge, clear: NAME_CLEAR_PX });
+        if (m.tag) out.push({ ...m.tag, clear: NAME_CLEAR_PX });
+      }
+      const vw = this.canvas.clientWidth;
+      const vh = this.canvas.clientHeight;
+      for (let i = 0; i + 1 < this.majors.length; i += 2) {
+        for (const off of wrapOffsets(cam, this.geo, vw)) {
+          const [bx, by] = worldToScreen(cam, this.majors[i]! + off, this.majors[i + 1]!, vw, vh);
+          if (bx > -20 && by > -20 && bx < vw + 20 && by < vh + 20) out.push({ x: bx - 12, y: by - 12, w: 24, h: 24, clear: NAME_CLEAR_PX });
+        }
+      }
+    }
     for (const f of this.flagRects) out.push({ x: f.x - 1, y: f.y - 1, w: f.w + 2, h: f.h + 2 });
     return out;
   }
@@ -1135,7 +1161,7 @@ export class MapView {
    * way round it does not. The units and the flags, on the overlay, are above both as before.
    */
   private drawCityLayer(cam: Camera, dpr: number, now: number): void {
-    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT));
+    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(cam), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT));
   }
 
   /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */

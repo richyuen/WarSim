@@ -342,6 +342,35 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     overlay has nothing drawn. That holds for a nation name, a counter and a flag alike, so it
     is also the check of ADR-76 read from the picture and not from the layout's boxes.
 
+- **Addendum to ADR-76, PLAN 2.7u (2026-10-04): the names keep clear of the T1 markers.**
+  - *Context:* ADR-76 gave the names the T0 counters and the flags to keep clear of. At T1 the
+    markers stood on them: over central Europe at the 1938 start something was drawn over the
+    letters of 12 of the 30 names shown at 1800 m/px, of 8 of 25 at 1000, of 1 of 13 at 500.
+  - *Decision:* the same rule with other obstacles. A marker's box with its backing, the bar
+    and the number under it; the tag of a stack, which reaches out of the box; the Major
+    Battles. With the counters' clearance of 2 px for a place to be taken: a marker moves
+    with its army every tick.
+  - *Not the order arrows.* A dashed line 1.5 px wide across a name leaves it to be read.
+    Arrows are long, and in a war there are hundreds: names that gave way to them would leave
+    a front without names.
+  - *Which layer counts: the one that is shown or coming in,* from the first frame of a
+    handover. First it was judged by opacity, as the counters were in 2.7r (half and more).
+    The names then changed places in the middle of the handover and were still fading when it
+    was over: `labelFades1938` at 2000 m/px, 23 opacities not at rest after 352 ms. Now the
+    names cross-fade with the layers. A counter or a marker that is itself on its way out (a
+    fold, a stack) counts by its own part, as before.
+  - *To be exact about "the first frame":* in the frame of the camera's step the coming layer
+    has no share yet and draws nothing, so it has no boxes, and the going layer no longer
+    counts: that one frame has no unit obstacles. The coming layer counts from the frame it
+    is first drawn in, 16 ms later. A name with no place under either layer can begin to
+    fade in during that frame and begin again in the next; not seen, and left so.
+  - *What it costs:* names. Of those shown before, covered or not, 28 of 30, 23 of 25 and 13
+    of 13 over central Europe; a capital among those left out at two of the zooms (Prague at
+    1800 m/px, Warsaw at 1000: their garrisons stand on every place by the dot). On the
+    watch list: the places are eleven fixed ones, and one a pixel to the side would do.
+  - *How it is tested:* by pixels, as 2.7t; and while the game runs, by the names' boxes in the
+    view's own frames.
+
 ### ADR-75 · 2026-10-04 · accepted — The counters' hold is a memory of the layer at rest; a split or merge on its way is folded without it (PLAN 2.7l)
 
 - **Context:** a gate run under load saw 2 counters over central Europe at 1.5 px per cell where

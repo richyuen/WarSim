@@ -78,6 +78,8 @@ export interface PlacedMarker {
   /** Opacity of the box; `bar` that of the strength bar and the number; `scale` of the box (PLAN 2.7c). */
   alpha: number;
   bar: number;
+  /** The marker's own part of both, without the layer's: 1 shown, less on its way into a stack or out of one. */
+  own: number;
   scale: number;
   x: number;
   y: number;
@@ -86,6 +88,8 @@ export interface PlacedMarker {
   text: string;
   /** The formations it stands for, itself first: more than one for a stack (PLAN 2.7s1). */
   members: number[];
+  /** A stack's tag, on the box's corner and reaching out of it (CSS px): what a city name keeps clear of besides the box (PLAN 2.7u). */
+  tag?: { x: number; y: number; w: number; h: number };
 }
 
 /**
@@ -245,7 +249,7 @@ export function drawMarkers(
   ctx.font = '600 9px system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  const tags: { px: number; py: number; x: number; y: number; text: string; alpha: number }[] = [];
+  const tags: { px: number; py: number; x: number; y: number; text: string; alpha: number; of: number }[] = [];
   for (const m of order) {
     for (const off of offs) {
       const stack = stacks?.get(m.id);
@@ -275,7 +279,7 @@ export function drawMarkers(
         ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
         ctx.fillRect(x - 1, y + BOX_H, BOX_W + 2, 12);
         // How many formations it stands for: a tag, drawn after all the boxes (below).
-        if (members.length > 1) tags.push({ px, py, x, y, text: `×${members.length}`, alpha: barAlpha * part });
+        if (members.length > 1) tags.push({ px, py, x, y, text: `×${members.length}`, alpha: barAlpha * part, of: placed.length });
         const f = m.full > 0 ? Math.max(0, Math.min(1, m.strength / m.full)) : 1;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(x, y + BOX_H + 1, BOX_W, 2);
@@ -304,7 +308,7 @@ export function drawMarkers(
         }
       }
       ctx.restore();
-      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar: barAlpha * part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members });
+      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar: barAlpha * part, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members });
     }
   }
   // The tags of the stacks, above every box: a neighbour's box must not hide how many a marker
@@ -321,6 +325,7 @@ export function drawMarkers(
     const tw = Math.ceil(ctx.measureText(t.text).width) + 5;
     const tx = t.x + BOX_W - tw + 4;
     const ty = t.y - 6;
+    placed[t.of]!.tag = { x: t.px + (tx - t.px) * size, y: t.py + (ty - t.py) * size, w: tw * size, h: 11 * size };
     ctx.fillStyle = 'rgba(16, 18, 24, 0.92)';
     ctx.fillRect(tx, ty, tw, 11);
     ctx.strokeStyle = 'rgba(255, 226, 138, 0.9)';

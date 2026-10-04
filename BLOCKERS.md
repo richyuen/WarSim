@@ -192,9 +192,22 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     four seconds at 4000 m/px over Europe). Not looked at at the speeds a player watches at.
   - A name's place is one for the city: on a looping map its two copies either side of the seam
     share it, and what is in the way of one copy moves both.
-  - At T1 the markers stand on the city names. The names keep clear of the T0 counters and the
-    flags only. (PLAN 2.7s did not take it: its markers are stacked and moved apart among
-    themselves.) The pixel check of PLAN 2.7t would see it: it is run at T0.
+  - (Done, PLAN 2.7u: at T1 the markers stood on the city names.)
+- Left by PLAN 2.7u (2026-10-04, ADR-76 addendum), for the phase review (PLAN 2.11):
+  - Capitals whose names are left out at T1 because their garrisons stand on every place by
+    the dot: Prague at 1800 m/px, Warsaw at 1000 (with Turin, Kiev and Kraków, at the 1938
+    start). Prague's place below its dot is short of the clearance by half a pixel. The places
+    are eleven fixed ones.
+  - The order arrows are not kept clear of, by decision. In a war they are many: two months
+    into a game of seed 1938 the picture over Austria is mostly arrows
+    (`docs/evidence/2.7/city-names-t1-central-europe-1000m-after-running.png`). Whether every
+    marker's arrow should show at T1 has not been asked.
+  - At top speed the names by marching armies come and go: 30 and 37 fades begun in four
+    seconds (1,400 ticks) at 1000 m/px over central Europe. At one tick a second that is one
+    in some 40 seconds.
+  - T1 → T2, not looked at: the markers stop counting when the sprites are wanted, and the
+    morph keeps their bars and numbers in full for a while (PLAN 2.7c). A name can take a place
+    under a number that still shows. The same choice as at T0 → T1, without a picture.
 - Found by the second independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
   (PLAN 2.11):
   - `nationLabels.ts` `fadeNationLabels`: on a looping map with two copies of a name in view, the
