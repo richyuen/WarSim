@@ -4,7 +4,7 @@
  */
 import type { Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
-import { destroyFormation } from './systems/elements';
+import { destroyFormation, equipFormation } from './systems/elements';
 import { declareWar, makePeace, offerPeace } from './systems/war';
 import { canJoin, leaveAlliance, noWarAmong, proposeAlliance } from './systems/alliances';
 import { annexNation, makePuppet, releasePuppet } from './systems/puppets';
@@ -61,6 +61,12 @@ function applyCommand(world: World, cmd: Command): void {
       f.cols.x[id] = cmd.x;
       f.cols.y[id] = cmd.y;
       f.cols.strength[id] = cmd.strength;
+      // Of a scenario template (PLAN 2.5): with its elements, as production delivers one.
+      if (cmd.template !== undefined && world.rules?.templates[cmd.template]) {
+        f.cols.template[id] = cmd.template;
+        f.cols.supply[id] = 1;
+        equipFormation(world, id, cmd.template); // sets strength from the elements
+      }
       return;
     }
     case 'removeFormation':

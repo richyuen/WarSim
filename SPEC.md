@@ -1037,6 +1037,14 @@ on the GPU, with facing and a procedural walk/drive animation, fading in as the 
 come from FireEvents. Close-tier positions inside an element footprint are the only
 presentational freedom, and the count is always exact.
 
+*Checked (PLAN 2.5, `tests/e2e/tiers1938.spec.ts`):* in a battle spawned by God where nothing
+else stands, the element sprites read at T2 and the counter read at T0 give the same men before
+the fight, when the first elements have died and when one division is gone: what the counter
+loses is what the elements lost, to the man. Men are units × the men per unit of the element's
+type, summed over a formation's elements and rounded, as the sim does: a gun crew is not a whole
+number of men (12.5 or 8.33 per gun). No mechanism was needed for it: the number at every tier
+is the formation's strength, which the sim recomputes from its elements at each settle.
+
 **Transitions without popping.**
 - T0→T1: clusters split by animating from the cluster centroid to member positions
   over 250 ms (positions are real). They merge in reverse.
@@ -1138,6 +1146,9 @@ interpolation changes something.
   rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
   `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
   (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.
+  `spawnFormation {nation, x, y, strength, template?}` (PLAN 2.5, ADR-68): with a template of
+  the scenario the formation has its elements and fights, as one from production does; without
+  one it is a bare strength with no elements (the toy world). It has no button in the God tab.
 - **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel
   (`setPlayer`, saved as `settings.player`, so loads and resumed autosaves keep it) turns that
   nation's AI off (strategic, operational and economic AI all skip it) and makes map

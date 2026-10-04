@@ -3314,3 +3314,39 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
 - **Done:** the test now names the sections that differ, the first differing element and its
   bytes on both sides, before the byte comparison. The next failure will say where.
 - **Not explained.** BLOCKERS has it on the watch list, next to the gunzip flake.
+
+## 2026-10-04 — PLAN 2.5: casualties are the same at every tier (ADR-68)
+
+- **What the task turned out to be:** a check, not a mechanism. The T0 counter, the T1 marker
+  and the T2 sprites all come from the formation's strength, which the sim recomputes from its
+  elements at every settle. Nothing had to change for them to agree.
+- **What the test needed:** a battle where a T0 counter stands for known formations only. A
+  counter is a cluster of a nation's formations folded with its neighbours', and every battle
+  of the 1938 start is in a crowded front. So God spawns one in empty land, as the AT says.
+  The one command that places a formation made no elements, and a formation without elements
+  does not fight: `spawnFormation` now takes an optional `template` (ADR-68). No button for it.
+- **The battle:** two Japanese infantry divisions against a Chinese one in western China (cell
+  1578.5, 338.5; 55 cells from any other formation), both nations' AI off, the Japanese with
+  God's attack buff. Without the buff the same fight shows no dead element in 12 days.
+- **Acceptance test** (`tests/e2e/tiers1938.spec.ts`), the same commands in Node and in the
+  browser, hashes compared at each of three moments (before the fight, the first elements
+  dead, the Chinese division gone):
+  - the sprites read at T2 are the sim's elements, unit for unit;
+  - each formation's strength is what its sprites add up to (units × men per unit of the
+    element's type, summed and rounded as the sim does: a gun crew is 12.5 or 8.33 men a gun);
+  - the T0 counter on the site says that many men, and no formation but the spawned ones is
+    within 30 cells;
+  - between moments, what the counter lost is what the elements lost: 8,852 men with 4
+    elements dead (37,337 → 28,485), then 4,913 with 24 more dead (28,485 → 23,572, the
+    "+1" for the second nation gone).
+- **Looked at:** `docs/evidence/2.5/` (T2 before, with the first dead and after; the T0 counter
+  at each: "37.3k +1", "28.5k +1", "23.6k").
+- **Typecheck lesson:** `npx tsc --noEmit -p .` does not cover `tests/`; `npm run typecheck`
+  does. A type error in the new spec showed only as "webServer was not able to start".
+- **Seen on the way, known:** in the first tick of 1938 the economic AI disbands 228 of 1,054
+  formations in 30 nations (China 70, USSR 34). Deficit disbanding is as designed (PLAN 1.26);
+  army sizes are a Phase 7 balance matter (ADR-58).
+- **Tests:** 1 new unit test (the command with and without a template, and in the toy world).
+  Gate: 521 unit tests in 72 files, 8 ten-year tests, 77 e2e, parity 46.3%.
+- **Next:** PLAN 2.6 (T3 close expansion: vehicles exact, infantry ≤ 64 sprites, count =
+  strength).

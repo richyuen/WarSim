@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-68 · 2026-10-04 · accepted — `spawnFormation` takes a template: God can spawn a formation that fights (PLAN 2.5)
+
+- **Context:** the acceptance test of PLAN 2.5 asks for a God-spawned battle. The only command
+  that places a formation, `spawnFormation`, set a bare strength and made no elements. In a
+  scenario with unit rules such a formation has no sprites at T2 and is skipped by the
+  engagement (combat is between elements), so it cannot fight. The command was used by the toy
+  world's tests only; the God tab builds through `queueFormation`, which delivers at the
+  capital after the build time.
+- **Why a spawned battle and not one of the scenario's:** the test compares a T0 counter with
+  the elements under it, to the man. A counter is a cluster of a nation's formations, folded
+  with its neighbours' (ADR-65), so its number is only "these formations" where nothing else
+  stands. Every battle of the 1938 start is in a crowded front.
+- **Decision:** `spawnFormation` has an optional `template`. With a template of the scenario
+  the formation gets that template's elements, is in supply, and its strength is theirs (the
+  command's `strength` is ignored), exactly as production delivers one. Without a template, with
+  one the scenario does not have, or in a scenario without unit rules, the command does what it
+  did.
+- **The pinned hash did not move:** the baseline run issues no commands, and the optional field
+  changes nothing for a command without it. The sweep stage of the gate confirms it.
+- **Not added:** a button for it in the God tab. Two things to settle first: where the click
+  goes while the territory brush is the map tool, and that the economic AI disbands idle
+  divisions of a nation in deficit at the start of the month (a spawned division of an AI
+  nation may not last; the test turns the AI of both nations off).
+- **The test's battle:** two Japanese divisions against a Chinese one in western China, 55 cells
+  from any other formation, the Japanese with God's attack buff (× 21). Without the buff the
+  same fight shows no dead element in 12 days: losses are spread over all elements of a
+  division, and they die together at the end.
+- **What PLAN 2.5 found:** nothing to fix. The counter, the marker and the sprites agree
+  because each is the formation's strength, recomputed from the elements at every settle.
+
 ### ADR-67 · 2026-10-04 · accepted — An element's end is an event; its wreck lives in the view (PLAN 2.4b, critic B2)
 
 - **Context:** an element whose strength reached 0 was removed from the table when its

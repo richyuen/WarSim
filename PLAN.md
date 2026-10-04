@@ -398,7 +398,8 @@ quick sweep as a smoke test.
   a wreck stays where it stood for a while, on the render clock.
   AT: e2e at T2 over a battle: every `ElementDestroyed` in the window has one wreck at its
   position, no sprite of a dead element is drawn, and the pinned hash does not move.
-- [ ] 2.5 Casualty consistency across tiers.
+- [x] 2.5 Casualty consistency across tiers (ADR-68: `spawnFormation` takes a template, so that
+  God can spawn a battle).
   AT: e2e kills elements at T2 (God-spawned battle) → T0 counter strength drops by exactly the same amount.
 - [ ] 2.6 T3 close expansion (vehicles exact, infantry ≤ 64 sprites, count = strength).
   AT: e2e compares the individual count to the sim strength for 20 random elements.

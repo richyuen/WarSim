@@ -5,7 +5,13 @@
  */
 
 export type Command =
-  | { kind: 'spawnFormation'; nation: number; x: number; y: number; strength: number }
+  /**
+   * Place a formation at (x, y). With `template` (an index of the scenario's templates) it has
+   * that template's elements, is in supply, and its strength is theirs: `strength` is then
+   * ignored (PLAN 2.5). Without it, or in a scenario without unit rules, a bare formation of
+   * `strength` men that has no elements and does not fight.
+   */
+  | { kind: 'spawnFormation'; nation: number; x: number; y: number; strength: number; template?: number }
   | { kind: 'removeFormation'; id: number }
   /** Queue a formation of scenario template `template` (index) for `nation` (PLAN 1.10). */
   | { kind: 'queueFormation'; nation: number; template: number }

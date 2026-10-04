@@ -7,7 +7,7 @@ import { SLOT_SPACING, slotPose } from '../../src/sim/core/pose';
 import { applyLoss, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { addDivision, nationId } from '../helpers/sim1938';
+import { addDivision, INF_DIV, nationId } from '../helpers/sim1938';
 
 // Review pass after PLAN 1.10–1.14: invariants of the element table (SPEC §3.6): a formation's
 // strength is always the sum of its elements; no element outlives its formation; the derived
@@ -72,6 +72,42 @@ describe('element invariants (review after PLAN 1.14)', () => {
     expect(w.elements.count).toBe(before - n);
     expect(w.out.events.length).toBe(6);
     checkInvariants(w);
+  });
+
+  it('spawnFormation with a template places a formation with its elements; without one, a bare formation (PLAN 2.5)', () => {
+    const s = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
+    const w = s.world;
+    const fc = w.formations.cols;
+    const [x, y] = cellOf(100, 38, W, H());
+    const before = new Set(w.formations.ids());
+    const CHI = nationId('CHI');
+    s.command({ kind: 'setAi', nation: CHI, enabled: false });
+    s.command({ kind: 'spawnFormation', nation: CHI, x, y, strength: 777, template: INF_DIV });
+    s.command({ kind: 'spawnFormation', nation: CHI, x: x + 3, y, strength: 777 });
+    s.command({ kind: 'spawnFormation', nation: CHI, x: x + 6, y, strength: 777, template: 9999 });
+    s.step(1);
+    const [equipped, bare, unknown] = w.formations.ids().filter((f) => !before.has(f) && fc.nation[f] === CHI && Math.abs(fc.y[f]! - y) < 0.01);
+    // With its elements, as production delivers one: the strength is theirs, not the command's.
+    const rule = w.rules!.templates[INF_DIV]!;
+    const els = elementIndex(w).get(equipped!)!;
+    expect(els).toHaveLength(rule.elements.reduce((n, e) => n + e.count, 0));
+    expect(fc.template[equipped!]).toBe(INF_DIV);
+    const men = Math.round(els.reduce((m, e) => m + w.elements.cols.strength[e]! * w.rules!.units[w.elements.cols.unit[e]!]!.menPerUnit, 0));
+    expect(fc.strength[equipped!]).toBe(men);
+    expect(men).toBeGreaterThan(10_000);
+    // Without a template, or with one the scenario does not have: as before, no elements.
+    for (const f of [bare!, unknown!]) {
+      expect(elementIndex(w).has(f)).toBe(false);
+      expect(fc.strength[f]).toBe(777);
+    }
+    checkInvariants(w);
+    // A scenario without unit rules ignores the template.
+    const toy = new Sim({ scenario: 'toy', seed: 1 });
+    const had = toy.world.formations.count;
+    toy.command({ kind: 'spawnFormation', nation: 1, x: 50.5, y: 50.5, strength: 900, template: 0 });
+    toy.step(1);
+    expect(toy.world.formations.count).toBe(had + 1);
+    expect(toy.world.elements.count).toBe(0);
   });
 
   it('an element whose strength reaches 0 emits ElementDestroyed at the slot it stood in (PLAN 2.4b)', () => {
