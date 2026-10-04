@@ -25,18 +25,28 @@ export type System = (world: World) => void;
 /** Longest custom nation name (God Mode rename). */
 const MAX_NAME = 40;
 
-/** Sets the controller of land cells within r cells of (x, y) (wrapping x; water untouched). */
-function paintControl(world: World, nation: number, x: number, y: number, r: number): void {
+/**
+ * Sets the controller of land cells within r cells of (x, y) (wrapping x; water untouched). With
+ * (x2, y2) the brush is stamped at every cell step of the segment to it (a dragged God brush,
+ * PLAN 1.44b), so no cell under the segment is skipped.
+ */
+function paintControl(world: World, nation: number, x: number, y: number, r: number, x2 = x, y2 = y): void {
   const { w, h, terrain } = world.cells;
   if (nation !== 0 && !world.nations.has(nation)) return;
   const rr = Math.min(Math.max(0, r), 64);
-  for (let dy = Math.ceil(-rr); dy <= rr; dy++) {
-    const cy = Math.floor(y + dy);
-    if (cy < 0 || cy >= h) continue;
-    for (let dx = Math.ceil(-rr); dx <= rr; dx++) {
-      if (dx * dx + dy * dy > rr * rr) continue;
-      const cell = cy * w + ((Math.floor(x + dx) % w) + w) % w;
-      if (terrain[cell] !== 0) world.setController(cell, nation);
+  // One stamp per cell of the longer axis; a segment longer than the map is cut to its size.
+  const steps = Math.min(Math.ceil(Math.max(Math.abs(x2 - x), Math.abs(y2 - y))), w + h);
+  for (let i = 0; i <= steps; i++) {
+    const px = steps === 0 ? x : x + ((x2 - x) * i) / steps;
+    const py = steps === 0 ? y : y + ((y2 - y) * i) / steps;
+    for (let dy = Math.ceil(-rr); dy <= rr; dy++) {
+      const cy = Math.floor(py + dy);
+      if (cy < 0 || cy >= h) continue;
+      for (let dx = Math.ceil(-rr); dx <= rr; dx++) {
+        if (dx * dx + dy * dy > rr * rr) continue;
+        const cell = cy * w + ((Math.floor(px + dx) % w) + w) % w;
+        if (terrain[cell] !== 0) world.setController(cell, nation);
+      }
     }
   }
 }
@@ -112,7 +122,7 @@ function applyCommand(world: World, cmd: Command): void {
       }
       return;
     case 'paintControl':
-      paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r);
+      paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r, cmd.x2, cmd.y2);
       return;
     case 'declareWar':
       declareWar(world, cmd.attacker, cmd.defender);

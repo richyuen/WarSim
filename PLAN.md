@@ -340,10 +340,13 @@ quick sweep as a smoke test.
   Done 2026-10-04 (ADR-63; `tests/e2e/editorDrag1938.spec.ts`, `tests/unit/editor.test.ts`,
   `docs/evidence/1.44/`): a stroke grows one undo edit; one finger paints and two move the map.
   The pinned hash did not move.
-- [ ] 1.44b The God Mode territory brush paints on a left-drag too (it is click-only, and a
+- [x] 1.44b The God Mode territory brush paints on a left-drag too (it is click-only, and a
   drag with it pans the map: the same complaint as B6, in the game instead of the editor).
   AT: e2e: with the God territory tool, a left-drag across ≥ 20 cells gives every cell under
   its path to the selected nation's control and the camera does not move; a right-drag pans.
+  Done 2026-10-04 (ADR-63, addendum; `tests/e2e/editorDrag1938.spec.ts`,
+  `tests/unit/paintControl.test.ts`): `paintControl` takes a segment (`x2, y2`). The pinned
+  hash did not move.
 - [ ] 1.45 Critic B7: Europe readable at world zoom. T0 counters are decluttered in screen space
   (no two overlap; what does not fit is aggregated into its neighbour), and split and merge
   fades finish while the game is paused, so no translucent duplicate is left standing.

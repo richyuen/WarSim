@@ -177,31 +177,38 @@ export class Hud {
   }
 
   /**
-   * Painting by dragging (PLAN 1.44): the tool that paints on a primary-button drag while the
-   * editor is open (the brush and the line), or null. The map view asks this, and the camera
-   * leaves that button to the tool.
+   * Painting by dragging (PLAN 1.44): the tool that paints on a primary-button drag, or null.
+   * While the editor is open that is its brush or its line (its other tools are click tools,
+   * and the editor takes the map's clicks before God Mode does); otherwise the God Mode
+   * territory brush, when a nation is selected to paint for (PLAN 1.44b). The map view asks
+   * this, and the camera leaves that button to the tool.
    */
-  dragTool(): 'brush' | 'line' | null {
-    const tool = this.editor.value.tool;
-    return this.showEditor.value && (tool === 'brush' || tool === 'line') ? tool : null;
+  dragTool(): 'brush' | 'line' | 'god' | null {
+    if (this.showEditor.value) {
+      const tool = this.editor.value.tool;
+      return tool === 'brush' || tool === 'line' ? tool : null;
+    }
+    return this.godTool.value === 'brush' && this.selected.value !== 0 ? 'god' : null;
   }
 
-  /** Where the drag is: its tool, and the last point (brush) or the press (line), in world cells. */
-  private drag: { tool: 'brush' | 'line'; x: number; y: number } | null = null;
+  /** Where the drag is: its tool, and the last point (brushes) or the press (line), in world cells. */
+  private drag: { tool: 'brush' | 'line' | 'god'; x: number; y: number } | null = null;
 
-  /** A press at world (x, y): the brush stamps and opens a stroke; the line waits for the release. */
+  /** A press at world (x, y): a brush stamps (the editor's opens a stroke); the line waits for the release. */
   dragStart(x: number, y: number): void {
     const tool = this.dragTool();
     if (!tool) return;
     this.drag = { tool, x, y };
     if (tool === 'brush') this.editPaint('brush', x, y, x, y, 'start');
+    else if (tool === 'god') this.command({ kind: 'paintControl', nation: this.selected.value, x, y, r: BRUSH_RADIUS });
   }
 
-  /** The pointer entered another cell: the brush paints the way there, as part of its stroke. */
+  /** The pointer entered another cell: a brush paints the way there (the editor's as part of its stroke). */
   dragMove(x: number, y: number): void {
     const d = this.drag;
-    if (d?.tool !== 'brush') return;
-    this.editPaint('line', d.x, d.y, x, y, 'more');
+    if (!d || d.tool === 'line') return;
+    if (d.tool === 'brush') this.editPaint('line', d.x, d.y, x, y, 'more');
+    else this.command({ kind: 'paintControl', nation: this.selected.value, x: d.x, y: d.y, r: BRUSH_RADIUS, x2: x, y2: y });
     d.x = x;
     d.y = y;
   }
@@ -222,7 +229,7 @@ export class Hud {
     this.lineStart.value = null;
   }
 
-  /** The drag was taken away (a second finger): what the brush painted stays, a line is not drawn. */
+  /** The drag was taken away (a second finger): what a brush painted stays, a line is not drawn. */
   dragCancel(): void {
     this.drag = null;
   }
@@ -305,9 +312,9 @@ export class Hud {
       if (nation !== 0) this.command({ kind: 'forceBreakthrough', nation, x: this.battleStart[0], y: this.battleStart[1], toX: x, toY: y });
       this.battleStart = null;
       this.godTool.value = null;
-    } else if (nation !== 0) {
-      this.command({ kind: 'paintControl', nation, x, y, r: BRUSH_RADIUS }); // brush stays active
     }
+    // The territory brush paints through the drag path (`dragStart`, PLAN 1.44b) and stays
+    // active. Its click arrives here only with no nation selected: nothing to paint for.
     return true;
   }
 

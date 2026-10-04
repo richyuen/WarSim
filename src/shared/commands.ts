@@ -36,8 +36,11 @@ export type Command =
   /** PLAN 1.23 God Mode: a custom Major Battle won by `nation`: a corridor from (x, y) to (toX, toY). */
   | { kind: 'forceBreakthrough'; nation: number; x: number; y: number; toX: number; toY: number }
   | { kind: 'collapseNation'; nation: number }
-  /** God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y). */
-  | { kind: 'paintControl'; nation: number; x: number; y: number; r: number }
+  /**
+   * God Mode territory brush (PLAN 1.15): `nation` controls land cells within r of (x, y); with
+   * `x2, y2`, within r of the segment to that point (the brush dragged, PLAN 1.44b).
+   */
+  | { kind: 'paintControl'; nation: number; x: number; y: number; r: number; x2?: number; y2?: number }
   /** PLAN 1.16: `attacker` declares war on `defender` (each brings its puppets). */
   | { kind: 'declareWar'; attacker: number; defender: number }
   /** God Mode: conclude war `war` now on its current score. */

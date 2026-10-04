@@ -3035,3 +3035,29 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Not done:** the God Mode territory brush is still click-only (PLAN 1.44b, added). No tick
   measurement: the tick's systems did not change (an edit command is applied between ticks).
 - **Next:** PLAN 1.44b, then 1.45 (critic B7: Europe readable at world zoom).
+
+## 2026-10-04 — PLAN 1.44b: the God Mode territory brush paints on a left-drag (ADR-63, addendum)
+- **What:** with the Territory tool on and a nation selected, a left-drag gives the land under
+  its path to that nation's control and the camera does not move; the right and middle buttons
+  pan. A click still paints its disc. With the tool off, a left-drag pans as before.
+- **How:** the map view's drag path of 1.44 serves both brushes: `Hud.dragTool()` answers the
+  editor's brush or line while the editor is open, else `god` for the territory brush.
+  `paintControl` has an optional end point (`x2, y2`) and stamps the brush at every cell step of
+  the segment: one command per pointer move, no cell skipped. Without the end point it is the
+  disc it was, and the pinned hash did not move (the gate's sweep stage ran).
+- **No stroke, no undo:** the God brush sets control, not ownership, and was never on the edit
+  stack. Nothing of `EditStack.stroke` applies.
+- **Dead code removed:** the brush branch of `Hud.pick` can no longer be reached with a nation
+  selected (the drag path takes the press), and with none it painted nothing.
+- **Verified in the browser** (`tests/e2e/editorDrag1938.spec.ts`, the God Mode case;
+  `docs/evidence/1.44/god-brush-stroke.png`, viewed): a 30-cell drag over Poland leaves every
+  cell under it German-controlled and hatched as occupied, the owner raster is unchanged, the
+  camera is where it was and Germany is still selected; a right-drag pans and paints nothing;
+  a click paints; with the tool off a left-drag pans. `godUi1938` and `godMode1938` pass.
+- **Unit** (`tests/unit/paintControl.test.ts`): the segment covers every land cell within r of
+  it and equals a stamp per cell step; the point form and a fractional position give the old
+  disc of 81 cells at r = 5; a segment across the seam wraps; a segment of 10⁹ cells ends.
+- **Not done:** no tick measurement (a God command is applied between ticks; the tick's systems
+  did not change).
+- **Next:** PLAN 1.45 (critic B7: Europe readable at world zoom; the translucent duplicate
+  counters it names are visible in today's screenshots at 8 px per cell).

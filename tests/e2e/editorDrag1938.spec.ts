@@ -9,6 +9,8 @@ import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 // across ≥ 20 cells paints every cell under its path, the camera does not move, and one undo
 // removes the whole stroke; a right-drag pans and paints nothing; with no paint tool active a
 // left-drag pans as before.
+// PLAN 1.44b AT: with the God territory tool, a left-drag across ≥ 20 cells gives every cell
+// under its path to the selected nation's control and the camera does not move; a right-drag pans.
 
 const { w: W, h: H } = SIZE_1938;
 const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
@@ -174,4 +176,77 @@ test('editor: one finger paints with the brush, two fingers move the map', async
   await page.getByTestId('editor-nation').focus(); // the synthetic touches left the focus in the radius field
   await page.keyboard.press('Control+z');
   await expect.poll(() => rasters(page)).toEqual(h1);
+});
+
+test('God Mode: the territory brush paints on a left-drag; the right button pans', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const lookAt = async (lon: number, lat: number): Promise<void> => {
+    const [x, y] = cellOf(lon, lat, W, H);
+    await page.evaluate(({ x, y, scale }) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale }), { x, y, scale: SCALE });
+    await page.waitForTimeout(200);
+  };
+
+  // God Mode on, Germany selected by a map click, the territory tool on.
+  await page.getByTestId('god-btn').click();
+  await lookAt(10.5, 51);
+  await page.mouse.click(700, 400);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(GER));
+  await page.getByTestId('tab-god').click();
+  await lookAt(19.5, 52);
+  // Before the tool is on, a left-drag pans.
+  const p0 = await camera(page);
+  await drag(page, [760, 600], [720, 600]);
+  expect((await camera(page)).cx - p0.cx).toBeCloseTo(40 / SCALE, 6);
+  await lookAt(19.5, 52);
+  await page.getByTestId('god-tool-brush').click();
+  await expect(page.getByTestId('god-tool-hint')).toContainText('drag');
+  await expect(page.locator('canvas#map')).toHaveCSS('cursor', 'crosshair');
+
+  // A stroke over Polish land right of the nation panel: 30 cells east, 5 south.
+  const h0 = await rasters(page);
+  const from: [number, number] = [700, 430];
+  const to: [number, number] = [940, 470];
+  const way = along(from, to);
+  expect(way.length).toBeGreaterThanOrEqual(20);
+  expect((await holders(page, way)).every((n) => n !== GER)).toBe(true);
+  const before = await camera(page);
+  await drag(page, from, to);
+  await expect.poll(async () => (await holders(page, way)).filter((n) => n !== GER).length).toBe(0);
+  expect(await camera(page)).toEqual(before);
+  // Control, not ownership: the land is occupied, and the selection is still Germany.
+  const h1 = await rasters(page);
+  expect(h1.controller).not.toBe(h0.controller);
+  expect(h1.owner).toBe(h0.owner);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(GER));
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.44') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(out, 'god-brush-stroke.png') });
+
+  // A right-drag pans and paints nothing; a click still paints its disc.
+  const c = await camera(page);
+  await drag(page, [760, 600], [840, 580], 'right');
+  const d = await camera(page);
+  expect(d.cx - c.cx).toBeCloseTo(-80 / SCALE, 6);
+  expect(d.cy - c.cy).toBeCloseTo(20 / SCALE, 6);
+  expect(await rasters(page)).toEqual(h1);
+  expect(await page.evaluate(() => window.__warsim!.view!.nationAt(760, 600))).not.toBe(GER);
+  await page.mouse.click(760, 600);
+  await expect.poll(() => page.evaluate(() => window.__warsim!.view!.nationAt(760, 600))).toBe(GER);
+
+  // The tool off again: a left-drag pans and paints nothing.
+  await page.getByTestId('god-tool-brush').click();
+  await expect(page.getByTestId('god-tool-hint')).toHaveCount(0);
+  await expect(page.locator('canvas#map')).not.toHaveCSS('cursor', 'crosshair');
+  const h2 = await rasters(page);
+  const e0 = await camera(page);
+  await drag(page, [760, 640], [720, 640]);
+  expect((await camera(page)).cx - e0.cx).toBeCloseTo(40 / SCALE, 6);
+  expect(await rasters(page)).toEqual(h2);
+  expect(errors).toEqual([]);
 });

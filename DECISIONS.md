@@ -205,6 +205,15 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Not in this task:** the God Mode territory brush (`paintControl`) is still click-only and a
   drag with it pans. It is PLAN 1.44b. Bucket and the scenario tools (cities, capitals, cores)
   stay click tools by design.
+- **Addendum, PLAN 1.44b (2026-10-04): the God territory brush follows.** With the tool on and a
+  nation selected, the left button paints and the camera leaves it alone, through the same
+  drag path of the map view. `paintControl` gained an optional end point (`x2, y2`): the brush
+  is stamped at every cell step of the segment, one command per pointer move, so a fast drag
+  skips no cell. Without the end point the command is the disc it was (the pin did not move).
+  No stroke and no undo here: the God brush sets control only and never was on the edit stack.
+  While the editor is open its tools take the map, as its clicks already did. The other God
+  tools (revolt, breakthrough) stay click tools. Tests: `tests/unit/paintControl.test.ts`,
+  the God Mode case of `tests/e2e/editorDrag1938.spec.ts`.
 - **Tests:** `tests/unit/editor.test.ts` (a stroke paints its path and is one step; what ends a
   stroke; no empty step; 70 segments are one step; a cell changed under the stroke; a save in
   mid-stroke; an empty stack has its old bytes), `tests/e2e/editorDrag1938.spec.ts` (30 cells by

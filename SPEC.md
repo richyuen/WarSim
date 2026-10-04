@@ -632,7 +632,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     and wars removed).
   - `winnerTakesAll` (a saved setting; command `setSetting`) annexes everything the loser
     controls, plus the loser's land the capturer already occupies.
-  - God brush `paintControl {nation, x, y, r}` sets control on land cells.
+  - God brush `paintControl {nation, x, y, r}` sets control on land cells; with `x2, y2`, on the
+    cells within r of the segment to that point (the brush dragged, PLAN 1.44b).
   - The war-score jump comes with 1.16.
 - **Capital capture**: the war score jumps, the capital relocates to the largest owned city, and with
   the `winnerTakesAll` setting the capturer annexes all of the loser's controlled territory.
@@ -1082,6 +1083,9 @@ interpolation changes something.
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).
   Map tools (revolt, breakthrough from two clicks, territory brush) take the next map clicks.
+  The territory brush also paints on a left-drag (PLAN 1.44b): a disc at the press, then
+  `paintControl` with `x2, y2` to every further cell the pointer enters; the right or middle
+  button pans meanwhile. It sets control, not ownership, and has no undo.
   God commands are sent with `now`: applied at once between ticks with the next step's tick
   stamp (`Sim.applyNow`), so they show while paused and replay identically.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
