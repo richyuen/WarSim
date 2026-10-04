@@ -8,11 +8,11 @@ import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
 import { AT_REST, drawMarkers, markerMorph, MORPH_MS, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
-import { HANDOVER_HYSTERESIS, TierHandover } from '../render/units/handover';
+import { TierHandover } from '../render/units/handover';
 import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
-import { FADE_MS, progress, running, smooth, TimedSwitch } from '../render/timing';
+import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
 import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -470,7 +470,7 @@ export class MapView {
    * but it is not a change to wait for.)
    */
   unitsAnimating(now = performance.now()): boolean {
-    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || running(now, this.nameChanged, FADE_MS);
+    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
     return this.counters.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
   }
 
@@ -491,7 +491,7 @@ export class MapView {
     const change = markerMorph(this.tactical.linear(m, now));
     this.shares.elements = change.elements;
     this.morph = change.morph;
-    const wanted = m <= (this.close.near ? T3_MAX_M * HANDOVER_HYSTERESIS : T3_MAX_M);
+    const wanted = m <= (this.close.near ? T3_MAX_M * ZOOM_HYSTERESIS : T3_MAX_M);
     if (wanted && !this.individualsBuilt && this.elementSection) this.buildIndividuals(this.elementSection);
     // No figures to show (no elements kept yet, none in view, or more than the cap): the sprites stay.
     this.shares.individuals = this.close.share(this.individualsBuilt && this.individualCount > 0 ? m : Infinity, now);
@@ -830,7 +830,7 @@ export class MapView {
     this.flagRects = [];
     // The flags as a layer are a state (PLAN 2.7d): in at FLAG_MIN_SCALE, out below it by the
     // hysteresis, a fade in time. They used to appear in one frame.
-    const want = this.capitals.size > 0 && cam.scale >= (this.flagsIn.on ? FLAG_MIN_SCALE / HANDOVER_HYSTERESIS : FLAG_MIN_SCALE);
+    const want = this.capitals.size > 0 && cam.scale >= (this.flagsIn.on ? FLAG_MIN_SCALE / ZOOM_HYSTERESIS : FLAG_MIN_SCALE);
     const layer = this.flagsIn.value(want, now);
     if (layer <= 0.01) {
       this.flagPlace.clear();
@@ -1030,40 +1030,17 @@ export class MapView {
       ctx.font = `600 ${px.toFixed(1)}px ${LABEL_FONT}`;
       return ctx.measureText(text).width;
     };
-    // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out,
-    // and which names in view have nothing to show (those fade in when the zoom brings them).
+    // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out.
     const states = this.nameStates;
-    const inView = new Set<string>();
-    const labels = layoutNationLabels(this.labelData.data, this.labelData.names, cam, this.geo, w, h, measure, {
-      held: (key) => states.get(key)?.on === true,
-      visible: (key) => {
-        const s = states.get(key);
-        return s !== undefined && (s.on === true || s.animating(now));
-      },
-      hidden: (key) => {
-        inView.add(key);
-        let s = states.get(key);
-        if (!s) states.set(key, (s = new TimedSwitch(FADE_MS)));
-        s.value(false, now);
-      },
-    });
-    for (const l of labels) {
-      inView.add(l.key);
-      let s = states.get(l.key);
-      if (!s) states.set(l.key, (s = new TimedSwitch(FADE_MS))); // new to the view: there at once
-      const was = s.on;
-      l.alpha = s.value(l.alpha > 0, now);
-      if (was !== null && s.on !== was) this.nameChanged = now;
-    }
-    // Out of view: no state.
-    for (const key of states.keys()) if (!inView.has(key)) states.delete(key);
+    const labels = layoutNationLabels(this.labelData.data, this.labelData.names, cam, this.geo, w, h, measure, states.frame(now));
+    for (const l of labels) l.alpha = states.value(l.key, l.alpha > 0);
+    states.end();
     this.nationLabels = labels;
     drawNationLabels(ctx, labels, LABEL_FONT);
   }
 
   /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */
-  private readonly nameStates = new Map<string, TimedSwitch>();
-  private nameChanged = -Infinity;
+  private readonly nameStates = new SwitchBank<string>();
 
   dispose(): void {
     cancelAnimationFrame(this.raf);

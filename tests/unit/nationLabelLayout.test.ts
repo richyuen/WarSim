@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { layoutNationLabels, MIN_PX, NAME_HYSTERESIS, type NameState } from '../../src/render/labels/nationLabels';
+import { layoutNationLabels, MIN_PX, type NameState } from '../../src/render/labels/nationLabels';
+import { ZOOM_HYSTERESIS } from '../../src/render/timing';
 import { LABEL_STRIDE } from '../../src/shared/nationLabels';
 
 // PLAN 2.7e: the curved nation names as states. The layout is pure: it says what is wanted at a
@@ -48,11 +49,11 @@ describe('nation names with the states of the frames before (PLAN 2.7e)', () => 
     const inBand = IN / 1.08;
     expect(lay(ALONE, ['Xy'], inBand, none)).toEqual([]);
     expect(lay(ALONE, ['Xy'], inBand, on)).toMatchObject([{ id: 7, alpha: 1 }]);
-    const below = (IN / NAME_HYSTERESIS) * 0.999;
+    const below = (IN / ZOOM_HYSTERESIS) * 0.999;
     // Too small now, but still on screen: placed to fade out, wanting nothing, at the size it has.
     const [fading] = lay(ALONE, ['Xy'], below, on);
     expect(fading).toMatchObject({ id: 7, alpha: 0 });
-    expect(fading!.fontPx).toBeLessThan(MIN_PX / NAME_HYSTERESIS);
+    expect(fading!.fontPx).toBeLessThan(MIN_PX / ZOOM_HYSTERESIS);
     expect(fading!.glyphs).toHaveLength(2);
   });
 

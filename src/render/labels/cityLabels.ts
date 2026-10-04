@@ -8,12 +8,12 @@
  * collision in priority order (capitals, then size, then list order).
  *
  * A dot or a name is a state, not a function of the zoom (PLAN 2.7d): it comes in when the zoom
- * reaches its limit, goes out above the limit × LABEL_HYSTERESIS, and a change is a fade over
+ * reaches its limit, goes out above the limit × ZOOM_HYSTERESIS, and a change is a fade over
  * FADE_MS of real time, the same when a name appears because its neighbour made room. At rest
  * every dot and name is in full or absent. The layer holds the states.
  */
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
-import { FADE_MS, running, TimedSwitch } from '../timing';
+import { SwitchBank, ZOOM_HYSTERESIS, type SwitchState } from '../timing';
 
 export interface CityPoint {
   name: string;
@@ -42,7 +42,7 @@ export interface PlacedLabel {
 
 /**
  * Metres per CSS px at which a city's dot / name comes in; it goes out above this ×
- * LABEL_HYSTERESIS. (It used to start a fade by zoom here that was complete at 0.7 × this.)
+ * ZOOM_HYSTERESIS. (It used to start a fade by zoom here that was complete at 0.7 × this.)
  */
 export function dotMaxMPerPx(c: CityPoint): number {
   return c.capital ? Infinity : [0, 1500, 3000, 6000, 12000, Infinity][c.size]!;
@@ -50,11 +50,10 @@ export function dotMaxMPerPx(c: CityPoint): number {
 export function nameMaxMPerPx(c: CityPoint): number {
   return c.capital ? 5000 : [0, 450, 800, 1400, 2000, 3500][c.size]!;
 }
-export const LABEL_HYSTERESIS = 1.15;
 
 /** Whether a dot or a name with `limit` is wanted at `mPerPx`; `held`: it is on now. */
 export function wanted(mPerPx: number, limit: number, held: boolean): boolean {
-  return mPerPx < limit * (held ? LABEL_HYSTERESIS : 1);
+  return mPerPx < limit * (held ? ZOOM_HYSTERESIS : 1);
 }
 
 export function fontPxFor(c: CityPoint): number {
@@ -63,16 +62,13 @@ export function fontPxFor(c: CityPoint): number {
 
 const PAD = 2;
 
-/** What the layer knows of each city from the frames before (none: a layout at rest). */
+/** What the layer knows of each city's dot and name from the frames before (none: a layout at rest). */
 export interface LabelState {
-  /** The city's dot or name is on now: shown, or fading in. */
-  held(index: number, part: 'dot' | 'name'): boolean;
-  /** Something of the city is still on screen (a fade out runs): it is placed though not wanted. */
-  visible(index: number): boolean;
-  /** Called for a city that is in view and not placed. */
-  hidden?(index: number): void;
+  dot: SwitchState<number>;
+  name: SwitchState<number>;
 }
-const AT_REST: LabelState = { held: () => false, visible: () => false };
+const OFF: SwitchState<number> = { held: () => false, visible: () => false };
+const AT_REST: LabelState = { dot: OFF, name: OFF };
 
 export function layoutCityLabels(
   cities: readonly CityPoint[],
@@ -91,13 +87,16 @@ export function layoutCityLabels(
   const inView = (sx: number, sy: number): boolean => sx >= -200 && sx <= viewW + 200 && sy >= -40 && sy <= viewH + 40;
   for (const i of order) {
     const c = cities[i]!;
-    const dot = wanted(mPerPx, dotMaxMPerPx(c), state.held(i, 'dot'));
-    const lingers = state.visible(i);
+    const dot = wanted(mPerPx, dotMaxMPerPx(c), state.dot.held(i));
+    const lingers = state.dot.visible(i) || state.name.visible(i);
     if (!dot && !lingers) {
-      if (state.hidden && offsets.some((off) => inView(...worldToScreen(cam, c.x + off, c.y, viewW, viewH)))) state.hidden(i);
+      if ((state.dot.hidden || state.name.hidden) && offsets.some((off) => inView(...worldToScreen(cam, c.x + off, c.y, viewW, viewH)))) {
+        state.dot.hidden?.(i);
+        state.name.hidden?.(i);
+      }
       continue;
     }
-    const name = dot && wanted(mPerPx, nameMaxMPerPx(c), state.held(i, 'name'));
+    const name = dot && wanted(mPerPx, nameMaxMPerPx(c), state.name.held(i));
     const dotR = (c.capital ? 3 : 1.5 + 0.35 * c.size) * Math.min(1.6, Math.max(0.8, Math.sqrt(cam.scale / 8)));
     for (const off of offsets) {
       const [sx, sy] = worldToScreen(cam, c.x + off, c.y, viewW, viewH);
@@ -135,10 +134,8 @@ export class CityLabelLayer {
   private order: number[] = [];
   private readonly widths = new Map<string, number>();
   /** Each city's dot and name: on or off, and the fade of a change. */
-  private dots: TimedSwitch[] = [];
-  private names: TimedSwitch[] = [];
-  /** When a dot or a name last changed. */
-  private changed = -Infinity;
+  private readonly dots = new SwitchBank<number>();
+  private readonly names = new SwitchBank<number>();
   /** Labels placed by the last draw, with the opacities drawn (tests and stats). */
   lastPlaced: PlacedLabel[] = [];
 
@@ -152,13 +149,13 @@ export class CityLabelLayer {
   setCities(cities: CityPoint[]): void {
     this.cities = cities;
     this.order = priorityOrder(cities);
-    this.dots = cities.map(() => new TimedSwitch(FADE_MS));
-    this.names = cities.map(() => new TimedSwitch(FADE_MS));
+    this.dots.clear();
+    this.names.clear();
   }
 
   /** True while a dot or a name fades (the view keeps redrawing). */
   animating(now: number): boolean {
-    return running(now, this.changed, FADE_MS);
+    return this.dots.animating(now) || this.names.animating(now);
   }
 
   private measure = (text: string, fontPx: number): number => {
@@ -172,14 +169,6 @@ export class CityLabelLayer {
     return w;
   };
 
-  /** The opacity of a switch that should be `want` at `now`; notes a change. */
-  private fade(s: TimedSwitch, want: boolean, now: number): number {
-    const was = s.on;
-    const v = s.value(want, now);
-    if (was !== null && s.on !== was) this.changed = now;
-    return v;
-  }
-
   draw(cam: Camera, dpr: number, now = performance.now()): void {
     const { canvas, ctx } = this;
     const viewW = canvas.clientWidth;
@@ -191,29 +180,13 @@ export class CityLabelLayer {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, viewW, viewH);
     const { dots, names } = this;
-    const seen = new Uint8Array(this.cities.length);
-    const placed = layoutCityLabels(this.cities, this.order, cam, this.geo, viewW, viewH, this.measure, {
-      held: (i, part) => (part === 'dot' ? dots[i]! : names[i]!).on === true,
-      visible: (i) => dots[i]!.on === true || dots[i]!.animating(now) || names[i]!.on === true || names[i]!.animating(now),
-      // In view with nothing to show: off, so that it fades in when the zoom brings it.
-      hidden: (i) => {
-        seen[i] = 1;
-        dots[i]!.value(false, now);
-        names[i]!.value(false, now);
-      },
-    });
+    const placed = layoutCityLabels(this.cities, this.order, cam, this.geo, viewW, viewH, this.measure, { dot: dots.frame(now), name: names.frame(now) });
     for (const p of placed) {
-      seen[p.index] = 1;
-      p.dotAlpha = this.fade(dots[p.index]!, p.dotAlpha > 0, now);
-      p.nameAlpha = this.fade(names[p.index]!, p.nameAlpha > 0, now);
+      p.dotAlpha = dots.value(p.index, p.dotAlpha > 0);
+      p.nameAlpha = names.value(p.index, p.nameAlpha > 0);
     }
-    // Out of view: no state. A city that a pan brings into view is there at once.
-    for (let i = 0; i < seen.length; i++) {
-      if (seen[i] === 0 && dots[i]!.on !== null) {
-        dots[i] = new TimedSwitch(FADE_MS);
-        names[i] = new TimedSwitch(FADE_MS);
-      }
-    }
+    dots.end();
+    names.end();
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';
     for (const p of placed) {

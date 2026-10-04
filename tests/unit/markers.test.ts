@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HANDOVER_MS } from '../../src/render/units/handover';
+import { FADE_MS } from '../../src/render/timing';
 import { AT_REST, BAR_LINGER_MS, MARKER_SHRINK, markerMorph, MORPH_MS, strengthText } from '../../src/render/units/markers';
 
 // PLAN 2.1: the T1 markers' strength labels. The layer's opacity is the business of the two
@@ -25,13 +25,13 @@ describe('T1 markers (PLAN 2.1)', () => {
 // PLAN 2.7c: the marker on its way into the T2 sprites. The box fades and shrinks into the group
 // while the sprites fade in; the strength bar and the number stay for that time and go after it.
 describe('the marker → elements morph (PLAN 2.7c)', () => {
-  const first = HANDOVER_MS / MORPH_MS;
+  const first = FADE_MS / MORPH_MS;
   const frame = 16 / MORPH_MS; // progress in a 16 ms frame
 
   it('at T1 the marker is as it always was; at T2 nothing of it is left', () => {
     expect(markerMorph(0)).toEqual({ elements: 0, morph: AT_REST });
     expect(markerMorph(1)).toEqual({ elements: 1, morph: { box: 0, scale: 1 - MARKER_SHRINK, bar: 0 } });
-    expect(MORPH_MS).toBe(HANDOVER_MS + BAR_LINGER_MS);
+    expect(MORPH_MS).toBe(FADE_MS + BAR_LINGER_MS);
   });
 
   it('the box and the sprites cross-fade in the first part, as at the other tier boundaries', () => {

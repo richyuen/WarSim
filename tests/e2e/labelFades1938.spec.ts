@@ -4,7 +4,9 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { kmPerCell } from '../../src/sim/data/projection';
 import { cellOf } from '../../src/sim/data/terrain';
+import { ZOOM_HYSTERESIS } from '../../src/render/timing';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { MAX_JUMP } from './noPop';
 import { settle } from './settle';
 
 // PLAN 2.7d and 2.7e AT: the layers that are not units do not pop either. The capital flags came
@@ -21,9 +23,8 @@ import { settle } from './settle';
 const { w: W, h: H } = SIZE_1938;
 const [CX, CY] = cellOf(15, 50, W, H); // central Europe: cities of every size, many capitals
 const M_PER_CELL = kmPerCell(W) * 1000;
-const MAX_JUMP = 48; // of 255: as in fades1938.spec.ts, where it is derived
 const FRAMES = 22; // 352 ms: a fade of 250 ms and its tail
-const HYSTERESIS = 1.15;
+const HYSTERESIS = ZOOM_HYSTERESIS;
 
 interface Crossing {
   name: string;
@@ -185,6 +186,7 @@ test('no popping of labels and flags: each comes and goes by a fade, and at rest
       }));
       const jumps = recorded.slice(1).map((cur, k) => jump(recorded[k]!, cur, skip));
       const unmasked = Math.max(...recorded.slice(1).map((cur, k) => jump(recorded[k]!, cur)));
+      // (A sum of the rectangles, not their union: a flag's places overlap, so this counts too much.)
       const masked = skip.reduce((a, [x0, y0, x1, y1]) => a + (x1 - x0 + 1) * (y1 - y0 + 1), 0) / (w * h);
       return { before, after: count(), jumps, unmasked, moved: moved.length, masked, partial, whole: jump(recorded[0]!, recorded.at(-1)!, skip), animating: v.unitsAnimating(now), rest: alphas(), picture };
     }, { cx: CX, cy: CY, scale: M_PER_CELL / c.to, frames: FRAMES, shot: process.env['EVIDENCE'] && (c.name === 'flags in' || c.name === 'names at 2000 in' || c === names[0]) ? 7 : -1 });

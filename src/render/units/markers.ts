@@ -10,8 +10,7 @@
  */
 import type { UnitSymbol } from '../../shared/protocol';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
-import { smooth } from '../timing';
-import { HANDOVER_MS } from './handover';
+import { FADE_MS, smooth } from '../timing';
 
 export interface MarkerInput {
   id: number;
@@ -41,12 +40,12 @@ export interface MarkerMorph {
 export const AT_REST: MarkerMorph = { box: 1, scale: 1, bar: 1 };
 
 /**
- * The T1 ↔ T2 change in two parts (PLAN 2.7c): for HANDOVER_MS the box fades and shrinks by
+ * The T1 ↔ T2 change in two parts (PLAN 2.7c): for FADE_MS the box fades and shrinks by
  * MARKER_SHRINK into the group while the sprites fade in; the strength bar and the number stay
  * for that time and go over BAR_LINGER_MS after it. Out of T2 the same, backwards.
  */
 export const BAR_LINGER_MS = 220;
-export const MORPH_MS = HANDOVER_MS + BAR_LINGER_MS;
+export const MORPH_MS = FADE_MS + BAR_LINGER_MS;
 /**
  * 0.13 and no more: at a corner of the box the motion of its two edges adds up (13 + 8.5 px from
  * the centre), and a white flag chip against the dark outline is nearly full contrast. At 0.2
@@ -61,7 +60,7 @@ export const MARKER_SHRINK = 0.13;
  * steady speed changes a pixel less than one that eases to one and a half times that speed.
  */
 export function markerMorph(p: number): { elements: number; morph: MarkerMorph } {
-  const first = HANDOVER_MS / MORPH_MS;
+  const first = FADE_MS / MORPH_MS;
   const q = Math.max(0, Math.min(1, p / first));
   const late = Math.max(0, Math.min(1, (p - first) / (1 - first)));
   return { elements: smooth(q), morph: { box: 1 - smooth(q), scale: 1 - MARKER_SHRINK * q, bar: 1 - smooth(late) } };

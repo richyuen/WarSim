@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { HANDOVER_HYSTERESIS, HANDOVER_MS, TierHandover } from '../../src/render/units/handover';
+import { FADE_MS, ZOOM_HYSTERESIS } from '../../src/render/timing';
+import { TierHandover } from '../../src/render/units/handover';
 import { T3_MAX_M } from '../../src/render/units/individuals';
 import { T1_MAX_M, T1_MIN_M } from '../../src/render/units/markers';
 import { tierOf } from '../../src/shared/protocol';
@@ -9,7 +10,7 @@ import { tierOf } from '../../src/shared/protocol';
 // counters": at 2446 m/px, counters at 0.84 and markers at 0.16, paused, for as long as one
 // looked). Now the layer is a state and the cross-fade takes time.
 
-const OUT = T1_MAX_M * HANDOVER_HYSTERESIS;
+const OUT = T1_MAX_M * ZOOM_HYSTERESIS;
 /** A handover that has rested at `mPerPx` since long before `now`. */
 function resting(mPerPx: number, now = 0): TierHandover {
   const h = new TierHandover(T1_MAX_M);
@@ -29,11 +30,11 @@ describe('T0 ↔ T1 handover (PLAN 1.45a)', () => {
     for (const m of [2017, 2174, 2446, 2575]) {
       const fromFar = resting(6_000);
       fromFar.share(m, 0);
-      expect(fromFar.share(m, HANDOVER_MS + 1), `${m} from T0`).toBe(0);
+      expect(fromFar.share(m, FADE_MS + 1), `${m} from T0`).toBe(0);
       const fromNear = resting(1_000);
       fromNear.share(m, 0);
-      expect(fromNear.share(m, HANDOVER_MS + 1), `${m} from T1`).toBe(m <= OUT ? 1 : 0);
-      expect(fromNear.animating(HANDOVER_MS + 51)).toBe(false);
+      expect(fromNear.share(m, FADE_MS + 1), `${m} from T1`).toBe(m <= OUT ? 1 : 0);
+      expect(fromNear.animating(FADE_MS + 51)).toBe(false);
     }
   });
 
@@ -53,21 +54,21 @@ describe('T0 ↔ T1 handover (PLAN 1.45a)', () => {
     expect(h.share(T1_MAX_M + 1, 50_000)).toBe(0);
   });
 
-  it('a change is a smooth cross-fade over HANDOVER_MS, in steps the eye follows', () => {
+  it('a change is a smooth cross-fade over FADE_MS, in steps the eye follows', () => {
     const h = resting(6_000);
     let last = h.share(1_500, 0);
     expect(last).toBe(0); // the fade starts at the frame that sees the change
     expect(h.animating(0)).toBe(true);
-    for (let t = 16; t <= HANDOVER_MS; t += 16) {
+    for (let t = 16; t <= FADE_MS; t += 16) {
       const s = h.share(1_500, t);
       expect(s).toBeGreaterThan(last);
       expect(s - last).toBeLessThan(0.12); // 16 ms frames: no pop
       last = s;
     }
-    expect(h.share(1_500, HANDOVER_MS / 2)).toBeCloseTo(0.5, 6);
-    expect(h.share(1_500, HANDOVER_MS)).toBe(1);
-    expect(h.animating(HANDOVER_MS + 49)).toBe(true); // one more frame, so the end state is drawn
-    expect(h.animating(HANDOVER_MS + 50)).toBe(false);
+    expect(h.share(1_500, FADE_MS / 2)).toBeCloseTo(0.5, 6);
+    expect(h.share(1_500, FADE_MS)).toBe(1);
+    expect(h.animating(FADE_MS + 49)).toBe(true); // one more frame, so the end state is drawn
+    expect(h.animating(FADE_MS + 50)).toBe(false);
   });
 
   it('a turn in mid-fade continues from the share reached', () => {
@@ -80,7 +81,7 @@ describe('T0 ↔ T1 handover (PLAN 1.45a)', () => {
     expect(h.share(6_000, 100)).toBeCloseTo(reached, 9);
     expect(h.share(6_000, 150)).toBeLessThan(reached);
     expect(h.share(6_000, 200)).toBeCloseTo(0, 9);
-    expect(h.share(6_000, 100 + HANDOVER_MS)).toBe(0);
+    expect(h.share(6_000, 100 + FADE_MS)).toBe(0);
   });
 
   it('a clock that runs backwards (tests draw at made-up times) leaves the fade done, not undone', () => {
@@ -116,7 +117,7 @@ describe('T0 ↔ T1 handover (PLAN 1.45a)', () => {
 describe('every tier boundary is a handover (PLAN 2.7b)', () => {
   for (const [name, threshold] of [['T0 ↔ T1', T1_MAX_M], ['T1 ↔ T2', T1_MIN_M], ['T2 ↔ T3', T3_MAX_M]] as const) {
     it(`${name} at ${threshold} m/px: one layer at rest, in at the threshold, out by the hysteresis`, () => {
-      const out = threshold * HANDOVER_HYSTERESIS;
+      const out = threshold * ZOOM_HYSTERESIS;
       // At rest, wherever the camera stands, the nearer layer is in full or not there.
       for (let m = threshold / 4; m < threshold * 4; m *= 1.03) {
         const h = new TierHandover(threshold);
@@ -129,13 +130,13 @@ describe('every tier boundary is a handover (PLAN 2.7b)', () => {
       expect(h.near).toBe(false);
       h.share(threshold, 0); // the tier reaches up to its limit, inclusive, as `tierOf` has it
       expect(h.near).toBe(true);
-      expect(h.share(threshold, HANDOVER_MS)).toBe(1);
+      expect(h.share(threshold, FADE_MS)).toBe(1);
       // Zooming out, the nearer layer stays through the band, in full.
       expect(h.share(out, 10_000)).toBe(1);
       expect(h.near).toBe(true);
       h.share(out * 1.001, 20_000);
       expect(h.near).toBe(false);
-      expect(h.share(out * 1.001, 20_000 + HANDOVER_MS)).toBe(0);
+      expect(h.share(out * 1.001, 20_000 + FADE_MS)).toBe(0);
       // Back into the band from above: still the farther layer.
       expect(h.share(threshold * 1.05, 30_000)).toBe(0);
     });
@@ -147,7 +148,7 @@ describe('every tier boundary is a handover (PLAN 2.7b)', () => {
     expect([tierOf(T3_MAX_M), tierOf(T3_MAX_M + 1)]).toEqual([3, 2]);
     // Elements are sent from tier 1.5 on: they are in the view before the sprites come in, and
     // still there through the hysteresis on the way out.
-    expect(tierOf(T1_MIN_M * HANDOVER_HYSTERESIS)).toBe(1.5);
+    expect(tierOf(T1_MIN_M * ZOOM_HYSTERESIS)).toBe(1.5);
   });
 
   it('where the markers used to fade by zoom, a resting camera has one layer in full', () => {
@@ -155,7 +156,7 @@ describe('every tier boundary is a handover (PLAN 2.7b)', () => {
       const fromT1 = new TierHandover(T1_MIN_M);
       fromT1.share(1000, -10_000);
       fromT1.share(m, 0);
-      expect(fromT1.share(m, HANDOVER_MS), `${m} m/px from T1`).toBe(1);
+      expect(fromT1.share(m, FADE_MS), `${m} m/px from T1`).toBe(1);
       const fromT2 = new TierHandover(T1_MIN_M);
       fromT2.share(100, -10_000);
       expect(fromT2.share(m, 0), `${m} m/px from T2`).toBe(1);

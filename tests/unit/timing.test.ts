@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { ANIM_TAIL_MS, FADE_MS, progress, running, smooth, TimedSwitch } from '../../src/render/timing';
+import { ANIM_TAIL_MS, FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch } from '../../src/render/timing';
 
-// The clock shared by the view's short animations (counter splits and folds, the T0 ↔ T1
-// handover, capital flags making way). Review pass after PLAN 1.43–1.45: three copies of these
-// rules became one.
+// The clock shared by the view's short animations (counter splits and folds, the handovers
+// between tiers, flags, labels). Review pass after PLAN 1.43–1.45: three copies of these rules
+// became one. Review pass after PLAN 2.7: the switches of the labels became one bank.
 
 describe('animation clock', () => {
   it('progress runs from 0 to 1 over the duration and stays there', () => {
@@ -60,6 +60,47 @@ describe('animation clock', () => {
       last = v;
     }
     expect(last).toBe(1);
+  });
+
+  it('a bank of switches: new things are set at once, hidden ones are off, unseen ones are forgotten', () => {
+    const bank = new SwitchBank<string>();
+    // Frame 1: "a" is placed and wanted (new: there at once); "b" is in view with nothing to show.
+    let state = bank.frame(1000);
+    expect(state.held('a')).toBe(false); // the layout is asked before the layer answers
+    expect(bank.value('a', true)).toBe(1);
+    state.hidden!('b');
+    bank.end();
+    expect(bank.animating(1000)).toBe(false);
+    // Frame 2: the zoom brings "b": it fades in from nothing. "a" is held.
+    state = bank.frame(2000);
+    expect([state.held('a'), state.visible('a'), state.held('b'), state.visible('b')]).toEqual([true, true, false, false]);
+    expect(bank.value('a', true)).toBe(1);
+    expect(bank.value('b', true)).toBe(0);
+    bank.end();
+    expect(bank.animating(2000)).toBe(true);
+    // Mid-fade: "b" is held and half there; "a" goes out, and stays visible while it does.
+    state = bank.frame(2000 + FADE_MS / 2);
+    expect(state.held('b')).toBe(true);
+    expect(bank.value('b', true)).toBeCloseTo(0.5, 12);
+    expect(bank.value('a', false)).toBe(1);
+    bank.end();
+    state = bank.frame(2000 + FADE_MS);
+    expect([state.held('a'), state.visible('a')]).toEqual([false, true]);
+    expect(bank.value('a', false)).toBeCloseTo(0.5, 12);
+    expect(bank.value('b', true)).toBe(1);
+    bank.end();
+    // A frame in which "a" is neither placed nor hidden: out of view. It has no state after,
+    // and is there at once when a pan brings it back.
+    bank.frame(5000);
+    bank.value('b', true);
+    bank.end();
+    state = bank.frame(6000);
+    expect([state.held('a'), state.visible('a')]).toEqual([false, false]);
+    expect(bank.value('a', true)).toBe(1);
+    bank.end();
+    expect(bank.animating(6000)).toBe(false);
+    bank.clear();
+    expect(bank.frame(7000).held('b')).toBe(false);
   });
 
   it('smooth is a symmetric ease: a fade turned at p goes on at 1 − p', () => {

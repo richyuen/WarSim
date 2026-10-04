@@ -86,7 +86,8 @@ src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command
                    rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts,
                    calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts
-src/render/        camera.ts, timing.ts (the animations' clock), gl/ (gpuTimer), map/ (MapRenderer), labels/,
+src/render/        camera.ts, timing.ts (the animations' clock; TimedSwitch and SwitchBank: what shows at a
+                   zoom as states with timed fades), gl/ (gpuTimer), map/ (MapRenderer), labels/,
                    hash.ts (placement noise), units/ (ProxyRenderer, atlas, counters, markers, handover,
                    individuals, formationDots), fx/ (fire: tracers, flashes, impacts; wrecks: the
                    ends of elements); later lod/
@@ -959,16 +960,20 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 ## 8. Semantic zoom / LOD design [ADR-3, ADR-4]
 
 Continuous zoom `z = log2(screen px per world km)`. Tiers are bands with overlap.
-Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresis
-±0.15 for discrete decisions such as clustering level). As built (2026-10-04): the counters'
-cluster level and the three handovers between the unit tiers are states with hysteresis and a
-timed change [ADR-64, ADR-71]. So are the capital flags as a layer and each city's dot and
-name [ADR-73]: in at their limit, out above it × 1.15, a fade of 250 ms; a name that finds room
-when its neighbour goes fades in the same way. The curved nation names likewise (PLAN 2.7e): in
-when a name's size reaches 9 px and no larger name is in its way, out below 9 ÷ 1.15 px. A
-change of map mode still takes the names away at once, with the mode. The short animations
-share one
-clock (`src/render/timing.ts`).
+
+**What shows at a zoom is a state, not a function of the zoom** (as built, PLAN 1.45a and
+2.7; ADR-64, ADR-71, ADR-73). The first design gave every layer an opacity curve `α_layer(z)`.
+It was dropped: a camera resting on a curve showed two layers half there.
+- A thing (a tier's unit layer, the capital flags, a city's dot, a city's name, a nation's name)
+  comes in when the zoom reaches its threshold and stays until the zoom is 1.15 × beyond it.
+- A change is a fade of 250 ms of real time, the same when a name finds room because its
+  neighbour went. At rest everything is in full or absent.
+- `src/render/timing.ts` has the pieces: `TimedSwitch` (one thing), `SwitchBank` (a layer's
+  things, by key), `ZOOM_HYSTERESIS`, `FADE_MS`. Layouts stay pure functions: they are told what
+  is on and what still fades out (`SwitchState`).
+- Not zoom, and at once: a change of map mode takes the nation names away with the mode; new
+  label curves from the worker move a name. The counters' cluster level has its own hysteresis
+  (± 0.15 of a level) and a split or merge of 250 ms.
 
 | Tier | m/px | Map | Forces |
 |---|---|---|---|

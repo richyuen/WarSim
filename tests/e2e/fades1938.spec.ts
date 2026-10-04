@@ -2,8 +2,10 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { ZOOM_HYSTERESIS } from '../../src/render/timing';
 import type { Command } from '../../src/shared/commands';
 import { NATIONS_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { MAX_JUMP } from './noPop';
 import { settle } from './settle';
 
 // PLAN 2.7b AT: no popping at any tier change. Two divisions are spawned where nothing else
@@ -27,15 +29,8 @@ const SETUP: Command[] = [
   { kind: 'spawnFormation', nation: nation('JAP'), x: SITE[0], y: SITE[1] + 0.3, strength: 0, template: template('panzer_div') },
 ];
 
-/**
- * A smooth cross-fade over 250 ms moves a layer's share by at most 0.096 in a 16 ms frame (1.5 ×
- * the linear step), which is 25 of 255 for a white figure on black, and the layer going out adds
- * its own change at the pixels the two share. 48 is twice the single step with room for
- * rounding; a layer that appears or goes in one frame jumps by its whole contrast.
- */
-const MAX_JUMP = 48;
 const FRAMES = 34; // 544 ms: the longest change (T1 ↔ T2, 470 ms) and its tail
-const HYSTERESIS = 1.15;
+const HYSTERESIS = ZOOM_HYSTERESIS;
 
 interface Crossing {
   name: string;
@@ -170,7 +165,6 @@ test('no popping: every tier change is a cross-fade whose frames differ by littl
 
     const start = 1 - c.end;
     console.log(`${c.name} (${c.from.toFixed(1)} → ${c.to.toFixed(1)} m/px): largest luminance jump between frames ${Math.max(...rec.jumps).toFixed(1)} of 255; the whole change ${rec.whole.toFixed(0)}; lit pixels ${rec.lit[0]} → ${rec.lit[1]}; slowest frame of the unit layers ${rec.slowest.toFixed(2)} ms of CPU`);
-    if (c.share === 'elements') console.log(`  jumps by frame: ${rec.jumps.map((j) => j.toFixed(0)).join(' ')}`);
     // The step itself changes nothing at once: the first frame still has the old layer in full.
     expect(rec.before[c.share], `${c.name}: at rest before`).toBe(start);
     expect(rec.shares[0], `${c.name}: the frame of the step`).toBe(start);

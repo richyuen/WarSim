@@ -8,16 +8,16 @@
  * outside the view are dropped, and glyph circles collide greedily in area order (largest first).
  *
  * A name is a state, not a function of the zoom (PLAN 2.7e): it comes in when its size reaches
- * MIN_PX and no larger name is in its way, goes out below MIN_PX ÷ NAME_HYSTERESIS or when one
+ * MIN_PX and no larger name is in its way, goes out below MIN_PX ÷ ZOOM_HYSTERESIS or when one
  * is, and a change is a fade in time. The view holds the states and tells the layout what is on.
  */
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { bezierAt, LABEL_STRIDE, LabelField } from '../../shared/nationLabels';
+import { ZOOM_HYSTERESIS, type SwitchState } from '../timing';
 
 export const MIN_PX = 9;
 export const MAX_PX = 64;
-/** A name that is on stays until its size falls below MIN_PX by this factor. */
-export const NAME_HYSTERESIS = 1.15;
+
 /** Average glyph advance as a share of the font size (initial fit before measuring). */
 const ADVANCE = 0.62;
 
@@ -44,15 +44,8 @@ export interface PlacedNationLabel {
 
 export type Measure = (text: string, fontPx: number) => number;
 
-/** What the view knows of each name from the frames before (none: a layout at rest). */
-export interface NameState {
-  /** The name is on now: shown, or fading in. */
-  held(key: string): boolean;
-  /** It is still on screen (on, or a fade out runs): placed though not wanted. */
-  visible(key: string): boolean;
-  /** Called for a name in view that is not placed. */
-  hidden?(key: string): void;
-}
+/** What the view knows of each name, by its key, from the frames before (none: a layout at rest). */
+export type NameState = SwitchState<string>;
 const AT_REST: NameState = { held: () => false, visible: () => false };
 
 export function layoutNationLabels(
@@ -79,7 +72,7 @@ export function layoutNationLabels(
     const len = data[o + LabelField.length]! * cam.scale;
     let fontPx = Math.min(MAX_PX, 2 * thick, len / (ADVANCE * text.length));
     let width = 0;
-    if (fontPx >= MIN_PX / NAME_HYSTERESIS) {
+    if (fontPx >= MIN_PX / ZOOM_HYSTERESIS) {
       width = measure(text, fontPx);
       if (width > len) {
         fontPx *= len / width;
@@ -88,7 +81,7 @@ export function layoutNationLabels(
     }
     for (const off of offsets) {
       const key = `${id}:${off}`;
-      const fits = fontPx >= (state.held(key) ? MIN_PX / NAME_HYSTERESIS : MIN_PX);
+      const fits = fontPx >= (state.held(key) ? MIN_PX / ZOOM_HYSTERESIS : MIN_PX);
       const lingers = state.visible(key);
       const pts: [number, number][] = [];
       for (const k of [LabelField.x0, LabelField.cx, LabelField.x2]) pts.push(worldToScreen(cam, data[o + k]! + off, data[o + k + 1]!, viewW, viewH));

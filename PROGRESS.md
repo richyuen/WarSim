@@ -3619,3 +3619,41 @@ since, with three test races found in their gate runs.
   80 e2e, parity 46.3% (no sim input changed, so the ten-year stage did not run).
 - **Next:** a review pass (five tasks since the last: 2.7a–e), then PLAN 2.8 (procedural detail
   tiles and hillshade).
+
+## 2026-10-04 — Review pass after PLAN 2.7a–e
+
+No rule changed and nothing on screen changed: the same fades, by fewer pieces.
+
+- **One hysteresis, one duration.** `HANDOVER_HYSTERESIS`, `LABEL_HYSTERESIS` and
+  `NAME_HYSTERESIS` (three copies of 1.15) are `ZOOM_HYSTERESIS`; `HANDOVER_MS` and `FADE_MS`
+  (two copies of 250) are `FADE_MS`. Both in `src/render/timing.ts`. The two fades specs read
+  the constant instead of a fourth copy.
+- **One bank of switches.** The city label layer and the nation names each kept a switch for
+  every thing in view, with the same four rules written twice (new to the view: there at once;
+  in view with nothing to show: off; out of view: forgotten; a change is noted so that the view
+  keeps drawing). That is `SwitchBank<K>` now, and what a layout is told is `SwitchState<K>`
+  (`LabelState` is one for the dots and one for the names; `NameState` is one by key). MapView
+  lost its 30 lines of name bookkeeping and `nameChanged`.
+- **One measure of "no popping".** `MAX_JUMP` and its derivation are in `tests/e2e/noPop.ts`,
+  read by `fades1938` and `labelFades1938`. A debug line of `fades1938` is gone.
+- **SPEC §8** opened with "every layer has an opacity curve α(z)", which is true of no layer any
+  more. It now says what is built: states with hysteresis and timed fades, the pieces, and what
+  is not a matter of zoom (map mode, new label curves, the counters' cluster level).
+- **Looked at and left:**
+  - `drawMarkers` takes twelve parameters. So do the counters, the fire and the wrecks, in the
+    same order (context, data, camera, geometry, view size, opacity, …). Bundling one of them
+    would make it the odd one; bundling all is a change of every draw call for no behaviour.
+  - `drawUnitLayers` and `drawLabelLayers` share four lines (resize, shares, mark dirty).
+  - `masked` in `labelFades1938` sums the flags' rectangles and does not take their union: it
+    counts too much, which only makes its own limit (10% of the picture) stricter. Noted there.
+  - `elements1938` has two fixed sleeps. It reads counts and not pixels; the first waits for a
+    snapshot that must carry no elements, which cannot be polled for.
+  - Three exports that nothing reads (`UnitClass`, `STAT_FIELDS`, the parity `Status`): each
+    names a layout or a union for the reader. Kept; no longer listed.
+- **Found, and in its own commit after this one:** during the T1 → T2 morph the markers' boxes
+  are pictures of themselves, cached by symbol and state and not by nation (PLAN 2.7c). Where
+  two nations' markers are in view, one takes the other's colour and flag for the 250 ms of
+  the morph. The acceptance test spawned two divisions of one nation and could not see it.
+- **Not run:** `sweep:quick` (ADR-58: at the phase review only).
+- **Tests:** 1 new unit test (the bank's four rules). 552 unit tests in 75 files.
+- **Next:** the fix above, then PLAN 2.8 (procedural detail tiles and hillshade).
