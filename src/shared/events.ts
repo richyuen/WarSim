@@ -73,7 +73,8 @@ export const EventKind = {
   /**
    * An element's strength reached 0 (combat, attrition, desertion; PLAN 2.4b): a = element id,
    * b = its unit index, (x, y) = the slot it stood in. In a snapshot b is the `Wreck` its class
-   * leaves (the view has no unit rules), and only a view that draws elements gets the event.
+   * leaves (`shared/unitLooks`; the view has no unit rules), and only a view that draws elements
+   * gets the event.
    */
   ElementDestroyed: 34,
 } as const;
@@ -98,30 +99,10 @@ export interface SimEvent {
  * `TickOutputs.fires`. Like the events above they are never state and never hashed.
  * Record layout: [tick, subtick, shooter, target, unit, dmg, x0, y0, x1, y1], shooter and target
  * being element ids and the points their slot poses. In a snapshot the `unit` slot carries the
- * `Weapon` of the shooter's class (the view has no unit rules).
+ * `Weapon` of the shooter's class (`shared/unitLooks`; the view has no unit rules).
  */
 export const FIRE_STRIDE = 10;
 export const FireField = { tick: 0, subtick: 1, shooter: 2, target: 3, weapon: 4, dmg: 5, x0: 6, y0: 7, x1: 8, y1: 9 } as const;
-
-/** How a volley is drawn (PLAN 2.4): rifles and machine guns, direct-fire guns, indirect fire. */
-export const Weapon = { smallArms: 0, cannon: 1, shell: 2 } as const;
-export type Weapon = (typeof Weapon)[keyof typeof Weapon];
-
-export function weaponOf(cls: string): Weapon {
-  if (cls === 'art') return Weapon.shell;
-  if (cls === 'inf' || cls === 'mot' || cls === 'mech') return Weapon.smallArms;
-  return Weapon.cannon;
-}
-
-/** What a destroyed element leaves where it stood (PLAN 2.4b): the fallen, a broken gun, a burnt-out vehicle. */
-export const Wreck = { men: 0, gun: 1, vehicle: 2 } as const;
-export type Wreck = (typeof Wreck)[keyof typeof Wreck];
-
-export function wreckOf(cls: string): Wreck {
-  if (cls === 'inf') return Wreck.men;
-  if (cls === 'art' || cls === 'at' || cls === 'aa') return Wreck.gun;
-  return Wreck.vehicle;
-}
 
 export function readEvent(buf: Float64Array, i: number): SimEvent {
   const o = i * EVENT_STRIDE;

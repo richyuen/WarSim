@@ -149,7 +149,7 @@ export interface SnapshotElements {
   id: Uint32Array;
   formation: Uint32Array;
   nation: Uint16Array;
-  /** Atlas frame (0 infantry, 1 vehicle, 2 ship, 3 aircraft). */
+  /** Atlas frame of the element's unit class (shared/unitLooks Frame). */
   frame: Uint8Array;
   strength: Uint16Array;
   x: Float64Array;
@@ -188,7 +188,7 @@ export interface SnapshotEvents {
  */
 export interface SnapshotFires {
   count: number;
-  /** count·FIRE_STRIDE records (shared/events `FireField`; the weapon slot holds a `Weapon`). */
+  /** count·FIRE_STRIDE records (shared/events `FireField`; the weapon slot holds a `Weapon` of shared/unitLooks). */
   data: Float64Array;
   /** Fires dropped because the queue hit its cap: a snapshot that spans many ticks (should stay 0 at ×5). */
   dropped: number;

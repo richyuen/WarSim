@@ -4,6 +4,7 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { settle } from './settle';
 
 // PLAN 1.45a AT (critic B7, the "ghost counters"): wherever the camera rests over Europe, in the
 // band where the T0 counters and the T1 markers used to cross-fade by zoom (2000–2600 m/px),
@@ -30,7 +31,7 @@ async function rest(page: Page, scale: number, running = false): Promise<Layers>
   await page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx: CX, cy: CY, scale });
   await page.evaluate(() => window.__warsim!.view!.draw()); // the frame that sees the new zoom
   if (running) await page.waitForFunction(() => !window.__warsim!.view!.handover.animating(performance.now()));
-  else await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
+  else await settle(page);
   return page.evaluate(() => {
     const v = window.__warsim!.view!;
     v.draw();

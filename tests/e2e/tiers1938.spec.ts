@@ -8,6 +8,7 @@ import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1
 import { Sim } from '../../src/sim/sim';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { assets1938 } from '../helpers/earth';
+import { settle } from './settle';
 
 // PLAN 2.5 AT: elements killed at T2 take exactly as many men off the T0 counter. God Mode
 // spawns a battle where nothing else stands (two Japanese divisions against a Chinese one in
@@ -108,15 +109,10 @@ async function sprites(page: Page): Promise<El[]> {
 
 /** T0 on the site, at rest: the counters standing there and what they say. */
 async function counters(page: Page): Promise<{ strength: number; others: number; text: string; alpha: number }[]> {
-  await page.evaluate(({ x, y, scale }) => {
-    const v = window.__warsim!.view!;
-    v.controller.set({ cx: x, cy: y, scale });
-    v.draw();
-  }, { x: SITE[0], y: SITE[1], scale: T0_SCALE });
-  await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
+  await page.evaluate(({ x, y, scale }) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale }), { x: SITE[0], y: SITE[1], scale: T0_SCALE });
+  await settle(page);
   return page.evaluate(({ x, y, box }) => {
     const v = window.__warsim!.view!;
-    v.draw();
     return v.counters.drawn.filter((d) => Math.abs(d.wx - x) <= box && Math.abs(d.wy - y) <= box).map((d) => ({ strength: d.strength, others: d.others, text: d.text, alpha: d.alpha }));
   }, { x: SITE[0], y: SITE[1], box: BOX });
 }

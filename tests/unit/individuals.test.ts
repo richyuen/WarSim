@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { hash2, pair } from '../../src/render/hash';
-import { Frame } from '../../src/render/units/atlas';
+import { Frame } from '../../src/shared/unitLooks';
 import { figureCells, figureCount, figureOffsets, FOOTPRINT_CELLS, gridSide, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
 
 // PLAN 2.6: an element as its individuals at T3 (ADR-69). How many, and where each stands. The

@@ -14,7 +14,7 @@
  * frame and after a reload. Nothing here is sim state.
  */
 import { hash2, pair } from '../hash';
-import { Frame } from './atlas';
+import { Frame } from '../../shared/unitLooks';
 
 export const MAX_FIGURES = 64;
 /** Side of an element's footprint, cells. Slots are 0.03 apart (`sim/core/pose`), so elements stay apart. */

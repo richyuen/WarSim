@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField, Weapon, Wreck } from '../../src/shared/events';
+import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../../src/shared/events';
+import { Weapon, Wreck } from '../../src/shared/unitLooks';
 import type { FromWorker, Snapshot, Subscription } from '../../src/shared/protocol';
 import { Sim } from '../../src/sim/sim';
 import { TOY_W } from '../../src/sim/toy';

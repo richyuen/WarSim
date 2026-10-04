@@ -4,6 +4,7 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { settle } from './settle';
 
 // PLAN 1.45b AT (critic B7, the wall of counters): on the 1938 start and after one year, at world
 // zoom over Europe, paused and running, no two counter boxes overlap; what did not fit is folded
@@ -31,15 +32,10 @@ function overlaps(b: Box[]): string[] {
     }
   return out;
 }
-/** Moves the camera, lets the unit animations run out, draws, and returns the counters. */
+/** Moves the camera, draws until the unit animations have run out, and returns the counters. */
 async function rest(page: Page, cx: number, cy: number, scale: number): Promise<Box[]> {
-  await page.evaluate(({ cx, cy, scale }) => {
-    const v = window.__warsim!.view!;
-    v.controller.set({ cx, cy, scale });
-    v.draw();
-  }, { cx, cy, scale });
-  await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
-  await page.evaluate(() => window.__warsim!.view!.draw());
+  await page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx, cy, scale });
+  await settle(page);
   return boxes(page);
 }
 const simStrength = (page: Page): Promise<number> => page.evaluate(async () => (await window.__warsim!.sim.inspect(true)).formations.reduce((a, f) => a + f.strength, 0));

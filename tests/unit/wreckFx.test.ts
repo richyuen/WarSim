@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { EVENT_STRIDE, EventKind, Wreck, wreckOf } from '../../src/shared/events';
-import { LAND_CLASSES } from '../../src/sim/data/schemas';
+import { EVENT_STRIDE, EventKind } from '../../src/shared/events';
+import { Wreck } from '../../src/shared/unitLooks';
 import { ANIM_TAIL_MS } from '../../src/render/timing';
 import { BURST_MS, burstOf, MAX_WRECKS, WRECK_HOLD_MS, WRECK_IN_MS, WRECK_LIFE_MS, WRECK_OUT_MS, WreckFx, wreckOpacity } from '../../src/render/fx/wrecks';
 
@@ -17,15 +17,6 @@ const died = (id: number, kind: Wreck = Wreck.men, x = 10, y = 20): [number, num
 function add(fx: WreckFx, list: readonly [number, number, number, number, number][], now: number): void {
   fx.add(list.length, events(list), now);
 }
-
-describe('wreckOf', () => {
-  it('infantry leaves the fallen, guns a broken gun, everything on wheels or tracks a hull', () => {
-    expect(wreckOf('inf')).toBe(Wreck.men);
-    for (const cls of ['art', 'at', 'aa']) expect(wreckOf(cls), cls).toBe(Wreck.gun);
-    for (const cls of ['armor_l', 'armor_m', 'armor_h', 'mech', 'mot']) expect(wreckOf(cls), cls).toBe(Wreck.vehicle);
-    expect(new Set(LAND_CLASSES.map(wreckOf)).size).toBe(3);
-  });
-});
 
 describe('WreckFx.add', () => {
   it('makes a wreck of each ElementDestroyed and of nothing else', () => {

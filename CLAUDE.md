@@ -27,6 +27,8 @@ There is no memory between sessions. Read these files:
     input changed. They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
 - `npm run check:full`: every stage, whatever changed.
+- `npm run typecheck`: `src/`, `tools/` and `tests/` (a bare `tsc --noEmit -p .` skips `tests/`; a
+  type error in a spec then shows only as Playwright's "webServer was not able to start").
 - `npm run critic:due`: whether a critic run is due (PROMPT.md step 2a): no report yet, or a
   phase review ticked in PLAN.md since the report. One run per phase (ADR-59).
 - `npm run dev`: title screen at `/`; the 1938 world at `/?scenario=1938`, the toy world at

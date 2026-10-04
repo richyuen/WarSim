@@ -13,7 +13,8 @@
  *   drawn (`skipped`). So the fire on screen grows with the elements that fight, not with the
  *   game speed. Within one tick every FireEvent is a shot: an element fires once an hour.
  */
-import { FIRE_STRIDE, FireField, Weapon } from '../../shared/events';
+import { FIRE_STRIDE, FireField } from '../../shared/events';
+import { Weapon } from '../../shared/unitLooks';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, progress } from '../timing';

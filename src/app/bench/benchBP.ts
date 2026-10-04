@@ -7,7 +7,7 @@
 import { Application, Particle, ParticleContainer, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GpuTimer } from '../../render/gl/gpuTimer';
 import { MapRenderer } from '../../render/map/MapRenderer';
-import { ATLAS_FRAME, drawUnitAtlas } from '../../render/units/atlas';
+import { ATLAS_FRAME, ATLAS_FRAMES, drawUnitAtlas } from '../../render/units/atlas';
 import type { ProxyBenchCase } from './benchApi';
 import { runFrames } from './benchUtil';
 import { ProxyScene, TACTICAL_VIEW, TICK_HZ } from './proxyScene';
@@ -41,7 +41,7 @@ const timer = new GpuTimer(pgl);
 
 app.stage.addChild(new Sprite(Texture.from(mapCanvas)));
 const atlas = Texture.from(drawUnitAtlas());
-const frames = [0, 1, 2, 3].map((i) => new Texture({ source: atlas.source, frame: new Rectangle(i * ATLAS_FRAME, 0, ATLAS_FRAME, ATLAS_FRAME) }));
+const frames = Array.from({ length: ATLAS_FRAMES }, (_, i) => new Texture({ source: atlas.source, frame: new Rectangle(i * ATLAS_FRAME, 0, ATLAS_FRAME, ATLAS_FRAME) }));
 let container: ParticleContainer | null = null;
 let scene: ProxyScene | null = null;
 let lastTick = 0;

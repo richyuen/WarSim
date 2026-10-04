@@ -1,13 +1,13 @@
 /**
  * Procedural unit sprite atlas (our own art, DATA_SOURCES "Unit sprites"): white silhouettes
- * with a dark outline, tinted per nation in the shader. Frames are 64×64 in a 320×64 strip:
- * 0 infantry, 1 tank, 2 ship, 3 aircraft, 4 gun. Phase 2 replaces this with the full atlas.
+ * with a dark outline, tinted per nation in the shader. Frames are 64×64 in a strip, in the
+ * order of `Frame` (`shared/unitLooks`): infantry, tank, ship, aircraft, gun. Phase 2 replaces
+ * this with the full atlas.
  */
+import { Frame } from '../../shared/unitLooks';
 
 export const ATLAS_FRAME = 64;
-export const ATLAS_FRAMES = 5;
-/** Frames by what they show (`worker/server` picks one per unit class). */
-export const Frame = { infantry: 0, tank: 1, ship: 2, aircraft: 3, gun: 4 } as const;
+export const ATLAS_FRAMES = Object.keys(Frame).length;
 
 export function drawUnitAtlas(): HTMLCanvasElement {
   const c = document.createElement('canvas');
@@ -25,7 +25,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.restore();
   };
   // Infantry: a soldier seen from above facing +x (head, shoulders, rifle).
-  frame(0, (g) => {
+  frame(Frame.infantry, (g) => {
     g.beginPath();
     g.ellipse(0, 0, 12, 18, 0, 0, Math.PI * 2);
     g.stroke();
@@ -38,7 +38,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.strokeRect(6, 8, 22, 4);
   });
   // Tank: hull, turret and barrel facing +x.
-  frame(1, (g) => {
+  frame(Frame.tank, (g) => {
     g.beginPath();
     g.roundRect(-24, -16, 44, 32, 5);
     g.stroke();
@@ -51,7 +51,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.strokeRect(6, -3, 24, 6);
   });
   // Ship: pointed hull facing +x with a superstructure.
-  frame(2, (g) => {
+  frame(Frame.ship, (g) => {
     g.beginPath();
     g.moveTo(30, 0);
     g.lineTo(12, -11);
@@ -65,7 +65,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.fillRect(-12, -5, 14, 10);
   });
   // Aircraft: fuselage, wings and tail facing +x.
-  frame(3, (g) => {
+  frame(Frame.aircraft, (g) => {
     g.beginPath();
     g.moveTo(28, 0);
     g.lineTo(6, -4);
@@ -88,7 +88,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.fill();
   });
   // Gun (PLAN 2.6): a field piece facing +x, seen from above: split trail, wheels, shield, barrel.
-  frame(4, (g) => {
+  frame(Frame.gun, (g) => {
     g.beginPath();
     g.moveTo(-4, 0);
     g.lineTo(-28, -9);

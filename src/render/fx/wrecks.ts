@@ -6,7 +6,8 @@
  * Nothing here is sim state: wrecks live on the render clock, drawing changes nothing, and a
  * reload starts with none. A wreck stays where the element died; its formation moves on.
  */
-import { EVENT_STRIDE, EventKind, Wreck } from '../../shared/events';
+import { EVENT_STRIDE, EventKind } from '../../shared/events';
+import { Wreck } from '../../shared/unitLooks';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2 } from '../hash';
 import { ANIM_TAIL_MS, smooth } from '../timing';

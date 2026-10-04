@@ -9,15 +9,20 @@ import type {} from '../../src/app/testApi';
  * state, starts what follows from it (a capital flag making way for a counter that has just
  * come to rest) and shows that animation's first frame. `flagsClear1938.spec.ts` failed that
  * way once in a gate run (2026-10-04): three flags still on their counters.
+ *
+ * For a paused game. While the game runs the counters never all stand still: a spec that
+ * samples a running game says which animation it waits for (`handover1938.spec.ts`) or which
+ * frames it reads (`declutter1938.spec.ts`).
  */
-export async function settle(page: Page): Promise<void> {
-  await page.evaluate(async () => {
+export async function settle(page: Page, timeoutMs = 30_000): Promise<void> {
+  await page.evaluate(async (timeoutMs) => {
     const v = window.__warsim!.view!;
-    for (let i = 0; i < 400; i++) {
+    const deadline = performance.now() + timeoutMs;
+    for (;;) {
       v.draw();
       if (!v.unitsAnimating()) return;
+      if (performance.now() > deadline) throw new Error(`the view did not come to rest in ${timeoutMs / 1000} s`);
       await new Promise((done) => setTimeout(done, 25));
     }
-    throw new Error('the view did not come to rest in 10 s');
-  });
+  }, timeoutMs);
 }

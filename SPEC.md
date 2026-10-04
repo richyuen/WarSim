@@ -81,7 +81,8 @@ src/sim/toy.ts     the Phase 0 toy world (determinism suites)
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
 src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all serialized)
-src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums,
+src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), events.ts (event kinds,
+                   fire records), unitLooks.ts (a unit class's sprite, fire and wreck), constants, enums,
                    rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts,
                    calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts

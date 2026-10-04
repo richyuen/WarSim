@@ -6,6 +6,7 @@ import type { Inspection } from '../../src/shared/protocol';
 import { strengthText } from '../../src/render/units/markers';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { settle } from './settle';
 
 // PLAN 2.1 AT: at T1 every formation marker's strength number equals the sim's Σ element
 // strength (the e2e reads both: the drawn label and the element sum from the worker). Order
@@ -20,13 +21,10 @@ async function look(page: Page, lon: number, lat: number, mPerPx: number): Promi
   await page.evaluate(({ x, y, m }) => {
     const v = window.__warsim!.view!;
     v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
-    v.draw();
   }, { x, y, m: mPerPx });
-  // The camera jump may start the T0 ↔ T1 handover (PLAN 1.45a, 250 ms) and counter splits: let
-  // them finish, then draw the state they end in.
-  await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
-  await page.evaluate(() => window.__warsim!.view!.draw());
-  await page.waitForTimeout(150);
+  // The camera jump may start the T0 ↔ T1 handover (PLAN 1.45a, 250 ms) and counter splits: draw
+  // until they have finished, and leave the state they end in on screen.
+  await settle(page);
 }
 
 test('T1 markers: numbers equal Σ element strength; arrows and battle markers', async ({ page }, info) => {

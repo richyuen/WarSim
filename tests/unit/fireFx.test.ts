@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { FIRE_STRIDE, Weapon, weaponOf } from '../../src/shared/events';
-import { LAND_CLASSES } from '../../src/sim/data/schemas';
+import { FIRE_STRIDE } from '../../src/shared/events';
+import { Weapon } from '../../src/shared/unitLooks';
 import { ANIM_TAIL_MS } from '../../src/render/timing';
 import { FireFx, lifeOf, LOOKS, MAX_SHOTS, MAX_SPREAD_MS, MIN_SPREAD_MS, phasesOf, SCATTER_CELLS, STEP_SPREAD_MS } from '../../src/render/fx/fire';
 
@@ -28,16 +28,6 @@ function records(list: readonly Rec[]): Float64Array {
 function add(fx: FireFx, list: readonly Rec[], now: number, tickMs = 1000): void {
   fx.add(list.length, records(list), now, tickMs, GEO);
 }
-
-describe('weaponOf', () => {
-  it('artillery lobs shells, guns and tanks fire flat, the rest small arms', () => {
-    expect(weaponOf('art')).toBe(Weapon.shell);
-    for (const cls of ['at', 'aa', 'armor_l', 'armor_m', 'armor_h']) expect(weaponOf(cls), cls).toBe(Weapon.cannon);
-    for (const cls of ['inf', 'mot', 'mech']) expect(weaponOf(cls), cls).toBe(Weapon.smallArms);
-    // Every land class has a look.
-    for (const cls of LAND_CLASSES) expect(LOOKS[weaponOf(cls)]).toBeDefined();
-  });
-});
 
 describe('FireFx.add', () => {
   it('makes one shot of each record, as the sim gave it', () => {

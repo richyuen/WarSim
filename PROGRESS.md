@@ -3407,3 +3407,51 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
   `counters1938` rest by the old pattern (wait, then draw). None has failed this way, and for
   counters alone a second draw of the same inputs starts nothing; they should use `settle` all
   the same.
+
+## 2026-10-04 — Review pass after PLAN 2.4–2.6
+
+Step 9 of PROMPT.md. The last one was after PLAN 1.45; 2.4a, 2.4b, 2.5 and 2.6 have landed
+since, with three test races found in their gate runs.
+
+- **The pattern in the three races, and the rule taken from it.** A test that reads a frame has
+  to say which frame of an animation it means.
+  - *Fire (2.4a):* the layer drew nothing before "the batch arrived", but a frame's clock (the
+    rAF time) can be earlier than the arrival of the snapshot it draws. Fixed in the layer.
+  - *Declutter (found with 2.4b):* "the counters at opacity 1 do not overlap" is false of the
+    first frame of a fade, which starts at opacity 1. The spec now reads two frames.
+  - *Flags (found with 2.6):* "wait until nothing animates, then draw" can draw the first frame
+    of what follows. `tests/e2e/settle.ts` draws until a frame leaves nothing animating.
+  - **Done in this pass:** `declutter1938`, `handover1938` (its paused rests), `markers1938` and
+    `tiers1938` rest with `settle` now; `markers1938` lost a 150 ms sleep that stood in for it.
+    `settle` gives up by the clock (30 s), not by a count of iterations. The five specs ran
+    twice each, green. A running game has no rest: `handover1938` waits for the handover alone
+    there and `declutter1938` reads two named frames; `settle.ts` says so.
+  - **Not done:** 36 fixed sleeps remain in the specs (camera, editor, map modes, panels).
+    They wait for UI and input, not for the view's animation clock, and none has failed.
+- **One home for what a unit class looks like** (`src/shared/unitLooks.ts`): the sprite frame,
+  how its fire is drawn, what it leaves when destroyed. `frameOf` sat in the worker with bare
+  numbers while the atlas named its frames, and `weaponOf` and `wreckOf` sat with the event
+  kinds. The worker may not import `render/`, so the names live in `shared/`. The atlas takes
+  its frame count from `Frame`. `tests/unit/unitLooks.test.ts` has the three maps (new: every
+  unit class has a frame, and the frames are the atlas order without gaps).
+- **MapView:** three copies of the unwrap across the seam of a looping map and two of the
+  sprite tint are one helper each.
+- **The placement hash of 2.6 was not a pure extraction:** shots land where they did, wrecks
+  lie at other angles than before. Nothing depends on the angle.
+- **Dead code:** the scan of every export in `src/` and `tools/` finds the same three as last
+  time (`UnitClass`, parity's `Status`, `STAT_FIELDS`) and nothing new.
+- **Drift:**
+  - `shared/protocol.ts` still described four atlas frames; the Pixi bench (`benchBP.ts`) listed
+    frames 0–3 by hand;
+  - SPEC's module layout did not list `shared/events.ts`, nor the new `unitLooks.ts`;
+  - CLAUDE.md did not name `npm run typecheck`, the one command that typechecks `tests/`;
+  - PARITY row 74 (unit visuals) has a note on fire, wrecks and individuals.
+- **Missing tests:** none found for 2.4–2.6 beyond the frame map (added). Not looked at again:
+  the code of PLAN 2.1–2.3 and 1.42 beyond what the scans touch.
+- **Open, unchanged:** the I5 failure of one gate run (BLOCKERS watch list) has not recurred
+  in six full unit runs since.
+- **Gate:** 530 unit tests in 74 files, 8 ten-year tests, 78 e2e, parity 46.3%.
+- **Next:** PLAN 2.7 (fade curves and hysteresis for all layers; the marker → elements morph).
+  It owns three things left open on the way: the T1 → T2 fade by zoom, the plain switch at
+  T2 → T3, and a block of sprites that re-forms in one frame when its element count crosses a
+  step of the grid. ADR-69 also leaves it a choice: how a battalion's losses show at T3.

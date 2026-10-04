@@ -11,7 +11,8 @@ import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
-import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField, weaponOf, wreckOf } from '../shared/events';
+import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
+import { frameOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
@@ -83,15 +84,6 @@ const EMPTY_ELEMENTS: SnapshotElements = {
   flags: new Uint8Array(0),
   truncated: false,
 };
-
-/** Atlas frame of a unit class (PLAN 2.3; `render/units/atlas` `Frame`): men, armour, ships, aircraft, guns. */
-function frameOf(cls: string): number {
-  if (cls.startsWith('armor') || cls === 'mech') return 1;
-  if (cls === 'art' || cls === 'at' || cls === 'aa') return 4;
-  if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return 2;
-  if (['fighter', 'bomber_tac', 'bomber_str', 'cas', 'naval_bomber', 'transport_air'].includes(cls)) return 3;
-  return 0;
-}
 
 /** Marker symbol of a template (PLAN 2.1): by its dominant element type. */
 function symbolOf(t: { id: string; elements: readonly { type: string; count: number }[] }): UnitSymbol {

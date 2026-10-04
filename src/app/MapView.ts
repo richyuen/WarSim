@@ -303,9 +303,7 @@ export class MapView {
       p.data[o] = f.prevX[i]! - p.originX;
       p.data[o + 1] = f.prevY[i]! - p.originY;
       // Unwrap across the seam so interpolation never sweeps the whole map.
-      let x = f.x[i]!;
-      if (this.geo.wrapX && Math.abs(x - f.prevX[i]!) > this.geo.w / 2) x += x < f.prevX[i]! ? this.geo.w : -this.geo.w;
-      p.data[o + 2] = x - p.originX;
+      p.data[o + 2] = this.unwrapped(f.x[i]!, f.prevX[i]!) - p.originX;
       p.data[o + 3] = f.y[i]! - p.originY;
       p.data[o + 4] = f.facing[i]!;
       p.data[o + 5] = MARKER_CELLS;
@@ -482,22 +480,14 @@ export class MapView {
       const o = i * PROXY_STRIDE;
       p.data[o] = e.prevX[i]! - p.originX;
       p.data[o + 1] = e.prevY[i]! - p.originY;
-      let x = e.x[i]!;
-      if (this.geo.wrapX && Math.abs(x - e.prevX[i]!) > this.geo.w / 2) x += x < e.prevX[i]! ? this.geo.w : -this.geo.w;
-      p.data[o + 2] = x - p.originX;
+      p.data[o + 2] = this.unwrapped(e.x[i]!, e.prevX[i]!) - p.originX;
       p.data[o + 3] = e.y[i]! - p.originY;
       p.data[o + 4] = e.facing[i]!;
       p.data[o + 5] = ELEMENT_CELLS;
       p.data[o + 6] = e.frame[i]! + ((e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0);
       // Depleted elements fade a little (an empty one is gone from the sim).
       p.data[o + 7] = 0.55 + 0.45 * Math.min(1, e.strength[i]! / 8);
-      // Lightened toward white so a sprite stands out on its own nation's fill.
-      const col = this.nationColor(e.nation[i]!);
-      const lift = (v: number): number => Math.round(v + (255 - v) * 0.45);
-      p.colors[i * 4] = lift((col >> 16) & 255);
-      p.colors[i * 4 + 1] = lift((col >> 8) & 255);
-      p.colors[i * 4 + 2] = lift(col & 255);
-      p.colors[i * 4 + 3] = 255;
+      p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
     }
     p.upload(e.count);
     this.individualsBuilt = false;
@@ -537,7 +527,6 @@ export class MapView {
     const owner = new Uint32Array(total);
     const xs = new Float64Array(total);
     const ys = new Float64Array(total);
-    const lift = (v: number): number => Math.round(v + (255 - v) * 0.45);
     let j = 0;
     for (let i = 0; i < e.count; i++) {
       const n = figureCount(e.strength[i]!);
@@ -545,11 +534,9 @@ export class MapView {
       const frame = e.frame[i]!;
       const size = figureCells(gridSide(frame, n));
       const off = figureOffsets(e.id[i]!, frame, n, e.facing[i]!);
-      let x = e.x[i]!;
-      if (this.geo.wrapX && Math.abs(x - e.prevX[i]!) > this.geo.w / 2) x += x < e.prevX[i]! ? this.geo.w : -this.geo.w;
+      const x = this.unwrapped(e.x[i]!, e.prevX[i]!);
       const moving = (e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0;
-      const col = this.nationColor(e.nation[i]!);
-      const [r, g, b] = [lift((col >> 16) & 255), lift((col >> 8) & 255), lift(col & 255)];
+      const rgba = this.spriteRgba(e.nation[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
         const dx = off[k * 2]!;
@@ -562,10 +549,7 @@ export class MapView {
         p.data[o + 5] = size;
         p.data[o + 6] = frame + moving;
         p.data[o + 7] = 1;
-        p.colors[j * 4] = r;
-        p.colors[j * 4 + 1] = g;
-        p.colors[j * 4 + 2] = b;
-        p.colors[j * 4 + 3] = 255;
+        p.colors.set(rgba, j * 4);
         owner[j] = e.id[i]!;
         xs[j] = e.x[i]! + dx;
         ys[j] = e.y[i]! + dy;
@@ -828,6 +812,18 @@ export class MapView {
     if (y < 0 || y >= this.geo.h) return 0;
     const x = ((Math.floor(wx) % this.geo.w) + this.geo.w) % this.geo.w;
     return this.controlGrid[y * this.geo.w + x] ?? 0;
+  }
+
+  /** Tint of an element sprite or a figure: the nation's marker colour lightened toward white, so that it stands out on the nation's own fill. */
+  private spriteRgba(id: number): [number, number, number, number] {
+    const col = this.nationColor(id);
+    const lift = (v: number): number => Math.round(v + (255 - v) * 0.45);
+    return [lift((col >> 16) & 255), lift((col >> 8) & 255), lift(col & 255), 255];
+  }
+
+  /** x on the side of prevX: across the seam of a looping map an interpolation must not sweep the whole map. */
+  private unwrapped(x: number, prevX: number): number {
+    return this.geo.wrapX && Math.abs(x - prevX) > this.geo.w / 2 ? x + (x < prevX ? this.geo.w : -this.geo.w) : x;
   }
 
   private nationColor(id: number): number {
