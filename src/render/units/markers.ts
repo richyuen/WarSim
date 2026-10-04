@@ -2,6 +2,8 @@
  * T1 operational markers (SPEC §8, PLAN 2.1): per formation a box with its type symbol, a flag
  * chip, a strength bar (strength / full template strength) and the strength number; an order
  * arrow to its march target; a red outline while engaged; crossed swords at Major Battles.
+ * Markers of one nation that stand on each other are one marker (`markerStacks.ts`): the
+ * strongest, with the men of all and "×n".
  * Drawn on a Canvas2D overlay between 300 and 2000 m/px, with a timed handover toward the T0
  * counters and one toward the T2 sprites (`handover.ts`).
  *
@@ -11,6 +13,7 @@
 import type { UnitSymbol } from '../../shared/protocol';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { FADE_MS, smooth } from '../timing';
+import type { StackedMarker } from './markerStacks';
 
 export interface MarkerInput {
   id: number;
@@ -81,6 +84,8 @@ export interface PlacedMarker {
   w: number;
   h: number;
   text: string;
+  /** The formations it stands for, itself first: more than one for a stack (PLAN 2.7s1). */
+  members: number[];
 }
 
 /**
@@ -91,6 +96,9 @@ export const T1_MIN_M = 300;
 export const T1_MAX_M = 2000;
 const BOX_W = 26;
 const BOX_H = 17;
+/** A marker's footprint in CSS px at unit size 1: the box, and under it the strength bar and the number. */
+export const MARKER_W = BOX_W;
+export const MARKER_H = BOX_H + 12;
 const CHIP_W = 9;
 const CHIP_H = 6;
 
@@ -190,6 +198,8 @@ export function drawMarkers(
   /** Unit-size setting (PLAN 1.39a): scales each marker about its position. */
   size = 1,
   morph: MarkerMorph = AT_REST,
+  /** The stacks of the frame (PLAN 2.7s1): by formation id, its opacity, the number it shows and what it stands for. None: every marker alone. */
+  stacks?: ReadonlyMap<number, StackedMarker>,
 ): PlacedMarker[] {
   const placed: PlacedMarker[] = [];
   const boxAlpha = alpha * morph.box;
@@ -235,12 +245,18 @@ export function drawMarkers(
   ctx.font = '600 9px system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
+  const tags: { px: number; py: number; x: number; y: number; text: string; alpha: number }[] = [];
   for (const m of order) {
     for (const off of offs) {
       const [px, py] = worldToScreen(cam, m.x + off, m.y, vw, vh);
       const x = Math.round(px - BOX_W / 2);
       const y = Math.round(py - BOX_H / 2);
       if (px + BOX_W * size < 0 || py + BOX_H * size < 0 || px - BOX_W * size > vw || py - BOX_H * size > vh) continue;
+      // In a stack: its men are in its lead's number. On its way in or out: fading where it stands.
+      const stack = stacks?.get(m.id);
+      const part = stack?.alpha ?? 1;
+      if (part <= 0.01) continue;
+      const members = stack?.members ?? [m.id];
       ctx.save();
       if (size !== 1) {
         ctx.translate(px, py);
@@ -249,11 +265,13 @@ export function drawMarkers(
       }
       // Strength bar and number under the box, on their dark backing. They have an opacity of
       // their own: on the way to T2 they stay while the box goes (PLAN 2.7c).
-      const text = strengthText(m.strength);
-      if (barAlpha > 0.01) {
-        ctx.globalAlpha = barAlpha;
+      const text = strengthText(stack?.strength ?? m.strength);
+      if (barAlpha * part > 0.01) {
+        ctx.globalAlpha = barAlpha * part;
         ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
         ctx.fillRect(x - 1, y + BOX_H, BOX_W + 2, 12);
+        // How many formations it stands for: a tag, drawn after all the boxes (below).
+        if (members.length > 1) tags.push({ px, py, x, y, text: `×${members.length}`, alpha: barAlpha * part });
         const f = m.full > 0 ? Math.max(0, Math.min(1, m.strength / m.full)) : 1;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(x, y + BOX_H + 1, BOX_W, 2);
@@ -263,8 +281,8 @@ export function drawMarkers(
         ctx.fillText(text, x + BOX_W / 2, y + BOX_H + 3);
       }
       // The box, about its centre: at rest as it always was, on the way to T2 smaller and fainter.
-      if (boxAlpha > 0.01) {
-        ctx.globalAlpha = boxAlpha;
+      if (boxAlpha * part > 0.01) {
+        ctx.globalAlpha = boxAlpha * part;
         if (morph.scale === 1) boxArt(ctx, m, x, y, colorOf, flagOf);
         else {
           // Shrinking, the box is a picture of itself, scaled smoothly. Scaling its parts would
@@ -282,8 +300,31 @@ export function drawMarkers(
         }
       }
       ctx.restore();
-      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha, bar: barAlpha, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text });
+      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar: barAlpha * part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members });
     }
+  }
+  // The tags of the stacks, above every box: a neighbour's box must not hide how many a marker
+  // stands for. On the corner of the box and not in its picture, which the morph into T2 keeps
+  // by nation, symbol and state.
+  for (const t of tags) {
+    ctx.save();
+    if (size !== 1) {
+      ctx.translate(t.px, t.py);
+      ctx.scale(size, size);
+      ctx.translate(-t.px, -t.py);
+    }
+    ctx.globalAlpha = t.alpha;
+    const tw = Math.ceil(ctx.measureText(t.text).width) + 5;
+    const tx = t.x + BOX_W - tw + 4;
+    const ty = t.y - 6;
+    ctx.fillStyle = 'rgba(16, 18, 24, 0.92)';
+    ctx.fillRect(tx, ty, tw, 11);
+    ctx.strokeStyle = 'rgba(255, 226, 138, 0.9)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(tx + 0.5, ty + 0.5, tw - 1, 10);
+    ctx.fillStyle = '#ffe28a';
+    ctx.fillText(t.text, tx + tw / 2, ty + 1.5);
+    ctx.restore();
   }
   // Major Battles: crossed swords.
   ctx.globalAlpha = boxAlpha;

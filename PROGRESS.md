@@ -4306,3 +4306,33 @@ Documents only.
   its own formation's men. A stack's number is the men of all it stands for. PLAN has the
   sentence that replaces it; the ADR of the task will argue it.
 - **Next:** PLAN 2.7s1.
+
+## 2026-10-04 — PLAN 2.7s1: T1 markers of one nation that stand on each other are one marker (ADR-77)
+
+- **Seen first** (`tests/e2e/markerStacks1938.spec.ts` on the markers as they were): Spain's
+  front after two weeks at 1200 m/px, 48 markers, 13 pairs of one nation more than a quarter
+  under each other.
+- **Built:** `stackMarkers` (pure: the strongest first; a marker goes into the shown marker of
+  its nation that it is most under, above a quarter, or above a tenth for one already in a
+  stack) and `MarkerStacks` (the fades, by the bank of switches the labels use).
+  `drawMarkers` takes the stacks of the frame.
+- **After:** 37 markers for the 48 formations at 1200 m/px (stacks of 4, 3, 3, 2, 2, 2, 2), 33
+  for 40 at 600 m/px; no such pair.
+- **Pictures looked at:** `docs/evidence/2.7/marker-stacks-spain-1200m.png` and `-600m.png`.
+  At 600 m/px the stacks read: "24.4k" with "×2" on the corner, "18.4k ×3". The tag stood
+  beside the number first; the boxes of the enemy across the front hid it, so it is drawn
+  after every box.
+- **Two existing specs restated** (ADR-77 has the argument):
+  - `markers1938`: "its number is its formation's element sum" is, for stacks too, "the element
+    sum of the formations it stands for, and each formation in one marker".
+  - `handover1938`, while the game runs: the marker layer is in full when its most opaque
+    marker is, as the spec already had it for the counters.
+- **Unchanged and passing:** `counters1938` (no popping through T0 ↔ T1), `fades1938` (largest
+  jumps 31.8 and 43.1 of 255, as before), `morphNations1938`, `tiers1938`, `player1938`,
+  `fire1938`, `lateFrame1938`.
+- **Cost:** 0.4 to 0.5 ms a frame at T1 for 1,054 formations. Against every shown marker it was
+  0.5 to 0.6 ms; a grid of boxes makes it grow with their number.
+- **Still on each other:** markers of two nations across a front at the far end of T1 (PLAN
+  2.7s2), and at 1200 m/px by less than a quarter.
+- **Tests:** 11 new unit tests, 1 new e2e. 591 unit tests in 79 files, 94 e2e.
+- **Next:** PLAN 2.7s2.

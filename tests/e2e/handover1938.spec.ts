@@ -42,7 +42,8 @@ async function rest(page: Page, scale: number, running = false): Promise<Layers>
 /**
  * `running`: while the armies move, counters keep folding into their neighbours and coming out
  * again (PLAN 1.45b), each with a short fade of its own, so the layer is in full when its most
- * opaque counter is; paused, every counter is.
+ * opaque counter is; paused, every counter is. The same for the markers since PLAN 2.7s1: they
+ * go into the stacks of their nation and come out of them, each by a fade of its own.
  */
 const countersOnly = (l: Layers, what: string, running = false): void => {
   expect(l.counters, what).toBeGreaterThan(20);
@@ -50,9 +51,10 @@ const countersOnly = (l: Layers, what: string, running = false): void => {
   else expect(l.counterAlphas, what).toEqual([1]);
   expect(l.markers, what).toBe(0);
 };
-const markersOnly = (l: Layers, what: string): void => {
+const markersOnly = (l: Layers, what: string, running = false): void => {
   expect(l.markers, what).toBeGreaterThan(20);
-  expect(l.markerAlphas, what).toEqual([1]);
+  if (running) expect(Math.max(...l.markerAlphas), what).toBe(1);
+  else expect(l.markerAlphas, what).toEqual([1]);
   expect(l.counters, what).toBe(0);
 };
 
@@ -121,8 +123,8 @@ test('T0 ↔ T1: a resting camera shows one unit layer in full, never a half-fad
   await page.waitForFunction(() => window.__warsim!.hud.tick.value > 24 * 30, null, { timeout: 120_000 });
   countersOnly(await rest(page, 4, true), 'running, T0', true);
   countersOnly(await rest(page, 8, true), 'running, in from T0 at 2446 m/px', true);
-  markersOnly(await rest(page, 10, true), 'running, T1');
-  markersOnly(await rest(page, 9, true), 'running, out from T1 at 2174 m/px');
+  markersOnly(await rest(page, 10, true), 'running, T1', true);
+  markersOnly(await rest(page, 9, true), 'running, out from T1 at 2174 m/px', true);
   countersOnly(await rest(page, 8, true), 'running, out from T1 at 2446 m/px', true);
   await page.screenshot({ path: path.join(out, 'europe-2446m-running.png') });
   await page.evaluate(() => {

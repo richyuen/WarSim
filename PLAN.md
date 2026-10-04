@@ -652,7 +652,7 @@ quick sweep as a smoke test.
     nations on Spain's front, 2 in north China.
   - *Stacked, then pushed apart:* rests after one round on Spain's front (16 markers moved, by 3 px at
     most), after four in north China (5 px): nothing left.
-  - [ ] 2.7s1 Markers of one nation that stand on each other are one marker: the strongest, with the
+  - [x] 2.7s1 Markers of one nation that stand on each other are one marker: the strongest, with the
     men of all of them as its number and how many it stands for. The others go into it by a fade,
     and come out by one; a marker in a stack stays there until it is well clear (no flicker while
     the armies move).
@@ -663,6 +663,17 @@ quick sweep as a smoke test.
     - `markers1938` asserts for every marker that its number is its own formation's men. With
       stacks that becomes the sentence of the AT above, which says more (every formation is
       counted once). The ADR of the task argues it, as ADR-75 did for `flagsClear1938`.
+    Done 2026-10-04 (ADR-77): `stackMarkers` and `MarkerStacks` (`src/render/units/markerStacks.ts`).
+    A marker more than a quarter under a stronger one of its nation goes into it and stays until it
+    is under it by less than a tenth; the lead shows the men of all and a tag "×n", drawn above
+    every box. `tests/e2e/markerStacks1938.spec.ts`: Spain's front after two weeks, at 1200 m/px 37
+    markers for 48 formations (stacks of 4, 3, 3, 2, 2, 2, 2), at 600 m/px 33 for 40; no pair of one
+    nation more than a quarter under each other (before: 13 and 7). `tests/unit/markerStacks.test.ts`,
+    11. `counters1938`, `fades1938`, `morphNations1938` pass unchanged.
+    - Two existing specs say for stacks what they said for single markers: `markers1938` (a
+      marker's number is the element sum of the formations it stands for, each formation in one
+      marker) and `handover1938` (while the game runs the marker layer is in full when its most
+      opaque marker is, as it already said of the counters). ADR-77.
   - [ ] 2.7s2 What is left at the far end of T1, markers of two nations on each other across a front,
     is cleared by moving the boxes apart by a few px (by an ease, kept while the quarter rule holds,
     never during the morph into T2).

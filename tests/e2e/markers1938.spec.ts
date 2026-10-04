@@ -11,10 +11,35 @@ import { settle } from './settle';
 // PLAN 2.1 AT: at T1 every formation marker's strength number equals the sim's Σ element
 // strength (the e2e reads both: the drawn label and the element sum from the worker). Order
 // arrows follow move orders; engaged formations and Major Battles are marked.
+//
+// Since PLAN 2.7s1 markers of one nation that stand on each other are one marker, which stands
+// for all of them. "Every marker's number is its formation's element sum" is, said for stacks
+// too: a marker's number is the element sum of the formations it stands for, and no formation
+// is stood for twice (`oneTruth`). For a marker that stands for itself alone that is the
+// sentence as it was (ADR-77).
 
 const { w: W, h: H } = SIZE_1938;
 const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
 const full = (page: Page): Promise<Inspection> => page.evaluate(() => window.__warsim!.sim.inspect(true));
+
+/** One truth: each drawn number is the element sum of the formations its marker stands for, and each formation is in one marker. */
+function oneTruth(rects: readonly { id: number; text: string; members: number[] }[], world: Inspection): void {
+  const byId = new Map(world.formations.map((f) => [f.id, f]));
+  const seen = new Set<number>();
+  for (const r of rects) {
+    expect(r.members[0], `marker ${r.id} stands for itself first`).toBe(r.id);
+    let men = 0;
+    for (const id of r.members) {
+      const f = byId.get(id)!;
+      expect(f, `formation ${id}`).toBeTruthy();
+      expect(f.strength).toBe(f.elementMen);
+      expect(seen.has(id), `formation ${id} in two markers`).toBe(false);
+      seen.add(id);
+      men += f.elementMen;
+    }
+    expect(r.text, `marker ${r.id} for ${r.members.join(', ')}`).toBe(strengthText(men));
+  }
+}
 
 async function look(page: Page, lon: number, lat: number, mPerPx: number): Promise<void> {
   const [x, y] = cellOf(lon, lat, W, H);
@@ -43,13 +68,7 @@ test('T1 markers: numbers equal Σ element strength; arrows and battle markers',
 
   // One truth: each drawn number is the element sum (and the formation strength equals it).
   const s = await full(page);
-  const byId = new Map(s.formations.map((f) => [f.id, f]));
-  for (const r of rects) {
-    const f = byId.get(r.id)!;
-    expect(f, `formation ${r.id}`).toBeTruthy();
-    expect(f.strength).toBe(f.elementMen);
-    expect(r.text).toBe(strengthText(f.elementMen));
-  }
+  oneTruth(rects, s);
 
   // Order arrow: a Polish formation ordered west gets a target in the snapshot and an arrow.
   const pol = s.formations.find((f) => f.nation === POL)!;
@@ -60,7 +79,7 @@ test('T1 markers: numbers equal Σ element strength; arrows and battle markers',
     .poll(() => page.evaluate((id) => {
       const v = window.__warsim!.view!;
       v.draw();
-      return v.markerRects.some((r) => r.id === id);
+      return v.markerRects.some((r) => r.members.includes(id));
     }, pol.id))
     .toBe(true);
 
@@ -73,10 +92,9 @@ test('T1 markers: numbers equal Σ element strength; arrows and battle markers',
   await look(page, -3.7, 40.4, 1200);
   await page.screenshot({ path: path.join(out, 'markers-spain-1200m.png') });
   const after = await full(page);
-  const byId2 = new Map(after.formations.map((f) => [f.id, f]));
   const spain = await page.evaluate(() => window.__warsim!.view!.markerRects);
   expect(spain.length).toBeGreaterThan(5);
-  for (const r of spain) expect(r.text).toBe(strengthText(byId2.get(r.id)!.elementMen));
+  oneTruth(spain, after);
 
   // T2 (close): markers fade out again.
   await look(page, -3.7, 40.4, 120);

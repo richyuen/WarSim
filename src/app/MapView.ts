@@ -6,7 +6,8 @@
 import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { AT_REST, drawMarkers, markerMorph, MORPH_MS, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
+import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
+import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
 import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
@@ -475,6 +476,8 @@ export class MapView {
   private templates: TemplateInfo[] = [];
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
   markerRects: PlacedMarker[] = [];
+  /** The stacks of the T1 markers: which are in one, and the fade of a change (PLAN 2.7s1). */
+  readonly markerStacks = new MarkerStacks();
   markerOpacity = 0;
   /** T0 counters (PLAN 2.2). */
   readonly counters = new CounterLayer();
@@ -504,7 +507,7 @@ export class MapView {
    */
   unitsAnimating(now = performance.now()): boolean {
     const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
-    return this.counters.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
+    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
   }
 
   /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
@@ -802,10 +805,17 @@ export class MapView {
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
-    if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) return;
+    if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) {
+      // No markers: the next ones take their places in their stacks at once.
+      this.markerStacks.clear();
+      return;
+    }
     const w = this.geo.w;
     const markers: MarkerInput[] = [];
+    // For the stacks (PLAN 2.7s1): each marker's centre in px, as cells × scale (panning does not reshuffle them).
+    const items: StackItem[] = [];
     for (let i = 0; i < this.formIds.length; i++) {
+      items.push({ id: this.formIds[i]!, nation: this.formNation[i]!, x: this.formX[i]! * cam.scale, y: this.formY[i]! * cam.scale, strength: this.formStrength[i]! });
       const t = this.templates[this.formTemplate[i]!];
       const moving = (this.formFlags[i]! & FormationFlag.moving) !== 0;
       const target = this.formTarget[i]!;
@@ -821,7 +831,8 @@ export class MapView {
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
       });
     }
-    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph);
+    const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now);
+    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks);
   }
 
   /** Position of formation `id` from the last snapshot, or null. */

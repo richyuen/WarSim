@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
+
+- **Context:** a T1 marker stands on its formation's centre, and formations of one nation often
+  stand on one spot. On Spain's front after two weeks, at 1200 m/px, 13 pairs of markers of one
+  nation were more than a quarter under each other (7 at 600 m/px, 5 at 310): the number of the
+  one underneath could not be read. ADR-65 had left it "not solved here".
+- **Measured before the design** (PLAN 2.7s has the table): pushing the boxes apart, each kept
+  within half a marker of its formation, does not come to rest on that front at any zoom.
+  Stacking by nation leaves no such pair at 1200 m/px and closer.
+- **Decision:**
+  - A marker that is more than a quarter of its box under a stronger marker of its nation goes
+    into that one (the one it is most under, when several). The strongest first, so a stack is
+    what stands on its lead and no chain.
+  - The lead keeps its own symbol, flag and bar. Its number is the men of all it stands for,
+    and a tag "×n" on its corner says how many. The tag is drawn after all the boxes: on the
+    first try it stood beside the number and neighbours' boxes hid it.
+  - A marker in a stack stays there until it is under its lead by less than a tenth. A change
+    is a fade in place over 250 ms; the lead shows the sum at once. A marker new to the view
+    takes its place at once.
+  - Markers of two nations are never one marker: who faces whom is what this tier shows.
+- **The men of all, not the lead's own.** SPEC's "one truth": the numbers on the map add up to
+  the formations in view. A stack that showed its lead's men would hide the others'.
+- **Two specs restated.**
+  - `markers1938` asserted, marker by marker, "its number is its formation's element sum". For a
+    stack that sentence has no single formation. It reads now: a marker's number is the element
+    sum of the formations it stands for, itself first, and no formation is stood for twice. For
+    a marker alone that is the old sentence, word for word in the test; for all markers
+    together it says more than the old one did (every formation is counted, once).
+  - `handover1938`, running: "every marker is at opacity 1" became "the layer's most opaque
+    marker is at 1", which the spec already said of the counters for the same reason (ADR-65):
+    while the armies move, markers go into stacks and come out, each by its own fade. Paused,
+    every marker is still asserted at 1.
+- **Rejected:**
+  - *Pushing boxes apart only:* does not rest (above).
+  - *Folding across nations as the T0 counters do* ("+n"): at T1 the enemy's marker is the
+    information.
+  - *The tag inside the box:* the morph into T2 keeps a picture of the box by nation, symbol
+    and state; a count in it would make a picture for every count.
+- **Cost:** every formation of the world is stacked in every frame at T1: 0.4 to 0.5 ms for the
+  1,054 formations of the 1938 start (a grid of boxes, so that it grows with their number and
+  not its square).
+- **Not solved here:** markers of two nations on each other across a front at the far end of T1
+  (PLAN 2.7s2). At T1 the markers stand on city names (BLOCKERS, with PLAN 2.7r).
+- **Tests:** `tests/unit/markerStacks.test.ts` (11); `tests/e2e/markerStacks1938.spec.ts`;
+  `counters1938`, `fades1938`, `morphNations1938`, `tiers1938`, `player1938` unchanged and
+  passing.
+
 ### ADR-76 · 2026-10-04 · accepted — A city's name takes the first free place by its dot, keeps it, and moves by a cross-fade (PLAN 2.7r)
 
 - **Context:** the T0 counters are drawn over the city names, and a capital's name stood to the

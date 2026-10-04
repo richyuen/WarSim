@@ -1003,6 +1003,10 @@ from 2000 m/px down to 300 (see the handovers below). Each
 shows a type symbol (from the template's
 elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
 order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
+*Stacks (PLAN 2.7s1, `markerStacks.ts`, ADR-77):* a marker that is more than a quarter of its
+box under a stronger marker of its own nation goes into that one, which then shows the men of
+all it stands for and "×n". It stays in until it is under its lead by less than a tenth; a
+change is a fade in place over 250 ms. Markers of two nations are never one marker.
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
 flag that would cover a counter stands just above it instead (up to 40 px from its usual place,
