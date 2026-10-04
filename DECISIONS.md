@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-56 · 2026-10-03 · accepted — Cell A* uses an octile bound (PLAN 1.42f, step 4)
+
+- **Context:** the 5-year mean tick of seed 99 was still over budget after ADR-53 and PLAN 1.42f
+  step 3. A profile of year 1 put 19% of the tick in route searches, nearly all in the cell A*
+  loop. Its heuristic was the straight-line km between two cells at the smaller endpoint row
+  scales. On an 8-connected grid a walk is diagonal steps plus straight ones, which is up to
+  about 8% longer than the straight line, so A* expanded a wide fan of nearly tied cells.
+- **Decision:** the heuristic is the octile walk with the same row scales: min(dx, dy) diagonal
+  steps of √(kx² + ky²) and the rest straight (`octileKm`). It is never below the straight-line
+  bound (a unit test checks 6,000 pairs on three grids). `boundKm` stays the distance of the
+  province graph and of the 500 km switch, which this does not change.
+- **Why it is a rule change:** the search is the same, but a tighter bound pops cells in another
+  order, so ties between equal routes can break differently. The reference search in
+  `movement.test.ts` now uses the octile bound, and its pop order and tie-break are unchanged.
+- **Result:** replaying year 1's 5,868 route requests on the 1938 map: 5.86–6.11 s → 4.75–5.23 s
+  (−17%). No route is dearer, 221 are cheaper (by ≤ 1.4%), and 112 paths differ. Seed 99 × 5
+  years on a 4-core machine about 1.9× slower than the one of the budget: year 1 3.66 → 3.30 ms
+  (−10%); 5-year mean 2.985 → 2.928 ms (−1.9%; the world differs from year 1 on, and year 4 flips
+  twice as many cells). In the budget machine's terms that is a mean of about 1.52 ms.
+- **Hash:** seed 99 after one year 2cb270e6 → e5741d70; after five years f57f70ac → 7a8e5c27.
+- **Quick sweep** (seeds 1–10 × 20 years, seen seeds, no verdict at 20 years): limits 10 of 10,
+  riser 7 of 10, faller 10 of 10 (6, 10 and 10 before, ADR-54). Wall time 20.4 min on this machine.
+- **Not solved:** neither bound is a strict lower bound when a route swings poleward of both its
+  ends. Against Dijkstra on 30 random grids of 16–64 rows, 21,042 of 84,575 routes were dearer,
+  by up to 15.1%, with the octile bound, and 22,037, by up to 15.2%, with the old one. SPEC §4
+  had called this 0.1%, which was not a maximum.
+
 ### ADR-55 · 2026-10-03 · accepted — The gate skips a tree it has passed; the baseline hash is a test (the user's request)
 
 - **Context:** the user asked what slows the iterations. Measured on 2026-10-03: the gate on

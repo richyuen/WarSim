@@ -2671,3 +2671,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Next:** a tighter A* bound (octile instead of straight line): 15% off the replay, no route
   dearer, 221 of 5,868 cheaper (by ≤ 1.4%; the straight-line bound was not quite a lower
   bound), 112 paths different. A rule change: its own commit, ADR and new pin.
+
+## 2026-10-03 — PLAN 1.42f, step 4: cell A* uses an octile bound (ADR-56)
+- **Rule:** the A* heuristic is the octile walk (diagonal steps, then straight ones) at the smaller
+  endpoint row scales, never below the old straight-line bound. `boundKm` is untouched as the
+  province graph's distance.
+- **Measured:** replay of year 1's 5,868 route requests 5.86–6.11 → 4.75–5.23 s; none dearer, 221
+  cheaper, 112 paths different. Seed 99 × 5 years: year 1 3.66 → 3.30 ms, mean 2.985 → 2.928 ms.
+  Hash e5741d70 after one year (2cb270e6), 7a8e5c27 after five (f57f70ac); pin moved.
+- **Found on the way:** against Dijkstra on small random grids a quarter of routes are dearer,
+  by up to 15%, under both bounds. SPEC §4 and BLOCKERS said 0.1%. Both now give the measured
+  numbers.
+- **Tests:** a new unit test (octile ≥ straight line on 6,000 pairs; exact along a row and on a
+  diagonal); the reference search of PLAN 1.42a now uses the octile bound.
+- **Quick sweep** (1–10 × 20 years, scratch): limits 10/10, riser 7/10, faller 10/10.
+- **1.42f still open:** about 1.52 ms in the budget machine's terms against 1.5. What is left
+  of the planner is the ~2,000 re-planned marches whose sector has gone (ADR-53).

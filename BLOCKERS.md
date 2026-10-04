@@ -64,6 +64,9 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 - Cell A* is not exactly optimal (found 2026-10-03, PLAN 1.42a; SPEC §4 routes): its bound is
   not a strict lower bound across rows of different width. Routes can be ~0.1% longer than the
   cheapest. Not fixed: it would change routes (and the sweep baselines) and slow every search.
+  **Measured again 2026-10-03 (ADR-56):** on random grids of 16–64 rows a quarter of routes are
+  dearer than Dijkstra's, by up to 15%, with the old and with the octile bound alike; the 0.1%
+  above was not a maximum. The map's rows change slowly, so it matters far less there.
 - Unit flake (2026-10-03): `tests/unit/scenarioFile.test.ts` ("export: no run history in the
   scenario") failed once in a full `npm test` with a gunzip "incorrect data check" after 43 s;
   alone it passes in 8.5 s, and it passed in every gate run of the day. Not investigated. If it

@@ -3,7 +3,7 @@ import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
 import { slotGrid, slotPose } from '../../src/sim/core/pose';
 import { cellOf } from '../../src/sim/data/terrain';
-import { boundKm, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_COST, stepKm, type MobilityId } from '../../src/sim/nav/grid';
+import { boundKm, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_COST, octileKm, stepKm, type MobilityId } from '../../src/sim/nav/grid';
 import { findRoute } from '../../src/sim/nav/provinceGraph';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -186,7 +186,7 @@ describe('route edge cases', () => {
         const gs = new Map<number, number>([[start, 0]]);
         const came = new Map<number, number>();
         const closed = new Set<number>();
-        const open = [{ key: boundKm(g, start, goal) * MIN_COST[Mobility.foot]!, seq: 0, cell: start }];
+        const open = [{ key: octileKm(g, start, goal) * MIN_COST[Mobility.foot]!, seq: 0, cell: start }];
         let seq = 1;
         while (open.length > 0) {
           let bi = 0;
@@ -212,7 +212,7 @@ describe('route edge cases', () => {
             if (!gs.has(n) || t < gs.get(n)!) {
               gs.set(n, t);
               came.set(n, c);
-              open.push({ key: t + boundKm(g, n, goal) * MIN_COST[Mobility.foot]!, seq: seq++, cell: n });
+              open.push({ key: t + octileKm(g, n, goal) * MIN_COST[Mobility.foot]!, seq: seq++, cell: n });
             }
           }
         }
@@ -228,6 +228,27 @@ describe('route edge cases', () => {
         if (want) routes++;
       }
       expect(routes).toBeGreaterThan(1);
+    }
+  });
+
+  it('the octile bound is never below the straight-line bound and is the walk on one row (ADR-56)', () => {
+    let seed = 99;
+    const rand = (): number => (seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 2 ** 32;
+    for (const [GW, GH, wrap] of [[24, 16, true], [64, 32, false], [2048, 1024, true]] as const) {
+      const g = makeNavGrid(new Uint8Array(GW * GH).fill(Terrain.Plains), GW, GH, wrap);
+      for (let i = 0; i < 2000; i++) {
+        const a = Math.floor(rand() * GW * GH);
+        const b = Math.floor(rand() * GW * GH);
+        expect(octileKm(g, a, b)).toBeGreaterThanOrEqual(boundKm(g, a, b) * (1 - 1e-12));
+      }
+      // Along one row the walk is straight steps; on a diagonal from a row towards the equator's
+      // side it is diagonal steps at the smaller endpoint scales.
+      const row = Math.floor(GH / 4);
+      const c = row * GW + 2;
+      expect(octileKm(g, c, c + 5)).toBeCloseTo(5 * stepKm(g, row, 1, 0), 9);
+      const kx = Math.min(g.kx[row]!, g.kx[row + 3]!);
+      const ky = Math.min(g.ky[row]!, g.ky[row + 3]!);
+      expect(octileKm(g, c, c + 3 * GW + 3)).toBeCloseTo(3 * Math.hypot(kx, ky), 9);
     }
   });
 

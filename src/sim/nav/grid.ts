@@ -160,6 +160,37 @@ export function boundKm(g: NavGrid, a: number, b: number): number {
 }
 
 /**
+ * Octile lower bound (km) between two cells: the cheapest 8-neighbour walk with `boundKm`'s row
+ * scales, min(dx, dy) diagonal steps and the rest straight. Never below `boundKm` (a diagonal
+ * step of √(kx² + ky²) against the straight line's share), so A* expands fewer ties; the A*
+ * heuristic only (ADR-56). `boundKm` stays the distance of the province graph.
+ */
+export function octileKm(g: NavGrid, a: number, b: number): number {
+  const ax = a % g.w;
+  const ay = (a - ax) / g.w;
+  const bx = b % g.w;
+  const by = (b - bx) / g.w;
+  let dx = Math.abs(ax - bx);
+  if (g.wrapX && dx > g.w / 2) dx = g.w - dx;
+  const dy = Math.abs(ay - by);
+  const r0 = Math.min(ay, by);
+  const r1 = Math.max(ay, by);
+  let kx = Infinity;
+  let ky = Infinity;
+  if (g.endpointMin) {
+    kx = Math.min(g.kx[r0]!, g.kx[r1]!);
+    ky = Math.min(g.ky[r0]!, g.ky[r1]!);
+  } else {
+    for (let r = r0; r <= r1; r++) {
+      if (g.kx[r]! < kx) kx = g.kx[r]!;
+      if (g.ky[r]! < ky) ky = g.ky[r]!;
+    }
+  }
+  const d = dx < dy ? dx : dy;
+  return d * sqrt(kx * kx + ky * ky) + (dx - d) * kx + (dy - d) * ky;
+}
+
+/**
  * Binary min-heap keyed by f64, tie-broken by insertion order (deterministic: keys with their
  * sequence numbers are a total order, so the pop order does not depend on the heap's layout).
  * Typed arrays, reused across searches (PLAN 1.42a: the array-of-numbers heap and its swaps were
@@ -280,7 +311,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
   const { g: gs, came, stamp } = sc;
   const open = OPEN;
   open.clear();
-  // boundKm to the goal, inlined for the common grid (row scales shrinking away from the equator).
+  // octileKm to the goal, inlined for the common grid (row scales shrinking away from the equator).
   const gx = goal % w;
   const gy = (goal - gx) / w;
   const kxGoal = kx[gy]!;
@@ -289,7 +320,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
   const half = w / 2;
   gs[start] = 0;
   stamp[start] = SEEN;
-  open.push(boundKm(g, start, goal) * hScale, start);
+  open.push(octileKm(g, start, goal) * hScale, start);
   while (open.size > 0) {
     const c = open.pop();
     if (c === goal) break;
@@ -326,10 +357,12 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
         if (fast) {
           let ex = nx > gx ? nx - gx : gx - nx;
           if (wrapX && ex > half) ex = w - ex;
-          ex *= kx[ny]! < kxGoal ? kx[ny]! : kxGoal;
-          const ey = (ny > gy ? ny - gy : gy - ny) * (ky[ny]! < kyGoal ? ky[ny]! : kyGoal);
-          bound = sqrt(ex * ex + ey * ey);
-        } else bound = boundKm(g, n, goal);
+          const ax = kx[ny]! < kxGoal ? kx[ny]! : kxGoal;
+          const ay = ky[ny]! < kyGoal ? ky[ny]! : kyGoal;
+          const ey = ny > gy ? ny - gy : gy - ny;
+          const d = ex < ey ? ex : ey;
+          bound = d * sqrt(ax * ax + ay * ay) + (ex - d) * ax + (ey - d) * ay;
+        } else bound = octileKm(g, n, goal);
         open.push(t + bound * hScale, n);
       }
     }

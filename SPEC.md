@@ -559,12 +559,15 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   M. It is derived, never saved.
 - *Routes:* `findRoute` uses straight cell A* below 500 km. Above that, it runs coarse A* on the
   province graph, then cell A* inside the corridor of route provinces and their neighbours, with a
-  flat fallback. Cell A* is 8-connected with no corner cutting. Its heuristic is straight km × min
-  cost, with the km scale of the smaller of the two rows' cell sizes. That is not a strict lower
-  bound (a route may swing poleward of both ends, where cells are narrower) and the search closes
-  a cell when it first pops it, so a route can be slightly longer than the cheapest one: 0.1% on
-  a 16-row test grid, found in PLAN 1.42a; left as it is, because a strict bound would change
-  routes and widen every search. Berlin → Moscow takes 9 ms, Lisbon → Khabarovsk (840 cells)
+  flat fallback. Cell A* is 8-connected with no corner cutting. Its heuristic is the octile walk
+  (min(dx, dy) diagonal steps, the rest straight) × min cost, with the km scales of the smaller of
+  the two rows' cell sizes (ADR-56; straight km before, which is never larger). That is not a
+  strict lower bound (a route may swing poleward of both ends, where cells are narrower) and the
+  search closes a cell when it first pops it, so a route can be longer than the cheapest one.
+  Measured 2026-10-03 against Dijkstra on 30 random grids of 16–64 rows, where rows differ far
+  more than on the map: 21,042 of 84,575 routes dearer, by up to 15.1% (straight km: 22,037, up
+  to 15.2%). On the 1938 map the octile bound made 221 of year 1's 5,868 routes cheaper and none
+  dearer. Left as it is, because a strict bound would widen every search. Berlin → Moscow takes 9 ms, Lisbon → Khabarovsk (840 cells)
   83 ms (before PLAN 1.42a, which made the same search about 40% faster: a typed-array heap
   reused across searches, the step and bound arithmetic inlined).
 - *Orders:* `moveFormation {id, x, y}`.

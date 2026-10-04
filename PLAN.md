@@ -240,6 +240,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   1.95 ms (met); mean 1.56 ms (**not met**, 0.06 ms over, in a world with more wars).
   Left: marches whose sector has gone are re-planned (about 2,000 long searches in year 1),
   0.3–0.4 ms a tick of route searches in all.
+  Step 3, no behaviour change (hash 2cb270e6): the corridor and stamps of cell A* are typed
+  arrays; replay of year 1's routes −5%, mean −1.0%. Step 4, a rule (ADR-56, hash e5741d70): an
+  octile A* bound; replay −17%, year 1 −10%, mean −1.9%. Measured on a machine 1.9× slower; in
+  the budget machine's terms the mean is about 1.52 ms (**not met**, 0.02 ms over).
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km

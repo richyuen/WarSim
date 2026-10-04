@@ -9,7 +9,7 @@ import { assets1938 } from '../helpers/earth';
 // in that commit and log the old and the new value with the reason in DECISIONS.md. That is a
 // new baseline, not a weakened test; a pin moved without such an entry is a defect.
 // `npm run sim -- --scenario 1938 --seed 99 --years 1` prints the same hash.
-const BASELINE = '2cb270e6'; // since ADR-53 (PLAN 1.42f); dd3096af before it
+const BASELINE = 'e5741d70'; // since ADR-56 (PLAN 1.42f); 2cb270e6 since ADR-53, dd3096af before it
 
 it('seed 99 after one year has the pinned state hash', () => {
   const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });
