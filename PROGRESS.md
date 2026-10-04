@@ -3093,3 +3093,40 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   stand on top of each other (the Soviet divisions east of Poland). B7 names the counters at
   world zoom; marker stacking at T1 has no PLAN task yet and belongs with PLAN 2.7's morph.
 - **Next:** PLAN 1.45b.
+
+## 2026-10-04 — PLAN 1.45b: T0 counters never overlap; they fold into their stronger neighbour (critic B7, ADR-65)
+- **What:** at world zoom Europe was a wall of counters on top of each other. Now a counter whose
+  box would touch a stronger one's is folded into it, across nations too. The stronger counter
+  shows the sum and "+n" for the other nations inside ("1.54M +7" over Germany at world zoom).
+  Nothing is hidden: the shown counters add up to every formation's strength. Zooming in brings
+  the folded counters out again.
+- **How:** `foldOverlaps` in `src/render/units/counters.ts`, in screen space after the clustering.
+  A nation's own counters fold first, then across nations by what they hold; each pass repeats
+  until no box is within 2 px of another. Positions are cells × scale, so panning does not
+  reshuffle anything. A change is a fade in place over 250 ms, with a 6 px hold so that a counter
+  at the edge does not flicker.
+- **The continuity test of PLAN 2.2 did its job** (it passes unchanged). My first version slid a
+  folding counter into its neighbour; across a split or merge every cluster key changes, and the
+  slide lost its target and jumped. I patched key remapping four times, each fix opening another
+  case, before dropping the slide: a fade in place has no target to lose. What stayed from the
+  patching, because the test needs it: the pass by nation first (so a cluster and its children
+  on its centroid give the same picture) and a new key taking over the fade of the counter it
+  replaces.
+- **Verified in the browser** (`tests/e2e/declutter1938.spec.ts`; `docs/evidence/1.45/declutter-*.png`,
+  viewed): the whole world and four zooms over Europe, at the 1938 start and after one year:
+  no two boxes overlap, every counter at opacity 1, the sum equal to the sim's, and more counters
+  in central Europe at each closer zoom; with the game running at top speed, twelve samples with
+  no overlap among the counters drawn in full.
+- **Compared:** AoC has no counters (a strength beside each nation's name), so the comparison is
+  with the critic's own crop `critic/shots/s1_01_crop_europe_counters.png`: Europe is now about a
+  dozen separate counters (`declutter-europe-crop-start.png`).
+- **Also:** strengths from 999,950 on read in millions ("1.54M"; the sums first read "1535.7k").
+  `DrawnCounter` carries its box and its "+n" for the tests. The handover spec's running checks
+  now allow a counter in mid-fade (the layer is in full when its most opaque counter is).
+- **Seen, not fixed (PLAN 1.45c, added):** capital flags are drawn above the counters and cover
+  the numbers of counters standing at a capital (Rome, Helsinki, Lisbon at 3 px per cell).
+- **Not done:** no frame-time measurement. The pass is O(n²) over the counters of the map (the
+  probe of 1.45a counted about a hundred in view) per drawn frame, at T0 only, and frames are
+  drawn only when something changed; the bench does not cover the overlay. If T0 frame time
+  matters later, measure there.
+- **Next:** PLAN 1.45c, then PLAN 2.4.

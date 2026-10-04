@@ -167,6 +167,58 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-65 · 2026-10-04 · accepted — T0 counters fold into their stronger neighbour instead of overlapping, across nations too (PLAN 1.45b, critic B7)
+
+- **Context:** counters are one per nation per grid cell of about 64 px, so the counters of
+  different nations in the same or the next cell stood on top of each other. At world zoom
+  Europe was "a wall of overlapping counters" with cut-off numbers
+  (`critic/shots/s1_01_crop_europe_counters.png`). AoC has no counters to copy: it prints a
+  strength beside each nation's name.
+- **Decision:** a declutter pass in screen space after the clustering (`foldOverlaps`).
+  - A counter whose box would come within 2 px of a stronger counter's box is *folded* into
+    it (the nearest, when several). The stronger one shows the sum of everything folded in,
+    and "+n" for the n other nations among it. Nothing is hidden: the shown counters add up to
+    the strength of every formation, as PLAN 2.2 requires.
+  - Two passes: a nation's own counters fold into each other first, then the counters left
+    fold across nations, strongest total first. A box grows with its text, so each pass repeats
+    until no box touches another.
+  - Positions are cells × scale, without the camera's place: panning never reshuffles the
+    counters, zooming does.
+  - A fold or its reverse is a fade in place over 250 ms. At rest a counter is drawn in full or
+    not at all. A folded counter comes out only once it would clear its neighbour by 6 px more,
+    so a counter at the edge does not flicker while the armies move.
+- **Why fold across nations, and not move the boxes apart:** at world zoom Europe has some
+  thirty nations in about 200 × 180 px. Their boxes fit only if pushed far from their armies,
+  over the sea and over other countries. A counter that says "1.54M +7" over Germany is true
+  at that zoom (that many men stand there, of eight nations) and the detail returns by zooming
+  in, which is what semantic zoom is for. The flag on a folded counter is the strongest
+  holder's; the "+n" says it is not alone.
+- **What the continuity test taught (PLAN 2.2's frame-by-frame zoom test, unchanged):**
+  - The first version slid a folding counter into its neighbour. A split or merge swaps every
+    cluster key, and a slide that straddled the swap lost its neighbour's key and jumped.
+    Several attempts to remap keys each fixed one case and opened another. The slide is gone: a
+    fade in place needs no neighbour.
+  - The order of folding must not change when a cluster is replaced by its children on its
+    centroid (or the reverse). Hence the first pass by nation: the children then count exactly
+    as the cluster, and the same counters stay shown through the swap.
+  - A fade must go on through the swap: a counter with a new key takes over the fold state of
+    the most visible counter of its nation that stood on that spot.
+- **"No two overlap" is about counters drawn in full.** One fading into a neighbour stands on
+  it for the 250 ms of its fade, and during that time the neighbour's number already includes
+  it. The e2e asserts the rule for opacity 1, paused (where every counter is at 1) and running.
+- **Strength text:** from 999,950 men on, millions with two decimals ("1.54M"); "1535.7k" was
+  what the sums first read.
+- **Not solved here:** capital flags are drawn above the unit layers and cover counters that
+  stand at a capital (PLAN 1.45c, added). T1 markers of a dense group still stand on each other
+  (seen in 1.45a; no task yet).
+- **Tests:** `tests/unit/counters.test.ts` (the sum and the nations of a fold; 300 random
+  counters with no two shown boxes within the gap and the sum kept; the same picture under a
+  shift of every position; children on a centroid count as their cluster; the hold distance;
+  the fade in place and a turn in mid-fade; the fade through a key swap),
+  `tests/e2e/declutter1938.spec.ts` (world view and four zooms over Europe, at the start and
+  after one year: no overlap, every counter at opacity 1, the sum equal to the sim's, more
+  counters in central Europe at each closer zoom; twelve samples with the game running).
+
 ### ADR-64 · 2026-10-04 · accepted — The T0 ↔ T1 handover is a state and a cross-fade in time, not a fade by zoom (PLAN 1.45a, critic B7)
 
 - **Context:** the critic saw "translucent duplicate counters persist behind real ones when

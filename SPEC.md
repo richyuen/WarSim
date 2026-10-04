@@ -956,6 +956,15 @@ sprites stop once markers are fully in; capital flags draw above the markers.
 cell of a nested 2^L-cell grid (~64 px), showing Σ strength. Splits and merges animate the child
 level for 250 ms. The unit-size setting scales counters and markers.
 
+*T0 declutter (PLAN 1.45b, `foldOverlaps` in `counters.ts`, ADR-65):* no two counter boxes
+overlap. In screen space, a counter whose box would come within 2 px of a stronger one's is
+folded into it: first a nation's own counters into each other, then across nations in the
+order of what they hold. The stronger counter shows the sum and "+n" for the other nations
+folded in; nothing is dropped, so the shown counters still add up to every formation's
+strength. A change is a fade in place over 250 ms; a folded counter comes out only once it
+clears its neighbour by 6 px more. The result depends on the zoom, not on where the camera
+is. Strengths from a million on read "1.54M".
+
 *T0 ↔ T1 handover (PLAN 1.45a, `src/render/units/handover.ts`, ADR-64):* which of the two
 layers shows is a state. The markers come in when the zoom reaches 2000 m/px and go out above
 2300 m/px (hysteresis × 1.15); a change is a cross-fade over 250 ms of real time. At rest one

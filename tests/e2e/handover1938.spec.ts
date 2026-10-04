@@ -22,11 +22,17 @@ interface Layers {
   markerAlphas: number[];
 }
 
-/** Moves the camera to `scale` px per cell, lets the unit animations run, and reads both layers. */
-async function rest(page: Page, scale: number): Promise<Layers> {
+/**
+ * Moves the camera to `scale` px per cell, lets the unit animations run, and reads both layers.
+ * `running`: the counters never all stand still then, so only the handover is waited for.
+ */
+async function rest(page: Page, scale: number, running = false): Promise<Layers> {
   await page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx: CX, cy: CY, scale });
   await page.evaluate(() => window.__warsim!.view!.draw()); // the frame that sees the new zoom
-  await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
+  if (running) {
+    await page.waitForFunction(() => !window.__warsim!.view!.handover.animating(performance.now()));
+    await page.waitForTimeout(350);
+  } else await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
   return page.evaluate(() => {
     const v = window.__warsim!.view!;
     v.draw();
@@ -34,9 +40,15 @@ async function rest(page: Page, scale: number): Promise<Layers> {
     return { mPerPx: Math.round(v.metresPerPx), counters: v.counters.drawn.length, counterAlphas: unique(v.counters.drawn.map((d) => d.alpha)), markers: v.markerRects.length, markerAlphas: unique(v.markerRects.map((r) => r.alpha)) };
   });
 }
-const countersOnly = (l: Layers, what: string): void => {
+/**
+ * `running`: while the armies move, counters keep folding into their neighbours and coming out
+ * again (PLAN 1.45b), each with a short fade of its own, so the layer is in full when its most
+ * opaque counter is; paused, every counter is.
+ */
+const countersOnly = (l: Layers, what: string, running = false): void => {
   expect(l.counters, what).toBeGreaterThan(20);
-  expect(l.counterAlphas, what).toEqual([1]);
+  if (running) expect(Math.max(...l.counterAlphas), what).toBe(1);
+  else expect(l.counterAlphas, what).toEqual([1]);
   expect(l.markers, what).toBe(0);
 };
 const markersOnly = (l: Layers, what: string): void => {
@@ -81,7 +93,9 @@ test('T0 ↔ T1: a resting camera shows one unit layer in full, never a half-fad
     const res: { counters: number; markers: number }[] = [];
     for (let i = 0; i < 22; i++) {
       v.drawUnitLayers(now);
-      res.push({ counters: v.counters.drawn[0]?.alpha ?? 0, markers: v.markerRects[0]?.alpha ?? 0 });
+      // The layer's opacity is its most opaque counter's: counters folding into a neighbour or
+      // coming out of one (PLAN 1.45b) fade on their own.
+      res.push({ counters: Math.max(0, ...v.counters.drawn.map((d) => d.alpha)), markers: v.markerRects[0]?.alpha ?? 0 });
       now += 16;
     }
     return res;
@@ -106,11 +120,11 @@ test('T0 ↔ T1: a resting camera shows one unit layer in full, never a half-fad
     if (hud.paused.value) hud.togglePause();
   });
   await page.waitForFunction(() => window.__warsim!.hud.tick.value > 24 * 30, null, { timeout: 120_000 });
-  countersOnly(await rest(page, 4), 'running, T0');
-  countersOnly(await rest(page, 8), 'running, in from T0 at 2446 m/px');
-  markersOnly(await rest(page, 10), 'running, T1');
-  markersOnly(await rest(page, 9), 'running, out from T1 at 2174 m/px');
-  countersOnly(await rest(page, 8), 'running, out from T1 at 2446 m/px');
+  countersOnly(await rest(page, 4, true), 'running, T0', true);
+  countersOnly(await rest(page, 8, true), 'running, in from T0 at 2446 m/px', true);
+  markersOnly(await rest(page, 10, true), 'running, T1');
+  markersOnly(await rest(page, 9, true), 'running, out from T1 at 2174 m/px');
+  countersOnly(await rest(page, 8, true), 'running, out from T1 at 2446 m/px', true);
   await page.screenshot({ path: path.join(out, 'europe-2446m-running.png') });
   await page.evaluate(() => {
     const hud = window.__warsim!.hud;

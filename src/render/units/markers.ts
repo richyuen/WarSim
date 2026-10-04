@@ -60,10 +60,14 @@ export function markerLowFade(mPerPx: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/** Strength as shown: under 1,000 exact, else thousands with one decimal ("12.3k"). */
+/**
+ * Strength as shown: under 1,000 exact, then thousands with one decimal ("12.3k"), and from a
+ * million on (the folded counters of PLAN 1.45b) millions with two ("1.48M").
+ */
 export function strengthText(men: number): string {
   const m = Math.round(men);
-  return m < 1000 ? String(m) : `${(m / 1000).toFixed(1)}k`;
+  if (m < 1000) return String(m);
+  return m < 999_950 ? `${(m / 1000).toFixed(1)}k` : `${(m / 1e6).toFixed(2)}M`;
 }
 
 function symbolPath(ctx: CanvasRenderingContext2D, s: UnitSymbol, x: number, y: number, w: number, h: number): void {

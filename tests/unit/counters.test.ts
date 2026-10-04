@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { buildClusters, clusterKey, clusterLevel, CounterLayer, HYSTERESIS, SPLIT_MS, type CounterSource } from '../../src/render/units/counters';
+import {
+  buildClusters,
+  clusterKey,
+  clusterLevel,
+  CounterLayer,
+  FOLD_GAP_PX,
+  FOLD_HOLD_PX,
+  FOLD_MS,
+  foldOverlaps,
+  HYSTERESIS,
+  SPLIT_MS,
+  type Cluster,
+  type CounterSource,
+  type FoldItem,
+} from '../../src/render/units/counters';
 
 // PLAN 2.2: T0 counters with stable multi-level clustering and split/merge animation.
 
@@ -77,5 +91,131 @@ describe('T0 counters (PLAN 2.2)', () => {
     L.layout(SRC, 64 / 2 ** 3, 10, false);
     expect(L.level).toBe(3);
     expect(L.animating(10)).toBe(false);
+  });
+});
+
+// PLAN 1.45b: the declutter. No two shown counter boxes overlap; what would overlap is folded into
+// its stronger neighbour, never dropped; a change is a fade in place.
+describe('counter declutter (PLAN 1.45b)', () => {
+  // A box 40 px wide per counter, 10 px more when it holds other nations, 14 px high.
+  const boxOf = (_total: number, others: number): [number, number] => [others > 0 ? 50 : 40, 14];
+  const fi = (key: string, nation: number, x: number, y: number, strength: number): FoldItem => ({ key, nation, x, y, strength });
+  const shown = (r: Map<string, { into: string | null; total: number; others: number }>): string[] => [...r].filter(([, f]) => f.into === null).map(([k]) => k).sort();
+  /** True when the boxes of a and b, as `boxOf` sizes them, keep at least `gap` px apart. */
+  const apart = (a: FoldItem, wa: number, b: FoldItem, wb: number, gap: number): boolean => Math.abs(a.x - b.x) >= (wa + wb) / 2 + gap || Math.abs(a.y - b.y) >= 14 + gap;
+
+  it('folds what would overlap into the stronger counter: the sum and the other nations are shown', () => {
+    const items = [fi('ger', 1, 100, 100, 500), fi('pol', 2, 120, 104, 300), fi('cze', 3, 90, 96, 80), fi('fra', 4, 300, 100, 400), fi('ger2', 1, 110, 100, 50)];
+    const r = foldOverlaps(items, boxOf);
+    expect(shown(r)).toEqual(['fra', 'ger']);
+    expect(r.get('ger')).toEqual({ into: null, total: 930, others: 2, lead: 'ger', own: 550 }); // 550 of them its own nation's
+    expect(r.get('fra')).toMatchObject({ into: null, total: 400, others: 0 });
+    for (const k of ['pol', 'cze', 'ger2']) expect(r.get(k)!.into).toBe('ger');
+    expect(r.get('ger2')!.lead).toBe('ger'); // its own nation's counter stands for it
+    expect(r.get('pol')).toMatchObject({ lead: 'pol', own: 300 });
+    // Nothing is dropped: the shown counters hold every strength.
+    expect([...r.values()].reduce((a, f) => a + f.total, 0)).toBe(items.reduce((a, i) => a + i.strength, 0));
+  });
+
+  it('leaves no two shown boxes closer than the gap, on a crowded map, and keeps the sum', () => {
+    let s = 7;
+    const rnd = (): number => ((s = (s * 1664525 + 1013904223) >>> 0), s / 2 ** 32);
+    const items = Array.from({ length: 300 }, (_, i) => fi(`k${i}`, 1 + Math.floor(rnd() * 30), rnd() * 600, rnd() * 300, 1 + Math.floor(rnd() * 90_000)));
+    const r = foldOverlaps(items, boxOf);
+    const heads = items.filter((i) => r.get(i.key)!.into === null);
+    expect(heads.length).toBeGreaterThan(20);
+    expect(heads.length).toBeLessThan(items.length);
+    const w = (i: FoldItem): number => boxOf(r.get(i.key)!.total, r.get(i.key)!.others)[0];
+    for (let a = 0; a < heads.length; a++) for (let b = a + 1; b < heads.length; b++) expect(apart(heads[a]!, w(heads[a]!), heads[b]!, w(heads[b]!), FOLD_GAP_PX), `${heads[a]!.key} and ${heads[b]!.key}`).toBe(true);
+    expect(heads.reduce((a, i) => a + r.get(i.key)!.total, 0)).toBe(items.reduce((a, i) => a + i.strength, 0));
+    // Every folded counter points at a shown one.
+    for (const [, f] of r) if (f.into !== null) expect(r.get(f.into)!.into).toBeNull();
+    // The same picture wherever the camera is: moving every counter by the same way changes nothing.
+    const moved = foldOverlaps(items.map((i) => ({ ...i, x: i.x + 1234.5, y: i.y - 77.25 })), boxOf);
+    expect([...moved].map(([k, f]) => [k, f.into, f.total])).toEqual([...r].map(([k, f]) => [k, f.into, f.total]));
+  });
+
+  it("a nation's own counters fold first, so the children of a cluster on its centroid count as the cluster", () => {
+    // Germany as one cluster of 900 beside Poland's 700: Germany is shown, Poland inside it.
+    const parent = foldOverlaps([fi('ger', 1, 100, 100, 900), fi('pol', 2, 110, 100, 700)], boxOf);
+    expect(shown(parent)).toEqual(['ger']);
+    expect(parent.get('ger')).toMatchObject({ into: null, total: 1600, others: 1 });
+    // Germany as three children on that spot, each weaker than Poland: the same picture.
+    const kids = foldOverlaps([fi('g1', 1, 100, 100, 400), fi('g2', 1, 100, 100, 300), fi('g3', 1, 100, 100, 200), fi('pol', 2, 110, 100, 700)], boxOf);
+    expect(shown(kids)).toEqual(['g1']);
+    expect(kids.get('g1')).toMatchObject({ into: null, total: 1600, others: 1, own: 900 });
+    expect(kids.get('pol')!.into).toBe('g1');
+  });
+
+  it('a folded counter comes out only once it clears its neighbour by the hold distance', () => {
+    const at = (dx: number, held: boolean): boolean => foldOverlaps([fi('a', 1, 0, 0, 500), fi('b', 2, dx, 0, 300)], boxOf, (k) => held && k === 'b').get('b')!.into === null;
+    const touch = 40 + FOLD_GAP_PX; // centres this far apart: the boxes keep exactly the gap
+    expect(at(touch - 1, false)).toBe(false);
+    expect(at(touch, false)).toBe(true);
+    // Folded already: still inside at the distance where a free counter stands alone.
+    expect(at(touch, true)).toBe(false);
+    expect(at(touch + FOLD_HOLD_PX - 1, true)).toBe(false);
+    expect(at(touch + FOLD_HOLD_PX, true)).toBe(true);
+  });
+
+  const cluster = (nation: number, strength: number): Cluster => ({ nation, gx: 0, gy: 0, x: 0, y: 0, strength, count: 1 });
+  const item = (key: string, nation: number, x: number, y: number, strength: number): { key: string; c: Cluster; x: number; y: number } => ({ key, c: cluster(nation, strength), x, y });
+
+  it('a fold is a fade in place over FOLD_MS; at rest a counter is shown in full or not at all', () => {
+    const L = new CounterLayer();
+    const far = [item('a', 1, 0, 0, 500), item('b', 2, 100, 0, 300)];
+    const close = [item('a', 1, 0, 0, 500), item('b', 2, 30, 0, 300)];
+    expect(L.fold(far, 1, 0, boxOf).map((d) => [d.key, d.alpha, d.strength, d.others])).toEqual([['a', 1, 500, 0], ['b', 1, 300, 0]]);
+    expect(L.animating(0)).toBe(false);
+    // They come close: b fades out where it stands, a shows the sum at once.
+    let last = 1;
+    for (let t = 1000; t <= 1000 + FOLD_MS; t += 16) {
+      const d = L.fold(close, 1, t, boxOf);
+      expect(d.find((x) => x.key === 'a')).toMatchObject({ alpha: 1, strength: 800, others: 1, x: 0 });
+      const b = d.find((x) => x.key === 'b');
+      const alpha = b?.alpha ?? 0;
+      if (b) expect([b.x, b.y, b.strength]).toEqual([30, 0, 300]); // in place, with its own number
+      expect(alpha).toBeLessThanOrEqual(last);
+      expect(last - alpha).toBeLessThan(0.15);
+      last = alpha;
+      expect(L.animating(t)).toBe(true);
+    }
+    expect(L.fold(close, 1, 1000 + FOLD_MS, boxOf).map((d) => d.key)).toEqual(['a']);
+    expect(L.animating(1000 + FOLD_MS + 50)).toBe(false);
+    // Apart again, far enough to clear the hold: b fades back in; a turn in mid-fade goes on from there.
+    const half = L.fold(far, 1, 5000 + FOLD_MS / 2, boxOf).find((x) => x.key === 'b');
+    expect(half).toBeUndefined(); // the frame that sees the change starts the fade at 0
+    const quarter = L.fold(far, 1, 5000 + FOLD_MS / 2 + 100, boxOf).find((x) => x.key === 'b')!;
+    expect(quarter.alpha).toBeGreaterThan(0.2);
+    expect(quarter.alpha).toBeLessThan(0.5);
+    const turned = L.fold(close, 1, 5000 + FOLD_MS / 2 + 100, boxOf).find((x) => x.key === 'b')!;
+    expect(turned.alpha).toBeCloseTo(quarter.alpha, 9);
+    expect(L.fold(close, 1, 5000 + FOLD_MS / 2 + 150, boxOf).find((x) => x.key === 'b')!.alpha).toBeLessThan(quarter.alpha);
+  });
+
+  it('a fade goes on through the swap of a cluster and its children', () => {
+    const L = new CounterLayer();
+    const before = [item('ger:6', 1, 0, 0, 900), item('pol:6', 2, 100, 0, 700)];
+    L.fold(before, 1, 0, boxOf);
+    // Poland comes close and starts to fade into Germany.
+    const close = [item('ger:6', 1, 0, 0, 900), item('pol:6', 2, 30, 0, 700)];
+    L.fold(close, 1, 1000, boxOf);
+    const mid = L.fold(close, 1, 1100, boxOf).find((d) => d.key === 'pol:6')!;
+    expect(mid.alpha).toBeGreaterThan(0.5);
+    // The level changes: every key is new. Poland's two children stand on its centroid.
+    const split = [item('ger:5a', 1, 0, 0, 500), item('ger:5b', 1, 0, 0, 400), item('pol:5a', 2, 30, 0, 400), item('pol:5b', 2, 30, 0, 300)];
+    const d = L.fold(split, 1, 1116, boxOf);
+    // Germany: the stronger child shown in full with everything, the other inside it at once.
+    expect(d.find((x) => x.key === 'ger:5a')).toMatchObject({ alpha: 1, strength: 1600, others: 1 });
+    expect(d.find((x) => x.key === 'ger:5b')).toBeUndefined();
+    // Poland: the stronger child carries the fade on (a little further) with Poland's number,
+    // the other is inside it.
+    const pol = d.find((x) => x.key === 'pol:5a')!;
+    expect(pol.strength).toBe(700);
+    expect(pol.alpha).toBeLessThan(mid.alpha);
+    expect(mid.alpha - pol.alpha).toBeLessThan(0.15);
+    expect(d.find((x) => x.key === 'pol:5b')).toBeUndefined();
+    // And it ends folded.
+    expect(L.fold(split, 1, 1000 + FOLD_MS, boxOf).map((x) => x.key)).toEqual(['ger:5a']);
   });
 });

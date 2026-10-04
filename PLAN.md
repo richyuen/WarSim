@@ -359,12 +359,25 @@ quick sweep as a smoke test.
   screenshots viewed.
   Done 2026-10-04 (ADR-64; `tests/e2e/handover1938.spec.ts`, `tests/unit/handover.test.ts`,
   `docs/evidence/1.45/`).
-- [ ] 1.45b Critic B7, the wall of counters: Europe readable at world zoom. T0 counters are
+- [x] 1.45b Critic B7, the wall of counters: Europe readable at world zoom. T0 counters are
   decluttered in screen space (no two overlap; what does not fit is aggregated into its
   neighbour, never hidden).
   AT: e2e on the 1938 start and after one year, at world zoom over Europe, paused and running:
   no two counter boxes overlap; the sum of the counters still equals the sim's strength
   (PLAN 2.2); screenshots compared with `reference/` frames and viewed.
+  Done 2026-10-04 (ADR-65; `tests/e2e/declutter1938.spec.ts`, `tests/unit/counters.test.ts`,
+  `docs/evidence/1.45/declutter-*.png`): a counter that would touch a stronger one folds into
+  it, across nations too; the stronger shows the sum and "+n" nations. PLAN 2.2's continuity
+  test passes unchanged. "No two overlap" is asserted for counters drawn in full: one fading
+  into a neighbour overlaps it for the 250 ms of its fade. AoC has no counters to compare with
+  (it prints a strength beside each nation's name); compared with the critic's own crop.
+- [ ] 1.45c Capital flags do not hide unit counters. The flags are drawn above the unit layers
+  (PLAN 2.1, so that capitals stay readable), and at 3 px per cell over Europe they cover the
+  numbers of counters standing at a capital (Rome, Helsinki, Lisbon in
+  `docs/evidence/1.45/declutter-europe-start.png`).
+  AT: e2e at 3 and 6 px per cell over Europe, at the 1938 start: no capital flag covers any
+  part of a counter's box (the counter is drawn above it, or one of the two makes way);
+  screenshots viewed.
 
 ## Phase 2 — Semantic zoom
 

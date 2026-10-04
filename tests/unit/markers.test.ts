@@ -27,5 +27,10 @@ describe('T1 markers (PLAN 2.1)', () => {
     expect(strengthText(1000)).toBe('1.0k');
     expect(strengthText(12345)).toBe('12.3k');
     expect(strengthText(12350)).toBe('12.3k'); // toFixed rounding of 12.35
+    // From a million on: millions with two decimals (a folded counter over Europe holds 1.5 M men).
+    expect(strengthText(999_949)).toBe('999.9k');
+    expect(strengthText(999_950)).toBe('1.00M');
+    expect(strengthText(1_476_400)).toBe('1.48M');
+    expect(strengthText(24_726_000)).toBe('24.73M');
   });
 });
