@@ -3559,3 +3559,38 @@ since, with three test races found in their gate runs.
   the ten-year stage did not run).
 - **Next:** PLAN 2.7d (capital flags switch at 3 px per cell in one frame; city labels fade by
   zoom).
+
+## 2026-10-04 — PLAN 2.7d: capital flags and city labels come and go by a fade (ADR-73)
+
+- **What was there:** the flags appeared at 3 px per cell in one frame. A city's dot and name
+  faded by a curve of the zoom (a resting camera could show them half there), and a name hidden
+  by a collision appeared in full the frame its neighbour made room.
+- **Now:** `TimedSwitch` in `render/timing.ts` (on or off; a change is a fade of 250 ms; a turn
+  in mid-fade goes on from where it is). The tier handovers are built on it. The flags have one
+  for the layer; each city has one for its dot and one for its name, with hysteresis × 1.15.
+  The layout of the city labels stays pure: it is told what is on, and says what is wanted.
+- **A label comes in at its old limit,** where its fade by zoom used to begin. My first choice,
+  the middle of the old band, failed the layout's unit test at 1.2 km/px (fewer than 20 names
+  around Berlin): the test counts a faint name as shown, and I kept what it expects.
+- **Acceptance test** (`tests/e2e/labelFades1938.spec.ts`): 22 crossings over Europe (the flags'
+  threshold, six for names, four for dots, each in and out), the labels and flags alone on
+  black, frames 16 ms apart at a fixed camera: 23–30 of 255 between two frames (limit 48),
+  242–255 for a whole change. At nine zooms inside the old bands every opacity at rest is 0 or 1.
+- **A jump of 193 that was not a pop:** "flags out" failed at first. A flag stands clear of the
+  counters and follows when the camera's step moves a counter's box by a pixel; it moves in
+  whole pixels. The spec now records where each flag stood in every frame and leaves the places
+  of the flags that moved out of the comparison (1–8 flags, under 10% of the picture; with them
+  the measure reads up to 255). At 2000 m/px eight move: the counters hand over to the markers
+  and the flags above them come down. Flag motion has its own spec (`flagsClear1938`).
+- **Looked at:** `docs/evidence/2.7/change-flags-in-at-128ms.png` (Europe at 6.5 km/px, every
+  capital's flag half there) and `change-names-at-2000-in-at-128ms.png` (Hamburg, Frankfurt,
+  Munich and others half there, in the middle of the T0 → T1 handover).
+- **Seen in the second picture, not new:** at 2000 m/px the T1 markers of a dense front stand
+  on each other (central Europe is piles of boxes). The counters are decluttered (PLAN 1.45b);
+  the markers are not, and no PLAN task says they should be. Logged here for the phase review.
+- **Other specs:** `labels1938` rests before it counts names (they fade in now).
+- **Handed on:** PLAN 2.7e, the curved nation names, which appear in one frame at 9 px.
+- **Tests:** 5 new unit tests (the timed switch; the label layout with states: hysteresis, a
+  label still fading out, the cities in view with nothing to show). Gate: 546 unit tests in 74
+  files, 80 e2e, parity 46.3% (no sim input changed, so the ten-year stage did not run).
+- **Next:** PLAN 2.7e, then 2.8 (procedural detail tiles and hillshade).

@@ -962,8 +962,10 @@ Continuous zoom `z = log2(screen px per world km)`. Tiers are bands with overlap
 Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresis
 ±0.15 for discrete decisions such as clustering level). As built (2026-10-04): the counters'
 cluster level and the three handovers between the unit tiers are states with hysteresis and a
-timed change [ADR-64, ADR-71]. City labels still fade by a curve of the zoom alone, and the
-capital flags switch at 3 px per cell in one frame (PLAN 2.7d). The short animations share one
+timed change [ADR-64, ADR-71]. So are the capital flags as a layer and each city's dot and
+name [ADR-73]: in at their limit, out above it × 1.15, a fade of 250 ms; a name that finds room
+when its neighbour goes fades in the same way. The curved nation names still appear in one
+frame (PLAN 2.7e). The short animations share one
 clock (`src/render/timing.ts`).
 
 | Tier | m/px | Map | Forces |

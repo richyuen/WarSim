@@ -12,7 +12,7 @@ import { HANDOVER_HYSTERESIS, TierHandover } from '../render/units/handover';
 import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
-import { progress, running, smooth } from '../render/timing';
+import { FADE_MS, progress, running, smooth, TimedSwitch } from '../render/timing';
 import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -470,7 +470,7 @@ export class MapView {
    * but it is not a change to wait for.)
    */
   unitsAnimating(now = performance.now()): boolean {
-    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now);
+    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now);
     return this.counters.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
   }
 
@@ -696,6 +696,24 @@ export class MapView {
     }
   }
 
+  /**
+   * Only the city labels and the capital flags at `now`, on cleared canvases: a comparison of
+   * their pixels over the frames of a change (PLAN 2.7d AT). The next frame of the view's own
+   * loop draws everything again.
+   */
+  drawLabelLayers(now: number): void {
+    this.resize();
+    const cam = this.controller.cam;
+    // The counters first, for their boxes at this camera (the flags keep clear of them), then
+    // the overlay is wiped and only the labels and the flags are left on it.
+    this.tierShares(now);
+    this.drawUnitMarkers(cam, now);
+    this.overlay.getContext('2d')!.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+    this.cityLabels.draw(cam, window.devicePixelRatio || 1, now);
+    this.drawFlags(cam, now);
+    this.dirty = true;
+  }
+
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least 5 px, × the size setting). */
   get elementPx(): number {
     return Math.max(ELEMENT_CELLS * this.controller.cam.scale, 5) * this.unitScale;
@@ -790,7 +808,9 @@ export class MapView {
   readonly flags = new FlagStore((id) => this.ownColor.get(id));
   private readonly capitals = new Map<number, [number, number]>();
   /** Where flags were drawn last frame, CSS px (tests). */
-  flagRects: { id: number; x: number; y: number; w: number; h: number }[] = [];
+  flagRects: { id: number; x: number; y: number; w: number; h: number; alpha: number }[] = [];
+  /** The capital flags as a layer: shown, or fading in (PLAN 2.7d). */
+  private readonly flagsIn = new TimedSwitch(FADE_MS);
 
   /**
    * Where each flag stands relative to its usual place, to keep clear of the T0 counters (PLAN
@@ -807,7 +827,11 @@ export class MapView {
    */
   private drawFlags(cam: Camera, now: number): void {
     this.flagRects = [];
-    if (cam.scale < FLAG_MIN_SCALE || this.capitals.size === 0) {
+    // The flags as a layer are a state (PLAN 2.7d): in at FLAG_MIN_SCALE, out below it by the
+    // hysteresis, a fade in time. They used to appear in one frame.
+    const want = this.capitals.size > 0 && cam.scale >= (this.flagsIn.on ? FLAG_MIN_SCALE / HANDOVER_HYSTERESIS : FLAG_MIN_SCALE);
+    const layer = this.flagsIn.value(want, now);
+    if (layer <= 0.01) {
       this.flagPlace.clear();
       return;
     }
@@ -854,11 +878,11 @@ export class MapView {
         const alpha = ease(st, st.alpha);
         if (alpha < 0.01) continue;
         const y = Math.round(y0 - ease(st, st.rise));
-        ctx.globalAlpha = alpha;
+        ctx.globalAlpha = alpha * layer;
         ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
         ctx.fillRect(x - 1, y - 1, FLAG_PX_W + 2, FLAG_PX_H + 2);
         ctx.drawImage(this.flags.canvasOf(id), x, y, FLAG_PX_W, FLAG_PX_H);
-        this.flagRects.push({ id, x, y, w: FLAG_PX_W, h: FLAG_PX_H });
+        this.flagRects.push({ id, x, y, w: FLAG_PX_W, h: FLAG_PX_H, alpha: alpha * layer });
       }
     }
     ctx.restore();
@@ -972,7 +996,7 @@ export class MapView {
     // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
     this.tierShares(now);
     this.drawSprites(cam, now);
-    this.cityLabels.draw(cam, dpr);
+    this.cityLabels.draw(cam, dpr, now);
     this.drawLabels(cam, dpr);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
     // clear of the T0 counters (PLAN 1.45c).

@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
+
+- **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.
+  The capital flags appeared at 3 px per cell in one frame. A city's dot and its name faded by
+  a curve of the zoom over 0.7–1 × a limit, so a resting camera could show them half there,
+  and a name hidden by a collision appeared in full in the frame its neighbour made room.
+- **Decision:** `TimedSwitch` (`src/render/timing.ts`): something is on or off, the first
+  answer sets it, every later change is a fade of 250 ms, and a turn in mid-fade goes on from
+  the value reached. `TierHandover` is built on it.
+  - *Flags:* one switch for the layer: in at 3 px per cell, out below 3 ÷ 1.15. Each flag's
+    own move away from a counter (PLAN 1.45c) is as it was.
+  - *City labels:* two switches for each city, its dot and its name. Wanted is "the zoom is
+    below the limit, or below the limit × 1.15 if it is on", and for a name also "no name of
+    higher priority is in its box". The layout stays a pure function: it is told what is on
+    and what is still fading out, and says what is wanted and where.
+  - A city out of view has no state: a pan brings it in at once. A city in view with nothing
+    to show is off, so that it fades in when the zoom brings it.
+- **Where a label comes in:** at its old limit, where its fade by zoom used to begin, not in
+  the middle of the old band. The unit test of the layout counts a name as shown from that
+  zoom on; moving the threshold would have meant changing what the test expects.
+  Consequence: in the band 0.7–1 × the limit a label is in full where it was faint.
+- **The acceptance test** (`tests/e2e/labelFades1938.spec.ts`): the measure of ADR-71 over the
+  city labels and the flags alone (`drawLabelLayers`), across 22 thresholds over Europe: the
+  flags', six for names and four for dots, each in and out. Largest jump between two frames:
+  23–30 of 255 (limit 48); the whole change 242–255. At nine zooms inside the old bands every
+  opacity at rest is 0 or 1.
+- **Moving flags are left out of the comparison, and counted.** A flag stands clear of the
+  counters. The camera's step of 0.04% can move a counter's box by a pixel, and at 2000 m/px
+  the counters go altogether: the flags above them come down. A flag moves in whole pixels,
+  which is a full-contrast change of the pixels at its edges (measured with them: up to 255).
+  That is motion, covered by `flagsClear1938` (at most 8 px a frame). The spec records where
+  each flag stood in each frame and leaves the places of those that moved out of the
+  comparison: at most 8 flags, under 10% of the picture.
+- **Not done:** the curved nation names (`nationLabels.ts`) appear in one frame when their
+  size reaches 9 px or a collision ends. PLAN 2.7e.
 ### ADR-72 · 2026-10-04 · accepted — The marker → elements morph: a shrink of 13%, and a bar that lingers (PLAN 2.7c)
 
 - **Context:** SPEC §8 asks that at T1 → T2 "the marker scales down and fades into the

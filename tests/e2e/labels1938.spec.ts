@@ -4,6 +4,7 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { settle } from './settle';
 
 // PLAN 1.29 AT: curved, area-sized nation names for ≥ 20 nations; no overlaps among the major
 // ones. Labels come from the worker's derived curves and are drawn on the 2D overlay.
@@ -72,15 +73,10 @@ test('curved, area-sized nation labels without overlaps', async ({ page }, info)
   // City names in the main app (review after 1.29): around Berlin at T1 zoom, named cities.
   await page.waitForFunction(() => window.__warsim!.view!.hasFineCoast, null, { timeout: 60_000 });
   const [bx, by] = cellOf(13.4, 52.5, W, H);
-  const named = await page.evaluate(
-    ({ bx, by }) => {
-      const v = window.__warsim!.view!;
-      v.controller.set({ cx: bx, cy: by, scale: 24 });
-      v.draw();
-      return v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0.5).length;
-    },
-    { bx, by },
-  );
+  // (Names come in by a fade since PLAN 2.7d: read them at rest.)
+  await page.evaluate(({ bx, by }) => window.__warsim!.view!.controller.set({ cx: bx, cy: by, scale: 24 }), { bx, by });
+  await settle(page);
+  const named = await page.evaluate(() => window.__warsim!.view!.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0.5).length);
   expect(named).toBeGreaterThanOrEqual(5);
 
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.29') : info.outputPath();
