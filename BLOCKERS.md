@@ -151,6 +151,27 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     of those 250 ms are then of the tick before.
   - `MapView.flagPlace` keeps a capital flag's rise by nation and wrap offset: at the seam of
     a looping map the state is lost and a rise of 150 ms is cut short.
+- Left by PLAN 2.7l (2026-10-04, ADR-75; measured on 400 synthetic formations in a scratch test, not
+  in the repo). For the phase review (PLAN 2.11):
+  - An eased zoom (a wheel notch closes on its target over about 0.4 s) still ends with other
+    counters when its frames fall otherwise: 62 of 192 cases at spacings of 16 to 200 ms (136
+    before). The hold written at rest between two level changes of one zoom is the cause (158 runs
+    end at the same level with other counters; 413 before). Tried and rejected: no hold whenever
+    the zoom changes. It ends every case alike, and a pinch that wobbles then makes 1% of the
+    counters flicker. A spec that needs the same counters steps the camera.
+  - At a spacing of 200 ms, 12 of those runs end at another cluster level (the same before):
+    `clusterLevel` rounds to the nearest level from wherever a frame finds the zoom, so frames
+    far apart can skip the level a close sequence would stop at. A level judged by its band from
+    the level held (the next level up or down whose band has the zoom) would not, for a zoom
+    that goes one way. Not tried: it changes where a step lands (world → 1.5 px per cell: level
+    6, not 5).
+  - In flight more counters turn twice (begin to fade in, fold again): 56 of 7,394 on a wheel
+    notch in (28 before), 484 of 9,560 on three notches out (325). The numbers on their
+    neighbours change with each turn. If it shows in the zoom demo (PLAN 2.10): fold a flight by
+    where its counters land, the children fading in as they fly.
+  - The frame after a merge lands, a few counters turn (4 of 162 and 7 of 50 keys; 1 and 2
+    before): the hold widens the reach of a folded counter, which can then find a nearer
+    neighbour and take its box's width with it. One fade at the landing.
 - Specs that measure time and fail on a slow machine (2026-10-04, gate runs with another project's
   dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
   changed. If one fails on an idle machine it is a finding.
@@ -158,5 +179,5 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - `fire1938`: more than 10 of something drawn in a window of frames (9), and no fire dropped (6,614).
   - `handover1938`: a wait of 120 s. `labelFades1938`: the test's 240 s. `title`: 15 s for the
     title screen, and an autosave read before it was written.
-  - `declutter1938`: PLAN 2.7l.
+  - `declutter1938`: PLAN 2.7l, done 2026-10-04 (it was not time that it measured: ADR-75).
   - A way to tell: `npm run test` takes 40 s on the idle machine and took 72 s then.

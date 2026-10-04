@@ -217,7 +217,19 @@ export class CounterLayer {
    */
   private folds = new Map<string, { folded: boolean; since: number }>();
   /** The counters of the last frame, in cells, with their fold state and the opacity it gave. */
-  private last: { nation: number; x: number; y: number; state: { folded: boolean; since: number }; alpha: number }[] = [];
+  private last: { key: string; nation: number; x: number; y: number; state: { folded: boolean; since: number }; alpha: number }[] = [];
+  /**
+   * The hold of the declutter (PLAN 1.45b): the counters that were folded in the last frame, with
+   * the layer at rest. Such a counter comes out only once it clears its neighbour by
+   * FOLD_HOLD_PX more, so one at the edge does not flicker while the armies move.
+   *
+   * It is a memory of the layer at rest (PLAN 2.7l, ADR-75). A split or merge in flight is
+   * folded without it and leaves none: its counters land free and are folded there by where
+   * they stand, as in a view opened at that zoom. Kept through the flight, the hold recorded
+   * which counters had touched which on the way, and that depends on the frames drawn: the same
+   * step of the camera ended with other counters shown when its frames were further apart.
+   */
+  private hold = new Set<string>();
   /** When the latest fold or unfold began. */
   private foldStart = -Infinity;
   /** Counters drawn last frame (tests). */
@@ -233,14 +245,17 @@ export class CounterLayer {
   /**
    * Declutters `items` (already laid out, in cells) at `scale` px per cell and returns what to
    * draw at `now`: the shown counters with their totals, and those still fading out into a
-   * neighbour or back in. `boxOf` as in `foldOverlaps`.
+   * neighbour or back in. `boxOf` as in `foldOverlaps`. `flying`: the items are those of a split
+   * or merge on their way (no hold: see `hold`).
    */
   fold(
     items: readonly { key: string; c: Cluster; x: number; y: number }[],
     scale: number,
     now: number,
     boxOf: (total: number, others: number) => [number, number],
+    flying = false,
   ): { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] {
+    if (flying) this.hold.clear();
     const near = (a: { x: number; y: number }, b: { x: number; y: number }): boolean => Math.abs(a.x - b.x) * scale <= INHERIT_PX && Math.abs(a.y - b.y) * scale <= INHERIT_PX;
     // At the end of a split or merge a cluster and its children swap in the same place, under
     // new keys. A counter with a new key takes over the state of the counter of its nation that
@@ -252,14 +267,17 @@ export class CounterLayer {
       fresh.add(it.key);
       let heir: (typeof this.last)[number] | null = null;
       for (const o of this.last) if (o.nation === it.c.nation && near(o, it) && (!heir || o.alpha > heir.alpha)) heir = o;
-      if (heir) this.folds.set(it.key, { ...heir.state });
+      if (!heir) continue;
+      this.folds.set(it.key, { ...heir.state });
+      if (this.hold.has(heir.key)) this.hold.add(it.key);
     }
     for (const key of this.folds.keys()) if (!at.has(key)) this.folds.delete(key);
     const result = foldOverlaps(
       items.map((it) => ({ key: it.key, nation: it.c.nation, x: it.x * scale, y: it.y * scale, strength: it.c.strength })),
       boxOf,
-      (key) => this.folds.get(key)?.folded === true,
+      (key) => this.hold.has(key),
     );
+    const hold = new Set<string>();
     const out: { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] = [];
     const seen: typeof this.last = [];
     let latest = -Infinity;
@@ -281,15 +299,40 @@ export class CounterLayer {
       if (st.since <= now && st.since > latest) latest = st.since;
       const p = ease(progress(now, st.since, FOLD_MS));
       const alpha = st.folded ? 1 - p : p;
-      seen.push({ nation: it.c.nation, x: it.x, y: it.y, state: st, alpha });
+      if (folded && !flying) hold.add(it.key);
+      seen.push({ key: it.key, nation: it.c.nation, x: it.x, y: it.y, state: st, alpha });
       if (alpha <= 0) continue; // folded: its strength is in its neighbour's number
       // A shown counter shows all it holds; one fading out, what it holds of its own nation.
       out.push({ key: it.key, nation: it.c.nation, x: it.x, y: it.y, alpha, strength: !folded ? f.total : f.lead === it.key ? f.own : it.c.strength, others: folded ? 0 : f.others, folded });
     }
     this.last = seen;
+    this.hold = hold;
     this.foldStart = latest;
     return out;
   }
+
+  /**
+   * What `draw` draws at `now`: the counters laid out and decluttered. Nothing when the layer
+   * is not visible or the map has no formation.
+   */
+  declutter(
+    src: readonly CounterSource[],
+    scale: number,
+    now: number,
+    visible: boolean,
+    boxOf: (total: number, others: number) => [number, number],
+  ): ReturnType<CounterLayer['fold']> {
+    const items = this.layout(src, scale, now, visible);
+    if (items.length === 0) {
+      // Nothing on the map: the next counters take their places at once.
+      this.folds.clear();
+      this.last = [];
+      this.hold.clear();
+      return [];
+    }
+    return this.fold(items, scale, now, boxOf, this.trans !== null);
+  }
+
   /** The counters to show at `now`: positions in cells, after any animation. */
   layout(src: readonly CounterSource[], scale: number, now: number, visible: boolean): { key: string; c: Cluster; x: number; y: number }[] {
     if (this.trans && progress(now, this.trans.start, SPLIT_MS) >= 1) {
@@ -336,15 +379,8 @@ export class CounterLayer {
     /** Unit-size setting (PLAN 1.39a): scales each counter about its position. */
     size = 1,
   ): void {
-    const items = this.layout(src, cam.scale, now, alpha > 0.01);
     this.drawn = [];
     this.boxes = [];
-    if (items.length === 0) {
-      // Nothing on the map: the next counters take their places at once.
-      this.folds.clear();
-      this.last = [];
-      return;
-    }
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     ctx.font = '700 10px system-ui, sans-serif';
@@ -359,7 +395,7 @@ export class CounterLayer {
     const h = 14;
     // Flag chip, the strength, and "+n" for the other nations folded in.
     const boxWidth = (strength: number, others: number): number => widthOf(strengthText(strength)) + 18 + (others > 0 ? widthOf(`+${others}`) + BADGE_GAP : 0);
-    const shown = this.fold(items, cam.scale, now, (total, others) => [boxWidth(total, others) * size, h * size]);
+    const shown = this.declutter(src, cam.scale, now, alpha > 0.01, (total, others) => [boxWidth(total, others) * size, h * size]);
     const offs = wrapOffsets(cam, geo, vw);
     // Small first, so the big stacks stay on top.
     shown.sort((a, b) => a.strength - b.strength || (a.key < b.key ? -1 : 1));

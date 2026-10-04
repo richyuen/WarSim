@@ -476,7 +476,7 @@ quick sweep as a smoke test.
   Done 2026-10-04: a name's state is kept by nation; the copies near the seam share it
   (`fadeNationLabels`). `tests/unit/nationLabelLayout.test.ts`, "a name on a looping map". The key
   in three older tests of that file changed from '7:0' to 7 with the format: the same assertions.
-- [ ] 2.7l What the counters show at rest does not depend on the frames drawn on the way there. Seen
+- [x] 2.7l What the counters show at rest does not depend on the frames drawn on the way there. Seen
   2026-10-04 in a gate run under load: `declutter1938`, "start, 1.5 px per cell", central Europe had 2
   counters where every other run has 3 (the step before has 2; the spec wants more). All were in full
   and none overlapped: one counter was folded into a neighbour, or not, by how the frames of the split
@@ -494,6 +494,26 @@ quick sweep as a smoke test.
     and not the same counters at 16 and 25 ms.
   So the fold state at rest remembers the split's frames. A direction to try: decide the folds on where
   the counters of a split are going, not on where they are in flight.
+  Done 2026-10-04 (ADR-75): the hold is a memory of the layer at rest. A split or merge on its way is
+  folded without it and leaves none (`CounterLayer.hold`, `fold(…, flying)`, `declutter`).
+  `tests/unit/counters.test.ts`, "the counters at rest after a step of the camera": the same keys with
+  frames 16 to 1000 ms apart, after splits and merges; the same from any level; the same as a view
+  opened at that zoom. `tests/e2e/declutter1938.spec.ts`, the second test: the frames drawn by the
+  test, 16, 60, 200 and 1000 ms apart, over the five stops of the first test. Both fail on the code
+  before. Central Europe at the stops: 2, 5, 17, 56, 58 (before 2, 3, 17, 45, 58).
+  - Not the direction above: with the children born held it lands on 2, 3 for ever (ADR-75, rejected).
+  - "Whether that is all of it": for a step, yes. An eased zoom still ends with other counters in 62
+    of 192 cases (136 before): BLOCKERS watch list.
+  - `flagsClear1938` asserted a count of one of the pictures this zoom had (41 of 41 flags); it asserts
+    the rule now, for each capital. ADR-75 has why that is not a weaker test.
+- [ ] 2.7m The view draws again after a frame that started an animation, however late the next frame
+  comes. `MapView.frame` asks "is anything animating?" before it draws. A frame that starts a split
+  (or any timed change) and is followed by a gap longer than the animation is followed by no draw at
+  all: the counters stay on their parents' centroids, at the first frame of the split, until
+  something else redraws. Found while doing 2.7l; `settle` in the specs draws by itself, so no spec
+  sees it.
+  AT: with the frames driven at times the test gives, a camera step and then one frame 400 ms later:
+  the view has drawn the end of the split (the counters at rest, in full, at the new level).
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

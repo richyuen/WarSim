@@ -3927,3 +3927,55 @@ To resume:
   file), then PLAN 2.7k (the rest of the tree). One green run covers both: the tree it passed
   on held both.
 - **Next:** PLAN 2.7l.
+
+## 2026-10-04 — PLAN 2.7l: the counters at rest do not depend on the frames of a step (ADR-75)
+
+- **The cause, as PLAN 2.7l guessed:** the hold of the declutter was read and written by every
+  frame of a split or merge in flight. A counter passes others on the way; whether it landed
+  held was decided by the moments that were drawn.
+- **Seen first** on the code as it was (a scratch test, not committed; 400 synthetic formations,
+  a step of the camera, frames 16 to 1000 ms apart): 7 → 6 ends with 286, 285, 284 or 283
+  counters; 8 → 6 with 291, 290, 284, 289 or 282; a merge 5 → 7 with 157 at four spacings and
+  not the same 157. In the browser, the frames drawn by the test: the world view reached again
+  by a merge differs by 3 counters with frames 60 ms apart.
+- **Fix:** the hold is a memory of the layer at rest. A frame in flight is folded without it and
+  leaves none (`CounterLayer.hold`, `fold(…, flying)`). `declutter()` is the layout and the fold
+  as `draw` does them; `draw` goes through it.
+- **After:** the same keys at all eight spacings, after splits and merges; the same from any
+  level; the same as a view opened at that zoom (before: one zoom, two pictures).
+- **Three rules were measured, not one.** ADR-75 has the numbers.
+  - No hold in flight (kept).
+  - No hold whenever the zoom changes: an eased zoom ends alike at every spacing too, but a
+    pinch that wobbles turned 62 of 5,848 counters about 16 times in a second (none before).
+    Dropped.
+  - The children of a split born held, the folds decided where they land: not built; its
+    picture is the old code's with frames 1000 ms apart, which was measured. Central Europe
+    2 → 3 for good, and two pictures for one zoom. Dropped.
+- **The picture changed.** After a zoom in more counters stand: the children come out at the
+  2 px gap, as counters do in a view opened there. Central Europe at the five stops of
+  `declutter1938`: 2, 5, 17, 56, 58 (before 2, 3, 17, 45, 58).
+- **`flagsClear1938` failed, and its assertion is restated.** At 3 px per cell Vienna and Prague
+  have three counters in the column above them; their flags are left out by the 40 px rule (39
+  of 41). The spec asserted 41 of 41.
+  - That 41 was one of the pictures the old code had for this zoom: with frames exactly 16 ms
+    apart the old code shows 73 counters and 40 flags (Prague out); with frames 1000 ms apart
+    65 and 41. The gate saw 41 by the spacing `settle` happens to give.
+  - It asserts the rule now, for each capital: the flag is there, or the test does the climb
+    again and finds no free place within 40 px. The count is printed, not asserted.
+  - **This is a changed assertion in an existing test.** The reason is in ADR-75 and in the
+    spec. It is for the user to overrule.
+- **Pictures looked at:** `docs/evidence/1.45/declutter-europe-start.png`, `flags-clear-3px.png`,
+  `flags-clear-6px.png`, `declutter-world-year1.png`, made again with `EVIDENCE=1`. No counter
+  overlaps another, the numbers read. At 3 px per cell from the opening view Germany and Poland
+  carry six or seven counters each where they had four: busier, readable.
+- **Costs, measured:** in flight more counters turn twice (56 of 7,394 on a wheel notch in, 28
+  before); the frame after a merge lands a few counters turn (4 of 162, 7 of 50; 1 and 2
+  before). BLOCKERS watch list, for the phase review.
+- **"Find out whether that is all of it":** for a step, yes. An eased zoom still ends with other
+  counters in 62 of 192 cases (136 before): the hold written at rest between two level changes,
+  and at 200 ms the level itself. BLOCKERS watch list.
+- **Found on the way, PLAN 2.7m (new, next):** `MapView.frame` asks whether anything animates
+  before it draws. A frame that starts a split and is followed by a gap longer than 250 ms is
+  followed by no draw: the counters stay at the first frame of the split.
+- **Tests:** 5 new unit tests, 1 new e2e. 564 unit tests in 76 files, 87 e2e.
+- **Next:** PLAN 2.7m, then 2.8 (procedural detail tiles and hillshade).

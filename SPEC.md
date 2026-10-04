@@ -1002,8 +1002,10 @@ folded into it: first a nation's own counters into each other, then across natio
 order of what they hold. The stronger counter shows the sum and "+n" for the other nations
 folded in; nothing is dropped, so the shown counters still add up to every formation's
 strength. A change is a fade in place over 250 ms; a folded counter comes out only once it
-clears its neighbour by 6 px more. The result depends on the zoom, not on where the camera
-is. Strengths from a million on read "1.54M".
+clears its neighbour by 6 px more. That hold is a memory of the layer at rest: a split or merge
+on its way is folded without it and leaves none, so the counters land as a view opened at that
+zoom shows them, whatever frames were drawn on the way (PLAN 2.7l, ADR-75). The result depends
+on the zoom, not on where the camera is. Strengths from a million on read "1.54M".
 
 *Tier handovers (PLAN 1.45a and 2.7b, `src/render/units/handover.ts`, ADR-64, ADR-71):* at each
 of the three boundaries which of the two unit layers shows is a state. The nearer layer comes

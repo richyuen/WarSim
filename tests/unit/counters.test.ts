@@ -276,3 +276,85 @@ describe('counter declutter (PLAN 1.45b)', () => {
     expect(L.fold(split, 1, 1000 + FOLD_MS, boxOf).map((x) => x.key)).toEqual(['ger:5a']);
   });
 });
+// PLAN 2.7l: the hold is a memory of the layer at rest. A split or merge in flight is folded
+// without it and leaves none. Kept through the flight, it recorded which counters had touched
+// which on the way: the same step of the camera ended with other counters shown when its frames
+// were further apart (a gate run under load saw 2 counters over central Europe, every other run 3).
+describe('the counters at rest after a step of the camera (PLAN 2.7l)', () => {
+  const boxOf = (_total: number, others: number): [number, number] => [others > 0 ? 50 : 40, 14];
+  const scaleAt = (lv: number): number => 64 / 2 ** lv;
+  /**
+   * Draws frames `dt` ms apart from `t0` at the zoom of `lv` levels, as the view does: until two
+   * frames in a row leave nothing animating. Returns the counters then shown and the time.
+   */
+  const rest = (L: CounterLayer, lv: number, t0: number, dt: number): { keys: string[]; end: number } => {
+    let shown: { key: string; alpha: number }[] = [];
+    let t = t0;
+    for (let quiet = 0; quiet < 2; t += dt) {
+      shown = L.declutter(SRC, scaleAt(lv), t, true, boxOf);
+      quiet = L.animating(t) ? 0 : quiet + 1;
+    }
+    expect(shown.every((d) => d.alpha === 1)).toBe(true);
+    return { keys: shown.map((d) => d.key).sort(), end: t };
+  };
+  /** At rest at `from`, the camera steps to `to`; the frames after the step are `dt` ms apart. */
+  const stepped = (from: number, to: number, dt: number): string[] => {
+    const L = new CounterLayer();
+    return rest(L, to, rest(L, from, 0, 16).end + 1000, dt).keys;
+  };
+
+  it('are the same counters whatever the time between the frames, after splits and after merges', () => {
+    for (const [from, to] of [[7, 6], [8, 5], [5, 7], [6, 8]] as const) {
+      const ref = stepped(from, to, 16);
+      expect(ref.length, `${from} → ${to}`).toBeGreaterThan(30);
+      for (const dt of [25, 33, 60, 120, 200, 400, 1000]) expect(stepped(from, to, dt), `${from} → ${to}, frames ${dt} ms apart`).toEqual(ref);
+    }
+  });
+
+  it('are those of the zoom reached, from whichever level the camera came', () => {
+    expect(stepped(8, 5, 16)).toEqual(stepped(6, 5, 16));
+    expect(stepped(7, 6, 16)).toEqual(stepped(5, 6, 16));
+    expect(stepped(5, 7, 16)).toEqual(stepped(8, 7, 16));
+  });
+
+  // Before, a view opened at a zoom was folded without a hold and a step to that zoom with the
+  // hold of its flight: one zoom, two pictures.
+  it('are those of a view opened at that zoom', () => {
+    for (const [from, to] of [[8, 5], [7, 6], [5, 7]] as const) expect(stepped(from, to, 16), `${from} → ${to}`).toEqual(rest(new CounterLayer(), to, 0, 16).keys);
+  });
+
+  const cluster = (nation: number, strength: number): Cluster => ({ nation, gx: 0, gy: 0, x: 0, y: 0, strength, count: 1 });
+  const pair = (dx: number): { key: string; c: Cluster; x: number; y: number }[] => [
+    { key: 'a', c: cluster(1, 500), x: 0, y: 0 },
+    { key: 'b', c: cluster(2, 300), x: dx, y: 0 },
+  ];
+  const TOUCH = 40 + FOLD_GAP_PX; // centres this far apart: the boxes keep exactly the gap
+  /** Whether b is shown, once its fade has run: the frame at `t` and one a fade later. */
+  const bShown = (L: CounterLayer, dx: number, t: number, flying: boolean): boolean => {
+    L.fold(pair(dx), 1, t, boxOf, flying);
+    return L.fold(pair(dx), 1, t + FOLD_MS, boxOf, flying).some((d) => d.key === 'b' && !d.folded && d.alpha === 1);
+  };
+
+  it('a counter in flight is folded without the hold', () => {
+    const L = new CounterLayer();
+    expect(bShown(L, 30, 0, false)).toBe(false); // folded into a
+    // At rest it stays inside until it clears a by the hold distance.
+    expect(bShown(L, TOUCH + 3, 1000, false)).toBe(false);
+    // In flight at the same place it is judged as a free counter is: it clears a by the gap.
+    expect(bShown(L, TOUCH + 3, 2000, true)).toBe(true);
+    expect(bShown(L, TOUCH - 1, 3000, true)).toBe(false);
+  });
+
+  it('and leaves none: a counter that was folded on the way lands free', () => {
+    const L = new CounterLayer();
+    expect(bShown(L, 100, 0, false)).toBe(true);
+    // On the way it passes a and is folded into it.
+    expect(bShown(L, 30, 1000, true)).toBe(false);
+    // It lands clear of a by the gap, not by the hold distance: shown, as if it had never touched a.
+    expect(bShown(L, TOUCH + 3, 2000, false)).toBe(true);
+    // From there the hold is that of the layer at rest again.
+    expect(bShown(L, 30, 3000, false)).toBe(false);
+    expect(bShown(L, TOUCH + 3, 4000, false)).toBe(false);
+    expect(bShown(L, TOUCH + FOLD_HOLD_PX, 5000, false)).toBe(true);
+  });
+});

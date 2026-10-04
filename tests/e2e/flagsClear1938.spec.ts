@@ -8,8 +8,9 @@ import { settle } from './settle';
 
 // PLAN 1.45c AT: at 3 and 6 px per cell over Europe, at the 1938 start, no capital flag covers any
 // part of a counter's box. The flags are drawn above the unit layers (PLAN 2.1); a flag that would
-// cover a counter stands above that counter instead. Before, the flags of Rome, Helsinki and
-// Lisbon covered the numbers of the counters standing there.
+// cover a counter stands above that counter instead, and is left out when that would be more than
+// 40 px from its capital. Before, the flags of Rome, Helsinki and Lisbon covered the numbers of
+// the counters standing there.
 
 const { w: W, h: H } = SIZE_1938;
 const VW = 1400;
@@ -54,11 +55,32 @@ test('capital flags keep clear of the T0 counters', async ({ page }, info) => {
     const covered = flags.flatMap((f) => counters.filter((c) => touches({ x: f.x - 1, y: f.y - 1, w: f.w + 2, h: f.h + 2 }, c)).map((c) => `flag of nation ${f.id} on ${c.text}`));
     expect(covered, `${scale} px`).toEqual([]);
 
-    // Every capital in view still has its flag: none had to be left out. Some stand higher than
-    // their usual place (24 px above the capital), which is how they made way.
+    // Every capital in view has its flag, or has no place for one: the counters above its usual
+    // place (24 px above the capital) leave none within 40 px, and such a flag is left out (ADR-65,
+    // addendum). Some flags stand higher than their usual place, which is how they made way.
+    //
+    // This read "every capital in view has its flag: none had to be left out" until PLAN 2.7l. That
+    // was a count of one picture of this zoom, and the picture depended on the frames drawn on the
+    // way to it (ADR-75): the code of that time, with frames exactly 16 ms apart, left Prague's
+    // flag out. What is asserted now is the rule, for each capital.
     const usual = new Map(capitals.map((c) => [c.id, { x: Math.round((c.x - EX) * scale + VW / 2 - 12), y: Math.round((c.y - EY) * scale + VH / 2 - 24) }]));
-    const inView = [...usual.values()].filter((p) => p.x >= -24 && p.x <= VW && p.y >= -16 && p.y <= VH).length;
-    expect(flags.length, `${scale} px`).toBe(inView);
+    const inView = [...usual].filter(([, p]) => p.x >= -24 && p.x <= VW && p.y >= -16 && p.y <= VH);
+    const have = new Set(flags.map((f) => f.id));
+    expect(have.size, `${scale} px: one flag a nation`).toBe(flags.length);
+    const leftOut: number[] = [];
+    for (const [id, u] of inView) {
+      if (have.has(id)) continue;
+      // The climb of the view, done again here: above the highest counter in the way, and again
+      // if another stands there. Left out only when that ends more than 40 px up.
+      for (let rise = 0; rise <= 40; ) {
+        const hit = counters.filter((c) => touches({ x: u.x - 1, y: u.y - rise - 1, w: 26, h: 18 }, c));
+        expect(hit.length, `${scale} px: nation ${id} has no flag, and its place ${rise} px above the usual one is free`).toBeGreaterThan(0);
+        rise = u.y - (Math.floor(Math.min(...hit.map((c) => c.y))) - 16 - 3);
+      }
+      leftOut.push(id);
+    }
+    expect(flags.length + leftOut.length, `${scale} px`).toBe(inView.length);
+    for (const f of flags) expect(inView.some(([id]) => id === f.id), `nation ${f.id}`).toBe(true);
     let raised = 0;
     for (const f of flags) {
       const u = usual.get(f.id)!;
@@ -74,6 +96,7 @@ test('capital flags keep clear of the T0 counters', async ({ page }, info) => {
     expect(raised, `${scale} px`).toBeGreaterThan(0);
     // None stands further from its capital than the limit beyond which a flag is left out.
     expect(Math.max(...flags.map((f) => usual.get(f.id)!.y - f.y)), ` px`).toBeLessThanOrEqual(40);
+    console.log(`${scale} px per cell: ${counters.length} counters; ${flags.length} of ${inView.length} flags, ${raised} raised by up to ${Math.max(...flags.map((f) => usual.get(f.id)!.y - f.y))} px, ${leftOut.length} left out${leftOut.length ? ` (nations ${leftOut.join(', ')})` : ''}`);
     await page.screenshot({ path: path.join(out, `flags-clear-${scale}px.png`) });
   }
 

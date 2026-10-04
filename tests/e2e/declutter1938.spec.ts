@@ -124,3 +124,46 @@ test('T0 counters never overlap: what does not fit is folded into a neighbour, a
     hud.setSpeedLevel(4);
   });
 });
+
+// PLAN 2.7l: the counters at rest after a step of the camera do not depend on the frames drawn on
+// the way. Seen in a gate run under load: "start, 1.5 px per cell" above had 2 counters over
+// central Europe where every other run has 3. The frames here are drawn by the test, at times
+// it gives, in one call into the page: the view's own loop cannot draw between them, so the
+// time between frames is what the test says and not what the machine gives.
+test('the T0 counters at rest after a step are the same whatever the time between the frames', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: VW, height: VH });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const [x0, y0] = cellOf(5, 55, W, H);
+  const [x1, y1] = cellOf(25, 45, W, H);
+
+  // The steps of the test above: the world, then closer over Europe. One run for each spacing.
+  const runs = await page.evaluate(({ stops, spacings, x0, y0, x1, y1 }) => {
+    const v = window.__warsim!.view!;
+    let now = performance.now() + 60_000; // ahead of every frame the view's own loop has drawn
+    /** Steps the camera and draws frames `dt` ms apart until two in a row leave nothing animating. */
+    const rest = (cx: number, cy: number, scale: number, dt: number): { keys: string[]; central: number; level: number | null; frames: number } => {
+      v.controller.set({ cx, cy, scale });
+      let frames = 0;
+      for (let quiet = 0; quiet < 2; now += dt, frames++) {
+        v.drawUnitLayers(now);
+        quiet = v.unitsAnimating(now) ? 0 : quiet + 1;
+        if (frames > 2000) throw new Error('the counters did not come to rest');
+      }
+      const d = v.counters.drawn;
+      if (d.some((c) => c.alpha !== 1)) throw new Error('a counter at rest is not in full');
+      return { keys: d.map((c) => c.key).sort(), central: d.filter((c) => c.wx >= x0 && c.wx <= x1 && c.wy >= y0 && c.wy <= y1).length, level: v.counters.level, frames };
+    };
+    return spacings.map((dt) => stops.map(([cx, cy, scale]) => rest(cx, cy, scale, dt)));
+  }, { stops: [[W / 2, H / 2, WORLD], [EX, EY, 1.5], [EX, EY, 3], [EX, EY, 6], [EX, EY, 8]] as [number, number, number][], spacings: [16, 60, 200, 1000], x0, y0, x1, y1 });
+
+  const [ref, ...others] = runs;
+  console.log(`counters at rest (cluster level; all in view, over central Europe): ${ref!.map((r) => `level ${r.level}: ${r.keys.length}, ${r.central}`).join(' → ')}`);
+  // The steps do change the level, so every stop but the first is reached by a split in flight.
+  expect(new Set(ref!.map((r) => r.level)).size).toBeGreaterThanOrEqual(3);
+  for (const [i, run] of others.entries())
+    for (const [k, stop] of run.entries()) expect(stop.keys, `stop ${k}, frames ${[60, 200, 1000][i]} ms apart`).toEqual(ref![k]!.keys);
+  // With margin now: more counters over central Europe at each closer stop.
+  for (let k = 1; k < ref!.length; k++) expect(ref![k]!.central, `stop ${k}`).toBeGreaterThan(ref![k - 1]!.central);
+});

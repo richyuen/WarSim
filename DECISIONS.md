@@ -167,6 +167,91 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-75 · 2026-10-04 · accepted — The counters' hold is a memory of the layer at rest; a split or merge on its way is folded without it (PLAN 2.7l)
+
+- **Context:** a gate run under load saw 2 counters over central Europe at 1.5 px per cell where
+  every other run has 3 (`declutter1938`). The hold of ADR-65 (a folded counter comes out only
+  once it clears its neighbour by 6 px more) was read and written by every frame, those of a
+  split or merge in flight too. In flight a counter passes others. Whether it lands held was
+  decided by the moments of the flight that happened to be drawn.
+- **Measured before, a step of the camera, the frames after it 16 to 1000 ms apart:**
+  - Unit, 400 synthetic formations, counters shown at rest (and keys that differ from the 16 ms
+    run): level 7 → 6: 286 at 16–60 ms, 285 (3), 284 (2), 283 (3) at 120, 200, 400 ms. Level
+    8 → 6: 291, 290, 291, 290, 284, 289, 282, 282. A merge, 5 → 7: 157, then 156 (5), 157 (8),
+    160 (11). Only a step inside one level's band gave one answer.
+  - Browser, the 1938 start, the stops of `declutter1938` (the world, then 1.5, 3, 6, 8 px per
+    cell over Europe), the frames drawn by the test: the world view reached again by a merge
+    differs by 3 counters with frames 60 ms apart.
+- **Decision:** the hold is a memory of the layer at rest. A frame of a split or merge on its way
+  is folded without the hold and leaves none: the counters land free and are folded there by
+  where they stand. `CounterLayer.hold`; `fold(…, flying)`; `declutter()` is the layout and the
+  fold as `draw` does them, for the tests.
+- **What it gives:** after a step the counters at rest are
+  - the same at every spacing of the frames (16, 25, 33, 60, 120, 200, 400, 1000 ms; unit and
+    browser);
+  - the same from whichever level the camera came;
+  - the same as in a view opened at that zoom. Before, a view opened at a zoom was folded
+    without a hold and a step to it with the hold of its flight: one zoom, two pictures.
+- **What it changes in the picture:** after a zoom in more counters stand. The children of a
+  split come out at the gap (2 px), as counters do everywhere else, not at the hold distance.
+  - The stops of `declutter1938`, counters in view and over central Europe: the world 65 and 2;
+    1.5 px 57 and 5 (before 48 and 3); 3 px 61 and 17 (the same); 6 px 104 and 56 (85 and 45);
+    8 px 87 and 58 (86 and 58). The spec's "more over central Europe at each closer stop" had a
+    margin of one at the first step and has three; at the last step it has two (had thirteen).
+  - At 3 px per cell from the opening view: 79 counters. Before: 73 with frames exactly 16 ms
+    apart, 65 with frames 1000 ms apart.
+  - Pictures: `docs/evidence/1.45/declutter-*.png` and `flags-clear-*.png`, made again and
+    looked at. No counter overlaps another; the numbers read; Germany and Poland carry more
+    counters on their names than before.
+- **What it costs:**
+  - In flight more counters turn twice (begin to fade in, then fold again), because nothing
+    holds them: on a wheel notch in, eased, 56 of 7,394 counters (28 before); three notches out,
+    484 of 9,560 (325); a step 7 → 6, 28 (17). A turn goes on from the opacity reached; the
+    number on the neighbour changes with it.
+  - The frame after a merge lands, a few counters turn: 4 of 162 keys at 5 → 7, 7 of 50 at
+    6 → 8 (before 1 and 2). The landing is folded free; the next frame has its hold, which
+    widens the reach of a folded counter, and it can find a nearer neighbour. One fade.
+- **`flagsClear1938` restated.** The spec asserted that every capital in view has its flag at 3
+  and 6 px per cell (41 of 41 and 22 of 22). At 3 px per cell two flags are left out now: Vienna
+  and Prague, each with three counters in the column above it, so that the first free place is
+  more than 40 px up (the rule of ADR-65's addendum).
+  - *Why this is not a test made weaker to pass:* the 41 was a count of one of the pictures that
+    zoom had. The code before this change, the frames drawn by the test exactly 16 ms apart:
+    73 counters and 40 flags, Prague left out. Frames 1000 ms apart: 65 and 41. The gate saw 41
+    because `settle` draws every 25 ms with the view's own loop in between. The assertion held
+    by the defect this task removes.
+  - *What it asserts now,* for each capital in view: its flag is there (and stands as before:
+    at its usual place or just above a counter, at most 40 px up), or the test does the view's
+    climb again over the counters drawn and finds no free place within 40 px. One flag a
+    nation. So a flag cannot be dropped without cause; how many are left out is printed, not
+    asserted.
+  - Now: 3 px, 39 of 41, 15 raised by up to 36 px; 6 px, 22 of 22, 7 raised by up to 33 px.
+- **Rejected:**
+  - *No hold whenever the zoom changes* (tried). An eased zoom then ends alike at every
+    spacing too. But the hold at rest is the hysteresis: a pinch that wobbles by ±1% at 12 Hz
+    for a second turned 62 of 5,848 counters about 16 times each (998 turns; with the hold kept
+    17 turns, no counter twice).
+  - *The folds of a flight decided on where its counters land, the children born held* (PLAN's
+    first direction; not built: its picture is that of the old code with frames 1000 ms apart,
+    which was measured). It keeps 41 flags and the old look, and no counter would turn in
+    flight. It also keeps two pictures for one zoom, and central Europe goes 2 → 3 at the first
+    step for good: zooming in by a factor of four shows one counter more. It needs the hold
+    carried across levels by ancestry and a second set of positions in the fold.
+  - *The same, the children born free:* the picture of this decision with nothing turning in
+    flight. More machinery for the flight alone; on the watch list, to be judged on the zoom
+    demo (PLAN 2.10).
+- **Not solved, on the watch list.** The acceptance test is a step of the camera. An eased zoom
+  still ends with other counters when its frames fall otherwise, in 62 of 192 cases at spacings
+  of 16 to 200 ms (136 before):
+  - by the hold written at rest between two level changes of one zoom (158 runs at the same
+    level with other counters; 413 before);
+  - at 200 ms, by the level itself (12 runs, as before): `clusterLevel` rounds to the nearest
+    level from wherever a frame finds the zoom.
+- **Tests:** `tests/unit/counters.test.ts`, 5 new ("the counters at rest after a step of the
+  camera"); `tests/e2e/declutter1938.spec.ts`, 1 new, which fails on the code before with
+  "stop 0, frames 60 ms apart: 3 keys"; `tests/e2e/flagsClear1938.spec.ts`, restated as above.
+  PLAN 2.2's continuity test (`counters1938`) passes unchanged.
+
 ### ADR-74 · 2026-10-04 · accepted — An independent read finds what the author no longer sees; its findings are tasks before the next feature
 
 - **Context:** the review pass after PLAN 2.7 found, by reading, a bug of PLAN 2.7c that five
