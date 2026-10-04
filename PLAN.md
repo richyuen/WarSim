@@ -428,6 +428,32 @@ quick sweep as a smoke test.
   collision with another name ends, and goes the same way.
   AT: the luminance limit of 2.7b over the names when the camera steps across such a zoom; at rest
   every name is in full or absent.
+- [ ] 2.7f The counters' cluster level comes to rest (ADR-74, finding 1). `CounterLayer.layout` judges the
+  level wanted against the level a finished split or merge has just left. Where the bands of two
+  levels overlap it starts the way back, and that one's end does the same: at a resting camera
+  the counters split and merge every 250 ms, for ever.
+  AT: unit: (a) level 3, zoom to 3.7 levels, back to 3.5 within 100 ms; (b) an eased burst of 4–6
+  wheel notches from each of 129 starting zooms. Each ends with one level and `animating` false
+  within a second of the camera resting.
+- [ ] 2.7g A destroyed nation's capital flag goes with it (ADR-74, finding 2). The view only ever adds to
+  its capitals; the snapshot has every nation's row, dead ones too, with the last capital.
+  AT: e2e: a nation is annexed; no flag of it is placed after the next snapshot, at a zoom where it
+  was placed before.
+- [ ] 2.7h The sprites keep their clock when a snapshot repeats a tick (ADR-74, finding 3). A new subscription
+  (a pan), a pause or a change of speed sends the same tick again, and the element sprites and
+  figures start their walk through the tick again from where it began.
+  AT: at T2 with the game running slowly, a pan in the middle of a tick moves no sprite backwards.
+- [ ] 2.7i Sprites and figures wear the nation's own colour in every map mode, as the markers and counters do
+  (ADR-74, finding 4). They take the map mode's palette, when they are uploaded: in the wars
+  mode both sides are one red, and a change of mode while paused leaves the old tints.
+  AT: e2e: in the wars mode two belligerents' element sprites at T2 have the tints of their T1
+  markers; a change of mode while paused changes no sprite.
+- [ ] 2.7j Figures that fade out are of the snapshot in hand (ADR-74, finding 5). Leaving T3, a tick that
+  arrives during the 250 ms leaves the figures of the tick before, drawn with the new tick's clock.
+  AT: the figures drawn while the close handover runs are built from the element section last received.
+- [ ] 2.7k A nation's name keeps its state when the camera crosses the seam of a looping map (ADR-74, finding 6).
+  The state's key holds the absolute wrap offset, which changes there.
+  AT: unit: a name held at 8.2 px is still placed, in full, after a pan across x = 0.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

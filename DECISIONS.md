@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-74 · 2026-10-04 · accepted — An independent read finds what the author no longer sees; its findings are tasks before the next feature
+
+- **Context:** the review pass after PLAN 2.7 found, by reading, a bug of PLAN 2.7c that five
+  gated commits had carried (ADR-72, addendum). A second reader with no part in the code was
+  then given the unit and label drawing code (`src/render/units`, `fx`, `labels`,
+  `timing.ts`, the unit layers of `MapView`) and asked for defects only: an input or a state
+  that gives a wrong picture, a wrong value, or a view that never comes to rest.
+- **It found the 2.7c bug by itself**, before the fix landed, and eight more. Three it ran
+  (the pure modules, in scratch scripts); five it traced by reading. Finding 1 was checked
+  here against the code and holds; the others are checked by the failing test of their task.
+- **Decision:** the six that a player can meet are PLAN 2.7f–k, before 2.8, each with a test
+  that fails first. Most severe first.
+  1. 2.7f: the counters' level can go back and forth for ever at a resting camera.
+  2. 2.7g: a destroyed nation's capital flag stays.
+  3. 2.7h: a repeated tick restarts the sprites' walk.
+  4. 2.7i: sprites take the map mode's colours, and keep stale ones.
+  5. 2.7j: figures fading out are of the tick before.
+  6. 2.7k: a nation name's state is lost at the seam.
+- **Not tasks, on the watch list in BLOCKERS.md:** the counters' declutter does not see across
+  the seam (the 180° meridian: rare); the two wrap copies of a city share one name switch (needs
+  a view 6,570 px wide on the shipped maps); a city's limit is exclusive where the tiers' are
+  inclusive (one zoom value); the toy world's two nations wear 1938 flags; the morph's box
+  picture is rounded up at a fractional device pixel ratio (not traced).
+- **Why before 2.8:** 2.8 adds a layer to a view that does not come to rest. A view that keeps
+  drawing hides the cost of what is added, and `settle` in the specs waits on it.
+- **Why not all in one commit:** one cause, one test, one commit.
+- **For the reviews to come:** a review pass (PROMPT step 9) includes one such read of the code
+  written since the last pass. This one found nine defects.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.

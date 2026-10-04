@@ -125,3 +125,16 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   before and after passed all 61. Paused pages run no tick, so the A* change under test was not
   involved. Contention does not explain 10×: if it recurs, keep the trace
   (`test-results/…/trace.zip`) and look at the worker boot handshake.
+- Found by the independent read of 2026-10-04 (ADR-74), not tasks; look again at the phase review (PLAN 2.11):
+  - `counters.ts` `foldOverlaps` works in unwrapped px: counters either side of the seam of a
+    looping map (the 180° meridian in 1938) are not folded into each other and can overlap.
+  - `cityLabels.ts`: the wrap copies of a city share one name switch. When one copy collides
+    and the other does not, the switch turns twice a frame and the layer never rests. Both
+    copies are laid out only when the world is narrower than the view + 400 px at a zoom that
+    shows names: a view of 6,570 px or more on the shipped maps.
+  - `cityLabels.ts` `wanted` uses `<` where the tiers use `<=`: at exactly 2000 m/px the
+    names of size 4 are off while the T1 markers are on.
+  - `flagStore.ts` maps nation ids to 1938 tags in every scenario: the toy world's two
+    nations wear the first two 1938 flags.
+  - `markers.ts` `boxSprite`: at a fractional device pixel ratio the picture is rounded up
+    and drawn into the unrounded rectangle (38 px into 37.5 at 1.25). Not traced.

@@ -3693,3 +3693,19 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
   files, 81 e2e, parity 46.3%). One run for the two commits: the second run would have been of
   the same tree.
 - **Next:** PLAN 2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — An independent read of the drawing code: six tasks before 2.8 (ADR-74)
+
+- **Why:** the review pass found a bug of mine by reading. I asked a reader with no part in the
+  code for defects in the unit and label drawing code, and nothing else.
+- **What came back:** the 2.7c bug (found before the fix landed), and eight more. Three were
+  run in scratch scripts, five traced by reading. Nothing was edited by the reader.
+- **Checked here:** finding 1. `CounterLayer.layout` computes the level wanted before it
+  takes over the level of a finished transition. With the zoom inside the overlap of two
+  levels' bands, each end starts the way back. The reader's script: 38 changes of level in 10 s
+  at a resting camera; 16 of 129 starting zooms end that way after four wheel notches.
+- **Decided:** PLAN 2.7f–k, most severe first, each with a failing test first. Five lesser
+  ones are on the watch list in BLOCKERS.md.
+- **Why no spec saw the first:** the specs place the camera in one step. The loop needs a
+  zoom that moves while a split runs.
+- **Next:** PLAN 2.7f (the counters' level comes to rest).
