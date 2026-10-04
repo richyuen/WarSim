@@ -21,6 +21,13 @@ export class Table<S extends Schema> {
   cols: Columns<S>;
   /** 1 = live row. */
   alive: Uint8Array;
+  /**
+   * How many times each id has been given out in this process. It tells a row from an earlier
+   * row that had its id: an observer that remembers something by id (the worker: where a
+   * formation stood a tick ago) compares it. Not state: nothing in the sim reads it, and it is
+   * neither serialized nor hashed. A loaded table counts on from where the process was.
+   */
+  generation: Uint32Array;
   private free: Uint32Array;
   private freeLen = 0;
   /** One past the largest id ever allocated (row 0 is reserved). */
@@ -35,6 +42,7 @@ export class Table<S extends Schema> {
     const cap = Math.max(2, initialCapacity);
     this.cols = Table.allocCols(schema, cap);
     this.alive = new Uint8Array(cap);
+    this.generation = new Uint32Array(cap);
     this.free = new Uint32Array(16);
   }
 
@@ -59,6 +67,9 @@ export class Table<S extends Schema> {
     const alive = new Uint8Array(cap);
     alive.set(this.alive);
     this.alive = alive;
+    const generation = new Uint32Array(cap);
+    generation.set(this.generation);
+    this.generation = generation;
   }
 
   /**
@@ -79,6 +90,7 @@ export class Table<S extends Schema> {
       if (id >= this.capacity) this.grow(id + 1);
     }
     this.alive[id] = 1;
+    this.generation[id]!++;
     this.count++;
     this.zeroRow(id);
     return id;

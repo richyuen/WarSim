@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import type { Command } from '../../src/shared/commands';
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { tierOf, type FromWorker, type Snapshot, type Subscription } from '../../src/shared/protocol';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex, slotCount } from '../../src/sim/systems/elements';
 import { SimServer } from '../../src/worker/server';
@@ -24,7 +25,7 @@ function boxOf(cx: number, cy: number, scale: number, vw: number, vh: number): S
   return { bbox: [cx - hw, cy - hh, cx + hw, cy + hh], z: Math.log2(scale), tier, wantsElements: tier >= 1.5 };
 }
 
-function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot } {
+function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot; step: (cmds: Command[]) => void } {
   let last: Snapshot | null = null;
   let unacked: Snapshot | null = null;
   const server = new SimServer((m: FromWorker) => {
@@ -32,14 +33,29 @@ function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot } {
   });
   const sim = new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });
   server.sim = sim;
-  const snapshot = (sub: Subscription): Snapshot => {
-    server.handle({ type: 'subscribe', sub }, 0);
-    const s = unacked;
-    unacked = null;
-    if (s) server.handle({ type: 'ack', seq: s.seq, buffers: s.buffers }, 0);
-    return last!;
+  /** Acknowledges what was sent, and what that brings: an ack sends the snapshot the worker still owes (queued events). */
+  const drain = (): void => {
+    while (unacked) {
+      const s: Snapshot = unacked;
+      unacked = null;
+      server.handle({ type: 'ack', seq: s.seq, buffers: s.buffers }, 0);
+    }
   };
-  return { sim, snapshot };
+  /** The snapshot that answers a subscription with `sub`. */
+  const snapshot = (sub: Subscription): Snapshot => {
+    drain();
+    server.handle({ type: 'subscribe', sub }, 0);
+    const answer = last!;
+    drain();
+    return answer;
+  };
+  /** Sends `cmds` and steps one tick, as the page does. */
+  const step = (cmds: Command[]): void => {
+    for (const cmd of cmds) server.handle({ type: 'cmd', cmd }, 0);
+    server.handle({ type: 'step', n: 1, reqId: 1 }, 0);
+    drain();
+  };
+  return { sim, snapshot, step };
 }
 
 describe('elements in snapshots (PLAN 2.7n1)', () => {
@@ -105,5 +121,64 @@ describe('elements in snapshots (PLAN 2.7n1)', () => {
     expect(own(snapshot(boxOf(fx + 0.1, fy, scale, 1280, 720)))).toBe(28); // on its flank
     expect(own(snapshot(boxOf(fx + 0.3, fy, scale, 1280, 720)))).toBe(0); // well clear of it
     expect(own(snapshot(boxOf(fx, fy + 0.3, scale, 1280, 720)))).toBe(0);
+  });
+});
+
+// PLAN 2.7o (ADR-74, second read, finding 3): the place a formation had one tick before, which
+// the view moves its sprites from.
+//
+// The worker judged "new this tick: no previous place" by whether the id was alive before the
+// step. Freed ids are reused, the last freed first: a formation created in the step in which
+// another was destroyed takes that one's id, and was sent with that one's place as its own
+// previous place. Its sprites then crossed the map in one tick.
+describe('previous places in snapshots (PLAN 2.7o)', () => {
+  const SITE = [1578.5, 338.8] as const; // western China, far from every other formation
+  const JAP = NATIONS_1938.findIndex((n) => n.tag === 'JAP') + 1;
+  const infantry = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
+
+  it('a formation that takes the id of one removed in the same step comes from nowhere but its own place', () => {
+    const { sim, snapshot, step } = setup();
+    const ft = sim.world.formations;
+    // The victim: a formation far from the site.
+    let victim = 0;
+    ft.forEach((f) => {
+      if (victim === 0 && Math.abs(ft.cols.x[f]! - SITE[0]) > 200) victim = f;
+    });
+    const was: [number, number] = [ft.cols.x[victim]!, ft.cols.y[victim]!];
+    const before = new Map<number, [number, number]>();
+    ft.forEach((f) => before.set(f, [ft.cols.x[f]!, ft.cols.y[f]!]));
+
+    step([
+      { kind: 'setAi', nation: JAP, enabled: false },
+      { kind: 'removeFormation', id: victim },
+      { kind: 'spawnFormation', nation: JAP, x: SITE[0], y: SITE[1], strength: 0, template: infantry },
+    ]);
+    // The new division has the victim's id: the case this test is about.
+    expect(ft.has(victim)).toBe(true);
+    expect([ft.cols.nation[victim], ft.cols.x[victim], ft.cols.y[victim]]).toEqual([JAP, SITE[0], SITE[1]]);
+
+    const s = snapshot(boxOf(SITE[0], SITE[1], (GEO.kmPerCell * 1000) / 100, 1280, 720));
+    const i = s.formations.id.subarray(0, s.formations.count).indexOf(victim);
+    expect(i).toBeGreaterThanOrEqual(0);
+    expect([s.formations.prevX[i], s.formations.prevY[i]], `the removed one stood at ${was.join(', ')}`).toEqual([SITE[0], SITE[1]]);
+    // Its elements likewise: each comes from where it stands.
+    let own = 0;
+    for (let j = 0; j < s.elements.count; j++) {
+      if (s.elements.formation[j] !== victim) continue;
+      own++;
+      expect([s.elements.prevX[j], s.elements.prevY[j]]).toEqual([s.elements.x[j], s.elements.y[j]]);
+    }
+    expect(own).toBe(28);
+
+    // And every formation that was there before, and is itself still, comes from where it was.
+    let moved = 0;
+    for (let k = 0; k < s.formations.count; k++) {
+      const id = s.formations.id[k]!;
+      const b = before.get(id);
+      if (id === victim || !b) continue;
+      expect([s.formations.prevX[k], s.formations.prevY[k]], `formation ${id}`).toEqual(b);
+      if (s.formations.x[k] !== b[0] || s.formations.y[k] !== b[1]) moved++;
+    }
+    expect(moved).toBeGreaterThan(0); // the step did move some: the previous place is not just the place
   });
 });

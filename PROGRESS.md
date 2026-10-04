@@ -4154,3 +4154,33 @@ No rule changed and nothing on screen changed. Six tasks came out of it.
   background** (the commit of 2.7n2 had changed one number in PLAN after its gate): green.
 - **Tests:** 2 new e2e. 571 unit tests in 78 files, 90 e2e.
 - **Next:** PLAN 2.7o (a formation that takes a freed id arrives from where the dead one stood).
+
+## 2026-10-04 — PLAN 2.7o: a formation that takes a freed id comes from its own place
+
+- **The bug (ADR-74, second read, finding 3):** the worker sends, with each formation, where it
+  stood before the step; the view moves the sprites from there. "Created in this step: no
+  previous place" was judged by whether the id was alive before. Freed ids are given out again,
+  the last freed first, so a formation created in the step in which another was destroyed has
+  that one's id and got that one's place.
+- **Test first** (`tests/unit/serverElements.test.ts`, "previous places in snapshots"): the 1938
+  world; a formation far away is removed and a Japanese division is spawned in western China
+  in one step. The division has the removed one's id (asserted). Before the fix its previous
+  place in the snapshot was (1100.2, 267.2), where the removed one stood: 480 cells away.
+- **Fix:** `Table.generation` counts how often each id has been given out. The worker keeps the
+  counts of before the step beside the places, and a formation whose count has changed is new.
+  The elements of a formation take their previous places from the formation's, so they follow.
+- **Not sim state:** the count is not serialized or hashed and nothing in the sim reads it
+  (DECISIONS, ADR-74, the entry of 2.7o). The 10-year tests ran in the gate: the pinned hash of
+  seed 99 is unchanged.
+- **The test's helper was wrong first:** an ack makes the worker send the snapshot it still owes
+  (queued events), and the helper dropped that one unacknowledged; the next subscription then
+  got no answer and the test read the snapshot of the step. It acknowledges until nothing is
+  owed now. Seen because the test found 0 elements of a division that has 28.
+- **Seen on the way, not looked into:** in the first tick of 1938 the economic AI disbands 228
+  of the 1,054 formations. Decided behaviour (it balances the books); the size of it is not on
+  record. BLOCKERS, for Phase 7.
+- **No picture:** the reader met the case once in three simulated years, across 362 km. What
+  the test reads is the place the sprites start from.
+- **Tests:** 1 new unit test. 572 unit tests in 78 files, 90 e2e.
+- **Next:** the numbers chosen in 2.7n2 and 2.7n3 into DECISIONS (documents only), then PLAN 2.7p
+  (a pan at T3 shows T2 sprites for 250 ms).

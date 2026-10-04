@@ -181,6 +181,10 @@ _As of PLAN 0.13 the snapshot carries `tiles` (ids + owner/controller u16 per ti
 id, color, cells, capitalX, capitalY), `formations` (id, nation, x, y, prevX, prevY, facing, strength) and
 `events` (f64 stride 7: seq, tick, kind, a, b, x, y); see `src/shared/protocol.ts`. Other rows arrive with their systems._
 
+_`prevX`, `prevY` are where the formation stood before the last step. A formation created in that step has none
+and is sent with its own place: it was not alive before, or the count of its id (`Table.generation`) has changed
+(PLAN 2.7o)._
+
 _As of PLAN 2.4a fire events travel in a section of their own, `fires` (f64 stride 10: tick, subtick, shooter,
 target, weapon, dmg, x0, y0, x1, y1; `src/shared/events.ts`), not in `events`: only for a subscription that
 gets elements, filtered when they happen to those with an end in the subscribed bbox, queue cap 2^13 with
@@ -240,6 +244,10 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) �
   `dmath` = fdlibm ports (polynomial kernels + atan table), golden bits pinned in Node and Chromium.
 - Iteration is always in ascending id order. Entity ids come from free lists in
   deterministic order. `Map`/`Set` are allowed only with insertion order derived from id order.
+  An id is therefore not an identity over time: a row created in a step can have the id of a row
+  destroyed in that step. A table counts how often each id has been given out
+  (`Table.generation`), for an observer that remembers something by id. The count is not state:
+  it is not serialized or hashed, and the sim does not read it (PLAN 2.7o).
 - **State hash**: `hashSections` chains (name, dtype, length, xxhash32(data)) over every
   authoritative section (`World.parts()`: meta incl. tick and seed, RNG states, command log and
   pending commands, cell layers, entity tables). Events and derived outputs are excluded.

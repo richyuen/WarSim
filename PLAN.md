@@ -567,7 +567,7 @@ quick sweep as a smoke test.
     toy world's stand-in was 485 px across at 200 m/px. Now: none lit; 32 px at 200, 30, 5 and 1 m/px.
     On the division's flank, 2,235 m from its centre: 28 elements, 1,584 figures, and the same after
     a pan away and back. `docs/evidence/2.7/close-on-a-flank-1m.png`.
-- [ ] 2.7o A formation that takes the id of one destroyed in the same step does not arrive from where
+- [x] 2.7o A formation that takes the id of one destroyed in the same step does not arrive from where
   that one stood (ADR-74, second read, finding 3). The worker judges "new this tick" by whether the id
   was alive before; freed ids are reused last-in-first-out, and revolts create formations after combat
   has destroyed some. The snapshot then carries the dead formation's place as the new one's previous
@@ -577,6 +577,13 @@ quick sweep as a smoke test.
   in 26,280 ticks, 18.5 cells (362 km).
   AT: unit, the worker: a formation removed and one created in the same step, the new one with the
   freed id: its previous place in the snapshot is its own place. Elements likewise.
+  Done 2026-10-04: a table counts how often each id has been given out (`Table.generation`: not
+  serialized, not hashed, read by nothing in the sim), and the worker takes a formation for new when
+  the count under its id has changed since the step began. `tests/unit/serverElements.test.ts`,
+  "previous places in snapshots": in the 1938 world a formation is removed and a division spawned in
+  one step; the division has the removed one's id. Before: its previous place was (1100.2, 267.2),
+  where the removed one stood, 480 cells from its own. Every other formation still comes from where it
+  was before the step. The pinned hash of seed 99 is unchanged.
 - [ ] 2.7p A pan at T3 from empty ground onto a formation shows its figures, not its T2 sprites first
   (ADR-74, second read, finding 2; traced by the reader, not run). A snapshot with no elements turns
   the close tier off (`tierShares`: no figures built, so `share(Infinity)`); the next one, with

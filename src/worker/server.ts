@@ -129,6 +129,7 @@ export class SimServer {
   private prevX = new Float64Array(0);
   private prevY = new Float64Array(0);
   private prevAlive = new Uint8Array(0);
+  private prevGeneration = new Uint32Array(0);
   /** Fractional ticks owed at fixed speed. */
   private owed = 0;
   private lastPump = -1;
@@ -740,10 +741,22 @@ export class SimServer {
       this.prevX = new Float64Array(f.capacity);
       this.prevY = new Float64Array(f.capacity);
       this.prevAlive = new Uint8Array(f.capacity);
+      this.prevGeneration = new Uint32Array(f.capacity);
     }
     this.prevX.set(f.cols.x.subarray(0, f.highWater));
     this.prevY.set(f.cols.y.subarray(0, f.highWater));
     this.prevAlive.set(f.alive.subarray(0, f.highWater));
+    this.prevGeneration.set(f.generation.subarray(0, f.highWater));
+  }
+
+  /**
+   * Whether formation `id` has no place of a tick ago: it was created during the last tick. By
+   * the id alone that cannot be told (PLAN 2.7o): freed ids are given out again, the last freed
+   * first, so a formation made in the step in which another died has that one's id, and was
+   * sent with that one's place as the place it came from.
+   */
+  private born(world: World, id: number): boolean {
+    return id >= this.prevAlive.length || this.prevAlive[id] !== 1 || this.prevGeneration[id] !== world.formations.generation[id];
   }
 
   private drainEvents(world: World): void {
@@ -843,7 +856,7 @@ export class SimServer {
       const list = idx!.get(f)!;
       const fx = ft.cols.x[f]!;
       const fy = ft.cols.y[f]!;
-      const born = f >= this.prevAlive.length || this.prevAlive[f] !== 1;
+      const born = this.born(world, f);
       const px = born ? fx : this.prevX[f]!;
       const py = born ? fy : this.prevY[f]!;
       const fa = ft.cols.facing[f]!;
@@ -979,7 +992,7 @@ export class SimServer {
       fx[j] = ft.cols.x[id]!;
       fy[j] = ft.cols.y[id]!;
       // A formation created during the last tick has no previous position: use the current one.
-      const born = id >= this.prevAlive.length || this.prevAlive[id] !== 1;
+      const born = this.born(world, id);
       fpx[j] = born ? fx[j]! : this.prevX[id]!;
       fpy[j] = born ? fy[j]! : this.prevY[id]!;
       ffacing[j] = ft.cols.facing[id]!;

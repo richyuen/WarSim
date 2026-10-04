@@ -160,6 +160,13 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     of those 250 ms are then of the tick before.
   - `MapView.flagPlace` keeps a capital flag's rise by nation and wrap offset: at the seam of
     a looping map the state is lost and a rise of 150 ms is cut short.
+- For Phase 7 (balance; seen 2026-10-04 while writing the test of PLAN 2.7o, not looked into): in the
+  first tick of the 1938 world the economic AI disbands 228 of the 1,054 formations (seed 99; the
+  same with and without commands), all in `economicAi` step 1, "disband until the books balance".
+  That it disbands is decided (the ADR on the economic AI: the order of battle gives some nations
+  armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
+  hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
+  income or their order of battle is off, is a question for the balance work.
 - Found by the second independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
   (PLAN 2.11):
   - `nationLabels.ts` `fadeNationLabels`: on a looping map with two copies of a name in view, the

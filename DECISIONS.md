@@ -301,6 +301,17 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **The two reads together:** fifteen findings, ten of them tasks, in code that passed its
     gate every time. The second cost 325,000 tokens and 45 minutes.
 
+- **2.7o, done 2026-10-04 (second read, finding 3): how the worker knows a formation is new.**
+  By the id alone it cannot: freed ids are given out again, the last freed first.
+  - *Decision:* the table counts how often each id has been given out (`Table.generation`), and
+    the worker compares the count before and after the step.
+  - *Why it is not sim state:* nothing in the sim reads it, and it is not serialized or hashed.
+    A column would change the save bytes and the pinned hash for a thing only the view needs;
+    the pin of seed 99 is unchanged (ADR-55: it moves with rules only).
+  - *Rejected:* the events of the step (not every way a formation goes emits one: disbanded,
+    annexed, removed by God or the editor); a guess from how far the formation moved in a tick
+    (a threshold, and a recycled id next door would pass it).
+
 - **2.7f, done 2026-10-04: finding 1 reproduced and fixed.** `CounterLayer.layout` now takes
   over the level of a finished change first and judges the level wanted against that.
   - Before, in the unit test: a zoom to 3.7 levels and back to 3.5 within 100 ms left the level
