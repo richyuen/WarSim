@@ -4657,3 +4657,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   `mapModes1938`.
 - **Tests:** 3 new e2e. 609 unit tests in 79 files, 102 e2e.
 - **Next:** PLAN 2.8b (ground texture and the small relief).
+
+## 2026-10-04 — PLAN 2.8b: ground texture
+
+- **What it is:** at T2 and T3 the map pass adds small relief and grain to the land, from
+  noise seeded by the place, by terrain class: rough in mountains, faint on plains. The nearer
+  the camera, the finer. The fill keeps its colour.
+- **Test first** (`ground1938`, 3 tests): on the hillshade alone the detail fell with the
+  zoom (a pixel differed from the next by 0.26, 0.05 and 0.00 of 255 at 250, 60 and 5 m/px),
+  and at 1 m/px the ground was flat.
+- **Now:** over the Alps 0.00 at 1000 m/px, 1.2 at 250, 2.0 at 60, 4.3 at 5; the Hungarian
+  plain at 60 m/px 0.5. At 1 m/px no streaks, and no block of 64 px twice among 252. Three
+  views on two loads: the same hashes. No line at the seam.
+- **Three things the pictures and the bench changed on the way:**
+  - *Value noise showed its lattice as a grid* in the shading: gradient noise now.
+  - *The hard limit of 2.8a made two tones of a mountainside:* a soft limit now; the
+    hillshade's numbers moved with it (spread 18 of 255 for 23) and its test holds unchanged.
+  - *The texture's loop made T0 half as dear again* though it sat behind a branch that is
+    never taken there (bench A 0.77 ms for 0.51). The ground has a shader program of its
+    own now; T0 and T1 are back at 0.52, 0.48 and 0.46. ADR-78 said a branch would do; set
+    right there.
+- **Cost where the ground shows:** 0.82 and 0.88 ms of GPU a frame at 1080p (hillshade alone
+  0.53); the budget at T2 is 2.0 with 10,000 sprites. The number before 2.8c.
+- **Nothing pops:** `fades1938` has the T1 → T2 change at 43.1 of 255, as before: the texture
+  comes in by the handover's share.
+- **Pictures looked at:** the Alps at 250 m/px read as a shaded relief map; the plain is
+  faintly mottled; the Rockies at 1 m/px are rough ground with a fine grain.
+- **Tests:** 3 new e2e, 3 new unit; the hillshade spec takes the helpers the ground spec
+  brought (`tests/e2e/mapView.ts`), no assertion changed. 612 unit tests in 80 files, 105 e2e.
+- **Next:** PLAN 2.8c (trees, rocks, buildings).

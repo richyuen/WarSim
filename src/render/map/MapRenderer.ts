@@ -5,7 +5,8 @@
  */
 import * as twgl from 'twgl.js';
 import { splitCoord, type Camera } from '../camera';
-import { MAP_FS, MAP_VS } from './mapShader';
+import { groundUniform } from './ground';
+import { MAP_FS, MAP_FS_GROUND, MAP_VS } from './mapShader';
 
 export interface MapRendererOptions {
   wrapX: boolean;
@@ -15,6 +16,8 @@ export interface MapRendererOptions {
   cellM?: number;
   /** How much steeper than it is the ground is shaded: a cell is some 20 km, and the slope from one to the next is a few hundredths. */
   reliefScale?: number;
+  /** The slope the small relief of mountains is shaded with (PLAN 2.8b); other ground by its `bump` (ground.ts). */
+  bumpSlope?: number;
 }
 
 /**
@@ -31,6 +34,8 @@ export class MapRenderer {
   readonly w: number;
   readonly h: number;
   private readonly program: twgl.ProgramInfo;
+  /** The pass with the ground of T2 and T3 (PLAN 2.8): used while any of it shows. */
+  private readonly groundProgram: twgl.ProgramInfo;
   private readonly owner: WebGLTexture;
   private readonly controller: WebGLTexture;
   private readonly paletteTex: WebGLTexture;
@@ -52,13 +57,15 @@ export class MapRenderer {
   private hasElevation = false;
   /** Whether the ground's relief is drawn where the zoom shows it (off: the map of T0 and T1 at every zoom). */
   relief = true;
+  private readonly ground = groundUniform();
 
   constructor(gl: WebGL2RenderingContext, w: number, h: number, opts: MapRendererOptions) {
     this.gl = gl;
     this.w = w;
     this.h = h;
-    this.opts = { borderPx: 1.25, warp: 0.32, cellM: 20_000, reliefScale: 12, ...opts };
+    this.opts = { borderPx: 1.25, warp: 0.32, cellM: 20_000, reliefScale: 12, bumpSlope: 0.16, ...opts };
     this.program = twgl.createProgramInfo(gl, [MAP_VS, MAP_FS]);
+    this.groundProgram = twgl.createProgramInfo(gl, [MAP_VS, MAP_FS_GROUND]);
     this.owner = this.makeIdTexture();
     this.controller = this.makeIdTexture();
     this.paletteTex = gl.createTexture()!;
@@ -206,8 +213,11 @@ export class MapRenderer {
     const [cxi, cxf] = splitCoord(cam.cx);
     const [cyi, cyf] = splitCoord(cam.cy);
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-    gl.useProgram(this.program.program);
-    twgl.setUniforms(this.program, {
+    // The ground has a pass of its own: where none of it shows, the map is drawn by the pass of T0 and T1.
+    const share = this.relief && this.hasElevation ? detail : 0;
+    const program = share > 0 ? this.groundProgram : this.program;
+    gl.useProgram(program.program);
+    twgl.setUniforms(program, {
       uOwner: this.owner,
       uController: this.controller,
       uPalette: this.paletteTex,
@@ -229,9 +239,11 @@ export class MapRenderer {
       uUnrest: this.unrestTex,
       uTerrainCol: this.terrainColors,
       uElevation: this.elevationTex,
-      uDetail: this.relief && this.hasElevation ? detail : 0,
+      uDetail: share,
       uCellM: this.opts.cellM,
       uRelief: this.opts.reliefScale,
+      uGround: this.ground,
+      uBump: this.opts.bumpSlope,
     });
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -250,5 +262,6 @@ export class MapRenderer {
     gl.deleteTexture(this.elevationTex);
     gl.deleteVertexArray(this.vao);
     gl.deleteProgram(this.program.program);
+    gl.deleteProgram(this.groundProgram.program);
   }
 }

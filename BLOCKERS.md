@@ -247,6 +247,12 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     east is shaded less steep than it is, against one to the south.
   - The cost of the ground in the tests' software rasteriser is not known per frame (what was
     read varied by a quarter from run to run); the e2e stage's length is watched instead.
+- Left by PLAN 2.8b (2026-10-04, ADR-78 second addendum), for the phase review (PLAN 2.11):
+  - The texture's octaves are measured in screen px and cells: like the hillshade, it does
+    not know that a cell is fewer km wide than high away from the equator.
+  - The toy world has no ground texture (one switch for the ground, the elevation's arrival).
+  - Every ground is the fill's colour: at T3 a forest floor, a field and a street differ by
+    roughness and a few hundredths of brightness only. What stands on it is PLAN 2.8c.
 - Left by PLAN 2.7u (2026-10-04, ADR-76 addendum), for the phase review (PLAN 2.11):
   - Capitals whose names are left out at T1 because their garrisons stand on every place by
     the dot: Prague at 1800 m/px, Warsaw at 1000 (with Turin, Kiev and Kraków, at the 1938

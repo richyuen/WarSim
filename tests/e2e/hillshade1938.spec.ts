@@ -4,6 +4,7 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { lookAt, open, open1938 } from './mapView';
 import { settle } from './settle';
 
 // PLAN 2.8a (ADR-78): hillshade. At T2 the map shades the land by the slope of the elevation
@@ -14,21 +15,6 @@ import { settle } from './settle';
 
 const { w: W, h: H } = SIZE_1938;
 
-async function open(page: Page, url: string): Promise<void> {
-  await page.setViewportSize({ width: 1400, height: 800 });
-  await page.goto(url);
-  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0, null, { timeout: 60_000 });
-}
-const ready1938 = (page: Page): Promise<unknown> =>
-  page.waitForFunction(() => window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null, null, { timeout: 60_000 });
-
-async function lookAt(page: Page, cx: number, cy: number, mPerPx: number): Promise<void> {
-  await page.evaluate(({ cx, cy, m }) => {
-    const v = window.__warsim!.view!;
-    v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
-  }, { cx, cy, m: mPerPx });
-  await settle(page);
-}
 
 /**
  * The map canvas at rest, drawn with the layer and without it: whether the two are the same
@@ -112,8 +98,7 @@ function measure(page: Page): Promise<{ same: boolean; hashOn: string; hashOff: 
 
 test('at T2 the land is shaded by its relief, lit from the north-west; at T0 and T1 the map is as it was', async ({ page }, info) => {
   test.setTimeout(150_000);
-  await open(page, '/?scenario=1938&paused=1&seed=1938');
-  await ready1938(page);
+  await open1938(page);
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.8') : info.outputPath();
   mkdirSync(out, { recursive: true });
   const [ax, ay] = cellOf(10.5, 46.6, W, H); // the central Alps
@@ -145,8 +130,7 @@ test('the hillshade of a place is the same after a reload', async ({ page }) => 
   const [rx, ry] = cellOf(-106.5, 39.5, W, H); // the Rockies: no army stands there in 1938
   const hashes: string[] = [];
   for (let load = 0; load < 2; load++) {
-    await open(page, '/?scenario=1938&paused=1&seed=1938');
-    await ready1938(page);
+    await open1938(page);
     await lookAt(page, rx, ry, 150);
     const m = await measure(page);
     expect(await page.evaluate(() => window.__warsim!.view!.elementCount), 'no sprites in the view').toBe(0);

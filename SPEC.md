@@ -1013,9 +1013,22 @@ It was dropped: a camera resting on a curve showed two layers half there.
 (`elevation`: int16 metres, one value a cell); the pass smooths it over the 4×4 cells around by
 the borders' cubic B-spline, takes the slope from the spline's derivative, steepens it 12
 times, and lights it from the north-west, 41° up: level ground is unchanged, a slope is from
-0.6 to 1.25 of its fill. The sea is level. It comes in by the sprites' share of the T1 → T2
-handover, shows in every map mode, and has no part in the pass at T0 and T1. A map without
-elevation of its size (the toy world) is drawn flat. Ground texture and instances: PLAN 2.8b, c.
+0.58 to 1.28 of its fill, by a soft limit. The sea is level. It comes in by the sprites' share
+of the T1 → T2 handover and shows in every map mode. A map without elevation of its size (the
+toy world) is drawn flat: the one switch is for the ground as a whole.
+*Ground texture (PLAN 2.8b):* the same pass adds small relief and grain from noise seeded by
+the place. Gradient noise in octaves, 2^k lattice points to a cell, the lattice points named
+and hashed as integers (a float that held the cell and the place in it is too coarse at 1 m/px)
+and periodic over the map's width (no line at the seam). An octave counts by its wavelength on
+screen: from 256 px down to 16 px at the far end of T2 and to 2.5 px from 20 m/px in, so the
+ground is finer the nearer the camera. The slope of the octaves is added to the data's slope
+before the lighting, by the terrain class of the four cells around (`ground.ts`: 1 for
+mountains, 0.55 hills, 0.14 plains); their value varies the fill's brightness by a few
+hundredths, and woods are a little darker, sand and ice a little lighter. The fill keeps its
+colour.
+*Two programs:* the pass of T0 and T1 is compiled without any of this, and the pass with the
+ground is used while any of it shows (PLAN 2.8b: a branch in one program made T0 half as dear
+again). Instances: PLAN 2.8c.
 
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
 from 2000 m/px down to 300 (see the handovers below). Each

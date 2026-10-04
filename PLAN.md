@@ -843,7 +843,7 @@ quick sweep as a smoke test.
       cell 0.45, as before; with the ground at 48 px a cell 0.53, at 400 px a cell 0.52.
     - `docs/evidence/2.8/hillshade-alps-250m.png`, `-100m.png`, viewed: broad, soft relief, no
       cell shows; at 100 m/px it is a slow wash of light and dark (one sample in 20 km: 2.8b).
-  - [ ] 2.8b Ground texture. Noise seeded by the place modulates the fill by terrain class, with finer
+  - [x] 2.8b Ground texture. Noise seeded by the place modulates the fill by terrain class, with finer
     octaves coming in from T2 to T3, and gives the hillshade the small relief the data has not (one
     sample of elevation in 20 km): bumps by terrain class, large in mountains, faint on plains.
     AT: e2e: screenshots at 4 zooms from T1 to T3 show more detail at each (a measure of local
@@ -851,6 +851,21 @@ quick sweep as a smoke test.
     (the finest octave is built so that f32 holds: looked at for that); the hash of one T2 and one
     T3 view is the same after a reload; the seam of the looping map shows no line; `fades1938`
     passes; bench A within the budget.
+    Done 2026-10-04 (ADR-78, second addendum). `tests/e2e/ground1938.spec.ts`, 3 tests (two failed
+    on the hillshade alone: its detail fell with the zoom, 0.26, 0.05, 0.00), and
+    `tests/unit/ground.test.ts`, 3 tests of the table of grounds.
+    - Over the Alps a pixel differs from the next by 0.00 of 255 at 1000 m/px, 1.2 at 250, 2.0 at
+      60 and 4.3 at 5; the Hungarian plain at 60 m/px: 0.5.
+    - The Rockies at 1 m/px: 2.2 across and 2.1 down; 252 blocks of 64 px, 252 different. At 150,
+      5 and 1 m/px, two loads: the same three hashes.
+    - The seam at 150 and 10 m/px: across it 0.13 and 0.64, elsewhere 0.20 and 0.71.
+    - `fades1938`: the T1 → T2 change 43.1 of 255, as before. T0 and T1: the hashes of before 2.8.
+    - Bench A, GPU ms a frame at 1080p: T0 and T1 0.52, 0.48, 0.46 (as before 2.8); with the
+      ground 0.82 at 48 px a cell and 0.88 at 400 (the hillshade alone: 0.53 and 0.52). This is
+      the number before 2.8c's instances; SPEC's budget at T2 is 2.0 with 10,000 sprites.
+    - `docs/evidence/2.8/ground-*.png`, viewed: the Alps read as a shaded relief, the plain as
+      faint mottling, the Rockies at 1 m/px as rough ground with a fine grain; the fills keep
+      their colours.
   - [ ] 2.8c Instances: trees in forest cells, rocks on mountain cells, buildings around cities. A
     scatter seeded by the place, drawn as instanced quads, capped.
     AT: unit: the scatter is a pure function of the cell and its class (the same twice; none on

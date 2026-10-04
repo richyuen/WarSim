@@ -231,6 +231,37 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *What the picture is:* broad, soft relief. At 100 m/px one sample in 20 km is a slow wash
     of light and dark. The small relief is PLAN 2.8b's.
 
+- **Second addendum, PLAN 2.8b (2026-10-04): the ground texture as built, and two things of 2.8a set right.**
+  - *Set right, the cost at T0 and T1.* This ADR had "inside a branch on that share the pass
+    does the new work; outside it, T0 and T1 cost what they cost". With the texture's loop of
+    octaves inside the branch, bench A measured the map of T0 at 0.77 ms where it had been
+    0.51, the branch never taken: the compiler does not leave a loop of that size behind a
+    branch. The ground has a program of its own now (the same source with GROUND defined),
+    used while any of the ground shows; the pass of T0 and T1 is compiled without it and is
+    back at 0.52.
+  - *Set right, the shading's limit.* 2.8a cut a slope's shade off at 0.6 and 1.25 of the
+    fill. With the small relief added that made two tones of a mountainside. The limit is
+    soft now (0.58 to 1.28, approached by a tanh), and the hillshade's own numbers moved with
+    it: over the Alps the fill's brightness varies by 18 of 255 (it was 23), and slopes facing
+    the light are brighter by 24 and 21 (44 and 45). Its test holds unchanged.
+  - *Gradient noise, not value noise.* The first version used value noise with its slope.
+    That slope is nought along every lattice line, and the shading showed the lattice as a
+    grid (seen in the picture at 250 m/px).
+  - *Integers name the lattice.* Octave k has 2^k points to a cell; a point is the centre
+    cell times 2^k plus a small whole number, hashed as integers. Only the place between two
+    points is a float. At 1 m/px: no streaks (as much change across as down), no block of
+    64 px twice among 252.
+  - *An octave counts by its wavelength on screen,* from 256 px to the finest drawn: 16 px at
+    the far end of T2, 2.5 px from 20 m/px in. A function of the zoom, continuous: an octave
+    comes and goes by its weight. The detail measured rises at each of four zooms.
+  - *The class of the ground, not its colour.* The fill says whose the land is and keeps its
+    hue; the terrain class sets how rough the ground is (mountains 1, hills 0.55, forest 0.34,
+    plains 0.14) and shifts its brightness a little. Terrain colours stay the terrain mode's.
+  - *The toy world has no ground,* though the texture needs no elevation: one switch for the
+    ground as a whole (the elevation's arrival), by decision. It has no terrain raster either.
+  - *Cost where it shows:* 0.82 and 0.88 ms of GPU a frame at 1080p (the hillshade alone:
+    0.53). SPEC's budget at T2 is 2.0 with 10,000 sprites; 2.8c's instances come on top.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often

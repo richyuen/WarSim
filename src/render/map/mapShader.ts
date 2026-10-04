@@ -47,10 +47,14 @@ uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = provin
 uniform highp usampler2D uProvince; // admin-1 province per cell
 uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
 uniform vec3 uTerrainCol[12];
+#ifdef GROUND
 uniform highp isampler2D uElevation; // the land's height in metres, one texel a cell (PLAN 2.8a)
 uniform float uDetail;     // how much of the ground of T2 and T3 shows, 0..1; 0: the map of T0 and T1
 uniform float uCellM;      // metres to a cell
 uniform float uRelief;     // how much steeper than it is the ground is shaded
+uniform vec3 uGround[12];  // the ground of each terrain class: (bump, grain, shade) (PLAN 2.8b, ground.ts)
+uniform float uBump;       // the slope the small relief of mountains is shaded with
+#endif
 
 out vec4 outColor;
 
@@ -77,6 +81,7 @@ vec3 terrainCol(uint t) {
   return uTerrainCol[min(int(t), 11)];
 }
 
+#ifdef GROUND
 // Height of a cell for the shading: the sea is level, and past the map's top and bottom the edge row goes on.
 float heightAt(ivec2 c) {
   c = wrapCell(c);
@@ -84,6 +89,61 @@ float heightAt(ivec2 c) {
   c.y = clamp(c.y, 0, uMapSize.y - 1);
   return max(float(texelFetch(uElevation, c, 0).r), 0.0);
 }
+
+vec3 groundOf(ivec2 c) {
+  return uGround[min(int(terrainAt(c)), 11)];
+}
+
+// The ground's noise (PLAN 2.8b). Octave k has 2^k lattice points to a cell. A lattice point is
+// named by integers and hashed as integers: at 1 m/px a pixel is 5e-5 of a cell, and a float that
+// carried the cell and the place in it would be too coarse by then (streaks). Only the place
+// between two lattice points is a float, and that is small.
+vec2 latticeGrad(ivec2 p, int k) {
+  uint h = uint(p.x) * 0x9E3779B1u ^ uint(p.y) * 0x85EBCA6Bu ^ uint(k) * 0xC2B2AE35u;
+  h ^= h >> 15;
+  h *= 0x2C1B3C6Du;
+  h ^= h >> 12;
+  h *= 0x297A2D39u;
+  h ^= h >> 15;
+  // Two numbers in [-1, 1) from the two halves of the hash.
+  return vec2(float(h & 0xFFFFu), float(h >> 16)) * (1.0 / 32768.0) - 1.0;
+}
+
+// Gradient noise of octave k at local (cells from the centre cell): xy its slope to a lattice
+// step, z its value (about -0.7 to 0.7). Gradient noise and not value noise: the slope of value
+// noise is nought along every lattice line, and the shading showed the lattice as a grid.
+// Its period along x is the map's width, so the seam of a looping map has no line.
+vec3 groundOctave(int k, vec2 local) {
+  int f = 1 << k;
+  vec2 p = local * float(f);
+  vec2 ip = floor(p);
+  vec2 t = p - ip;
+  // (Rows above the map are sea and never come here; the bias keeps both numbers positive.)
+  ivec2 i0 = uCenterCell * f + ivec2(ip) + ivec2(0, 1 << 20);
+  ivec2 i1 = i0 + 1;
+  if (uWrapX == 1) {
+    int period = uMapSize.x * f;
+    i0.x = (i0.x + 4 * period) % period;
+    i1.x = (i1.x + 4 * period) % period;
+  } else {
+    i0.x += 1 << 20;
+    i1.x += 1 << 20;
+  }
+  vec2 ga = latticeGrad(i0, k);
+  vec2 gb = latticeGrad(ivec2(i1.x, i0.y), k);
+  vec2 gc = latticeGrad(ivec2(i0.x, i1.y), k);
+  vec2 gd = latticeGrad(i1, k);
+  float va = dot(ga, t);
+  float vb = dot(gb, t - vec2(1.0, 0.0));
+  float vc = dot(gc, t - vec2(0.0, 1.0));
+  float vd = dot(gd, t - vec2(1.0, 1.0));
+  vec2 u = t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+  vec2 du = 30.0 * t * t * (t * (t - 2.0) + 1.0);
+  float kxy = va - vb - vc + vd;
+  vec2 slope = ga + u.x * (gb - ga) + u.y * (gc - ga) + u.x * u.y * (ga - gb - gc + gd) + du * (u.yx * kxy + vec2(vb, vc) - va);
+  return vec3(slope, va + u.x * (vb - va) + u.y * (vc - va) + u.x * u.y * kxy);
+}
+#endif
 
 uint provinceAt(ivec2 c) {
   c = wrapCell(c);
@@ -230,7 +290,10 @@ void main() {
   // the north-west. The height is smoothed over the 4×4 cells around by the cubic B-spline the
   // borders use, and its slope taken from the spline's own derivative: one sample a cell would
   // otherwise show every cell as a facet. Not warped: the ground is where it is.
-  // Inside a branch on a uniform: at T0 and T1 the pass does none of it.
+  // Only in the program that draws the ground (GROUND): the pass of T0 and T1 is compiled
+  // without it. (A branch on the share was not enough: with the texture's loop inside it, the
+  // pass cost half as much again at T0, where the branch is never taken.)
+#ifdef GROUND
   if (uDetail > 0.0 && !water) {
     vec2 e = local - 0.5;
     vec2 fe = floor(e);
@@ -250,11 +313,42 @@ void main() {
       }
     }
     vec2 slope = rise * (uRelief / uCellM);
+
+    // Ground texture (PLAN 2.8b). The data has one height in 20 km: the small relief and the
+    // grain of the ground are noise, by the kind of ground of the four cells around.
+    ivec2 gc = uCenterCell + ivec2(fe);
+    vec3 ground = mix(mix(groundOf(gc), groundOf(gc + ivec2(1, 0)), s.x), mix(groundOf(gc + ivec2(0, 1)), groundOf(gc + ivec2(1, 1)), s.x), s.y);
+    // Octaves by their wavelength on screen (CSS px): from 256 px down to the finest that is
+    // drawn, 16 px at the far end of T2 and 2.5 px from 20 m/px in. So the nearer the camera,
+    // the finer the ground; and an octave comes and goes by its weight, a function of the zoom.
+    float sc = uScale / uDpr;
+    float nearness = 1.0 - smoothstep(4.32, 8.23, log2(uCellM / sc)); // log2 of 20 and of 300 m/px
+    float lmin = mix(16.0, 2.5, nearness);
+    int k0 = max(0, int(floor(log2(sc / 256.0))));
+    vec2 bump = vec2(0.0);
+    float grain = 0.0;
+    for (int n = 0; n < 10; n++) {
+      int k = k0 + n;
+      float lambda = sc / float(1 << k);
+      if (lambda < lmin * 0.5) break;
+      float w = smoothstep(lmin * 0.5, lmin, lambda) * (1.0 - smoothstep(128.0, 256.0, lambda));
+      if (w <= 0.0) continue;
+      vec3 o = groundOctave(k, local);
+      // The broader a rise, the higher it stands: its slope counts for more, by the fourth root of its width.
+      bump += o.xy * (w * pow(lambda / 16.0, 0.25));
+      grain += o.z * w;
+    }
+    slope += bump * (uBump * ground.x);
+
     // The light: from the north-west (x grows east, y south), 41° above the horizon.
     const vec3 light = vec3(-0.5206, -0.5206, 0.6768);
-    float lit = dot(normalize(vec3(-slope, 1.0)), light) / light.z; // 1 on level ground
-    col *= mix(1.0, clamp(lit, 0.6, 1.25), uDetail);
+    float lit = dot(normalize(vec3(-slope, 1.0)), light) / light.z - 1.0; // 0 on level ground
+    // A soft limit, not a hard one: a slope is from 0.58 to 1.28 of its fill, and the steepest
+    // run into the limit gently (a hard one made two tones of a mountainside).
+    float shade = 1.0 + (lit > 0.0 ? 0.28 : 0.42) * tanh(lit * (lit > 0.0 ? 2.2 : 1.5));
+    col *= mix(1.0, shade * (1.0 + ground.y * grain) * ground.z, uDetail);
   }
+#endif
 
   float d = acc[bi] - second;
   float halfW = 0.5 * uBorderPx * uDpr;
@@ -288,3 +382,6 @@ void main() {
   outColor = vec4(col, 1.0);
 }
 `;
+
+/** The pass with the ground of T2 and T3 in it (PLAN 2.8): the same source, compiled with GROUND. */
+export const MAP_FS_GROUND = MAP_FS.replace('#version 300 es\n', '#version 300 es\n#define GROUND\n');
