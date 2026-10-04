@@ -1219,7 +1219,10 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   *As built (PLAN 2.7h):* it is the time since the tick in hand arrived over the tick length,
   0–1 (`MapView.tickProgress`). Its clock starts with a new tick only: a snapshot that repeats
   the tick (a new subscription, a pause, another speed) goes on from the progress reached.
-  Paused, it is 1: the sprites stand where the tick has them.
+  A pause in a tick lets the sprites finish the step they are on, at the length the tick had,
+  and then they stand where the tick has them (PLAN 2.7y: put there at once, every marching
+  sprite jumped by the rest of its step). A tick that comes while the game is paused (a single
+  step) or at full speed has no length: its progress is 1.
   The tint is the nation's own colour, lightened, in every map mode (PLAN 2.7i): the map's
   palette carries the mode's colours, the units do not, at any tier.
 - Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes). *As built (PLAN

@@ -4495,3 +4495,36 @@ of what was done since the last pass.
   the sim's core changed).
 - **Tests:** 3 new unit tests. 607 unit tests in 79 files, 97 e2e.
 - **Next:** PLAN 2.7y (what a pause in mid-tick does to the sprites: a decision).
+
+## 2026-10-04 — PLAN 2.7y: a pause lets the sprites finish their step
+
+- **The question** (ADR-74, third read, finding 4): a pause in the middle of a tick put the
+  sprites' progress at 1 at once, and every marching sprite jumped by the rest of its step in
+  one frame (14 px for the median step at 100 m/px, 54 for the largest; 48 and 181 at
+  30 m/px). SPEC had it as meant, and `tickClock.spec.ts` said "paused: 1".
+- **Decided:** on a pause the sprites finish the step they are on, at the length the tick had,
+  and then stand where the tick has them. Not held at the progress reached: they would stand,
+  while the pause lasts, where no state of the sim has them.
+- **Test first, restated and seen to fail:** the spec reads the progress at each reading and
+  in each frame drawn (`draw` wrapped). On the code before: a pause at 0.31 of a tick, the
+  progress 0.50 ahead of the clock between two readings, 0.60 between two frames, no frame
+  drawn on the way.
+- **Fix** (`MapView.apply`): a snapshot of the tick in hand without a tick length leaves the
+  clock and the length alone. The view goes on drawing until the step is done, as it does
+  for a tick that runs.
+- **Now**, in three runs: never ahead of the clock nor behind it (0.000 and 0.000); 3 or 4
+  frames drawn on the way, the last at 1; a pause and on again at once: 0.35 → 0.77 in
+  421 ms.
+- **The first gate failed at e2e, on this test:** it counted the frames drawn on the way, and
+  under the load of the whole suite the pause was answered at 0.98 of the tick: none. The test
+  no longer leans on the machine: a try counts when the pause is answered with a way still to
+  go by the clock (twelve tries); whether the view draws is asked of the view (`frameAt`
+  straight after the pause's frame); the progress is compared with the clock both ways; the
+  count of frames is logged, not asserted.
+- **The assertion restated** (`paused: 1`, `resumed: 1`), by the entry of 2.7h in ADR-74: the
+  fifth of its kind today, for the user to overrule.
+- **Seen on the way, not followed:** the snapshot that answers a pause takes about 190 ms to
+  come; and this toy view draws some 10 frames a second in the test's browser (the reading at
+  the tick's end came 120 ms late for it).
+- **Tests:** 1 e2e restated and widened (4 parts for 3). 607 unit tests in 79 files, 97 e2e.
+- **Next:** PLAN 2.7u (city names keep clear of the T1 markers).

@@ -752,7 +752,7 @@ quick sweep as a smoke test.
   after a load" (2 new): the first of each failed before (the count array 4 long for a table of 41;
   formation 128 sent in tick 0 as coming from where it stood after it). The third held before too:
   the worker takes the places anew after a load.
-- [ ] 2.7y Decide what a pause in mid-tick does to the sprites, and make it so (ADR-74, third read,
+- [x] 2.7y Decide what a pause in mid-tick does to the sprites, and make it so (ADR-74, third read,
   finding 4; traced by the reader). `tickProgress` is 1 when the game is paused (SPEC, PLAN 2.7h:
   "the sprites stand where the tick has them"), so a pause at progress p of a tick moves every
   marching sprite by the rest of its step in one frame. Measured by the reader on 1938, seed 99
@@ -761,6 +761,14 @@ quick sweep as a smoke test.
   AT: e2e at T2, the game running slowly: a pause in the middle of a tick; no sprite's place changes
   by more than a frame's share of its step between two frames, and the sprites are at the tick's end
   once the tick's time has run. Or, if the jump is kept: the reason in DECISIONS.
+  Done 2026-10-04 (ADR-74, the entry of 2.7h): decided for the first. On a pause the sprites finish
+  the step they are on at the length the tick had, and then stand where the tick has them.
+  `tests/e2e/tickClock.spec.ts`, its third and fourth parts, restated: it had "paused: 1". It reads
+  the sprites' progress, the one number that places every sprite at every tier, at each reading and in
+  each frame drawn. Before: a pause at 0.31 of a tick put the progress 0.50 ahead of the clock
+  between two readings and 0.60 between two frames; no frame drawn on the way. Now never ahead of
+  the clock nor behind it (0.000 and 0.000, in three runs); a frame asked for straight after the
+  pause's own is drawn; 3 or 4 frames drawn on the way, the last at 1.
 - [ ] 2.7u City names keep clear of the T1 markers, as they do of the T0 counters (PLAN 2.7r left it; it
   was on the watch list). Seen in the review pass of 2026-10-04 in the T1 evidence made again
   (`docs/evidence/2.1/markers-poland-1000m.png`: Warsaw and Poznań under markers).

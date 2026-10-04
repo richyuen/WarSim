@@ -137,6 +137,7 @@ export class MapView {
   private readonly map: MapRenderer;
   private readonly proxies: ProxyRenderer;
   private snapArrival = 0;
+  /** The length of the step the sprites are on, ms; 0: they stand where the tick has them. */
   private tickMs = 0;
   private lastFrame = -1;
   /** Something changed since the last draw (snapshot, resize, camera). */
@@ -365,19 +366,27 @@ export class MapView {
     // The sprites' clock starts with a new tick. A snapshot of the tick in hand (a new
     // subscription, a pause, another speed) brings the same step again: they go on from where
     // they are, at the new tick length (PLAN 2.7h).
-    if (s.tick !== this.lastTick) this.snapArrival = arrived;
-    else if (s.tickMs !== this.tickMs) this.snapArrival = arrived - this.tickProgress(arrived) * s.tickMs;
+    // A pause has no tick length. The sprites finish the step they are on at the length it had,
+    // and then stand (PLAN 2.7y): put at the tick's end at once, every marching sprite jumped by
+    // the rest of its step in the frame of the pause.
+    if (s.tick !== this.lastTick) {
+      this.snapArrival = arrived;
+      this.tickMs = s.tickMs;
+    } else if (s.tickMs > 0 && s.tickMs !== this.tickMs) {
+      this.snapArrival = arrived - this.tickProgress(arrived) * s.tickMs;
+      this.tickMs = s.tickMs;
+    }
     this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
-    this.tickMs = s.tickMs;
     this.lastTick = s.tick;
     this.snapshots++;
   }
 
   /**
    * How far the sprites are on their way from the tick before to the tick in hand at `now`, 0–1.
-   * Paused, they stand where the tick has them.
+   * A tick that came while the game was paused or at full speed has no length: they stand where
+   * it has them. A pause in a tick with a length lets them finish the step (PLAN 2.7y).
    */
   tickProgress(now = performance.now()): number {
     return this.tickMs > 0 ? Math.max(0, Math.min(1, (now - this.snapArrival) / this.tickMs)) : 1;

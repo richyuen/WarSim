@@ -580,6 +580,28 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - The same tick at another tick length (another speed, a pause and its end) keeps the
     progress reached: the clock is set back by that progress × the new length. Without this a
     change from one tick a second to three would jump from 0.38 to 1.
+  - **PLAN 2.7y, 2026-10-04 (third read, finding 4): a pause lets the sprites finish their
+    step.** 2.7h had "paused, the progress is 1: the sprites stand where the tick has them",
+    and its test said so. A pause at progress p of a tick then moved every marching sprite by
+    (1 − p) of its step in one frame: by the reader's numbers 14 px for the median step at
+    100 m/px and 54 for the largest, 48 and 181 at 30 m/px. The phase's rule is that nothing
+    pops.
+    - *Decision:* a snapshot of the tick in hand without a tick length (a pause) leaves the
+      clock and the length as they are. The sprites reach the tick's end when the tick's time
+      has run, at most one tick length after the pause, and the view draws the way there.
+    - *What a paused view shows* is the sim's state, as before, from then on. The date stops
+      at once; the sprites are the only thing that goes on, for under a second at one tick a
+      second.
+    - *Rejected: to hold them at p until the game goes on.* Every sprite would stand, for as
+      long as the pause lasts, at a place no state of the sim has: a formation moved or made by
+      God Mode or the editor while paused would be drawn between its old place and its new.
+    - *Unchanged:* a tick that comes while paused (a single step) or at full speed has no
+      length, and its progress is 1 at once.
+    - *The test restated:* `tickClock.spec.ts` had `paused: 1` and `resumed: 1`. It now has:
+      the progress is never ahead of the clock, between readings and between frames drawn
+      (before: 0.50 and 0.60 of a step), nor behind it; the view draws on the way; the last
+      frame drawn is at 1 and the progress stays 1; a pause and its end at once leave the
+      clock running. For the user to overrule.
   - Paused, the progress is 1, as before: the sprites stand where the tick has them, which is
     what the sim holds. Going there from the middle of a step is a jump forward of less than
     one tick's march. Left.
