@@ -506,7 +506,7 @@ quick sweep as a smoke test.
     of 192 cases (136 before): BLOCKERS watch list.
   - `flagsClear1938` asserted a count of one of the pictures this zoom had (41 of 41 flags); it asserts
     the rule now, for each capital. ADR-75 has why that is not a weaker test.
-- [ ] 2.7m The view draws again after a frame that started an animation, however late the next frame
+- [x] 2.7m The view draws again after a frame that started an animation, however late the next frame
   comes. `MapView.frame` asks "is anything animating?" before it draws. A frame that starts a split
   (or any timed change) and is followed by a gap longer than the animation is followed by no draw at
   all: the counters stay on their parents' centroids, at the first frame of the split, until
@@ -514,6 +514,14 @@ quick sweep as a smoke test.
   sees it.
   AT: with the frames driven at times the test gives, a camera step and then one frame 400 ms later:
   the view has drawn the end of the split (the counters at rest, in full, at the new level).
+  (Made exact, 2026-10-04: one late frame lands the split and starts the fades of the counters that
+  come out there, so "in full" is not after one frame. The test: a step, then turns of the loop 400 ms
+  apart until one draws nothing; the view then rests on the picture that frames 16 ms apart end with.)
+  Done 2026-10-04: the loop asks after the draw, at the draw's own time, whether a unit animation is
+  unfinished, and draws the next frame if so (`MapView.frameAt`, the loop's turn at a given time).
+  `tests/e2e/lateFrame1938.spec.ts`: five steps over Europe (a split, T0 → T1, T1 → T0, a merge), 400 ms
+  between frames. Before: one draw a step and no more; the level and the markers' share were those of
+  the stop before (the markers' share 0 at the T1 stop, 1 back at T0).
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

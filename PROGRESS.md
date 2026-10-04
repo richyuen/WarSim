@@ -3979,3 +3979,29 @@ To resume:
   followed by no draw: the counters stay at the first frame of the split.
 - **Tests:** 5 new unit tests, 1 new e2e. 564 unit tests in 76 files, 87 e2e.
 - **Next:** PLAN 2.7m, then 2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — PLAN 2.7m: a frame that comes late still draws the end of what a step started
+
+- **The bug:** `MapView.frame` asked "is anything animating?" before it drew, and drew one more
+  frame after a "yes". For a change that the draw itself starts the answer before the draw is
+  "no"; once the clock is past the change's end (its 250 ms and a tail of 50) it is "no" again.
+  So a camera step and then more than 300 ms without a frame was followed by no draw at all.
+- **Seen first** with the loop's turns made by the test, 400 ms apart, five steps over Europe:
+  one draw a step and no more. The counters' level was that of the stop before (4, 5, 3, 3, 3
+  where the stops have 5, 3, 2, 3, 4). The markers' share was 0 at the T1 stop, with the
+  counters in full at a zoom of markers, and 1 back at T0.
+- **Fix:** the question is asked after the draw, at the draw's own time. A frame that leaves a
+  unit animation unfinished is followed by another, however late. `frameAt(now)` is the loop's
+  turn at a given time and says whether it drew; `frame` is that on the browser's clock.
+- **After:** 3 or 4 draws a step at 400 ms, and the view rests on the picture that frames 16 ms
+  apart end with: the same level, the same counters, in full, the same share.
+- **A view at rest still draws nothing:** `countersRest1938` reads "0 frames drawn in 2 s".
+- **No picture:** what is on screen at rest is what it was with close frames. What was wrong is
+  that it never got there.
+- **Not looked into:** whether any of the failures under load of this morning was this. A
+  paused page on a machine that gives a frame every 300 ms would have shown it; `settle` draws
+  by itself and would have hidden it.
+- **Tests:** 1 new e2e. 564 unit tests in 76 files, 88 e2e.
+- **Next:** a review pass (PROMPT step 9). Eight iterations have gone since the last one
+  (2.7f–m), and ADR-74 makes an independent read of the code written since then part of it.
+  Then PLAN 2.8.

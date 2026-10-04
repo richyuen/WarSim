@@ -1177,7 +1177,9 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
 Sim tick ≤ 1.5 ms average (Node, M, 1938). Dev-GPU translation (ADR-4): T0 frame ≤ 1.0 ms
 GPU and T2 frame with 10k proxies ≤ 2.0 ms GPU at 1080p on the bench machine (Phase 0:
 0.46 and 0.41 ms). The map view redraws only when the camera, a snapshot or an
-interpolation changes something.
+interpolation changes something, and once more after any frame that left a unit animation
+unfinished, however late that frame comes (PLAN 2.7m): the end of an animation is what stays
+on screen.
 
 ---
 

@@ -517,7 +517,7 @@ export class MapView {
     this.shares.individuals = this.close.share(this.individualsBuilt && this.individualCount > 0 ? m : Infinity, now);
     this.individualsShown = this.close.near === true;
   }
-  /** A unit layer animated in the last frame (see `frame`). */
+  /** The last frame drawn left a unit animation unfinished (see `frameAt`). */
   private unitsAnimated = false;
 
   /** Element sprites (PLAN 2.3) from the snapshot's interest-managed elements section. */
@@ -995,6 +995,16 @@ export class MapView {
   }
 
   private frame(now: number): void {
+    this.frameAt(now);
+    this.raf = requestAnimationFrame((t) => this.frame(t));
+  }
+
+  /**
+   * One turn of the view's loop at `now`: the camera moves, and the view is drawn when something
+   * can have changed. Returns whether it drew. (`frame` is this on the browser's clock; a test
+   * gives the times.)
+   */
+  frameAt(now: number): boolean {
     const dt = this.lastFrame < 0 ? 0 : Math.min(0.1, (now - this.lastFrame) / 1000);
     this.lastFrame = now;
     this.controller.update(dt);
@@ -1003,17 +1013,20 @@ export class MapView {
     // or units still interpolating toward the latest tick. An idle map costs nothing.
     const c = this.controller.cam;
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
-    // One more frame after a unit animation ends, so that its end state is what stays on screen
-    // however late the last animated frame came.
     const animating = this.unitsAnimating(now) || this.wrecks.animating(now);
     const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || animating || this.unitsAnimated;
-    this.unitsAnimated = animating;
-    if (this.resize() || this.dirty || camMoved || interpolating) {
-      this.draw(now);
-      this.dirty = false;
-      this.lastCam = { ...c };
-    }
-    this.raf = requestAnimationFrame((t) => this.frame(t));
+    if (!(this.resize() || this.dirty || camMoved || interpolating)) return false;
+    this.draw(now);
+    this.dirty = false;
+    this.lastCam = { ...c };
+    // A frame that leaves a unit animation unfinished is followed by another, however late that
+    // one comes, so that the end of an animation is what stays on screen. The question is asked
+    // after the draw, at the draw's own time (PLAN 2.7m): asked before it, the answer is "no"
+    // for a change that this draw starts, and "no" again once the clock is past the change's
+    // end. A camera step and then a gap of more than the 300 ms of a split left the counters on
+    // their parents' centroids, with nothing to draw them on.
+    this.unitsAnimated = this.unitsAnimating(now) || this.wrecks.animating(now);
+    return true;
   }
 
   /** Renders one frame (also used by tests for deterministic screenshots). */
