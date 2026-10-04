@@ -1193,6 +1193,11 @@ interpolation changes something.
     runs of ≥ 50 years are judged by these two.
   - *Reported, not judged:* new nations in the top ten and the leader's share range (the
     two criteria of critic B1 that riser and faller replace).
+  - *Suspended until phases 2–6 are complete* [ADR-58]: no sweep after a rule change, since
+    every feature still to come moves the balance. One quick sweep at each phase review is a
+    smoke test (its five limits are reported; nothing is tuned for it). The criteria judge
+    again from PLAN 6.8 and in Phase 7. The 10-year tests of the gate are not sweeps in this
+    sense: they test correctness and stay.
   Implemented as `npm run sweep` (PLAN 1.40, `tools/sweep/`): the movement threshold is 1% of the land
   over the last 5 years. Land is measured in km² of true area in all four land criteria, in the
   ranking and in the nation panel, never in cells: the map is a Miller projection

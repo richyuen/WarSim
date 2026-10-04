@@ -174,6 +174,14 @@ added without code changes.
     first. Critic findings override your own priorities. You may dispute a
     finding only by writing evidence in DECISIONS.md. Never edit anything in
     `critic/`.
+    Deferred to PLAN Phase 7 (added 2026-10-03, ADR-58, the user's decision):
+    findings about long-run balance and dynamics (a static world, the
+    leader's share of the land, risers and fallers, how many nations rise or
+    die). The balance will move with every feature of phases 2-6, so tuning
+    it now is wasted work. Log such a finding once per report in PROGRESS.md,
+    do not dispute it, do not fix it, and take the next blocking issue. A
+    crash, a desync or a mechanism that plainly does not work is not balance:
+    fix it.
 3. Pick the first unchecked PLAN.md task (or split it if too large).
 4. Implement it fully. No stubs, no TODO placeholders, no faked features.
 5. Verify for real: run tests; start the dev server; use Playwright to load
@@ -193,6 +201,20 @@ added without code changes.
 Added 2026-10-03 after an iteration that took three hours, most of it waiting
 on simulation runs (DECISIONS ADR-48).
 
+- Balance sweeps are suspended until phases 2-6 are complete (added
+  2026-10-03, ADR-58, the user's decision). No `npm run sweep` and no
+  `npm run sweep:quick` after a rule change: the balance will change with
+  every feature, so a verdict on it now is wasted. What stays:
+  - the 10-year tests in the gate (`tests/sweep/`): the pinned hash, save and
+    load, allies never at war, no bankruptcy in peace. They test correctness,
+    not balance;
+  - one `npm run sweep:quick` at each phase review (PLAN 2.11, 3.7, 4.8, 5.8,
+    6.9), as a smoke test. Report its five limits in PROGRESS.md. A limit
+    that fails is logged in BLOCKERS.md and waits for Phase 7, unless its
+    cause is a defect of the phase's feature (a crash, a desync, a mechanism
+    that does not work). Do not tune constants in answer to it.
+  The bullets below about tuning and the full sweep apply again from PLAN 6.8
+  (the sweep with nukes on) and in Phase 7.
 - One cause per commit. When a task or a critic finding has several causes,
   split it in PLAN.md and fix, gate and commit them one at a time.
 - Tune on small runs. `npm run sweep:quick` (10 seeds × 20 years, report in

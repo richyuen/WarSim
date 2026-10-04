@@ -48,6 +48,12 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   re-run seen seeds under the new measure to claim a pass.
 - **Kept anyway:** ADR-47, ADR-50, PLAN 1.42c and ADR-51 each remove a defect found in the
   diagnosis; none of them is a tuning constant chosen to pass a seed.
+- **Deferred to Phase 7 (2026-10-03, ADR-58, the user's decision):** balance sweeps are
+  suspended until phases 2–6 are complete, and PLAN 1.42 has moved to Phase 7. Not retried
+  before then. The critic will go on listing B1 as blocking: PROMPT step 2b says to log it
+  and take the next issue. State when parked: 1.42d, 1.42e and 1.42f are done; the last five
+  quick sweeps (20 years, seen seeds) show a riser in 6–8 of 10 seeds and a faller in 10 of
+  10; no 50-year run has been judged by the criteria of ADR-54.
 
 ## Watch list (not blocking)
 

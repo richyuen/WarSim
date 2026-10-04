@@ -3,6 +3,9 @@
 Rules: each task is small and verifiable. `AT:` is the acceptance test that must
 pass before ticking. Work top-down, and split a task if it grows past one iteration.
 "Gate" = the full suite (tsc, eslint, vitest, build, parity) passes.
+Balance sweeps are suspended until phases 2–6 are complete (ADR-58, PROMPT "KEEPING ITERATIONS
+SHORT"): no sweep after a rule change. Each of those phases ends with a review that runs one
+quick sweep as a smoke test.
 
 ## Phase 0 — Foundations & benchmarks
 
@@ -298,30 +301,8 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   2.2729, 2.2615, 2.2457 ms: met. The pin is a tool now (`npm run sim -- … --affinity 0xFFFF`).
   Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 6 of 10, faller 10 of 10
   (8 and 10 after 1.42e2); largest nation 12.2–16.4% of the land and 28.4–29.5% of the income.
-- [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03). Retry after 1.42d
-  and 1.42f (and 1.42e if that is done), judged by area, on seeds from 401.** Critic B1 (static world), continued: every seed passes the two criteria added on
-  2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
-  ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
-  the leader-share range (2.7 points). Do not move the thresholds. (The tick time that
-  ADR-47 raised is back under budget since PLAN 1.42a.)
-  Second attempt, 2026-10-03, after 1.42b and 1.42c: seeds 201–210, **7 of 10 green**
-  (`docs/sweeps/2026-10-03-sweep-b1c.md`, FAILING): 204 and 208 have one newcomer in the top
-  ten, 208 and 209 a leader-share range of 2.4 and 2.6 points. Seeds 201–210 are now seen.
-  The leader is the Soviet Union in every year of all 24 runs to date and it only shrinks, by
-  an amount that depends on the seed's luck with revolts: the next attempt needs a mechanism
-  that acts on every seed (see PROGRESS 2026-10-03 for candidates), not more tuning. A third
-  failed attempt goes to BLOCKERS (PROMPT step 8).
-  Third attempt, 2026-10-03 (ADR-51): the winner of a peace keeps all the land it occupies.
-  Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
-  Unseen seeds 301–310: **8 of 10** (`docs/sweeps/2026-10-03-sweep-b1d.md`, FAILING): 304 and
-  306 fail the leader-share range (2.6 and 1.6 points); every seed has 2–3 newcomers.
-  **Criteria changed 2026-10-03 (ADR-54, the user's decision), before any 50-year run by
-  area:** the two criteria above are reported and no longer judged. A sweep passes when every
-  seed keeps the five limits and at least 8 of 10 seeds have a riser and at least 8 of 10 a
-  faller, both measured on realms (SPEC §10). The three FAILING reports stand as they are and are not re-judged; only
-  seeds from 401 judge this task. The quick sweep (10 seeds × 20 years) comes first: run
-  the deciding sweep when it shows risers and fallers on most seeds, not to find out.
-  AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
+  (1.42, critic B1 continued, the dynamism of the long run: moved to Phase 7 on 2026-10-03,
+  ADR-58. Balance sweeps are suspended until phases 2–6 are complete.)
 
 ## Phase 2 — Semantic zoom
 
@@ -345,6 +326,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.
+- [ ] 2.11 Phase 2 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
+  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
+  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
 
 ## Phase 3 — Armour
 
@@ -360,6 +345,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   AT: tank battle demo e2e + screenshots viewed.
+- [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
+  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
+  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
 
 ## Phase 4 — Naval
 
@@ -377,6 +366,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
+- [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
+  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
+  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
 
 ## Phase 5 — Air
 
@@ -394,6 +387,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
 - [ ] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
   AT: air battle demo e2e + screenshots viewed.
+- [ ] 5.8 Phase 5 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
+  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
+  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
 
 ## Phase 6 — Nuclear AI
 
@@ -413,6 +410,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: e2e passes and asserts that the decision record came from AI utility.
 - [ ] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.
   AT: sweep report: in ≥ 1 seed nukes are used; in no seed does > 50% of land carry fallout.
+- [ ] 6.9 Phase 6 review: re-read SPEC for drift, PARITY rows updated with evidence. The sweep
+  of 6.8 is this phase's smoke run (ADR-58); the features are in, so sweeps judge again from
+  here.
+  AT: the five limits of the 6.8 sweep are in PROGRESS, with what fails listed for Phase 7.
 
 ## Phase 7 — Balance, polish, soak
 
@@ -426,6 +427,32 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
   AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
   tick and memory budgets.
+- [ ] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is
+  judged when the features are in. Blocked after three attempts before that (BLOCKERS.md);
+  its prerequisites 1.42d, 1.42e and 1.42f are done. Judged by area, on seeds from 401.**
+  Critic B1 (static world), continued: every seed passes the two criteria added on
+  2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
+  ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
+  the leader-share range (2.7 points). Do not move the thresholds. (The tick time that
+  ADR-47 raised is back under budget since PLAN 1.42a.)
+  Second attempt, 2026-10-03, after 1.42b and 1.42c: seeds 201–210, **7 of 10 green**
+  (`docs/sweeps/2026-10-03-sweep-b1c.md`, FAILING): 204 and 208 have one newcomer in the top
+  ten, 208 and 209 a leader-share range of 2.4 and 2.6 points. Seeds 201–210 are now seen.
+  The leader is the Soviet Union in every year of all 24 runs to date and it only shrinks, by
+  an amount that depends on the seed's luck with revolts: the next attempt needs a mechanism
+  that acts on every seed (see PROGRESS 2026-10-03 for candidates), not more tuning. A third
+  failed attempt goes to BLOCKERS (PROMPT step 8).
+  Third attempt, 2026-10-03 (ADR-51): the winner of a peace keeps all the land it occupies.
+  Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
+  Unseen seeds 301–310: **8 of 10** (`docs/sweeps/2026-10-03-sweep-b1d.md`, FAILING): 304 and
+  306 fail the leader-share range (2.6 and 1.6 points); every seed has 2–3 newcomers.
+  **Criteria changed 2026-10-03 (ADR-54, the user's decision), before any 50-year run by
+  area:** the two criteria above are reported and no longer judged. A sweep passes when every
+  seed keeps the five limits and at least 8 of 10 seeds have a riser and at least 8 of 10 a
+  faller, both measured on realms (SPEC §10). The three FAILING reports stand as they are and are not re-judged; only
+  seeds from 401 judge this task. The quick sweep (10 seeds × 20 years) comes first: run
+  the deciding sweep when it shows risers and fallers on most seeds, not to find out.
+  AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
 - [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.

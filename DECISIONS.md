@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-58 · 2026-10-03 · accepted — Balance sweeps are suspended until the features are in (the user's decision)
+
+- **Context:** since critic B1 ("the world is static over decades") the loop has spent most of
+  its time on balance: PLAN 1.42 failed three deciding sweeps (9, 7 and 8 of 10 unseen seeds),
+  its criteria were rewritten (ADR-54), and six sub-tasks (1.42a–1.42f) were done to prepare a
+  fourth. All of it tunes a world of land armies only. The critic scores naval warfare, tanks,
+  aircraft and nuclear weapons at 0 and semantic zoom at 3; every one of those features will
+  move the balance more than a constant can. Sea transport alone decides whether an overseas
+  empire can be held or attacked. The three quick sweeps of PLAN 1.42e (one per rule) all kept
+  the limits and found nothing.
+- **Decision (the user's, 2026-10-03):**
+  1. No `npm run sweep` and no `npm run sweep:quick` after a rule change until phases 2–6
+     are complete. PLAN 1.42 moves to Phase 7.
+  2. The 10-year tests of the gate stay (`tests/sweep/`: the pinned state hash, save and load
+     after a year, allies never at war with each other, no bankruptcy in ten peaceful years).
+     They test that the sim is correct and deterministic, not that it is balanced.
+  3. One quick sweep at each phase review (PLAN 2.11, 3.7, 4.8, 5.8; the sweep of 6.8 for
+     Phase 6) is a smoke test: its five limits are reported in PROGRESS. A limit that fails
+     is logged in BLOCKERS and waits for Phase 7, unless a defect of that phase's feature
+     caused it (a crash, a desync, a mechanism that does not work). No constant is tuned in
+     answer to it.
+  4. Critic findings about long-run balance and dynamics (B1 and its kind) are logged once
+     per report and not acted on before Phase 7 (PROMPT step 2b). They are not disputed: the
+     critic is right that the world is too static, and stays free to say so.
+- **Why keep the smoke run:** without any long run, gross breakage builds up over four phases
+  and surfaces at once in Phase 7, where it cannot be traced to the feature that caused it.
+  PLAN 1.40 found 300–600 nations after 50 years that way. One run per phase costs 5–9 minutes.
+- **What does not change:** the DONE condition (the critic's dimensions, zero blocking issues,
+  a multi-decade sweep with borders moving and no hegemon). PLAN 6.8, 7.3 and 1.42 run when
+  the features are in. The rules made for B1 so far stay (ADR-47, ADR-50, ADR-51, ADR-53,
+  ADR-57): each removed a defect, none is a constant chosen to pass a seed.
+- **Consequence to watch:** the balance debt is paid in Phase 7 in one piece, with every
+  system interacting. That is the only time tuning it can last, and it will take longer than
+  one task: 1.42 is the place for it.
+
 ### ADR-57 · 2026-10-03 · accepted — The land rules of a war count km², not cells (PLAN 1.42e1)
 
 - **Context:** ADR-52 made every reported land figure an area and left the sim's rules on

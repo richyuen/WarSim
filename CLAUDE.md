@@ -38,6 +38,8 @@ There is no memory between sessions. Read these files:
 - `npm run diag -- --seed 99 --at 5,12,20`: wars and great-power state dumps (`--load` a checkpoint).
 - `npm run sweep` (10 seeds × 50 years, report in `docs/sweeps/`; `--first`, `--tag`) and
   `npm run sweep:quick` (10 × 20, report in `.cache/`; limits only, riser and faller reported).
+  **Suspended until phases 2–6 are complete (ADR-58):** no sweep after a rule change. Only one
+  `sweep:quick` at each phase review, as a smoke test, not a balance verdict.
 - See "KEEPING ITERATIONS SHORT" in `PROMPT.md` for when to use which.
 - `npm run data` / `npm run data -- --check`: data pipeline.
 - `npm run bench`.

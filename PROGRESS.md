@@ -2849,3 +2849,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   (blocked; its line says to retry after 1.42d and 1.42f, and 1.42e if done: all are done):
   the deciding sweep on seeds from 401, once the quick sweep shows risers on most seeds. The
   checkpoints in `.cache/ck/` predate these rules.
+
+## 2026-10-03 — Balance sweeps suspended until the features are in (ADR-58, the user's decision)
+- **Decision:** no full sweep and no quick sweep after a rule change until phases 2–6 are
+  complete. The balance of a world without sea, air, armour and nuclear rules is not the
+  balance of the game, and the loop had spent a day on it.
+- **Kept:** the 10-year tests of the gate (correctness: pinned hash, save and load, allies
+  never at war, no bankruptcy in peace), and one quick sweep per phase review as a smoke test,
+  reported and not tuned for.
+- **Critic B1 is deferred, not disputed:** PROMPT step 2b now says that findings about
+  long-run balance are logged once per report and wait for Phase 7. A crash, a desync or a
+  mechanism that does not work is still fixed at once.
+- **Files:** PROMPT.md (step 2b; first bullet of "KEEPING ITERATIONS SHORT"), CLAUDE.md
+  (Commands), PLAN.md (1.42 moved to Phase 7; review tasks 2.11, 3.7, 4.8, 5.8 and 6.9 carry
+  the smoke run), BLOCKERS.md (the 1.42 entry), SPEC §10, DECISIONS ADR-58. No code changed.
+- **Next:** PLAN 2.4 (FireEvent visuals: tracers, muzzle flashes, impacts, casualty removal,
+  wrecks) is the first unchecked task. It answers critic B2 (nothing to see at close zoom).
