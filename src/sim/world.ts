@@ -19,6 +19,7 @@ import { StatSeries } from './stats';
 import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
+import { LandCounts } from './landCounts';
 
 export interface PendingCommand {
   seq: number;
@@ -327,6 +328,7 @@ class WorldCore implements Stateful {
     w.elementIndex = null;
     w.nav = null;
     w.frontier = null;
+    w.dropLandCounts();
     w.terrainVersion++;
     w.citiesVersion++;
     w.flipping = null;
@@ -408,6 +410,8 @@ export class World {
   };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
+  /** Derived (not state): land tallies, kept by setOwner/setController once built. */
+  private land: LandCounts | null = null;
   /** Derived (not state): the frontier set as a byte per cell (valid whenever `frontier` is). */
   frontierMask: Uint8Array | null = null;
   /** Derived (not state): cells with non-zero `cells.flip`; null = rebuild by scan. */
@@ -448,6 +452,10 @@ export class World {
   setController(i: number, nation: number, keepFrontier = false): void {
     const c = this.cells;
     if (c.controller[i] === nation) return;
+    if (this.land) {
+      this.land.cell(c.owner[i]!, c.controller[i]!, -1);
+      this.land.cell(c.owner[i]!, nation, 1);
+    }
     this.controlChanges++;
     this.supplyDirtyNations.add(c.controller[i]!);
     this.supplyDirtyNations.add(nation);
@@ -469,10 +477,24 @@ export class World {
     const nc = this.nations.cols;
     if (c.owner[i] !== 0 && this.nations.has(c.owner[i]!)) nc.cells[c.owner[i]!] = nc.cells[c.owner[i]!]! - 1;
     if (nation !== 0 && this.nations.has(nation)) nc.cells[nation] = nc.cells[nation]! + 1;
+    if (this.land) {
+      this.land.cell(c.owner[i]!, c.controller[i]!, -1);
+      this.land.cell(nation, c.controller[i]!, 1);
+    }
     c.owner[i] = nation;
     const x = i % c.w;
     const y = (i - x) / c.w;
     this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;
+  }
+
+  /** Land tallies of the current map (built by a scan on first use, then kept by the setters). */
+  landCounts(): LandCounts {
+    return (this.land ??= LandCounts.scan(this.cells.owner, this.cells.controller));
+  }
+
+  /** Forget the land tallies (cells were written without the setters, e.g. by a load). */
+  dropLandCounts(): void {
+    this.land = null;
   }
 
   /** Queue a command for the next tick boundary. */

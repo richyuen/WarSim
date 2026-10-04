@@ -41,6 +41,7 @@ import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { annexNation, makePuppet } from './puppets';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
+import type { LandCounts } from '../landCounts';
 import type { World } from '../world';
 
 export const WHITE_PEACE = 10;
@@ -127,43 +128,6 @@ export function noteCapitalCaptured(world: World, capturer: number, loser: numbe
   if (w) w.war.capitalBonus = Math.max(-CAPITAL_BONUS_MAX, Math.min(CAPITAL_BONUS_MAX, w.war.capitalBonus + (w.side === ATTACKERS ? CAPITAL_SCORE : -CAPITAL_SCORE)));
 }
 
-interface LandCounts {
-  /** Cells owned, by nation id. */
-  owned: Uint32Array;
-  /** key owner·65536 + controller → cells. */
-  occupied: Map<number, number>;
-  /** Cells owned but controlled by another nation, by owner. */
-  lost: Uint32Array;
-}
-
-function countLand(world: World): LandCounts {
-  const { owner, controller } = world.cells;
-  const owned = new Uint32Array(world.nations.highWater + 1);
-  const lost = new Uint32Array(world.nations.highWater + 1);
-  const occupied = new Map<number, number>();
-  // Occupied cells come in runs of one (owner, occupier) pair: count the run, then add it once.
-  let runKey = -1;
-  let run = 0;
-  for (let c = 0; c < owner.length; c++) {
-    const o = owner[c]!;
-    if (o === 0) continue;
-    owned[o]!++;
-    const k = controller[c]!;
-    if (k !== o && k !== 0) {
-      lost[o]!++;
-      const key = o * 65536 + k;
-      if (key !== runKey) {
-        if (run > 0) occupied.set(runKey, (occupied.get(runKey) ?? 0) + run);
-        runKey = key;
-        run = 0;
-      }
-      run++;
-    }
-  }
-  if (run > 0) occupied.set(runKey, (occupied.get(runKey) ?? 0) + run);
-  return { owned, occupied, lost };
-}
-
 function landOf(land: LandCounts, side: number[]): number {
   let own = 0;
   for (const n of side) own += land.owned[n] ?? 0;
@@ -190,7 +154,9 @@ export function warSystem(world: World): void {
   if (!isDayStart(world.tick)) return;
   if (world.wars.truces.some((t) => t.untilTick <= world.tick)) world.wars.truces = world.wars.truces.filter((t) => t.untilTick > world.tick);
   if (world.wars.list.length === 0) return;
-  const land = countLand(world);
+  // The day's tallies as of its start: peace terms below change the map, and every war of the
+  // day is judged on the same counts (as the daily scan did before PLAN 1.42f).
+  const land = world.landCounts().snapshot();
   const men = menOf(world);
   const nc = world.nations.cols;
   const sideMen = (side: number[]): number => side.reduce((s, n) => s + (men.get(n) ?? 0), 0);

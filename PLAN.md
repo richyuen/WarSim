@@ -244,6 +244,10 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   arrays; replay of year 1's routes −5%, mean −1.0%. Step 4, a rule (ADR-56, hash e5741d70): an
   octile A* bound; replay −17%, year 1 −10%, mean −1.9%. Measured on a machine 1.9× slower; in
   the budget machine's terms the mean is about 1.52 ms (**not met**, 0.02 ms over).
+  Step 5, no behaviour change (hash 7a8e5c27 after 5 years): the war pass's land tallies are
+  kept by the cell setters instead of a daily scan of the map; 5-year mean −5.8% (interleaved
+  runs). In the budget machine's terms 1.43–1.51 ms depending on the baseline (this machine
+  drifts ±5% between runs): **not proven here**. Measure on the budget machine, or cut more.
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km

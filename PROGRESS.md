@@ -2687,3 +2687,20 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Quick sweep** (1–10 × 20 years, scratch): limits 10/10, riser 7/10, faller 10/10.
 - **1.42f still open:** about 1.52 ms in the budget machine's terms against 1.5. What is left
   of the planner is the ~2,000 re-planned marches whose sector has gone (ADR-53).
+
+## 2026-10-04 — PLAN 1.42f, step 5: land tallies kept by the cell setters, not a daily scan
+- **Profile of years 2–3** (from a year-1 checkpoint, which reproduces the year-3 hash): cell A*
+  20%, supply network refresh 12%, operational planner 8%, `countLand` 6% (a scan of the 2 M
+  cells every day, for the war scores).
+- **Change, no behaviour change:** `LandCounts` (src/sim/landCounts.ts) is built by the same scan
+  once, then kept by `World.setOwner` / `setController`; a load drops it. The war pass reads a
+  copy taken at the start of its day. My first version read the live tallies, and the hash
+  changed: peace terms partway through the pass changed the counts later wars of that day saw.
+  The copy restores the old semantics (five yearly hashes identical, e5741d70 … 7a8e5c27).
+- **Test (new):** the kept tallies equal a scan after 240 days of war, an editor brush and its
+  undo, and a load. With the setController hook removed the test fails.
+- **Result, interleaved on this machine:** year 2 from the checkpoint 2.95–3.02 → 2.83–2.87 ms;
+  seed 99 × 5 years 3.05–3.14 → 2.88–2.94 ms (−5.8%). A single 5-year run had shown nothing:
+  the same code measured 2.93 and 3.09 ms an hour apart. Only interleaved ratios count here.
+- **1.42f still open:** in the budget machine's terms 1.43 ms (chaining today's ratios from 1.56)
+  to 1.51 ms (tonight's absolute numbers); the AT needs a measurement, not an estimate.
