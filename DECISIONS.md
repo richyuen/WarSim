@@ -219,10 +219,15 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     capital in the view. (The reader reports that its flag was kept off the picture before only
     by where its unset capital lies, cell (0, 0); not checked here.)
   - Not hashed: a snapshot is a view of the state. The pinned hash did not move.
+  - The flag goes in one frame, without a fade. So does a name when land changes hands (ADR-73,
+    addendum): an event of the game, not a matter of zoom. Left.
 
 - **2.7h, done 2026-10-04: finding 3 reproduced and fixed.** The view restarted the sprites'
   clock on every snapshot. Measured in the browser at one tick a second: a pan 0.38 of the
   way through a tick sent the progress to 0.00; the end of a pause sent it from 1.00 to 0.00.
+  - The test reads the progress, not pixels. The progress is the sprites' only motion between
+    ticks: the GPU draws each at `prev + t × (cur − prev)` with `t` one uniform for all. A `t`
+    that does not go back moves no sprite back.
   - The clock starts with a new tick only.
   - The same tick at another tick length (another speed, a pause and its end) keeps the
     progress reached: the clock is set back by that progress × the new length. Without this a
