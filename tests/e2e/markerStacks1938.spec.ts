@@ -120,3 +120,42 @@ test('T1 markers of two nations that stand on each other move apart by a few px'
     if (mPerPx !== 1200) await page.screenshot({ path: path.join(out, `markers-apart-spain-${mPerPx}m.png`) });
   }
 });
+
+// PLAN 2.7v (ADR-74, third read, finding 1): the markers come to rest in a game that has run.
+// The two tests above look at day 14, where they did. At day 90 of this game three formations of
+// two nations stand within a few cells of (1080, 306), in China: their boxes cannot be parted
+// within the 6 px a box may move, and the moves, which started from those of the frame before,
+// went round a cycle. The view drew every frame for ever.
+test('the T1 markers come to rest in a game that has run: 1938, seed 99, day 90', async ({ page }) => {
+  test.setTimeout(240_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=99');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  await page.evaluate(async () => {
+    const tick = (await window.__warsim!.sim.step(24 * 90)).tick;
+    await new Promise<void>((done) => {
+      const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 20));
+      wait();
+    });
+  });
+  // Frames 16 ms apart, at times the test gives, until two in a row leave nothing animating.
+  const rests = await page.evaluate(() => {
+    const v = window.__warsim!.view!;
+    let now = performance.now() + 60_000;
+    return [1950, 1700, 1400, 1100, 800, 500].map((m) => {
+      v.controller.set({ cx: 1080, cy: 306, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+      let frames = 0;
+      for (let quiet = 0; quiet < 2 && frames < 400; now += 16, frames++) {
+        v.draw(now);
+        quiet = v.unitsAnimating(now) ? 0 : quiet + 1;
+      }
+      return { m, frames, markers: v.markerRects.length };
+    });
+  });
+  console.log(`day 90, frames until the view rests: ${rests.map((r) => `${r.m} m/px: ${r.frames} (${r.markers} markers)`).join('; ')}`);
+  for (const r of rests) {
+    expect(r.markers, `${r.m} m/px`).toBeGreaterThan(5);
+    // A handover and its fades are 250 ms and a tail: 20 frames. 400 is the test's limit.
+    expect(r.frames, `${r.m} m/px: frames until rest`).toBeLessThan(60);
+  }
+});

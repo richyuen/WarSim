@@ -15,8 +15,8 @@
  * What is then still on each other, markers of two nations that face each other across a front
  * at the far end of T1 (a cell is 10 px there and a marker 26), moves apart (PLAN 2.7s2): each
  * box by a few px, never further than `NUDGE_MAX_PX` from its formation, until neither is more
- * than a quarter under the other. A box keeps its move while it is needed, and eases to a new
- * one over NUDGE_MS.
+ * than a quarter under the other. Where the boxes stand is a function of where the formations
+ * stand and of nothing else (PLAN 2.7v); a box eases to a new place over NUDGE_MS.
  */
 import { FADE_MS, progress, running, smooth, SwitchBank } from '../timing';
 
@@ -107,10 +107,13 @@ const NUDGE_TO = 0.24;
  * formation so that none is more than STACK_UNDER under another: [dx, dy] by id, in px.
  * - A pair that is too much on each other moves apart by half each, along the axis that needs
  *   the shorter move; no box further than NUDGE_MAX_PX from its formation.
- * - `before`: the moves of the frame before. A box starts from its move and keeps it while it
- *   still serves; a box that touches no other where its formation stands goes back there.
+ * - Every box starts on its formation, in every call: the same markers give the same moves.
+ *   (It started from the moves of the frame before, so that a box kept its move while it
+ *   served. Three markers crowded beyond what the limit can part then never came to rest: fed
+ *   its own result, the passes below went round a cycle, and the view drew for ever. PLAN 2.7v.)
+ *   Where the limit leaves boxes on each other, they are left so.
  */
-export function nudgeApart(items: readonly StackItem[], w: number, h: number, before: ReadonlyMap<number, readonly [number, number]> = new Map()): Map<number, [number, number]> {
+export function nudgeApart(items: readonly StackItem[], w: number, h: number): Map<number, [number, number]> {
   const out = new Map<number, [number, number]>();
   // By the cell of a grid of boxes, where the formations stand: a box moved by at most
   // NUDGE_MAX_PX can only meet one from its own cell or a neighbouring one.
@@ -131,12 +134,8 @@ export function nudgeApart(items: readonly StackItem[], w: number, h: number, be
   };
   const near = new Map<number, StackItem[]>();
   for (const it of items) {
-    const n = neighbours(it);
-    near.set(it.id, n);
-    // On no other box where its formation stands: it stands there.
-    const alone = !n.some((o) => shareUnder(it, o, w, h) > 0);
-    const b = before.get(it.id);
-    out.set(it.id, alone || !b ? [0, 0] : [b[0], b[1]]);
+    near.set(it.id, neighbours(it));
+    out.set(it.id, [0, 0]);
   }
   const at = (it: StackItem): { x: number; y: number } => {
     const o = out.get(it.id)!;
@@ -204,28 +203,23 @@ export class MarkerStacks {
   /** The move of each shown box: from where to where, since when. */
   private moves = new Map<number, { from: [number, number]; to: [number, number]; start: number }>();
   private moved = -Infinity;
-  private zoom = NaN;
 
   /**
-   * The markers of a frame at `now`.
-   * - `still`: the boxes keep the moves they have (the morph into T2 shrinks each box about its
-   *   place: ADR-72).
-   * - `zoom`: the camera's scale. A box keeps its move from frame to frame while the armies
-   *   move under a camera at rest. At another zoom the moves are found afresh, so that what
-   *   stands at rest after a zoom does not depend on the frames of the way there (ADR-75's
-   *   lesson); they are small, and a box eases to its new one.
+   * The markers of a frame at `now`. `still`: the boxes keep the moves they have (the morph into
+   * T2 shrinks each box about its place: ADR-72).
    */
-  frame(items: readonly StackItem[], w: number, h: number, now: number, still = false, zoom = 1): Map<number, StackedMarker> {
+  frame(items: readonly StackItem[], w: number, h: number, now: number, still = false): Map<number, StackedMarker> {
     this.shown.frame(now);
     const stacks = stackMarkers(items, w, h, (id) => this.inStack.has(id));
     const leads = items.filter((it) => stacks.get(it.id)!.into === null);
-    const before = new Map<number, [number, number]>();
-    for (const it of leads) {
-      const m = this.moves.get(it.id);
-      if (m) before.set(it.id, m.to);
-    }
-    const to = still ? before : nudgeApart(leads, w, h, zoom === this.zoom ? before : undefined);
-    this.zoom = zoom;
+    let to: Map<number, [number, number]>;
+    if (still) {
+      to = new Map();
+      for (const it of leads) {
+        const m = this.moves.get(it.id);
+        if (m) to.set(it.id, m.to);
+      }
+    } else to = nudgeApart(leads, w, h);
     const moves = new Map<number, { from: [number, number]; to: [number, number]; start: number }>();
     const out = new Map<number, StackedMarker>();
     const inStack = new Set<number>();

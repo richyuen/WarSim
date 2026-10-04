@@ -702,7 +702,7 @@ quick sweep as a smoke test.
   4000 m/px: something over the letters of 11 of 30 names (Berlin 505 px, Rome 442, Riga 355,
   Budapest 326, Warsaw 282, Lisbon 179, Tirana 141, Ankara 90, Bern 76). `labels1938`,
   `labelFades1938`, `flags1938` and `mapModes1938` pass unchanged.
-- [ ] 2.7v The T1 markers come to rest (ADR-74, third read, finding 1; a defect of PLAN 2.7s2). `nudgeApart`
+- [x] 2.7v The T1 markers come to rest (ADR-74, third read, finding 1; a defect of PLAN 2.7s2). `nudgeApart`
   starts from the moves of the frame before. Where three or more shown markers are crowded beyond
   what 6 px can part, its result fed back to it goes round a cycle: the targets change by more than
   0.01 px a frame, and the layer says for ever that it animates. A paused view at T1 then draws every
@@ -716,6 +716,12 @@ quick sweep as a smoke test.
   AT: unit: those three markers, and 3,000 random clusters of 2 to 8 markers: the layer, given the
   same markers every 16 ms, is at rest within 20 frames. e2e: 1938, seed 99, paused at day 90, at
   2000 m/px over cell (1080, 306): the view comes to rest.
+  Done 2026-10-04 (ADR-77, second addendum): `nudgeApart` starts every box on its formation in every
+  call: where the boxes stand is a function of where the formations stand. `tests/unit/markerStacks.test.ts`,
+  "the moves come to rest": both failed before (the three markers never rested; of the 3,000 clusters,
+  the first three that never rested are in the failure). `tests/e2e/markerStacks1938.spec.ts`, the
+  third test, at six zooms over (1080, 306) at day 90. Before: 400 frames, the test's limit, at 1950,
+  1700 and 1100 m/px. Now 21 to 35 frames at every zoom.
 - [ ] 2.7w A marker that goes into a stack fades where it stands (ADR-74, third read, finding 3; a defect of
   PLAN 2.7s2). A box that was moved apart from another nation's marker loses its move in the frame
   it goes into a stack: it jumps back onto its formation, up to 6 px, in full, and then fades.

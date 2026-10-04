@@ -175,15 +175,14 @@ describe('markers of two nations move apart (PLAN 2.7s2)', () => {
     expect(far(r)).toBeLessThanOrEqual(NUDGE_MAX_PX);
   });
 
-  it('a box keeps its move while it serves, and goes back when it touches no other', () => {
+  // (Until PLAN 2.7v a box kept its move from frame to frame while it served. That memory is
+  // what never came to rest: see the last tests of this file.)
+  it('where the formations stand says where the boxes stand: a box is on its formation when it need not move', () => {
     const [a, b] = [m(1, 7, 0, 0, 500), m(2, 8, 16, 0, 300)];
-    const first = nudgeApart([a, b], W, H);
-    // The other has moved off a little: under by less than a quarter even without the move. The move stays.
-    const b2 = m(2, 8, 21, 0, 300);
-    const kept = nudgeApart([a, b2], W, H, first);
-    expect(kept.get(1)).toEqual(first.get(1));
-    // It has gone: back onto the formation.
-    expect(nudgeApart([a, m(2, 8, 60, 0, 300)], W, H, first).get(1)).toEqual([0, 0]);
+    expect(nudgeApart([a, b], W, H).get(1)![0]).toBeLessThan(0);
+    // The other has moved off a little: under by less than a quarter. No move is needed, and none is made.
+    expect(nudgeApart([a, m(2, 8, 21, 0, 300)], W, H).get(1)).toEqual([0, 0]);
+    expect(nudgeApart([a, m(2, 8, 60, 0, 300)], W, H).get(1)).toEqual([0, 0]);
   });
 
   it('over time: a box eases to its move; a marker new among the shown stands there at once', () => {
@@ -204,17 +203,68 @@ describe('markers of two nations move apart (PLAN 2.7s2)', () => {
     expect(S.animating(1000 + NUDGE_MS + 100)).toBe(false);
     // `still` (the morph into T2): the boxes keep what they have, though it is no longer needed.
     expect(S.frame(apart, W, H, 3000, true).get(1)!.dx).toBeCloseTo(want, 9);
-    // At another zoom the moves are found afresh: a move that is kept at one zoom though no
-    // longer needed is given up at the next.
+    // A move that is no longer needed is given up, by the same ease.
     const Z = new MarkerStacks();
     const touching = [m(1, 7, 0, 0, 500), m(2, 8, 21, 0, 300)]; // under each other by less than a quarter
-    Z.frame(close, W, H, 0, false, 10);
-    expect(Z.frame(touching, W, H, 1000, false, 10).get(1)!.dx).toBeCloseTo(want, 9);
-    expect(Z.frame(touching, W, H, 2000, false, 12).get(1)!.dx).toBeCloseTo(want, 9); // the frame of the change: on its way
-    expect(Z.frame(touching, W, H, 2000 + NUDGE_MS, false, 12).get(1)!.dx).toBe(0);
+    Z.frame(close, W, H, 0);
+    expect(Z.frame(touching, W, H, 2000).get(1)!.dx).toBeCloseTo(want, 9); // the frame of the change: on its way
+    expect(Z.frame(touching, W, H, 2000 + NUDGE_MS).get(1)!.dx).toBe(0);
     // New to the view, on another's spot: moved at once.
     const N = new MarkerStacks();
     expect(N.frame(close, W, H, 0).get(1)!.dx).toBeCloseTo(want, 9);
     expect(N.animating(0)).toBe(false);
+  });
+});
+
+// PLAN 2.7v (ADR-74, third read, finding 1): the moves come to rest. `nudgeApart` started from
+// the moves of the frame before, so that a box kept its move while it served. Where three
+// markers are crowded beyond what NUDGE_MAX_PX can part, its result, fed back to it, went round a
+// cycle; the targets changed in every frame, and the layer said for ever that it animated: a
+// paused view at T1 drew every frame. Found in 29 of 324 samples of a 1938 game, none of them at
+// a tick a spec looked at.
+describe('the moves come to rest (PLAN 2.7v)', () => {
+  /** Frames 16 ms apart with the same markers, as the view draws them: how many until two in a row leave nothing animating (0: never, in `max`). */
+  const framesToRest = (items: readonly StackItem[], max = 400): number => {
+    const S = new MarkerStacks();
+    let t = 0;
+    S.frame(items, W, H, t);
+    for (let frames = 1, quiet = 0; frames <= max; frames++) {
+      t += 16;
+      S.frame(items, W, H, t);
+      quiet = S.animating(t) ? 0 : quiet + 1;
+      if (quiet === 2) return frames;
+    }
+    return 0;
+  };
+
+  it('three markers that 6 px cannot part: the layer rests', () => {
+    // The reader's case: after the 40th call there had been 31 different results.
+    const three = [m(1, 2, 18.57, 16.65, 300), m(2, 1, 10.4, 1.19, 500), m(3, 4, 11.66, 14.84, 400)];
+    const frames = framesToRest(three);
+    expect(frames).toBeGreaterThan(0);
+    expect(frames).toBeLessThanOrEqual(20);
+    // Where the formations stand says where the boxes stand: the same answer every time.
+    expect(nudgeApart(three, W, H)).toEqual(nudgeApart(three, W, H));
+  });
+
+  it('3,000 random clusters of 2 to 8 markers of three nations: every one rests within 20 frames', () => {
+    let s = 2718;
+    const rnd = (): number => ((s = (s * 1664525 + 1013904223) >>> 0), s / 2 ** 32);
+    const never: string[] = [];
+    let slowest = 0;
+    let crowded = 0;
+    for (let k = 0; k < 3000; k++) {
+      const n = 2 + Math.floor(rnd() * 7);
+      const items = Array.from({ length: n }, (_, i) => m(i + 1, 1 + Math.floor(rnd() * 3), rnd() * 40, rnd() * 40, 100 + Math.floor(rnd() * 900)));
+      const frames = framesToRest(items);
+      if (frames === 0 || frames > 20) never.push(`cluster ${k}: ${items.map((i) => `(${i.x.toFixed(2)}, ${i.y.toFixed(2)}) n${i.nation}`).join(' ')}`);
+      slowest = Math.max(slowest, frames);
+      // Among them the case of the finding: boxes left more than a quarter on each other at the limit.
+      const r = nudgeApart(items, W, H);
+      if ([...r.values()].some(([dx, dy]) => Math.hypot(dx, dy) > NUDGE_MAX_PX - 1e-6)) crowded++;
+    }
+    expect(crowded).toBeGreaterThan(300);
+    expect(never.slice(0, 3)).toEqual([]);
+    expect(slowest).toBeLessThanOrEqual(20);
   });
 });

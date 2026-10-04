@@ -233,6 +233,30 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *What it does not do:* a quarter of a box can be the number. At 1800 m/px the front is
     still a band of boxes that touch, and some numbers are partly covered. BLOCKERS watch list.
 
+- **Second addendum, PLAN 2.7v (2026-10-04): the moves have no memory.**
+  - *What was wrong:* the first addendum has "a box keeps its move from frame to frame while
+    the armies move under a camera at rest". The moves of a frame started from those of the
+    frame before. Where three markers of more than one nation are crowded beyond what 6 px can
+    part, no set of moves satisfies the rule; each frame's passes ended somewhere else on a
+    cycle, every target changed by more than a hundredth of a px, and the layer said for ever
+    that it animated. Found by the third independent read (ADR-74): 29 of 324 samples of a 1938
+    game, the first at day 90. The specs of 2.7s2 looked at day 14.
+  - *Decision:* every box starts on its formation in every frame. The same formations give
+    the same boxes; a view at rest has nothing to change.
+  - *What is given up:* the memory was there so that a pair whose formations move a little
+    keeps the axis it parted along. Without it a pair can part along x in one tick and along y
+    in the next; the ease of 150 ms carries the box over. The markers stand at the places of
+    the tick (they are not eased between ticks), so that can happen once in a tick and no
+    oftener. Not seen in a picture yet.
+  - *Tests:* the unit test of the memory ("a box keeps its move while it serves") is replaced
+    by one of what holds now, and the three assertions of "at another zoom the moves are found
+    afresh" by one of the ease that gives a move up. Restated, not weakened: the thing they
+    pinned is the defect's cause.
+  - *What the first addendum's "at another zoom the moves are found afresh" was for* is now
+    true of every frame.
+  - *The lesson, in ADR-74's third addendum:* a layer with a memory of the frame before is run
+    on one input until it rests, on random inputs, in a unit test.
+
 ### ADR-76 · 2026-10-04 · accepted — A city's name takes the first free place by its dot, keeps it, and moves by a cross-fade (PLAN 2.7r)
 
 - **Context:** the T0 counters are drawn over the city names, and a capital's name stood to the

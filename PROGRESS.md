@@ -4422,3 +4422,31 @@ of what was done since the last pass.
 - **Not run:** `sweep:quick` (ADR-58: at the phase review only).
 - **Tests:** 1 new unit test. 598 unit tests in 79 files, 96 e2e.
 - **Next:** PLAN 2.7v.
+
+## 2026-10-04 — PLAN 2.7v: the T1 markers come to rest (a defect of 2.7s2)
+
+- **The bug:** the moves that part markers of two nations started, in each frame, from the
+  moves of the frame before. Three markers crowded beyond what 6 px can part have no set of
+  moves that satisfies the rule: each frame ended elsewhere on a cycle, and the layer animated
+  for ever. A paused view at T1 drew every frame.
+- **Test first, two unit tests that failed:** the reader's three markers never rested; of 3,000
+  random clusters of 2 to 8 markers, several never did.
+- **Fix:** every box starts on its formation in every frame. `nudgeApart` is a function of
+  where the formations stand.
+- **In the browser** (`tests/e2e/markerStacks1938.spec.ts`, the third test): 1938, seed 99,
+  day 90, over (1080, 306). On the code before, 400 frames (the test's limit) at 1950, 1700 and
+  1100 m/px. Now 21 to 35 frames at six zooms.
+- **One unit test of the memory is replaced, and three assertions of another restated** ("a box
+  keeps its move while it serves"; in "over time", "at another zoom the moves are found
+  afresh"): they said what the layer no longer does, by ADR-77's second addendum. In their
+  place: a box is on its formation when it need not move; a move no longer needed is given up
+  by the ease. For the user to overrule, as the three restated before.
+- **What is given up:** a pair can part along another axis from one tick to the next; the ease
+  carries the box. The markers' places are those of the tick (`formX`, `formY`: not eased
+  between ticks), so the axis can change once in a tick and no oftener. Not seen in a picture.
+- **Unchanged:** the acceptance of 2.7s2 (at 1900 and 1800 m/px no pair more than a quarter on
+  each other, 12 boxes moved by 3.2 and 2.7 px at most), `markers1938`, `handover1938`,
+  `fades1938`.
+- **Tests:** 1 unit test in place of 1, and 2 more; 1 new e2e. 600 unit tests in 79 files,
+  97 e2e.
+- **Next:** PLAN 2.7w (a marker that goes into a stack jumps first).
