@@ -11,6 +11,7 @@ import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
+import { decodeElevation } from '../shared/elevation';
 import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
 import { frameOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
@@ -358,6 +359,19 @@ export class SimServer {
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
+    }
+    await this.sendElevation(store);
+  }
+
+  /** The elevation level of the map's size, for the hillshade (PLAN 2.8a). After the map layers: the map does not wait for it. */
+  private async sendElevation(store: AssetStore): Promise<void> {
+    try {
+      const { w, h } = this.requireSim().world.cells;
+      const { bytes } = await store.load('elevation', w);
+      const data = decodeElevation(bytes, w, h);
+      this.post({ type: 'elevation', w, h, data }, [data.buffer]);
+    } catch {
+      /* no level of this size: the land is drawn flat */
     }
   }
 

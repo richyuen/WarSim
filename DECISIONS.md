@@ -206,6 +206,31 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   frame at the world, at 4 px a cell and at 48 px a cell; budget 1.0 at T0. The e2e stage:
   5.5 minutes.
 
+- **Addendum, PLAN 2.8a (2026-10-04): the hillshade as built.**
+  - *The data's path:* a message of its own after `mapLayers`, so the map and its coast do
+    not wait for 2 MB of elevation; an integer texture (R16I), one texel a cell, read with
+    `texelFetch`.
+  - *Smoothed by the borders' spline, the slope from its derivative:* sixteen fetches for a
+    slope that is continuous from cell to cell. Two bilinear taps would show each cell as a
+    facet, at 65 px a cell and more.
+  - *Steepened 12 times:* a cell is some 20 km, and the slope from one cell's mean height to
+    the next is a few hundredths even in the Alps. Chosen by the picture: the relief reads and
+    the fills keep their colours. The limits (0.6 to 1.25 of the fill) keep a nation's colour
+    its own on the darkest slope and a pale fill from going white on the brightest.
+  - *The sea is level:* its floor would put a bright and a dark band along every coast.
+  - *One cell size for the whole map:* in Miller's projection a cell is fewer km wide than
+    high away from the equator; the shading takes one figure. The relief is a picture of the
+    ground, not a measure of it.
+  - *Seen first:* with the data in the renderer and no shading, the test's two pictures were
+    one. *T0 and T1 are the old pass:* hashes at four zooms equal before and after, with the
+    layer and without it.
+  - *Cost:* 0.08 ms of GPU a frame at 1080p where the ground shows (0.53 against 0.45); nothing
+    where it does not. In the tests' software rasteriser a frame and its read were between 95
+    and 155 ms with the layer and between 95 and 129 without, from one run to the next: the
+    e2e stage's length is the measure there.
+  - *What the picture is:* broad, soft relief. At 100 m/px one sample in 20 km is a slow wash
+    of light and dark. The small relief is PLAN 2.8b's.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often

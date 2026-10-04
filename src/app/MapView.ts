@@ -158,7 +158,7 @@ export class MapView {
     const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is required');
     this.gl = gl;
-    this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX });
+    this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX, cellM: geo.kmPerCell * 1000 });
     this.map.setColor(0, 0x1d3557);
     const atlas = drawUnitAtlas();
     this.proxies = new ProxyRenderer(gl, atlas);
@@ -259,6 +259,10 @@ export class MapView {
     });
     sim.onUnrest((u) => {
       this.map.setUnrest(u);
+      this.dirty = true;
+    });
+    sim.onElevation((e) => {
+      this.map.setElevation(e.w, e.h, e.data);
       this.dirty = true;
     });
     sim.onMapLayers((m) => {
@@ -807,6 +811,15 @@ export class MapView {
     return out;
   }
 
+  /** The ground's relief at T2 and T3 (PLAN 2.8a). Off: the map of T0 and T1 at every zoom (tests compare the two). */
+  get relief(): boolean {
+    return this.map.relief;
+  }
+  set relief(on: boolean) {
+    this.map.relief = on;
+    this.dirty = true;
+  }
+
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least 5 px, × the size setting). */
   get elementPx(): number {
     return Math.max(ELEMENT_CELLS * this.controller.cam.scale, 5) * this.unitScale;
@@ -1110,9 +1123,10 @@ export class MapView {
     this.resize();
     const dpr = window.devicePixelRatio || 1;
     const cam = this.controller.cam;
-    this.map.draw(cam, dpr);
     // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
     this.tierShares(now);
+    // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN 2.8a).
+    this.map.draw(cam, dpr, this.shares.elements);
     this.drawSprites(cam, now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep

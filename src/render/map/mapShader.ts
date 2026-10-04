@@ -47,6 +47,10 @@ uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = provin
 uniform highp usampler2D uProvince; // admin-1 province per cell
 uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
 uniform vec3 uTerrainCol[12];
+uniform highp isampler2D uElevation; // the land's height in metres, one texel a cell (PLAN 2.8a)
+uniform float uDetail;     // how much of the ground of T2 and T3 shows, 0..1; 0: the map of T0 and T1
+uniform float uCellM;      // metres to a cell
+uniform float uRelief;     // how much steeper than it is the ground is shaded
 
 out vec4 outColor;
 
@@ -71,6 +75,14 @@ uint terrainAt(ivec2 c) {
 
 vec3 terrainCol(uint t) {
   return uTerrainCol[min(int(t), 11)];
+}
+
+// Height of a cell for the shading: the sea is level, and past the map's top and bottom the edge row goes on.
+float heightAt(ivec2 c) {
+  c = wrapCell(c);
+  if (c.x < 0 || c.x >= uMapSize.x) return 0.0;
+  c.y = clamp(c.y, 0, uMapSize.y - 1);
+  return max(float(texelFetch(uElevation, c, 0).r), 0.0);
 }
 
 uint provinceAt(ivec2 c) {
@@ -212,6 +224,36 @@ void main() {
   if (!water && uMode == 0 && occ[bi] > 0.5 * acc[bi]) {
     float stripe = step(0.5, fract((gl_FragCoord.x + gl_FragCoord.y) / (7.0 * uDpr)));
     col = mix(col * 0.72, mix(col, pal(occOwner[bi]), 0.35), stripe);
+  }
+
+  // Hillshade (PLAN 2.8a, ADR-78): the fill is lit by the slope of the ground, the light from
+  // the north-west. The height is smoothed over the 4×4 cells around by the cubic B-spline the
+  // borders use, and its slope taken from the spline's own derivative: one sample a cell would
+  // otherwise show every cell as a facet. Not warped: the ground is where it is.
+  // Inside a branch on a uniform: at T0 and T1 the pass does none of it.
+  if (uDetail > 0.0 && !water) {
+    vec2 e = local - 0.5;
+    vec2 fe = floor(e);
+    vec2 s = e - fe;
+    vec2 s2 = s * s;
+    vec2 s3 = s2 * s;
+    vec2 oms = 1.0 - s;
+    vec4 hx = vec4(oms.x * oms.x * oms.x, 3.0 * s3.x - 6.0 * s2.x + 4.0, -3.0 * s3.x + 3.0 * s2.x + 3.0 * s.x + 1.0, s3.x) / 6.0;
+    vec4 hy = vec4(oms.y * oms.y * oms.y, 3.0 * s3.y - 6.0 * s2.y + 4.0, -3.0 * s3.y + 3.0 * s2.y + 3.0 * s.y + 1.0, s3.y) / 6.0;
+    vec4 dhx = vec4(-0.5 * oms.x * oms.x, 1.5 * s2.x - 2.0 * s.x, -1.5 * s2.x + s.x + 0.5, 0.5 * s2.x);
+    vec4 dhy = vec4(-0.5 * oms.y * oms.y, 1.5 * s2.y - 2.0 * s.y, -1.5 * s2.y + s.y + 0.5, 0.5 * s2.y);
+    ivec2 hb = uCenterCell + ivec2(fe) - 1;
+    vec2 rise = vec2(0.0); // metres to a cell, east and south
+    for (int j = 0; j < 4; j++) {
+      for (int i = 0; i < 4; i++) {
+        rise += heightAt(hb + ivec2(i, j)) * vec2(dhx[i] * hy[j], hx[i] * dhy[j]);
+      }
+    }
+    vec2 slope = rise * (uRelief / uCellM);
+    // The light: from the north-west (x grows east, y south), 41° above the horizon.
+    const vec3 light = vec3(-0.5206, -0.5206, 0.6768);
+    float lit = dot(normalize(vec3(-slope, 1.0)), light) / light.z; // 1 on level ground
+    col *= mix(1.0, clamp(lit, 0.6, 1.25), uDetail);
   }
 
   float d = acc[bi] - second;

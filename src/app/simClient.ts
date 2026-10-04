@@ -24,6 +24,7 @@ import type {
 /** Static map layers sent by the worker (PLAN 1.28b). */
 export type NationStats = Extract<FromWorker, { type: 'nationStats' }>;
 export type MapLayers = Extract<FromWorker, { type: 'mapLayers' }>;
+export type Elevation = Extract<FromWorker, { type: 'elevation' }>;
 
 type Reply =
   | { status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }
@@ -94,6 +95,11 @@ export class SimClient {
     if (msg.type === 'mapLayers') {
       this.mapLayers = msg;
       for (const l of this.layerListeners) l(msg);
+      return;
+    }
+    if (msg.type === 'elevation') {
+      this.elevation = msg;
+      for (const l of this.elevationListeners) l(msg);
       return;
     }
     const p = this.pending.get(msg.reqId);
@@ -187,6 +193,15 @@ export class SimClient {
     this.layerListeners.add(l);
     if (this.mapLayers) l(this.mapLayers);
     return () => this.layerListeners.delete(l);
+  }
+
+  /** The land's height from the worker (PLAN 2.8a); late listeners get it at once. */
+  elevation: Elevation | null = null;
+  private readonly elevationListeners = new Set<(e: Elevation) => void>();
+  onElevation(l: (e: Elevation) => void): () => void {
+    this.elevationListeners.add(l);
+    if (this.elevation) l(this.elevation);
+    return () => this.elevationListeners.delete(l);
   }
 
   onSnapshotReceived(l: SnapshotListener): () => void {

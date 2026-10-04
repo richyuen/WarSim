@@ -30,12 +30,18 @@ const t1 = performance.now();
 map.setGrid(world.owner, world.controller);
 gl.finish();
 const uploadMs = performance.now() - t1;
+// A relief to shade (PLAN 2.8a): ranges some hundred km apart, up to 3 km high, the same on every run.
+const height = new Int16Array(W * H);
+for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) height[y * W + x] = Math.round(1500 * (1 + Math.sin(x * 0.21) * Math.cos(y * 0.17)) * (0.5 + 0.5 * Math.sin(x * 0.013 + y * 0.029)));
+map.setElevation(W, H, height);
 
 const fitScale = Math.min(canvas.clientWidth / W, canvas.clientHeight / H);
 let cam: Camera = { cx: W / 2, cy: H / 2, scale: fitScale };
+/** How much of the ground of T2 and T3 the pass draws (0: the map of T0 and T1). */
+let detail = 0;
 
 function frame(): void {
-  map.draw(cam, dpr);
+  map.draw(cam, dpr, detail);
 }
 
 const timer = new GpuTimer(gl);
@@ -63,6 +69,13 @@ async function run(): Promise<BenchAResult> {
     cam = c;
     drawMs[name] = await measureDraw(60);
   }
+  // The ground of T2 and T3 (PLAN 2.8): the same close view and a closer one, with the detail in full.
+  detail = 1;
+  for (const [name, c] of [['close-48px-ground', views[2]![1]], ['close-400px-ground', { cx: 1100.3, cy: 330.7, scale: 400 }]] as [string, Camera][]) {
+    cam = c;
+    drawMs[name] = await measureDraw(60);
+  }
+  detail = 0;
   cam = views[0]![1];
   const t0Stats = await runFrames(3, frame);
 

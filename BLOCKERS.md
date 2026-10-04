@@ -241,6 +241,12 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - A name's place is one for the city: on a looping map its two copies either side of the seam
     share it, and what is in the way of one copy moves both.
   - (Done, PLAN 2.7u: at T1 the markers stood on the city names.)
+- Left by PLAN 2.8a (2026-10-04, ADR-78 addendum), for the phase review (PLAN 2.11):
+  - The sea floor is not shaded, though the elevation carries it (quantised to 10 m for that).
+  - The shading takes one cell size for the whole map: far from the equator a slope to the
+    east is shaded less steep than it is, against one to the south.
+  - The cost of the ground in the tests' software rasteriser is not known per frame (what was
+    read varied by a quarter from run to run); the e2e stage's length is watched instead.
 - Left by PLAN 2.7u (2026-10-04, ADR-76 addendum), for the phase review (PLAN 2.11):
   - Capitals whose names are left out at T1 because their garrisons stand on every place by
     the dot: Prague at 1800 m/px, Warsaw at 1000 (with Turin, Kiev and Kraków, at the 1938

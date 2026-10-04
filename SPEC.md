@@ -1008,6 +1008,15 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, roads near cities | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
 | **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals: one figure for each unit of strength, at most 64 to an element. So the count is the strength for vehicles, guns, ships and planes (an element holds 10–12), and for a battalion of 500 once fewer than 64 men are left [ADR-69] |
 
+*The ground of T2 and T3, as built so far (PLAN 2.8a, ADR-78):* hillshade in the map pass
+(`mapShader.ts`). The worker sends the elevation level of the map's size after the map layers
+(`elevation`: int16 metres, one value a cell); the pass smooths it over the 4×4 cells around by
+the borders' cubic B-spline, takes the slope from the spline's derivative, steepens it 12
+times, and lights it from the north-west, 41° up: level ground is unchanged, a slope is from
+0.6 to 1.25 of its fill. The sea is level. It comes in by the sprites' share of the T1 → T2
+handover, shows in every map mode, and has no part in the pass at T0 and T1. A map without
+elevation of its size (the toy world) is drawn flat. Ground texture and instances: PLAN 2.8b, c.
+
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
 from 2000 m/px down to 300 (see the handovers below). Each
 shows a type symbol (from the template's

@@ -11,6 +11,10 @@ export interface MapRendererOptions {
   wrapX: boolean;
   borderPx?: number;
   warp?: number;
+  /** Metres to a cell (the hillshade's slopes: PLAN 2.8a). */
+  cellM?: number;
+  /** How much steeper than it is the ground is shaded: a cell is some 20 km, and the slope from one to the next is a few hundredths. */
+  reliefScale?: number;
 }
 
 /**
@@ -43,12 +47,17 @@ export class MapRenderer {
   private terrainColors = new Float32Array(12 * 3);
   /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest. */
   fillMode = 0;
+  /** The land's height in metres, one texel a cell (PLAN 2.8a); a 1×1 placeholder until the worker sends it. */
+  private elevationTex: WebGLTexture;
+  private hasElevation = false;
+  /** Whether the ground's relief is drawn where the zoom shows it (off: the map of T0 and T1 at every zoom). */
+  relief = true;
 
   constructor(gl: WebGL2RenderingContext, w: number, h: number, opts: MapRendererOptions) {
     this.gl = gl;
     this.w = w;
     this.h = h;
-    this.opts = { borderPx: 1.25, warp: 0.32, ...opts };
+    this.opts = { borderPx: 1.25, warp: 0.32, cellM: 20_000, reliefScale: 12, ...opts };
     this.program = twgl.createProgramInfo(gl, [MAP_VS, MAP_FS]);
     this.owner = this.makeIdTexture();
     this.controller = this.makeIdTexture();
@@ -61,6 +70,15 @@ export class MapRenderer {
     this.terrainTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.provinceTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
     this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
+    this.elevationTex = this.makeTexture(gl.R16I, gl.RED_INTEGER, gl.SHORT, 1, 1, new Int16Array([0]), gl.NEAREST);
+  }
+
+  /** The land's height (metres, one value a cell: `w` × `h` must be the map's size). */
+  setElevation(w: number, h: number, data: Int16Array): void {
+    if (w !== this.w || h !== this.h) throw new Error(`elevation ${w}×${h} for a map of ${this.w}×${this.h}`);
+    this.gl.deleteTexture(this.elevationTex);
+    this.elevationTex = this.makeTexture(this.gl.R16I, this.gl.RED_INTEGER, this.gl.SHORT, w, h, data, this.gl.NEAREST);
+    this.hasElevation = true;
   }
 
   /** Province per cell (map size) for the revolts mode (PLAN 1.30b). */
@@ -173,7 +191,11 @@ export class MapRenderer {
     gl.texSubImage2D(gl.TEXTURE_2D, 0, x, y, w, h, gl.RED_INTEGER, gl.UNSIGNED_SHORT, data);
   }
 
-  draw(cam: Camera, dpr: number): void {
+  /**
+   * `detail`: how much of the ground of T2 and T3 shows, 0–1 (the share of the T1 → T2 handover:
+   * the ground comes with the sprites). At 0 the pass is the one of T0 and T1.
+   */
+  draw(cam: Camera, dpr: number, detail = 0): void {
     const gl = this.gl;
     if (this.paletteDirty) {
       gl.bindTexture(gl.TEXTURE_2D, this.paletteTex);
@@ -206,6 +228,10 @@ export class MapRenderer {
       uProvince: this.provinceTex,
       uUnrest: this.unrestTex,
       uTerrainCol: this.terrainColors,
+      uElevation: this.elevationTex,
+      uDetail: this.relief && this.hasElevation ? detail : 0,
+      uCellM: this.opts.cellM,
+      uRelief: this.opts.reliefScale,
     });
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -221,6 +247,7 @@ export class MapRenderer {
     gl.deleteTexture(this.terrainTex);
     gl.deleteTexture(this.provinceTex);
     gl.deleteTexture(this.unrestTex);
+    gl.deleteTexture(this.elevationTex);
     gl.deleteVertexArray(this.vao);
     gl.deleteProgram(this.program.program);
   }

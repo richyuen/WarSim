@@ -294,6 +294,12 @@ export type FromWorker =
       /** Buildable land templates (index = command template id; PLAN 1.33b). */
       templates: TemplateInfo[];
     }
+  /**
+   * The land's height for the hillshade (PLAN 2.8a): metres, one value a cell of the map (`w` ×
+   * `h` = the map's size), row-major. Sent once after `mapLayers`, so that the map does not wait
+   * for it; a map without an elevation asset of its size sends none.
+   */
+  | { type: 'elevation'; w: number; h: number; data: Int16Array }
   /** Custom pixel flags (PLAN 1.37b): [nation, runs][] (runs as in `setFlag`), after init and on change. */
   | { type: 'flags'; custom: [number, number[]][] }
   /** City dots and names again after editor city edits (PLAN 1.36). */

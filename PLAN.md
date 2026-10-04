@@ -823,7 +823,7 @@ quick sweep as a smoke test.
     the clean tree, RTX 4070 Ti at 1080p: 0.51, 0.48 and 0.45 ms of GPU a frame; budget 1.0), and
     the e2e stage, on a software rasteriser, stays near its 5.5 minutes.
   - *Every map mode:* the detail is laid on the fill, whatever the fill shows.
-  - [ ] 2.8a Hillshade. The elevation level of the map's size reaches the renderer (the worker loads
+  - [x] 2.8a Hillshade. The elevation level of the map's size reaches the renderer (the worker loads
     it with the land mask; one sample a cell), and the map pass shades the land by its slope, the
     light from the north-west.
     AT: e2e, 1938: at T2 over the Alps the land's brightness varies with the relief (a measure of
@@ -831,6 +831,18 @@ quick sweep as a smoke test.
     canvas is pixel for pixel what it was before the task; the picture of one T2 view is the same
     after a reload (hash); `fades1938` passes unchanged; the toy world, which has no elevation,
     draws as before; bench A within the budget; screenshots viewed.
+    Done 2026-10-04 (ADR-78, addendum). `tests/e2e/hillshade1938.spec.ts`, 3 tests; with the data
+    reaching the renderer and no shading yet, two of them failed (the picture with the layer was
+    the picture without it).
+    - Over the Alps at 250 and 100 m/px the largest fill's brightness varies by 23 of 255, and
+      its slopes that face the light are brighter than those that face away by 44 and 45.
+    - At 8000, 4000, 1000 and 400 m/px the map's hash is what it was before the task, with the
+      layer and without it; at 250, 100 and 20 m/px the picture without the layer is the old one.
+    - The Rockies at 150 m/px, two loads: one hash.
+    - Bench A (RTX 4070 Ti, 1080p), GPU ms a frame: the world 0.51, 4 px a cell 0.48, 48 px a
+      cell 0.45, as before; with the ground at 48 px a cell 0.53, at 400 px a cell 0.52.
+    - `docs/evidence/2.8/hillshade-alps-250m.png`, `-100m.png`, viewed: broad, soft relief, no
+      cell shows; at 100 m/px it is a slow wash of light and dark (one sample in 20 km: 2.8b).
   - [ ] 2.8b Ground texture. Noise seeded by the place modulates the fill by terrain class, with finer
     octaves coming in from T2 to T3, and gives the hillshade the small relief the data has not (one
     sample of elevation in 20 km): bumps by terrain class, large in mountains, faint on plains.

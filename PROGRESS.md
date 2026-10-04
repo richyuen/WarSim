@@ -4632,3 +4632,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Before numbers:** bench A 0.51, 0.48 and 0.45 ms of GPU a frame (budget 1.0); the e2e stage
   5.5 minutes.
 - **Next:** PLAN 2.8a, its test first.
+
+## 2026-10-04 — PLAN 2.8a: hillshade
+
+- **What it is:** at T2 and T3 the map shades the land by the slope of the elevation data, the
+  light from the north-west. It comes in with the sprites' share of the T1 → T2 handover,
+  shows in every map mode, and is no part of the pass at T0 and T1.
+- **The data's path:** the worker sends the elevation level of the map's size (2048 × 1024
+  for 1938, one value a cell) in a message of its own after the map layers; an integer
+  texture in the renderer.
+- **Test first** (`hillshade1938`, 3 tests): with the data in the renderer and no shading,
+  the picture with the layer was the picture without it, and two tests failed.
+- **Now:** over the Alps at 250 and 100 m/px the largest fill's brightness varies by 23 of
+  255; slopes facing the light are brighter than those facing away by 44 and 45. The Rockies
+  at 150 m/px: one hash on two loads. The toy world, which has no elevation: as before.
+- **T0 and T1 are untouched:** the map's hash at 8000, 4000, 1000 and 400 m/px is what it was
+  before the task; at 250, 100 and 20 m/px the picture without the layer is the old one.
+- **Cost:** bench A, GPU ms a frame at 1080p: 0.51, 0.48 and 0.45 as before; with the ground
+  0.53 and 0.52 (budget 1.0 at T0). The bench has a relief and two ground views now.
+- **Pictures looked at:** broad, soft relief; no cell shows as a facet; the nations keep
+  their colours. At 100 m/px it is a slow wash of light and dark: the data has one sample in
+  20 km, and the small relief is 2.8b's.
+- **Unchanged:** `fades1938` (the T1 → T2 change: 43.1 of 255 as before), `coast1938`,
+  `mapModes1938`.
+- **Tests:** 3 new e2e. 609 unit tests in 79 files, 102 e2e.
+- **Next:** PLAN 2.8b (ground texture and the small relief).
