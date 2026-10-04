@@ -4193,3 +4193,26 @@ They are under ADR-74 now, beside the entry of 2.7o: whole formations by the rea
 block; the step of the subscription key and why a 16th of the box; 48 px for a stand-in.
 
 - **Next:** PLAN 2.7p (a pan at T3 shows T2 sprites for 250 ms).
+
+## 2026-10-04 — PLAN 2.7p: a pan at T3 onto a division shows its figures in the first frame
+
+- **The bug (ADR-74, second read, finding 2):** which of the two close layers shows, the element
+  sprites or the figures, is a state of the zoom. `tierShares` also made it a matter of whether
+  there were figures: with none, the close tier went off ("the sprites stay"). Over ground with
+  no formation there are none. A pan onto a division then turned the tier on again, with its
+  fade: for 250 ms the division's element sprites, in full, at the zoom of the figures (102 px
+  each at 5 m/px).
+- **Seen first** (`tests/e2e/closeZoom1938.spec.ts`, the third test; the reader had traced it,
+  not run it): at 5 m/px from ground 10 km east of a division onto it, the view's own frames
+  read as they are drawn. In the first frame that has the division's elements the figures'
+  share was 0.00.
+- **Fix:** the sprites stay only for elements whose figures cannot be drawn (their section not
+  kept yet, or more figures than the cap). With no elements at all the tier is what the zoom
+  says. One condition.
+- **After:** 1.00 in every frame of the half second, 1,584 figures.
+- **Unchanged:** the T2 ↔ T3 handover over a division (`fades1938`: the largest jump between
+  frames 32.9 and 33.9 of 255, as before), `individuals1938`, `figuresFadeOut1938`.
+- **No picture:** the frames at rest are what they were. What was wrong lasted 250 ms after a
+  pan.
+- **Tests:** 1 new e2e. 572 unit tests in 78 files, 91 e2e.
+- **Next:** PLAN 2.7q (a world loaded into a running game leaves the old world's flags).

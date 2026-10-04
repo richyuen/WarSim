@@ -520,8 +520,13 @@ export class MapView {
     // The figures are drawn while the close tier is on and while it fades out: for as long,
     // they are of the snapshot in hand (PLAN 2.7j).
     if ((wanted || this.close.animating(now)) && !this.individualsBuilt && this.elementSection) this.buildIndividuals(this.elementSection);
-    // No figures to show (no elements kept yet, none in view, or more than the cap): the sprites stay.
-    this.shares.individuals = this.close.share(this.individualsBuilt && this.individualCount > 0 ? m : Infinity, now);
+    // Which of the two close layers shows is a matter of the zoom, with one exception: elements
+    // whose figures cannot be drawn (their section not kept yet, or more figures than the cap)
+    // keep their sprites. Where there are no elements at all there is nothing to keep, and the
+    // close tier stays as the zoom has it (PLAN 2.7p). It went off there, and a pan onto a
+    // formation turned it on again with its fade: 250 ms of element sprites at the zoom of figures.
+    const figures = this.individualsBuilt && this.individualCount > 0;
+    this.shares.individuals = this.close.share(figures || this.elementCount === 0 ? m : Infinity, now);
     this.individualsShown = this.close.near === true;
   }
   /** The last frame drawn left a unit animation unfinished (see `frameAt`). */

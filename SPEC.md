@@ -1035,6 +1035,10 @@ the other not at all, wherever the camera stops.
   element section that the view keeps below 60 m/px. A snapshot subscribed at T3 is a frame or
   two away, and the cross-fade needs both layers. They are built from each snapshot for as long
   as they are drawn: while the close tier is on, and while its fade out runs (PLAN 2.7j).
+- Elements whose figures cannot be drawn keep their sprites at T3 (their section not kept yet,
+  or more figures than the renderer's cap). A view with no elements at all keeps the close
+  tier as the zoom has it, so that the figures of a formation panned to are there in its first
+  frame (PLAN 2.7p).
 - Fire and wrecks are drawn with the sprites' share, at T2 and T3 alike.
 - *Before:* T0 ↔ T1 cross-faded by zoom over 2000–2600 m/px and T1 → T2 over 210–300 m/px, so
   a camera resting in either band showed two layers half-faded; T2 → T3 was a switch in one

@@ -210,3 +210,53 @@ test('the stand-in sprite of a formation with no elements is no larger than a ma
   }
   console.log(`the toy world's stand-in under the camera, the larger side of its lit px: ${sizes.join('; ')}`);
 });
+
+// PLAN 2.7p (ADR-74, second read, finding 2): which of the two close layers shows is a matter of
+// the zoom. It was also made a matter of whether there were figures to show: over ground with no
+// formation the close tier went off, and a pan onto a division then turned it on again, with its
+// fade. For those 250 ms the division's element sprites were drawn in full at the zoom of the
+// figures: 102 px each at 5 m/px, where a figure is a few px.
+test('a pan at T3 from empty ground onto a division shows its figures at once, not its sprites first', async ({ page }) => {
+  test.setTimeout(120_000);
+  await boot(page, '/?scenario=1938&paused=1&seed=1938', true);
+  await page.evaluate(async (cmds) => {
+    const sim = window.__warsim!.sim;
+    for (const c of cmds) sim.command(c);
+    const tick = (await sim.step(1)).tick;
+    await new Promise<void>((done) => {
+      const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+      wait();
+    });
+  }, SETUP);
+
+  // At 5 m/px half a cell (10 km) east of the division: ground, nothing in the snapshot.
+  const ground = await look(page, SITE[0] + 0.5, SITE[1], 5);
+  expect(ground.elements).toBe(0);
+  expect(ground.lit).toBe(0);
+
+  // The pan onto the division, at the same zoom. The view's own frames are read as they are
+  // drawn, from the first that has the division's elements and for half a second after it.
+  const frames = await page.evaluate(async ({ x, y }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx: x, cy: y, scale: v.controller.cam.scale });
+    const seen: { ms: number; share: number; figures: number }[] = [];
+    const t0 = performance.now();
+    for (let since = -1; ; ) {
+      await new Promise((done) => requestAnimationFrame(done));
+      const now = performance.now();
+      if (v.elementCount === 0) {
+        if (now - t0 > 10_000) throw new Error('no elements for the view on the division');
+        continue;
+      }
+      if (since < 0) since = now;
+      seen.push({ ms: Math.round(now - since), share: v.shares.individuals, figures: v.individualCount });
+      if (now - since > 500) return seen;
+    }
+  }, { x: SITE[0], y: SITE[1] });
+  const low = frames.reduce((a, f) => (f.share < a.share ? f : a));
+  console.log(`a pan at 5 m/px onto the division: ${frames.length} frames in ${frames.at(-1)!.ms} ms; the figures' share in the first ${frames[0]!.share.toFixed(2)}, the lowest ${low.share.toFixed(2)} (${low.ms} ms in); ${frames[0]!.figures} figures`);
+  expect(frames.length).toBeGreaterThan(5);
+  expect(frames[0]!.figures).toBeGreaterThan(500);
+  // The figures in full from the first frame: no frame draws the element sprites.
+  expect(low.share).toBe(1);
+});

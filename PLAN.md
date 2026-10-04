@@ -584,13 +584,19 @@ quick sweep as a smoke test.
   one step; the division has the removed one's id. Before: its previous place was (1100.2, 267.2),
   where the removed one stood, 480 cells from its own. Every other formation still comes from where it
   was before the step. The pinned hash of seed 99 is unchanged.
-- [ ] 2.7p A pan at T3 from empty ground onto a formation shows its figures, not its T2 sprites first
+- [x] 2.7p A pan at T3 from empty ground onto a formation shows its figures, not its T2 sprites first
   (ADR-74, second read, finding 2; traced by the reader, not run). A snapshot with no elements turns
   the close tier off (`tierShares`: no figures built, so `share(Infinity)`); the next one, with
   elements, turns it on from 0. For the 250 ms of that fade the element sprites are drawn in full, at
   0.026 cells: 102 px each at 5 m/px, 509 px at 1 m/px.
   AT: e2e, paused, at 5 m/px: the camera steps from ground with no formation onto a division; in the
   first frame that has its elements the figures' share is 1 and no element sprite is drawn.
+  Done 2026-10-04: with no elements at all the close tier stays as the zoom has it; only elements
+  whose figures cannot be drawn keep their sprites (`tierShares`). `tests/e2e/closeZoom1938.spec.ts`,
+  the third test: the view's own frames read as they are drawn, for half a second from the first
+  that has the division's elements. Before: the figures' share in that first frame was 0.00 (the
+  reader had traced this; here it ran). Now 1.00 in every frame, 1,584 figures. A share of 1 is no
+  element sprite drawn: `drawSprites` draws them only below 0.99.
 - [ ] 2.7q A world loaded into a running game takes the place of everything of the old one in the view
   (ADR-74, second read, finding 4; traced by the reader, not run). `MapView.apply` sets a nation's
   capital and colour for each row of the snapshot and removes none: after a scenario file is imported
