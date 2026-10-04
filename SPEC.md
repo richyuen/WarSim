@@ -944,8 +944,9 @@ Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresi
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, roads near cities | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
 | **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals (exact for vehicles, ships and planes; ≤ 64 sprites per infantry element, count = strength) |
 
-*T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers fade in over
-2000–2600 m/px and out over 210–300 m/px. Each shows a type symbol (from the template's
+*T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
+from 2000 m/px down (see the handover below), fading out over 210–300 m/px toward T2. Each
+shows a type symbol (from the template's
 elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
 order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
@@ -953,7 +954,14 @@ sprites stop once markers are fully in; capital flags draw above the markers.
 
 *T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per
 cell of a nested 2^L-cell grid (~64 px), showing Σ strength. Splits and merges animate the child
-level for 250 ms; T0↔T1 is a cross-fade. The unit-size setting scales counters and markers.
+level for 250 ms. The unit-size setting scales counters and markers.
+
+*T0 ↔ T1 handover (PLAN 1.45a, `src/render/units/handover.ts`, ADR-64):* which of the two
+layers shows is a state. The markers come in when the zoom reaches 2000 m/px and go out above
+2300 m/px (hysteresis × 1.15); a change is a cross-fade over 250 ms of real time. At rest one
+layer is drawn at full opacity and the other not at all, wherever the camera stops. (Until
+1.45a the cross-fade went by zoom over 2000–2600 m/px, and a camera resting there showed both
+layers half-faded.) The T1 → T2 fade still goes by zoom, until PLAN 2.7.
 
 *T2 elements implemented (PLAN 2.3, ADR-46):* the view subscribes with its padded bbox
 and tier at most 10 Hz. The worker sends the elements of the formations inside, at their slot

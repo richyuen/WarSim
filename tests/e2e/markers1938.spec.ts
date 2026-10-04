@@ -22,6 +22,10 @@ async function look(page: Page, lon: number, lat: number, mPerPx: number): Promi
     v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
     v.draw();
   }, { x, y, m: mPerPx });
+  // The camera jump may start the T0 ↔ T1 handover (PLAN 1.45a, 250 ms) and counter splits: let
+  // them finish, then draw the state they end in.
+  await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
+  await page.evaluate(() => window.__warsim!.view!.draw());
   await page.waitForTimeout(150);
 }
 

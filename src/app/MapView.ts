@@ -6,8 +6,9 @@
 import { CityLabelLayer } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { drawMarkers, markerAlpha, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
-import { CounterLayer, counterAlpha, type CounterSource } from '../render/units/counters';
+import { drawMarkers, markerLowFade, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
+import { CounterLayer, type CounterSource } from '../render/units/counters';
+import { TierHandover } from '../render/units/handover';
 import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -405,6 +406,15 @@ export class MapView {
   markerOpacity = 0;
   /** T0 counters (PLAN 2.2). */
   readonly counters = new CounterLayer();
+  /** Which of the two shows, counters or markers, and the cross-fade between them (PLAN 1.45a). */
+  readonly handover = new TierHandover();
+
+  /** True while a unit layer still animates: a counter split or merge, or the T0 ↔ T1 handover. */
+  unitsAnimating(now = performance.now()): boolean {
+    return this.counters.animating(now) || this.handover.animating(now);
+  }
+  /** A unit layer animated in the last frame (see `frame`). */
+  private unitsAnimated = false;
 
   /** Element sprites (PLAN 2.3) from the snapshot's interest-managed elements section. */
   private readonly elementProxies: ProxyRenderer;
@@ -494,7 +504,9 @@ export class MapView {
 
   /** T1 operational markers (PLAN 2.1) and T0 counters (PLAN 2.2) on the overlay. */
   private drawUnitMarkers(cam: Camera, now: number): void {
-    const alpha = markerAlpha(this.metresPerPx);
+    // T0 counters or T1 markers: a timed handover, so at rest only one of them is drawn (PLAN 1.45a).
+    const share = this.handover.share(this.metresPerPx, now);
+    const alpha = markerLowFade(this.metresPerPx) * share;
     this.markerOpacity = alpha;
     this.markerRects = [];
     const ctx = this.overlay.getContext('2d')!;
@@ -505,7 +517,7 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: this.formNation[i]!, strength: this.formStrength[i]! });
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
-    this.counters.draw(ctx, src, cam, this.geo, vw, vh, counterAlpha(this.metresPerPx, alpha), now, hex, flagOf, this.unitScale);
+    this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
     if (alpha <= 0.01) return;
     const w = this.geo.w;
     const markers: MarkerInput[] = [];
@@ -666,7 +678,11 @@ export class MapView {
     // or units still interpolating toward the latest tick. An idle map costs nothing.
     const c = this.controller.cam;
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
-    const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || this.counters.animating(now);
+    // One more frame after a unit animation ends, so that its end state is what stays on screen
+    // however late the last animated frame came.
+    const animating = this.unitsAnimating(now);
+    const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || animating || this.unitsAnimated;
+    this.unitsAnimated = animating;
     if (this.resize() || this.dirty || camMoved || interpolating) {
       this.draw(now);
       this.dirty = false;
@@ -685,7 +701,7 @@ export class MapView {
     // Below T1: element sprites (PLAN 2.3) fading in as the markers fade out; formation sprites
     // only stand in where no elements arrived yet (element-less formations, before the first
     // subscribed snapshot). T0 has counters (PLAN 2.2) and T1 markers (PLAN 2.1).
-    const unitsIn = this.metresPerPx < T1_MIN_M ? 1 - markerAlpha(this.metresPerPx) : 0;
+    const unitsIn = this.metresPerPx < T1_MIN_M ? 1 - markerLowFade(this.metresPerPx) : 0;
     if (unitsIn > 0.01) {
       const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
       if (this.elementCount > 0) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn);

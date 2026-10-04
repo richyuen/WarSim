@@ -167,6 +167,47 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-64 · 2026-10-04 · accepted — The T0 ↔ T1 handover is a state and a cross-fade in time, not a fade by zoom (PLAN 1.45a, critic B7)
+
+- **Context:** the critic saw "translucent duplicate counters persist behind real ones when
+  paused" (`critic/shots/s4_07_crop_ghost_counters.png`). PLAN 1.45 blamed split and merge
+  fades that do not finish while the game is paused.
+- **Measured, 1938 start, paused, the camera at rest 1.5 s at each zoom** (px per cell → m/px:
+  counters drawn at their opacity, markers drawn at theirs; a split or merge still running?):
+  - 4 → 4892: 107 counters at 1; no markers; no.
+  - 7.6 → 2575: 111 at 0.995; none (0.005 is not drawn); no.
+  - 8 → 2446: 104 at 0.836; 356 at 0.164; no.
+  - 9 → 2174: 83 at 0.204; 268 at 0.796; no.
+  - 9.7 → 2017: none; 243 at 0.998; no.
+  - 10 → 1957: none; 237 at 1; no.
+  The split and merge animations do finish while paused. The ghosts are the cross-fade between
+  the two unit layers, which `markerAlpha` made a function of the zoom over 2000–2600 m/px: the
+  two opacities add up to one, and a camera that stops in that band shows both layers
+  half-faded for as long as it stays, paused or running. SPEC §8 promised hysteresis for every
+  layer; this one had none.
+- **Decision:** which layer shows is a state (`TierHandover`). The markers come in when the
+  zoom reaches T1_MAX_M (2000 m/px) and go out above T1_MAX_M × 1.15 (2300 m/px). A change of
+  state is a cross-fade over 250 ms of real time, the markers' share easing from 0 to 1 and the
+  counters having the rest. At rest the share is exactly 0 or 1: one layer in full, the other
+  not drawn. A turn in mid-fade continues from the share reached. The view keeps drawing while
+  the fade runs, paused or not, and draws one more frame after any unit animation ends, so the
+  end state is what stays on screen.
+- **Why 1.15 and not the old band's 1.3:** the hysteresis only has to keep a camera that
+  hovers at the threshold from flickering. The counters' cluster levels use ±0.15 for the same
+  purpose. A wider band would keep the markers on screen further out, where their boxes of a
+  fixed 26 px are closest together.
+- **What it replaces:** `markerAlpha(mPerPx)` and `counterAlpha` are gone; `markerLowFade` is
+  the markers' fade toward T2 only. The unit test of the old fade by zoom is replaced by tests
+  of the new rule (`tests/unit/handover.test.ts`); it tested a rule that no longer exists.
+- **Not changed:** the T1 → T2 fade (markers out, element sprites in, 210–300 m/px) still goes
+  by zoom and has the same flaw at rest. PLAN 2.7 is "fade curves and hysteresis for all
+  layers" and takes it, with the marker → elements morph.
+- **Tests:** `tests/e2e/handover1938.spec.ts` (at rest at 2575, 2446, 2174 and 2017 m/px from
+  T0: counters only, all at opacity 1; from T1 at 2017 and 2174: markers only, at 1; at 2446:
+  counters again; the 250 ms cross-fade frame by frame; the same with the game running),
+  `tests/unit/handover.test.ts`. PLAN 2.2's frame-by-frame continuity test
+  (`tests/e2e/counters1938.spec.ts`) passes unchanged.
+
 ### ADR-63 · 2026-10-04 · accepted — A dragged brush is a stroke: many commands, one undo step (PLAN 1.44, critic B6)
 
 - **Context:** in the editor a left-drag panned the map and only a click painted (critic B6:

@@ -1,21 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { markerAlpha, strengthText, T1_MAX_M, T1_MIN_M } from '../../src/render/units/markers';
+import { markerLowFade, strengthText, T1_MAX_M, T1_MIN_M } from '../../src/render/units/markers';
 
-// PLAN 2.1: T1 marker layer opacity and strength labels.
+// PLAN 2.1: T1 marker layer opacity and strength labels. Toward T0 the opacity is the timed
+// handover's (PLAN 1.45a, tests/unit/handover.test.ts): the fade by zoom over 2000–2600 m/px that
+// this test used to check is gone, because a camera resting there showed both layers half-faded.
 
 describe('T1 markers (PLAN 2.1)', () => {
-  it('are fully visible inside 300–2000 m/px and fade smoothly outside', () => {
-    expect(markerAlpha(1000)).toBe(1);
-    expect(markerAlpha(T1_MIN_M)).toBe(1);
-    expect(markerAlpha(T1_MAX_M)).toBe(1);
-    expect(markerAlpha(100)).toBe(0); // T2/T3
-    expect(markerAlpha(5000)).toBe(0); // T0
-    const a = markerAlpha(T1_MAX_M * 1.15);
+  it('are fully visible from 300 m/px up and fade smoothly below, toward T2', () => {
+    expect(markerLowFade(1000)).toBe(1);
+    expect(markerLowFade(T1_MIN_M)).toBe(1);
+    expect(markerLowFade(T1_MAX_M)).toBe(1);
+    expect(markerLowFade(100)).toBe(0); // T2/T3
+    // Zoom alone does not fade them toward T0 any more.
+    expect(markerLowFade(T1_MAX_M * 1.15)).toBe(1);
+    expect(markerLowFade(5000)).toBe(1);
+    const a = markerLowFade(T1_MIN_M * 0.85);
     expect(a).toBeGreaterThan(0);
     expect(a).toBeLessThan(1);
-    // Monotone across the fades.
-    for (let m = T1_MAX_M; m < T1_MAX_M * 1.4; m += 20) expect(markerAlpha(m + 20)).toBeLessThanOrEqual(markerAlpha(m));
-    for (let m = T1_MIN_M * 0.6; m < T1_MIN_M; m += 5) expect(markerAlpha(m + 5)).toBeGreaterThanOrEqual(markerAlpha(m));
+    // Monotone across the fade.
+    for (let m = T1_MIN_M * 0.6; m < T1_MIN_M; m += 5) expect(markerLowFade(m + 5)).toBeGreaterThanOrEqual(markerLowFade(m));
   });
 
   it('strength text: exact under 1,000, thousands with one decimal above', () => {

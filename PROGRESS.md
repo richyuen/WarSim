@@ -3061,3 +3061,35 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   did not change).
 - **Next:** PLAN 1.45 (critic B7: Europe readable at world zoom; the translucent duplicate
   counters it names are visible in today's screenshots at 8 px per cell).
+
+## 2026-10-04 — PLAN 1.45a: no ghost counters; the T0 ↔ T1 handover is timed (critic B7, ADR-64)
+- **Split:** PLAN 1.45 named two causes and is now 1.45a (the ghosts, this entry) and 1.45b
+  (overlapping counters at world zoom, open).
+- **The PLAN's diagnosis was wrong, and the probe said so before any code:** it blamed split and
+  merge fades that do not finish while paused. Measured at rest, paused: no animation was
+  running at any zoom, and at 8 px per cell (2446 m/px) 104 counters stood at opacity 0.836 with
+  356 markers at 0.164 behind them; at 9 px per cell (2174 m/px) 0.204 and 0.796. The two always
+  add up to one. The cross-fade between the T0 counters and the T1 markers was a function of the
+  zoom over 2000–2600 m/px, so a camera that stopped there showed both, half-faded, for as long
+  as it stayed. ADR-64 has the table.
+- **Fix:** `src/render/units/handover.ts`. Which layer shows is a state: markers in at 2000 m/px,
+  out above 2300 m/px. A change is a cross-fade over 250 ms of real time. At rest the share is
+  exactly 0 or 1. `markerAlpha` and `counterAlpha` are gone; `markerLowFade` is the markers'
+  fade toward T2, which still goes by zoom (PLAN 2.7 takes it).
+- **One more frame:** the view now draws once more after a unit animation ends. Before, the last
+  animated frame could be the one left on screen if frames came more than 50 ms apart.
+- **Verified in the browser** (`tests/e2e/handover1938.spec.ts`; `docs/evidence/1.45/`, viewed):
+  at rest at 2575, 2446, 2174 and 2017 m/px coming from the world view: counters only, every one
+  at opacity 1; at 1957: markers only, at 1; zooming out, markers only at 2017 and 2174, counters
+  only at 2446; the cross-fade frame by frame (16 ms steps, the two adding up to one, done by
+  256 ms); the same at rest with the game running at top speed. The screenshot at 2446 m/px has
+  the framing of `docs/evidence/1.44/brush-stroke.png`, which shows the ghosts.
+- **Regression guard:** PLAN 2.2's frame-by-frame continuity test passes unchanged.
+  `markers1938.spec.ts` now waits for the handover before it reads the markers (its assertions
+  are the same). The unit test of the fade by zoom is replaced by tests of the new rule.
+- **Not done:** counters still overlap at world zoom (1.45b). No frame-time measurement: the
+  handover is two comparisons and a multiply per frame, and no draw call was added.
+- **Seen, not fixed:** at the top of T1 (`europe-1957m-paused.png`) the markers of a dense group
+  stand on top of each other (the Soviet divisions east of Poland). B7 names the counters at
+  world zoom; marker stacking at T1 has no PLAN task yet and belongs with PLAN 2.7's morph.
+- **Next:** PLAN 1.45b.

@@ -347,13 +347,24 @@ quick sweep as a smoke test.
   Done 2026-10-04 (ADR-63, addendum; `tests/e2e/editorDrag1938.spec.ts`,
   `tests/unit/paintControl.test.ts`): `paintControl` takes a segment (`x2, y2`). The pinned
   hash did not move.
-- [ ] 1.45 Critic B7: Europe readable at world zoom. T0 counters are decluttered in screen space
-  (no two overlap; what does not fit is aggregated into its neighbour), and split and merge
-  fades finish while the game is paused, so no translucent duplicate is left standing.
+- [x] 1.45a Critic B7, the ghost counters: no half-faded unit layer is left standing. (1.45 was
+  split on 2026-10-04 into a and b: two causes. Its text blamed split and merge fades that do
+  not finish while paused; measured, they do finish. The ghosts are the T0 ↔ T1 cross-fade,
+  which went by zoom over 2000–2600 m/px: a camera resting at 2446 m/px showed the counters at
+  0.84 and 356 markers at 0.16 behind them, paused or not.) The handover between the T0
+  counters and the T1 markers becomes a state with hysteresis and a cross-fade in time.
+  AT: e2e on the 1938 start over Europe, paused and running: at rest anywhere in that band,
+  from either side, one unit layer is drawn at full opacity and the other not at all; the
+  cross-fade takes 250 ms and never pops; PLAN 2.2's continuity test passes unchanged;
+  screenshots viewed.
+  Done 2026-10-04 (ADR-64; `tests/e2e/handover1938.spec.ts`, `tests/unit/handover.test.ts`,
+  `docs/evidence/1.45/`).
+- [ ] 1.45b Critic B7, the wall of counters: Europe readable at world zoom. T0 counters are
+  decluttered in screen space (no two overlap; what does not fit is aggregated into its
+  neighbour, never hidden).
   AT: e2e on the 1938 start and after one year, at world zoom over Europe, paused and running:
-  no two counter boxes overlap, and no counter is drawn below full opacity once its animation
-  time has passed; the sum of the counters still equals the sim's strength (PLAN 2.2);
-  screenshots compared with `reference/` frames and viewed.
+  no two counter boxes overlap; the sum of the counters still equals the sim's strength
+  (PLAN 2.2); screenshots compared with `reference/` frames and viewed.
 
 ## Phase 2 — Semantic zoom
 

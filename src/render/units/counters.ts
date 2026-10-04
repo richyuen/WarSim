@@ -11,7 +11,7 @@
  * the end they are replaced by the target level, already at the same positions. No counter
  * appears or disappears anywhere except under a counter in the same place.
  */
-import { strengthText, T1_MAX_M } from './markers';
+import { strengthText } from './markers';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 
 export interface CounterSource {
@@ -79,11 +79,6 @@ export function buildClusters(src: readonly CounterSource[], level: number): Map
     c.y /= c.count;
   }
   return out;
-}
-
-/** Opacity of the counter layer: full above T1, fading out as the T1 markers fade in. */
-export function counterAlpha(mPerPx: number, markerAlpha: number): number {
-  return mPerPx >= T1_MAX_M ? 1 - markerAlpha : 0;
 }
 
 const ease = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);

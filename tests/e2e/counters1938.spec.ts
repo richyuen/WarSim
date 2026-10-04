@@ -106,7 +106,8 @@ test('T0 counters: Σ strength is the world total; zooming T0 ↔ T1 never pops 
   }
   expect(problems.slice(0, 10)).toEqual([]);
 
-  // Evidence: Europe at T0 and in the T0/T1 cross-fade.
+  // Evidence: Europe at T0, down to just above T1 (2,300 m/px was inside the cross-fade by zoom
+  // that PLAN 1.45a removed: counters only now).
   for (const m of [12_000, 4_000, 2_300]) {
     await page.evaluate(({ cx, cy, m }) => {
       const v = window.__warsim!.view!;

@@ -2,7 +2,8 @@
  * T1 operational markers (SPEC §8, PLAN 2.1): per formation a box with its type symbol, a flag
  * chip, a strength bar (strength / full template strength) and the strength number; an order
  * arrow to its march target; a red outline while engaged; crossed swords at Major Battles.
- * Drawn on a Canvas2D overlay between 300 and 2000 m/px with a fade at both ends.
+ * Drawn on a Canvas2D overlay between 300 and 2000 m/px: a fade by zoom toward T2, a timed
+ * handover with the T0 counters toward T0.
  *
  * One truth: the number is the formation's sim strength (men), which the sim keeps equal to the
  * sum over its elements.
@@ -37,7 +38,10 @@ export interface PlacedMarker {
   text: string;
 }
 
-/** m/px where T1 markers are fully visible (between) and fade over FADE_FRACTION outside. */
+/**
+ * m/px where T1 markers are the unit layer. Below T1_MIN_M they fade out over FADE_FRACTION as
+ * the elements fade in; above T1_MAX_M the T0 counters take over (`handover.ts`).
+ */
 export const T1_MIN_M = 300;
 export const T1_MAX_M = 2000;
 const FADE_FRACTION = 0.3;
@@ -46,13 +50,14 @@ const BOX_H = 17;
 const CHIP_W = 9;
 const CHIP_H = 6;
 
-/** Opacity of the T1 marker layer at `mPerPx` (smooth fade at both ends). */
-export function markerAlpha(mPerPx: number): number {
-  const s = (a: number, b: number, v: number): number => {
-    const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
-    return t * t * (3 - 2 * t);
-  };
-  return s(T1_MIN_M * (1 - FADE_FRACTION), T1_MIN_M, mPerPx) * (1 - s(T1_MAX_M, T1_MAX_M * (1 + FADE_FRACTION), mPerPx));
+/**
+ * Opacity of the T1 markers toward T2: full at T1_MIN_M and above, fading out below it as the
+ * element sprites fade in (by zoom, until PLAN 2.7). Toward T0 the opacity is the handover's
+ * share (`handover.ts`), which is a matter of time, not of zoom.
+ */
+export function markerLowFade(mPerPx: number): number {
+  const t = Math.max(0, Math.min(1, (mPerPx - T1_MIN_M * (1 - FADE_FRACTION)) / (T1_MIN_M * FADE_FRACTION)));
+  return t * t * (3 - 2 * t);
 }
 
 /** Strength as shown: under 1,000 exact, else thousands with one decimal ("12.3k"). */
