@@ -530,6 +530,28 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     test, on the same input until it rests, on random inputs. The spec of one tick does not
     see a cycle.
 
+- **Addendum 2026-10-04, the fourth read (review pass after PLAN 2.7v–u), narrowed by the user.**
+  - *The user's decision:* asked why another pass came before PLAN 2.8, the user was given three
+    ways (the read as before; no read until the phase review; a read of the two changes with
+    the most new logic) and chose the third. The read was of PLAN 2.7w (a box that fades into
+    a stack keeps its place) and PLAN 2.7u (the names keep clear of the T1 markers). The pass
+    itself is PROMPT.md's (step 9); the read is this ADR's, and its width is now a choice made
+    for each pass.
+  - *What the earlier statuses got wrong:* they said PLAN 2.8 came after the five tasks of the
+    third read. Five tasks are five iterations, and bring the next pass due.
+  - *Two findings, both run by the reader; neither in the two changes themselves.* 2.7w held
+    under 1,600 made-up games (no step over the ease's, no opacity step, every formation in
+    one marker, every game at rest within 19 frames), and the names of 2.7u under 160 runs
+    through marches and handovers (never fail to rest; nothing partly faded at rest; no name
+    under a marker, a tag, a counter or a name).
+  - *Finding 1, a task (PLAN 2.7z):* on the way back from T2 the markers stand un-parted for
+    the whole morph and then spring apart; with 2.7u the names shuffle a second time. The rule
+    it comes from (`still`) is of 2.7s2; the test of it has moves in hand, and none enters it
+    after `clear()`. Run here at the layer before anything else: it holds.
+  - *Finding 2 and six suspicions:* the watch list.
+  - *The four reads together:* twenty-two findings, fifteen of them tasks. The yield falls: 9,
+    6, 5, 2; and this one found nothing in the code it was pointed at.
+
 - **2.7n, done 2026-10-04 (second read, finding 1): what was chosen in its three parts.**
   - *2.7n1, whole formations by the reach of their block.* The worker widens the box, for a
     formation's centre, by the distance to the far corner's slot and half a slot more, and

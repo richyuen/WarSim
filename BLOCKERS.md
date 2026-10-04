@@ -167,6 +167,27 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
   hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
   income or their order of battle is off, is a question for the balance work.
+- Found by the fourth independent read (2026-10-04, ADR-74 addendum; narrowed to PLAN 2.7w and 2.7u),
+  not tasks; for the phase review (PLAN 2.11):
+  - The parting moves of the T1 markers can put a pair more on each other than it stood (finding
+    2, run by the reader): in a crowd, parting one pair pushes a box onto a neighbour, and the
+    6 px and the 8 rounds leave it there. 44 of 5,249 made-up clusters of four markers; the worst
+    pair from 0.20 to 0.42 under each other. The passes are those of PLAN 2.7s2; since 2.7v
+    what they end on is what stays on screen.
+  - Not established by the reader, one line each:
+    - T1 → T0: the counters change what they show in their second frame with nothing moving
+      (68 of 300 made-up worlds), and a name then changes place in mid-handover. The reader
+      points at the hold of `CounterLayer.fold`; outside what it was given.
+    - T2 → T1: the names give way from the first frame to markers that show at 2% (the rule of
+      2.7u: the layer that is coming in); a name with no free place goes out some 250 ms before
+      the boxes show.
+    - In 1.2 to 1.6% of made-up clusters of 3 to 5 markers, more than 8 rounds of the same passes
+      would part every pair (the reader's copy visits the pairs in another order: indicative).
+    - `nudgeApart` gives other moves for the same markers in another order of the list. Not
+      reachable: snapshots list formations by ascending id.
+    - The zoom into T2: the first frame of the morph has scale 1, so a move to the new zoom's
+      places starts, and the boxes ease a few px in the first 150 ms of the shrink.
+    - (The two copies of a city on a looping map share one place: already above, PLAN 2.7r.)
 - Found by the third independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
   (PLAN 2.11):
   - T1 markers either side of the seam of a looping map are neither stacked nor moved apart

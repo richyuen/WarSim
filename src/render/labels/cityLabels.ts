@@ -8,8 +8,9 @@
  * collision in priority order (capitals, then size, then list order).
  *
  * A name stands by its dot, at the first place where nothing is on it (PLAN 2.7r): no name
- * placed before it, and none of the frame's obstacles, the T0 counters and the capital flags.
- * With no place free it is left out.
+ * placed before it, and none of the frame's obstacles: the unit layer that is shown (the T0
+ * counters, or the T1 markers: PLAN 2.7u) and the capital flags. With no place free it is left
+ * out.
  * - It keeps its place, to the pixel, as an offset from its dot, for as long as nothing stands
  *   on it: it does not follow a counter, and a place it would prefer coming free does not move
  *   it.
@@ -65,16 +66,16 @@ export interface NamePlace {
 /**
  * The places around its dot a name can stand at, in the order they are tried:
  * - beside the dot: right (0), left (1), below right (2), below left (3), below (4);
- * - past what is in the way: to the right (8), to the left (9) or below (10) of the counter or
- *   flag that stands on the place beside the dot, as near as that leaves room, and no further
- *   from the dot than `NAME_REACH_PX`. A counter mostly stands on its nation's capital;
+ * - past what is in the way: to the right (8), to the left (9) or below (10) of the counter,
+ *   marker or flag that stands on the place beside the dot, as near as that leaves room, and no
+ *   further from the dot than `NAME_REACH_PX`. A counter mostly stands on its nation's capital;
  * - above: right (5), left (6), centred (7). A capital's flag stands above its dot, so these
  *   come last.
  */
 export const NAME_SIDES = [0, 1, 2, 3, 4, 8, 9, 10, 5, 6, 7] as const;
 /** How far from its dot a name may stand when it is past something, to the side and below: beyond that it is no longer that dot's name. */
 export const NAME_REACH_PX = { side: 40, below: 26 } as const;
-/** The clearance the view gives the counters (`NameObstacle.clear`): a counter's box moves by a pixel with its number and with the camera. */
+/** The clearance the view gives the counters and the markers (`NameObstacle.clear`): a counter's box moves by a pixel with its number and with the camera, a marker's with its army. */
 export const NAME_CLEAR_PX = 2;
 
 /**
@@ -175,7 +176,7 @@ export function layoutCityLabels(
   viewH: number,
   measure: (text: string, fontPx: number) => number,
   state: LabelState = AT_REST,
-  /** What a name must not stand under, CSS px: the T0 counters' boxes and the capital flags of this frame. */
+  /** What a name must not stand under, CSS px: the boxes of the unit layer that is shown (T0 counters or T1 markers) and the capital flags of this frame. */
   obstacles: readonly NameObstacle[] = [],
 ): PlacedLabel[] {
   const mPerPx = (geo.kmPerCell * 1000) / cam.scale;

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
@@ -22,6 +22,74 @@ const { w: W, h: H } = SIZE_1938;
 const [EX, EY] = cellOf(15, 50, W, H); // Europe
 interface Rect { x: number; y: number; w: number; h: number }
 const touches = (a: Rect, b: Rect): boolean => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+/**
+ * Read from the canvas: for each city name that shows, how many pixels of the overlay (the layer
+ * above the names: counters, markers, flags) are drawn inside its letters, of how many.
+ */
+function lettersCovered(page: Page): Promise<{ name: string; alpha: number; over: number; all: number }[]> {
+  return page.evaluate(() => {
+    const v = window.__warsim!.view!;
+    const overlay = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
+    const px = overlay.getContext('2d')!.getImageData(0, 0, overlay.width, overlay.height).data;
+    const dpr = overlay.width / overlay.clientWidth;
+    return v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0 && l.box && !l.ghost).map((l) => {
+      // The letters: the box without its padding and its line spacing (`nameTextBox`), whole px inside it.
+      const b = { x: l.box!.x + 2, y: l.box!.y + l.box!.h / 6, w: l.box!.w - 4, h: (l.box!.h * 2) / 3 };
+      let over = 0;
+      let all = 0;
+      for (let y = Math.ceil(b.y * dpr); y < Math.floor((b.y + b.h) * dpr); y++)
+        for (let x = Math.ceil(b.x * dpr); x < Math.floor((b.x + b.w) * dpr); x++) {
+          if (x < 0 || y < 0 || x >= overlay.width || y >= overlay.height) continue;
+          all++;
+          if (px[(y * overlay.width + x) * 4 + 3]! > 16) over++;
+        }
+      return { name: v.cityLabels.city(l.index).name, alpha: l.nameAlpha, over, all };
+    });
+  });
+}
+
+/**
+ * The game at top speed for `ms`, the camera at rest; the view's own frames, read as they are
+ * drawn. A name's box may not move at all while it shows (`jumps`); `fades`: names that began to
+ * go or to come; `fewest`, `most`: names more than half there in a frame; `names`: at the end.
+ */
+function watchNames(page: Page, ms: number): Promise<{ frames: number; ticks: number; fades: number; jumps: string[]; fewest: number; most: number; names: number; markers: number }> {
+  return page.evaluate(async (ms) => {
+    const v = window.__warsim!.view!;
+    const hud = window.__warsim!.hud;
+    hud.setSpeedLevel(99);
+    if (hud.paused.value) hud.togglePause();
+    const last = new Map<number, { x: number; y: number; alpha: number }>();
+    const jumps: string[] = [];
+    const shown: number[] = [];
+    let frames = 0;
+    let fades = 0;
+    const tick = v.lastTick;
+    for (const t0 = performance.now(); performance.now() - t0 < ms; ) {
+      await new Promise((done) => requestAnimationFrame(done));
+      frames++;
+      let names = 0;
+      for (const l of v.cityLabels.lastPlaced) {
+        // (Not what still shows at a place a name has left: that is a label of its own, going out.)
+        if (!l.box || l.ghost) continue;
+        if (l.nameAlpha > 0.5) names++;
+        const was = last.get(l.index);
+        if (was) {
+          const moved = Math.hypot(l.box.x - was.x, l.box.y - was.y);
+          // A name that is gone may be anywhere next; one that shows may not move.
+          if (moved > 0.5 && Math.min(l.nameAlpha, was.alpha) > 0.02) jumps.push(`${v.cityLabels.city(l.index).name}: ${moved.toFixed(0)} px at opacity ${l.nameAlpha.toFixed(2)}`);
+          if ((was.alpha === 1 && l.nameAlpha < 1) || (was.alpha === 0 && l.nameAlpha > 0)) fades++;
+        }
+        last.set(l.index, { x: l.box.x, y: l.box.y, alpha: l.nameAlpha });
+      }
+      shown.push(names);
+    }
+    if (!hud.paused.value) hud.togglePause();
+    hud.setSpeedLevel(4);
+    return { frames, ticks: v.lastTick - tick, fades, jumps, fewest: Math.min(...shown), most: Math.max(...shown), names: v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0 && !l.ghost).length, markers: v.markerRects.length };
+  }, ms);
+}
 
 test('city names are not under the T0 counters or the capital flags, and are not simply left out', async ({ page }, info) => {
   test.setTimeout(150_000);
@@ -69,36 +137,7 @@ test('city names are not under the T0 counters or the capital flags, and are not
     v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / 4000 });
   }, { cx: EX, cy: EY });
   await settle(page);
-  const running = await page.evaluate(async () => {
-    const v = window.__warsim!.view!;
-    const hud = window.__warsim!.hud;
-    hud.setSpeedLevel(99);
-    if (hud.paused.value) hud.togglePause();
-    const last = new Map<number, { x: number; y: number; alpha: number }>();
-    const jumps: string[] = [];
-    let frames = 0;
-    let fades = 0;
-    const tick = v.lastTick;
-    for (const t0 = performance.now(); performance.now() - t0 < 4000; ) {
-      await new Promise((done) => requestAnimationFrame(done));
-      frames++;
-      for (const l of v.cityLabels.lastPlaced) {
-        // (Not what still shows at a place a name has left: that is a label of its own, going out.)
-        if (!l.box || l.ghost) continue;
-        const was = last.get(l.index);
-        if (was) {
-          const moved = Math.hypot(l.box.x - was.x, l.box.y - was.y);
-          // A name that is gone may be anywhere next; one that shows may not move.
-          if (moved > 0.5 && Math.min(l.nameAlpha, was.alpha) > 0.02) jumps.push(`${v.cityLabels.city(l.index).name}: ${moved.toFixed(0)} px at opacity ${l.nameAlpha.toFixed(2)}`);
-          if ((was.alpha === 1 && l.nameAlpha < 1) || (was.alpha === 0 && l.nameAlpha > 0)) fades++;
-        }
-        last.set(l.index, { x: l.box.x, y: l.box.y, alpha: l.nameAlpha });
-      }
-    }
-    if (!hud.paused.value) hud.togglePause();
-    hud.setSpeedLevel(4);
-    return { frames, ticks: v.lastTick - tick, fades, jumps, names: v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0 && !l.ghost).length };
-  });
+  const running = await watchNames(page, 4000);
   console.log(`running at top speed, 4000 m/px: ${running.frames} frames, ${running.ticks} ticks; ${running.names} names, ${running.fades} fades begun, ${running.jumps.length} jumps`);
   // (How many frames and ticks four seconds hold depends on the machine: enough of both to have seen names go and come.)
   expect(running.ticks).toBeGreaterThan(50);
@@ -125,26 +164,12 @@ test('nothing is drawn over the letters of a city name: not a nation name, a cou
       v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
     }, { cx: EX, cy: EY, m: mPerPx });
     await settle(page);
-    const got = await page.evaluate(() => {
-      const v = window.__warsim!.view!;
-      const overlay = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
-      const px = overlay.getContext('2d')!.getImageData(0, 0, overlay.width, overlay.height).data;
-      const dpr = overlay.width / overlay.clientWidth;
-      const names = v.cityLabels.lastPlaced.filter((l) => l.nameAlpha === 1 && l.box && !l.ghost);
-      const covered: string[] = [];
-      for (const l of names) {
-        // The letters: the box without its padding and its line spacing (`nameTextBox`), whole px inside it.
-        const b = { x: l.box!.x + 2, y: l.box!.y + l.box!.h / 6, w: l.box!.w - 4, h: (l.box!.h * 2) / 3 };
-        let over = 0;
-        for (let y = Math.ceil(b.y * dpr); y < Math.floor((b.y + b.h) * dpr); y++)
-          for (let x = Math.ceil(b.x * dpr); x < Math.floor((b.x + b.w) * dpr); x++) {
-            if (x < 0 || y < 0 || x >= overlay.width || y >= overlay.height) continue;
-            if (px[(y * overlay.width + x) * 4 + 3]! > 16) over++;
-          }
-        if (over > 0) covered.push(`${v.cityLabels.city(l.index).name} (${over} px)`);
-      }
-      return { names: names.length, covered, nations: v.nationLabels.filter((n) => n.alpha === 1).length };
-    });
+    const names = (await lettersCovered(page)).filter((l) => l.alpha === 1);
+    const got = {
+      names: names.length,
+      covered: names.filter((l) => l.over > 0).map((l) => `${l.name} (${l.over} px)`),
+      nations: await page.evaluate(() => window.__warsim!.view!.nationLabels.filter((n) => n.alpha === 1).length),
+    };
     console.log(`${mPerPx} m/px: ${got.names} city names, ${got.nations} nation names; something drawn over the letters of ${got.covered.length}: ${got.covered.join(', ')}`);
     expect(got.names, `${mPerPx} m/px`).toBeGreaterThanOrEqual(14);
     // The nation names are there as they were (their layout has a spec of its own: labels1938).
@@ -185,28 +210,15 @@ test('city names keep clear of the T1 markers, and are not simply left out', asy
       v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
     }, { cx, cy, m: mPerPx });
     await settle(page);
-    const got = await page.evaluate(() => {
-      const v = window.__warsim!.view!;
-      const overlay = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
-      const px = overlay.getContext('2d')!.getImageData(0, 0, overlay.width, overlay.height).data;
-      const dpr = overlay.width / overlay.clientWidth;
-      const names = v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0 && l.box && !l.ghost);
-      const covered: string[] = [];
-      for (const l of names) {
-        // The letters: the box without its padding and its line spacing (`nameTextBox`), whole px inside it.
-        const b = { x: l.box!.x + 2, y: l.box!.y + l.box!.h / 6, w: l.box!.w - 4, h: (l.box!.h * 2) / 3 };
-        let over = 0;
-        let all = 0;
-        for (let y = Math.ceil(b.y * dpr); y < Math.floor((b.y + b.h) * dpr); y++)
-          for (let x = Math.ceil(b.x * dpr); x < Math.floor((b.x + b.w) * dpr); x++) {
-            if (x < 0 || y < 0 || x >= overlay.width || y >= overlay.height) continue;
-            all++;
-            if (px[(y * overlay.width + x) * 4 + 3]! > 16) over++;
-          }
-        if (over > 0) covered.push(`${v.cityLabels.city(l.index).name} ${Math.round((100 * over) / Math.max(1, all))}%`);
-      }
-      return { names: names.length, alphas: [...new Set(names.map((l) => l.nameAlpha))], covered, markers: v.markerRects.length, markerAlphas: [...new Set(v.markerRects.map((r) => r.alpha))] };
-    });
+    const names = await lettersCovered(page);
+    const markerAlphas = await page.evaluate(() => window.__warsim!.view!.markerRects.map((r) => r.alpha));
+    const got = {
+      names: names.length,
+      alphas: [...new Set(names.map((l) => l.alpha))],
+      covered: names.filter((l) => l.over > 0).map((l) => `${l.name} ${Math.round((100 * l.over) / Math.max(1, l.all))}%`),
+      markers: markerAlphas.length,
+      markerAlphas: [...new Set(markerAlphas)],
+    };
     console.log(`${where}, ${mPerPx} m/px: ${got.markers} markers, ${got.names} city names; something drawn over the letters of ${got.covered.length}: ${got.covered.join(', ')}`);
     await page.screenshot({ path: path.join(out, `city-names-t1-${where}-${mPerPx}m.png`) });
     // At rest a name is in full or absent, and so is a marker.
@@ -226,38 +238,7 @@ test('city names keep clear of the T1 markers, and are not simply left out', asy
     v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / 1000 });
   }, { cx: EX, cy: EY });
   await settle(page);
-  const running = await page.evaluate(async () => {
-    const v = window.__warsim!.view!;
-    const hud = window.__warsim!.hud;
-    hud.setSpeedLevel(99);
-    if (hud.paused.value) hud.togglePause();
-    const last = new Map<number, { x: number; y: number; alpha: number }>();
-    const jumps: string[] = [];
-    const shown: number[] = [];
-    let frames = 0;
-    let fades = 0;
-    const tick = v.lastTick;
-    for (const t0 = performance.now(); performance.now() - t0 < 4000; ) {
-      await new Promise((done) => requestAnimationFrame(done));
-      frames++;
-      let names = 0;
-      for (const l of v.cityLabels.lastPlaced) {
-        if (!l.box || l.ghost) continue;
-        if (l.nameAlpha > 0.5) names++;
-        const was = last.get(l.index);
-        if (was) {
-          const moved = Math.hypot(l.box.x - was.x, l.box.y - was.y);
-          if (moved > 0.5 && Math.min(l.nameAlpha, was.alpha) > 0.02) jumps.push(`${v.cityLabels.city(l.index).name}: ${moved.toFixed(0)} px at opacity ${l.nameAlpha.toFixed(2)}`);
-          if ((was.alpha === 1 && l.nameAlpha < 1) || (was.alpha === 0 && l.nameAlpha > 0)) fades++;
-        }
-        last.set(l.index, { x: l.box.x, y: l.box.y, alpha: l.nameAlpha });
-      }
-      shown.push(names);
-    }
-    if (!hud.paused.value) hud.togglePause();
-    hud.setSpeedLevel(4);
-    return { frames, ticks: v.lastTick - tick, fades, jumps, fewest: Math.min(...shown), most: Math.max(...shown), markers: v.markerRects.length };
-  });
+  const running = await watchNames(page, 4000);
   console.log(`running at top speed, 1000 m/px: ${running.frames} frames, ${running.ticks} ticks; ${running.markers} markers; ${running.fewest} to ${running.most} names shown, ${running.fades} fades begun, ${running.jumps.length} jumps`);
   expect(running.ticks).toBeGreaterThan(50);
   expect(running.frames).toBeGreaterThan(8);

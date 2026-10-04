@@ -1116,7 +1116,8 @@ export class MapView {
     this.drawSprites(cam, now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
-    // clear of the T0 counters (PLAN 1.45c), and the city names of both (PLAN 2.7r).
+    // clear of the T0 counters (PLAN 1.45c), and the city names of the flags and of the unit
+    // layer that is shown, counters or markers (PLAN 2.7r, 2.7u).
     this.drawUnitMarkers(cam, now);
     this.drawFx(cam, now);
     this.drawFlags(cam, now);

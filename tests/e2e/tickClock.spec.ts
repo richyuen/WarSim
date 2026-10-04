@@ -138,7 +138,15 @@ test('a snapshot of the tick in hand does not send the sprites back', async ({ p
       if (pausedTick === tick && v.lastTick === tick) again = { before, resumed: v.tickProgress(now), ms: now - t0 };
     }
     sim.setPaused(true);
-    return { pan, speed, walk, again };
+
+    // 5. A tick that comes while the game is paused (a single step) has no length: the sprites
+    //    stand where it has them at once, as before 2.7y.
+    await until('the end of the step in hand', () => v.tickProgress() === 1, 3000);
+    const held = v.lastTick;
+    await sim.step(1);
+    await until('the tick of the single step', () => v.lastTick !== held, 3000);
+    const stepped = v.tickProgress();
+    return { pan, speed, walk, again, stepped };
   });
 
   console.log(
@@ -169,4 +177,6 @@ test('a snapshot of the tick in hand does not send the sprites back', async ({ p
   expect(got.again, 'a pause and its end within one tick, in six tries').not.toBeNull();
   const again = got.again!;
   expect(Math.abs(again.resumed - Math.min(1, again.before + again.ms / 1000)), 'on again: the clock ran on').toBeLessThan(0.001);
+
+  expect(got.stepped, 'a single step while paused: no walk').toBe(1);
 });

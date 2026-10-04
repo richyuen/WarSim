@@ -787,6 +787,25 @@ quick sweep as a smoke test.
   21 of 23, 14 of 16, 9 of 9. Running at top speed at 1000 m/px for four seconds: no jump, 18 to 25
   names shown. Left out: Prague at 1800 m/px and Warsaw at 1000, with Turin, Kiev and Kraków
   (BLOCKERS). `docs/evidence/2.7/city-names-t1-*.png`, viewed.
+- [ ] 2.7z On the way back from T2 the T1 markers stand where they will rest (ADR-74, fourth read, finding 1).
+  At T2 no markers are drawn and the layer forgets its moves (`markerStacks.clear()`). On the way
+  back the boxes "do not move while they grow" (`still`, ADR-72), and `still` takes each box's place
+  from the moves in hand: there are none, so every box stands on its formation for the 470 ms of the
+  morph, and markers of two nations that rest parted are on each other meanwhile. When the morph ends
+  they ease apart over 150 ms. The city names (PLAN 2.7u) take their places against the boxes not yet
+  parted, and some change place again 530 to 620 ms after the zoom.
+  - Run here, the layer: two markers of two nations 16 px apart rest parted by 1.88 px each, a quarter
+    under each other. After `clear()`, in every frame of the way back they are 0.38 under each other,
+    with no move; then 0.35, 0.28, 0.24 as they ease.
+  - Run by the reader, made-up armies and cities: three markers of three nations up to 0.44 under each
+    other for the whole morph; in 13 of 40 runs a name in full took another place after the morph
+    (14 names, 33 to 39 frames after the zoom).
+  AT: unit: a layer that has been cleared, drawn `still`: each lead stands, from the first frame,
+  where `nudgeApart` puts it, and nothing moves when `still` ends. Markers that had moves before
+  `still` keep them (the way into T2: as now). e2e, 1938 start, over a front where boxes are parted
+  (Spain, as `markerStacks1938`): a zoom from T2 back to 1800 m/px: no pair of shown boxes of two
+  nations is more than a quarter on each other in any frame in which the boxes show in full, and no
+  box's place from its formation changes after its first frame.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

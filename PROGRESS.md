@@ -4557,3 +4557,31 @@ of what was done since the last pass.
 - **No assertion restated** in this task: `labelFades1938` passes as it was.
 - **The five tasks of the third read are done** (2.7v, w, x, y, u). **Next:** the review pass
   (five iterations since the last: 2.7v to 2.7u), with its independent read; then PLAN 2.8.
+
+## 2026-10-04 — Review pass after PLAN 2.7v–u
+
+No rule changed and nothing on screen changed. One task came out of it.
+
+- **The read, narrowed by the user** (ADR-74, addendum): of the two changes with the most new
+  logic, 2.7w and 2.7u, not of all five. Both held under what the reader ran.
+  - **PLAN 2.7z, the one task:** on the way back from T2 the T1 markers stand on their
+    formations for the whole morph and spring apart when it ends; the city names then change
+    places a second time. Run here at the layer: two markers that rest a quarter under each
+    other are 0.38 under each other for every frame of the way back. A rule of 2.7s2 that no
+    test enters after the layer was cleared.
+  - **Watch list:** the parting moves can leave a pair worse than it stood (rare); six
+    suspicions.
+- **Refactor debt:** `cityNames1938` had the pixel check written twice and the running check
+  twice. Two helpers now (`lettersCovered`, `watchNames`); the three tests pass with the same
+  numbers; 19 lines fewer. No assertion changed.
+- **One test added:** a single step while paused puts the sprites at the tick's end at once
+  (`tickClock`, a fifth part). 2.7y said it was unchanged; nothing checked it.
+- **Comments set right:** four that still said the names keep clear of the T0 counters and the
+  flags only (`cityLabels.ts`, `MapView.ts`).
+- **Evidence made again and looked at:** the six T1 marker shots (`docs/evidence/2.1`,
+  `2.7/marker-stacks-*`, `2.7/markers-apart-*`): the names stand elsewhere since 2.7u. Over
+  Poland at 1000 m/px Poznań is clear of its markers; Warsaw's name is not shown (known).
+- **SPEC:** read again for the parts of 2.7v to 2.7u; nothing to change.
+- **Looked at and left:** "frames until nothing animates" is written in six places now.
+- **Not run:** `sweep:quick` (ADR-58: at the phase review only). The critic is not due.
+- **Next:** PLAN 2.7z, then 2.8.
