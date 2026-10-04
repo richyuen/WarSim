@@ -4184,3 +4184,12 @@ No rule changed and nothing on screen changed. Six tasks came out of it.
 - **Tests:** 1 new unit test. 572 unit tests in 78 files, 90 e2e.
 - **Next:** the numbers chosen in 2.7n2 and 2.7n3 into DECISIONS (documents only), then PLAN 2.7p
   (a pan at T3 shows T2 sprites for 250 ms).
+
+## 2026-10-04 — DECISIONS: what was chosen in PLAN 2.7n1–n3
+
+Documents only. The three commits of 2.7n said what they did in PLAN, PROGRESS and the code;
+the choices and what was rejected were in none of the places a reader looks for a decision.
+They are under ADR-74 now, beside the entry of 2.7o: whole formations by the reach of their
+block; the step of the subscription key and why a 16th of the box; 48 px for a stand-in.
+
+- **Next:** PLAN 2.7p (a pan at T3 shows T2 sprites for 250 ms).

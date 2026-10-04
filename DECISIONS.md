@@ -301,6 +301,31 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **The two reads together:** fifteen findings, ten of them tasks, in code that passed its
     gate every time. The second cost 325,000 tokens and 45 minutes.
 
+- **2.7n, done 2026-10-04 (second read, finding 1): what was chosen in its three parts.**
+  - *2.7n1, whole formations by the reach of their block.* The worker widens the box, for a
+    formation's centre, by the distance to the far corner's slot and half a slot more, and
+    sends the formation whole.
+    - Rejected: elements one by one, by their own places. Fewer are sent at the closest
+      zooms, but the strength of a formation would no longer be the sum of the elements the
+      view has, which the T2 specs and the "one truth" check read.
+    - Rejected: one margin for all. Blocks are 6 to 53 slots: 0.05 to 0.17 cells.
+  - *2.7n2, the step of the subscription key: a power of two of cells between a 32nd and a
+    16th of the box's smaller half-size.*
+    - The pad is a fifth of the half-size. For the view of one camera to lie in the box of
+      another with the same key the step must not be more than the pad. A 16th is a third of
+      it: the rest is for the 100 ms between two subscriptions, in which a fast pan goes on.
+    - A power of two, and in the key: two cameras with one key then have one step, and
+      zooms near each other round to the same grid.
+    - It asks every 14 to 28 px of pan on a view 720 px high. Before: every pixel at T0 and
+      T1, every 41 px at 120 m/px, every 4,892 px at 1 m/px. At most 10 times a second, as
+      before.
+  - *2.7n3, 48 px.* A stand-in stands for a formation, as a marker does, so it has a size on
+    screen and not on the map. The silhouette fills two thirds of its square: 32 px lit, a
+    little more than a marker's box (26 × 17) and less than a counter.
+    - Rejected: no stand-ins in a world that has elements. The view cannot tell a formation
+      without elements from one whose elements are not in its box, and the toy world, where
+      every formation is a stand-in, would need the limit all the same.
+
 - **2.7o, done 2026-10-04 (second read, finding 3): how the worker knows a formation is new.**
   By the id alone it cannot: freed ids are given out again, the last freed first.
   - *Decision:* the table counts how often each id has been given out (`Table.generation`), and
