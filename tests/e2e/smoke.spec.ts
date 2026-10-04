@@ -7,7 +7,7 @@ test('page loads with the WarSim title and a sized map canvas', async ({ page })
     if (m.type() === 'error') errors.push(m.text());
   });
 
-  await page.goto('/');
+  await page.goto('/?scenario=toy');
   await expect(page).toHaveTitle('WarSim');
   const canvas = page.locator('canvas#map');
   await expect(canvas).toBeVisible();

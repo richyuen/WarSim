@@ -19,7 +19,7 @@ const geo = decodeAdmin1(file('admin1-geometry'));
 const meta = JSON.parse(file('admin1-meta').toString('utf8')) as Admin1Meta[];
 
 test('province raster builds in the worker at S and M sizes (Chromium == Node)', async ({ page }) => {
-  await page.goto('/?paused=1&view=0');
+  await page.goto('/?scenario=toy&paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
   for (const [w, h] of [[1024, 512], [2048, 1024]] as const) {
     const r = await page.evaluate(({ w, h }) => window.__warsim!.sim.buildProvinces(w, h), { w, h });

@@ -75,7 +75,7 @@ test('T2 elements: interest-managed, at their formations, strengths add up; none
 
 test('I4 with elements: 1938 subscription churn at T2 while stepping gives the Node hash', async ({ page }) => {
   test.setTimeout(150_000);
-  await page.goto('/?paused=1&view=0');
+  await page.goto('/?scenario=toy&paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
   const status = await page.evaluate(async ({ w, h }) => {
     const sim = window.__warsim!.sim;

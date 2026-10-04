@@ -42,7 +42,7 @@ const dist = (a: number[], b: number[]): number => Math.hypot(a[0]! - b[0]!, a[1
 test('an occupied cell renders in the occupier colour family', async ({ page }) => {
   const cell = findOccupiedCell();
   await page.setViewportSize({ width: 800, height: 450 });
-  await page.goto(`/?paused=1&seed=${SEED}`);
+  await page.goto(`/?scenario=toy&paused=1&seed=${SEED}`);
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick === 0);
   await page.evaluate((n) => window.__warsim!.sim.step(n), TICKS);
   await page.waitForFunction((t) => window.__warsim!.view!.lastTick === t, TICKS);

@@ -1,5 +1,26 @@
 import { LOCALES, locale, setLocale, t, type Locale, type MessageKey } from './i18n';
 
+/** The language picker (PLAN 0.21), in the top bar and on the title screen. */
+export function LocalePicker() {
+  return (
+    <label class="topbar-locale">
+      <span data-testid="locale-label">{t('settings.language')}</span>
+      <select
+        data-testid="locale-select"
+        aria-label={t('settings.language')}
+        value={locale.value}
+        onChange={(e) => setLocale((e.currentTarget as HTMLSelectElement).value as Locale)}
+      >
+        {LOCALES.map((l) => (
+          <option key={l} value={l}>
+            {t(`locale.${l}` as MessageKey)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 /** Top bar: title and language picker (PLAN 0.21). Grows into the AoC-style bottom bar later. */
 export function TopBar() {
   return (
@@ -8,21 +29,7 @@ export function TopBar() {
         {t('app.title')}
       </span>
       <span class="topbar-tagline">{t('app.tagline')}</span>
-      <label class="topbar-locale">
-        <span data-testid="locale-label">{t('settings.language')}</span>
-        <select
-          data-testid="locale-select"
-          aria-label={t('settings.language')}
-          value={locale.value}
-          onChange={(e) => setLocale((e.currentTarget as HTMLSelectElement).value as Locale)}
-        >
-          {LOCALES.map((l) => (
-            <option key={l} value={l}>
-              {t(`locale.${l}` as MessageKey)}
-            </option>
-          ))}
-        </select>
-      </label>
+      <LocalePicker />
     </header>
   );
 }

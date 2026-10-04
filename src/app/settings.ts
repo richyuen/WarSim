@@ -28,6 +28,11 @@ function store(key: string, v: number): void {
   }
 }
 
+/** The persisted UI size where no game runs (the title screen, PLAN 1.43). */
+export function applyUiScale(): void {
+  document.documentElement.style.fontSize = `${16 * load(KEY_UI, UI_SCALES, 1)}px`;
+}
+
 export class Settings {
   readonly uiScale = signal(load(KEY_UI, UI_SCALES, 1));
   readonly unitScale = signal(load(KEY_UNIT, UNIT_SCALES, 1));

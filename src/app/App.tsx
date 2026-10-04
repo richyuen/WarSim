@@ -31,6 +31,7 @@ export function App({
   seed,
   options,
   nameOf,
+  onMenu,
 }: {
   hud: Hud;
   player: PlayerControl | null;
@@ -40,6 +41,8 @@ export function App({
   seed: number;
   options: GameOptions;
   nameOf: (id: number) => string | null;
+  /** Leaves the game for the title screen (PLAN 1.43). */
+  onMenu: () => void;
 }) {
   const [scenarioStatus, setScenarioStatus] = useState('');
   // Re-render when custom flags change (the flag store is outside the signals).
@@ -85,6 +88,7 @@ export function App({
             if (view) void saveScreenshot(view, screenshotLabel(hud));
           }}
           onNewGame={(s, o) => location.assign(newGameUrl(base, s, o))}
+          onMenu={onMenu}
           onClose={() => hud.toggleSettings()}
         />
       ) : null}

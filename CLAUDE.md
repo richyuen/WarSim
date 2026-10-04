@@ -29,7 +29,8 @@ There is no memory between sessions. Read these files:
 - `npm run check:full`: every stage, whatever changed.
 - `npm run critic:due`: whether a critic run is due (PROMPT.md step 2a): no report yet, or a
   phase review ticked in PLAN.md since the report. One run per phase (ADR-59).
-- `npm run dev`: toy world at `/`; benches at `/bench.html?b=A|P|R`.
+- `npm run dev`: title screen at `/`; the 1938 world at `/?scenario=1938`, the toy world at
+  `/?scenario=toy`; benches at `/bench.html?b=A|P|R`.
 - `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`: a tick-time
   measurement. `--affinity` pins the run to the performance cores of the machine the budget was
   set on; unpinned, the same code reads up to 1.65 × slower there.

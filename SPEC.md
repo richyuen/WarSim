@@ -86,10 +86,11 @@ src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command
                    calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, derive/
 src/render/        camera.ts, gl/ (gpuTimer), map/ (MapRenderer), units/ (ProxyRenderer, atlas), fx/, labels/, lod/
-src/ui/            TopBar, BottomBar (date/pause/speed), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
-                   en.json = source of truth}; later panels, theme
+src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), i18n/{index.ts: t(), locale signal,
+                   pseudo-locale 'qps'; en.json = source of truth}; later panels, theme
 src/editor/        paint tools, undo stack, flag editor, scenario IO
-src/app/           main.tsx (?scenario=toy|1938), MapView.ts, simClient.ts, hud.ts (persisted speed/pause), input/
+src/app/           main.tsx (no ?scenario → title screen; ?scenario=1938|toy → game.tsx), MapView.ts, simClient.ts,
+                   hud.ts (persisted speed/pause), input/
                    (CameraController), testApi.ts (__warsim), bench/ (bench.html pages: A B BP P R T W F);
                    later settings, autosave, screenshot
 tools/             data/, headless/, parity/, bench/, dmath/, eslint/; later soak/, sweep/
@@ -1150,10 +1151,21 @@ interpolation changes something.
     (RFC 4180) and JSON export of the filtered rows.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
+- **Title screen** (implemented PLAN 1.43a, `src/ui/TitleScreen.tsx`, `src/app/main.tsx`) [ADR-60]:
+  - `/` (no `?scenario=`, or an unknown one) is the title screen: the scenario list (the
+    scenarios whose `scenario.json` is not `hidden`, the 1938 world first), the chosen scenario's
+    name, description, start date and map, and the new-game form (`src/ui/NewGameForm.tsx`: a
+    seed, random per visit, and the options below). No sim worker and no map exist behind it.
+  - A game is its URL. Start navigates to `?scenario=<id>&seed=<n>&paused=1` plus the options,
+    as New game in the settings panel does; a reload restarts that game and the URL can be shared.
+  - The toy world is a test world (`hidden`): it opens by `?scenario=toy` only.
+  - Settings → Main menu autosaves the game and returns to `/`.
+  - Still to come: Continue and scenario files on the title screen (PLAN 1.43b), a map preview
+    (PLAN 1.43c).
 - **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
-  interface size 85–130% (root font size), unit size 50–200% (marker size multiplier), both
-  persisted; F2 or the panel saves a PNG of the map with its overlays; seed field, random seed
-  and New game (reloads with `?seed=`, paused).
+  interface size 85–130% (root font size, also on the title screen), unit size 50–200% (marker
+  size multiplier), both persisted; F2 or the panel saves a PNG of the map with its overlays;
+  Main menu; seed field, random seed and New game (reloads with `?seed=`, paused).
 - **New-game options** (PLAN 1.39b1, `src/sim/gameOptions.ts`, `src/app/gameUrl.ts`): looping map
   (`settings.loopingMap`, saved; off = no wrap in pathing, territory, operational AI or
   rendering), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
@@ -1208,7 +1220,8 @@ interpolation changes something.
   conditions, AI-decided rather than God-forced); editor round trip; save/load.
   The test API is `window.__warsim`: now `sim` (SimClient: init/step/command/hash/save/load/
   speed/pause/subscribe/buildProvinces) and `view` (camera, controller.set/zoomTo, frames,
-  draw); later `god(cmd)`, `fps()`. URL options: `?seed=`, `?paused=1`, `?view=0`.
+  draw); later `god(cmd)`, `fps()`. It exists only in a game, not on the title screen. URL
+  options: `?scenario=1938|toy` (none = the title screen), `?seed=`, `?paused=1`, `?view=0`.
 - **Bench** (`npm run bench [-- A B BP R]`): Chromium on the real GPU (headless with
   `--use-angle=d3d11 --enable-gpu --ignore-gpu-blocklist`; without them it is SwiftShader).
   GPU time comes from EXT_disjoint_timer_query_webgl2 (gl.finish does not block under ANGLE).

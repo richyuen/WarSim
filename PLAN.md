@@ -303,13 +303,27 @@ quick sweep as a smoke test.
   (8 and 10 after 1.42e2); largest nation 12.2–16.4% of the land and 28.4–29.5% of the income.
   (1.42, critic B1 continued, the dynamism of the long run: moved to Phase 7 on 2026-10-03,
   ADR-58. Balance sweeps are suspended until phases 2–6 are complete.)
-- [ ] 1.43 Critic B5: a way into the game. `/` opens a title screen, not the two-nation toy
-  world: a scenario list with the 1938 world first, the new-game options of 1.39b1, and loading
-  a saved game or a `.warsim-scenario` file. The toy world moves behind its own URL
-  (`?scenario=toy`); the tests that open `/` for it move to that URL, unchanged otherwise.
+- [x] 1.43a Critic B5: a way into the game. `/` opens a title screen, not the two-nation toy
+  world: a scenario list with the 1938 world first and the new-game options of 1.39b1. The toy
+  world moves behind its own URL (`?scenario=toy`); the tests that open `/` for it move to that
+  URL, unchanged otherwise. The settings panel leads back to the title screen and saves first.
   AT: e2e: `/` shows the title screen and no world; choosing 1938 starts it on 1 January 1938
-  with the chosen seed and options; a scenario file loads from the screen; the toy world opens
-  by its URL; screenshots viewed.
+  with the chosen seed and options; the toy world opens by its URL; screenshots viewed.
+  (1.43 was split on 2026-10-03 into a, b and c: one cause per commit.)
+  Done 2026-10-03 (ADR-60; `tests/e2e/title.spec.ts`, `docs/evidence/1.43/`): the started game
+  has the state hash of a Node sim with the same seed and options.
+- [ ] 1.43b The title screen loads a game: Continue (the autosave, with the seed and options of
+  the game that wrote it) and a `.warsim-scenario` file.
+  AT: e2e: after Main menu, Continue resumes the autosave at its tick, and a game started
+  without a looping map resumes without one; with no autosave there is no Continue; a scenario
+  file chosen on the title screen starts its base scenario with the file's state hash; a
+  damaged file is refused on the title screen; screenshots viewed.
+- [ ] 1.43c The title screen shows the chosen scenario: a political map of its start and its
+  number of nations, drawn from the scenario's own data (AoC shows a map preview beside its
+  scenario list).
+  AT: e2e: the preview shows the scenario's nations in their colours (pixel check against the
+  nation colours at known places) and the count equals the sim's; screenshots viewed and
+  compared with the trailer frame of AoC's menu.
 - [ ] 1.44 Critic B6: the editor's brush and line paint on a left-drag. While a paint tool is
   active the camera pans on a right- or middle-drag and with the keys, not on a left-drag.
   AT: an e2e that drags: a brush stroke across ≥ 20 cells paints every cell under its path,

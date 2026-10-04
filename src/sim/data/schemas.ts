@@ -219,6 +219,8 @@ export const ScenarioMeta = z.strictObject({
   id: z.string().regex(/^[a-z0-9_]+$/),
   nameKey: key,
   descKey: key,
+  /** A test world: not offered on the title screen, opened by `?scenario=<id>` only (PLAN 1.43). */
+  hidden: z.boolean().optional(),
   map: id,
   /** Map size id; absent = the map's default size. */
   size: z.string().optional(),

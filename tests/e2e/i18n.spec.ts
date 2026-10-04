@@ -8,7 +8,7 @@ const en = JSON.parse(readFileSync(path.resolve(import.meta.dirname, '../../src/
 // the choice persists across reloads.
 
 test('UI renders en.json strings and the locale picker switches and persists', async ({ page }) => {
-  await page.goto('/?paused=1&view=0');
+  await page.goto('/?scenario=toy&paused=1&view=0');
   await expect(page.getByTestId('app-title')).toHaveText(en['app.title']!);
   await expect(page.getByTestId('locale-label')).toHaveText(en['settings.language']!);
   await expect(page.getByTestId('topbar')).toContainText(en['app.tagline']!);

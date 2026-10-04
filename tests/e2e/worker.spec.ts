@@ -22,7 +22,7 @@ function nodeRun(): { sim: Sim; mid: number } {
 test('I3: Node and worker runs produce identical hashes and save bytes', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/?paused=1&view=0');
+  await page.goto('/?scenario=toy&paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
 
   const browser = await page.evaluate(
@@ -60,7 +60,7 @@ test('I3: Node and worker runs produce identical hashes and save bytes', async (
 });
 
 test('worker reports errors as rejected promises', async ({ page }) => {
-  await page.goto('/?paused=1&view=0');
+  await page.goto('/?scenario=toy&paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
   const message = await page.evaluate(async () => {
     try {

@@ -22,14 +22,24 @@ export interface ScenarioInfo {
   geometry: ScenarioGeometry;
   /** Start date as days since 1970-01-01 (shared/calendar). */
   startDay: number;
+  /** i18n keys of the scenario's name and description, and of its map's name (title screen, PLAN 1.43). */
+  nameKey: string;
+  descKey: string;
+  mapNameKey: string;
+  /** Not offered on the title screen: it opens by its URL only (`?scenario=<id>`). */
+  hidden: boolean;
 }
 
 interface MapJson {
+  nameKey: string;
   widthKm: number;
   sizes: { id: string; w: number; h: number }[];
   defaultSize: string;
 }
 interface ScenarioJson {
+  nameKey: string;
+  descKey: string;
+  hidden?: boolean;
   size?: string;
   startDate: string;
   settings: { loopingMap: boolean };
@@ -47,7 +57,26 @@ export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   '1938': geometry(earthMap, scenario1938),
 };
 
+function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson): ScenarioInfo {
+  return {
+    geometry: SCENARIO_GEOMETRY[id],
+    startDay: dayOfIso(scenario.startDate),
+    nameKey: scenario.nameKey,
+    descKey: scenario.descKey,
+    mapNameKey: map.nameKey,
+    hidden: scenario.hidden === true,
+  };
+}
+
 export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
-  toy: { geometry: SCENARIO_GEOMETRY.toy, startDay: dayOfIso(toyScenario.startDate) },
-  '1938': { geometry: SCENARIO_GEOMETRY['1938'], startDay: dayOfIso(scenario1938.startDate) },
+  toy: info('toy', toyMap, toyScenario),
+  '1938': info('1938', earthMap, scenario1938),
 };
+
+/** The scenarios the title screen offers, in its order (PLAN 1.43). */
+export const LISTED_SCENARIOS: readonly ScenarioId[] = (['1938', 'toy'] as const).filter((id) => !SCENARIO_INFO[id].hidden);
+
+/** A `?scenario=` value as a scenario id; null for none or an unknown one (the title screen). */
+export function scenarioIdOf(value: string | null): ScenarioId | null {
+  return value !== null && Object.hasOwn(SCENARIO_INFO, value) ? (value as ScenarioId) : null;
+}

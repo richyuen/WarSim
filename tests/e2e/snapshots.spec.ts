@@ -6,7 +6,7 @@ import { Sim } from '../../src/sim/sim';
 // invariant I4 (subscription churn never changes sim state) across the worker boundary.
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/?paused=1&view=0');
+  await page.goto('/?scenario=toy&paused=1&view=0');
   await page.waitForFunction(() => window.__warsim !== undefined);
 });
 

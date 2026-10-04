@@ -167,6 +167,49 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-60 · 2026-10-03 · accepted — `/` is a title screen; a game is its URL (PLAN 1.43, critic B5)
+
+- **Context:** `/` booted the two-nation toy world, a test fixture, and the 1938 world could be
+  reached only by typing `?scenario=1938` (critic B5). AoC opens on a main menu: New game, Load
+  game, Scenarios, Settings, Credits and Quit along the top, a scenario list on the left, a map
+  preview with Play and Edit on the right (VISUAL 2026-10-03:
+  `reference/screens/steam-trailer-contact-sheet.png`, second row, last tile), and a search
+  field in the menu since v3.1.1 (TEXT).
+- **Decision:**
+  - A URL without `?scenario=`, or with an unknown one, is the title screen
+    (`src/ui/TitleScreen.tsx`): the scenario list, the chosen scenario's name, description, start
+    date and map, and the new-game form of PLAN 1.39b1 (seed and options) with Start. Nothing of
+    a game exists behind it: no sim worker, no map canvas, no `window.__warsim`.
+  - Start navigates to the game's URL (`newGameUrl`), exactly as New game in the settings panel
+    already did. `src/app/main.tsx` chooses between the title screen and `src/app/game.tsx`
+    (the former `main.tsx`, unchanged but for being a function).
+  - Which scenarios are offered is data: `"hidden": true` in a `scenario.json` keeps a scenario
+    off the list. The toy world is hidden and opens by `?scenario=toy`.
+  - The seed field starts with a random seed on each visit. Without `seed=` in a game URL the
+    seed is still 1938, as before.
+  - Settings → Main menu autosaves the game, then goes to `/`.
+- **Why a navigation and not a boot in the page:** a game that is its URL restarts on reload,
+  can be shared by its seed, and is what the e2e specs of the 1938 world and the critic's
+  scripts already open. Booting in the page would leave `/` in the address bar for every game.
+- **Why the toy world is not listed:** it is two rectangles for the tests of the worker, the
+  camera and the map view. A player who picks it has found a test fixture, not a scenario. The
+  critic asked for it behind a flag; its URL is that flag.
+- **Deviations from AoC [AoC-DEVIATION]:**
+  - One screen instead of a menu bar with sub-screens: there is one listed scenario today, and
+    the settings live in the game's own panel. No Quit (a browser tab) and no Credits screen
+    (`DATA_SOURCES.md` holds the sources; a credits view can come with the polish of Phase 7).
+  - The interface size setting applies to the title screen; in AoC it does not affect the main
+    menu (TEXT, v3.2.3). A player who needs a larger interface needs it there too.
+  - No search field: it would search a list of one.
+- **Split:** PLAN 1.43a is this ADR. Continue (the autosave) and loading a `.warsim-scenario`
+  file from the title screen are PLAN 1.43b; a map preview of the chosen scenario, as AoC has,
+  is PLAN 1.43c.
+- **Tests:** `tests/e2e/title.spec.ts` (no worker and no canvas at `/`; the game started from
+  the screen has the state hash of a Node sim with the same seed and options; Main menu leaves
+  an autosave at the tick it left; the toy world by its URL), `tests/unit/scenarios.test.ts`
+  (the list; unknown ids). Ten specs that opened `/` for the toy world now open
+  `/?scenario=toy`; nothing else in them changed.
+
 ### ADR-59 · 2026-10-03 · accepted — The critic runs once per phase, not every five commits (the user's decision)
 
 - **Context:** since ADR-49 the critic was due 5 commits after the later of its report and

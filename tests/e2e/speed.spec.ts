@@ -14,7 +14,7 @@ test('speed and pause persist across reload; the date advances from 1 January 19
   test.setTimeout(90_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
+  await page.goto('/?scenario=toy');
   await page.waitForFunction(() => window.__warsim?.hud.worker.value !== null);
   const label = page.getByTestId('speed-label');
   await expect(label).toHaveAttribute('data-level', '4'); // default: ×5 = 24 h/s
