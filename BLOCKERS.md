@@ -76,6 +76,12 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   involved. If it recurs, look at the page boot under 4 parallel workers.
   **Recurred 2026-10-03** on a 4-core machine in every gate run, with `precision` and `camera`:
   workers now scale to the cores and the spec has a 90 s timeout (PROGRESS of that date).
+- Tick timings on the budget machine come in two speeds (2026-10-03, PLAN 1.42e1): the same
+  commit measured 1.68 ms and, minutes later with the machine idle, 2.76 ms for year 1 of seed
+  99. The processor has 8 performance and 8 efficiency cores, and the slow figure (× 1.65) fits
+  a run on an efficiency core (not observed directly). Confined to the performance cores at high priority
+  (`.cache/pin.ps1`, a scratch script: affinity mask 0xFFFF) the figure is 1.671 ms twice. A
+  tick measurement for a budget is taken that way. Not yet a tool in the repo.
 - e2e boot stall (2026-10-03, 4-core machine, 2 workers): `coast1938.spec.ts:91` and
   `nationPanel1938.spec.ts:15` waited more than 60 s for the first frame of
   `/?scenario=1938&paused=1` in one gate run; alone they pass in 5.5 s and 11.6 s, and the gate

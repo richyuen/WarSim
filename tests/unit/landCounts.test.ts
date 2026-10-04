@@ -1,6 +1,8 @@
 import { expect, it } from 'vitest';
-import { LandCounts } from '../../src/sim/landCounts';
+import { landStandings } from '../../src/sim/landArea';
+import { cellKm2ByRow, LandCounts } from '../../src/sim/landCounts';
 import { cellOf } from '../../src/sim/data/terrain';
+import { cellAreaByRow } from '../../src/sim/nav/grid';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import type { World } from '../../src/sim/world';
@@ -8,15 +10,37 @@ import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
 // The land tallies kept by setOwner/setController (PLAN 1.42f) equal a fresh scan of the map
-// after months of war, after editor edits and their undo, and after a load.
+// after months of war, after editor edits and their undo, and after a load. They are km² (ADR-57),
+// whole per cell, so "equal" is exact: a load rebuilds them by the scan.
 const same = (world: World): void => {
   const kept = world.landCounts();
-  const scan = LandCounts.scan(world.cells.owner, world.cells.controller);
+  const scan = LandCounts.scan(world.cells.owner, world.cells.controller, world.cells.w, world.cells.h);
   expect(kept.owned).toEqual(scan.owned);
   expect(kept.lost).toEqual(scan.lost);
   const sorted = (m: Map<number, number>): [number, number][] => [...m].sort((a, b) => a[0] - b[0]);
   expect(sorted(kept.occupied)).toEqual(sorted(scan.occupied));
 };
+
+it('a cell counts the whole km² of its row: within half a km² of the true area, never zero', () => {
+  const { w, h } = SIZE_1938;
+  const km2 = cellKm2ByRow(w, h);
+  const exact = cellAreaByRow(w, h);
+  for (let y = 0; y < h; y++) {
+    expect(Number.isInteger(km2[y])).toBe(true);
+    expect(Math.abs(km2[y]! - exact[y]!)).toBeLessThanOrEqual(0.5);
+    expect(km2[y]!).toBeGreaterThan(20);
+  }
+});
+
+it('the tallies are the owned areas of the 1938 start, to 0.1% per nation', () => {
+  const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });
+  const land = landStandings(s.world);
+  const kept = s.world.landCounts();
+  // The Soviet Union by area, not by cells (it holds 26.8% of the owned cells).
+  expect(kept.owned[nationId('SOV')]! / land.owned).toBeGreaterThan(0.155);
+  expect(kept.owned[nationId('SOV')]! / land.owned).toBeLessThan(0.163);
+  for (const n of land.ranked.slice(0, 40)) expect(Math.abs(kept.owned[n]! / land.area[n]! - 1)).toBeLessThan(0.001);
+});
 
 it('kept land tallies equal a scan through war, edits, undo and load', () => {
   const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });

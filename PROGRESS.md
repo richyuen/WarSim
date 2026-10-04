@@ -2728,3 +2728,44 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   step 4 the dear year was year 1. A world with more wars moves the cost between years; the
   next sim rule that adds work is measured the same way (three runs, here).
 - **Next:** PLAN 1.42e (land rules by area), then the retry of 1.42 on seeds from 401.
+
+## 2026-10-03 — PLAN 1.42e1: the land rules of a war count km², not cells (ADR-57)
+- **Split:** PLAN 1.42e is three rules (a war's land shares, overextension, the admin cost):
+  three commits, each with its own pin and quick sweep (1.42e1–1.42e3). This is the first.
+- **Rule:** the score, the true share behind exhaustion, capitulation, the puppet share and the
+  small-state limit read km². `LandCounts` tallies whole km² per cell (the area of the cell's
+  row, rounded), so the tallies are integers and the ones the setters keep equal a scan exactly;
+  with the exact areas a load would have rebuilt them with other last bits. `SMALL_STATE_CELLS`
+  40 → `SMALL_STATE_KM2` 8,500 (40 mean owned cells of 212 km²).
+- **Why it matters, on the 1938 map:** the northern 75% of the Soviet cells are 61% of its land,
+  the northern 33% are 19.5%. German-sized bites of the Arctic scored 50 and now score 10.
+- **Tests:** four new ones in `war.test.ts`, on cases where cells and km² disagree; one older
+  test re-stated in km² (same expected score); `landCounts.test.ts` compares the km² tallies
+  with a scan and with the exact areas. With the tallies counting 1 per cell the four new tests
+  and the re-stated one fail.
+- **Hash:** seed 99 after one year e5741d70 → 23734db3 (pin moved); after five 7a8e5c27 →
+  6738d695.
+- **Timing on this machine has two speeds, found here.** After the change year 1 read 3.42 ms
+  (1.68 before). Then HEAD itself read 2.74–2.78 ms, with the machine idle (2% load): the same
+  code, 1.65 × slower than an hour earlier. The processor has 8 performance and 8 efficiency
+  cores; the slow figure fits a run on an efficiency core (not observed directly). Confined to
+  the performance cores at high priority (`.cache/pin.ps1`, affinity 0xFFFF), HEAD reads 1.671
+  and 1.671 ms, the speed of the three runs that closed 1.42f (1.68 ms). Every tick figure
+  below is taken that way.
+  **A budget measurement on this machine is pinned, or it is not a measurement.**
+- **Tick, pinned** (seed 99): year 1 1.671 → 2.047, 2.051, 2.040 ms (budget 2.4); 5-year mean
+  1.43 (the runs that closed 1.42f) → 1.367 ms (budget 1.5; one run; years 1–5: 2.04, 1.10,
+  0.91, 1.45, 1.33). Year 1 is dearer because its world fights more (29 major battles instead of 8; operational AI 0.84 →
+  1.39 ms and combat 0.72 → 0.85 ms in a per-system profile, both taken at the slow speed),
+  not because of the tallies (war system 0.07 → 0.06 ms in the same profile).
+- **Quick sweep** (seeds 1–10 × 20 years, scratch, `.cache/sweep-quick-adr57.log`): limits 10 of
+  10, riser 7 of 10, faller 10 of 10, the counts of ADR-56. 4.5 min. Largest faller: the British
+  realm in seeds 1, 4, 5 and 9; China, with no land left, in 2 and 10; Italy, with no land left,
+  in 3, 7 and 8. Risers in seeds 2, 7 and 8 are small states that grew past 1% of the land (the
+  Chinese communists × 23, Austria × 45, Switzerland × 35): not looked into.
+- **Not verified in the browser:** a rule of the war system with no UI of its own; the e2e stage
+  of the gate ran.
+- **Scratch files:** `.cache/ck/seed99-y1.bin` was written before this rule: rewrite it before
+  the next question about later years.
+- **Next:** PLAN 1.42e2 (overextension by km²), then 1.42e3 (admin cost) with the three-run tick
+  measurement, pinned.

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, MAX_WAR_DAYS, noteCapitalCaptured, PUPPET_SCORE, REL_CAP, TRUCE_TICKS } from '../../src/sim/systems/war';
+import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, MAX_WAR_DAYS, noteCapitalCaptured, PUPPET_SCORE, PUPPET_SHARE, REL_CAP, SMALL_STATE_KM2, TRUCE_TICKS } from '../../src/sim/systems/war';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/sim1938';
@@ -15,6 +15,55 @@ const W = SIZE_1938.w;
 const GER = nationId('GER');
 const POL = nationId('POL');
 const SOV = nationId('SOV');
+const FIN = nationId('FIN');
+const BRA = nationId('BRA');
+const USA = nationId('USA');
+
+/**
+ * A sim in which `a` and `b` stand alone (no alliance, guarantee, overlord or puppet) and `a` has
+ * declared war on `b` (applied at tick 0), the AI off.
+ */
+function duel(a: number, b: number, seed = 1): Sim {
+  const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
+  const w = s.world;
+  w.settings.aiEnabled = false;
+  for (const n of [a, b]) {
+    w.alliances.leave(n);
+    w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    w.nations.cols.overlord[n] = 0;
+  }
+  // One on one: puppets would add their land to the sides.
+  w.nations.forEach((n) => {
+    if (w.nations.cols.overlord[n] === a || w.nations.cols.overlord[n] === b) w.nations.cols.overlord[n] = 0;
+  });
+  s.command({ kind: 'declareWar', attacker: a, defender: b });
+  return s;
+}
+
+/** The cells `nation` owns, ordered by `key` (smallest first, then by cell). */
+function cellsOf(w: World, nation: number, key: (c: number) => number): number[] {
+  const out: number[] = [];
+  w.cells.owner.forEach((o, c) => o === nation && out.push(c));
+  return out.sort((p, q) => key(p) - key(q) || p - q);
+}
+
+/** Row of a cell: 0 is the northernmost. */
+const rowOf = (c: number): number => Math.floor(c / W);
+
+/** km² of `cells` in the sim's measure (whole km² per cell, by row). */
+const km2Of = (w: World, cells: readonly number[]): number => cells.reduce((sum, c) => sum + w.landCounts().rowKm2[rowOf(c)]!, 0);
+
+/** `nation` keeps the `keep` cells nearest its capital; the rest of its land goes to the United States. */
+function shrinkToCapital(w: World, nation: number, keep: number): number[] {
+  const cx = w.nations.cols.capitalX[nation]!;
+  const cy = w.nations.cols.capitalY[nation]!;
+  const cells = cellsOf(w, nation, (c) => ((c % W) + 0.5 - cx) ** 2 + (rowOf(c) + 0.5 - cy) ** 2);
+  for (const c of cells.slice(keep)) {
+    w.setOwner(c, USA);
+    w.setController(c, USA);
+  }
+  return cells.slice(0, keep);
+}
 
 
 /**
@@ -202,31 +251,24 @@ describe('wars and peace (PLAN 1.16)', () => {
 
   // Critic B1 (2026-10-03): wars against large nations must be winnable, and no war lasts forever.
   it('the score is relative to the smaller party: half of Germany\'s own size taken from the Soviet Union scores 50', () => {
-    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
-    s.world.settings.aiEnabled = false;
-    for (const n of [GER, SOV]) {
-      s.world.alliances.leave(n);
-      s.world.alliances.guarantees = s.world.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
-    }
+    const s = duel(GER, SOV);
     const w = s.world;
-    // One on one: puppets would add their land to the sides.
-    w.nations.forEach((n) => {
-      if (w.nations.cols.overlord[n] === GER || w.nations.cols.overlord[n] === SOV) w.nations.cols.overlord[n] = 0;
-    });
-    s.command({ kind: 'declareWar', attacker: GER, defender: SOV });
     s.step(24);
-    const german = w.nations.cols.cells[GER]!;
-    const soviet = w.nations.cols.cells[SOV]!;
+    // Land is km² (ADR-57): the sizes are areas, and so is the half of Germany that is taken.
+    const german = w.landCounts().owned[GER]!;
+    const soviet = w.landCounts().owned[SOV]!;
     expect(soviet).toBeGreaterThan(REL_CAP * german);
     // Far-eastern Soviet cells (no capital, no armies in contact within the hour).
-    const cells: number[] = [];
-    w.cells.owner.forEach((o, c) => o === SOV && cells.push(c));
-    cells.sort((a, b) => (b % W) - (a % W) || a - b);
-    const taken = cells.slice(0, Math.round(0.5 * german));
+    const cells = cellsOf(w, SOV, (c) => -(c % W));
+    const taken: number[] = [];
+    for (let i = 0, km2 = 0; km2 < 0.5 * german; i++) {
+      taken.push(cells[i]!);
+      km2 += w.landCounts().rowKm2[rowOf(cells[i]!)]!;
+    }
     for (const c of taken) w.setController(c, GER);
     s.step(1); // the 00:00 assessment
     const war = w.wars.between(GER, SOV)!.war;
-    expect(taken.length / soviet).toBeLessThan(0.02); // by true share this was a white peace
+    expect(km2Of(w, taken) / soviet).toBeLessThan(0.02); // by true share this was a white peace
     expect(war.score).toBeGreaterThanOrEqual(48); // 200 × (0.5 G) ÷ (REL_CAP × G) = 50, ± front flips
     expect(war.score).toBeLessThanOrEqual(52);
     // Peace on that score: Germany keeps what it took (ADR-51; half of it until then); the
@@ -237,6 +279,91 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(kept).toBe(taken.length);
     expect(w.nations.cols.overlord[SOV]).toBe(0);
   });
+
+  // PLAN 1.42e, ADR-57: every land share of a war is a share of km², not of cells. The Soviet far
+  // north is where the two differ most: its cells cover a third of the ground of German ones.
+  it('the score counts km²: Arctic cells numbering half of the German cells score far below 50', () => {
+    const s = duel(GER, SOV);
+    const w = s.world;
+    s.step(24);
+    const taken = cellsOf(w, SOV, rowOf).slice(0, Math.round(0.5 * w.nations.cols.cells[GER]!));
+    for (const c of taken) w.setController(c, GER);
+    s.step(1); // the 00:00 assessment
+    const war = w.wars.between(GER, SOV)!.war;
+    const byArea = (200 * km2Of(w, taken)) / (REL_CAP * w.landCounts().owned[GER]!);
+    expect(byArea).toBeLessThan(25); // by cells: 200 × 0.5 ÷ REL_CAP = 50
+    expect(Math.abs(war.score - byArea)).toBeLessThanOrEqual(2); // ± front flips
+  });
+
+  it('capitulation counts km²: the northern three quarters of the Soviet cells are not three quarters of its land', () => {
+    const s = duel(GER, SOV);
+    const w = s.world;
+    s.step(1);
+    const war = w.wars.between(GER, SOV)!.war;
+    s.command({ kind: 'setWarFightToDeath', war: war.id, side: 1, value: true });
+    s.step(23); // occupy just before the 00:00 assessment at tick 24
+    const north = cellsOf(w, SOV, rowOf);
+    const soviet = w.landCounts().owned[SOV]!;
+    const first = north.slice(0, Math.round((CAPITULATE + 0.03) * north.length));
+    for (const c of first) w.setController(c, GER);
+    expect(first.length / north.length).toBeGreaterThan(CAPITULATE); // by cells: overrun
+    expect(km2Of(w, first) / soviet).toBeLessThan(CAPITULATE - 0.05); // by km²: not yet
+    expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([]);
+    expect(w.wars.atWar(GER, SOV)).toBe(true);
+    // Further south until 80% of the land is held: now it capitulates, fight to the death or not.
+    s.step(23);
+    let km2 = km2Of(w, first);
+    for (let i = first.length; km2 < (CAPITULATE + 0.05) * soviet; i++) {
+      w.setController(north[i]!, GER);
+      km2 += w.landCounts().rowKm2[rowOf(north[i]!)]!;
+    }
+    expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, SOV]]);
+  }, 60_000);
+
+  it('the puppet share counts km²: 33% of the Soviet cells in the north are under 30% of its land', () => {
+    const s = duel(GER, SOV);
+    const w = s.world;
+    s.step(24);
+    const north = cellsOf(w, SOV, rowOf);
+    const soviet = w.landCounts().owned[SOV]!;
+    const taken = north.slice(0, Math.round((PUPPET_SHARE + 0.03) * north.length));
+    for (const c of taken) w.setController(c, GER);
+    expect(taken.length / north.length).toBeGreaterThan(PUPPET_SHARE);
+    expect(km2Of(w, taken) / soviet).toBeLessThan(PUPPET_SHARE - 0.05);
+    // Several times Germany's own land: score 100, the Soviet Union is crushed and sues.
+    expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, SOV]]);
+    for (const c of taken) expect(w.cells.owner[c]).toBe(GER);
+    expect(w.nations.cols.overlord[SOV]).toBe(0);
+    expect(w.nations.cols.living[SOV]).toBe(1);
+  }, 60_000);
+
+  it('a small losing leader is annexed by km²: 48 cells at 60°N are small, 32 cells in the tropics are not', () => {
+    const lose = (loser: number, keep: number, occupy: number): { w: World; left: number[] } => {
+      const s = duel(GER, loser);
+      const w = s.world;
+      s.step(24);
+      const kept = shrinkToCapital(w, loser, keep);
+      // Germany holds the cells farthest from the capital; the loser is broke and sues.
+      for (const c of kept.slice(keep - occupy)) w.setController(c, GER);
+      w.nations.cols.gold[loser] = -1e9;
+      expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, loser]]);
+      return { w, left: kept.slice(0, keep - occupy) };
+    };
+    // Finland around Helsinki: 60 cells, 12 lost. The 48 left are more than the 40 cells of the
+    // old rule and less than SMALL_STATE_KM2: annexed whole.
+    const fin = lose(FIN, 60, 12);
+    expect(fin.left.length).toBeGreaterThanOrEqual(40);
+    expect(km2Of(fin.w, fin.left)).toBeLessThan(SMALL_STATE_KM2);
+    expect(fin.w.nations.cols.living[FIN]).toBe(0);
+    for (const c of fin.left) expect(fin.w.cells.owner[c]).toBe(GER);
+    // Brazil around Rio de Janeiro: 38 cells, 6 lost. The 32 left are fewer than 40 cells and more
+    // than SMALL_STATE_KM2: it keeps them.
+    const bra = lose(BRA, 38, 6);
+    expect(bra.left.length).toBeLessThan(40);
+    expect(km2Of(bra.w, bra.left)).toBeGreaterThan(SMALL_STATE_KM2);
+    expect(bra.w.nations.cols.living[BRA]).toBe(1);
+    for (const c of bra.left) expect(bra.w.cells.owner[c]).toBe(BRA);
+  }, 60_000);
 
   it('capitulation: an overrun side loses at once, even when it fights to the death', () => {
     const s = atWar();

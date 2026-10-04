@@ -408,6 +408,12 @@ tag → spec.
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
     a much larger nation can be won (ADR-47). The true share (÷ Y's land) drives exhaustion,
     puppets and capitulation.
+  - *Land is km², not cells (ADR-57):* every land figure of a war (the score, the true share,
+    capitulation, the puppet share, the small-state limit) is an area. A cell counts the true
+    area of its row rounded to a whole km² (29 km² at 80°N, 382 km² at the equator), so the
+    tallies (`src/sim/landCounts.ts`) are integers: the ones the cell setters keep equal the
+    scan a load makes. By cells land at 60°N weighed 1.7 times its area against the mean owned
+    cell (212 km²), and land at 72°N 3.4 times.
   - *Exhaustion:* 0.1 per day + 80 × share of men lost since the war's first assessment +
     60 × occupied true share of own land.
   - *Suing:* a side sues when broke (gold < 0 or bankrupt), exhausted (≥ 80) or crushed
@@ -416,6 +422,8 @@ tag → spec.
     annexes all of the losers' land it occupies, and the losers' occupations of the winners
     revert (ADR-51; until then round(|score|% of the occupied land), nearest first). At ≥ 90
     the loser's leader also becomes a puppet when the annexed land is ≥ 30% of the losers' land.
+    A losing leader left with less than 8,500 km² is annexed whole instead (PLAN 1.40; 40 cells
+    until ADR-57).
   - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose
     leader has lost ≥ 75% of its own land to occupiers of any war, loses at ±100 at once, fight
     to the death or not.

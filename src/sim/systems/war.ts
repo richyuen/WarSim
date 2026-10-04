@@ -6,9 +6,12 @@
  * the defender also gains its guarantors (each with its puppets). A side fights to the death when any
  * member's nation flag is set (God Mode can change it per war with `setWarFightToDeath`).
  *
- * Daily (00:00), when any war exists, one grid pass counts land owned per nation and land
- * occupied per (owner, controller) pair. Per war, with side A = attackers, D = defenders:
- *   held(X→Y)  = cells owned by Y's side and controlled by X's side
+ * Daily (00:00), when any war exists, the day's land tallies (`LandCounts`) give the land owned
+ * per nation and the land occupied per (owner, controller) pair. Land is km², not cells (ADR-57):
+ * a Miller cell in the far north covers a quarter of the ground of one at the equator, and by
+ * cells Siberia weighed twice its land in every share below. Per war, with side A = attackers,
+ * D = defenders:
+ *   held(X→Y)  = km² owned by Y's side and controlled by X's side
  *   occ(X→Y)   = held(X→Y) ÷ min(land(Y), REL_CAP × land(X)), at most 1
  *   share(X→Y) = held(X→Y) ÷ land(Y), the true share
  *   score = clamp(200 × (occ(A→D) − occ(D→A)) + capitalBonus, −100, 100)
@@ -26,7 +29,8 @@
  *   a conquest that was small to begin with, and the map hardly changed at a peace); the losers'
  *   occupations of the winners revert;
  *   ≥ PUPPET_SCORE: when the annexed land is at least PUPPET_SHARE of the losers' land, the
- *   loser's leader also becomes a puppet of the winner's leader.
+ *   loser's leader also becomes a puppet of the winner's leader;
+ *   a losing leader left with less than SMALL_STATE_KM2 is annexed whole instead.
  * Capitulation: a side with share(other→side) ≥ CAPITULATE, or whose leader has lost that share
  * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
  * the spot. (An overrun fight-to-the-death nation used to stay at war for good and kept its
@@ -60,8 +64,11 @@ export const MAX_WAR_DAYS = 5 * 365;
 export const TRUCE_TICKS = 24 * 730;
 /** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
 export const PEACE_PUPPET_AUTONOMY = 30;
-/** A losing leader smaller than this (owned cells, ≈ 15,000 km² at M) is annexed by a decisive winner. */
-export const SMALL_STATE_CELLS = 40;
+/**
+ * A losing leader smaller than this (km² owned after the terms) is annexed by a decisive winner.
+ * Until ADR-57 it was 40 cells: 40 cells of the mean area of an owned cell in 1938 (212 km²).
+ */
+export const SMALL_STATE_KM2 = 8500;
 /** Player peace offers (PLAN 1.33b) are accepted when the offering side leads by this score… */
 export const PEACE_ACCEPT_SCORE = 25;
 /** …or the other side's exhaustion exceeds this (the AI's stalemate threshold). */
@@ -224,18 +231,28 @@ export function makePeace(world: World, war: War): void {
   const W = war.sides[winner]!;
   const L = war.sides[1 - winner]!;
   const s = Math.abs(war.score);
-  const { owner, controller } = world.cells;
+  const { owner, controller, w, h } = world.cells;
   const inW = new Set(W);
   const inL = new Set(L);
-  // One pass: the winner's occupation of the loser (candidates) and the reverse (reverts).
+  const rowKm2 = world.landCounts().rowKm2;
+  // One pass: the winner's occupation of the loser (candidates) and the reverse (reverts), with
+  // the losers' land and the occupied part of it in km².
   const candidates: number[] = [];
   let loserLand = 0;
-  for (let c = 0; c < owner.length; c++) {
-    const o = owner[c]!;
-    const k = controller[c]!;
-    if (inL.has(o)) loserLand++;
-    if (inL.has(o) && inW.has(k)) candidates.push(c);
-    else if (inW.has(o) && inL.has(k)) world.setController(c, o);
+  let occupied = 0;
+  for (let y = 0, c = 0; y < h; y++) {
+    const km2 = rowKm2[y]!;
+    for (let x = 0; x < w; x++, c++) {
+      const o = owner[c]!;
+      const k = controller[c]!;
+      if (inL.has(o)) {
+        loserLand += km2;
+        if (inW.has(k)) {
+          candidates.push(c);
+          occupied += km2;
+        }
+      } else if (inW.has(o) && inL.has(k)) world.setController(c, o);
+    }
   }
   for (const c of candidates) {
     if (s >= WHITE_PEACE) world.setOwner(c, controller[c]!);
@@ -247,8 +264,8 @@ export function makePeace(world: World, war: War): void {
   world.wars.end(war);
   // A small losing leader is annexed outright by a decisive winner (PLAN 1.40 tuning: losing
   // rebels otherwise survived as rump states or puppets, and 50 years ended with 300–600 nations).
-  if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && nc.cells[ll]! < SMALL_STATE_CELLS) annexNation(world, wl, ll);
-  else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && candidates.length >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
+  if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && world.landCounts().owned[ll]! < SMALL_STATE_KM2) annexNation(world, wl, ll);
+  else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && occupied >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
   world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
 }

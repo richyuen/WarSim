@@ -259,6 +259,32 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   conversion of PLAN 7.1b: do the land-share part here, leave distances and map sizes there.
   Rule changes: an ADR, and tune only on `npm run sweep:quick`.
   AT: unit tests per converted rule; hash change logged in DECISIONS; gate green.
+  Split 2026-10-03 into one rule per commit (1.42e1–1.42e3 below); tick this line with the
+  last of them. Not converted, left to 7.1b: the overextension distance (`OVEREXT_CELLS`),
+  `MILITIA_PER_CELLS` and the largest fragment of a collapse (ADR-57).
+- [x] 1.42e1 The land rules of a war count km² (ADR-57): score, true share, capitulation, puppet
+  share, small-state limit (`SMALL_STATE_KM2` 8,500 = 40 mean owned cells). `LandCounts`
+  tallies whole km² per cell, so the kept tallies equal a scan exactly.
+  AT: unit tests on cases where cells and km² disagree; kept tallies equal a scan; the pin
+  moved with the hashes in DECISIONS; gate green; quick sweep keeps the limits.
+  Done 2026-10-03: four new tests in `war.test.ts` (all fail with the tallies counting cells);
+  seed 99 after one year e5741d70 → 23734db3, after five 7a8e5c27 → 6738d695; tick, on the
+  performance cores: year 1 2.05 ms, 5-year mean 1.37 ms (both in budget).
+  Quick sweep (1–10 × 20 years, scratch): limits 10/10, riser 7/10, faller 10/10.
+- [ ] 1.42e2 Overextension counts km²: a holder's share of the world's owned land
+  (`revolts.ts`, `OVEREXT_SHARE` 4% unchanged) is a share of area, read from `LandCounts`.
+  By cells the Soviet Union is at 26.8% and Canada at 12.3%; by area 15.9% and 6.8%, and
+  Australia (6.1%) and Brazil (6.4%) come above the 4% they were under.
+  AT: a unit test where the two measures disagree; pin and hashes in DECISIONS (ADR-57
+  addendum); gate green; quick sweep keeps the limits.
+- [ ] 1.42e3 The admin cost counts km² held (`economy.ts`): `adminCost` per 212,000 km² (1,000
+  mean owned cells) instead of per 1,000 cells. Measured at the 1938 start, uncapped, summed
+  over all nations: 568 gold a month by cells, 470 by mean cells (Soviet Union 253 → 125,
+  Canada 89 → 40, Brazil 18 → 37, Australia 20 → 34), 212 by equatorial cells. The mean-cell
+  reference keeps the world's total nearest; decide in the ADR, with the quick sweep.
+  AT: unit tests (`economy.test.ts` in km²); pin and hashes in DECISIONS; gate green; quick
+  sweep keeps the limits; then the tick measured by the three-run rule of 1.42f, pinned to
+  the performance cores (PROGRESS 2026-10-03).
 - [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03). Retry after 1.42d
   and 1.42f (and 1.42e if that is done), judged by area, on seeds from 401.** Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
@@ -382,6 +408,8 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
+  The shares of land are km² already (PLAN 1.42e, ADR-57). Still in cells: `OVEREXT_CELLS`,
+  `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
   AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
   tick and memory budgets.
 - [ ] 7.2 30-minute soak with save/load twin comparison.

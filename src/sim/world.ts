@@ -453,8 +453,9 @@ export class World {
     const c = this.cells;
     if (c.controller[i] === nation) return;
     if (this.land) {
-      this.land.cell(c.owner[i]!, c.controller[i]!, -1);
-      this.land.cell(c.owner[i]!, nation, 1);
+      const km2 = this.land.rowKm2[Math.floor(i / c.w)]!;
+      this.land.cell(c.owner[i]!, c.controller[i]!, -km2);
+      this.land.cell(c.owner[i]!, nation, km2);
     }
     this.controlChanges++;
     this.supplyDirtyNations.add(c.controller[i]!);
@@ -478,8 +479,9 @@ export class World {
     if (c.owner[i] !== 0 && this.nations.has(c.owner[i]!)) nc.cells[c.owner[i]!] = nc.cells[c.owner[i]!]! - 1;
     if (nation !== 0 && this.nations.has(nation)) nc.cells[nation] = nc.cells[nation]! + 1;
     if (this.land) {
-      this.land.cell(c.owner[i]!, c.controller[i]!, -1);
-      this.land.cell(nation, c.controller[i]!, 1);
+      const km2 = this.land.rowKm2[Math.floor(i / c.w)]!;
+      this.land.cell(c.owner[i]!, c.controller[i]!, -km2);
+      this.land.cell(nation, c.controller[i]!, km2);
     }
     c.owner[i] = nation;
     const x = i % c.w;
@@ -487,9 +489,9 @@ export class World {
     this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;
   }
 
-  /** Land tallies of the current map (built by a scan on first use, then kept by the setters). */
+  /** Land tallies of the current map in km² (built by a scan on first use, then kept by the setters). */
   landCounts(): LandCounts {
-    return (this.land ??= LandCounts.scan(this.cells.owner, this.cells.controller));
+    return (this.land ??= LandCounts.scan(this.cells.owner, this.cells.controller, this.cells.w, this.cells.h));
   }
 
   /** Forget the land tallies (cells were written without the setters, e.g. by a load). */

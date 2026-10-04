@@ -167,6 +167,55 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-57 · 2026-10-03 · accepted — The land rules of a war count km², not cells (PLAN 1.42e1)
+
+- **Context:** ADR-52 made every reported land figure an area and left the sim's rules on
+  cells. On the Miller map a cell covers 382 km² at the equator, 128 km² at 60°N, 63 km² at 72°N
+  and 29 km² at 80°N; the mean owned cell of the 1938 start is 212 km² (133.2 M km² over 627,829
+  cells). A war's shares were shares of cells, so land at 60°N weighed 1.7 times its area and
+  land at 72°N 3.4 times: a km² of the Arctic coast scored three times a km² of the Ukraine,
+  and the Soviet Union was "75% overrun" with the northern 61% of its land held.
+- **Decision:** every land figure in `src/sim/systems/war.ts` is km²: the score (`occ`, the
+  smaller-party cap), the true share behind exhaustion, capitulation (both tests), the puppet
+  share of a peace, and the small-state limit. The shares keep their numbers (REL_CAP 2,
+  CAPITULATE 0.75, PUPPET_SHARE 0.3).
+- **Whole km² per cell.** `LandCounts` is kept by the cell setters and rebuilt by a scan on a
+  load. Sums of the exact areas (floats) depend on the order of the additions, so a kept tally
+  and a scanned one would differ in their last bits, and a loaded game could settle a peace
+  differently from the game that saved it. A cell therefore counts the area of its row rounded
+  to a whole km² (`cellKm2ByRow`): the tallies are integers, exact in any order. The rounding is
+  at most 0.5 km² a cell; the tallies of the 40 largest nations of 1938 are within 0.1% of
+  their exact areas (`tests/unit/landCounts.test.ts`). The sim's rules measure whole km² per
+  cell; the reports (`landArea.ts`: statistics, ranking, panel, sweep) keep the exact areas.
+- **The one absolute number.** `SMALL_STATE_CELLS = 40` becomes `SMALL_STATE_KM2 = 8500`: 40
+  cells of the mean owned cell (40 × 212.2 = 8,487). The old comment said "≈ 15,000 km²", which
+  is 40 cells at the equator (15,282 km²); between 35°N and 55°N 40 cells were 11,000–6,300
+  km². The mean keeps the limit where it was for the world as a whole and only moves it by
+  latitude. At the 1938 start Danzig and Luxembourg are below it either way;
+  Lebanon (10,452 km², 36 cells) was below 40 cells and is above 8,500 km².
+- **Not converted here:** overextension (PLAN 1.42e2) and the admin cost (PLAN 1.42e3), each
+  its own commit. Left to PLAN 7.1b, because they are distances or per-cell mechanics and not
+  shares of land: `OVEREXT_CELLS` (distance to the capital), `MILITIA_PER_CELLS`, and the
+  largest fragment of a collapse (`revival.ts`, by cells). `nations.cells` stays a saved column
+  (the save layout does not change).
+- **Tests:** four new ones in `tests/unit/war.test.ts`, each on a case where cells and km²
+  disagree: Arctic Soviet cells numbering half of the German cells score 10, not 50; the
+  northern 78% of the Soviet cells are 65% of its land and it does not capitulate, and does
+  at 80% of the land; 33% of its cells in the north are 19.5% of its land and a dictated
+  peace makes no puppet of it; 48 cells around Helsinki are a small state and 32
+  cells around Rio de Janeiro are not. The older test "half of Germany's size taken from the
+  Soviet Union scores 50" now takes half of Germany's km². With the tallies counting 1 per cell
+  again, all of these fail.
+- **Hash:** seed 99 after one year e5741d70 → 23734db3; after five years 7a8e5c27 → 6738d695.
+- **Tick time** (seed 99, performance cores, see PROGRESS): year 1 1.67 → 2.05 ms (budget 2.4);
+  5-year mean 1.43 → 1.37 ms (budget 1.5). Year 1 has 29 major battles instead of 8. The tallies
+  themselves cost nothing measurable (the war system is 0.06 ms a tick before and after).
+- **Quick sweep** (seeds 1–10 × 20 years, seen seeds, no verdict at 20 years): limits 10 of 10,
+  riser 7 of 10, faller 10 of 10 (7 and 10 after ADR-56). Largest nation 12.7–16.2% of the land,
+  92–139 nations alive, land moving in the last five years 7.8–16.6%. Largest faller by seed:
+  the British realm in 1, 4, 5 and 9, China (no land left) in 2 and 10, Italy (no land left)
+  in 3, 7 and 8, the Belgian realm in 6. Wall time 4.5 min.
+
 ### ADR-56 · 2026-10-03 · accepted — Cell A* uses an octile bound (PLAN 1.42f, step 4)
 
 - **Context:** the 5-year mean tick of seed 99 was still over budget after ADR-53 and PLAN 1.42f
