@@ -257,6 +257,21 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *The lesson, in ADR-74's third addendum:* a layer with a memory of the frame before is run
     on one input until it rests, on random inputs, in a unit test.
 
+- **Third addendum, PLAN 2.7w (2026-10-04): a box that goes into a stack fades where it is.**
+  - *What was wrong:* a marker in a stack had no move: in the frame it went in, its box stood
+    on its formation. One that had been moved apart from another nation's marker jumped back,
+    up to 6 px, at full opacity, and faded there (ADR-74, third read, finding 3).
+  - *Decision:* while anything of it shows, a box on its way in keeps the place it is drawn at
+    (where its ease had brought it, not where the ease was going). One that comes out again
+    before its fade has ended eases from that place to where it should stand.
+  - *When nothing of it shows, it keeps nothing:* one that comes out later is new among the
+    shown and stands where it should at once, as before. What stands at rest does not depend
+    on what faded there (ADR-75's lesson).
+  - *This is the animation's own state, not the memory 2.7v removed:* it is read only while the
+    fade runs, and where the leads stand is still a function of where the formations stand.
+  - *Tested as the third read's addendum asks:* armies moving at random, 40 games of 150
+    ticks; no box that shows moves off its formation by more than a step of the ease.
+
 ### ADR-76 · 2026-10-04 · accepted — A city's name takes the first free place by its dot, keeps it, and moves by a cross-fade (PLAN 2.7r)
 
 - **Context:** the T0 counters are drawn over the city names, and a capital's name stood to the

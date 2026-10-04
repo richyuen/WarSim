@@ -268,3 +268,120 @@ describe('the moves come to rest (PLAN 2.7v)', () => {
     expect(slowest).toBeLessThanOrEqual(20);
   });
 });
+
+// PLAN 2.7w (ADR-74, third read, finding 3): a marker that goes into a stack fades where it
+// stands. A box that had been moved apart from another nation's marker lost its move in the frame
+// it went into a stack: it jumped back onto its formation, up to NUDGE_MAX_PX, at full opacity,
+// and faded there.
+describe('a marker that goes into a stack fades where it stands (PLAN 2.7w)', () => {
+  // a and b of one nation, just short of a quarter on each other; c of another nation, more than
+  // half on b: b and c are moved apart. Then b's army moves 0.2 px towards a, and b is a's.
+  const a = m(1, 7, 0, 0, 500);
+  const c = m(3, 8, 19.6, 12, 400);
+  const withB = (x: number): StackItem[] => [a, m(2, 7, x, 0, 300), c];
+  /** The layer after 82 frames of the three as they first stand: b is drawn off its formation. */
+  const moved = (): { S: MarkerStacks; t: number; off: [number, number] } => {
+    const S = new MarkerStacks();
+    let t = 0;
+    let b = S.frame(withB(19.6), W, H, t).get(2)!;
+    for (let k = 1; k < 82; k++) b = S.frame(withB(19.6), W, H, (t = k * 16)).get(2)!;
+    expect(b.alpha).toBe(1);
+    expect(Math.hypot(b.dx, b.dy)).toBeGreaterThan(4);
+    expect(S.animating(t)).toBe(false);
+    return { S, t, off: [b.dx, b.dy] };
+  };
+
+  it('in the frame it goes in, and in every frame of its fade, its box is where it was', () => {
+    const { S, t, off } = moved();
+    let alpha = 1;
+    let frames = 0;
+    for (let now = t + 16; now <= t + 16 + FADE_MS + 32; now += 16) {
+      const f = S.frame(withB(19.4), W, H, now);
+      const b = f.get(2)!;
+      expect(f.get(1)!.members).toEqual([1, 2]);
+      expect(b.alpha).toBeLessThanOrEqual(alpha);
+      alpha = b.alpha;
+      if (alpha === 0) break;
+      frames++;
+      expect([b.dx, b.dy], `at ${now - t} ms, opacity ${alpha.toFixed(3)}`).toEqual(off);
+    }
+    expect(frames).toBeGreaterThan(10);
+    expect(alpha).toBe(0);
+  });
+
+  it('one that comes out again before its fade has ended moves from where it stood, by the ease', () => {
+    const { S, t, off } = moved();
+    let now = t;
+    for (let k = 0; k < 6; k++) S.frame(withB(19.4), W, H, (now += 16));
+    // b's army moves off: under a by less than STACK_HOLD. It is shown again, and c still presses on it.
+    const want = nudgeApart([a, m(2, 7, 24, 0, 300), c], W, H).get(2)!;
+    expect(Math.hypot(want[0], want[1])).toBeGreaterThan(3);
+    let last = S.frame(withB(24), W, H, (now += 16)).get(2)!;
+    expect(last.alpha).toBeGreaterThan(0.5);
+    expect(last.alpha).toBeLessThan(1);
+    expect([last.dx, last.dy]).toEqual(off); // the frame of the change: where it stood
+    for (let k = 0; k < 30; k++) {
+      const b = S.frame(withB(24), W, H, (now += 16)).get(2)!;
+      expect(Math.hypot(b.dx - last.dx, b.dy - last.dy), 'a step of the ease').toBeLessThan(1.5);
+      expect(b.alpha).toBeGreaterThanOrEqual(last.alpha);
+      last = b;
+    }
+    expect(last.alpha).toBe(1);
+    expect(last.dx).toBeCloseTo(want[0], 9);
+    expect(last.dy).toBeCloseTo(want[1], 9);
+  });
+
+  it('armies that move at random, 40 games of 150 ticks: no box that shows moves off its formation by more than a step of the ease', () => {
+    // The largest step of an ease over NUDGE_MS between two places NUDGE_MAX_PX from a formation, in a frame of 16 ms.
+    const STEP = 1.5 * (16 / NUDGE_MS) * 2 * NUDGE_MAX_PX;
+    let s = 31415;
+    const rnd = (): number => ((s = (s * 1664525 + 1013904223) >>> 0), s / 2 ** 32);
+    let wentInMoved = 0;
+    let worst = 0;
+    const jumps: string[] = [];
+    for (let game = 0; game < 40; game++) {
+      const S = new MarkerStacks();
+      const at = Array.from({ length: 8 }, (_, i) => ({ id: i + 1, nation: 7 + (i % 2), x: rnd() * 70, y: rnd() * 70, strength: 100 + Math.floor(rnd() * 900), vx: 0, vy: 0 }));
+      const before = new Map<number, { alpha: number; dx: number; dy: number; lead: boolean }>();
+      let now = 0;
+      for (let tick = 0; tick < 150; tick++) {
+        for (const a of at) {
+          a.vx = (rnd() - 0.5) * 3;
+          a.vy = (rnd() - 0.5) * 3;
+          a.x = Math.min(70, Math.max(0, a.x + a.vx));
+          a.y = Math.min(70, Math.max(0, a.y + a.vy));
+        }
+        for (let f = 0; f < 6; f++, now += 16) {
+          const got = S.frame(at, W, H, now);
+          for (const a of at) {
+            const g = got.get(a.id)!;
+            const b = before.get(a.id);
+            const lead = g.members.length > 0;
+            if (b && b.alpha > 0 && g.alpha > 0) {
+              const step = Math.hypot(g.dx - b.dx, g.dy - b.dy);
+              worst = Math.max(worst, step);
+              if (step > STEP + 1e-9) jumps.push(`game ${game}, tick ${tick}, marker ${a.id}: ${step.toFixed(2)} px at opacity ${g.alpha.toFixed(2)}`);
+              if (b.lead && !lead && Math.hypot(b.dx, b.dy) > 1) wentInMoved++;
+            }
+            before.set(a.id, { alpha: g.alpha, dx: g.dx, dy: g.dy, lead });
+          }
+        }
+      }
+    }
+    // The case is among them, many times: a box that stood off its formation goes into a stack.
+    expect(wentInMoved).toBeGreaterThan(50);
+    expect(jumps.slice(0, 3)).toEqual([]);
+    expect(worst).toBeLessThanOrEqual(STEP + 1e-9);
+  });
+
+  it('one whose fade has ended keeps nothing: when it comes out later it stands where it should at once', () => {
+    const { S, t } = moved();
+    let now = t;
+    for (let k = 0; k < 40; k++) S.frame(withB(19.4), W, H, (now += 16));
+    expect(S.frame(withB(19.4), W, H, (now += 16)).get(2)!.alpha).toBe(0);
+    // c has gone off meanwhile: nothing presses on b where it comes out.
+    const b = S.frame([a, m(2, 7, 24, 0, 300), m(4, 8, 24, 80, 400)], W, H, now + 16).get(2)!;
+    expect(b.alpha).toBeLessThan(0.1);
+    expect([b.dx, b.dy]).toEqual([0, 0]);
+  });
+});

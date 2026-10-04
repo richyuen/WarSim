@@ -4450,3 +4450,26 @@ of what was done since the last pass.
 - **Tests:** 1 unit test in place of 1, and 2 more; 1 new e2e. 600 unit tests in 79 files,
   97 e2e.
 - **Next:** PLAN 2.7w (a marker that goes into a stack jumps first).
+
+## 2026-10-04 — PLAN 2.7w: a marker that goes into a stack fades where it stands (a defect of 2.7s2)
+
+- **The bug:** a marker in a stack had no move of its own. A box that had been moved apart
+  from another nation's marker stood on its formation in the frame it went into a stack: a
+  jump of up to 6 px at full opacity, then the fade.
+- **Test first, three unit tests that failed:**
+  - the reader's case: b drawn at (0, 0) from its formation in the frame it went in, not at
+    (0, −5.02) where it stood;
+  - one that comes out again in mid-fade: it stood at once at its new place;
+  - armies moving at random, 40 games of 150 ticks, 8 markers of two nations: steps of 3.6 to
+    4.7 px at full opacity in the first three found.
+- **Fix:** while anything of it shows, a box on its way in keeps the place it is drawn at; one
+  that comes out before its fade has ended eases from there. When nothing of it shows it
+  keeps nothing (a fourth test, which held before too): what stands at rest does not depend on
+  what faded there.
+- **Now:** in the random games no box that shows moves off its formation by more than a step
+  of the ease (1.9 px a frame at most, between two places 6 px either side); the case of the
+  finding is among them more than 50 times.
+- **Not looked for in the browser:** the task's test is of the layer. The marker specs pass
+  unchanged (`markerStacks1938`, `markers1938`, `handover1938`).
+- **Tests:** 4 new unit tests. 604 unit tests in 79 files, 97 e2e.
+- **Next:** PLAN 2.7x (a load does not resize the count of ids).

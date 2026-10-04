@@ -722,7 +722,7 @@ quick sweep as a smoke test.
   the first three that never rested are in the failure). `tests/e2e/markerStacks1938.spec.ts`, the
   third test, at six zooms over (1080, 306) at day 90. Before: 400 frames, the test's limit, at 1950,
   1700 and 1100 m/px. Now 21 to 35 frames at every zoom.
-- [ ] 2.7w A marker that goes into a stack fades where it stands (ADR-74, third read, finding 3; a defect of
+- [x] 2.7w A marker that goes into a stack fades where it stands (ADR-74, third read, finding 3; a defect of
   PLAN 2.7s2). A box that was moved apart from another nation's marker loses its move in the frame
   it goes into a stack: it jumps back onto its formation, up to 6 px, in full, and then fades.
   Run here, the reader's case (a of nation 7 at px (0, 0), b of nation 7 at (19.6, 0), c of nation 8 at
@@ -730,6 +730,12 @@ quick sweep as a smoke test.
   at (19.40, 0.00), both at opacity 1.
   AT: unit: in that case b is drawn, in the frame it goes into the stack and in every frame of its
   fade, where it was drawn the frame before (but for the 0.2 px its army moved).
+  Done 2026-10-04 (ADR-77, third addendum): a box on its way into a stack keeps the place it is
+  drawn at until nothing of it shows; one that comes out before then eases from there.
+  `tests/unit/markerStacks.test.ts`, "a marker that goes into a stack fades where it stands", 4 tests,
+  3 of them failed before: the reader's case (b drawn at (0, 0) from its formation, not (0, −5.02));
+  one that comes out in mid-fade; armies moving at random, 40 games of 150 ticks (before: steps of
+  3.6 to 4.7 px at full opacity in the first three found; now none over a step of the ease, 1.9 px).
 - [ ] 2.7x A table loaded larger than it was still tells its rows apart (ADR-74, third read, finding 2; a
   defect of PLAN 2.7o). `Table.deserialize` makes `alive` and the columns anew at the loaded size and
   leaves `generation` at its old length. For ids beyond it the count is not a number: the worker

@@ -10,7 +10,8 @@
  *
  * A change is a fade in place over FADE_MS, and a marker in a stack stays there until it is
  * under its lead by less than `STACK_HOLD`: the armies move every tick, and a marker at the edge
- * must not go in and out.
+ * must not go in and out. In place: a box that stood off its formation (below) fades there
+ * (PLAN 2.7w).
  *
  * What is then still on each other, markers of two nations that face each other across a front
  * at the far end of T1 (a cell is 10 px there and a marker 26), moves apart (PLAN 2.7s2): each
@@ -200,7 +201,10 @@ export interface StackedMarker {
 export class MarkerStacks {
   private readonly shown = new SwitchBank<number>(FADE_MS);
   private inStack = new Set<number>();
-  /** The move of each shown box: from where to where, since when. */
+  /**
+   * The move of each box that is drawn: from where to where, since when. A box that fades into
+   * a stack keeps the place it had, for as long as anything of it shows.
+   */
   private moves = new Map<number, { from: [number, number]; to: [number, number]; start: number }>();
   private moved = -Infinity;
 
@@ -223,17 +227,26 @@ export class MarkerStacks {
     const moves = new Map<number, { from: [number, number]; to: [number, number]; start: number }>();
     const out = new Map<number, StackedMarker>();
     const inStack = new Set<number>();
+    const eased = (v: { from: [number, number]; to: [number, number]; start: number }): [number, number] => {
+      const p = smooth(progress(now, v.start, NUDGE_MS));
+      return [v.from[0] + (v.to[0] - v.from[0]) * p, v.from[1] + (v.to[1] - v.from[1]) * p];
+    };
     for (const it of items) {
       const s = stacks.get(it.id)!;
+      const alpha = this.shown.value(it.id, s.into === null);
       let at: [number, number] = [0, 0];
-      if (s.into !== null) inStack.add(it.id);
-      else {
+      let m = this.moves.get(it.id);
+      if (s.into !== null) {
+        inStack.add(it.id);
+        // On its way in: the box stays where it is drawn until nothing of it shows (it stood on
+        // its formation in the frame it went in, and jumped there: PLAN 2.7w). Then it has no
+        // place: one that comes out later is new among the shown.
+        if (m && alpha > 0) {
+          at = eased(m);
+          moves.set(it.id, { from: at, to: at, start: -Infinity });
+        }
+      } else {
         const want = to.get(it.id) ?? [0, 0];
-        let m = this.moves.get(it.id);
-        const eased = (v: { from: [number, number]; to: [number, number]; start: number }): [number, number] => {
-          const p = smooth(progress(now, v.start, NUDGE_MS));
-          return [v.from[0] + (v.to[0] - v.from[0]) * p, v.from[1] + (v.to[1] - v.from[1]) * p];
-        };
         // A marker new among the shown stands where it should at once; a new move starts from where the box is.
         if (!m) m = { from: want, to: want, start: -Infinity };
         else if (Math.abs(m.to[0] - want[0]) > 0.01 || Math.abs(m.to[1] - want[1]) > 0.01) {
@@ -244,7 +257,7 @@ export class MarkerStacks {
         at = eased(m);
       }
       // The lead shows the sum at once; one on its way in shows its own number where it stands.
-      out.set(it.id, { alpha: this.shown.value(it.id, s.into === null), strength: s.into === null ? s.total : it.strength, members: s.members, dx: at[0], dy: at[1] });
+      out.set(it.id, { alpha, strength: s.into === null ? s.total : it.strength, members: s.members, dx: at[0], dy: at[1] });
     }
     this.shown.end();
     this.inStack = inStack;
