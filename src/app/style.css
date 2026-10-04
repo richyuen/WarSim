@@ -543,7 +543,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 1rem;
+  padding: 1.5rem 1rem;
   overflow-y: auto;
   background: radial-gradient(ellipse at 50% 0%, #2b4563 0%, #1b2a3a 55%, #121c28 100%);
 }
@@ -553,8 +553,8 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   gap: 0.75rem;
-  width: min(56rem, 100%);
-  margin-bottom: 1.5rem;
+  width: min(74rem, 100%);
+  margin-bottom: 1.2rem;
 }
 .title-name {
   margin: 0;
@@ -570,10 +570,10 @@ body {
 }
 .title-body {
   display: grid;
-  grid-template-columns: 18rem 1fr;
+  grid-template-columns: 16rem 1fr;
   gap: 1rem;
   align-items: start;
-  width: min(56rem, 100%);
+  width: min(74rem, 100%);
 }
 .title-card {
   box-sizing: border-box;
@@ -634,6 +634,27 @@ body {
 .title-desc {
   margin: 0 0 0.6rem;
   opacity: 0.85;
+}
+/* The chosen scenario: its map and facts beside the new-game form. */
+.title-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  gap: 1rem;
+  align-items: start;
+}
+.title-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.6rem;
+  background: #1d3557;
+  border: 1px solid rgba(214, 178, 94, 0.55);
+  border-radius: 0.3rem;
+}
+@media (max-width: 960px) {
+  .title-detail-grid {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 720px) {
   .title-body {

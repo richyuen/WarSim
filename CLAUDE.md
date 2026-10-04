@@ -42,7 +42,9 @@ There is no memory between sessions. Read these files:
   **Suspended until phases 2–6 are complete (ADR-58):** no sweep after a rule change. Only one
   `sweep:quick` at each phase review, as a smoke test, not a balance verdict.
 - See "KEEPING ITERATIONS SHORT" in `PROMPT.md` for when to use which.
-- `npm run data` / `npm run data -- --check`: data pipeline.
+- `npm run data` / `npm run data -- --check`: data pipeline. `npm run data -- --previews`: only
+  the title screen's scenario map images (no downloads, seconds); run it after a change of the
+  1938 ownership, nation colours or map assets.
 - `npm run bench`.
 - `npm run parity`.
 

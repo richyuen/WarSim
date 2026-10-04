@@ -9,6 +9,7 @@ import toyMap from '../../data/maps/toy/map.json' with { type: 'json' };
 import toyScenario from '../../data/scenarios/toy/scenario.json' with { type: 'json' };
 import earthMap from '../../data/maps/earth/map.json' with { type: 'json' };
 import scenario1938 from '../../data/scenarios/1938/scenario.json' with { type: 'json' };
+import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 
 export interface ScenarioGeometry {
   w: number;
@@ -26,6 +27,8 @@ export interface ScenarioInfo {
   nameKey: string;
   descKey: string;
   mapNameKey: string;
+  /** Nations alive at the start. */
+  nations: number;
   /** Not offered on the title screen: it opens by its URL only (`?scenario=<id>`). */
   hidden: boolean;
 }
@@ -57,24 +60,34 @@ export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   '1938': geometry(earthMap, scenario1938),
 };
 
-function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson): ScenarioInfo {
+function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson, nations: number): ScenarioInfo {
   return {
     geometry: SCENARIO_GEOMETRY[id],
     startDay: dayOfIso(scenario.startDate),
     nameKey: scenario.nameKey,
     descKey: scenario.descKey,
     mapNameKey: map.nameKey,
+    nations,
     hidden: scenario.hidden === true,
   };
 }
 
 export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
-  toy: info('toy', toyMap, toyScenario),
-  '1938': info('1938', earthMap, scenario1938),
+  // The toy world's two nations are code (src/sim/toy.ts), not a nations file.
+  toy: info('toy', toyMap, toyScenario, 2),
+  '1938': info('1938', earthMap, scenario1938, (nations1938.nations as { alive?: boolean }[]).filter((n) => n.alive !== false).length),
 };
 
 /** The scenarios the title screen offers, in its order (PLAN 1.43). */
 export const LISTED_SCENARIOS: readonly ScenarioId[] = (['1938', 'toy'] as const).filter((id) => !SCENARIO_INFO[id].hidden);
+
+/**
+ * Where a listed scenario's preview image is served, relative to the page (PLAN 1.43c): the
+ * political map of its start, made by `npm run data -- --previews` (tools/data/preview.ts).
+ */
+export function scenarioPreviewPath(id: ScenarioId): string {
+  return `data/scenarios/${id}/preview.png`;
+}
 
 /** A `?scenario=` value as a scenario id; null for none or an unknown one (the title screen). */
 export function scenarioIdOf(value: string | null): ScenarioId | null {

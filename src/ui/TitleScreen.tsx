@@ -19,6 +19,8 @@ export interface SavedGame {
 export interface TitleScreenProps {
   /** The scenarios on offer, in list order (at least one). */
   scenarios: readonly { id: ScenarioId; info: ScenarioInfo }[];
+  /** The image of a scenario's start (its political map, PLAN 1.43c). */
+  previewUrl: (id: ScenarioId) => string;
   /** Starts a new game of scenario `id` with `seed` and the new-game options. */
   onStart: (id: ScenarioId, seed: number, options: GameOptions) => void;
   /** The saved game to offer as Continue, if there is one (PLAN 1.43b). */
@@ -32,10 +34,10 @@ export interface TitleScreenProps {
 
 /**
  * The title screen (PLAN 1.43): what `/` opens. On the left the saved game, the scenario list and
- * the scenario file loader; on the right the chosen scenario with its new-game form. No world runs
- * behind it.
+ * the scenario file loader; on the right the chosen scenario (a map of its start, its facts) with
+ * its new-game form. No world runs behind it.
  */
-export function TitleScreen({ scenarios, onStart, readSave, onContinue, onScenarioFile, loadFailed }: TitleScreenProps) {
+export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContinue, onScenarioFile, loadFailed }: TitleScreenProps) {
   const [chosen, setChosen] = useState<ScenarioId>(scenarios[0]!.id);
   // A new seed per visit, so two games started without touching the field differ.
   const [seed] = useState(randomSeed);
@@ -121,16 +123,27 @@ export function TitleScreen({ scenarios, onStart, readSave, onContinue, onScenar
           <h2 class="title-sub" data-testid="title-chosen">
             {t(info.nameKey as MessageKey)}
           </h2>
-          <p class="title-desc">{t(info.descKey as MessageKey)}</p>
-          <div class="form-row">
-            <span class="form-name">{t('title.startDate')}</span>
-            <span data-testid="title-start-date">{dateAt(info.startDay, 0)}</span>
+          <div class="title-detail-grid">
+            <div>
+              <img class="title-preview" data-testid="title-preview" src={previewUrl(chosen)} width={1024} height={512} alt={t('title.previewAlt', { name: t(info.nameKey as MessageKey) })} />
+              <p class="title-desc">{t(info.descKey as MessageKey)}</p>
+              <div class="form-row">
+                <span class="form-name">{t('title.startDate')}</span>
+                <span data-testid="title-start-date">{dateAt(info.startDay, 0)}</span>
+              </div>
+              <div class="form-row">
+                <span class="form-name">{t('title.map')}</span>
+                <span data-testid="title-map">
+                  {t(info.mapNameKey as MessageKey)} · {info.geometry.w} × {info.geometry.h}
+                </span>
+              </div>
+              <div class="form-row">
+                <span class="form-name">{t('title.nations')}</span>
+                <span data-testid="title-nations">{info.nations}</span>
+              </div>
+            </div>
+            <NewGameForm key={chosen} seed={seed} options={{}} startLabel={t('title.start')} onStart={(s, o) => onStart(chosen, s, o)} />
           </div>
-          <div class="form-row">
-            <span class="form-name">{t('title.map')}</span>
-            <span>{t(info.mapNameKey as MessageKey)}</span>
-          </div>
-          <NewGameForm key={chosen} seed={seed} options={{}} startLabel={t('title.start')} onStart={(s, o) => onStart(chosen, s, o)} />
         </section>
       </div>
     </main>

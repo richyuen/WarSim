@@ -14,6 +14,9 @@
 //    - data/scenarios/1938/cities.json: the 1938 city list (PLAN 1.5, tools/data/cities.ts).
 // 3. Writes manifest.json (sizes, dims, sha256 of every asset and source). Deterministic: files
 //    are rewritten only when their bytes change, so a second run changes nothing.
+// 4. Scenario previews for the title screen (PLAN 1.43c, tools/data/preview.ts):
+//    public/data/scenarios/<id>/preview.png, from the shipped assets and the scenario data.
+//    `--previews` builds only these: no downloads, a few seconds.
 // `--check` builds everything in memory and fails if any output would change.
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -25,6 +28,7 @@ import { ADMIN1_Q, encodeAdmin1, type Admin1Meta, type QPolygon, type QProvince 
 import { encodeElevation, halveElevation, OCEAN_QUANTUM_M, quantizeOcean } from '../../src/shared/elevation';
 import { clearBits, rasterizePolygon, setBits } from '../../src/shared/rasterize';
 import { encodePng } from './png';
+import { writePreviews } from './preview';
 import { buildCities, type CityRules, type NePlace } from './cities';
 import { buildTerrain, halveTerrain, landFraction, terrainPreview } from './terrain';
 import { extractZipEntry } from './zip';
@@ -34,6 +38,7 @@ const cacheDir = path.join(root, '.cache/data');
 const outDir = path.join(root, 'public/data/earth');
 const sourcesPath = path.join(root, 'tools/data/sources.json');
 const CHECK = process.argv.includes('--check');
+const ONLY_PREVIEWS = process.argv.includes('--previews');
 
 const MASK_W = 16384;
 const MASK_H = 8192;
@@ -273,7 +278,20 @@ function buildAdmin1(geojson: Uint8Array): { geometry: Uint8Array; meta: Admin1M
   return { geometry: encodeAdmin1(provinces), meta, vertices };
 }
 
+/** Step 4; returns how many previews changed. */
+function previews(): number {
+  const changed = writePreviews(root, CHECK);
+  for (const rel of changed) console.log(`  ${CHECK ? 'would change' : 'written'}: ${rel}`);
+  return changed.length;
+}
+
 async function main(): Promise<void> {
+  if (ONLY_PREVIEWS) {
+    const n = previews();
+    console.log(n === 0 ? 'data: previews unchanged' : `data: ${n} preview(s) ${CHECK ? 'would change' : 'written'}`);
+    if (CHECK && n > 0) process.exit(1);
+    return;
+  }
   mkdirSync(cacheDir, { recursive: true });
   mkdirSync(outDir, { recursive: true });
   const lock = JSON.parse(readFileSync(sourcesPath, 'utf8')) as { comment: string; sources: Source[] };
@@ -382,6 +400,8 @@ async function main(): Promise<void> {
     else writeFileSync(cityPath, cityJson);
   }
   for (const a of assets) console.log(`  ${a.path}: ${(a.bytes / 1e6).toFixed(2)} MB`);
+  // The previews are built from the assets on disk, so after those are written.
+  changed += previews();
   console.log(changed === 0 ? 'data: no changes' : `data: ${changed} file(s) ${CHECK ? 'would change' : 'written'}`);
   if (CHECK && changed > 0) process.exit(1);
 }

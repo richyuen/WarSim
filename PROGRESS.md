@@ -2963,3 +2963,39 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   the browser's own control, so its button text is the browser's language, not ours (as in the
   editor).
 - **Next:** PLAN 1.43c (a map preview of the chosen scenario).
+
+## 2026-10-04 — PLAN 1.43c: the title screen shows a map of the chosen scenario (ADR-62)
+- **What:** the chosen scenario's card now has a political map of its start, its start date, its
+  map with the size, and the number of nations alive at the start (102 for 1938), beside the
+  new-game form. PLAN 1.43 is complete (a, b, c).
+- **The map is an image**, `public/data/scenarios/1938/preview.png` (1024 × 512, 33 KB): nations
+  in their colours, the game's sea colour, a dark line where the holder changes, a darker
+  coast. `tools/data/preview.ts` builds it from the shipped map assets and the scenario data
+  with the sim's `buildPoliticalMap`. `npm run data` writes it; `npm run data -- --previews`
+  writes only it, without the pipeline's downloads.
+- **Why an image and not a map drawn on the title screen:** drawing it needs the sim worker and
+  3.2 MB of map assets, and ADR-60's title screen has no worker (its e2e asserts that).
+- **Drift is tested:** `tests/unit/scenarioPreview.test.ts` rebuilds the image from today's data
+  and compares pixels with the committed one (pixels, because a PNG's bytes depend on the zlib).
+  After a change of the 1938 ownership, nation colours or map assets: `npm run data -- --previews`.
+- **Layout:** the screen is 74 rem wide instead of 56; the card holds the map and facts on the
+  left and the form on the right, so Start stays on the screen at 1400 × 800 without scrolling
+  (asserted). Below 960 px the form goes under the map; below 720 px everything is one column.
+- **Verified in the browser** (`tests/e2e/title.spec.ts`; `docs/evidence/1.43/`, viewed): the
+  image loads at 1024 × 512; the pixels at the Urals, Kansas, central Brazil and central
+  Australia are the colours of the Soviet Union, the United States, Brazil and Australia, the
+  mid-Atlantic is the sea colour; the count on the screen equals the living nations of the game
+  it then starts.
+- **Compared with AoC** (`reference/frames/scene_006.png`, its Scenarios screen): the same
+  parts in the same places: list on the left; map, name, facts and the start button on the
+  right. AoC also shows the number of cities and has Edit beside Play; we show neither (ADR-62,
+  PARITY row 81).
+- **Gotcha:** `reference/frames/0010.png` is not the menu; the contact sheet's tile 10 is
+  `scene_006.png`. In the preview, the row at the map's edge counts as coast (beyond the edge is
+  sea, as on the game's map): a unit test of mine expected otherwise and was wrong.
+- **Not done:** no tick or frame measurement (no sim rule or renderer change; the pinned hash
+  test ran in the gate because `src/shared/scenarios.ts` and `public/data/` changed).
+- **The gate failed once, on a flake:** `tests/unit/provinces.test.ts` did not load ("incorrect
+  data check" gunzipping an unchanged asset). It passed alone and in the next gate run. Two
+  stress runs of the same read did not reproduce it; BLOCKERS has the numbers.
+- **Next:** PLAN 1.44 (critic B6: the editor's brush and line paint on a left-drag).

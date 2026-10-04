@@ -77,6 +77,15 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   scenario") failed once in a full `npm test` with a gunzip "incorrect data check" after 43 s;
   alone it passes in 8.5 s, and it passed in every gate run of the day. Not investigated. If it
   recurs, look at the gzip stream round trip under CPU load.
+  **Recurred 2026-10-04** (PLAN 1.43c, the third record of this error; the first is the retry in
+  `tests/helpers/earth.ts`): `tests/unit/provinces.test.ts` failed to load in one gate run with
+  "incorrect data check" from `gunzipSync(readFileSync(admin1-geometry.wsz))`. The file was
+  intact (the manifest test checked its sha256 in the same run), no test writes the assets, and
+  the file passed alone and in the next gate run. Looked at, not explained: the same read and
+  gunzip in a loop gave no error in 72,000 runs over 24 processes (56 s) nor in 36,000 runs over
+  24 worker threads of one process (28 s), so it is not zlib or the machine under plain load.
+  It has only been seen inside a full vitest run. `provinces.test.ts`, `terrain.test.ts` and
+  `data-manifest.test.ts` read the assets without the helper's retry.
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.

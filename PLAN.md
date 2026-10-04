@@ -322,12 +322,16 @@ quick sweep as a smoke test.
   the way and fixed: a continue URL without `looping=0` drew wrap copies of a world that has no
   looping map, and showed seed 1938 for any save. A loaded world now gives the game its looping
   setting (the URL is corrected) and its seed.
-- [ ] 1.43c The title screen shows the chosen scenario: a political map of its start and its
+- [x] 1.43c The title screen shows the chosen scenario: a political map of its start and its
   number of nations, drawn from the scenario's own data (AoC shows a map preview beside its
   scenario list).
   AT: e2e: the preview shows the scenario's nations in their colours (pixel check against the
   nation colours at known places) and the count equals the sim's; screenshots viewed and
   compared with the trailer frame of AoC's menu.
+  Done 2026-10-04 (ADR-62): `public/data/scenarios/1938/preview.png` (1024 × 512, 33 KB), made
+  by `npm run data -- --previews` from the shipped assets and the scenario data; a unit test
+  fails when it no longer is the map the data gives. 102 nations, equal to the sim's living
+  nations. Compared with `reference/frames/scene_006.png` (AoC's Scenarios screen).
 - [ ] 1.44 Critic B6: the editor's brush and line paint on a left-drag. While a paint tool is
   active the camera pans on a right- or middle-drag and with the keys, not on a left-drag.
   AT: an e2e that drags: a brush stroke across ≥ 20 cells paints every cell under its path,

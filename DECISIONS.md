@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-62 · 2026-10-04 · accepted — The title screen's scenario map is a generated image, checked against the data (PLAN 1.43c)
+
+- **Context:** AoC's Scenarios screen shows a map of the chosen scenario with its size, nations,
+  cities and date (VISUAL 2026-10-04: `reference/frames/scene_006.png`). Ours had the list and
+  the form, and text where AoC has the map.
+- **Decision:** the map is an image, `public/data/scenarios/<id>/preview.png`, 1024 × 512: each
+  land cell in the colour of the nation that holds it at the start, the game's sea colour, a
+  dark line where the holder changes, a darker coast. `tools/data/preview.ts` builds it from
+  the shipped map assets and the scenario data with the sim's own `buildPoliticalMap`;
+  `npm run data` writes it, and `npm run data -- --previews` writes only it (no downloads).
+  The title screen shows it with the start date, the map and its size, and the number of
+  nations alive at the start (`SCENARIO_INFO[id].nations`, from `nations.json`).
+- **Rejected: building the map on the title screen.** It needs the sim worker and 3.2 MB of
+  map assets to draw one picture, and the title screen would no longer be free of a worker
+  (ADR-60). The image is 33 KB.
+- **The risk of an image is drift,** so the gate rebuilds it: `tests/unit/scenarioPreview.test.ts`
+  compares the committed image's pixels with what the data gives today and names the command
+  to run. Pixels, not file bytes: a PNG's bytes depend on the zlib that packed it.
+- **Not shown:** the number of cities (AoC shows it). The city list is 350 KB and belongs to
+  the worker's bundle; a count in the main bundle is not worth that, and can come with a
+  scenario registry read from `data/` (PARITY row 78).
+- **Layout:** the title screen is wider (74 rem), and the chosen scenario's card holds the map
+  and facts beside the form, so Start is on the screen without scrolling at 1400 × 800 (the
+  spec asserts it). Below 960 px the form goes under the map.
+
 ### ADR-61 · 2026-10-03 · accepted — Loading from the title screen: the URL names the game, the loaded world corrects it (PLAN 1.43b)
 
 - **Context:** ADR-60 made a game its URL. A loaded game does not fit that at once: the bytes

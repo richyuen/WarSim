@@ -1,5 +1,5 @@
 import { render } from 'preact';
-import { LISTED_SCENARIOS, SCENARIO_INFO, scenarioIdOf } from '../shared/scenarios';
+import { LISTED_SCENARIOS, SCENARIO_INFO, scenarioIdOf, scenarioPreviewPath } from '../shared/scenarios';
 import { TitleScreen } from '../ui/TitleScreen';
 import { readAutosave, type SaveRecord } from './autosave';
 import { startGame } from './game';
@@ -36,6 +36,7 @@ if (scenarioId !== null) {
     render(
       <TitleScreen
         scenarios={LISTED_SCENARIOS.map((id) => ({ id, info: SCENARIO_INFO[id] }))}
+        previewUrl={(id) => new URL(scenarioPreviewPath(id), document.baseURI).href}
         onStart={(id, seed, options) => location.assign(newGameUrl(id, seed, options))}
         readSave={readSave}
         onContinue={() => {

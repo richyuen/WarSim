@@ -1173,7 +1173,13 @@ interpolation changes something.
     - *The loaded world wins:* after a load the game shows the world's own seed, and when the
       world's looping setting differs from the URL's the URL is corrected and the game boots
       again (the map view is built from the URL before the world is there).
-  - Still to come: a map preview (PLAN 1.43c).
+  - The chosen scenario's map (PLAN 1.43c) [ADR-62]: an image of the political map of its start,
+    `public/data/scenarios/<id>/preview.png` (1024 × 512; nations in their colours, the game's
+    sea colour, dark borders where the holder changes), beside the start date, the map with its
+    size and the number of nations alive at the start. The image is made by
+    `npm run data -- --previews` (`tools/data/preview.ts`) from the shipped map assets and the
+    scenario data; `tests/unit/scenarioPreview.test.ts` rebuilds it and fails when the committed
+    image differs.
 - **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
   interface size 85–130% (root font size, also on the title screen), unit size 50–200% (marker
   size multiplier), both persisted; F2 or the panel saves a PNG of the map with its overlays;

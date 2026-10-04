@@ -4,6 +4,8 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import type { Inspection } from '../../src/shared/protocol';
 import { encodeScenarioFile, SCENARIO_FORMAT } from '../../src/shared/scenarioFile';
+import { SCENARIO_INFO } from '../../src/shared/scenarios';
+import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { assets1938 } from '../helpers/earth';
@@ -15,7 +17,11 @@ import { assets1938 } from '../helpers/earth';
 // without one, and there is no Continue without an autosave; a scenario file chosen on the title
 // screen starts its base scenario with the file's state hash; a file that does not fit is refused.
 
+// PLAN 1.43c AT: the preview shows the scenario's nations in their colours at known places, and
+// the nation count equals the sim's.
+
 const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
+const rgbOf = (hex: string): number[] => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
 
 const evidence = (info: { outputPath: () => string }): string => {
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.43') : info.outputPath();
@@ -51,6 +57,34 @@ test('/ opens the title screen and no world', async ({ page }, info) => {
   await expect(page.getByTestId('title-scenario-toy')).toHaveCount(0);
   await expect(page.getByTestId('title-chosen')).toHaveText('World, 1938');
   await expect(page.getByTestId('title-start-date')).toHaveText('1 January 1938');
+  // The chosen scenario's map (PLAN 1.43c): an image of its start, with nations in their colours
+  // at known places and the sea between them; and how many nations there are.
+  const preview = page.getByTestId('title-preview');
+  await expect(preview).toHaveAttribute('alt', 'Political map of World, 1938');
+  await expect.poll(() => preview.evaluate((img: HTMLImageElement) => (img.complete ? [img.naturalWidth, img.naturalHeight] : null))).toEqual([1024, 512]);
+  const places = [
+    { tag: 'SOV', lon: 60, lat: 60 },
+    { tag: 'USA', lon: -100, lat: 40 },
+    { tag: 'BRA', lon: -52, lat: -10 },
+    { tag: 'AST', lon: 134, lat: -25 },
+    { tag: '', lon: -40, lat: 30 }, // mid-Atlantic
+  ];
+  const cells = places.map((p) => cellOf(p.lon, p.lat, 1024, 512).map(Math.floor));
+  const seen = await preview.evaluate((img: HTMLImageElement, at: number[][]) => {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const ctx = c.getContext('2d')!;
+    ctx.drawImage(img, 0, 0);
+    return at.map(([x, y]) => Array.from(ctx.getImageData(x!, y!, 1, 1).data.subarray(0, 3)));
+  }, cells);
+  places.forEach((p, i) => expect(seen[i], p.tag || 'sea').toEqual(p.tag ? rgbOf(NATIONS_1938.find((n) => n.tag === p.tag)!.color) : [0x1d, 0x35, 0x57]));
+  await expect(page.getByTestId('title-nations')).toHaveText(String(SCENARIO_INFO['1938'].nations));
+  await expect(page.getByTestId('title-map')).toHaveText('Earth · 2048 × 1024');
+  // It is drawn at a size worth looking at, and Start is on the screen without scrolling.
+  expect((await preview.boundingBox())!.width).toBeGreaterThan(450);
+  await expect(page.getByTestId('settings-new-game')).toBeInViewport({ ratio: 1 });
+
   // The new-game form of PLAN 1.39b1, with a seed already in it.
   expect(await page.getByTestId('settings-seed').inputValue()).toMatch(/^\d+$/);
   for (const id of ['opt-looping', 'opt-aggression', 'opt-traits', 'opt-gold', 'opt-ce']) await expect(page.getByTestId(id)).toBeVisible();
@@ -90,6 +124,7 @@ test('the title screen starts the 1938 world with the chosen seed and options; M
   await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/');
   await page.getByTestId('title-scenario-1938').click();
+  const nations = Number(await page.getByTestId('title-nations').textContent());
   await page.getByTestId('settings-seed').fill('4242');
   await page.getByTestId('opt-looping').selectOption('off');
   await page.getByTestId('opt-gold').selectOption('equal');
@@ -107,6 +142,7 @@ test('the title screen starts the 1938 world with the chosen seed and options; M
   expect(s.seed).toBe(4242);
   expect(s.settings.loopingMap).toBe(false);
   expect(s.settings.ceMode).toBe('static');
+  expect(s.nations.filter((n) => n.living).length).toBe(nations); // the count the title screen showed
   const node = new Sim({ scenario: '1938', seed: 4242, options: { loopingMap: false, gold: 'equal', ceMode: 'static' }, assets: assets1938(SIZE_1938.w) });
   expect((await page.evaluate(() => window.__warsim!.sim.hash())).hash).toBe(node.hash());
   await page.waitForTimeout(500); // let the first frames draw
