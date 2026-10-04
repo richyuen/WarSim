@@ -106,6 +106,15 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     both sides. **If it fails again, read that message before anything else:** one flipped bit
     in one section points at the machine; a whole section or a value that makes sense points
     at the sim.
+- Unit failure, once, its message lost (2026-10-04, the gate of the review pass after PLAN 2.7f–m):
+  `npm run check` stopped at the unit stage with 75 of 76 files and 563 of 565 tests passing. The
+  run's output had been cut down to its summary lines, so which two tests of which file failed is
+  not known. The full `vitest run` straight after passed 565 of 565, and the gate after that was
+  green. Nothing else ran on the machine (the reader of the review had finished).
+  - Two tests in one file fits neither of the two entries above as written (a file that fails to
+    load fails all its tests; I5 is one test). It may be either of them, or a third.
+  - **A gate run keeps its whole output from now on** (`npm run check > <log> 2>&1`, then read the
+    log). If a unit test fails in a gate run, the message is the first thing to keep.
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.

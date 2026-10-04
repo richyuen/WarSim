@@ -4065,3 +4065,17 @@ No rule changed and nothing on screen changed. Six tasks came out of it.
 - **Not run:** `sweep:quick` (ADR-58: at the phase review only).
 - **Tests:** 1 new unit test. 565 unit tests in 76 files, 88 e2e.
 - **Next:** PLAN 2.7n.
+
+## 2026-10-04 — The first gate run of the review pass failed, and its message was not kept
+
+- **What happened:** the gate stopped at the unit stage: 75 of 76 files, 563 of 565 tests. I had
+  piped its output through a filter that keeps summary lines, so the names of the two tests and
+  their messages are gone.
+- **After it:** `vitest run` alone, 565 of 565; the gate again, with its log kept, green (565
+  unit tests, 88 e2e in 4.6 min). The review pass was committed on that run (`3df649d`).
+- **Not known:** whether it was the gunzip failure or the save bytes of I5 (both on the watch
+  list, both seen only inside a full run) or something new. BLOCKERS says to read the message of
+  I5 before anything else if it fails again; this time there is no message to read.
+- **Changed:** a gate run's whole output goes to a file and is read from there. BLOCKERS has the
+  entry.
+- **Next:** PLAN 2.7n.
