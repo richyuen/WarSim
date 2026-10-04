@@ -409,18 +409,25 @@ quick sweep as a smoke test.
   from 2.7: the sprites of a block re-formed in one frame when deaths took its count across a step of the grid).
   AT: after such deaths the snapshot draws every survivor where it stood (unit, and e2e over an hour of
   battle); the pinned hash does not move.
-- [ ] 2.7b Fade curves & hysteresis for all layers: T1 ↔ T2 and T2 ↔ T3 are states with hysteresis and a
+- [x] 2.7b Fade curves & hysteresis for all layers: T1 ↔ T2 and T2 ↔ T3 are states with hysteresis and a
   cross-fade in time, as T0 ↔ T1 is (ADR-64).
   AT: scripted zoom recording: max per-pixel luminance jump between consecutive frames below threshold in unit areas (no popping).
   Read as: the luminance is compared over the frames of each tier change at a fixed camera (16 ms apart,
   the unit layers alone); a zoom moves every edge by pixels a frame, which is not popping. Between camera
   steps the layers' opacities are compared instead.
 - [ ] 2.7c The marker → elements morph: the box shrinks into the group and fades, the strength bar lingers.
+  AT: the frames of the T1 → T2 change keep the luminance limit of 2.7b; a marker's box is smaller in each
+  frame of the change and its strength bar is still in full at half of it.
+- [ ] 2.7d The layers that are not units: the capital flags switch at 3 px per cell in one frame, and the
+  city labels fade by a curve of the zoom (a resting camera can show them half-faded).
+  AT: the luminance limit of 2.7b over the flags' and labels' areas when the camera steps across their
+  thresholds; at rest every label and flag is in full or absent.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
+  Also decide ADR-69's open choice at the close stops: how a battalion's losses show at T3 (ADR-71).
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.
 - [ ] 2.11 Phase 2 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.

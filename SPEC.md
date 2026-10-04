@@ -961,9 +961,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 Continuous zoom `z = log2(screen px per world km)`. Tiers are bands with overlap.
 Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresis
 ±0.15 for discrete decisions such as clustering level). As built (2026-10-04): the counters'
-cluster level and the T0 ↔ T1 handover are states with hysteresis and a timed change
-[ADR-64]; the T1 → T2 fade is still a curve of the zoom alone, without hysteresis, until
-PLAN 2.7. The short animations share one clock (`src/render/timing.ts`).
+cluster level and the three handovers between the unit tiers are states with hysteresis and a
+timed change [ADR-64, ADR-71]. City labels still fade by a curve of the zoom alone, and the
+capital flags switch at 3 px per cell in one frame (PLAN 2.7d). The short animations share one
+clock (`src/render/timing.ts`).
 
 | Tier | m/px | Map | Forces |
 |---|---|---|---|
@@ -973,7 +974,7 @@ PLAN 2.7. The short animations share one clock (`src/render/timing.ts`).
 | **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals: one figure for each unit of strength, at most 64 to an element. So the count is the strength for vehicles, guns, ships and planes (an element holds 10–12), and for a battalion of 500 once fewer than 64 men are left [ADR-69] |
 
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
-from 2000 m/px down (see the handover below), fading out over 210–300 m/px toward T2. Each
+from 2000 m/px down to 300 (see the handovers below). Each
 shows a type symbol (from the template's
 elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
 order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
@@ -995,12 +996,30 @@ strength. A change is a fade in place over 250 ms; a folded counter comes out on
 clears its neighbour by 6 px more. The result depends on the zoom, not on where the camera
 is. Strengths from a million on read "1.54M".
 
-*T0 ↔ T1 handover (PLAN 1.45a, `src/render/units/handover.ts`, ADR-64):* which of the two
-layers shows is a state. The markers come in when the zoom reaches 2000 m/px and go out above
-2300 m/px (hysteresis × 1.15); a change is a cross-fade over 250 ms of real time. At rest one
-layer is drawn at full opacity and the other not at all, wherever the camera stops. (Until
-1.45a the cross-fade went by zoom over 2000–2600 m/px, and a camera resting there showed both
-layers half-faded.) The T1 → T2 fade still goes by zoom, until PLAN 2.7.
+*Tier handovers (PLAN 1.45a and 2.7b, `src/render/units/handover.ts`, ADR-64, ADR-71):* at each
+of the three boundaries which of the two unit layers shows is a state. The nearer layer comes
+in when the zoom reaches the boundary and goes out above it by the hysteresis (× 1.15); a
+change is a cross-fade over 250 ms of real time. At rest one layer is drawn at full opacity and
+the other not at all, wherever the camera stops.
+
+| Boundary | Nearer layer in at | out above |
+|---|---|---|
+| T0 counters ↔ T1 markers | 2000 m/px | 2300 |
+| T1 markers ↔ T2 element sprites | 300 | 345 |
+| T2 sprites ↔ T3 individuals | 30 | 34.5 |
+
+- The elements are in the view before the sprites come in: they are sent from 450 m/px.
+- The figures of T3 are built in the frame the close tier comes in, from a copy of the last
+  element section that the view keeps below 60 m/px. A snapshot subscribed at T3 is a frame or
+  two away, and the cross-fade needs both layers.
+- Fire and wrecks are drawn with the sprites' share, at T2 and T3 alike.
+- *Before:* T0 ↔ T1 cross-faded by zoom over 2000–2600 m/px and T1 → T2 over 210–300 m/px, so
+  a camera resting in either band showed two layers half-faded; T2 → T3 was a switch in one
+  frame.
+- *Checked (PLAN 2.7b, `tests/e2e/fades1938.spec.ts`):* the camera steps across each boundary
+  in both directions and stays; of the frames that follow, 16 ms apart, no pixel of the unit
+  layers changes by more than 48 of 255 between two frames (measured: 31–39; the whole change
+  is about 250).
 
 *T2 elements implemented (PLAN 2.3, ADR-46):* the view subscribes with its padded bbox
 and tier at most 10 Hz. The worker sends the elements of the formations inside, at their slot
@@ -1054,8 +1073,7 @@ on the GPU, with facing and a procedural walk/drive animation, fading in as the 
   map would step by 2.4 m). A figure is at least 2.5 px.
 - *Guns* have a frame of their own in the procedural atlas (artillery, anti-tank, anti-air), at
   T2 and T3; they were drawn as infantry.
-- *The T2 → T3 change* is a plain switch at 30 m/px, when the first snapshot subscribed at T3
-  arrives. The cross-fade below comes with PLAN 2.7.
+- *The T2 ↔ T3 change* is a handover like the others (see above), since PLAN 2.7b.
 - *Measured:* 3,345 figures of 89 elements (three divisions at 28 m/px): 0.7 ms to build per
   snapshot, 0.5 ms of CPU to draw a frame.
 
@@ -1077,9 +1095,10 @@ is the formation's strength, which the sim recomputes from its elements at each 
   over 250 ms (positions are real). They merge in reverse.
 - T1→T2: the marker scales down and fades into the formation centroid while elements fade
   in at their real positions. The strength bar lingers above the group until T2 is fully in.
+  (As built, PLAN 2.7b: a plain cross-fade over 250 ms; the scaling and the lingering bar are
+  PLAN 2.7c.)
 - T2→T3: an element sprite cross-fades into its individual expansion, which is laid out inside
-  the element footprint. (As built, PLAN 2.6: the expansion is there, the change is a plain
-  switch at 30 m/px until PLAN 2.7.)
+  the element footprint. (As built, PLAN 2.7b: a cross-fade over 250 ms.)
 - The map shader blends the detail layers by `z`, and border width is constant in screen px.
 
 **Interest management.** Main sends `subscribe` whenever the camera moves (throttled to

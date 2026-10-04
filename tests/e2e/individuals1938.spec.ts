@@ -7,6 +7,7 @@ import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1
 import { Sim } from '../../src/sim/sim';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { assets1938 } from '../helpers/earth';
+import { settle } from './settle';
 
 // PLAN 2.6 AT: at T3 an element is drawn as its individuals, and their number is the sim's
 // strength: one figure for each unit, at most 64 (ADR-69). So tanks (10 to an element) and guns
@@ -93,6 +94,8 @@ async function close(page: Page, x: number, y: number, mPerPx: number): Promise<
     const b = v.subscription?.bbox;
     return v.subscription?.tier === 3 && b !== undefined && Math.abs((b[0] + b[2]) / 2 - x) < 0.05 && Math.abs((b[1] + b[3]) / 2 - y) < 0.05 && v.elementCount > 0 && v.individualCount > 0;
   }, { x, y }, { timeout: 15_000 });
+  // The close tier comes in over 250 ms (PLAN 2.7b): read it at rest.
+  await settle(page);
   return page.evaluate(() => {
     const v = window.__warsim!.view!;
     const t0 = performance.now();

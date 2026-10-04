@@ -6,10 +6,10 @@
 import { CityLabelLayer } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { drawMarkers, markerLowFade, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
+import { drawMarkers, T1_MAX_M, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
-import { TierHandover } from '../render/units/handover';
-import { figureCells, figureCount, figureOffsets, gridSide } from '../render/units/individuals';
+import { HANDOVER_HYSTERESIS, TierHandover } from '../render/units/handover';
+import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
 import { progress, running, smooth } from '../render/timing';
@@ -41,6 +41,26 @@ import type { SimClient } from './simClient';
  * enters `move`, and the release `end` (`cancel` when the drag is taken away: a second finger, a
  * lost pointer); the camera does not pan on that button meanwhile.
  */
+/** A copy of a snapshot's element section that outlives the snapshot's buffers. */
+function copyElements(e: SnapshotElements): SnapshotElements {
+  const n = e.count;
+  return {
+    count: n,
+    id: e.id.slice(0, n),
+    formation: e.formation.slice(0, n),
+    nation: e.nation.slice(0, n),
+    frame: e.frame.slice(0, n),
+    strength: e.strength.slice(0, n),
+    x: e.x.slice(0, n),
+    y: e.y.slice(0, n),
+    prevX: e.prevX.slice(0, n),
+    prevY: e.prevY.slice(0, n),
+    facing: e.facing.slice(0, n),
+    flags: e.flags.slice(0, n),
+    truncated: e.truncated,
+  };
+}
+
 export interface PaintDrag {
   active(): boolean;
   start(x: number, y: number): void;
@@ -55,6 +75,8 @@ const MARKER_CELLS = 0.9;
 const ELEMENT_CELLS = 0.026;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
 const FIGURE_MIN_PX = 2.5;
+/** Below this many m/px the last element section is kept for building the figures (twice T3's limit: a wheel step away). */
+const T3_KEEP_M = 60;
 /** Figures in one build: six times the 10,000 proxies of the PLAN 2.3 bench. */
 const MAX_INDIVIDUALS = 60_000;
 /** A wreck is drawn the size of its element's sprite, at most this (CSS px): at T3 the sprite's size is not a size any more. */
@@ -423,8 +445,16 @@ export class MapView {
   markerOpacity = 0;
   /** T0 counters (PLAN 2.2). */
   readonly counters = new CounterLayer();
-  /** Which of the two shows, counters or markers, and the cross-fade between them (PLAN 1.45a). */
-  readonly handover = new TierHandover();
+  /**
+   * Which of two unit layers shows at each tier boundary, and the cross-fade between them (PLAN
+   * 1.45a, 2.7b): T0 counters ↔ T1 markers, T1 markers ↔ T2 element sprites, T2 sprites ↔ T3
+   * individuals.
+   */
+  readonly handover = new TierHandover(T1_MAX_M);
+  readonly tactical = new TierHandover(T1_MIN_M);
+  readonly close = new TierHandover(T3_MAX_M);
+  /** The nearer layer's share at each of them, in the frame being drawn (	ierShares). */
+  readonly shares = { markers: 0, elements: 0, individuals: 0 };
   /** The fire of the elements in view at T2 (PLAN 2.4), and the worker's count of fires it dropped. */
   readonly fire = new FireFx();
   firesDropped = 0;
@@ -432,18 +462,35 @@ export class MapView {
   readonly wrecks = new WreckFx();
 
   /**
-   * True while a unit layer still animates: a counter split, merge or fold, the T0 ↔ T1
-   * handover, a capital flag making way for a counter, a shot on its way, or the burst of an
+   * True while a unit layer still animates: a counter split, merge or fold, a handover between
+   * two tiers, a capital flag making way for a counter, a shot on its way, or the burst of an
    * element's end. (A wreck then lies and smokes for seconds: `frame` keeps drawing for it,
    * but it is not a change to wait for.)
    */
   unitsAnimating(now = performance.now()): boolean {
-    return this.counters.animating(now) || this.handover.animating(now) || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
+    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now);
+    return this.counters.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
   }
 
-  /** Opacity of the element sprites and their fire: in as the T1 markers go out (PLAN 2.3). */
+  /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
   get elementOpacity(): number {
-    return this.metresPerPx < T1_MIN_M ? 1 - markerLowFade(this.metresPerPx) : 0;
+    return this.shares.elements;
+  }
+
+  /**
+   * The layers' shares for a frame at `now`: each handover is asked once a frame. The figures
+   * of T3 are built here, in the frame the close tier wants them, from the elements at hand: a
+   * snapshot subscribed at T3 is a frame or two away, and the cross-fade needs both layers.
+   */
+  private tierShares(now: number): void {
+    const m = this.metresPerPx;
+    this.shares.markers = this.handover.share(m, now);
+    this.shares.elements = this.tactical.share(m, now);
+    const wanted = m <= (this.close.near ? T3_MAX_M * HANDOVER_HYSTERESIS : T3_MAX_M);
+    if (wanted && !this.individualsBuilt && this.elementSection) this.buildIndividuals(this.elementSection);
+    // No figures to show (no elements kept yet, none in view, or more than the cap): the sprites stay.
+    this.shares.individuals = this.close.share(this.individualsBuilt && this.individualCount > 0 ? m : Infinity, now);
+    this.individualsShown = this.close.near === true;
   }
   /** A unit layer animated in the last frame (see `frame`). */
   private unitsAnimated = false;
@@ -490,20 +537,25 @@ export class MapView {
       p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
     }
     p.upload(e.count);
+    // Near T3 the section is kept, so that the figures can be built in the frame the close tier
+    // comes in (`tierShares`); the snapshot's own arrays go back to the worker.
+    this.elementSection = this.metresPerPx < T3_KEEP_M ? copyElements(e) : null;
     this.individualsBuilt = false;
-    if (tierOf(this.metresPerPx) === 3) this.buildIndividuals(e);
   }
+
+  /** The elements of the last snapshot, kept while the camera is near T3. */
+  private elementSection: SnapshotElements | null = null;
 
   /** T3 individuals (PLAN 2.6): the elements of the last snapshot, each as its figures. */
   private readonly individualProxies: ProxyRenderer;
-  /** Whether they stand for the elements now held: built from the same snapshot, at T3. */
+  /** Whether they stand for the elements now held: built from the last snapshot's section. */
   private individualsBuilt = false;
   /** Figures of the last build, each with its element's id and its place in cells (tests). */
   individualCount = 0;
   individualOwner = new Uint32Array(0);
   individualX = new Float64Array(0);
   individualY = new Float64Array(0);
-  /** ms the last build took, and whether the last frame drew the individuals (tests). */
+  /** ms the last build took, and whether the close tier is the one shown or fading in (tests). */
   individualsBuildMs = 0;
   individualsShown = false;
 
@@ -519,7 +571,11 @@ export class MapView {
     for (let i = 0; i < e.count; i++) total += figureCount(e.strength[i]!);
     // More than the renderer is measured for: the element sprites stay (never at T3 in practice,
     // where a view holds a few formations).
-    if (total > MAX_INDIVIDUALS) return;
+    if (total > MAX_INDIVIDUALS) {
+      this.individualCount = 0;
+      this.individualsBuilt = true;
+      return;
+    }
     const p = this.individualProxies;
     p.reserve(total);
     p.originX = Math.floor(this.controller.cam.cx);
@@ -595,10 +651,41 @@ export class MapView {
    * Only the unit layers (T0 counters, T1 markers) at `now`, without the map: scripted zoom
    * recordings check their continuity without software-rendering the map (PLAN 2.2 AT).
    */
-  drawUnitLayers(now: number): void {
+  drawUnitLayers(now: number, pixels = false): void {
     this.resize();
-    this.drawUnitMarkers(this.controller.cam, now);
-    this.drawFx(this.controller.cam, now);
+    const cam = this.controller.cam;
+    this.tierShares(now);
+    if (pixels) {
+      // For a comparison of pixels (PLAN 2.7b AT): both canvases cleared, the sprite layers drawn
+      // without the map. The next frame of the view's own loop draws everything again.
+      const gl = this.gl;
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      this.overlay.getContext('2d')!.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+      this.drawSprites(cam, now);
+      this.dirty = true;
+    }
+    this.drawUnitMarkers(cam, now);
+    this.drawFx(cam, now);
+  }
+
+  /**
+   * The sprite layers (WebGL): at T2 the elements, at T3 their figures, cross-faded by the close
+   * handover; formation sprites stand in where no elements arrived (element-less formations,
+   * or before the first subscribed snapshot).
+   */
+  private drawSprites(cam: Camera, now: number): void {
+    const unitsIn = this.shares.elements;
+    if (unitsIn <= 0.01) return;
+    const dpr = window.devicePixelRatio || 1;
+    const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
+    const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
+    const figures = this.shares.individuals;
+    if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn);
+    else {
+      if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn * (1 - figures));
+      if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures);
+    }
   }
 
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least 5 px, × the size setting). */
@@ -620,9 +707,10 @@ export class MapView {
 
   /** T1 operational markers (PLAN 2.1) and T0 counters (PLAN 2.2) on the overlay. */
   private drawUnitMarkers(cam: Camera, now: number): void {
-    // T0 counters or T1 markers: a timed handover, so at rest only one of them is drawn (PLAN 1.45a).
-    const share = this.handover.share(this.metresPerPx, now);
-    const alpha = markerLowFade(this.metresPerPx) * share;
+    // T0 counters, T1 markers or T2 sprites: timed handovers, so at rest only one layer is drawn
+    // (PLAN 1.45a, 2.7b). The markers have what the counters and the sprites leave them.
+    const share = this.shares.markers;
+    const alpha = share * (1 - this.shares.elements);
     this.markerOpacity = alpha;
     this.markerRects = [];
     const ctx = this.overlay.getContext('2d')!;
@@ -872,21 +960,10 @@ export class MapView {
     this.resize();
     const dpr = window.devicePixelRatio || 1;
     const cam = this.controller.cam;
-    const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
     this.map.draw(cam, dpr);
-    // Below T1: element sprites (PLAN 2.3) fading in as the markers fade out; formation sprites
-    // only stand in where no elements arrived yet (element-less formations, before the first
-    // subscribed snapshot). T0 has counters (PLAN 2.2) and T1 markers (PLAN 2.1).
-    const unitsIn = this.elementOpacity;
-    if (unitsIn > 0.01) {
-      const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
-      // T3 (PLAN 2.6): the elements as their individuals, once a snapshot has arrived at T3. A
-      // plain switch at 30 m/px; the cross-fade of SPEC §8 comes with PLAN 2.7.
-      this.individualsShown = this.individualsBuilt && this.individualCount > 0 && tierOf(this.metresPerPx) === 3;
-      if (this.individualsShown) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn);
-      else if (this.elementCount > 0) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn);
-      else this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn);
-    } else this.individualsShown = false;
+    // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
+    this.tierShares(now);
+    this.drawSprites(cam, now);
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep

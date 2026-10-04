@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-71 · 2026-10-04 · accepted — Every tier boundary is a timed handover; "no popping" is measured at a fixed camera (PLAN 2.7b)
+
+- **Context:** of the three boundaries between the unit tiers only T0 ↔ T1 was a state with a
+  cross-fade in time (ADR-64). The T1 markers faded toward T2 by a curve of the zoom over
+  210–300 m/px, so a camera resting there showed markers and sprites both half-faded (the
+  defect ADR-64 removed at the other edge). T2 → T3 switched the sprite for its figures in one
+  frame.
+- **Decision:** one mechanism, `TierHandover(threshold)`, three times: 2000, 300 and 30 m/px,
+  each in at its threshold and out above it × 1.15, each a cross-fade over 250 ms.
+  - The view asks each handover once a frame and keeps the three shares. The markers have
+    what the counters and the sprites leave them; the sprites and the figures divide the
+    sprites' share; fire and wrecks are drawn with the sprites' share at T2 and T3 alike.
+  - `markerLowFade` is gone, with the unit test that checked its curve. The handover's test
+    has the three thresholds and the old band at rest.
+- **The figures are built when the close tier wants them, not when a snapshot arrives at T3.**
+  The state flips in the frame the camera crosses 30 m/px; the snapshot subscribed at T3 is a
+  frame or two away. Built on arrival, the sprites would fade out with nothing fading in, and
+  the figures would pop. The view keeps a copy of the last element section while the camera
+  is below 60 m/px and expands it in that frame. With no elements at hand (a jump from far
+  away) the close handover waits: the sprites stay until there are figures to fade to.
+- **The acceptance test, read.** "Max per-pixel luminance jump between consecutive frames …
+  in unit areas" cannot be measured while the camera moves: at 3% a frame a sprite 300 px
+  from the centre moves 9 px, and its edge sweeping over a pixel is a full-contrast jump with
+  nothing popping. So:
+  - the camera steps across a boundary once (0.04%) and stays; the frames of the change that
+    follows are drawn 16 ms apart, the unit layers alone on black (`drawUnitLayers(now, true)`
+    clears both canvases and draws the sprite layers without the map), and consecutive frames
+    are compared pixel by pixel;
+  - that the step itself changes nothing at once is in the shares: the first frame after it
+    has the old layer in full, and the share then moves by less than 0.12 a frame.
+- **The limit, 48 of 255.** A smooth cross-fade over 250 ms moves a share by at most 0.096 in
+  16 ms (1.5 × the linear step): 25 of 255 for a white figure on black. Where the outgoing
+  layer covers the same pixel its change adds. 48 is twice the single step. Measured over the
+  six crossings: 31–39. A change done in one frame measures 247–255 here, and the test asserts
+  that too, so the measure is known to see a pop.
+- **Cost:** the slowest frame of the unit layers during a change takes 1.6–6.2 ms of CPU; the
+  larger figures are T0 ↔ T1, where the counters are clustered. T2 ↔ T3 with both sprite
+  layers and the build of 3,000 figures in its first frame: 2.7 ms.
+- **Handed on, not dropped:**
+  - PLAN 2.7c: the morph of SPEC §8 (the marker shrinks into the group, the strength bar
+    lingers). T1 ↔ T2 is a plain cross-fade until then.
+  - PLAN 2.7d: the layers that are not units. Capital flags switch at 3 px per cell in one
+    frame; city labels fade by a curve of the zoom.
+  - PLAN 2.10: ADR-69's open choice, how a battalion's losses show at T3. It is a matter of
+    the look at the demo's close stops, not of fades.
 ### ADR-70 · 2026-10-04 · accepted — A slot is a place in the block the template made (PLAN 2.7a)
 
 - **Context:** an element's place was `slotPose(formation, slot, count)` with `count` the

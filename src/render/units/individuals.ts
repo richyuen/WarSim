@@ -16,6 +16,8 @@
 import { hash2, pair } from '../hash';
 import { Frame } from '../../shared/unitLooks';
 
+/** m/px up to which T3 is the unit layer (`tierOf`); the handover from the T2 sprites is at this zoom. */
+export const T3_MAX_M = 30;
 export const MAX_FIGURES = 64;
 /** Side of an element's footprint, cells. Slots are 0.03 apart (`sim/core/pose`), so elements stay apart. */
 export const FOOTPRINT_CELLS = 0.024;

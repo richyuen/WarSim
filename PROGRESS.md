@@ -3476,3 +3476,47 @@ since, with three test races found in their gate runs.
   goes from 22 elements to 17. Gate: 531 unit tests in 74 files, 8 ten-year tests, 78 e2e,
   parity 46.3%.
 - **Next:** PLAN 2.7b.
+
+## 2026-10-04 — PLAN 2.7b: every tier boundary is a timed handover; no popping, measured (ADR-71)
+
+- **What was there:** T0 ↔ T1 was a state with a cross-fade in time (PLAN 1.45a). T1 → T2 was a
+  fade by zoom over 210–300 m/px (a resting camera showed markers and sprites both
+  half-faded). T2 → T3 was a switch in one frame.
+- **Now:** `TierHandover(threshold)` three times (2000, 300, 30 m/px; out above each × 1.15;
+  250 ms). The view asks each once a frame; the layers' opacities are products of the shares.
+  `markerLowFade` and its unit test are gone: the curve it tested no longer exists, and the
+  handover's test covers the three thresholds and the old band at rest.
+- **Figures on demand:** the T3 figures are built in the frame the close tier comes in, from a
+  copy of the last element section kept below 60 m/px, so that the cross-fade has both layers.
+  Built on arrival of a T3 snapshot they would have popped a frame or two after the sprites
+  began to fade.
+- **Acceptance test** (`tests/e2e/fades1938.spec.ts`): two divisions spawned where nothing else
+  stands; the camera steps across each boundary in both directions and stays; 22 frames follow
+  16 ms apart, the unit layers alone on black, compared pixel by pixel.
+
+  | Change | Largest jump between frames (of 255) | The whole change | Slowest frame (CPU) |
+  |---|---|---|---|
+  | T0 → T1 | 38.3 | 255 | 6.2 ms |
+  | T1 → T2 | 31.9 | 255 | 2.7 ms |
+  | T2 → T3 | 32.9 | 247 | 2.7 ms |
+  | T3 → T2 | 33.9 | 247 | 1.6 ms |
+  | T2 → T1 | 31.0 | 255 | 1.8 ms |
+  | T1 → T0 | 39.0 | 255 | 4.6 ms |
+
+  The limit is 48 (twice the largest step of a 250 ms smooth fade on full contrast); the test
+  also asserts that the whole change is more than twice the limit, so that a change done in
+  one frame would fail. The share of the nearer layer is the old one in the frame of the step
+  and moves by less than 0.12 a frame. At 320 and 250 m/px, where the fade by zoom was, a
+  resting camera has one layer in full.
+- **A first run measured nothing:** jump 0 and whole change 0 on every frame. The spec read the
+  second canvas of the page, which is the city labels', not the overlay. The assertion that
+  the whole change is large caught it. Without it the test would have passed on a blank.
+- **The AT's wording, pinned in PLAN:** the luminance is compared at a fixed camera. While the
+  camera moves every edge moves by pixels a frame, which is not popping.
+- **Other specs:** `individuals1938` rests before it reads (the figures fade in now).
+- **Handed on:** 2.7c (the marker → elements morph), 2.7d (flags switch in one frame; city
+  labels fade by zoom), and to 2.10 the open choice of ADR-69 (a battalion's losses at T3).
+- **Tests:** 5 new unit tests in `handover.test.ts`, one removed from `markers.test.ts` with the
+  function it tested. Gate: 535 unit tests in 74 files, 79 e2e, parity 46.3% (no sim input
+  changed, so the ten-year stage did not run).
+- **Next:** PLAN 2.7c.

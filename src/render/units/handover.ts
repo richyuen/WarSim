@@ -1,36 +1,40 @@
 /**
- * The T0 ↔ T1 handover (SPEC §8, PLAN 1.45a): which unit layer shows, the T0 counters or the T1
- * markers, is a state and not a function of the zoom. The markers come in when the zoom reaches
- * T1_MAX_M and go out when it passes above T1_MAX_M × HANDOVER_HYSTERESIS, and a change is
- * a cross-fade over HANDOVER_MS of real time. Wherever the camera stops, one layer is drawn at
- * full opacity and the other not at all.
+ * A handover between two unit layers at a zoom threshold (SPEC §8, PLAN 1.45a and 2.7b): which
+ * of the two shows is a state and not a function of the zoom. The nearer layer comes in when
+ * the zoom reaches the threshold and goes out when it passes above the threshold ×
+ * HANDOVER_HYSTERESIS, and a change is a cross-fade over HANDOVER_MS of real time. Wherever the
+ * camera stops, one layer is drawn at full opacity and the other not at all.
+ *
+ * The view has three: T0 counters ↔ T1 markers at 2000 m/px, T1 markers ↔ T2 element sprites at
+ * 300, T2 sprites ↔ T3 individuals at 30.
  */
 import { progress, running, smooth } from '../timing';
-import { T1_MAX_M } from './markers';
 
 export const HANDOVER_MS = 250;
-/** Zooming out, the markers stay until this factor above T1_MAX_M (as the counters' levels: ±0.15). */
+/** Zooming out, the nearer layer stays until this factor above the threshold (as the counters' levels: ±0.15). */
 export const HANDOVER_HYSTERESIS = 1.15;
 
 export class TierHandover {
-  /** The layer shown, or fading in: true = T1 markers, false = T0 counters. Null before the first frame. */
-  markers: boolean | null = null;
+  /** The layer shown, or fading in: true = the nearer one. Null before the first frame. */
+  near: boolean | null = null;
   /** When the layer shown began to fade in (ms on the clock of `now`). */
   private start = -Infinity;
 
-  /** The markers' share of the two layers at `now`, in [0, 1]; the counters have the rest. */
+  /** `thresholdM`: the nearer layer's tier reaches up to this many m/px, inclusive, as `tierOf` has it. */
+  constructor(readonly thresholdM: number) {}
+
+  /** The nearer layer's share of the two at `now`, in [0, 1]; the farther one has the rest. */
   share(mPerPx: number, now: number): number {
-    // T1 reaches up to T1_MAX_M inclusive, as `tierOf` has it.
-    const want = mPerPx <= (this.markers ? T1_MAX_M * HANDOVER_HYSTERESIS : T1_MAX_M);
-    if (this.markers === null) this.markers = want;
-    else if (want !== this.markers) {
+    const want = mPerPx <= (this.near ? this.thresholdM * HANDOVER_HYSTERESIS : this.thresholdM);
+    if (this.near === null) this.near = want;
+    else if (want !== this.near) {
       // A turn in mid-fade goes on from the share reached: the smoothstep is symmetric.
       const reached = progress(now, this.start, HANDOVER_MS);
-      this.markers = want;
+      this.near = want;
       this.start = now - (1 - reached) * HANDOVER_MS;
     }
     const s = smooth(progress(now, this.start, HANDOVER_MS));
-    return this.markers ? s : 1 - s;
+    return this.near ? s : 1 - s;
   }
 
   /** True while a cross-fade runs (the view keeps redrawing). */

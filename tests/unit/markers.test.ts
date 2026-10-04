@@ -1,26 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { markerLowFade, strengthText, T1_MAX_M, T1_MIN_M } from '../../src/render/units/markers';
+import { strengthText } from '../../src/render/units/markers';
 
-// PLAN 2.1: T1 marker layer opacity and strength labels. Toward T0 the opacity is the timed
-// handover's (PLAN 1.45a, tests/unit/handover.test.ts): the fade by zoom over 2000–2600 m/px that
-// this test used to check is gone, because a camera resting there showed both layers half-faded.
+// PLAN 2.1: the T1 markers' strength labels. The layer's opacity is the business of the two
+// handovers at its edges (PLAN 1.45a toward T0, PLAN 2.7b toward T2: tests/unit/handover.test.ts).
+// The fades by zoom that this file used to check are gone: a camera resting inside one showed
+// two layers half-faded.
 
 describe('T1 markers (PLAN 2.1)', () => {
-  it('are fully visible from 300 m/px up and fade smoothly below, toward T2', () => {
-    expect(markerLowFade(1000)).toBe(1);
-    expect(markerLowFade(T1_MIN_M)).toBe(1);
-    expect(markerLowFade(T1_MAX_M)).toBe(1);
-    expect(markerLowFade(100)).toBe(0); // T2/T3
-    // Zoom alone does not fade them toward T0 any more.
-    expect(markerLowFade(T1_MAX_M * 1.15)).toBe(1);
-    expect(markerLowFade(5000)).toBe(1);
-    const a = markerLowFade(T1_MIN_M * 0.85);
-    expect(a).toBeGreaterThan(0);
-    expect(a).toBeLessThan(1);
-    // Monotone across the fade.
-    for (let m = T1_MIN_M * 0.6; m < T1_MIN_M; m += 5) expect(markerLowFade(m + 5)).toBeGreaterThanOrEqual(markerLowFade(m));
-  });
-
   it('strength text: exact under 1,000, thousands with one decimal above', () => {
     expect(strengthText(0)).toBe('0');
     expect(strengthText(999)).toBe('999');
