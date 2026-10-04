@@ -91,6 +91,30 @@ describe('Table', () => {
     expect(saveBytes([wrap(b)])).toEqual(saveBytes([wrap(a)]));
   });
 
+  // PLAN 2.7x (ADR-74, third read, finding 2): `deserialize` made the columns and `alive` anew
+  // at the loaded size and left `generation` as long as it was. For ids beyond it the count
+  // read as undefined, and the increment in `create` wrote nowhere.
+  it('a table loaded larger than it was counts its ids beyond the old size too', () => {
+    const a = new Table('units', schema, 4);
+    for (let i = 0; i < 40; i++) a.create();
+    const b = new Table('units', schema, 4);
+    b.create();
+    loadBytes([wrap(b)], saveBytes([wrap(a)]));
+    expect(b.highWater).toBe(41);
+    expect(b.generation.length).toBe(b.capacity);
+    // The counts of the process go on: id 1 was given out once here, the others not yet.
+    expect(Array.from(b.generation.subarray(0, 41)).every((g) => Number.isInteger(g))).toBe(true);
+    // An id beyond the old size, freed and given out again: another row, and its count says so.
+    const before = b.generation[30]!;
+    b.remove(30);
+    expect(b.create()).toBe(30);
+    expect(b.generation[30]).toBe(before + 1);
+    // And one that the table grows for.
+    const id = b.create();
+    expect(id).toBe(41);
+    expect(b.generation[id]).toBe(1);
+  });
+
   it('state hash changes on any single-byte mutation of any column, alive map or free list', () => {
     const t = new Table('units', schema);
     churn(t, 3, 1000);

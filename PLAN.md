@@ -736,7 +736,7 @@ quick sweep as a smoke test.
   3 of them failed before: the reader's case (b drawn at (0, 0) from its formation, not (0, −5.02));
   one that comes out in mid-fade; armies moving at random, 40 games of 150 ticks (before: steps of
   3.6 to 4.7 px at full opacity in the first three found; now none over a step of the ease, 1.9 px).
-- [ ] 2.7x A table loaded larger than it was still tells its rows apart (ADR-74, third read, finding 2; a
+- [x] 2.7x A table loaded larger than it was still tells its rows apart (ADR-74, third read, finding 2; a
   defect of PLAN 2.7o). `Table.deserialize` makes `alive` and the columns anew at the loaded size and
   leaves `generation` at its old length. For ids beyond it the count is not a number: the worker
   takes every such formation for new in every tick, and its sprites jump from tick to tick.
@@ -747,6 +747,11 @@ quick sweep as a smoke test.
   AT: unit, the worker: that case; every formation that moved is sent with the place it had before
   the tick. And the snapshot that follows a load sends every formation from its own place: the
   places of the world before the load are not its previous places.
+  Done 2026-10-04: `Table.deserialize` keeps `generation` as long as the table (ADR-74, the entry of
+  2.7o). `tests/unit/table.test.ts` (1 new) and `tests/unit/serverElements.test.ts`, "previous places
+  after a load" (2 new): the first of each failed before (the count array 4 long for a table of 41;
+  formation 128 sent in tick 0 as coming from where it stood after it). The third held before too:
+  the worker takes the places anew after a load.
 - [ ] 2.7y Decide what a pause in mid-tick does to the sprites, and make it so (ADR-74, third read,
   finding 4; traced by the reader). `tickProgress` is 1 when the game is paused (SPEC, PLAN 2.7h:
   "the sprites stand where the tick has them"), so a pause at progress p of a tick moves every

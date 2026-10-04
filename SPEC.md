@@ -247,7 +247,8 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) �
   An id is therefore not an identity over time: a row created in a step can have the id of a row
   destroyed in that step. A table counts how often each id has been given out
   (`Table.generation`), for an observer that remembers something by id. The count is not state:
-  it is not serialized or hashed, and the sim does not read it (PLAN 2.7o).
+  it is not serialized or hashed, and the sim does not read it (PLAN 2.7o). A load leaves the
+  counts as they are, for a table as large as the loaded one (PLAN 2.7x).
 - **State hash**: `hashSections` chains (name, dtype, length, xxhash32(data)) over every
   authoritative section (`World.parts()`: meta incl. tick and seed, RNG states, command log and
   pending commands, cell layers, entity tables). Events and derived outputs are excluded.

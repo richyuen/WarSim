@@ -25,7 +25,8 @@ export class Table<S extends Schema> {
    * How many times each id has been given out in this process. It tells a row from an earlier
    * row that had its id: an observer that remembers something by id (the worker: where a
    * formation stood a tick ago) compares it. Not state: nothing in the sim reads it, and it is
-   * neither serialized nor hashed. A loaded table counts on from where the process was.
+   * neither serialized nor hashed. A loaded table counts on from where the process was. As
+   * long as the table: `grow` and `deserialize` keep it so (PLAN 2.7x).
    */
   generation: Uint32Array;
   private free: Uint32Array;
@@ -168,5 +169,12 @@ export class Table<S extends Schema> {
     this.count = count;
     this.alive = alive;
     this.cols = cols;
+    // The counts go on, in an array as long as the table now is. (Left at its old length, an id
+    // beyond it had no count: an observer took its row for another row in every tick. PLAN 2.7x.)
+    if (this.generation.length !== cap) {
+      const generation = new Uint32Array(cap);
+      generation.set(this.generation.subarray(0, cap));
+      this.generation = generation;
+    }
   }
 }

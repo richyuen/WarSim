@@ -536,6 +536,13 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *Rejected:* the events of the step (not every way a formation goes emits one: disbanded,
     annexed, removed by God or the editor); a guess from how far the formation moved in a tick
     (a threshold, and a recycled id next door would pass it).
+  - *PLAN 2.7x, 2026-10-04 (third read, finding 2): the count through a load.* `deserialize`
+    made the columns anew at the loaded size and left the counts at the old length; ids beyond
+    it had none, and the worker took their formations for new in every tick. The counts are
+    now as long as the table. A load does not raise them: that every row is another row after a
+    load is the observer's to know (the worker takes the places anew in `resetStreams`, and
+    the snapshot that follows sends every formation from its own place: tested). Raising them
+    all in `deserialize` would say the same twice, and was left.
 
 - **2.7f, done 2026-10-04: finding 1 reproduced and fixed.** `CounterLayer.layout` now takes
   over the level of a finished change first and judges the level wanted against that.

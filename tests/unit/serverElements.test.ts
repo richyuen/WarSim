@@ -182,3 +182,113 @@ describe('previous places in snapshots (PLAN 2.7o)', () => {
     expect(moved).toBeGreaterThan(0); // the step did move some: the previous place is not just the place
   });
 });
+
+// PLAN 2.7x (ADR-74, third read, finding 2): a save with more formation ids than a fresh world
+// has room for (the toy world: 128), loaded into a fresh world. `Table.deserialize` left
+// `generation` at its old length; for ids beyond it the worker compared the count of a tick ago
+// (0) with undefined, took the formation for new in every tick, and sent it with its place as
+// the place it came from: its sprites jumped from tick to tick.
+describe('previous places after a load (PLAN 2.7x)', () => {
+  const FULL: Subscription = { bbox: [0, 0, Infinity, Infinity], z: 0, tier: 0, wantsElements: false };
+  type Places = { id: number[]; x: number[]; y: number[]; prevX: number[]; prevY: number[] };
+
+  /** A worker on `sim`, subscribed to everything. A snapshot's arrays go back to the worker with the ack: what is read is copied first. */
+  function worker(sim: Sim): { send: (m: Parameters<SimServer['handle']>[0]) => void; step: () => Places; now: () => Places } {
+    let last: Snapshot | null = null;
+    let unacked: Snapshot | null = null;
+    const server = new SimServer((m: FromWorker) => {
+      if (m.type === 'snapshot') last = unacked = m.snap;
+    });
+    server.sim = sim;
+    const drain = (): void => {
+      while (unacked) {
+        const s: Snapshot = unacked;
+        unacked = null;
+        server.handle({ type: 'ack', seq: s.seq, buffers: s.buffers }, 0);
+      }
+    };
+    const places = (): Places => {
+      const f = last!.formations;
+      const cut = (a: ArrayLike<number>): number[] => Array.from(a).slice(0, f.count);
+      return { id: cut(f.id), x: cut(f.x), y: cut(f.y), prevX: cut(f.prevX), prevY: cut(f.prevY) };
+    };
+    const send = (m: Parameters<SimServer['handle']>[0]): void => {
+      drain();
+      server.handle(m, 0);
+    };
+    const now = (): Places => {
+      send({ type: 'subscribe', sub: FULL });
+      const p = places();
+      drain();
+      return p;
+    };
+    const step = (): Places => {
+      send({ type: 'step', n: 1, reqId: 1 });
+      const p = places();
+      drain();
+      return p;
+    };
+    now();
+    return { send, step, now };
+  }
+
+  /** The saved game: the toy world with 20 formations more, after a day. */
+  function saved(): { bytes: Uint8Array; highWater: number } {
+    const a = new Sim({ scenario: 'toy', seed: 7 });
+    const wa = worker(a);
+    const fa = a.world.formations;
+    const nation = fa.cols.nation[1]!;
+    for (let i = 0; i < 20; i++) wa.send({ type: 'cmd', cmd: { kind: 'spawnFormation', nation, x: fa.cols.x[1]! + 0.5 * i, y: fa.cols.y[1]!, strength: 5000 } });
+    for (let t = 0; t < 24; t++) wa.step();
+    return { bytes: a.save(), highWater: fa.highWater };
+  }
+
+  it('every formation that moves is sent with the place it had before the tick, whatever its id', () => {
+    const { bytes, highWater } = saved();
+    const b = new Sim({ scenario: 'toy', seed: 7 });
+    const fb = b.world.formations;
+    expect(highWater).toBeGreaterThan(fb.capacity); // the case: more ids than the fresh world has room for
+    const fresh = fb.capacity;
+    const wb = worker(b);
+    wb.send({ type: 'load', reqId: 2, bytes });
+    expect(fb.highWater).toBe(highWater);
+
+    const moves = { low: 0, high: 0 };
+    const wrong: string[] = [];
+    for (let t = 0; t < 48; t++) {
+      const before = new Map<number, [number, number]>();
+      fb.forEach((f) => before.set(f, [fb.cols.x[f]!, fb.cols.y[f]!]));
+      const s = wb.step();
+      for (let k = 0; k < s.id.length; k++) {
+        const was = before.get(s.id[k]!);
+        if (!was || (was[0] === s.x[k] && was[1] === s.y[k])) continue;
+        moves[s.id[k]! < fresh ? 'low' : 'high']++;
+        if (s.prevX[k] !== was[0] || s.prevY[k] !== was[1]) wrong.push(`tick ${t}, formation ${s.id[k]}: it stood at ${was.join(', ')} and was sent as coming from ${s.prevX[k]}, ${s.prevY[k]}`);
+      }
+    }
+    expect(moves.low).toBeGreaterThan(1000);
+    expect(moves.high).toBeGreaterThan(100);
+    expect(wrong.length, wrong.slice(0, 3).join('; ')).toBe(0);
+  });
+
+  it('the snapshot that follows a load sends every formation from its own place, not from where the world before stood', () => {
+    const { bytes } = saved();
+    const b = new Sim({ scenario: 'toy', seed: 7 });
+    const wb = worker(b);
+    // The world before the load has moved on too, another way: its formations stand elsewhere.
+    for (let t = 0; t < 12; t++) wb.step();
+    const before = new Map<number, [number, number]>();
+    const old = wb.now();
+    old.id.forEach((id, k) => before.set(id, [old.x[k]!, old.y[k]!]));
+    wb.send({ type: 'load', reqId: 2, bytes });
+    const s = wb.now();
+    let elsewhere = 0;
+    for (let k = 0; k < s.id.length; k++) {
+      expect([s.prevX[k], s.prevY[k]], `formation ${s.id[k]}`).toEqual([s.x[k], s.y[k]]);
+      const was = before.get(s.id[k]!);
+      if (was && (was[0] !== s.x[k] || was[1] !== s.y[k])) elsewhere++;
+    }
+    expect(s.id.length).toBeGreaterThan(130);
+    expect(elsewhere).toBeGreaterThan(20); // ids whose formation of before the load stood somewhere else
+  });
+});

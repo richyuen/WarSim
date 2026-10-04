@@ -4473,3 +4473,25 @@ of what was done since the last pass.
   unchanged (`markerStacks1938`, `markers1938`, `handover1938`).
 - **Tests:** 4 new unit tests. 604 unit tests in 79 files, 97 e2e.
 - **Next:** PLAN 2.7x (a load does not resize the count of ids).
+
+## 2026-10-04 — PLAN 2.7x: the count of ids through a load (a defect of 2.7o)
+
+- **The bug:** `Table.deserialize` made the columns and `alive` anew at the loaded size and
+  left `generation` (2.7o: how often each id has been given out) at its old length. For an id
+  beyond it the count read as undefined: the worker took that formation for new in every tick
+  and sent it with its place as the place it came from. Its sprites jumped from tick to tick.
+- **Reach:** a save with more formation ids than a fresh world has room for (toy 128, 1938
+  2,048), loaded into a fresh page. Nothing shipped makes one yet; the editor and God Mode can.
+- **Test first, two that failed:**
+  - the table: loaded with 41 ids into one of 4, its count array was 4 long;
+  - the worker: the toy world with 20 formations more, saved after a day and loaded into a
+    fresh one; over 48 ticks every move of an id from 128 on was sent as coming from where it
+    arrived (the first: formation 128 in tick 0).
+- **Fix:** `deserialize` keeps `generation` as long as the table. The counts go on as they
+  were.
+- **A third test, which held before too:** the snapshot that follows a load sends every
+  formation from its own place, not from where the world before the load stood.
+- **Not sim state:** the pinned hash of seed 99 is unchanged (the sweep tests ran: a file of
+  the sim's core changed).
+- **Tests:** 3 new unit tests. 607 unit tests in 79 files, 97 e2e.
+- **Next:** PLAN 2.7y (what a pause in mid-tick does to the sprites: a decision).
