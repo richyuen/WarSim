@@ -211,7 +211,7 @@ function applyCommand(world: World, cmd: Command): void {
       return;
     }
     case 'editPaint':
-      paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask);
+      paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask, cmd.stroke);
       return;
     case 'importLayer': {
       const values = decodeRuns(cmd.runs, world.cells.w * world.cells.h);

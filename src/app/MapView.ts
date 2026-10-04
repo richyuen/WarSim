@@ -25,6 +25,20 @@ import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
 
+/**
+ * A tool that paints on a primary-button drag (PLAN 1.44). Positions are world cells, fractional,
+ * with x not wrapped. While `active()`, a press calls `start`, every further cell the pointer
+ * enters `move`, and the release `end` (`cancel` when the drag is taken away: a second finger, a
+ * lost pointer); the camera does not pan on that button meanwhile.
+ */
+export interface PaintDrag {
+  active(): boolean;
+  start(x: number, y: number): void;
+  move(x: number, y: number): void;
+  end(x: number, y: number): void;
+  cancel(): void;
+}
+
 /** Formation marker size in cells (T0/T1 placeholder until the Phase 2 LOD markers). */
 const MARKER_CELLS = 0.9;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
@@ -103,10 +117,54 @@ export class MapView {
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
     this.controlGrid = new Uint16Array(geo.w * geo.h);
-    // Click (no drag) selects the nation under the cursor.
+    // A paint tool takes the primary button (PLAN 1.44): the press starts a stroke that follows
+    // the pointer from cell to cell until the release, and the camera leaves that button alone.
+    // World x is not wrapped here, so a stroke crosses the map's seam.
+    this.controller.leftPans = () => !this.paint?.active();
+    const worldAt = (e: PointerEvent): [number, number] => {
+      const r = canvas.getBoundingClientRect();
+      return screenToWorld(this.controller.cam, e.clientX - r.left, e.clientY - r.top, canvas.clientWidth, canvas.clientHeight);
+    };
+    let stroke: { id: number; cx: number; cy: number } | null = null;
+    window.addEventListener('pointermove', (e) => {
+      if (!stroke || e.pointerId !== stroke.id) return;
+      const [wx, wy] = worldAt(e);
+      if (Math.floor(wx) === stroke.cx && Math.floor(wy) === stroke.cy) return;
+      stroke.cx = Math.floor(wx);
+      stroke.cy = Math.floor(wy);
+      this.paint?.move(wx, wy);
+    });
+    window.addEventListener('pointerup', (e) => {
+      if (!stroke || e.pointerId !== stroke.id) return;
+      stroke = null;
+      this.paint?.end(...worldAt(e));
+    });
+    window.addEventListener('pointercancel', (e) => {
+      if (!stroke || e.pointerId !== stroke.id) return;
+      stroke = null;
+      this.paint?.cancel();
+    });
+    // Click (no drag) of the primary button selects the nation under the cursor.
     let down: [number, number] | null = null;
-    canvas.addEventListener('pointerdown', (e) => (down = [e.clientX, e.clientY]));
+    canvas.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      if (stroke) {
+        // A second finger: the stroke stops where it is and the two fingers move the map.
+        stroke = null;
+        this.paint?.cancel();
+        return;
+      }
+      if (this.paint?.active()) {
+        const [wx, wy] = worldAt(e);
+        stroke = { id: e.pointerId, cx: Math.floor(wx), cy: Math.floor(wy) };
+        canvas.setPointerCapture?.(e.pointerId);
+        this.paint.start(wx, wy);
+        return;
+      }
+      down = [e.clientX, e.clientY];
+    });
     canvas.addEventListener('pointerup', (e) => {
+      if (e.button !== 0) return;
       if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 5) {
         const r = canvas.getBoundingClientRect();
         const sx = e.clientX - r.left;
@@ -313,6 +371,9 @@ export class MapView {
    * point and Shift; returns true to consume the click.
    */
   onPick: ((x: number, y: number, sx: number, sy: number, shift: boolean) => boolean) | null = null;
+
+  /** The tool that paints on a primary-button drag, if any (PLAN 1.44; the editor's brush and line). */
+  paint: PaintDrag | null = null;
 
   /** Whether the map renders east–west wrap copies (looping map; PLAN 1.39b1 option). */
   get wrapsX(): boolean {

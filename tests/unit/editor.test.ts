@@ -97,3 +97,117 @@ describe('editor tools (PLAN 1.35)', () => {
     expect(t.hash()).toBe(s.hash());
   });
 });
+
+// PLAN 1.44: a brush dragged over the map is a stroke: a stamp where it starts and a line to
+// every further point. The whole stroke is one undo step.
+describe('brush strokes (PLAN 1.44)', () => {
+  const stamp = (value: number, x: number, y: number, stroke?: 'start' | 'more'): Command => ({ kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: 0, y2: 0, r: 1, value, mask: null, ...(stroke ? { stroke } : {}) });
+  const seg = (value: number, x: number, y: number, x2: number, y2: number, stroke: 'more' | null = 'more'): Command => ({ kind: 'editPaint', layer: 'nation', tool: 'line', x, y, x2, y2, r: 1, value, mask: null, ...(stroke ? { stroke } : {}) });
+  /** Paint from (wx, wy) east, then south-east, 30 cells long: as one stroke, or as three paints apart. */
+  const strokeOf = (value: number, oneStroke = true): Command[] => [
+    stamp(value, wx, wy, oneStroke ? 'start' : undefined),
+    seg(value, wx, wy, wx + 12, wy, oneStroke ? 'more' : null),
+    seg(value, wx + 12, wy, wx + 30, wy + 6, oneStroke ? 'more' : null),
+  ];
+  const path = [...lineCells(W, H, wx, wy, wx + 12, wy, 0), ...lineCells(W, H, wx + 12, wy, wx + 30, wy + 6, 0)];
+
+  it('paints every cell under its path and is one undo step', () => {
+    const s = sim();
+    const before = rasters(s.world);
+    run(s, ...strokeOf(GER!));
+    expect(path.length).toBeGreaterThan(30);
+    for (const c of path) expect(s.world.cells.owner[c], `cell ${c}`).toBe(GER);
+    expect(s.world.edits.undo.length).toBe(1);
+    expect(s.world.edits.stroke).toBe(true);
+    const painted = rasters(s.world);
+    // The stroke's edit lists each changed cell once: the same picture as the three paints apart.
+    const apart = sim();
+    run(apart, ...strokeOf(GER!, false));
+    expect(rasters(apart.world)).toEqual(painted);
+    expect(apart.world.edits.undo.length).toBe(3);
+    expect(s.world.edits.undo[0]!.cells.length).toBe(apart.world.edits.undo.reduce((n, e) => n + e.cells.length, 0));
+    expect(new Set(s.world.edits.undo[0]!.cells).size).toBe(s.world.edits.undo[0]!.cells.length);
+
+    run(s, { kind: 'editUndo' });
+    expect(rasters(s.world)).toEqual(before);
+    expect([s.world.edits.undo.length, s.world.edits.redo.length, s.world.edits.stroke]).toEqual([0, 1, false]);
+    run(s, { kind: 'editRedo' });
+    expect(rasters(s.world)).toEqual(painted);
+  });
+
+  it('a stroke ends with the next stroke, any other paint, an undo or a redo', () => {
+    const s = sim();
+    run(s, ...strokeOf(GER!), ...strokeOf(0));
+    expect(s.world.edits.undo.length).toBe(2); // two strokes, two steps
+    run(s, brush(POL!, 2)); // a plain click
+    expect([s.world.edits.undo.length, s.world.edits.stroke]).toEqual([3, false]);
+    // `more` with no stroke open opens one, and the next `more` joins it.
+    run(s, seg(GER!, wx, wy + 10, wx + 8, wy + 10), seg(GER!, wx + 8, wy + 10, wx + 16, wy + 10));
+    expect([s.world.edits.undo.length, s.world.edits.stroke]).toEqual([4, true]);
+    // After an undo the stroke is closed: the same segment again is a step of its own.
+    run(s, { kind: 'editUndo' });
+    expect(s.world.edits.stroke).toBe(false);
+    run(s, seg(GER!, wx, wy + 10, wx + 8, wy + 10));
+    expect(s.world.edits.undo.length).toBe(4);
+    // Another value or layer within a stroke starts a new step.
+    run(s, seg(POL!, wx, wy + 12, wx + 8, wy + 12));
+    expect(s.world.edits.undo.length).toBe(5);
+    run(s, { kind: 'editPaint', layer: 'terrain', tool: 'line', x: wx, y: wy, x2: wx + 5, y2: wy, r: 1, value: Terrain.Hills, mask: null, stroke: 'more' });
+    expect(s.world.edits.undo.length).toBe(6);
+  });
+
+  it('a start that changes nothing leaves no empty step; the stroke begins with its first change', () => {
+    const s = sim();
+    run(s, stamp(POL!, wx, wy, 'start')); // Polish paint on Polish land
+    expect([s.world.edits.undo.length, s.world.edits.stroke]).toEqual([0, false]);
+    run(s, seg(POL!, wx, wy, wx + 3, wy)); // still nothing
+    expect(s.world.edits.undo.length).toBe(0);
+    const [gx, gy] = cellOf(13.4, 52.5, W, H); // Berlin
+    run(s, seg(POL!, gx, gy, gx + 4, gy), seg(POL!, gx + 4, gy, gx + 8, gy));
+    expect([s.world.edits.undo.length, s.world.edits.stroke]).toEqual([1, true]);
+  });
+
+  it('a long stroke is still one step, and the depth cap counts strokes, not segments', () => {
+    const s = sim();
+    const before = rasters(s.world);
+    const cmds: Command[] = [stamp(GER!, wx, wy, 'start')];
+    for (let i = 0; i < UNDO_DEPTH + 20; i++) cmds.push(seg(GER!, wx + i * 0.5, wy, wx + (i + 1) * 0.5, wy));
+    run(s, ...cmds);
+    expect(s.world.edits.undo.length).toBe(1);
+    run(s, { kind: 'editUndo' });
+    expect(rasters(s.world)).toEqual(before);
+  });
+
+  it('a cell the game changed under the stroke returns to its value before the stroke', () => {
+    const s = sim();
+    const c = Math.floor(wy) * W + Math.floor(wx);
+    run(s, stamp(GER!, wx, wy, 'start'));
+    // The running game takes the cell for Poland again (a war would do it); the stroke passes over it once more.
+    s.world.setController(c, POL!);
+    run(s, seg(GER!, wx, wy, wx + 2, wy));
+    expect(s.world.edits.undo.length).toBe(1);
+    expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([GER, GER]);
+    run(s, { kind: 'editUndo' });
+    expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([POL, POL]);
+  });
+
+  it('an open stroke is state: a save in mid-stroke continues identically, and a closed one hashes as before', () => {
+    const s = sim();
+    const fresh = s.hash();
+    const [first, ...rest] = strokeOf(GER!);
+    run(s, first!, rest[0]!);
+    const t = sim();
+    t.load(s.save());
+    expect(t.hash()).toBe(s.hash());
+    expect(t.world.edits.stroke).toBe(true);
+    for (const x of [s, t]) run(x, rest[1]!);
+    expect(t.hash()).toBe(s.hash());
+    expect(t.world.edits.undo.length).toBe(1);
+    for (const x of [s, t]) run(x, { kind: 'editUndo' });
+    expect(t.hash()).toBe(s.hash());
+    // No stroke open and nothing on the stack: the edit section has the bytes it always had.
+    const meta = new TextDecoder().decode(sim().world.edits.serialize().find((x) => x.name === 'edits.json')!.data as Uint8Array);
+    expect(meta).toBe('{"undo":0,"edits":[]}');
+    expect(sim().hash()).toBe(fresh);
+  });
+});

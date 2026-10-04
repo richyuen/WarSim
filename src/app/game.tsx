@@ -1,4 +1,4 @@
-import { signal } from '@preact/signals';
+import { effect, signal } from '@preact/signals';
 import { render } from 'preact';
 import type { ScenarioId } from '../shared/protocol';
 import { SCENARIO_INFO } from '../shared/scenarios';
@@ -47,6 +47,11 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     const p = new PlayerControl(hud, view);
     player = p;
     view.onPick = (x, y, sx, sy, shift) => hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y)) || p.click(x, y, sx, sy, shift);
+    // The editor's brush and line paint on a left-drag (PLAN 1.44); the cursor says so.
+    view.paint = { active: () => hud.dragTool() !== null, start: (x, y) => hud.dragStart(x, y), move: (x, y) => hud.dragMove(x, y), end: (x, y) => hud.dragEnd(x, y), cancel: () => hud.dragCancel() };
+    effect(() => {
+      canvas.style.cursor = hud.dragTool() ? 'crosshair' : '';
+    });
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') p.clearSelection();
       // Editor undo/redo: Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z, except while typing in a text field

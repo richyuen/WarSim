@@ -332,11 +332,18 @@ quick sweep as a smoke test.
   by `npm run data -- --previews` from the shipped assets and the scenario data; a unit test
   fails when it no longer is the map the data gives. 102 nations, equal to the sim's living
   nations. Compared with `reference/frames/scene_006.png` (AoC's Scenarios screen).
-- [ ] 1.44 Critic B6: the editor's brush and line paint on a left-drag. While a paint tool is
+- [x] 1.44 Critic B6: the editor's brush and line paint on a left-drag. While a paint tool is
   active the camera pans on a right- or middle-drag and with the keys, not on a left-drag.
   AT: an e2e that drags: a brush stroke across ≥ 20 cells paints every cell under its path,
   the camera does not move, and one undo removes the whole stroke; a right-drag pans and
   paints nothing; with no paint tool active a left-drag pans as before.
+  Done 2026-10-04 (ADR-63; `tests/e2e/editorDrag1938.spec.ts`, `tests/unit/editor.test.ts`,
+  `docs/evidence/1.44/`): a stroke grows one undo edit; one finger paints and two move the map.
+  The pinned hash did not move.
+- [ ] 1.44b The God Mode territory brush paints on a left-drag too (it is click-only, and a
+  drag with it pans the map: the same complaint as B6, in the game instead of the editor).
+  AT: e2e: with the God territory tool, a left-drag across ≥ 20 cells gives every cell under
+  its path to the selected nation's control and the camera does not move; a right-drag pans.
 - [ ] 1.45 Critic B7: Europe readable at world zoom. T0 counters are decluttered in screen space
   (no two overlap; what does not fit is aggregated into its neighbour), and split and merge
   fades finish while the game is paused, so no translucent duplicate is left standing.

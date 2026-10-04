@@ -70,8 +70,22 @@ export type Command =
   /**
    * PLAN 1.35 editor: paint `value` (nation id, 0 = unowned; or a land terrain class) with a tool;
    * `x2, y2` end a line; `mask` limits it to cells of one terrain or nation. Undoable.
+   * `stroke` (PLAN 1.44, a brush dragged over the map): `start` opens a stroke and `more`
+   * continues it, and the whole stroke is one undo step.
    */
-  | { kind: 'editPaint'; layer: 'nation' | 'terrain'; tool: 'brush' | 'line' | 'bucket'; x: number; y: number; x2: number; y2: number; r: number; value: number; mask: { kind: 'terrain' | 'nation'; value: number } | null }
+  | {
+      kind: 'editPaint';
+      layer: 'nation' | 'terrain';
+      tool: 'brush' | 'line' | 'bucket';
+      x: number;
+      y: number;
+      x2: number;
+      y2: number;
+      r: number;
+      value: number;
+      mask: { kind: 'terrain' | 'nation'; value: number } | null;
+      stroke?: 'start' | 'more';
+    }
   /** PLAN 1.37a map import: a whole layer as runs [value, count, …] covering every cell. */
   | { kind: 'importLayer'; layer: 'nation' | 'terrain'; runs: number[] }
   | { kind: 'editUndo' }

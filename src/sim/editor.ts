@@ -47,10 +47,37 @@ export interface Edit {
 export class EditStack implements Stateful {
   undo: Edit[] = [];
   redo: Edit[] = [];
+  /**
+   * The top undo edit is the brush stroke in progress (PLAN 1.44): the stroke's next segment
+   * grows that edit instead of pushing one. Any other change of the stack ends the stroke.
+   */
+  stroke = false;
 
   push(e: Edit): void {
     this.undo.push(e);
     this.redo = [];
+    this.stroke = false;
+    this.trim();
+  }
+
+  /** Adds `more` (same layer, as `paint` builds it) to the top edit: one undo step for both. */
+  extend(more: Edit): void {
+    const top = this.undo[this.undo.length - 1]!;
+    const join = <T extends Uint16Array | Uint32Array>(a: T, b: T): T => {
+      const out = new (a.constructor as new (n: number) => T)(a.length + b.length);
+      out.set(a, 0);
+      out.set(b, a.length);
+      return out;
+    };
+    top.cells = join(top.cells, more.cells);
+    top.before = join(top.before, more.before);
+    top.after = join(top.after, more.after);
+    if (top.beforeCtl && more.beforeCtl) top.beforeCtl = join(top.beforeCtl, more.beforeCtl);
+    this.trim();
+  }
+
+  /** Drops the oldest edits beyond the caps. */
+  private trim(): void {
     let cells = 0;
     for (const u of this.undo) cells += u.cells.length;
     // The cell cap never evicts the last two edit groups: a terrain import followed by a nation
@@ -66,7 +93,8 @@ export class EditStack implements Stateful {
   serialize(): Section[] {
     // Metadata as JSON; cell data as typed sections in stack order (undo, then redo).
     const all = [...this.undo, ...this.redo];
-    const meta = { undo: this.undo.length, edits: all.map((e) => ({ layer: e.layer, n: e.cells.length, ctl: e.beforeCtl !== null, linked: e.linked === true })) };
+    // `stroke` is written only while one is open, so a world without one keeps its bytes (and hash).
+    const meta = { undo: this.undo.length, edits: all.map((e) => ({ layer: e.layer, n: e.cells.length, ctl: e.beforeCtl !== null, linked: e.linked === true })), ...(this.stroke ? { stroke: true } : {}) };
     const total = all.reduce((s, e) => s + e.cells.length, 0);
     const cells = new Uint32Array(total);
     const before = new Uint16Array(total);
@@ -96,8 +124,10 @@ export class EditStack implements Stateful {
   deserialize(sections: readonly Section[]): void {
     this.undo = [];
     this.redo = [];
+    this.stroke = false;
     if (!sections.some((s) => s.name === 'edits.json')) return; // saves from before PLAN 1.35
-    const meta = JSON.parse(new TextDecoder().decode(takeSection(sections, 'edits.json', 'u8'))) as { undo: number; edits: { layer: EditLayer; n: number; ctl: boolean; linked?: boolean }[] };
+    const meta = JSON.parse(new TextDecoder().decode(takeSection(sections, 'edits.json', 'u8'))) as { undo: number; edits: { layer: EditLayer; n: number; ctl: boolean; linked?: boolean }[]; stroke?: boolean };
+    this.stroke = meta.stroke === true;
     const cells = takeSection(sections, 'edits.cells', 'u32');
     const before = takeSection(sections, 'edits.before', 'u16');
     const after = takeSection(sections, 'edits.after', 'u16');
@@ -190,9 +220,17 @@ function terrainChanged(world: World): void {
 /**
  * Paints `value` (a nation id, 0 = unowned; or a terrain class) with `tool`; returns the edit, or
  * null when nothing changed. The edit is pushed on the undo stack.
+ *
+ * `stroke` (PLAN 1.44): `start` opens a brush stroke, and `more` adds to the open stroke's edit
+ * when it is of the same layer and value (else it opens the stroke anew), so a dragged stroke is
+ * one undo step however many segments it took.
  */
-export function paint(world: World, layer: EditLayer, tool: EditTool, x: number, y: number, x2: number, y2: number, r: number, value: number, mask: EditMask | null): Edit | null {
+export function paint(world: World, layer: EditLayer, tool: EditTool, x: number, y: number, x2: number, y2: number, r: number, value: number, mask: EditMask | null, stroke?: 'start' | 'more'): Edit | null {
   const { w, h, owner, controller, terrain } = world.cells;
+  const st = world.edits;
+  // Only `more` continues a stroke: every other paint, valid or not, ends the one in progress.
+  const top = stroke === 'more' && st.stroke ? st.undo[st.undo.length - 1] : undefined;
+  if (stroke !== 'more') st.stroke = false;
   if (layer === 'nation' && value !== 0 && !world.nations.has(value)) return null;
   if (layer === 'terrain' && !isLand(value)) return null;
   const shape = tool === 'brush' ? brushCells(w, h, x, y, r) : tool === 'line' ? lineCells(w, h, x, y, x2, y2, r) : bucketCells(world, layer, x, y);
@@ -210,14 +248,24 @@ export function paint(world: World, layer: EditLayer, tool: EditTool, x: number,
     beforeCtl: layer === 'nation' ? Uint16Array.from(cells, (c) => controller[c]!) : null,
   };
   apply(world, e, false);
-  world.edits.push(e);
+  if (top && top.layer === layer && top.after[0] === value) st.extend(e);
+  else {
+    st.push(e);
+    st.stroke = stroke !== undefined;
+  }
   return e;
 }
 
-/** Applies an edit forward, or backward (`undo`). */
+/**
+ * Applies an edit forward, or backward (`undo`). Backward runs from the last cell to the first:
+ * a cell that a stroke lists twice (it changed under the stroke, by the running game) then ends
+ * with the value it had before the stroke.
+ */
 function apply(world: World, e: Edit, undo: boolean): void {
   const terrain = world.cells.terrain;
-  for (let i = 0; i < e.cells.length; i++) {
+  const n = e.cells.length;
+  for (let k = 0; k < n; k++) {
+    const i = undo ? n - 1 - k : k;
     const c = e.cells[i]!;
     if (e.layer === 'nation') {
       world.setOwner(c, undo ? e.before[i]! : e.after[i]!);
@@ -258,6 +306,7 @@ function strandedToLand(world: World): void {
 /** Undoes the top edit, with the edits linked to it (newest first). */
 export function undoEdit(world: World): boolean {
   const st = world.edits;
+  st.stroke = false;
   if (st.undo.length === 0) return false;
   for (;;) {
     const e = st.undo.pop()!;
@@ -271,6 +320,7 @@ export function undoEdit(world: World): boolean {
 /** Redoes the top undone edit, then the edits linked to it (oldest first). */
 export function redoEdit(world: World): boolean {
   const st = world.edits;
+  st.stroke = false;
   if (st.redo.length === 0) return false;
   do {
     const e = st.redo.pop()!;

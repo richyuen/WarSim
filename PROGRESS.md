@@ -2999,3 +2999,39 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   data check" gunzipping an unchanged asset). It passed alone and in the next gate run. Two
   stress runs of the same read did not reproduce it; BLOCKERS has the numbers.
 - **Next:** PLAN 1.44 (critic B6: the editor's brush and line paint on a left-drag).
+
+## 2026-10-04 — PLAN 1.44: the editor's brush and line paint on a left-drag (critic B6, ADR-63)
+- **What:** with the brush or the line as the editor's tool, the left button paints and no longer
+  pans. The camera pans with the right button (new), the middle button, two fingers and the
+  keys. With the bucket, a scenario tool or the editor closed, a left-drag pans as before.
+- **Brush:** the press stamps; every further cell the pointer enters paints a line from the last
+  point, so no cell under the path is skipped. A stroke is one undo step however many segments
+  it took.
+- **How one step:** `editPaint` has `stroke: 'start' | 'more'`. A `more` grows the top edit of the
+  undo stack instead of pushing one; `EditStack.stroke` says whether the top edit is the stroke
+  in progress and is ended by a `start`, any other paint, an import, an undo or a redo.
+  Linking the segments (as imports do) would not do: the stack keeps 50 edits and a stroke of
+  51 segments would evict its own beginning.
+- **State:** the stroke flag is saved only while a stroke is open, so a world without one has
+  the bytes it had. The pinned hash of seed 99 did not move (the gate's sweep stage ran).
+- **Undo now runs backward through an edit's cells:** a cell the running game changed under an
+  open stroke is listed twice, and the earlier entry (the value before the stroke) must win.
+  Edits without repeats undo as before.
+- **Line:** press at the start, release at the end. Released in the cell of the press it is a
+  click, and the two-click line still works (the existing spec uses it).
+- **Clicks are the primary button's:** a right-click used to select or paint like a left-click.
+  It now does neither (the right button pans).
+- **Verified in the browser** (`tests/e2e/editorDrag1938.spec.ts`; `docs/evidence/1.44/`,
+  viewed): a 30-cell stroke over Poland paints every cell under its path German, the camera is
+  exactly where it was, the stack holds one edit and one Ctrl+Z restores the rasters; right- and
+  middle-drag move the camera by the pointer's way and paint nothing; a right-click paints
+  nothing; the arrow keys pan with the brush active; a line by one drag is one edit; with the
+  bucket a left-drag pans; one finger paints a stroke and a second finger ends it and moves the
+  map. The cursor is a crosshair while a drag tool is active.
+- **Two mistakes in my first version of the spec, not in the code:** the stroke began in German
+  Silesia (the path must start on land that is not yet German), and Ctrl+Z after synthetic
+  touches did nothing because the focus was still in the radius field, where the shortcut is
+  left to the field.
+- **Not done:** the God Mode territory brush is still click-only (PLAN 1.44b, added). No tick
+  measurement: the tick's systems did not change (an edit command is applied between ticks).
+- **Next:** PLAN 1.44b, then 1.45 (critic B7: Europe readable at world zoom).

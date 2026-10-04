@@ -1,7 +1,9 @@
 /**
- * Camera input (AoC parity rows "Camera controls"): mouse drag (left/middle), wheel zoom
+ * Camera input (AoC parity rows "Camera controls"): mouse drag (left/middle/right), wheel zoom
  * anchored at the cursor, keyboard pan (arrows/WASD) and zoom (Q/E, +/−, numpad), touch drag
  * and two-finger pinch. Zoom is continuous and eased toward a target; pans are immediate.
+ * While a paint tool has the primary button (`leftPans` false, PLAN 1.44), the left button and
+ * one finger do not pan: the middle and right buttons, two fingers and the keys still do.
  */
 import {
   normalize,
@@ -43,6 +45,8 @@ export class CameraController {
   private readonly touches = new Map<number, [number, number]>();
   private pinch: { dist: number; mid: [number, number] } | null = null;
   private readonly detach: (() => void)[] = [];
+  /** False while something else uses a primary-button drag (the editor's brush and line). */
+  leftPans: () => boolean = () => true;
 
   constructor(
     private readonly el: HTMLElement,
@@ -148,7 +152,8 @@ export class CameraController {
       this.startPinchIfTwo();
       return;
     }
-    if (e.button !== 0 && e.button !== 1) return;
+    if (e.button !== 0 && e.button !== 1 && e.button !== 2) return;
+    if (e.button === 0 && !this.leftPans()) return;
     e.preventDefault();
     this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
     this.el.setPointerCapture?.(e.pointerId);
@@ -160,7 +165,7 @@ export class CameraController {
       const cur = this.local(e);
       this.touches.set(e.pointerId, cur);
       if (this.touches.size === 1) {
-        this.cam = normalize(panBy(this.cam, cur[0] - prev[0], cur[1] - prev[1]), this.geo, this.viewW, this.viewH);
+        if (this.leftPans()) this.cam = normalize(panBy(this.cam, cur[0] - prev[0], cur[1] - prev[1]), this.geo, this.viewW, this.viewH);
       } else if (this.touches.size === 2 && this.pinch) {
         const [a, b] = [...this.touches.values()] as [[number, number], [number, number]];
         const dist = Math.hypot(a[0] - b[0], a[1] - b[1]);

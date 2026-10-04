@@ -157,8 +157,6 @@ export class Hud {
       default:
         break;
     }
-    const mask = s.mask === 'none' ? null : { kind: s.mask, value: s.mask === 'terrain' ? s.maskTerrain : s.maskNation };
-    const value = s.layer === 'nation' ? s.nation : s.terrain;
     const cx = x + 0.5;
     const cy = y + 0.5;
     if (s.tool === 'line' && !this.lineStart.value) {
@@ -166,9 +164,67 @@ export class Hud {
       return true;
     }
     const [x0, y0] = s.tool === 'line' ? this.lineStart.value! : [cx, cy];
-    this.command({ kind: 'editPaint', layer: s.layer, tool: s.tool as 'brush' | 'line' | 'bucket', x: x0, y: y0, x2: cx, y2: cy, r: s.r, value, mask });
+    this.editPaint(s.tool as 'brush' | 'line' | 'bucket', x0, y0, cx, cy);
     this.lineStart.value = null;
     return true;
+  }
+
+  /** Paints with the editor's layer, value, radius and mask; `stroke` joins a dragged stroke. */
+  private editPaint(tool: 'brush' | 'line' | 'bucket', x: number, y: number, x2: number, y2: number, stroke?: 'start' | 'more'): void {
+    const s = this.editor.value;
+    const mask = s.mask === 'none' ? null : { kind: s.mask, value: s.mask === 'terrain' ? s.maskTerrain : s.maskNation };
+    this.command({ kind: 'editPaint', layer: s.layer, tool, x, y, x2, y2, r: s.r, value: s.layer === 'nation' ? s.nation : s.terrain, mask, ...(stroke ? { stroke } : {}) });
+  }
+
+  /**
+   * Painting by dragging (PLAN 1.44): the tool that paints on a primary-button drag while the
+   * editor is open (the brush and the line), or null. The map view asks this, and the camera
+   * leaves that button to the tool.
+   */
+  dragTool(): 'brush' | 'line' | null {
+    const tool = this.editor.value.tool;
+    return this.showEditor.value && (tool === 'brush' || tool === 'line') ? tool : null;
+  }
+
+  /** Where the drag is: its tool, and the last point (brush) or the press (line), in world cells. */
+  private drag: { tool: 'brush' | 'line'; x: number; y: number } | null = null;
+
+  /** A press at world (x, y): the brush stamps and opens a stroke; the line waits for the release. */
+  dragStart(x: number, y: number): void {
+    const tool = this.dragTool();
+    if (!tool) return;
+    this.drag = { tool, x, y };
+    if (tool === 'brush') this.editPaint('brush', x, y, x, y, 'start');
+  }
+
+  /** The pointer entered another cell: the brush paints the way there, as part of its stroke. */
+  dragMove(x: number, y: number): void {
+    const d = this.drag;
+    if (d?.tool !== 'brush') return;
+    this.editPaint('line', d.x, d.y, x, y, 'more');
+    d.x = x;
+    d.y = y;
+  }
+
+  /**
+   * The release. A line dragged to another cell is painted from the press to the release;
+   * released in the cell of the press, it is a click of the two-click line.
+   */
+  dragEnd(x: number, y: number): void {
+    const d = this.drag;
+    this.drag = null;
+    if (d?.tool !== 'line') return;
+    if (Math.floor(d.x) === Math.floor(x) && Math.floor(d.y) === Math.floor(y)) {
+      this.editorClick(Math.floor(x), Math.floor(y));
+      return;
+    }
+    this.editPaint('line', d.x, d.y, x, y);
+    this.lineStart.value = null;
+  }
+
+  /** The drag was taken away (a second finger): what the brush painted stays, a line is not drawn. */
+  dragCancel(): void {
+    this.drag = null;
   }
 
   /** Statistics charts panel (PLAN 1.34b). */

@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-63 · 2026-10-04 · accepted — A dragged brush is a stroke: many commands, one undo step (PLAN 1.44, critic B6)
+
+- **Context:** in the editor a left-drag panned the map and only a click painted (critic B6:
+  after a click 49 cells changed, after a drag none). AoC's editors paint with a held brush
+  (VISUAL: `reference/frames/scene_007.png`, a brushed outline in its map painter).
+- **Decision:**
+  - *Who gets the left button.* While the editor's tool is the brush or the line, a primary
+    press on the map belongs to the tool and the camera ignores it. The camera pans with the
+    right button (new) and the middle button, with two fingers, and with the keys. With any
+    other tool, or the editor closed, a left-drag pans as before. A click is now a click of
+    the primary button only: a right-click neither paints nor selects.
+  - *Brush.* The press stamps the brush (`editPaint`, `stroke: 'start'`); each further cell the
+    pointer enters paints a line from the last point (`stroke: 'more'`), so no cell under the
+    path is skipped however fast the pointer moves. Positions are world cells with x not
+    wrapped, so a stroke crosses the map's seam.
+  - *One undo step.* A `more` segment grows the stack's top edit instead of pushing one. The
+    stack knows whether its top edit is the stroke in progress (`EditStack.stroke`); a `start`,
+    any other paint, an import, an undo or a redo ends the stroke. A `start` that changes
+    nothing pushes nothing, and the stroke then begins with its first change.
+  - *Line.* Press at the start, release at the end: one `editPaint` of the line tool. Released
+    in the cell of the press it is a click, and the two-click line works as before.
+  - *Touch.* One finger paints; a second finger ends the stroke and the two move the map.
+- **Why many commands and not one command with the stroke's points:** the map has to show the
+  paint while the pointer moves, so the cells must change during the drag. One command at the
+  release would paint nothing until then.
+- **Why grow one edit and not link the segments** (as the import links its two edits): the
+  stack keeps 50 edits, and a stroke of 51 segments would evict its own beginning. One edit per
+  stroke also keeps the Undo count meaning strokes.
+- **State and hash:** the stroke flag is world state (a save in mid-stroke must continue the
+  same), written into `edits.json` only while a stroke is open, so a world without one has the
+  bytes it had: the pinned hash of seed 99 did not move.
+- **Undo runs backward through an edit's cells.** If the running game changes a cell under an
+  open stroke and the stroke passes over it again, the cell is listed twice; the earlier entry
+  holds what the cell was before the stroke and must be applied last. Edits without repeats
+  undo exactly as before.
+- **Not in this task:** the God Mode territory brush (`paintControl`) is still click-only and a
+  drag with it pans. It is PLAN 1.44b. Bucket and the scenario tools (cities, capitals, cores)
+  stay click tools by design.
+- **Tests:** `tests/unit/editor.test.ts` (a stroke paints its path and is one step; what ends a
+  stroke; no empty step; 70 segments are one step; a cell changed under the stroke; a save in
+  mid-stroke; an empty stack has its old bytes), `tests/e2e/editorDrag1938.spec.ts` (30 cells by
+  mouse, the camera still, one Ctrl+Z; right- and middle-drag pan; a right-click paints
+  nothing; the line by a drag; the bucket pans; one finger paints, two move the map).
+
 ### ADR-62 · 2026-10-04 · accepted — The title screen's scenario map is a generated image, checked against the data (PLAN 1.43c)
 
 - **Context:** AoC's Scenarios screen shows a map of the chosen scenario with its size, nations,

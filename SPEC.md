@@ -1095,6 +1095,14 @@ interpolation changes something.
   - Land cells only: terrain edits are land ↔ land until map import (1.37) can regenerate the
     fine coastline. Terrain edits drop nav and paths; the worker resends `terrainLayer`.
   - UI: the bottom bar's Editor button; map clicks paint; Ctrl+Z / Ctrl+Y.
+  - Painting by dragging (PLAN 1.44) [ADR-63]: while the brush or the line is the editor's tool,
+    the primary button (and one finger) paints and does not pan; the camera pans with the right
+    or middle button, two fingers and the keys. The brush stamps at the press (`editPaint` with
+    `stroke: 'start'`) and paints a line to every further cell the pointer enters (`stroke:
+    'more'`). A stroke is one undo step: `more` grows the top edit instead of pushing one
+    (`EditStack.stroke`, saved only while a stroke is open). The line paints from the press to
+    the release; released in the cell of the press it is a click of the two-click line. The
+    bucket and the scenario tools are click tools: with them a left-drag pans.
 - **Map import** (PLAN 1.37a):
   - `src/shared/mapImport.ts` maps an image to the map: nearest-neighbour resample, then the
     nearest palette colour (terrain colours, or nation colours within 40, else unowned). The
