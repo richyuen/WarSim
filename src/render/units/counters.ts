@@ -216,6 +216,8 @@ export class CounterLayer {
   private foldStart = -Infinity;
   /** Counters drawn last frame (tests). */
   drawn: DrawnCounter[] = [];
+  /** Every box drawn last frame, CSS px: one per copy of a counter on a looping map (capital flags keep clear of them). */
+  boxes: { x: number; y: number; w: number; h: number; alpha: number }[] = [];
 
   /** True while a split/merge or a fold animation runs (the view keeps redrawing). */
   animating(now: number): boolean {
@@ -330,6 +332,7 @@ export class CounterLayer {
   ): void {
     const items = this.layout(src, cam.scale, now, alpha > 0.01);
     this.drawn = [];
+    this.boxes = [];
     if (items.length === 0) {
       // Nothing on the map: the next counters take their places at once.
       this.folds.clear();
@@ -366,6 +369,7 @@ export class CounterLayer {
         const y = Math.round(sy - h / 2);
         if (sx - (w / 2) * size > vw || sy - (h / 2) * size > vh || sx + (w / 2) * size < 0 || sy + (h / 2) * size < 0) continue;
         box ??= [sx + (x - sx) * size, sy + (y - sy) * size];
+        this.boxes.push({ x: sx + (x - sx) * size, y: sy + (y - sy) * size, w: w * size, h: h * size, alpha: a });
         ctx.save();
         ctx.globalAlpha = a;
         if (size !== 1) {

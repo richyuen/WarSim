@@ -371,13 +371,16 @@ quick sweep as a smoke test.
   test passes unchanged. "No two overlap" is asserted for counters drawn in full: one fading
   into a neighbour overlaps it for the 250 ms of its fade. AoC has no counters to compare with
   (it prints a strength beside each nation's name); compared with the critic's own crop.
-- [ ] 1.45c Capital flags do not hide unit counters. The flags are drawn above the unit layers
+- [x] 1.45c Capital flags do not hide unit counters. The flags are drawn above the unit layers
   (PLAN 2.1, so that capitals stay readable), and at 3 px per cell over Europe they cover the
   numbers of counters standing at a capital (Rome, Helsinki, Lisbon in
   `docs/evidence/1.45/declutter-europe-start.png`).
   AT: e2e at 3 and 6 px per cell over Europe, at the 1938 start: no capital flag covers any
   part of a counter's box (the counter is drawn above it, or one of the two makes way);
   screenshots viewed.
+  Done 2026-10-04 (ADR-65, addendum; `tests/e2e/flagsClear1938.spec.ts`,
+  `docs/evidence/1.45/flags-clear-*.png`): the flag makes way. It stands just above the
+  counter it would cover, up to 40 px from its usual place, and is left out beyond that.
 
 ## Phase 2 — Semantic zoom
 

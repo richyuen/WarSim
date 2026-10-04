@@ -3130,3 +3130,35 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   drawn only when something changed; the bench does not cover the overlay. If T0 frame time
   matters later, measure there.
 - **Next:** PLAN 1.45c, then PLAN 2.4.
+
+## 2026-10-04 — PLAN 1.45c: capital flags make way for counters (ADR-65, addendum); the declutter's frame time
+- **Frame time first (owed from 1.45b):** the unit layers at T0 with the declutter, 200 frames
+  each, in headless Chromium on the software renderer (the fold itself is JavaScript, the same
+  on a GPU): whole world 0.64 ms mean (p95 0.80), Europe at 3 px per cell 0.81 (0.90), at 8 px
+  per cell 1.15 (5.8); after one year 0.57, 0.68 and 0.89 ms. The frame budget at 60 fps is
+  16.7 ms. No change needed.
+- **What:** a capital flag that would cover a T0 counter now stands just above it. The flags
+  stay above the unit layers (PLAN 2.1's order): only the flag in the way moves. More than 40 px
+  from its usual place it would no longer read as its capital's, so there it is left out.
+- **Why the flag and not the counter:** most nations keep an army at their capital, so with
+  counters on top most flags would show as a strip behind a counter; and a counter can only
+  fold, not move off its armies.
+- **Moves are eased:** 150 ms to a new place; a flag left out or coming back fades in the same
+  time. The first version let a flag climb over three stacked counters: Vienna's rose 75 px in
+  one move, far from Vienna. That is what the 40 px limit is for.
+- **Verified in the browser** (`tests/e2e/flagsClear1938.spec.ts`;
+  `docs/evidence/1.45/flags-clear-3px.png` and `-6px.png`, viewed): at 3 and 6 px per cell over
+  Europe no flag with its frame touches a counter box; every capital in view has its flag;
+  14 of 41 flags stand higher at 3 px per cell (by 3 to 36 px) and 6 of 22 at 6 px per cell (by
+  5 to 33 px); each raised flag was in the way and stands just above a counter. Rome, Helsinki
+  and Lisbon, which the task named, are clear.
+- **A gate run failed at e2e and I do not know which test:** I had created the temporary probe
+  spec before running the gate at the start of this iteration, so the gate ran with it in the
+  tree (73 tests) and reported "FAILED at e2e"; I had kept only its last line. The probe passed
+  alone, and the committed tree passed the full e2e twice (72 of 72: the gate before the last
+  commit, and a full run afterwards). Lesson: no scratch files in the tree when the gate runs,
+  and keep the failing test's name.
+- **Not done:** T1 markers of a dense group still stand on each other (seen in 1.45a; no task).
+  Flags can still overlap each other where capitals are close (Brussels, Amsterdam,
+  Luxembourg): as before.
+- **Next:** PLAN 2.4 (FireEvent visuals). PLAN 1.43–1.45, the critic's B5, B6 and B7, are done.

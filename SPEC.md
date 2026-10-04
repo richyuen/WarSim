@@ -950,7 +950,9 @@ shows a type symbol (from the template's
 elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
 order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
-sprites stop once markers are fully in; capital flags draw above the markers.
+sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
+flag that would cover a counter stands just above it instead (up to 40 px from its usual place,
+else it is left out), so no counter's number is hidden (PLAN 1.45c).
 
 *T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per
 cell of a nested 2^L-cell grid (~64 px), showing Σ strength. Splits and merges animate the child

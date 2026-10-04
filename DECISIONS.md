@@ -211,6 +211,23 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Not solved here:** capital flags are drawn above the unit layers and cover counters that
   stand at a capital (PLAN 1.45c, added). T1 markers of a dense group still stand on each other
   (seen in 1.45a; no task yet).
+- **Addendum, PLAN 1.45c (2026-10-04): the capital flag makes way for a counter.** The flags
+  stay above the unit layers (PLAN 2.1's order is kept: a capital must stay readable among the
+  T1 markers). At T0 a flag whose place, with its frame, would touch a counter's box stands
+  3 px above that counter instead, and above the next one if another is there. More than 40 px
+  from its usual place it no longer reads as its capital's flag, so it is left out (the capital
+  keeps its dot and name, and the counter there carries the nation's flag chip). A move is an
+  ease over 150 ms, a flag left out or coming back a fade of the same length.
+  - *Rejected: counters above flags.* Most nations keep an army at their capital, so most
+    flags would show as a strip behind a counter.
+  - *Rejected: counters make way.* A counter can only fold into another counter; moving it
+    off its armies is what the declutter avoids.
+  - Measured at the 1938 start over Europe: at 3 px per cell 14 of 41 flags stand higher, by 3
+    to 36 px; at 6 px per cell 6 of 22, by 5 to 33 px; none is left out at either.
+  - Tests: `tests/e2e/flagsClear1938.spec.ts` (no flag with its frame touches a counter box at
+    3 and 6 px per cell; every capital in view has its flag, at most 40 px above its usual
+    place; a raised flag was in the way and stands just above a counter; after a zoom the flags
+    move at most 8 px per 16 ms frame).
 - **Tests:** `tests/unit/counters.test.ts` (the sum and the nations of a fold; 300 random
   counters with no two shown boxes within the gap and the sum kept; the same picture under a
   shift of every position; children on a centroid count as their cluster; the hold distance;

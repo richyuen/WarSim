@@ -15,6 +15,11 @@ import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type T
 const FLAG_MIN_SCALE = 3;
 const FLAG_PX_W = 24;
 const FLAG_PX_H = 16;
+/** A flag that makes way for a counter stands this many px above it (frame included), and takes this long to move. */
+const FLAG_CLEAR_PX = 3;
+const FLAG_MOVE_MS = 150;
+/** Further than this above its usual place a flag no longer reads as its capital's: it is left out. */
+const FLAG_MAX_RISE = 40;
 import { drawNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
@@ -409,9 +414,12 @@ export class MapView {
   /** Which of the two shows, counters or markers, and the cross-fade between them (PLAN 1.45a). */
   readonly handover = new TierHandover();
 
-  /** True while a unit layer still animates: a counter split or merge, or the T0 ↔ T1 handover. */
+  /**
+   * True while a unit layer still animates: a counter split, merge or fold, the T0 ↔ T1
+   * handover, or a capital flag making way for a counter.
+   */
   unitsAnimating(now = performance.now()): boolean {
-    return this.counters.animating(now) || this.handover.animating(now);
+    return this.counters.animating(now) || this.handover.animating(now) || (now >= this.flagMoveStart && now - this.flagMoveStart < FLAG_MOVE_MS + 50);
   }
   /** A unit layer animated in the last frame (see `frame`). */
   private unitsAnimated = false;
@@ -580,13 +588,34 @@ export class MapView {
   /** Where flags were drawn last frame, CSS px (tests). */
   flagRects: { id: number; x: number; y: number; w: number; h: number }[] = [];
 
-  /** Flags above living nations' capitals once zoomed in (FLAG_MIN_SCALE px per cell). */
-  private drawFlags(cam: Camera): void {
+  /**
+   * Where each flag stands relative to its usual place, to keep clear of the T0 counters (PLAN
+   * 1.45c): per nation and map copy, a rise in px and an opacity, each easing to its new value
+   * over FLAG_MOVE_MS. Opacity 0: no free place within FLAG_MAX_RISE, the flag is left out.
+   */
+  private readonly flagPlace = new Map<string, { rise: [number, number]; alpha: [number, number]; start: number }>();
+  private flagMoveStart = -Infinity;
+
+  /**
+   * Flags above living nations' capitals once zoomed in (FLAG_MIN_SCALE px per cell). They are
+   * drawn above the unit layers so that capitals stay readable (PLAN 2.1), and a flag that would
+   * cover a T0 counter stands above that counter instead: a counter's number is never hidden.
+   */
+  private drawFlags(cam: Camera, now: number): void {
     this.flagRects = [];
-    if (cam.scale < FLAG_MIN_SCALE || this.capitals.size === 0) return;
+    if (cam.scale < FLAG_MIN_SCALE || this.capitals.size === 0) {
+      this.flagPlace.clear();
+      return;
+    }
     const ctx = this.overlay.getContext('2d')!;
     const w = this.canvas.clientWidth;
     const h = this.canvas.clientHeight;
+    // Counters at least half visible are in the way: one fading in is, one fading out is not.
+    const boxes = this.counters.boxes.filter((b) => b.alpha >= 0.5);
+    /** The counter boxes that a flag at (x, y), with its 1 px frame, would touch. */
+    const under = (x: number, y: number): typeof boxes => boxes.filter((b) => x - 1 < b.x + b.w && b.x < x + FLAG_PX_W + 1 && y - 1 < b.y + b.h && b.y < y + FLAG_PX_H + 1);
+    const seen = new Set<string>();
+    let latest = -Infinity;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     for (const [id, [cx, cy]] of this.capitals) {
@@ -594,8 +623,37 @@ export class MapView {
       for (const off of wrapOffsets(cam, this.geo, w)) {
         const [px, py] = worldToScreen(cam, cx + off, cy, w, h);
         const x = Math.round(px - FLAG_PX_W / 2);
-        const y = Math.round(py - FLAG_PX_H - 8);
-        if (x < -FLAG_PX_W || y < -FLAG_PX_H || x > w || y > h) continue;
+        const y0 = Math.round(py - FLAG_PX_H - 8);
+        if (x < -FLAG_PX_W || y0 < -FLAG_PX_H || x > w || y0 > h) continue;
+        // Up, above the highest counter in the way, and again if another stands there; a flag
+        // that would have to go further than FLAG_MAX_RISE from its capital is left out.
+        let rise: number | null = 0;
+        while (rise !== null) {
+          const hit = under(x, y0 - rise);
+          if (hit.length === 0) break;
+          const up: number = y0 - (Math.floor(Math.min(...hit.map((b) => b.y))) - FLAG_PX_H - FLAG_CLEAR_PX);
+          rise = up <= FLAG_MAX_RISE ? up : null;
+        }
+        const key = `${id}:${off}`;
+        seen.add(key);
+        let st = this.flagPlace.get(key);
+        const ease = (s: { start: number }, v: [number, number]): number => {
+          const p = now < s.start ? 1 : Math.min(1, (now - s.start) / FLAG_MOVE_MS);
+          return v[0] + (v[1] - v[0]) * p * p * (3 - 2 * p);
+        };
+        if (!st) st = { rise: [rise ?? 0, rise ?? 0], alpha: [rise === null ? 0 : 1, rise === null ? 0 : 1], start: -Infinity };
+        else if (st.alpha[1] !== (rise === null ? 0 : 1) || (rise !== null && st.rise[1] !== rise)) {
+          const a = ease(st, st.alpha);
+          // A flag left out stays where it was while it fades; one coming back appears in its new place.
+          const r = rise === null ? ease(st, st.rise) : a < 0.01 ? rise : ease(st, st.rise);
+          st = { rise: [r, rise ?? r], alpha: [a, rise === null ? 0 : 1], start: now };
+        }
+        this.flagPlace.set(key, st);
+        if (st.start <= now && st.start > latest) latest = st.start;
+        const alpha = ease(st, st.alpha);
+        if (alpha < 0.01) continue;
+        const y = Math.round(y0 - ease(st, st.rise));
+        ctx.globalAlpha = alpha;
         ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
         ctx.fillRect(x - 1, y - 1, FLAG_PX_W + 2, FLAG_PX_H + 2);
         ctx.drawImage(this.flags.canvasOf(id), x, y, FLAG_PX_W, FLAG_PX_H);
@@ -603,8 +661,9 @@ export class MapView {
       }
     }
     ctx.restore();
+    for (const key of this.flagPlace.keys()) if (!seen.has(key)) this.flagPlace.delete(key);
+    this.flagMoveStart = latest;
   }
-
   /** Rings around the selected formations (PLAN 1.33a). */
   private drawSelection(cam: Camera): void {
     if (this.selectedFormations.size === 0) return;
@@ -709,9 +768,10 @@ export class MapView {
     }
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
-    // Unit markers below capital flags, so capitals stay readable (PLAN 2.1).
+    // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
+    // clear of the T0 counters (PLAN 1.45c).
     this.drawUnitMarkers(cam, now);
-    this.drawFlags(cam);
+    this.drawFlags(cam, now);
     this.drawSelection(cam);
     this.frames++;
   }
