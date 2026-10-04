@@ -4585,3 +4585,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Looked at and left:** "frames until nothing animates" is written in six places now.
 - **Not run:** `sweep:quick` (ADR-58: at the phase review only). The critic is not due.
 - **Next:** PLAN 2.7z, then 2.8.
+
+## 2026-10-04 — The gate of the review pass failed twice on time; not explained
+
+- **Two gate runs failed at e2e** before the third was green: four and five tests, all on
+  time, in runs of 11.8 and 11.7 minutes for a stage that takes 5.5. For about half an hour
+  (17:07 to 17:39) the sim in the browser ran up to 200 times slower at top speed: 7 to 49
+  ticks in four seconds where every gate of the day had 590 to 700.
+- **Not the pass's changes:** the commit before, gated green an hour earlier, had 25 ticks in
+  the same test.
+- **Not found:** the machine was idle whenever it was looked at; the sim is as fast as ever
+  in Node and stepped in the browser. From 17:40 the same test had 347, 349 and 1,474 ticks.
+- **Measured on the way, for whoever looks next** (BLOCKERS): at top speed each frame holds
+  the page's thread for about 600 ms, and the ticks come in bursts.
+- **No test was changed for it.** The two runs and what was measured are in BLOCKERS, with
+  what to look at if it comes back.
+- **Next:** PLAN 2.7z, then 2.8.

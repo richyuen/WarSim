@@ -115,6 +115,33 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     load fails all its tests; I5 is one test). It may be either of them, or a third.
   - **A gate run keeps its whole output from now on** (`npm run check > <log> 2>&1`, then read the
     log). If a unit test fails in a gate run, the message is the first thing to keep.
+- **Half an hour in which the browser's sim ran up to 200 times slower (2026-10-04, about 17:07 to
+  17:39; the gate of the review pass after PLAN 2.7v–u). Not explained.**
+  - *What was seen:* two gate runs in a row failed at e2e, in 11.8 and 11.7 minutes for a stage
+    that takes 5.5: four and five tests, all on time. `cityNames1938` had 49 and 7 ticks in
+    its four seconds at top speed (every gate of the day before: 590 to 700), and its T1 part
+    149 and 49; `handover1938` and `labelFades1938` ran into their timeouts; `tickClock` had no
+    pause answered in its tick in twelve tries.
+  - *Not the change under test:* with the tree at the commit before (gated green an hour
+    earlier, `f5a7083`) the same test had 25 ticks.
+  - *Not the machine, as far as could be seen:* no process used a hundredth of a core over three
+    seconds, no battery, the High performance plan, nothing listening on the test port, no
+    file changed on disk but the pass's own. Looked at between the runs, not during one.
+  - *Not the sim:* in Node 2.28 ms a tick over a year of seed 1938; in the browser, stepped,
+    1.2 to 2.4 ms a tick.
+  - *Then it was gone:* from 17:40 the same test, three times in a row, had 347, 349 and 1,474
+    ticks, and the third gate run was green in 5.5 minutes with 348.
+  - *One thing measured that may be its ground:* at top speed from the 1938 start, the page's
+    own thread is held for about 600 ms by each frame (a 4 ms timer of the page comes 540 to
+    620 ms late in every half second), with two frames in a half second and half seconds with
+    no tick at all; 271 ticks in the first half second, 30 to 90 in those after. That was
+    measured in the healthy time. Whether a frame at top speed always cost that much has not
+    been looked at, nor what in it does (the labels, the tiles of a changed map, the counters).
+  - *And the spread in the healthy time is wide by itself:* 347 to 1,474 ticks in four seconds
+    for one test.
+  - **If it comes back:** look while it runs (`Get-Process` by CPU over a few seconds; the
+    timeline of ticks, snapshots and frames by half seconds, as above), before running it
+    again.
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.
