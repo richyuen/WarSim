@@ -3503,6 +3503,9 @@ since, with three test races found in their gate runs.
   | T2 → T1 | 31.0 | 255 | 1.8 ms |
   | T1 → T0 | 39.0 | 255 | 4.6 ms |
 
+  The frame times are from the spec run alone; in the gate, with four specs at once, one frame
+  took 36 ms. The luminance figures were the same in both runs to the digit.
+
   The limit is 48 (twice the largest step of a 250 ms smooth fade on full contrast); the test
   also asserts that the whole change is more than twice the limit, so that a change done in
   one frame would fail. The share of the nearer layer is the old one in the frame of the step

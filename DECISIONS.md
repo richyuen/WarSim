@@ -204,7 +204,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   that too, so the measure is known to see a pop.
 - **Cost:** the slowest frame of the unit layers during a change takes 1.6–6.2 ms of CPU; the
   larger figures are T0 ↔ T1, where the counters are clustered. T2 ↔ T3 with both sprite
-  layers and the build of 3,000 figures in its first frame: 2.7 ms.
+  layers and the build of 3,000 figures in its first frame: 2.7 ms. These are from the spec
+  run alone. In the gate, with four specs running at once, the same frames took up to 36 ms:
+  the figure is a wall-clock time and not a budget check.
 - **Handed on, not dropped:**
   - PLAN 2.7c: the morph of SPEC §8 (the marker shrinks into the group, the strength bar
     lingers). T1 ↔ T2 is a plain cross-fade until then.
