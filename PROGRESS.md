@@ -3736,3 +3736,26 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
   frames drawn.
 - **Tests:** 2 new unit tests, 1 new e2e. 554 unit tests in 75 files, 82 e2e.
 - **Next:** PLAN 2.7g (a destroyed nation's capital flag goes with it).
+
+## 2026-10-04 — PLAN 2.7g: a destroyed nation's capital flag goes with it (ADR-74, finding 2)
+
+- **The bug:** the snapshot has a row for every nation, the destroyed ones too, with the last
+  capital and nothing that says the nation is gone. The view set a capital for every row and
+  never took one away. A nation annexed or conquered kept its flag over its old capital, on
+  the conqueror's land, until the page was reloaded.
+- **Test first** (`flagGone1938.spec.ts`): Warsaw and Berlin in one view, Germany annexes
+  Poland, one tick. Before the fix Poland is dead and its flag is still placed. After: no
+  Polish flag, Germany's stays, no other flag changed.
+- **Fix:** `NationField.living` (the row's ninth field), written by the worker; the view sets
+  a capital for a living nation and deletes it otherwise.
+- **Unit** (`serverNations.test.ts`): every nation has a row that says whether it lives; a
+  destroyed one keeps its row, colour and last capital, with `living` 0.
+- **Looked at:** `docs/evidence/2.7/flag-poland-before-annex.png` (Poland's flag over Warsaw)
+  and `flag-poland-after-annex.png` (Poland's land grey, German counters on it, no flag over
+  Warsaw, Germany's flag over Berlin, "Germany" written across both).
+  - The first "after" picture still had the name "Poland": the worker lays the names out at
+    most every 2 s. That is by design; the spec now waits for the name to go before the picture.
+- **Also in this commit:** one comment in `countersRest1938.spec.ts` on why its wait is a
+  plain one.
+- **Tests:** 2 new unit tests, 1 new e2e. 556 unit tests in 76 files, 83 e2e.
+- **Next:** PLAN 2.7h (the sprites keep their clock when a snapshot repeats a tick).

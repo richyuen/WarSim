@@ -301,7 +301,9 @@ export class MapView {
       this.allianceLeader.set(id, s.nations.data[o + NationField.alliance]!);
       this.overlordOf.set(id, s.nations.data[o + NationField.overlord]!);
       this.income.set(id, s.nations.data[o + NationField.income]!);
-      this.capitals.set(id, [s.nations.data[o + NationField.capitalX]!, s.nations.data[o + NationField.capitalY]!]);
+      // A destroyed nation's row stays, with where its capital last was: it has no flag to fly.
+      if (s.nations.data[o + NationField.living] === 1) this.capitals.set(id, [s.nations.data[o + NationField.capitalX]!, s.nations.data[o + NationField.capitalY]!]);
+      else this.capitals.delete(id);
     }
     this.applyPalette();
     const f = s.formations;

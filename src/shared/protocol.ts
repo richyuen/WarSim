@@ -102,10 +102,12 @@ export interface SimStatus {
 /**
  * `alliance` = the nation's alliance leader id (0 = none; PLAN 1.17 alliance map mode);
  * `overlord` = its overlord id (0 = independent; PLAN 1.18 puppet map mode);
- * `income` = last month's gross income (PLAN 1.30 income map mode).
+ * `income` = last month's gross income (PLAN 1.30 income map mode);
+ * `living` = 1, or 0 for a destroyed nation: its row stays (its colour is still on the charts),
+ * its capital is where it last was and is no capital any more (PLAN 2.7g).
  */
-export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5, overlord: 6, income: 7 } as const;
-export const NATION_STRIDE = 8;
+export const NationField = { id: 0, color: 1, cells: 2, capitalX: 3, capitalY: 4, alliance: 5, overlord: 6, income: 7, living: 8 } as const;
+export const NATION_STRIDE = 9;
 
 export interface SnapshotTiles {
   /** Tile side in cells. */

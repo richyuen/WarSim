@@ -438,10 +438,13 @@ quick sweep as a smoke test.
   Done 2026-10-04: the level wanted is judged after a finished change is taken over. Before: 69 of
   516 eased bursts never rested. Also `tests/e2e/countersRest1938.spec.ts`: four notches of one
   flick at T0; two seconds at rest draw no frame.
-- [ ] 2.7g A destroyed nation's capital flag goes with it (ADR-74, finding 2). The view only ever adds to
+- [x] 2.7g A destroyed nation's capital flag goes with it (ADR-74, finding 2). The view only ever adds to
   its capitals; the snapshot has every nation's row, dead ones too, with the last capital.
   AT: e2e: a nation is annexed; no flag of it is placed after the next snapshot, at a zoom where it
   was placed before.
+  Done 2026-10-04: the snapshot says whether a nation lives (`NationField.living`); the view drops
+  the capital of one that does not. `tests/e2e/flagGone1938.spec.ts` (Poland annexed by Germany),
+  `tests/unit/serverNations.test.ts`.
 - [ ] 2.7h The sprites keep their clock when a snapshot repeats a tick (ADR-74, finding 3). A new subscription
   (a pan), a pause or a change of speed sends the same tick again, and the element sprites and
   figures start their walk through the tick again from where it began.

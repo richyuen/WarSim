@@ -945,6 +945,7 @@ export class SimServer {
       nations[o + NationField.alliance] = world.alliances.allianceOf(id)?.leader ?? 0;
       nations[o + NationField.overlord] = nt.cols.living[id] === 1 ? nt.cols.overlord[id]! : 0;
       nations[o + NationField.income] = nt.cols.income[id]!;
+      nations[o + NationField.living] = nt.cols.living[id] === 1 ? 1 : 0;
       n++;
     });
     const warPairs: number[] = [];

@@ -40,6 +40,7 @@ test('T0 counters come to rest after a burst of wheel notches', async ({ page })
   await page.waitForFunction(() => !window.__warsim!.view!.controller.animating, null, { timeout: 10_000 });
   const rested = await page.evaluate(() => ({ scale: window.__warsim!.view!.controller.cam.scale, at: performance.now() }));
   expect(Math.log2(64 / rested.scale)).toBeCloseTo(START_LEVEL + NOTCHES * Math.log2(1.25), 2);
+  // (A plain wait, not `settle`: that draws frames itself, and the frames drawn are counted below.)
   await page.waitForFunction((at) => performance.now() > at + 1000, rested.at);
 
   // Two seconds at rest, in the view's own frames: one level, nothing animating, nothing drawn.

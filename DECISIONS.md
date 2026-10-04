@@ -207,6 +207,19 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     them together. Before the fix: levels 6 and 5 in turn at a resting camera, a frame drawn on
     every tick of the loop. After: one level, no frame in two seconds.
 
+- **2.7g, done 2026-10-04: finding 2 reproduced and fixed.** Poland annexed by Germany: its
+  flag stood over Warsaw afterwards. The snapshot's nation row has a ninth field, `living`,
+  and the view drops the capital of a nation that does not live.
+  - *Why a field and not a missing row:* the row's colour is still needed (the charts and the
+    list of the dead draw destroyed nations).
+  - *Why not a capital of NaN:* the view's cull of flags outside the picture compares
+    coordinates, and every comparison with NaN is false; it would have needed its own test
+    there anyway.
+  - A nation that is dead from the start (Ethiopia in 1938) is treated the same: it has no
+    capital in the view. (The reader reports that its flag was kept off the picture before only
+    by where its unset capital lies, cell (0, 0); not checked here.)
+  - Not hashed: a snapshot is a view of the state. The pinned hash did not move.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.
