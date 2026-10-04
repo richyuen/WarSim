@@ -3248,3 +3248,39 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
 - **Not done:** impacts are faint at 120 m/px (they read at 45 m/px). No GPU particle pools
   (SPEC §8): Canvas2D is cheap at this count.
 - **Next:** PLAN 2.4b (casualty removal and wrecks).
+
+## 2026-10-04 — PLAN 2.4b: an element's end: a burst and a wreck (critic B2, ADR-67)
+
+- **The sim:** `ElementDestroyed` (element, unit, the slot it stood in) is emitted in
+  `settleElements`, where an element at 0 is removed. It is a tick output: not saved, not in
+  the history log, not hashed. The pinned hash did not move. `SLOT_SPACING` moved from
+  `combat.ts` to `core/pose.ts`, so that `elements.ts` can use it without a cycle.
+- **Which removals:** deaths in combat, by attrition and by desertion (all pass through the
+  settle). A formation removed whole (disbanded, annexed, by God or the editor) takes its
+  elements along without the event. A formation wiped out in battle has one event for each of
+  its last elements, then `FormationDestroyed`: a unit test wipes one out and counts.
+- **The worker** sends the event only to a view that draws elements, with what the unit leaves
+  (the fallen, a broken gun, a burnt-out vehicle) in place of the unit index.
+- **The view** (`src/render/fx/wrecks.ts`): a burst (flash and ring, 400 ms) in the frame the
+  sprite is gone, and under it a wreck that stays 12 s and fades over 3 s; guns and vehicles
+  smoke. On the render clock, lost on a reload, at most 1,500 held.
+- **Acceptance test** (`tests/e2e/wrecks1938.spec.ts`): 16 hours from 15 January 1938, the
+  camera at 120 m/px on the square where the most elements die (the war of Japan and China,
+  east of Hefei), stepped hour by hour and compared with the same sim in Node.
+  - 40 elements die in the window, 30 inside the view's subscribed box. Each hour the view has
+    exactly one new wreck for each of them, at the event's position.
+  - Each wreck lies where the sprite of that element was drawn in the frame before: 0 cells off.
+  - After the hour no sprite has the id of a dead element.
+  - Drawn: the burst 100 ms on, the wreck at rest 1 s on, nothing after 15.25 s.
+  - The state hashes agree with Node before and after the window.
+- **Looked at:** `docs/evidence/2.4/wrecks-120m-burst.png`, `wrecks-120m.png`, `wrecks-40m.png`.
+  Two clusters of dark marks with a rust edge where two divisions were destroyed; they read at
+  40 m/px, and at 120 m/px as a dark patch of the size of the block.
+- **Not seen:** a vehicle wreck. In the first 40 days of seed 1938, 799 elements die: 704
+  infantry, 77 artillery, 18 anti-tank, no vehicle. The shape is in the code and untested by eye.
+- **Noticed, not changed:** a block's grid depends on its element count; when deaths take the
+  count across a step (25 to 24), the surviving sprites take new places in one frame. PLAN 2.7.
+- **Tests:** 10 new unit tests (`wreckFx.test.ts`; one each in `elements.test.ts` and
+  `serverFires.test.ts`). Gate: 520 unit tests in 72 files, 8 ten-year tests, 76 e2e, parity 46.3%.
+- **Next:** PLAN 2.5 (casualty consistency across tiers: elements killed at T2 take exactly
+  that much off the T0 counter).

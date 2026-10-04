@@ -11,7 +11,7 @@ import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
-import { EVENT_STRIDE, FIRE_STRIDE, FireField, weaponOf } from '../shared/events';
+import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField, weaponOf, wreckOf } from '../shared/events';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
@@ -45,8 +45,7 @@ import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
 import { elementIndex } from '../sim/systems/elements';
-import { slotPose } from '../sim/core/pose';
-import { SLOT_SPACING } from '../sim/systems/combat';
+import { SLOT_SPACING, slotPose } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
@@ -757,7 +756,14 @@ export class SimServer {
   private drainEvents(world: World): void {
     const ev = world.out.events;
     for (let i = 0; i < ev.length; i += 6) {
-      this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, ev[i + 3]!, ev[i + 4]!, ev[i + 5]!);
+      let b = ev[i + 3]!;
+      if (ev[i + 1] === EventKind.ElementDestroyed) {
+        // The end of an element is for a view that draws elements (PLAN 2.4b); it gets what the
+        // unit leaves behind in place of the unit.
+        if (!this.wantsElements()) continue;
+        b = wreckOf(world.rules?.units[b]?.cls ?? 'inf');
+      }
+      this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, b, ev[i + 4]!, ev[i + 5]!);
     }
     ev.length = 0;
     this.drainFires(world);

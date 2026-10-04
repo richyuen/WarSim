@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { destroyFormation, elementIndex } from '../../src/sim/systems/elements';
+import { EventKind } from '../../src/shared/events';
+import { SLOT_SPACING, slotPose } from '../../src/sim/core/pose';
+import { applyLoss, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -70,6 +72,45 @@ describe('element invariants (review after PLAN 1.14)', () => {
     expect(w.elements.count).toBe(before - n);
     expect(w.out.events.length).toBe(6);
     checkInvariants(w);
+  });
+
+  it('an element whose strength reaches 0 emits ElementDestroyed at the slot it stood in (PLAN 2.4b)', () => {
+    const s = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
+    const w = s.world;
+    const fc = w.formations.cols;
+    const ec = w.elements.cols;
+    const id = w.formations.ids()[0]!;
+    const list = [...elementIndex(w).get(id)!];
+    expect(list.length).toBeGreaterThan(6);
+    // Two of its elements die in the same hour: both stood in the block as it was before.
+    const dying = [list[1]!, list[4]!];
+    const expected = dying.flatMap((e) => [w.tick, EventKind.ElementDestroyed, e, ec.unit[e]!, ...slotPose(fc.x[id]!, fc.y[id]!, fc.facing[id]!, ec.slot[e]!, list.length, SLOT_SPACING)]);
+    const hash = s.hash();
+    w.out.events.length = 0;
+    for (const e of dying) applyLoss(w, e, ec.strength[e]!);
+    settleFormation(w, id);
+    expect(w.out.events).toEqual(expected);
+    expect(elementIndex(w).get(id)).toEqual(list.filter((e) => !dying.includes(e)));
+    checkInvariants(w);
+    expect(s.hash()).not.toBe(hash); // the deaths are state; the events are not (the pinned hash covers that)
+
+    // Wiped out: every element left has its end, then the formation its own.
+    const rest = [...elementIndex(w).get(id)!];
+    w.out.events.length = 0;
+    for (const e of rest) applyLoss(w, e, ec.strength[e]!);
+    settleFormation(w, id);
+    const kinds = Array.from({ length: w.out.events.length / 6 }, (_, i) => w.out.events[i * 6 + 1]);
+    expect(kinds).toEqual([...rest.map(() => EventKind.ElementDestroyed), EventKind.FormationDestroyed]);
+    expect(w.formations.has(id)).toBe(false);
+    checkInvariants(w);
+
+    // Not a death: a formation removed whole (disbanded, annexed, by God) takes its elements
+    // along without an end for each.
+    const other = w.formations.ids()[0]!;
+    w.out.events.length = 0;
+    destroyFormation(w, other);
+    expect(w.out.events[1]).toBe(EventKind.FormationDestroyed);
+    expect(w.out.events).toHaveLength(6);
   });
 });
 

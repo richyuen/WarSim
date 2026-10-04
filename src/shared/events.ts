@@ -70,6 +70,12 @@ export const EventKind = {
   NationAnnexed: 32,
   /** a = city row, b = nation holding it, (x, y) = city (PLAN 1.36 editor). */
   CitySpawned: 33,
+  /**
+   * An element's strength reached 0 (combat, attrition, desertion; PLAN 2.4b): a = element id,
+   * b = its unit index, (x, y) = the slot it stood in. In a snapshot b is the `Wreck` its class
+   * leaves (the view has no unit rules), and only a view that draws elements gets the event.
+   */
+  ElementDestroyed: 34,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
@@ -105,6 +111,16 @@ export function weaponOf(cls: string): Weapon {
   if (cls === 'art') return Weapon.shell;
   if (cls === 'inf' || cls === 'mot' || cls === 'mech') return Weapon.smallArms;
   return Weapon.cannon;
+}
+
+/** What a destroyed element leaves where it stood (PLAN 2.4b): the fallen, a broken gun, a burnt-out vehicle. */
+export const Wreck = { men: 0, gun: 1, vehicle: 2 } as const;
+export type Wreck = (typeof Wreck)[keyof typeof Wreck];
+
+export function wreckOf(cls: string): Wreck {
+  if (cls === 'inf') return Wreck.men;
+  if (cls === 'art' || cls === 'at' || cls === 'aa') return Wreck.gun;
+  return Wreck.vehicle;
 }
 
 export function readEvent(buf: Float64Array, i: number): SimEvent {

@@ -22,7 +22,7 @@
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
 import { sqrt } from '../core/dmath';
-import { slotPose } from '../core/pose';
+import { SLOT_SPACING, slotPose } from '../core/pose';
 import type { UnitRule, World } from '../world';
 import { applyLoss, elementIndex, settleFormation } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
@@ -33,8 +33,6 @@ const BUCKET_CELLS = 2;
 export const FIRE_SCALE = 0.1;
 export const ARMOR_PEN = 0.5;
 export const COOLDOWN = 4;
-/** Element spacing within a formation's block, cells (for fire-event positions). */
-export const SLOT_SPACING = 0.03;
 const SALT_TARGET = 0x7a46;
 
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);

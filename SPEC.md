@@ -87,7 +87,7 @@ src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts
 src/render/        camera.ts, timing.ts (the animations' clock), gl/ (gpuTimer), map/ (MapRenderer), labels/,
                    units/ (ProxyRenderer, atlas, counters, markers, handover, formationDots),
-                   fx/ (fire: tracers, flashes, impacts); later lod/
+                   fx/ (fire: tracers, flashes, impacts; wrecks: the ends of elements); later lod/
 src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
                    Actions and God tabs, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
                    FlagEditor, WarBanners, MapLegend), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
@@ -729,6 +729,8 @@ bombardment) participants join through their missions.
   - Weights are tabled per (formation, unit type), and the draw is a binary search.
 - *Damage* (target units) = eff × fullness × 0.1 × terrain attack × (0.5 + 0.5 supply) ÷ terrain
   defence (when the target holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys.
+- *Death:* an element at 0 is removed when its formation settles, and emits `ElementDestroyed`
+  (element, unit, the slot it stood in; PLAN 2.4b). The event is a tick output, not state.
 - *Measured:*
   - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
     (square law: 0.268).
@@ -1014,8 +1016,21 @@ on the GPU, with facing and a procedural walk/drive animation, fading in as the 
   that fight, not with the game speed.
 - *Presentational freedom:* a shot lands up to 0.012 cells from its target's slot. Nothing of
   it is sim state; a reload starts with no shots.
-- *Not built:* casualty removal and wrecks (PLAN 2.4b), GPU particle pools (the layer is
-  Canvas2D: 0.12–0.22 ms a frame for the fire of three divisions).
+- *Not built:* GPU particle pools (the layer is Canvas2D: 0.12–0.22 ms a frame for the fire of
+  three divisions).
+
+*T2 casualty removal and wrecks implemented (PLAN 2.4b, `src/render/fx/wrecks.ts`, ADR-67):*
+- *The event:* an element whose strength reaches 0 (combat, attrition, desertion) is removed
+  and emits `ElementDestroyed` with the slot it stood in (§5.2 step 3). It is a tick output,
+  not state. Elements that go with a formation removed whole (disbanded, annexed, by God or the
+  editor) emit none. Only a view that draws elements gets the event, with what the unit's class
+  leaves in place of the unit: the fallen, a broken gun, a burnt-out vehicle.
+- *The visible end:* the snapshot that no longer has the sprite brings the event. In that frame
+  a burst (a flash and an expanding ring, 400 ms) is drawn where the sprite stood, and the
+  wreck comes in under it.
+- *The wreck* stays for 12 s of real time and fades over 3 s; guns and vehicles smoke. It stays
+  where the element died while its formation moves on. At most 1,500 are held.
+- Nothing of it is sim state; a reload starts with no wrecks.
 
 **One truth.** Every number or sprite derives from sim state: counter strength =
 Σ formation strength = Σ element strength. Sprites are at element positions, and tracers

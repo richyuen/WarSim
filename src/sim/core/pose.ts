@@ -9,6 +9,9 @@
  */
 import { cos, sin, sqrt } from './dmath';
 
+/** Element spacing within a formation's block, cells. */
+export const SLOT_SPACING = 0.03;
+
 export function slotGrid(count: number): { cols: number; rows: number } {
   const cols = Math.max(1, Math.ceil(sqrt(count * 2)));
   return { cols, rows: Math.max(1, Math.ceil(count / cols)) };

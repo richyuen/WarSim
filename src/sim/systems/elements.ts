@@ -7,6 +7,7 @@
  * tactical view shows. Formations without elements (toy scenario, tests) keep a bare strength.
  */
 import { EventKind } from '../../shared/events';
+import { SLOT_SPACING, slotPose } from '../core/pose';
 import type { World } from '../world';
 
 /** Live element ids per formation, ascending (derived; rebuilt after creates/removes or a load). */
@@ -100,8 +101,13 @@ export function settleFormation(world: World, fid: number): void {
 
 function settleElements(world: World, fid: number, list: number[]): void {
   const e = world.elements;
+  const fc = world.formations.cols;
   const live = list.filter((id) => {
     if (e.cols.strength[id]! > 0) return true;
+    // Its end is an event, not state (PLAN 2.4b): at the slot it stood in, in the block as it
+    // was before this settle. Elements that go with a disbanded or removed formation have none.
+    const [x, y] = slotPose(fc.x[fid]!, fc.y[fid]!, fc.facing[fid]!, e.cols.slot[id]!, list.length, SLOT_SPACING);
+    world.out.emit(world.tick, EventKind.ElementDestroyed, id, e.cols.unit[id]!, x, y);
     e.remove(id);
     return false;
   });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FIRE_STRIDE, FireField, Weapon } from '../../src/shared/events';
+import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField, Weapon, Wreck } from '../../src/shared/events';
 import type { FromWorker, Snapshot, Subscription } from '../../src/shared/protocol';
 import { Sim } from '../../src/sim/sim';
 import { TOY_W } from '../../src/sim/toy';
@@ -102,6 +102,36 @@ describe('fire events in snapshots', () => {
     expect(s.fires.count).toBe(FIRE_QUEUE_CAP);
     expect(s.fires.dropped).toBe(40);
     expect(s.fires.data[FireField.shooter]).toBe(41);
+  });
+
+  it('ElementDestroyed goes to a view that draws elements, with what the unit leaves; other events to every view', () => {
+    const emit = (world: World): void => {
+      world.out.emit(41, EventKind.ElementDestroyed, 7, 0, 12, 12); // inf
+      world.out.emit(41, EventKind.ElementDestroyed, 8, 1, 13, 13); // art
+      world.out.emit(41, EventKind.ElementDestroyed, 9, 2, 14, 14); // armor_l
+      world.out.emit(41, EventKind.ElementDestroyed, 10, 0, 40, 40); // outside the box
+      world.out.emit(41, EventKind.FormationArrived, 3, 1, 12, 12);
+    };
+    const events = (s: Snapshot): number[][] => Array.from({ length: s.events.count }, (_, i) => Array.from(s.events.data.subarray(i * EVENT_STRIDE + 2, (i + 1) * EVENT_STRIDE)));
+    const box: Subscription['bbox'] = [10, 10, 20, 20];
+    for (const [tier, wants] of [[2, true], [1, true], [0, false], [2, false]] as const) {
+      const { world, resub, server } = setup();
+      resub(sub(tier, box, wants));
+      world.out.events.length = 0; // what the toy world emitted at its start
+      server['drainEvents'](world);
+      emit(world);
+      server['drainEvents'](world);
+      const got = events(resub(sub(tier, box, wants))).filter((e) => e[0] === EventKind.ElementDestroyed || e[0] === EventKind.FormationArrived);
+      const arrived = [EventKind.FormationArrived, 3, 1, 12, 12];
+      if (tier === 2 && wants) {
+        expect(got).toEqual([
+          [EventKind.ElementDestroyed, 7, Wreck.men, 12, 12],
+          [EventKind.ElementDestroyed, 8, Wreck.gun, 13, 13],
+          [EventKind.ElementDestroyed, 9, Wreck.vehicle, 14, 14],
+          arrived,
+        ]);
+      } else expect(got, `tier ${tier}, wantsElements ${wants}`).toEqual([arrived]);
+    }
   });
 
   it('a snapshot without fire takes no pooled buffer for it', () => {

@@ -393,7 +393,7 @@ quick sweep as a smoke test.
 - [x] 2.4a FireEvent visuals: tracers, muzzle flashes, impacts (ADR-66; first answer to critic B2).
   AT: e2e counts tracers in the viewport against FireEvents in the same window (equal).
   The window is one tick: `tests/e2e/fire1938.spec.ts` takes the events from the sim in Node.
-- [ ] 2.4b Casualty removal and wrecks (split from 2.4, as it needs an event of its own): an
+- [x] 2.4b Casualty removal and wrecks (ADR-67; split from 2.4, as it needs an event of its own): an
   element that dies emits `ElementDestroyed` (not state); its sprite goes with a visible end and
   a wreck stays where it stood for a while, on the render clock.
   AT: e2e at T2 over a battle: every `ElementDestroyed` in the window has one wreck at its

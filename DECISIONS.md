@@ -167,6 +167,47 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-67 · 2026-10-04 · accepted — An element's end is an event; its wreck lives in the view (PLAN 2.4b, critic B2)
+
+- **Context:** an element whose strength reached 0 was removed from the table when its
+  formation settled, and its sprite was simply missing from the next snapshot. SPEC §5.2 step 3
+  asks for a wreck event; SPEC §8 lists wrecks and casualties at T2.
+- **Decision, the sim:** `ElementDestroyed` (element, unit, the slot it stood in) is emitted in
+  `settleElements`, the one place where an element at 0 is removed.
+  - The slot is computed in the block as it was before the settle, which is where the last
+    snapshot drew the sprite and where the hour's fire was aimed. Measured in the acceptance
+    test: 30 wrecks, each 0 cells from its sprite's last position.
+  - Deaths by attrition and desertion emit it too. They pass through the same settle, the sim
+    does not record the cause there, and a battalion that starved is as gone as one shot.
+  - Elements that go with a formation removed whole (`destroyFormation`: disbanded by the AI,
+    annexed, removed by God or the editor) emit none. That is not a death, and
+    `FormationDestroyed` already says it. A formation wiped out in battle is covered: its last
+    elements are removed by the settle, each with its event, before the formation goes.
+  - The event is a tick output and is not in the history log's kinds, so it is neither saved
+    nor hashed. The pinned hash did not move.
+- **Decision, the worker:** the event goes only to a view that draws elements (as the fire
+  does), and carries what the unit's class leaves in place of the unit index: the fallen (inf),
+  a broken gun (art, at, aa), a burnt-out vehicle (the rest). Other events go to every view as
+  before.
+- **Decision, the view** (`src/render/fx/wrecks.ts`, Canvas2D on the overlay, under the fire):
+  - *The visible end:* the snapshot that no longer has the sprite is the one that brings the
+    event. In that frame a burst (a flash and an expanding ring, 400 ms) is drawn where the
+    sprite stood, and the wreck comes in under it. No sprite is held back or faded: the sprites
+    are what the sim has.
+  - *The wreck* stays 12 s and fades over 3 s, on the render clock. Guns and vehicles smoke.
+    It lies at an angle taken from the element id. At most 1,500 are held; the oldest go.
+  - *Why real time and not sim time:* at the default speed a day is a second. A wreck that
+    lasted a sim day would be gone in a second at ×5 and never while paused. As with the shots,
+    the picture is paced for the eye and is lost on a reload.
+  - `unitsAnimating` (what tests wait for) covers the burst only; the frame loop keeps drawing
+    while a wreck smokes or fades.
+- **Not seen yet:** in the first 40 days of seed 1938, 799 elements die: 704 infantry, 77
+  artillery, 18 anti-tank; no vehicle. The vehicle wreck is drawn by the same code but no run
+  has shown one. SPEC §6.1 "burning wrecks" for armour is PLAN 3.6.
+- **Noticed, not changed:** a block's layout depends on its element count. When deaths take
+  the count across a step of the grid (for example 25 to 24), the survivors' sprites take new
+  places in one frame. PLAN 2.7 (no popping) owns it.
+
 ### ADR-66 · 2026-10-04 · accepted — Fire at T2: a FireEvent is a shot, and a shooter shows one at a time (PLAN 2.4a, critic B2)
 
 - **Context:** combat has emitted one FireEvent per volley since PLAN 1.13 (shooter, target,

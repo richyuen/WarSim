@@ -10,6 +10,7 @@ import { drawMarkers, markerLowFade, T1_MIN_M, type MarkerInput, type PlacedMark
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
 import { FireFx } from '../render/fx/fire';
+import { WreckFx } from '../render/fx/wrecks';
 import { progress, running, smooth } from '../render/timing';
 import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
@@ -314,6 +315,7 @@ export class MapView {
     this.snapArrival = performance.now();
     this.fire.add(s.fires.count, s.fires.data, this.snapArrival, s.tickMs, this.geo);
     this.firesDropped = s.fires.dropped;
+    this.wrecks.add(s.events.count, s.events.data, this.snapArrival);
     this.tickMs = s.tickMs;
     this.lastTick = s.tick;
   }
@@ -420,13 +422,17 @@ export class MapView {
   /** The fire of the elements in view at T2 (PLAN 2.4), and the worker's count of fires it dropped. */
   readonly fire = new FireFx();
   firesDropped = 0;
+  /** The ends of elements at T2 and the wrecks they leave (PLAN 2.4b). */
+  readonly wrecks = new WreckFx();
 
   /**
    * True while a unit layer still animates: a counter split, merge or fold, the T0 ↔ T1
-   * handover, a capital flag making way for a counter, or a shot on its way.
+   * handover, a capital flag making way for a counter, a shot on its way, or the burst of an
+   * element's end. (A wreck then lies and smokes for seconds: `frame` keeps drawing for it,
+   * but it is not a change to wait for.)
    */
   unitsAnimating(now = performance.now()): boolean {
-    return this.counters.animating(now) || this.handover.animating(now) || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now);
+    return this.counters.animating(now) || this.handover.animating(now) || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
   }
 
   /** Opacity of the element sprites and their fire: in as the T1 markers go out (PLAN 2.3). */
@@ -441,6 +447,7 @@ export class MapView {
   /** Elements in the last snapshot (tests). */
   elementCount = 0;
   elementTruncated = false;
+  elementId = new Uint32Array(0);
   elementFormation = new Uint32Array(0);
   elementX = new Float64Array(0);
   elementY = new Float64Array(0);
@@ -455,6 +462,7 @@ export class MapView {
     this.elementCount = e.count;
     this.elementTruncated = e.truncated;
     // Copies for tests (the snapshot buffers go back to the pool).
+    this.elementId = e.id.slice(0, e.count);
     this.elementFormation = e.formation.slice(0, e.count);
     this.elementX = e.x.slice(0, e.count);
     this.elementY = e.y.slice(0, e.count);
@@ -520,12 +528,24 @@ export class MapView {
   drawUnitLayers(now: number): void {
     this.resize();
     this.drawUnitMarkers(this.controller.cam, now);
-    this.drawFire(this.controller.cam, now);
+    this.drawFx(this.controller.cam, now);
   }
 
-  /** Tracers, muzzle flashes and impacts over the element sprites (PLAN 2.4). */
-  private drawFire(cam: Camera, now: number): void {
-    this.fire.draw(this.overlay.getContext('2d')!, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, now, this.elementOpacity, this.unitScale);
+  /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least 5 px, × the size setting). */
+  get elementPx(): number {
+    return Math.max(ELEMENT_CELLS * this.controller.cam.scale, 5) * this.unitScale;
+  }
+
+  /**
+   * Over the element sprites (PLAN 2.4): the wrecks of the elements that died, then tracers,
+   * muzzle flashes and impacts.
+   */
+  private drawFx(cam: Camera, now: number): void {
+    const ctx = this.overlay.getContext('2d')!;
+    const vw = this.canvas.clientWidth;
+    const vh = this.canvas.clientHeight;
+    this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.elementPx);
+    this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale);
   }
 
   /** T1 operational markers (PLAN 2.1) and T0 counters (PLAN 2.2) on the overlay. */
@@ -754,7 +774,7 @@ export class MapView {
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
     // One more frame after a unit animation ends, so that its end state is what stays on screen
     // however late the last animated frame came.
-    const animating = this.unitsAnimating(now);
+    const animating = this.unitsAnimating(now) || this.wrecks.animating(now);
     const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || animating || this.unitsAnimated;
     this.unitsAnimated = animating;
     if (this.resize() || this.dirty || camMoved || interpolating) {
@@ -786,7 +806,7 @@ export class MapView {
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
     // clear of the T0 counters (PLAN 1.45c).
     this.drawUnitMarkers(cam, now);
-    this.drawFire(cam, now);
+    this.drawFx(cam, now);
     this.drawFlags(cam, now);
     this.drawSelection(cam);
     this.frames++;
