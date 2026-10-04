@@ -523,22 +523,34 @@ quick sweep as a smoke test.
   between frames. Before: one draw a step and no more; the level and the markers' share were those of
   the stop before (the markers' share 0 at the T1 stop, 1 back at T0).
 - [ ] 2.7n At the closest zooms the figures of a formation are there wherever the camera looks at it
-  (ADR-74, second read, finding 1). Two causes; split when taken, one commit each.
-  - The worker sends a formation's elements only when the formation's centre is in the subscribed
-    box (`elementSection`). Below about 5 m/px the box is smaller than a division (28 elements stand
-    ±2,055 m by ±880 m): with the camera on a flank the snapshot has none of it. Run by the reader on
-    the 1938 world, the camera centred on each of the 28 elements of formation 1 in turn, the count of
-    those for which nothing of the division is sent: at 1 m/px 24 (1280×720) and 21 (1920×1080); at
-    2 m/px 14 and 14; at 3 m/px 14 and 7; at 5 m/px none.
-  - The view subscribes again only when its box, rounded to quarter cells, has changed
-    (`maybeSubscribe`). At 1 m/px a quarter cell is 4,892 px, two and a half screens: a pan onto a
-    formation can leave the old box, which does not hold it.
-  - What is then drawn (traced, not run): with no elements, every formation's stand-in sprite, 0.9
-    cells wide, which at 1 m/px is 17,611 px and covers the view in the nation's tint.
-  AT: unit, the worker: for a view of 1280×720 and of 1920×1080 at 1, 2, 3 and 5 m/px centred on any
-  element of a division, the snapshot has every element of that division that is in the view. e2e: at
-  1 m/px, a pan of a screen onto a division's flank shows its figures; no sprite drawn is wider than
-  the view.
+  (ADR-74, second read, finding 1). Three causes, split 2026-10-04 when the task was taken: 2.7n1–n3,
+  one commit each. Ticked when the three are.
+  - [x] 2.7n1 The worker sends a formation's elements when its block reaches into the subscribed box,
+    not when its centre is in it (`elementSection`). Below about 5 m/px the box is smaller than a
+    division (28 elements stand ±2,055 m by ±880 m): with the camera on a flank the snapshot had none
+    of it.
+    AT: unit, the worker: for a view of 1280×720 and of 1920×1080 at 1, 2, 3 and 5 m/px centred on any
+    element of a division, the snapshot has every element of that division that is in the view.
+    Done 2026-10-04: `blockReach` (the far corner's slot and half a slot more) widens the box for a
+    formation's centre; a formation is sent whole or not at all. `tests/unit/serverElements.test.ts`,
+    three divisions (blocks of 28, 53 and 6 slots), the camera on each of their elements. Before: the
+    28-slot division had an element in view and not in the snapshot in 24 of its 28 views at 1 m/px on
+    1280×720 (21 on 1920×1080), 14 and 14 at 2 m/px, 14 and 7 at 3 m/px; the 53-slot one in 50 of 53 at
+    1 m/px and still in 18 at 5 m/px.
+  - [ ] 2.7n2 The view subscribes again when its box has moved by a part of itself, at every zoom
+    (`maybeSubscribe`). It subscribes again only when the box, rounded to quarter cells, has changed.
+    At 1 m/px a quarter cell is 4,892 px, two and a half screens: a pan onto a formation can leave the
+    old box, which does not hold it. Run by the reader: 271 of the 1,054 formations of the 1938 start
+    can be reached by a 1280×720 view at 1 m/px from 0.1 cells (1,957 px) to the west without a new
+    subscription.
+    AT: unit: for cameras from the world view down to 1 m/px, two cameras with the same subscription
+    key: the view of the second is inside the box subscribed by the first.
+  - [ ] 2.7n3 A formation's stand-in sprite is never larger than a marker. With no elements in the
+    snapshot every formation is drawn as a stand-in of 0.9 cells (`drawSprites`): 147 px at 120 m/px,
+    17,611 px at 1 m/px, which covers the view in the nation's tint when a formation's centre is a few
+    kilometres away (traced by the reader, not run).
+    AT: e2e, 1938, paused: at 1 m/px with the camera 5 km from the nearest formation's centre, no sprite
+    drawn is wider than 48 px; a pan of a screen onto a division's flank shows its figures.
 - [ ] 2.7o A formation that takes the id of one destroyed in the same step does not arrive from where
   that one stood (ADR-74, second read, finding 3). The worker judges "new this tick" by whether the id
   was alive before; freed ids are reused last-in-first-out, and revolts create formations after combat

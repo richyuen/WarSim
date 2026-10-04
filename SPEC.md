@@ -1037,7 +1037,9 @@ the other not at all, wherever the camera stops.
   is about 250).
 
 *T2 elements implemented (PLAN 2.3, ADR-46):* the view subscribes with its padded bbox
-and tier at most 10 Hz. The worker sends the elements of the formations inside, at their slot
+and tier at most 10 Hz. The worker sends the elements of the formations whose block reaches
+into the box (by the block, not the centre: at the closest zooms the box is smaller than a
+division; PLAN 2.7n1), a formation whole or not at all, at their slot
 poses (`sim/core/pose`, shared with the sim). They are drawn as instanced sprites, interpolated
 on the GPU, with facing and a procedural walk/drive animation, fading in as the markers fade out.
 

@@ -4079,3 +4079,27 @@ No rule changed and nothing on screen changed. Six tasks came out of it.
 - **Changed:** a gate run's whole output goes to a file and is read from there. BLOCKERS has the
   entry.
 - **Next:** PLAN 2.7n.
+
+## 2026-10-04 — PLAN 2.7n1: the worker sends a formation's elements by its block, not its centre
+
+- **PLAN 2.7n is three causes** and is split: 2.7n1 (the worker), 2.7n2 (the view's subscription is
+  rounded to quarter cells), 2.7n3 (the stand-in sprite of a formation with no elements is 0.9
+  cells wide). This entry is the first.
+- **The bug (ADR-74, second read, finding 1):** `elementSection` took a formation when its centre
+  was in the subscribed box. At the closest zooms the box is smaller than a division.
+- **Test first** (`tests/unit/serverElements.test.ts`): three divisions of the 1938 start (blocks
+  of 28, 53 and 6 slots), a view of 1280×720 and of 1920×1080 at 1, 2, 3 and 5 m/px centred on
+  each of their elements in turn; every element of the division that is in the view must be in
+  the snapshot. On the code as it was it failed in 15 of the 24 cases: the 28-slot division in
+  24 of its 28 views at 1 m/px on 1280×720 (the reader's number), the 53-slot one in 50 of 53,
+  and still in 18 of 53 at 5 m/px.
+- **Fix:** the box is widened, for a formation's centre, by how far its block reaches
+  (`blockReach` in `sim/core/pose.ts`: the far corner's slot and half a slot more). A formation
+  is sent whole or not at all, as before. Fire and the ends of elements are still sent by their
+  own places.
+- **And not too much:** a view 0.3 cells from a division's centre (its block reaches 0.129) gets
+  none of it.
+- **No picture yet:** the view still asks for the wrong box after a pan (2.7n2) and still draws
+  the stand-in (2.7n3). The e2e of 2.7n3 is the one that looks at the screen.
+- **Tests:** 2 new unit tests. 567 unit tests in 77 files, 88 e2e.
+- **Next:** PLAN 2.7n2.

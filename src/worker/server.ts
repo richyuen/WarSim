@@ -46,7 +46,7 @@ import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
 import { elementIndex, slotCount } from '../sim/systems/elements';
-import { SLOT_SPACING, slotPose } from '../sim/core/pose';
+import { blockReach, SLOT_SPACING, slotPose } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
@@ -797,8 +797,12 @@ export class SimServer {
   }
 
   /**
-   * Elements of formations inside the subscribed bbox (PLAN 2.3): only when the subscription
-   * wants them at tier ≥ 1.5. Read-only: never touches sim state (I4).
+   * Elements of the formations whose block reaches into the subscribed bbox (PLAN 2.3): only
+   * when the subscription wants them at tier ≥ 1.5. Read-only: never touches sim state (I4).
+   *
+   * By the block and not by the formation's centre (PLAN 2.7n1): at the closest zooms the box
+   * is smaller than a division, and a view on a division's flank got nothing of it. A formation
+   * is sent whole or not at all.
    */
   private elementSection(world: World, buffers: ArrayBuffer[]): SnapshotElements {
     const ft = world.formations;
@@ -810,7 +814,7 @@ export class SimServer {
       ft.forEach((f) => {
         if (truncated) return;
         const list = idx.get(f);
-        if (!list || !this.inBbox(ft.cols.x[f]!, ft.cols.y[f]!, world)) return;
+        if (!list || !this.inBbox(ft.cols.x[f]!, ft.cols.y[f]!, world, blockReach(slotCount(world, f, list.length), SLOT_SPACING))) return;
         if (total + list.length > MAX_SNAPSHOT_ELEMENTS) {
           truncated = true;
           return;
@@ -867,13 +871,15 @@ export class SimServer {
     return { count: total, id, formation, nation, frame, strength, x, y, prevX, prevY, facing, flags, truncated };
   }
 
-  private inBbox(x: number, y: number, world: World): boolean {
+  /** Whether (x, y) is in the subscribed bbox, or within `reach` cells of it. */
+  private inBbox(x: number, y: number, world: World, reach = 0): boolean {
     const [x0, y0, x1, y1] = this.sub.bbox;
-    if (y < y0 || y > y1) return false;
+    if (y < y0 - reach || y > y1 + reach) return false;
     const w = world.cells.w;
-    if (x1 - x0 >= w) return true;
-    const dx = (((x - x0) % w) + w) % w;
-    return dx <= x1 - x0;
+    const span = x1 - x0 + 2 * reach;
+    if (span >= w) return true;
+    const dx = (((x - (x0 - reach)) % w) + w) % w;
+    return dx <= span;
   }
 
   private maybeSend(): void {

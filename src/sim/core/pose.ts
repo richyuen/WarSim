@@ -17,6 +17,17 @@ export function slotGrid(count: number): { cols: number; rows: number } {
   return { cols, rows: Math.max(1, Math.ceil(count / cols)) };
 }
 
+/**
+ * How far from a formation's centre its block of `count` slots reaches, in cells: to the slot
+ * in the far corner, and half a slot more for what stands on it.
+ */
+export function blockReach(count: number, spacing: number): number {
+  const { cols, rows } = slotGrid(count);
+  const across = ((cols - 1) / 2) * spacing;
+  const along = ((rows - 1) / 2) * spacing;
+  return sqrt(across * across + along * along) + spacing / 2;
+}
+
 /** World position (cells) of `slot` in a formation of `count` elements spaced `spacing` cells. */
 export function slotPose(cx: number, cy: number, facing: number, slot: number, count: number, spacing: number): [number, number] {
   const { cols, rows } = slotGrid(count);
