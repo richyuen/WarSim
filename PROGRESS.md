@@ -3523,3 +3523,39 @@ since, with three test races found in their gate runs.
   function it tested. Gate: 535 unit tests in 74 files, 79 e2e, parity 46.3% (no sim input
   changed, so the ten-year stage did not run).
 - **Next:** PLAN 2.7c.
+
+## 2026-10-04 — PLAN 2.7c: the marker → elements morph (ADR-72)
+
+- **What it is:** T1 ↔ T2 takes 470 ms in two parts. For 250 ms the marker's box fades and
+  shrinks to 0.87 about its centre while the sprites fade in, the strength bar and the number
+  still in full; then those fade over 220 ms. Out of T2 the same, backwards.
+- **The luminance limit of 2.7b was kept at 48, and the morph made to fit it:**
+
+  | Version | Largest jump between frames (of 255) | Where |
+  |---|---|---|
+  | box scaled part by part, shrink 20% | 188 | the flag chip: drawn without smoothing, its pixels snap |
+  | box as a smoothly scaled picture of itself, shrink 20% | 67 | the box's corner: two edges move at once |
+  | the same, shrink 13% | 43 into T2, 42 out | the same corner |
+
+  The other four crossings measure what they did (38, 33, 34, 39).
+- **A second defect of the spec, found by the evidence run:** before each crossing it waited
+  for "the view has elements", which the elements of the crossing before satisfied at once.
+  Near T3 the view then had no element section kept, no figures to fade to, and the share never
+  moved; without the evidence images the timing had hidden it. The spec waits for a section
+  that arrived at the zoom it is at.
+- **A mistake of mine on the way:** a PowerShell replacement dropped `${c.name}` from five
+  assertion messages in the spec (a lesson of PLAN 1.43 already: such strings are edited with
+  the editor, not through the shell). Found on reading the file, fixed with the editor.
+- **Acceptance test:** `fades1938.spec.ts` now records each frame's first marker. Into T2 the
+  box is smaller in every frame of its change (at least 12 frames, down to 0.87–0.9), the bar
+  is in full when the box is half gone, at least 8 frames show the bar alone, no opacity moves
+  by 0.12 or more a frame, and no marker is left at T2. Out of T2 the same sequence reversed.
+- **Looked at:** `docs/evidence/2.7/`: each change into the nearer tier 128 ms after the camera
+  crossed. T1 → T2: two half-faded boxes with their bars and numbers ("12.5k", "5.7k") in full.
+  T2 → T3: element sprites and blocks of figures, both half there. T0 → T1: a counter and the
+  markers under it, both half there.
+- **Tests:** 6 new unit tests (the morph's curve; a handover with a duration and its linear
+  progress). Gate: 541 unit tests in 74 files, 79 e2e, parity 46.3% (no sim input changed, so
+  the ten-year stage did not run).
+- **Next:** PLAN 2.7d (capital flags switch at 3 px per cell in one frame; city labels fade by
+  zoom).

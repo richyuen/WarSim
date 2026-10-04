@@ -1005,7 +1005,7 @@ the other not at all, wherever the camera stops.
 | Boundary | Nearer layer in at | out above |
 |---|---|---|
 | T0 counters ↔ T1 markers | 2000 m/px | 2300 |
-| T1 markers ↔ T2 element sprites | 300 | 345 |
+| T1 markers ↔ T2 element sprites (470 ms: see the morph below) | 300 | 345 |
 | T2 sprites ↔ T3 individuals | 30 | 34.5 |
 
 - The elements are in the view before the sprites come in: they are sent from 450 m/px.
@@ -1095,8 +1095,11 @@ is the formation's strength, which the sim recomputes from its elements at each 
   over 250 ms (positions are real). They merge in reverse.
 - T1→T2: the marker scales down and fades into the formation centroid while elements fade
   in at their real positions. The strength bar lingers above the group until T2 is fully in.
-  (As built, PLAN 2.7b: a plain cross-fade over 250 ms; the scaling and the lingering bar are
-  PLAN 2.7c.)
+  (As built, PLAN 2.7c, ADR-72: over 250 ms the box fades and shrinks by 13% about its centre
+  while the sprites fade in; the strength bar and the number stay for that time and fade over
+  the 220 ms after it. Out of T2 the same, backwards: the bar first, then the box. The box does
+  not move: a marker stands on its formation's centre already. It shrinks by 13% and no more:
+  see the ADR.)
 - T2→T3: an element sprite cross-fades into its individual expansion, which is laid out inside
   the element footprint. (As built, PLAN 2.7b: a cross-fade over 250 ms.)
 - The map shader blends the detail layers by `z`, and border width is constant in screen px.

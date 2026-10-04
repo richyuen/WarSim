@@ -6,7 +6,7 @@
 import { CityLabelLayer } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { drawMarkers, T1_MAX_M, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
+import { AT_REST, drawMarkers, markerMorph, MORPH_MS, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { HANDOVER_HYSTERESIS, TierHandover } from '../render/units/handover';
 import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
@@ -451,10 +451,12 @@ export class MapView {
    * individuals.
    */
   readonly handover = new TierHandover(T1_MAX_M);
-  readonly tactical = new TierHandover(T1_MIN_M);
+  readonly tactical = new TierHandover(T1_MIN_M, MORPH_MS);
   readonly close = new TierHandover(T3_MAX_M);
   /** The nearer layer's share at each of them, in the frame being drawn (	ierShares). */
   readonly shares = { markers: 0, elements: 0, individuals: 0 };
+  /** The markers on their way into the sprites, in the frame being drawn (PLAN 2.7c). */
+  morph: MarkerMorph = AT_REST;
   /** The fire of the elements in view at T2 (PLAN 2.4), and the worker's count of fires it dropped. */
   readonly fire = new FireFx();
   firesDropped = 0;
@@ -485,7 +487,10 @@ export class MapView {
   private tierShares(now: number): void {
     const m = this.metresPerPx;
     this.shares.markers = this.handover.share(m, now);
-    this.shares.elements = this.tactical.share(m, now);
+    // T1 ↔ T2 in two parts: the box and the sprites cross-fade first, then the bar goes.
+    const change = markerMorph(this.tactical.linear(m, now));
+    this.shares.elements = change.elements;
+    this.morph = change.morph;
     const wanted = m <= (this.close.near ? T3_MAX_M * HANDOVER_HYSTERESIS : T3_MAX_M);
     if (wanted && !this.individualsBuilt && this.elementSection) this.buildIndividuals(this.elementSection);
     // No figures to show (no elements kept yet, none in view, or more than the cap): the sprites stay.
@@ -539,12 +544,15 @@ export class MapView {
     p.upload(e.count);
     // Near T3 the section is kept, so that the figures can be built in the frame the close tier
     // comes in (`tierShares`); the snapshot's own arrays go back to the worker.
-    this.elementSection = this.metresPerPx < T3_KEEP_M ? copyElements(e) : null;
+    this.elementsZoom = this.metresPerPx;
+    this.elementSection = this.elementsZoom < T3_KEEP_M ? copyElements(e) : null;
     this.individualsBuilt = false;
   }
 
   /** The elements of the last snapshot, kept while the camera is near T3. */
   private elementSection: SnapshotElements | null = null;
+  /** m/px of the camera when the last element section arrived (tests). */
+  elementsZoom = Infinity;
 
   /** T3 individuals (PLAN 2.6): the elements of the last snapshot, each as its figures. */
   private readonly individualProxies: ProxyRenderer;
@@ -710,7 +718,7 @@ export class MapView {
     // T0 counters, T1 markers or T2 sprites: timed handovers, so at rest only one layer is drawn
     // (PLAN 1.45a, 2.7b). The markers have what the counters and the sprites leave them.
     const share = this.shares.markers;
-    const alpha = share * (1 - this.shares.elements);
+    const alpha = share * this.morph.box;
     this.markerOpacity = alpha;
     this.markerRects = [];
     const ctx = this.overlay.getContext('2d')!;
@@ -722,7 +730,7 @@ export class MapView {
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
-    if (alpha <= 0.01) return;
+    if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) return;
     const w = this.geo.w;
     const markers: MarkerInput[] = [];
     for (let i = 0; i < this.formIds.length; i++) {
@@ -741,7 +749,7 @@ export class MapView {
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
       });
     }
-    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, alpha, hex, flagOf, this.unitScale);
+    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph);
   }
 
   /** Position of formation `id` from the last snapshot, or null. */

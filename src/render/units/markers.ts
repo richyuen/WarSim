@@ -10,6 +10,8 @@
  */
 import type { UnitSymbol } from '../../shared/protocol';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { smooth } from '../timing';
+import { HANDOVER_MS } from './handover';
 
 export interface MarkerInput {
   id: number;
@@ -24,13 +26,57 @@ export interface MarkerInput {
   target: [number, number] | null;
 }
 
+/**
+ * How far the markers are on their way into the T2 sprites (PLAN 2.7c): the box fades and
+ * shrinks into the group while the strength bar and the number stay, then those go. All 1 at T1.
+ */
+export interface MarkerMorph {
+  /** Opacity of the box (frame, fill, symbol, flag chip) and of the order arrows. */
+  box: number;
+  /** Scale of the box about its centre. */
+  scale: number;
+  /** Opacity of the strength bar and the number. */
+  bar: number;
+}
+export const AT_REST: MarkerMorph = { box: 1, scale: 1, bar: 1 };
+
+/**
+ * The T1 ↔ T2 change in two parts (PLAN 2.7c): for HANDOVER_MS the box fades and shrinks by
+ * MARKER_SHRINK into the group while the sprites fade in; the strength bar and the number stay
+ * for that time and go over BAR_LINGER_MS after it. Out of T2 the same, backwards.
+ */
+export const BAR_LINGER_MS = 220;
+export const MORPH_MS = HANDOVER_MS + BAR_LINGER_MS;
+/**
+ * 0.13 and no more: at a corner of the box the motion of its two edges adds up (13 + 8.5 px from
+ * the centre), and a white flag chip against the dark outline is nearly full contrast. At 0.2
+ * that corner pixel changed by 67 of 255 in one frame; the limit for a change without popping
+ * is 48 (ADR-71, ADR-72).
+ */
+export const MARKER_SHRINK = 0.13;
+
+/**
+ * The sprites' share and the markers' morph at progress `p` of the T1 ↔ T2 change (0 = T1,
+ * 1 = T2, linear in time: `TierHandover.linear`). The shrink is linear in time: an edge at a
+ * steady speed changes a pixel less than one that eases to one and a half times that speed.
+ */
+export function markerMorph(p: number): { elements: number; morph: MarkerMorph } {
+  const first = HANDOVER_MS / MORPH_MS;
+  const q = Math.max(0, Math.min(1, p / first));
+  const late = Math.max(0, Math.min(1, (p - first) / (1 - first)));
+  return { elements: smooth(q), morph: { box: 1 - smooth(q), scale: 1 - MARKER_SHRINK * q, bar: 1 - smooth(late) } };
+}
+
 export interface PlacedMarker {
   id: number;
   nation: number;
   /** World position in cells. */
   wx: number;
   wy: number;
+  /** Opacity of the box; `bar` that of the strength bar and the number; `scale` of the box (PLAN 2.7c). */
   alpha: number;
+  bar: number;
+  scale: number;
   x: number;
   y: number;
   w: number;
@@ -96,6 +142,37 @@ function symbolPath(ctx: CanvasRenderingContext2D, s: UnitSymbol, x: number, y: 
   ctx.stroke();
 }
 
+/** The box of a marker with its top-left corner at (x, y): backing, the nation's fill, outline, symbol, flag chip. */
+function boxArt(ctx: CanvasRenderingContext2D, m: MarkerInput, x: number, y: number, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null): void {
+  ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
+  ctx.fillRect(x - 1, y - 1, BOX_W + 2, BOX_H + 1);
+  ctx.fillStyle = colorOf(m.nation);
+  ctx.fillRect(x, y, BOX_W, BOX_H);
+  ctx.strokeStyle = m.engaged ? '#ff4d3d' : 'rgba(0, 0, 0, 0.85)';
+  ctx.lineWidth = m.engaged ? 2 : 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, BOX_W - 1, BOX_H - 1);
+  ctx.strokeStyle = 'rgba(10, 10, 14, 0.9)';
+  ctx.lineWidth = 1.3;
+  symbolPath(ctx, m.symbol, x + 4, y + 3, BOX_W - 8, BOX_H - 6);
+  const flag = flagOf(m.nation);
+  if (flag) ctx.drawImage(flag, x + 1, y + 1, CHIP_W, CHIP_H);
+}
+
+/** Room around the box in its picture, CSS px (the engaged outline reaches half a pixel out). */
+const SPRITE_PAD = 2;
+
+/** A picture of a marker's box at `dpr` device px per CSS px, as it is drawn at rest. */
+function boxSprite(m: MarkerInput, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null, dpr: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = Math.ceil((BOX_W + 2 * SPRITE_PAD) * dpr);
+  c.height = Math.ceil((BOX_H + 2 * SPRITE_PAD) * dpr);
+  const g = c.getContext('2d')!;
+  g.scale(dpr, dpr);
+  g.imageSmoothingEnabled = false;
+  boxArt(g, m, SPRITE_PAD, SPRITE_PAD, colorOf, flagOf);
+  return c;
+}
+
 /**
  * Draws the markers (already in the CSS-px transform of `ctx`) and returns where they went.
  * `colorOf` gives a nation's CSS colour; `flagOf` its flag image (or null).
@@ -113,18 +190,21 @@ export function drawMarkers(
   flagOf: (nation: number) => CanvasImageSource | null,
   /** Unit-size setting (PLAN 1.39a): scales each marker about its position. */
   size = 1,
+  morph: MarkerMorph = AT_REST,
 ): PlacedMarker[] {
   const placed: PlacedMarker[] = [];
-  if (alpha <= 0.01) return placed;
+  const boxAlpha = alpha * morph.box;
+  const barAlpha = alpha * morph.bar;
+  if (Math.max(boxAlpha, barAlpha) <= 0.01) return placed;
   ctx.save();
-  ctx.globalAlpha = alpha;
+  ctx.globalAlpha = boxAlpha;
   ctx.imageSmoothingEnabled = false;
   const offs = wrapOffsets(cam, geo, vw);
   // Order arrows below the boxes.
   ctx.lineWidth = 1.5;
   ctx.setLineDash([4, 3]);
   for (const m of markers) {
-    if (!m.target) continue;
+    if (!m.target || boxAlpha <= 0.01) continue;
     for (const off of offs) {
       const [ax, ay] = worldToScreen(cam, m.x + off, m.y, vw, vh);
       let tx = m.target[0];
@@ -148,6 +228,9 @@ export function drawMarkers(
     }
   }
   ctx.setLineDash([]);
+  // Pictures of the boxes, made when a morph needs them (one for each nation, symbol and state).
+  const sprites = new Map<string, HTMLCanvasElement>();
+  const dpr = Math.max(1, ctx.getTransform().a);
   // Boxes, back to front by y.
   const order = [...markers].sort((a, b) => a.y - b.y || a.id - b.id);
   ctx.font = '600 9px system-ui, sans-serif';
@@ -165,32 +248,46 @@ export function drawMarkers(
         ctx.scale(size, size);
         ctx.translate(-px, -py);
       }
-      ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
-      ctx.fillRect(x - 1, y - 1, BOX_W + 2, BOX_H + 13);
-      ctx.fillStyle = colorOf(m.nation);
-      ctx.fillRect(x, y, BOX_W, BOX_H);
-      ctx.strokeStyle = m.engaged ? '#ff4d3d' : 'rgba(0, 0, 0, 0.85)';
-      ctx.lineWidth = m.engaged ? 2 : 1;
-      ctx.strokeRect(x + 0.5, y + 0.5, BOX_W - 1, BOX_H - 1);
-      ctx.strokeStyle = 'rgba(10, 10, 14, 0.9)';
-      ctx.lineWidth = 1.3;
-      symbolPath(ctx, m.symbol, x + 4, y + 3, BOX_W - 8, BOX_H - 6);
-      const flag = flagOf(m.nation);
-      if (flag) ctx.drawImage(flag, x + 1, y + 1, CHIP_W, CHIP_H);
-      // Strength bar and number under the box.
-      const f = m.full > 0 ? Math.max(0, Math.min(1, m.strength / m.full)) : 1;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.fillRect(x, y + BOX_H + 1, BOX_W, 2);
-      ctx.fillStyle = f > 0.5 ? '#8bd17c' : f > 0.25 ? '#f1c40f' : '#e74c3c';
-      ctx.fillRect(x, y + BOX_H + 1, Math.round(BOX_W * f), 2);
+      // Strength bar and number under the box, on their dark backing. They have an opacity of
+      // their own: on the way to T2 they stay while the box goes (PLAN 2.7c).
       const text = strengthText(m.strength);
-      ctx.fillStyle = '#ffe28a';
-      ctx.fillText(text, x + BOX_W / 2, y + BOX_H + 3);
+      if (barAlpha > 0.01) {
+        ctx.globalAlpha = barAlpha;
+        ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
+        ctx.fillRect(x - 1, y + BOX_H, BOX_W + 2, 12);
+        const f = m.full > 0 ? Math.max(0, Math.min(1, m.strength / m.full)) : 1;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillRect(x, y + BOX_H + 1, BOX_W, 2);
+        ctx.fillStyle = f > 0.5 ? '#8bd17c' : f > 0.25 ? '#f1c40f' : '#e74c3c';
+        ctx.fillRect(x, y + BOX_H + 1, Math.round(BOX_W * f), 2);
+        ctx.fillStyle = '#ffe28a';
+        ctx.fillText(text, x + BOX_W / 2, y + BOX_H + 3);
+      }
+      // The box, about its centre: at rest as it always was, on the way to T2 smaller and fainter.
+      if (boxAlpha > 0.01) {
+        ctx.globalAlpha = boxAlpha;
+        if (morph.scale === 1) boxArt(ctx, m, x, y, colorOf, flagOf);
+        else {
+          // Shrinking, the box is a picture of itself, scaled smoothly. Scaling its parts would
+          // make the pixels of the flag chip (drawn without smoothing) and of the hairlines snap
+          // from one frame to the next: measured, a jump of 188 of 255.
+          const key = `|${m.symbol}|${m.engaged ? 1 : 0}`;
+          let sprite = sprites.get(key);
+          if (!sprite) sprites.set(key, (sprite = boxSprite(m, colorOf, flagOf, dpr)));
+          ctx.imageSmoothingEnabled = true;
+          ctx.translate(x + BOX_W / 2, y + BOX_H / 2);
+          ctx.scale(morph.scale, morph.scale);
+          ctx.translate(-(x + BOX_W / 2), -(y + BOX_H / 2));
+          ctx.drawImage(sprite, x - SPRITE_PAD, y - SPRITE_PAD, BOX_W + 2 * SPRITE_PAD, BOX_H + 2 * SPRITE_PAD);
+          ctx.imageSmoothingEnabled = false;
+        }
+      }
       ctx.restore();
-      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text });
+      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha, bar: barAlpha, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text });
     }
   }
   // Major Battles: crossed swords.
+  ctx.globalAlpha = boxAlpha;
   ctx.strokeStyle = '#ffe28a';
   ctx.lineWidth = 2.2;
   for (let i = 0; i + 1 < majors.length; i += 2) {

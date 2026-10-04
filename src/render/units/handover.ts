@@ -20,25 +20,39 @@ export class TierHandover {
   /** When the layer shown began to fade in (ms on the clock of `now`). */
   private start = -Infinity;
 
-  /** `thresholdM`: the nearer layer's tier reaches up to this many m/px, inclusive, as `tierOf` has it. */
-  constructor(readonly thresholdM: number) {}
+  /**
+   * `thresholdM`: the nearer layer's tier reaches up to this many m/px, inclusive, as `tierOf`
+   * has it. `ms`: how long a change takes.
+   */
+  constructor(
+    readonly thresholdM: number,
+    readonly ms = HANDOVER_MS,
+  ) {}
 
-  /** The nearer layer's share of the two at `now`, in [0, 1]; the farther one has the rest. */
+  /** The nearer layer's share of the two at `now`, in [0, 1], eased; the farther one has the rest. */
   share(mPerPx: number, now: number): number {
+    return smooth(this.linear(mPerPx, now));
+  }
+
+  /**
+   * The change's progress toward the nearer layer at `now`, in [0, 1], linear in time. For a
+   * change in several parts (the T1 → T2 morph, PLAN 2.7c); `share` is this, eased.
+   */
+  linear(mPerPx: number, now: number): number {
     const want = mPerPx <= (this.near ? this.thresholdM * HANDOVER_HYSTERESIS : this.thresholdM);
     if (this.near === null) this.near = want;
     else if (want !== this.near) {
-      // A turn in mid-fade goes on from the share reached: the smoothstep is symmetric.
-      const reached = progress(now, this.start, HANDOVER_MS);
+      // A turn in mid-change goes on from the progress reached (and the share: the smoothstep is symmetric).
+      const reached = progress(now, this.start, this.ms);
       this.near = want;
-      this.start = now - (1 - reached) * HANDOVER_MS;
+      this.start = now - (1 - reached) * this.ms;
     }
-    const s = smooth(progress(now, this.start, HANDOVER_MS));
-    return this.near ? s : 1 - s;
+    const p = progress(now, this.start, this.ms);
+    return this.near ? p : 1 - p;
   }
 
   /** True while a cross-fade runs (the view keeps redrawing). */
   animating(now: number): boolean {
-    return running(now, this.start, HANDOVER_MS);
+    return running(now, this.start, this.ms);
   }
 }

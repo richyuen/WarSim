@@ -415,7 +415,7 @@ quick sweep as a smoke test.
   Read as: the luminance is compared over the frames of each tier change at a fixed camera (16 ms apart,
   the unit layers alone); a zoom moves every edge by pixels a frame, which is not popping. Between camera
   steps the layers' opacities are compared instead.
-- [ ] 2.7c The marker → elements morph: the box shrinks into the group and fades, the strength bar lingers.
+- [x] 2.7c The marker → elements morph: the box shrinks into the group and fades, the strength bar lingers (ADR-72).
   AT: the frames of the T1 → T2 change keep the luminance limit of 2.7b; a marker's box is smaller in each
   frame of the change and its strength bar is still in full at half of it.
 - [ ] 2.7d The layers that are not units: the capital flags switch at 3 px per cell in one frame, and the

@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-72 · 2026-10-04 · accepted — The marker → elements morph: a shrink of 13%, and a bar that lingers (PLAN 2.7c)
+
+- **Context:** SPEC §8 asks that at T1 → T2 "the marker scales down and fades into the
+  formation centroid while elements fade in at their real positions. The strength bar lingers
+  above the group until T2 is fully in." Since PLAN 2.7b the change was a plain cross-fade.
+- **Decision:** the T1 ↔ T2 handover takes 470 ms and has two parts (`markerMorph`).
+  - *First 250 ms:* the box (frame, fill, symbol, flag chip) fades out and shrinks about its
+    centre to 0.87 of its size; the sprites fade in. The strength bar and the number stay in
+    full.
+  - *Next 220 ms:* the bar and the number fade out.
+  - Out of T2 it runs backwards: the bar comes first, then the box grows in as the sprites go.
+  - The marker does not travel: it stands on the formation's centre already.
+- **Why only 13%.** A moving edge changes a pixel by its speed × its contrast, and the limit
+  for a change without popping is 48 of 255 (ADR-71). It was not raised.
+  - Shrinking to 0.6 was the first plan. At a corner of the box the motions of the two edges
+    add (13 and 8.5 px from the centre), and the white of a flag chip against the dark outline
+    is nearly full contrast.
+  - Measured at a shrink of 20%: 67 of 255 at that corner pixel in the first frame. At 13%:
+    43 into T2 and 42 out of it.
+  - The shrink is linear in time. An eased one moves one and a half times as fast in the
+    middle, where it would have to be half as deep to keep the limit.
+- **Why the box is a picture of itself while it shrinks.** Scaling its parts made the pixels
+  of the flag chip (drawn without smoothing) and of the hairlines snap from frame to frame:
+  188 of 255. During the morph the box is drawn once to a small canvas, as at rest, and that is
+  scaled with smoothing. At rest it is drawn directly, as before: the pixels at T1 did not
+  change.
+- **Why the bar has its own 220 ms.** Faded over the second half of a 250 ms change it would
+  move by 0.25 a frame. With 220 ms of its own: 0.11.
+- **Found by the evidence run:** the spec waited for "the view has elements" before each
+  crossing. Elements from the crossing before satisfied that at once; near T3 the view then had
+  no element section kept and no figures to fade to, and the T2 → T3 share never moved. The
+  spec waits for a section that arrived at the zoom it is at (`elementsZoom`).
+- **Not done:** the bar does not move "above the group"; it stays where it is at T1, under
+  where the box was. The order arrows and the battle swords fade with the box.
 ### ADR-71 · 2026-10-04 · accepted — Every tier boundary is a timed handover; "no popping" is measured at a fixed camera (PLAN 2.7b)
 
 - **Context:** of the three boundaries between the unit tiers only T0 ↔ T1 was a state with a

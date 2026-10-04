@@ -89,6 +89,24 @@ describe('T0 ↔ T1 handover (PLAN 1.45a)', () => {
     expect(h.share(1_500, 1_000)).toBe(1);
     expect(h.animating(1_000)).toBe(false);
   });
+
+  it('a handover can take longer, and gives its progress unsmoothed for a change in parts (PLAN 2.7c)', () => {
+    const h = new TierHandover(T1_MIN_M, 470);
+    h.linear(1_000, -10_000);
+    expect(h.linear(250, 0)).toBe(0);
+    expect(h.linear(250, 235)).toBeCloseTo(0.5, 12);
+    expect(h.share(250, 235)).toBeCloseTo(0.5, 12); // the share is the progress, eased
+    expect(h.linear(250, 117.5)).toBeCloseTo(0.25, 12);
+    expect(h.share(250, 117.5)).toBeCloseTo(0.15625, 12);
+    expect(h.animating(469 + 50)).toBe(true);
+    expect(h.animating(470 + 50)).toBe(false);
+    expect(h.linear(250, 470)).toBe(1);
+    // Out again: back down over the same time, and a turn in the middle goes on from where it was.
+    expect(h.linear(1_000, 1_000)).toBe(1);
+    expect(h.linear(1_000, 1_000 + 141)).toBeCloseTo(0.7, 12);
+    expect(h.linear(250, 1_000 + 141)).toBeCloseTo(0.7, 12);
+    expect(h.linear(250, 1_000 + 141 + 47)).toBeCloseTo(0.8, 12);
+  });
 });
 
 // PLAN 2.7b: the same mechanism at the other two tier boundaries. Toward T2 the markers used to

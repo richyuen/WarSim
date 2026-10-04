@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import type { Command } from '../../src/shared/commands';
 import { NATIONS_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
@@ -32,7 +34,7 @@ const SETUP: Command[] = [
  * rounding; a layer that appears or goes in one frame jumps by its whole contrast.
  */
 const MAX_JUMP = 48;
-const FRAMES = 22; // 352 ms: the fade and its tail
+const FRAMES = 34; // 544 ms: the longest change (T1 ↔ T2, 470 ms) and its tail
 const HYSTERESIS = 1.15;
 
 interface Crossing {
@@ -57,8 +59,11 @@ const CROSSINGS: Crossing[] = [
   crossing('T1 → T0', 2000, 'markers', false),
 ];
 
-test('no popping: every tier change is a cross-fade whose frames differ by little, in both directions', async ({ page }) => {
+test('no popping: every tier change is a cross-fade whose frames differ by little, in both directions', async ({ page }, info) => {
   test.setTimeout(240_000);
+  const evidence = process.env['EVIDENCE'] !== undefined;
+  const out = evidence ? path.resolve(import.meta.dirname, '../../docs/evidence/2.7') : info.outputPath();
+  mkdirSync(out, { recursive: true });
   await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
@@ -81,14 +86,16 @@ test('no popping: every tier change is a cross-fade whose frames differ by littl
   for (const c of CROSSINGS) {
     // At rest on the far side of the boundary, with the elements in the view where the tier has them.
     await at(c.from);
-    if (c.from < 450) await page.waitForFunction(({ x, y }) => {
+    // (An element section that arrived with the camera at this zoom: one from the crossing before
+    // would satisfy "has elements" at once, and below 60 m/px the view keeps the section it needs
+    // for the figures only if it arrived there.)
+    if (c.from < 450) await page.waitForFunction((m) => {
       const v = window.__warsim!.view!;
-      const b = v.subscription?.bbox;
-      return b !== undefined && v.subscription!.wantsElements && Math.abs((b[0] + b[2]) / 2 - x) < 0.05 && Math.abs((b[1] + b[3]) / 2 - y) < 0.05 && v.elementCount > 0;
-    }, { x: SITE[0], y: SITE[1] }, { timeout: 15_000 });
+      return v.elementCount > 0 && Math.abs(v.elementsZoom / m - 1) < 0.01;
+    }, c.from, { timeout: 15_000 });
     await settle(page);
 
-    const rec = await page.evaluate(({ x, y, m, frames, share }) => {
+    const rec = await page.evaluate(({ x, y, m, frames, share, shot }) => {
       const v = window.__warsim!.view!;
       // The map's canvas (WebGL: the sprites) and the overlay (counters, markers); the city
       // labels have a canvas of their own between the two.
@@ -132,20 +139,38 @@ test('no popping: every tier change is a cross-fade whose frames differ by littl
       v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
       const first = frame(now);
       const shares = [v.shares[share]];
+      // The first marker in each frame: its box's opacity and scale, its bar's opacity (PLAN 2.7c).
+      const marker = (): { alpha: number; scale: number; bar: number } | null => {
+        const r = v.markerRects[0];
+        return r ? { alpha: r.alpha, scale: r.scale, bar: r.bar } : null;
+      };
+      const markers = [marker()];
       const jumps: number[] = [];
       let prev = first;
+      let picture = '';
       for (let k = 0; k < frames; k++) {
         now += 16;
         const cur = frame(now);
         jumps.push(jump(prev, cur));
         shares.push(v.shares[share]);
+        markers.push(marker());
         prev = cur;
+        if (shot === k) {
+          // Evidence: this moment of the change with the map under it (the next frame clears it).
+          v.draw(now);
+          ctx.drawImage(gl, 0, 0);
+          ctx.drawImage(document.querySelector<HTMLCanvasElement>('canvas.map-cities')!, 0, 0, w, h);
+          ctx.drawImage(overlay, 0, 0, w, h);
+          picture = scratch.toDataURL('image/png');
+        }
       }
-      return { before, shares, jumps, whole: jump(first, prev), lit: [lit(first), lit(prev)], after: { ...v.shares }, animating: v.unitsAnimating(now), figures: v.individualCount, elements: v.elementCount, slowest };
-    }, { x: SITE[0], y: SITE[1], m: c.to, frames: FRAMES, share: c.share });
+      return { before, shares, markers, picture, jumps, whole: jump(first, prev), lit: [lit(first), lit(prev)], after: { ...v.shares }, animating: v.unitsAnimating(now), figures: v.individualCount, elements: v.elementCount, slowest };
+    }, { x: SITE[0], y: SITE[1], m: c.to, frames: FRAMES, share: c.share, shot: c.end === 1 ? 7 : -1 });
+    if (rec.picture) writeFileSync(path.join(out, `change-${c.name.replace(' → ', '-')}-at-128ms.png`), Buffer.from(rec.picture.split(',')[1]!, 'base64'));
 
     const start = 1 - c.end;
     console.log(`${c.name} (${c.from.toFixed(1)} → ${c.to.toFixed(1)} m/px): largest luminance jump between frames ${Math.max(...rec.jumps).toFixed(1)} of 255; the whole change ${rec.whole.toFixed(0)}; lit pixels ${rec.lit[0]} → ${rec.lit[1]}; slowest frame of the unit layers ${rec.slowest.toFixed(2)} ms of CPU`);
+    if (c.share === 'elements') console.log(`  jumps by frame: ${rec.jumps.map((j) => j.toFixed(0)).join(' ')}`);
     // The step itself changes nothing at once: the first frame still has the old layer in full.
     expect(rec.before[c.share], `${c.name}: at rest before`).toBe(start);
     expect(rec.shares[0], `${c.name}: the frame of the step`).toBe(start);
@@ -163,6 +188,30 @@ test('no popping: every tier change is a cross-fade whose frames differ by littl
     expect(rec.whole, `${c.name}: the whole change`).toBeGreaterThan(MAX_JUMP * 2);
     expect(Math.min(...rec.lit), `${c.name}: units on screen`).toBeGreaterThan(50);
     if (c.share === 'individuals') expect(rec.figures, c.name).toBeGreaterThan(1000);
+
+    // PLAN 2.7c AT, the marker → elements morph: into T2 the box shrinks in every frame it is
+    // drawn, and the strength bar is still in full when the box is half gone; then the bar goes
+    // too, in steps the eye follows. Out of T2 the same, backwards.
+    if (c.share === 'elements') {
+      const seq = c.end === 1 ? rec.markers : [...rec.markers].reverse();
+      const drawn = seq.filter((f) => f !== null);
+      expect(drawn[0], c.name).toEqual({ alpha: 1, scale: 1, bar: 1 }); // at T1: as it always was
+      // (Out of T2 the recording ends with several frames at rest: the change is the frames between.)
+      const shrinking = drawn.filter((f) => f.alpha > 0.01 && f.scale < 1);
+      expect(shrinking.length, `${c.name}: frames of the box's change`).toBeGreaterThanOrEqual(12);
+      for (let k = 1; k < shrinking.length; k++) expect(shrinking[k]!.scale, `${c.name}: box ${k}`).toBeLessThan(shrinking[k - 1]!.scale);
+      expect(shrinking.at(-1)!.scale, c.name).toBeLessThan(0.9); // by an eighth, into the group
+      expect(shrinking.at(-1)!.scale, c.name).toBeGreaterThanOrEqual(0.87);
+      const half = drawn.find((f) => f.alpha <= 0.5)!;
+      expect(half.bar, `${c.name}: the bar when the box is half gone`).toBe(1);
+      const lingering = drawn.filter((f) => f.alpha <= 0.01 && f.bar > 0.01);
+      expect(lingering.length, `${c.name}: frames with the bar alone`).toBeGreaterThanOrEqual(8);
+      for (let k = 1; k < drawn.length; k++) {
+        expect(Math.abs(drawn[k]!.bar - drawn[k - 1]!.bar), `${c.name}: bar ${k}`).toBeLessThan(0.12);
+        expect(Math.abs(drawn[k]!.alpha - drawn[k - 1]!.alpha), `${c.name}: box ${k}`).toBeLessThan(0.12);
+      }
+      expect(seq.at(-1), `${c.name}: at T2`).toBeNull(); // no marker left
+    }
   }
 
   // Hysteresis: back inside the band after going out, the farther layer stays (T1 markers at
