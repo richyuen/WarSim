@@ -470,9 +470,12 @@ quick sweep as a smoke test.
   Done 2026-10-04: the figures are built for as long as they are drawn (the close tier on, or its fade
   running). `tests/e2e/figuresFadeOut1938.spec.ts`: a division removed during the fade has no figures in
   a frame of it. Before: 1,584 of the 3,168 figures drawn were of elements no longer in the snapshot.
-- [ ] 2.7k A nation's name keeps its state when the camera crosses the seam of a looping map (ADR-74, finding 6).
+- [x] 2.7k A nation's name keeps its state when the camera crosses the seam of a looping map (ADR-74, finding 6).
   The state's key holds the absolute wrap offset, which changes there.
   AT: unit: a name held at 8.2 px is still placed, in full, after a pan across x = 0.
+  Done 2026-10-04: a name's state is kept by nation; the copies near the seam share it
+  (`fadeNationLabels`). `tests/unit/nationLabelLayout.test.ts`, "a name on a looping map". The key
+  in three older tests of that file changed from '7:0' to 7 with the format: the same assertions.
 - [ ] 2.7l What the counters show at rest does not depend on the frames drawn on the way there. Seen
   2026-10-04 in a gate run under load: `declutter1938`, "start, 1.5 px per cell", central Europe had 2
   counters where every other run has 3 (the step before has 2; the spec wants more). All were in full
@@ -482,6 +485,15 @@ quick sweep as a smoke test.
   AT: unit: from the same camera step, frames 16 ms apart and frames 200 ms apart end with the same
   counters shown. If the hysteresis must stay path-dependent, the spec's step is changed to one that
   does not sit on it, and the reason is in DECISIONS.
+  Measured 2026-10-04, before the task (a scratch script, not in the repo: `CounterLayer.layout` and
+  `fold` on the formations of the 1938 start, a glyph taken as 6.2 px wide, the camera stepped from the
+  world view): it does depend on the frames.
+  - To 1.5 px per cell: 102 counters shown at rest with frames 16–60 ms apart, 101 at 120–200 ms, 100 at
+    400–1000 ms; central Europe 4, 4 and 3.
+  - To 3 px per cell: 161, 161, 160, 161, 160, 158, 158, 158 for 16, 25, 33, 60, 120, 200, 400, 1000 ms,
+    and not the same counters at 16 and 25 ms.
+  So the fold state at rest remembers the split's frames. A direction to try: decide the folds on where
+  the counters of a split are going, not on where they are in flight.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

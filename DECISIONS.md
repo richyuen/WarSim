@@ -263,6 +263,26 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - Cost: a build of 1,584 figures took 0.6 ms. At 24 ticks a second a fade sees six or seven
     snapshots. Not worth avoiding.
 
+- **2.7k, done 2026-10-04: finding 6 reproduced and fixed.** A name's state was kept by nation
+  and wrap offset. The camera's x wraps at the seam of a looping map, and the copy of the name
+  on screen is then another offset's: a name held on by the hysteresis (8.2 px, under the 9 px
+  at which it comes in) was placed with the camera at x = 390 of 400 and not at x = 5.
+  - **Decision: a nation's name is one thing, with one switch**, whichever copies of it are on
+    screen. Its state survives the seam because nothing in its key changes there.
+  - *Considered: a switch for each copy, re-keyed when the camera wraps.* Each copy would keep
+    its own fade. It needs the view to notice the wrap (a jump of the camera's x by more than
+    half the world) and to rename the bank's keys; a jump of the camera for another reason
+    would look the same. More parts for a difference nobody can see: the copies of a name are
+    the same name at the same size.
+  - *Two copies, one switch:* near the seam at world zoom both copies of a name can be on
+    screen, and one of them alone can be in a larger name's way (the larger name's other copy
+    is off the picture). Asked twice a frame for two answers, one switch would turn twice a
+    frame and never rest: the shape of the city labels' case on the watch list. So the name is
+    on when either copy is wanted, and a copy that alone is in the way is not drawn
+    (`fadeNationLabels`; a unit test holds both).
+  - The capital flags' places (`flagPlace` in `MapView`) are still kept by nation and wrap
+    offset. There the worst is a rise of 150 ms cut short at the seam. Left; on the watch list.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.

@@ -3849,3 +3849,81 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
   running. Both specs passed in the green run before it (85 of 85).
 - **Tests:** 1 new e2e. 556 unit tests in 76 files, 86 e2e.
 - **Next:** PLAN 2.7k (a nation's name keeps its state across the seam), then 2.7l.
+
+## 2026-10-04 — PLAN 2.7k: a nation's name keeps its state across the seam (ADR-74, finding 6)
+
+- **The bug:** each name's fade state was kept by nation and wrap offset. On a looping map the
+  camera's x wraps at the seam, and the copy of a name on screen is then another offset's, with
+  no state: a name that was held on by the hysteresis went out in one frame when a pan crossed
+  the date line, and stayed out until the zoom reached 9 px again.
+- **Seen first** in a scratch test on the old code (not committed): the camera at x = 390 of
+  400 places the held name under the key '7:400'; at x = 5, told that '7:400' is on, the
+  layout places nothing.
+- **Fix:** a name's state is kept by the nation. `fadeNationLabels` (in `nationLabels.ts`,
+  out of `MapView`) joins the layout and the bank: one answer a nation, on when any copy is
+  wanted; a copy that alone is in a larger name's way is not drawn.
+- **Tests** (`nationLabelLayout.test.ts`, 3 new): the held name is placed in full on both
+  sides of the seam and back; a name that is off there stays off and fades in when the zoom
+  brings it; two copies with two answers share one switch, and it rests.
+  - Three older tests of the file name the key: '7:0' became 7. The format changed, the
+    assertions did not.
+- **In the browser:** `labels1938` and `labelFades1938` pass alone; the names' fades are as
+  they were (21–24 of 255).
+- **No picture:** nothing at rest looks different. Not looked for on the 1938 map: a name near
+  the date line small enough to sit in the hysteresis band.
+- **Tests:** 3 new unit tests. 559 unit tests in 76 files, 86 e2e.
+- **All six findings of the independent read are done** (2.7f–k). Left from it: the watch list.
+- **The gate failed under load again** (e2e 10.0 min): `handover1938` ran into a 120 s wait and a
+  `title` test read no autosave. Both pass alone with this change in the tree (58 s and 16 s).
+  Held, and run again later, as said to the user.
+- **While waiting, PLAN 2.7l was measured** with a scratch script (numbers in its PLAN lines):
+  the counters shown at rest do depend on how far apart the frames of the split were. 102, 101
+  or 100 counters at 1.5 px per cell.
+- **The gate failed a second time, 20 minutes later** (e2e 9.9 min), in three specs:
+  - `figuresFadeOut1938` (new with 2.7j): the share read 0 where the frame of the step had 1.
+    **Mine.** The spec drew a frame in one call into the page and read the result in the next;
+    on a slow machine the view's own loop draws in between, at the time it is, which is after
+    the fade. The step, the frame and the reading are one call now. It goes with its own commit.
+  - `fire1938`: 9 where it wants more than 10. `individuals1938`: a frame of 170 ms where it
+    wants under 25. Both are measures of time, on a machine that was slow.
+- **What was slow:** the unit tests took 72 s; 40 s at the start of the session. The clock is
+  at its maximum and the power plan is High performance. The one other busy process is the dev
+  server of another project on this machine (two and a half cores, steadily; a browser at
+  times). It is the user's. Not touched.
+- **Not committed yet.** The tree holds PLAN 2.7k and the spec's fix; the gate is run again
+  when the machine is quiet.
+- **Next:** PLAN 2.7l (what the counters show at rest and the frames on the way there), then
+  2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — Paused by the user for a reboot: resume here
+
+The working tree is not clean. It holds two causes, both finished, neither committed, because
+the gate did not pass on the loaded machine. Nothing else is in progress.
+
+1. **A race in the spec of PLAN 2.7j** (one file): `tests/e2e/figuresFadeOut1938.spec.ts`.
+   Commit it alone, first.
+2. **PLAN 2.7k** (the rest): `src/render/labels/nationLabels.ts`, `src/app/MapView.ts`,
+   `tests/unit/nationLabelLayout.test.ts`, `PLAN.md`, `DECISIONS.md`, `BLOCKERS.md`,
+   `docs/PARITY.md`, `PROGRESS.md`.
+
+To resume:
+- `npm run test` as a probe: about 40 s on the idle machine (72 s when it was loaded).
+- `npm run check` on the tree as it is. One green run covers both commits: the tree it passes
+  on holds both.
+- Two commits, in the order above. Then PLAN 2.7l is the first unchecked task; its PLAN lines
+  have the measurement that says what to fix.
+- The scratch files of this session were outside the repo and may be gone; nothing in them is
+  needed (the numbers are in PLAN 2.7l and above).
+
+## 2026-10-04 — After the reboot: the gate passes on the idle machine; the spec's race and PLAN 2.7k are committed
+
+- **The machine:** one minute after boot, no node process, the processor idle. `npm run test`
+  as the probe: 41.8 s (559 tests in 76 files).
+- **The gate on the tree as it was left:** green. Unit tests 41.4 s; e2e 86 of 86 in 4.3 min.
+- **Every spec that failed under the other job's load passed**, none of them changed since:
+  `handover1938` (36.6 s), `labelFades1938` (1.9 min), `title`, `fire1938` (0 dropped),
+  `individuals1938`, `declutter1938`. That fits the reading in BLOCKERS: they measure time.
+- **Two commits, as the note above said:** `86bf16c` (the race in the spec of PLAN 2.7j, one
+  file), then PLAN 2.7k (the rest of the tree). One green run covers both: the tree it passed
+  on held both.
+- **Next:** PLAN 2.7l.

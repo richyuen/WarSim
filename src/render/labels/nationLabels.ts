@@ -10,10 +10,14 @@
  * A name is a state, not a function of the zoom (PLAN 2.7e): it comes in when its size reaches
  * MIN_PX and no larger name is in its way, goes out below MIN_PX ÷ ZOOM_HYSTERESIS or when one
  * is, and a change is a fade in time. The view holds the states and tells the layout what is on.
+ *
+ * A nation's name is one thing (PLAN 2.7k): the copies of it that a looping map shows near its
+ * seam share one state, by the nation. (By nation and wrap offset, the state was lost where the
+ * camera's x wraps: a name held on by the hysteresis went out in one frame at the date line.)
  */
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { bezierAt, LABEL_STRIDE, LabelField } from '../../shared/nationLabels';
-import { ZOOM_HYSTERESIS, type SwitchState } from '../timing';
+import { ZOOM_HYSTERESIS, type SwitchBank, type SwitchState } from '../timing';
 
 export const MIN_PX = 9;
 export const MAX_PX = 64;
@@ -29,9 +33,8 @@ export interface PlacedGlyph {
 }
 
 export interface PlacedNationLabel {
+  /** The nation. A looping map can show two copies of a name near its seam: two labels of one id. */
   id: number;
-  /** The nation and the copy of the world it is drawn in (a looping map shows two near the seam). */
-  key: string;
   text: string;
   fontPx: number;
   area: number;
@@ -44,8 +47,8 @@ export interface PlacedNationLabel {
 
 export type Measure = (text: string, fontPx: number) => number;
 
-/** What the view knows of each name, by its key, from the frames before (none: a layout at rest). */
-export type NameState = SwitchState<string>;
+/** What the view knows of each name, by its nation, from the frames before (none: a layout at rest). */
+export type NameState = SwitchState<number>;
 const AT_REST: NameState = { held: () => false, visible: () => false };
 
 export function layoutNationLabels(
@@ -79,17 +82,16 @@ export function layoutNationLabels(
         width = measure(text, fontPx);
       }
     }
+    const fits = fontPx >= (state.held(id) ? MIN_PX / ZOOM_HYSTERESIS : MIN_PX);
+    const lingers = state.visible(id);
     for (const off of offsets) {
-      const key = `${id}:${off}`;
-      const fits = fontPx >= (state.held(key) ? MIN_PX / ZOOM_HYSTERESIS : MIN_PX);
-      const lingers = state.visible(key);
       const pts: [number, number][] = [];
       for (const k of [LabelField.x0, LabelField.cx, LabelField.x2]) pts.push(worldToScreen(cam, data[o + k]! + off, data[o + k + 1]!, viewW, viewH));
       const [p0, c, p2] = pts as [[number, number], [number, number], [number, number]];
       if (!fits && !lingers) {
         // Too small to show, and nothing of it on screen. In view, the view is told: such a name
         // fades in when the zoom brings it, where one that a pan brings is there at once.
-        if (state.hidden && pts.some(([x, y]) => x >= 0 && x <= viewW && y >= 0 && y <= viewH)) state.hidden(key);
+        if (state.hidden && pts.some(([x, y]) => x >= 0 && x <= viewW && y >= 0 && y <= viewH)) state.hidden(id);
         continue;
       }
       // A name that only fades out is drawn at the size it has, however small.
@@ -124,7 +126,7 @@ export function layoutNationLabels(
       const free = !glyphs.some((g) => occupied.some((q) => (q.x - g.x) * (q.x - g.x) + (q.y - g.y) * (q.y - g.y) < (q.r + r) * (q.r + r)));
       const want = fits && free;
       if (!want && !lingers) {
-        if (state.hidden) state.hidden(key); // in view, in the way of a larger name
+        if (state.hidden) state.hidden(id); // in view, in the way of a larger name
         continue;
       }
       if (want) for (const g of glyphs) occupied.push({ x: g.x, y: g.y, r });
@@ -132,10 +134,33 @@ export function layoutNationLabels(
       const chordY = p2[1] - p0[1];
       const chord = Math.hypot(chordX, chordY);
       const off2 = Math.abs((c[0] - p0[0]) * chordY - (c[1] - p0[1]) * chordX) / Math.max(1e-9, chord);
-      placed.push({ id, key, text, fontPx: px, area: data[o + LabelField.area]!, glyphs, curved: off2 > 0.03 * chord, alpha: want ? 1 : 0 });
+      placed.push({ id, text, fontPx: px, area: data[o + LabelField.area]!, glyphs, curved: off2 > 0.03 * chord, alpha: want ? 1 : 0 });
     }
   }
   return placed;
+}
+
+/**
+ * The names of a frame at `now` with the opacity of each: the layout is told what the bank
+ * holds, and the bank what the layout wants.
+ * - One answer a nation: its name is on when any copy of it is wanted.
+ * - A copy that alone is in a larger name's way, while the other copy is wanted, is not drawn.
+ *   (With one switch for both, each asking for its own answer, the switch would turn twice a
+ *   frame and never rest.)
+ */
+export function fadeNationLabels(bank: SwitchBank<number>, now: number, layout: (state: NameState) => PlacedNationLabel[]): PlacedNationLabel[] {
+  const held = bank.frame(now);
+  const hidden = new Set<number>();
+  const labels = layout({ held: held.held, visible: held.visible, hidden: (id) => void hidden.add(id) });
+  const wanted = new Map<number, boolean>();
+  for (const l of labels) wanted.set(l.id, (wanted.get(l.id) ?? false) || l.alpha > 0);
+  // In view with nothing to show, in no copy: off, so that it fades in when the zoom brings it.
+  for (const id of hidden) if (!wanted.has(id)) bank.value(id, false);
+  const opacity = new Map<number, number>();
+  for (const [id, want] of wanted) opacity.set(id, bank.value(id, want));
+  for (const l of labels) l.alpha = l.alpha > 0 || !wanted.get(l.id) ? opacity.get(l.id)! : 0;
+  bank.end();
+  return labels;
 }
 
 /** Draws placed labels at their opacity: dark glyphs with a light halo. */

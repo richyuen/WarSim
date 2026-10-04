@@ -144,3 +144,19 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   than the sim makes fire. The drop is by design (the view says how many: `firesDropped`); the
   spec's "none dropped" holds on an idle machine only. If it recurs on an idle machine, look at
   the snapshot rate at T2 while the game runs at ×5. The counters' case of the same run is PLAN 2.7l.
+- More for the phase review (PLAN 2.11), seen while fixing PLAN 2.7j and 2.7k (2026-10-04):
+  - Figures fading out of T3 are rebuilt from each snapshot (PLAN 2.7j) only while the view
+    keeps the element section, below 60 m/px (`T3_KEEP_M`). A flick of three wheel notches
+    from the edge of T3 (34.5 × 1.25³ ≈ 67 m/px) passes that before a tick lands; the figures
+    of those 250 ms are then of the tick before.
+  - `MapView.flagPlace` keeps a capital flag's rise by nation and wrap offset: at the seam of
+    a looping map the state is lost and a rise of 150 ms is cut short.
+- Specs that measure time and fail on a slow machine (2026-10-04, gate runs with another project's
+  dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
+  changed. If one fails on an idle machine it is a finding.
+  - `individuals1938`: a frame under 25 ms (170 ms).
+  - `fire1938`: more than 10 of something drawn in a window of frames (9), and no fire dropped (6,614).
+  - `handover1938`: a wait of 120 s. `labelFades1938`: the test's 240 s. `title`: 15 s for the
+    title screen, and an autosave read before it was written.
+  - `declutter1938`: PLAN 2.7l.
+  - A way to tell: `npm run test` takes 40 s on the idle machine and took 72 s then.

@@ -24,7 +24,7 @@ const FLAG_CLEAR_PX = 3;
 const FLAG_MOVE_MS = 150;
 /** Further than this above its usual place a flag no longer reads as its capital's: it is left out. */
 const FLAG_MAX_RISE = 40;
-import { drawNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
+import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
@@ -1059,16 +1059,14 @@ export class MapView {
       return ctx.measureText(text).width;
     };
     // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out.
-    const states = this.nameStates;
-    const labels = layoutNationLabels(this.labelData.data, this.labelData.names, cam, this.geo, w, h, measure, states.frame(now));
-    for (const l of labels) l.alpha = states.value(l.key, l.alpha > 0);
-    states.end();
+    const { data, names } = this.labelData;
+    const labels = fadeNationLabels(this.nameStates, now, (state) => layoutNationLabels(data, names, cam, this.geo, w, h, measure, state));
     this.nationLabels = labels;
     drawNationLabels(ctx, labels, LABEL_FONT);
   }
 
   /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */
-  private readonly nameStates = new SwitchBank<string>();
+  private readonly nameStates = new SwitchBank<number>();
 
   dispose(): void {
     cancelAnimationFrame(this.raf);
