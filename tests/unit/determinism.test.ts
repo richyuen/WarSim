@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { decodeSections } from '../../src/sim/core/sections';
 import { Sim } from '../../src/sim/sim';
 import { TOY_W, TOY_H } from '../../src/sim/toy';
 
@@ -83,6 +84,39 @@ describe('determinism invariants', () => {
     const bytes = a.save();
     const b = new Sim({ scenario: 'toy', seed: 0 });
     b.load(bytes);
-    expect(b.save()).toEqual(bytes);
+    const again = b.save();
+    // First which sections differ and where: a failed comparison of 600 kB says only that they
+    // do. (It failed once in a full run, 2026-10-04, and passes alone: see BLOCKERS.)
+    expect(differing(again, bytes)).toEqual([]);
+    expect(again).toEqual(bytes);
   });
 });
+
+/** The sections of two saves that differ, each with its first differing element and its bytes. */
+function differing(a: Uint8Array, b: Uint8Array): string[] {
+  const [sa, sb] = [decodeSections(a), decodeSections(b)];
+  const out: string[] = [];
+  if (sa.length !== sb.length) out.push(`${sa.length} sections against ${sb.length}`);
+  sa.forEach((s, i) => {
+    const t = sb[i];
+    if (!t || t.name !== s.name || t.dtype !== s.dtype || t.data.length !== s.data.length) {
+      out.push(`${s.name} (${s.dtype}, ${s.data.length}) against ${t ? `${t.name} (${t.dtype}, ${t.data.length})` : 'nothing'}`);
+      return;
+    }
+    const x = new Uint8Array(s.data.buffer, s.data.byteOffset, s.data.byteLength);
+    const y = new Uint8Array(t.data.buffer, t.data.byteOffset, t.data.byteLength);
+    let first = -1;
+    let n = 0;
+    for (let k = 0; k < x.length; k++) {
+      if (x[k] === y[k]) continue;
+      if (first < 0) first = k;
+      n++;
+    }
+    if (n === 0) return;
+    const w = s.data.BYTES_PER_ELEMENT;
+    const el = Math.floor(first / w);
+    const hex = (v: Uint8Array): string => Array.from(v.subarray(el * w, (el + 1) * w), (c) => c.toString(16).padStart(2, '0')).join(' ');
+    out.push(`${s.name} (${s.dtype}, ${s.data.length}): ${n} bytes differ, first in element ${el}: ${s.data[el]} [${hex(x)}] against ${t.data[el]} [${hex(y)}]`);
+  });
+  return out;
+}

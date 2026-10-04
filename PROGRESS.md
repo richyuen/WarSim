@@ -3299,3 +3299,18 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
   do not overlap. `DrawnCounter.folded` tells the two kinds apart. ADR-65 has the addendum.
 - **Lesson:** an assertion on "the frames a user sees" has to say which frame of an animation
   it means; `alpha === 1` is true of a fade's first frame.
+
+## 2026-10-04 — I5 failed once in a full unit run (found in the gate of PLAN 2.4b)
+
+- **What failed:** `determinism.test.ts`, "I5: save bytes → load → save bytes are identical", in
+  one full `npm test` of the gate: two saves of 601,576 bytes, equal in length, not in content.
+  Alone it passes; the next two full runs passed.
+- **Not PLAN 2.4b:** the test runs the toy world, which has no elements; the changed code is
+  not reached.
+- **Looked at:** the toy save has 103 sections and no NaN in any float section (a NaN's bits
+  can differ between the interpreter and compiled code: ruled out). Forty save → load → save
+  round trips in one process were identical. Saves are raw sections, not gzip: this is not the
+  gunzip flake of BLOCKERS, though it shares its pattern (bytes wrong, only in a full run).
+- **Done:** the test now names the sections that differ, the first differing element and its
+  bytes on both sides, before the byte comparison. The next failure will say where.
+- **Not explained.** BLOCKERS has it on the watch list, next to the gunzip flake.

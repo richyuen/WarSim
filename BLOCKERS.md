@@ -90,6 +90,22 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   and `earthAsset`, read again up to three times when the gunzip fails), used by the test
   helper, the headless tools, the preview tool and those three tests. The cause is still not
   known; if the error shows again it is no longer a first read that failed.
+- Unit failure, once (2026-10-04, in the gate of PLAN 2.4b): `tests/unit/determinism.test.ts`
+  "I5: save bytes → load → save bytes are identical" failed in one full `npm test`: two saves of
+  the toy world, 601,576 bytes each, not equal. It passed alone and in the next two full runs.
+  - It is not the change under test (the toy world has no elements) and not the gunzip flake
+    above (saves are raw sections; nothing is compressed or read from disk).
+  - Ruled out: a NaN whose bits differ between interpreted and compiled code (the save has no
+    NaN in any float section); a defect that shows in repetition (40 save → load → save round
+    trips in one process were identical).
+  - The same pattern as the gunzip flake: bytes that are wrong, seen only inside a full vitest
+    run. Two readings, neither tested: a real nondeterminism that needs the load of a full run
+    to show, or memory that is not reliable on this machine under that load (the gunzip check
+    and a byte comparison are both checksums of a large buffer).
+  - The test now reports which sections differ, the first differing element and its bytes on
+    both sides. **If it fails again, read that message before anything else:** one flipped bit
+    in one section points at the machine; a whole section or a value that makes sense points
+    at the sim.
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.
