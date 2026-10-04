@@ -4619,3 +4619,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No assertion restated.**
 - **Tests:** 2 new unit tests, 1 new e2e. 609 unit tests in 79 files, 99 e2e.
 - **Next:** PLAN 2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — PLAN 2.8 split into three (ADR-78)
+
+- **Read first:** the map is one full-screen pass; elevation ships at the map's size (one
+  sample a cell, some 20 km) and is not loaded by the app; the e2e stage draws in software.
+- **The split, by the way each part is drawn:** 2.8a hillshade (the data's slope, in the map
+  pass); 2.8b ground texture (noise by terrain class, and the small relief the data has not);
+  2.8c instances (trees, rocks, buildings, as instanced quads).
+- **What all three keep to:** the detail comes in with the T1 → T2 handover's share; it is a
+  function of the place and has no clock; T0 and T1 cost what they cost today; every map mode.
+- **Before numbers:** bench A 0.51, 0.48 and 0.45 ms of GPU a frame (budget 1.0); the e2e stage
+  5.5 minutes.
+- **Next:** PLAN 2.8a, its test first.

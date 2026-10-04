@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
+
+- **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail
+  (ground texture, trees, rocks, buildings near cities) at T2 and T3. What there is:
+  - The map is one full-screen pass (`mapShader.ts`): fills from a palette, smooth borders,
+    the fine coast. It knows the terrain class of each cell and nothing of height.
+  - Elevation ships at 2048, 1024 and 512 wide (`elev-*.i16d.wsz`, int16 metres) and is not
+    loaded by the app. At the map's size that is one sample a cell, some 20 km: at T2 a cell
+    is 65 to 650 px wide, at T3 more than the screen.
+  - The e2e suite draws on a software rasteriser: what the pass costs there, every spec pays.
+- **Decision: three parts, by the way they are drawn** (PLAN 2.8a to 2.8c).
+  1. *Hillshade, in the map pass.* The slope of the elevation, smoothed over the cells so
+     that no cell shows as a facet, lit from the north-west, laid on the fill.
+  2. *Ground texture, in the map pass.* Noise by terrain class on the fill, and small relief
+     added to the slope: the data's relief is smooth at these zooms, and without it the
+     close view is flat. Finer octaves come in as the zoom nears.
+  3. *Instances, over the map.* Trees, rocks and buildings as instanced quads from a scatter
+     seeded by the place, as the element sprites are drawn.
+- **Not tiles kept in textures,** though PLAN's word is "tiles": a pass that works out the
+  ground for each pixel has no seams, no cache to manage and no step between zoom levels.
+  What a cache would save is cost per frame. If the pass proves too dear on the bench or in
+  the e2e stage, the texture part moves into tiles; measured after each part.
+- **The detail comes in with the T1 → T2 handover's share** (ADR-71): the ground arrives with
+  the sprites, by a fade of real time, not at a threshold of the zoom. Inside a branch on that
+  share the pass does the new work; outside it, T0 and T1 cost what they cost.
+- **Seeded by the place and nothing else.** No clock. The game's seed is not in it: two games
+  on one Earth have the same ground. (Only real maps have these layers; the toy world has no
+  terrain raster and draws as before.)
+- **In every map mode:** SPEC's table gives the ground to the tier, not to a mode. It is laid
+  on whatever the fill shows.
+- **Noise that holds at 1 m/px:** a pixel there is 5 × 10⁻⁵ of a cell, and the pass's own
+  noise coordinates (a cell number modulo 256 plus a fraction) resolve 3 × 10⁻⁵: the finest
+  octaves are built on integers (the cell and the lattice point within it), hashed as
+  integers, with the fraction kept small. Periods divide the map's width, so the seam of a
+  looping map has no line.
+- **Before:** bench A on the clean tree (RTX 4070 Ti, 1080p): 0.51, 0.48 and 0.45 ms of GPU a
+  frame at the world, at 4 px a cell and at 48 px a cell; budget 1.0 at T0. The e2e stage:
+  5.5 minutes.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often

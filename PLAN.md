@@ -814,6 +814,38 @@ quick sweep as a smoke test.
   frames. Now none moves, no pair, at rest after 36.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
+  Split 2026-10-04 (ADR-78) by the way each part is drawn: each has its own cost, test and way to
+  fail. What all three keep to:
+  - *Nothing pops:* the detail comes in by the share of the T1 → T2 handover, as the sprites do
+    (`fades1938` measures it), not at a threshold of the zoom.
+  - *The same on every reload:* a function of where on the map and of nothing else; no clock.
+  - *No cost where it does not show:* at T0 and T1 the map pass does what it does today (bench A on
+    the clean tree, RTX 4070 Ti at 1080p: 0.51, 0.48 and 0.45 ms of GPU a frame; budget 1.0), and
+    the e2e stage, on a software rasteriser, stays near its 5.5 minutes.
+  - *Every map mode:* the detail is laid on the fill, whatever the fill shows.
+  - [ ] 2.8a Hillshade. The elevation level of the map's size reaches the renderer (the worker loads
+    it with the land mask; one sample a cell), and the map pass shades the land by its slope, the
+    light from the north-west.
+    AT: e2e, 1938: at T2 over the Alps the land's brightness varies with the relief (a measure of
+    spread inside one nation's fill, against the same view without the layer); at T0 and T1 the map
+    canvas is pixel for pixel what it was before the task; the picture of one T2 view is the same
+    after a reload (hash); `fades1938` passes unchanged; the toy world, which has no elevation,
+    draws as before; bench A within the budget; screenshots viewed.
+  - [ ] 2.8b Ground texture. Noise seeded by the place modulates the fill by terrain class, with finer
+    octaves coming in from T2 to T3, and gives the hillshade the small relief the data has not (one
+    sample of elevation in 20 km): bumps by terrain class, large in mountains, faint on plains.
+    AT: e2e: screenshots at 4 zooms from T1 to T3 show more detail at each (a measure of local
+    contrast that rises from one to the next), viewed; at 1 m/px no streaks and no repeat in the view
+    (the finest octave is built so that f32 holds: looked at for that); the hash of one T2 and one
+    T3 view is the same after a reload; the seam of the looping map shows no line; `fades1938`
+    passes; bench A within the budget.
+  - [ ] 2.8c Instances: trees in forest cells, rocks on mountain cells, buildings around cities. A
+    scatter seeded by the place, drawn as instanced quads, capped.
+    AT: unit: the scatter is a pure function of the cell and its class (the same twice; none on
+    water; denser in forest than on plains; buildings fall off with distance from a city by its
+    size). e2e: at T2 and T3 over a forest, a mountain range and a metropolis the instances show,
+    viewed; the hash is the same after a reload; they come and go with the handover; frame cost
+    measured at T2 with the cap reached.
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
