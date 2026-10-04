@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutCityLabels, nameMaxMPerPx, priorityOrder, wanted, type CityPoint, type LabelState } from '../../src/render/labels/cityLabels';
+import { layoutCityLabels, NAME_CLEAR_PX, NAME_REACH_PX, nameMaxMPerPx, nameTextBox, priorityOrder, wanted, type CityPoint, type LabelState } from '../../src/render/labels/cityLabels';
 import { ZOOM_HYSTERESIS, type SwitchState } from '../../src/render/timing';
 import { CITIES_1938, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
 
@@ -144,5 +144,101 @@ describe('city label layout', () => {
     const fresh = [...named(48)].filter((i) => !t1.has(i));
     expect(fresh.length).toBeGreaterThan(0);
     expect(fresh.some((i) => points[i]!.size <= 2)).toBe(true);
+  });
+});
+
+// PLAN 2.7r: a name keeps clear of what the frame gives it as obstacles (the T0 counters, the
+// capital flags): it takes the first place by its dot that is free, keeps that place to the pixel
+// while any of it is on screen, and is left out when it has none.
+describe('city names among obstacles (PLAN 2.7r)', () => {
+  const geo = { w: 100, h: 100, kmPerCell: 1, wrapX: false };
+  const town: CityPoint[] = [{ name: 'Sample', x: 50, y: 50, size: 3, capital: true }];
+  const measure = (t: string, px: number): number => t.length * px * 0.55;
+  const cam = { cx: 50, cy: 50, scale: 8 }; // 125 m/px: the dot at 400, 300 of an 800 × 600 view
+  const OFF: SwitchState<number> = { held: () => false, visible: () => false };
+  const ON: SwitchState<number> = { held: () => true, visible: () => true };
+  type Rect = { x: number; y: number; w: number; h: number; clear?: number };
+  /** A counter: a name takes a place only with room to spare beside it. */
+  const counterAt = (x: number, y: number): Rect => ({ x, y, w: 44, h: 14, clear: NAME_CLEAR_PX });
+  const hit = (a: Rect, b: Rect): boolean => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+  const lay = (obstacles: Rect[], state: LabelState = { dot: OFF, name: OFF }) => layoutCityLabels(town, [0], cam, geo, 800, 600, measure, state, obstacles)[0]!;
+  /** The letters of a placed name. */
+  const letters = (p: ReturnType<typeof lay>): Rect => nameTextBox(p.box!);
+
+  const alone = lay([]);
+  it('with nothing in the way a name stands to the right of its dot, as it always did', () => {
+    expect(alone).toMatchObject({ nameAlpha: 1, side: 0 });
+    expect(alone.box!.x).toBeGreaterThan(400);
+    expect(alone.box!.y + alone.box!.h / 2).toBeCloseTo(300, 9);
+  });
+
+  it('a counter on that place: the next free place is taken, and the letters are clear of it', () => {
+    // A counter to the right of the dot, where the name stood.
+    const counter = counterAt(412, 293);
+    const p = lay([counter]);
+    expect(p).toMatchObject({ nameAlpha: 1, side: 1 }); // to the left
+    expect(p.box!.x + p.box!.w).toBeLessThan(400);
+    expect(hit(letters(p), counter)).toBe(false);
+  });
+
+  it('a counter on the dot: the name stands past it, as near as the counter leaves room', () => {
+    const counter = counterAt(378, 293); // centred on the dot: no place beside the dot is clear of it
+    const p = lay([counter]);
+    expect(p).toMatchObject({ nameAlpha: 1, side: 8 }); // past it, to the right
+    expect(letters(p).x - (counter.x + counter.w)).toBeCloseTo(NAME_CLEAR_PX + 1, 9);
+    expect(hit(letters(p), counter)).toBe(false);
+    // With a wall to the right of that counter too, past it to the left; with one there as well, below it.
+    const right = { x: 422, y: 280, w: 120, h: 40 };
+    const left = { x: 258, y: 280, w: 120, h: 40 };
+    expect(lay([counter, right])).toMatchObject({ nameAlpha: 1, side: 9 });
+    const under = lay([counter, right, left]);
+    expect(under).toMatchObject({ nameAlpha: 1, side: 10 });
+    expect(hit(letters(under), counter)).toBe(false);
+  });
+
+  it('counters all around, further than a name reaches: it is left out', () => {
+    // A block of counters 200 px wide and 80 high on the dot.
+    const wall = [{ x: 300, y: 260, w: 200, h: 80 }];
+    const p = lay(wall);
+    expect(p.nameAlpha).toBe(0);
+    expect(p.box).toBeUndefined();
+    expect(NAME_REACH_PX.side).toBeLessThan(100);
+  });
+
+  it('a name on screen keeps its place to the pixel while that place is free, though a place it prefers is free too', () => {
+    // It stood past a counter that has gone since: 30 px to the right of where it would stand now.
+    const place = { side: 8, dx: alone.box!.x - 400 + 30, dy: alone.box!.y - 300 };
+    const p = lay([], { dot: ON, name: ON, place: () => place });
+    expect(p).toMatchObject({ nameAlpha: 1, side: 8 });
+    expect(p.box!.x).toBeCloseTo(alone.box!.x + 30, 9);
+  });
+
+  it('when something comes to stand on it, it takes the first free place at once; with none, it goes out where it stood', () => {
+    const place = { side: 0, dx: alone.box!.x - 400, dy: alone.box!.y - 300 };
+    const counter = counterAt(412, 293);
+    // (The layer cross-fades: what showed at the old place goes out there.)
+    expect(lay([counter], { dot: ON, name: ON, place: () => place })).toMatchObject({ nameAlpha: 1, side: 1 });
+    const going = lay([{ x: 300, y: 260, w: 200, h: 80 }], { dot: ON, name: ON, place: () => place });
+    expect(going.nameAlpha).toBe(0);
+    expect(going.box).toEqual(alone.box);
+  });
+
+  it('a new place needs room to spare; a place held only has to be untouched', () => {
+    // A counter whose left edge is 1 px from the letters of the name to the right of the dot.
+    const text = nameTextBox(alone.box!);
+    const counter = counterAt(text.x + text.w + 1, 293);
+    expect(NAME_CLEAR_PX).toBeGreaterThan(1);
+    // Not taken as a new place...
+    expect(lay([counter]).side).not.toBe(0);
+    // ...and kept by a name that stands there: a counter that moves by a pixel moves no name.
+    const place = { side: 0, dx: alone.box!.x - 400, dy: alone.box!.y - 300 };
+    expect(lay([counter], { dot: ON, name: ON, place: () => place })).toMatchObject({ nameAlpha: 1, side: 0, box: alone.box });
+  });
+
+  it('a flag by a pixel on the box of a name is not on its letters', () => {
+    // A capital's own flag: 24 × 16, its foot 8 px above the dot, with a frame of 1 px.
+    const flag = { x: 400 - 12 - 1, y: 300 - 24 - 1, w: 26, h: 18 };
+    expect(hit(alone.box!, flag)).toBe(true);
+    expect(lay([flag])).toMatchObject({ nameAlpha: 1, side: 0 });
   });
 });

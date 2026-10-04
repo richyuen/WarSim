@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-76 · 2026-10-04 · accepted — A city's name takes the first free place by its dot, keeps it, and moves by a cross-fade (PLAN 2.7r)
+
+- **Context:** the T0 counters are drawn over the city names, and a capital's name stood to the
+  right of the dot its nation's army often stands on. Over Europe at the 1938 start, at
+  4000 m/px, a counter was on the letters of 17 of the 31 names shown and a flag on 3.
+- **Decision:**
+  - *Places.* A name takes the first of these where nothing is on its letters: beside the dot
+    (right, left, below right, below left, below); past the counter or flag that stands there (to
+    its right, its left or below it, no further from the dot than 40 px to the side and 26 px
+    down); above (right, left, centred). With none, it is left out.
+  - *What is in the way:* names placed before it (by their boxes, as before), the T0 counters
+    that are at least half visible (the flags' rule) and the capital flags with their frames.
+    The names are laid out after both; they have a canvas of their own, so the order of the
+    layers does not change.
+  - *It keeps its place,* to the pixel, as an offset from its dot, while nothing stands on it.
+    A place it would prefer coming free does not move it, and it does not follow a counter.
+  - *It moves by a cross-fade.* When something comes to stand on it, it takes the first free
+    place in that frame: what showed at the old place goes out there over 250 ms while the name
+    comes in at the new one.
+  - *Clearance.* A new place must be clear of a counter by 2 px; a place held only has to be
+    untouched. A counter's box moves by a pixel with its number and with the camera.
+- **By the letters, not by the box.** A name's box has the padding and the line spacing that
+  keep two names apart. A capital's own flag, 8 px above its dot, touches that box by a pixel:
+  of the 22 names whose box a flag touched at 4000 m/px, 19 were that. Judged by the box, no
+  capital's name could stand beside its dot. For the same reason the flags get no clearance.
+- **What the measurements decided:**
+  - *Eight places beside the dot were not enough:* 21 of 31 names found one at 4000 m/px (the
+    acceptance test wants 25). Each of the other ten had a counter on its dot, clear of every
+    place beside the dot by less than the name needs. With the places past the counter: 30 of
+    31, 27 of 27 at 3000 m/px, 18 of 18 at 2300.
+  - *Rejected: a name past a counter follows the counter.* The first version computed that
+    place anew in every frame. With the game at top speed: 125 jumps of a name in full in 12 s
+    (up to 28 px, as counters folded and came out).
+  - *Rejected: go out, then come in elsewhere* (one box a name, the second fade starting when
+    the first has ended). No jump, but a change took 550 ms, and `labelFades1938`, which gives
+    a change one fade and its tail (352 ms), found two names still on their way. A cross-fade
+    is one fade.
+  - *Rejected: leave a covered name out.* 13 of 31 would be left at 4000 m/px.
+  - *Rejected: the counter or the flag makes way.* ADR-65: a counter stands on its armies; a
+    flag makes way for counters only.
+- **What it costs:**
+  - With the game at top speed (65 days in four seconds) 51 fades of names began in those four
+    seconds at 4000 m/px: where counters change in every frame, the names near them come and go.
+  - A name past a counter stays where it is when the counter has gone: 20 to 40 px from its
+    dot with nothing between, until something stands on it.
+  - One name of 31 is left out at 4000 m/px (Luxembourg: counters on every side).
+- **Not solved here:** the nation names are drawn over the city names (Berlin under the "y" of
+  Germany). PLAN 2.7t. At T1 the markers stand on city names as the counters did at T0: with
+  PLAN 2.7s.
+- **Tests:** `tests/e2e/cityNames1938.spec.ts` (the three zooms at rest; four seconds running: no
+  name's box moves while it shows); `tests/unit/cities.test.ts`, 8 new (the order of the places,
+  past a counter, the reach, the place kept, the move, the clearance, the flag by a pixel).
+  `labelFades1938`, `labels1938`, `flagsClear1938` unchanged and passing.
+
 ### ADR-75 · 2026-10-04 · accepted — The counters' hold is a memory of the layer at rest; a split or merge on its way is folded without it (PLAN 2.7l)
 
 - **Context:** a gate run under load saw 2 counters over central Europe at 1.5 px per cell where

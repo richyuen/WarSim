@@ -4239,3 +4239,39 @@ block; the step of the subscription key and why a 16th of the box; 48 px for a s
   watch list.
 - **Tests:** 1 new e2e. 572 unit tests in 78 files, 92 e2e.
 - **Next:** PLAN 2.7r (city names stay readable among the T0 counters and the capital flags).
+
+## 2026-10-04 — PLAN 2.7r: city names keep clear of the T0 counters and the capital flags (ADR-76)
+
+- **Seen first** (`tests/e2e/cityNames1938.spec.ts` on the layout as it was), over Europe at
+  4000 m/px: 31 names shown, a counter on the letters of 17 (Berlin, Moscow, Rome, Paris,
+  Amsterdam, Prague, Warsaw, Riga, Sofia, Budapest, Tirana, Ankara, Brussels, Danzig, Kaunas,
+  Bern, Luxembourg), a flag on 3 (Vienna, Rome, Helsinki).
+- **"On a name" is on its letters.** A flag touched the box of 22 names; for 19 it was the
+  capital's own flag, a pixel into the box's line spacing, covering nothing.
+- **Four versions, each measured:**
+  1. Four places beside the dot (right, left, below, above), then eight: no name under a
+     counter, and 21 of 31 shown. The other ten each had a counter on the dot, clear of every
+     place beside the dot by too little.
+  2. Places past the counter in the way (to its right, its left, below it): 30 of 31, 27 of 27,
+     18 of 18. But the place followed its counter: with the game at top speed, 125 jumps of a
+     name in full in 12 s.
+  3. The place kept to the pixel; a name on which something comes to stand goes out, and comes
+     in elsewhere when it is gone: no jump. But a change took 550 ms, and `labelFades1938`
+     (which was not changed) found two names still on their way after the 352 ms it gives a
+     change.
+  4. The move is a cross-fade in the frame of the cause, and a new place needs 2 px of room
+     beside a counter (a place held does not): this one is committed.
+- **After:** no name under a counter or a flag at 4000, 3000 and 2300 m/px; 30, 27 and 18 names
+  shown. Running at top speed for four seconds: no name's box moves while it shows; 51 fades
+  begun.
+- **Pictures looked at:** `docs/evidence/2.7/city-names-4000m.png`, `-3000m.png`, `-2300m.png`,
+  and `docs/evidence/2.2/counters-europe-4000m.png` made again. Paris stands to the left of its
+  dot, Vienna, Amsterdam and Berlin to the right of the counters on theirs, Danzig and Kaunas
+  to the left, Prague below left. Every one reads against the counters.
+- **Seen in them, a new task (PLAN 2.7t):** the nation names are drawn over the city names.
+  Berlin is under the "y" of Germany, Warsaw under Poland, Budapest under Hungary, Rome under
+  Italy. It was so before; with the counters out of the way it is what is left.
+- **A shell problem, twice:** a script given to the shell inline failed to parse and nothing
+  ran. Scripts go into a file first now.
+- **Tests:** 8 new unit tests, 1 new e2e. 580 unit tests in 78 files, 93 e2e.
+- **Next:** PLAN 2.7s (T1 markers of a dense group do not stand on each other), then 2.7t.

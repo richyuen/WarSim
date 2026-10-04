@@ -122,6 +122,18 @@ export class SwitchBank<K> {
     return v;
   }
 
+  /**
+   * `key` starts again from nothing: off at once, so that it fades in when it is next wanted.
+   * For a thing that is another thing now under the same key (a name that has taken another
+   * place: what shows of it at the old place is the caller's to fade out).
+   */
+  restart(key: K): void {
+    const s = new TimedSwitch(this.ms);
+    s.value(false, this.now);
+    this.switches.set(key, { s, frame: this.frames });
+    this.changed = this.now;
+  }
+
   end(): void {
     for (const [key, e] of this.switches) if (e.frame !== this.frames) this.switches.delete(key);
   }

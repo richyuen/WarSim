@@ -3,7 +3,7 @@
  * formations → instanced markers) and renders every animation frame with GPU interpolation
  * between the previous and current tick.
  */
-import { CityLabelLayer } from '../render/labels/cityLabels';
+import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
 import { AT_REST, drawMarkers, markerMorph, MORPH_MS, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
@@ -747,9 +747,25 @@ export class MapView {
     this.drawUnitMarkers(cam, now);
     const dpr = window.devicePixelRatio || 1;
     this.drawLabels(cam, dpr, now); // wipes the overlay first
-    this.cityLabels.draw(cam, dpr, now);
     this.drawFlags(cam, now);
+    this.cityLabels.draw(cam, dpr, now, this.nameObstacles());
     this.dirty = true;
+  }
+
+  /**
+   * What a city's name keeps clear of in this frame (PLAN 2.7r): the T0 counters, by the rule
+   * the flags have (at least half visible: one fading in is in the way, one fading out is not),
+   * and the capital flags where they stand, with their frames. So the names are laid out after
+   * both. They have a canvas of their own: when they are drawn does not change what is above what.
+   */
+  private nameObstacles(): NameObstacle[] {
+    const out: NameObstacle[] = [];
+    // A counter's box moves by a pixel with its number and with the camera: a name takes a place
+    // only with room to spare beside one. A flag stands by its capital's dot, a pixel from the
+    // place of the capital's name: no clearance, or no capital's name could stand there.
+    for (const b of this.counters.boxes) if (b.alpha >= 0.5) out.push({ x: b.x, y: b.y, w: b.w, h: b.h, clear: NAME_CLEAR_PX });
+    for (const f of this.flagRects) out.push({ x: f.x - 1, y: f.y - 1, w: f.w + 2, h: f.h + 2 });
+    return out;
   }
 
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least 5 px, × the size setting). */
@@ -1050,13 +1066,13 @@ export class MapView {
     // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
     this.tierShares(now);
     this.drawSprites(cam, now);
-    this.cityLabels.draw(cam, dpr, now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
-    // clear of the T0 counters (PLAN 1.45c).
+    // clear of the T0 counters (PLAN 1.45c), and the city names of both (PLAN 2.7r).
     this.drawUnitMarkers(cam, now);
     this.drawFx(cam, now);
     this.drawFlags(cam, now);
+    this.cityLabels.draw(cam, dpr, now, this.nameObstacles());
     this.drawSelection(cam);
     this.frames++;
   }

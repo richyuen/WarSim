@@ -609,7 +609,7 @@ quick sweep as a smoke test.
   `tests/e2e/loadedWorld1938.spec.ts`: the start of 1938 exported, a revolt in Masovia (nation 104, a
   new row), the export loaded. Before: the flag of 104 was still placed (the reader had traced it;
   the test ran it). Now no flag of an id the loaded world lacks.
-- [ ] 2.7r City names stay readable among the T0 counters and the capital flags. The counters are drawn
+- [x] 2.7r City names stay readable among the T0 counters and the capital flags. The counters are drawn
   over the city names, and a capital's name stands beside the dot its nation's army often stands on.
   Seen in the review pass of 2026-10-04, in the evidence shots made again
   (`docs/evidence/2.2/counters-europe-4000m.png`, `counters-europe-2300m.png`): Paris, Berlin, Prague,
@@ -620,6 +620,17 @@ quick sweep as a smoke test.
   AT: e2e over Europe at 4000, 3000 and 2300 m/px, at the 1938 start: no city name that is shown has a
   counter's box or a capital flag on it; at least 25, 22 and 14 names are shown (four in five of
   today's), so that the names are not simply left out; screenshots viewed.
+  (Made exact, 2026-10-04: "on it" is on the name's letters, not on its box with the padding and
+  the line spacing. A capital's own flag touches that box by a pixel for 19 of the 22 names the first
+  measure counted, and covers nothing. By the letters, before: a counter on 17 of 31 at 4000 m/px, a
+  flag on 3.)
+  Done 2026-10-04 (ADR-76): a name takes the first place by its dot that is clear of the frame's
+  counters and flags: beside the dot, or past the counter that stands there, or above. It keeps its
+  place to the pixel while nothing stands on it, and takes another by a cross-fade.
+  `tests/e2e/cityNames1938.spec.ts`: no name under a counter or a flag at the three zooms, and 30, 27
+  and 18 names shown (of 31, 27 and 18: Luxembourg has no place at 4000 m/px); four seconds at top
+  speed, no name's box moves while it shows. `tests/unit/cities.test.ts`, 8 new.
+  `docs/evidence/2.7/city-names-*.png`.
 - [ ] 2.7s T1 markers of a dense group do not stand on each other. Seen in PLAN 1.45a and left without a
   task (ADR-65, "not solved here"). Measured in the review pass of 2026-10-04 on Spain's front after
   two weeks (a scratch spec): at 1800 m/px 60 markers, 97 pairs overlap and 10 markers are more than
@@ -628,6 +639,15 @@ quick sweep as a smoke test.
   AT: e2e, Spain's front after two weeks, at 1800, 1200 and 600 m/px: no marker's box is more than a
   quarter under another's; the numbers on the map still add up to the strength of the formations in
   view (PLAN 2.1); screenshots viewed.
+- [ ] 2.7t A city's name is readable where a nation's name crosses it. The curved nation names are drawn
+  above the city names: at T0 a capital's name is often under the letters of its own nation. Seen in
+  the pictures of PLAN 2.7r (`docs/evidence/2.7/city-names-4000m.png`, `city-names-3000m.png`): Berlin
+  under the "y" of Germany, Warsaw under Poland, Budapest under Hungary, Rome under Italy, Brussels
+  under Belgium. Not measured yet.
+  AT: e2e over Europe at 4000, 3000 and 2300 m/px, at the 1938 start: no letter of a nation's name is
+  drawn over the letters of a city name that is shown (the order of the layers, or the city names keep
+  clear of the nation names' glyphs, or the nation names of them); the nation names of `labels1938`
+  are still placed; screenshots viewed.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

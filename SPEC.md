@@ -352,6 +352,14 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   Canvas2D overlay. Dots appear from T0 (capitals and size ≥ 4); names fade in by size through
   T1 (capitals at 5 km/px, size 4 at 2 km/px, size 3 at 1.4 km/px, size 2 at 800 m/px, size 1 at
   450 m/px); greedy collision runs in priority order.
+  *Where a name stands (PLAN 2.7r, ADR-76):* at the first place by its dot where no name placed
+  before it, no T0 counter and no capital flag is on its letters: to the right, to the left, below
+  right, below left, below; then past the counter or flag that stands beside the dot (to the right,
+  to the left or below it, at most 40 px to the side and 26 px down); then above. With no place it
+  is left out. It keeps its place to the pixel, as an offset from its dot, for as long as nothing
+  stands on it; when something does, it takes the first free place at once and cross-fades from
+  the old one over 250 ms. A new place must be clear of a counter by 2 px; a place held only has
+  to be untouched. The names are laid out after the frame's counters and flags.
 - **Sea zone**: id, name key, polygon (cells), lane graph nodes, adjacency, control per side.
   Built as a Voronoi over water seeded by named seas (Natural Earth marine
   polygons) and then subdivided.

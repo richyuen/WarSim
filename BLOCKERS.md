@@ -167,6 +167,13 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
   hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
   income or their order of battle is off, is a question for the balance work.
+- Left by PLAN 2.7r (2026-10-04, ADR-76), for the phase review (PLAN 2.11):
+  - With the game at top speed the city names near counters come and go often (51 fades begun in
+    four seconds at 4000 m/px over Europe). Not looked at at the speeds a player watches at.
+  - A name's place is one for the city: on a looping map its two copies either side of the seam
+    share it, and what is in the way of one copy moves both.
+  - At T1 the markers stand on the city names. The names keep clear of the T0 counters and the
+    flags only. With PLAN 2.7s.
 - Found by the second independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
   (PLAN 2.11):
   - `nationLabels.ts` `fadeNationLabels`: on a looping map with two copies of a name in view, the
