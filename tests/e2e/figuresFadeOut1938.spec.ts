@@ -52,10 +52,23 @@ async function at(page: Page, mPerPx: number): Promise<void> {
   await settle(page);
 }
 
-/** The figures of the last build: how many, and how many of them belong to each formation. */
-const figures = (page: Page): Promise<{ count: number; byFormation: Record<number, number>; share: number; shown: boolean; buildMs: number }> =>
-  page.evaluate(() => {
+/**
+ * The figures of the last build: how many, and how many of them belong to each formation.
+ * `stepTo`: the camera steps to that zoom first and the frame of the step is drawn; `drawAt`: a
+ * frame is drawn at that time first. The step, the frame and the reading are one call into the
+ * page: between two calls the view's own loop draws at the time it is, and on a slow machine
+ * that is after the fade (seen in a gate run under load: the share read 0 where the frame of the
+ * step had 1).
+ */
+const figures = (page: Page, frame: { stepTo?: number; drawAt?: number } = {}): Promise<{ count: number; byFormation: Record<number, number>; share: number; shown: boolean; buildMs: number; now: number }> =>
+  page.evaluate(({ x, y, stepTo, drawAt }) => {
     const v = window.__warsim!.view!;
+    let now = drawAt;
+    if (stepTo !== undefined) {
+      now = performance.now();
+      v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / stepTo });
+    }
+    if (now !== undefined) v.drawUnitLayers(now);
     const formationOf = new Map<number, number>();
     for (let i = 0; i < v.elementCount; i++) formationOf.set(v.elementId[i]!, v.elementFormation[i]!);
     const byFormation: Record<number, number> = {};
@@ -64,8 +77,8 @@ const figures = (page: Page): Promise<{ count: number; byFormation: Record<numbe
       const f = formationOf.get(v.individualOwner[i]!) ?? 0;
       byFormation[f] = (byFormation[f] ?? 0) + 1;
     }
-    return { count: v.individualCount, byFormation, share: v.shares.individuals, shown: v.individualsShown, buildMs: v.individualsBuildMs };
-  });
+    return { count: v.individualCount, byFormation, share: v.shares.individuals, shown: v.individualsShown, buildMs: v.individualsBuildMs, now: now ?? 0 };
+  }, { x: SITE[0], y: SITE[1], ...frame });
 
 test('figures fading out of T3 are built from the snapshot in hand', async ({ page }) => {
   test.setTimeout(120_000);
@@ -87,22 +100,16 @@ test('figures fading out of T3 are built from the snapshot in hand', async ({ pa
   expect(before.count).toBe(before.byFormation[gone]! + before.byFormation[stays]!);
 
   // The step out of T3: the figures begin to fade at `now`.
-  const now = await page.evaluate(({ x, y, m }) => {
-    const v = window.__warsim!.view!;
-    const now = performance.now();
-    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
-    v.drawUnitLayers(now);
-    return now;
-  }, { x: SITE[0], y: SITE[1], m: T3_MAX_M * ZOOM_HYSTERESIS * 1.0002 });
-  expect(await figures(page)).toMatchObject({ share: 1, shown: false, count: before.count });
+  const stepped = await figures(page, { stepTo: T3_MAX_M * ZOOM_HYSTERESIS * 1.0002 });
+  expect(stepped).toMatchObject({ share: 1, shown: false, count: before.count });
+  const now = stepped.now;
 
   // A tick arrives while they fade, without one of the divisions.
   await step(page, [{ kind: 'removeFormation', id: gone }]);
   expect(await page.evaluate(() => new Set(window.__warsim!.view!.elementFormation).size)).toBe(1);
 
   // A frame in the middle of the fade.
-  await page.evaluate((t) => window.__warsim!.view!.drawUnitLayers(t), now + 100);
-  const fading = await figures(page);
+  const fading = await figures(page, { drawAt: now + 100 });
   console.log(`mid-fade (share ${fading.share.toFixed(2)}): ${fading.count} figures, ${fading.byFormation[stays] ?? 0} of the division that stays, ${fading.byFormation[0] ?? 0} of elements no longer in the snapshot (before: ${before.count}); the build took ${fading.buildMs.toFixed(2)} ms`);
   expect(fading.share).toBeGreaterThan(0.2);
   expect(fading.share).toBeLessThan(0.9);
