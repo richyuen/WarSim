@@ -222,4 +222,7 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - `handover1938`: a wait of 120 s. `labelFades1938`: the test's 240 s. `title`: 15 s for the
     title screen, and an autosave read before it was written.
   - `declutter1938`: PLAN 2.7l, done 2026-10-04 (it was not time that it measured: ADR-75).
+  - `cityNames1938`, the running part (added 2026-10-04 with PLAN 2.7r): four seconds at top speed
+    must hold more than 8 frames, more than 50 ticks and at least one fade of a name. Gate runs
+    on the idle machine gave 20 to 44 frames, 235 to 1,561 ticks and 6 to 51 fades.
   - A way to tell: `npm run test` takes 40 s on the idle machine and took 72 s then.

@@ -639,6 +639,35 @@ quick sweep as a smoke test.
   AT: e2e, Spain's front after two weeks, at 1800, 1200 and 600 m/px: no marker's box is more than a
   quarter under another's; the numbers on the map still add up to the strength of the formations in
   view (PLAN 2.1); screenshots viewed.
+  Split 2026-10-04, when the task was taken, by a second measurement (a scratch spec; "deep": one box
+  more than a quarter under another; a marker is 26 × 29 px). Ticked when both parts are.
+  - Deep pairs of one nation and of two nations: Spain 29 and 19 at 1900 m/px, 24 and 19 at 1800, 13
+    and 0 at 1200, 7 and 0 at 600, 6 and 0 at 340, 5 and 0 at 310. North China 10 and 4 at 1900, 4
+    and 2 at 1800, 1 and 0 at 1200, none closer.
+  - *Pushing the boxes apart, each at most 13 px from its formation,* does not come to rest on
+    Spain's front at any zoom and leaves 2 to 8 deep pairs: formations of one nation that stand on
+    one spot cannot be parted within half a marker.
+  - *Stacking by nation* (a marker more than a quarter under a stronger one of its nation goes into
+    it) leaves no deep pair at 1200 m/px and closer; at 1800 and 1900 it leaves 9 and 8 pairs of two
+    nations on Spain's front, 2 in north China.
+  - *Stacked, then pushed apart:* rests after one round on Spain's front (16 markers moved, by 3 px at
+    most), after four in north China (5 px): nothing left.
+  - [ ] 2.7s1 Markers of one nation that stand on each other are one marker: the strongest, with the
+    men of all of them as its number and how many it stands for. The others go into it by a fade,
+    and come out by one; a marker in a stack stays there until it is well clear (no flicker while
+    the armies move).
+    AT: e2e, Spain's front after two weeks at 1200 and 600 m/px: no marker's box is more than a
+    quarter under another's; every formation in view is stood for by exactly one marker, and a
+    marker's number is the men of the formations it stands for. Unit: the stacking as a pure
+    function (the strongest leads; the hold). `counters1938` (no popping through T0 ↔ T1) passes.
+    - `markers1938` asserts for every marker that its number is its own formation's men. With
+      stacks that becomes the sentence of the AT above, which says more (every formation is
+      counted once). The ADR of the task argues it, as ADR-75 did for `flagsClear1938`.
+  - [ ] 2.7s2 What is left at the far end of T1, markers of two nations on each other across a front,
+    is cleared by moving the boxes apart by a few px (by an ease, kept while the quarter rule holds,
+    never during the morph into T2).
+    AT: e2e, Spain's front after two weeks at 1800 and 1900 m/px: no marker's box is more than a
+    quarter under another's; no box is more than 6 px from its formation.
 - [ ] 2.7t A city's name is readable where a nation's name crosses it. The curved nation names are drawn
   above the city names: at T0 a capital's name is often under the letters of its own nation. Seen in
   the pictures of PLAN 2.7r (`docs/evidence/2.7/city-names-4000m.png`, `city-names-3000m.png`): Berlin

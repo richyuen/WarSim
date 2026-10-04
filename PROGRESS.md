@@ -4275,3 +4275,34 @@ block; the step of the subscription key and why a 16th of the box; 48 px for a s
   ran. Scripts go into a file first now.
 - **Tests:** 8 new unit tests, 1 new e2e. 580 unit tests in 78 files, 93 e2e.
 - **Next:** PLAN 2.7s (T1 markers of a dense group do not stand on each other), then 2.7t.
+
+## 2026-10-04 — Owed from PLAN 2.7r: what the city names cost; and PLAN 2.7s measured and split
+
+Documents only.
+
+- **The cost of the city layer with its obstacles (PROMPT step 6, not done in the tick of 2.7r).**
+  Measured in the browser, 200 draws each, layout and drawing together:
+  - T0, Europe at 4000 m/px (160 dots, 30 names, 103 obstacles): 0.44 ms a frame; 0.37 ms with
+    no obstacles.
+  - T0 at 2300 m/px (227 dots, 18 names, 104 obstacles): 0.39 ms; 0.36 without.
+  - T1 at 1200 and 500 m/px (6 and 1 obstacles, the flags): 0.31 and 0.25 ms, the same without.
+  So the obstacles cost 0.07 ms at most, and the layer is under half a millisecond of the 6 ms a
+  frame may take.
+- **`cityNames1938`'s running part measures time:** on the BLOCKERS list of such specs.
+- **PLAN 2.7s (T1 markers on each other), measured before any design** on Spain's front and in
+  north China after two weeks, at 1900 to 310 m/px. "Deep": one box more than a quarter under
+  another. The numbers are in PLAN.
+  - Pushing boxes apart, each kept within half a marker of its formation, does not come to rest
+    on Spain's front at any zoom. The first measurement, in the review pass, had said "median
+    5 px, the furthest 29": that run had stopped at its limit of 500 rounds and aimed at no
+    overlap at all, which the acceptance test does not ask for.
+  - Every deep pair at 1200 m/px and closer is of one nation: formations on one spot. Stacking
+    by nation clears them all.
+  - At 1800 and 1900 m/px pairs of two nations are left (9 and 8 on Spain's front). After
+    stacking, a move of 3 px clears them.
+- **Split:** 2.7s1 (stacks of one nation, with their fade and their hold), 2.7s2 (the move of a
+  few px at the far end of T1).
+- **An existing assertion will change with 2.7s1:** `markers1938` says each marker's number is
+  its own formation's men. A stack's number is the men of all it stands for. PLAN has the
+  sentence that replaces it; the ADR of the task will argue it.
+- **Next:** PLAN 2.7s1.
