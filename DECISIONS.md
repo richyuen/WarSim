@@ -250,6 +250,21 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   spec waits for a section that arrived at the zoom it is at (`elementsZoom`).
 - **Not done:** the bar does not move "above the group"; it stays where it is at T1, under
   where the box was. The order arrows and the battle swords fade with the box.
+- **Addendum, 2026-10-04 (review pass after PLAN 2.7): the pictures are kept by nation too.**
+  The box's picture was kept by symbol and state alone. Of two nations' markers in view, the
+  second was drawn with the first one's picture: another nation's colour and flag from the
+  first frame of the morph to the last, 250 ms. That is a pop of the kind this ADR is about
+  (measured: a box's mean colour off by 102 of 255 in the frame after the step).
+  - The acceptance test spawned two divisions of one nation and could not see it. The lesson
+    for a test of pictures: two things under test must differ in everything the code could
+    confuse.
+  - `tests/e2e/morphNations1938.spec.ts`: a division of Japan and one of Manchukuo side by
+    side; each box, 16 ms into the morph, is within 12 of 255 of its mean colour at rest
+    (measured 4.8 and 4.5). It fails on the code before the fix (102 for Manchukuo's).
+  - The pictures are still made anew in every frame of a morph, one for each nation, symbol
+    and state in view. Measured in `fades1938`: the slowest frame of the unit layers at
+    T1 ↔ T2 is 2.2 ms of CPU. A cache across frames would have to follow flags and colours
+    that change; not worth it at that cost.
 ### ADR-71 · 2026-10-04 · accepted — Every tier boundary is a timed handover; "no popping" is measured at a fixed camera (PLAN 2.7b)
 
 - **Context:** of the three boundaries between the unit tiers only T0 ↔ T1 was a state with a

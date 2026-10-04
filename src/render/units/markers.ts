@@ -270,7 +270,7 @@ export function drawMarkers(
           // Shrinking, the box is a picture of itself, scaled smoothly. Scaling its parts would
           // make the pixels of the flag chip (drawn without smoothing) and of the hairlines snap
           // from one frame to the next: measured, a jump of 188 of 255.
-          const key = `|${m.symbol}|${m.engaged ? 1 : 0}`;
+          const key = `${m.nation}|${m.symbol}|${m.engaged ? 1 : 0}`;
           let sprite = sprites.get(key);
           if (!sprite) sprites.set(key, (sprite = boxSprite(m, colorOf, flagOf, dpr)));
           ctx.imageSmoothingEnabled = true;

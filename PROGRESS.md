@@ -3657,3 +3657,23 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
 - **Not run:** `sweep:quick` (ADR-58: at the phase review only).
 - **Tests:** 1 new unit test (the bank's four rules). 552 unit tests in 75 files.
 - **Next:** the fix above, then PLAN 2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — Fix: in the marker → elements morph every nation's box keeps its own colour (ADR-72, addendum)
+
+- **The bug (PLAN 2.7c, mine):** while a marker's box shrinks it is drawn from a picture of
+  itself. The pictures were kept by symbol and state, not by nation. With markers of two
+  nations in view, zooming from T1 into T2 (or back), every box of one kind showed the colour
+  and flag of whichever nation was drawn first, for 250 ms, then the right one again.
+- **Found** by reading `drawMarkers` in the review pass: its comment said "one for each
+  nation, symbol and state" and the key had no nation.
+- **Why no test saw it:** `fades1938` spawns two divisions of Japan.
+- **Test first:** `tests/e2e/morphNations1938.spec.ts`. A division of Japan and one of
+  Manchukuo (its subject: a division of a nation with no business in western China is sent
+  home within the tick) side by side. Before the fix, 16 ms into the morph, Manchukuo's box is
+  off its own colour by 102 of 255 and the test fails; after, 4.5 (Japan's 4.8; limit 12).
+- **Fix:** the nation is part of the key. One line.
+- **Looked at:** `docs/evidence/2.7/morph-two-nations-at-64ms.png`: a cream box with the
+  Japanese flag and an ochre one with Manchukuo's, both a little faint, each its own.
+- **Unchanged:** the no-popping numbers of `fades1938` (43.1 into T2, 42.0 out).
+- **Tests:** 1 new e2e. 552 unit tests in 75 files, 81 e2e.
+- **Next:** PLAN 2.8 (procedural detail tiles and hillshade).
