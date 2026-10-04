@@ -4216,3 +4216,26 @@ block; the step of the subscription key and why a 16th of the box; 48 px for a s
   pan.
 - **Tests:** 1 new e2e. 572 unit tests in 78 files, 91 e2e.
 - **Next:** PLAN 2.7q (a world loaded into a running game leaves the old world's flags).
+
+## 2026-10-04 — PLAN 2.7q: a world loaded into a running game leaves no flag of the old one
+
+- **The bug (ADR-74, second read, finding 4):** the view keeps each nation's colour, capital,
+  alliance leader, overlord and income by id. `apply` set them for every row of a snapshot and
+  removed none. A scenario imported into a running game replaces the world; a nation that a
+  revolt had made in that game has no row in it, and what the view knew of it stayed.
+- **Seen first** (`tests/e2e/loadedWorld1938.spec.ts`; the reader had traced it, not run it):
+  the start of 1938 is exported, a revolt is spawned in Masovia (nation 104, where the scenario
+  has 103), its flag flies over its capital; the export is loaded. The flag of 104 was still
+  placed.
+- **Fix:** the five maps are emptied and filled from each snapshot. A snapshot has a row for
+  every nation of its world (read in `server.ts`: the whole table, the dead too), so nothing
+  is lost between two snapshots of one world.
+- **After:** no flag of an id the loaded world does not have; 40-odd flags of the others.
+- **Unchanged:** `flagGone1938` (a destroyed nation's flag goes), `scenarioFile1938`.
+- **Not looked for:** other things the view keeps across a load that are not by nation
+  (selection, wrecks, the fire in flight). The task named the flags; the fix covers what is
+  kept by nation.
+- **The four findings of the second read that were tasks are done** (2.7n–q). Left from it: the
+  watch list.
+- **Tests:** 1 new e2e. 572 unit tests in 78 files, 92 e2e.
+- **Next:** PLAN 2.7r (city names stay readable among the T0 counters and the capital flags).

@@ -303,6 +303,15 @@ export class MapView {
       this.atWar.add(b);
       this.warPairs.add(a < b ? a * 65536 + b : b * 65536 + a);
     }
+    // What the view knows of each nation is what this snapshot says, and of no other nation: a
+    // snapshot has a row for every nation of its world. A world loaded into a running game can
+    // have fewer (PLAN 2.7q): the flag of a nation made by a revolt stayed over its capital after
+    // a scenario without that nation was imported.
+    this.ownColor.clear();
+    this.allianceLeader.clear();
+    this.overlordOf.clear();
+    this.income.clear();
+    this.capitals.clear();
     for (let i = 0; i < s.nations.count; i++) {
       const o = i * NATION_STRIDE;
       const id = s.nations.data[o + NationField.id]!;
@@ -312,7 +321,6 @@ export class MapView {
       this.income.set(id, s.nations.data[o + NationField.income]!);
       // A destroyed nation's row stays, with where its capital last was: it has no flag to fly.
       if (s.nations.data[o + NationField.living] === 1) this.capitals.set(id, [s.nations.data[o + NationField.capitalX]!, s.nations.data[o + NationField.capitalY]!]);
-      else this.capitals.delete(id);
     }
     this.applyPalette();
     const f = s.formations;

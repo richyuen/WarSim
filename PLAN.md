@@ -597,13 +597,18 @@ quick sweep as a smoke test.
   that has the division's elements. Before: the figures' share in that first frame was 0.00 (the
   reader had traced this; here it ran). Now 1.00 in every frame, 1,584 figures. A share of 1 is no
   element sprite drawn: `drawSprites` draws them only below 0.99.
-- [ ] 2.7q A world loaded into a running game takes the place of everything of the old one in the view
+- [x] 2.7q A world loaded into a running game takes the place of everything of the old one in the view
   (ADR-74, second read, finding 4; traced by the reader, not run). `MapView.apply` sets a nation's
   capital and colour for each row of the snapshot and removes none: after a scenario file is imported
   into a game in which a revolt made a nation, the loaded world has no row for it and its flag stays
   at its last capital.
   AT: e2e: a nation is spawned by God, a scenario file exported before that is imported; no flag is
   placed for an id the loaded world does not have.
+  Done 2026-10-04: what the view keeps by nation (colour, capital, alliance leader, overlord, income)
+  is emptied and filled from each snapshot, which has a row for every nation of its world.
+  `tests/e2e/loadedWorld1938.spec.ts`: the start of 1938 exported, a revolt in Masovia (nation 104, a
+  new row), the export loaded. Before: the flag of 104 was still placed (the reader had traced it;
+  the test ran it). Now no flag of an id the loaded world lacks.
 - [ ] 2.7r City names stay readable among the T0 counters and the capital flags. The counters are drawn
   over the city names, and a capital's name stands beside the dot its nation's army often stands on.
   Seen in the review pass of 2026-10-04, in the evidence shots made again
