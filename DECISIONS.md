@@ -239,6 +239,20 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     clock, which no longer is that time. The worker sends each fire once
     (`serverFires.test.ts`), so a repeated tick brings none again.
 
+- **2.7i, done 2026-10-04: finding 4 reproduced and fixed.** The sprites' colour was read from
+  the map's palette, which holds the colours of the map mode, at the moment of upload.
+  - Measured: in the wars mode, after a tick, the element sprites of Japan and of Manchukuo
+    were both 236,195,191. In the political mode they are 248,247,241 and 238,227,201.
+  - Decided: units wear their nation's own colour in every map mode, at every tier. The T0
+    counters and T1 markers already did; a unit that changes colour at 300 m/px is a bug
+    whichever colour is right, and the mode's colours answer a question about the land.
+  - `nationColor` reads the own colour. The second half of the finding (tints left over after
+    a change of mode while paused) cannot happen any more; the test still asserts it.
+  - The task's acceptance line said the sprites "have the tints of their T1 markers". A
+    sprite's tint is the own colour lightened, by design (to read against the nation's fill),
+    so it never was the marker's colour itself. The line is made exact in PLAN, not weakened:
+    one tint a nation, the same in all eight modes, before and after a tick in each.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.

@@ -528,6 +528,11 @@ export class MapView {
   elementX = new Float64Array(0);
   elementY = new Float64Array(0);
   elementStrength = new Uint16Array(0);
+  /** The tint of element sprite `i` as it was uploaded: [r, g, b] (tests). */
+  elementTint(i: number): [number, number, number] {
+    const c = this.elementProxies.colors;
+    return [c[i * 4]!, c[i * 4 + 1]!, c[i * 4 + 2]!];
+  }
   /** The last subscription sent (tests). */
   subscription: Subscription | null = null;
   private lastSub = '';
@@ -965,12 +970,15 @@ export class MapView {
     return this.geo.wrapX && Math.abs(x - prevX) > this.geo.w / 2 ? x + (x < prevX ? this.geo.w : -this.geo.w) : x;
   }
 
+  /**
+   * The colour of a nation's sprites: its own colour in every map mode, as its T1 markers and T0
+   * counters have it (the map's palette carries the mode's colours: PLAN 2.7i), lightened so that
+   * they read against the fill.
+   */
   private nationColor(id: number): number {
-    const o = id * 4;
-    const pal = this.map.palette;
-    // Markers use a lighter tint of the nation colour so they read against the fill.
+    const own = this.ownColor.get(id) ?? 0x888888;
     const lift = (v: number): number => Math.min(255, Math.round(v * 0.55 + 115));
-    return (lift(pal[o]!) << 16) | (lift(pal[o + 1]!) << 8) | lift(pal[o + 2]!);
+    return (lift((own >> 16) & 255) << 16) | (lift((own >> 8) & 255) << 8) | lift(own & 255);
   }
 
   /** Matches the backing store to the CSS size; returns true when it changed. */

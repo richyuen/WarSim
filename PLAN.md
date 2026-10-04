@@ -452,17 +452,33 @@ quick sweep as a smoke test.
   Done 2026-10-04: the clock starts with a new tick only; the same tick at another length goes on from
   the progress reached. `tests/e2e/tickClock.spec.ts` reads the sprites' progress through the tick
   (`MapView.tickProgress`) across a pan, a change of speed and a pause: before, 0.38 → 0.00 on a pan.
-- [ ] 2.7i Sprites and figures wear the nation's own colour in every map mode, as the markers and counters do
+- [x] 2.7i Sprites and figures wear the nation's own colour in every map mode, as the markers and counters do
   (ADR-74, finding 4). They take the map mode's palette, when they are uploaded: in the wars
   mode both sides are one red, and a change of mode while paused leaves the old tints.
   AT: e2e: in the wars mode two belligerents' element sprites at T2 have the tints of their T1
   markers; a change of mode while paused changes no sprite.
+  (Made exact, 2026-10-04: "the tints of their markers" meant made from the nation's own colour as
+  the markers are, not from the mode's palette. A sprite's tint is that colour lightened, by design,
+  so it is not the marker's colour itself. The test: every nation's sprites have one tint, the same
+  in all eight map modes, before and after a tick in each.)
+  Done 2026-10-04: `nationColor` reads the own colour. `tests/e2e/spriteColours1938.spec.ts`: before,
+  in the wars mode Japan's and Manchukuo's sprites were both 236,195,191; now 248,247,241 and
+  238,227,201 in every mode.
 - [ ] 2.7j Figures that fade out are of the snapshot in hand (ADR-74, finding 5). Leaving T3, a tick that
   arrives during the 250 ms leaves the figures of the tick before, drawn with the new tick's clock.
   AT: the figures drawn while the close handover runs are built from the element section last received.
 - [ ] 2.7k A nation's name keeps its state when the camera crosses the seam of a looping map (ADR-74, finding 6).
   The state's key holds the absolute wrap offset, which changes there.
   AT: unit: a name held at 8.2 px is still placed, in full, after a pan across x = 0.
+- [ ] 2.7l What the counters show at rest does not depend on the frames drawn on the way there. Seen
+  2026-10-04 in a gate run under load: `declutter1938`, "start, 1.5 px per cell", central Europe had 2
+  counters where every other run has 3 (the step before has 2; the spec wants more). All were in full
+  and none overlapped: one counter was folded into a neighbour, or not, by how the frames of the split
+  fell. A fold holds until the counter clears its neighbour by the hold distance (PLAN 1.45b), so the
+  state at rest remembers the animation. Find out whether that is all of it.
+  AT: unit: from the same camera step, frames 16 ms apart and frames 200 ms apart end with the same
+  counters shown. If the hysteresis must stay path-dependent, the spec's step is changed to one that
+  does not sit on it, and the reason is in DECISIONS.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

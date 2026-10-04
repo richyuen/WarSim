@@ -3782,3 +3782,45 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
   (PLAN 2.7g), as a name jumps when land changes hands: events, not zoom.
 - **Tests:** 1 new e2e. 556 unit tests in 76 files, 84 e2e.
 - **Next:** PLAN 2.7i (sprites and figures wear the nation's own colour in every map mode).
+
+## 2026-10-04 — PLAN 2.7i: sprites wear the nation's own colour in every map mode (ADR-74, finding 4)
+
+- **The bug:** the element sprites, the figures and the formation sprites took their colour
+  from the map's palette, which holds the colours of the map mode. In the wars mode every
+  belligerent's units were one red at T2 and T3, and their own colour at T0 and T1: a zoom
+  across 300 m/px changed a unit's colour. The colour was read when the sprites were uploaded,
+  so a change of mode while paused left the old one.
+- **Test first** (`spriteColours1938.spec.ts`): a division of Japan and one of Manchukuo side
+  by side at T2. The tints uploaded for their sprites (`MapView.elementTint`, new, for the
+  test), by nation, in the political mode and then in each of the other seven, before and
+  after a tick. Before the fix: "wars, after a tick" has both at 236,195,191. After: Japan
+  248,247,241 and Manchukuo 238,227,201 in every mode.
+- **Fix:** `nationColor` reads the nation's own colour. In the political mode the palette is
+  the own colour, so nothing changes there (the same numbers before and after).
+- **The acceptance line** said "the tints of their T1 markers". Made exact in PLAN, with the
+  reason in ADR-74: a sprite's tint is the own colour lightened, never the marker's colour.
+- **Looked at:** `docs/evidence/2.7/sprites-in-the-wars-mode.png`: the two divisions on the
+  red of the wars mode at 45 m/px, Japan's sprites near white, Manchukuo's a light tan. The
+  sprites are 8 px there; the two tints are close and the picture alone would not prove much.
+  The numbers do.
+  - Two earlier takes were no use: at 150 m/px the sprites are specks, and at the site's
+    centre the list of nations covered one division.
+- **Tests:** 1 new e2e. 556 unit tests in 76 files, 85 e2e.
+- **The gate failed once, in a spec this change does not touch:** `declutter1938`, "start, 1.5 px
+  per cell: expected > 2, received 2". Alone it passed. The e2e stage of that run took 6.7 min
+  where it takes 4.1: the machine was slow.
+  - Measured in a run alone (a print, taken out again): central Europe has 2 counters with the
+    world in view and 3 at 1.5 px per cell; then 17, 44, 58. The first step has a margin of one.
+  - In the failed run that one counter was not shown. Every counter was in full and none
+    overlapped, so it was folded into a neighbour. A fold holds until the counter clears its
+    neighbour by the hold distance: which counters are folded at rest can depend on the frames
+    drawn during the split. Not proven; it is PLAN 2.7l, with a test that draws the same change
+    at two frame rates.
+  - The spec is unchanged. The gate was run again for this commit.
+- **The second run failed too, in another spec:** `fire1938`, the part with the game running:
+  6,614 fires dropped from the worker's queue (expected 0). The queue is capped; it overflows
+  when the page takes its snapshots more slowly than the sim makes fire. The e2e stage took 8.4
+  min. The user said another job was running on the machine.
+- **The third run is green:** 85 e2e, in 8.0 min, the machine still loaded. Two specs fail under
+  load in ways that are theirs and not this change's: 2.7l, and the watch list in BLOCKERS.md.
+- **Next:** PLAN 2.7j (figures that fade out are of the snapshot in hand).

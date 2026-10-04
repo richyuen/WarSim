@@ -138,3 +138,9 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     nations wear the first two 1938 flags.
   - `markers.ts` `boxSprite`: at a fractional device pixel ratio the picture is rounded up
     and drawn into the unrounded rectangle (38 px into 37.5 at 1.25). Not traced.
+- `fire1938.spec.ts`, the running part, under load (2026-10-04, gate run with another job on the
+  machine, the e2e stage at twice its usual time): 6,614 fires dropped (expected 0). The worker's
+  fire queue is capped at 8,192 and drops the oldest when the view takes snapshots more slowly
+  than the sim makes fire. The drop is by design (the view says how many: `firesDropped`); the
+  spec's "none dropped" holds on an idle machine only. If it recurs on an idle machine, look at
+  the snapshot rate at T2 while the game runs at ×5. The counters' case of the same run is PLAN 2.7l.

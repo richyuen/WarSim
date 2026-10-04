@@ -1165,6 +1165,8 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   0–1 (`MapView.tickProgress`). Its clock starts with a new tick only: a snapshot that repeats
   the tick (a new subscription, a pause, another speed) goes on from the progress reached.
   Paused, it is 1: the sprites stand where the tick has them.
+  The tint is the nation's own colour, lightened, in every map mode (PLAN 2.7i): the map's
+  palette carries the mode's colours, the units do not, at any tier.
 - Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes). *As built (PLAN
   2.4a):* tracers, muzzle flashes and impacts are drawn with Canvas2D on the overlay; no pools yet.
 
