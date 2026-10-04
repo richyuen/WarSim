@@ -11,7 +11,7 @@ import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
-import { EVENT_STRIDE } from '../shared/events';
+import { EVENT_STRIDE, FIRE_STRIDE, FireField, weaponOf } from '../shared/events';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
@@ -57,6 +57,9 @@ export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
 const MAX_SLICE_MS = 12;
 /** Hard cap on queued (unsent) events; beyond it the oldest are dropped and counted. */
 const EVENT_QUEUE_CAP = 1 << 20;
+/** Hard cap on queued (unsent) fire events in view; beyond it the oldest are dropped and counted. */
+export const FIRE_QUEUE_CAP = 1 << 13;
+const NO_FIRES = new Float64Array(0);
 /** Never schedule more than this many ticks in one pump at a fixed speed (avoid spirals). */
 const MAX_TICKS_PER_PUMP = 2000;
 
@@ -127,6 +130,9 @@ export class SimServer {
   private eventQueue: number[] = [];
   private nextEventSeq = 1;
   private droppedEvents = 0;
+  /** Unsent fire events of the subscribed bbox, flat FIRE_STRIDE records (PLAN 2.4). */
+  private fireQueue: number[] = [];
+  private droppedFires = 0;
   /** Positions one tick before the current tick, indexed by formation id. */
   private prevX = new Float64Array(0);
   private prevY = new Float64Array(0);
@@ -427,6 +433,7 @@ export class SimServer {
   /** New sim state: drop queued events, resend every tile. */
   private resetStreams(): void {
     this.eventQueue = [];
+    this.fireQueue = [];
     this.sim!.world.out.markAllDirty();
     this.sim!.world.out.events.length = 0;
     this.sim!.world.out.fires.length = 0;
@@ -753,7 +760,7 @@ export class SimServer {
       this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, ev[i + 3]!, ev[i + 4]!, ev[i + 5]!);
     }
     ev.length = 0;
-    world.out.fires.length = 0; // fire events reach the renderer with the tactical view (Phase 2)
+    this.drainFires(world);
     const over = this.eventQueue.length / EVENT_STRIDE - EVENT_QUEUE_CAP;
     if (over > 0) {
       this.eventQueue.splice(0, over * EVENT_STRIDE);
@@ -761,17 +768,45 @@ export class SimServer {
     }
   }
 
+  /** Whether the subscription draws elements, and with them their fire (PLAN 2.3, 2.4). */
+  private wantsElements(): boolean {
+    return this.sub.wantsElements && this.sub.tier >= 1.5;
+  }
+
+  /**
+   * Fire events (PLAN 2.4) for a view that draws elements: those with an end inside the
+   * subscribed bbox when they happen, the shooter's weapon in place of its unit. Any other view
+   * gets none and none are kept, so a strategic zoom pays nothing. Read-only on the sim (I4).
+   */
+  private drainFires(world: World): void {
+    const fires = world.out.fires;
+    const units = world.rules?.units;
+    if (units && this.wantsElements()) {
+      const q = this.fireQueue;
+      for (let i = 0; i < fires.length; i += FIRE_STRIDE) {
+        const from = this.inBbox(fires[i + FireField.x0]!, fires[i + FireField.y0]!, world);
+        if (!from && !this.inBbox(fires[i + FireField.x1]!, fires[i + FireField.y1]!, world)) continue;
+        for (let c = 0; c < FIRE_STRIDE; c++) q.push(c === FireField.weapon ? weaponOf(units[fires[i + c]!]?.cls ?? 'inf') : fires[i + c]!);
+      }
+      const over = q.length / FIRE_STRIDE - FIRE_QUEUE_CAP;
+      if (over > 0) {
+        q.splice(0, over * FIRE_STRIDE);
+        this.droppedFires += over;
+      }
+    }
+    fires.length = 0;
+  }
+
   /**
    * Elements of formations inside the subscribed bbox (PLAN 2.3): only when the subscription
    * wants them at tier ≥ 1.5. Read-only: never touches sim state (I4).
    */
   private elementSection(world: World, buffers: ArrayBuffer[]): SnapshotElements {
-    const sub = this.sub;
     const ft = world.formations;
     const picked: number[] = [];
     let total = 0;
     let truncated = false;
-    const idx = sub.wantsElements && sub.tier >= 1.5 && world.rules ? elementIndex(world) : null;
+    const idx = this.wantsElements() && world.rules ? elementIndex(world) : null;
     if (idx) {
       ft.forEach((f) => {
         if (truncated) return;
@@ -968,6 +1003,12 @@ export class SimServer {
     }
     this.eventQueue = [];
 
+    // Fires: what was queued while the view drew elements; a view that left that tier gets none.
+    const fq = this.wantsElements() ? this.fireQueue : [];
+    const fires = fq.length > 0 ? this.view(Float64Array, fq.length, buffers) : NO_FIRES;
+    fires.set(fq);
+    this.fireQueue = [];
+
     const snap: Snapshot = {
       seq: ++this.seq,
       tick: world.tick,
@@ -981,6 +1022,7 @@ export class SimServer {
       majors,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
+      fires: { count: fq.length / FIRE_STRIDE, data: fires, dropped: this.droppedFires },
       buffers,
     };
     return { snap, transfer: buffers };

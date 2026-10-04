@@ -390,8 +390,14 @@ quick sweep as a smoke test.
   AT: zooming T0↔T1 shows no frame where a counter vanishes without a matching animation (frame-diff check on a recorded sequence).
 - [x] 2.3 Element snapshot path (interest-managed) + GPU-interpolated element sprites at T2 (facing, walk/drive anim).
   AT: 10k visible proxies ≥ 30 fps (bench); I4 still passes.
-- [ ] 2.4 FireEvent visuals: tracers, muzzle flashes, impacts; casualty removal; wrecks.
+- [x] 2.4a FireEvent visuals: tracers, muzzle flashes, impacts (ADR-66; first answer to critic B2).
   AT: e2e counts tracers in the viewport against FireEvents in the same window (equal).
+  The window is one tick: `tests/e2e/fire1938.spec.ts` takes the events from the sim in Node.
+- [ ] 2.4b Casualty removal and wrecks (split from 2.4, as it needs an event of its own): an
+  element that dies emits `ElementDestroyed` (not state); its sprite goes with a visible end and
+  a wreck stays where it stood for a while, on the render clock.
+  AT: e2e at T2 over a battle: every `ElementDestroyed` in the window has one wreck at its
+  position, no sprite of a dead element is drawn, and the pinned hash does not move.
 - [ ] 2.5 Casualty consistency across tiers.
   AT: e2e kills elements at T2 (God-spawned battle) → T0 counter strength drops by exactly the same amount.
 - [ ] 2.6 T3 close expansion (vehicles exact, infantry ≤ 64 sprites, count = strength).

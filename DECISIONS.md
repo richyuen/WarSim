@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-66 · 2026-10-04 · accepted — Fire at T2: a FireEvent is a shot, and a shooter shows one at a time (PLAN 2.4a, critic B2)
+
+- **Context:** combat has emitted one FireEvent per volley since PLAN 1.13 (shooter, target,
+  their slot poses, the minute of the hour), and the worker threw them away. At close zoom the
+  element sprites of a battle stood still (critic B2: "no terrain, combat or motion").
+- **Decision, transport:** the snapshot has a `fires` section.
+  - Only a subscription that gets elements (tier ≥ 1.5) gets fire. At any other zoom the
+    events are cleared after the tick as before and nothing is queued.
+  - The filter is applied when the event happens, not when the snapshot is built: an event is
+    kept when its shooter or its target is inside the subscribed box. A queue of the whole
+    world's fire would be about 1,000–2,000 events a tick in 1938.
+  - The worker sends the weapon kind of the shooter's class in place of the unit index (the
+    view has no unit rules): small arms (inf, mot, mech), cannon (at, aa, armour), shell (art).
+  - The queue holds 8,192 events; beyond that the oldest are dropped and counted
+    (`fires.dropped`). A snapshot without fire takes no pooled buffer for it.
+  - Fire events are tick outputs, not state: the sim is not touched and the pinned hash did not
+    move. PLAN 2.4a changed no file under `src/sim/`.
+- **Decision, drawing:** `src/render/fx/fire.ts`, Canvas2D on the overlay, above the sprites.
+  - A shot is a muzzle flash, a tracer and an impact, timed on the render clock with
+    `render/timing.ts`. Three looks: a thin pale tracer and a puff of dust; a thicker orange one
+    with a burst and smoke; a shell on an arc with a larger burst.
+  - The shots of a tick start spread over the tick's wall time by their minute: at least 250 ms
+    (so that a fast game does not fire in salvoes), at most 1 s, and 400 ms for a tick stepped
+    while paused.
+  - Drawing is pure: the same time draws the same frame. Shots leave the list only when a
+    snapshot arrives. Tests draw every frame of a burst at made-up times.
+  - A shot lands up to 0.012 cells from its target's slot, by a hash of shooter and tick.
+    This is the presentational freedom SPEC §8 allows; the points the sim gave are kept as they
+    are and are what the test compares.
+- **Decision, one shot per shooter at a time:** an event whose shooter still has a shot on
+  screen when it would start is not drawn, and is counted (`skipped`).
+  - **Why:** a tick is an hour, and the default speed is 24 ticks a second. Drawn one to one,
+    every element fires 24 tracers a second: measured at ×5 over three divisions, 810 tracers
+    in flight and 3,000 shots alive (the cap), a solid orange beam that hides the units. With
+    the rule the same battle shows 63–125 tracers in flight, and each can be followed.
+  - **What stays true:** within one tick every FireEvent is a shot, because an element fires
+    once an hour. That is the window of the acceptance test: the tracers drawn are the sim's
+    events, compared one by one with a run of the same sim in Node.
+  - **What does not:** from tick to tick events are skipped at every speed, also at ×1 (a
+    shell is on screen for 880 ms and two starts can be closer than that). The tracers are a
+    picture of who fires at whom, not a count of volleys. Losses come from the sim alone.
+- **A defect found on the way:** the frame clock (the rAF time) can be earlier than the arrival
+  time of the snapshot the frame draws. A guard "nothing to draw before the batch arrived"
+  drew no fire at all while the game ran, because every frame had a newer batch. The layer has
+  no lower bound on the time; the unit test names the case.
+- **Measured:** the fire layer costs 0.12–0.22 ms a frame at ×5 with 426–512 shots held
+  (software GL, 1400 × 800).
+- **Deferred:**
+  - casualty removal and wrecks (PLAN 2.4b): they need an event when an element dies;
+  - the GPU particle pools of SPEC §8: Canvas2D is cheap at this count. To look at again when
+    air and naval fire or T3 add effects;
+  - impacts are small at 120 m/px. They read at 45 m/px. PLAN 2.7 and 2.10 judge the look
+    across zooms.
+
 ### ADR-65 · 2026-10-04 · accepted — T0 counters fold into their stronger neighbour instead of overlapping, across nations too (PLAN 1.45b, critic B7)
 
 - **Context:** counters are one per nation per grid cell of about 64 px, so the counters of

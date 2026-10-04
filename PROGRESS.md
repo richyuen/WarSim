@@ -3203,3 +3203,48 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
   this pass: the code of 2.1–2.3 and 1.42 beyond what the scans above touch.
 - **Next:** PLAN 2.4 (FireEvent visuals: tracers, muzzle flashes, impacts; casualty removal;
   wrecks). It is the first answer to critic B2 (nothing to see at close zoom).
+
+## 2026-10-04 — PLAN 2.4a: fire at T2: tracers, muzzle flashes, impacts (critic B2, ADR-66)
+
+- **What was there:** combat has emitted a FireEvent per volley since PLAN 1.13; the worker
+  cleared them after every tick. Two weeks into 1938 that is 937 events a tick, 2,003 after a month.
+- **Transport:** the snapshot's new `fires` section. Only a view that gets elements gets fire,
+  filtered when it happens to the events with an end in the subscribed box; the weapon kind
+  (small arms, cannon, shell) replaces the unit index; the queue holds 8,192 and counts what it
+  drops. No file under `src/sim/` changed and the pinned hash did not move.
+- **Drawing:** `src/render/fx/fire.ts` (the first file of `render/fx/`), Canvas2D on the overlay.
+  A shot is a flash at the shooter, a tracer to the target (shells on an arc) and an impact,
+  timed with `render/timing.ts`. The shots of a tick start spread over its wall time by their
+  minute of the hour.
+- **Split:** PLAN 2.4 is now 2.4a (this) and 2.4b (casualty removal and wrecks, which need an
+  event when an element dies).
+- **Acceptance test** (`tests/e2e/fire1938.spec.ts`, 2 tests): the sim runs in Node to two weeks
+  and one hour more, keeping that hour's FireEvents. The browser does the same with the camera
+  at 120 m/px on the busiest battle (Germany against Austria south of Passau).
+  - The state hashes agree before and after the hour.
+  - The view received exactly the events with an end in its subscribed box, with the sim's
+    points.
+  - Every frame of the burst is drawn 16 ms apart: the tracers drawn in the viewport are the
+    events in the viewport, one for one. Each flies for 9–27 frames; flashes come first, impacts
+    last, and after the last impact nothing is drawn.
+  - At T1 over the same battle no fire is sent.
+- **Looked at, and changed twice:**
+  1. While the game ran, no fire was drawn at all. The frame clock (rAF time) can be earlier
+     than the arrival time of the snapshot the frame draws, and a guard skipped the frame. At
+     ×5 every frame has a newer snapshot. The guard is gone; a unit test names the case. The
+     paused acceptance test had passed with the defect in place: it is why the test now also
+     runs the game.
+  2. Drawn one to one, ×5 gave 810 tracers in flight between three divisions: an orange beam
+     over the units, and flat orange discs on the target. Now a shooter shows one shot at a
+     time (63–125 tracers in flight in the same battle), shots land scattered around the
+     target, and bursts are smaller. Within a tick every event is still a shot; from tick to
+     tick events are skipped and counted. ADR-66 says what that makes of the acceptance test.
+- **Performance:** the fire layer takes 0.12–0.22 ms a frame at ×5 (426–512 shots held).
+- **Tests:** 17 new unit tests (`fireFx.test.ts`: what becomes a shot and when;
+  `serverFires.test.ts`: what a snapshot carries). Gate: 510 unit tests in 71 files, 8 ten-year
+  tests, 75 e2e, parity 46.3%.
+- **Evidence:** `docs/evidence/2.4/fire-120m.png`, `fire-45m.png` (one stepped hour) and
+  `fire-120m-running.png` (×5).
+- **Not done:** impacts are faint at 120 m/px (they read at 45 m/px). No GPU particle pools
+  (SPEC §8): Canvas2D is cheap at this count.
+- **Next:** PLAN 2.4b (casualty removal and wrecks).

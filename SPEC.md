@@ -86,7 +86,8 @@ src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command
                    calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts
 src/render/        camera.ts, timing.ts (the animations' clock), gl/ (gpuTimer), map/ (MapRenderer), labels/,
-                   units/ (ProxyRenderer, atlas, counters, markers, handover, formationDots); later fx/, lod/
+                   units/ (ProxyRenderer, atlas, counters, markers, handover, formationDots),
+                   fx/ (fire: tracers, flashes, impacts); later lod/
 src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
                    Actions and God tabs, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
                    FlagEditor, WarBanners, MapLegend), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
@@ -176,6 +177,11 @@ Implementation (PLAN 0.13):
 _As of PLAN 0.13 the snapshot carries `tiles` (ids + owner/controller u16 per tile), `nations` (f64 stride 5:
 id, color, cells, capitalX, capitalY), `formations` (id, nation, x, y, prevX, prevY, facing, strength) and
 `events` (f64 stride 7: seq, tick, kind, a, b, x, y); see `src/shared/protocol.ts`. Other rows arrive with their systems._
+
+_As of PLAN 2.4a fire events travel in a section of their own, `fires` (f64 stride 10: tick, subtick, shooter,
+target, weapon, dmg, x0, y0, x1, y1; `src/shared/events.ts`), not in `events`: only for a subscription that
+gets elements, filtered when they happen to those with an end in the subscribed bbox, queue cap 2^13 with
+`fires.dropped`._
 
 ### 2.5 Tick order (1 tick = 1 sim hour) [ADR-5]
 Calendar (PLAN 1.8, ADR-21): tick 0 = 00:00 of the scenario start date (`World.startDay`, saved);
@@ -993,6 +999,24 @@ and tier at most 10 Hz. The worker sends the elements of the formations inside, 
 poses (`sim/core/pose`, shared with the sim). They are drawn as instanced sprites, interpolated
 on the GPU, with facing and a procedural walk/drive animation, fading in as the markers fade out.
 
+*T2 fire implemented (PLAN 2.4a, `src/render/fx/fire.ts`, ADR-66):*
+- *Transport:* a view that draws elements also gets the FireEvents (§5.2 step 5) with an end
+  inside its subscribed box, in the snapshot's `fires` section (shooter, target, the two slot
+  poses, the minute of the hour, and the weapon kind of the shooter's class: small arms, cannon
+  or shell). Any other view gets none. The queue is capped at 8,192 events; the oldest are
+  dropped and counted.
+- *A shot* is a muzzle flash at the shooter, a tracer that flies to the target (shells on an arc)
+  and an impact there, 310–880 ms in all, on the render clock. The shots of a tick start spread
+  over its wall time by their minute (250–1000 ms; 400 ms for a tick stepped while paused).
+- *One at a time:* a shooter shows one shot at a time. Within a tick every FireEvent is a shot
+  (an element fires once an hour); from tick to tick the events that find their shooter's shot
+  still on screen are not drawn, and are counted. So the fire on screen grows with the elements
+  that fight, not with the game speed.
+- *Presentational freedom:* a shot lands up to 0.012 cells from its target's slot. Nothing of
+  it is sim state; a reload starts with no shots.
+- *Not built:* casualty removal and wrecks (PLAN 2.4b), GPU particle pools (the layer is
+  Canvas2D: 0.12–0.22 ms a frame for the fire of three divisions).
+
 **One truth.** Every number or sprite derives from sim state: counter strength =
 Σ formation strength = Σ element strength. Sprites are at element positions, and tracers
 come from FireEvents. Close-tier positions inside an element footprint are the only
@@ -1055,7 +1079,8 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   and cross-faded on change.
 - Units: one instanced draw per sprite atlas. Instance attributes are prev/cur pos,
   facing, frame, tint and alpha. The interpolation alpha is a uniform.
-- Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes).
+- Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes). *As built (PLAN
+  2.4a):* tracers, muzzle flashes and impacts are drawn with Canvas2D on the overlay; no pools yet.
 
 **Performance budgets.** T0 ≥ 60 fps with 100+ nations at M size. T2 ≥ 30 fps with
 10 000 visible proxies. Snapshot build ≤ 2 ms. Main-thread frame CPU ≤ 6 ms.

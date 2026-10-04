@@ -182,6 +182,18 @@ export interface SnapshotEvents {
   dropped: number;
 }
 
+/**
+ * Fire events since the last snapshot with an end inside the subscribed bbox (PLAN 2.4): only
+ * for a subscription with `wantsElements` at tier ≥ 1.5, as the elements are.
+ */
+export interface SnapshotFires {
+  count: number;
+  /** count·FIRE_STRIDE records (shared/events `FireField`; the weapon slot holds a `Weapon`). */
+  data: Float64Array;
+  /** Fires dropped because the queue hit its cap: a snapshot that spans many ticks (should stay 0 at ×5). */
+  dropped: number;
+}
+
 export interface Snapshot {
   seq: number;
   tick: number;
@@ -198,6 +210,7 @@ export interface Snapshot {
   /** Active Major Battles as flat [x, y, …] (battle markers, PLAN 2.1). */
   majors: Float32Array;
   events: SnapshotEvents;
+  fires: SnapshotFires;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */
   buffers: ArrayBuffer[];
 }

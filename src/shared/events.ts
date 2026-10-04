@@ -87,6 +87,26 @@ export interface SimEvent {
   y: number;
 }
 
+/**
+ * Fire events (SPEC §5.2 step 5): one record per volley, emitted by combat into
+ * `TickOutputs.fires`. Like the events above they are never state and never hashed.
+ * Record layout: [tick, subtick, shooter, target, unit, dmg, x0, y0, x1, y1], shooter and target
+ * being element ids and the points their slot poses. In a snapshot the `unit` slot carries the
+ * `Weapon` of the shooter's class (the view has no unit rules).
+ */
+export const FIRE_STRIDE = 10;
+export const FireField = { tick: 0, subtick: 1, shooter: 2, target: 3, weapon: 4, dmg: 5, x0: 6, y0: 7, x1: 8, y1: 9 } as const;
+
+/** How a volley is drawn (PLAN 2.4): rifles and machine guns, direct-fire guns, indirect fire. */
+export const Weapon = { smallArms: 0, cannon: 1, shell: 2 } as const;
+export type Weapon = (typeof Weapon)[keyof typeof Weapon];
+
+export function weaponOf(cls: string): Weapon {
+  if (cls === 'art') return Weapon.shell;
+  if (cls === 'inf' || cls === 'mot' || cls === 'mech') return Weapon.smallArms;
+  return Weapon.cannon;
+}
+
 export function readEvent(buf: Float64Array, i: number): SimEvent {
   const o = i * EVENT_STRIDE;
   return {

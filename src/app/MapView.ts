@@ -9,6 +9,7 @@ import { FlagStore } from './flagStore';
 import { drawMarkers, markerLowFade, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
+import { FireFx } from '../render/fx/fire';
 import { progress, running, smooth } from '../render/timing';
 import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
@@ -311,6 +312,8 @@ export class MapView {
     this.uploadElements(s.elements);
     this.dirty = true;
     this.snapArrival = performance.now();
+    this.fire.add(s.fires.count, s.fires.data, this.snapArrival, s.tickMs, this.geo);
+    this.firesDropped = s.fires.dropped;
     this.tickMs = s.tickMs;
     this.lastTick = s.tick;
   }
@@ -414,13 +417,21 @@ export class MapView {
   readonly counters = new CounterLayer();
   /** Which of the two shows, counters or markers, and the cross-fade between them (PLAN 1.45a). */
   readonly handover = new TierHandover();
+  /** The fire of the elements in view at T2 (PLAN 2.4), and the worker's count of fires it dropped. */
+  readonly fire = new FireFx();
+  firesDropped = 0;
 
   /**
    * True while a unit layer still animates: a counter split, merge or fold, the T0 ↔ T1
-   * handover, or a capital flag making way for a counter.
+   * handover, a capital flag making way for a counter, or a shot on its way.
    */
   unitsAnimating(now = performance.now()): boolean {
-    return this.counters.animating(now) || this.handover.animating(now) || running(now, this.flagMoveStart, FLAG_MOVE_MS);
+    return this.counters.animating(now) || this.handover.animating(now) || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now);
+  }
+
+  /** Opacity of the element sprites and their fire: in as the T1 markers go out (PLAN 2.3). */
+  get elementOpacity(): number {
+    return this.metresPerPx < T1_MIN_M ? 1 - markerLowFade(this.metresPerPx) : 0;
   }
   /** A unit layer animated in the last frame (see `frame`). */
   private unitsAnimated = false;
@@ -509,6 +520,12 @@ export class MapView {
   drawUnitLayers(now: number): void {
     this.resize();
     this.drawUnitMarkers(this.controller.cam, now);
+    this.drawFire(this.controller.cam, now);
+  }
+
+  /** Tracers, muzzle flashes and impacts over the element sprites (PLAN 2.4). */
+  private drawFire(cam: Camera, now: number): void {
+    this.fire.draw(this.overlay.getContext('2d')!, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, now, this.elementOpacity, this.unitScale);
   }
 
   /** T1 operational markers (PLAN 2.1) and T0 counters (PLAN 2.2) on the overlay. */
@@ -758,7 +775,7 @@ export class MapView {
     // Below T1: element sprites (PLAN 2.3) fading in as the markers fade out; formation sprites
     // only stand in where no elements arrived yet (element-less formations, before the first
     // subscribed snapshot). T0 has counters (PLAN 2.2) and T1 markers (PLAN 2.1).
-    const unitsIn = this.metresPerPx < T1_MIN_M ? 1 - markerLowFade(this.metresPerPx) : 0;
+    const unitsIn = this.elementOpacity;
     if (unitsIn > 0.01) {
       const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
       if (this.elementCount > 0) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn);
@@ -769,6 +786,7 @@ export class MapView {
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
     // clear of the T0 counters (PLAN 1.45c).
     this.drawUnitMarkers(cam, now);
+    this.drawFire(cam, now);
     this.drawFlags(cam, now);
     this.drawSelection(cam);
     this.frames++;
