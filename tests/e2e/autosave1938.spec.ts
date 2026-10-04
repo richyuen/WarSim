@@ -12,7 +12,7 @@ test('autosave to IndexedDB, reload with ?continue=1 and continue', async ({ pag
   test.setTimeout(120_000);
   const url = '/?scenario=1938&paused=1&seed=1938';
   await page.goto(url);
-  await page.waitForFunction(() => window.__warsim?.hud.worker.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => (window.__warsim?.hud.worker.value ?? null) !== null, null, { timeout: 60_000 });
   const stepped = await page.evaluate(() => window.__warsim!.sim.step(72));
   const savedTick = await page.evaluate(() => window.__warsim!.autosave.saveNow());
   expect(savedTick).toBe(72);
@@ -24,7 +24,7 @@ test('autosave to IndexedDB, reload with ?continue=1 and continue', async ({ pag
 
   // A fresh page (new worker) resumes from the autosave.
   await page.goto(`${url}&continue=1`);
-  await page.waitForFunction(() => window.__warsim?.hud.worker.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => (window.__warsim?.hud.worker.value ?? null) !== null, null, { timeout: 60_000 });
   await page.waitForFunction(() => window.__warsim!.hud.tick.value === 72, null, { timeout: 30_000 });
   const resumed = await page.evaluate(() => window.__warsim!.sim.hash());
   expect(resumed).toEqual(stepped);

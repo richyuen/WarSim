@@ -3677,3 +3677,19 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
 - **Unchanged:** the no-popping numbers of `fades1938` (43.1 into T2, 42.0 out).
 - **Tests:** 1 new e2e. 552 unit tests in 75 files, 81 e2e.
 - **Next:** PLAN 2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — Three specs waited for a boot that had not happened
+
+- **Seen:** the gate for the fix above failed once, in `autosave1938`: "Cannot read
+  properties of undefined (reading 'sim')". Alone the spec passed.
+- **Cause, in the spec:** it waited for `window.__warsim?.hud.worker.value !== null`. Before
+  the app has set `__warsim` that reads `undefined !== null`, which is true: the wait was
+  over before the boot began, and the next line read an app that was not there. Most runs the
+  boot wins; under load (a second job was reading the repo) it lost.
+- **Fix:** `(window.__warsim?.hud.worker.value ?? null) !== null` in the five places that
+  had it (`autosave1938`, `boot1938`, `speed`). The other specs' waits name `undefined`
+  too, or a count that is 0 before the boot; checked by a search.
+- **Gate:** green on the tree that held this and the fix above together (552 unit tests in 75
+  files, 81 e2e, parity 46.3%). One run for the two commits: the second run would have been of
+  the same tree.
+- **Next:** PLAN 2.8 (procedural detail tiles and hillshade).

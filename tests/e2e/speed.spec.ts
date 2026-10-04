@@ -15,7 +15,7 @@ test('speed and pause persist across reload; the date advances from 1 January 19
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/?scenario=toy');
-  await page.waitForFunction(() => window.__warsim?.hud.worker.value !== null);
+  await page.waitForFunction(() => (window.__warsim?.hud.worker.value ?? null) !== null);
   const label = page.getByTestId('speed-label');
   await expect(label).toHaveAttribute('data-level', '4'); // default: ×5 = 24 h/s
   await expect(page.getByTestId('date-label')).toContainText('1938');
@@ -36,7 +36,7 @@ test('speed and pause persist across reload; the date advances from 1 January 19
   await page.screenshot({ path: path.join(out, 'bottom-bar-paused.png') });
 
   await page.reload();
-  await page.waitForFunction(() => window.__warsim?.hud.worker.value !== null);
+  await page.waitForFunction(() => (window.__warsim?.hud.worker.value ?? null) !== null);
   await expect(page.getByTestId('speed-label')).toHaveAttribute('data-level', '5');
   await expect.poll(async () => await workerState(page)).toEqual({ speed: 48, paused: true });
   await expect(page.getByTestId('pause-btn')).toHaveAttribute('aria-pressed', 'true');

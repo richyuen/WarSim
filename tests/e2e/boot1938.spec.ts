@@ -17,7 +17,7 @@ test('the 1938 scenario boots in the worker == Node and renders', async ({ page 
   page.on('pageerror', (e) => errors.push(e.message));
   await page.setViewportSize({ width: 1600, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');
-  await page.waitForFunction(() => window.__warsim?.hud.worker.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => (window.__warsim?.hud.worker.value ?? null) !== null, null, { timeout: 60_000 });
 
   const node = new Sim({
     scenario: '1938',
