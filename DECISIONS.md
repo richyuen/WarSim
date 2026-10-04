@@ -287,6 +287,22 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   past a counter, the reach, the place kept, the move, the clearance, the flag by a pixel).
   `labelFades1938`, `labels1938`, `flagsClear1938` unchanged and passing.
 
+- **Addendum to ADR-76, PLAN 2.7t (2026-10-04): the city names are above the nation names.**
+  - *Context:* the curved nation names were drawn on the overlay, the canvas above the city
+    names. With the counters and the flags out of the way, they were what still stood on city
+    names: at 4000 m/px over Europe something was drawn over the letters of 11 of the 30 names
+    shown (Berlin 505 px of them, under the "y" of Germany).
+  - *Decision:* the order of the layers. The nation names are laid out as before and drawn on
+    the city layer's canvas, under its dots and names. The overlay keeps the unit layers and
+    the flags, above both, as they were above the nation names before.
+  - *Why the order and not room:* a nation's name fills its nation, and a capital stands in
+    it. Keeping the city names clear of those glyphs would move most of them off their dots or
+    leave them out; the other way round the nation names would break up. A small name with its
+    dark outline reads over a large pale one; the large one loses a few px of a letter.
+  - *How it is tested:* by pixels. Inside the letters of every city name that is shown, the
+    overlay has nothing drawn. That holds for a nation name, a counter and a flag alike, so it
+    is also the check of ADR-76 read from the picture and not from the layout's boxes.
+
 ### ADR-75 · 2026-10-04 · accepted — The counters' hold is a memory of the layer at rest; a split or merge on its way is folded without it (PLAN 2.7l)
 
 - **Context:** a gate run under load saw 2 counters over central Europe at 1.5 px per cell where

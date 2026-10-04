@@ -686,7 +686,7 @@ quick sweep as a smoke test.
     second test: at 1900 and 1800 m/px no pair more than a quarter under each other (7 at 1900
     before), 12 boxes moved, by 3.2 px at most; at 1200 m/px none moved.
     `tests/unit/markerStacks.test.ts`, 6 new.
-- [ ] 2.7t A city's name is readable where a nation's name crosses it. The curved nation names are drawn
+- [x] 2.7t A city's name is readable where a nation's name crosses it. The curved nation names are drawn
   above the city names: at T0 a capital's name is often under the letters of its own nation. Seen in
   the pictures of PLAN 2.7r (`docs/evidence/2.7/city-names-4000m.png`, `city-names-3000m.png`): Berlin
   under the "y" of Germany, Warsaw under Poland, Budapest under Hungary, Rome under Italy, Brussels
@@ -695,6 +695,13 @@ quick sweep as a smoke test.
   drawn over the letters of a city name that is shown (the order of the layers, or the city names keep
   clear of the nation names' glyphs, or the nation names of them); the nation names of `labels1938`
   are still placed; screenshots viewed.
+  Done 2026-10-04 (ADR-76, addendum): the order of the layers. The nation names are drawn on the
+  city layer's canvas, under its dots and names; the overlay above keeps the units and the flags.
+  `tests/e2e/cityNames1938.spec.ts`, the second test, reads the overlay's pixels inside the letters
+  of every city name shown: none drawn at the three zooms. Before, measured by that test at
+  4000 m/px: something over the letters of 11 of 30 names (Berlin 505 px, Rome 442, Riga 355,
+  Budapest 326, Warsaw 282, Lisbon 179, Tirana 141, Ankara 90, Bern 76). `labels1938`,
+  `labelFades1938`, `flags1938` and `mapModes1938` pass unchanged.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

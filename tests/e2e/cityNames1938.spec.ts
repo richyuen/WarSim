@@ -106,3 +106,49 @@ test('city names are not under the T0 counters or the capital flags, and are not
   expect(running.fades).toBeGreaterThan(0);
   expect(running.jumps).toEqual([]);
 });
+
+// PLAN 2.7t: nothing is drawn over the letters of a city name. The curved nation names were
+// drawn on the canvas above the city names: Berlin stood under the "y" of Germany, Warsaw under
+// Poland, Budapest under Hungary. With the counters and the flags out of the way (PLAN 2.7r)
+// that was what was left.
+//
+// Read from the canvases: the layer above the city names (the overlay: counters, markers, flags,
+// and until now the nation names) has no pixel drawn inside the letters of a name that is shown.
+test('nothing is drawn over the letters of a city name: not a nation name, a counter or a flag', async ({ page }) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  for (const mPerPx of [4000, 3000, 2300]) {
+    await page.evaluate(({ cx, cy, m }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+    }, { cx: EX, cy: EY, m: mPerPx });
+    await settle(page);
+    const got = await page.evaluate(() => {
+      const v = window.__warsim!.view!;
+      const overlay = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
+      const px = overlay.getContext('2d')!.getImageData(0, 0, overlay.width, overlay.height).data;
+      const dpr = overlay.width / overlay.clientWidth;
+      const names = v.cityLabels.lastPlaced.filter((l) => l.nameAlpha === 1 && l.box && !l.ghost);
+      const covered: string[] = [];
+      for (const l of names) {
+        // The letters: the box without its padding and its line spacing (`nameTextBox`), whole px inside it.
+        const b = { x: l.box!.x + 2, y: l.box!.y + l.box!.h / 6, w: l.box!.w - 4, h: (l.box!.h * 2) / 3 };
+        let over = 0;
+        for (let y = Math.ceil(b.y * dpr); y < Math.floor((b.y + b.h) * dpr); y++)
+          for (let x = Math.ceil(b.x * dpr); x < Math.floor((b.x + b.w) * dpr); x++) {
+            if (x < 0 || y < 0 || x >= overlay.width || y >= overlay.height) continue;
+            if (px[(y * overlay.width + x) * 4 + 3]! > 16) over++;
+          }
+        if (over > 0) covered.push(`${v.cityLabels.city(l.index).name} (${over} px)`);
+      }
+      return { names: names.length, covered, nations: v.nationLabels.filter((n) => n.alpha === 1).length };
+    });
+    console.log(`${mPerPx} m/px: ${got.names} city names, ${got.nations} nation names; something drawn over the letters of ${got.covered.length}: ${got.covered.join(', ')}`);
+    expect(got.names, `${mPerPx} m/px`).toBeGreaterThanOrEqual(14);
+    // The nation names are there as they were (their layout has a spec of its own: labels1938).
+    expect(got.nations, `${mPerPx} m/px: nation names`).toBeGreaterThan(8);
+    expect(got.covered, `${mPerPx} m/px`).toEqual([]);
+  }
+});

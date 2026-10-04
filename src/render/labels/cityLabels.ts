@@ -296,8 +296,12 @@ export class CityLabelLayer {
     return w;
   };
 
-  /** `obstacles`: what the names keep clear of in this frame (see `layoutCityLabels`). */
-  draw(cam: Camera, dpr: number, now = performance.now(), obstacles: readonly NameObstacle[] = []): void {
+  /**
+   * `obstacles`: what the names keep clear of in this frame (see `layoutCityLabels`).
+   * `under`: draws what lies on this canvas below the dots and the names (the nation names:
+   * PLAN 2.7t), in CSS px.
+   */
+  draw(cam: Camera, dpr: number, now = performance.now(), obstacles: readonly NameObstacle[] = [], under?: (ctx: CanvasRenderingContext2D) => void): void {
     const { canvas, ctx } = this;
     const viewW = canvas.clientWidth;
     const viewH = canvas.clientHeight;
@@ -307,6 +311,11 @@ export class CityLabelLayer {
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, viewW, viewH);
+    if (under) {
+      ctx.save();
+      under(ctx);
+      ctx.restore();
+    }
     const { dots, names } = this;
     const nameState = names.frame(now);
     const placed = layoutCityLabels(this.cities, this.order, cam, this.geo, viewW, viewH, this.measure, { dot: dots.frame(now), name: nameState, place: (i) => this.places.get(i) }, obstacles);

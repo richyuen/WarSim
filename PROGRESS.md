@@ -4358,3 +4358,25 @@ Documents only.
 - **Tests:** 6 new unit tests, 1 new e2e. 597 unit tests in 79 files, 95 e2e.
 - **Next:** PLAN 2.7t (the nation names are drawn over the city names), then the review pass
   (eight iterations since the last), then 2.8.
+
+## 2026-10-04 — PLAN 2.7t: the city names are above the nation names
+
+- **Seen first** (`tests/e2e/cityNames1938.spec.ts`, the second test, on the layers as they
+  were): the overlay's pixels inside the letters of each city name shown. At 4000 m/px over
+  Europe something was drawn over 11 of 30 names: Berlin (505 px), Rome (442), Riga (355),
+  Budapest (326), Warsaw (282), Lisbon (179), Tirana (141), Ankara (90), Bern (76), Vienna and
+  Kaunas (5 each).
+- **Fix:** the order of the layers. The nation names are laid out where they were and drawn on
+  the city layer's canvas, under its dots and names. Nothing else moved: the units and the
+  flags are on the overlay, above both.
+- **After:** nothing drawn over the letters of any city name at 4000, 3000 and 2300 m/px (30,
+  27 and 18 names; 28, 23 and 16 nation names placed).
+- **Pictures looked at:** `docs/evidence/2.7/city-names-4000m.png` and `-2300m.png`, made again.
+  Berlin reads across the "y" of Germany, Warsaw across Poland, Budapest across Hungary, Rome
+  across Italy. Over Europe at T0 the counters, the flags, the city names and the nation names
+  now each read.
+- **Unchanged and passing:** `labels1938` (the nation names' layout), `labelFades1938` (it
+  composes both canvases), `flags1938`, `flagsClear1938`, `mapModes1938`, `t0map`.
+- **Tests:** 1 new e2e. 597 unit tests in 79 files, 96 e2e.
+- **The tasks before PLAN 2.8 are done** (2.7f–t). **Next:** the review pass (nine iterations
+  since the last: 2.7n1–t), with its independent read; then 2.8.

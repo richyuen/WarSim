@@ -181,7 +181,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - A name's place is one for the city: on a looping map its two copies either side of the seam
     share it, and what is in the way of one copy moves both.
   - At T1 the markers stand on the city names. The names keep clear of the T0 counters and the
-    flags only. With PLAN 2.7s.
+    flags only. (PLAN 2.7s did not take it: its markers are stacked and moved apart among
+    themselves.) The pixel check of PLAN 2.7t would see it: it is run at T0.
 - Found by the second independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
   (PLAN 2.11):
   - `nationLabels.ts` `fadeNationLabels`: on a looping map with two copies of a name in view, the

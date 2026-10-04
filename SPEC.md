@@ -360,6 +360,9 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   stands on it; when something does, it takes the first free place at once and cross-fades from
   the old one over 250 ms. A new place must be clear of a counter by 2 px; a place held only has
   to be untouched. The names are laid out after the frame's counters and flags.
+  *The order of the label layers (PLAN 2.7t):* on one canvas under the overlay, the curved
+  nation names and over them the city dots and names: a small name over a large one reads. On
+  the overlay above: the unit layers, then the capital flags.
 - **Sea zone**: id, name key, polygon (cells), lane graph nodes, adjacency, control per side.
   Built as a Voronoi over water seeded by named seas (Natural Earth marine
   polygons) and then subdivided.

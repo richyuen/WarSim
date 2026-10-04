@@ -228,8 +228,9 @@ export class MapView {
     this.overlay = document.createElement('canvas');
     this.overlay.className = 'map-labels map-nations';
     canvas.insertAdjacentElement('afterend', this.overlay);
-    // City dots and names (PLAN 1.5) under the nation names (review after 1.29: they had only
-    // been wired into the bench view).
+    // City dots and names (PLAN 1.5; review after 1.29: they had only been wired into the bench
+    // view), on a canvas under the overlay. The nation names are drawn on it too, under them
+    // (PLAN 2.7t).
     const cityCanvas = document.createElement('canvas');
     cityCanvas.className = 'map-labels map-cities';
     canvas.insertAdjacentElement('afterend', cityCanvas);
@@ -751,7 +752,7 @@ export class MapView {
     const dpr = window.devicePixelRatio || 1;
     this.drawLabels(cam, dpr, now); // wipes the overlay first
     this.drawFlags(cam, now);
-    this.cityLabels.draw(cam, dpr, now, this.nameObstacles());
+    this.drawCityLayer(cam, dpr, now);
     this.dirty = true;
   }
 
@@ -1084,12 +1085,12 @@ export class MapView {
     this.drawUnitMarkers(cam, now);
     this.drawFx(cam, now);
     this.drawFlags(cam, now);
-    this.cityLabels.draw(cam, dpr, now, this.nameObstacles());
+    this.drawCityLayer(cam, dpr, now);
     this.drawSelection(cam);
     this.frames++;
   }
 
-  /** Curved nation names on the overlay canvas (PLAN 1.29); redrawn with the map. */
+  /** Wipes the overlay for the frame, and lays out the curved nation names (PLAN 1.29) for `drawCityLayer` to draw. */
   private drawLabels(cam: Camera, dpr: number, now: number): void {
     const o = this.overlay;
     const w = this.canvas.clientWidth;
@@ -1114,8 +1115,18 @@ export class MapView {
     // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out.
     const { data, names } = this.labelData;
     const labels = fadeNationLabels(this.nameStates, now, (state) => layoutNationLabels(data, names, cam, this.geo, w, h, measure, state));
+    // Laid out here; drawn with the city layer, under its dots and names (`drawCityLayer`).
     this.nationLabels = labels;
-    drawNationLabels(ctx, labels, LABEL_FONT);
+  }
+
+  /**
+   * The canvas under the overlay: the nation names, and over them the city dots and names (PLAN
+   * 2.7t). The nation names were drawn on the overlay, above the city names: a capital's name
+   * stood under the letters of its own nation's. A small name over a large one reads; the other
+   * way round it does not. The units and the flags, on the overlay, are above both as before.
+   */
+  private drawCityLayer(cam: Camera, dpr: number, now: number): void {
+    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT));
   }
 
   /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */
