@@ -227,7 +227,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   Done 2026-10-03: without the stats part dd414d91 before and after; full hash ac517acf →
   93effc58. The section is renamed `stats.km2`, so a save with the old `stats.rows` (cells)
   starts an empty series.
-- [ ] 1.42f Tick time is over budget again after ADR-50 and ADR-51: seed 99 × 5 years, mean
+- [x] 1.42f Tick time is over budget again after ADR-50 and ADR-51: seed 99 × 5 years, mean
   1.69 ms (budget 1.5), year 1 3.34 ms (budget 2.4), measured at 85c2e35 on 2026-10-03. PROMPT
   "KEEPING ITERATIONS SHORT": fixed before the next task that needs a full sweep, which is
   the retry of 1.42.
@@ -248,6 +248,11 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   kept by the cell setters instead of a daily scan of the map; 5-year mean −5.8% (interleaved
   runs). In the budget machine's terms 1.43–1.51 ms depending on the baseline (this machine
   drifts ±5% between runs): **not proven here**. Measure on the budget machine, or cut more.
+  Done 2026-10-03, measured on the budget machine (the one of `.cache/base5.log`, 1.42a's
+  1.59 ms) at 9c6ac4d, idle, after the gate. Rule set before the runs: three runs back to back,
+  met only if all three keep both limits. 5-year mean 1.4317, 1.4334, 1.4324 ms (≤ 1.5); year 1
+  1.6807, 1.6869, 1.6859 ms (≤ 2.4); hashes e5741d70 after year 1 and 7a8e5c27 after year 5 in
+  all three, as steps 4 and 5 logged them. Year 4 is the dearest year now (1.76 ms).
 - [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km

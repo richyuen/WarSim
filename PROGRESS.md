@@ -2704,3 +2704,27 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   the same code measured 2.93 and 3.09 ms an hour apart. Only interleaved ratios count here.
 - **1.42f still open:** in the budget machine's terms 1.43 ms (chaining today's ratios from 1.56)
   to 1.51 ms (tonight's absolute numbers); the AT needs a measurement, not an estimate.
+
+## 2026-10-03 — PLAN 1.42f closed: the tick budget measured on the budget machine
+- **Session start:** back on the machine that set the budget (`.cache/base5.log` holds PLAN
+  1.42a's 1.59 ms). `npm run critic:due`: not due (0 commits since the last remediation). HEAD
+  (9c6ac4d) was committed elsewhere, so the gate ran its code stages here: green, 61 e2e passed.
+- **Rule set before the runs:** `npm run sim -- --scenario 1938 --seed 99 --years 5` three times
+  back to back, nothing else running, after the gate had finished; met only if all three keep
+  both limits. No code changed.
+
+  | Run | 5-year mean (≤ 1.5 ms) | Year 1 (≤ 2.4 ms) | Hash year 1 / year 5 |
+  |---|---|---|---|
+  | 1 | 1.4317 | 1.6807 | e5741d70 / 7a8e5c27 |
+  | 2 | 1.4334 | 1.6869 | e5741d70 / 7a8e5c27 |
+  | 3 | 1.4324 | 1.6859 | e5741d70 / 7a8e5c27 |
+
+- **Result: met.** Years 1–5 of run 1: 1.68, 1.28, 1.26, 1.76, 1.18 ms. The three runs differ
+  by 0.1%, so the ±5% drift of the last entries belongs to the 4-core machine, not to the sim.
+  The hashes equal the ones that machine logged (steps 4 and 5): the run is the same on both.
+- **The estimate of step 5 held at its low end:** 1.43 ms by chaining the ratios from 1.56;
+  the 1.51 ms from that night's absolute numbers was the drift.
+- **Not a margin to spend:** year 4 costs 1.76 ms, above the 1.5 ms mean budget on its own. Before
+  step 4 the dear year was year 1. A world with more wars moves the cost between years; the
+  next sim rule that adds work is measured the same way (three runs, here).
+- **Next:** PLAN 1.42e (land rules by area), then the retry of 1.42 on seeds from 401.
