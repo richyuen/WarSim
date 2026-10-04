@@ -9,6 +9,7 @@ import { FlagStore } from './flagStore';
 import { drawMarkers, markerLowFade, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
+import { progress, running, smooth } from '../render/timing';
 import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -419,7 +420,7 @@ export class MapView {
    * handover, or a capital flag making way for a counter.
    */
   unitsAnimating(now = performance.now()): boolean {
-    return this.counters.animating(now) || this.handover.animating(now) || (now >= this.flagMoveStart && now - this.flagMoveStart < FLAG_MOVE_MS + 50);
+    return this.counters.animating(now) || this.handover.animating(now) || running(now, this.flagMoveStart, FLAG_MOVE_MS);
   }
   /** A unit layer animated in the last frame (see `frame`). */
   private unitsAnimated = false;
@@ -637,10 +638,7 @@ export class MapView {
         const key = `${id}:${off}`;
         seen.add(key);
         let st = this.flagPlace.get(key);
-        const ease = (s: { start: number }, v: [number, number]): number => {
-          const p = now < s.start ? 1 : Math.min(1, (now - s.start) / FLAG_MOVE_MS);
-          return v[0] + (v[1] - v[0]) * p * p * (3 - 2 * p);
-        };
+        const ease = (s: { start: number }, v: [number, number]): number => v[0] + (v[1] - v[0]) * smooth(progress(now, s.start, FLAG_MOVE_MS));
         if (!st) st = { rise: [rise ?? 0, rise ?? 0], alpha: [rise === null ? 0 : 1, rise === null ? 0 : 1], start: -Infinity };
         else if (st.alpha[1] !== (rise === null ? 0 : 1) || (rise !== null && st.rise[1] !== rise)) {
           const a = ease(st, st.alpha);

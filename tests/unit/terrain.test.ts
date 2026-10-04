@@ -1,23 +1,20 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import straitsJson from '../../data/maps/earth/straits.json';
 import { Terrain, TERRAIN_IDS } from '../../src/shared/terrain';
 import { millerLat, Y_TOP } from '../../src/sim/data/projection';
 import { applyCrossings, cellOf, loadTerrain, segmentCells, straitPath, type StraitDef } from '../../src/sim/data/terrain';
+import { earthFile } from '../helpers/earth';
 import golden from './terrain-golden.json';
 
 // PLAN 1.2: the derived terrain (tools/data/terrain.ts) is geographically right at known places,
 // stays within ±10% of the golden class counts, has plausible area shares, and every strait in
 // data/maps/earth/straits.json becomes a land-to-land crossing at both shipped sizes.
 
-const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
 const straits = straitsJson.straits as unknown as StraitDef[];
 const SIZES = [[2048, 1024], [1024, 512]] as const;
 
 function load(w: number, h: number): Uint8Array {
-  return loadTerrain(new Uint8Array(gunzipSync(readFileSync(path.join(dir, `terrain-${w}x${h}.u8.wsz`)))), w, h, straits).terrain;
+  return loadTerrain(new Uint8Array(earthFile(`terrain-${w}x${h}.u8.wsz`)), w, h, straits).terrain;
 }
 
 const KNOWN: [string, number, number, readonly string[]][] = [
@@ -94,7 +91,7 @@ describe.each(SIZES)('terrain %i×%i (PLAN 1.2)', (w, h) => {
   });
 
   it('every strait links land on both shores through crossing cells', () => {
-    const base = new Uint8Array(gunzipSync(readFileSync(path.join(dir, `terrain-${w}x${h}.u8.wsz`))));
+    const base = new Uint8Array(earthFile(`terrain-${w}x${h}.u8.wsz`));
     expect(base.includes(Terrain.Crossing)).toBe(false); // crossings are data, not baked in
     const res = applyCrossings(base, w, h, straits);
     expect(res.filter((r) => !r.linked).map((r) => r.id)).toEqual([]);

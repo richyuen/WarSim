@@ -86,6 +86,10 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   24 worker threads of one process (28 s), so it is not zlib or the machine under plain load.
   It has only been seen inside a full vitest run. `provinces.test.ts`, `terrain.test.ts` and
   `data-manifest.test.ts` read the assets without the helper's retry.
+  **Review pass 2026-10-04:** there is one loader now (`tools/headless/assets.ts`: `earthFile`
+  and `earthAsset`, read again up to three times when the gunzip fails), used by the test
+  helper, the headless tools, the preview tool and those three tests. The cause is still not
+  known; if the error shows again it is no longer a first read that failed.
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.

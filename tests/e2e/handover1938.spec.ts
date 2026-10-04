@@ -29,10 +29,8 @@ interface Layers {
 async function rest(page: Page, scale: number, running = false): Promise<Layers> {
   await page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx: CX, cy: CY, scale });
   await page.evaluate(() => window.__warsim!.view!.draw()); // the frame that sees the new zoom
-  if (running) {
-    await page.waitForFunction(() => !window.__warsim!.view!.handover.animating(performance.now()));
-    await page.waitForTimeout(350);
-  } else await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
+  if (running) await page.waitForFunction(() => !window.__warsim!.view!.handover.animating(performance.now()));
+  else await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
   return page.evaluate(() => {
     const v = window.__warsim!.view!;
     v.draw();

@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { decodeElevation, encodeElevation, halveElevation } from '../../src/shared/elevation';
 import { project } from '../../src/sim/data/projection';
+import { earthFile } from '../helpers/earth';
 
 // PLAN 0.18: the committed runtime map assets match public/data/earth/manifest.json and are
 // geographically sane (projection, land mask and elevation agree with known places).
@@ -26,7 +26,7 @@ const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8'
   sources: { id: string; sha256: string; license: string }[];
 };
 
-const load = (a: Asset): Uint8Array => gunzipSync(readFileSync(path.join(dir, a.path)));
+const load = (a: Asset): Uint8Array => earthFile(a.path);
 const asset = (kind: string, w: number): Asset => {
   const a = manifest.assets.find((x) => x.kind === kind && x.width === w);
   if (!a) throw new Error(`no ${kind} asset at width ${w}`);

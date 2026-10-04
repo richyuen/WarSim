@@ -84,16 +84,21 @@ src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all seri
 src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), constants, enums,
                    rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts,
                    calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
-src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, derive/
-src/render/        camera.ts, gl/ (gpuTimer), map/ (MapRenderer), units/ (ProxyRenderer, atlas), fx/, labels/, lod/
-src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), i18n/{index.ts: t(), locale signal,
-                   pseudo-locale 'qps'; en.json = source of truth}; later panels, theme
-src/editor/        paint tools, undo stack, flag editor, scenario IO
+src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts
+src/render/        camera.ts, timing.ts (the animations' clock), gl/ (gpuTimer), map/ (MapRenderer), labels/,
+                   units/ (ProxyRenderer, atlas, counters, markers, handover, formationDots); later fx/, lod/
+src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
+                   Actions and God tabs, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
+                   FlagEditor, WarBanners, MapLegend), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
+                   en.json = source of truth}
+                   (no src/editor/: the editor is src/sim/editor.ts and scenarioEdit.ts, src/ui/EditorPanel.tsx
+                   and FlagEditor.tsx, and src/app/scenarioFiles.ts)
 src/app/           main.tsx (no ?scenario → title screen; ?scenario=1938|toy → game.tsx), MapView.ts, simClient.ts,
-                   hud.ts (persisted speed/pause), input/
-                   (CameraController), testApi.ts (__warsim), bench/ (bench.html pages: A B BP P R T W F);
-                   later settings, autosave, screenshot
-tools/             data/, headless/, parity/, bench/, dmath/, eslint/; later soak/, sweep/
+                   hud.ts (persisted speed/pause, editor and God tools, drag painting), input/ (CameraController),
+                   settings.ts, autosave.ts and saveDb.ts (IndexedDB), scenarioFiles.ts, gameUrl.ts, player.ts,
+                   flagStore.ts, testApi.ts (__warsim), bench/ (bench.html pages: A B BP P R T W F)
+tools/             data/ (pipeline, scenario previews), headless/ (runner, asset loader), sweep/, diag/, gate/,
+                   parity/, bench/, dmath/, eslint/; later soak/
 data/              terrain.json, units/, templates/, tech/, traits/, buildings/, flags/presets.json, maps/<id>/{map,straits}.json,
                    scenarios/<id>/{scenario,nations,ownership,diplomacy,cities,city-rules,flags,oob,economy}.json
                    (every file validated by tests/unit/data-schemas.test.ts; unknown paths are rejected)
@@ -235,15 +240,21 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) �
   unchanged; (I5) save bytes → load → save bytes are identical.
 
 ### 2.7 Persistence [ADR-9]
-- **Save** (`.warsim-save`): `gzip( header{magic 'WSIM', version, scenarioHash, seed,
-  tick, mapW, mapH} + sections[{name, dtype, length, bytes}] + json{strings,
-  commandLog} )` via `CompressionStream`/`DecompressionStream` (browser + Node 18+).
-- **Scenario** (`.warsim-scenario`): `gzip(JSON meta + RLE rasters (terrain, owner,
-  controller, province) + flags SVG)`. Shareable.
-- **Autosave**: IndexedDB, 3 rotating slots, every N sim months (setting) and on page hide.
-- _Phase 0 state:_ `Sim.save()` returns the raw WSEC section stream (`src/sim/core/sections.ts`);
-  the gzip container and header above arrive with PLAN 1.27.
+As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
+- **Save**: the sim's WSEC section stream (`src/sim/core/sections.ts`: every section of
+  `World.parts()`, the command log included), gzipped with `CompressionStream` (browser and
+  Node 18+; `src/shared/saveCodec.ts`). No header of its own: the seed and the tick are in the
+  `meta` section.
+- **Scenario** (`.warsim-scenario`, `src/shared/scenarioFile.ts`): gzip of a magic line, a JSON
+  header line (name, base scenario, map size, tick, state hash) and the state bytes without run
+  history (`Sim.exportScenario`). Shareable; loaded in the editor or from the title screen.
+- **IndexedDB** (`src/app/saveDb.ts`, database `warsim`, store `saves`): slot `autosave` (one
+  slot; every 60 s of real time while running, on page hide and on Main menu) and slot
+  `scenario` (the scenario file on its way from the title screen into its game).
 - Settings (speed, paused, UI size, locale, unit size, map mode, etc.): localStorage.
+- **Designed, not built:** a `.warsim-save` file on disk with its own header (magic, version,
+  scenario hash), several rotating autosave slots, an autosave interval in sim months as a
+  setting (PARITY row 65).
 
 ---
 
@@ -935,7 +946,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 
 Continuous zoom `z = log2(screen px per world km)`. Tiers are bands with overlap.
 Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresis
-±0.15 for discrete decisions such as clustering level).
+±0.15 for discrete decisions such as clustering level). As built (2026-10-04): the counters'
+cluster level and the T0 ↔ T1 handover are states with hysteresis and a timed change
+[ADR-64]; the T1 → T2 fade is still a curve of the zoom alone, without hysteresis, until
+PLAN 2.7. The short animations share one clock (`src/render/timing.ts`).
 
 | Tier | m/px | Map | Forces |
 |---|---|---|---|

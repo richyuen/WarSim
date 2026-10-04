@@ -1,17 +1,12 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { decodeAdmin1, encodeAdmin1, type Admin1Meta } from '../../src/shared/admin1';
 import { xxhash32View } from '../../src/sim/core/hash';
 import { project } from '../../src/sim/data/projection';
 import { buildProvinceRaster } from '../../src/sim/data/provinces';
+import { earthAsset } from '../helpers/earth';
 
-const dir = path.resolve(import.meta.dirname, '../../public/data/earth');
-const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')) as { assets: { kind: string; path: string }[] };
-const file = (kind: string): Buffer => gunzipSync(readFileSync(path.join(dir, manifest.assets.find((a) => a.kind === kind)!.path)));
-const geo = decodeAdmin1(file('admin1-geometry'));
-const meta = JSON.parse(file('admin1-meta').toString('utf8')) as Admin1Meta[];
+const geo = decodeAdmin1(earthAsset('admin1-geometry'));
+const meta = JSON.parse(earthAsset('admin1-meta').toString('utf8')) as Admin1Meta[];
 
 describe('admin-1 assets', () => {
   it('geometry and metadata line up and the codec round-trips', () => {

@@ -11,6 +11,7 @@
  * the end they are replaced by the target level, already at the same positions. No counter
  * appears or disappears anywhere except under a counter in the same place.
  */
+import { progress, running } from '../timing';
 import { strengthText } from './markers';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 
@@ -221,7 +222,7 @@ export class CounterLayer {
 
   /** True while a split/merge or a fold animation runs (the view keeps redrawing). */
   animating(now: number): boolean {
-    return (this.trans !== null && now - this.trans.start < SPLIT_MS + 50) || (now >= this.foldStart && now - this.foldStart < FOLD_MS + 50);
+    return (this.trans !== null && running(now, this.trans.start, SPLIT_MS)) || running(now, this.foldStart, FOLD_MS);
   }
 
   /**
@@ -235,8 +236,6 @@ export class CounterLayer {
     now: number,
     boxOf: (total: number, others: number) => [number, number],
   ): { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number }[] {
-    // A clock that ran backwards (tests draw at made-up times) leaves a fade done.
-    const progress = (since: number): number => (now < since ? 1 : Math.min(1, (now - since) / FOLD_MS));
     const near = (a: { x: number; y: number }, b: { x: number; y: number }): boolean => Math.abs(a.x - b.x) * scale <= INHERIT_PX && Math.abs(a.y - b.y) * scale <= INHERIT_PX;
     // At the end of a split or merge a cluster and its children swap in the same place, under
     // new keys. A counter with a new key takes over the state of the counter of its nation that
@@ -271,11 +270,11 @@ export class CounterLayer {
         st = { folded, since: -Infinity };
       } else if (st.folded !== folded) {
         // A turn in mid-fade goes on from the opacity reached.
-        st = { folded, since: now - (1 - progress(st.since)) * FOLD_MS };
+        st = { folded, since: now - (1 - progress(now, st.since, FOLD_MS)) * FOLD_MS };
       }
       this.folds.set(it.key, st);
       if (st.since <= now && st.since > latest) latest = st.since;
-      const p = ease(progress(st.since));
+      const p = ease(progress(now, st.since, FOLD_MS));
       const alpha = st.folded ? 1 - p : p;
       seen.push({ nation: it.c.nation, x: it.x, y: it.y, state: st, alpha });
       if (alpha <= 0) continue; // folded: its strength is in its neighbour's number
@@ -289,7 +288,7 @@ export class CounterLayer {
   /** The counters to show at `now`: positions in cells, after any animation. */
   layout(src: readonly CounterSource[], scale: number, now: number, visible: boolean): { key: string; c: Cluster; x: number; y: number }[] {
     const target = clusterLevel(scale, this.level);
-    if (this.trans && now - this.trans.start >= SPLIT_MS) {
+    if (this.trans && progress(now, this.trans.start, SPLIT_MS) >= 1) {
       this.level = this.trans.to;
       this.trans = null;
     }
@@ -307,7 +306,7 @@ export class CounterLayer {
     const fine = Math.min(from, to);
     const coarse = Math.max(from, to);
     const d = coarse - fine;
-    const p = ease(Math.max(0, Math.min(1, (now - start) / SPLIT_MS)));
+    const p = ease(progress(now, start, SPLIT_MS));
     const s = to < from ? 1 - p : p; // 1 = at the parent's centroid
     const parents = buildClusters(src, coarse);
     return [...buildClusters(src, fine).entries()].map(([key, c]) => {

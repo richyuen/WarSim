@@ -3162,3 +3162,44 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   Flags can still overlap each other where capitals are close (Brussels, Amsterdam,
   Luxembourg): as before.
 - **Next:** PLAN 2.4 (FireEvent visuals). PLAN 1.43–1.45, the critic's B5, B6 and B7, are done.
+
+## 2026-10-04 — Review pass after PLAN 1.43–1.45
+The last review pass was PLAN 1.41 (the Phase 1 review); PROMPT step 9 asks for one about every
+five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
+- **Refactor, one clock:** the T0 ↔ T1 handover, the counters' folds and the capital flags each
+  had their own copy of the same three rules (progress of a timed change; a clock that ran
+  backwards leaves it done; "running" lasts 50 ms past the end so the end state is drawn), and
+  the counters' split and merge had a fourth without the backwards rule. They are
+  `src/render/timing.ts` now (`progress`, `running`, `smooth`), with its own unit test. The
+  split and merge gained the backwards rule: before, a level change drawn at a made-up future
+  time left the counters at the old level, redrawing every frame, until real time caught up
+  (only tests draw that way).
+- **Refactor, one asset loader:** `tests/helpers/earth.ts` and `tools/headless/assets.ts` each
+  looked up the manifest and gunzipped, only the first with the retry for the "incorrect data
+  check" flake, and three unit tests read the files themselves. One loader now
+  (`tools/headless/assets.ts`), with the retry, used by all of them. BLOCKERS updated: the cause
+  of the flake is still unknown.
+- **Dead code:** a scan of every export in `src/` and `tools/` found three that nothing uses:
+  two types (`UnitClass`, parity's `Status`) and `STAT_FIELDS`, which names the fields of a
+  statistics record. Left: they document, and cost nothing.
+- **A clock-based wait removed:** `handover1938.spec.ts` slept 350 ms before its running checks;
+  it waits for the handover only.
+- **SPEC drift:**
+  - the module layout listed `src/editor/`, `src/render/fx/` and `lod/`, `src/worker/derive/`,
+    none of which exist, and "later settings, autosave, screenshot", all of which do;
+  - §2.7 Persistence described the design of ADR-9 (a save header, RLE rasters in scenario
+    files, three rotating autosave slots by sim months). It now says what is built and lists the
+    rest as designed, not built;
+  - §8 said every layer has hysteresis; it says which have it (cluster level, T0 ↔ T1) and which
+    has not yet (T1 → T2, PLAN 2.7).
+- **PARITY, stale statuses:** Table 2 row 1 (semantic zoom) and row 11 (headless and sweep
+  tooling) still said "not started" with three tiers and both tools in place: partial, with
+  evidence. Row 76 said the seed UI and the seeded 1938 scenario were missing; both exist since
+  1.39a. Table 2 is unscored and row 76 was already partial, so the score did not move.
+- **e2e length:** the suite went from 64 tests in 1.7 min to 73 in 2.9 min in this session
+  (title, drag painting, handover, declutter, flags). The two longest new specs step the sim a
+  year or run it at top speed; nothing in them is waiting on a fixed sleep now.
+- **Missing tests:** none found for 1.43–1.45 beyond the clock's own (added). Not looked at in
+  this pass: the code of 2.1–2.3 and 1.42 beyond what the scans above touch.
+- **Next:** PLAN 2.4 (FireEvent visuals: tracers, muzzle flashes, impacts; casualty removal;
+  wrecks). It is the first answer to critic B2 (nothing to see at close zoom).

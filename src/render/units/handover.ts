@@ -5,6 +5,7 @@
  * a cross-fade over HANDOVER_MS of real time. Wherever the camera stops, one layer is drawn at
  * full opacity and the other not at all.
  */
+import { progress, running, smooth } from '../timing';
 import { T1_MAX_M } from './markers';
 
 export const HANDOVER_MS = 250;
@@ -17,11 +18,6 @@ export class TierHandover {
   /** When the layer shown began to fade in (ms on the clock of `now`). */
   private start = -Infinity;
 
-  /** Progress of the running fade in [0, 1]. A clock that ran backwards counts as a fade done. */
-  private progress(now: number): number {
-    return now < this.start ? 1 : Math.min(1, (now - this.start) / HANDOVER_MS);
-  }
-
   /** The markers' share of the two layers at `now`, in [0, 1]; the counters have the rest. */
   share(mPerPx: number, now: number): number {
     // T1 reaches up to T1_MAX_M inclusive, as `tierOf` has it.
@@ -29,17 +25,16 @@ export class TierHandover {
     if (this.markers === null) this.markers = want;
     else if (want !== this.markers) {
       // A turn in mid-fade goes on from the share reached: the smoothstep is symmetric.
-      const reached = this.progress(now);
+      const reached = progress(now, this.start, HANDOVER_MS);
       this.markers = want;
       this.start = now - (1 - reached) * HANDOVER_MS;
     }
-    const p = this.progress(now);
-    const s = p * p * (3 - 2 * p);
+    const s = smooth(progress(now, this.start, HANDOVER_MS));
     return this.markers ? s : 1 - s;
   }
 
   /** True while a cross-fade runs (the view keeps redrawing). */
   animating(now: number): boolean {
-    return now >= this.start && now - this.start < HANDOVER_MS + 50;
+    return running(now, this.start, HANDOVER_MS);
   }
 }
