@@ -2769,3 +2769,6 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   the next question about later years.
 - **Next:** PLAN 1.42e2 (overextension by km²), then 1.42e3 (admin cost) with the three-run tick
   measurement, pinned.
+- **Corrected after the commit (docs only):** ADR-57 gave Lebanon as 36 cells and 10,452 km²,
+  which was its real area and a guess; on the map it is 35 cells and 9,874 km². The note under
+  PLAN 7.1b said the shares of land were km² already; two of the three rules are still open.

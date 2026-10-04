@@ -408,7 +408,8 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
-  The shares of land are km² already (PLAN 1.42e, ADR-57). Still in cells: `OVEREXT_CELLS`,
+  The shares of land become km² in PLAN 1.42e (ADR-57: a war's shares are done; overextension
+  and the admin cost are 1.42e2 and 1.42e3). Left in cells for this task: `OVEREXT_CELLS`,
   `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
   AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
   tick and memory budgets.

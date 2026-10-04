@@ -191,8 +191,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   cells of the mean owned cell (40 × 212.2 = 8,487). The old comment said "≈ 15,000 km²", which
   is 40 cells at the equator (15,282 km²); between 35°N and 55°N 40 cells were 11,000–6,300
   km². The mean keeps the limit where it was for the world as a whole and only moves it by
-  latitude. At the 1938 start Danzig and Luxembourg are below it either way;
-  Lebanon (10,452 km², 36 cells) was below 40 cells and is above 8,500 km².
+  latitude. At the 1938 start Danzig (7 cells, 1,135 km²) and Luxembourg (14 cells, 2,654
+  km²) are below it either way; Lebanon (35 cells, 9,874 km² on the map) was below 40 cells and
+  is above 8,500 km².
 - **Not converted here:** overextension (PLAN 1.42e2) and the admin cost (PLAN 1.42e3), each
   its own commit. Left to PLAN 7.1b, because they are distances or per-cell mechanics and not
   shares of land: `OVEREXT_CELLS` (distance to the capital), `MILITIA_PER_CELLS`, and the
@@ -209,7 +210,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Hash:** seed 99 after one year e5741d70 → 23734db3; after five years 7a8e5c27 → 6738d695.
 - **Tick time** (seed 99, performance cores, see PROGRESS): year 1 1.67 → 2.05 ms (budget 2.4);
   5-year mean 1.43 → 1.37 ms (budget 1.5). Year 1 has 29 major battles instead of 8. The tallies
-  themselves cost nothing measurable (the war system is 0.06 ms a tick before and after).
+  themselves cost nothing measurable (the war system: 0.07 ms a tick before, 0.06 after).
 - **Quick sweep** (seeds 1–10 × 20 years, seen seeds, no verdict at 20 years): limits 10 of 10,
   riser 7 of 10, faller 10 of 10 (7 and 10 after ADR-56). Largest nation 12.7–16.2% of the land,
   92–139 nations alive, land moving in the last five years 7.8–16.6%. Largest faller by seed:
