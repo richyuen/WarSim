@@ -405,8 +405,17 @@ quick sweep as a smoke test.
   AT: e2e compares the individual count to the sim strength for 20 random elements.
   The rule (ADR-69): `min(strength, 64)` figures. `tests/e2e/individuals1938.spec.ts` checks every
   element of three divisions, and names 20 by a seeded draw.
-- [ ] 2.7 Fade curves & hysteresis for all layers; marker→elements morph.
+- [x] 2.7a Slots stay: an element keeps its place in its formation's block when others die (ADR-70; split
+  from 2.7: the sprites of a block re-formed in one frame when deaths took its count across a step of the grid).
+  AT: after such deaths the snapshot draws every survivor where it stood (unit, and e2e over an hour of
+  battle); the pinned hash does not move.
+- [ ] 2.7b Fade curves & hysteresis for all layers: T1 ↔ T2 and T2 ↔ T3 are states with hysteresis and a
+  cross-fade in time, as T0 ↔ T1 is (ADR-64).
   AT: scripted zoom recording: max per-pixel luminance jump between consecutive frames below threshold in unit areas (no popping).
+  Read as: the luminance is compared over the frames of each tier change at a fixed camera (16 ms apart,
+  the unit layers alone); a zoom moves every edge by pixels a frame, which is not popping. Between camera
+  steps the layers' opacities are compared instead.
+- [ ] 2.7c The marker → elements morph: the box shrinks into the group and fades, the strength bar lingers.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

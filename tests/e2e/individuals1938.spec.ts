@@ -206,6 +206,9 @@ test('T3: an element is its individuals, one for each unit of strength and at mo
       continue;
     }
     const e0 = posOf.get(id)!;
+    // The element kept its slot (PLAN 2.7a), though the division went from 22 elements to 17,
+    // across a step of the block's grid.
+    expect([e1.x, e1.y], `element ${id}`).toEqual([e0.x, e0.y]);
     expect(left.length).toBeLessThanOrEqual(old.length);
     if (left.length < old.length) fewer++;
     for (let k = 0; k < left.length; k++) {

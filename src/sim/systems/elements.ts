@@ -46,6 +46,20 @@ export function equipFormation(world: World, fid: number, template: number): voi
   recomputeStrength(world, fid);
 }
 
+/**
+ * Slots of formation `fid`'s block: the elements its template gave it. Slots are numbered when
+ * the formation is equipped and never reassigned, so an element keeps its place when others die
+ * and the block shows the gaps (SPEC §3.6, PLAN 2.7a). `fallback` for a formation whose template
+ * the scenario does not have.
+ */
+export function slotCount(world: World, fid: number, fallback: number): number {
+  const rule = world.rules?.templates[world.formations.cols.template[fid]!];
+  if (!rule) return fallback;
+  let n = 0;
+  for (const e of rule.elements) n += e.count;
+  return Math.max(n, fallback);
+}
+
 /** Formation strength in men from its elements (no-op for element-less formations). */
 export function recomputeStrength(world: World, fid: number): void {
   const list = elementIndex(world).get(fid);
@@ -102,11 +116,12 @@ export function settleFormation(world: World, fid: number): void {
 function settleElements(world: World, fid: number, list: number[]): void {
   const e = world.elements;
   const fc = world.formations.cols;
+  const slots = slotCount(world, fid, list.length);
   const live = list.filter((id) => {
     if (e.cols.strength[id]! > 0) return true;
-    // Its end is an event, not state (PLAN 2.4b): at the slot it stood in, in the block as it
-    // was before this settle. Elements that go with a disbanded or removed formation have none.
-    const [x, y] = slotPose(fc.x[fid]!, fc.y[fid]!, fc.facing[fid]!, e.cols.slot[id]!, list.length, SLOT_SPACING);
+    // Its end is an event, not state (PLAN 2.4b): at the slot it stood in. Elements that go
+    // with a disbanded or removed formation have none.
+    const [x, y] = slotPose(fc.x[fid]!, fc.y[fid]!, fc.facing[fid]!, e.cols.slot[id]!, slots, SLOT_SPACING);
     world.out.emit(world.tick, EventKind.ElementDestroyed, id, e.cols.unit[id]!, x, y);
     e.remove(id);
     return false;

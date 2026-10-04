@@ -3455,3 +3455,24 @@ since, with three test races found in their gate runs.
   It owns three things left open on the way: the T1 → T2 fade by zoom, the plain switch at
   T2 → T3, and a block of sprites that re-forms in one frame when its element count crosses a
   step of the grid. ADR-69 also leaves it a choice: how a battalion's losses show at T3.
+
+## 2026-10-04 — PLAN 2.7a: slots stay when elements die (ADR-70)
+
+- **PLAN 2.7 is three tasks now:** 2.7a (this), 2.7b (T1 ↔ T2 and T2 ↔ T3 as timed handovers,
+  with the acceptance test of 2.7, read as a comparison of frames at a fixed camera), 2.7c (the
+  marker → elements morph).
+- **The defect** (noted in ADR-67 and ADR-69): an element's place was computed from the number
+  of elements alive, and the block's grid follows that number. A death re-centred the rows; a
+  death that took the count across a step of the grid (28 → 24: 8 columns → 7) moved every
+  sprite of the division in one frame.
+- **The fix:** the count is the template's, which is what the slots were numbered for
+  (`slotCount`). Fire records, the `ElementDestroyed` event and the snapshot all use it.
+  SPEC §3.6 said this from the start (`slotPose(formation, slot, aliveMask)`).
+- **Not state:** the three users are tick outputs or the snapshot. No column was added. The
+  pinned hash did not move.
+- **Tests:** one new unit test (the snapshot of a T2 view before and after deaths across a
+  grid step; the next death's event at its slot); the T3 spec now also checks that every
+  element that lives through its hour of battle keeps its place, while the Chinese division
+  goes from 22 elements to 17. Gate: 531 unit tests in 74 files, 8 ten-year tests, 78 e2e,
+  parity 46.3%.
+- **Next:** PLAN 2.7b.

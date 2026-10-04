@@ -24,7 +24,7 @@ import { hash32, hashToUnit } from '../core/hash';
 import { sqrt } from '../core/dmath';
 import { SLOT_SPACING, slotPose } from '../core/pose';
 import type { UnitRule, World } from '../world';
-import { applyLoss, elementIndex, settleFormation } from './elements';
+import { applyLoss, elementIndex, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
 export const CONTACT_CELLS = 1.5;
@@ -201,8 +201,8 @@ export function combatSystem(world: World): void {
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;
         const tl = idx.get(tf)!;
-        const [x0, y0] = slotPose(f.x[sf]!, f.y[sf]!, f.facing[sf]!, ec.slot[s]!, sl.length, SLOT_SPACING);
-        const [x1, y1] = slotPose(f.x[tf]!, f.y[tf]!, f.facing[tf]!, ec.slot[t]!, tl.length, SLOT_SPACING);
+        const [x0, y0] = slotPose(f.x[sf]!, f.y[sf]!, f.facing[sf]!, ec.slot[s]!, slotCount(world, sf, sl.length), SLOT_SPACING);
+        const [x1, y1] = slotPose(f.x[tf]!, f.y[tf]!, f.facing[tf]!, ec.slot[t]!, slotCount(world, tf, tl.length), SLOT_SPACING);
         const subtick = hash32(world.seed, world.tick, s, 0x5b7) % 60;
         fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, x0, y0, x1, y1);
       }

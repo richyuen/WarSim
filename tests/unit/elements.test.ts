@@ -3,9 +3,11 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { EventKind } from '../../src/shared/events';
-import { SLOT_SPACING, slotPose } from '../../src/sim/core/pose';
-import { applyLoss, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
+import type { FromWorker, Snapshot } from '../../src/shared/protocol';
+import { SLOT_SPACING, slotGrid, slotPose } from '../../src/sim/core/pose';
+import { applyLoss, destroyFormation, elementIndex, settleFormation, slotCount } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
+import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, INF_DIV, nationId } from '../helpers/sim1938';
 
@@ -72,6 +74,57 @@ describe('element invariants (review after PLAN 1.14)', () => {
     expect(w.elements.count).toBe(before - n);
     expect(w.out.events.length).toBe(6);
     checkInvariants(w);
+  });
+
+  it('a slot is a place in the block the template made: it stays when other elements die (PLAN 2.7a)', () => {
+    const s = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
+    const w = s.world;
+    const fc = w.formations.cols;
+    const ec = w.elements.cols;
+    const id = w.formations.ids()[0]!;
+    const list = [...elementIndex(w).get(id)!];
+    const full = list.length;
+    expect(slotCount(w, id, 0)).toBe(full);
+    // Enough deaths to take the count across a step of the grid (28 → 24: 8 columns → 7).
+    let k = 1;
+    while (slotGrid(full - k).cols === slotGrid(full).cols) k++;
+    expect(k).toBeLessThan(full - 2);
+    const pose = (e: number): [number, number] => slotPose(fc.x[id]!, fc.y[id]!, fc.facing[id]!, ec.slot[e]!, full, SLOT_SPACING);
+    const survivors = list.slice(k);
+    const before = new Map(survivors.map((e) => [e, pose(e)]));
+
+    // The snapshot of a view at T2 draws each element at its slot: before, and after the deaths.
+    let last: Snapshot | null = null;
+    const server = new SimServer((m: FromWorker) => {
+      if (m.type === 'snapshot') last = m.snap;
+    });
+    server.sim = s;
+    const sub = { bbox: [fc.x[id]! - 2, fc.y[id]! - 2, fc.x[id]! + 2, fc.y[id]! + 2] as [number, number, number, number], z: 0, tier: 2 as const, wantsElements: true };
+    const drawn = (): Map<number, [number, number]> => {
+      if (last) server.handle({ type: 'ack', seq: last.seq, buffers: last.buffers }, 0);
+      server.handle({ type: 'subscribe', sub }, 0);
+      const el = last!.elements;
+      const out = new Map<number, [number, number]>();
+      for (let i = 0; i < el.count; i++) if (el.formation[i] === id) out.set(el.id[i]!, [el.x[i]!, el.y[i]!]);
+      return out;
+    };
+    const shown = drawn();
+    for (const [e, p] of before) expect(shown.get(e)).toEqual(p);
+
+    for (const e of list.slice(0, k)) applyLoss(w, e, ec.strength[e]!);
+    settleFormation(w, id);
+    expect(elementIndex(w).get(id)).toEqual(survivors);
+    expect(slotCount(w, id, 0)).toBe(full); // the block is as large as it was
+    const after = drawn();
+    expect([...after.keys()]).toEqual(survivors);
+    for (const [e, p] of before) expect(after.get(e), `element ${e}`).toEqual(p);
+
+    // The next to die is reported where it stood, in that same block.
+    const victim = survivors[2]!;
+    w.out.events.length = 0;
+    applyLoss(w, victim, ec.strength[victim]!);
+    settleFormation(w, id);
+    expect(w.out.events.slice(4, 6)).toEqual(before.get(victim));
   });
 
   it('spawnFormation with a template places a formation with its elements; without one, a bare formation (PLAN 2.5)', () => {

@@ -539,6 +539,10 @@ Element (authoritative unit proxy) {
     Phases 4–5.
 - **Slotted pose** is `slotPose(formation, slot, aliveMask)`, a pure function. It is the same
   code in the sim (for engagement start positions) and in the snapshot builder.
+  *As built (`sim/core/pose`, PLAN 2.7a, ADR-70):* `slotPose(x, y, facing, slot, slots, spacing)`, where
+  `slots` is the element count of the formation's template. Slots are numbered when the formation is
+  equipped and never reassigned, so an element's place does not depend on which others are alive: the
+  block keeps its shape and shows the gaps. Fire records, `ElementDestroyed` and the snapshot use it.
 - **Engaged pose** is integrated per tick inside a battle (advance or withdraw toward
   a target or cover, clamped to passable fine-mask terrain).
 

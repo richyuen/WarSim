@@ -45,7 +45,7 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { elementIndex } from '../sim/systems/elements';
+import { elementIndex, slotCount } from '../sim/systems/elements';
 import { SLOT_SPACING, slotPose } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -844,10 +844,12 @@ export class SimServer {
       const py = born ? fy : this.prevY[f]!;
       const fa = ft.cols.facing[f]!;
       const fl = (ft.cols.moving[f] === 1 ? FormationFlag.moving : 0) | (ft.cols.engaged[f] === 1 ? FormationFlag.engaged : 0);
+      // The block as the template made it: an element keeps its slot when others die (PLAN 2.7a).
+      const slots = slotCount(world, f, list.length);
       for (const e of list) {
         const slot = ec.slot[e]!;
-        const [cx, cy] = slotPose(fx, fy, fa, slot, list.length, SLOT_SPACING);
-        const [qx, qy] = slotPose(px, py, fa, slot, list.length, SLOT_SPACING);
+        const [cx, cy] = slotPose(fx, fy, fa, slot, slots, SLOT_SPACING);
+        const [qx, qy] = slotPose(px, py, fa, slot, slots, SLOT_SPACING);
         id[j] = e;
         formation[j] = f;
         nation[j] = ft.cols.nation[f]!;

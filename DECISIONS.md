@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-70 · 2026-10-04 · accepted — A slot is a place in the block the template made (PLAN 2.7a)
+
+- **Context:** an element's place was `slotPose(formation, slot, count)` with `count` the
+  number of elements alive. The block is a grid whose width follows the count (8 columns for
+  28 elements, 7 for 24). So when deaths took the count across a step, every surviving sprite
+  of the division took a new place in one frame, and with each single death the block's rows
+  re-centred. SPEC §3.6 had it otherwise from the start: `slotPose(formation, slot, aliveMask)`.
+- **Decision:** the count is the element count of the formation's template, which is what the
+  slots were numbered for when the formation was equipped (`slotCount` in
+  `sim/systems/elements.ts`). An element keeps its place for as long as it lives; the block
+  keeps its shape and shows gaps where elements died.
+  - The three users of a slot's place take it: the fire records of combat, the
+    `ElementDestroyed` event and the snapshot's element section. They agree, as before.
+  - No column was added. The template index is in the formation table already; a new section
+    would have moved the pinned hash.
+- **The pinned hash did not move,** and could not: all three users are tick outputs or the
+  snapshot. Nothing in the sim's state reads a slot's place (formations fight from their
+  centres). The sweep stage of the gate confirms it.
+- **What the player sees:** a division that has lost a third of its elements is a block with
+  holes, of the size it had. Before, it closed up into a smaller block, which read as a fresh
+  small formation.
+- **Tests:** `tests/unit/elements.test.ts` (deaths that take the count across a step of the
+  grid: the snapshot draws every survivor where it stood, and the next death is reported at its
+  slot in the same block); `tests/e2e/individuals1938.spec.ts` (an hour of battle in which a
+  division goes from 22 elements to 17: every element that lives keeps its place).
+
 ### ADR-69 · 2026-10-04 · accepted — T3: an element is `min(strength, 64)` figures in its footprint (PLAN 2.6, critic B2)
 
 - **Context:** SPEC §8 said of T3 "element → individuals (exact for vehicles, ships and planes;
@@ -288,7 +314,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   has shown one. SPEC §6.1 "burning wrecks" for armour is PLAN 3.6.
 - **Noticed, not changed:** a block's layout depends on its element count. When deaths take
   the count across a step of the grid (for example 25 to 24), the survivors' sprites take new
-  places in one frame. PLAN 2.7 (no popping) owns it.
+  places in one frame. PLAN 2.7 (no popping) owns it. **Changed since: ADR-70.**
 
 ### ADR-66 · 2026-10-04 · accepted — Fire at T2: a FireEvent is a shot, and a shooter shows one at a time (PLAN 2.4a, critic B2)
 
