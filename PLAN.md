@@ -702,6 +702,59 @@ quick sweep as a smoke test.
   4000 m/px: something over the letters of 11 of 30 names (Berlin 505 px, Rome 442, Riga 355,
   Budapest 326, Warsaw 282, Lisbon 179, Tirana 141, Ankara 90, Bern 76). `labels1938`,
   `labelFades1938`, `flags1938` and `mapModes1938` pass unchanged.
+- [ ] 2.7v The T1 markers come to rest (ADR-74, third read, finding 1; a defect of PLAN 2.7s2). `nudgeApart`
+  starts from the moves of the frame before. Where three or more shown markers are crowded beyond
+  what 6 px can part, its result fed back to it goes round a cycle: the targets change by more than
+  0.01 px a frame, and the layer says for ever that it animates. A paused view at T1 then draws every
+  frame, and `settle` in a spec would throw.
+  - Run by the reader on 1938, seed 99, sampled every 10 days for 540 days at six zooms from 2000 to
+    500 m/px: 29 of 324 samples never rest, the first at day 90. At ticks 0, 1 and 336, where the specs
+    look, all rest.
+  - Run here: three markers at px (18.57, 16.65) of nation 2, (10.4, 1.19) of nation 1 and (11.66,
+    14.84) of nation 4. Fed its own output 40 times `nudgeApart` gives 31 different results; the
+    layer, given those three every 16 ms, still animates after 4,000 frames.
+  AT: unit: those three markers, and 3,000 random clusters of 2 to 8 markers: the layer, given the
+  same markers every 16 ms, is at rest within 20 frames. e2e: 1938, seed 99, paused at day 90, at
+  2000 m/px over cell (1080, 306): the view comes to rest.
+- [ ] 2.7w A marker that goes into a stack fades where it stands (ADR-74, third read, finding 3; a defect of
+  PLAN 2.7s2). A box that was moved apart from another nation's marker loses its move in the frame
+  it goes into a stack: it jumps back onto its formation, up to 6 px, in full, and then fades.
+  Run here, the reader's case (a of nation 7 at px (0, 0), b of nation 7 at (19.6, 0), c of nation 8 at
+  (19.6, 12); b's army moves 0.2 px towards a): b is drawn at (19.60, −5.02), and in the next frame
+  at (19.40, 0.00), both at opacity 1.
+  AT: unit: in that case b is drawn, in the frame it goes into the stack and in every frame of its
+  fade, where it was drawn the frame before (but for the 0.2 px its army moved).
+- [ ] 2.7x A table loaded larger than it was still tells its rows apart (ADR-74, third read, finding 2; a
+  defect of PLAN 2.7o). `Table.deserialize` makes `alive` and the columns anew at the loaded size and
+  leaves `generation` at its old length. For ids beyond it the count is not a number: the worker
+  takes every such formation for new in every tick, and its sprites jump from tick to tick.
+  Run by the reader: a toy game with 141 formation ids saved and loaded into a fresh one (capacity
+  128): over 48 ticks the 624 moves of ids 128 to 140 were all sent with the previous place equal to
+  the place. It needs a save with more ids than a fresh world has room for (toy 128, 1938 2,048): no
+  shipped path makes one yet.
+  AT: unit, the worker: that case; every formation that moved is sent with the place it had before
+  the tick. And the snapshot that follows a load sends every formation from its own place: the
+  places of the world before the load are not its previous places.
+- [ ] 2.7y Decide what a pause in mid-tick does to the sprites, and make it so (ADR-74, third read,
+  finding 4; traced by the reader). `tickProgress` is 1 when the game is paused (SPEC, PLAN 2.7h:
+  "the sprites stand where the tick has them"), so a pause at progress p of a tick moves every
+  marching sprite by the rest of its step in one frame. Measured by the reader on 1938, seed 99
+  (2,271 moves of a tick): the median step is 0.073 cells and the largest 0.277: 14 px (54) at
+  100 m/px, 48 px (181) at 30 m/px.
+  AT: e2e at T2, the game running slowly: a pause in the middle of a tick; no sprite's place changes
+  by more than a frame's share of its step between two frames, and the sprites are at the tick's end
+  once the tick's time has run. Or, if the jump is kept: the reason in DECISIONS.
+- [ ] 2.7u City names keep clear of the T1 markers, as they do of the T0 counters (PLAN 2.7r left it; it
+  was on the watch list). Seen in the review pass of 2026-10-04 in the T1 evidence made again
+  (`docs/evidence/2.1/markers-poland-1000m.png`: Warsaw and Poznań under markers).
+  Measured at the 1938 start by the pixel check of PLAN 2.7t (the overlay inside the letters of each
+  city name shown; a scratch spec): over central Europe something is drawn over 12 of 30 names at
+  1800 m/px (Berlin 70% of its letters, Bern and Turin all of them), 8 of 25 at 1000 m/px, 1 of 13 at
+  500; over Poland 7 of 23, 5 of 16 and 1 of 9; over Spain 5 of 14, 2 of 13 and none of 7.
+  AT: e2e, 1938 start, over central Europe and Poland at 1800, 1000 and 500 m/px: the overlay has no
+  pixel drawn inside the letters of a city name that is shown; at least four in five of today's names
+  are shown (24, 20 and 10 over central Europe); with the game running, no name's box moves while
+  it shows; screenshots viewed.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

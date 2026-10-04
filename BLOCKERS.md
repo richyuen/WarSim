@@ -167,6 +167,18 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
   hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
   income or their order of battle is off, is a question for the balance work.
+- Found by the third independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
+  (PLAN 2.11):
+  - T1 markers either side of the seam of a looping map are neither stacked nor moved apart
+    (their places are cells × scale, unwrapped): the markers' twin of the counters' entry above.
+    No formation of the 1938 start stands near the seam.
+  - Not established by the reader, one line each: the order arrows of markers that are in a
+    stack are drawn in full from their own formations (meant so: an arrow is its formation's);
+    `server.ts` `inBbox` wraps modulo the map's width on a map that does not loop, so a view at
+    the west edge is sent formations within the pad of the east edge; a formation that takes a
+    freed id takes over the dead one's place in a stack for one fade, and a selection ring
+    stays on a reused id; `snapshotPrev` keeps rows above the high water after a second `init`
+    on one worker (the app inits once).
 - Left by PLAN 2.7s (2026-10-04, ADR-77), for the phase review (PLAN 2.11):
   - "No box more than a quarter under another" is a rule about area. The number is the lower
     12 px of a marker's 29: at 1800 m/px on Spain's front some numbers are partly under a

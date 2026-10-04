@@ -4380,3 +4380,45 @@ Documents only.
 - **Tests:** 1 new e2e. 597 unit tests in 79 files, 96 e2e.
 - **The tasks before PLAN 2.8 are done** (2.7f–t). **Next:** the review pass (nine iterations
   since the last: 2.7n1–t), with its independent read; then 2.8.
+
+## 2026-10-04 — Review pass after PLAN 2.7n1–t
+
+No rule changed and nothing on screen changed. Five tasks came out of it, three of them defects
+of what was done since the last pass.
+
+- **The third independent read (ADR-74, addendum).** Five findings, three run by the reader.
+  - **PLAN 2.7v: the T1 markers do not always come to rest** (2.7s2, two hours old). Where three
+    markers of more than one nation are crowded beyond what 6 px can part, `nudgeApart`, which
+    starts from the moves of the frame before, goes round a cycle, and the layer animates for
+    ever. Run here before anything else: three markers, 31 different results in 40 calls, the
+    layer still animating after 4,000 frames. The reader found it in 29 of 324 samples of a
+    1938 game, the first at day 90; the specs look at day 0 and day 14, where it rests.
+  - **PLAN 2.7w: a marker that goes into a stack jumps first** (2.7s2 against 2.7s1). Run here:
+    from (19.60, −5.02) to (19.40, 0.00) in one frame at opacity 1.
+  - **PLAN 2.7x: a load does not resize the count of ids** (2.7o). Read here: `deserialize`
+    leaves `generation` as it was. No shipped path makes a save large enough yet.
+  - **PLAN 2.7y: a pause in mid-tick** moves every marching sprite to its tick's end in one
+    frame. SPEC has it as meant (2.7h). A decision, with the reader's numbers.
+  - **Watch list:** markers at the seam; four suspicions.
+  - **Found correct, by running:** the city names of 2.7r among moving obstacles, the
+    subscription key of 2.7n2, the stacks of 2.7s1 on the 1938 world.
+- **Why the specs did not see 2.7v:** every spec of the markers looks at a paused game at one
+  tick, and rests there. The city names of 2.7r were measured while the game ran, and their
+  first three versions were dropped for what that showed; the moves of 2.7s2 were not. From
+  now on a layer that remembers the frame before gets a unit test that feeds it the same input
+  until it rests, on random inputs.
+- **One test added:** `SwitchBank.restart` (2.7r: a thing that starts again is off at once and
+  fades in). It had none.
+- **One measurement set right, no assertion changed:** `labelFades1938` counted what still shows
+  of a name at the place it has left as a second name. It counts the names.
+- **Evidence made again and looked at:** `docs/evidence/2.1/markers-poland-1000m.png`, with it
+  three frames of `labelFades1938`.
+- **Seen in it, a task (PLAN 2.7u):** at T1 the markers stand on the city names, as the counters
+  did at T0. By the pixel check of 2.7t over central Europe: something over the letters of 12
+  of 30 names at 1800 m/px, 8 of 25 at 1000, 1 of 13 at 500. It was on the watch list.
+- **SPEC:** read again for the parts of 2.7n to 2.7t; each has its paragraph. Nothing to change.
+- **Looked at and left:** "frames until nothing animates" is now written in five specs, each
+  with its own clock and reading (the pass before left it at three).
+- **Not run:** `sweep:quick` (ADR-58: at the phase review only).
+- **Tests:** 1 new unit test. 598 unit tests in 79 files, 96 e2e.
+- **Next:** PLAN 2.7v.

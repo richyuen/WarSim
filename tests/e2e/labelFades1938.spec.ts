@@ -148,7 +148,8 @@ test('no popping of labels and flags: each comes and goes by a fade, and at rest
       /** What is on: dots, names, flags and nation names that are wanted (at any opacity). */
       const count = (): { dots: number; names: number; flags: number; nations: number } => ({
         dots: v.cityLabels.lastPlaced.filter((l) => l.dotAlpha > 0).length,
-        names: v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0).length,
+        // (Not what still shows of a name at a place it has left: PLAN 2.7r. Its opacity is among `alphas` below.)
+        names: v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0 && !l.ghost).length,
         flags: v.flagRects.length,
         nations: v.nationLabels.filter((l) => l.alpha > 0).length,
       });

@@ -103,6 +103,39 @@ describe('animation clock', () => {
     expect(bank.frame(7000).held('b')).toBe(false);
   });
 
+  // PLAN 2.7r: a thing that is another thing now under its key (a city's name at another
+  // place) starts again from nothing; the caller fades out what showed of the old one.
+  it('a bank of switches: a thing that starts again is off at once and fades in', () => {
+    const bank = new SwitchBank<string>();
+    bank.frame(1000);
+    expect(bank.value('a', true)).toBe(1);
+    bank.end();
+    expect(bank.animating(1000)).toBe(false);
+    // In full; then it starts again, and is wanted in the same frame: from 0.
+    let state = bank.frame(2000);
+    expect(state.held('a')).toBe(true);
+    bank.restart('a');
+    expect(bank.value('a', true)).toBe(0);
+    bank.end();
+    expect(bank.animating(2000)).toBe(true); // the view keeps drawing
+    state = bank.frame(2000 + FADE_MS / 2);
+    expect([state.held('a'), state.visible('a')]).toEqual([true, true]);
+    expect(bank.value('a', true)).toBeCloseTo(0.5, 12);
+    bank.end();
+    bank.frame(2000 + FADE_MS);
+    expect(bank.value('a', true)).toBe(1);
+    bank.end();
+    // Started again and not wanted: it is off, with no fade to run out.
+    bank.frame(5000);
+    bank.restart('a');
+    expect(bank.value('a', false)).toBe(0);
+    bank.end();
+    expect(bank.frame(5016).visible('a')).toBe(false);
+    // A key the bank has never seen can start again too: it is new, and off.
+    bank.restart('z');
+    expect(bank.value('z', true)).toBe(0);
+  });
+
   it('smooth is a symmetric ease: a fade turned at p goes on at 1 − p', () => {
     expect(smooth(0)).toBe(0);
     expect(smooth(0.5)).toBe(0.5);

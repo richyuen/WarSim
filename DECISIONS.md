@@ -437,6 +437,31 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **The two reads together:** fifteen findings, ten of them tasks, in code that passed its
     gate every time. The second cost 325,000 tokens and 45 minutes.
 
+- **Addendum 2026-10-04, the third read (review pass after PLAN 2.7n1–t).** The same brief, on
+  the ten files changed since the second read: the marker stacks, the markers, the city labels,
+  the timing, the sprite renderer, the subscription, `MapView`, the worker's snapshots, the
+  table and the slot poses.
+  - **Five findings, three run by the reader, all in code written since the second read.** Two
+    were run again here before anything else and hold; one was read against the code.
+  - **Three are defects of tasks done hours before, each gated green:** the moves of PLAN 2.7s2
+    never come to rest where three markers are crowded (a view that draws for ever: 29 of 324
+    samples of a 1938 game, none of them at a tick a spec looks at); a marker moved by 2.7s2
+    jumps when it goes into a stack of 2.7s1; the count of PLAN 2.7o is not resized by a load.
+  - **Tasks, before the rest:** PLAN 2.7v, 2.7w, 2.7x; and 2.7y, a decision (a pause in mid-tick
+    moves every marching sprite to its tick's end in one frame, which SPEC has as intended).
+  - **Watch list:** markers at the seam; four suspicions.
+  - **What it ran and found correct:** the city names of 2.7r (2,707 moves of a name among 25
+    moving obstacles: no jump, none without its fade, all at rest 3.2 s after the obstacles
+    stopped); the subscription key of 2.7n2 (14,802 pairs of cameras with one key); the stacks
+    of 2.7s1 on the 1938 world at three ticks and eighteen zooms.
+  - **The three reads together:** twenty findings, fourteen of them tasks. The first two found
+    theirs in code older than the lines they were pointed at; this one in the newest. What
+    separates the two kinds: 2.7r was measured while the game ran, in four versions; 2.7s2 was
+    measured at one tick, paused.
+  - **For the tasks to come:** a layer with a memory of the frame before is run, in a unit
+    test, on the same input until it rests, on random inputs. The spec of one tick does not
+    see a cycle.
+
 - **2.7n, done 2026-10-04 (second read, finding 1): what was chosen in its three parts.**
   - *2.7n1, whole formations by the reach of their block.* The worker widens the box, for a
     formation's centre, by the distance to the far corner's slot and half a slot more, and
