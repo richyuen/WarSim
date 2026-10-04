@@ -303,6 +303,25 @@ quick sweep as a smoke test.
   (8 and 10 after 1.42e2); largest nation 12.2–16.4% of the land and 28.4–29.5% of the income.
   (1.42, critic B1 continued, the dynamism of the long run: moved to Phase 7 on 2026-10-03,
   ADR-58. Balance sweeps are suspended until phases 2–6 are complete.)
+- [ ] 1.43 Critic B5: a way into the game. `/` opens a title screen, not the two-nation toy
+  world: a scenario list with the 1938 world first, the new-game options of 1.39b1, and loading
+  a saved game or a `.warsim-scenario` file. The toy world moves behind its own URL
+  (`?scenario=toy`); the tests that open `/` for it move to that URL, unchanged otherwise.
+  AT: e2e: `/` shows the title screen and no world; choosing 1938 starts it on 1 January 1938
+  with the chosen seed and options; a scenario file loads from the screen; the toy world opens
+  by its URL; screenshots viewed.
+- [ ] 1.44 Critic B6: the editor's brush and line paint on a left-drag. While a paint tool is
+  active the camera pans on a right- or middle-drag and with the keys, not on a left-drag.
+  AT: an e2e that drags: a brush stroke across ≥ 20 cells paints every cell under its path,
+  the camera does not move, and one undo removes the whole stroke; a right-drag pans and
+  paints nothing; with no paint tool active a left-drag pans as before.
+- [ ] 1.45 Critic B7: Europe readable at world zoom. T0 counters are decluttered in screen space
+  (no two overlap; what does not fit is aggregated into its neighbour), and split and merge
+  fades finish while the game is paused, so no translucent duplicate is left standing.
+  AT: e2e on the 1938 start and after one year, at world zoom over Europe, paused and running:
+  no two counter boxes overlap, and no counter is drawn below full opacity once its animation
+  time has passed; the sum of the counters still equals the sim's strength (PLAN 2.2);
+  screenshots compared with `reference/` frames and viewed.
 
 ## Phase 2 — Semantic zoom
 

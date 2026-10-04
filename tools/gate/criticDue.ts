@@ -1,54 +1,50 @@
 /**
- * `npm run critic:due`: whether PROMPT.md step 2a's commit rule calls for a critic run (ADR-49).
+ * `npm run critic:due`: whether PROMPT.md step 2a calls for a critic run (ADR-59).
  *
- * The critic is due when `critic/CRITIC_REPORT.json` is missing, or when HEAD is CRITIC_EVERY or
- * more commits past the later of (a) the report's commit and (b) the last critic remediation
- * commit after it. A remediation commit is one whose subject starts with "Critic " (for example
- * "Critic B1: ..."): every commit that fixes a critic finding is named that way. So the count
- * restarts with each remediation, and the critic returns only after CRITIC_EVERY commits of
- * other work. Step 2a's other triggers (a phase review was the last ticked task; the DONE
- * condition looks met) are judgement calls and are not checked here.
+ * The critic is due when `critic/CRITIC_REPORT.json` is missing (or names a commit this
+ * repository does not have), or when a phase review has been ticked in PLAN.md since the commit
+ * the report names: one run per phase. (Until ADR-59 it was also due every 5 commits of work
+ * that fixed no critic finding, ADR-49.) Step 2a's last trigger, the DONE condition looking met,
+ * is a judgement call and is not checked here.
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
-export const CRITIC_EVERY = 5;
-export const REMEDIATION_PREFIX = 'Critic ';
 
 export interface CriticDue {
   due: boolean;
-  /** Commits since the report. */
-  sinceReport: number;
-  /** Commits since the last remediation commit (or since the report when there is none). */
-  sinceBase: number;
-  /** Subject of the last remediation commit after the report, if any. */
-  lastRemediation: string | null;
+  /** PLAN ids of the phase reviews ticked now and not at the report's commit. */
+  reviews: string[];
 }
 
-/** `subjects`: the commits after the report's commit, newest first; null = no usable report. */
-export function criticDue(subjects: readonly string[] | null): CriticDue {
-  if (subjects === null) return { due: true, sinceReport: 0, sinceBase: 0, lastRemediation: null };
-  const i = subjects.findIndex((s) => s.startsWith(REMEDIATION_PREFIX));
-  const sinceBase = i < 0 ? subjects.length : i;
-  return { due: sinceBase >= CRITIC_EVERY, sinceReport: subjects.length, sinceBase, lastRemediation: i < 0 ? null : subjects[i]! };
+/** The ids of the phase reviews ticked in a PLAN.md text (`- [x] 2.11 Phase 2 review…`). */
+export function tickedReviews(plan: string): string[] {
+  return [...plan.matchAll(/^- \[x\] (\d+\.\d+\w*) Phase \d+ review/gm)].map((m) => m[1]!);
+}
+
+/** `planAtReport`: PLAN.md as of the commit the report names; null = no usable report. */
+export function criticDue(planNow: string, planAtReport: string | null): CriticDue {
+  if (planAtReport === null) return { due: true, reviews: [] };
+  const before = new Set(tickedReviews(planAtReport));
+  const reviews = tickedReviews(planNow).filter((id) => !before.has(id));
+  return { due: reviews.length > 0, reviews };
 }
 
 function main(): void {
   const file = path.join(ROOT, 'critic/CRITIC_REPORT.json');
-  let subjects: string[] | null = null;
+  let planAtReport: string | null = null;
+  let commit = '';
   if (existsSync(file)) {
-    const commit = (JSON.parse(readFileSync(file, 'utf8')) as { commit?: string }).commit ?? '';
-    const r = /^[0-9a-f]{7,40}$/.test(commit) ? spawnSync('git', ['log', '--format=%s', `${commit}..HEAD`], { cwd: ROOT, encoding: 'utf8' }) : null;
-    if (r && r.status === 0) subjects = r.stdout.split('\n').filter((l) => l !== '');
+    commit = (JSON.parse(readFileSync(file, 'utf8')) as { commit?: string }).commit ?? '';
+    const r = /^[0-9a-f]{7,40}$/.test(commit) ? spawnSync('git', ['show', `${commit}:PLAN.md`], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 }) : null;
+    if (r && r.status === 0) planAtReport = r.stdout;
   }
-  const d = criticDue(subjects);
-  if (subjects === null) console.log('critic: DUE (no report, or its commit is not in this repository).');
-  else {
-    const base = d.lastRemediation ? `the last remediation commit ("${d.lastRemediation}")` : 'the report';
-    console.log(`critic: ${d.due ? 'DUE' : 'not due'}: ${d.sinceBase} commit(s) since ${base}, ${d.sinceReport} since the report; due at ${CRITIC_EVERY}.`);
-  }
+  const d = criticDue(readFileSync(path.join(ROOT, 'PLAN.md'), 'utf8'), planAtReport);
+  if (planAtReport === null) console.log('critic: DUE (no report, or its commit is not in this repository).');
+  else if (d.due) console.log(`critic: DUE: phase review ${d.reviews.join(', ')} ticked since the report (${commit.slice(0, 7)}).`);
+  else console.log(`critic: not due: no phase review ticked since the report (${commit.slice(0, 7)}). It runs after each phase review and for the DONE condition.`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) main();

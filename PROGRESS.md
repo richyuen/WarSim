@@ -2865,3 +2865,19 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   the smoke run), BLOCKERS.md (the 1.42 entry), SPEC §10, DECISIONS ADR-58. No code changed.
 - **Next:** PLAN 2.4 (FireEvent visuals: tracers, muzzle flashes, impacts, casualty removal,
   wrecks) is the first unchecked task. It answers critic B2 (nothing to see at close zoom).
+
+## 2026-10-03 — The critic runs once per phase; its findings B5–B7 are PLAN tasks (ADR-59, the user's decision)
+- **Cadence:** the critic is due after each phase review and for the DONE condition, no longer
+  every 5 commits. `npm run critic:due` compares the phase reviews ticked in PLAN.md now with
+  those ticked at the commit the report names (`tools/gate/criticDue.ts`; the unit tests of the
+  5-commit rule are replaced by tests of this one). The "Critic " subject prefix no longer
+  counts for anything.
+- **Why it is kept:** B2, B5, B6 and B7 were defects that all tests passed, found only by
+  playing the game.
+- **A gap closed:** B5 (no way into the game from `/`), B6 (the editor brush does not paint on
+  a drag) and B7 (Europe unreadable at world zoom) had no PLAN task, and the report is too old
+  for step 2b to follow. They are PLAN 1.43, 1.44 and 1.45. Step 2a now says to add a task for
+  every blocking issue of a new report.
+- **Not checked:** whether rebel states still lack flags and regional names (the rest of B4).
+- **Next:** PLAN 1.43 (the title screen) is the first unchecked task; then 1.44, 1.45, and
+  PLAN 2.4. The next critic run comes with the Phase 2 review (2.11).

@@ -1,10 +1,12 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ALL_STAGES, changedFiles, gatedTrees, planGate, worktreeTree } from '../../tools/gate/check';
-import { CRITIC_EVERY, criticDue } from '../../tools/gate/criticDue';
+import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
 
-// ADR-48, ADR-49: the gate is sized to what changed since HEAD; the critic comes back only
-// CRITIC_EVERY commits after the last remediation commit. ADR-55: a clean tree that the gate
-// has already passed runs nothing.
+// ADR-48, ADR-49: the gate is sized to what changed since HEAD. ADR-55: a clean tree that the
+// gate has already passed runs nothing. ADR-59: the critic comes back once per phase, when a
+// phase review has been ticked since its report (until then: every 5 commits, ADR-49).
 
 describe('gate plan (ADR-48, ADR-49)', () => {
   it('documents only: parity alone', () => {
@@ -59,27 +61,37 @@ describe('gate plan (ADR-48, ADR-49)', () => {
   });
 });
 
-describe('critic cadence (ADR-49)', () => {
-  const work = (n: number): string[] => Array.from({ length: n }, (_, i) => `PLAN 2.${i + 4}: something`);
+describe('critic cadence (ADR-59)', () => {
+  const plan = (...lines: string[]): string => ['# Plan', '', ...lines, ''].join('\n');
+  const DONE = '- [x] 1.41 Phase 1 review + PARITY rows updated with evidence.';
 
   it('no report: due', () => {
-    expect(criticDue(null).due).toBe(true);
+    expect(criticDue(plan(DONE), null)).toEqual({ due: true, reviews: [] });
   });
 
-  it('without remediation commits, due CRITIC_EVERY commits after the report', () => {
-    expect(criticDue(work(CRITIC_EVERY - 1)).due).toBe(false);
-    expect(criticDue(work(CRITIC_EVERY)).due).toBe(true);
+  it('not due while no phase review has been ticked since the report, whatever else was', () => {
+    const then = plan(DONE, '- [ ] 2.4 FireEvent visuals', '- [ ] 2.11 Phase 2 review: SPEC drift');
+    const now = plan(DONE, '- [x] 2.4 FireEvent visuals', '- [x] 2.5 Casualty consistency', '- [ ] 2.11 Phase 2 review: SPEC drift');
+    expect(criticDue(now, then)).toEqual({ due: false, reviews: [] });
   });
 
-  it('a remediation commit restarts the count', () => {
-    // Newest first: 3 commits of other work, a remediation, 4 more before it.
-    const subjects = [...work(3), 'Critic B1 part 2: leader share', ...work(4)];
-    const d = criticDue(subjects);
-    expect(d).toMatchObject({ due: false, sinceReport: 8, sinceBase: 3, lastRemediation: 'Critic B1 part 2: leader share' });
-    expect(criticDue([...work(CRITIC_EVERY), 'Critic B6: brush paints on drag']).due).toBe(true);
+  it('due once a phase review is ticked, and it names the review', () => {
+    const then = plan(DONE, '- [ ] 2.11 Phase 2 review: SPEC drift');
+    const now = plan(DONE, '- [x] 2.11 Phase 2 review: SPEC drift');
+    expect(criticDue(now, then)).toEqual({ due: true, reviews: ['2.11'] });
+    // The report made after it names a commit in which the review is ticked: not due again.
+    expect(criticDue(now, now).due).toBe(false);
   });
 
-  it('only subjects that start with "Critic " are remediation', () => {
-    expect(criticDue([...work(4), 'Add critic subagent to the build loop']).due).toBe(true); // 5 commits, none a remediation
+  it('only a ticked task named "Phase N review" counts', () => {
+    const now = plan('- [x] 0.6 Screenshot of a flag grid reviewed', '- [x] 1.9 Economy (Phase 1 review notes)', '  Phase 3 review happens later', '- [ ] 3.7 Phase 3 review');
+    expect(tickedReviews(now)).toEqual([]);
+    expect(tickedReviews(plan('- [x] 0.22 Phase 0 review: re-read SPEC', DONE))).toEqual(['0.22', '1.41']);
+  });
+
+  it('PLAN.md itself: the reviews of phases 0 and 1 are ticked, those of phases 2 to 6 exist and are open', () => {
+    const text = readFileSync(path.resolve(import.meta.dirname, '../../PLAN.md'), 'utf8');
+    expect(tickedReviews(text)).toEqual(['0.22', '1.41']);
+    for (const id of ['2.11', '3.7', '4.8', '5.8', '6.9']) expect(text).toMatch(new RegExp(`^- \\[ \\] ${id.replace('.', '\\.')} Phase \\d review`, 'm'));
   });
 });

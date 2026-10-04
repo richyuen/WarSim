@@ -1223,9 +1223,10 @@ interpolation changes something.
   `npm run check:full` runs every stage. The sweep tests include the pinned state hash of
   seed 99 after one year (`tests/sweep/baselineHash.test.ts`): a change of rules moves the pin
   and logs it in DECISIONS.
-- **Critic cadence** (`npm run critic:due`, `tools/gate/criticDue.ts`, ADR-49): due 5 commits
-  after the later of the report's commit and the last commit whose subject starts with
-  "Critic ".
+- **Critic cadence** (`npm run critic:due`, `tools/gate/criticDue.ts`, ADR-59): due when there
+  is no report, or when a phase review has been ticked in PLAN.md since the commit the report
+  names. One run per phase, and one for the DONE condition. Each blocking issue of a report
+  becomes a PLAN task. (Until ADR-59: every 5 commits that fixed no critic finding, ADR-49.)
 - **Checkpoints and diagnostics** (ADR-48): `npm run sim -- --save f` writes the final state and
   `--load f` continues from it (bit-identical saves: tested on the toy world). `npm run diag`
   prints wars and great-power state at chosen years, from 1938 or from a checkpoint.

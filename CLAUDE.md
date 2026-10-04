@@ -27,8 +27,8 @@ There is no memory between sessions. Read these files:
     input changed. They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
 - `npm run check:full`: every stage, whatever changed.
-- `npm run critic:due`: whether the critic's commit rule (PROMPT.md step 2a) calls for a run.
-  Commits that fix a critic finding start their subject with "Critic "; they restart the count.
+- `npm run critic:due`: whether a critic run is due (PROMPT.md step 2a): no report yet, or a
+  phase review ticked in PLAN.md since the report. One run per phase (ADR-59).
 - `npm run dev`: toy world at `/`; benches at `/bench.html?b=A|P|R`.
 - `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`: a tick-time
   measurement. `--affinity` pins the run to the performance cores of the machine the budget was

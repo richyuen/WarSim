@@ -153,22 +153,23 @@ added without code changes.
    `critic/CRITIC_REPORT.md` if it exists.
 2. Run the full test/lint/typecheck/build suite. If anything is broken,
    fixing it is this iteration's only task.
-2a. Critic run. If `critic/CRITIC_REPORT.json` is missing, or HEAD is 5 or
-    more commits past both its `commit` and the last critic remediation
-    commit (`npm run critic:due` computes this; see below), or the last
-    ticked PLAN.md task was a phase review, or you believe the
-    DONE CONDITION is otherwise met, then running the critic is this
-    iteration's only task: commit any pending work first, spawn the `critic`
-    subagent (Agent tool, subagent_type `critic`) with no hints about what to
-    look at, wait for it to finish, and check that `critic/CRITIC_REPORT.json`
-    now names HEAD. Append one line to PROGRESS.md with the scores and
-    blocking count. Then end the iteration. Never act as the critic yourself.
-    Remediation commits restart the count (added 2026-10-03, ADR-49): every
-    commit that fixes a critic finding has a subject starting with
-    "Critic " (for example "Critic B1: ..."), and the 5 commits are counted
-    from the last such commit after the report, not from the report. The
-    critic therefore returns only after 5 commits of other work, so the
-    phases in PLAN.md get worked on between critic runs.
+2a. Critic run. If `critic/CRITIC_REPORT.json` is missing, or a phase review
+    has been ticked in PLAN.md since the report (`npm run critic:due` checks
+    these two), or you believe the DONE CONDITION is otherwise met, then
+    running the critic is this iteration's only task: commit any pending
+    work first, spawn the `critic` subagent (Agent tool, subagent_type
+    `critic`) with no hints about what to look at, wait for it to finish,
+    and check that `critic/CRITIC_REPORT.json` now names HEAD. Append one
+    line to PROGRESS.md with the scores and blocking count. Then add a
+    PLAN.md task for every blocking issue that has none, placed before the
+    next feature task unless a later phase already covers it (a finding that
+    step 2b defers gets a line under PLAN 1.42 instead): no finding may
+    depend on the report staying recent. Then end the iteration. Never act
+    as the critic yourself.
+    One run per phase (changed 2026-10-03, ADR-59, the user's decision). The
+    critic no longer returns every 5 commits, and the "Critic " prefix on
+    commit subjects no longer counts for anything. The user may ask for a
+    run at any time.
 2b. If `critic/CRITIC_REPORT.json` exists and its `commit` is not older than
     the last 10 commits, fix its blocking issues first, highest severity
     first. Critic findings override your own priorities. You may dispute a

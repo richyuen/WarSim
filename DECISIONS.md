@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-59 · 2026-10-03 · accepted — The critic runs once per phase, not every five commits (the user's decision)
+
+- **Context:** since ADR-49 the critic was due 5 commits after the later of its report and
+  the last commit that fixed one of its findings (subject starting "Critic "). In the feature
+  phases nearly every commit answers a finding (B2 is semantic zoom, B3 the missing naval, air
+  and nuclear rules), so the count kept restarting: the report of bb1dd4f was 28 commits old
+  and the critic would have returned whenever five housekeeping commits happened to pile up.
+  With ADR-58 a part of every run (multi-decade dynamics) also judges what is now deferred.
+- **Decision (the user's, 2026-10-03):** keep the critic and run it at fixed points: after each
+  phase review (PLAN 2.11, 3.7, 4.8, 5.8, 6.9), which is also where the smoke run of ADR-58
+  is, and for the DONE condition. The 5-commit rule and the meaning of the "Critic " prefix
+  are gone. `npm run critic:due` reports due when there is no report or when a phase review
+  has been ticked in PLAN.md since the commit the report names. The user can ask for a run at
+  any time.
+- **Why keep it at all:** it is the only part of the process that looks at the game as a
+  player does. Four of its seven blocking issues were plain defects that every test had
+  passed: nothing to see at close zoom (B2), no way into the game from `/` (B5), an editor
+  brush that does not paint on a drag (B6), Europe unreadable at world zoom (B7). It is also
+  the judge the DONE condition names. Its prompt is unchanged: it goes on scoring long-run
+  dynamics, and the builder defers that one kind of finding (ADR-58).
+- **Findings become PLAN tasks.** Step 2b follows a report only while it is within the last 10
+  commits. After that nothing scheduled B5, B6 and B7: no PLAN task named them. They are now
+  PLAN 1.43, 1.44 and 1.45, ahead of the Phase 2 tasks, and step 2a says to add a task for
+  every blocking issue of a new report that has none.
+- **Not added:** B4 (revolt fragmentation; flagless "Free <village>" states). ADR-47 answered
+  part of it (defection and spreading) and its remaining count of nations is balance (ADR-58).
+  Whether rebel states still lack flags and regional names has not been checked; the next
+  critic run will say.
+- **Tests:** the cases of the 5-commit rule in `tests/unit/gate.test.ts` are replaced by cases
+  of the new rule (no report; nothing ticked; a review ticked; what counts as a review; the
+  review tasks of PLAN.md itself). The old cases tested a rule that no longer exists.
+
 ### ADR-58 · 2026-10-03 · accepted — Balance sweeps are suspended until the features are in (the user's decision)
 
 - **Context:** since critic B1 ("the world is static over decades") the loop has spent most of
