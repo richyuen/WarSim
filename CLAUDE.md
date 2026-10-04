@@ -30,6 +30,9 @@ There is no memory between sessions. Read these files:
 - `npm run critic:due`: whether the critic's commit rule (PROMPT.md step 2a) calls for a run.
   Commits that fix a critic finding start their subject with "Critic "; they restart the count.
 - `npm run dev`: toy world at `/`; benches at `/bench.html?b=A|P|R`.
+- `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`: a tick-time
+  measurement. `--affinity` pins the run to the performance cores of the machine the budget was
+  set on; unpinned, the same code reads up to 1.65 × slower there.
 - `npm run sim -- --scenario toy --seed 7 --years 10`: headless runner (`--save` / `--load` a
   checkpoint).
 - `npm run diag -- --seed 99 --at 5,12,20`: wars and great-power state dumps (`--load` a checkpoint).

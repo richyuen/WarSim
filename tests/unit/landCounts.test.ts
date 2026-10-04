@@ -48,10 +48,12 @@ it('kept land tallies equal a scan through war, edits, undo and load', () => {
   s.step(24 * 240);
   expect([...s.world.landCounts().occupied.values()].reduce((a, b) => a + b, 0)).toBeGreaterThan(0);
   same(s.world);
-  // A German disc painted near Paris, then undone (the editor's own commands).
+  // A Brazilian disc painted near Paris, then undone (the editor's own commands). Brazil, because
+  // it holds nothing there whoever is winning the war: on day 240 of this seed Germany may
+  // already occupy Paris, and a German disc would then change no controller.
   const [x, y] = cellOf(2.35, 48.85, SIZE_1938.w, SIZE_1938.h);
   const before = s.world.controlChanges;
-  s.command({ kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: 0, y2: 0, r: 6, value: nationId('GER'), mask: null });
+  s.command({ kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: 0, y2: 0, r: 6, value: nationId('BRA'), mask: null });
   s.applyNow();
   expect(s.world.controlChanges).toBeGreaterThan(before);
   same(s.world);

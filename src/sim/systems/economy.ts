@@ -11,8 +11,9 @@
  *             OCCUPIED_SHARE ($M)
  *   gross   = land / 1000 × INCOME_PER_BN × incomeMult × (1 + incomeBonus / 100) × (1 + income buffs)
  *   upkeep  = UPKEEP_SCALE × Σ formation upkeep (template gold upkeep × current / full strength)
- *   admin   = min(ADMIN_BASE × (cells held / 1000) ^ ADMIN_EXP, ADMIN_CAP_SHARE × gross)
- *             (superlinear: anti-hegemon; capped so barren land cannot bankrupt a nation)
+ *   admin   = min(ADMIN_BASE × (km² held / ADMIN_KM2) ^ ADMIN_EXP, ADMIN_CAP_SHARE × gross)
+ *             (superlinear: anti-hegemon; capped so barren land cannot bankrupt a nation; land
+ *             held is km², not cells: ADR-57)
  *   gold   += gross − upkeep − admin
  *   manpower += MANPOWER_MONTHLY_RATE × manpowerMult × owned population, up to MANPOWER_CAP_SHARE
  *               of it (a pool already above the cap after losing land is kept, not cut)
@@ -23,6 +24,7 @@ import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { pow } from '../core/dmath';
+import { cellKm2ByRow } from '../landCounts';
 import type { World } from '../world';
 import { bleedFormation } from './elements';
 
@@ -35,6 +37,11 @@ export const INDUSTRY_EXP = 0.5;
 export const OCCUPIED_SHARE = 0.5;
 export const UPKEEP_SCALE = 0.35;
 export const ADMIN_BASE = 0.25;
+/**
+ * Land per unit of admin cost, km² (ADR-57). Until then the unit was 1,000 cells: this is 1,000
+ * cells of the mean area of an owned cell in 1938 (212 km²).
+ */
+export const ADMIN_KM2 = 212_000;
 export const ADMIN_EXP = 1.35;
 /** Admin never exceeds this share of gross income (PLAN 1.26: barren land must not bankrupt). */
 export const ADMIN_CAP_SHARE = 0.5;
@@ -68,9 +75,9 @@ export interface EconomyTables {
   templateStrength: readonly number[];
 }
 
-/** Admin cost of holding `cells` cells. */
-export function adminCost(cells: number): number {
-  return cells <= 0 ? 0 : ADMIN_BASE * pow(cells / 1000, ADMIN_EXP);
+/** Admin cost of holding `km2` of land. */
+export function adminCost(km2: number): number {
+  return km2 <= 0 ? 0 : ADMIN_BASE * pow(km2 / ADMIN_KM2, ADMIN_EXP);
 }
 
 /** Builds the monthly economy system over the scenario's template tables. */
@@ -89,18 +96,23 @@ export function monthlyAccounts(
   const nc = world.nations.cols;
   const size = world.nations.highWater;
   const land = new Float64Array(size);
+  /** km² controlled (whole km² per cell, as every land rule counts it). */
   const held = new Float64Array(size);
   /** People on land the nation both owns and controls (recruitable). */
   const population = new Float64Array(size);
-  const { owner, controller, econ, pop } = world.cells;
-  for (let c = 0; c < controller.length; c++) {
-    const n = controller[c]!;
-    if (n === 0) continue;
-    held[n]!++;
-    const v = econ[c]!;
-    const own = owner[c] === n;
-    if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
-    if (own) population[n]! += pop[c]! * 1000;
+  const { owner, controller, econ, pop, w, h } = world.cells;
+  const rowKm2 = cellKm2ByRow(w, h);
+  for (let y = 0, c = 0; y < h; y++) {
+    const km2 = rowKm2[y]!;
+    for (let x = 0; x < w; x++, c++) {
+      const n = controller[c]!;
+      if (n === 0) continue;
+      held[n]! += km2;
+      const v = econ[c]!;
+      const own = owner[c] === n;
+      if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
+      if (own) population[n]! += pop[c]! * 1000;
+    }
   }
   const upkeep = new Float64Array(size);
   const fc = world.formations.cols;

@@ -240,6 +240,43 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   Tick, pinned: year 1 2.06 ms, 5-year mean 1.42 ms (one run; budgets 2.4 and 1.5).
   Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 8 of 10, faller 10 of 10
   (7 and 10 after 1.42e1); largest nation 12.6–17.1% of the land; wall time 5.9 min.
+- **Admin cost (PLAN 1.42e3, 2026-10-03):** admin = min(0.25 × (km² held ÷ `ADMIN_KM2`)^1.35,
+  50% of gross), with `ADMIN_KM2` = 212,000: the 1,000 cells of the old rule at the mean owned
+  cell of 1938 (212.2 km²). `monthlyAccounts` sums the whole km² of the cells a nation controls.
+  Charged at the 1938 start (after the cap), gold a month and share of the nation's gross:
+
+  | Nation | By cells | Of its gross | By km² | Of its gross |
+  |---|---|---|---|---|
+  | Soviet Union | 252.7 | 21.9% | 125.3 | 10.8% |
+  | Canada | 79.0 (at the cap) | 50.0% | 40.1 | 25.4% |
+  | United States | 43.6 | 0.8% | 41.1 | 0.7% |
+  | Denmark (Greenland) | 29.4 | 18.8% | 5.1 | 3.2% |
+  | Australia | 19.6 | 7.8% | 34.4 | 13.6% |
+  | Brazil | 17.5 | 13.8% | 36.5 | 28.6% |
+  | French West Africa | 8.1 | 9.4% | 16.4 | 18.8% |
+  | China | 10.4 | 3.9% | 15.8 | 5.9% |
+
+  The world pays 554.6 gold a month by cells and 461.2 by km² (2.85% and 2.37% of its gross of
+  19,443); 4 nations are at the cap by cells, 6 by km².
+- **Why the mean cell, and what it costs.** Two other references were on the table. A cell at
+  the equator (382,000 km²) leaves the tropics as they were and cuts everyone else: the world
+  would pay 211.0. A constant fitted to keep the world's total (about 184,000 km²) is a number
+  chosen for an outcome. The mean cell is the unit conversion of "1,000 cells" and nothing
+  else. The total still falls by 17%, because the cost is superlinear and the cells measure had
+  made its two largest payers larger than they are. **The Soviet Union pays 127 gold a month
+  less, 11% of its income:** the anti-hegemon cost on the largest nation is halved by measuring
+  it correctly. Whether it then grows too strong is for the sweeps of PLAN 1.42 to show, not
+  for this constant to prevent.
+  Tests: `economy.test.ts` (the cost in units of `ADMIN_KM2`; on the 1938 map Canada pays less
+  than the United States, having less land and more cells, and Greenland costs Denmark under
+  5% of its income). The tiny 4×1 test world has cells a quarter of the map each, so its
+  admin cost is now at the cap, and that test says so.
+  Hash: seed 99 after one year 6569bc8e → f93cb674; after five years 7f1ffbfb → 6b84c48c.
+  Tick, three runs pinned (`--affinity 0xFFFF`), the rule of PLAN 1.42f: 5-year mean 1.4648,
+  1.4612, 1.4563 ms (budget 1.5); year 1 2.2729, 2.2615, 2.2457 ms (budget 2.4). Met, with
+  0.04 ms to spare on the mean.
+  Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 6 of 10, faller 10 of 10
+  (8 and 10 after 1.42e2); largest nation 12.2–16.4% of the land and 28.4–29.5% of the income.
 
 ### ADR-56 · 2026-10-03 · accepted — Cell A* uses an octile bound (PLAN 1.42f, step 4)
 

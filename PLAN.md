@@ -253,7 +253,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   met only if all three keep both limits. 5-year mean 1.4317, 1.4334, 1.4324 ms (≤ 1.5); year 1
   1.6807, 1.6869, 1.6859 ms (≤ 2.4); hashes e5741d70 after year 1 and 7a8e5c27 after year 5 in
   all three, as steps 4 and 5 logged them. Year 4 is the dearest year now (1.76 ms).
-- [ ] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
+- [x] 1.42e Critic B1: sim rules that count land in cells count area instead (overextension
   share and distance, admin cost, war score and capitulation shares, SMALL_STATE_CELLS), so
   Siberia and northern Canada stop weighing like twice their land. This overlaps the km
   conversion of PLAN 7.1b: do the land-share part here, leave distances and map sizes there.
@@ -262,6 +262,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   Split 2026-10-03 into one rule per commit (1.42e1–1.42e3 below); tick this line with the
   last of them. Not converted, left to 7.1b: the overextension distance (`OVEREXT_CELLS`),
   `MILITIA_PER_CELLS` and the largest fragment of a collapse (ADR-57).
+  Done 2026-10-03 with 1.42e3.
 - [x] 1.42e1 The land rules of a war count km² (ADR-57): score, true share, capitulation, puppet
   share, small-state limit (`SMALL_STATE_KM2` 8,500 = 40 mean owned cells). `LandCounts`
   tallies whole km² per cell, so the kept tallies equal a scan exactly.
@@ -282,7 +283,7 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   after five 6738d695 → 7f1ffbfb; tick, pinned: year 1 2.06 ms, 5-year mean 1.42 ms.
   Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 8 of 10, faller 10 of 10
   (7 and 10 after 1.42e1); largest nation 12.6–17.1% of the land; wall time 5.9 min.
-- [ ] 1.42e3 The admin cost counts km² held (`economy.ts`): `adminCost` per 212,000 km² (1,000
+- [x] 1.42e3 The admin cost counts km² held (`economy.ts`): `adminCost` per 212,000 km² (1,000
   mean owned cells) instead of per 1,000 cells. Measured at the 1938 start, uncapped, summed
   over all nations: 568 gold a month by cells, 470 by mean cells (Soviet Union 253 → 125,
   Canada 89 → 40, Brazil 18 → 37, Australia 20 → 34), 212 by equatorial cells. The mean-cell
@@ -290,6 +291,13 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   AT: unit tests (`economy.test.ts` in km²); pin and hashes in DECISIONS; gate green; quick
   sweep keeps the limits; then the tick measured by the three-run rule of 1.42f, pinned to
   the performance cores (PROGRESS 2026-10-03).
+  Done 2026-10-03 with the mean-cell reference (`ADMIN_KM2` 212,000; ADR-57 has the table and
+  the reason). Charged at the 1938 start, after the cap: the world 554.6 → 461.2 gold a month,
+  the Soviet Union 252.7 → 125.3. Seed 99 after one year 6569bc8e → f93cb674, after five
+  7f1ffbfb → 6b84c48c. Tick, three pinned runs: 5-year mean 1.4648, 1.4612, 1.4563 ms; year 1
+  2.2729, 2.2615, 2.2457 ms: met. The pin is a tool now (`npm run sim -- … --affinity 0xFFFF`).
+  Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 6 of 10, faller 10 of 10
+  (8 and 10 after 1.42e2); largest nation 12.2–16.4% of the land and 28.4–29.5% of the income.
 - [ ] 1.42 **Blocked after three attempts: see BLOCKERS.md (2026-10-03). Retry after 1.42d
   and 1.42f (and 1.42e if that is done), judged by area, on seeds from 401.** Critic B1 (static world), continued: every seed passes the two criteria added on
   2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
@@ -413,8 +421,8 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
-  The shares of land become km² in PLAN 1.42e (ADR-57: a war's shares are done; overextension
-  and the admin cost are 1.42e2 and 1.42e3). Left in cells for this task: `OVEREXT_CELLS`,
+  The shares of land are km² since PLAN 1.42e (ADR-57: a war's shares, overextension, the
+  admin cost). Left in cells for this task: `OVEREXT_CELLS`,
   `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
   AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
   tick and memory budgets.

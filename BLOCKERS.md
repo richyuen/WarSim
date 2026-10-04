@@ -82,6 +82,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   a run on an efficiency core (not observed directly). Confined to the performance cores at high priority
   (`.cache/pin.ps1`, a scratch script: affinity mask 0xFFFF) the figure is 1.671 ms twice. A
   tick measurement for a budget is taken that way. Not yet a tool in the repo.
+  **A tool since PLAN 1.42e3:** `npm run sim -- … --affinity 0xFFFF` (`tools/headless/affinity.ts`).
+  The gate and the sweeps run unpinned: their wall times vary with it, their results do not.
 - e2e boot stall (2026-10-03, 4-core machine, 2 workers): `coast1938.spec.ts:91` and
   `nationPanel1938.spec.ts:15` waited more than 60 s for the first frame of
   `/?scenario=1938&paused=1` in one gate run; alone they pass in 5.5 s and 11.6 s, and the gate

@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { Sim } from '../../src/sim/sim';
+import { parseAffinity } from '../../tools/headless/affinity';
 import { runHeadless, TICKS_PER_YEAR } from '../../tools/headless/runner';
 
 describe('headless runner (PLAN 0.20)', () => {
+  it('--affinity takes a CPU mask in decimal or hex and nothing else', () => {
+    expect(parseAffinity('0xFFFF')).toBe(65535);
+    expect(parseAffinity('3')).toBe(3);
+    for (const bad of ['', '0', '-1', 'pcores', '1.5']) expect(() => parseAffinity(bad)).toThrow(/CPU mask/);
+  });
+
   it('records per-year metrics and matches a plain Sim run', () => {
     const years: number[] = [];
     const r = runHeadless({ scenario: 'toy', seed: 3, years: 2, onYear: (m) => years.push(m.year) });

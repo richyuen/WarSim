@@ -390,7 +390,8 @@ tag → spec.
   - gross = Σ controlled cells (occupied at 50%) / 1000 × 6 gold per bn × trait income ×
     (1 + incomeBonus %);
   - upkeep = 0.35 × template unit upkeep × strength / full strength;
-  - admin = 0.25 × (cells / 1000)^1.35, capped at 50% of gross (since PLAN 1.26);
+  - admin = 0.25 × (km² held / 212,000)^1.35, capped at 50% of gross (since PLAN 1.26). The
+    land is km², not cells (ADR-57); 212,000 km² is 1,000 cells of the mean owned cell of 1938;
   - gold += gross − upkeep − admin.
 - *Bankruptcy*: gold < −3 × gross. Formations then lose 5% strength per month; recovery at gold
   ≥ 0. Both transitions emit a `Bankruptcy` event.

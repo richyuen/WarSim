@@ -2794,3 +2794,58 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   (7 and 10 after 1.42e1); largest nation 12.6–17.1% of the land; wall time 5.9 min.
 - **Not verified in the browser:** a rule with no UI of its own; the e2e stage of the gate ran.
 - **Next:** PLAN 1.42e3 (admin cost by km² held), with the pin script as a tracked tool.
+
+## 2026-10-03 — PLAN 1.42e3: the admin cost counts km² held; PLAN 1.42e closed (ADR-57 addendum)
+- **Rule:** admin = min(0.25 × (km² held ÷ 212,000)^1.35, 50% of gross). 212,000 km² is the
+  1,000 cells of the old rule at the mean owned cell of 1938 (212.2 km²): a unit conversion,
+  not a fitted number.
+- **What moves, at the 1938 start** (charged after the cap, gold a month): the Soviet Union
+  252.7 → 125.3 (21.9% → 10.8% of its income), Canada 79.0 (at the cap) → 40.1, Denmark 29.4
+  → 5.1, Australia 19.6 → 34.4, Brazil 17.5 → 36.5 (13.8% → 28.6% of its income). The world
+  554.6 → 461.2 (2.85% → 2.37% of its gross).
+- **The cost of measuring correctly:** the largest nation's anti-hegemon cost is halved. A
+  reference fitted to keep the world's total (184,000 km²) or the equator's cell (382,000 km²,
+  world total 211) were the alternatives; ADR-57 says why neither.
+- **Tests:** `economy.test.ts`: the cost in units of `ADMIN_KM2`; on the 1938 map the held land
+  equals an independent km² scan for six nations, Canada pays less than the United States and
+  is no longer at the cap, Greenland costs Denmark under 5% of its income. The yearly-payment
+  test on the 4×1 world now states the cap (its cells are a quarter of the map each); with
+  the cells rule put back, it and the new test fail.
+- **Hash:** seed 99 after one year 6569bc8e → f93cb674 (pin moved); after five 7f1ffbfb →
+  6b84c48c.
+- **Tick, by the three-run rule of 1.42f, pinned:**
+
+  | Run | 5-year mean (≤ 1.5 ms) | Year 1 (≤ 2.4 ms) | Hash year 1 / year 5 |
+  |---|---|---|---|
+  | 1 | 1.4648 | 2.2729 | f93cb674 / 6b84c48c |
+  | 2 | 1.4612 | 2.2615 | f93cb674 / 6b84c48c |
+  | 3 | 1.4563 | 2.2457 | f93cb674 / 6b84c48c |
+
+  Met, with 0.04 ms to spare on the mean. Before 1.42e the same seed read 1.43 and 1.68 ms.
+  By year, before and now: 1.68, 1.28, 1.26, 1.76, 1.18 and 2.27, 1.59, 1.18, 1.14, 1.15 ms.
+  The first two years are dearer and the budget for year 1 has 0.13 ms left.
+- **The pin is a tool:** `npm run sim -- … --affinity 0xFFFF` (`tools/headless/affinity.ts`;
+  run on Windows; the Linux branch uses `taskset` and has not been run). CLAUDE.md names it;
+  the scratch script `.cache/pin.ps1` is no longer needed.
+- **Quick sweep** (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 6 of 10, faller 10 of
+  10 (8 and 10 after 1.42e2); largest nation 12.2–16.4% of the land, 28.4–29.5% of the income.
+- **Riser count:** 6 of 10, against 8 after 1.42e2 and 7 after 1.42e1 (7 and 6 in the two quick
+  sweeps before those). Not judged at 20 years, and two seeds in ten is within what these five
+  sweeps show with no rule to explain it. It is the number PLAN 1.42 needs at 8 of 10 over 50
+  years. The largest nation's share did not rise with the cheaper administration (12.2–16.4%
+  of the land; 12.6–17.1% in the sweep before).
+- **The sweep took 8.8 min, against 5.9 and 4.5 for the two before: not the tick.** Seed 1 × 20
+  years, pinned, takes 2.9 min at a mean of 0.98 ms (year 1 2.14 ms, years 18–20 under 0.6 ms);
+  in the sweep the same seed took 7.1 min. The sweep runs ten unpinned processes, so its wall
+  time moves with the scheduling, as the gate's e2e stage did today (1.6 and 3.6 min).
+- **Not verified in the browser:** a rule of the economy with no UI of its own (the nation
+  panel shows income and expenses, which the e2e stage reads); the e2e stage of the gate ran.
+- **The gate failed once, on a fixture:** `landCounts.test.ts` painted a German disc near Paris
+  on day 240 of seed 99 and expected a controller to change. Under this rule Germany already
+  occupies Paris that day (its war with the British alliance stands at score 79), so nothing
+  changed. The tallies were right (the comparisons before the paint passed). The disc is now
+  Brazilian; the assertions are the same.
+- **State for the next iteration:** PLAN 1.42e is closed. The first unchecked task is PLAN 1.42
+  (blocked; its line says to retry after 1.42d and 1.42f, and 1.42e if done: all are done):
+  the deciding sweep on seeds from 401, once the quick sweep shows risers on most seeds. The
+  checkpoints in `.cache/ck/` predate these rules.

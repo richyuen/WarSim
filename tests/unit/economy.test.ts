@@ -2,8 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { dayOfIso, tickOfDate } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
 import { ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938, START_GOLD_MONTHS } from '../../src/sim/scenario1938';
+import { cellKm2ByRow } from '../../src/sim/landCounts';
 import { Sim } from '../../src/sim/sim';
 import {
+  ADMIN_BASE,
+  ADMIN_CAP_SHARE,
+  ADMIN_KM2,
   adminCost,
   BANKRUPT_MONTHS,
   cellWeight,
@@ -71,10 +75,11 @@ describe('economy rules (PLAN 1.9)', () => {
     expect(monthlyAccounts(w, TABLES).upkeep[1]).toBeCloseTo(UPKEEP_SCALE * 10 * 1.5);
   });
 
-  it('admin cost is superlinear in land held', () => {
+  it('admin cost is superlinear in land held (km², in units of ADMIN_KM2)', () => {
     expect(adminCost(0)).toBe(0);
-    expect(adminCost(2000)).toBeGreaterThan(2 * adminCost(1000));
-    expect(adminCost(100_000) / adminCost(10_000)).toBeGreaterThan(20);
+    expect(adminCost(ADMIN_KM2)).toBe(ADMIN_BASE);
+    expect(adminCost(2 * ADMIN_KM2)).toBeGreaterThan(2 * adminCost(ADMIN_KM2));
+    expect(adminCost(100 * ADMIN_KM2) / adminCost(10 * ADMIN_KM2)).toBeGreaterThan(20);
   });
 
   it('the economy runs once a month, at 00:00 of day 1', () => {
@@ -88,7 +93,11 @@ describe('economy rules (PLAN 1.9)', () => {
       if (w.nations.cols.gold[1] !== before) payments++;
     }
     expect(payments).toBe(12);
-    expect(w.nations.cols.gold[1]).toBeCloseTo(12 * (2 * INCOME_PER_BN - adminCost(2)));
+    // The cells of this 4×1 world are a quarter of the map each: the admin cost is at its cap.
+    const gross = 2 * INCOME_PER_BN;
+    const admin = Math.min(adminCost(2 * cellKm2ByRow(4, 1)[0]!), ADMIN_CAP_SHARE * gross);
+    expect(admin).toBe(ADMIN_CAP_SHARE * gross);
+    expect(w.nations.cols.gold[1]).toBeCloseTo(12 * (gross - admin));
   });
 
   it('bankruptcy below −3 months of income makes armies desert, and ends at gold ≥ 0', () => {
@@ -129,6 +138,32 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
   it('the top 5 incomes are the USA, the UK, Germany, the USSR and France', () => {
     expect(ranked.slice(0, 5).map(([t]) => t).sort()).toEqual(['ENG', 'FRA', 'GER', 'SOV', 'USA']);
     expect(ranked[0]![0]).toBe('USA');
+  });
+
+  // PLAN 1.42e3, ADR-57: land held is km². By cells Canada holds more land than the United States
+  // and Denmark (Greenland) a third as much as the Soviet Union.
+  it('the admin cost counts km² held: Canada pays less than the United States, and Greenland costs Denmark little', () => {
+    const { w, h, controller } = sim.world.cells;
+    const { gross: g, expenses, upkeep, held } = monthlyAccounts(sim.world, ECONOMY_TABLES_1938);
+    const rowKm2 = cellKm2ByRow(w, h);
+    const cells = new Float64Array(held.length);
+    const km2 = new Float64Array(held.length);
+    for (let c = 0; c < controller.length; c++) {
+      cells[controller[c]!]!++;
+      km2[controller[c]!]! += rowKm2[Math.floor(c / w)]!;
+    }
+    const id = (tag: string): number => tags.indexOf(tag) + 1;
+    const admin = (tag: string): number => expenses[id(tag)]! - upkeep[id(tag)]!;
+    for (const tag of ['SOV', 'CAN', 'USA', 'DEN', 'BRA', 'AST']) {
+      expect(held[id(tag)], tag).toBe(km2[id(tag)]);
+      expect(admin(tag), tag).toBeCloseTo(Math.min(adminCost(km2[id(tag)]!), ADMIN_CAP_SHARE * g[id(tag)]!), 9);
+    }
+    expect(cells[id('CAN')]!).toBeGreaterThan(1.5 * cells[id('USA')]!); // by cells Canada is the larger
+    expect(km2[id('CAN')]!).toBeLessThan(km2[id('USA')]!);
+    expect(admin('CAN')).toBeLessThan(admin('USA'));
+    expect(admin('CAN')).toBeLessThan(ADMIN_CAP_SHARE * g[id('CAN')]!); // by cells it was at the cap
+    expect(admin('DEN') / g[id('DEN')]!).toBeLessThan(0.05); // by cells 19% of its income
+    expect(admin('BRA')).toBeGreaterThan(admin('DEN')); // by cells Denmark paid the more
   });
 
   it('every living nation earns something and starts with six months of income', () => {
