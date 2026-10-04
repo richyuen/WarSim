@@ -4,6 +4,7 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { settle } from './settle';
 
 // PLAN 1.45c AT: at 3 and 6 px per cell over Europe, at the 1938 start, no capital flag covers any
 // part of a counter's box. The flags are drawn above the unit layers (PLAN 2.1); a flag that would
@@ -19,15 +20,10 @@ interface Rect { x: number; y: number; w: number; h: number }
 const touches = (a: Rect, b: Rect): boolean => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
 async function rest(page: Page, scale: number): Promise<{ flags: (Rect & { id: number })[]; counters: (Rect & { text: string; alpha: number })[] }> {
-  await page.evaluate(({ cx, cy, scale }) => {
-    const v = window.__warsim!.view!;
-    v.controller.set({ cx, cy, scale });
-    v.draw();
-  }, { cx: EX, cy: EY, scale });
-  await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
+  await page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx: EX, cy: EY, scale });
+  await settle(page);
   return page.evaluate(() => {
     const v = window.__warsim!.view!;
-    v.draw();
     return {
       flags: v.flagRects.map((f) => ({ id: f.id, x: f.x, y: f.y, w: f.w, h: f.h })),
       counters: v.counters.drawn.map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h, text: d.text, alpha: d.alpha })),

@@ -3391,3 +3391,19 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
   parity 46.3% (no sim input changed, so the ten-year stage did not run).
 - **Next:** a review pass (the last was after 1.45; 2.4a, 2.4b, 2.5 and 2.6 since), then PLAN
   2.7 (fade curves and hysteresis for all layers; the marker → elements morph).
+
+## 2026-10-04 — A race in the flag spec's rest (found in the gate of PLAN 2.6)
+
+- **What failed:** `flagsClear1938.spec.ts` at 3 px per cell: three capital flags still on their
+  counters. No file of PLAN 2.6 touches flags or counters at T0.
+- **What it was:** the spec waited until nothing animated and then drew a frame and read it.
+  The view's own loop may not have drawn since the counters came to rest; then the spec's draw
+  is the frame that sees them at rest, starts the flags' move away from them, and shows the
+  first frame of that move. The same family as the declutter race of the entry before last: a
+  read of the first frame of an animation that the test's own draw started.
+- **Fix, in the test:** `tests/e2e/settle.ts` draws until a frame leaves nothing animating. The
+  flag spec rests that way; its assertions are unchanged.
+- **For the review pass:** `declutter1938`, `handover1938`, `markers1938`, `tiers1938` and
+  `counters1938` rest by the old pattern (wait, then draw). None has failed this way, and for
+  counters alone a second draw of the same inputs starts nothing; they should use `settle` all
+  the same.
