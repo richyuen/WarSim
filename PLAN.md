@@ -312,12 +312,16 @@ quick sweep as a smoke test.
   (1.43 was split on 2026-10-03 into a, b and c: one cause per commit.)
   Done 2026-10-03 (ADR-60; `tests/e2e/title.spec.ts`, `docs/evidence/1.43/`): the started game
   has the state hash of a Node sim with the same seed and options.
-- [ ] 1.43b The title screen loads a game: Continue (the autosave, with the seed and options of
+- [x] 1.43b The title screen loads a game: Continue (the autosave, with the seed and options of
   the game that wrote it) and a `.warsim-scenario` file.
   AT: e2e: after Main menu, Continue resumes the autosave at its tick, and a game started
   without a looping map resumes without one; with no autosave there is no Continue; a scenario
   file chosen on the title screen starts its base scenario with the file's state hash; a
   damaged file is refused on the title screen; screenshots viewed.
+  Done 2026-10-03 (ADR-61; `tests/e2e/title.spec.ts`, `tests/unit/gameUrl.test.ts`). Found on
+  the way and fixed: a continue URL without `looping=0` drew wrap copies of a world that has no
+  looping map, and showed seed 1938 for any save. A loaded world now gives the game its looping
+  setting (the URL is corrected) and its seed.
 - [ ] 1.43c The title screen shows the chosen scenario: a political map of its start and its
   number of nations, drawn from the scenario's own data (AoC shows a map preview beside its
   scenario list).

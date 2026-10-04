@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals';
 import { render } from 'preact';
 import type { ScenarioId } from '../shared/protocol';
 import { SCENARIO_INFO } from '../shared/scenarios';
@@ -6,7 +7,8 @@ import { Autosave } from './autosave';
 import { Hud } from './hud';
 import { MapView } from './MapView';
 import { PlayerControl } from './player';
-import { optionsFromUrl } from './gameUrl';
+import { loadFailedUrl, optionsFromUrl, withLooping } from './gameUrl';
+import { importScenarioFile, readStagedScenario } from './scenarioFiles';
 import { saveScreenshot, Settings } from './settings';
 import { screenshotLabel } from './screenshotLabel';
 import { SimClient } from './simClient';
@@ -15,11 +17,20 @@ import { installTestApi } from './testApi';
 /**
  * Boots a game of `scenarioId` (the sim worker, the map view on `canvas`, the HUD in `uiRoot`).
  * URL options: ?seed=N (world seed), the new-game options of `gameUrl.ts`, ?paused=1 (start
- * paused), ?continue=1 (resume the autosave), ?view=0 (no map view; tests that only drive the sim
- * worker use it).
+ * paused), ?continue=1 (resume the autosave), ?load=scenario (start from the staged scenario
+ * file), ?view=0 (no map view; tests that only drive the sim worker use it).
  */
 export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement | null, params: URLSearchParams, scenarioId: ScenarioId): Promise<void> {
-  const seed = Number(params.get('seed') ?? 1938) >>> 0;
+  // ?load=scenario: the scenario file chosen on the title screen waits in IndexedDB (PLAN 1.43b).
+  // Without it there is no game to start, and the title screen says so.
+  const wantsFile = params.get('load') === 'scenario';
+  const staged = wantsFile ? await readStagedScenario().catch(() => undefined) : undefined;
+  if (wantsFile && staged?.scenario !== scenarioId) {
+    location.replace(loadFailedUrl());
+    return;
+  }
+  // The seed the settings panel shows: the URL's, or a loaded world's own.
+  const seed = signal(Number(params.get('seed') ?? 1938) >>> 0);
   const sim = new SimClient();
   const scenario = SCENARIO_INFO[scenarioId];
   // New-game options (PLAN 1.39b1); a non-looping map also renders without wrap copies.
@@ -50,7 +61,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     });
     view.setMapMode(hud.mapMode.value);
   }
-  const autosave = new Autosave(sim, scenarioId);
+  const autosave = new Autosave(sim, scenarioId, () => ({ seed: seed.value, options }));
   const settings = new Settings(view);
   // F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).
   window.addEventListener('keydown', (e) => {
@@ -67,15 +78,43 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       .catch(() => {})
       .then(() => location.assign(location.pathname));
   };
+  const showWorldSeed = async (): Promise<void> => {
+    seed.value = (await sim.inspect()).seed;
+  };
   if (uiRoot) {
-    render(<App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} options={options} nameOf={(id) => view?.nationName(id) ?? null} onMenu={toMenu} />, uiRoot);
+    render(
+      <App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} options={options} nameOf={(id) => view?.nationName(id) ?? null} onMenu={toMenu} onLoaded={() => void showWorldSeed()} />,
+      uiRoot,
+    );
   }
 
-  await sim.init({ scenario: scenarioId, seed, options });
-  // ?continue=1 resumes the autosave of this scenario (PLAN 1.27).
-  if (params.get('continue') === '1') {
+  await sim.init({ scenario: scenarioId, seed: seed.value, options });
+  // A loaded world replaces the new one: the staged scenario file, or with ?continue=1 the
+  // autosave of this scenario (PLAN 1.27).
+  let loaded = false;
+  if (staged) {
+    try {
+      await importScenarioFile(sim, staged.bytes, scenarioId, scenario.geometry.w, scenario.geometry.h);
+      loaded = true;
+    } catch {
+      location.replace(loadFailedUrl());
+      return;
+    }
+  } else if (params.get('continue') === '1') {
     const tick = await autosave.restore().catch(() => null);
     if (tick !== null) console.info(`WarSim: resumed autosave at tick ${tick}`);
+    loaded = tick !== null;
+  }
+  if (loaded) {
+    // The loaded world has its own looping setting, and the map view was built from the URL
+    // before it was there: when they differ, the URL is corrected and the game boots again.
+    const world = await sim.inspect();
+    const looping = world.settings.loopingMap && scenario.geometry.wrapX;
+    if (looping !== geometry.wrapX) {
+      location.replace(withLooping(params, looping));
+      return;
+    }
+    seed.value = world.seed;
   }
   autosave.start(() => !hud.paused.value);
   // Persisted speed and pause (PLAN 1.8); ?paused=1 forces a paused start (tests).

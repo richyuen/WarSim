@@ -19,6 +19,7 @@ import { newGameUrl } from './gameUrl';
 import type { GameOptions } from '../shared/gameOptions';
 import { downloadBytes, exportScenarioFile, importScenarioFile, scenarioFileName } from './scenarioFiles';
 import { useEffect, useState } from 'preact/hooks';
+import type { ReadonlySignal } from '@preact/signals';
 import { encodeRuns } from '../shared/mapImport';
 import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
@@ -32,17 +33,21 @@ export function App({
   options,
   nameOf,
   onMenu,
+  onLoaded,
 }: {
   hud: Hud;
   player: PlayerControl | null;
   view: MapView | null;
   base: string;
   settings: Settings;
-  seed: number;
+  /** The world's seed: the URL's, or a loaded world's own. */
+  seed: ReadonlySignal<number>;
   options: GameOptions;
   nameOf: (id: number) => string | null;
   /** Leaves the game for the title screen (PLAN 1.43). */
   onMenu: () => void;
+  /** A scenario file was loaded into the running game (its world has its own seed). */
+  onLoaded: () => void;
 }) {
   const [scenarioStatus, setScenarioStatus] = useState('');
   // Re-render when custom flags change (the flag store is outside the signals).
@@ -80,7 +85,7 @@ export function App({
           unitScale={settings.unitScale.value}
           uiScales={UI_SCALES}
           unitScales={UNIT_SCALES}
-          seed={seed}
+          seed={seed.value}
           options={options}
           onUiScale={(v) => settings.setUiScale(v)}
           onUnitScale={(v) => settings.setUnitScale(v)}
@@ -125,7 +130,10 @@ export function App({
             void file
               .arrayBuffer()
               .then((buf) => importScenarioFile(hud.sim, new Uint8Array(buf), base, geo.w, geo.h))
-              .then((h) => setScenarioStatus(t('scenario.loaded', { name: h.name })))
+              .then((h) => {
+                setScenarioStatus(t('scenario.loaded', { name: h.name }));
+                onLoaded();
+              })
               .catch((e: unknown) => setScenarioStatus(t('scenario.failed', { error: e instanceof Error ? e.message : String(e) })));
           }}
           onImport={(file, layer) => {

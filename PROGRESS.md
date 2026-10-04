@@ -2922,3 +2922,44 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
   pinned hash test of the gate covers the sim; `data/scenarios/toy/scenario.json` gained a
   field the sim does not read).
 - **Next:** PLAN 1.43b.
+
+## 2026-10-03 — PLAN 1.43b: Continue and scenario files on the title screen (ADR-61)
+- **Continue:** the title screen reads the autosave and shows its scenario, in-game date and the
+  time of the save. The record now keeps the seed and options of its game, and Continue opens
+  that game's URL plus `continue=1`. With no autosave the card is absent.
+- **Scenario file:** the title screen checks the file (it unpacks, its format, its base scenario
+  exists here at that map size), stores it in IndexedDB (slot `scenario`) and navigates to
+  `?scenario=<base>&paused=1&load=scenario`. The game loads it with `importScenarioFile`, so the
+  state hash is checked as in the editor. The file stays stored: a reload starts the scenario
+  again.
+- **A defect found first and measured:** a game started with `looping=0`, autosaved and resumed
+  by `?scenario=1938&continue=1` had `view.wrapsX` true over a world whose `loopingMap` is false
+  (wrap copies drawn of a world that does not wrap), and the settings panel said seed 1938 for
+  a world of seed 77. The map view is built from the URL before the world is loaded.
+- **Fix, for every load at boot:** the game asks the loaded world for its seed and looping
+  setting. The seed is shown. A looping setting that differs corrects the URL and boots again
+  (one more boot, in that case only). So an old autosave, a hand-typed continue URL and a
+  scenario file of a non-looping world all end right. The editor's import into a running game
+  now shows the world's seed as well; it still keeps the running game's wrap (ADR-61, known
+  limit).
+- **A load that fails in the game** (nothing staged; a state that is not the one the header
+  names) returns to `/?failed=scenario`, which says so. Nothing staged is checked before the sim
+  starts, so that case costs no boot.
+- **Files:** `src/app/saveDb.ts` (the IndexedDB helper, moved out of `autosave.ts`),
+  `src/app/autosave.ts` (`readAutosave`, seed and options in the record), `src/app/scenarioFiles.ts`
+  (`checkScenarioFile`, `stageScenarioFile`, `readStagedScenario`), `src/app/gameUrl.ts`
+  (`continueUrl`, `stagedScenarioUrl`, `withLooping`), `src/app/game.tsx`, `src/app/main.tsx`,
+  `src/ui/TitleScreen.tsx`.
+- **Verified in the browser** (`tests/e2e/title.spec.ts`; screenshots in `docs/evidence/1.43/`,
+  viewed): Continue resumes at tick 72 with the hash of a Node sim of seed 77 without a looping
+  map; a bare continue URL is corrected to `looping=0`; a scenario file made in Node (seed 5, no
+  looping map, Poland renamed, ten days in) starts on 11 January 1938 with the file's hash, and
+  again after a reload; a damaged file, a text file, a file of another map size and one of an
+  unknown scenario are refused on the title screen with their reason and no game starts; a file
+  with a forged hash is refused by the game.
+- **Screenshots of 1.43a regenerated:** `title.png`, `title-options.png` and `title-narrow.png`
+  now show the scenario file card.
+- **Not done:** named save slots and save files (PARITY row 65 stays partial). The file input is
+  the browser's own control, so its button text is the browser's language, not ours (as in the
+  editor).
+- **Next:** PLAN 1.43c (a map preview of the chosen scenario).

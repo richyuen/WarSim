@@ -1,9 +1,13 @@
 /**
  * Scenario files in the app (PLAN 1.38): export the running world as a `.warsim-scenario`
  * download, and import one into the running sim after checking its base scenario, map size and
- * state hash.
+ * state hash. A file chosen on the title screen (PLAN 1.43b) is checked there, staged in
+ * IndexedDB and loaded by the game that the title screen then navigates to.
  */
+import type { ScenarioId } from '../shared/protocol';
 import { decodeScenarioFile, encodeScenarioFile, SCENARIO_EXT, SCENARIO_FORMAT, type ScenarioHeader } from '../shared/scenarioFile';
+import { SCENARIO_GEOMETRY, scenarioIdOf } from '../shared/scenarios';
+import { getRecord, putRecord } from './saveDb';
 import type { SimClient } from './simClient';
 
 export async function exportScenarioFile(sim: SimClient, name: string, base: string, w: number, h: number): Promise<{ file: Uint8Array; header: ScenarioHeader }> {
@@ -36,4 +40,43 @@ export async function importScenarioFile(sim: SimClient, file: Uint8Array, base:
   const status = await sim.load(bytes);
   if (status.hash !== header.hash) throw new Error('scenario file damaged: state hash mismatch');
   return header;
+}
+
+/** A scenario file between the title screen and its game: the file as chosen, and its base scenario. */
+export interface StagedScenario {
+  slot: string;
+  scenario: ScenarioId;
+  name: string;
+  bytes: Uint8Array;
+}
+const STAGED_SLOT = 'scenario';
+
+/**
+ * What can be checked of a scenario file without a sim: it unpacks, it is a scenario file of this
+ * format, and its base scenario exists here at the file's map size. Throws a readable error
+ * otherwise. The state hash is checked when the game loads it (`importScenarioFile`).
+ */
+export async function checkScenarioFile(file: Uint8Array): Promise<{ header: ScenarioHeader; scenario: ScenarioId }> {
+  const { header } = await decodeScenarioFile(file);
+  const scenario = scenarioIdOf(header.base);
+  if (scenario === null) throw new Error(`scenario for ${header.base}, which this version does not have`);
+  const { w, h } = SCENARIO_GEOMETRY[scenario];
+  if (header.w !== w || header.h !== h) throw new Error(`scenario for ${header.base} ${header.w}×${header.h}; here ${header.base} is ${w}×${h}`);
+  return { header, scenario };
+}
+
+/**
+ * Checks `file` and keeps it for the game that loads it; returns its base scenario. It stays
+ * stored until another file replaces it, so reloading that game starts the scenario again.
+ */
+export async function stageScenarioFile(file: Uint8Array): Promise<ScenarioId> {
+  const { header, scenario } = await checkScenarioFile(file);
+  const rec: StagedScenario = { slot: STAGED_SLOT, scenario, name: header.name, bytes: file };
+  await putRecord(rec);
+  return scenario;
+}
+
+/** The staged scenario file, if any. */
+export function readStagedScenario(): Promise<StagedScenario | undefined> {
+  return getRecord<StagedScenario>(STAGED_SLOT);
 }

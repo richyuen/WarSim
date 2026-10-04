@@ -3,13 +3,19 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import type { Inspection } from '../../src/shared/protocol';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { encodeScenarioFile, SCENARIO_FORMAT } from '../../src/shared/scenarioFile';
+import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.43a AT (critic B5): `/` shows the title screen and no world; choosing 1938 starts it on
 // 1 January 1938 with the chosen seed and options; the settings panel leads back, saving the game;
 // the toy world opens by its URL.
+// PLAN 1.43b AT: Continue resumes the autosave at its tick, a game without a looping map resumes
+// without one, and there is no Continue without an autosave; a scenario file chosen on the title
+// screen starts its base scenario with the file's state hash; a file that does not fit is refused.
+
+const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
 
 const evidence = (info: { outputPath: () => string }): string => {
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.43') : info.outputPath();
@@ -139,4 +145,142 @@ test('the toy world opens by its URL', async ({ page }) => {
   await expect(page.locator('canvas#map')).toBeVisible();
   await expect(page.getByTestId('date-label')).toContainText('1 January 1938');
   expect((await page.evaluate(() => window.__warsim!.sim.hash())).hash).toBe(new Sim({ scenario: 'toy', seed: 7 }).hash());
+});
+
+test('Continue resumes the autosave with the seed and options of its game', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/');
+  // Nothing saved yet: no Continue.
+  await expect(page.getByTestId('title-screen')).toHaveAttribute('data-save', 'none');
+  await expect(page.getByTestId('title-continue')).toHaveCount(0);
+
+  // A game without a looping map, left after three days.
+  await page.getByTestId('settings-seed').fill('77');
+  await page.getByTestId('opt-looping').selectOption('off');
+  await Promise.all([page.waitForURL(/scenario=1938/), page.getByTestId('settings-new-game').click()]);
+  await ready(page);
+  const left = await page.evaluate(() => window.__warsim!.sim.step(72));
+  await page.getByTestId('settings-btn').click();
+  await Promise.all([page.waitForURL((u) => u.search === ''), page.getByTestId('settings-menu').click()]);
+
+  // The title screen offers it, with its scenario and its date.
+  await expect(page.getByTestId('title-screen')).toHaveAttribute('data-save', 'found');
+  await expect(page.getByTestId('title-save')).toContainText('World, 1938');
+  await expect(page.getByTestId('title-save-date')).toHaveText('4 January 1938');
+  await page.screenshot({ path: path.join(evidence(info), 'title-continue.png') });
+  await Promise.all([page.waitForURL(/continue=1/), page.getByTestId('title-continue').click()]);
+  for (const p of ['scenario=1938', 'seed=77', 'looping=0']) expect(page.url()).toContain(p);
+  await ready(page);
+  await page.waitForFunction(() => window.__warsim!.hud.tick.value === 72, null, { timeout: 30_000 });
+
+  // The same world, three days in, still without a looping map; the panel knows its seed and options.
+  expect(await page.evaluate(() => window.__warsim!.sim.hash())).toEqual(left);
+  const node = new Sim({ scenario: '1938', seed: 77, options: { loopingMap: false }, assets: assets1938(SIZE_1938.w) });
+  node.step(72);
+  expect(left.hash).toBe(node.hash());
+  expect(await page.evaluate(() => window.__warsim!.view!.wrapsX)).toBe(false);
+  await expect(page.getByTestId('date-label')).toContainText('4 January 1938');
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-current-seed')).toContainText('77');
+  await expect(page.getByTestId('opt-looping')).toHaveValue('off');
+
+  // A continue URL that says nothing of the game (as before 1.43b, or typed by hand): the game
+  // takes the looping setting and the seed from the loaded world. Before, this drew wrap copies
+  // of a world without a looping map and showed seed 1938.
+  await page.goto('/?scenario=1938&paused=1&continue=1');
+  await page.waitForURL(/looping=0/, { timeout: 60_000 });
+  expect(page.url()).toContain('continue=1');
+  await ready(page);
+  await page.waitForFunction(() => window.__warsim!.hud.tick.value === 72, null, { timeout: 30_000 });
+  expect(await page.evaluate(() => window.__warsim!.view!.wrapsX)).toBe(false);
+  expect(await page.evaluate(() => window.__warsim!.sim.hash())).toEqual(left);
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-current-seed')).toContainText('seed 77');
+  expect(errors).toEqual([]);
+});
+
+test('a scenario file chosen on the title screen starts its game; a file that does not fit is refused', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  // A scenario made in Node: seed 5, no looping map, Poland renamed, ten days in.
+  const sim = new Sim({ scenario: '1938', seed: 5, options: { loopingMap: false }, assets: assets1938(SIZE_1938.w) });
+  sim.command({ kind: 'renameNation', nation: POL, name: 'Rzeczpospolita' });
+  sim.step(24 * 10);
+  const { bytes, hash } = sim.exportScenario();
+  const header = { format: SCENARIO_FORMAT, name: 'Title test', base: '1938', w: SIZE_1938.w, h: SIZE_1938.h, tick: sim.tick, hash };
+  const file = Buffer.from(await encodeScenarioFile(header, bytes));
+  const pick = (name: string, buffer: Buffer): Promise<void> => page.getByTestId('title-scenario-file').setInputFiles({ name, mimeType: 'application/octet-stream', buffer });
+  const error = page.getByTestId('title-file-error');
+
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/');
+  await expect(error).toHaveCount(0);
+
+  // Refused on the title screen: a damaged file, another kind of file, another map size, a
+  // scenario this version does not have. No game starts.
+  const damaged = Buffer.from(file);
+  damaged[damaged.length - 40] = damaged[damaged.length - 40]! ^ 0xff;
+  await pick('damaged.warsim-scenario', damaged);
+  await expect(error).toContainText('Could not load');
+  await pick('other.warsim-scenario', Buffer.from('hello'));
+  await expect(error).toContainText('not a WarSim scenario file');
+  await pick('small.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, w: 1024, h: 512 }, bytes)));
+  await expect(error).toContainText('1024×512');
+  await pick('atlantis.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, base: 'atlantis' }, bytes)));
+  await expect(error).toContainText('atlantis');
+  expect(new URL(page.url()).search).toBe('');
+  expect(page.workers()).toHaveLength(0);
+  await page.screenshot({ path: path.join(evidence(info), 'title-file-refused.png') });
+
+  // A file whose state is not the one its header names passes the title screen and is refused
+  // by the game, which returns to the title screen.
+  await Promise.all([page.waitForURL(/failed=scenario/, { timeout: 60_000 }), pick('forged.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, hash: (hash ^ 1) >>> 0 }, bytes)))]);
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  await expect(error).toHaveText('The scenario file could not be loaded. Choose it again.');
+
+  // The file itself: the game of its base scenario starts with the file's state. That world has
+  // no looping map, so the game corrects its URL and draws the map without wrap copies.
+  await Promise.all([page.waitForURL(/load=scenario/), pick('title-test.warsim-scenario', file)]);
+  await page.waitForURL(/looping=0/, { timeout: 60_000 });
+  await ready(page);
+  await page.waitForFunction((tick) => window.__warsim!.hud.tick.value === tick, sim.tick, { timeout: 30_000 });
+  expect(await page.evaluate(() => window.__warsim!.sim.hash())).toEqual({ tick: sim.tick, hash });
+  expect(await page.evaluate(() => window.__warsim!.view!.wrapsX)).toBe(false);
+  await expect(page.getByTestId('date-label')).toContainText('11 January 1938');
+  const s: Inspection = await page.evaluate(() => window.__warsim!.sim.inspect());
+  expect(s.seed).toBe(5);
+  expect(s.nations.find((n) => n.id === POL)!.name).toBe('=Rzeczpospolita');
+  // The panel shows the world's seed, not the URL's default.
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-current-seed')).toContainText('seed 5');
+  await page.getByTestId('settings-close').click();
+  await page.waitForTimeout(500); // let the first frames draw
+  await page.screenshot({ path: path.join(evidence(info), 'scenario-file-started.png') });
+
+  // The file stays staged: reloading the game starts the scenario again.
+  await page.evaluate(() => window.__warsim!.sim.step(24));
+  await page.reload();
+  await ready(page);
+  await page.waitForFunction((tick) => window.__warsim!.hud.tick.value === tick, sim.tick, { timeout: 30_000 });
+  expect((await page.evaluate(() => window.__warsim!.sim.hash())).hash).toBe(hash);
+
+  // The editor's import into a running game (PLAN 1.38) shows the loaded world's seed too.
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await ready(page);
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null);
+  await page.getByTestId('editor-btn').click();
+  await page.getByTestId('scenario-import').setInputFiles({ name: 'title-test.warsim-scenario', mimeType: 'application/octet-stream', buffer: file });
+  await expect(page.getByTestId('scenario-status')).toContainText('Loaded', { timeout: 30_000 });
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-current-seed')).toContainText('seed 5');
+});
+
+test('a game URL that asks for a staged scenario file when none is staged returns to the title screen', async ({ page }) => {
+  await page.goto('/?scenario=1938&paused=1&load=scenario');
+  await page.waitForURL(/failed=scenario/);
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  await expect(page.getByTestId('title-file-error')).toHaveText('The scenario file could not be loaded. Choose it again.');
+  expect(page.workers()).toHaveLength(0);
 });

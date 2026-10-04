@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-61 · 2026-10-03 · accepted — Loading from the title screen: the URL names the game, the loaded world corrects it (PLAN 1.43b)
+
+- **Context:** ADR-60 made a game its URL. A loaded game does not fit that at once: the bytes
+  of a scenario file do not survive a navigation, and a loaded world has a seed and a looping
+  setting of its own, while the map view is built from the URL before the world exists.
+  Measured before the change: a game started with `looping=0` and resumed by
+  `?scenario=1938&continue=1` drew wrap copies of the map (`view.wrapsX` true) over a world
+  without a looping map, and the settings panel showed seed 1938 for a world of seed 77.
+- **Decision:**
+  - *Continue.* The autosave record keeps the seed and options of the game that wrote it
+    (app side: nothing enters the sim). Continue opens that game's URL plus `continue=1`.
+  - *Scenario file.* The title screen checks what needs no sim (the file unpacks, its format,
+    its base scenario exists here at the file's map size) and refuses the rest with the reason.
+    A file that passes is stored in IndexedDB (slot `scenario`) and the title screen navigates
+    to `?scenario=<base>&paused=1&load=scenario`. The game loads it through
+    `importScenarioFile`, which checks the state hash as the editor's import does.
+  - *The file stays stored* until another replaces it, so reloading that game starts the
+    scenario again, as reloading a seed URL starts that game again.
+  - *The loaded world wins.* After a load (autosave or scenario file) the game reads the
+    world's seed and looping setting. The seed is shown. A looping setting that differs from
+    the URL's corrects the URL (`location.replace`) and the game boots again: one more boot,
+    only in that case, and it cannot repeat (the corrected URL agrees with the world).
+  - *A load that fails in the game* (nothing staged, or a state that is not the one the header
+    names) returns to `/?failed=scenario`, and the title screen says the file could not be
+    loaded. A game that silently started a new 1938 world instead would be the wrong game.
+- **Rejected:**
+  - Booting the game in the page with the file's bytes in memory: `/` would stay in the
+    address bar and a reload would lose the game (ADR-60).
+  - The looping setting and the seed in the scenario file's header: files already exported
+    lack them, and a continue URL typed by hand or from an older autosave has the same
+    problem. Reading them from the loaded world covers all three.
+  - Rebuilding the map view in place when the looping setting differs: the renderer, the
+    labels and the unit layers each take the wrap at construction.
+- **Known limit:** the editor's import into a running game (PLAN 1.38) still keeps the running
+  game's wrap: a scenario without a looping map imported there is drawn with wrap copies. It
+  now shows the right seed. Loading the file from the title screen is the way that is right.
+- **Tests:** `tests/e2e/title.spec.ts` (Continue: tick, state hash equal to a Node sim, no
+  wrap, seed and options in the panel; a bare continue URL is corrected; a scenario file of a
+  non-looping world of seed 5 starts with its hash, without wrap, showing seed 5, and again
+  after a reload; four files refused on the title screen; a forged hash refused by the game;
+  nothing staged), `tests/unit/gameUrl.test.ts` (the URLs; `checkScenarioFile`).
+
 ### ADR-60 · 2026-10-03 · accepted — `/` is a title screen; a game is its URL (PLAN 1.43, critic B5)
 
 - **Context:** `/` booted the two-nation toy world, a test fixture, and the 1938 world could be

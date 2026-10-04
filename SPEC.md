@@ -208,10 +208,11 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) �
 - *Format:* a save is the sim's section bytes (all of `World.parts()`, the command log included),
   gzipped (`src/shared/saveCodec.ts`; raw bytes still load). A 1938 world after one year of AI
   play is 38.6 MB raw and 0.79 MB gzipped.
-- *Autosave* (`src/app/autosave.ts`): IndexedDB `warsim`/`saves`, slot `autosave`, holding
-  {scenario, tick, savedAt, bytes}. It runs every 60 s of real time while the game runs, and when
-  the page is hidden.
-- *Resume:* `?continue=1` restores the slot for the same scenario after init.
+- *Autosave* (`src/app/autosave.ts`; the store is `src/app/saveDb.ts`): IndexedDB
+  `warsim`/`saves`, slot `autosave`, holding {scenario, tick, savedAt, bytes, seed, options}. It
+  runs every 60 s of real time while the game runs, when the page is hidden, and on Main menu.
+- *Resume:* `?continue=1` restores the slot for the same scenario after init; the title screen
+  offers it as Continue (§9).
 - *Status:* the worker's save reply carries the status taken at the same tick.
 
 ### 2.6 Determinism [ADR-5]
@@ -1160,8 +1161,19 @@ interpolation changes something.
     as New game in the settings panel does; a reload restarts that game and the URL can be shared.
   - The toy world is a test world (`hidden`): it opens by `?scenario=toy` only.
   - Settings → Main menu autosaves the game and returns to `/`.
-  - Still to come: Continue and scenario files on the title screen (PLAN 1.43b), a map preview
-    (PLAN 1.43c).
+  - Loading a game (PLAN 1.43b) [ADR-61]:
+    - *Continue:* shown when there is an autosave, with its scenario, in-game date and the time
+      of the save. It opens the URL of the game that wrote it plus `continue=1` (the record keeps
+      that game's seed and options).
+    - *Scenario file:* a `.warsim-scenario` file is checked on the title screen (it unpacks, its
+      format, its base scenario exists here at that map size), kept in IndexedDB (slot
+      `scenario`) and loaded by `?scenario=<base>&load=scenario`. The game checks the state hash.
+      The file stays stored, so a reload starts the scenario again. A file the game cannot load
+      leads back to `/?failed=scenario`, which says so.
+    - *The loaded world wins:* after a load the game shows the world's own seed, and when the
+      world's looping setting differs from the URL's the URL is corrected and the game boots
+      again (the map view is built from the URL before the world is there).
+  - Still to come: a map preview (PLAN 1.43c).
 - **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
   interface size 85–130% (root font size, also on the title screen), unit size 50–200% (marker
   size multiplier), both persisted; F2 or the panel saves a PNG of the map with its overlays;
@@ -1221,7 +1233,8 @@ interpolation changes something.
   The test API is `window.__warsim`: now `sim` (SimClient: init/step/command/hash/save/load/
   speed/pause/subscribe/buildProvinces) and `view` (camera, controller.set/zoomTo, frames,
   draw); later `god(cmd)`, `fps()`. It exists only in a game, not on the title screen. URL
-  options: `?scenario=1938|toy` (none = the title screen), `?seed=`, `?paused=1`, `?view=0`.
+  options: `?scenario=1938|toy` (none = the title screen), `?seed=`, `?paused=1`, `?view=0`,
+  `?continue=1`, `?load=scenario`.
 - **Bench** (`npm run bench [-- A B BP R]`): Chromium on the real GPU (headless with
   `--use-angle=d3d11 --enable-gpu --ignore-gpu-blocklist`; without them it is SwiftShader).
   GPU time comes from EXT_disjoint_timer_query_webgl2 (gl.finish does not block under ANGLE).
