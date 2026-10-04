@@ -28,13 +28,14 @@
  * instead of founding a new one per revolt. The holder declares war on them unless already at
  * war or in a truce.
  *
- * Overextension (critic B1, 2026-10-03): a holder with share s of the world's owned land above
- * OVEREXT_SHARE strains to hold its far provinces (centre more than OVEREXT_CELLS cells from the
- * capital), core or not: each gains OVEREXT_UNREST × min(OVEREXT_MAX, s/OVEREXT_SHARE − 1) a
- * month, plus AT_WAR on core land while a war of the holder has exhausted its side to
- * OVEREXT_EXHAUSTION or more (a phoney war does not count). Suppression and garrisons hold it
- * down, so a solvent empire at peace keeps its periphery, and one that cannot pay for
- * suppression or is worn down by war loses it in large pieces over the years.
+ * Overextension (critic B1, 2026-10-03): a holder with share s of the world's owned land (km²,
+ * not cells: ADR-57) above OVEREXT_SHARE strains to hold its far provinces (centre more than
+ * OVEREXT_CELLS cells from the capital), core or not: each gains
+ * OVEREXT_UNREST × min(OVEREXT_MAX, s/OVEREXT_SHARE − 1) a month, plus AT_WAR on core land while
+ * a war of the holder has exhausted its side to OVEREXT_EXHAUSTION or more (a phoney war does
+ * not count). Suppression and garrisons hold it down, so a solvent empire at peace keeps its
+ * periphery, and one that cannot pay for suppression or is worn down by war loses it in large
+ * pieces over the years.
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -121,11 +122,13 @@ export function revoltSystem(world: World): void {
   });
   pv.version++; // unrest is updated below
   // Overextension factor per nation (0 for nations at or below OVEREXT_SHARE of the owned land).
+  // Land is km² (ADR-57): by cells Canada held 12% of the world and Brazil under 4%.
+  const km2 = world.landCounts().owned;
   let ownedLand = 0;
   world.nations.forEach((n) => {
-    if (nc.living[n] === 1) ownedLand += nc.cells[n]!;
+    if (nc.living[n] === 1) ownedLand += km2[n]!;
   });
-  const overext = (n: number): number => (ownedLand > 0 ? Math.min(OVEREXT_MAX, Math.max(0, nc.cells[n]! / ownedLand / OVEREXT_SHARE - 1)) : 0);
+  const overext = (n: number): number => (ownedLand > 0 ? Math.min(OVEREXT_MAX, Math.max(0, km2[n]! / ownedLand / OVEREXT_SHARE - 1)) : 0);
   const worn = new Set<number>();
   for (const war of world.wars.list) for (const side of [0, 1] as const) if (war.exhaustion[side] >= OVEREXT_EXHAUSTION) for (const m of war.sides[side]) worn.add(m);
   const farFromCapital = (cell: number, n: number): boolean => {

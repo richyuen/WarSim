@@ -666,7 +666,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     joins that state. Only otherwise does it found a new nation.
   - *Overextension (ADR-47):* a holder above 4% of the world's owned land gains, in provinces
     more than 80 cells from its capital, 1.25 × min(2, share/4% − 1) unrest a month, plus 2 on
-    core land while one of its wars has exhausted its side to ≥ 60.
+    core land while one of its wars has exhausted its side to ≥ 60. The share is of km², not
+    of cells (ADR-57): in 1938 the Soviet Union (15.9%), the United States (7.0%), Canada
+    (6.8%), Brazil (6.4%) and Australia (6.1%) are above 4%. The strain outruns the monthly
+    decay of 2 only above 10.4% of the land.
   - *Tuning (PLAN 1.40, ADR-44):*
     - The 1938 scenario revolts by region (`revoltMode`).
     - A province held for 10 years becomes its holder's core (the old owner keeps a claim).

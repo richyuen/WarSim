@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
+import { DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_SHARE, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
@@ -208,5 +208,58 @@ describe('revolts (PLAN 1.19)', () => {
     expect(free.near).toBe(0); // the heartland stays calm
     expect(free.german).toBe(0); // a nation below OVEREXT_SHARE is not strained
     expect(unrestAfter(1).far).toBe(0);
+  });
+
+  // PLAN 1.42e2, ADR-57: the share is a share of km². By cells Canada holds 12.3% of the owned
+  // land (strain at the cap) and Brazil 3.7% (none); by km² they hold 6.8% and 6.4%.
+  it('overextension counts km²: Canada is not at the cap, and Brazil is above the threshold', () => {
+    const CAN = nationId('CAN');
+    const BRA = nationId('BRA');
+    const ARG = nationId('ARG');
+    const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const g = navOf(w).graph;
+    const nc = w.nations.cols;
+    const share = (n: number, land: ArrayLike<number>): number => {
+      let owned = 0;
+      w.nations.forEach((m) => {
+        if (nc.living[m] === 1) owned += land[m]!;
+      });
+      return land[n]! / owned;
+    };
+    const factor = (sh: number): number => Math.min(OVEREXT_MAX, Math.max(0, sh / OVEREXT_SHARE - 1));
+    const km2 = w.landCounts().owned;
+    // The premise: the two measures put these nations on different sides of the rule.
+    expect(OVEREXT_UNREST * factor(share(CAN, nc.cells))).toBeGreaterThan(DECAY); // by cells: restless
+    expect(OVEREXT_UNREST * factor(share(CAN, km2))).toBeLessThan(DECAY); // by km²: calm
+    expect(factor(share(BRA, nc.cells))).toBe(0);
+    expect(factor(share(BRA, km2))).toBeGreaterThan(0.5);
+    expect(factor(share(ARG, nc.cells))).toBe(0);
+    expect(factor(share(ARG, km2))).toBe(0);
+    /** The own core provinces of `n`, far from its capital or anywhere. */
+    const provinces = (n: number, far: boolean): number[] => {
+      const out: number[] = [];
+      for (let p = 1; p < w.provinces.count; p++) {
+        const c = g.centre[p] ?? -1;
+        if (c < 0 || w.cells.owner[c] !== n || w.provinces.core[p] !== n) continue;
+        const d = Math.hypot((c % W) + 0.5 - nc.capitalX[n]!, Math.floor(c / W) + 0.5 - nc.capitalY[n]!);
+        if (!far || d > OVEREXT_CELLS + 1) out.push(p);
+      }
+      return out;
+    };
+    const most = (ps: number[]): number => Math.max(...ps.map((p) => w.provinces.unrest[p]!));
+    const [canada, brazil, argentina] = [provinces(CAN, true), provinces(BRA, true), provinces(ARG, false)];
+    expect(Math.min(canada.length, brazil.length, argentina.length)).toBeGreaterThan(3);
+    // Brazil and Argentina start restless (below the revolt threshold), so the decay shows.
+    for (const p of [...brazil, ...argentina]) s.command({ kind: 'setUnrest', province: p, value: 40 });
+    const f = factor(share(BRA, km2));
+    run(s, THROUGH_MARCH);
+    expect(most(canada)).toBe(0); // by cells its far north gained 0.5 a month
+    // Argentina decays by DECAY a month; Brazil's far provinces by OVEREXT_UNREST × factor less.
+    const months = (40 - most(argentina)) / DECAY;
+    expect(months).toBeGreaterThanOrEqual(2);
+    expect(Number.isInteger(months)).toBe(true);
+    expect(most(brazil) - most(argentina)).toBeCloseTo(months * OVEREXT_UNREST * f, 3);
   });
 });

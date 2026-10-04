@@ -216,6 +216,30 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   92–139 nations alive, land moving in the last five years 7.8–16.6%. Largest faller by seed:
   the British realm in 1, 4, 5 and 9, China (no land left) in 2 and 10, Italy (no land left)
   in 3, 7 and 8, the Belgian realm in 6. Wall time 4.5 min.
+- **Overextension (PLAN 1.42e2, 2026-10-03):** a holder's share of the world's owned land
+  (`revolts.ts`) is read from the same km² tallies, summed over the living nations as before.
+  `OVEREXT_SHARE` stays 4%. At the 1938 start, share and monthly strain in far provinces:
+
+  | Nation | By cells | Strain | By km² | Strain |
+  |---|---|---|---|---|
+  | Soviet Union | 26.8% | 2.50 | 15.9% | 2.50 |
+  | United States | 7.3% | 1.03 | 7.0% | 0.93 |
+  | Canada | 12.3% | 2.50 | 6.8% | 0.89 |
+  | Brazil | 3.7% | 0 | 6.4% | 0.75 |
+  | Australia | 4.0% | 0.01 | 6.1% | 0.66 |
+  | Denmark (Greenland) | 5.4% | 0.45 | 1.5% | 0 |
+
+  Unrest decays by 2 a month, so the strain alone raises unrest only above 10.4% of the
+  land. By cells that was the Soviet Union and Canada; by km² it is the Soviet Union alone,
+  still at the cap. Below that the strain slows the decay of unrest that has another cause
+  (occupation, non-core land, war): by km² that now applies to Brazil and Australia and no
+  longer to Greenland.
+  Test: `revolts.test.ts`, Canada's far provinces stay at 0 through March (1.5 by cells) and
+  Brazil's far provinces lose unrest more slowly than Argentina's by exactly the strain.
+  Hash: seed 99 after one year 23734db3 → 6569bc8e; after five years 6738d695 → 7f1ffbfb.
+  Tick, pinned: year 1 2.06 ms, 5-year mean 1.42 ms (one run; budgets 2.4 and 1.5).
+  Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 8 of 10, faller 10 of 10
+  (7 and 10 after 1.42e1); largest nation 12.6–17.1% of the land; wall time 5.9 min.
 
 ### ADR-56 · 2026-10-03 · accepted — Cell A* uses an octile bound (PLAN 1.42f, step 4)
 

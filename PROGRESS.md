@@ -2772,3 +2772,25 @@ How each step was applied to tasks 0.4–0.22 (0.1–0.3 were done in an earlier
 - **Corrected after the commit (docs only):** ADR-57 gave Lebanon as 36 cells and 10,452 km²,
   which was its real area and a guess; on the map it is 35 cells and 9,874 km². The note under
   PLAN 7.1b said the shares of land were km² already; two of the three rules are still open.
+
+## 2026-10-03 — PLAN 1.42e2: overextension counts km² (ADR-57 addendum)
+- **Rule:** a holder's share of the world's owned land, which sets the strain on its far
+  provinces, is a share of km² (the tallies of 1.42e1), summed over the living nations.
+  `OVEREXT_SHARE` (4%) and the other constants are untouched.
+- **What moves, at the 1938 start:** the strain beats the monthly decay of unrest only above
+  10.4% of the land. By cells that was the Soviet Union (26.8%) and Canada (12.3%); by km² it
+  is the Soviet Union alone (15.9%, still at the cap). Canada (6.8%) falls from 2.50 to 0.89 a
+  month; Brazil (6.4%) and Australia (6.1%) rise from nothing to 0.75 and 0.66; Greenland no
+  longer strains Denmark.
+- **Test (new):** through March, Canada's far provinces stay at unrest 0 (1.5 under the cells
+  rule, with which the test fails), and Brazil's far provinces, set to 40, lose unrest more
+  slowly than Argentina's by months × OVEREXT_UNREST × factor.
+- **Hash:** seed 99 after one year 23734db3 → 6569bc8e (pin moved); after five 6738d695 →
+  7f1ffbfb. The first two years flip as many cells as before (18,519 and 11,566); year 3
+  differs.
+- **Tick, pinned** (one run): year 1 2.06 ms, 5-year mean 1.42 ms (budgets 2.4 and 1.5). The
+  three-run measurement comes with 1.42e3.
+- Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 8 of 10, faller 10 of 10
+  (7 and 10 after 1.42e1); largest nation 12.6–17.1% of the land; wall time 5.9 min.
+- **Not verified in the browser:** a rule with no UI of its own; the e2e stage of the gate ran.
+- **Next:** PLAN 1.42e3 (admin cost by km² held), with the pin script as a tracked tool.

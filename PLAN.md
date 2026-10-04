@@ -271,12 +271,17 @@ pass before ticking. Work top-down, and split a task if it grows past one iterat
   seed 99 after one year e5741d70 → 23734db3, after five 7a8e5c27 → 6738d695; tick, on the
   performance cores: year 1 2.05 ms, 5-year mean 1.37 ms (both in budget).
   Quick sweep (1–10 × 20 years, scratch): limits 10/10, riser 7/10, faller 10/10.
-- [ ] 1.42e2 Overextension counts km²: a holder's share of the world's owned land
+- [x] 1.42e2 Overextension counts km²: a holder's share of the world's owned land
   (`revolts.ts`, `OVEREXT_SHARE` 4% unchanged) is a share of area, read from `LandCounts`.
   By cells the Soviet Union is at 26.8% and Canada at 12.3%; by area 15.9% and 6.8%, and
   Australia (6.1%) and Brazil (6.4%) come above the 4% they were under.
   AT: a unit test where the two measures disagree; pin and hashes in DECISIONS (ADR-57
   addendum); gate green; quick sweep keeps the limits.
+  Done 2026-10-03: one new test (Canada's far north stays calm, Brazil's far provinces feel
+  the strain; it fails under the cells rule); seed 99 after one year 23734db3 → 6569bc8e,
+  after five 6738d695 → 7f1ffbfb; tick, pinned: year 1 2.06 ms, 5-year mean 1.42 ms.
+  Quick sweep (seeds 1–10 × 20 years, scratch): limits 10 of 10, riser 8 of 10, faller 10 of 10
+  (7 and 10 after 1.42e1); largest nation 12.6–17.1% of the land; wall time 5.9 min.
 - [ ] 1.42e3 The admin cost counts km² held (`economy.ts`): `adminCost` per 212,000 km² (1,000
   mean owned cells) instead of per 1,000 cells. Measured at the 1938 start, uncapped, summed
   over all nations: 568 gold a month by cells, 470 by mean cells (Soviet Union 253 → 125,
