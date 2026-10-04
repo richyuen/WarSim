@@ -4686,3 +4686,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** 3 new e2e, 3 new unit; the hillshade spec takes the helpers the ground spec
   brought (`tests/e2e/mapView.ts`), no assertion changed. 612 unit tests in 80 files, 105 e2e.
 - **Next:** PLAN 2.8c (trees, rocks, buildings).
+
+## 2026-10-04 — PLAN 2.8c1: where the trees, rocks and buildings stand
+
+- **2.8c split in two:** the scatter (a pure function, this task), then its drawing (2.8c2).
+- **The scatter** (`src/render/map/scatter.ts`): a nested lattice. An instance stands at one
+  place whatever the zoom; a nearer view adds instances between those that are there; the next
+  finer level comes in by its opacity. Trees and rocks by terrain class, buildings by the
+  cities; nothing on water. A symbol at T2, the thing's own size at the end of T3.
+- **Tests** (`tests/unit/scatter.test.ts`, 10): the same twice and under a pan; water by the
+  cells and by the fine coast; forest against plains, rocks in mountains, nothing on ice;
+  buildings by a city's size and distance; nesting at twice and four times the zoom; no
+  opacity moves by more than a tenth in a step of 1%; density on screen at seven zooms; sizes;
+  the cap; the seam.
+- **The tests were tried:** each of three faults put in on purpose failed one or two of them.
+  Three of my own first assertions were wrong (they named an instance by its place to seven
+  decimals, finer than a float32 of px carries from one view to the next); set right.
+- **Cost:** 0.4 to 1.2 ms a scatter for a full view of forest at 1080p (Node), 4,400 to 10,900
+  instances.
+- **Not drawn yet:** nothing on screen has changed.
+- **Tests:** 10 new unit tests. 622 unit tests in 81 files, 105 e2e.
+- **Next:** PLAN 2.8c2 (the draw).

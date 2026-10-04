@@ -1028,7 +1028,17 @@ hundredths, and woods are a little darker, sand and ice a little lighter. The fi
 colour.
 *Two programs:* the pass of T0 and T1 is compiled without any of this, and the pass with the
 ground is used while any of it shows (PLAN 2.8b: a branch in one program made T0 half as dear
-again). Instances: PLAN 2.8c.
+again).
+*Where trees, rocks and buildings stand (PLAN 2.8c1, `scatter.ts`; drawn by PLAN 2.8c2):* a
+nested lattice, 2^l points to a cell at level l, each point of a level a point of every finer
+one. An instance belongs to the coarsest level its point is on and stands near it, moved by a
+hash of the point: one place whatever the zoom. A view shows the levels whose points are 14 px
+apart or more, and the next finer level comes in by its opacity through the upper half of the
+octave of zoom before that. At a point: a building by how near a city is and how large (reach
+3 to 18 km by size, densest at the middle); else a tree or a rock by the terrain class of the
+cell (forest 0.75 trees; mountains 0.42 rocks; plains 0.05 trees; ice nothing). Nothing on
+water, by the cell's class and by the fine coast's coverage. Size: a symbol of 6 or 7 px at
+T2, the thing's own (a crown of 9 m, a house of 14 m) once the zoom shows it larger.
 
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
 from 2000 m/px down to 300 (see the handovers below). Each

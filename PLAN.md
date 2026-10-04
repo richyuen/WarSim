@@ -873,6 +873,26 @@ quick sweep as a smoke test.
     size). e2e: at T2 and T3 over a forest, a mountain range and a metropolis the instances show,
     viewed; the hash is the same after a reload; they come and go with the handover; frame cost
     measured at T2 with the cap reached.
+    Split 2026-10-04 (ADR-78, third addendum): where they stand, then how they are drawn.
+    - [x] 2.8c1 The scatter (`src/render/map/scatter.ts`): the instances of a view, a pure
+      function. A nested lattice, 2^l points to a cell at level l: an instance stands at one
+      place whatever the zoom, a nearer view adds instances between those that are there, and
+      the next finer level comes in by its opacity. Trees and rocks by terrain class, buildings
+      by how near a city is and how large; nothing on water, by the cell and by the fine coast.
+      A symbol of a few px at T2, the thing's own size once that is larger.
+      AT: unit: the first AT above, and: a pan shows the same instances where two views
+      overlap; every instance of a view is in the view at twice and four times the zoom; a
+      step of 1% of zoom changes no opacity by more than a tenth; the cap; the seam.
+      Done 2026-10-04: `tests/unit/scatter.test.ts`, 10 tests. Each of three faults put in on
+      purpose is caught (the finer level in at once; a place that depends on the level shown;
+      the seam not wrapped). Cost in Node, 1920 × 1080, all forest: 0.4 to 1.2 ms a scatter
+      for 4,400 to 10,900 instances.
+    - [ ] 2.8c2 The draw: the scatter's instances as instanced quads over the map, under the
+      units; a tree, a rock and a building each drawn by the fragment shader, lit from the
+      north-west as the ground is; by the handover's share.
+      AT: the e2e AT above (a forest, a mountain range, a metropolis at T2 and T3, viewed; the
+      hash after a reload; with the handover; the frame's cost with the cap reached, on the
+      bench and in the e2e stage's length).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.

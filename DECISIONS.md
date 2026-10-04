@@ -262,6 +262,28 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *Cost where it shows:* 0.82 and 0.88 ms of GPU a frame at 1080p (the hillshade alone:
     0.53). SPEC's budget at T2 is 2.0 with 10,000 sprites; 2.8c's instances come on top.
 
+- **Third addendum, PLAN 2.8c1 (2026-10-04): where the instances stand.**
+  - *What a tree is at T2:* a crown of 9 m is a thirtieth of a px at 300 m/px. Drawn to
+    scale, nothing would show before the last of T3. So an instance is a symbol at T2 (a few
+    px: "wood here", "town here"), as the units' sprites are, and the thing itself once the
+    zoom shows it larger than its symbol.
+  - *One place whatever the zoom: a nested lattice.* Level l has 2^l points to a cell; a
+    point of a level is a point of every finer one; an instance belongs to the coarsest level
+    its point is on. Zooming in adds instances between those that are there and moves none.
+    A lattice chosen afresh for each zoom would put every tree elsewhere at each step.
+  - *The next level comes in by its opacity,* through the upper half of the octave of zoom
+    before its points are 14 px apart: a function of the zoom, as the texture's octaves are.
+    A step of 1% of zoom changes no opacity by more than a tenth (tested).
+  - *On the CPU, not in the vertex shader.* The shader could find each instance from its
+    number with no buffer at all, but the scatter is what the task's unit test is of: one
+    function, tested, and drawn from its output. It costs 0.4 to 1.2 ms for a full view of
+    forest at 1080p (Node), and only when the camera moves.
+  - *Buildings by the cities, not by the urban terrain class:* a city's cell is 20 km wide
+    and urban all over; its buildings reach 3 to 18 km from its dot by its size.
+  - *Water by two rules:* the cell's class, and the fine coast's coverage where it is known
+    (with a margin: nothing stands on the coast line). PLAN 2.9 is of the same coast.
+  - *Not done here:* the cities near the seam of a looping map reach only to it.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often
