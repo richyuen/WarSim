@@ -220,6 +220,20 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     by where its unset capital lies, cell (0, 0); not checked here.)
   - Not hashed: a snapshot is a view of the state. The pinned hash did not move.
 
+- **2.7h, done 2026-10-04: finding 3 reproduced and fixed.** The view restarted the sprites'
+  clock on every snapshot. Measured in the browser at one tick a second: a pan 0.38 of the
+  way through a tick sent the progress to 0.00; the end of a pause sent it from 1.00 to 0.00.
+  - The clock starts with a new tick only.
+  - The same tick at another tick length (another speed, a pause and its end) keeps the
+    progress reached: the clock is set back by that progress × the new length. Without this a
+    change from one tick a second to three would jump from 0.38 to 1.
+  - Paused, the progress is 1, as before: the sprites stand where the tick has them, which is
+    what the sim holds. Going there from the middle of a step is a jump forward of less than
+    one tick's march. Left.
+  - Fire and wrecks are stamped with the time the snapshot arrived, not with the sprites'
+    clock, which no longer is that time. The worker sends each fire once
+    (`serverFires.test.ts`), so a repeated tick brings none again.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.

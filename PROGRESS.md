@@ -3759,3 +3759,26 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
   plain one.
 - **Tests:** 2 new unit tests, 1 new e2e. 556 unit tests in 76 files, 83 e2e.
 - **Next:** PLAN 2.7h (the sprites keep their clock when a snapshot repeats a tick).
+
+## 2026-10-04 — PLAN 2.7h: the sprites keep their clock when a snapshot repeats a tick (ADR-74, finding 3)
+
+- **The bug:** between two ticks the element sprites and figures walk from where the tick
+  before had them to where this one has them. The view started that walk again on every
+  snapshot. A pan makes the view subscribe to a new box and the worker answer with the tick in
+  hand; a pause and a change of speed do the same. Each sent the sprites back to the start of
+  the step. At the default 24 ticks a second a step is 42 ms and nobody sees it; at 1 or 3
+  ticks a second, dragging the map made the sprites stutter back up to ten times a second.
+- **Test first** (`tickClock.spec.ts`, toy world at one tick a second): the sprites' progress
+  through the tick, read before and after a snapshot of the same tick.
+  - Before the fix: a pan 0.38 → 0.00; another speed 0.38 → 0.29; paused 1.00, on again 0.00.
+  - After (three runs): a pan 0.46 → 0.62; another speed 0.39 → 0.77; paused 1.00, on again 1.00.
+  - Each case is tried up to six times: a try in which the next tick came first does not count.
+- **Fix:** the clock starts with a new tick only; the same tick at another length keeps the
+  progress reached. `MapView.tickProgress` is the one place that works it out.
+- **Also new on the view, for the test:** `snapshots`, a count (the tick does not change when
+  a snapshot repeats it).
+- **No picture:** the measure is a number in time; a still shows nothing of it.
+- **Left as it is, and now said in the ADR:** a flag of a destroyed nation goes in one frame
+  (PLAN 2.7g), as a name jumps when land changes hands: events, not zoom.
+- **Tests:** 1 new e2e. 556 unit tests in 76 files, 84 e2e.
+- **Next:** PLAN 2.7i (sprites and figures wear the nation's own colour in every map mode).

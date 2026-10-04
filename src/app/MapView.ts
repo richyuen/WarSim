@@ -138,6 +138,8 @@ export class MapView {
   /** Frames rendered (test API / stats). */
   frames = 0;
   lastTick = -1;
+  /** Snapshots applied (tests: one of a tick already in hand does not move `lastTick`). */
+  snapshots = 0;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -342,12 +344,26 @@ export class MapView {
     p.upload(f.count);
     this.uploadElements(s.elements);
     this.dirty = true;
-    this.snapArrival = performance.now();
-    this.fire.add(s.fires.count, s.fires.data, this.snapArrival, s.tickMs, this.geo);
+    const arrived = performance.now();
+    // The sprites' clock starts with a new tick. A snapshot of the tick in hand (a new
+    // subscription, a pause, another speed) brings the same step again: they go on from where
+    // they are, at the new tick length (PLAN 2.7h).
+    if (s.tick !== this.lastTick) this.snapArrival = arrived;
+    else if (s.tickMs !== this.tickMs) this.snapArrival = arrived - this.tickProgress(arrived) * s.tickMs;
+    this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo);
     this.firesDropped = s.fires.dropped;
-    this.wrecks.add(s.events.count, s.events.data, this.snapArrival);
+    this.wrecks.add(s.events.count, s.events.data, arrived);
     this.tickMs = s.tickMs;
     this.lastTick = s.tick;
+    this.snapshots++;
+  }
+
+  /**
+   * How far the sprites are on their way from the tick before to the tick in hand at `now`, 0–1.
+   * Paused, they stand where the tick has them.
+   */
+  tickProgress(now = performance.now()): number {
+    return this.tickMs > 0 ? Math.max(0, Math.min(1, (now - this.snapArrival) / this.tickMs)) : 1;
   }
 
   /** Switches the map mode (a palette swap: no id texture is re-uploaded). */
@@ -688,7 +704,7 @@ export class MapView {
     const unitsIn = this.shares.elements;
     if (unitsIn <= 0.01) return;
     const dpr = window.devicePixelRatio || 1;
-    const t = this.tickMs > 0 ? (now - this.snapArrival) / this.tickMs : 1;
+    const t = this.tickProgress(now);
     const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
     const figures = this.shares.individuals;
     if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn);

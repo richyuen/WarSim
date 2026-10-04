@@ -1161,6 +1161,10 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   and cross-faded on change.
 - Units: one instanced draw per sprite atlas. Instance attributes are prev/cur pos,
   facing, frame, tint and alpha. The interpolation alpha is a uniform.
+  *As built (PLAN 2.7h):* it is the time since the tick in hand arrived over the tick length,
+  0–1 (`MapView.tickProgress`). Its clock starts with a new tick only: a snapshot that repeats
+  the tick (a new subscription, a pause, another speed) goes on from the progress reached.
+  Paused, it is 1: the sprites stand where the tick has them.
 - Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes). *As built (PLAN
   2.4a):* tracers, muzzle flashes and impacts are drawn with Canvas2D on the overlay; no pools yet.
 

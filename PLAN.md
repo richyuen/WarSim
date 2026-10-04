@@ -445,10 +445,13 @@ quick sweep as a smoke test.
   Done 2026-10-04: the snapshot says whether a nation lives (`NationField.living`); the view drops
   the capital of one that does not. `tests/e2e/flagGone1938.spec.ts` (Poland annexed by Germany),
   `tests/unit/serverNations.test.ts`.
-- [ ] 2.7h The sprites keep their clock when a snapshot repeats a tick (ADR-74, finding 3). A new subscription
+- [x] 2.7h The sprites keep their clock when a snapshot repeats a tick (ADR-74, finding 3). A new subscription
   (a pan), a pause or a change of speed sends the same tick again, and the element sprites and
   figures start their walk through the tick again from where it began.
   AT: at T2 with the game running slowly, a pan in the middle of a tick moves no sprite backwards.
+  Done 2026-10-04: the clock starts with a new tick only; the same tick at another length goes on from
+  the progress reached. `tests/e2e/tickClock.spec.ts` reads the sprites' progress through the tick
+  (`MapView.tickProgress`) across a pan, a change of speed and a pause: before, 0.38 → 0.00 on a pan.
 - [ ] 2.7i Sprites and figures wear the nation's own colour in every map mode, as the markers and counters do
   (ADR-74, finding 4). They take the map mode's palette, when they are uploaded: in the wars
   mode both sides are one red, and a change of mode while paused leaves the old tints.
