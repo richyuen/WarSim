@@ -45,6 +45,11 @@ export interface DrawnCounter {
   text: string;
   /** Other nations folded into it (shown as "+n"). */
   others: number;
+  /**
+   * On its way into a neighbour (PLAN 1.45b): fading out where it stands, so its box lies on
+   * or by its neighbour's. A fade starts at full opacity: in its first frame `alpha` is still 1.
+   */
+  folded: boolean;
   /** Its box on screen, CSS px (the first copy drawn, on a looping map). */
   x: number;
   y: number;
@@ -235,7 +240,7 @@ export class CounterLayer {
     scale: number,
     now: number,
     boxOf: (total: number, others: number) => [number, number],
-  ): { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number }[] {
+  ): { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] {
     const near = (a: { x: number; y: number }, b: { x: number; y: number }): boolean => Math.abs(a.x - b.x) * scale <= INHERIT_PX && Math.abs(a.y - b.y) * scale <= INHERIT_PX;
     // At the end of a split or merge a cluster and its children swap in the same place, under
     // new keys. A counter with a new key takes over the state of the counter of its nation that
@@ -255,7 +260,7 @@ export class CounterLayer {
       boxOf,
       (key) => this.folds.get(key)?.folded === true,
     );
-    const out: { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number }[] = [];
+    const out: { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] = [];
     const seen: typeof this.last = [];
     let latest = -Infinity;
     for (const it of items) {
@@ -279,7 +284,7 @@ export class CounterLayer {
       seen.push({ nation: it.c.nation, x: it.x, y: it.y, state: st, alpha });
       if (alpha <= 0) continue; // folded: its strength is in its neighbour's number
       // A shown counter shows all it holds; one fading out, what it holds of its own nation.
-      out.push({ key: it.key, nation: it.c.nation, x: it.x, y: it.y, alpha, strength: !folded ? f.total : f.lead === it.key ? f.own : it.c.strength, others: folded ? 0 : f.others });
+      out.push({ key: it.key, nation: it.c.nation, x: it.x, y: it.y, alpha, strength: !folded ? f.total : f.lead === it.key ? f.own : it.c.strength, others: folded ? 0 : f.others, folded });
     }
     this.last = seen;
     this.foldStart = latest;
@@ -393,7 +398,7 @@ export class CounterLayer {
         }
         ctx.restore();
       }
-      if (box) this.drawn.push({ key: it.key, nation: it.nation, wx: it.x, wy: it.y, alpha: a, strength: it.strength, text, others: it.others, x: box[0], y: box[1], w: w * size, h: h * size });
+      if (box) this.drawn.push({ key: it.key, nation: it.nation, wx: it.x, wy: it.y, alpha: a, strength: it.strength, text, others: it.others, folded: it.folded, x: box[0], y: box[1], w: w * size, h: h * size });
     }
     ctx.restore();
   }

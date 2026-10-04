@@ -330,6 +330,21 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   `tests/e2e/declutter1938.spec.ts` (world view and four zooms over Europe, at the start and
   after one year: no overlap, every counter at opacity 1, the sum equal to the sim's, more
   counters in central Europe at each closer zoom; twelve samples with the game running).
+- **Addendum 2026-10-04, the running check restated (found in the gate of PLAN 2.4b):** the
+  check read "among the counters at opacity 1 no two overlap" on one frame per sample. A fade
+  starts at opacity 1, so in the one frame in which a counter begins to fold into its
+  neighbour it stands in full on that neighbour, and a sample can be that frame.
+  - *Seen:* one gate run failed there. A probe of 283 samples at top speed hit it in 2, and
+    each of its 6 pairs had one counter "folded since 0.0 ms" and the other shown. The
+    declutter was right; the check raced it, at roughly 1 run in 12.
+  - *The check now:* a sample is two frames 17 ms apart with no snapshot between them. In the
+    first, the counters that are shown (not on their way out) do not overlap, whatever their
+    opacity. In the second, every counter on its way out has begun to fade, and the counters
+    at opacity 1 do not overlap, which is the old sentence one frame on.
+  - *What it took:* `DrawnCounter.folded`, so that a test can tell a counter on its way out
+    from a shown one. No behaviour changed.
+  - *Not weakened:* the first frame now checks more counters than before (those fading in,
+    too) and leaves out only the counter that the declutter has already folded.
 
 ### ADR-64 · 2026-10-04 · accepted — The T0 ↔ T1 handover is a state and a cross-fade in time, not a fade by zoom (PLAN 1.45a, critic B7)
 

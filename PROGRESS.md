@@ -3284,3 +3284,18 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
   `serverFires.test.ts`). Gate: 520 unit tests in 72 files, 8 ten-year tests, 76 e2e, parity 46.3%.
 - **Next:** PLAN 2.5 (casualty consistency across tiers: elements killed at T2 take exactly
   that much off the T0 counter).
+
+## 2026-10-04 — A race in the declutter spec's running check (found in the gate of PLAN 2.4b)
+
+- **What failed:** `declutter1938.spec.ts`, "running, sample 5": two counters of one nation at
+  opacity 1 with overlapping boxes. No file of PLAN 2.4b touches the counters.
+- **What it was:** a probe sampled the running game 283 times and caught 6 such pairs in 2
+  frames. In every pair one counter was "folded since 0.0 ms": the frame in which its fold
+  began. A fade starts at opacity 1, so for that one frame it stands in full on its neighbour.
+  The check sampled one frame and could land on it: about 1 gate run in 12.
+- **Fix, in the test and not in the declutter:** a sample is two frames 17 ms apart. First
+  frame: the shown counters (not on their way out) do not overlap, whatever their opacity.
+  Second frame: every counter on its way out has begun to fade, and the counters at opacity 1
+  do not overlap. `DrawnCounter.folded` tells the two kinds apart. ADR-65 has the addendum.
+- **Lesson:** an assertion on "the frames a user sees" has to say which frame of an animation
+  it means; `alpha === 1` is true of a fade's first frame.

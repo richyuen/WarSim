@@ -17,7 +17,7 @@ const VH = 800;
 const WORLD = Math.min(VW / W, VH / H); // px per cell with the whole map in view
 const [EX, EY] = cellOf(15, 50, W, H); // Europe
 
-interface Box { key: string; x: number; y: number; w: number; h: number; alpha: number; strength: number; others: number; text: string }
+interface Box { key: string; x: number; y: number; w: number; h: number; alpha: number; strength: number; others: number; text: string; folded?: boolean }
 
 const boxes = (page: Page): Promise<Box[]> =>
   page.evaluate(() => window.__warsim!.view!.counters.drawn.map((d) => ({ key: d.key, x: d.x, y: d.y, w: d.w, h: d.h, alpha: d.alpha, strength: d.strength, others: d.others, text: d.text })));
@@ -98,15 +98,28 @@ test('T0 counters never overlap: what does not fit is folded into a neighbour, a
     hud.setSpeedLevel(99);
     if (hud.paused.value) hud.togglePause();
   });
+  // A fade starts at full opacity. In the one frame in which a counter begins to fold into its
+  // neighbour it still stands at alpha 1 on that neighbour, and a sample can be that frame (a
+  // gate run was; a probe saw it in 2 of 283 samples, each pair with one counter "folded since
+  // 0.0 ms"). So a sample is two frames, 17 ms apart, with no snapshot between them:
+  // - in the first, the counters that are shown (not on their way out) do not overlap, whatever
+  //   their opacity;
+  // - in the second, every counter on its way out has begun to fade, and the counters drawn in
+  //   full do not overlap.
   for (let i = 0; i < 12; i++) {
     await page.waitForTimeout(250);
-    const b = await page.evaluate(() => {
+    const [first, second] = await page.evaluate(() => {
       const v = window.__warsim!.view!;
-      v.draw();
-      return v.counters.drawn.map((d) => ({ key: d.key, x: d.x, y: d.y, w: d.w, h: d.h, alpha: d.alpha, strength: d.strength, others: d.others, text: d.text }));
+      const now = performance.now();
+      return [now, now + 17].map((at) => {
+        v.draw(at);
+        return v.counters.drawn.map((d) => ({ key: d.key, x: d.x, y: d.y, w: d.w, h: d.h, alpha: d.alpha, strength: d.strength, others: d.others, text: d.text, folded: d.folded }));
+      });
     });
-    expect(overlaps(b.filter((x) => x.alpha === 1)), `running, sample ${i}`).toEqual([]);
-    expect(b.filter((x) => x.alpha === 1).length, `running, sample ${i}`).toBeGreaterThan(10);
+    expect(overlaps(first!.filter((x) => !x.folded)), `running, sample ${i}`).toEqual([]);
+    expect(second!.filter((x) => x.folded && x.alpha === 1).map((x) => x.key), `running, sample ${i}: going out, not fading`).toEqual([]);
+    expect(overlaps(second!.filter((x) => x.alpha === 1)), `running, sample ${i}, a frame on`).toEqual([]);
+    expect(second!.filter((x) => x.alpha === 1).length, `running, sample ${i}`).toBeGreaterThan(10);
   }
   await page.screenshot({ path: path.join(out, 'declutter-europe-running.png') });
   await page.evaluate(() => {
