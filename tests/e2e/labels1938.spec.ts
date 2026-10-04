@@ -22,15 +22,11 @@ interface Laid {
 
 async function view(page: Page, lon: number, lat: number, scale: number): Promise<Laid[]> {
   const [cx, cy] = cellOf(lon, lat, W, H);
-  return page.evaluate(
-    ({ cx, cy, scale }) => {
-      const v = window.__warsim!.view!;
-      v.controller.set({ cx, cy, scale });
-      v.draw();
-      return v.nationLabels.map((l) => ({ id: l.id, text: l.text, fontPx: l.fontPx, area: l.area, curved: l.curved, glyphs: l.glyphs.map((g) => ({ x: g.x, y: g.y })) }));
-    },
-    { cx, cy, scale },
-  );
+  // (A name comes and goes by a fade since PLAN 2.7e: read the names at rest, when every one
+  // placed is in full.)
+  await page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx, cy, scale });
+  await settle(page);
+  return page.evaluate(() => window.__warsim!.view!.nationLabels.map((l) => ({ id: l.id, text: l.text, fontPx: l.fontPx, area: l.area, curved: l.curved, glyphs: l.glyphs.map((g) => ({ x: g.x, y: g.y })) })));
 }
 
 test('curved, area-sized nation labels without overlaps', async ({ page }, info) => {

@@ -424,7 +424,7 @@ quick sweep as a smoke test.
   thresholds; at rest every label and flag is in full or absent.
   A flag that moves to keep clear of a counter while the camera steps is left out of the comparison:
   that is motion, with its own spec (`flagsClear1938`).
-- [ ] 2.7e The curved nation names: a name appears in one frame when its size reaches 9 px or a
+- [x] 2.7e The curved nation names (ADR-73, addendum): a name appears in one frame when its size reaches 9 px or a
   collision with another name ends, and goes the same way.
   AT: the luminance limit of 2.7b over the names when the camera steps across such a zoom; at rest
   every name is in full or absent.

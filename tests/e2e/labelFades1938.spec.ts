@@ -7,10 +7,11 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { settle } from './settle';
 
-// PLAN 2.7d AT: the layers that are not units do not pop either. The capital flags came in at
-// 3 px per cell in one frame; a city's dot and name faded by a curve of the zoom, so a camera
-// resting inside a band showed them half there, and a name that found room appeared at once.
-// Now each is a state with hysteresis and a fade in time.
+// PLAN 2.7d and 2.7e AT: the layers that are not units do not pop either. The capital flags came
+// in at 3 px per cell in one frame; a city's dot and name faded by a curve of the zoom, so a
+// camera resting inside a band showed them half there, and a name that found room appeared at
+// once; a curved nation name appeared in one frame when its size reached 9 px. Now each is a
+// state with hysteresis and a fade in time.
 //
 // As for the unit tiers (fades1938.spec.ts): the camera steps across a threshold once and stays,
 // the frames of the change are drawn 16 ms apart (the city labels and the flags alone, on
@@ -26,13 +27,17 @@ const HYSTERESIS = 1.15;
 
 interface Crossing {
   name: string;
+  /** m/px the camera comes from, so that what crosses is off (coming in) or on (going out) at `from`. */
+  approach: number;
   /** m/px the camera rests at before, and steps to. */
   from: number;
   to: number;
 }
 /** Zooming in across `limit` m/px, or out across its hysteresis. */
 const crossing = (name: string, limit: number, inward: boolean): Crossing =>
-  inward ? { name: `${name} in`, from: limit * 1.0002, to: limit * 0.9998 } : { name: `${name} out`, from: limit * HYSTERESIS * 0.9998, to: limit * HYSTERESIS * 1.0002 };
+  inward
+    ? { name: `${name} in`, approach: limit * 1.3, from: limit * 1.0002, to: limit * 0.9998 }
+    : { name: `${name} out`, approach: limit * 0.9, from: limit * HYSTERESIS * 0.9998, to: limit * HYSTERESIS * 1.0002 };
 const FLAGS = M_PER_CELL / 3; // 3 px per cell
 const CROSSINGS: Crossing[] = [
   crossing('flags', FLAGS, true),
@@ -51,7 +56,55 @@ test('no popping of labels and flags: each comes and goes by a fade, and at rest
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.view!.cityLabels.lastPlaced.length > 0, null, { timeout: 60_000 });
   const at = (mPerPx: number): Promise<void> => page.evaluate(({ cx, cy, scale }) => window.__warsim!.view!.controller.set({ cx, cy, scale }), { cx: CX, cy: CY, scale: M_PER_CELL / mPerPx });
 
-  for (const c of CROSSINGS) {
+  // PLAN 2.7e: the curved nation names. A name comes in when its size reaches 9 px and nothing
+  // larger is in its way; where that is depends on the nation's shape, so the zooms are found
+  // here, by bisection, for two names that the world view does not show and a closer one does.
+  const names = await page.evaluate(({ cx, cy, perCell }) => {
+    const v = window.__warsim!.view!;
+    // Frames far apart in time: every fade is over by the next one. (Frames of the view's own
+    // loop come before these on the clock, which leaves an animation done.)
+    let now = performance.now() + 1e6;
+    const rest = (m: number): void => {
+      v.controller.set({ cx, cy, scale: perCell / m });
+      for (let i = 0; i < 2; i++) v.drawLabelLayers((now += 10_000));
+    };
+    /** The names in full at `m` m/px, the camera coming from `via`. */
+    const shown = (via: number, m: number): Set<number> => {
+      rest(via);
+      rest(m);
+      return new Set(v.nationLabels.filter((l) => l.alpha === 1).map((l) => l.id));
+    };
+    const FAR = 14_000;
+    const NEAR = 3_000;
+    const far = shown(60_000, FAR);
+    const near = v.nationLabels.length === 0 ? new Set<number>() : shown(60_000, NEAR);
+    const text = new Map(v.nationLabels.map((l) => [l.id, l.text]));
+    const out: { name: string; approach: number; from: number; to: number }[] = [];
+    for (const id of [...near].filter((n) => !far.has(n)).slice(0, 2)) {
+      // In: absent at `hi`, there at `lo`, the camera coming from far away each time.
+      let [lo, hi] = [NEAR, FAR];
+      for (let i = 0; i < 16; i++) {
+        const mid = Math.sqrt(lo * hi);
+        if (shown(60_000, mid).has(id)) lo = mid;
+        else hi = mid;
+      }
+      out.push({ name: `the name ${text.get(id)} in`, approach: 60_000, from: hi, to: lo });
+      // Out: there at `on`, gone at `off`, the camera coming from where it is on.
+      let [on, off] = [lo, lo * 1.6];
+      for (let i = 0; i < 16; i++) {
+        const mid = Math.sqrt(on * off);
+        if (shown(lo * 0.9, mid).has(id)) on = mid;
+        else off = mid;
+      }
+      out.push({ name: `the name ${text.get(id)} out`, approach: lo * 0.9, from: on, to: off });
+    }
+    return out;
+  }, { cx: CX, cy: CY, perCell: M_PER_CELL });
+  expect(names.map((n) => n.name).join(', '), 'nation names that come and go between 14 and 3 km/px').toMatch(/ in, .* out, .* in, .* out/);
+
+  for (const c of [...CROSSINGS, ...names]) {
+    await at(c.approach);
+    await settle(page);
     await at(c.from);
     await settle(page);
     const rec = await page.evaluate(({ cx, cy, scale, frames, shot }) => {
@@ -91,13 +144,14 @@ test('no popping of labels and flags: each comes and goes by a fade, and at rest
         }
         return max;
       };
-      /** What is on: dots, names and flags that are wanted (at any opacity). */
-      const count = (): { dots: number; names: number; flags: number } => ({
+      /** What is on: dots, names, flags and nation names that are wanted (at any opacity). */
+      const count = (): { dots: number; names: number; flags: number; nations: number } => ({
         dots: v.cityLabels.lastPlaced.filter((l) => l.dotAlpha > 0).length,
         names: v.cityLabels.lastPlaced.filter((l) => l.nameAlpha > 0).length,
         flags: v.flagRects.length,
+        nations: v.nationLabels.filter((l) => l.alpha > 0).length,
       });
-      const alphas = (): number[] => [...v.cityLabels.lastPlaced.flatMap((l) => [l.dotAlpha, l.nameAlpha]), ...v.flagRects.map((f) => f.alpha)];
+      const alphas = (): number[] => [...v.cityLabels.lastPlaced.flatMap((l) => [l.dotAlpha, l.nameAlpha]), ...v.flagRects.map((f) => f.alpha), ...v.nationLabels.map((l) => l.alpha)];
 
       let now = performance.now();
       v.drawLabelLayers(now);
@@ -133,10 +187,10 @@ test('no popping of labels and flags: each comes and goes by a fade, and at rest
       const unmasked = Math.max(...recorded.slice(1).map((cur, k) => jump(recorded[k]!, cur)));
       const masked = skip.reduce((a, [x0, y0, x1, y1]) => a + (x1 - x0 + 1) * (y1 - y0 + 1), 0) / (w * h);
       return { before, after: count(), jumps, unmasked, moved: moved.length, masked, partial, whole: jump(recorded[0]!, recorded.at(-1)!, skip), animating: v.unitsAnimating(now), rest: alphas(), picture };
-    }, { cx: CX, cy: CY, scale: M_PER_CELL / c.to, frames: FRAMES, shot: process.env['EVIDENCE'] && (c.name === 'flags in' || c.name === 'names at 2000 in') ? 7 : -1 });
+    }, { cx: CX, cy: CY, scale: M_PER_CELL / c.to, frames: FRAMES, shot: process.env['EVIDENCE'] && (c.name === 'flags in' || c.name === 'names at 2000 in' || c === names[0]) ? 7 : -1 });
     if (rec.picture) writeFileSync(path.join(out, `change-${c.name.replaceAll(' ', '-')}-at-128ms.png`), Buffer.from(rec.picture.split(',')[1]!, 'base64'));
 
-    const changed = (['dots', 'names', 'flags'] as const).filter((k) => rec.before[k] !== rec.after[k]);
+    const changed = (['dots', 'names', 'flags', 'nations'] as const).filter((k) => rec.before[k] !== rec.after[k]);
     console.log(`${c.name} (${c.from.toFixed(0)} → ${c.to.toFixed(0)} m/px): largest luminance jump ${Math.max(...rec.jumps).toFixed(1)} of 255; the whole change ${rec.whole.toFixed(0)}; ${changed.map((k) => `${k} ${rec.before[k]} → ${rec.after[k]}`).join(', ') || 'nothing changed'}${rec.moved ? `; ${rec.moved} flags moved (with them: ${rec.unmasked.toFixed(0)})` : ''}`);
     // The comparison is of nearly all of the picture: what moving flags take out of it is small
     // (most at 2000 m/px, where the counters hand over to the markers and the flags that stood
@@ -162,7 +216,7 @@ test('no popping of labels and flags: each comes and goes by a fade, and at rest
     await settle(page);
     const rest = await page.evaluate(() => {
       const v = window.__warsim!.view!;
-      return { labels: v.cityLabels.lastPlaced.flatMap((l) => [l.dotAlpha, l.nameAlpha]), flags: v.flagRects.map((f) => f.alpha), dots: v.cityLabels.lastPlaced.length };
+      return { labels: [...v.cityLabels.lastPlaced.flatMap((l) => [l.dotAlpha, l.nameAlpha]), ...v.nationLabels.map((l) => l.alpha)], flags: v.flagRects.map((f) => f.alpha), dots: v.cityLabels.lastPlaced.length };
     });
     expect(rest.dots, `${m} m/px`).toBeGreaterThan(5);
     expect([...new Set([...rest.labels, ...rest.flags])].sort(), `${m} m/px`).toEqual(rest.labels.includes(0) ? [0, 1] : [1]);

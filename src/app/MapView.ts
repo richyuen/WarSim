@@ -470,7 +470,7 @@ export class MapView {
    * but it is not a change to wait for.)
    */
   unitsAnimating(now = performance.now()): boolean {
-    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now);
+    const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || running(now, this.nameChanged, FADE_MS);
     return this.counters.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
   }
 
@@ -697,9 +697,9 @@ export class MapView {
   }
 
   /**
-   * Only the city labels and the capital flags at `now`, on cleared canvases: a comparison of
-   * their pixels over the frames of a change (PLAN 2.7d AT). The next frame of the view's own
-   * loop draws everything again.
+   * Only the nation names, the city labels and the capital flags at `now`, on cleared canvases: a
+   * comparison of their pixels over the frames of a change (PLAN 2.7d and 2.7e AT). The next
+   * frame of the view's own loop draws everything again.
    */
   drawLabelLayers(now: number): void {
     this.resize();
@@ -708,8 +708,9 @@ export class MapView {
     // the overlay is wiped and only the labels and the flags are left on it.
     this.tierShares(now);
     this.drawUnitMarkers(cam, now);
-    this.overlay.getContext('2d')!.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
-    this.cityLabels.draw(cam, window.devicePixelRatio || 1, now);
+    const dpr = window.devicePixelRatio || 1;
+    this.drawLabels(cam, dpr, now); // wipes the overlay first
+    this.cityLabels.draw(cam, dpr, now);
     this.drawFlags(cam, now);
     this.dirty = true;
   }
@@ -997,7 +998,7 @@ export class MapView {
     this.tierShares(now);
     this.drawSprites(cam, now);
     this.cityLabels.draw(cam, dpr, now);
-    this.drawLabels(cam, dpr);
+    this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
     // clear of the T0 counters (PLAN 1.45c).
     this.drawUnitMarkers(cam, now);
@@ -1008,7 +1009,7 @@ export class MapView {
   }
 
   /** Curved nation names on the overlay canvas (PLAN 1.29); redrawn with the map. */
-  private drawLabels(cam: Camera, dpr: number): void {
+  private drawLabels(cam: Camera, dpr: number, now: number): void {
     const o = this.overlay;
     const w = this.canvas.clientWidth;
     const h = this.canvas.clientHeight;
@@ -1020,16 +1021,49 @@ export class MapView {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     if (!this.labelData || this.mapMode === 'terrain' || this.mapMode === 'revolts') {
+      // A map mode without names: they go with the mode, at once, and come back the same way.
       this.nationLabels = [];
+      this.nameStates.clear();
       return;
     }
     const measure: Measure = (text, px) => {
       ctx.font = `600 ${px.toFixed(1)}px ${LABEL_FONT}`;
       return ctx.measureText(text).width;
     };
-    this.nationLabels = layoutNationLabels(this.labelData.data, this.labelData.names, cam, this.geo, w, h, measure);
-    drawNationLabels(ctx, this.nationLabels, LABEL_FONT);
+    // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out,
+    // and which names in view have nothing to show (those fade in when the zoom brings them).
+    const states = this.nameStates;
+    const inView = new Set<string>();
+    const labels = layoutNationLabels(this.labelData.data, this.labelData.names, cam, this.geo, w, h, measure, {
+      held: (key) => states.get(key)?.on === true,
+      visible: (key) => {
+        const s = states.get(key);
+        return s !== undefined && (s.on === true || s.animating(now));
+      },
+      hidden: (key) => {
+        inView.add(key);
+        let s = states.get(key);
+        if (!s) states.set(key, (s = new TimedSwitch(FADE_MS)));
+        s.value(false, now);
+      },
+    });
+    for (const l of labels) {
+      inView.add(l.key);
+      let s = states.get(l.key);
+      if (!s) states.set(l.key, (s = new TimedSwitch(FADE_MS))); // new to the view: there at once
+      const was = s.on;
+      l.alpha = s.value(l.alpha > 0, now);
+      if (was !== null && s.on !== was) this.nameChanged = now;
+    }
+    // Out of view: no state.
+    for (const key of states.keys()) if (!inView.has(key)) states.delete(key);
+    this.nationLabels = labels;
+    drawNationLabels(ctx, labels, LABEL_FONT);
   }
+
+  /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */
+  private readonly nameStates = new Map<string, TimedSwitch>();
+  private nameChanged = -Infinity;
 
   dispose(): void {
     cancelAnimationFrame(this.raf);

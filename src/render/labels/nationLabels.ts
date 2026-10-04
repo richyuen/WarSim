@@ -6,12 +6,18 @@
  * `layoutNationLabels` is pure (DOM-free apart from the injected text measurer): font size fits
  * the territory (≤ 2 × half-thickness, the text ≤ the curve length), labels below MIN_PX or
  * outside the view are dropped, and glyph circles collide greedily in area order (largest first).
+ *
+ * A name is a state, not a function of the zoom (PLAN 2.7e): it comes in when its size reaches
+ * MIN_PX and no larger name is in its way, goes out below MIN_PX ÷ NAME_HYSTERESIS or when one
+ * is, and a change is a fade in time. The view holds the states and tells the layout what is on.
  */
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { bezierAt, LABEL_STRIDE, LabelField } from '../../shared/nationLabels';
 
 export const MIN_PX = 9;
 export const MAX_PX = 64;
+/** A name that is on stays until its size falls below MIN_PX by this factor. */
+export const NAME_HYSTERESIS = 1.15;
 /** Average glyph advance as a share of the font size (initial fit before measuring). */
 const ADVANCE = 0.62;
 
@@ -24,15 +30,30 @@ export interface PlacedGlyph {
 
 export interface PlacedNationLabel {
   id: number;
+  /** The nation and the copy of the world it is drawn in (a looping map shows two near the seam). */
+  key: string;
   text: string;
   fontPx: number;
   area: number;
   glyphs: PlacedGlyph[];
   /** Whether the baseline bends (control point off the chord by > 3% of its length). */
   curved: boolean;
+  /** From the layout: 1 wanted, 0 not (it is placed because it still fades out). From the view: the opacity drawn. */
+  alpha: number;
 }
 
 export type Measure = (text: string, fontPx: number) => number;
+
+/** What the view knows of each name from the frames before (none: a layout at rest). */
+export interface NameState {
+  /** The name is on now: shown, or fading in. */
+  held(key: string): boolean;
+  /** It is still on screen (on, or a fade out runs): placed though not wanted. */
+  visible(key: string): boolean;
+  /** Called for a name in view that is not placed. */
+  hidden?(key: string): void;
+}
+const AT_REST: NameState = { held: () => false, visible: () => false };
 
 export function layoutNationLabels(
   data: Float64Array,
@@ -42,6 +63,7 @@ export function layoutNationLabels(
   viewW: number,
   viewH: number,
   measure: Measure,
+  state: NameState = AT_REST,
 ): PlacedNationLabel[] {
   const n = data.length / LABEL_STRIDE;
   const order = Array.from({ length: n }, (_, i) => i).sort((a, b) => data[b * LABEL_STRIDE + LabelField.area]! - data[a * LABEL_STRIDE + LabelField.area]! || a - b);
@@ -52,20 +74,34 @@ export function layoutNationLabels(
     const o = i * LABEL_STRIDE;
     const text = names[i] ?? '';
     if (!text) continue;
+    const id = data[o + LabelField.id]!;
     const thick = data[o + LabelField.thickness]! * cam.scale;
     const len = data[o + LabelField.length]! * cam.scale;
     let fontPx = Math.min(MAX_PX, 2 * thick, len / (ADVANCE * text.length));
-    if (fontPx < MIN_PX) continue;
-    let width = measure(text, fontPx);
-    if (width > len) {
-      fontPx *= len / width;
-      if (fontPx < MIN_PX) continue;
+    let width = 0;
+    if (fontPx >= MIN_PX / NAME_HYSTERESIS) {
       width = measure(text, fontPx);
+      if (width > len) {
+        fontPx *= len / width;
+        width = measure(text, fontPx);
+      }
     }
     for (const off of offsets) {
+      const key = `${id}:${off}`;
+      const fits = fontPx >= (state.held(key) ? MIN_PX / NAME_HYSTERESIS : MIN_PX);
+      const lingers = state.visible(key);
       const pts: [number, number][] = [];
       for (const k of [LabelField.x0, LabelField.cx, LabelField.x2]) pts.push(worldToScreen(cam, data[o + k]! + off, data[o + k + 1]!, viewW, viewH));
       const [p0, c, p2] = pts as [[number, number], [number, number], [number, number]];
+      if (!fits && !lingers) {
+        // Too small to show, and nothing of it on screen. In view, the view is told: such a name
+        // fades in when the zoom brings it, where one that a pan brings is there at once.
+        if (state.hidden && pts.some(([x, y]) => x >= 0 && x <= viewW && y >= 0 && y <= viewH)) state.hidden(key);
+        continue;
+      }
+      // A name that only fades out is drawn at the size it has, however small.
+      const px = Math.max(fontPx, 2);
+      const w = fits ? width : measure(text, px);
       // Arc-length table along the screen curve.
       const N = 48;
       const cum = new Float64Array(N + 1);
@@ -76,7 +112,7 @@ export function layoutNationLabels(
         if (k > 0) cum[k] = cum[k - 1]! + Math.hypot(xs[k]! - xs[k - 1]!, ys[k]! - ys[k - 1]!);
       }
       const total = cum[N]!;
-      if (xs.every((x) => x < -fontPx || x > viewW + fontPx) || ys.every((y) => y < -fontPx || y > viewH + fontPx)) continue;
+      if (xs.every((x) => x < -px || x > viewW + px) || ys.every((y) => y < -px || y > viewH + px)) continue;
       const at = (s: number): [number, number, number] => {
         let k = 1;
         while (k < N && cum[k]! < s) k++;
@@ -84,31 +120,39 @@ export function layoutNationLabels(
         return [xs[k - 1]! + (xs[k]! - xs[k - 1]!) * f, ys[k - 1]! + (ys[k]! - ys[k - 1]!) * f, Math.atan2(ys[k]! - ys[k - 1]!, xs[k]! - xs[k - 1]!)];
       };
       const glyphs: PlacedGlyph[] = [];
-      let s = (total - width) / 2;
+      let s = (total - w) / 2;
       for (const ch of text) {
-        const adv = measure(ch, fontPx);
+        const adv = measure(ch, px);
         const [x, y, angle] = at(s + adv / 2);
         glyphs.push({ ch, x, y, angle });
         s += adv;
       }
-      const r = fontPx * 0.5;
-      if (glyphs.some((g) => occupied.some((q) => (q.x - g.x) * (q.x - g.x) + (q.y - g.y) * (q.y - g.y) < (q.r + r) * (q.r + r)))) continue;
-      for (const g of glyphs) occupied.push({ x: g.x, y: g.y, r });
+      const r = px * 0.5;
+      const free = !glyphs.some((g) => occupied.some((q) => (q.x - g.x) * (q.x - g.x) + (q.y - g.y) * (q.y - g.y) < (q.r + r) * (q.r + r)));
+      const want = fits && free;
+      if (!want && !lingers) {
+        if (state.hidden) state.hidden(key); // in view, in the way of a larger name
+        continue;
+      }
+      if (want) for (const g of glyphs) occupied.push({ x: g.x, y: g.y, r });
       const chordX = p2[0] - p0[0];
       const chordY = p2[1] - p0[1];
       const chord = Math.hypot(chordX, chordY);
       const off2 = Math.abs((c[0] - p0[0]) * chordY - (c[1] - p0[1]) * chordX) / Math.max(1e-9, chord);
-      placed.push({ id: data[o + LabelField.id]!, text, fontPx, area: data[o + LabelField.area]!, glyphs, curved: off2 > 0.03 * chord });
+      placed.push({ id, key, text, fontPx: px, area: data[o + LabelField.area]!, glyphs, curved: off2 > 0.03 * chord, alpha: want ? 1 : 0 });
     }
   }
   return placed;
 }
 
-/** Draws placed labels: dark glyphs with a light halo. */
+/** Draws placed labels at their opacity: dark glyphs with a light halo. */
 export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string): void {
+  ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   for (const l of labels) {
+    if (l.alpha <= 0) continue;
+    ctx.globalAlpha = l.alpha;
     ctx.font = `600 ${l.fontPx.toFixed(1)}px ${font}`;
     ctx.lineWidth = Math.max(2, l.fontPx * 0.14);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
@@ -122,4 +166,5 @@ export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly
       ctx.restore();
     }
   }
+  ctx.restore();
 }

@@ -964,8 +964,10 @@ Every layer has an opacity curve `α_layer(z)` (smoothstep in and out, hysteresi
 cluster level and the three handovers between the unit tiers are states with hysteresis and a
 timed change [ADR-64, ADR-71]. So are the capital flags as a layer and each city's dot and
 name [ADR-73]: in at their limit, out above it × 1.15, a fade of 250 ms; a name that finds room
-when its neighbour goes fades in the same way. The curved nation names still appear in one
-frame (PLAN 2.7e). The short animations share one
+when its neighbour goes fades in the same way. The curved nation names likewise (PLAN 2.7e): in
+when a name's size reaches 9 px and no larger name is in its way, out below 9 ÷ 1.15 px. A
+change of map mode still takes the names away at once, with the mode. The short animations
+share one
 clock (`src/render/timing.ts`).
 
 | Tier | m/px | Map | Forces |

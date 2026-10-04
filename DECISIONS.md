@@ -202,6 +202,20 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   comparison: at most 8 flags, under 10% of the picture.
 - **Not done:** the curved nation names (`nationLabels.ts`) appear in one frame when their
   size reaches 9 px or a collision ends. PLAN 2.7e.
+- **Addendum 2026-10-04, PLAN 2.7e: the curved nation names.** The same pattern.
+  - A name has a switch, keyed by nation and by the copy of the world it is drawn in. It
+    comes in when its size reaches 9 px and no name of a larger area is in its way, and goes out
+    below 9 ÷ 1.15 px or when one is. The layout stays pure (`NameState`: what is on, what
+    still fades out, and a call for each name in view with nothing to show).
+  - A name that goes out because it became too small is drawn at the size it has while it
+    fades. Its size follows the zoom, so it has no last size to keep.
+  - *Checked* in `labelFades1938.spec.ts`: the zooms at which two names come and go are found
+    by bisection (they depend on a nation's shape): United Kingdom in at 11,405 m/px and out at
+    13,115, Nationalist Spain at 7,374 and 8,480, each out 1.15 × in. Largest jump between two
+    frames: 21–24 of 255.
+  - *Out of scope:* a change of map mode takes all names away in one frame, with the map's
+    colours: a user's action, not a zoom. New label curves from the worker (territory changed
+    hands) move a name at once.
 ### ADR-72 · 2026-10-04 · accepted — The marker → elements morph: a shrink of 13%, and a bar that lingers (PLAN 2.7c)
 
 - **Context:** SPEC §8 asks that at T1 → T2 "the marker scales down and fades into the

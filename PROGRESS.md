@@ -3594,3 +3594,28 @@ since, with three test races found in their gate runs.
   label still fading out, the cities in view with nothing to show). Gate: 546 unit tests in 74
   files, 80 e2e, parity 46.3% (no sim input changed, so the ten-year stage did not run).
 - **Next:** PLAN 2.7e, then 2.8 (procedural detail tiles and hillshade).
+
+## 2026-10-04 — PLAN 2.7e: the curved nation names come and go by a fade (ADR-73, addendum)
+
+- **What was there:** a nation's name appeared in one frame when its size reached 9 px, or when
+  a larger name stopped being in its way, and went the same way.
+- **Now:** a `TimedSwitch` for each name in view, with hysteresis (in at 9 px, out below 9 ÷
+  1.15). `layoutNationLabels` stays pure and is told what is on and what still fades out, as the
+  city labels' layout is. A name fading out because it is too small is drawn at the size it has.
+- **Acceptance test:** `labelFades1938.spec.ts` finds, by bisection in the page, the zooms at
+  which two names come and go (United Kingdom: in at 11,405 m/px, out at 13,115; Nationalist
+  Spain: 7,374 and 8,480) and records those four crossings with the 22 of 2.7d: 21–24 of 255
+  between two frames (limit 48), 197–212 for the whole change. Every crossing now names where
+  the camera comes from, so that what crosses is off (coming in) or on (going out) before.
+- **Other specs:** `labels1938` reads the names at rest. Its evidence (`docs/evidence/1.29/`)
+  is drawn again: city names stand in full where they were faint (PLAN 2.7d).
+- **Looked at:** `docs/evidence/2.7/change-the-name-United-Kingdom-in-at-128ms.png` (the name
+  faint along Britain, half-way in) and `docs/evidence/1.29/cities-berlin.png`.
+- **Out of scope, in the ADR:** a change of map mode takes the names away at once; new label
+  curves from the worker move a name at once.
+- **PLAN 2.7 is complete** (a: slots stay; b: tier handovers; c: the marker morph; d: flags and
+  city labels; e: nation names). One mechanism under all of them since 2.7d: `TimedSwitch`.
+- **Tests:** 5 new unit tests (`nationLabelLayout.test.ts`). Gate: 551 unit tests in 75 files,
+  80 e2e, parity 46.3% (no sim input changed, so the ten-year stage did not run).
+- **Next:** a review pass (five tasks since the last: 2.7a–e), then PLAN 2.8 (procedural detail
+  tiles and hillshade).
