@@ -13,7 +13,8 @@ import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
-import { FormationFlag, tierOf, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
+import { FormationFlag, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
+import { viewSubscription } from './subscription';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
 const FLAG_MIN_SCALE = 3;
@@ -654,20 +655,12 @@ export class MapView {
   }
 
   /**
-   * Interest management (SPEC §8): the camera's bbox padded by 25%, tier and whether elements
-   * are wanted, sent at most 10 times a second and only when it changed.
+   * Interest management (SPEC §8): the view's subscription, sent at most 10 times a second and
+   * only when its key has changed (`viewSubscription`).
    */
   private maybeSubscribe(now: number): void {
     if (now - this.lastSubAt < 100) return;
-    const cam = this.controller.cam;
-    const vw = this.canvas.clientWidth;
-    const vh = this.canvas.clientHeight;
-    const hw = (vw / 2 / cam.scale) * 1.25;
-    const hh = (vh / 2 / cam.scale) * 1.25;
-    const tier = tierOf(this.metresPerPx);
-    const sub: Subscription = { bbox: [cam.cx - hw, cam.cy - hh, cam.cx + hw, cam.cy + hh], z: Math.log2(cam.scale), tier, wantsElements: tier >= 1.5 };
-    // Quantise so tiny camera motion does not resend.
-    const key = `${tier}|${sub.bbox.map((v) => Math.round(v * 4)).join(',')}`;
+    const { sub, key } = viewSubscription(this.controller.cam, this.canvas.clientWidth, this.canvas.clientHeight, this.geo.kmPerCell);
     if (key === this.lastSub) return;
     this.lastSub = key;
     this.lastSubAt = now;

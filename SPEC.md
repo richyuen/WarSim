@@ -1126,6 +1126,10 @@ is the formation's strength, which the sim recomputes from its elements at each 
 **Interest management.** Main sends `subscribe` whenever the camera moves (throttled to
 10 Hz) with the bbox padded by 25%. The worker only includes elements/events inside it.
 This never affects sim state (invariant I4).
+*As built (`src/app/subscription.ts`, PLAN 2.7n2):* "moves" is judged by a key: the box rounded
+to a step that is a part of the box itself (a 32nd to a 16th of its smaller half-size, less
+than a third of the pad). While the key stands, the view is inside the box the worker has. The
+step was a quarter cell at every zoom, which at 1 m/px is two and a half screens.
 
 **Precision.** The CPU camera is in f64. Per frame (or per tile batch), choose an origin
 and upload f32 positions relative to it. The vertex shader never sees absolute world coordinates.

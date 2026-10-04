@@ -4103,3 +4103,26 @@ No rule changed and nothing on screen changed. Six tasks came out of it.
   the stand-in (2.7n3). The e2e of 2.7n3 is the one that looks at the screen.
 - **Tests:** 2 new unit tests. 567 unit tests in 77 files, 88 e2e.
 - **Next:** PLAN 2.7n2.
+
+## 2026-10-04 — PLAN 2.7n2: the view asks the worker again when its box has moved by a part of itself
+
+- **The bug (ADR-74, second read, finding 1, the second cause):** the view subscribed again only
+  when its box, rounded to quarter cells, had changed. A quarter cell is a pixel at the world
+  view, 41 px at 120 m/px and 4,892 px at 1 m/px. At the closest zooms a pan of two screens
+  asked nothing, and the worker went on sending the elements of the box the view had left.
+- **Out of MapView first:** `viewSubscription(cam, viewW, viewH, kmPerCell)` in
+  `src/app/subscription.ts` gives the subscription and its key. The loop of `MapView` keeps
+  the throttle (10 times a second) and the sending.
+- **Test first** (`tests/unit/subscription.test.ts`), on the old rounding in the new place:
+  - of 11,053 pairs of cameras with one key, the second camera's view was outside the first
+    one's box in 2,115 (the first: at 27.3 m/px, a move of 138 px);
+  - a pan of a quarter of the view asked nothing from 10 m/px down;
+  - a pan of 2 px asked again for 255 of 800 cameras (all of those at 5000 m/px).
+- **Fix:** the step is a part of the box: a power of two of cells between a 32nd and a 16th of
+  the box's smaller half-size, and the step is in the key. The pad is a fifth of the
+  half-size, so two cameras with one key have their views inside each other's boxes.
+- **How often it asks:** every 14 to 28 px of pan on a view 720 px high, at most 10 times a
+  second as before. At T0 and T1 it asked on every pixel before; at T2 every 41 px.
+- **No picture yet:** the stand-in sprite (2.7n3) is still what is drawn where no elements are.
+- **Tests:** 4 new unit tests. 571 unit tests in 78 files, 88 e2e.
+- **Next:** PLAN 2.7n3.

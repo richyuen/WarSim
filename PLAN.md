@@ -537,7 +537,7 @@ quick sweep as a smoke test.
     28-slot division had an element in view and not in the snapshot in 24 of its 28 views at 1 m/px on
     1280×720 (21 on 1920×1080), 14 and 14 at 2 m/px, 14 and 7 at 3 m/px; the 53-slot one in 50 of 53 at
     1 m/px and still in 18 at 5 m/px.
-  - [ ] 2.7n2 The view subscribes again when its box has moved by a part of itself, at every zoom
+  - [x] 2.7n2 The view subscribes again when its box has moved by a part of itself, at every zoom
     (`maybeSubscribe`). It subscribes again only when the box, rounded to quarter cells, has changed.
     At 1 m/px a quarter cell is 4,892 px, two and a half screens: a pan onto a formation can leave the
     old box, which does not hold it. Run by the reader: 271 of the 1,054 formations of the 1938 start
@@ -545,6 +545,13 @@ quick sweep as a smoke test.
     subscription.
     AT: unit: for cameras from the world view down to 1 m/px, two cameras with the same subscription
     key: the view of the second is inside the box subscribed by the first.
+    Done 2026-10-04: the key is the box rounded to a step that is a part of the box (a power of two
+    of cells between a 32nd and a 16th of its smaller half-size: 14 to 28 px on a view 720 px high),
+    and the step. `viewSubscription` in `src/app/subscription.ts`, out of `MapView`.
+    `tests/unit/subscription.test.ts`: 39,600 pairs of cameras from 0.35 px per cell to 1 m/px on
+    three view sizes; a pan of a quarter of the view asks again at every zoom; a pan of 2 px mostly
+    does not. Before: of the pairs with one key the second view was outside the first box in 2,115 of
+    11,053, and a pan of a quarter of the view asked nothing from 10 m/px down.
   - [ ] 2.7n3 A formation's stand-in sprite is never larger than a marker. With no elements in the
     snapshot every formation is drawn as a stand-in of 0.9 cells (`drawSprites`): 147 px at 120 m/px,
     17,611 px at 1 m/px, which covers the view in the nation's tint when a formation's centre is a few
