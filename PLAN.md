@@ -787,7 +787,7 @@ quick sweep as a smoke test.
   21 of 23, 14 of 16, 9 of 9. Running at top speed at 1000 m/px for four seconds: no jump, 18 to 25
   names shown. Left out: Prague at 1800 m/px and Warsaw at 1000, with Turin, Kiev and Kraków
   (BLOCKERS). `docs/evidence/2.7/city-names-t1-*.png`, viewed.
-- [ ] 2.7z On the way back from T2 the T1 markers stand where they will rest (ADR-74, fourth read, finding 1).
+- [x] 2.7z On the way back from T2 the T1 markers stand where they will rest (ADR-74, fourth read, finding 1).
   At T2 no markers are drawn and the layer forgets its moves (`markerStacks.clear()`). On the way
   back the boxes "do not move while they grow" (`still`, ADR-72), and `still` takes each box's place
   from the moves in hand: there are none, so every box stands on its formation for the 470 ms of the
@@ -806,6 +806,12 @@ quick sweep as a smoke test.
   (Spain, as `markerStacks1938`): a zoom from T2 back to 1800 m/px: no pair of shown boxes of two
   nations is more than a quarter on each other in any frame in which the boxes show in full, and no
   box's place from its formation changes after its first frame.
+  Done 2026-10-04 (ADR-77, fourth addendum): in `still`, a box with no move to keep stands where
+  `nudgeApart` puts it. `tests/unit/markerStacks.test.ts`, "back from T2", 2 tests, both failed
+  before. `tests/e2e/markerStacks1938.spec.ts`, the fourth test, Spain's front after two weeks, from
+  250 m/px to 1800: 40 markers, 14 of them parted at rest. Before: boxes moved by up to 2.71 px
+  after their first frame, 5 pairs and more over a quarter with the boxes in full, at rest after 46
+  frames. Now none moves, no pair, at rest after 36.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

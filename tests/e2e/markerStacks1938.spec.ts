@@ -159,3 +159,77 @@ test('the T1 markers come to rest in a game that has run: 1938, seed 99, day 90'
     expect(r.frames, `${r.m} m/px: frames until rest`).toBeLessThan(60);
   }
 });
+
+// PLAN 2.7z (ADR-74, fourth read, finding 1): on the way back from T2 the markers stand where
+// they will rest. At T2 no markers are drawn, and the layer forgets how it had parted them. On
+// the way back the boxes do not move while they grow, and they grew on their formations, markers
+// of two nations on each other, for the 470 ms of the morph; then they eased apart. The city
+// names (PLAN 2.7u), placed against the boxes not yet parted, changed places a second time.
+test('back from T2 the T1 markers stand where they will rest: none on another, none moves when the morph ends', async ({ page }) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  await page.evaluate(() => window.__warsim!.sim.step(24 * 14));
+  // Spain's front, where boxes of two nations are parted at 1800 m/px (the test above): from T2.
+  const atRest = await look(page, -3, 40.5, 1800);
+  const parted = atRest.filter((m) => Math.hypot(m.x + m.w / 2 - m.fx, m.y + 17 / 2 - m.fy) > 1).length;
+  expect((await look(page, -3, 40.5, 250)).length, 'markers at T2').toBe(0);
+
+  // The step back out, and the view's frames 16 ms apart at times the test gives.
+  const [cx, cy] = cellOf(-3, 40.5, W, H);
+  const got = await page.evaluate(({ cx, cy }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / 1800 });
+    const cam = v.controller.cam;
+    const first = new Map<number, [number, number]>();
+    const deep: string[] = [];
+    const moved: string[] = [];
+    let frames = 0;
+    let full = 0;
+    let growing = 0;
+    let worstMove = 0;
+    let now = performance.now() + 60_000;
+    for (let quiet = 0; quiet < 3 && frames < 200; now += 16, frames++) {
+      v.draw(now);
+      quiet = v.unitsAnimating(now) ? 0 : quiet + 1;
+      const shown = v.markerRects.filter((r) => r.own === 1);
+      if (shown.length === 0) continue;
+      const scale = shown[0]!.scale;
+      if (scale < 1) growing++;
+      // Where each box stands from its formation, in every frame it is drawn in.
+      for (const r of shown) {
+        const off: [number, number] = [r.x + r.w / 2 - ((r.wx - cam.cx) * cam.scale + window.innerWidth / 2), r.y + 17 / 2 - ((r.wy - cam.cy) * cam.scale + window.innerHeight / 2)];
+        const was = first.get(r.id);
+        if (!was) first.set(r.id, off);
+        else {
+          const d = Math.hypot(off[0] - was[0], off[1] - was[1]);
+          worstMove = Math.max(worstMove, d);
+          if (d > 0.05 && moved.length < 5) moved.push(`marker ${r.id}: ${d.toFixed(2)} px from where it first stood, in frame ${frames}`);
+        }
+      }
+      // With the boxes in full: no box of one nation more than a quarter on a box of another.
+      if (scale === 1 && shown.every((r) => r.alpha === 1)) {
+        full++;
+        for (let i = 0; i < shown.length; i++)
+          for (let j = i + 1; j < shown.length; j++) {
+            const [a, b] = [shown[i]!, shown[j]!];
+            if (a.nation === b.nation) continue;
+            const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+            const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+            const under = ox <= 0 || oy <= 0 ? 0 : (ox * oy) / (a.w * a.h);
+            if (under > 0.2501 && deep.length < 5) deep.push(`${a.id} and ${b.id}: ${(under * 100).toFixed(0)}% in frame ${frames}`);
+          }
+      }
+    }
+    return { frames, growing, full, markers: first.size, worstMove, moved, deep };
+  }, { cx, cy });
+  console.log(`T2 → 1800 m/px: ${got.frames} frames, ${got.growing} of them with the boxes growing, ${got.full} with them in full; ${got.markers} markers, ${parted} of them parted at rest; a box moved from where it first stood by ${got.worstMove.toFixed(2)} px at most; pairs of two nations more than a quarter on each other: ${got.deep.length}`);
+  // The case: the morph was seen, boxes in full after it, and boxes that rest off their formations.
+  expect(parted, 'boxes parted at rest at 1800 m/px').toBeGreaterThan(5);
+  expect(got.growing, 'frames of the morph').toBeGreaterThan(15);
+  expect(got.full, 'frames with the boxes in full').toBeGreaterThan(2);
+  expect(got.frames, 'the view comes to rest').toBeLessThan(200);
+  expect(got.moved, 'boxes that moved after their first frame').toEqual([]);
+  expect(got.deep, 'pairs of two nations more than a quarter on each other, the boxes in full').toEqual([]);
+});

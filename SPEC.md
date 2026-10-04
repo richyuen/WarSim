@@ -1023,7 +1023,8 @@ they move apart by half each, at most 6 px from their formations, by an ease of 
 the frame before (PLAN 2.7v); where the 6 px cannot part them they are left on each other. A
 box that goes into a stack fades at the place it is drawn at, and one that comes out again in
 mid-fade eases from there (PLAN 2.7w). The order arrow starts at the formation. The boxes do
-not move during the morph into T2.
+not move during the morph into T2; on the way back from T2 they grow where they will rest
+(PLAN 2.7z).
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
 flag that would cover a counter stands just above it instead (up to 40 px from its usual place,

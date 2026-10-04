@@ -210,7 +210,8 @@ export class MarkerStacks {
 
   /**
    * The markers of a frame at `now`. `still`: the boxes keep the moves they have (the morph into
-   * T2 shrinks each box about its place: ADR-72).
+   * T2 shrinks each box about its place, and the one back grows it there: ADR-72); a box with
+   * none stands where it will rest.
    */
   frame(items: readonly StackItem[], w: number, h: number, now: number, still = false): Map<number, StackedMarker> {
     this.shown.frame(now);
@@ -218,10 +219,14 @@ export class MarkerStacks {
     const leads = items.filter((it) => stacks.get(it.id)!.into === null);
     let to: Map<number, [number, number]>;
     if (still) {
+      // A box with no move to keep stands where it will rest. On the way back from T2 that is
+      // every box: the layer was cleared there. (They stood on their formations for the whole
+      // morph, markers of two nations on each other, and eased apart when it ended: PLAN 2.7z.)
+      let rest: Map<number, [number, number]> | null = null;
       to = new Map();
       for (const it of leads) {
         const m = this.moves.get(it.id);
-        if (m) to.set(it.id, m.to);
+        to.set(it.id, m ? m.to : ((rest ??= nudgeApart(leads, w, h)).get(it.id) ?? [0, 0]));
       }
     } else to = nudgeApart(leads, w, h);
     const moves = new Map<number, { from: [number, number]; to: [number, number]; start: number }>();

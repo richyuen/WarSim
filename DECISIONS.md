@@ -272,6 +272,21 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *Tested as the third read's addendum asks:* armies moving at random, 40 games of 150
     ticks; no box that shows moves off its formation by more than a step of the ease.
 
+- **Fourth addendum, PLAN 2.7z (2026-10-04): on the way back from T2 a box grows where it will rest.**
+  - *What was wrong:* ADR-72 has the boxes stand still while the morph into T2 shrinks them, and
+    the layer kept each box's move for that. At T2 nothing is drawn and the layer is cleared;
+    on the way back there was no move to keep, and "still" then meant "on the formation". The
+    boxes grew there for 470 ms, markers of two nations on each other, and eased apart when
+    the morph ended (ADR-74, fourth read, finding 1).
+  - *Decision:* while the boxes stand still, one with no move to keep stands where the parting
+    puts it. On the way back that is every box, from its first frame; on the way in, a marker
+    new among the others. Boxes that have moves keep them, as before.
+  - *What is not changed:* the first frame of the way into T2 still starts a move to the new
+    zoom's places (the reader's suspicion; on the watch list).
+  - *A camera that eases through the way back* (the wheel): each box takes its place at the
+    zoom of its first frame and keeps it until the morph ends; then it eases to the place of
+    the zoom reached. Small, and by the ease. Not measured.
+
 ### ADR-76 · 2026-10-04 · accepted — A city's name takes the first free place by its dot, keeps it, and moves by a cross-fade (PLAN 2.7r)
 
 - **Context:** the T0 counters are drawn over the city names, and a capital's name stood to the

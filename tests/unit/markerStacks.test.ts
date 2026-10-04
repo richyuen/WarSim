@@ -385,3 +385,50 @@ describe('a marker that goes into a stack fades where it stands (PLAN 2.7w)', ()
     expect([b.dx, b.dy]).toEqual([0, 0]);
   });
 });
+
+// PLAN 2.7z (ADR-74, fourth read, finding 1): on the way back from T2 the markers stand where
+// they will rest. At T2 no markers are drawn and the layer forgets its moves (`clear`). On the way
+// back the boxes do not move while they grow (`still`), and `still` took each box's place from
+// the moves in hand: there were none, so every box stood on its formation for the whole morph,
+// markers of two nations on each other, and they eased apart when it ended.
+describe('back from T2: a cleared layer drawn still (PLAN 2.7z)', () => {
+  // 1 and 2, of two nations, 16 px apart: at rest they are parted. 3 stands alone.
+  const items = [m(1, 7, 0, 0, 500), m(2, 8, 16, 0, 300), m(3, 9, 5, 60, 400)];
+
+  it('each lead stands, from the first frame, where it will rest; nothing moves when the morph ends', () => {
+    const want = nudgeApart(items, W, H);
+    expect(Math.abs(want.get(1)![0])).toBeGreaterThan(1);
+    expect(want.get(3)).toEqual([0, 0]);
+    const S = new MarkerStacks();
+    S.frame(items, W, H, 0); // T1, at rest
+    S.clear(); // T2: no markers are drawn
+    let t = 1000;
+    // The way back: 470 ms of the morph, the boxes growing about their places.
+    for (; t < 1470; t += 16) {
+      const f = S.frame(items, W, H, t, true);
+      for (const it of items) expect([f.get(it.id)!.dx, f.get(it.id)!.dy], `marker ${it.id} at ${t - 1000} ms of the morph`).toEqual(want.get(it.id));
+      expect(S.animating(t)).toBe(false);
+    }
+    // The morph over: they are where they were, and nothing is on its way.
+    for (; t < 1470 + 200; t += 16) {
+      const f = S.frame(items, W, H, t);
+      for (const it of items) expect([f.get(it.id)!.dx, f.get(it.id)!.dy], `marker ${it.id}, ${t - 1470} ms after the morph`).toEqual(want.get(it.id));
+      expect(S.animating(t)).toBe(false);
+    }
+  });
+
+  it('on the way into T2 the boxes keep the moves they have, as before; one that is new among them takes its place', () => {
+    const S = new MarkerStacks();
+    const had = S.frame(items, W, H, 0);
+    const [dx1, dx2] = [had.get(1)!.dx, had.get(2)!.dx];
+    // The armies part while the boxes shrink: no move is needed any more, and none is given up.
+    const apart = [m(1, 7, 0, 0, 500), m(2, 8, 40, 0, 300), m(3, 9, 5, 60, 400)];
+    let f = S.frame(apart, W, H, 100, true);
+    expect([f.get(1)!.dx, f.get(2)!.dx]).toEqual([dx1, dx2]);
+    // A marker that was not there (a formation made meanwhile), on marker 3: it has no move to keep.
+    const more = [...apart, m(4, 7, 21, 60, 200)];
+    f = S.frame(more, W, H, 116, true);
+    expect([f.get(4)!.dx, f.get(4)!.dy]).toEqual(nudgeApart(more, W, H).get(4));
+    expect([f.get(1)!.dx, f.get(2)!.dx]).toEqual([dx1, dx2]);
+  });
+});

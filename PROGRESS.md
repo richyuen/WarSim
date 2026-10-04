@@ -4601,3 +4601,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No test was changed for it.** The two runs and what was measured are in BLOCKERS, with
   what to look at if it comes back.
 - **Next:** PLAN 2.7z, then 2.8.
+
+## 2026-10-04 — PLAN 2.7z: back from T2 the markers stand where they will rest
+
+- **The bug** (the fourth read's one task): at T2 the marker layer is cleared. On the way back
+  the boxes stand still while they grow, and with no move to keep they stood on their
+  formations: markers of two nations on each other for the 470 ms of the morph, then an ease
+  apart over 150 ms, and with PLAN 2.7u the city names changing places a second time.
+- **Test first:** two unit tests (a cleared layer drawn still; a marker new among those that
+  keep their moves) and a browser test on Spain's front after two weeks, from 250 m/px back to
+  1800. On the code before: boxes moved by up to 2.71 px after their first frame; pairs of two
+  nations over a quarter on each other with the boxes in full; at rest after 46 frames.
+- **Fix:** in `still`, a box with no move to keep stands where `nudgeApart` puts it.
+- **Now:** 40 markers, 14 of them parted at rest; none moves after its first frame; no pair
+  over a quarter; at rest after 36 frames.
+- **Unchanged:** the other marker specs, `fades1938`, `cityNames1938`.
+- **No assertion restated.**
+- **Tests:** 2 new unit tests, 1 new e2e. 609 unit tests in 79 files, 99 e2e.
+- **Next:** PLAN 2.8 (procedural detail tiles and hillshade).
