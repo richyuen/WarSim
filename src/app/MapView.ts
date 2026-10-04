@@ -72,6 +72,12 @@ export interface PaintDrag {
 
 /** Size in cells of a formation's stand-in sprite: drawn at T2 and T3 where no elements have arrived (`drawSprites`). */
 const MARKER_CELLS = 0.9;
+/**
+ * And at most this many px (PLAN 2.7n3). A stand-in stands for a formation, as a marker does:
+ * it does not grow with the zoom. At 0.9 cells it was 17,611 px wide at 1 m/px, and a formation
+ * some kilometres from the view covered it in its nation's tint.
+ */
+const STAND_IN_MAX_PX = 48;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
 const ELEMENT_CELLS = 0.026;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
@@ -707,7 +713,7 @@ export class MapView {
     const t = this.tickProgress(now);
     const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
     const figures = this.shares.individuals;
-    if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn);
+    if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
     else {
       if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn * (1 - figures));
       if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures);

@@ -1042,6 +1042,9 @@ into the box (by the block, not the centre: at the closest zooms the box is smal
 division; PLAN 2.7n1), a formation whole or not at all, at their slot
 poses (`sim/core/pose`, shared with the sim). They are drawn as instanced sprites, interpolated
 on the GPU, with facing and a procedural walk/drive animation, fading in as the markers fade out.
+Where a snapshot has no elements, each formation is one stand-in sprite of 0.9 cells and at most
+48 px (PLAN 2.7n3): the toy world's formations, which have no elements, and any world for the
+moment before its first elements arrive.
 
 *T2 fire implemented (PLAN 2.4a, `src/render/fx/fire.ts`, ADR-66):*
 - *Transport:* a view that draws elements also gets the FireEvents (§5.2 step 5) with an end

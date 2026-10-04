@@ -21,6 +21,7 @@ uniform float uScale;       // device px per cell
 uniform vec2 uViewport;     // device px
 uniform float uT;           // interpolation factor in [0, 1]
 uniform float uMinPx;       // minimum sprite size in device px
+uniform float uMaxPx;       // maximum sprite size in device px
 uniform float uSizeMul;     // unit-size setting (PLAN 1.39a)
 uniform float uTime;        // seconds, for the walk/drive animation (PLAN 2.3)
 uniform float uAlpha;       // layer opacity (tier fades)
@@ -28,7 +29,7 @@ out vec2 vUv;
 out vec4 vColor;
 void main() {
   vec2 pos = mix(aPrevCur.xy, aPrevCur.zw, uT);
-  float sizePx = max(aMisc.y * uScale, uMinPx) * uSizeMul;
+  float sizePx = min(max(aMisc.y * uScale, uMinPx), uMaxPx) * uSizeMul;
   float frame = floor(aMisc.z);
   // Moving (frame + 0.5): infantry sway side to side at a walking cadence, vehicles judder.
   float moving = step(0.25, aMisc.z - frame);
@@ -59,6 +60,9 @@ void main() {
   if (outColor.a < 0.02) discard;
 }
 `;
+
+/** No upper limit to a sprite's size (a finite number: the shader takes it as a float). */
+const NO_MAX_PX = 1e9;
 
 /** Floats per instance in the position/misc buffer. */
 export const PROXY_STRIDE = 8;
@@ -138,9 +142,10 @@ export class ProxyRenderer {
 
   /**
    * Draws all instances; `wrapOffsets` are world x-shifts (cells) of extra copies for a looping
-   * map (see camera.wrapOffsets), so sprites near the seam appear on both sides.
+   * map (see camera.wrapOffsets), so sprites near the seam appear on both sides. A sprite is its
+   * size in cells at the zoom, at least `minPx` and at most `maxPx` CSS px (before `sizeMul`).
    */
-  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1): void {
+  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1, maxPx = NO_MAX_PX): void {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
@@ -152,6 +157,7 @@ export class ProxyRenderer {
       uViewport: [gl.drawingBufferWidth, gl.drawingBufferHeight],
       uT: Math.min(1, Math.max(0, t)),
       uMinPx: minPx * dpr,
+      uMaxPx: maxPx * dpr,
       uSizeMul: sizeMul,
       uTime: timeS,
       uAlpha: alpha,

@@ -4126,3 +4126,31 @@ No rule changed and nothing on screen changed. Six tasks came out of it.
 - **No picture yet:** the stand-in sprite (2.7n3) is still what is drawn where no elements are.
 - **Tests:** 4 new unit tests. 571 unit tests in 78 files, 88 e2e.
 - **Next:** PLAN 2.7n3.
+
+## 2026-10-04 — PLAN 2.7n3: a stand-in sprite is no larger than a marker; PLAN 2.7n is done
+
+- **The bug (ADR-74, second read, finding 1, the third cause):** with no elements in the
+  snapshot the view draws every formation as a stand-in sprite, 0.9 cells wide at any zoom:
+  59 px at 300 m/px, 17,611 px at 1 m/px.
+- **Seen first** (`tests/e2e/closeZoom1938.spec.ts`, the sprite layers alone on cleared
+  canvases), with 2.7n1 and 2.7n2 in place: at 1 m/px, 3.2 km north of a division spawned in
+  western China, **921,600 of 921,600 px lit**. The reader had traced this and not run it. In
+  the toy world, whose formations have no elements, the stand-in under the camera was 485 px
+  across at 200 m/px.
+- **Fix:** a stand-in is at most 48 px. `ProxyRenderer.draw` takes a largest size beside the
+  smallest; the element sprites and the figures have none.
+- **After:** 3.2 km from the division, no pixel lit. The toy world's stand-in: 32 px lit at 200,
+  30, 5 and 1 m/px (the silhouette in its 48 px square).
+- **The three causes together, in the browser:** at 1 m/px on the division's flank element,
+  2,235 m from its centre: 28 elements, 1,584 figures, 78,446 px lit; a pan of 3 km away and
+  back gives the same again.
+- **Pictures looked at:** `docs/evidence/2.7/close-on-a-flank-1m.png`: two battalions as
+  figures, 40 and 64 of them in rows, each about 40 px, white with a rifle, on flat ochre
+  ground. The ground has nothing on it at this zoom: PLAN 2.8.
+  `toy-stand-ins-200m.png`: one small figure on flat blue.
+- **The toy world looks different at T2 and T3:** a formation was a sprite as large as its
+  cell there; it is a figure of marker size. No test read it.
+- **Before this work began, a gate run on the clean tree was started and ran through in the
+  background** (the commit of 2.7n2 had changed one number in PLAN after its gate): green.
+- **Tests:** 2 new e2e. 571 unit tests in 78 files, 90 e2e.
+- **Next:** PLAN 2.7o (a formation that takes a freed id arrives from where the dead one stood).

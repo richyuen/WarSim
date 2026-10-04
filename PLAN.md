@@ -522,7 +522,7 @@ quick sweep as a smoke test.
   `tests/e2e/lateFrame1938.spec.ts`: five steps over Europe (a split, T0 → T1, T1 → T0, a merge), 400 ms
   between frames. Before: one draw a step and no more; the level and the markers' share were those of
   the stop before (the markers' share 0 at the T1 stop, 1 back at T0).
-- [ ] 2.7n At the closest zooms the figures of a formation are there wherever the camera looks at it
+- [x] 2.7n At the closest zooms the figures of a formation are there wherever the camera looks at it
   (ADR-74, second read, finding 1). Three causes, split 2026-10-04 when the task was taken: 2.7n1–n3,
   one commit each. Ticked when the three are.
   - [x] 2.7n1 The worker sends a formation's elements when its block reaches into the subscribed box,
@@ -552,12 +552,21 @@ quick sweep as a smoke test.
     three view sizes; a pan of a quarter of the view asks again at every zoom; a pan of 2 px mostly
     does not. Before: of the pairs with one key the second view was outside the first box in 2,115 of
     11,053, and a pan of a quarter of the view asked nothing from 10 m/px down.
-  - [ ] 2.7n3 A formation's stand-in sprite is never larger than a marker. With no elements in the
+  - [x] 2.7n3 A formation's stand-in sprite is never larger than a marker. With no elements in the
     snapshot every formation is drawn as a stand-in of 0.9 cells (`drawSprites`): 147 px at 120 m/px,
     17,611 px at 1 m/px, which covers the view in the nation's tint when a formation's centre is a few
     kilometres away (traced by the reader, not run).
     AT: e2e, 1938, paused: at 1 m/px with the camera 5 km from the nearest formation's centre, no sprite
     drawn is wider than 48 px; a pan of a screen onto a division's flank shows its figures.
+    (Made exact, 2026-10-04: the camera is 3.2 km from the division's centre, the nearest place from
+    which nothing of the division is sent; there no pixel of the sprite layers is lit. The size of a
+    stand-in is read where one is drawn at rest, in the toy world, whose formations have no elements.)
+    Done 2026-10-04: a stand-in is at most 48 px (`STAND_IN_MAX_PX`; `ProxyRenderer.draw` takes a
+    largest size). `tests/e2e/closeZoom1938.spec.ts` reads the sprite layers alone, drawn on cleared
+    canvases. Before: 3.2 km from a division at 1 m/px all 921,600 px of the view were lit, and the
+    toy world's stand-in was 485 px across at 200 m/px. Now: none lit; 32 px at 200, 30, 5 and 1 m/px.
+    On the division's flank, 2,235 m from its centre: 28 elements, 1,584 figures, and the same after
+    a pan away and back. `docs/evidence/2.7/close-on-a-flank-1m.png`.
 - [ ] 2.7o A formation that takes the id of one destroyed in the same step does not arrive from where
   that one stood (ADR-74, second read, finding 3). The worker judges "new this tick" by whether the id
   was alive before; freed ids are reused last-in-first-out, and revolts create formations after combat
