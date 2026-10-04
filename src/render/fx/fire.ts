@@ -15,6 +15,7 @@
  */
 import { FIRE_STRIDE, FireField, Weapon } from '../../shared/events';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, progress } from '../timing';
 
 /** Over how long the shots of one tick start: the tick's wall time, within these. */
@@ -89,15 +90,6 @@ export function phasesOf(s: Shot, now: number): { flash: number; tracer: number;
   return { flash: progress(now, s.start, l.flash), tracer: progress(now, s.start, l.flight), impact: progress(now, s.start + l.flight, l.impact) };
 }
 
-/** Two numbers in [−1, 1) from a volley's shooter and tick: where its shot lands. */
-function scatter(shooter: number, tick: number): [number, number] {
-  let h = Math.imul(shooter ^ Math.imul(tick + 1, 0x9e3779b1), 0x85ebca6b);
-  h ^= h >>> 15;
-  h = Math.imul(h, 0xc2b2ae35);
-  h ^= h >>> 13;
-  return [((h & 0xffff) / 32768) - 1, (((h >>> 16) & 0xffff) / 32768) - 1];
-}
-
 export class FireFx {
   shots: Shot[] = [];
   /** FireEvents so far that were not drawn: their shooter's shot was still on screen, or MAX_SHOTS were. */
@@ -138,7 +130,8 @@ export class FireFx {
       let x1 = data[o + FireField.x1]!;
       if (geo.wrapX && Math.abs(x1 - x0) > geo.w / 2) x1 += x1 < x0 ? geo.w : -geo.w;
       const weapon = data[o + FireField.weapon]! as Weapon;
-      const [jx, jy] = scatter(shooter, data[o + FireField.tick]!);
+      // Where it lands: by the volley's shooter and tick.
+      const [jx, jy] = pair(hash2(shooter, data[o + FireField.tick]!));
       this.shots.push({ shooter, target: data[o + FireField.target]!, weapon, x0, y0: data[o + FireField.y0]!, x1, y1: data[o + FireField.y1]!, dx: jx * SCATTER_CELLS, dy: jy * SCATTER_CELLS, start });
       const end = start + lifeOf(weapon);
       this.busy.set(shooter, end);

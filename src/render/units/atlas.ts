@@ -1,11 +1,13 @@
 /**
  * Procedural unit sprite atlas (our own art, DATA_SOURCES "Unit sprites"): white silhouettes
- * with a dark outline, tinted per nation in the shader. Frames are 64×64 in a 256×64 strip:
- * 0 infantry, 1 tank, 2 ship, 3 aircraft. Phase 2 replaces this with the full atlas.
+ * with a dark outline, tinted per nation in the shader. Frames are 64×64 in a 320×64 strip:
+ * 0 infantry, 1 tank, 2 ship, 3 aircraft, 4 gun. Phase 2 replaces this with the full atlas.
  */
 
 export const ATLAS_FRAME = 64;
-export const ATLAS_FRAMES = 4;
+export const ATLAS_FRAMES = 5;
+/** Frames by what they show (`worker/server` picks one per unit class). */
+export const Frame = { infantry: 0, tank: 1, ship: 2, aircraft: 3, gun: 4 } as const;
 
 export function drawUnitAtlas(): HTMLCanvasElement {
   const c = document.createElement('canvas');
@@ -84,6 +86,33 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.closePath();
     g.stroke();
     g.fill();
+  });
+  // Gun (PLAN 2.6): a field piece facing +x, seen from above: split trail, wheels, shield, barrel.
+  frame(4, (g) => {
+    g.beginPath();
+    g.moveTo(-4, 0);
+    g.lineTo(-28, -9);
+    g.moveTo(-4, 0);
+    g.lineTo(-28, 9);
+    g.lineWidth = 9;
+    g.stroke();
+    g.lineWidth = 4;
+    g.strokeStyle = '#ffffff';
+    g.stroke();
+    g.strokeStyle = 'rgba(15,15,20,0.95)';
+    g.lineWidth = 5;
+    for (const y of [-17, 17]) {
+      g.beginPath();
+      g.roundRect(-9, y - 4, 16, 8, 3);
+      g.stroke();
+      g.fill();
+    }
+    g.beginPath();
+    g.rect(2, -13, 5, 26);
+    g.stroke();
+    g.fill();
+    g.fillRect(6, -3, 24, 6);
+    g.strokeRect(6, -3, 24, 6);
   });
   return c;
 }

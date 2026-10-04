@@ -167,6 +167,58 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-69 · 2026-10-04 · accepted — T3: an element is `min(strength, 64)` figures in its footprint (PLAN 2.6, critic B2)
+
+- **Context:** SPEC §8 said of T3 "element → individuals (exact for vehicles, ships and planes;
+  ≤ 64 sprites per infantry element, count = strength)". For a battalion of 500 that sentence
+  can be read two ways: a cap, or 64 figures that each stand for eight men.
+- **Decision, the count:** a cap. One figure for each unit of strength, at most 64 to an
+  element. Tanks (10 to an element) and guns (12) are exact; a battalion shows 64 until fewer
+  than 64 men are left, and is exact from there. SPEC's T3 row now says so.
+  - **Why the cap and not a share:** it is what the sentence says ("count = strength" is true
+    wherever the cap does not bind), and it needs nothing new in the snapshot: strength and
+    frame already travel. A share (figures = strength × 64 ÷ full size) needs the element's
+    full size in the snapshot and makes no figure a man.
+  - **What it costs:** at T3 a battalion of 500 and one of 100 look alike, and a battalion's
+    losses show only when it is nearly gone. T2 has the same blind spot (a sprite dims only
+    below 8 units). Not solved here. Candidates for PLAN 2.7: the strength as a number under
+    each element at T3, or the share after all, with the size sent.
+- **Decision, the place** (`src/render/units/individuals.ts`, pure functions of the element's
+  id, frame, strength and facing):
+  - The footprint is a square of 0.024 cells around the slot pose, turned with the formation.
+    Slots are 0.03 apart, so the elements of a division stay apart as blocks.
+  - It is a grid of sub-slots, 8 × 8 for men, 4 × 4 for vehicles and guns (8 × 8 when there
+    are more than 16 of them: a mechanised battalion). A figure fills 92% of its sub-slot.
+  - Figures take sub-slots in an order of the element's own, a shuffle by its id, each up to
+    18% of a sub-slot off its centre. A loss takes the last figure of that order: the others
+    do not move, and the gaps open across the block instead of from one edge.
+  - This is the "presentational freedom inside an element footprint" of SPEC §8. A figure's
+    place is not sim state.
+- **Decision, the drawing:**
+  - The view expands the elements when a snapshot arrives at T3, into a third instanced
+    renderer with the same atlas. Previous and current place get the same offset, so the GPU's
+    interpolation holds.
+  - The origin of the instances is the camera's cell. Offsets from the middle of the map in
+    f32 step by 2.4 m, which is 2.4 px at the closest zoom.
+  - A plain switch at 30 m/px, as soon as a snapshot subscribed at T3 has arrived (one or two
+    frames after the zoom crosses). The cross-fade of SPEC §8 is PLAN 2.7.
+  - At most 60,000 figures in a build; beyond that the element sprites stay. A view at T3
+    holds a few formations: three divisions are 3,345.
+  - A wreck is drawn at most 30 px wide: the element sprite's size, which it used, is hundreds
+    of px at T3.
+- **A gun frame:** artillery, anti-tank and anti-air elements were drawn with the infantry
+  frame, so a battery at T3 would have been twelve soldiers. The procedural atlas has a fifth
+  frame, a field gun, used at T2 and T3.
+- **One hash for placement** (`src/render/hash.ts`): where a shot lands, how a wreck lies and
+  where a figure stands used three copies of one integer mix. The view's code may not import
+  the sim's hash (module boundaries), and should not: this is presentation.
+- **Measured** (three divisions in one view at 28 m/px, 3,345 figures of 89 elements): 0.7 ms
+  to build per snapshot, 0.5 ms of CPU to issue the frame. The GPU's time is not in that
+  figure; the bench of PLAN 2.3 has 10,000 instances at ≥ 30 fps.
+- **Not done:** figures face where the formation faces, which is east for a formation that
+  never marched (the sim does not turn a formation toward its enemy); no terrain under them
+  (PLAN 2.8); no cross-fade (PLAN 2.7).
+
 ### ADR-68 · 2026-10-04 · accepted — `spawnFormation` takes a template: God can spawn a formation that fights (PLAN 2.5)
 
 - **Context:** the acceptance test of PLAN 2.5 asks for a God-spawned battle. The only command

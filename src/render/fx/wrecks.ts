@@ -8,6 +8,7 @@
  */
 import { EVENT_STRIDE, EventKind, Wreck } from '../../shared/events';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { hash2 } from '../hash';
 import { ANIM_TAIL_MS, smooth } from '../timing';
 
 /** ms: the burst, the wreck coming in under it, its stay and its fading. */
@@ -59,10 +60,7 @@ export function burstOf(w: WreckMark, now: number): number {
 
 /** An angle in [0, π) from an element id. */
 function lie(id: number): number {
-  let h = Math.imul(id + 1, 0x9e3779b1);
-  h ^= h >>> 15;
-  h = Math.imul(h, 0x85ebca6b);
-  return (((h >>> 8) & 0xffff) / 65536) * Math.PI;
+  return ((hash2(id, 0) >>> 16) / 65536) * Math.PI;
 }
 
 /** Adds the outline of a wreck of `kind` at (x, y), `s` px across, lying at `angle`. */

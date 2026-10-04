@@ -401,8 +401,10 @@ quick sweep as a smoke test.
 - [x] 2.5 Casualty consistency across tiers (ADR-68: `spawnFormation` takes a template, so that
   God can spawn a battle).
   AT: e2e kills elements at T2 (God-spawned battle) → T0 counter strength drops by exactly the same amount.
-- [ ] 2.6 T3 close expansion (vehicles exact, infantry ≤ 64 sprites, count = strength).
+- [x] 2.6 T3 close expansion (vehicles exact, infantry ≤ 64 sprites, count = strength).
   AT: e2e compares the individual count to the sim strength for 20 random elements.
+  The rule (ADR-69): `min(strength, 64)` figures. `tests/e2e/individuals1938.spec.ts` checks every
+  element of three divisions, and names 20 by a seeded draw.
 - [ ] 2.7 Fade curves & hysteresis for all layers; marker→elements morph.
   AT: scripted zoom recording: max per-pixel luminance jump between consecutive frames below threshold in unit areas (no popping).
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.

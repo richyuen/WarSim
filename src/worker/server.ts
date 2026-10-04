@@ -84,9 +84,10 @@ const EMPTY_ELEMENTS: SnapshotElements = {
   truncated: false,
 };
 
-/** Atlas frame of a unit class (PLAN 2.3): 1 for vehicles and guns on wheels/tracks, else 0. */
+/** Atlas frame of a unit class (PLAN 2.3; `render/units/atlas` `Frame`): men, armour, ships, aircraft, guns. */
 function frameOf(cls: string): number {
   if (cls.startsWith('armor') || cls === 'mech') return 1;
+  if (cls === 'art' || cls === 'at' || cls === 'aa') return 4;
   if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return 2;
   if (['fighter', 'bomber_tac', 'bomber_str', 'cas', 'naval_bomber', 'transport_air'].includes(cls)) return 3;
   return 0;

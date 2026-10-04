@@ -9,6 +9,7 @@ import { FlagStore } from './flagStore';
 import { drawMarkers, markerLowFade, T1_MIN_M, type MarkerInput, type PlacedMarker } from '../render/units/markers';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
+import { figureCells, figureCount, figureOffsets, gridSide } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
 import { progress, running, smooth } from '../render/timing';
@@ -52,6 +53,12 @@ export interface PaintDrag {
 const MARKER_CELLS = 0.9;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
 const ELEMENT_CELLS = 0.026;
+/** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
+const FIGURE_MIN_PX = 2.5;
+/** Figures in one build: six times the 10,000 proxies of the PLAN 2.3 bench. */
+const MAX_INDIVIDUALS = 60_000;
+/** A wreck is drawn the size of its element's sprite, at most this (CSS px): at T3 the sprite's size is not a size any more. */
+const WRECK_MAX_PX = 30;
 
 /** Label typeface (system UI stack: every script renders). */
 const LABEL_FONT = 'system-ui, "Segoe UI", Roboto, sans-serif';
@@ -123,6 +130,7 @@ export class MapView {
     const atlas = drawUnitAtlas();
     this.proxies = new ProxyRenderer(gl, atlas);
     this.elementProxies = new ProxyRenderer(gl, atlas);
+    this.individualProxies = new ProxyRenderer(gl, atlas);
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
     this.controlGrid = new Uint16Array(geo.w * geo.h);
@@ -492,6 +500,84 @@ export class MapView {
       p.colors[i * 4 + 3] = 255;
     }
     p.upload(e.count);
+    this.individualsBuilt = false;
+    if (tierOf(this.metresPerPx) === 3) this.buildIndividuals(e);
+  }
+
+  /** T3 individuals (PLAN 2.6): the elements of the last snapshot, each as its figures. */
+  private readonly individualProxies: ProxyRenderer;
+  /** Whether they stand for the elements now held: built from the same snapshot, at T3. */
+  private individualsBuilt = false;
+  /** Figures of the last build, each with its element's id and its place in cells (tests). */
+  individualCount = 0;
+  individualOwner = new Uint32Array(0);
+  individualX = new Float64Array(0);
+  individualY = new Float64Array(0);
+  /** ms the last build took, and whether the last frame drew the individuals (tests). */
+  individualsBuildMs = 0;
+  individualsShown = false;
+
+  /**
+   * Expands the elements into their figures (`render/units/individuals`). Previous and current
+   * place get the same offset, so the GPU's interpolation carries a figure with its element.
+   * The origin is the camera's cell: at 1 m/px an offset from the middle of the map would step
+   * by 2.4 m in f32.
+   */
+  private buildIndividuals(e: SnapshotElements): void {
+    const t0 = performance.now();
+    let total = 0;
+    for (let i = 0; i < e.count; i++) total += figureCount(e.strength[i]!);
+    // More than the renderer is measured for: the element sprites stay (never at T3 in practice,
+    // where a view holds a few formations).
+    if (total > MAX_INDIVIDUALS) return;
+    const p = this.individualProxies;
+    p.reserve(total);
+    p.originX = Math.floor(this.controller.cam.cx);
+    p.originY = Math.floor(this.controller.cam.cy);
+    const owner = new Uint32Array(total);
+    const xs = new Float64Array(total);
+    const ys = new Float64Array(total);
+    const lift = (v: number): number => Math.round(v + (255 - v) * 0.45);
+    let j = 0;
+    for (let i = 0; i < e.count; i++) {
+      const n = figureCount(e.strength[i]!);
+      if (n === 0) continue;
+      const frame = e.frame[i]!;
+      const size = figureCells(gridSide(frame, n));
+      const off = figureOffsets(e.id[i]!, frame, n, e.facing[i]!);
+      let x = e.x[i]!;
+      if (this.geo.wrapX && Math.abs(x - e.prevX[i]!) > this.geo.w / 2) x += x < e.prevX[i]! ? this.geo.w : -this.geo.w;
+      const moving = (e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0;
+      const col = this.nationColor(e.nation[i]!);
+      const [r, g, b] = [lift((col >> 16) & 255), lift((col >> 8) & 255), lift(col & 255)];
+      for (let k = 0; k < n; k++, j++) {
+        const o = j * PROXY_STRIDE;
+        const dx = off[k * 2]!;
+        const dy = off[k * 2 + 1]!;
+        p.data[o] = e.prevX[i]! + dx - p.originX;
+        p.data[o + 1] = e.prevY[i]! + dy - p.originY;
+        p.data[o + 2] = x + dx - p.originX;
+        p.data[o + 3] = e.y[i]! + dy - p.originY;
+        p.data[o + 4] = e.facing[i]!;
+        p.data[o + 5] = size;
+        p.data[o + 6] = frame + moving;
+        p.data[o + 7] = 1;
+        p.colors[j * 4] = r;
+        p.colors[j * 4 + 1] = g;
+        p.colors[j * 4 + 2] = b;
+        p.colors[j * 4 + 3] = 255;
+        owner[j] = e.id[i]!;
+        xs[j] = e.x[i]! + dx;
+        ys[j] = e.y[i]! + dy;
+      }
+    }
+    p.upload(total);
+    this.individualCount = total;
+    this.individualOwner = owner;
+    this.individualX = xs;
+    this.individualY = ys;
+    this.individualsBuilt = true;
+    this.individualsBuildMs = performance.now() - t0;
   }
 
   /**
@@ -544,7 +630,7 @@ export class MapView {
     const ctx = this.overlay.getContext('2d')!;
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
-    this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.elementPx);
+    this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
     this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale);
   }
 
@@ -798,9 +884,13 @@ export class MapView {
     const unitsIn = this.elementOpacity;
     if (unitsIn > 0.01) {
       const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
-      if (this.elementCount > 0) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn);
+      // T3 (PLAN 2.6): the elements as their individuals, once a snapshot has arrived at T3. A
+      // plain switch at 30 m/px; the cross-fade of SPEC §8 comes with PLAN 2.7.
+      this.individualsShown = this.individualsBuilt && this.individualCount > 0 && tierOf(this.metresPerPx) === 3;
+      if (this.individualsShown) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn);
+      else if (this.elementCount > 0) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn);
       else this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn);
-    }
+    } else this.individualsShown = false;
     this.cityLabels.draw(cam, dpr);
     this.drawLabels(cam, dpr);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep

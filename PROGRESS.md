@@ -3350,3 +3350,44 @@ five iterations, and 2.1–2.3, 1.42 and 1.43–1.45 had passed without one.
   Gate: 521 unit tests in 72 files, 8 ten-year tests, 77 e2e, parity 46.3%.
 - **Next:** PLAN 2.6 (T3 close expansion: vehicles exact, infantry ≤ 64 sprites, count =
   strength).
+
+## 2026-10-04 — PLAN 2.6: T3, an element as its individuals (critic B2, ADR-69)
+
+- **The rule:** `min(strength, 64)` figures to an element. SPEC's sentence could be read as a
+  cap or as 64 figures of eight men each; it is a cap (ADR-69 says why, and what it costs: a
+  battalion's losses do not show at T3 until fewer than 64 men are left). No protocol change.
+- **Where they stand** (`src/render/units/individuals.ts`): a footprint of 0.024 cells around
+  the slot pose, turned with the formation; sub-slots 8 × 8 for men, 4 × 4 for vehicles and
+  guns; taken in a shuffle of the element's own, each figure a little off centre. A loss takes
+  the last figure of the order and the others stand still.
+- **Drawing:** a third instanced renderer, filled when a snapshot arrives at T3, with the
+  camera's cell as origin (f32 offsets from the middle of the map step by 2.4 m). A plain
+  switch at 30 m/px; the cross-fade is PLAN 2.7.
+- **A gun frame** in the procedural atlas: batteries were drawn as infantry.
+- **One placement hash** (`src/render/hash.ts`) for shots, wrecks and figures: there were two
+  copies and this would have been the third.
+- **Wrecks at T3** are drawn at most 30 px wide; they used the element sprite's size, which is
+  hundreds of px there.
+- **Acceptance test** (`tests/e2e/individuals1938.spec.ts`): the spawned battle of PLAN 2.5 with
+  a Japanese armoured division, at the hour when six Chinese battalions are below 64 men,
+  mirrored in Node (hashes compared at three ticks). At 12 m/px on each formation in turn:
+  - the view holds the formation's elements with the sim's strengths;
+  - every element has `min(strength, 64)` figures, and tanks and guns exactly their strength
+    (94 elements: 34 armour, 8 guns, 46 battalions at the cap and 6 under it);
+  - every figure is inside its element's slot, and no two on one spot;
+  - 20 elements by a seeded draw are printed with class, strength and figures;
+  - one hour later on the Chinese division: 5 elements lost figures and 5 died; who is left
+    stands where he stood, to 1e-9 cells.
+- **Measured:** three divisions in view at 28 m/px are 3,345 figures of 89 elements: 0.7 ms to
+  build per snapshot, 0.5 ms of CPU to issue a frame (the GPU's time is not in it).
+- **Looked at:** `docs/evidence/2.6/`: the Chinese division at 12 m/px (blocks of 64, some
+  thinned to a handful, the batteries as guns, gaps where elements died), the armoured
+  division at 4 m/px (ten tanks to an element, motorised infantry in blocks, guns), all three
+  at 28 m/px.
+- **Not done, seen in the pictures:** every figure faces east. The sim turns a formation only
+  when it marches, never toward its enemy; the Chinese division has its back to the Japanese.
+  No ground under them (PLAN 2.8).
+- **Tests:** 7 new unit tests (`individuals.test.ts`). Gate: 528 unit tests in 73 files, 78 e2e,
+  parity 46.3% (no sim input changed, so the ten-year stage did not run).
+- **Next:** a review pass (the last was after 1.45; 2.4a, 2.4b, 2.5 and 2.6 since), then PLAN
+  2.7 (fade curves and hysteresis for all layers; the marker → elements morph).

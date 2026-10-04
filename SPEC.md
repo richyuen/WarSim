@@ -86,8 +86,9 @@ src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command
                    calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts
 src/render/        camera.ts, timing.ts (the animations' clock), gl/ (gpuTimer), map/ (MapRenderer), labels/,
-                   units/ (ProxyRenderer, atlas, counters, markers, handover, formationDots),
-                   fx/ (fire: tracers, flashes, impacts; wrecks: the ends of elements); later lod/
+                   hash.ts (placement noise), units/ (ProxyRenderer, atlas, counters, markers, handover,
+                   individuals, formationDots), fx/ (fire: tracers, flashes, impacts; wrecks: the
+                   ends of elements); later lod/
 src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
                    Actions and God tabs, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
                    FlagEditor, WarBanners, MapLegend), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
@@ -964,7 +965,7 @@ PLAN 2.7. The short animations share one clock (`src/render/timing.ts`).
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
 | **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows, battle markers |
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, roads near cities | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
-| **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals (exact for vehicles, ships and planes; ≤ 64 sprites per infantry element, count = strength) |
+| **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals: one figure for each unit of strength, at most 64 to an element. So the count is the strength for vehicles, guns, ships and planes (an element holds 10–12), and for a battalion of 500 once fewer than 64 men are left [ADR-69] |
 
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
 from 2000 m/px down (see the handover below), fading out over 210–300 m/px toward T2. Each
@@ -1032,6 +1033,27 @@ on the GPU, with facing and a procedural walk/drive animation, fading in as the 
   where the element died while its formation moves on. At most 1,500 are held.
 - Nothing of it is sim state; a reload starts with no wrecks.
 
+*T3 individuals implemented (PLAN 2.6, `src/render/units/individuals.ts`, ADR-69):*
+- *Count:* `min(strength, 64)` figures for an element. No protocol change: the element section
+  already carries strength and atlas frame.
+- *Place:* the footprint is a square of 0.024 cells around the element's slot pose (slots are
+  0.03 apart), turned with the formation and divided into sub-slots: 8 × 8 for men and for
+  anything of more than 16, 4 × 4 for vehicles and guns. An element's figures take the sub-slots
+  in an order of its own (a shuffle by its id), each a little off its sub-slot's centre.
+- *Casualties:* a loss takes the last figure of that order away; the others stand where they
+  stood. A battalion above 64 men shows 64 whatever it lost: its losses show at T3 only below
+  the cap (see ADR-69 for what was weighed).
+- *Drawing:* the view expands the elements of a snapshot that arrives at T3 into instances of
+  the same instanced renderer as the element sprites, previous and current place alike, so the
+  GPU still interpolates. The origin is the camera's cell (f32 offsets from the middle of the
+  map would step by 2.4 m). A figure is at least 2.5 px.
+- *Guns* have a frame of their own in the procedural atlas (artillery, anti-tank, anti-air), at
+  T2 and T3; they were drawn as infantry.
+- *The T2 → T3 change* is a plain switch at 30 m/px, when the first snapshot subscribed at T3
+  arrives. The cross-fade below comes with PLAN 2.7.
+- *Measured:* 3,345 figures of 89 elements (three divisions at 28 m/px): 0.7 ms to build per
+  snapshot, 0.5 ms of CPU to draw a frame.
+
 **One truth.** Every number or sprite derives from sim state: counter strength =
 Σ formation strength = Σ element strength. Sprites are at element positions, and tracers
 come from FireEvents. Close-tier positions inside an element footprint are the only
@@ -1051,7 +1073,8 @@ is the formation's strength, which the sim recomputes from its elements at each 
 - T1→T2: the marker scales down and fades into the formation centroid while elements fade
   in at their real positions. The strength bar lingers above the group until T2 is fully in.
 - T2→T3: an element sprite cross-fades into its individual expansion, which is laid out inside
-  the element footprint.
+  the element footprint. (As built, PLAN 2.6: the expansion is there, the change is a plain
+  switch at 30 m/px until PLAN 2.7.)
 - The map shader blends the detail layers by `z`, and border width is constant in screen px.
 
 **Interest management.** Main sends `subscribe` whenever the camera moves (throttled to
