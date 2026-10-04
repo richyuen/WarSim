@@ -3824,3 +3824,28 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
 - **The third run is green:** 85 e2e, in 8.0 min, the machine still loaded. Two specs fail under
   load in ways that are theirs and not this change's: 2.7l, and the watch list in BLOCKERS.md.
 - **Next:** PLAN 2.7j (figures that fade out are of the snapshot in hand).
+
+## 2026-10-04 — PLAN 2.7j: figures that fade out are of the snapshot in hand (ADR-74, finding 5)
+
+- **The bug:** zooming out of T3, the figures are drawn for another 250 ms while they fade into
+  the element sprites. The figures were built from a snapshot only while the close tier wanted
+  them. A tick that arrived during the fade left the figures of the tick before, drawn with the
+  new tick's clock over sprites of the new tick: figures that jump back and walk their step
+  again, and figures of elements that are gone.
+- **Test first** (`figuresFadeOut1938.spec.ts`), paused and at made-up times: two divisions,
+  the camera at the outer edge of T3 steps out, one division is removed and a tick stepped, a
+  frame 100 ms into the fade is drawn (the figures at 0.65). What the figures of that frame
+  belong to is read directly.
+  - Before: 3,168 figures, 1,584 of the division that stays and 1,584 of elements no longer in
+    the snapshot.
+  - After: 1,584, all of the division that stays.
+- **Fix:** one condition in `tierShares`: build when the close tier wants figures or its fade
+  runs. A build of 1,584 figures took 0.6 ms.
+- **No picture:** the frame is one of a 250 ms fade; what was wrong in it is which elements its
+  figures stood for, and that is what the test reads.
+- **The gate on the clean tree failed before this work began**, with nothing of mine in the
+  tree: `labelFades1938` ran into its 240 s limit and `title` waited 15 s for the title
+  screen, the e2e stage at 8.9 min (4.1 on an idle machine). The user had said another job was
+  running. Both specs passed in the green run before it (85 of 85).
+- **Tests:** 1 new e2e. 556 unit tests in 76 files, 86 e2e.
+- **Next:** PLAN 2.7k (a nation's name keeps its state across the seam), then 2.7l.

@@ -253,6 +253,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     so it never was the marker's colour itself. The line is made exact in PLAN, not weakened:
     one tint a nation, the same in all eight modes, before and after a tick in each.
 
+- **2.7j, done 2026-10-04: finding 5 reproduced and fixed.** Leaving T3, the figures are drawn
+  for the 250 ms of the fade. They were built only while the close tier wanted them, so a
+  snapshot that arrived during the fade was not turned into figures.
+  - Measured: two divisions, the camera steps out of T3, one division is removed and a tick
+    is stepped, a frame 100 ms into the fade is drawn. Before: 3,168 figures, 1,584 of them of
+    elements no longer in the snapshot. After: 1,584, all of the division that stays.
+  - The figures are now built whenever they are drawn: the close tier on, or its fade running.
+  - Cost: a build of 1,584 figures took 0.6 ms. At 24 ticks a second a fade sees six or seven
+    snapshots. Not worth avoiding.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.

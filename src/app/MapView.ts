@@ -510,7 +510,9 @@ export class MapView {
     this.shares.elements = change.elements;
     this.morph = change.morph;
     const wanted = m <= (this.close.near ? T3_MAX_M * ZOOM_HYSTERESIS : T3_MAX_M);
-    if (wanted && !this.individualsBuilt && this.elementSection) this.buildIndividuals(this.elementSection);
+    // The figures are drawn while the close tier is on and while it fades out: for as long,
+    // they are of the snapshot in hand (PLAN 2.7j).
+    if ((wanted || this.close.animating(now)) && !this.individualsBuilt && this.elementSection) this.buildIndividuals(this.elementSection);
     // No figures to show (no elements kept yet, none in view, or more than the cap): the sprites stay.
     this.shares.individuals = this.close.share(this.individualsBuilt && this.individualCount > 0 ? m : Infinity, now);
     this.individualsShown = this.close.near === true;

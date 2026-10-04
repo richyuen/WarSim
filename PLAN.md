@@ -464,9 +464,12 @@ quick sweep as a smoke test.
   Done 2026-10-04: `nationColor` reads the own colour. `tests/e2e/spriteColours1938.spec.ts`: before,
   in the wars mode Japan's and Manchukuo's sprites were both 236,195,191; now 248,247,241 and
   238,227,201 in every mode.
-- [ ] 2.7j Figures that fade out are of the snapshot in hand (ADR-74, finding 5). Leaving T3, a tick that
+- [x] 2.7j Figures that fade out are of the snapshot in hand (ADR-74, finding 5). Leaving T3, a tick that
   arrives during the 250 ms leaves the figures of the tick before, drawn with the new tick's clock.
   AT: the figures drawn while the close handover runs are built from the element section last received.
+  Done 2026-10-04: the figures are built for as long as they are drawn (the close tier on, or its fade
+  running). `tests/e2e/figuresFadeOut1938.spec.ts`: a division removed during the fade has no figures in
+  a frame of it. Before: 1,584 of the 3,168 figures drawn were of elements no longer in the snapshot.
 - [ ] 2.7k A nation's name keeps its state when the camera crosses the seam of a looping map (ADR-74, finding 6).
   The state's key holds the absolute wrap offset, which changes there.
   AT: unit: a name held at 8.2 px is still placed, in full, after a pan across x = 0.
