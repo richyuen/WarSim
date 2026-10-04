@@ -69,7 +69,7 @@ export interface PaintDrag {
   cancel(): void;
 }
 
-/** Formation marker size in cells (T0/T1 placeholder until the Phase 2 LOD markers). */
+/** Size in cells of a formation's stand-in sprite: drawn at T2 and T3 where no elements have arrived (`drawSprites`). */
 const MARKER_CELLS = 0.9;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
 const ELEMENT_CELLS = 0.026;
@@ -471,7 +471,7 @@ export class MapView {
   readonly handover = new TierHandover(T1_MAX_M);
   readonly tactical = new TierHandover(T1_MIN_M, MORPH_MS);
   readonly close = new TierHandover(T3_MAX_M);
-  /** The nearer layer's share at each of them, in the frame being drawn (	ierShares). */
+  /** The nearer layer's share at each of them, in the frame being drawn (`tierShares`). */
   readonly shares = { markers: 0, elements: 0, individuals: 0 };
   /** The markers on their way into the sprites, in the frame being drawn (PLAN 2.7c). */
   morph: MarkerMorph = AT_REST;

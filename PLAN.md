@@ -522,6 +522,66 @@ quick sweep as a smoke test.
   `tests/e2e/lateFrame1938.spec.ts`: five steps over Europe (a split, T0 → T1, T1 → T0, a merge), 400 ms
   between frames. Before: one draw a step and no more; the level and the markers' share were those of
   the stop before (the markers' share 0 at the T1 stop, 1 back at T0).
+- [ ] 2.7n At the closest zooms the figures of a formation are there wherever the camera looks at it
+  (ADR-74, second read, finding 1). Two causes; split when taken, one commit each.
+  - The worker sends a formation's elements only when the formation's centre is in the subscribed
+    box (`elementSection`). Below about 5 m/px the box is smaller than a division (28 elements stand
+    ±2,055 m by ±880 m): with the camera on a flank the snapshot has none of it. Run by the reader on
+    the 1938 world, the camera centred on each of the 28 elements of formation 1 in turn, the count of
+    those for which nothing of the division is sent: at 1 m/px 24 (1280×720) and 21 (1920×1080); at
+    2 m/px 14 and 14; at 3 m/px 14 and 7; at 5 m/px none.
+  - The view subscribes again only when its box, rounded to quarter cells, has changed
+    (`maybeSubscribe`). At 1 m/px a quarter cell is 4,892 px, two and a half screens: a pan onto a
+    formation can leave the old box, which does not hold it.
+  - What is then drawn (traced, not run): with no elements, every formation's stand-in sprite, 0.9
+    cells wide, which at 1 m/px is 17,611 px and covers the view in the nation's tint.
+  AT: unit, the worker: for a view of 1280×720 and of 1920×1080 at 1, 2, 3 and 5 m/px centred on any
+  element of a division, the snapshot has every element of that division that is in the view. e2e: at
+  1 m/px, a pan of a screen onto a division's flank shows its figures; no sprite drawn is wider than
+  the view.
+- [ ] 2.7o A formation that takes the id of one destroyed in the same step does not arrive from where
+  that one stood (ADR-74, second read, finding 3). The worker judges "new this tick" by whether the id
+  was alive before; freed ids are reused last-in-first-out, and revolts create formations after combat
+  has destroyed some. The snapshot then carries the dead formation's place as the new one's previous
+  place: its sprite crosses the map in one tick.
+  Run by the reader: toy world, a remove and a spawn in one step: the new formation at (157.79, 20.00)
+  has the previous place (57.37, 67.78), where the removed one stood. 1938, seed 99, three years: once
+  in 26,280 ticks, 18.5 cells (362 km).
+  AT: unit, the worker: a formation removed and one created in the same step, the new one with the
+  freed id: its previous place in the snapshot is its own place. Elements likewise.
+- [ ] 2.7p A pan at T3 from empty ground onto a formation shows its figures, not its T2 sprites first
+  (ADR-74, second read, finding 2; traced by the reader, not run). A snapshot with no elements turns
+  the close tier off (`tierShares`: no figures built, so `share(Infinity)`); the next one, with
+  elements, turns it on from 0. For the 250 ms of that fade the element sprites are drawn in full, at
+  0.026 cells: 102 px each at 5 m/px, 509 px at 1 m/px.
+  AT: e2e, paused, at 5 m/px: the camera steps from ground with no formation onto a division; in the
+  first frame that has its elements the figures' share is 1 and no element sprite is drawn.
+- [ ] 2.7q A world loaded into a running game takes the place of everything of the old one in the view
+  (ADR-74, second read, finding 4; traced by the reader, not run). `MapView.apply` sets a nation's
+  capital and colour for each row of the snapshot and removes none: after a scenario file is imported
+  into a game in which a revolt made a nation, the loaded world has no row for it and its flag stays
+  at its last capital.
+  AT: e2e: a nation is spawned by God, a scenario file exported before that is imported; no flag is
+  placed for an id the loaded world does not have.
+- [ ] 2.7r City names stay readable among the T0 counters and the capital flags. The counters are drawn
+  over the city names, and a capital's name stands beside the dot its nation's army often stands on.
+  Seen in the review pass of 2026-10-04, in the evidence shots made again
+  (`docs/evidence/2.2/counters-europe-4000m.png`, `counters-europe-2300m.png`): Paris, Berlin, Prague,
+  Budapest, Danzig, Brussels and Luxembourg read as fragments.
+  Measured over Europe at the 1938 start (a scratch spec; boxes that touch, which counts a little too
+  much): of the city names shown, a counter's box is on 18 of 31 at 4000 m/px, 18 of 27 at 3000,
+  11 of 18 at 2300; a capital flag on 23, 8 and 7.
+  AT: e2e over Europe at 4000, 3000 and 2300 m/px, at the 1938 start: no city name that is shown has a
+  counter's box or a capital flag on it; at least 25, 22 and 14 names are shown (four in five of
+  today's), so that the names are not simply left out; screenshots viewed.
+- [ ] 2.7s T1 markers of a dense group do not stand on each other. Seen in PLAN 1.45a and left without a
+  task (ADR-65, "not solved here"). Measured in the review pass of 2026-10-04 on Spain's front after
+  two weeks (a scratch spec): at 1800 m/px 60 markers, 97 pairs overlap and 10 markers are more than
+  half under another; at 1200 m/px 48, 39 and 7; at 600 m/px 40, 10 and 5. The number of a marker
+  underneath cannot be read.
+  AT: e2e, Spain's front after two weeks, at 1800, 1200 and 600 m/px: no marker's box is more than a
+  quarter under another's; the numbers on the map still add up to the strength of the formations in
+  view (PLAN 2.1); screenshots viewed.
 - [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.

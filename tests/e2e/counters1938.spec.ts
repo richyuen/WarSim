@@ -107,13 +107,21 @@ test('T0 counters: Σ strength is the world total; zooming T0 ↔ T1 never pops 
   expect(problems.slice(0, 10)).toEqual([]);
 
   // Evidence: Europe at T0, down to just above T1 (2,300 m/px was inside the cross-fade by zoom
-  // that PLAN 1.45a removed: counters only now).
-  for (const m of [12_000, 4_000, 2_300]) {
-    await page.evaluate(({ cx, cy, m }) => {
+  // that PLAN 1.45a removed: counters only now). Each shot is of the view at rest: the step is
+  // followed by frames until nothing animates, on a clock ahead of every frame drawn so far.
+  // (One frame was drawn here before. The shot was still of the end of the split, because the
+  // view's own loop drew next, at a time before the split's start, and a clock that ran
+  // backwards leaves an animation done: right by accident.)
+  for (const [i, m] of [12_000, 4_000, 2_300].entries()) {
+    await page.evaluate(({ cx, cy, m, ahead }) => {
       const v = window.__warsim!.view!;
       v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
-      v.draw(performance.now() + 60_000);
-    }, { cx, cy, m });
+      let now = performance.now() + ahead;
+      for (let quiet = 0; quiet < 2; now += 16) {
+        v.draw(now);
+        quiet = v.unitsAnimating(now) ? 0 : quiet + 1;
+      }
+    }, { cx, cy, m, ahead: 60_000 * (i + 1) });
     await page.screenshot({ path: path.join(out, `counters-europe-${m}m.png`) });
   }
 });

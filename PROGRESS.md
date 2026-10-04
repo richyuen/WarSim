@@ -4005,3 +4005,63 @@ To resume:
 - **Next:** a review pass (PROMPT step 9). Eight iterations have gone since the last one
   (2.7f–m), and ADR-74 makes an independent read of the code written since then part of it.
   Then PLAN 2.8.
+
+## 2026-10-04 — Review pass after PLAN 2.7f–m
+
+No rule changed and nothing on screen changed. Six tasks came out of it.
+
+- **The second independent read (ADR-74, addendum).** A reader with no part in the code read the
+  counters, the nation names, the timing, the handovers, the unit layers and the loop of
+  `MapView`, and the snapshot fields. Six findings, three run and three traced. Each was read
+  against the code here and holds.
+  - **Tasks before 2.8:** PLAN 2.7n (below about 5 m/px a division's figures are missing when
+    the camera is off its centre, and the stand-in sprite that is drawn instead is wider than
+    the screen), 2.7o (a formation that takes a freed id arrives from where the dead one
+    stood), 2.7p (a pan at T3 shows T2 sprites for 250 ms), 2.7q (a world loaded into a running
+    game leaves the old world's flags).
+  - **Watch list:** a name's second copy going out in one frame; no margin at the seam.
+  - **None of the six is in the lines of 2.7f–m.** The reader was pointed at those lines first
+    and found them correct; what it found is older, in the code around them.
+  - **What it ran and found correct:** the level and the 2.7f order; the hold of 2.7l (540
+    static views rest; 840 zoom steps at frame gaps of 16, 33 and 120 ms rest within 960 ms);
+    the names (720 random zoom steps, no jump of opacity above 0.25 but the one on the watch
+    list); `frameAt` of 2.7m (every animation a draw starts is seen by the question after it);
+    the sprite clock of 2.7h; `living` of 2.7g; the colours of 2.7i; the flags' climb.
+- **SPEC §8 said less than is built,** in five places: the cluster level is judged against the
+  level held (2.7f); a destroyed nation has no flag (2.7g); the figures are built for as long
+  as they are drawn (2.7j); a name's state is one a nation, shared by its copies at the seam
+  (2.7k); and "T0→T1: clusters split" under the transitions, which is the change between two
+  cluster levels inside T0, the T0 ↔ T1 change being a handover.
+- **Evidence made again and looked at:** `docs/evidence/2.1`, `2.2` and `2.3` were of 3 October,
+  before the declutter (PLAN 1.45b), before the flags made way (1.45c) and before the ranking
+  by area (ADR-52). `counters-europe-4000m.png` showed counters on counters, flags on numbers
+  and Denmark fourth in the ranking.
+  - The three shots of `counters1938` were taken after one frame at a time 60 s ahead. They
+    were still of the view at rest, because the view's own loop drew next at an earlier time
+    and a clock that ran backwards leaves an animation done. They are taken after frames until
+    nothing animates now.
+- **Seen in the new pictures, two tasks:**
+  - PLAN 2.7r: the T0 counters stand on the city names. Over Europe a counter's box is on 18
+    of the 31 names shown at 4000 m/px, 18 of 27 at 3000, 11 of 18 at 2300. Paris, Berlin,
+    Prague and Budapest read as fragments.
+  - PLAN 2.7s: T1 markers of a dense group stand on each other. Spain's front after two weeks
+    at 1200 m/px: 48 markers, 39 pairs overlap, 7 more than half hidden. ADR-65 said "not
+    solved here" and no task was made.
+- **One test added:** at rest the hold goes with a counter through a change of its key (a
+  formation that crosses a line of the grid). The line that does it was run by an older test
+  and asserted by none; the new test fails without it.
+- **Two comments fixed:** `MARKER_CELLS` is the stand-in sprite of T2 and T3, not a "T0/T1
+  placeholder"; a TAB stood where "`t`" was meant.
+- **Looked at and left:**
+  - "Frames until nothing animates" is written three times inside a `page.evaluate`
+    (`declutter1938`, `lateFrame1938`, `counters1938`), five lines each, each with its own
+    clock and its own reading. A method on the view would share it and be a hook for tests
+    alone.
+  - The other evidence of 3 October that has T0 counters in the background (the coast, the map
+    modes, the panels): each is evidence of its own subject, which did not change. Not made
+    again.
+  - The comment of `maybeSubscribe` ("tiny camera motion"): wrong at the closest zooms. Left
+    to PLAN 2.7n, which changes what it describes.
+- **Not run:** `sweep:quick` (ADR-58: at the phase review only).
+- **Tests:** 1 new unit test. 565 unit tests in 76 files, 88 e2e.
+- **Next:** PLAN 2.7n.

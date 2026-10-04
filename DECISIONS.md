@@ -281,6 +281,26 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **For the reviews to come:** a review pass (PROMPT step 9) includes one such read of the code
   written since the last pass. This one found nine defects.
 
+- **Addendum 2026-10-04, the second read (review pass after PLAN 2.7f–m).** A reader with no part
+  in the code was given `counters.ts`, `nationLabels.ts`, `timing.ts`, `handover.ts`, the unit
+  layers and the frame loop of `MapView`, and `protocol.ts` and `server.ts` for the snapshot
+  fields; the lines new since the first read first; the same definition of a defect; the watch
+  list as known. It was told nothing of what had changed or why.
+  - **Six findings.** Three it ran in scratch tests (worker side and pure modules), three it
+    traced. Each was checked here against the code it names, by reading: all six hold as far as
+    reading shows. None is in the lines of PLAN 2.7f–m: the read went further than the diff.
+  - **Tasks, before 2.8, most severe first:** PLAN 2.7n (at the closest zooms a formation's
+    figures are missing when the camera is off its centre: the worker sends by the formation's
+    centre, and the view's subscription is rounded to quarter cells), 2.7o (a formation that
+    takes a freed id arrives from where the dead one stood), 2.7p (a pan at T3 shows T2 sprites
+    for 250 ms), 2.7q (a world loaded into a running game leaves the old world's flags).
+  - **Watch list:** one copy of a name going out in one frame (needs two copies in view and a
+    larger name arriving); no margin at the seam for what is drawn across it.
+  - **What it found correct** is in PROGRESS of this date: among it the hold of PLAN 2.7l and
+    the loop of 2.7m, run over 840 zoom steps and 540 static views.
+  - **The two reads together:** fifteen findings, ten of them tasks, in code that passed its
+    gate every time. The second cost 325,000 tokens and 45 minutes.
+
 - **2.7f, done 2026-10-04: finding 1 reproduced and fixed.** `CounterLayer.layout` now takes
   over the level of a finished change first and judges the level wanted against that.
   - Before, in the unit test: a zoom to 3.7 levels and back to 3.5 within 100 ms left the level

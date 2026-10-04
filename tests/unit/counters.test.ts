@@ -345,6 +345,29 @@ describe('the counters at rest after a step of the camera (PLAN 2.7l)', () => {
     expect(bShown(L, TOUCH - 1, 3000, true)).toBe(false);
   });
 
+  // At rest a counter can change its key where it stands: a formation that crosses a line of
+  // the grid is another cluster. The counter with the new key takes over the hold, as it takes
+  // over the fade.
+  it('at rest the hold goes with a counter through a change of its key', () => {
+    const L = new CounterLayer();
+    expect(bShown(L, 30, 0, false)).toBe(false); // b folded into a, and held
+    const renamed = (dx: number): { key: string; c: Cluster; x: number; y: number }[] => [pair(dx)[0]!, { ...pair(dx)[1]!, key: 'b2' }];
+    const b2Shown = (dx: number, t: number): boolean => {
+      L.fold(renamed(dx), 1, t, boxOf);
+      return L.fold(renamed(dx), 1, t + FOLD_MS, boxOf).some((d) => d.key === 'b2' && !d.folded && d.alpha === 1);
+    };
+    // b moves clear of a by the gap, not by the hold distance: it stays inside.
+    expect(bShown(L, TOUCH + 3, 1000, false)).toBe(false);
+    // The same counter under a new key, in that place: still inside a, as b would have stayed.
+    // Without the hold it would stand alone there.
+    expect(b2Shown(TOUCH + 3, 2000)).toBe(false);
+    expect(b2Shown(TOUCH + FOLD_HOLD_PX, 3000)).toBe(true);
+    // A counter new to the map at that distance, with no one to take over from, stands alone.
+    const fresh = new CounterLayer();
+    fresh.fold(pair(TOUCH + 3), 1, 0, boxOf);
+    expect(fresh.fold(pair(TOUCH + 3), 1, FOLD_MS, boxOf).map((d) => d.key).sort()).toEqual(['a', 'b']);
+  });
+
   it('and leaves none: a counter that was folded on the way lands free', () => {
     const L = new CounterLayer();
     expect(bShown(L, 100, 0, false)).toBe(true);

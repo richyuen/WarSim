@@ -151,6 +151,25 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     of those 250 ms are then of the tick before.
   - `MapView.flagPlace` keeps a capital flag's rise by nation and wrap offset: at the seam of
     a looping map the state is lost and a rise of 150 ms is cut short.
+- Found by the second independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
+  (PLAN 2.11):
+  - `nationLabels.ts` `fadeNationLabels`: on a looping map with two copies of a name in view, the
+    copy that alone is in a larger name's way goes from 1 to 0 in one frame when the larger name
+    comes, while the other copy stays (run by the reader on two made-up labels; not met in 720
+    random zoom steps). Two copies are in view when the window is wider than about 1.8 × its
+    height at the furthest zoom.
+  - `camera.ts` `wrapOffsets` has no margin: a counter, marker, flag or name within its own
+    half-width of the seam is drawn only once the view's edge has crossed the seam. Half a
+    counter (about 24 px) then appears at once (run by the reader). Not the seam entry above,
+    which is about folding.
+  - Not established by the reader, one line each: a frame later than 1.5 ticks after a snapshot,
+    with none following, leaves the sprites short of the tick's end; figures drawn through a wrap
+    offset are 2,047 cells from the origin of their f32 offsets, where a step is 2.4 m;
+    `drawUnitLayers` without `pixels` draws on an overlay that is not cleared (a test hook);
+    `FlagStore.pixelsOf` keeps a plain flag in the first colour it saw for an id.
+  - The "few counters turn the frame after a merge lands" of the entry below is, by the reader's
+    run, the second frame of any counter layer newly shown: 1.33% of the counters, at worst 9.1%
+    of a view.
 - Left by PLAN 2.7l (2026-10-04, ADR-75; measured on 400 synthetic formations in a scratch test, not
   in the repo). For the phase review (PLAN 2.11):
   - An eased zoom (a wheel notch closes on its target over about 0.4 s) still ends with other

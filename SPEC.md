@@ -990,11 +990,14 @@ order arrow to the target, and a red outline while engaged; Major Battles get cr
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
 flag that would cover a counter stands just above it instead (up to 40 px from its usual place,
-else it is left out), so no counter's number is hidden (PLAN 1.45c).
+else it is left out), so no counter's number is hidden (PLAN 1.45c). A destroyed nation has no
+flag: the snapshot says which nations live (PLAN 2.7g).
 
 *T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per
 cell of a nested 2^L-cell grid (~64 px), showing Σ strength. Splits and merges animate the child
-level for 250 ms. The unit-size setting scales counters and markers.
+level for 250 ms. The level wanted is judged against the level held, and a change that has
+finished is taken over first: a camera at rest holds one level (PLAN 2.7f). The unit-size
+setting scales counters and markers.
 
 *T0 declutter (PLAN 1.45b, `foldOverlaps` in `counters.ts`, ADR-65):* no two counter boxes
 overlap. In screen space, a counter whose box would come within 2 px of a stronger one's is
@@ -1022,7 +1025,8 @@ the other not at all, wherever the camera stops.
 - The elements are in the view before the sprites come in: they are sent from 450 m/px.
 - The figures of T3 are built in the frame the close tier comes in, from a copy of the last
   element section that the view keeps below 60 m/px. A snapshot subscribed at T3 is a frame or
-  two away, and the cross-fade needs both layers.
+  two away, and the cross-fade needs both layers. They are built from each snapshot for as long
+  as they are drawn: while the close tier is on, and while its fade out runs (PLAN 2.7j).
 - Fire and wrecks are drawn with the sprites' share, at T2 and T3 alike.
 - *Before:* T0 ↔ T1 cross-faded by zoom over 2000–2600 m/px and T1 → T2 over 210–300 m/px, so
   a camera resting in either band showed two layers half-faded; T2 → T3 was a switch in one
@@ -1104,6 +1108,8 @@ is the formation's strength, which the sim recomputes from its elements at each 
 **Transitions without popping.**
 - T0→T1: clusters split by animating from the cluster centroid to member positions
   over 250 ms (positions are real). They merge in reverse.
+  (As built: that is the change between two cluster levels inside T0, PLAN 2.2. T0 ↔ T1
+  itself is a handover, a cross-fade of counters and markers over 250 ms: see the table above.)
 - T1→T2: the marker scales down and fades into the formation centroid while elements fade
   in at their real positions. The strength bar lingers above the group until T2 is fully in.
   (As built, PLAN 2.7c, ADR-72: over 250 ms the box fades and shrinks by 13% about its centre
@@ -1158,6 +1164,9 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   - *Drawing:* the app lays the glyphs out along the curve on a Canvas2D overlay
     (`src/render/labels/nationLabels.ts`). Font ≤ 2 × half-thickness and fits the curve length,
     9–64 px; greedy glyph-circle collision runs largest first; dark text with a light halo.
+  - *Coming and going:* a name is a switch like the others (the list at the head of this
+    section), one for each nation. On a looping map the copies of a name either side of the
+    seam share it: it is on when any copy is wanted (PLAN 2.7k, `fadeNationLabels`).
 - Labels (original plan): MSDF font atlas. The curve comes from the worker's `derive/labels` (largest
   connected component → skeleton/PCA → quadratic Bézier, size by area), throttled
   and cross-faded on change.
