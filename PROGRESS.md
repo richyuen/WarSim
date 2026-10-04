@@ -3709,3 +3709,30 @@ No rule changed and nothing on screen changed: the same fades, by fewer pieces.
 - **Why no spec saw the first:** the specs place the camera in one step. The loop needs a
   zoom that moves while a split runs.
 - **Next:** PLAN 2.7f (the counters' level comes to rest).
+
+## 2026-10-04 — PLAN 2.7f: the counters' cluster level comes to rest (ADR-74, finding 1)
+
+- **The bug (PLAN 2.2, mine):** `CounterLayer.layout` worked out the level wanted before it
+  took over the level of a split or merge that had just finished. In that frame the zoom was
+  judged against the level just left. Each level holds through a band of ± 0.65 levels, so the
+  bands of neighbours overlap by 0.3: with the zoom in an overlap, the end of a change started
+  the way back, and the end of that one the way there. At a resting camera, for ever.
+- **What a player saw:** after a fast flick of the wheel at world zoom, about one time in
+  eight, the counters split and merged every 250 ms until the next zoom, and the view drew
+  every frame.
+- **Tests first.** Unit (`counters.test.ts`, "the level comes to rest"):
+  - a zoom to 3.7 levels and back to 3.5 within 100 ms: before, the level still changed (8
+    times in the two seconds counted) and `animating` stayed true;
+  - eased bursts of 4, 5 and 6 notches out and 4 in, from 129 zooms each, eased as
+    `CameraController` eases: before, 69 of 516 never rested.
+- **In the browser** (`countersRest1938.spec.ts`): four notches at T0, then two seconds at
+  rest in the view's own frames. Before: levels 6 and 5 in turn, 17 frames drawn. After: level
+  5, none.
+  - The first version of the spec passed on the old code. Playwright's wheel sends the notches
+    50 ms and more apart; the first merge was over before the zoom reached the overlap. The
+    spec dispatches the notches of one flick together. (Run on the old code by stashing the fix.)
+- **Fix:** three lines moved in `layout`.
+- **No picture:** a still cannot show a view at rest. The measure is the levels seen and the
+  frames drawn.
+- **Tests:** 2 new unit tests, 1 new e2e. 554 unit tests in 75 files, 82 e2e.
+- **Next:** PLAN 2.7g (a destroyed nation's capital flag goes with it).

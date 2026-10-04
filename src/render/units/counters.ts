@@ -292,11 +292,13 @@ export class CounterLayer {
   }
   /** The counters to show at `now`: positions in cells, after any animation. */
   layout(src: readonly CounterSource[], scale: number, now: number, visible: boolean): { key: string; c: Cluster; x: number; y: number }[] {
-    const target = clusterLevel(scale, this.level);
     if (this.trans && progress(now, this.trans.start, SPLIT_MS) >= 1) {
       this.level = this.trans.to;
       this.trans = null;
     }
+    // The level wanted, judged against the level held now. (Judged against the level a finished
+    // change has just left, a zoom inside the bands of both sent it back, and back again: PLAN 2.7f.)
+    const target = clusterLevel(scale, this.level);
     if (!visible || this.level === null) {
       // Invisible: follow the zoom without animating.
       this.level = target;

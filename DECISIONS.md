@@ -196,6 +196,17 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **For the reviews to come:** a review pass (PROMPT step 9) includes one such read of the code
   written since the last pass. This one found nine defects.
 
+- **2.7f, done 2026-10-04: finding 1 reproduced and fixed.** `CounterLayer.layout` now takes
+  over the level of a finished change first and judges the level wanted against that.
+  - Before, in the unit test: a zoom to 3.7 levels and back to 3.5 within 100 ms left the level
+    changing 8 times in the two seconds that were counted, for ever; of 516 eased bursts of
+    wheel notches (4, 5 and 6 out, 4 in, from 129 zooms each) 69 never rested. The reader had
+    counted 68.
+  - In the browser the bug needs the notches of one flick between two frames. Sent one by one
+    through Playwright they are 50 ms apart and the old code rested too; the spec dispatches
+    them together. Before the fix: levels 6 and 5 in turn at a resting camera, a frame drawn on
+    every tick of the loop. After: one level, no frame in two seconds.
+
 ### ADR-73 · 2026-10-04 · accepted — Capital flags and city labels are timed switches too (PLAN 2.7d)
 
 - **Context:** after ADR-71 the unit tiers no longer popped, but two layers above them did.

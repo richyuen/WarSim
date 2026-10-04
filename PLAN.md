@@ -428,13 +428,16 @@ quick sweep as a smoke test.
   collision with another name ends, and goes the same way.
   AT: the luminance limit of 2.7b over the names when the camera steps across such a zoom; at rest
   every name is in full or absent.
-- [ ] 2.7f The counters' cluster level comes to rest (ADR-74, finding 1). `CounterLayer.layout` judges the
+- [x] 2.7f The counters' cluster level comes to rest (ADR-74, finding 1). `CounterLayer.layout` judges the
   level wanted against the level a finished split or merge has just left. Where the bands of two
   levels overlap it starts the way back, and that one's end does the same: at a resting camera
   the counters split and merge every 250 ms, for ever.
   AT: unit: (a) level 3, zoom to 3.7 levels, back to 3.5 within 100 ms; (b) an eased burst of 4–6
   wheel notches from each of 129 starting zooms. Each ends with one level and `animating` false
   within a second of the camera resting.
+  Done 2026-10-04: the level wanted is judged after a finished change is taken over. Before: 69 of
+  516 eased bursts never rested. Also `tests/e2e/countersRest1938.spec.ts`: four notches of one
+  flick at T0; two seconds at rest draw no frame.
 - [ ] 2.7g A destroyed nation's capital flag goes with it (ADR-74, finding 2). The view only ever adds to
   its capitals; the snapshot has every nation's row, dead ones too, with the last capital.
   AT: e2e: a nation is annexed; no flag of it is placed after the next snapshot, at a zoom where it

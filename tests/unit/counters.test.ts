@@ -85,6 +85,63 @@ describe('T0 counters (PLAN 2.2)', () => {
     expect(L.animating(2000 + SPLIT_MS + 100)).toBe(false);
   });
 
+  // PLAN 2.7f (ADR-74, finding 1): the level wanted was judged against the level a finished split
+  // had just left. With the zoom in the overlap of two levels' bands, the end of each change
+  // started the way back: counters splitting and merging every 250 ms at a resting camera.
+  describe('the level comes to rest', () => {
+    const FRAME = 16;
+    const scaleAt = (lv: number): number => 64 / 2 ** lv;
+    const FEW = SRC.slice(0, 16); // the level does not depend on what is clustered
+    /**
+     * Draws frames 16 ms apart with the zoom `lvAt(t)` (in levels) until `restAt`, then for
+     * three more seconds at rest. Returns how often the level changed more than a second after
+     * the camera came to rest, and whether the layer still animates at the end.
+     */
+    const rest = (L: CounterLayer, lvAt: (t: number) => number, restAt: number): { late: number; animating: boolean; level: number } => {
+      let late = 0;
+      let level = L.level;
+      let t = 0;
+      for (; t <= restAt + 3000; t += FRAME) {
+        L.layout(FEW, scaleAt(lvAt(Math.min(t, restAt))), t, true);
+        if (L.level !== level && t > restAt + 1000) late++;
+        level = L.level;
+      }
+      return { late, animating: L.animating(t), level: L.level! };
+    };
+
+    it('after a zoom that turns back while a split runs', () => {
+      const L = new CounterLayer();
+      L.layout(FEW, scaleAt(3), -1000, true);
+      expect(L.level).toBe(3);
+      // Out to 3.7 levels (a merge to 4 begins), and 100 ms later back to 3.5: inside the band
+      // of 3 and of 4.
+      const got = rest(L, (t) => (t < 100 ? 3.7 : 3.5), 100);
+      expect(got).toEqual({ late: 0, animating: false, level: 4 });
+    });
+
+    it('after a burst of wheel notches, eased as the camera eases, from any zoom', () => {
+      // CameraController: a notch is × 1.25 on the target; each frame the scale closes
+      // 1 − e^(−18 dt) of the distance to it, in log space.
+      const NOTCH = Math.log2(1.25);
+      const closes = 1 - Math.exp((-18 * FRAME) / 1000);
+      const stuck: string[] = [];
+      for (const notches of [4, 5, 6, -4]) {
+        for (let i = 0; i <= 128; i++) {
+          const from = 2 + i / 32;
+          const to = from + notches * NOTCH;
+          // The zoom of every frame until it is within 1e-4 of the target, as the controller has it.
+          const path = [from];
+          while (Math.abs(path.at(-1)! - to) * Math.LN2 > 1e-4) path.push(path.at(-1)! + (to - path.at(-1)!) * closes);
+          const L = new CounterLayer();
+          L.layout(FEW, scaleAt(from), -1000, true);
+          const got = rest(L, (t) => path[Math.min(path.length - 1, Math.round(t / FRAME))]!, (path.length - 1) * FRAME);
+          if (got.late > 0 || got.animating) stuck.push(`${notches} notches from ${from}: ${got.late} late changes`);
+        }
+      }
+      expect(stuck, `${stuck.length} of 516 never rest`).toEqual([]);
+    });
+  });
+
   it('invisible layers follow the zoom without animating', () => {
     const L = new CounterLayer();
     L.layout(SRC, 64 / 2 ** 8, 0, false);
