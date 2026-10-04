@@ -831,7 +831,8 @@ export class MapView {
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
       });
     }
-    const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now);
+    // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
+    const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now, this.morph.scale < 1, cam.scale);
     this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks);
   }
 

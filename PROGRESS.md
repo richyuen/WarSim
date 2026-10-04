@@ -4336,3 +4336,25 @@ Documents only.
   2.7s2), and at 1200 m/px by less than a quarter.
 - **Tests:** 11 new unit tests, 1 new e2e. 591 unit tests in 79 files, 94 e2e.
 - **Next:** PLAN 2.7s2.
+
+## 2026-10-04 — PLAN 2.7s2: markers of two nations move apart by a few px; PLAN 2.7s is done
+
+- **Seen first** (`tests/e2e/markerStacks1938.spec.ts`, the second test, on the stacks alone):
+  Spain's front after two weeks at 1900 m/px, 41 markers, 7 pairs more than a quarter on each
+  other, all of two nations.
+- **Built:** `nudgeApart` (pure) and the moves' ease in `MarkerStacks`. A pair moves apart by
+  half each along the shorter way; no box more than 6 px from its formation.
+- **After:** no such pair at 1900 and 1800 m/px; 12 boxes moved, by 3.2 and 2.7 px at most.
+- **A second version in the same task:** the first kept a box's move for as long as its box
+  touched another. After a step from 1800 to 1200 m/px, 12 boxes stood 3.2 px off their
+  formations where none needs to. The moves are found afresh at another zoom now (0 boxes off
+  at 1200), as ADR-75 has it for the counters' hold.
+- **Picture looked at:** `docs/evidence/2.7/markers-apart-spain-1800m.png`. The stacks read
+  ("×2", "×3", "×4" on the corners). The front is still a band of boxes that touch: a quarter
+  of a box can be its number, and some numbers are partly covered. BLOCKERS, for the phase
+  review.
+- **Unchanged and passing:** `markers1938`, `counters1938`, `fades1938` (31.8 and 43.1 of 255),
+  `morphNations1938`, `handover1938`, `player1938`.
+- **Tests:** 6 new unit tests, 1 new e2e. 597 unit tests in 79 files, 95 e2e.
+- **Next:** PLAN 2.7t (the nation names are drawn over the city names), then the review pass
+  (eight iterations since the last), then 2.8.

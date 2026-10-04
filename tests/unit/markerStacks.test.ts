@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MarkerStacks, shareUnder, STACK_HOLD, STACK_UNDER, stackMarkers, type StackItem } from '../../src/render/units/markerStacks';
+import { MarkerStacks, NUDGE_MAX_PX, NUDGE_MS, nudgeApart, shareUnder, STACK_HOLD, STACK_UNDER, stackMarkers, type StackItem } from '../../src/render/units/markerStacks';
 import { FADE_MS } from '../../src/render/timing';
 
 // PLAN 2.7s1: markers of one nation that stand on each other are one marker. On Spain's front
@@ -82,14 +82,14 @@ describe('marker stacks (PLAN 2.7s1)', () => {
     it('going into a stack is a fade in place; the lead shows the men of both at once', () => {
       const S = new MarkerStacks();
       expect([...S.frame(far, W, H, 0)]).toEqual([
-        [1, { alpha: 1, strength: 500, members: [1] }],
-        [2, { alpha: 1, strength: 300, members: [2] }],
+        [1, { alpha: 1, strength: 500, members: [1], dx: 0, dy: 0 }],
+        [2, { alpha: 1, strength: 300, members: [2], dx: 0, dy: 0 }],
       ]);
       expect(S.animating(0)).toBe(false);
       let last = 1;
       for (let t = 1000; t < 1000 + FADE_MS; t += 16) {
         const f = S.frame(close, W, H, t);
-        expect(f.get(1)).toEqual({ alpha: 1, strength: 800, members: [1, 2] });
+        expect(f.get(1)).toEqual({ alpha: 1, strength: 800, members: [1, 2], dx: 0, dy: 0 });
         const b = f.get(2)!;
         expect(b.strength).toBe(300); // its own number, where it stands, while it goes
         expect(b.members).toEqual([]);
@@ -102,7 +102,7 @@ describe('marker stacks (PLAN 2.7s1)', () => {
       expect(S.animating(1000 + FADE_MS + 100)).toBe(false);
       // And out again, by a fade: the lead shows its own men at once.
       const out = S.frame(far, W, H, 5000);
-      expect(out.get(1)).toEqual({ alpha: 1, strength: 500, members: [1] });
+      expect(out.get(1)).toEqual({ alpha: 1, strength: 500, members: [1], dx: 0, dy: 0 });
       expect(out.get(2)).toMatchObject({ alpha: 0, strength: 300, members: [2] });
       expect(S.frame(far, W, H, 5000 + FADE_MS).get(2)!.alpha).toBe(1);
     });
@@ -124,5 +124,97 @@ describe('marker stacks (PLAN 2.7s1)', () => {
       expect(S.frame(close, W, H, 16).get(2)!.alpha).toBe(0);
       expect(S.animating(16)).toBe(false);
     });
+  });
+});
+
+// PLAN 2.7s2: markers of two nations are never one marker. Where they face each other across a
+// front at the far end of T1 (a cell is 10 px, a marker 26) their boxes stood on each other: on
+// Spain's front after two weeks 9 pairs at 1800 m/px after the stacks of 2.7s1. They move apart
+// by a few px.
+describe('markers of two nations move apart (PLAN 2.7s2)', () => {
+  const under = (r: Map<number, [number, number]>, a: StackItem, b: StackItem): number =>
+    shareUnder({ x: a.x + r.get(a.id)![0], y: a.y + r.get(a.id)![1] }, { x: b.x + r.get(b.id)![0], y: b.y + r.get(b.id)![1] }, W, H);
+  const far = (r: Map<number, [number, number]>): number => Math.max(...[...r.values()].map(([dx, dy]) => Math.hypot(dx, dy)));
+
+  it('two boxes too much on each other move apart by half each, along the shorter way, to a quarter', () => {
+    // Side by side, 16 px apart: under each other by 10 / 26 = 0.38.
+    const [a, b] = [m(1, 7, 0, 0, 500), m(2, 8, 16, 0, 300)];
+    const r = nudgeApart([a, b], W, H);
+    expect(under(r, a, b)).toBeLessThanOrEqual(STACK_UNDER);
+    expect(under(r, a, b)).toBeGreaterThan(0.2); // and no further than that takes
+    expect(r.get(1)![0]).toBeCloseTo(-r.get(2)![0], 9);
+    expect(r.get(1)![0]).toBeLessThan(0); // away from the other
+    expect([r.get(1)![1], r.get(2)![1]]).toEqual([0, 0]);
+    expect(far(r)).toBeLessThan(3);
+    // One above the other: along y.
+    const [c, d] = [m(3, 7, 0, 0, 500), m(4, 8, 2, 18, 300)];
+    const v = nudgeApart([c, d], W, H);
+    expect(under(v, c, d)).toBeLessThanOrEqual(STACK_UNDER);
+    expect(v.get(3)![1]).toBeLessThan(0);
+    expect(v.get(3)![0]).toBe(0);
+  });
+
+  it('boxes that are a quarter under each other or less stand on their formations', () => {
+    const r = nudgeApart([m(1, 7, 0, 0, 500), m(2, 8, 20, 0, 300), m(3, 8, 200, 0, 300)], W, H);
+    expect([...r.values()]).toEqual([[0, 0], [0, 0], [0, 0]]);
+  });
+
+  it('no box is moved further than the limit from its formation, whatever is left', () => {
+    // Two on one spot: a quarter would take 9.75 px each along x.
+    const [a, b] = [m(1, 7, 0, 0, 500), m(2, 8, 0, 0, 300)];
+    const r = nudgeApart([a, b], W, H);
+    expect(far(r)).toBeLessThanOrEqual(NUDGE_MAX_PX + 1e-9);
+    expect(under(r, a, b)).toBeGreaterThan(STACK_UNDER);
+  });
+
+  it('three in a row come to rest', () => {
+    const row = [m(1, 7, 0, 0, 500), m(2, 8, 17, 0, 300), m(3, 7, 34, 0, 200)];
+    const r = nudgeApart(row, W, H);
+    expect(under(r, row[0]!, row[1]!)).toBeLessThanOrEqual(STACK_UNDER);
+    expect(under(r, row[1]!, row[2]!)).toBeLessThanOrEqual(STACK_UNDER);
+    expect(far(r)).toBeLessThanOrEqual(NUDGE_MAX_PX);
+  });
+
+  it('a box keeps its move while it serves, and goes back when it touches no other', () => {
+    const [a, b] = [m(1, 7, 0, 0, 500), m(2, 8, 16, 0, 300)];
+    const first = nudgeApart([a, b], W, H);
+    // The other has moved off a little: under by less than a quarter even without the move. The move stays.
+    const b2 = m(2, 8, 21, 0, 300);
+    const kept = nudgeApart([a, b2], W, H, first);
+    expect(kept.get(1)).toEqual(first.get(1));
+    // It has gone: back onto the formation.
+    expect(nudgeApart([a, m(2, 8, 60, 0, 300)], W, H, first).get(1)).toEqual([0, 0]);
+  });
+
+  it('over time: a box eases to its move; a marker new among the shown stands there at once', () => {
+    const S = new MarkerStacks();
+    const apart = [m(1, 7, 0, 0, 500), m(2, 8, 100, 0, 300)];
+    const close = [m(1, 7, 0, 0, 500), m(2, 8, 16, 0, 300)];
+    expect(S.frame(apart, W, H, 0).get(1)).toMatchObject({ dx: 0, dy: 0 });
+    const want = nudgeApart(close, W, H).get(1)![0];
+    let last = 0;
+    for (let t = 1000; t <= 1000 + NUDGE_MS; t += 16) {
+      const dx = S.frame(close, W, H, t).get(1)!.dx;
+      expect(dx).toBeLessThanOrEqual(last + 1e-9); // on its way, never back
+      expect(last - dx).toBeLessThan(0.6); // px a frame
+      last = dx;
+      if (t < 1000 + NUDGE_MS) expect(S.animating(t)).toBe(true);
+    }
+    expect(S.frame(close, W, H, 1000 + NUDGE_MS).get(1)!.dx).toBeCloseTo(want, 9);
+    expect(S.animating(1000 + NUDGE_MS + 100)).toBe(false);
+    // `still` (the morph into T2): the boxes keep what they have, though it is no longer needed.
+    expect(S.frame(apart, W, H, 3000, true).get(1)!.dx).toBeCloseTo(want, 9);
+    // At another zoom the moves are found afresh: a move that is kept at one zoom though no
+    // longer needed is given up at the next.
+    const Z = new MarkerStacks();
+    const touching = [m(1, 7, 0, 0, 500), m(2, 8, 21, 0, 300)]; // under each other by less than a quarter
+    Z.frame(close, W, H, 0, false, 10);
+    expect(Z.frame(touching, W, H, 1000, false, 10).get(1)!.dx).toBeCloseTo(want, 9);
+    expect(Z.frame(touching, W, H, 2000, false, 12).get(1)!.dx).toBeCloseTo(want, 9); // the frame of the change: on its way
+    expect(Z.frame(touching, W, H, 2000 + NUDGE_MS, false, 12).get(1)!.dx).toBe(0);
+    // New to the view, on another's spot: moved at once.
+    const N = new MarkerStacks();
+    expect(N.frame(close, W, H, 0).get(1)!.dx).toBeCloseTo(want, 9);
+    expect(N.animating(0)).toBe(false);
   });
 });

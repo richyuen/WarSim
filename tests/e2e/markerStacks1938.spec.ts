@@ -20,14 +20,21 @@ import { settle } from './settle';
 const { w: W, h: H } = SIZE_1938;
 interface Marker { id: number; nation: number; x: number; y: number; w: number; h: number; alpha: number; text: string; members: number[] }
 
-async function look(page: Page, lon: number, lat: number, mPerPx: number): Promise<Marker[]> {
+/** A marker's box centre, and where its formation is on screen. */
+interface Placed extends Marker { fx: number; fy: number }
+
+async function look(page: Page, lon: number, lat: number, mPerPx: number): Promise<Placed[]> {
   const [x, y] = cellOf(lon, lat, W, H);
   await page.evaluate(({ x, y, m }) => {
     const v = window.__warsim!.view!;
     v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
   }, { x, y, m: mPerPx });
   await settle(page);
-  return page.evaluate(() => window.__warsim!.view!.markerRects.map((r) => ({ id: r.id, nation: r.nation, x: r.x, y: r.y, w: r.w, h: r.h, alpha: r.alpha, text: r.text, members: r.members })));
+  return page.evaluate(() => {
+    const v = window.__warsim!.view!;
+    const cam = v.controller.cam;
+    return v.markerRects.map((r) => ({ id: r.id, nation: r.nation, x: r.x, y: r.y, w: r.w, h: r.h, alpha: r.alpha, text: r.text, members: r.members, fx: (r.wx - cam.cx) * cam.scale + window.innerWidth / 2, fy: (r.wy - cam.cy) * cam.scale + window.innerHeight / 2 }));
+  });
 }
 /** The share of the smaller of two boxes that lies under the other. */
 const under = (a: Marker, b: Marker): number => {
@@ -78,5 +85,38 @@ test('T1 markers of one nation that stand on each other are one marker, with the
     // There are stacks here: the picture is not as it was.
     expect(stacks.length, `${mPerPx} m/px: stacks`).toBeGreaterThanOrEqual(3);
     await page.screenshot({ path: path.join(out, `marker-stacks-spain-${mPerPx}m.png`) });
+  }
+});
+
+// PLAN 2.7s2: at the far end of T1 a cell is 10 px and a marker 26: the markers of two nations
+// that face each other across a front stand on each other. They are never one marker (who faces
+// whom is what the tier shows), so their boxes move apart, by a few px.
+test('T1 markers of two nations that stand on each other move apart by a few px', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.7') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.evaluate(() => window.__warsim!.sim.step(24 * 14));
+
+  for (const mPerPx of [1900, 1800, 1200]) {
+    const markers = await look(page, -3, 40.5, mPerPx);
+    expect(markers.length, `${mPerPx} m/px`).toBeGreaterThan(20);
+    expect([...new Set(markers.map((m) => m.alpha))], `${mPerPx} m/px`).toEqual([1]);
+    // No marker is more than a quarter under another, of whatever nation.
+    const deep: string[] = [];
+    for (let i = 0; i < markers.length; i++)
+      for (let j = i + 1; j < markers.length; j++) {
+        const [a, b] = [markers[i]!, markers[j]!];
+        if (under(a, b) > 0.25) deep.push(`${a.id} (nation ${a.nation}) and ${b.id} (nation ${b.nation}): ${(under(a, b) * 100).toFixed(0)}%`);
+      }
+    // A box stands on its formation, or a few px from it.
+    const off = markers.map((m) => Math.hypot(m.x + m.w / 2 - m.fx, m.y + 17 / 2 - m.fy));
+    console.log(`${mPerPx} m/px: ${markers.length} markers; more than a quarter under another: ${deep.length} pairs; ${off.filter((d) => d > 0.75).length} boxes off their formations, the furthest ${Math.max(...off).toFixed(1)} px`);
+    expect(deep, `${mPerPx} m/px`).toEqual([]);
+    // (A box is drawn on whole px: up to 0.71 px from its formation with no move at all.)
+    expect(Math.max(...off), `${mPerPx} m/px: the furthest box from its formation`).toBeLessThanOrEqual(6.75);
+    if (mPerPx !== 1200) await page.screenshot({ path: path.join(out, `markers-apart-spain-${mPerPx}m.png`) });
   }
 });

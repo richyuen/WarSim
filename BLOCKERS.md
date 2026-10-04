@@ -167,6 +167,14 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
   hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
   income or their order of battle is off, is a question for the balance work.
+- Left by PLAN 2.7s (2026-10-04, ADR-77), for the phase review (PLAN 2.11):
+  - "No box more than a quarter under another" is a rule about area. The number is the lower
+    12 px of a marker's 29: at 1800 m/px on Spain's front some numbers are partly under a
+    neighbour's box (`docs/evidence/2.7/markers-apart-spain-1800m.png`). Not measured.
+  - What a stack's lead shows of its own (symbol, bar) is the strongest formation's; the others'
+    kinds are not shown until the zoom parts them.
+  - A marker in a stack cannot be picked by a click on the map: the lead is what is there. Not
+    looked at (`player1938` selects a formation that stands alone).
 - Left by PLAN 2.7r (2026-10-04, ADR-76), for the phase review (PLAN 2.11):
   - With the game at top speed the city names near counters come and go often (51 fades begun in
     four seconds at 4000 m/px over Europe). Not looked at at the speeds a player watches at.

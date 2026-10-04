@@ -1006,7 +1006,10 @@ order arrow to the target, and a red outline while engaged; Major Battles get cr
 *Stacks (PLAN 2.7s1, `markerStacks.ts`, ADR-77):* a marker that is more than a quarter of its
 box under a stronger marker of its own nation goes into that one, which then shows the men of
 all it stands for and "×n". It stays in until it is under its lead by less than a tenth; a
-change is a fade in place over 250 ms. Markers of two nations are never one marker.
+change is a fade in place over 250 ms. Markers of two nations are never one marker: where two
+shown boxes are still more than a quarter on each other (across a front at the far end of T1)
+they move apart by half each, at most 6 px from their formations, by an ease of 150 ms (PLAN
+2.7s2). The order arrow starts at the formation. The boxes do not move during the morph into T2.
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
 flag that would cover a counter stands just above it instead (up to 40 px from its usual place,

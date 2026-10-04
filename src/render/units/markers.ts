@@ -248,12 +248,16 @@ export function drawMarkers(
   const tags: { px: number; py: number; x: number; y: number; text: string; alpha: number }[] = [];
   for (const m of order) {
     for (const off of offs) {
-      const [px, py] = worldToScreen(cam, m.x + off, m.y, vw, vh);
+      const stack = stacks?.get(m.id);
+      // The box stands on its formation, or a few px from it to keep clear of a marker of
+      // another nation (PLAN 2.7s2); the order arrow starts at the formation.
+      const [fx, fy] = worldToScreen(cam, m.x + off, m.y, vw, vh);
+      const px = fx + (stack?.dx ?? 0);
+      const py = fy + (stack?.dy ?? 0);
       const x = Math.round(px - BOX_W / 2);
       const y = Math.round(py - BOX_H / 2);
       if (px + BOX_W * size < 0 || py + BOX_H * size < 0 || px - BOX_W * size > vw || py - BOX_H * size > vh) continue;
       // In a stack: its men are in its lead's number. On its way in or out: fading where it stands.
-      const stack = stacks?.get(m.id);
       const part = stack?.alpha ?? 1;
       if (part <= 0.01) continue;
       const members = stack?.members ?? [m.id];

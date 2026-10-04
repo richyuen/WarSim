@@ -631,7 +631,7 @@ quick sweep as a smoke test.
   and 18 names shown (of 31, 27 and 18: Luxembourg has no place at 4000 m/px); four seconds at top
   speed, no name's box moves while it shows. `tests/unit/cities.test.ts`, 8 new.
   `docs/evidence/2.7/city-names-*.png`.
-- [ ] 2.7s T1 markers of a dense group do not stand on each other. Seen in PLAN 1.45a and left without a
+- [x] 2.7s T1 markers of a dense group do not stand on each other. Seen in PLAN 1.45a and left without a
   task (ADR-65, "not solved here"). Measured in the review pass of 2026-10-04 on Spain's front after
   two weeks (a scratch spec): at 1800 m/px 60 markers, 97 pairs overlap and 10 markers are more than
   half under another; at 1200 m/px 48, 39 and 7; at 600 m/px 40, 10 and 5. The number of a marker
@@ -674,11 +674,18 @@ quick sweep as a smoke test.
       marker's number is the element sum of the formations it stands for, each formation in one
       marker) and `handover1938` (while the game runs the marker layer is in full when its most
       opaque marker is, as it already said of the counters). ADR-77.
-  - [ ] 2.7s2 What is left at the far end of T1, markers of two nations on each other across a front,
+  - [x] 2.7s2 What is left at the far end of T1, markers of two nations on each other across a front,
     is cleared by moving the boxes apart by a few px (by an ease, kept while the quarter rule holds,
     never during the morph into T2).
     AT: e2e, Spain's front after two weeks at 1800 and 1900 m/px: no marker's box is more than a
     quarter under another's; no box is more than 6 px from its formation.
+    Done 2026-10-04 (ADR-77, addendum): `nudgeApart` moves the shown boxes of a pair that is too
+    much on each other apart by half each, along the shorter way, at most 6 px from the formation.
+    A box keeps its move while the armies move under a camera at rest, eases to a new one over
+    150 ms, and does not move during the morph into T2. `tests/e2e/markerStacks1938.spec.ts`, the
+    second test: at 1900 and 1800 m/px no pair more than a quarter under each other (7 at 1900
+    before), 12 boxes moved, by 3.2 px at most; at 1200 m/px none moved.
+    `tests/unit/markerStacks.test.ts`, 6 new.
 - [ ] 2.7t A city's name is readable where a nation's name crosses it. The curved nation names are drawn
   above the city names: at T0 a capital's name is often under the letters of its own nation. Seen in
   the pictures of PLAN 2.7r (`docs/evidence/2.7/city-names-4000m.png`, `city-names-3000m.png`): Berlin

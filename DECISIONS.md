@@ -214,6 +214,25 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   `counters1938`, `fades1938`, `morphNations1938`, `tiers1938`, `player1938` unchanged and
   passing.
 
+- **Addendum, PLAN 2.7s2 (2026-10-04): markers of two nations move apart.**
+  - *What was left* after the stacks: on Spain's front at 1900 m/px, 7 pairs of markers of two
+    nations more than a quarter on each other (a cell is 10 px there, a marker 26).
+  - *Decision:* the two boxes of such a pair move apart by half each, along the axis that needs
+    the shorter move, until neither is under the other by more than a quarter; no box further
+    than 6 px from its formation. The order arrow still starts at the formation.
+  - *Over time:* a box keeps its move from frame to frame while the armies move under a camera
+    at rest, and goes back when it touches no other box where its formation stands. It eases to
+    a new move over 150 ms (the capital flags' time). At another zoom the moves are found
+    afresh: what stands at rest after a zoom does not depend on the frames of the way there
+    (ADR-75's lesson; the first version kept the moves of 1800 m/px at 1200, where none is
+    needed).
+  - *ADR-72 stands:* "the box does not move" during the morph into T2. The moves are frozen
+    while a box shrinks; and at 310 and 340 m/px no pair of two nations was more than a quarter
+    on each other in either region measured, so no box is off its formation there.
+  - *Measured:* at 1900 and 1800 m/px 12 boxes move, by 3.2 and 2.7 px at most; at 1200 none.
+  - *What it does not do:* a quarter of a box can be the number. At 1800 m/px the front is
+    still a band of boxes that touch, and some numbers are partly covered. BLOCKERS watch list.
+
 ### ADR-76 · 2026-10-04 · accepted — A city's name takes the first free place by its dot, keeps it, and moves by a cross-fade (PLAN 2.7r)
 
 - **Context:** the T0 counters are drawn over the city names, and a capital's name stood to the
