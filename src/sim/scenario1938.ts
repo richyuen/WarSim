@@ -127,7 +127,7 @@ function parseColor(hex: string): number {
  * `cellWeight`. Units without a GDP entry are estimated from their weight at the default GDP
  * per head, relative to the listed units.
  */
-function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: readonly { cell: number; size: number }[]): void {
+export function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: readonly { cell: number; size: number }[]): void {
   const { w, h, terrain, province, econ } = world.cells;
   const zone = (r: number): number => sin(millerLat(Y_TOP - (r / h) * Math.PI)) - sin(millerLat(Y_TOP - ((r + 1) / h) * Math.PI));
   const equatorZone = zone(Math.floor((h * Y_TOP) / Math.PI));
@@ -205,6 +205,21 @@ export function politicalMapInput1938(assets: ScenarioAssets, w: number, h: numb
     oob: oob1938.groups as unknown as OobGroup[],
     overlordOf: new Map(NATIONS_1938.flatMap((n) => (n.overlord ? [[n.tag, n.overlord.tag] as const] : []))),
   };
+}
+
+/** Starting treasury and manpower pool of every nation, from its land and the army it starts with. */
+export function startTreasury(world: World): void {
+  const accounts = monthlyAccounts(world, ECONOMY_TABLES_1938);
+  const { gross, expenses, population } = accounts;
+  world.nations.forEach((id) => {
+    // The army of the start is paid for a year, whatever the income (PLAN 2.13): see START_ARMY_MONTHS.
+    const { balance, need } = budgetOf(world, id, accounts);
+    world.nations.cols.gold[id] = Math.max(START_GOLD_MONTHS * gross[id]!, START_ARMY_MONTHS * Math.max(0, need - balance));
+    // Known before the first economy month (income map mode PLAN 1.30, economy panel PLAN 1.31a).
+    world.nations.cols.income[id] = gross[id]!;
+    world.nations.cols.expenses[id] = expenses[id]!;
+    world.nations.cols.manpower[id] = MANPOWER_START_SHARE * population[id]!;
+  });
 }
 
 export function createWorld1938(seed: number, assets: ScenarioAssets): World {
@@ -308,18 +323,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     world.wars.start(a, d, 0, [ftd(a), ftd(d)]);
   }
 
-  // Starting treasury and manpower pool.
-  const accounts = monthlyAccounts(world, ECONOMY_TABLES_1938);
-  const { gross, expenses, population } = accounts;
-  world.nations.forEach((id) => {
-    // The army of the start is paid for a year, whatever the income (PLAN 2.13): see START_ARMY_MONTHS.
-    const { balance, need } = budgetOf(world, id, accounts);
-    world.nations.cols.gold[id] = Math.max(START_GOLD_MONTHS * gross[id]!, START_ARMY_MONTHS * Math.max(0, need - balance));
-    // Known before the first economy month (income map mode PLAN 1.30, economy panel PLAN 1.31a).
-    world.nations.cols.income[id] = gross[id]!;
-    world.nations.cols.expenses[id] = expenses[id]!;
-    world.nations.cols.manpower[id] = MANPOWER_START_SHARE * population[id]!;
-  });
+  startTreasury(world);
   // Scenario settings seed the world's (review in PLAN 1.41: only revoltMode was read before).
   // Revolts by region keep the nation count in SPEC §10's range (PLAN 1.40). The revival
   // cooldown stays the code's REVIVAL_COOLDOWN; a unit test pins the file to it.

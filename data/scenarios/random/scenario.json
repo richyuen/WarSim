@@ -1,0 +1,18 @@
+{
+  "id": "random",
+  "nameKey": "scenario.random",
+  "descKey": "scenario.random.desc",
+  "hidden": true,
+  "map": "earth",
+  "size": "M",
+  "startDate": "1938-01-01",
+  "settings": {
+    "combatEfficiency": "dynamic",
+    "winnerTakesAll": false,
+    "loopingMap": true,
+    "revoltMode": "region",
+    "nukesEnabled": true,
+    "aiEnabled": true,
+    "revival": { "maxPerNation": 2, "cooldownDays": 730 }
+  }
+}

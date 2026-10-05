@@ -9,7 +9,11 @@ import toyMap from '../../data/maps/toy/map.json' with { type: 'json' };
 import toyScenario from '../../data/scenarios/toy/scenario.json' with { type: 'json' };
 import earthMap from '../../data/maps/earth/map.json' with { type: 'json' };
 import scenario1938 from '../../data/scenarios/1938/scenario.json' with { type: 'json' };
+import scenarioRandom from '../../data/scenarios/random/scenario.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
+
+/** How many nations the random world starts with when no number is asked for (PLAN 2.16). */
+export const RANDOM_NATIONS_DEFAULT = 60;
 
 export interface ScenarioGeometry {
   w: number;
@@ -58,6 +62,7 @@ function geometry(map: MapJson, scenario: ScenarioJson): ScenarioGeometry {
 export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   toy: geometry(toyMap, toyScenario),
   '1938': geometry(earthMap, scenario1938),
+  random: geometry(earthMap, scenarioRandom),
 };
 
 function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson, nations: number): ScenarioInfo {
@@ -76,6 +81,8 @@ export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
   // The toy world's two nations are code (src/sim/toy.ts), not a nations file.
   toy: info('toy', toyMap, toyScenario, 2),
   '1938': info('1938', earthMap, scenario1938, (nations1938.nations as { alive?: boolean }[]).filter((n) => n.alive !== false).length),
+  // Its nations are made by the seed (src/sim/randomWorld.ts); this is how many when none is asked for.
+  random: info('random', earthMap, scenarioRandom, RANDOM_NATIONS_DEFAULT),
 };
 
 /** The scenarios the title screen offers, in its order (PLAN 1.43). */

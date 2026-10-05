@@ -10,7 +10,7 @@ import type { LandMask } from './landMask';
  */
 import type { Command } from './commands';
 
-export type ScenarioId = 'toy' | '1938';
+export type ScenarioId = 'toy' | '1938' | 'random';
 
 /** Decoded map assets a real-map scenario is built from (PLAN 1.9a). */
 export interface ScenarioAssets {
@@ -30,7 +30,7 @@ export interface ScenarioAssets {
 export interface SimInit {
   scenario: ScenarioId;
   seed: number;
-  /** Required for '1938'. In the worker, `init` loads them from `assetBase` when absent. */
+  /** Required for '1938' and 'random'. In the worker, `init` loads them from `assetBase` when absent. */
   assets?: ScenarioAssets;
   /** New-game options (PLAN 1.39b1): looping map, random aggression/traits/gold, CE mode. */
   options?: GameOptions;

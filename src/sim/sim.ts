@@ -26,6 +26,7 @@ import { supplySystem } from './systems/supply';
 import { territorySystem } from './systems/territory';
 import { warSystem } from './systems/war';
 import { economySystem } from './systems/economy';
+import { createRandomWorld } from './randomWorld';
 import { createToyWorld, TOY_SYSTEMS } from './toy';
 import type { World } from './world';
 
@@ -40,8 +41,10 @@ export class Sim {
         this.systems = TOY_SYSTEMS;
         break;
       case '1938':
-        if (!init.assets) throw new Error("scenario '1938' needs its map assets");
-        this.world = createWorld1938(init.seed, init.assets);
+      case 'random':
+        if (!init.assets) throw new Error(`scenario '${init.scenario}' needs its map assets`);
+        // The random world has the map, the units and the rules of 1938, and nations of its own.
+        this.world = init.scenario === '1938' ? createWorld1938(init.seed, init.assets) : createRandomWorld(init.seed, init.options?.nations, init.assets);
         this.world.rules = RULES_1938;
         if (init.options) applyGameOptions(this.world, init.options);
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),

@@ -2266,6 +2266,35 @@ quick sweep as a smoke test.
   the same seed gives the same world (hash); every nation has a name, a flag and a capital;
   a year of it runs within the tick budget. And the title screen offers one scenario more
   besides "World, 1938". e2e from the title screen; pictures looked at.
+  - **Decided (2026-10-05, ADR-108):** the random world comes first, and it is the "one
+    scenario more" of the AT: it needs no new data. Another year (1914, 1956) needs a border
+    dataset and stays a line of PLAN 7.4.
+  - [x] 2.16a The sim: a scenario `random` on the earth map. N capitals drawn from the map's
+    cities by the seed, kept apart; each nation takes the provinces nearest its capital over
+    the province graph, at a speed of its own; a name (the province of its capital), a colour
+    and an army in proportion to its income. `--scenario random --nations N` in the headless
+    runner.
+    AT: unit: the same seed and count give the same hash, another seed another world; every
+    nation lives, has cells, a capital on its own land, a name and formations; no land
+    province is left without an owner; a year of 60 nations runs (the mean tick logged).
+    The pin does not move.
+    Done 2026-10-05 (ADR-108).
+    - *Tests:* `tests/unit/randomWorld.test.ts` (7): three worlds (60, 200 and 2 nations),
+      the hash, the sizes, a month with a save and a load.
+    - *Measured:* a world is built in 0.35 s; a year of 60 nations (seed 99, pinned): mean
+      tick 1.47 ms, 511 formations after the year (seed 7 starts with 565).
+    - *Not seen to fail:* the tests are of new code. The rule against a capital on an islet
+      has no test: before it, a world of 200 had nations of one cell (La Digue).
+  - [ ] 2.16b Flags and names by scenario: `FlagStore` and the worker's `nameOf` read the
+    1938 table only in the 1938 world (PLAN 7.4 "Flags by scenario"); a nation of the random
+    world, and of the toy world, flies a made flag.
+  - [ ] 2.16c The title screen: the random world on the list with its picture, a field for
+    the number of nations, `?nations=N` in the URL and in the autosave.
+  - [ ] 2.16d The whole: e2e from the title screen (count, names, flags, the same seed the
+    same hash), the tick of a year measured, pictures looked at, PARITY rows 75 and 78.
+    Ticks 2.16: the whole e2e suite.
+    - Not tried in 2.16a: a scenario file exported from a random world, loaded again (the
+      editor is reachable there).
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - **Ally** with a nation that is in another alliance (France of the Anglo-French, Italy of

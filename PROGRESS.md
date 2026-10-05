@@ -5993,3 +5993,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   https://richyuen.github.io/WarSim/. PROMPT.md step 7 and CLAUDE.md: push every commit.
 - **The gate:** run for the workflow file (green); not run for the documents of this commit,
   at the user's word.
+
+## 2026-10-05 — PLAN 2.16a: the random world, its sim (ADR-108)
+
+- **Decided:** of PLAN 2.16's ways to start, the random world first; 2.16 split in four
+  (a the sim, b flags and names by scenario, c the title screen, d the whole).
+- **Built:** `src/sim/randomWorld.ts`, scenario `random` (`data/scenarios/random/`, hidden
+  until 2.16c): N capitals from the map's cities, kept apart; provinces to the nation that
+  reaches them first, each at its own speed; a name (the capital's province, in
+  `world.names`), a colour, an army for half the income. `GameOptions.nations`;
+  `npm run sim -- --scenario random --nations 60`.
+- **Changed in the 1938 build:** `startTreasury` and `fillEconomy` are shared; the pin did
+  not move (324bc358).
+- **Tests:** `tests/unit/randomWorld.test.ts` (7). Not seen to fail (new code).
+- **Measured:** build 0.35 s. A year of 60 nations, seed 99, pinned: mean tick 1.47 ms (the
+  budget is 1.5), p95 6.5; 37,588 cells changed hands. One run before the islet rule, of
+  another world, read 1.17.
+- **Seen:** a capital on an islet made a nation of one cell (La Digue, of 200): none on land
+  under 12 cells now. Sizes are counted in cells, so the north's nations read large.
+- **Looked at in the page** (`?scenario=random&seed=7&paused=1`, a scratch script, two
+  pictures not kept): the world is drawn, 60 nations with their names on the map and in the
+  ranking, borders along the provinces, no error in the console; the page's hash is Node's
+  (2688170718).
+- **Seen, not changed:** its nations fly the flags of 1938 by id until 2.16b. The armies
+  come to some 570, not the 900 allowed. Not tried: the editor's scenario file of a random
+  world (a line under 2.16d).
+- **Gotchas:** `equipFormation` does not set the formation's template; set it first.
+- **Next:** PLAN 2.16b, flags and names by scenario.

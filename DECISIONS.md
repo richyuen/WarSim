@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-108 · 2026-10-05 · accepted — The random world: the earth shared out by the seed (PLAN 2.16a)
+
+- **Context:** the critic's R2-B7: one scenario, one map, no random world; AoC's usual way to
+  play is a random simulation (TEXT). PLAN 2.16 left open what comes first.
+- **Decision:** the random world first, as a scenario `random` on the earth map
+  (`src/sim/randomWorld.ts`). Another year needs a border dataset: PLAN 7.4.
+  - *Capitals:* N (2 to 200, 60 when none is asked for) drawn from the map's 5,774 cities:
+    of 12 cities drawn, the one farthest from the capitals there are. One to a province, none
+    on a piece of land under 12 cells.
+  - *Land:* each province goes to the nation that reaches it first over the province graph
+    (the crossings are nodes), a nation's kilometre costing 0.6 to 1.8 by the seed, so the
+    nations differ in size. A province no road reaches goes to the nearest capital by the
+    same measure. Borders follow the provinces, as those of 1938 do.
+  - *Nations:* called after the province of their capital; the name is in `world.names`,
+    with those God Mode gives, so it is state and is saved. No `origin`: that marks a nation
+    founded in a game, and a revolt next to one joins it (`risingNeighbour`). A colour by
+    golden-angle hue, aggression 15 to 85, no traits, no alliance, no war, no puppet.
+  - *Armies:* infantry divisions for half the income, one in eight armoured and one in eight
+    motorised where there are eight, around the nation's six largest cities; 900 at most.
+  - *The rest is the 1938 world's:* map, terrain, cities, economy by the land's country,
+    units, templates, systems, the start date. The count is a new-game option (`nations`).
+  - *Seeded by `hash32(seed, …)`*, not by the world's streams: the world's streams start as
+    they do in 1938.
+- **Seen:** seed 7 with 60: the largest holds 7% of the cells, the median 6,953 cells, the
+  smallest 66. With 2 nations the larger holds 61%. Cells, not km²: the north reads large.
+- **Not done here:** flags and the worker's names by scenario (2.16b: a random nation of id 3
+  would fly the flag of 1938's third); the title screen (2.16c). The scenario is `hidden`
+  until then; `?scenario=random` opens it.
+- **The pin did not move** (324bc358): the 1938 build lost only a function boundary
+  (`startTreasury`).
+
 ### ADR-107 · 2026-10-05 · accepted — The game is on GitHub Pages, and every commit is pushed (the user's decision)
 
 - **Context:** the build already ran from any path (a relative base, the worker and the map

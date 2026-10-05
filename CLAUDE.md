@@ -41,6 +41,7 @@ There is no memory between sessions. Read these files:
   set on; unpinned, the same code reads up to 1.65 × slower there.
 - `npm run sim -- --scenario toy --seed 7 --years 10`: headless runner (`--save` / `--load` a
   checkpoint).
+- `npm run sim -- --scenario random --nations 60 --seed 7 --years 1`: the random world (ADR-108).
 - `npm run diag -- --seed 99 --at 5,12,20`: wars and great-power state dumps (`--load` a checkpoint).
 - `npm run sweep` (10 seeds × 50 years, report in `docs/sweeps/`; `--first`, `--tag`) and
   `npm run sweep:quick` (10 × 20, report in `.cache/`; limits only, riser and faller reported).

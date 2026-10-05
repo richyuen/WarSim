@@ -15,6 +15,8 @@ export interface HeadlessOptions {
   scenario: ScenarioId;
   seed: number;
   years: number;
+  /** The random world: how many nations (absent: its default). */
+  nations?: number;
   /** Called after each simulated year (progress output). */
   onYear?: (m: YearMetrics) => void;
   /** Wall-clock source (injectable for tests). */
@@ -90,7 +92,7 @@ function nationStats(world: World): NationYear[] {
 
 export function runHeadless(opts: HeadlessOptions): HeadlessResult {
   const now = opts.now ?? (() => performance.now());
-  const sim = new Sim(opts.scenario === '1938' ? { scenario: '1938', seed: opts.seed, assets: loadAssets1938(SIZE_1938.w) } : { scenario: opts.scenario, seed: opts.seed });
+  const sim = new Sim(opts.scenario !== 'toy' ? { scenario: opts.scenario, seed: opts.seed, assets: loadAssets1938(SIZE_1938.w), ...(opts.nations !== undefined ? { options: { nations: opts.nations } } : {}) } : { scenario: opts.scenario, seed: opts.seed });
   if (opts.load) sim.load(opts.load);
   const world = sim.world;
   const firstYear = Math.floor(world.tick / TICKS_PER_YEAR);
