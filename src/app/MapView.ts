@@ -123,6 +123,8 @@ export class MapView {
   /** True once the worker's fine coast and terrain layers arrived (PLAN 1.28b). */
   hasFineCoast = false;
   private readonly ownColor = new Map<number, number>();
+  /** The nations founded in the game (PLAN 2.15c): their flags are made, not the scenario's. */
+  private readonly founded = new Set<number>();
   private readonly allianceLeader = new Map<number, number>();
   private readonly overlordOf = new Map<number, number>();
   private readonly income = new Map<number, number>();
@@ -367,6 +369,7 @@ export class MapView {
     // have fewer (PLAN 2.7q): the flag of a nation made by a revolt stayed over its capital after
     // a scenario without that nation was imported.
     this.ownColor.clear();
+    this.founded.clear();
     this.allianceLeader.clear();
     this.overlordOf.clear();
     this.income.clear();
@@ -375,6 +378,7 @@ export class MapView {
       const o = i * NATION_STRIDE;
       const id = s.nations.data[o + NationField.id]!;
       this.ownColor.set(id, s.nations.data[o + NationField.color]!);
+      if (s.nations.data[o + NationField.founded] === 1) this.founded.add(id);
       this.allianceLeader.set(id, s.nations.data[o + NationField.alliance]!);
       this.overlordOf.set(id, s.nations.data[o + NationField.overlord]!);
       this.income.set(id, s.nations.data[o + NationField.income]!);
@@ -1217,8 +1221,11 @@ export class MapView {
     return best;
   }
 
-  /** Nation flags (PLAN 1.37b): custom pixel flags, else the scenario's, else plain colour. */
-  readonly flags = new FlagStore((id) => this.ownColor.get(id));
+  /** Nation flags (PLAN 1.37b): custom pixel flags, else the scenario's, else one made from id and colour. */
+  readonly flags = new FlagStore(
+    (id) => this.ownColor.get(id),
+    (id) => this.founded.has(id),
+  );
   private readonly capitals = new Map<number, [number, number]>();
   /** Where flags were drawn last frame, CSS px (tests). */
   flagRects: { id: number; x: number; y: number; w: number; h: number; alpha: number }[] = [];

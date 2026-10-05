@@ -163,8 +163,23 @@ test('Kill through the God tab: a few new nations, no new war', async ({ page },
   expect(land).toBeGreaterThan(nation(before, FRA).cells * 0.9);
   console.log(`Kill of France: ${living(before).length} -> ${living(after).length} living, ${born.length} founded (${born.map((n) => `${nation(after, n).name} ${nation(after, n).cells}`).join('; ')}), ${before.wars.length} -> ${after.wars.length} wars`);
 
+  // Each of them flies a flag of its own, of two colours or more, with its colour on it (PLAN
+  // 2.15c): they flew a plain one. The view knows the colour from the first snapshot after.
+  const flagOf = (n: number): Promise<number[]> => page.evaluate((id) => [...new Set(window.__warsim!.view!.flags.pixelsOf(id))], n);
+  const flags: number[][] = [];
+  for (const n of born) {
+    await expect.poll(async () => (await flagOf(n)).includes(nation(after, n).color), `nation ${n}: its colour on its flag`).toBe(true);
+    flags.push(await flagOf(n));
+    expect(flags.at(-1)!.length, `nation ${n}: the colours of its flag`).toBeGreaterThanOrEqual(2);
+  }
+  console.log(`their flags: ${born.map((n, i) => `${nation(after, n).name} ${flags[i]!.length} colours`).join('; ')}`);
+
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.15') : info.outputPath();
   mkdirSync(out, { recursive: true });
+  // The panel of one of them: its flag beside its name.
+  await page.evaluate((n) => window.__warsim!.view!.select(n), born[0]!);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(born[0]!));
+  await page.getByTestId('nation-panel').screenshot({ path: path.join(out, 'founded-flag-panel.png') });
   await page.evaluate(() => window.__warsim!.view!.select(0));
   await lookAt(page, 2.5, 46.5, 10);
   await page.waitForTimeout(1_500);

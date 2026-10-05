@@ -167,6 +167,55 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-101 · 2026-10-05 · accepted — A founded nation flies a flag made from its id and its colour (PLAN 2.15c)
+
+- **Context:** the critic's R2-B6 saw 25 of 109 living nations after 14 years with "a blank
+  flag". PLAN 2.15c asked which of two causes it was. Both were there.
+  - *The plain flag was the rule.* `FlagStore` gave a nation without a scenario flag
+    `plainFlag(colour)`: 36×24 pixels of one colour, by design since PLAN 1.37b.
+  - *And the colour could be wrong for good.* The store kept a nation's pixels by its id and
+    dropped them only when a painted flag changed. A flag asked for before the first snapshot
+    had told the colour was grey (0x888888) for the rest of the game.
+  - *A third, by reading:* the scenario flag was found by `nations[id - 1]`, so a founded
+    nation on the id of a scenario nation would fly that nation's flag. No code frees a
+    nation's row today, so it could not happen; the table reuses a freed id first, so it would
+    on the day one does.
+- **Decision.**
+  - `foundedFlag(id, colour)` (`src/shared/flagPixels.ts`) returns a `FlagSpec`. It reads
+    nothing else: no seed, no state, no scenario. A scenario without flags can call it for
+    every nation (PLAN 2.16).
+    - *The pattern:* one of the editor's 11 presets, by a hash of the id and the colour.
+    - *The first colour:* the nation's own. The flag over a capital belongs to the land under
+      it, and a reader finds the nation of a counter by it.
+    - *The second:* dark (0x1c1c28) or pale (0xf2efe4), whichever stands off from the first
+      (by its luma, above or below 140).
+    - *The third:* the first of six plain accents (gold, red, navy, green, dark, pale), from a
+      place the hash gives, that is 150 or more from both others (the sum of the three
+      channels' differences).
+  - It is the view's. Nothing is written into `world.flags` (the painted flags): a made flag
+    in the state would make every founded nation read as painted in the flag editor, would
+    grow every save and would move the pin. **The pin did not move** (324bc358).
+  - `FlagStore` remembers what each cached flag was made from (a painted flag, the scenario's,
+    or a colour) and makes it again when that differs. It takes a second function,
+    `foundedOf`.
+  - The snapshot's nation row has a tenth field, `founded` (1 where the nation has an
+    origin: founded in the game, not revived). The view asks it before it looks for a
+    scenario flag by the id.
+  - `spawnRebels` drops a painted flag of the id it founds on, as it drops a God Mode name.
+- **Why not a flag from the province's country** (Free Paris under a French tricolour with a
+  mark)? It would need a flag for each of the data's countries, where we have 103 for the
+  nations of 1938, and five states of one Kill would fly five flags alike.
+- **What it does not give.**
+  - Flags that mean something: a cross says nothing of a nation's faith, a star nothing of
+    its rule.
+  - Two founded nations never alike: the same id with the same colour is the same flag by
+    design, and two ids can come to the same pattern and colours. Of 406 nations founded by a
+    revolt forced in every province of the 1938 start, all 406 flags differ.
+  - Flags by scenario: `FlagStore` still reads the 1938 tags and flags whatever the scenario
+    (the toy world's nations fly flags of 1938). PLAN 2.16.
+  - The GPU flag atlas (`buildFlagAtlas`, the bench of PLAN 1.6) holds the 103 scenario flags
+    only; what the game draws goes through `FlagStore`.
+
 ### ADR-100 · 2026-10-05 · accepted — A founded nation is named after the province of its capital, and a province without a name after its country (PLAN 2.15b)
 
 - **Context:** the critic's R2-B6 saw "Free state 128". PLAN 2.12a took away its cause there

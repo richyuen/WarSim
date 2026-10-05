@@ -307,6 +307,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   const nc = nt.cols;
   if (revive === 0) {
     world.names.delete(id); // a reused id does not inherit a God Mode name
+    if (world.flags.delete(id)) world.flagsVersion++; // nor a painted flag (PLAN 2.15c)
     nc.color[id] = rebelColor(world, id);
     nc.incomeMult[id] = 1;
     nc.manpowerMult[id] = 1;

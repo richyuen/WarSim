@@ -16,11 +16,6 @@ export function specToPixels(spec: FlagSpec, presets: FlagPresets): Uint32Array 
   return out;
 }
 
-/** A flag of one colour (nations without any flag, e.g. new rebels). */
-export function plainFlag(rgb: number): Uint32Array {
-  return new Uint32Array(FLAG_W * FLAG_H).fill(rgb & 0xffffff);
-}
-
 const hex = (c: number): string => `#${(c & 0xffffff).toString(16).padStart(6, '0')}`;
 
 /** Editor presets (our own simple patterns): three colours c1..c3 fill the pattern. */
@@ -54,6 +49,47 @@ export function presetSpec(p: FlagPreset, c1: number, c2: number, c3: number): F
     case 'star':
       return base([{ t: 'stripes', dir: 'h', colors: [a] }, { t: 'star', cx: 0.5, cy: 0.5, r: 0.35, color: b }]);
   }
+}
+
+/** Dark and pale, for the second colour: whichever stands off from the nation's own. */
+const FLAG_DARK = 0x1c1c28;
+const FLAG_PALE = 0xf2efe4;
+/** Third colours (our own choice of plain heraldic ones); the first far enough from the other two is taken. */
+const FLAG_ACCENTS = [0xe0b020, 0xb82020, 0x1c3c78, 0x1e6a3a, FLAG_DARK, FLAG_PALE] as const;
+/** Two colours nearer than this (the sum of the channels' differences) read as one on a 36×24 flag. */
+const FLAG_APART = 150;
+
+const luma = (c: number): number => (((c >> 16) & 255) * 299 + ((c >> 8) & 255) * 587 + (c & 255) * 114) / 1000;
+const apart = (a: number, b: number): number => Math.abs(((a >> 16) & 255) - ((b >> 16) & 255)) + Math.abs(((a >> 8) & 255) - ((b >> 8) & 255)) + Math.abs((a & 255) - (b & 255));
+
+/** A 32-bit mix of two numbers (murmur3's finalizer): the same everywhere, no seed, no state. */
+function mix(a: number, b: number): number {
+  let h = Math.imul(a ^ 0x9e3779b9, 0x85ebca6b) ^ b;
+  h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+/**
+ * The flag of a nation no scenario gives one (PLAN 2.15c): a founded nation, or a nation of a
+ * scenario without flags. Made from the nation's id and colour and nothing else, so the same
+ * nation flies the same flag in every view, save and session. The pattern is one of the
+ * editor's presets; the nation's own colour is the field (or the first stripe), the second
+ * colour is dark or pale, whichever stands off from it, and the third a plain accent.
+ */
+export function foundedFlag(id: number, colour: number): FlagSpec {
+  const c1 = colour & 0xffffff;
+  const h = mix(id, c1);
+  const c2 = luma(c1) > 140 ? FLAG_DARK : FLAG_PALE;
+  let c3: number = c2 === FLAG_DARK ? FLAG_PALE : FLAG_DARK;
+  for (let i = 0; i < FLAG_ACCENTS.length; i++) {
+    const a = FLAG_ACCENTS[((h >>> 8) + i) % FLAG_ACCENTS.length]!;
+    if (apart(a, c1) >= FLAG_APART && apart(a, c2) >= FLAG_APART) {
+      c3 = a;
+      break;
+    }
+  }
+  return presetSpec(FLAG_PRESETS[h % FLAG_PRESETS.length]!, c1, c2, c3);
 }
 
 /** 4-connected flood fill of pixel (x, y)'s colour with `rgb` (in place). */

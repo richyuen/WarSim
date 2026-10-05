@@ -1059,6 +1059,8 @@ export class SimServer {
       nations[o + NationField.overlord] = nt.cols.living[id] === 1 ? nt.cols.overlord[id]! : 0;
       nations[o + NationField.income] = nt.cols.income[id]!;
       nations[o + NationField.living] = nt.cols.living[id] === 1 ? 1 : 0;
+      // Founded in the game (it has an origin): no scenario gives it a flag (PLAN 2.15c).
+      nations[o + NationField.founded] = nt.cols.origin[id] !== 0 ? 1 : 0;
       n++;
     });
     const warPairs: number[] = [];

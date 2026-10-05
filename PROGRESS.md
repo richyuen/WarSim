@@ -5818,3 +5818,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen, not changed:** 114 province names are held by more than one province ("Valmiera"
   21, "Central" 10): two nations of one name can come of it. A line under PLAN 7.4.
 - **Next:** PLAN 2.15c, a flag for every founded nation.
+
+## 2026-10-05 — PLAN 2.15c: a flag for every founded nation
+
+- **Found:** both causes the task named, and a third. The plain flag was the rule
+  (`plainFlag`, PLAN 1.37b). `FlagStore` kept a nation's pixels by its id until a painted
+  flag changed: asked for before the first snapshot, grey for good. And the scenario flag
+  was found by `nations[id - 1]` alone (no nation's row is freed today, so not yet seen).
+- **Built (ADR-101):** `foundedFlag(id, colour)` in `src/shared/flagPixels.ts`: a preset by
+  a hash of the two, the nation's colour first, dark or pale second, an accent third.
+  `FlagStore` remembers what a flag was made from and takes `foundedOf`; `NationField.founded`
+  (the stride is 10); `spawnRebels` drops a painted flag of the id. `plainFlag` is gone.
+- **Tests:** `tests/unit/foundedFlags.test.ts`, 6 (unit 701), all seen to fail first. 406
+  forced revolts: 406 flags, all different, each of two colours or more.
+- **The pin did not move** (324bc358): the flag is the view's.
+- **15 years by hand** (the AT's words; `npm run sim -- --scenario 1938 --seed 2718 --years 15
+  --save`, then a script on the state): 159 nations, 56 founded, 30 of them living; none
+  with a flag of one colour, 56 different flags.
+- **Run by hand:** `godUi1938` (2), `flags1938`, `flags`, `flagsClear1938`: green.
+- **Pictures looked at:** `docs/evidence/2.15/kill-france-europe.png` (Free Paris a pale
+  Nordic cross on its colour, Free Ain a vertical tricolour, Free Gironde a canton with a
+  star; each reads as its nation's at 10 px per cell) and `founded-flag-panel.png` (the
+  flag beside the name in the panel). `kill-france-africa.png` shot again with them.
+- **Gotchas:** a flag's colours counted from its pixels are more than three (17 for a star:
+  the edges are blended). Count the colours that hold a twentieth of the flag.
+  The 15-year run took three times its usual time beside vitest and Playwright.
+- **Seen, not changed:** the toy world's nations fly flags of 1938 (`FlagStore` reads the
+  1938 tags in every scenario): PLAN 2.16 has the line already.
+- **Next:** PLAN 2.15d, land that returns is not logged as a revolt.

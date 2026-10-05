@@ -2143,12 +2143,30 @@ quick sweep as a smoke test.
       did not move.
     - *Not done:* 66 of the 406 have their capital outside the origin (no city: the middle
       of the area, 2.15e); two nations of one name (a line under PLAN 7.4).
-  - [ ] 2.15c A flag for every founded nation, made from its id and colour by a function any
+  - [x] 2.15c A flag for every founded nation, made from its id and colour by a function any
     scenario can use (PLAN 2.16 needs it). Look first at whether the plain flag is the
     cause or a colour not yet known when the flag is first asked for; a reused id must not
     show the flag of the nation before it.
     AT: every nation founded in 15 years of a game has a flag of two colours or more, the
     same for the same id and colour; a picture looked at.
+    Done 2026-10-05 (ADR-101).
+    - *The causes:* both. A nation without a scenario flag flew a plain one by design; and
+      the view kept a flag by the id for good, so one asked for before the first snapshot
+      stayed grey. A third by reading: the scenario flag was found by the id alone.
+    - *The rule:* `foundedFlag(id, colour)` (`src/shared/flagPixels.ts`): one of the editor's
+      11 presets, the nation's colour, a dark or pale second, an accent. The view's, not in
+      the state. `FlagStore` makes a flag again when its colour changes; the snapshot's
+      nation row says `founded`; a painted flag does not pass to a nation on a reused id.
+    - *Tests:* `tests/unit/foundedFlags.test.ts` (6, seen to fail): 406 nations of a revolt
+      forced in every province, each a flag of two colours or more with its own on it, all
+      406 different; 3,000 flags of any colour; the early grey; the id of a scenario nation;
+      the reused id; the snapshot. e2e in `godUi1938.spec.ts` (the Kill of France). The pin
+      did not move.
+    - *15 years of a game,* by hand (seed 2718, not a test: three minutes): 56 founded, 30
+      of them living, 56 flags of two colours or more, 56 different.
+    - *Pictures:* `docs/evidence/2.15/kill-france-europe.png` (a Nordic cross over Paris, a
+      tricolour over Geneva, a canton with a star in Gironde) and `founded-flag-panel.png`.
+    - *Not done:* see ADR-101, "what it does not give" (flags by scenario: PLAN 2.16).
   - [ ] 2.15d Land that returns to a living nation, or goes to a neighbour in a Kill, is not
     logged as a revolt: an event of its own, with its line in the history and its filter.
     AT: unit on the events of a defection and of a Kill; the history's text in e2e.

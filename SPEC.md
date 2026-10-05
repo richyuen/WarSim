@@ -178,7 +178,7 @@ Implementation (PLAN 0.13):
 |---|---|---|
 | header | seq, tick, date, speed, paused, globals (nuclear taboo, etc.) | 64 B |
 | dirtyTiles | list of 64×64 tiles: `owner u16[]`, `controller u16[]`, `flags u8[]` | changed tiles only |
-| nations | per nation: color, stats row (gold, income, mil size, land, …), flags. As built: a row for every nation, the destroyed ones too, with `living` (a destroyed nation has no capital flag). The view keeps of the nations what the last snapshot says and nothing else: a world loaded into a running game can have fewer nations (PLAN 2.7q) | 100s × 64 B, when changed |
+| nations | per nation: color, stats row (gold, income, mil size, land, …), flags. As built: a row for every nation, the destroyed ones too, with `living` (a destroyed nation has no capital flag) and `founded` (a nation founded in the game: its flag is made, PLAN 2.15c). The view keeps of the nations what the last snapshot says and nothing else: a world loaded into a running game can have fewer nations (PLAN 2.7q) | 100s × 64 B, when changed |
 | formations | all land formations, fleets, air wings: id, nation, kind, x, y (f64), prevX, prevY, facing, strength, maxStrength, org, state bits | ~4k × 48 B |
 | elements | **only** for formations intersecting the subscribed bbox when tier ≥ T1.5: type, strength, x, y, prevX, prevY, facing, state. As built (`SnapshotElements`): id, formation, nation, the atlas frame of the unit's class, strength, size (the units of the element when whole, since PLAN 2.10b), x, y, prevX, prevY, facing, the formation's flags (moving, engaged) | ≤ 40k × 32 B |
 | events | ring slice since the last ack, filtered by bbox/tier for spatial events (fire, death, explosion), global events always included | bounded ring |
@@ -468,6 +468,13 @@ expands a spec into coloured polygons, which feed `flagSvg` (UI) and `rasterizeF
 supersampled scanline fill, deterministic). `buildFlagAtlas` packs 48×32 cells (1 px gutter,
 aspect kept, transparent letterbox): 103 flags in 20 ms. `data/scenarios/1938/flags.json` maps
 tag → spec.
+
+**Flags of founded nations (PLAN 2.15c, ADR-101).** A nation no scenario gives a flag flies
+`foundedFlag(id, colour)` (`src/shared/flagPixels.ts`): one of the editor's 11 presets by a hash
+of the two, in the nation's colour, a dark or pale second and an accent. It is the view's and
+not in the state. `FlagStore` (`src/app/flagStore.ts`) gives, in this order: the painted flag
+(`world.flags`), the scenario's (not for a nation whose snapshot row says `founded`), the made
+one; a cached flag is made again when what it was made from changes (the colour, `founded`).
 
 **Economy (PLAN 1.9, ADR-22; `src/sim/systems/economy.ts`).**
 - *Cell values* (`cells.econ`, u32, $M/yr, saved): each NE admin-0 unit's industrial capacity is
