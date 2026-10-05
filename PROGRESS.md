@@ -4946,3 +4946,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - What the review makes is tasks, not fixes: what the read and the lists turn up follows as
   2.11e and on, one cause to a commit. 2.11 is ticked after them, and then the critic runs.
 - The count of numbered tasks for the next review pass starts again here.
+
+## 2026-10-05 — PLAN 2.11c: the sixteen watch lists of Phase 2, each item put somewhere
+
+- **Before:** sixteen lists in BLOCKERS, each "for the phase review", from four independent
+  reads and twelve tasks; some ninety items.
+- **After:** three tasks before Phase 3; lines under PLAN 4.1, 4.7, 7.1 and 7.4; a short list
+  carried with reasons; the rest closed with reasons. One block in BLOCKERS says where each
+  kind went. Nothing waits on BLOCKERS staying read.
+- **The three tasks, and why these:** each is something every game shows, or something
+  differentiator 1 forbids in words.
+  - 2.11e: a formation in contact is drawn walking in place. `moving` means "has a march";
+    the sim holds an engaged formation; the view walks it. An animation that disagrees with
+    the sim.
+  - 2.11f: occupied land's hatching lies over the ground at T2 and T3, across the view.
+  - 2.11g: a sprite at T2 shows nothing of its element's losses; at T3 the same battalion
+    has a third of its figures.
+- **Deferred with a line, the largest groups:** the seam of the looping map (seven items, one
+  group under 7.4); the declutter in a crowd and in flight; names and arrows at T1; the
+  instances' cap above 1920 × 1080 (7.1).
+- **Measured for it:** the 1938 page's start with the land mask: first frame at 0.22 s, the
+  layers and the mask at about 1.0 s, the first snapshot by 1.4 s; unpacking the mask 15 ms.

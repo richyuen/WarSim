@@ -1078,16 +1078,55 @@ quick sweep as a smoke test.
     last read was narrowed, and this is the phase's. Each finding is checked against the code
     here before it is anything; those a player can meet become tasks 2.11e and on, each with
     a test that fails first; the rest go on the watch list.
-  - [ ] 2.11c The watch lists of the phase: 17 blocks in BLOCKERS wait for this review. Each
+  - [x] 2.11c The watch lists of the phase: 17 blocks in BLOCKERS wait for this review. Each
     item becomes a task, a line under the later phase that covers it, a carry with the reason
     it waits, or is closed. Two are looked at now and not carried: the division that stands
     and is flagged as moving (PLAN 2.10b), and how long the worker's start takes with the land
     mask (PLAN 2.9a).
+    Done 2026-10-05. Sixteen lists, some ninety items (the seventeenth match was a line inside
+    one). Three tasks before Phase 3 (2.11e, f, g below); lines under PLAN 4.1, 4.7, 7.1 and
+    7.4; the rest carried with a reason or closed, in one block in BLOCKERS that names where
+    everything went.
+    - The division that stands: `moving` means "has a march", and `movementSystem` holds a
+      formation that is `engaged` where it is. The view walks whatever is `moving`. PLAN 2.11e.
+    - The start with the mask: the first frame 0.22 s after navigation, the map layers and the
+      mask at 0.95 to 1.09 s, the first snapshot at 1.1 to 1.4 s (five starts, alone, the
+      tests' rasteriser); the mask is read and unpacked in 15 ms in Node. Closed.
   - [ ] 2.11d SPEC re-read for drift (§3.1, §8, the map's rendering); the PARITY rows of the
     phase with their evidence; code that nothing uses since the last pass deleted (a commit of
     its own, gated).
   Tasks that come out of 2.11b and 2.11c follow as 2.11e and on. 2.11 is ticked when they
   are done; then the critic runs (PROMPT step 2a).
+  - [ ] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
+    formation that has a march, and keeps it where it stands while it is `engaged`
+    (`movement.ts`: "in contact: holds and fights"). The view plays the walk for `moving`
+    alone: the zoom demo's division has not left its place in a month and its sprites and
+    figures walk in place. Differentiator 1: no animation that disagrees with the sim.
+    (From the watch list of PLAN 2.10b.)
+    AT: unit: the walk is for an element whose formation has a march and is not in contact.
+    e2e: the demo's division, flagged moving and engaged, is drawn standing at T2 and at T3,
+    and a formation on the march is drawn walking. Then the demo's four close pictures of two
+    runs are compared: the walk's phase was what made them differ.
+  - [ ] 2.11f Occupied land at T2 and T3: the hatching gives way to the ground. The hatch is
+    in screen px and lies over the hillshade, the texture and what stands on the ground,
+    across the whole view: the four close pictures of the zoom demo are of an occupied pocket
+    and show stripes. Every war has occupied land, and it is where a player zooms in. How
+    the occupation still reads at T2 and T3 (a tint, the line of the front, a wider and
+    fainter hatch) is this task's decision, recorded in DECISIONS. (From the watch list of
+    PLAN 2.10a.)
+    AT: e2e: on occupied land at T2 and T3 the ground shows as on the same land unoccupied
+    (the measure of `ground1938`, within a stated share); occupied and unoccupied land still
+    differ in the picture; at T0 and T1 the picture is as it was (hash); the change comes with
+    the T1 ↔ T2 handover's share (`fades1938` passes). Pictures looked at; bench A.
+  - [ ] 2.11g At T2 a sprite shows what is left of its element. A battalion at a third of its
+    men is drawn as a whole one (a sprite dims only below 8 units), and then at T3 has a third
+    of its figures (ADR-80). The snapshot carries the element's size since PLAN 2.10b. How it
+    shows (dimmer, smaller, a mark) is this task's decision, recorded in DECISIONS. (From the
+    watch lists of PLAN 2.10a and 2.10b.)
+    AT: unit: the sprite's look as a function of strength and size, whole at full strength,
+    never gone while the element has units. e2e: in the demo's division the sprites of
+    battalions under half strength differ from those of a whole division's in the same view.
+    Pictures looked at; `spriteColours1938` and `fades1938` pass.
 
 ## Phase 3 — Armour
 
@@ -1111,6 +1150,10 @@ quick sweep as a smoke test.
 ## Phase 4 — Naval
 
 - [ ] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases.
+  From the Phase 2 review (PLAN 2.11c, 2026-10-05): a march goes straight from one cell's land
+  point to the next and can cross a bay (1 of 430 formations on the march was over the fine
+  mask's water at day 90 of seed 99, none of 134 at day 30). It needs routing below the cell
+  or along the coast, and belongs with the crossings.
   AT: every coastal province with a port connects to the lane graph; zone count within range.
 - [ ] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
   AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
@@ -1123,6 +1166,9 @@ quick sweep as a smoke test.
 - [ ] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
   AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
+  From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
+  though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
+  fine mask has and the coarser coverage has not is drawn at T2 and T3 and not at T1.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
 - [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
@@ -1177,6 +1223,20 @@ quick sweep as a smoke test.
 
 - [ ] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms).
   AT: `docs/bench/` report green on the reference machine.
+  From the Phase 2 review (PLAN 2.11c, 2026-10-05), to settle in this pass:
+  - The ground's instances are capped at 12,000. A view of forest has up to 10,900 at
+    1920 × 1080, so a larger view passes the cap, and what is cut is the finest level, row by
+    row from the top: the trees thin out below a line. The cap by the view's size; beyond
+    what a frame affords, an even thinning. (The tests look at 1400 × 800.)
+  - The page holds the land mask twice (16.8 MB for the scatter, as much on the GPU) and the
+    worker once.
+  - A GPU that takes no texture of 8192 px (WebGL2 promises 2048) draws the coarse coast at
+    T2 and T3, where the fine mask's land can be sea, and nothing says so.
+  - Fractional device pixel ratios (Windows at 125% and 150%): a marker's box picture is
+    rounded up and drawn into the unrounded rectangle (38 px into 37.5 at 1.25). Not traced;
+    no layer has been looked at at such a ratio.
+  - What the ground costs a frame where there is no GPU (the tests' rasteriser: readings
+    varied by a quarter).
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
@@ -1217,6 +1277,63 @@ quick sweep as a smoke test.
   AT: sweep report green.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
   AT: side-by-side screenshots vs reference frames logged in PROGRESS.
+  From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
+  when taken up.
+  - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
+    one layer at a time, and most layers do not:
+    - `wrapOffsets` has no margin: a counter, marker, flag or name within its own half-width
+      of the seam is drawn only once the view's edge has crossed the seam, and half of it
+      (about 24 px of a counter) then appears at once;
+    - counters either side of the seam are not folded into each other, and T1 markers there
+      are neither stacked nor moved apart;
+    - the two copies of a city share one name switch and one place (what is in the way of one
+      copy moves both; with both laid out, a view 6,570 px wide, the layer never rests);
+    - a nation name's copy that alone is in a larger name's way goes out in one frame;
+    - a capital flag's rise is cut short at the seam (its state is kept by wrap offset);
+    - a city's buildings reach to the seam and not across it;
+    - figures drawn through a wrap offset are 2,047 cells from the origin of their f32
+      offsets, where a step is 2.4 m.
+  - **The declutter in a crowd and in flight.**
+    - Counters: an eased zoom can end with other counters than a stepped one (62 of 192 cases
+      of made-up frame spacings), and at 200 ms a frame at another cluster level; in flight
+      some counters turn twice (56 of 7,394 on a wheel notch in); the second frame of a
+      counter layer newly shown turns 1.3% of them (the frame after a merge lands, and the
+      second frame of T1 → T0).
+    - T1 markers: parting one pair can push a box onto a neighbour and leave it there (44 of
+      5,249 made-up clusters of four); in 1.2 to 1.6% of clusters of 3 to 5 more than the 8
+      rounds would part every pair; "no box more than a quarter under another" is about area,
+      and at 1800 m/px on Spain's front some numbers are partly under a neighbour's box; the
+      first frame of the zoom into T2 starts a move of a few px.
+  - **Names and arrows at T1.**
+    - Capitals whose names are left out because garrisons stand on every place by the dot:
+      Prague at 1800 m/px, Warsaw at 1000, with Turin, Kiev and Kraków, at the 1938 start.
+      The places are eleven fixed ones.
+    - Order arrows are not kept clear of, by decision; in a war they are many (two months
+      into seed 1938 the picture over Austria is mostly arrows). Whether every marker's
+      arrow should show at T1 has not been asked.
+    - T2 → T1: names give way from the first frame to markers that show at 2%. T1 → T2: a
+      name can take a place under a number that still shows.
+    - `cityLabels` `wanted` is exclusive where the tiers are inclusive: at exactly 2000 m/px
+      the names of size 4 are off while the T1 markers are on.
+  - **The ground's look.**
+    - No roads near cities (SPEC's tier table had them; not built in PLAN 2.8); buildings
+      stand along two directions from a hash, with no streets, and know of their city's
+      coast and river only "not on water".
+    - Shading and texture take one cell size for the whole map: away from the equator a cell
+      is fewer km wide than high.
+    - Every ground is the fill's colour: at T3 a forest floor, a field and a street differ by
+      roughness and a few hundredths of brightness. The instances keep their natural colours
+      in every map mode.
+  - **What T3 shows of a battle.** Shots fly 30 to 60 km (the range is in cells) and a view at
+    T3 is 4 to 17 km wide: one tracer in the demo's picture at 12 m/px, none at 3. A battalion
+    at a third of its men is a scatter over its footprint, not a smaller block (ADR-69's
+    order of losses). A stack's lead at T1 shows the strongest formation's kind only.
+  - **Picking.** A marker in a stack cannot be picked by a click on the map (the lead is what
+    is there). A selection ring stays on an id that a new formation has taken, and such a
+    formation takes the dead one's place in a stack for one fade.
+  - **Flags by scenario.** `flagStore` maps nation ids to 1938 tags in every scenario (the
+    toy world's two nations wear the first two 1938 flags). A second scenario needs its flags
+    from its own data.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

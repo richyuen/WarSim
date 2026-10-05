@@ -205,32 +205,75 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   before and after passed all 61. Paused pages run no tick, so the A* change under test was not
   involved. Contention does not explain 10×: if it recurs, keep the trace
   (`test-results/…/trace.zip`) and look at the worker boot handshake.
-- Found by the independent read of 2026-10-04 (ADR-74), not tasks; look again at the phase review (PLAN 2.11):
-  - `counters.ts` `foldOverlaps` works in unwrapped px: counters either side of the seam of a
-    looping map (the 180° meridian in 1938) are not folded into each other and can overlap.
-  - `cityLabels.ts`: the wrap copies of a city share one name switch. When one copy collides
-    and the other does not, the switch turns twice a frame and the layer never rests. Both
-    copies are laid out only when the world is narrower than the view + 400 px at a zoom that
-    shows names: a view of 6,570 px or more on the shipped maps.
-  - `cityLabels.ts` `wanted` uses `<` where the tiers use `<=`: at exactly 2000 m/px the
-    names of size 4 are off while the T1 markers are on.
-  - `flagStore.ts` maps nation ids to 1938 tags in every scenario: the toy world's two
-    nations wear the first two 1938 flags.
-  - `markers.ts` `boxSprite`: at a fractional device pixel ratio the picture is rounded up
-    and drawn into the unrounded rectangle (38 px into 37.5 at 1.25). Not traced.
+- **The watch lists of Phase 2 after its review (PLAN 2.11c, 2026-10-05).** Sixteen lists stood
+  here, from four independent reads and twelve tasks, each "for the phase review". Every item of
+  theirs is now one of four things. What became a task or a line under a later task is in
+  PLAN.md and no longer here: nothing waits on this file staying read.
+  - **Tasks before Phase 3:** PLAN 2.11e (a formation in contact is drawn walking in place),
+    2.11f (occupied land's hatching lies over the ground at T2 and T3), 2.11g (a sprite at T2
+    shows nothing of its element's losses).
+  - **Lines under later tasks:** PLAN 4.1 (a march across a bay); 4.7 (the sea floor; lakes
+    that are there at T2 and not at T1); 7.1 (the instances' cap above 1920 × 1080; the land
+    mask held twice; a GPU without textures of 8192 px; fractional pixel ratios; the ground's
+    cost without a GPU); 7.4 (the seam of the looping map, seven items; the declutter in a
+    crowd and in flight; names and arrows at T1; the ground's look; what T3 shows of a battle;
+    picking in a stack; flags by scenario).
+  - **Carried here, each with why it waits:**
+    - *Tests that hang on something outside them.* None is a defect of the game; each says
+      what it lacks when it fails.
+      - The zoom demo's battle is found by rule (a division that fires, has stood a day, has
+        every battalion above 64 men and under half its strength, a battery with losses, and
+        more than 10 shots by or at it in each stepped hour). A pin move can make day 30 find
+        another division, or none. "Under half" stays: the close pictures are the evidence
+        that losses show at T3, and they show it only on a division that has lost.
+      - `coastPicture1938`: two of its nine views have little of one kind to compare (456
+        places surely land, 641 surely water; the floor is 300). Its "surely" (3 × 3 mask
+        pixels) is stricter than `maskSure`: the band between the two rests on the unit test
+        of the two constants and on the 202 elements looked at.
+      - `coastElements1938` looks at the 20 formations nearest the water, of 35 within half a
+        cell of it, on seed 99 at the start.
+      - Bench A's coast is made of blobs: no real coast was timed on a GPU.
+      - The demo's frames cost 100 to 200 ms each in the tests' rasteriser: a minute alone,
+        1.4 minutes in the gate, a timeout of 300 s.
+    - *Every unit test file that builds the 1938 world unpacks the land mask* (once to a
+      process). The unpacking that failed three times in parallel vitest runs (above) has one
+      more file to fail on. Not seen since PLAN 2.9a.
+    - *Close pictures differ from run to run where a formation walks* (the walk's phase is
+      the clock's; 4,500 to 56,000 px of 1,120,000 in the demo's four close stops). Look again
+      after PLAN 2.11e.
+    - *Land and water painted in the editor are not in the fine mask.* A cell without land in
+      the mask keeps its middle, its elements their slots, and the coast there is the cells'.
+      By design until an editor paints the mask.
+    - *Suspicions of the readers, neither established nor met:* a frame later than 1.5 ticks
+      after a snapshot, with none following, leaves the sprites short of the tick's end;
+      `drawUnitLayers` without `pixels` draws on an overlay that is not cleared (a test hook);
+      `FlagStore.pixelsOf` keeps a plain flag in the first colour it saw for an id.
+  - **Closed, each with its reason:**
+    - *The worker's start with the mask* (PLAN 2.9a, not measured then): measured now. Five starts of the 1938 page, alone, in the tests' rasteriser: the first frame 0.22 s after navigation, the map layers and the page's copy of the mask at 0.95 to 1.09 s, the first snapshot at 1.1 to 1.4 s. Reading and unpacking the mask takes 15 ms in Node. It is not what a start waits for.
+    - *The tick's time with the mask* (two unpinned readings then): pinned in PLAN 2.9b1, 1.45
+      and 1.44 ms over five years, under the code before the mask (1.50 and 1.49).
+    - *The demo stops at 3 m/px and only zooms in:* 1 m/px is `closeZoom1938`'s and
+      `ground1938`'s; the way out, at each boundary, `fades1938`'s.
+    - *Figures fading out after a flick past 60 m/px are of the tick before:* a quarter of a
+      second of a layer that is going.
+    - *`nudgeApart` gives other moves for another order of the list:* snapshots list
+      formations by ascending id.
+    - *The order arrows of markers in a stack are drawn from their own formations:* meant so.
+    - *`inBbox` wraps on a map that does not loop:* a view at one edge is sent the formations
+      within the pad of the other; they are not in the view and are not drawn.
+    - *`snapshotPrev` keeps rows after a second `init` on one worker:* the app inits once.
+    - *The toy world has no ground texture and wears 1938 flags:* a fixture; no player is
+      offered it. (Flags by scenario: PLAN 7.4.)
+    - *Names by counters and by marching armies come and go at top speed* (51 fades begun in
+      four seconds at 4000 m/px): at one tick a second it is one in some 40 seconds.
+    - *The six pictures of PLAN 2.6 were older than the ground:* shot again in PLAN 2.10b; the
+      phase's other pictures are shot again at the end of this review.
 - `fire1938.spec.ts`, the running part, under load (2026-10-04, gate run with another job on the
   machine, the e2e stage at twice its usual time): 6,614 fires dropped (expected 0). The worker's
   fire queue is capped at 8,192 and drops the oldest when the view takes snapshots more slowly
   than the sim makes fire. The drop is by design (the view says how many: `firesDropped`); the
   spec's "none dropped" holds on an idle machine only. If it recurs on an idle machine, look at
   the snapshot rate at T2 while the game runs at ×5. The counters' case of the same run is PLAN 2.7l.
-- More for the phase review (PLAN 2.11), seen while fixing PLAN 2.7j and 2.7k (2026-10-04):
-  - Figures fading out of T3 are rebuilt from each snapshot (PLAN 2.7j) only while the view
-    keeps the element section, below 60 m/px (`T3_KEEP_M`). A flick of three wheel notches
-    from the edge of T3 (34.5 × 1.25³ ≈ 67 m/px) passes that before a tick lands; the figures
-    of those 250 ms are then of the tick before.
-  - `MapView.flagPlace` keeps a capital flag's rise by nation and wrap offset: at the seam of
-    a looping map the state is lost and a rise of 150 ms is cut short.
 - For Phase 7 (balance; seen 2026-10-04 while writing the test of PLAN 2.7o, not looked into): in the
   first tick of the 1938 world the economic AI disbands 228 of the 1,054 formations (seed 99; the
   same with and without commands), all in `economicAi` step 1, "disband until the books balance".
@@ -238,189 +281,6 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
   hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
   income or their order of battle is off, is a question for the balance work.
-- Found by the fourth independent read (2026-10-04, ADR-74 addendum; narrowed to PLAN 2.7w and 2.7u),
-  not tasks; for the phase review (PLAN 2.11):
-  - The parting moves of the T1 markers can put a pair more on each other than it stood (finding
-    2, run by the reader): in a crowd, parting one pair pushes a box onto a neighbour, and the
-    6 px and the 8 rounds leave it there. 44 of 5,249 made-up clusters of four markers; the worst
-    pair from 0.20 to 0.42 under each other. The passes are those of PLAN 2.7s2; since 2.7v
-    what they end on is what stays on screen.
-  - Not established by the reader, one line each:
-    - T1 → T0: the counters change what they show in their second frame with nothing moving
-      (68 of 300 made-up worlds), and a name then changes place in mid-handover. The reader
-      points at the hold of `CounterLayer.fold`; outside what it was given.
-    - T2 → T1: the names give way from the first frame to markers that show at 2% (the rule of
-      2.7u: the layer that is coming in); a name with no free place goes out some 250 ms before
-      the boxes show.
-    - In 1.2 to 1.6% of made-up clusters of 3 to 5 markers, more than 8 rounds of the same passes
-      would part every pair (the reader's copy visits the pairs in another order: indicative).
-    - `nudgeApart` gives other moves for the same markers in another order of the list. Not
-      reachable: snapshots list formations by ascending id.
-    - The zoom into T2: the first frame of the morph has scale 1, so a move to the new zoom's
-      places starts, and the boxes ease a few px in the first 150 ms of the shrink.
-    - (The two copies of a city on a looping map share one place: already above, PLAN 2.7r.)
-- Found by the third independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
-  (PLAN 2.11):
-  - T1 markers either side of the seam of a looping map are neither stacked nor moved apart
-    (their places are cells × scale, unwrapped): the markers' twin of the counters' entry above.
-    No formation of the 1938 start stands near the seam.
-  - Not established by the reader, one line each: the order arrows of markers that are in a
-    stack are drawn in full from their own formations (meant so: an arrow is its formation's);
-    `server.ts` `inBbox` wraps modulo the map's width on a map that does not loop, so a view at
-    the west edge is sent formations within the pad of the east edge; a formation that takes a
-    freed id takes over the dead one's place in a stack for one fade, and a selection ring
-    stays on a reused id; `snapshotPrev` keeps rows above the high water after a second `init`
-    on one worker (the app inits once).
-- Left by PLAN 2.7s (2026-10-04, ADR-77), for the phase review (PLAN 2.11):
-  - "No box more than a quarter under another" is a rule about area. The number is the lower
-    12 px of a marker's 29: at 1800 m/px on Spain's front some numbers are partly under a
-    neighbour's box (`docs/evidence/2.7/markers-apart-spain-1800m.png`). Not measured.
-  - What a stack's lead shows of its own (symbol, bar) is the strongest formation's; the others'
-    kinds are not shown until the zoom parts them.
-  - A marker in a stack cannot be picked by a click on the map: the lead is what is there. Not
-    looked at (`player1938` selects a formation that stands alone).
-- Left by PLAN 2.7r (2026-10-04, ADR-76), for the phase review (PLAN 2.11):
-  - With the game at top speed the city names near counters come and go often (51 fades begun in
-    four seconds at 4000 m/px over Europe). Not looked at at the speeds a player watches at.
-  - A name's place is one for the city: on a looping map its two copies either side of the seam
-    share it, and what is in the way of one copy moves both.
-  - (Done, PLAN 2.7u: at T1 the markers stood on the city names.)
-- Left by PLAN 2.8a (2026-10-04, ADR-78 addendum), for the phase review (PLAN 2.11):
-  - The sea floor is not shaded, though the elevation carries it (quantised to 10 m for that).
-  - The shading takes one cell size for the whole map: far from the equator a slope to the
-    east is shaded less steep than it is, against one to the south.
-  - The cost of the ground in the tests' software rasteriser is not known per frame (what was
-    read varied by a quarter from run to run); the e2e stage's length is watched instead.
-- Left by PLAN 2.10a (2026-10-04, ADR-71 addendum), seen in the demo's pictures, for the phase
-  review (PLAN 2.11):
-  - Occupied land at T2 and T3: its hatching, in screen px, lies over the ground's shading and
-    texture across the whole view (the four close pictures are of an occupied pocket).
-  - A battle shows little of its fire at T3: shots fly 30 to 60 km (the range is in cells) and
-    the view is 4 to 17 km wide. One tracer in the picture at 12 m/px, none at 3 m/px.
-  - A battalion at a third of its strength looks whole at T2 (a sprite dims only below 8
-    units). At T3 it shows since PLAN 2.10b (ADR-80); T2 was not that task's.
-  - The demo does not go to 1 m/px (its closest stop is 3), and it only zooms in.
-  - A frame of the demo costs 100 to 200 ms in the tests' rasteriser (328 frames in 52 s); the
-    spec takes a minute alone and 1.4 minutes in the gate, beside three other workers; its
-    timeout is 300 s.
-  - The demo's battle hangs on the balance, by design: it needs a division that fires, has
-    stood for a day, has every battalion above 64 men and under half its strength, and a
-    battery with losses, and more than 10 shots by or at it in each stepped hour. A pin move
-    can make day 30 find another division, or none; then the test says that it has no battle.
-    The "under half" stays after 2.10b: the close pictures are the evidence that losses show
-    at T3, and they show it only on a division that has lost.
-- Left by PLAN 2.10b (2026-10-04, ADR-80), for the phase review (PLAN 2.11):
-  - A formation that stands and fights can be flagged as moving: the demo's division is in
-    one place on days 14, 21, 30 and 45 and through the five hours stepped after day 30, with
-    `moving` set in each of those five hours, and `engaged` too. Why was not looked into. Its
-    sprites and figures play the walk in place.
-  - The walk's phase is the browser's clock, so two runs' pictures of T2 and T3 with such a
-    formation in them differ (4,500 to 56,000 px of 1,120,000 in the demo's four close stops).
-    Close pictures cannot be compared pixel for pixel.
-  - A battalion at a third of its men is a scatter over its footprint, not a smaller block
-    (ADR-69's order: gaps open across the block). In the demo's closest picture the blocks of
-    a worn division no longer read as blocks. A look to judge at the review.
-  - The six pictures of `docs/evidence/2.6/` had not been shot again since the ground of 2.8.
-    Other tasks' pictures of T2 and T3 from before 2.8 may be as old.
-- Left by PLAN 2.9b2 (2026-10-04, ADR-79 third addendum), for the phase review (PLAN 2.11):
-  - A GPU that takes no texture of 8192 px (WebGL2 promises 2048) draws the coverage's coast
-    at T2 and T3, and nothing says so. The mask's land can be sea there (2 places at Dover).
-    Not met: the tests' rasteriser and the bench's GPU take the texture.
-  - A lake that the mask has and the coverage has not comes in at T2: it is not there at T1.
-  - The page holds the mask twice, 16.8 MB on the CPU and as much on the GPU.
-  - Two of the nine views of `coastPicture1938` have little of one kind to compare (456 places
-    surely land at the Aegean's 10 m/px, 641 surely water at the fjord's 150; the floor is 300).
-  - That an element on sure land has drawn land under it rests on the unit test of the two
-    constants and on the 202 elements looked at. The e2e's own "surely" (3 × 3 pixels) is
-    stricter than `maskSure`, so it does not test the band between the two.
-  - Bench A's coast is made of blobs; no real coast was timed on a GPU.
-- Left by PLAN 2.9a (2026-10-04, ADR-79 addendum), for the phase review (PLAN 2.11):
-  - A march is a straight line between two cells' points and can cross a bay: 1 of 430
-    formations on the march was over the mask's water at day 90 of seed 99 (0 of 134 at day
-    30). The tests are of formations at rest. It needs routing below the cell.
-  - The mask is the map's as shipped. Land and water painted in the editor are not in it: a
-    cell without land in the mask keeps its middle, and its elements their slots.
-  - The worker waits for the mask before it builds the world (430 KB to fetch, 17 MB to
-    unpack), and the page has a copy: how long the start takes with it was not measured. The
-    sim's process holds 17 MB more.
-  - Every unit test file that builds the 1938 world reads the mask (once to a process). The
-    unpacking that failed three times in parallel vitest runs (above) has one more file to fail
-    on; not seen in the runs of this task.
-  - The tick's time read 2.14 and 2.45 ms in two runs of a year (not pinned to cores); 2.28
-    and 2.14 before the task. Within what two runs differ by; not measured pinned.
-  - The e2e looks at seed 99 at the start, the 20 formations nearest the water (of 35 within
-    half a cell of it).
-- Left by PLAN 2.8c (2026-10-04, ADR-78 third and fourth addenda), for the phase review (PLAN 2.11):
-  - The cap of 12,000 instances can be reached: a full view of forest has up to 10,900 at
-    1920 × 1080, so a larger view goes past it. What is cut is the finest level, row by row
-    from the top: on such a view the trees would thin out below a line. The e2e looks at
-    1400 × 800, where nothing is cut.
-  - Buildings stand along two directions from a hash: there are no streets, and a city's
-    buildings do not know its river or its coast beyond "not on water".
-  - A city's buildings reach to the seam of a looping map and not across it.
-  - The roads near cities of SPEC's tier table are not in PLAN 2.8 and are not drawn.
-  - The instances are drawn in every map mode in the same natural colours.
-- Left by PLAN 2.8b (2026-10-04, ADR-78 second addendum), for the phase review (PLAN 2.11):
-  - The texture's octaves are measured in screen px and cells: like the hillshade, it does
-    not know that a cell is fewer km wide than high away from the equator.
-  - The toy world has no ground texture (one switch for the ground, the elevation's arrival).
-  - Every ground is the fill's colour: at T3 a forest floor, a field and a street differ by
-    roughness and a few hundredths of brightness only. What stands on it is PLAN 2.8c.
-- Left by PLAN 2.7u (2026-10-04, ADR-76 addendum), for the phase review (PLAN 2.11):
-  - Capitals whose names are left out at T1 because their garrisons stand on every place by
-    the dot: Prague at 1800 m/px, Warsaw at 1000 (with Turin, Kiev and Kraków, at the 1938
-    start). Prague's place below its dot is short of the clearance by half a pixel. The places
-    are eleven fixed ones.
-  - The order arrows are not kept clear of, by decision. In a war they are many: two months
-    into a game of seed 1938 the picture over Austria is mostly arrows
-    (`docs/evidence/2.7/city-names-t1-central-europe-1000m-after-running.png`). Whether every
-    marker's arrow should show at T1 has not been asked.
-  - At top speed the names by marching armies come and go: 30 and 37 fades begun in four
-    seconds (1,400 ticks) at 1000 m/px over central Europe. At one tick a second that is one
-    in some 40 seconds.
-  - T1 → T2, not looked at: the markers stop counting when the sprites are wanted, and the
-    morph keeps their bars and numbers in full for a while (PLAN 2.7c). A name can take a place
-    under a number that still shows. The same choice as at T0 → T1, without a picture.
-- Found by the second independent read (2026-10-04, ADR-74 addendum), not tasks; for the phase review
-  (PLAN 2.11):
-  - `nationLabels.ts` `fadeNationLabels`: on a looping map with two copies of a name in view, the
-    copy that alone is in a larger name's way goes from 1 to 0 in one frame when the larger name
-    comes, while the other copy stays (run by the reader on two made-up labels; not met in 720
-    random zoom steps). Two copies are in view when the window is wider than about 1.8 × its
-    height at the furthest zoom.
-  - `camera.ts` `wrapOffsets` has no margin: a counter, marker, flag or name within its own
-    half-width of the seam is drawn only once the view's edge has crossed the seam. Half a
-    counter (about 24 px) then appears at once (run by the reader). Not the seam entry above,
-    which is about folding.
-  - Not established by the reader, one line each: a frame later than 1.5 ticks after a snapshot,
-    with none following, leaves the sprites short of the tick's end; figures drawn through a wrap
-    offset are 2,047 cells from the origin of their f32 offsets, where a step is 2.4 m;
-    `drawUnitLayers` without `pixels` draws on an overlay that is not cleared (a test hook);
-    `FlagStore.pixelsOf` keeps a plain flag in the first colour it saw for an id.
-  - The "few counters turn the frame after a merge lands" of the entry below is, by the reader's
-    run, the second frame of any counter layer newly shown: 1.33% of the counters, at worst 9.1%
-    of a view.
-- Left by PLAN 2.7l (2026-10-04, ADR-75; measured on 400 synthetic formations in a scratch test, not
-  in the repo). For the phase review (PLAN 2.11):
-  - An eased zoom (a wheel notch closes on its target over about 0.4 s) still ends with other
-    counters when its frames fall otherwise: 62 of 192 cases at spacings of 16 to 200 ms (136
-    before). The hold written at rest between two level changes of one zoom is the cause (158 runs
-    end at the same level with other counters; 413 before). Tried and rejected: no hold whenever
-    the zoom changes. It ends every case alike, and a pinch that wobbles then makes 1% of the
-    counters flicker. A spec that needs the same counters steps the camera.
-  - At a spacing of 200 ms, 12 of those runs end at another cluster level (the same before):
-    `clusterLevel` rounds to the nearest level from wherever a frame finds the zoom, so frames
-    far apart can skip the level a close sequence would stop at. A level judged by its band from
-    the level held (the next level up or down whose band has the zoom) would not, for a zoom
-    that goes one way. Not tried: it changes where a step lands (world → 1.5 px per cell: level
-    6, not 5).
-  - In flight more counters turn twice (begin to fade in, fold again): 56 of 7,394 on a wheel
-    notch in (28 before), 484 of 9,560 on three notches out (325). The numbers on their
-    neighbours change with each turn. If it shows in the zoom demo (PLAN 2.10): fold a flight by
-    where its counters land, the children fading in as they fly.
-  - The frame after a merge lands, a few counters turn (4 of 162 and 7 of 50 keys; 1 and 2
-    before): the hold widens the reach of a folded counter, which can then find a nearer
-    neighbour and take its box's width with it. One fade at the landing.
 - Specs that measure time and fail on a slow machine (2026-10-04, gate runs with another project's
   dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
   changed. If one fails on an idle machine it is a finding.
