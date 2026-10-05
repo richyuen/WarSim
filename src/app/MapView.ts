@@ -528,6 +528,17 @@ export class MapView {
     this.dirty = true;
   }
 
+  /** The formation whose panel is open, or 0 (PLAN 2.14f3): its marker at T1 and its tag at T2 and T3 have a frame. */
+  private picked = 0;
+  get pickedFormation(): number {
+    return this.picked;
+  }
+  set pickedFormation(id: number) {
+    if (id === this.picked) return;
+    this.picked = id;
+    this.dirty = true;
+  }
+
   /** Player-selected formations (PLAN 1.33a), ringed on the overlay. */
   readonly selectedFormations = new Set<number>();
   private formIds = new Uint32Array(0);
@@ -1009,7 +1020,7 @@ export class MapView {
     }
     // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
     const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now, this.morph.scale < 1);
-    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks);
+    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks, this.picked);
   }
 
   /** The tags of the formations in the view at T2 and T3, as they were drawn last (PLAN 2.14a; tests, and the names keep clear of them). */
@@ -1094,6 +1105,7 @@ export class MapView {
         text: strengthText(this.formStrength[i]!),
         name: this.formationName(id, this.formTemplate[i]!),
         engaged: (this.formFlags[i]! & FormationFlag.engaged) !== 0,
+        picked: id === this.picked,
         x0: b[0],
         y0: b[1],
         x1: b[2],

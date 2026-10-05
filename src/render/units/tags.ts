@@ -10,7 +10,11 @@
  *
  * It gives way likewise to what the page has above the map (PLAN 2.14f2): the war banners and
  * the bottom bar. A formation at the bottom edge had its tag under them.
+ *
+ * The tag of the formation whose panel is open is lit and framed (PLAN 2.14f3), and takes its
+ * place before any other: it is not the one that gives way or is left out.
  */
+import { PICKED_EDGE } from './markers';
 
 /** A formation with something in the view: the box of its elements, CSS px. */
 export interface TagInput {
@@ -21,6 +25,8 @@ export interface TagInput {
   text: string;
   name: string;
   engaged: boolean;
+  /** The formation whose panel is open (PLAN 2.14f3). */
+  picked?: boolean;
   x0: number;
   y0: number;
   x1: number;
@@ -34,6 +40,7 @@ export interface PlacedTag {
   text: string;
   name: string;
   engaged: boolean;
+  picked: boolean;
   /** The tag's box, CSS px. */
   x: number;
   y: number;
@@ -50,6 +57,8 @@ export const TAG_FLAG_H = 10;
 export const TAG_PAD = 3;
 /** Between a formation's elements and its tag, and between two tags, px. */
 export const TAG_GAP = 4;
+/** How far the frame of the picked formation's tag reaches out of its box, px: less than the gap, so it touches no neighbour. */
+export const TAG_PICKED_REACH = 3;
 /** How many places a tag tries above, then below, before it is left out. */
 export const TAG_TRIES = 5;
 export const TAG_STRENGTH_FONT = (s: number): string => `700 ${Math.round(10 * s)}px system-ui, sans-serif`;
@@ -68,8 +77,8 @@ const overlap = (a: { x: number; y: number; w: number; h: number }, b: { x: numb
 
 /**
  * Places the tags of `items` in a view of vw × vh px. `measure(text, font)` is the width of a
- * line. Stronger formations first (the lower id on a tie), so the layout does not depend on the
- * order of the list. No tag stands on one of `avoid`, nor nearer to it than to another tag.
+ * line. The picked formation first, then the stronger ones (the lower id on a tie), so the
+ * layout does not depend on the order of the list. No tag stands on one of `avoid`, nor nearer to it than to another tag.
  * Returns the placed tags and how many found no place.
  */
 export function layoutTags(items: readonly TagInput[], measure: (text: string, font: string) => number, vw: number, vh: number, scale = 1, avoid: readonly TagObstacle[] = []): { placed: PlacedTag[]; left: number } {
@@ -80,7 +89,7 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
   const h = 2 * lineH + 2 * pad;
   const edge = 2;
   const kept = avoid.map((o) => ({ x: o.x - TAG_GAP, y: o.y - TAG_GAP, w: o.w + 2 * TAG_GAP, h: o.h + 2 * TAG_GAP }));
-  const sorted = [...items].sort((a, b) => b.strength - a.strength || a.id - b.id);
+  const sorted = [...items].sort((a, b) => Number(b.picked === true) - Number(a.picked === true) || b.strength - a.strength || a.id - b.id);
   for (const it of sorted) {
     // The part of the formation that is in the view.
     const vx0 = Math.max(it.x0, 0);
@@ -105,7 +114,7 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       const box = { x, y, w, h };
       if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
       const gap = y + h <= vy0 ? vy0 - (y + h) : y >= vy1 ? y - vy1 : 0;
-      placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, ...box, gap, flag: false });
+      placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, flag: false });
       done = true;
       break;
     }
@@ -124,7 +133,15 @@ export function drawTags(ctx: CanvasRenderingContext2D, tags: PlacedTag[], alpha
   ctx.textAlign = 'left';
   for (const t of tags) {
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = 'rgba(14, 17, 22, 0.78)';
+    if (t.picked) {
+      // The frame, out of the box: the edge of a tag in contact stays as it is inside it.
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = PICKED_EDGE;
+      ctx.beginPath();
+      ctx.roundRect(t.x - TAG_PICKED_REACH + 1, t.y - TAG_PICKED_REACH + 1, t.w + 2 * TAG_PICKED_REACH - 2, t.h + 2 * TAG_PICKED_REACH - 2, 3 * scale + 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = t.picked ? 'rgba(24, 42, 58, 0.94)' : 'rgba(14, 17, 22, 0.78)';
     ctx.beginPath();
     ctx.roundRect(t.x, t.y, t.w, t.h, 3 * scale);
     ctx.fill();

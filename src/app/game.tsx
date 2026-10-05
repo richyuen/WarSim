@@ -45,6 +45,11 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     view.onSelect = (id) => (hud.selected.value = id);
     hud.onSelectNation = (id) => view.select(id);
     hud.onShowBattle = (x, y) => view.showBattle(x, y);
+    // The formation whose panel is open is marked on the map (PLAN 2.14f3), however the panel
+    // was closed: a click on ground, its button, the nation's chip, or the formation's end.
+    effect(() => {
+      view.pickedFormation = hud.formation.value;
+    });
     // A formation's tag does not stand under the war banners or the bottom bar (PLAN 2.14f2):
     // each banner's own box, for they are a row in the middle and not a band across the view.
     view.tagObstacles = () => [...document.querySelectorAll('.war-banner, .war-more, .bottombar')].map((e) => {

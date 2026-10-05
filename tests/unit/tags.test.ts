@@ -52,6 +52,25 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) expect(over(placed[i]!, placed[j]!), `${i} on ${j}`).toBe(false);
   });
 
+  // PLAN 2.14f3: the formation whose panel is open takes its place before the stronger ones.
+  it('the picked formation has its tag above its block and is not the one left out, however weak it is', () => {
+    const many = Array.from({ length: 2 * TAG_TRIES + 3 }, (_, k) => item(k + 1, 9000 - k, 400, 300, 460, 340));
+    const weakest = many.length;
+    const picked = many.map((m) => (m.id === weakest ? { ...m, picked: true } : m));
+    const { placed, left } = layoutTags(picked, measure, 1400, 800);
+    expect(left).toBe(3);
+    expect(placed[0]!.id).toBe(weakest);
+    expect(placed[0]!.picked).toBe(true);
+    expect(placed[0]!.y + placed[0]!.h).toBe(300 - TAG_GAP);
+    expect(placed.filter((t) => t.picked).length).toBe(1);
+    // The others as before, one fewer: the weakest of them gave up its place.
+    expect(placed.slice(1).map((t) => t.id)).toEqual(Array.from({ length: 2 * TAG_TRIES - 1 }, (_, k) => k + 1));
+    for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) expect(over(placed[i]!, placed[j]!), `${i} on ${j}`).toBe(false);
+    // Unpicked, it is left out, and no tag says it is picked.
+    const plain = layoutTags(many, measure, 1400, 800).placed;
+    expect(plain.some((t) => t.id === weakest || t.picked)).toBe(false);
+  });
+
   // PLAN 2.14f2: the war banners and the bottom bar are in the way as another tag is.
   describe('what the page has above the map', () => {
     // A formation cut by the bottom edge, with something above it: its tag's first free place

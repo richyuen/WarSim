@@ -5488,3 +5488,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** the figures under the bar are still under it, and their tag is then some
   60 px above them; the panels at the sides are not obstacles.
 - **Next:** PLAN 2.14f3, the formation whose panel is open is marked on the map.
+
+## 2026-10-05 — PLAN 2.14f3: the formation whose panel is open is marked on the map
+
+- **What was wrong:** with a formation's panel open, nothing on the map said which formation
+  it was of.
+- **Built:** a light blue frame (`PICKED_EDGE`) around the picked formation's marker at T1
+  (`drawMarkers`, above every box; the stack's box when it is in one) and around its tag at
+  T2 and T3 (`drawTags`, with a lighter fill). The red edge of contact stays inside it.
+  `layoutTags` places the picked tag first. `MapView.pickedFormation` follows `hud.formation`
+  by an effect, so the chip, the button and a formation's end take the mark away too.
+- **Tests:** 1 unit (678). e2e in `formationPanel1938`: the frame's pixels around the box,
+  220 of an edge of 110 px at T1, 508 of 248 at T2 and T3; 0 around the other division and
+  after each of the three ways to close. Seen to fail first with the wiring taken out (0).
+  Pictures looked at: T1, T2, T3, the frame reads on grey, pink and green.
+- **A gotcha:** to see the spec fail, stash `game.tsx` only: the spec imports `PICKED_EDGE`,
+  and a stash of all of `src/` is the type error that reads "webServer was not able to start".
+- **Another:** in Git Bash a heredoc of Python with template strings of TypeScript in it did
+  not parse ("unexpected EOF"); the script went to a file.
+- **The pin:** not moved; view only. **Run by hand:** `formationPanel`, `tags`, `markers`,
+  `markerStacks`, `handover`, `battleView`, `toBattle`, `cityNames`, `morphNations`,
+  `player`, `fades`: 16 green.
+- **Not done:** no mark on the elements or figures; none at T0; the morph with a picked
+  formation not looked at as a sequence; the frame's cost not measured.
+- **Next:** PLAN 2.14f4, the handover at 300 m/px on a pair in contact, and the count of hops.

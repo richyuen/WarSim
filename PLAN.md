@@ -1899,10 +1899,25 @@ quick sweep as a smoke test.
       looked at. *Not done:* the figures themselves still stand under the bar (the map does
       not end above it), and a tag may then be 60 px from its block; the other panels
       (nation, formation, statistics) are not obstacles.
-    - [ ] 2.14f3 The formation whose panel is open is marked on the map (from 2.14b).
+    - [x] 2.14f3 The formation whose panel is open is marked on the map (from 2.14b).
       AT: e2e, in `formationPanel1938`, failing first: at T1, T2 and T3 the picked
       formation's marker or tag differs from the others by a stated measure, and no longer
       when the panel is closed; pictures looked at.
+      Done 2026-10-05: a frame of light blue (`PICKED_EDGE`, `#6fe3ff`), 2 px, around the
+      marker's box at T1 (of its stack, when it is in one) and around the tag at T2 and T3,
+      whose fill is also lighter. Out of the box: the red edge of a formation in contact
+      stays; not the gold of the player's selection for orders. The picked formation's tag
+      takes its place before the stronger ones, so it is not the one left out. The view
+      follows `hud.formation` (an effect in `game.tsx`): the mark goes however the panel
+      closes. *The measure:* pixels of the frame's colour within 6 px of the box, against
+      the length of the box's edge: 220 of 110 px at T1, 508 of 248 at T2 and T3; 0 around
+      the other formation and with the panel closed (by ground, the chip, the button). Seen
+      to fail first without the wiring (0 of 110). 1 unit test (the layout's order).
+      Pictures looked at (`formation-panel-t1.png`, `-t2`, `-t3`). *Not done:* the
+      formation's elements and figures themselves have no mark, only its tag; at T0 there
+      is none (the counters are nations'); in the morph at 300 m/px the frame fades with
+      the box and does not shrink with it, not looked at as a sequence; the frame's cost
+      in a frame was not measured (two strokes).
     - [ ] 2.14f4 The handover at 300 m/px on a pair in contact (from 2.14c1): the marker
       stands at the formation's place, the block up to 28 px from it. Shoot the sequence
       of the morph, look at it, and decide whether the marker of a formation in contact is

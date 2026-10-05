@@ -43,6 +43,13 @@ export interface MarkerMorph {
 export const AT_REST: MarkerMorph = { box: 1, scale: 1, bar: 1 };
 
 /**
+ * The colour of the mark on the formation whose panel is open (PLAN 2.14f3): a frame around its
+ * marker at T1 and around its tag at T2 and T3. Not the red of a formation in contact, which
+ * stays inside it, nor the gold of the player's selection for orders.
+ */
+export const PICKED_EDGE = '#6fe3ff';
+
+/**
  * The T1 ↔ T2 change in two parts (PLAN 2.7c): for FADE_MS the box fades and shrinks by
  * MARKER_SHRINK into the group while the sprites fade in; the strength bar and the number stay
  * for that time and go over BAR_LINGER_MS after it. Out of T2 the same, backwards.
@@ -88,6 +95,8 @@ export interface PlacedMarker {
   text: string;
   /** The formations it stands for, itself first: more than one for a stack (PLAN 2.7s1). */
   members: number[];
+  /** Whether it has the frame of the formation whose panel is open: it is that formation, or its stack holds it (PLAN 2.14f3). */
+  picked: boolean;
   /** A stack's tag, on the box's corner and reaching out of it (CSS px): what a city name keeps clear of besides the box (PLAN 2.7u). */
   tag?: { x: number; y: number; w: number; h: number };
 }
@@ -204,6 +213,8 @@ export function drawMarkers(
   morph: MarkerMorph = AT_REST,
   /** The stacks of the frame (PLAN 2.7s1): by formation id, its opacity, the number it shows and what it stands for. None: every marker alone. */
   stacks?: ReadonlyMap<number, StackedMarker>,
+  /** The formation whose panel is open, or 0 (PLAN 2.14f3): its marker, or the stack it is in, has a frame. */
+  picked = 0,
 ): PlacedMarker[] {
   const placed: PlacedMarker[] = [];
   const boxAlpha = alpha * morph.box;
@@ -250,6 +261,7 @@ export function drawMarkers(
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   const tags: { px: number; py: number; x: number; y: number; text: string; alpha: number; of: number }[] = [];
+  const frames: { px: number; py: number; x: number; y: number; alpha: number }[] = [];
   for (const m of order) {
     for (const off of offs) {
       const stack = stacks?.get(m.id);
@@ -308,7 +320,9 @@ export function drawMarkers(
         }
       }
       ctx.restore();
-      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar: barAlpha * part, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members });
+      const marked = picked !== 0 && members.includes(picked);
+      if (marked && boxAlpha * part > 0.01) frames.push({ px, py, x, y, alpha: boxAlpha * part });
+      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar: barAlpha * part, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members, picked: marked });
     }
   }
   // The tags of the stacks, above every box: a neighbour's box must not hide how many a marker
@@ -333,6 +347,22 @@ export function drawMarkers(
     ctx.strokeRect(tx + 0.5, ty + 0.5, tw - 1, 10);
     ctx.fillStyle = '#ffe28a';
     ctx.fillText(t.text, tx + tw / 2, ty + 1.5);
+    ctx.restore();
+  }
+  // The frame of the formation whose panel is open, above every box and clear of its own: the
+  // red edge of one in contact stays. It goes with the box into T2 and does not shrink with it
+  // (an edge that fades where it stands changes no pixel by its motion: ADR-71).
+  for (const f of frames) {
+    ctx.save();
+    if (size !== 1) {
+      ctx.translate(f.px, f.py);
+      ctx.scale(size, size);
+      ctx.translate(-f.px, -f.py);
+    }
+    ctx.globalAlpha = f.alpha;
+    ctx.strokeStyle = PICKED_EDGE;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(f.x - 3, f.y - 3, BOX_W + 6, BOX_H + 6);
     ctx.restore();
   }
   // Major Battles: crossed swords.

@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { PICKED_EDGE } from '../../src/render/units/markers';
 import type { Command } from '../../src/shared/commands';
 import { ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -13,6 +14,12 @@ import { settle } from './settle';
 // read at any zoom." A click on a formation now opens its panel: at T1 on its marker, at T2 on
 // its tag or its elements, at T3 on one of its figures' battalions. The panel's numbers are the
 // sim's. A click on ground closes it and selects the nation, as before.
+//
+// PLAN 2.14f3: the formation whose panel is open is marked on the map. Its marker at T1 and its
+// tag at T2 and T3 have a frame of a colour nothing else on the overlay has; the other
+// formation's has none, and nor has its own once the panel is closed. (Before: nothing on the
+// map said which formation the panel was of.) The measure is the pixels of the frame's colour
+// around the box, as against the length of the box's edge.
 //
 // The two divisions of `tags1938.spec.ts`: a German and a Polish one across their border.
 
@@ -90,6 +97,31 @@ async function panel(page: Page): Promise<{ id: number; name: string; kind: stri
 
 const num = (v: number): string => Math.round(v).toLocaleString('en-US');
 
+/**
+ * The frame of the picked formation around what is drawn of formation `id`: how many pixels of
+ * the overlay within 6 px of its marker or tag have the frame's colour (within 40 of it in RGB),
+ * and the length of the box's edge in the same pixels. Null where it has no marker or tag.
+ */
+async function frame(page: Page, id: number, what: 'tag' | 'marker'): Promise<{ lit: number; edge: number } | null> {
+  await settle(page);
+  return page.evaluate(({ id, what, colour }) => {
+    const v = window.__warsim!.view!;
+    const r = what === 'tag' ? v.tagRects.find((t) => t.id === id) : v.markerRects.find((m) => m.id === id || m.members.includes(id));
+    if (!r) return null;
+    const c = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
+    const k = c.width / c.clientWidth;
+    const x0 = Math.max(0, Math.floor((r.x - 6) * k));
+    const y0 = Math.max(0, Math.floor((r.y - 6) * k));
+    const w = Math.min(c.width - x0, Math.ceil((r.w + 12) * k));
+    const h = Math.min(c.height - y0, Math.ceil((r.h + 12) * k));
+    const px = c.getContext('2d')!.getImageData(x0, y0, w, h).data;
+    const rgb = [parseInt(colour.slice(1, 3), 16), parseInt(colour.slice(3, 5), 16), parseInt(colour.slice(5, 7), 16)];
+    let lit = 0;
+    for (let i = 0; i < px.length; i += 4) if (px[i + 3]! > 128 && Math.hypot(px[i]! - rgb[0]!, px[i + 1]! - rgb[1]!, px[i + 2]! - rgb[2]!) < 40) lit++;
+    return { lit, edge: Math.round(2 * (r.w + r.h) * k) };
+  }, { id, what, colour: PICKED_EDGE });
+}
+
 test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s numbers; a click on ground closes it', async ({ page }, info) => {
   test.setTimeout(180_000);
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/2.14') : info.outputPath();
@@ -143,44 +175,74 @@ test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s n
       throw new Error(`no element of formation ${id} in the middle of the screen`);
     }, { id, what });
 
+  /** Formation `on` has the frame, as many pixels of it as its box's edge is long or more, and each of `off` has none of it. */
+  const shares: string[] = [];
+  const marked = async (on: number | null, off: number[], what: 'tag' | 'marker', where: string): Promise<void> => {
+    if (on !== null) {
+      const f = await frame(page, on, what);
+      expect(f, `${where}: the ${what} of the picked formation`).not.toBeNull();
+      expect(f!.lit, `${where}: the frame's pixels around the picked ${what} (its edge is ${f!.edge} px)`).toBeGreaterThanOrEqual(f!.edge);
+      shares.push(`${where} ${f!.lit} of ${f!.edge}`);
+    }
+    for (const id of off) {
+      const f = await frame(page, id, what);
+      // At T3 the view may hold one formation only.
+      if (f) expect(f.lit, `${where}: the frame's pixels around the ${what} of ${id}, which is not picked`).toBe(0);
+    }
+  };
+
   // Nothing is open; a click on ground selects the nation, as before.
   expect(await panel(page)).toBeNull();
 
   // T1, 500 m/px: a click on the marker.
   await zoomTo(page, SITE[0], SITE[1], 500, false);
+  await marked(null, [german, polish], 'marker', 'T1, no panel');
   await page.mouse.click(...(await at(german, 'marker')));
   await expectPanel(german, 'GER', 'T1, the German marker');
+  await marked(german, [polish], 'marker', 'T1, the German picked');
   await page.mouse.click(...(await at(polish, 'marker')));
   await expectPanel(polish, 'POL', 'T1, the Polish marker');
+  await marked(polish, [german], 'marker', 'T1, the Polish picked');
+  await page.screenshot({ path: path.join(out, 'formation-panel-t1.png') });
 
   // T2, 150 m/px: a click on the tag, and on an element.
   await zoomTo(page, SITE[0], SITE[1], 150, true);
+  // The panel is still the Polish division's: the frame went from its marker to its tag.
+  await marked(polish, [german], 'tag', 'T2, the Polish still picked');
   await page.mouse.click(...(await at(german, 'tag')));
   await expectPanel(german, 'GER', 'T2, the German tag');
+  await marked(german, [polish], 'tag', 'T2, the German picked');
   await page.mouse.click(...(await at(polish, 'element')));
   await expectPanel(polish, 'POL', 'T2, a Polish element');
+  await marked(polish, [german], 'tag', 'T2, the Polish picked');
   await page.screenshot({ path: path.join(out, 'formation-panel-t2.png') });
 
   // A click on ground, away from both: the panel closes and the nation's opens.
   await page.mouse.click(700, 700);
   await expect(page.getByTestId('formation-panel')).toHaveCount(0);
   await expect(page.getByTestId('nation-panel')).toBeVisible();
+  await marked(null, [german, polish], 'tag', 'T2, the panel closed by a click on ground');
 
   // T3, 12 m/px, on the Polish division's block (deployed against the German one, in the
   // middle between the two formations' places: PLAN 2.14c1): a click on one of its battalions.
   await zoomTo(page, SITE[0] + 0.085, SITE[1], 12, true);
   await page.mouse.click(...(await at(polish, 'element')));
   await expectPanel(polish, 'POL', 'T3, a Polish battalion');
+  await marked(polish, [german], 'tag', 'T3, the Polish picked');
   await page.screenshot({ path: path.join(out, 'formation-panel-t3.png') });
 
   // The nation's chip leads to the nation panel; the close button closes.
   await page.getByTestId('formation-nation').click();
   await expect(page.getByTestId('formation-panel')).toHaveCount(0);
   await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(POL));
+  await marked(null, [german, polish], 'tag', 'T3, the panel closed by the chip');
   await page.mouse.click(...(await at(polish, 'tag')));
   await expectPanel(polish, 'POL', 'T3, the Polish tag');
+  await marked(polish, [german], 'tag', 'T3, the Polish picked again');
   await page.getByTestId('formation-close').click();
   await expect(page.getByTestId('formation-panel')).toHaveCount(0);
+  await marked(null, [german, polish], 'tag', 'T3, the panel closed by its button');
+  console.log(`the frame's pixels and the box's edge: ${shares.join('; ')}`);
 
   // The panel follows the game: a day on, engaged or not, its men are the sim's of that day.
   await page.mouse.click(...(await at(polish, 'tag')));
