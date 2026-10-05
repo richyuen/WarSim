@@ -1964,16 +1964,37 @@ quick sweep as a smoke test.
         a battle with no two that are each other's nearest has no test of its own and the
         camera does not widen for it; a pair across a strait (blocks on their shores) was
         not looked for.
-      - [ ] 2.14f5b Two decisions, each with an ADR: whether the jump becomes a flight (the
-        camera has an eased zoom and no eased pan, ADR-91), and whether a banner shows that
-        its war has a battle (ADR-91: not sent with the statistics; `contactsOf` is kept
-        for the hour, so one pass over it may do). Built or "not now, because".
-        From 2.14f5a (ADR-93), for the same ADRs: the banner names the two leaders and the
-        click may land on their allies (Germany and Poland: Italians against the French);
-        count how many of the 752 landings have no leader's formation, and decide whether
-        the battle of a leader comes first or the banner says whose battle it leads to.
-        And "largest by men" was 67,984 against 472: decide whether the smaller side's men
-        count instead, or say why not.
+      - [ ] 2.14f5b Four decisions, each with an ADR. **Split 2026-10-05** in four, one cause
+        a commit:
+        - [x] 2.14f5b1 What "largest" means: 67,984 against 472 was the largest battle by
+          men. Decide whether the smaller side's men count instead, or say why not.
+          Done 2026-10-05 (ADR-94). *Measured* (a probe not kept; seeds 99 and 7, 752 and
+          1,025 answers): by the men of both, one side was under a tenth of the other in 212
+          and 358 answers, under a hundredth in 53 and 103. *Decided and built:* the largest
+          battle is the one whose smaller side has the most men, then by the men of both,
+          then the lowest id. Under a tenth now: 36 and 33. *Tests:* unit, the second of
+          `warBattle.test.ts` restated (four against one with more men does not beat two
+          against two; four against three does), seen to fail with the old rule; the 60-day
+          test asks for under a tenth of the answers so uneven (36 of 752). e2e, the second
+          of `toBattle1938`: day 60 lands on 36,135 against 18,109, German motorised
+          division 45 and Polish infantry division 563. Picture looked at. The pin did not
+          move.
+        - [ ] 2.14f5b2 Whose battle the banner leads to. The banner names the two leaders
+          and the click may land on their allies. *Measured 2026-10-05 with 2.14f5b1* (the
+          rule of ADR-94; seed 99 and seed 7): neither of the two formations is a leader's
+          in 46 of 752 and 41 of 1,025 landings, one of them in 96 and 349, both in 610 and
+          635. In every one of the 1,777 answers the war had, somewhere, a pair of each
+          other's nearest with a leader's formation in it. Decide whether a leader's battle
+          or a leader's pair comes first, or the banner says whose battle it leads to.
+          AT: unit, on the 60-day front: the count of landings with no leader's formation,
+          at the limit decided; failing first if the rule changes.
+        - [ ] 2.14f5b3 Whether a banner shows that its war has a battle (ADR-91: not sent
+          with the statistics; `contactsOf` is kept for the hour, so one pass over it may
+          do). *Measured 2026-10-05:* one pass over `contactsOf` (a formation and its
+          nearest enemy on the two sides of the war) agreed with "`largestBattle` is not
+          null" in all 1,708 and 1,796 askings. Built or "not now, because".
+        - [ ] 2.14f5b4 Whether the jump becomes a flight (the camera has an eased zoom and
+          no eased pan, ADR-91). Built or "not now, because".
       - [ ] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest
         hop of a block in the 60 days was 50 km, more than contact (29 km). Decide, with an
         ADR, whether `deployOf` limits it. *Measured 2026-10-05 with 2.14f5a* (seed 99, days

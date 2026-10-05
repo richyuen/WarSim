@@ -11,7 +11,7 @@ import { addDivision, nationId } from '../helpers/sim1938';
 
 // PLAN 2.14e (the critic's R2-B2, "nothing leads to a battle"): a click on a war's banner
 // brings its largest battle into view. This is what the worker answers: the war's largest
-// battle by men, and the point between two of its formations that stand front to front.
+// battle (by the men of its smaller side, ADR-94), and the point between two of its formations that stand front to front.
 //
 // Germany against Poland with the armies of the start taken off the map: the only formations
 // in contact are the divisions put down here, either side of the border. (Divisions of nations
@@ -56,27 +56,28 @@ describe('the largest battle of a war (PLAN 2.14e)', () => {
     expect(largestBattle(w, 999_999)).toBeNull();
   });
 
-  it('is the one with the most men; the point is between two of its formations that face each other; asking changes nothing', () => {
+  it('is the one whose smaller side has the most men (ADR-94); the point is between two of its formations that face each other; asking changes nothing', () => {
     const { s, w, north, south } = game();
-    // North: one division against one. South: two against one, the second German a little further off.
+    // North: one division against one. South: two against two, the second of each a little further off.
     const n1 = addDivision(w, GER, north[0], north[1]);
     const n2 = addDivision(w, POL, north[0] + 1, north[1]);
     const s1 = addDivision(w, GER, south[0], south[1]);
     const s2 = addDivision(w, POL, south[0] + 1, south[1]);
     const s3 = addDivision(w, GER, south[0] - 0.2, south[1] + 0.4);
+    const s4 = addDivision(w, POL, south[0] + 1.2, south[1] - 0.4);
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
     s.step(2);
     const fc = w.formations.cols;
-    expect([n1, n2, s1, s2, s3].map((f) => fc.engaged[f])).toEqual([1, 1, 1, 1, 1]);
+    expect([n1, n2, s1, s2, s3, s4].map((f) => fc.engaged[f])).toEqual([1, 1, 1, 1, 1, 1]);
     const war = warOf(w, GER, POL);
     const hash = s.hash();
     const before = w.deployedBefore;
     const deployed = w.deployed;
     const b = largestBattle(w, war)!;
     expect(b.war).toBe(war);
-    expect(b.count).toEqual([2, 1]);
-    expect(b.men).toEqual([fc.strength[s1]! + fc.strength[s3]!, fc.strength[s2]!]);
-    // The pair that are each other's nearest: s1 and s2, a cell apart (s3 is 1.26 cells from s2).
+    expect(b.count).toEqual([2, 2]);
+    expect(b.men).toEqual([fc.strength[s1]! + fc.strength[s3]!, fc.strength[s2]! + fc.strength[s4]!]);
+    // The pair that are each other's nearest: s1 and s2, a cell apart (s3 is 1.26 cells from s2, s4 from s1).
     expect(b.formations).toEqual([s1, s2]);
     const da = deployOf(w, s1, 28)!;
     const db = deployOf(w, s2, 28)!;
@@ -92,12 +93,26 @@ describe('the largest battle of a war (PLAN 2.14e)', () => {
     // The world's other wars have no battle: their armies are gone.
     for (const other of w.wars.list) if (other.id !== war) expect(largestBattle(w, other.id)).toBeNull();
 
-    // The northern battle becomes the larger one: two more Polish divisions by it.
+    // Three more Germans in the north: four against one there, more men than the south's two
+    // against two. It is not the larger battle: its smaller side is one division.
+    for (const [dx, dy] of [[-0.2, 0.4], [-0.2, -0.4], [-0.3, 0]] as const) addDivision(w, GER, north[0] + dx, north[1] + dy);
+    s.step(1);
+    const lop = largestBattle(w, war)!;
+    const northMen = fc.strength[n2]!;
+    let northGermans = 0;
+    w.formations.forEach((f) => {
+      if (fc.nation[f] === GER && Math.abs(fc.y[f]! - north[1]) < 2) northGermans += fc.strength[f]!;
+    });
+    expect(northGermans + northMen).toBeGreaterThan(lop.men[0] + lop.men[1]);
+    expect(lop.count).toEqual([2, 2]);
+    expect(lop.formations).toEqual([s1, s2]);
+
+    // Two more Polish divisions by it: four against three, and the smaller side is the larger one's now.
     addDivision(w, POL, north[0] + 1.2, north[1] + 0.5);
     addDivision(w, POL, north[0] + 1.2, north[1] - 0.5);
     s.step(1);
     const c = largestBattle(w, war)!;
-    expect(c.count).toEqual([1, 3]);
+    expect(c.count).toEqual([4, 3]);
     expect(c.formations).toEqual([n1, n2]);
     expect(c.y).toBeCloseTo(north[1], 2);
   });
@@ -116,7 +131,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
     /** Half the view less 50 px, in cells (a cell is 19.57 km). */
     const HALF = { w: (700 - 50) * 20 / 19_570, h: (400 - 50) * 20 / 19_570 };
-    const n = { asked: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0 };
+    const n = { asked: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0, uneven: 0 };
     const outside: string[] = [];
     let last: WarBattleSite | null = null;
     s.step(24 * 60, (w) => {
@@ -133,6 +148,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         if (!b) continue;
         n.battles++;
         if (ours) n.germanPolish++;
+        if (Math.min(b.men[0], b.men[1]) * 10 < Math.max(b.men[0], b.men[1])) n.uneven++;
         const [a, d] = b.formations;
         const rank = (contacts.get(a) === d ? 1 : 0) + (contacts.get(d) === a ? 1 : 0);
         if (rank === 2) n.mutual++;
@@ -161,11 +177,14 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     console.log(
       `60 days of Germany against Poland (seed 99), every six hours, every war: asked ${n.asked} times, a battle ${n.battles} times (${n.germanPolish} of Germany against Poland); ` +
         `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
-        `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times`,
+        `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times; ` +
+        `one side under a tenth of the other in ${n.uneven}`,
     );
     expect(outside).toEqual([]);
     expect(n.battles).toBeGreaterThan(500);
     expect(n.germanPolish).toBeGreaterThan(200);
+    // The largest battle is one of two sides (ADR-94): by the men of both it was 212 of 752 with one side under a tenth of the other, 36 by the smaller side's.
+    expect(n.uneven).toBeLessThan(n.battles / 10);
     // The front is there on the last day: the banner of this war leads somewhere.
     expect(last).not.toBeNull();
   });

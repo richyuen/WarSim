@@ -5577,3 +5577,35 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** the battle with no two each other's nearest has no test; a pair across a
   strait not looked for; `battleView` not run (nothing it draws changed).
 - **Next:** PLAN 2.14f5b, the flight and the banner's sign of a battle.
+
+## 2026-10-05 — PLAN 2.14f5b1: the largest battle is the one whose smaller side is largest; 2.14f5b split in four
+
+- **The split:** 2.14f5b held four decisions: what largest means (b1), whose battle (b2),
+  the banner's sign of a battle (b3), the flight (b4).
+- **Measured first** (a probe not kept; seeds 99 and 7, 60 days, every six hours, every war;
+  752 and 1,025 answers): by the men of both sides, one side had under a tenth of the
+  other in 212 and 358 answers, under a hundredth in 53 and 103. The 67,984 against 472 of
+  ADR-93 was not an outlier.
+- **Decided and built (ADR-94):** `largestBattle` ranks a war's battles by the men of the
+  smaller side, then of both, then the lowest id. Under a tenth now: 36 and 33.
+- **Tests:** unit, the second of `warBattle.test.ts` restated to the new rule (the south is
+  two against two now; four against one in the north with more men does not win, four
+  against three does). Seen to fail with the old rule. The 60-day test counts the uneven
+  answers and asks for under a tenth of all. e2e, an assertion in the second of
+  `toBattle1938`. 680 unit tests, as before.
+- **Picture looked at** (`to-battle-front.png`, shot again): German motorised division 45
+  against Polish infantry division 563, four more Polish divisions along the line; 36,135
+  men against 18,109. The banner of Germany against Poland now lands on Germans and Poles.
+- **For 2.14f5b2 and b3, measured in the same probe:** no leader's formation in the pair in
+  46 of 752 and 41 of 1,025 landings (38 and 3 with the old rule); a pass over `contactsOf`
+  says "this war has a battle" as `largestBattle` does, 1,708 of 1,708 and 1,796 of 1,796.
+  In the PLAN.
+- **A gotcha:** a division added beside a fight an hour old is stronger than the two that
+  fought, and a pair of each other's nearest with a new one in it takes the camera. The
+  test's third German stands where it is nobody's nearest.
+- **Again:** a Git Bash heredoc of Python with backticks in it did not parse; a file did.
+- **The pin:** not moved; the answer writes nothing. **Run by hand:** `toBattle` (2): green.
+- **Not done:** the widest pair of blocks under the new rule not checked apart from "whole
+  in the view"; seed 7 run once through the kept test, not kept; the tooltip does not say
+  what largest means; `battleView` and `tags` not run (nothing they draw changed).
+- **Next:** PLAN 2.14f5b2, whose battle the banner leads to.

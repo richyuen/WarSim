@@ -5,7 +5,7 @@
  * Battles are derived each hour and not kept (`findBattles`): here they are worked out again
  * for one war from the state, the formations' `engaged` flags and places. A battle of the war
  * is a set of formations of its two sides joined by contacts between the sides (within
- * CONTACT_CELLS); the largest is the one with the most men. Reads only: nothing of the state
+ * CONTACT_CELLS); the largest is the one whose smaller side has the most men (ADR-94). Reads only: nothing of the state
  * and nothing of the hour's deployments changes (`deployOf` fills its cache, as the snapshot
  * does).
  */
@@ -15,7 +15,7 @@ import { cellDist, CONTACT_CELLS, contactsOf, deployOf, elementIndex, slotCount 
 
 export type WarBattleSite = Omit<WarBattle, 'tick'>;
 
-/** The largest battle of war `warId` (by men; of equals, the one with the lowest formation id), or null when none of its formations are in contact across its sides. */
+/** The largest battle of war `warId` (by the men of its smaller side, then of both; of equals, the one with the lowest formation id), or null when none of its formations are in contact across its sides. */
 export function largestBattle(world: World, warId: number): WarBattleSite | null {
   const war = world.wars.list.find((w) => w.id === warId);
   if (!war) return null;
@@ -47,11 +47,20 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
     }
   }
   if (pairs.length === 0) return null;
-  // Men by battle (its root is its lowest formation id).
-  const men = new Map<number, number>();
-  for (const f of parent.keys()) men.set(find(f), (men.get(find(f)) ?? 0) + c.strength[f]!);
+  // Men by battle and side (a battle's root is its lowest formation id). A battle is as large as its smaller side (ADR-94).
+  const men = new Map<number, [number, number]>();
+  for (const f of parent.keys()) {
+    const m = men.get(find(f)) ?? [0, 0];
+    m[sideOf(c.nation[f]!)]! += c.strength[f]!;
+    men.set(find(f), m);
+  }
+  const larger = (r: number, than: number): boolean => {
+    const [a, b] = [men.get(r)!, men.get(than)!];
+    const d = Math.min(a[0], a[1]) - Math.min(b[0], b[1]) || a[0] + a[1] - b[0] - b[1];
+    return d > 0 || (d === 0 && r < than);
+  };
   let root = -1;
-  for (const [r, m] of men) if (root < 0 || m > men.get(root)! || (m === men.get(root)! && r < root)) root = r;
+  for (const r of men.keys()) if (root < 0 || larger(r, root)) root = r;
   const count: [number, number] = [0, 0];
   const strength: [number, number] = [0, 0];
   for (const f of parent.keys()) {

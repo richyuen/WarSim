@@ -167,6 +167,46 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-94 · 2026-10-05 · accepted — A war's largest battle is the one whose smaller side has the most men (PLAN 2.14f5b1)
+
+- **Context:** ADR-91 sends a click on a war's banner to its largest battle, "by men": the
+  men of both sides. ADR-93 saw where that leads on day 60 of seed 99: 67,984 men against
+  472, eleven formations against three nearly spent ones.
+- **Measured** (a probe not kept; 60 days of Germany against Poland and the wars the AI
+  declares, every six hours, every war; seed 99: 752 answers, seed 7: 1,025): by the men of
+  both, one side had under a tenth of the other in 212 and 358 answers (28% and 35%), under
+  a hundredth in 53 and 103. The median of smaller to larger was 0.28 and 0.19. A war had 8
+  battles at a time in the mean (6,314 and 7,988 in all). Ranked by the smaller side, another
+  battle comes first in 319 and 545 answers, and under a tenth are 36 and 33 (5% and 3%),
+  under a hundredth 3 and 0.
+- **Decision:** the largest battle is the one whose smaller side has the most men; of
+  equals, the one with more men on both sides; of equals, the lowest formation id
+  (`largestBattle`). A battle is a fight of two sides, and what the click should show is
+  where both stand in strength: a large army over a remnant shows one side's figures and a
+  few of the other's. The pair inside the battle is chosen as before (ADR-91, ADR-93).
+- **Not chosen:** the most even battle (two battalions of equal strength would win over two
+  armies); the product of the sides (it says the same as the smaller side where it matters
+  and needs a second sentence to explain).
+- **Tests:** unit, `warBattle.test.ts`. The second test is restated: two against two in the
+  south stays the largest when four stand against one in the north with more men in all,
+  and gives way when the north is four against three. Seen to fail with the old rule at
+  the four against one. The 60-day test counts the answers with one side under a tenth: 36
+  of 752, and asks for under a tenth of them (212 before). With seed 7 in its place, once,
+  it passes too. e2e, the second test of `toBattle1938`: the landing of day 60 has no side
+  under a tenth of the other.
+- **On the screen** (seed 99, day 60): 6 formations against 6, 36,135 men against 18,109;
+  the camera lands between the German motorised division 45 and the Polish infantry
+  division 563. Picture: `docs/evidence/2.14/to-battle-front.png` (shot again).
+- **The pin:** not moved; the answer reads the state and writes none of it.
+- **Not done:**
+  - Of the 752 the pair is still each other's nearest in all, and whole in the view; that
+    was measured again. The widest pair of blocks reads 3.6 km as before; whether it is
+    the same pair was not checked.
+  - Whose battle it is, when neither of the two formations is a leader's: 46 of 752 and 41
+    of 1,025 with this rule (38 and 3 before). PLAN 2.14f5b2.
+  - The banner's tooltip still says "to its largest battle" and does not say what largest
+    means.
+
 ### ADR-93 · 2026-10-05 · accepted — On a real front the banner's pair is front to front: the rule of ADR-91 stays (PLAN 2.14f5a)
 
 - **Context:** ADR-91 sends the camera between the blocks of two formations of the war's

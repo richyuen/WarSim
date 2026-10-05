@@ -219,6 +219,8 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   expect(seen.battle.war).toBe(war);
   // A battle of the front, not a pair: more than two formations in it.
   expect(seen.battle.count[0] + seen.battle.count[1]).toBeGreaterThan(2);
+  // And one of two sides (ADR-94): by the men of both it was 67,984 against 472 on this day.
+  expect(Math.min(...seen.battle.men) * 10).toBeGreaterThan(Math.max(...seen.battle.men));
   expect(seen.cam.cx).toBeCloseTo(seen.battle.x, 6);
   expect(seen.cam.cy).toBeCloseTo(seen.battle.y, 6);
   expect(seen.m).toBeCloseTo(20, 1);
