@@ -4836,3 +4836,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** 2 new unit tests, 1 made stronger. 631 unit tests in 83 files.
 - **Next:** PLAN 2.9b2 (the coast drawn from the mask; written and set aside while this is
   gated).
+
+## 2026-10-04 — The slow half hour came back; it is the machine (BLOCKERS)
+
+- **Two gates of PLAN 2.9b1 failed at e2e**, 21:32 to 22:12, with 19 to 25 ticks in four seconds
+  at top speed. The third, 22:18, was green in 6.6 minutes with 643.
+- **New this time:** the stages without a browser were at half speed too (unit 92 s for 43,
+  sweep 183 s for 115), and the logs of the first time (17:07) say the same. So it is the
+  machine, and the browser's collapse is that half speed made worse by four pages at once.
+- **Not the change:** the gate's first five spec files on the tree and on the commit before,
+  minutes after: the same times and tick counts.
+- **Withdrawn:** my guess to the user that the worker's timer was throttled as a hidden page's.
+- **Not known:** what slows the machine. Nothing found in the system log, no scan, no other
+  process seen between the runs.
+- **Changed in how I work:** a sampler of the processor's clock and the busiest processes runs
+  beside every gate from now on; the healthy gate's reading is recorded for comparison.

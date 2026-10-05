@@ -142,6 +142,41 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - **If it comes back:** look while it runs (`Get-Process` by CPU over a few seconds; the
     timeline of ticks, snapshots and frames by half seconds, as above), before running it
     again.
+  - **It came back (2026-10-04, about 21:32 to 22:12; the gate of PLAN 2.9b1, twice), and it is
+    the whole machine, not the browser.** Still not explained.
+    - *What was seen:* two gate runs in a row failed at e2e (13.6 and 14.7 minutes for a stage
+      of 7; three and six tests, all on time: 25, 25 and 19 ticks in four seconds at top speed).
+    - *The stages that open no browser were slow by the same measure:* the unit stage 92.5 and
+      92.8 s (43 to 45 in the gates before and after), the sweep stage 183 and 182 s (115 and
+      117; 108 after). The logs of the first time say the same, and it was not read then: the
+      unit stage of the two failed runs 88 s, of the green third run 41 s, one tree.
+    - *So the browser's hundredfold is the machine's half speed made worse by the pages
+      starving each other:* four pages at once at top speed gave 247 to 385 ticks each in four
+      seconds where one alone gave 1,411, measured at 22:11, each page with its software
+      renderer on some six cores.
+    - *Not the change under test, measured:* at 22:25 the first five spec files of the gate, four
+      workers, on the tree and on the code of the commit before: 1,012 and 1,175 ticks against
+      896 and 1,104, the same test durations.
+    - *A guess of mine withdrawn:* that the worker's timer was held back as a hidden page's is.
+      A page asked during the slow time's end said visible and in focus, and Node was slow too.
+    - *Looked for and not found:* a virus scan (the day's one ran 18:07 to 18:10), an update, a
+      processor-power or other event in the system log, a process other than the gate's own
+      over a third of a core at 21:50 (three seconds between the runs), a leftover process of
+      mine, low memory (16 of 32 GB free).
+    - *The healthy gate, sampled every 14 s for comparison* (`gate-29b1c`, 22:18 to 22:28,
+      green): the processor at 128 to 158 % of its nominal clock throughout (138 on average),
+      about 20 cores' worth used by the browsers in the e2e stage, no other process over one core.
+    - *Not sampled: a slow gate.* **From now on a sampler runs beside every gate** (a scratch
+      script: `% Processor Performance`, and the processes by CPU, every 14 s). A slow gate then
+      shows one of three things: the clock held down (heat, or a limit), another program on the
+      cores, or neither with the cores not full (the work kept off the fast cores; then look at
+      the load by core).
+    - *The entry below on a slow machine is the same picture* (the unit stage 72 s for 40, with
+      another project's server known to be busy). Whether another project was busy this time is
+      not known; it was not seen at 21:50.
+    - *What a red gate of this kind means:* nothing about the tree. The rule stands: no commit
+      on red, no limit or worker count changed for it. Run again when the unit stage of a gate
+      reads 45 s or less; if it reads 90, the run will fail and the sampler has the reason.
 - e2e, once (2026-10-04, the second gate run of PLAN 2.8c2): `markers1938` waited 60 s for the
   page and it did not come. Its trace has one console error: "Failed to load resource:
   net::ERR_NO_BUFFER_SPACE". The page loaded nothing of the game.
