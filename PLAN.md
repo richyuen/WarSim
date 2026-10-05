@@ -1889,8 +1889,12 @@ quick sweep as a smoke test.
       a formation in contact is drawn at its block; count how often a block changes its
       line in a running war.
     - From 2.14e: click the banner of a war with a real front (60 days of Germany against
-      Poland) and look at where it lands; decide whether the jump becomes a flight, and
-      whether a banner shows that its war has a battle.
+      Poland) and look at where it lands, and log how the pair was chosen: when no two of
+      the battle are each other's nearest, the two picked can stand 29 km apart with their
+      blocks towards others, wider than the view of 28 km (the e2e has the front-to-front
+      case only). Decide whether the jump becomes a flight, and whether a banner shows that
+      its war has a battle. `largestBattle` repeats the distance of `combat.ts` by hand:
+      share it.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton
