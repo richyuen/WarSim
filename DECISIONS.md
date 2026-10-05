@@ -167,6 +167,49 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-105 · 2026-10-05 · accepted — An atoll the fine mask has no pixel for gets an islet in it (PLAN 2.15e2b)
+
+- **Context:** ADR-104 left 8 militia formations off sure land, each in a cell "without sure
+  land in the fine mask". Looked at first, as the task asked:
+  - Of the 627,829 owned cells of the 1938 start, 8 have no land pixel in the mask, and no
+    other owned cell is without sure land at its `cellPoint`. The mask has no land within
+    twelve of its pixels of any of the 8.
+  - They are Pitcairn, the Ralik Chain, Johnston Atoll, the Chagos (British Indian Ocean
+    Territory), Tuvalu, the Coral Sea Islands, Clipperton and Ashmore and Cartier: each a
+    province of one cell, a land cell by `reconcileIslands` (a territory smaller than a cell
+    is given one). The other 36 territories of that rule have a land pixel.
+  - The picture drew open sea there at every zoom (looked at: Clipperton and Tuvalu at 6,
+    40, 250 and 900 px to a cell). The game owned, taxed and could garrison land nobody saw.
+- **Decision:** "the best pixel of the cell" is no answer where there is none, so it is land
+  the mask does not have. `createWorld1938` gives each cell of `reconcileIslands` that has no
+  land pixel an islet in the mask (`addIslet`, `src/shared/landMask.ts`): the cell's pixels
+  without its corners, 52 of 64. `buildPoliticalMap` reports the cells (`islandCells`).
+- **Why in the mask, and not a rule of `onLand`:** ADR-79: the sim and the picture read one
+  mask. A rule of the sim alone would stand a formation on a place the map draws as sea.
+- **Why that size:** the coast of T0 and T1 is the coverage's, two texels to a cell, land
+  where it is over a half. A 4 × 4 islet gives each texel 4 of 16: nothing drawn. 6 × 6
+  gives 9 of 16: seen, a square speck. The cell without its corners gives 13 of 16 and a
+  round island at T1 and T2 (both looked at), and elements have a cell's width of sure land.
+  It is larger than the atoll (a cell is 20 km at the equator): what a cell of the game is.
+- **Why at the world's build, and not in `npm run data`:** which cells are land is the
+  scenario's (its provinces, at the map's size); the mask's file is the Earth's and stays
+  Natural Earth's.
+- **The mask is changed in place.** The worker draws the coverage and sends the page its
+  copy from the same object, after the world is built, so sim and picture agree without a
+  second mask. The headless tools keep one mask for the process: every world of it stamps
+  the same cells again, and a cell that has land is left alone (`addIslet` returns false).
+  A saved game is loaded into a world built the same way.
+- **What it does not decide:** land painted or imported in the editor on water of the mask
+  still keeps its cell's middle (`cellPoint`), and the picture draws it by the coverage only;
+  the other 36 island cells keep the land the mask gives them, however little.
+- **The pin:** not moved (324bc358): nothing stands on the 8 atolls in seed 99's first year.
+- **Tests:** `tests/unit/rebelCapitals.test.ts`, the second: `islets` at 0 (seen to fail: 8).
+  `tests/unit/coast1938.test.ts`: every owned cell has sure land at its place to stand, and
+  the 8 are over a half in the coverage (seen to fail: the 8); `addIslet` alone. e2e in
+  `tests/e2e/coast1938.spec.ts`: each of the 8 is not sea in the picture at 40, 400 and
+  1,600 px to a cell, and the sea two cells west is. Pictures:
+  `docs/evidence/2.15/atoll-clipperton-t1.png` and `-t2.png`.
+
 ### ADR-104 · 2026-10-05 · accepted — A rebel nation's militia are raised where production raises a formation (PLAN 2.15e2)
 
 - **Context:** the militia of a new rebel nation stood at the capital's coordinates

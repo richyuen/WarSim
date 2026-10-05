@@ -55,7 +55,8 @@ const UNSET = 0xffff;
  * them as water even though the province raster placed them. Each admin-0 unit that has province
  * cells but no land cell gets exactly one land cell (Plains): the first of its provinces whose
  * label point falls in one of its own water cells. Inland micro-states, whose label points lie in
- * a neighbour's land, are left alone. Mutates `terrain`; returns the adm0 codes given a cell.
+ * a neighbour's land, are left alone. Mutates `terrain`; returns the adm0 codes given a cell and,
+ * in the same order, the cells.
  */
 export function reconcileIslands(
   terrain: Uint8Array,
@@ -63,13 +64,13 @@ export function reconcileIslands(
   provinces: readonly { adm0: string; u: number; v: number }[],
   w: number,
   h: number,
-): string[] {
+): { adm0: string[]; cells: number[] } {
   const hasLand = new Set<string>();
   for (let c = 0; c < w * h; c++) {
     const pid = provinceIds[c]!;
     if (pid !== 0 && terrain[c]! >= Terrain.Plains) hasLand.add(provinces[pid - 1]!.adm0);
   }
-  const done = new Set<string>();
+  const done = new Map<string, number>();
   provinces.forEach((p) => {
     if (hasLand.has(p.adm0) || done.has(p.adm0)) return;
     const x = Math.min(w - 1, Math.floor(p.u * w));
@@ -78,9 +79,10 @@ export function reconcileIslands(
     const pid = provinceIds[c]!;
     if (pid === 0 || provinces[pid - 1]!.adm0 !== p.adm0 || terrain[c]! >= Terrain.Plains) return;
     terrain[c] = Terrain.Plains;
-    done.add(p.adm0);
+    done.set(p.adm0, c);
   });
-  return [...done].sort();
+  const adm0 = [...done.keys()].sort();
+  return { adm0, cells: adm0.map((a) => done.get(a)!) };
 }
 
 /** Calls `fn(cell)` for every cell whose centre lies inside the lon/lat ring. */

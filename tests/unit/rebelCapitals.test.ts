@@ -73,14 +73,15 @@ describe('where a rebel nation starts (PLAN 2.15e)', () => {
       const y = fc.y[f]!;
       if (owner[Math.floor(y) * w + Math.floor(x)] !== n) abroad.push(f);
       if (world.onLand(x, y)) return;
-      // A cell without sure land anywhere in the fine mask (an islet smaller than a pixel of
-      // it) has no place to stand on but its middle: a cause of its own, PLAN 2.15e2b.
+      // A cell without any land in the fine mask (an atoll smaller than a pixel of it) had no
+      // place to stand on but its middle, in the water: 8 nations of one cell. The world now
+      // gives such a cell an islet (PLAN 2.15e2b, ADR-105).
       const at = world.cellPoint(Math.floor(y) * w + Math.floor(x));
       (world.onLand(at[0], at[1]) ? afloat : islets).push(f);
     });
     expect(militia).toBeGreaterThan(400);
     expect(abroad.length, 'militia formations on a cell that is not their nation\'s').toBe(0);
     expect(afloat.length, 'militia formations off sure land in a cell that has some').toBe(0);
-    expect(islets.length, 'militia formations in a cell without sure land (PLAN 2.15e2b)').toBeLessThanOrEqual(8);
+    expect(islets.length, 'militia formations in a cell without sure land (PLAN 2.15e2b)').toBe(0);
   }, 300_000);
 });

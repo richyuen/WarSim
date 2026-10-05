@@ -5912,3 +5912,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   `--config vitest.sweep.config.ts`. A Python script in a Bash heredoc lost its `\'`: the
   Edit tool for a test's text.
 - **Next:** PLAN 2.15e2b, the owned cell without sure land; then 2.15e3.
+
+## 2026-10-05 — PLAN 2.15e2b: an atoll the fine mask has no pixel for gets an islet
+
+- **Found:** exactly 8 owned cells of the 1938 start (of 627,829) have no land pixel in the
+  fine mask, and no other owned cell lacks sure land at its `cellPoint`. Eight atolls made
+  land by `reconcileIslands`: Pitcairn, Ralik Chain, Johnston, Chagos, Tuvalu, Coral Sea
+  Islands, Clipperton, Ashmore and Cartier. The map drew sea there at every zoom.
+- **Built (ADR-105):** `addIslet` (`src/shared/landMask.ts`) sets the cell without its
+  corners (52 of 64 pixels) where a cell has none; `createWorld1938` calls it for the cells
+  `buildPoliticalMap` now reports (`islandCells`). In place, in the mask the worker draws
+  the coverage from and sends the page.
+- **Tests:** `rebelCapitals.test.ts` (`islets` 8 → 0), `coast1938.test.ts` (2 new; the
+  first seen to fail on the 8), `coast1938.spec.ts` (1 new). The failing runs were made
+  with the stamp switched off by a line that is not in the commit.
+- **The pin did not move** (324bc358).
+- **Run by hand:** `coast1938.spec.ts`, the atoll test (with `EVIDENCE=1`); `coastPicture1938` (3)
+  and `coastElements1938` (1): green.
+- **Pictures looked at:** `docs/evidence/2.15/atoll-clipperton-t1.png` (a round dot of
+  the owner's blue, nearly a cell wide) and `-t2.png` (an island with a shore, ground and
+  trees). Before: open sea at 6, 40, 250 and 900 px to a cell (a probe, not kept).
+- **Gotchas:** a 6 × 6 islet passed every test and was a square at both zooms: the picture
+  decided the shape. The coverage needs more than half of each quarter of a cell.
+- **Seen, not changed:** land painted in the editor on the mask's water is in the same
+  case (ADR-105). Whether the 36 other island cells show at T0 and T1 was not looked at.
+- **Next:** PLAN 2.15e3, the origin by the capital's cell; then 2.15f.

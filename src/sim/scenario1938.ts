@@ -18,6 +18,7 @@ import diplomacy1938 from '../../data/scenarios/1938/diplomacy.json' with { type
 import economy1938 from '../../data/scenarios/1938/economy.json' with { type: 'json' };
 import traitsJson from '../../data/traits/traits.json' with { type: 'json' };
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
+import { addIslet } from '../shared/landMask';
 import type { ScenarioAssets } from '../shared/protocol';
 import { dayOfIso } from '../shared/calendar';
 import type { CityDef } from './data/cities';
@@ -215,6 +216,11 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   const input = politicalMapInput1938(assets, w, h);
   const meta = input.meta;
   const map = buildPoliticalMap(input);
+  // An island territory smaller than a cell was given a land cell (`reconcileIslands`); where it
+  // is smaller than a pixel of the fine mask too, the mask has only sea there, and whatever
+  // stood in the cell stood in the water of the picture. Such a cell gets an islet (PLAN
+  // 2.15e2b, ADR-105). In the mask the world was given: the worker draws the coast from it.
+  if (world.landMask) for (const cell of map.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
   if (map.unplacedGroups.length) throw new Error(`1938 OOB: ${map.unplacedGroups.length} groups found no land`);
   const c = world.cells;
   c.owner.set(map.owner);

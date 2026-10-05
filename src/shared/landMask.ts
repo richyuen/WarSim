@@ -132,3 +132,34 @@ export function landPoint(mask: LandMask, mapW: number, cx: number, cy: number, 
   if (best < 0) return null;
   return [(bx + 0.5) / k, (by + 0.5) / k];
 }
+
+/**
+ * Gives cell (`cx`, `cy`) of a map `mapW` cells wide an islet where the mask has no land pixel
+ * in it: the cell's pixels but for its corners, cut a quarter of the cell deep (rows of 4, 6
+ * and 8 pixels on the M map, 52 of the 64). True when the mask changed; a cell with any land
+ * pixel is left alone, so a second call changes nothing.
+ *
+ * It is for land the game has and the mask's source is too coarse to show (an atoll that the
+ * scenario owns: PLAN 2.15e2b, ADR-105). Every reader of the mask takes it for land: the
+ * cell's middle is surely land (the four pixels round it), a formation's elements have the
+ * width of a cell to stand on, and each quarter of the cell is more than half land (13 of 16),
+ * which is what the coverage drawn at T0 and T1 asks (`buildLandCoverage` at two texels to a
+ * cell). Smaller, it was a square speck at T1 (6 × 6: 9 of 16) or nothing (4 × 4).
+ */
+export function addIslet(mask: LandMask, mapW: number, cx: number, cy: number): boolean {
+  const k = Math.round(mask.w / mapW);
+  const x0 = cx * k;
+  const y0 = cy * k;
+  for (let py = y0; py < y0 + k; py++) {
+    for (let px = x0; px < x0 + k; px++) if (maskBit(mask, px, py)) return false;
+  }
+  const cut = Math.floor(k / 4);
+  for (let r = 0; r < k; r++) {
+    const inset = Math.max(0, cut - Math.min(r, k - 1 - r));
+    for (let px = x0 + inset; px < x0 + k - inset; px++) {
+      const i = (y0 + r) * mask.w + px;
+      mask.bits[i >> 3] = mask.bits[i >> 3]! | (1 << (i & 7));
+    }
+  }
+  return true;
+}

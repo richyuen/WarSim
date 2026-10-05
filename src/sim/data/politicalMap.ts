@@ -33,6 +33,8 @@ export interface PoliticalMap {
   crossings: CrossingResult[];
   /** adm0 codes given a land cell by `reconcileIslands`. */
   islands: string[];
+  /** The cell each of them was given, in the order of `islands`. */
+  islandCells: number[];
   owner: Uint16Array;
   controller: Uint16Array;
   cities: PlacedCity[];
@@ -52,5 +54,5 @@ export function buildPoliticalMap(inp: PoliticalMapInput): PoliticalMap {
   const own = buildOwnership({ w, h, provinceIds: pr.ids, provinces: meta, terrain, tags, rules: inp.rules });
   const cities = placeCities(inp.cities, tags, own.owner, w, h);
   const oob = placeOob({ w, h, owner: own.owner, controller: own.controller, terrain, tags, overlordOf: inp.overlordOf, groups: inp.oob });
-  return { provinceIds: pr.ids, terrain, crossings, islands, ...own, cities, formations: oob.formations, unplacedGroups: oob.unplaced };
+  return { provinceIds: pr.ids, terrain, crossings, islands: islands.adm0, islandCells: islands.cells, ...own, cities, formations: oob.formations, unplacedGroups: oob.unplaced };
 }

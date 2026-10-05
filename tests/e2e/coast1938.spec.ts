@@ -122,3 +122,32 @@ test('off-map rows above and below the map render as sea, without stripes', asyn
     expect(sea[2]!).toBeGreaterThan(sea[0]! + 20); // blue sea, not grey land
   }
 });
+
+// PLAN 2.15e2b (ADR-105): eight atolls of the 1938 start are land cells of the game that the
+// fine mask had no pixel for. The map drew open sea there at every zoom, and whatever stood in
+// the cell stood in it. The world gives each an islet, in the mask the coasts are drawn from.
+test('an atoll smaller than a pixel of the mask is land in the picture, zoomed out and zoomed in', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  const atolls: [string, number, number][] = [
+    ['Pitcairn', 283, 742], ['Ralik Chain', 1985, 553], ['Johnston', 59, 501], ['Chagos', 1432, 627],
+    ['Tuvalu', 2047, 650], ['Coral Sea Islands', 1868, 698], ['Clipperton', 402, 538], ['Ashmore and Cartier', 1727, 668],
+  ];
+  await page.setViewportSize({ width: 1000, height: 700 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick === 0, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.view!.hasFineCoast && window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  const sea = [0x1d, 0x35, 0x57];
+  for (const [name, cx, cy] of atolls) {
+    // 40 px to a cell: the coverage's coast (T1). 400 and 1,600: the mask's (T2, T3).
+    for (const scale of [40, 400, 1600]) expect(dist(await pixelAt(page, cx + 0.5, cy + 0.5, scale), sea), `${name} at ${scale} px to a cell`).toBeGreaterThan(40);
+    // And the sea is still there: two cells to the west.
+    expect(dist(await pixelAt(page, cx - 1.5, cy + 0.5, 400), sea), `the sea west of ${name}`).toBeLessThan(12);
+  }
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.15') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  for (const [name, scale] of [['atoll-clipperton-t1', 40], ['atoll-clipperton-t2', 250]] as const) {
+    await page.evaluate(({ scale }) => window.__warsim!.view!.controller.set({ cx: 402.5, cy: 538.5, scale }), { scale });
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: path.join(out, `${name}.png`) });
+  }
+});

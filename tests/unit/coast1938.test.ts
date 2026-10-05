@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { tierOf, type FromWorker, type Snapshot, type Subscription } from '../../src/shared/protocol';
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { Terrain } from '../../src/shared/terrain';
-import { maskLand, maskSure } from '../../src/shared/landMask';
+import { buildLandCoverage } from '../../src/shared/landCoverage';
+import { addIslet, maskBit, maskLand, maskSure } from '../../src/shared/landMask';
 import { SLOT_SPACING, slotPose } from '../../src/sim/core/pose';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -119,6 +120,56 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     expect(own).toBe(list.length);
     expect(drawnIn).toBeGreaterThan(0);
   }, 120_000);
+
+  // PLAN 2.15e2b: eight atolls of the 1938 start (Pitcairn, the Ralik Chain, Johnston, the
+  // Chagos, Tuvalu, the Coral Sea Islands, Clipperton, Ashmore and Cartier) are land cells of
+  // the game and had not one land pixel in the fine mask: a formation there stood in the sea,
+  // and the map drew no land at any zoom.
+  it('every owned cell of the 1938 world has sure land to stand on, and an atoll shows in the coast drawn zoomed out', () => {
+    const world = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) }).world;
+    const mask = world.landMask!;
+    const { owner } = world.cells;
+    let owned = 0;
+    const wet: string[] = [];
+    for (let c = 0; c < W * H; c++) {
+      if (owner[c] === 0) continue;
+      owned++;
+      const [x, y] = world.cellPoint(c);
+      if (Math.floor(x) !== c % W || Math.floor(y) !== Math.floor(c / W) || !world.onLand(x, y)) wet.push(`${c % W},${Math.floor(c / W)}`);
+    }
+    expect(owned).toBeGreaterThan(600_000);
+    expect(wet, 'owned cells without sure land at their place to stand').toEqual([]);
+    // The coast of T0 and T1 is the coverage's, two texels to a cell, land where it is over a half.
+    const factor = mask.w / (2 * W);
+    const cov = buildLandCoverage(mask.bits, mask.w, mask.h, factor);
+    const atolls = [[283, 742], [1985, 553], [59, 501], [1432, 627], [2047, 650], [1868, 698], [402, 538], [1727, 668]];
+    const unseen = atolls.filter(([cx, cy]) => {
+      expect(owner[cy! * W + cx!], `the owner of ${cx},${cy}`).not.toBe(0);
+      const at = (dx: number, dy: number): number => cov.data[(2 * cy! + dy) * cov.w + 2 * cx! + dx]!;
+      return Math.min(at(0, 0), at(1, 0), at(0, 1), at(1, 1)) <= 127;
+    });
+    expect(unseen, 'atolls with no land in the coverage').toEqual([]);
+  }, 120_000);
+
+  it('an islet is given to a cell without land in the mask, once, and to no other', () => {
+    const mask = { w: 32, h: 16, bits: new Uint8Array((32 * 16) / 8) };
+    expect(addIslet(mask, 4, 1, 1)).toBe(true);
+    let n = 0;
+    for (let py = 0; py < 16; py++) for (let px = 0; px < 32; px++) if (maskBit(mask, px, py)) n++;
+    expect(n).toBe(52); // rows of 4, 6, 8, 8, 8, 8, 6 and 4: the cell without its corners
+    expect(maskBit(mask, 8, 11)).toBe(true);
+    expect(maskBit(mask, 8, 8)).toBe(false);
+    expect(maskBit(mask, 9, 8)).toBe(false);
+    expect(maskBit(mask, 10, 8)).toBe(true);
+    expect(maskBit(mask, 7, 11)).toBe(false); // and nothing outside the cell
+    expect(maskSure(mask, 4, 2, 1.5, 1.5, false)).toBe(true);
+    expect(addIslet(mask, 4, 1, 1)).toBe(false);
+    // A cell with one land pixel keeps its own land.
+    mask.bits[0] = 1;
+    expect(addIslet(mask, 4, 0, 0)).toBe(false);
+    expect(maskBit(mask, 3, 3)).toBe(false);
+    expect(maskBit(mask, 16, 8)).toBe(false);
+  });
 
   it('a world built without the mask stands on the cells’ middles, as before; the toy world has none', () => {
     const { landMask: _mask, ...without } = assets1938(W);
