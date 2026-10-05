@@ -1673,6 +1673,12 @@ quick sweep as a smoke test.
     - From 2.14a: the name is `MapView.formationName` (kind and id). Decide here whether a
       formation gets a number of its nation's own in the state ("3rd infantry division"):
       a new column, a moved pin, and a rule for what a new or a revived formation is called.
+    - From 2.14a, to do here: `drawFormationTags` builds a map keyed by a string for every
+      element in every frame. Fine for the 1,100 of the test's view; the section holds up to
+      40,000. A numeric key, and a frame time measured on a dense T2 front (PROMPT step 6:
+      not measured in 2.14a).
+    - After 2.14a's commit, also run by hand and green (13 tests): `coastPicture`, `ground`,
+      `groundThings`, `coastElements`, `declutter`.
   - [ ] 2.14c A battle fits a close view. Two formations in contact are both in one view at
     20 m/px and face each other (the critic: the closest pair stood 29 km apart, a view is
     32 km wide). The decision is of where engaged elements are drawn, or stand: at the cell
