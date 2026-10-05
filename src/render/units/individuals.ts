@@ -27,6 +27,14 @@ export const MAX_FIGURES = 64;
 export const FOOTPRINT_CELLS = 0.024;
 /** How far a figure stands from the centre of its sub-slot, as a share of the sub-slot's side. */
 const JITTER = 0.18;
+/**
+ * Infantry in contact (PLAN 2.14c2): the share of the footprint's depth its ranks take, at the
+ * front of it, and how far a man lies from his place in them (shares of the sub-slot's side;
+ * along the facing it is of the closed-up rank's depth).
+ */
+export const LINE_DEPTH = 0.5;
+const LINE_JITTER_ACROSS = 0.34;
+const LINE_JITTER_ALONG = 0.45;
 /** A figure fills this share of its sub-slot. */
 const FILL = 0.92;
 
@@ -69,19 +77,26 @@ export function subSlotOrder(element: number, side: number): number[] {
  * cells from its slot pose: [dx0, dy0, dx1, dy1, …], x east and y south, the block's front
  * toward `facing` (radians).
  */
-export function figureOffsets(element: number, side: number, count: number, facing: number): number[] {
+export function figureOffsets(element: number, side: number, count: number, facing: number, firingLine = false): number[] {
   const pitch = FOOTPRINT_CELLS / side;
   const order = subSlotOrder(element, side);
   const fx = Math.cos(facing);
   const fy = Math.sin(facing);
   const out: number[] = [];
+  // In contact (PLAN 2.14c2) the men are not in their ranks: the ranks close up towards the
+  // front of the footprint, LINE_DEPTH of its depth, and each man lies a good way off his
+  // place in them. The same man in the same file: a loss takes the same figure away.
+  const jitterAcross = firingLine ? LINE_JITTER_ACROSS : JITTER;
+  const jitterAlong = firingLine ? LINE_JITTER_ALONG : JITTER;
+  const depth = firingLine ? LINE_DEPTH : 1;
+  const forward = firingLine ? ((1 - LINE_DEPTH) * FOOTPRINT_CELLS) / 2 : 0;
   for (let k = 0; k < count; k++) {
     const slot = order[k]!;
     const row = Math.floor(slot / side);
     const col = slot - row * side;
     const [jx, jy] = pair(hash2(element, 4096 + slot));
-    const across = (col - (side - 1) / 2 + jx * JITTER) * pitch;
-    const along = ((side - 1) / 2 - row + jy * JITTER) * pitch; // front row ahead of the centre
+    const across = (col - (side - 1) / 2 + jx * jitterAcross) * pitch;
+    const along = ((side - 1) / 2 - row + jy * jitterAlong) * pitch * depth + forward; // front row ahead of the centre
     // Forward (fx, fy); right-hand side (−fy, fx): as the slots of the formation's block.
     out.push(fx * along - fy * across, fy * along + fx * across);
   }

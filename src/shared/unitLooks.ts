@@ -6,8 +6,17 @@
  */
 
 /** Frames of the unit sprite atlas (`render/units/atlas`), in its order. */
-export const Frame = { infantry: 0, tank: 1, ship: 2, aircraft: 3, gun: 4 } as const;
+export const Frame = { infantry: 0, tank: 1, ship: 2, aircraft: 3, gun: 4, prone: 5 } as const;
 export type Frame = (typeof Frame)[keyof typeof Frame];
+
+/**
+ * The frame an element is drawn with: its class's (`frameOf`, what the snapshot carries), but
+ * infantry in contact is down and firing (PLAN 2.14c2). A battalion under fire looked like one
+ * at rest: men standing in their grid.
+ */
+export function shownFrame(frame: number, inContact: boolean): number {
+  return inContact && frame === Frame.infantry ? Frame.prone : frame;
+}
 
 export function frameOf(cls: string): Frame {
   if (cls.startsWith('armor') || cls === 'mech') return Frame.tank;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hash2, pair } from '../../src/render/hash';
-import { Frame } from '../../src/shared/unitLooks';
-import { figureCells, figureCount, figureOffsets, FOOTPRINT_CELLS, gridSide, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
+import { Frame, shownFrame } from '../../src/shared/unitLooks';
+import { figureCells, figureCount, figureOffsets, FOOTPRINT_CELLS, gridSide, LINE_DEPTH, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
 
 // PLAN 2.6 and 2.10b: an element as its individuals at T3 (ADR-69, ADR-80). How many, and where
 // each stands. The drawing and the sim's strengths are checked in the browser
@@ -107,6 +107,45 @@ describe('where they stand', () => {
     }
   });
 
+  // PLAN 2.14c2: a battalion in contact does not stand in its parade grid.
+  it('in contact the men lie in a loose line at the front of the footprint: half as deep, inside it, a loss still the last figure', () => {
+    const along = (off: number[]): number[] => points(off).map(([dx]) => dx); // facing east: along is x
+    for (const element of [1, 77, 19_353]) {
+      const rest = figureOffsets(element, 8, 64, 0);
+      const line = figureOffsets(element, 8, 64, 0, true);
+      expect(line).not.toEqual(rest);
+      const depth = (a: number[]): number => Math.max(...a) - Math.min(...a);
+      // The ranks closed up: at most 0.6 of the depth at rest, and forward of the middle on the whole.
+      expect(depth(along(line)) / depth(along(rest))).toBeLessThan(0.6);
+      expect(depth(along(line)) / depth(along(rest))).toBeGreaterThan(LINE_DEPTH * 0.8);
+      const mean = (a: number[]): number => a.reduce((s, v) => s + v, 0) / a.length;
+      expect(mean(along(line))).toBeGreaterThan(FOOTPRINT_CELLS * 0.15);
+      expect(Math.abs(mean(along(rest)))).toBeLessThan(FOOTPRINT_CELLS * 0.03);
+      // Inside the footprint, front edge included.
+      for (const [dx, dy] of points(line)) {
+        expect(Math.abs(dx)).toBeLessThan(FOOTPRINT_CELLS / 2);
+        expect(Math.abs(dy)).toBeLessThan(FOOTPRINT_CELLS / 2);
+      }
+      // Less regular than the grid: across the front the men are further off their files.
+      const across = (off: number[]): number[] => points(off).map(([, dy]) => dy);
+      const offFile = (a: number[]): number => mean(a.map((v) => Math.abs(v / (FOOTPRINT_CELLS / 8) - Math.round(v / (FOOTPRINT_CELLS / 8) - 0.5) - 0.5)));
+      expect(offFile(across(line))).toBeGreaterThan(offFile(across(rest)) * 1.4);
+      // The same man in the same file: a loss takes the last figure of the order away.
+      for (const n of [63, 40, 1]) expect(figureOffsets(element, 8, n, 0, true)).toEqual(line.slice(0, n * 2));
+      // And it turns with the block as the grid does.
+      const turned = points(figureOffsets(element, 8, 64, Math.PI / 2, true));
+      points(line).forEach(([dx, dy], i) => {
+        expect(turned[i]![0]).toBeCloseTo(-dy, 12);
+        expect(turned[i]![1]).toBeCloseTo(dx, 12);
+      });
+    }
+  });
+
+  it('infantry in contact is drawn prone; guns, tanks and infantry at rest as they are', () => {
+    expect(shownFrame(Frame.infantry, true)).toBe(Frame.prone);
+    expect(shownFrame(Frame.infantry, false)).toBe(Frame.infantry);
+    for (const f of [Frame.tank, Frame.gun, Frame.ship, Frame.aircraft]) expect(shownFrame(f, true)).toBe(f);
+  });
   it('a loss takes the last figure of the order: the others stand where they stood', () => {
     const full = figureOffsets(42, gridSide(Frame.infantry, 64), 64, 1.1);
     for (const n of [63, 40, 1]) expect(figureOffsets(42, gridSide(Frame.infantry, 64), n, 1.1)).toEqual(full.slice(0, n * 2));

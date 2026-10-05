@@ -131,4 +131,54 @@ test('two formations in contact are both in one view at 20 m/px, and face each o
   await page.evaluate(() => window.__warsim!.view!.draw());
   console.log(`20 m/px between a German and a Polish division a cell apart: ${seen.german.on} of ${seen.german.all} German and ${seen.polish.on} of ${seen.polish.all} Polish elements on the screen, ${gap.toFixed(0)} px between the front rows`);
   await page.screenshot({ path: path.join(out, 'battle-20m.png') });
+
+  // PLAN 2.14c2: a battalion in contact looks like one. At 5 m/px on the ground between the
+  // front rows: the infantry of both sides is down (the prone frame) in a loose line at the
+  // front of each battalion's ground; the guns are guns.
+  const figures = (x: number, y: number): Promise<{ frames: Record<number, number>; depth: number; battalions: number }> =>
+    page.evaluate(async ({ x, y }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 5 });
+      const t0 = performance.now();
+      const near = (): boolean => {
+        if (Math.abs(v.elementsZoom / 5 - 1) >= 0.01 || v.individualCount === 0) return false;
+        for (let i = 0; i < v.elementCount; i++) if (Math.abs(v.elementX[i]! - x) < 0.2 && Math.abs(v.elementY[i]! - y) < 0.2) return true;
+        return false;
+      };
+      while (!near()) {
+        if (performance.now() - t0 > 20_000) throw new Error('no figures at 5 m/px');
+        await new Promise((d) => setTimeout(d, 50));
+      }
+      for (let k = 0; k < 40 && v.unitsAnimating(); k++) {
+        v.draw();
+        await new Promise((d) => setTimeout(d, 25));
+      }
+      v.draw();
+      const frames: Record<number, number> = {};
+      // Per battalion (an element with more than 16 figures): how deep its figures stand along the block's facing (east-west here), cells.
+      const by = new Map<number, number[]>();
+      for (let j = 0; j < v.individualCount; j++) {
+        frames[v.individualFrame(j)] = (frames[v.individualFrame(j)] ?? 0) + 1;
+        by.set(v.individualOwner[j]!, [...(by.get(v.individualOwner[j]!) ?? []), v.individualX[j]!]);
+      }
+      const depths = [...by.values()].filter((xs) => xs.length > 16).map((xs) => Math.max(...xs) - Math.min(...xs));
+      return { frames, depth: depths.reduce((s, d) => s + d, 0) / Math.max(1, depths.length), battalions: depths.length };
+    }, { x, y });
+  const fight = await figures(SITE[0], SITE[1]);
+  await page.screenshot({ path: path.join(out, 'contact-5m.png') });
+  expect(fight.battalions, 'battalions in the view').toBeGreaterThan(4);
+  expect(fight.frames[0] ?? 0, 'figures standing, in contact').toBe(0);
+  expect(fight.frames[5] ?? 0, 'figures prone, in contact').toBeGreaterThan(200);
+
+  // Peace by God Mode: the contact ends, the blocks go back to the formations' places, the men stand in their ranks.
+  const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
+  await step(page, [{ kind: 'forcePeace', war }], 2);
+  const rest = await figures(SITE[0] - 0.5, SITE[1]);
+  await page.screenshot({ path: path.join(out, 'rest-5m.png') });
+  expect(rest.battalions, 'battalions in the view, at rest').toBeGreaterThan(4);
+  expect(rest.frames[5] ?? 0, 'figures prone, at rest').toBe(0);
+  expect(rest.frames[0] ?? 0, 'figures standing, at rest').toBeGreaterThan(200);
+  // The ranks of a battalion in contact take about half the depth they take at rest.
+  expect(fight.depth / rest.depth, 'depth of a battalion\'s figures, in contact against at rest').toBeLessThan(0.65);
+  console.log(`5 m/px: in contact ${JSON.stringify(fight.frames)} figures by frame, a battalion ${(fight.depth * 19_570).toFixed(0)} m deep; at rest ${JSON.stringify(rest.frames)}, ${(rest.depth * 19_570).toFixed(0)} m deep`);
 });

@@ -5391,3 +5391,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   to 28 px away) was not looked at; how often a block changes its line was not counted.
   Both under PLAN 2.14f. PLAN 2.14c2 (a battalion in contact looks like one) is next.
 - **Run by hand:** thirteen close-zoom spec files, 19 tests green.
+
+## 2026-10-05 — PLAN 2.14c2: a battalion in contact looks like one. PLAN 2.14c is done
+
+- **What the critic saw:** "figures in contact stand in their grid and face one way, and but
+  for the dashes a battalion under fire looks like one at rest."
+- **Built:** a sixth atlas frame, a soldier prone; infantry of a formation in contact is drawn
+  with it at T2 and T3. At T3 its ranks close up to the front half of the battalion's ground
+  and lie loosely. Back to standing ranks when the contact ends.
+- **Tests:** 2 unit more (669); the e2e of 2.14c1 goes on to 5 m/px, in contact and after a
+  peace by God Mode: 2,955 prone and none standing, then 1,476 standing and none prone; a
+  battalion 226 m deep against 427 m.
+- **Looked at both pictures:** lines of men lying towards each other across the gap, against
+  squares of standing men. They differ at a glance.
+- **The pin:** not touched (view only).
+- **Run by hand:** twelve close-zoom spec files, 18 tests green.
+- **Next:** PLAN 2.14d, the ground at T2 and T3 is the terrain's.

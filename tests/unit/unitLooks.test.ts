@@ -18,8 +18,10 @@ describe('frameOf', () => {
   });
 
   it('frames are the atlas order, without gaps, and every class has one', () => {
-    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4]);
+    // Five classes' frames and, since PLAN 2.14c2, the sixth: infantry prone, which no class has of itself (`shownFrame`).
+    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5]);
     for (const cls of UNIT_CLASSES) expect(Object.values(Frame)).toContain(frameOf(cls));
+    for (const cls of UNIT_CLASSES) expect(frameOf(cls), cls).not.toBe(Frame.prone);
   });
 });
 

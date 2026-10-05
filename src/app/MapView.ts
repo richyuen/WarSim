@@ -30,6 +30,7 @@ const FLAG_MOVE_MS = 150;
 const FLAG_MAX_RISE = 40;
 import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
+import { Frame, shownFrame } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
@@ -625,6 +626,13 @@ export class MapView {
   elementWalks(i: number): boolean {
     return this.elementProxies.data[i * PROXY_STRIDE + 6]! % 1 > 0.25;
   }
+  /** The atlas frame element sprite `i` and figure `j` were uploaded with (`Frame`; tests). */
+  elementFrame(i: number): number {
+    return Math.floor(this.elementProxies.data[i * PROXY_STRIDE + 6]!);
+  }
+  individualFrame(j: number): number {
+    return Math.floor(this.individualProxies.data[j * PROXY_STRIDE + 6]!);
+  }
   /** Whether figure `j` was uploaded as walking (tests). */
   individualWalks(j: number): boolean {
     return this.individualProxies.data[j * PROXY_STRIDE + 6]! % 1 > 0.25;
@@ -663,7 +671,8 @@ export class MapView {
       p.data[o + 4] = e.facing[i]!;
       p.data[o + 5] = ELEMENT_CELLS;
       // The walk is for a formation on the march: one that holds in contact stands (PLAN 2.11e).
-      p.data[o + 6] = e.frame[i]! + (marching(e.flags[i]!) ? 0.5 : 0);
+      // Infantry in contact is down and firing (PLAN 2.14c2).
+      p.data[o + 6] = shownFrame(e.frame[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0) + (marching(e.flags[i]!) ? 0.5 : 0);
       // What is left of the element: its share of its size (PLAN 2.11g; an empty one is gone from the sim).
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
       p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
@@ -726,7 +735,9 @@ export class MapView {
       // The grid of the whole element: what is left of it stands where it stood (PLAN 2.10b).
       const side = gridSide(frame, figureCount(e.size[i]!, e.size[i]!));
       const size = figureCells(side);
-      const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!);
+      // In contact the men of a battalion lie in a loose line at the front of its ground (PLAN 2.14c2).
+      const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
+      const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!, inContact && frame === Frame.infantry);
       const x = this.unwrapped(e.x[i]!, e.prevX[i]!);
       const moving = marching(e.flags[i]!) ? 0.5 : 0;
       const rgba = this.spriteRgba(e.nation[i]!);
@@ -740,7 +751,7 @@ export class MapView {
         p.data[o + 3] = e.y[i]! + dy - p.originY;
         p.data[o + 4] = e.facing[i]!;
         p.data[o + 5] = size;
-        p.data[o + 6] = frame + moving;
+        p.data[o + 6] = shownFrame(frame, inContact) + moving;
         p.data[o + 7] = 1;
         p.colors.set(rgba, j * 4);
         owner[j] = e.id[i]!;

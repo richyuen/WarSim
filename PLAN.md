@@ -1711,7 +1711,7 @@ quick sweep as a smoke test.
       `individuals` and `markerStacks`: 22 tests green.
     - *Not done:* the picked formation is not marked on the map (no ring, no lit tag); and
       a tag can stand under the war banners at the bottom of the screen. Lines for 2.14f.
-  - [ ] 2.14c A battle fits a close view. Two formations in contact are both in one view at
+  - [x] 2.14c A battle fits a close view. Two formations in contact are both in one view at
     20 m/px and face each other (the critic: the closest pair stood 29 km apart, a view is
     32 km wide). The decision is of where engaged elements are drawn, or stand: at the cell
     edge they fight across. Posture and facing for figures in contact.
@@ -1781,11 +1781,33 @@ quick sweep as a smoke test.
         - *Hops.* When a formation's nearest enemy changes, its block goes to another
           line in an hour. How often in a running war was not counted.
         - 3% of the formations in contact, and the 3 pairs of blocks on one another.
-    - [ ] 2.14c2 A battalion in contact looks like one: posture and spread of its figures
+    - [x] 2.14c2 A battalion in contact looks like one: posture and spread of its figures
       at T3 (they stand in the parade grid of a battalion at rest), and its sprite at T2.
       AT: e2e, pictures looked at: the figures of a battalion in contact differ from those
       of one at rest by a stated measure (their spread across the front, a frame of their
       own), and go back when the contact ends.
+      Done 2026-10-05.
+      - *A frame of their own:* the atlas has a sixth frame, a soldier lying prone seen from
+        above (`Frame.prone`). Infantry of a formation in contact is drawn with it, as a
+        battalion's sprite at T2 and as its figures at T3 (`shownFrame`). Guns and tanks
+        are as they are. The snapshot still carries the class's frame: the view decides.
+      - *Their ground:* in contact the ranks of a battalion close up to the front half of
+        its footprint and each man lies further off his place in them (`figureOffsets`
+        with `firingLine`). The same man in the same file: a loss still takes the last
+        figure of the element's order.
+      - *Tests:* unit `individuals.test.ts` (2 more: the line is at most 0.6 as deep as the
+        grid, forward of the middle, inside the footprint, less regular across, turns with
+        the block, losses the same) and `unitLooks.test.ts` (six frames; no class has the
+        prone one of itself). e2e, in `battleView1938.spec.ts`: at 5 m/px between the two
+        divisions 2,955 figures are prone and none stands, the guns are guns, a battalion's
+        figures are 226 m deep; after peace by God Mode the blocks are back at the
+        formations' places, 1,476 stand and none is prone, 427 m deep (0.53).
+      - *Pictures looked at* (`docs/evidence/2.14/contact-5m.png`, `rest-5m.png`): in
+        contact two sides of lines of men lying towards each other across a gap, the
+        batteries behind; at rest the squares of standing men. They differ at a glance.
+      - *Run by hand* (ADR-87): twelve spec files of the close zoom, 18 tests green.
+      - *Not done:* no muzzle flash or movement on a prone figure beyond the shots already
+        drawn between the blocks; tanks and guns in contact look as at rest.
   - [ ] 2.14d The ground at T2 and T3 is the terrain's. Its colour comes from the terrain,
     the nation is a tint at the border (ADR-82's tint for occupied land with it).
     AT: the ground of one terrain on two nations' land differs by less than a stated share

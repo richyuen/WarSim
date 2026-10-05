@@ -1,8 +1,8 @@
 /**
  * Procedural unit sprite atlas (our own art, DATA_SOURCES "Unit sprites"): white silhouettes
  * with a dark outline, tinted per nation in the shader. Frames are 64×64 in a strip, in the
- * order of `Frame` (`shared/unitLooks`): infantry, tank, ship, aircraft, gun. Phase 2 replaces
- * this with the full atlas.
+ * order of `Frame` (`shared/unitLooks`): infantry, tank, ship, aircraft, gun, infantry prone.
+ * Phase 2 replaces this with the full atlas.
  */
 import { Frame } from '../../shared/unitLooks';
 
@@ -113,6 +113,26 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.fill();
     g.fillRect(6, -3, 24, 6);
     g.strokeRect(6, -3, 24, 6);
+  });
+  // Infantry in contact (PLAN 2.14c2): a soldier lying prone, seen from above, facing +x: legs
+  // back, body, head, the rifle out in front. Long and narrow, where the standing one is broad.
+  frame(Frame.prone, (g) => {
+    for (const y of [-5, 5]) {
+      g.beginPath();
+      g.roundRect(-30, y - 3, 20, 6, 3);
+      g.stroke();
+      g.fill();
+    }
+    g.beginPath();
+    g.ellipse(-4, 0, 14, 9, 0, 0, Math.PI * 2);
+    g.stroke();
+    g.fill();
+    g.beginPath();
+    g.arc(10, 0, 7, 0, Math.PI * 2);
+    g.stroke();
+    g.fill();
+    g.fillRect(12, 3, 18, 3);
+    g.strokeRect(12, 3, 18, 3);
   });
   return c;
 }
