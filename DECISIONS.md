@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-87 · 2026-10-05 · accepted — The e2e suite runs in full when a numbered task is ticked, not for its parts (the user's decision)
+
+- **Context:** a gate with code in it takes 13 minutes, 7 to 9 of them the e2e stage (117
+  specs in a real Chromium). On 2026-10-05 seven gate runs spent about an hour there. What
+  the stage found that day: one spec that measured the machine twice (ADR-85's commit), and
+  one spec whose battle a rule change had moved (PLAN 2.13). The user: "this cadence is
+  still a bit too high, let's do e2e after only numbered tasks, not split tasks".
+- **Decision:** `npm run check` runs the whole e2e stage when the change ticks a numbered
+  task of PLAN.md (`- [x] 2.14`), when git cannot tell what changed, when a helper under
+  `tests/e2e` or the Playwright config changed, and under `check:full`. For anything else
+  with code in it, only the spec files that changed (a new spec is never committed unrun),
+  or no e2e at all. Typecheck, lint, the unit tests, the build, parity and, for a sim input,
+  the ten-year tests run as before.
+- **What it costs:** `main` can hold a part's commit that breaks a spec nobody ran. It is
+  found when the task is ticked, at most a task's parts later, and fixed there. PROMPT.md
+  asks a part that touches what is drawn to run that feature's specs by hand.
+- **PROMPT.md's "all must pass before any commit"** now reads, for the e2e suite, "before a
+  numbered task is ticked". CLAUDE.md and PROMPT.md say so.
+
 ### ADR-86 · 2026-10-05 · accepted — A treasury is spent before an army is sent home; the treasury of the start carries the army of the start for a year (PLAN 2.13, the critic's R2-B3)
 
 - **Context:** the critic's second report: at tick 1 of every 1938 game 228 of the 1,054

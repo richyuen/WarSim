@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ALL_STAGES, changedFiles, gatedTrees, planGate, worktreeTree } from '../../tools/gate/check';
+import { ALL_STAGES, changedFiles, gatedTrees, planE2e, planGate, tickedTasks, worktreeTree } from '../../tools/gate/check';
 import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
 
 // ADR-48, ADR-49: the gate is sized to what changed since HEAD. ADR-55: a clean tree that the
@@ -47,6 +47,32 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     expect(tree).toMatch(/^[0-9a-f]{40,64}$/);
     expect(worktreeTree()).toBe(tree);
     for (const t of gatedTrees()) expect(t).toMatch(/^[0-9a-f]{40,64}$/);
+  });
+
+  // ADR-87 (the user's decision, 2026-10-05): the e2e stage in full when a numbered task is
+  // ticked, not for the parts it is split into.
+  it('e2e: in full when the change ticks a numbered task; for a part, the changed specs or none', () => {
+    const head = ['- [x] 2.12 A task', '  - [x] 2.12a its part', '- [ ] 2.14 Another', '  - [ ] 2.14a its part', '- [x] 1.42f An old part at the margin'].join('\n');
+    const code = ['src/render/units/markers.ts', 'PLAN.md'];
+    expect(tickedTasks(head)).toEqual(['2.12']);
+    // Nothing ticked, no spec touched: left out.
+    expect(planE2e(code, head, head)).toMatchObject({ mode: 'none' });
+    // A part ticked: not a numbered task.
+    const part = head.replace('  - [ ] 2.14a', '  - [x] 2.14a');
+    expect(planE2e(code, part, head)).toMatchObject({ mode: 'none' });
+    // With a spec written or edited for the part: that spec is run.
+    expect(planE2e([...code, 'tests/e2e/tags1938.spec.ts', 'tests/unit/tags.test.ts'], part, head)).toMatchObject({ mode: 'changed', specs: ['tests/e2e/tags1938.spec.ts'] });
+    // The numbered task ticked: everything.
+    const whole = part.replace('- [ ] 2.14 ', '- [x] 2.14 ');
+    expect(planE2e(code, whole, head)).toMatchObject({ mode: 'full' });
+    expect(planE2e(['PLAN.md', 'src/sim/tick.ts'], whole, head).why).toContain('2.14');
+    // What every spec stands on, or an unknown change: everything.
+    expect(planE2e([...code, 'tests/e2e/settle.ts'], head, head)).toMatchObject({ mode: 'full' });
+    expect(planE2e([...code, 'playwright.config.ts'], head, head)).toMatchObject({ mode: 'full' });
+    expect(planE2e(null, head, head)).toMatchObject({ mode: 'full' });
+    expect(planE2e(code, head, null)).toMatchObject({ mode: 'full' });
+    // The critic's own files are not a change.
+    expect(planE2e(['critic/scripts/x.spec.ts', 'src/app/hud.ts'], head, head)).toMatchObject({ mode: 'none' });
   });
 
   it('a file that only looks like a document is code', () => {

@@ -5305,3 +5305,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   battle fits a view at 20 m/px; 2.14d the ground is the terrain's; 2.14e the banner leads
   to the battle; 2.14f the demo, the pictures, PARITY.
 - **Next:** PLAN 2.14a.
+
+## 2026-10-05 — The gate: the e2e suite in full only when a numbered task is ticked (ADR-87, the user's decision)
+
+- **What changed:** `npm run check` runs every spec when the change ticks a numbered PLAN
+  task; for a part of a task, the spec files that changed, or none. `check:full` as before.
+- **Why:** 7 to 9 of a gate's 13 minutes; about an hour of the day's seven runs.
+- **How it tells:** `planE2e` compares the ticked numbered tasks of PLAN.md with HEAD's.
+  One unit test (656) with the cases: a part, a part with a spec, a task, a helper, unknown.
+- **A count set right:** the entry of PLAN 2.13 above says 660 unit tests; it was 655.
+- **This commit's own gate** is the first under the rule: no task ticked, no spec changed.
+- **Next:** PLAN 2.14a, which was begun (the code read, nothing written).

@@ -6,6 +6,9 @@
  *   no sim input changed                                             → everything but the 10-year sweep tests
  *   otherwise                                                        → everything
  *
+ * And of the e2e stage (ADR-87): all of it when the change ticks a numbered task of PLAN.md;
+ * for a part of a task (2.14a) only the spec files that changed, or none (`planE2e`).
+ *
  * Nothing but `npm run parity` reads the documents, and nothing but a sim input can change what
  * the sweep tests prove. `critic/` is the critic's own output and is ignored. The gate runs
  * before every commit, so the stages left out were proved by the gate of an earlier commit.
@@ -16,7 +19,7 @@
  * a pull or rebase, and whenever in doubt. If git cannot tell what changed, everything runs.
  */
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
@@ -44,6 +47,38 @@ export function planGate(files: readonly string[] | null, gated = false): Stage[
   if (changed.length > 0 && changed.every(isDocument)) return ['parity'];
   const sim = changed.some((f) => SWEEP_INPUTS.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)));
   return ALL_STAGES.filter((s) => s !== 'test:sweep' || sim);
+}
+
+/** The ids of the numbered tasks ticked in a PLAN.md text (`- [x] 2.13 …`): not the parts a task is split into (`2.13a`). */
+export function tickedTasks(plan: string): string[] {
+  return [...plan.matchAll(/^- \[x\] (\d+\.\d+)(?=\s)/gm)].map((m) => m[1]!);
+}
+
+export interface E2ePlan {
+  /** 'full': every spec. 'changed': only `specs`. 'none': the stage is left out. */
+  mode: 'full' | 'changed' | 'none';
+  specs: string[];
+  why: string;
+}
+
+/**
+ * How much of the e2e stage a gate with code in it runs (ADR-87, the user's decision): all of it
+ * when the change ticks a numbered task of PLAN.md (a part such as 2.14a does not), when git
+ * cannot tell what changed, or when something every spec stands on changed (a helper under
+ * tests/e2e, the Playwright config). Otherwise only the spec files that changed: a new or an
+ * edited spec is never committed unrun. `planAtHead`: PLAN.md as of HEAD, null when unknown.
+ */
+export function planE2e(files: readonly string[] | null, planNow: string, planAtHead: string | null): E2ePlan {
+  if (files === null || planAtHead === null) return { mode: 'full', specs: [], why: 'what changed is not known' };
+  const before = new Set(tickedTasks(planAtHead));
+  const ticked = tickedTasks(planNow).filter((id) => !before.has(id));
+  if (ticked.length > 0) return { mode: 'full', specs: [], why: `PLAN ${ticked.join(', ')} ticked` };
+  const changed = files.filter((f) => !ignored(f));
+  const shared = changed.filter((f) => f === 'playwright.config.ts' || (f.startsWith('tests/e2e/') && !f.endsWith('.spec.ts')));
+  if (shared.length > 0) return { mode: 'full', specs: [], why: `${shared[0]} changed` };
+  const specs = changed.filter((f) => f.startsWith('tests/e2e/') && f.endsWith('.spec.ts'));
+  if (specs.length > 0) return { mode: 'changed', specs, why: 'no numbered task ticked: the changed specs only' };
+  return { mode: 'none', specs: [], why: 'no numbered task ticked and no spec changed' };
 }
 
 /** Files that differ from HEAD (modified, staged, untracked, both ends of a rename), or null when git cannot tell. */
@@ -117,10 +152,27 @@ function main(): void {
   }
   // The tree as it is now: what the stages below prove. A file edited while they run is not in it.
   const tree = worktreeTree();
+  // The e2e stage in full only when a numbered task is ticked (ADR-87); a spec that changed is run.
+  let e2e: E2ePlan = { mode: 'full', specs: [], why: '' };
+  if (stages.includes('e2e') && !process.env['FULL']) {
+    let planNow = '';
+    try {
+      planNow = readFileSync(path.join(ROOT, 'PLAN.md'), 'utf8');
+    } catch {
+      // No plan: everything runs.
+    }
+    const atHead = spawnSync('git', ['show', 'HEAD:PLAN.md'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+    e2e = planE2e(files, planNow, atHead.status === 0 && !atHead.error && planNow !== '' ? atHead.stdout : null);
+    e2e.specs = e2e.specs.filter((f) => existsSync(path.join(ROOT, f)));
+    if (e2e.mode === 'changed' && e2e.specs.length === 0) e2e.mode = 'none';
+    if (e2e.mode === 'none') stages.splice(stages.indexOf('e2e'), 1);
+  }
   const skipped = ALL_STAGES.filter((s) => !stages.includes(s));
   console.log(`gate: ${stages.join(' → ')}${skipped.length > 0 ? `   (skipped: ${skipped.join(', ')}; npm run check:full runs everything)` : ''}`);
+  if (e2e.why !== '') console.log(`gate: e2e ${e2e.mode === 'full' ? 'in full' : e2e.mode === 'changed' ? `of ${e2e.specs.length} spec file(s)` : 'left out'}: ${e2e.why}`);
   for (const stage of stages) {
-    const r = spawnSync(`npm run ${stage}`, { cwd: ROOT, stdio: 'inherit', shell: true });
+    const command = stage === 'e2e' && e2e.mode === 'changed' ? `npx playwright test ${e2e.specs.join(' ')}` : `npm run ${stage}`;
+    const r = spawnSync(command, { cwd: ROOT, stdio: 'inherit', shell: true });
     if (r.status !== 0) {
       console.error(`gate: FAILED at ${stage}`);
       process.exitCode = r.status ?? 1;

@@ -23,8 +23,11 @@ There is no memory between sessions. Read these files:
 - `npm run check`: the gate, sized to what changed since HEAD. It must pass before every commit.
   - Clean tree that the gate has already passed: nothing.
   - Documents only (Markdown, `docs/`): parity.
-  - Code: typecheck, lint, unit, build, e2e, parity, plus the 10-year sweep tests when a sim
-    input changed. They include the pinned state hash of seed 99 after one year
+  - Code: typecheck, lint, unit, build, parity, plus the 10-year sweep tests when a sim
+    input changed.
+  - e2e (7 to 9 minutes): in full only when the change ticks a numbered PLAN task (2.14, not
+    its part 2.14a) (ADR-87). For a part, only the spec files that changed, or none. While
+    working on a part, run the specs of what you touch by hand (`npx playwright test <file>`). They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
 - `npm run check:full`: every stage, whatever changed.
 - `npm run typecheck`: `src/`, `tools/` and `tests/` (a bare `tsc --noEmit -p .` skips `tests/`; a
