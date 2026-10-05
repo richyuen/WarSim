@@ -305,7 +305,7 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   the sim for element placement and naval passability at sub-cell scale, and by the
   renderer for coastlines. Both read the same bytes, so they never disagree.
   *Islets (PLAN 2.15e2b, ADR-105):* a territory smaller than a cell is given a land cell
-  (`reconcileIslands`); where the mask has no land pixel in that cell (8 atolls of 1938), the
+  (`reconcileIslands`); where the mask has no land pixel in that cell (9 of the 44 in 1938), the
   world's build sets one in the mask, the cell without its corners (`addIslet`).
   *As built (PLAN 2.9a and 2.9b1, ADR-79; `src/shared/landMask.ts`):* a point is on land when
   the bit of the mask pixel that holds it is set (`maskLand`). A place to stand on is *surely

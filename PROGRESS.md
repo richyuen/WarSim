@@ -5937,3 +5937,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen, not changed:** land painted in the editor on the mask's water is in the same
   case (ADR-105). Whether the 36 other island cells show at T0 and T1 was not looked at.
 - **Next:** PLAN 2.15e3, the origin by the capital's cell; then 2.15f.
+- **Corrected after the commit (108c1c7), documents only:** the islets are 9, not 8. The
+  ninth is the Spratly Islands (1668,550), an island cell nobody owns in 1938, so the count
+  of owned cells did not see it; "the other 36" of ADR-105 is 35. The pictures of the sea
+  before the fix were all opened only now (four of the eight had been); they say the same.
+- **Seen, not changed:** in 1938 the Spratly Islands are unowned land (France and Japan
+  both claimed them): a line for the scenario's data, not looked into.

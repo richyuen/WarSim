@@ -177,9 +177,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - They are Pitcairn, the Ralik Chain, Johnston Atoll, the Chagos (British Indian Ocean
     Territory), Tuvalu, the Coral Sea Islands, Clipperton and Ashmore and Cartier: each a
     province of one cell, a land cell by `reconcileIslands` (a territory smaller than a cell
-    is given one). The other 36 territories of that rule have a land pixel.
+    is given one). Of the 44 cells of that rule, 9 have no land pixel: these 8 and the
+    Spratly Islands (cell 1668,550), which nobody owns in 1938. The other 35 have one.
+    (Counted after the commit of the code, which said "the other 36": corrected here.)
   - The picture drew open sea there at every zoom (looked at: Clipperton and Tuvalu at 6,
-    40, 250 and 900 px to a cell). The game owned, taxed and could garrison land nobody saw.
+    40, 250 and 900 px to a cell; at 6 the neighbours of Tuvalu are drawn, it is not). The
+    game owned, taxed and could garrison land nobody saw.
 - **Decision:** "the best pixel of the cell" is no answer where there is none, so it is land
   the mask does not have. `createWorld1938` gives each cell of `reconcileIslands` that has no
   land pixel an islet in the mask (`addIslet`, `src/shared/landMask.ts`): the cell's pixels
@@ -201,7 +204,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   A saved game is loaded into a world built the same way.
 - **What it does not decide:** land painted or imported in the editor on water of the mask
   still keeps its cell's middle (`cellPoint`), and the picture draws it by the coverage only;
-  the other 36 island cells keep the land the mask gives them, however little.
+  the other 35 island cells keep the land the mask gives them, however little. The Spratly
+  Islands get their islet too: a land cell of the game, owned or not, is land in the mask.
 - **The pin:** not moved (324bc358): nothing stands on the 8 atolls in seed 99's first year.
 - **Tests:** `tests/unit/rebelCapitals.test.ts`, the second: `islets` at 0 (seen to fail: 8).
   `tests/unit/coast1938.test.ts`: every owned cell has sure land at its place to stand, and

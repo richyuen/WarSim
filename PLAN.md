@@ -2216,7 +2216,7 @@ quick sweep as a smoke test.
         at every zoom.
       - *The rule:* land the mask does not have. The world's build gives such a cell an
         islet in the mask (`addIslet`: the cell without its corners), so the sim stands on
-        it and both coasts draw it.
+        it and both coasts draw it. Nine islets: the 8 and the Spratly Islands, unowned.
       - *Tests:* `rebelCapitals.test.ts` (seen to fail: 8), `coast1938.test.ts` (seen to
         fail: the 8), e2e in `coast1938.spec.ts`; `docs/evidence/2.15/atoll-clipperton-*.png`,
         looked at. The pin did not move.
