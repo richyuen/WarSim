@@ -1,5 +1,6 @@
 import { BottomBar } from '../ui/BottomBar';
 import { MapLegend } from '../ui/MapLegend';
+import { FormationPanel } from '../ui/FormationPanel';
 import { HistoryPanel } from '../ui/HistoryPanel';
 import { StatsChart } from '../ui/StatsChart';
 import { EditorPanel } from '../ui/EditorPanel';
@@ -56,6 +57,8 @@ export function App({
   const stats = hud.stats.value;
   const byId = new Map((stats?.nations ?? []).map((n) => [n.id, n]));
   const nation = byId.get(hud.selected.value) ?? null;
+  // The formation panel (PLAN 2.14b) stands in the nation panel's place while a formation is picked.
+  const formationTitle = view && hud.formation.value !== 0 ? view.formationTitle(hud.formation.value) : null;
   return (
     <>
       <TopBar />
@@ -173,7 +176,20 @@ export function App({
       {stats && hud.showStats.value && !hud.showEditor.value ? (
         <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />
       ) : null}
-      {nation ? (
+      {formationTitle ? (
+        <FormationPanel
+          info={hud.formationInfo.value}
+          name={formationTitle.name}
+          kind={formationTitle.kind}
+          nation={byId.get(formationTitle.nation) ?? null}
+          flagUrl={view && flagVersion >= 0 ? view.flags.urlOf(formationTitle.nation) : null}
+          onNation={(id) => {
+            hud.selectFormation(0);
+            hud.onSelectNation(id);
+          }}
+          onClose={() => hud.selectFormation(0)}
+        />
+      ) : nation ? (
         <NationPanel
           nation={nation}
           byId={byId}

@@ -126,6 +126,9 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
   alliances, buffs, majors, corridors, settings, terrain counts, raster hashes, editor stack
   depths; with `full` also cities, cores and unrest, ~600 KB) for tests and the critic (PLAN
   1.32a). Read-only replies (inspect, history, stats) report `status.hash` NaN: not computed.
+- `formation {id}`: one formation as JSON (`FormationDetail`: nation, template, men now and when
+  whole, supply, engaged, moving, its elements by unit type) for the formation panel, or `null`
+  (PLAN 2.14b). Read-only, as `inspect`.
 - `exportScenario`: the world without run history as state bytes + `scenarioHash` (PLAN 1.38).
 - `speed {ticksPerSecond | 'max'}`, `pause {paused}`, `step {n}`
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`

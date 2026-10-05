@@ -10,6 +10,7 @@ import type { HistoryRow } from '../shared/history';
 import type { LandMask } from '../shared/landMask';
 import type {
   FromWorker,
+  FormationDetail,
   Inspection,
   PoliticalBuildResult,
   ProvinceBuildResult,
@@ -316,6 +317,13 @@ export class SimClient {
     const r = await this.status({ type: 'history' });
     if (!r.bytes) throw new Error('history reply without bytes');
     return JSON.parse(new TextDecoder().decode(r.bytes)) as HistoryRow[];
+  }
+
+  /** One formation as the sim has it now (PLAN 2.14b), or null when it is gone. */
+  async formation(id: number): Promise<FormationDetail | null> {
+    const r = await this.status({ type: 'formation', id });
+    if (!r.bytes) throw new Error('formation reply without bytes');
+    return JSON.parse(new TextDecoder().decode(r.bytes)) as FormationDetail | null;
   }
 
   /** JSON summary of the world (PLAN 1.32; tests and the critic). */

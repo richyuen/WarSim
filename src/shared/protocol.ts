@@ -67,6 +67,8 @@ export type ToWorker =
   | { type: 'inspect'; reqId: number; full?: boolean }
   /** PLAN 1.34a: the history log as JSON `HistoryRow[]` in the reply bytes. */
   | { type: 'history'; reqId: number }
+  /** PLAN 2.14b: one formation as JSON `FormationDetail` in the reply bytes (`null` when it is gone). */
+  | { type: 'formation'; reqId: number; id: number }
   /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
   | { type: 'stats'; reqId: number }
   | { type: 'save'; reqId: number }
@@ -381,6 +383,30 @@ export interface NationStat {
   incomeMult: number;
   /** Formations in training: template index and the day (ticks / 24) they are ready. */
   queue: { template: number; readyDay: number }[];
+}
+
+/**
+ * Reply to `formation` (PLAN 2.14b): what the formation panel shows, as the sim has it. The
+ * view's snapshot has a formation's place and strength, and its elements only at close zoom:
+ * the panel asks, so that it says the same at every zoom.
+ */
+export interface FormationDetail {
+  id: number;
+  tick: number;
+  nation: number;
+  /** Index of its template (the view has the template's name), and the men of a whole one (0 = no template). */
+  template: number;
+  full: number;
+  /** Men now. */
+  strength: number;
+  /** Supply 0..1. */
+  supply: number;
+  engaged: boolean;
+  moving: boolean;
+  x: number;
+  y: number;
+  /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */
+  units: { nameKey: string; cls: string; elements: number; strength: number; size: number }[];
 }
 
 /** Reply to `inspect` (PLAN 1.32): enough sim state to assert God Mode effects. */

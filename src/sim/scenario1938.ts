@@ -80,6 +80,8 @@ function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number 
 type UnitStats = { id: string; class: string; elementSize: number; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number } };
 const UNITS_LAND = unitsLand.types as unknown as UnitStats[];
 const unitIndex = new Map(UNITS_LAND.map((u, i) => [u.id, i]));
+/** The id of each unit type by its index in `RULES_1938.units` (its name is the i18n key `unit.<id>`). */
+export const UNIT_IDS_1938: readonly string[] = UNITS_LAND.map((u) => u.id);
 /** Template indices of the economic AI's build mix (PLAN 1.26). */
 export const BUILD_MIX_1938 = {
   infantry: TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div'),

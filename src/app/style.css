@@ -704,3 +704,21 @@ body {
   border: none;
   background: none;
 }
+
+/* The formation panel (PLAN 2.14b): the nation panel's place and look; its elements as a table. */
+.formation-units {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.2rem;
+}
+.formation-units td {
+  padding: 0.1rem 0;
+}
+.formation-unit-count {
+  width: 2.2rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+.formation-unit-strength {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

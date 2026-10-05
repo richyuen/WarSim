@@ -1002,8 +1002,10 @@ export class MapView {
     const vh = this.canvas.clientHeight;
     const offs = wrapOffsets(cam, this.geo, vw);
     // The box of each formation's elements on the screen, per copy of a looping map.
-    const boxes = new Map<string, [number, number, number, number]>();
-    const grow = (key: string, px: number, py: number, r: number): void => {
+    // Keyed by formation and copy: a number, for a section of up to 40,000 elements a frame.
+    const copies = Math.max(1, offs.length);
+    const boxes = new Map<number, [number, number, number, number]>();
+    const grow = (key: number, px: number, py: number, r: number): void => {
       const b = boxes.get(key);
       if (!b) boxes.set(key, [px - r, py - r, px + r, py + r]);
       else {
@@ -1020,7 +1022,7 @@ export class MapView {
         for (let k = 0; k < offs.length; k++) {
           const [px, py] = worldToScreen(cam, this.elementX[i]! + offs[k]!, this.elementY[i]!, vw, vh);
           if (px < -vw || px > 2 * vw || py < -vh || py > 2 * vh) continue;
-          grow(`${this.elementFormation[i]!}:${k}`, px, py, r);
+          grow(this.elementFormation[i]! * copies + k, px, py, r);
         }
       }
     } else {
@@ -1030,7 +1032,7 @@ export class MapView {
         for (let k = 0; k < offs.length; k++) {
           const [px, py] = worldToScreen(cam, this.formX[i]! + offs[k]!, this.formY[i]!, vw, vh);
           if (px < -r || px > vw + r || py < -r || py > vh + r) continue;
-          grow(`${this.formIds[i]!}:${k}`, px, py, r);
+          grow(this.formIds[i]! * copies + k, px, py, r);
         }
       }
     }
@@ -1039,7 +1041,7 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) index.set(this.formIds[i]!, i);
     const items: TagInput[] = [];
     for (const [key, b] of boxes) {
-      const id = Number(key.slice(0, key.indexOf(':')));
+      const id = Math.floor(key / copies);
       const i = index.get(id);
       if (i === undefined) continue;
       items.push({
@@ -1065,6 +1067,57 @@ export class MapView {
     this.tagRects = placed;
     const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
     drawTags(ctx, placed, alpha, (n) => this.flags.canvasOf(n), hex, this.unitScale);
+  }
+
+  /**
+   * The formation under a CSS-px point, of any nation, or 0 (PLAN 2.14b): by what is drawn of it
+   * at this zoom. Its tag (T2, T3), its marker (T1), else the nearest of its elements, or its
+   * stand-in sprite where no elements arrived. At T0 the counters are nations', not formations'.
+   */
+  formationPick(sx: number, sy: number): number {
+    const inside = (r: { x: number; y: number; w: number; h: number }): boolean => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h;
+    if (this.tagOpacity > 0.5) for (const g of this.tagRects) if (inside(g)) return g.id;
+    if (this.markerOpacity > 0.5) for (let i = this.markerRects.length - 1; i >= 0; i--) if (inside(this.markerRects[i]!)) return this.markerRects[i]!.id;
+    if (this.shares.elements <= 0.5) return 0;
+    const cam = this.controller.cam;
+    const vw = this.canvas.clientWidth;
+    const vh = this.canvas.clientHeight;
+    const offs = wrapOffsets(cam, this.geo, vw);
+    let best = 0;
+    if (this.elementCount > 0) {
+      let bestD = Math.max(10, this.elementPx / 2 + 4);
+      for (let i = 0; i < this.elementCount; i++) {
+        for (const off of offs) {
+          const [px, py] = worldToScreen(cam, this.elementX[i]! + off, this.elementY[i]!, vw, vh);
+          const d = Math.hypot(px - sx, py - sy);
+          if (d < bestD) {
+            bestD = d;
+            best = this.elementFormation[i]!;
+          }
+        }
+      }
+      return best;
+    }
+    let bestD = 14;
+    for (let i = 0; i < this.formIds.length; i++) {
+      for (const off of offs) {
+        const [px, py] = worldToScreen(cam, this.formX[i]! + off, this.formY[i]!, vw, vh);
+        const d = Math.hypot(px - sx, py - sy);
+        if (d < bestD) {
+          bestD = d;
+          best = this.formIds[i]!;
+        }
+      }
+    }
+    return best;
+  }
+
+  /** What the panel of formation `id` is headed with, from the last snapshot: its name, its kind and its nation; null when it is not there. */
+  formationTitle(id: number): { name: string; kind: string; nation: number } | null {
+    const i = this.formIds.indexOf(id);
+    if (i < 0) return null;
+    const key = this.templates[this.formTemplate[i]!]?.nameKey;
+    return { name: this.formationName(id, this.formTemplate[i]!), kind: key ? t(key as MessageKey) : t('formation.kind.unknown'), nation: this.formNation[i]! };
   }
 
   /** The formations of the last snapshot (tests). */

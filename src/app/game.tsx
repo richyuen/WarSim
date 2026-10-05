@@ -46,7 +46,15 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     hud.onSelectNation = (id) => view.select(id);
     const p = new PlayerControl(hud, view);
     player = p;
-    view.onPick = (x, y, sx, sy, shift) => hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y)) || p.click(x, y, sx, sy, shift);
+    view.onPick = (x, y, sx, sy, shift) => {
+      if (hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y))) return true;
+      // A formation under the click opens its panel (PLAN 2.14b), the player's own too (which
+      // the click also selects for orders); a click anywhere else closes the panel, and goes on
+      // to the player's order or to the nation of the ground.
+      const formation = view.formationPick(sx, sy);
+      hud.selectFormation(formation);
+      return p.click(x, y, sx, sy, shift) || formation !== 0;
+    };
     // The editor's brush and line paint on a left-drag (PLAN 1.44); the cursor says so.
     view.paint = { active: () => hud.dragTool() !== null, start: (x, y) => hud.dragStart(x, y), move: (x, y) => hud.dragMove(x, y), end: (x, y) => hud.dragEnd(x, y), cancel: () => hud.dragCancel() };
     effect(() => {

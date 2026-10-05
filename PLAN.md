@@ -1665,7 +1665,7 @@ quick sweep as a smoke test.
       `fades`, `handover`, `cityNames`, `closeZoom`, `spriteColours`, `zoomDemo`,
       `individuals`, `labelFades`, `fire`, `morphNations`, `canvasOpaque`: 20 of 20 green.
     - *The pin:* not moved; nothing of the sim changed.
-  - [ ] 2.14b A formation panel. A click on a formation (its marker, its label, one of its
+  - [x] 2.14b A formation panel. A click on a formation (its marker, its label, one of its
     elements) opens it: name, kind, nation, strength, its elements with theirs, supply,
     whether it is engaged. No click at any zoom opened anything but the nation's panel.
     AT: a click at T1, T2 and T3 opens the panel of that formation; its numbers are the
@@ -1679,6 +1679,38 @@ quick sweep as a smoke test.
       not measured in 2.14a).
     - After 2.14a's commit, also run by hand and green (13 tests): `coastPicture`, `ground`,
       `groundThings`, `coastElements`, `declutter`.
+    Done 2026-10-05.
+    - *The panel* (`src/ui/FormationPanel.tsx`), in the nation panel's place while a
+      formation is picked: flag and name, kind, the nation as a chip that leads to the
+      nation panel, men now of a whole one's, supply, status (in contact, on the march,
+      holding), and its elements by unit type ("24× Infantry 11,985 of 12,000").
+    - *The numbers are the sim's:* a request to the worker (`formation`, answered with
+      `FormationDetail`), since the view has a formation's elements only at close zoom. It
+      is asked again with every snapshot of a new tick, one request at a time; a formation
+      that is gone closes its panel.
+    - *The click* (`MapView.formationPick`), of any nation: its tag (T2, T3), its marker
+      (T1; of a stack, the one on top), else the nearest of its elements within reach, or
+      its stand-in sprite. At T0 the counters are nations'. A click elsewhere closes the
+      panel and goes on to the player's order or to the nation of the ground, as before. A
+      click on one of the player's own formations opens the panel and selects it for orders.
+    - *The name:* stays the view's (kind and id). No column, no pin.
+    - *Tests:* e2e `formationPanel1938.spec.ts` on the two divisions of `tags1938` (before:
+      no click opened anything but the nation's panel): a click on the marker at T1, on the
+      tag and on an element at T2, on a battalion and on the tag at T3 opens that formation's
+      panel, with the sim's men, 100% supply, a row a unit type of the template and the
+      template's count of elements; ground closes it and the nation's opens; the chip and
+      the close button; a day on, the panel's men are the sim's of that day (11,926, "In
+      contact"). Unit `formationDetail.test.ts`: the worker's answer, null for no such
+      formation, and no change of the hash.
+    - *Pictures looked at* (`docs/evidence/2.14/formation-panel-t2.png`, `-t3.png`).
+    - *The tags' frame cost, from 2.14a:* the boxes are keyed by a number now. On the
+      densest place of the start (Kiev: 866 elements, 28 tags at 290 m/px) the tags take
+      0.37 ms of a frame's 0.82 ms on the CPU (0.16 of 0.66 at 150 m/px). Looked at that
+      view: 28 tags, none on another, all read.
+    - *Run by hand* (ADR-87): the eleven spec files that click on the map, with `tags`,
+      `individuals` and `markerStacks`: 22 tests green.
+    - *Not done:* the picked formation is not marked on the map (no ring, no lit tag); and
+      a tag can stand under the war banners at the bottom of the screen. Lines for 2.14f.
   - [ ] 2.14c A battle fits a close view. Two formations in contact are both in one view at
     20 m/px and face each other (the critic: the closest pair stood 29 km apart, a view is
     32 km wide). The decision is of where engaged elements are drawn, or stand: at the cell
@@ -1696,6 +1728,8 @@ quick sweep as a smoke test.
     AT: the click moves the camera onto elements of both sides of that war in contact.
   - [ ] 2.14f The whole: `zoomDemo1938` passes or is restated with the reason; the phase's
     close pictures shot again on the final code and looked at; PARITY.
+    - From 2.14b: the formation whose panel is open is marked on the map; a tag does not
+      stand under the war banners or the bottom bar.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton

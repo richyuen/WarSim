@@ -6,7 +6,7 @@
  * Subscriptions only change what is *sent*; the sim never sees them (invariant I4).
  */
 import { LABEL_STRIDE } from '../shared/nationLabels';
-import { ECONOMY_TABLES_1938, NATIONS_1938, TEMPLATES_LAND } from '../sim/scenario1938';
+import { ECONOMY_TABLES_1938, NATIONS_1938, TEMPLATES_LAND, UNIT_IDS_1938 } from '../sim/scenario1938';
 import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
@@ -34,6 +34,7 @@ import {
   type ToWorker,
   type NationStat,
   type UnitSymbol,
+  type FormationDetail,
   type Inspection,
   type WarStat,
 } from '../shared/protocol';
@@ -222,6 +223,9 @@ export class SimServer {
         break;
       case 'history':
         this.reply(msg.reqId, this.historyRows(), false);
+        break;
+      case 'formation':
+        this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(this.formationInfo(msg.id))), false);
         break;
       case 'stats': {
         const rows = Float32Array.from(this.requireSim().world.stats.rows);
@@ -712,6 +716,43 @@ export class SimServer {
       out.push({ tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b) });
     }
     return new TextEncoder().encode(JSON.stringify(out));
+  }
+
+  /** One formation for its panel (PLAN 2.14b), or null when there is none of that id. */
+  private formationInfo(id: number): FormationDetail | null {
+    const world = this.requireSim().world;
+    if (!Number.isInteger(id) || id <= 0 || !world.formations.has(id)) return null;
+    const fc = world.formations.cols;
+    const ec = world.elements.cols;
+    const template = fc.template[id]!;
+    const rules = world.rules;
+    // By unit type, in the order the type first has an element (the slots follow the template).
+    const units = new Map<number, { nameKey: string; cls: string; elements: number; strength: number; size: number }>();
+    for (const e of elementIndex(world).get(id) ?? []) {
+      const u = ec.unit[e]!;
+      let row = units.get(u);
+      if (!row) {
+        row = { nameKey: `unit.${UNIT_IDS_1938[u] ?? 'unknown'}`, cls: rules?.units[u]?.cls ?? '', elements: 0, strength: 0, size: 0 };
+        units.set(u, row);
+      }
+      row.elements++;
+      row.strength += ec.strength[e]!;
+      row.size += rules?.units[u]?.size ?? 0;
+    }
+    return {
+      id,
+      tick: world.tick,
+      nation: fc.nation[id]!,
+      template,
+      full: rules?.templates[template] ? (ECONOMY_TABLES_1938.templateStrength[template] ?? 0) : 0,
+      strength: fc.strength[id]!,
+      supply: fc.supply[id]!,
+      engaged: fc.engaged[id] === 1,
+      moving: fc.moving[id] === 1,
+      x: fc.x[id]!,
+      y: fc.y[id]!,
+      units: [...units.values()],
+    };
   }
 
   /** JSON summary of the world for tests and the critic (PLAN 1.32). */

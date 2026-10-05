@@ -10,7 +10,7 @@ import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
-import type { TemplateInfo } from '../shared/protocol';
+import type { FormationDetail, TemplateInfo } from '../shared/protocol';
 import type { EditorState } from '../shared/editorState';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
@@ -51,6 +51,40 @@ export class Hud {
   readonly selected = signal(0);
   /** Selects a nation from the UI (panel chips); main wires it to the map view. */
   onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
+  /** The formation whose panel is open (0 = none; PLAN 2.14b), set by map clicks, and what the sim says of it. */
+  readonly formation = signal(0);
+  readonly formationInfo = signal<FormationDetail | null>(null);
+  private formationAsked = false;
+
+  /** Opens the panel of formation `id`; 0 closes it. */
+  selectFormation(id: number): void {
+    if (id === this.formation.value) return;
+    this.formation.value = id;
+    this.formationInfo.value = null;
+    this.refreshFormation();
+  }
+
+  /** Asks the sim for the open formation again (one request at a time). A formation that is gone closes its panel. */
+  refreshFormation(): void {
+    const id = this.formation.value;
+    if (id === 0 || this.formationAsked) return;
+    this.formationAsked = true;
+    void this.sim
+      .formation(id)
+      .then((info) => {
+        if (this.formation.value !== id) return;
+        if (info === null) this.formation.value = 0;
+        this.formationInfo.value = info;
+      })
+      .catch(() => {
+        /* the worker is gone or busy with a load: the panel keeps what it has */
+      })
+      .finally(() => {
+        this.formationAsked = false;
+        // Another formation was picked while this one was asked for.
+        if (this.formation.value !== 0 && this.formation.value !== id) this.refreshFormation();
+      });
+  }
   /** Statistics ranking (PLAN 1.31b): shown and metric, both persisted. */
   readonly showStats = signal(true);
   readonly rankMetric = signal<RankMetric>('land');
@@ -77,6 +111,8 @@ export class Hud {
     if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;
     sim.onSnapshotReceived((s) => {
       this.tick.value = s.tick;
+      // The open formation panel follows the game.
+      if (this.formation.value !== 0 && this.formationInfo.value?.tick !== s.tick) this.refreshFormation();
       this.worker.value = { speed: s.speed, paused: s.paused };
     });
   }

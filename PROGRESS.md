@@ -5338,3 +5338,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** the first part under ADR-87: the changed spec only. Twelve spec files of the
   close zoom run by hand, 20 tests green.
 - **Next:** PLAN 2.14b, a formation panel.
+
+## 2026-10-05 — PLAN 2.14b: a click on a formation opens its panel
+
+- **What the critic saw:** a click on a unit opened its nation's panel at every zoom; a
+  formation's name, kind and composition could be read nowhere.
+- **Built:** a formation panel in the nation panel's place (name, kind, nation, men of a
+  whole one's, supply, status, elements by unit type), fed by a new worker request
+  (`formation` → `FormationDetail`) that is asked again as the game goes on. The click finds
+  the formation by what is drawn of it: tag, marker, element, stand-in.
+- **A name taken:** `FormationInfo` was already a type of the protocol (the political map's
+  formations); the new one is `FormationDetail`.
+- **Tests:** 1 e2e (`formationPanel1938`), 1 unit (661). The pin did not move.
+- **Pictures looked at:** the panel at T2 and T3; and the densest front of the start (Kiev)
+  with its 28 tags.
+- **The tags' cost, owed from 2.14a:** 0.37 ms a frame on that front (866 elements), with
+  the boxes keyed by a number.
+- **Run by hand:** the eleven spec files that click on the map and three of the close zoom,
+  22 tests green.
+- **Not done:** the picked formation is not marked on the map; a tag can stand under the war
+  banners. Both under PLAN 2.14f.
+- **Next:** PLAN 2.14c, a battle fits a view at 20 m/px. It may move where elements stand,
+  and with it the pin.
