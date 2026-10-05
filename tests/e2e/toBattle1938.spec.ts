@@ -149,3 +149,90 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
   console.log(`banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; ${seen.a.on} and ${seen.b.on} elements of the two in the middle on the screen`);
   await page.screenshot({ path: path.join(out, 'to-battle.png') });
 });
+
+// PLAN 2.14f5a: the same click on a real front. No division is put down: the armies of the start
+// fight for 60 days (Germany against Poland by God Mode, the AI running). In the test above the
+// largest battle is the one pair there is. Here it is one of many, and the two formations the
+// click leads to are chosen by the sim (`largestBattle`: each other's nearest enemy, then men).
+test('after 60 days of Germany against Poland the banner leads to two formations front to front', async ({ page }, info) => {
+  test.setTimeout(300_000);
+  const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/2.14') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.setViewportSize(VIEW);
+  await page.goto('/?scenario=1938&paused=1&seed=99');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  await step(page, [{ kind: 'declareWar', attacker: GER, defender: POL }]);
+  for (let day = 0; day < 60; day += 10) await step(page, [], day === 0 ? 239 : 240);
+
+  const start = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, elements: window.__warsim!.view!.elementCount }));
+  expect(start.m).toBeGreaterThan(5_000);
+  expect(start.elements).toBe(0);
+  const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
+  const banner = page.locator(`[data-testid="war-banner"][data-war="${war}"]`);
+  await expect(banner).toHaveCount(1, { timeout: 20_000 });
+  await banner.click();
+  await page.waitForFunction((m0) => window.__warsim!.view!.metresPerPx < m0 / 10, start.m, { timeout: 20_000 });
+  await page.waitForFunction(() => {
+    const v = window.__warsim!.view!;
+    return v.elementCount > 0 && Math.abs(v.elementsZoom / v.metresPerPx - 1) < 0.01;
+  }, null, { timeout: 20_000 });
+  await settle(page);
+
+  const seen = await page.evaluate(async (war) => {
+    const v = window.__warsim!.view!;
+    const battle = (await window.__warsim!.sim.warBattle(war))!;
+    const cam = v.controller.cam;
+    const side = (id: number): { all: number; on: number; engaged: number; x: number; y: number } => {
+      const s = { all: 0, on: 0, engaged: 0, x: 0, y: 0 };
+      for (let i = 0; i < v.elementCount; i++) {
+        if (v.elementFormation[i] !== id) continue;
+        s.all++;
+        const px = (v.elementX[i]! - cam.cx) * cam.scale + window.innerWidth / 2;
+        const py = (v.elementY[i]! - cam.cy) * cam.scale + window.innerHeight / 2;
+        s.x += px;
+        s.y += py;
+        if (px >= 0 && px <= window.innerWidth && py >= 0 && py <= window.innerHeight) s.on++;
+        if ((v.elementFlags[i]! & 2) !== 0) s.engaged++;
+      }
+      s.x /= Math.max(1, s.all);
+      s.y /= Math.max(1, s.all);
+      return s;
+    };
+    // Every formation with an element on the screen, by whether it is one of the two.
+    const others = new Set<number>();
+    for (let i = 0; i < v.elementCount; i++) {
+      const px = (v.elementX[i]! - cam.cx) * cam.scale + window.innerWidth / 2;
+      const py = (v.elementY[i]! - cam.cy) * cam.scale + window.innerHeight / 2;
+      if (px >= 0 && px <= window.innerWidth && py >= 0 && py <= window.innerHeight) others.add(v.elementFormation[i]!);
+    }
+    return {
+      battle,
+      m: v.metresPerPx,
+      cam: { ...cam },
+      a: side(battle.formations[0]),
+      b: side(battle.formations[1]),
+      formationsOnScreen: others.size,
+      tags: v.tagRects.filter((t) => t.id === battle.formations[0] || t.id === battle.formations[1]).length,
+    };
+  }, war);
+
+  expect(seen.battle.war).toBe(war);
+  // A battle of the front, not a pair: more than two formations in it.
+  expect(seen.battle.count[0] + seen.battle.count[1]).toBeGreaterThan(2);
+  expect(seen.cam.cx).toBeCloseTo(seen.battle.x, 6);
+  expect(seen.cam.cy).toBeCloseTo(seen.battle.y, 6);
+  expect(seen.m).toBeCloseTo(20, 1);
+  // Both of the two, whole and in contact, on the screen; their blocks' middles within 6 km (300 px).
+  expect(seen.a.all).toBeGreaterThan(0);
+  expect(seen.b.all).toBeGreaterThan(0);
+  expect(seen.a.on, 'elements of the attackers\' formation on the screen').toBe(seen.a.all);
+  expect(seen.b.on, 'elements of the defenders\' formation on the screen').toBe(seen.b.all);
+  expect(seen.a.engaged).toBe(seen.a.all);
+  expect(seen.b.engaged).toBe(seen.b.all);
+  const apart = Math.hypot(seen.a.x - seen.b.x, seen.a.y - seen.b.y);
+  expect(apart).toBeLessThan(300);
+  expect(seen.tags).toBe(2);
+
+  console.log(`day 60, banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; formations ${seen.battle.formations.join(' and ')}: ${seen.a.on} of ${seen.a.all} and ${seen.b.on} of ${seen.b.all} elements on the screen, the blocks' middles ${apart.toFixed(0)} px apart; ${seen.formationsOnScreen} formations have elements on the screen`);
+  await page.screenshot({ path: path.join(out, 'to-battle-front.png') });
+});

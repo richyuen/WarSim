@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import type { FromWorker, WarBattle } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { deployOf, destroyFormation } from '../../src/sim/systems/elements';
-import { largestBattle } from '../../src/sim/systems/warBattle';
+import { cellDist, contactsOf, deployOf, destroyFormation, elementIndex, elementPlace, slotCount } from '../../src/sim/systems/elements';
+import { largestBattle, type WarBattleSite } from '../../src/sim/systems/warBattle';
 import type { World } from '../../src/sim/world';
 import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
@@ -100,6 +100,74 @@ describe('the largest battle of a war (PLAN 2.14e)', () => {
     expect(c.count).toEqual([1, 3]);
     expect(c.formations).toEqual([n1, n2]);
     expect(c.y).toBeCloseTo(north[1], 2);
+  });
+});
+
+// PLAN 2.14f5a: the same on a real front. The tests above have the pair put down for them; here
+// the armies of the start fight for 60 days (Germany against Poland by command, and the wars
+// the AI declares meanwhile). Every six hours, for every war: the two formations the answer
+// names stand whole, every element of each, in the view the camera takes on the answer's point
+// (`MapView.showBattle`: 20 m/px, so 28 by 16 km in a view of 1400 × 800), 50 px clear of its
+// edges. The fear was a battle with no two formations that are each other's nearest enemy: its
+// two could stand 29 km apart with their blocks towards others.
+describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () => {
+  it('names two formations whose blocks are whole in the view the camera takes', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    /** Half the view less 50 px, in cells (a cell is 19.57 km). */
+    const HALF = { w: (700 - 50) * 20 / 19_570, h: (400 - 50) * 20 / 19_570 };
+    const n = { asked: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0 };
+    const outside: string[] = [];
+    let last: WarBattleSite | null = null;
+    s.step(24 * 60, (w) => {
+      w.out.events.length = 0;
+      w.out.fires.length = 0;
+      if (w.tick % 6 !== 0) return;
+      const idx = elementIndex(w);
+      const contacts = contactsOf(w);
+      for (const war of w.wars.list) {
+        n.asked++;
+        const b = largestBattle(w, war.id);
+        const ours = war.sides[0].includes(GER) && war.sides[1].includes(POL);
+        if (ours) last = b;
+        if (!b) continue;
+        n.battles++;
+        if (ours) n.germanPolish++;
+        const [a, d] = b.formations;
+        const rank = (contacts.get(a) === d ? 1 : 0) + (contacts.get(d) === a ? 1 : 0);
+        if (rank === 2) n.mutual++;
+        else if (rank === 1) n.oneWay++;
+        else n.neither++;
+        const blocks = [a, d].map((f) => deployOf(w, f, slotCount(w, f, idx.get(f)?.length ?? 0))!);
+        n.widest = Math.max(n.widest, cellDist(w, blocks[0]!.x, blocks[0]!.y, blocks[1]!.x, blocks[1]!.y));
+        let whole = true;
+        for (const f of [a, d]) {
+          const list = idx.get(f) ?? [];
+          expect(list.length, `elements of formation ${f}`).toBeGreaterThan(0);
+          const slots = slotCount(w, f, list.length);
+          for (const e of list) {
+            const p = elementPlace(w, f, w.elements.cols.slot[e]!, slots);
+            let dx = Math.abs(p[0] - b.x);
+            if (dx > W / 2) dx = W - dx;
+            if (dx >= HALF.w || Math.abs(p[1] - b.y) >= HALF.h) whole = false;
+          }
+        }
+        if (!whole) {
+          n.outside++;
+          if (outside.length < 5) outside.push(`hour ${w.tick}, war ${war.id}, formations ${a} and ${d}, each other's nearest: ${rank} of 2`);
+        }
+      }
+    });
+    console.log(
+      `60 days of Germany against Poland (seed 99), every six hours, every war: asked ${n.asked} times, a battle ${n.battles} times (${n.germanPolish} of Germany against Poland); ` +
+        `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
+        `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times`,
+    );
+    expect(outside).toEqual([]);
+    expect(n.battles).toBeGreaterThan(500);
+    expect(n.germanPolish).toBeGreaterThan(200);
+    // The front is there on the last day: the banner of this war leads somewhere.
+    expect(last).not.toBeNull();
   });
 });
 

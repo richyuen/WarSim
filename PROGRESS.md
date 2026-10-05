@@ -5548,3 +5548,32 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** a hop of 10 km in one hour not looked at on the screen; why 430 hops kept
   their enemy not looked into; the frame of the picked formation (2.14f3) in this morph.
 - **Next:** PLAN 2.14f5, the banner of a war with a real front.
+
+## 2026-10-05 — PLAN 2.14f5a: where the banner lands on a real front; 2.14f5 split in three
+
+- **The split:** 2.14f5 had three causes: where the banner lands (a), the two decisions on
+  the flight and on a banner that shows a battle (b), how far a block stands from its
+  formation (c).
+- **Measured first** (seed 99, 60 days, every six hours, every war): 752 battles; the two
+  formations named were each other's nearest enemy in all of them, their blocks at most 3.6
+  km apart, all their elements in the view less 50 px. Seed 7 by a probe not kept: 1,025
+  battles, one with a pair where only one was the other's nearest, 5.8 km at most, all whole.
+- **Decided (ADR-93):** no change of the rule. The case the PLAN feared did not occur.
+- **Tests:** unit, the fourth of `warBattle.test.ts`, a pin (it did not fail first; it fails
+  with the pair chosen by men alone: 136 of 752 not whole). e2e, the second of
+  `toBattle1938`: 60 days on seed 99, the click lands on formations 287 and 260, the same two
+  as the unit run. 680 unit tests.
+- **Picture looked at** (`to-battle-front.png`): an Italian division and a French tank
+  brigade front to front in the middle, more blocks around; it reads as a fight.
+- **Seen, not changed:** the banner of "Germany against Poland" leads to Italians against
+  the French; the largest battle is 67,984 men against 472.
+- **For 2.14f5c, measured in the same run** (days 10 to 60): a block stands 12.4 km from its
+  formation in the median and up to 42.0 km; 1 to 9 of 96 to 177 are beyond contact (29 km),
+  all of them formations whose nearest enemy is deployed against another. In the PLAN.
+- **A gotcha:** vitest shows a test's `console.log` only with `--silent=false` here.
+- **Again:** a Git Bash heredoc of Python with backticks in it did not parse; the Write tool
+  and a file did it.
+- **The pin:** not moved; no source changed. **Run by hand:** `toBattle` (2): green.
+- **Not done:** the battle with no two each other's nearest has no test; a pair across a
+  strait not looked for; `battleView` not run (nothing it draws changed).
+- **Next:** PLAN 2.14f5b, the flight and the banner's sign of a battle.

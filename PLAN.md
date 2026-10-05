@@ -1937,17 +1937,48 @@ quick sweep as a smoke test.
       cell, the longest 50 km. *Not done:* a hop of 10 km in an hour not looked at on the
       screen; `deployOf` has no limit to how far a block stands from its formation (to
       2.14f5, below).
-    - [ ] 2.14f5 The banner of a war with a real front (from 2.14e). After 60 days of
-      Germany against Poland, click the banner and look at where it lands; log how the
-      pair was chosen. When no two of the battle are each other's nearest, the two picked
-      can stand 29 km apart with their blocks towards others, wider than the view of 28
-      km (the e2e has the front-to-front case only).
-      AT: unit, on the 60-day front: both blocks of the chosen pair are in the view the
-      camera takes; e2e picture looked at. Decide, each with an ADR: whether the jump
-      becomes a flight, and whether a banner shows that its war has a battle.
-      From 2.14f4: the longest hop of a block in the 60 days was 50 km, more than contact
-      (29 km). Measure how far a block stands from its own formation on that front, and
-      decide whether `deployOf` limits it.
+    - [ ] 2.14f5 The banner of a war with a real front (from 2.14e); how far a block stands
+      from its formation (from 2.14f4). **Split 2026-10-05** in three, one cause a commit:
+      - [x] 2.14f5a Where the banner lands on a real front. After 60 days of Germany against
+        Poland, click the banner and look at where it lands; log how the pair was chosen.
+        The fear: when no two of the battle are each other's nearest, the two picked can
+        stand 29 km apart with their blocks towards others, wider than the view of 28 km.
+        AT: unit, on the 60-day front: both blocks of the chosen pair are in the view the
+        camera takes; e2e picture looked at.
+        Done 2026-10-05 (ADR-93). *Measured* (seed 99, every six hours of the 60 days, every
+        war): 752 battles, 237 of them of Germany against Poland; the two named were each
+        other's nearest enemy in all 752, their blocks at most 3.6 km apart, every element
+        of both in the view less 50 px. Seed 7, by a probe not kept: 1,025 battles, 1,024
+        each other's nearest and one where one was the other's; at most 5.8 km; all whole.
+        *Decided:* the rule of 2.14e stays; the case feared did not occur in 1,777 battles.
+        *Tests:* unit, `warBattle.test.ts` (the fourth): a pin of what is, not a test that
+        failed first; with the pair chosen by men alone it fails (136 of 752 not whole, the
+        blocks up to 31.9 km apart). e2e, the second test of `toBattle1938`: seed 99, no
+        division put down, 60 days; the click lands at 20.0 m/px on formations 287 and 260
+        (the same two as the unit run), 28 of 28 and 20 of 20 elements on the screen, the
+        blocks' middles 144 px apart. *Picture looked at*
+        (`docs/evidence/2.14/to-battle-front.png`): an Italian infantry division facing a
+        French tank brigade in the middle, seven more formations' elements around them.
+        *Seen, not changed:* the banner reads "Germany +5 against Poland +9" and its
+        largest battle is Italians against the French; 67,984 men against 472. *Not done:*
+        a battle with no two that are each other's nearest has no test of its own and the
+        camera does not widen for it; a pair across a strait (blocks on their shores) was
+        not looked for.
+      - [ ] 2.14f5b Two decisions, each with an ADR: whether the jump becomes a flight (the
+        camera has an eased zoom and no eased pan, ADR-91), and whether a banner shows that
+        its war has a battle (ADR-91: not sent with the statistics; `contactsOf` is kept
+        for the hour, so one pass over it may do). Built or "not now, because".
+      - [ ] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest
+        hop of a block in the 60 days was 50 km, more than contact (29 km). Decide, with an
+        ADR, whether `deployOf` limits it. *Measured 2026-10-05 with 2.14f5a* (seed 99, days
+        10, 20, 30, 45 and 60; 96 to 177 formations in contact): median 12.3 to 12.6 km,
+        the ninth tenth 19.4 to 27.8 km, the most 33.1 to 42.0 km; 1, 9, 3, 5 and 7 of them
+        beyond 29 km, every one a formation whose nearest enemy is deployed against another
+        (the worst: 29.3 km from its enemy, its block 42.0 km from itself). To try first: a
+        limit at `CONTACT_CELLS`, and what it does to the share of formations that have
+        their enemy in one view (`deploy.test.ts`: over 90% asked) and to the longest hop.
+        AT: unit, on the 60-day front: no block further from its formation than the limit
+        decided, or the reason there is none; the pin as the gate finds it.
     - [ ] 2.14f6 The whole: `zoomDemo1938` passes or is restated with the reason; the
       pictures of `docs/evidence/2.14/` shot again on the final code and looked at;
       PARITY rows with their evidence. Ticks 2.14f and 2.14: the whole e2e suite.

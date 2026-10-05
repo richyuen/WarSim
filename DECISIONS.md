@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-93 · 2026-10-05 · accepted — On a real front the banner's pair is front to front: the rule of ADR-91 stays (PLAN 2.14f5a)
+
+- **Context:** ADR-91 sends the camera between the blocks of two formations of the war's
+  largest battle: those that are each other's nearest enemy before those where one is the
+  other's, before any two in contact; then by men. Its tests put the pair down. The fear
+  (PLAN 2.14e, "not done"): in a battle with no two that are each other's nearest, the two
+  picked stand up to 29 km apart with their blocks towards others, and the view is 28 km.
+- **Measured** (`warBattle.test.ts`, seed 99, Germany at war with Poland by command and the
+  wars the AI declares, 60 days, every six hours, every war): asked 1,708 times, a battle
+  752 times, 237 of them of Germany against Poland. The two named were each other's nearest
+  in all 752. Their blocks stood at most 3.6 km apart. Every element of both stood in the
+  view of 28 by 16 km less 50 px at its edges, every time. Seed 7, by a probe not kept: 1,025
+  battles, 1,024 each other's nearest and 1 where one was the other's; at most 5.8 km; all
+  whole.
+- **Decision:** nothing changes in `largestBattle` or `showBattle`. The case feared did not
+  occur: 1,776 of 1,777 battles had a pair that are each other's nearest, and the other one
+  was whole in the view too.
+- **The test is a pin,** not one that failed first. That it can fail: with the pair chosen by
+  men alone, 136 of the 752 are not whole in the view (92 each other's nearest, 516 one the
+  other's, 144 neither; blocks up to 31.9 km apart).
+- **On the screen** (`toBattle1938.spec.ts`, the second test; seed 99, no division put down):
+  the click after 60 days lands at 20.0 m/px between formations 287 and 260, the two of the
+  unit run on that day; all of their elements on the screen, the blocks' middles 144 px
+  apart; nine formations have elements in the view. Picture:
+  `docs/evidence/2.14/to-battle-front.png`.
+- **Seen, not changed:**
+  - The banner reads "Germany +5 against Poland +9" and the battle it leads to is an Italian
+    division against a French brigade. The war is theirs too; the banner names leaders only.
+  - "Largest by men" was 67,984 against 472 on that day: 11 formations against 3 nearly
+    spent ones. Largest is not the most even.
+- **Not done:**
+  - No test builds a battle with no two that are each other's nearest (it needs three wars
+    in one place), and the camera does not widen for one.
+  - A pair across a strait stands on its two shores (ADR-89) and may be wider than the view.
+    Not looked for; none was among the 1,777.
+  - Two seeds, one scenario, 60 days.
+
 ### ADR-92 · 2026-10-05 · accepted — The marker of a formation in contact stays on the formation, not on its block; its bar goes with its box (PLAN 2.14f4)
 
 - **Context:** since ADR-89 the block of a formation in contact stands between it and its
