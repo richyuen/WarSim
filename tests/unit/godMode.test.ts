@@ -4,7 +4,9 @@ import { Sim } from '../../src/sim/sim';
 import { cellOf } from '../../src/sim/data/terrain';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { nationId } from '../helpers/sim1938';
+import { EventKind } from '../../src/shared/events';
+import { KILL_STATES } from '../../src/sim/systems/revival';
+import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 
 // PLAN 1.32a: the new God Mode commands (rename, spawn revolt, income bonus, forced collapse) and
 // the owned-cell counts they exposed as stale (now maintained by World.setOwner).
@@ -65,6 +67,7 @@ describe('God Mode commands (PLAN 1.32a)', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const before = s.world.nations.cols.cells[YUG!]!;
     const created = s.world.nations.highWater;
+    const had = recount(s.world);
     s.command({ kind: 'collapseNation', nation: YUG! });
     s.step(1);
     const nc = s.world.nations.cols;
@@ -73,9 +76,49 @@ describe('God Mode commands (PLAN 1.32a)', () => {
     let land = 0;
     for (let n = created; n < s.world.nations.highWater; n++) land += nc.cells[n]!;
     expect(s.world.nations.highWater - created).toBeGreaterThanOrEqual(2);
-    expect(land).toBe(before);
+    // Since ADR-99 a piece of the land that founds nothing goes to its neighbour (here one cell
+    // of an island, to Italy): the new nations and the neighbours hold all of it between them.
+    let gained = 0;
+    for (const [n, cells] of recount(s.world)) if (n < created && n !== YUG) gained += cells - (had.get(n) ?? 0);
+    expect(land + gained).toBe(before);
+    expect(land).toBeGreaterThan(before * 0.99);
     expectCountsMatch(s.world);
   });
+
+  // PLAN 2.15a (ADR-99; critic R2-B6): a Kill of France founded 37 nations and left 38 wars.
+  it(`a Kill founds at most ${KILL_STATES} nations, starts no war and leaves no land behind`, () => {
+    for (const tag of ['FRA', 'YUG', 'ITA', 'LUX']) {
+      const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+      const w = s.world;
+      const c = nationId(tag)!;
+      const living = (): Set<number> => {
+        const l = new Set<number>();
+        w.nations.forEach((n) => {
+          if (w.nations.cols.living[n] === 1) l.add(n);
+        });
+        return l;
+      };
+      const before = living();
+      const wars = new Set(w.wars.list.map((x) => x.id));
+      const total = recount(w);
+      s.command({ kind: 'collapseNation', nation: c });
+      const declared = kinds(run(s, 1), EventKind.WarDeclared);
+      const after = living();
+      const born = [...after].filter((n) => !before.has(n));
+      // Italy's Kill also brings Ethiopia back and frees Albania: neither is a nation founded.
+      const founded = born.filter((n) => w.nations.cols.origin[n] !== 0);
+      expect(after.has(c), tag).toBe(false);
+      expect(founded.length, `${tag}: nations founded`).toBeGreaterThanOrEqual(1);
+      expect(founded.length, `${tag}: nations founded`).toBeLessThanOrEqual(KILL_STATES);
+      expect(declared, `${tag}: wars declared`).toEqual([]);
+      expect(w.wars.list.filter((x) => !wars.has(x.id)), `${tag}: new wars`).toEqual([]);
+      expect(w.nations.cols.cells[c], `${tag}: cells left`).toBe(0);
+      expect([...recount(w).values()].reduce((a, n) => a + n, 0), `${tag}: owned land`).toBe([...total.values()].reduce((a, n) => a + n, 0));
+      for (const n of founded) expect(w.nations.cols.cells[n], `${tag}: nation ${n}`).toBeGreaterThan(0);
+      expectCountsMatch(w);
+      console.log(`Kill ${tag}: ${before.size} -> ${after.size} living, ${founded.length} founded (${founded.map((n) => w.nations.cols.cells[n]).join(', ')} cells), ${wars.size} -> ${w.wars.list.length} wars`);
+    }
+  }, 120_000);
 
   it('applyNow (God UI while paused) is replay-identical to applying at the next step', () => {
     const a = new Sim({ scenario: '1938', seed: 3, assets: assets1938(W) });

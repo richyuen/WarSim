@@ -5760,3 +5760,38 @@ No rule changed and nothing on screen changed. One task came out of it.
   gate's "full e2e on a tick" does not reach a tick with no code. Not changed here: a line
   for the next review pass (the gate, or this rule's wording in CLAUDE.md).
 - **Next:** PLAN 2.15, a nation's end does not found dozens of states.
+
+## 2026-10-05 — PLAN 2.15a: a Kill founds five nations at most and starts no war
+
+- **Split:** PLAN 2.15 into 2.15a to 2.15f (one cause per commit). This is 2.15a.
+- **Found:** two causes, not one. The count: groups of 8 provinces, and each island its own
+  nation (France is 20 connected pieces). The wars: the dying holder declared war on each
+  nation it founded, its allies came in, and `endAllOf` took only the dead nation out.
+- **Measured before** (seed 99, one tick after): France 102 → 139 living, 2 → 40 wars;
+  Yugoslavia 149 and 50.
+- **Built (ADR-99):** `killNation` in `systems/revival.ts`. Land back to living core nations
+  and claimants; at most `KILL_STATES` = 5 nations, one for every 200 cells, shared among
+  the connected pieces by their cities; the rest to a neighbour, an island to the heir; no
+  war (`spawnRebels` and `reviveNation` take `war`).
+- **Measured after:** France 106 and 2; Yugoslavia 106 and 2; Italy 107 and 2; Luxembourg
+  102 and 2, one founded.
+- **Seeds tried:** the largest cities (two neighbours in France); the furthest apart (Andorra
+  and Finistère, 1,800 / 553 / 373 cells); size times distance, taken (Paris, Ain,
+  Haute-Garonne: 1,095 / 944 / 687).
+- **A test restated:** the Kill of Yugoslavia in `godMode.test.ts` asked for every cell in
+  the new nations; one island cell now goes to Italy. It asks for every cell in the new
+  nations and the neighbours' gains, and over 99% in the new nations (ADR-99).
+- **Tests:** unit 691 (one more), seen to fail first (38 founded). The plain collapse is
+  untouched and the pin did not move.
+- **Run by hand:** `godUi1938` (2) and `godMode1938` (11): green. `tableGrowth` and
+  `revival`: green.
+- **Pictures looked at:** `docs/evidence/2.15/kill-france-europe.png` (three states with
+  curved names, Corsica with Paris, no new banner) and `kill-france-africa.png` (Algeria as
+  a coast and a desert; the three former puppets free).
+- **Gotchas:** a heredoc in the Bash tool broke on a quote in the script again: write the
+  script to the scratchpad. `EVIDENCE=1` with `-g "Kill through"` writes `docs/evidence/2.15`
+  only; without `-g` the first test would write over `docs/evidence/1.32/god-tab.png`.
+- **Not done:** ADR-99's list: the capital that moves once per fragment, "broke away" for
+  land handed over (2.15d), Algeria's 203 against 7,267 cells, Indochina and Madagascar to a
+  neighbour, names and flags (2.15b, 2.15c), no claim left for Revive (2.17).
+- **Next:** PLAN 2.15b, no nation without a name.

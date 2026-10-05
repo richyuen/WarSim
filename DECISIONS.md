@@ -167,6 +167,80 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-99 · 2026-10-05 · accepted — A God Mode Kill hands land back, founds five nations at most and starts no war (PLAN 2.15a)
+
+- **Context:** the critic's R2-B6. A Kill of France made 103 living nations 139 and left 43
+  wars a month later. Measured here at the 1938 start, seed 99, one tick after the Kill:
+  France 102 → 139 living and 2 → 40 wars; Yugoslavia 102 → 149 and 2 → 50.
+- **Two causes.**
+  - *The count:* the forced collapse cut the land into groups of at most `REGION_MAX` (8)
+    provinces, one nation each, and every island was a group of its own (France is 20
+    connected pieces, 13 of them of one cell).
+  - *The wars:* `spawnRebels` ends with the holder declaring war on the nation it founds,
+    and a declaration brings in the holder's allies and puppets. The holder died in the same
+    tick; `endAllOf` took it out of each war, and each war went on between its allies and
+    one new nation.
+- **Decision** (`killNation` in `systems/revival.ts`; the order is the rule):
+  1. Puppets go free and dead claimants revive, as before.
+  2. A province whose core nation is alive goes to it; else to its living claimant with the
+     lowest id.
+  3. The rest founds at most `KILL_STATES` = 5 nations, and no more than one for every
+     `KILL_CELLS_PER_STATE` = 200 cells the nation held (rounded, at least one). The
+     connected pieces share them by the weight of their cities (the sum of the sizes;
+     highest averages), no piece more than it has provinces with a city.
+  4. A piece with several is divided among seed provinces, each taking the provinces
+     nearest to it. The first seed is the capital's province, else the largest city's; each
+     further one has the highest product of its city's size and its distance from the seeds
+     taken.
+  5. A piece that founds nothing goes to the living nation with the most provinces next to
+     it. One with no neighbour, and the cells outside any province, go to the heir: the
+     nation founded on the old capital, else the largest founded, else whoever received the
+     most.
+  6. Nobody declares war: `spawnRebels` and `reviveNation` take `war = false`.
+- **Why five.** The critic asked for "a stated few". Five lets a large nation come apart
+  into pieces a viewer can count and name, and the war banners do not grow. One for every 200
+  cells keeps Luxembourg (14 cells) one nation.
+- **Why the cities weigh and not the land.** By cells France's Algeria is three times
+  metropolitan France (7,470 against 2,568) and would take four of the five.
+- **Why no war.** The nation that would declare it is dead before the tick ends. A new
+  nation that wants its neighbour's land declares its own war by the usual rules.
+- **Seeds, tried:** the largest cities in order gave two neighbouring provinces in France
+  (Ain and Rhône), and "Free Rhône" was the south-west with Lyon at its edge. The furthest
+  apart alone gave Finistère and Andorra's La Massana, and 1,800 / 553 / 373 cells. Size
+  times distance gives Paris, Ain and Haute-Garonne: 1,095 / 944 / 687.
+- **Measured with it** (seed 99, one tick after):
+
+  | Kill of | living | founded | their cells | wars |
+  |---|---|---|---|---|
+  | France | 102 → 106 | 5 | 1,095, 944, 687, 7,267, 203 | 2 → 2 |
+  | Yugoslavia | 102 → 106 | 5 | 535, 138, 50, 301, 72 | 2 → 2 |
+  | Italy | 102 → 107 | 5 | 1,263, 2,627, 2,516, 1,161, 191 | 2 → 2 |
+  | Luxembourg | 102 → 102 | 1 | 14 | 2 → 2 |
+
+  France's count is 106 and not 107 because France itself is gone; Italy's has Ethiopia back.
+- **A test restated, not weakened:** `godMode.test.ts`, the Kill of Yugoslavia, asked that
+  the new nations hold every cell Yugoslavia held. One cell of an island with Italy next to
+  it now goes to Italy (step 5). The test asks that the new nations and the neighbours'
+  gains together are every cell, and that the new nations hold over 99%.
+- **The plain game:** a collapse by bankruptcy is as it was (`forced` false: the restless
+  provinces revolt in connected groups, and the holder declares war on each). **The pin:**
+  not moved.
+- **Tests:** unit (`godMode.test.ts`): France, Yugoslavia, Italy and Luxembourg: one to five
+  founded, no `WarDeclared`, no new war, no cell left with the dead nation, the world's owned
+  land the same. Seen to fail before (38 founded for France). e2e (`godUi1938.spec.ts`): the
+  Kill of France by two clicks in the God tab. Pictures: `docs/evidence/2.15/`.
+- **What it does not give.**
+  - The dying nation's capital still moves once for each nation that takes it, with a
+    `CapitalMoved` event each time.
+  - Land that goes to a neighbour or back to a core nation is logged "broke away" (PLAN
+    2.15d).
+  - Algeria comes out as a coast of 203 cells and a desert of 7,267: provinces crossed, not
+    kilometres, decide who is nearest, and one desert province is most of the land.
+  - Indochina and Madagascar, with one or two cities, found nothing and go to a neighbour.
+  - The new nations are still "Free <province>" with plain flags (PLAN 2.15b, 2.15c).
+  - The dead nation keeps no claim on the land of the nations founded on it, so Revive
+    finds nothing there (PLAN 2.17).
+
 ### ADR-98 · 2026-10-05 · accepted — A deployed block stands no further from its formation than contact reaches (PLAN 2.14f5c)
 
 - **Context:** ADR-92, under "not done": "How far a block may stand from its formation has

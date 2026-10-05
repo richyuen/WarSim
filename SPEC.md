@@ -751,9 +751,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     (death + 2 years; 0 for nations dead at the start). It returns through a revolt on a
     province it has a core on (instead of new rebels), through its holder's collapse, or by God
     `reviveNation`.
-  - *Collapse:* 6 consecutive bankrupt months, or God `collapseNation`. Puppets go free, dead
-    claimants revive on their provinces, and restless (≥ 50) provinces revolt in connected
-    groups.
+  - *Collapse:* 6 consecutive bankrupt months. Puppets go free, dead claimants revive on
+    their provinces, and restless (≥ 50) provinces revolt in connected groups.
+  - *God Kill* (`collapseNation`, PLAN 2.15a, ADR-99): the nation dies and nobody declares
+    war over it. Puppets go free and dead claimants revive; land with a living core nation or
+    claimant goes to it; the rest founds at most 5 nations (one for every 200 cells), shared
+    among its connected pieces by their cities; a piece that founds nothing goes to its
+    neighbour, an island to the heir.
   - *Death rule:* losing the capital while holding no core land is death; the capturer annexes
     the rest.
 - **Cores**: provinces list core nations. Revival spawns a dead nation from its cores
@@ -1419,7 +1423,8 @@ on screen.
   phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
   section `world.names`), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God
-  Kill: forced, everything fragments and the nation dies), `reviveNation` (within the revival
+  Kill: the nation dies, its land goes back to claimants or founds at most five nations, and
+  no war starts: ADR-99), `reviveNation` (within the revival
   rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
   `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
   (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.

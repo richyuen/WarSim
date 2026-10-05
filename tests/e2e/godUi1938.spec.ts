@@ -5,6 +5,7 @@ import type {} from '../../src/app/testApi';
 import type { Inspection } from '../../src/shared/protocol';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { KILL_STATES } from '../../src/sim/systems/revival';
 
 // PLAN 1.32b AT: every God action is driven through the God tab of the nation panel (and its map
 // tools), and its effect is read back via `sim.inspect()`. Paused: commands apply at once.
@@ -129,4 +130,46 @@ test('God Mode through the UI: every action reaches the sim', async ({ page }, i
   // God Mode off: the God tab disappears.
   await page.getByTestId('god-btn').click();
   await expect(page.getByTestId('tab-god')).toHaveCount(0);
+});
+
+// PLAN 2.15a (ADR-99; critic R2-B6): a Kill of France through the God tab made 103 living nations
+// 139 and left 40 wars. It founds a stated few, and nobody goes to war over it.
+test('Kill through the God tab: a few new nations, no new war', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const FRA = id('FRA');
+  const before = await inspect(page);
+  const living = (s: Inspection): number[] => s.nations.filter((n) => n.living).map((n) => n.id);
+
+  await page.getByTestId('god-btn').click();
+  await page.evaluate((f) => window.__warsim!.view!.select(f), FRA);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(FRA));
+  await page.getByTestId('tab-god').click();
+  await page.getByTestId('god-kill').click();
+  await page.getByTestId('god-kill').click();
+  await expect.poll(async () => nation(await inspect(page), FRA).living).toBe(false);
+
+  const after = await inspect(page);
+  const born = living(after).filter((n) => !living(before).includes(n));
+  expect(born.length).toBeGreaterThanOrEqual(1);
+  expect(born.length).toBeLessThanOrEqual(KILL_STATES);
+  expect(nation(after, FRA).cells).toBe(0);
+  expect(after.wars.filter((w) => !before.wars.some((b) => b.id === w.id))).toEqual([]);
+  // The new nations hold most of what France held; the rest went to its neighbours.
+  const land = born.reduce((a, n) => a + nation(after, n).cells, 0);
+  expect(land).toBeGreaterThan(nation(before, FRA).cells * 0.9);
+  console.log(`Kill of France: ${living(before).length} -> ${living(after).length} living, ${born.length} founded (${born.map((n) => `${nation(after, n).name} ${nation(after, n).cells}`).join('; ')}), ${before.wars.length} -> ${after.wars.length} wars`);
+
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.15') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.evaluate(() => window.__warsim!.view!.select(0));
+  await lookAt(page, 2.5, 46.5, 10);
+  await page.waitForTimeout(1_500);
+  await page.screenshot({ path: path.join(out, 'kill-france-europe.png') });
+  await lookAt(page, 5, 25, 2.2);
+  await page.waitForTimeout(1_500);
+  await page.screenshot({ path: path.join(out, 'kill-france-africa.png') });
 });

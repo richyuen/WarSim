@@ -2113,6 +2113,40 @@ quick sweep as a smoke test.
   nations and starts no war by itself; no nation is named "Free state N"; every nation
   founded in 15 years of a game has a flag that is not blank (a test, and a picture looked
   at); land that returns to its owner is not logged as a revolt.
+  Split 2026-10-05 (one cause per commit):
+  - [x] 2.15a A Kill founds a stated few nations and starts no war. Done 2026-10-05 (ADR-99).
+    - *The causes:* the forced collapse cut the land into groups of 8 provinces and every
+      island into its own nation; and the dying holder declared war on each nation founded,
+      which brought in its allies, whose wars outlived it.
+    - *The rule:* land goes back to a living core nation or claimant; the rest founds at
+      most `KILL_STATES` (5) nations, one for every 200 cells, shared among the connected
+      pieces by their cities; a piece that founds nothing goes to its neighbour, an island
+      to the heir. Nobody declares war.
+    - *Measured* (seed 99, one tick after): France 102 → 106 living and 2 → 2 wars (139 and
+      40 before); Yugoslavia 106 and 2 (149 and 50).
+    - *Tests:* unit in `godMode.test.ts` (four nations; seen to fail: 38 founded); e2e in
+      `godUi1938.spec.ts` through the God tab; `docs/evidence/2.15/kill-france-*.png`,
+      looked at. The pin did not move.
+    - *Not done:* see ADR-99, "what it does not give".
+  - [ ] 2.15b No nation without a name: where "Free state N" can still come from (a
+    province with no name; the origin), and the origin on the province of the capital.
+    AT: every province of the 1938 data has a name or the name has another source; every
+    nation founded has an origin; unit.
+  - [ ] 2.15c A flag for every founded nation, made from its id and colour by a function any
+    scenario can use (PLAN 2.16 needs it). Look first at whether the plain flag is the
+    cause or a colour not yet known when the flag is first asked for; a reused id must not
+    show the flag of the nation before it.
+    AT: every nation founded in 15 years of a game has a flag of two colours or more, the
+    same for the same id and colour; a picture looked at.
+  - [ ] 2.15d Land that returns to a living nation, or goes to a neighbour in a Kill, is not
+    logged as a revolt: an event of its own, with its line in the history and its filter.
+    AT: unit on the events of a defection and of a Kill; the history's text in e2e.
+  - [ ] 2.15e A rebel nation's capital and militia stand on its own land (the 74 of 406
+    from PLAN 2.12a).
+    AT: the forced revolt in every province of the 1938 start: no capital on a cell that is
+    not the nation's, no militia off sure land.
+  - [ ] 2.15f The whole: the AT above read line by line, the pictures shot again, PARITY.
+    Ticks 2.15: the whole e2e suite.
 - [ ] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and
   nothing else: no other year, no other map, no random world with a number of nations. AoC
   has world scenarios for 1914, 1938, 1956 and today, regional maps, and a random simulation

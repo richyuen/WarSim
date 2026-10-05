@@ -229,7 +229,7 @@ function risingNeighbour(world: World, area: number[], holder: number): number {
 }
 
 /** The holder's land in `area` goes to living nation `to` (module comment: defection). */
-function defect(world: World, area: number[], holder: number, to: number): void {
+export function defect(world: World, area: number[], holder: number, to: number): void {
   const inArea = new Set(area);
   const { owner, province, w } = world.cells;
   let cells = 0;
@@ -294,9 +294,10 @@ function revoltArea(world: World, p: number, holder: number): number[] {
 
 /**
  * Creates the rebel nation on `area` (province ids) and returns its id; with `revive`, that dead
- * nation returns instead (PLAN 1.20, called by `reviveNation`).
+ * nation returns instead (PLAN 1.20, called by `reviveNation`). Without `war` the holder does not
+ * declare war on it (a God Mode Kill, whose holder dies in the same tick: ADR-99).
  */
-export function spawnRebels(world: World, area: number[], holder: number, revive = 0): number {
+export function spawnRebels(world: World, area: number[], holder: number, revive = 0, war = true): number {
   const nt = world.nations;
   let id = revive;
   if (id === 0) id = nt.create();
@@ -371,6 +372,6 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   // A revolt is a war of independence (AoC; PLAN 1.40 tuning): rebels keep their land only by
   // winning it. (Half of the revolts used to start in peace and stayed independent for good: the
   // 50-year sweep counted 300–600 nations.)
-  declareWar(world, holder, id);
+  if (war) declareWar(world, holder, id);
   return id;
 }

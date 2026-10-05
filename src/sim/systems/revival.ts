@@ -12,6 +12,21 @@
  * eligible dead claimant goes to that nation (one revival per claimant); held provinces with
  * unrest ≥ REVOLT_FROM revolt (one rebel nation per connected group). `NationCollapsed` event.
  *
+ * God Mode Kill (the forced collapse, ADR-99): the nation ends, and nobody declares war over it.
+ * Its puppets go free and its dead claimants revive as above. Then, in this order:
+ *   1. A province whose core nation is alive, or else one with a living claimant (lowest id),
+ *      goes to that nation.
+ *   2. The rest founds at most min(KILL_STATES, cells held / KILL_CELLS_PER_STATE rounded, at
+ *      least 1) nations. A connected piece of the land takes as many of them as its cities weigh
+ *      (the sum of their sizes; highest averages), no more than it has provinces with a city.
+ *      A piece that founds several is divided among provinces with a city, each taking the
+ *      provinces nearest to it: the first is the capital's (else the largest city's), each
+ *      further one a large city's far from those already chosen (`spread`).
+ *   3. A piece that founds none goes to the living nation with the most provinces next to it
+ *      (lowest id on a tie); one with no neighbour (an island) and the cells outside any
+ *      province go to the heir: the nation founded on the old capital, else the largest
+ *      founded, else whoever received the most land.
+ *
  * Capital loss without cores (AoC's death rule, deferred in ADR-28): a nation that loses its
  * capital while holding no province it has a core on dies; the capturer annexes what it held.
  */
@@ -19,12 +34,16 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { navOf, type World } from '../world';
 import { releasePuppet } from './puppets';
-import { REGION_MAX, REVOLT_FROM, spawnRebels } from './revolts';
+import { defect, REVOLT_FROM, spawnRebels } from './revolts';
 import { eliminateNation } from './capitals';
 
 export const REVIVALS = 2;
 export const REVIVAL_COOLDOWN = 24 * 730;
 export const COLLAPSE_MONTHS = 6;
+/** The most nations a God Mode Kill founds (ADR-99). */
+export const KILL_STATES = 5;
+/** A Kill founds one nation for every KILL_CELLS_PER_STATE cells the nation held (at least one). */
+export const KILL_CELLS_PER_STATE = 200;
 
 /** Whether dead nation n may revive now. */
 export function canRevive(world: World, n: number): boolean {
@@ -39,8 +58,8 @@ export function deadClaimant(world: World, p: number): number {
   return best;
 }
 
-/** Brings dead nation n back on `area` (province ids, taken from their holders). */
-export function reviveNation(world: World, n: number, area: number[]): boolean {
+/** Brings dead nation n back on `area` (province ids, taken from their holders); see `spawnRebels` for `war`. */
+export function reviveNation(world: World, n: number, area: number[], war = true): boolean {
   if (!canRevive(world, n) || area.length === 0) return false;
   const g = navOf(world).graph;
   // Group by holder (each holder loses its share); the revived nation is created once.
@@ -55,7 +74,7 @@ export function reviveNation(world: World, n: number, area: number[]): boolean {
   }
   if (byHolder.size === 0) return false;
   world.nations.cols.revivalsLeft[n] = world.nations.cols.revivalsLeft[n]! - 1;
-  for (const [h, ps] of [...byHolder].sort((a, b) => a[0] - b[0])) spawnRebels(world, ps, h, n);
+  for (const [h, ps] of [...byHolder].sort((a, b) => a[0] - b[0])) spawnRebels(world, ps, h, n, war);
   const nc = world.nations.cols; // after the rebels: see `Table.create` (PLAN 2.12)
   world.out.emit(world.tick, EventKind.NationRevived, n, nc.revivalsLeft[n]!, nc.capitalX[n]!, nc.capitalY[n]!);
   return true;
@@ -68,8 +87,7 @@ export function reviveOnCores(world: World, n: number): boolean {
 
 /**
  * Fragments nation c (see the module comment). `forced` (God Mode Kill, PLAN 1.32): every
- * province it holds goes, calm or not: claimants revive, the rest splits into rebel nations of at
- * most REGION_MAX connected provinces, and c dies.
+ * province it holds goes, calm or not, and c dies (`killNation`).
  */
 export function collapseNation(world: World, c: number, forced = false): void {
   // Taken anew after every revival and every founding below: a new nation's row may move the
@@ -110,43 +128,214 @@ export function collapseNation(world: World, c: number, forced = false): void {
   const taken = new Set<number>();
   for (const [d, ps] of [...byClaimant].sort((a, b) => a[0] - b[0])) {
     if (!forced && nc.living[c] !== 1) break;
-    if (reviveNation(world, d, ps)) for (const p of ps) taken.add(p);
+    if (reviveNation(world, d, ps, !forced)) for (const p of ps) taken.add(p);
     nc = world.nations.cols;
   }
+  if (forced) {
+    killNation(world, c, held.filter((p) => !taken.has(p)));
+    return;
+  }
   // 2. Restless provinces revolt, one rebel nation per connected group.
-  // Forced: every remaining province, in groups of at most REGION_MAX.
-  const restless = new Set(held.filter((p) => !taken.has(p) && (forced || pv.unrest[p]! >= REVOLT_FROM)));
-  const groupMax = forced ? REGION_MAX : Infinity;
-  let largest = 0;
-  let largestCells = 0;
+  const restless = new Set(held.filter((p) => !taken.has(p) && pv.unrest[p]! >= REVOLT_FROM));
   for (const start of [...restless].sort((a, b) => a - b)) {
-    if (!restless.has(start) || (!forced && nc.living[c] !== 1)) continue;
+    if (!restless.has(start) || nc.living[c] !== 1) continue;
     const group = [start];
     restless.delete(start);
-    for (let i = 0; i < group.length && group.length < groupMax; i++) {
+    for (let i = 0; i < group.length; i++) {
       for (const q of g.adj[group[i]!] ?? []) {
-        if (!restless.has(q) || group.length >= groupMax) continue;
+        if (!restless.has(q)) continue;
         restless.delete(q);
         group.push(q);
       }
     }
-    const r = spawnRebels(world, group, c);
+    spawnRebels(world, group, c);
     nc = world.nations.cols;
-    if (nc.cells[r]! > largestCells) {
-      largest = r;
-      largestCells = nc.cells[r]!;
+  }
+}
+
+interface Piece {
+  provinces: number[];
+  cells: number;
+  /** The sum of its cities' sizes. */
+  weight: number;
+  /** Where its nations can be founded: its provinces with a city, the largest city first. */
+  seeds: number[];
+  states: number;
+}
+
+/** The end of a God Mode Kill (module comment): `rest` is what c still holds, ascending. */
+function killNation(world: World, c: number, rest: number[]): void {
+  const pv = world.provinces;
+  const g = navOf(world).graph;
+  const { owner, controller, province, w } = world.cells;
+  const living = (n: number): boolean => n !== 0 && n !== c && world.nations.has(n) && world.nations.cols.living[n] === 1;
+  const cellsIn = new Map<number, number>();
+  let held = 0;
+  for (let cell = 0; cell < owner.length; cell++) {
+    if (owner[cell] !== c) continue;
+    held++;
+    cellsIn.set(province[cell]!, (cellsIn.get(province[cell]!) ?? 0) + 1);
+  }
+  const cellsOf = (ps: number[]): number => ps.reduce((a, p) => a + (cellsIn.get(p) ?? 0), 0);
+  const capitalProvince = province[Math.floor(world.nations.cols.capitalY[c]!) * w + Math.floor(world.nations.cols.capitalX[c]!)] ?? 0;
+  const received = new Map<number, number>();
+  const give = (area: number[], to: number): void => {
+    defect(world, area, c, to);
+    received.set(to, (received.get(to) ?? 0) + cellsOf(area));
+  };
+  // 1. Back to a living core nation, or else to a living claimant.
+  const back = new Map<number, number[]>();
+  const left = new Set<number>();
+  for (const p of rest) {
+    const core = pv.core[p]!;
+    const to = living(core) ? core : (pv.coresOf(p).filter(living).sort((a, b) => a - b)[0] ?? 0);
+    if (to === 0) left.add(p);
+    else back.set(to, [...(back.get(to) ?? []), p]);
+  }
+  for (const [to, ps] of [...back].sort((a, b) => a[0] - b[0])) give(ps, to);
+  // 2. The connected pieces of the rest, and the weight of each one's cities.
+  const cc = world.cities.cols;
+  const cityOf = new Map<number, number>(); // province → its largest city
+  const weightOf = new Map<number, number>();
+  world.cities.forEach((ci) => {
+    const p = province[cc.cell[ci]!]!;
+    if (owner[cc.cell[ci]!] !== c || !left.has(p)) return;
+    weightOf.set(p, (weightOf.get(p) ?? 0) + cc.size[ci]!);
+    const best = cityOf.get(p) ?? 0;
+    if (best === 0 || cc.size[ci]! > cc.size[best]!) cityOf.set(p, ci);
+  });
+  const pieces: Piece[] = [];
+  for (const start of rest) {
+    if (!left.has(start)) continue;
+    const ps = [start];
+    left.delete(start);
+    for (let i = 0; i < ps.length; i++) {
+      for (const q of g.adj[ps[i]!] ?? []) {
+        if (!left.has(q)) continue;
+        left.delete(q);
+        ps.push(q);
+      }
+    }
+    const seeds = ps.filter((p) => cityOf.has(p)).sort((a, b) => cc.size[cityOf.get(b)!]! - cc.size[cityOf.get(a)!]! || a - b);
+    pieces.push({ provinces: ps, cells: cellsOf(ps), weight: ps.reduce((a, p) => a + (weightOf.get(p) ?? 0), 0), seeds, states: 0 });
+  }
+  // Highest averages (D'Hondt) over the cities' weight.
+  const states = Math.max(1, Math.min(KILL_STATES, Math.round(held / KILL_CELLS_PER_STATE)));
+  for (let k = 0; k < states; k++) {
+    let best: Piece | null = null;
+    for (const pc of pieces) {
+      if (pc.states >= pc.seeds.length) continue;
+      if (best === null || pc.weight / (pc.states + 1) > best.weight / (best.states + 1)) best = pc;
+    }
+    if (best === null) break;
+    best.states++;
+  }
+  // No city anywhere and nobody the land could go to: the largest piece founds the one nation.
+  if (pieces.length > 0 && received.size === 0 && pieces.every((pc) => pc.states === 0 && neighbourOf(world, pc.provinces, c) === 0)) {
+    const largest = pieces.reduce((a, b) => (b.cells > a.cells ? b : a));
+    largest.seeds = [largest.provinces.reduce((a, p) => ((cellsIn.get(p) ?? 0) > (cellsIn.get(a) ?? 0) ? p : a))];
+    largest.states = 1;
+  }
+  let heir = 0;
+  let largest = 0;
+  for (const pc of pieces) {
+    if (pc.states === 0) continue;
+    // Each of the piece's nations takes the provinces nearest to its seed: breadth-first, the
+    // seeds in turn, a layer at a time.
+    const areas = spread(g.adj, pc, pc.states, (p) => cc.size[cityOf.get(p)!]!, capitalProvince).map((p) => [p]);
+    const free = new Set(pc.provinces);
+    for (const area of areas) free.delete(area[0]!);
+    const at = areas.map(() => 0);
+    for (let grew = true; grew && free.size > 0; ) {
+      grew = false;
+      for (let k = 0; k < areas.length; k++) {
+        const area = areas[k]!;
+        const end = area.length;
+        for (let i = at[k]!; i < end; i++) {
+          for (const q of g.adj[area[i]!] ?? []) {
+            if (!free.has(q)) continue;
+            free.delete(q);
+            area.push(q);
+            grew = true;
+          }
+        }
+        at[k] = end;
+      }
+    }
+    for (const area of areas) {
+      const r = spawnRebels(world, area, c, 0, false);
+      const cells = world.nations.cols.cells[r]!;
+      received.set(r, cells);
+      if (area.includes(capitalProvince)) heir = r;
+      if (largest === 0 || cells > received.get(largest)!) largest = r;
     }
   }
-  if (!forced) return;
-  // Cells outside any province (slivers) go to the largest fragment; then c is gone.
-  const { owner, controller } = world.cells;
+  if (heir === 0) heir = largest;
+  // 3. The pieces that found nothing: to the neighbour, else to the heir.
+  const islands: number[] = [];
+  for (const pc of pieces) {
+    if (pc.states > 0) continue;
+    const neighbour = neighbourOf(world, pc.provinces, c);
+    if (neighbour !== 0) give(pc.provinces, neighbour);
+    else islands.push(...pc.provinces);
+  }
+  if (heir === 0) for (const [n, cells] of [...received].sort((a, b) => a[0] - b[0])) if (heir === 0 || cells > received.get(heir)!) heir = n;
+  if (heir !== 0 && islands.length > 0) give(islands, heir);
+  // Cells outside any province (slivers) go to the heir; then c is gone.
   for (let cell = 0; cell < owner.length; cell++) {
-    if (largest !== 0 && owner[cell] === c) {
-      world.setOwner(cell, largest);
-      if (controller[cell] === c) world.setController(cell, largest);
+    if (heir !== 0 && owner[cell] === c) {
+      world.setOwner(cell, heir);
+      if (controller[cell] === c) world.setController(cell, heir);
     }
   }
   eliminateNation(world, c);
+}
+
+/**
+ * `n` of the piece's seeds: `first` if it is one of them, else the first; then each time the one
+ * with the highest product of its city's `size` and its distance (in provinces crossed) from
+ * the seeds taken (the earlier seed on a tie).
+ */
+function spread(adj: readonly (readonly number[])[], pc: Piece, n: number, size: (p: number) => number, first: number): number[] {
+  const inPiece = new Set(pc.provinces);
+  const dist = new Map<number, number>();
+  const taken: number[] = [];
+  for (let next = pc.seeds.includes(first) ? first : pc.seeds[0]; next !== undefined && taken.length < n; ) {
+    taken.push(next);
+    dist.set(next, 0);
+    const queue = [next];
+    for (let i = 0; i < queue.length; i++) {
+      const d = dist.get(queue[i]!)! + 1;
+      for (const q of adj[queue[i]!] ?? []) {
+        if (!inPiece.has(q) || (dist.get(q) ?? Infinity) <= d) continue;
+        dist.set(q, d);
+        queue.push(q);
+      }
+    }
+    next = undefined;
+    for (const p of pc.seeds) {
+      if (dist.get(p) === 0) continue;
+      if (next === undefined || size(p) * dist.get(p)! > size(next) * dist.get(next)!) next = p;
+    }
+  }
+  return taken;
+}
+
+/** The living nation other than c that holds the most provinces next to `area` (lowest id on a tie), or 0. */
+function neighbourOf(world: World, area: number[], c: number): number {
+  const g = navOf(world).graph;
+  const nc = world.nations.cols;
+  const count = new Map<number, number>();
+  for (const p of area) {
+    for (const q of g.adj[p] ?? []) {
+      const cell = g.centre[q] ?? -1;
+      const n = cell >= 0 ? world.cells.owner[cell]! : 0;
+      if (n !== 0 && n !== c && nc.living[n] === 1) count.set(n, (count.get(n) ?? 0) + 1);
+    }
+  }
+  let best = 0;
+  for (const [n, k] of [...count].sort((a, b) => a[0] - b[0])) if (best === 0 || k > count.get(best)!) best = n;
+  return best;
 }
 
 /** Monthly: bankruptcy streaks and collapse. */
