@@ -3,7 +3,7 @@
  * every host runs exactly the same code path.
  */
 import type { Command } from '../shared/commands';
-import type { SimInit } from '../shared/protocol';
+import type { ScenarioId, SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
 import { applyPendingCommands, step, type System } from './tick';
 import { BUILD_MIX_1938, createWorld1938, ECONOMY_TABLES_1938, RULES_1938 } from './scenario1938';
@@ -33,8 +33,11 @@ import type { World } from './world';
 export class Sim {
   readonly world: World;
   private readonly systems: readonly System[];
+  /** The scenario the world was made as; a load keeps it (a save is of the same scenario). */
+  readonly scenario: ScenarioId;
 
   constructor(init: SimInit) {
+    this.scenario = init.scenario;
     switch (init.scenario) {
       case 'toy':
         this.world = createToyWorld(init.seed);

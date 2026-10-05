@@ -40,7 +40,7 @@ import {
   type WarBattle,
   type WarStat,
 } from '../shared/protocol';
-import { SCENARIO_GEOMETRY } from '../shared/scenarios';
+import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
 import { foundedName, provinceLabel } from '../shared/nationNames';
 import { xxhash32View } from '../sim/core/hash';
@@ -527,7 +527,7 @@ export class SimServer {
 
   /**
    * Nation panel and war banner data (PLAN 1.31): when the tick moved (or after init/load), at
-   * most every STATS_INTERVAL_MS. Real-map scenarios only (names come from the 1938 table).
+   * most every STATS_INTERVAL_MS. Real-map scenarios only (the toy world has no panels).
    */
   private maybeStats(nowMs: number): void {
     const sim = this.sim;
@@ -792,13 +792,19 @@ export class SimServer {
     return new TextEncoder().encode(JSON.stringify(out));
   }
 
-  /** i18n key of a scenario nation, or a literal ('=…') name for a spawned one. */
+  /**
+   * i18n key of a nation of the scenario's table, or a literal ('=…') name: of a nation founded
+   * in the game, or of one whose scenario has no table (PLAN 2.16b; their names are in
+   * `world.names` from the start).
+   */
   private nameOf(id: number): string {
-    const custom = this.sim?.world.names.get(id);
+    const sim = this.requireSim();
+    const custom = sim.world.names.get(id);
     if (custom !== undefined) return `=${custom}`; // God Mode rename (PLAN 1.32)
-    const def = NATIONS_1938[id - 1];
+    // The one table there is, is that of 1938: it names the nations of the scenarios with its tags.
+    const def = SCENARIO_INFO[sim.scenario].nationTags[id - 1] !== undefined ? NATIONS_1938[id - 1] : undefined;
     if (def) return def.nameKey;
-    const origin = this.requireSim().world.nations.cols.origin[id] ?? 0;
+    const origin = sim.world.nations.cols.origin[id] ?? 0;
     return `=${foundedName(id, origin, this.provinceNames)}`;
   }
 

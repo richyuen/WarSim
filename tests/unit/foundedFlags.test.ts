@@ -16,6 +16,8 @@ import { assets1938 } from '../helpers/earth';
 // and its colour, of two colours or more.
 
 const PIXELS = FLAG_W * FLAG_H;
+/** The tags of the 1938 table, as the map view gives them to the store in the 1938 world. */
+const tagOf = (id: number): string | undefined => nationsJson.nations[id - 1]?.tag;
 const pixelsOf = (id: number, colour: number): Uint32Array => specToPixels(foundedFlag(id, colour), {});
 
 /** The colours of a flag that hold a twentieth of it or more (not the edge of a shape). */
@@ -34,6 +36,7 @@ describe('flags of founded nations (PLAN 2.15c)', () => {
     const store = new FlagStore(
       (id) => nc.color[id],
       (id) => nc.origin[id] !== 0,
+      tagOf,
     );
     const seen = new Set<string>();
     let founded = 0;
@@ -68,7 +71,7 @@ describe('flags of founded nations (PLAN 2.15c)', () => {
 
   it('a flag asked for before the colour is known is not kept once it is', () => {
     const colour = new Map<number, number>();
-    const store = new FlagStore((id) => colour.get(id));
+    const store = new FlagStore((id) => colour.get(id), () => false, tagOf);
     const early = store.pixelsOf(300);
     expect(colours(early).length).toBeGreaterThanOrEqual(2);
     colour.set(300, 0xb04a6e);
@@ -86,6 +89,7 @@ describe('flags of founded nations (PLAN 2.15c)', () => {
     const store = new FlagStore(
       () => 0x7a5ac0,
       (id) => founded.has(id),
+      tagOf,
     );
     const france = store.pixelsOf(FRA);
     expect(france).not.toEqual(pixelsOf(FRA, 0x7a5ac0));

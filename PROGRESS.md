@@ -6020,3 +6020,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   world (a line under 2.16d).
 - **Gotchas:** `equipFormation` does not set the formation's template; set it first.
 - **Next:** PLAN 2.16b, flags and names by scenario.
+
+## 2026-10-05 — PLAN 2.16b: flags and names by scenario (ADR-109)
+
+- **Built:** `ScenarioInfo.nationTags` (the 1938 tags; none for the toy and the random
+  world). `FlagStore` takes `tagOf` from the map view; `Sim.scenario`; the worker's `nameOf`
+  reads the 1938 table only for a nation with a tag. The toy world's nations are "West" and
+  "East" (`world.names`).
+- **Tests:** `tests/unit/flagsByScenario.test.ts` (7). Seen to fail before the change: four
+  (the toy world's nation 1 was `nation.GER` under Germany's flag). `foundedFlags.test.ts`
+  gives the store the 1938 tags, as the map view does there.
+- **The pin did not move** (324bc358). The toy world's hash did; no test pins it.
+- **Looked at in the page** (a scratch script on the dev server, three pictures not kept):
+  `?scenario=toy`: two made flags at the capitals and on the counters; `?scenario=random`:
+  made flags (East Flanders, a star on green); `?scenario=1938`: Germany, Austria,
+  Czechoslovakia and Poland fly their own. No error in the console.
+- **Run by hand:** `i18n`, `smoke`, `worker`, `snapshots`, `mapview`, `flags1938`, `title` (14): green. The e2e of the random world is 2.16d.
+- **Seen, not changed:** a rename to the empty name in a world without a table leaves
+  "Free state N" (a line under PLAN 2.17). The toy world sends no labels and no stats, so
+  its names show only in an inspection.
+- **PARITY:** row 48 appended.
+- **Next:** PLAN 2.16c, the title screen: the random world on the list.

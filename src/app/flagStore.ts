@@ -1,12 +1,12 @@
 /**
- * Nation flags in the app (PLAN 1.37b): a nation's custom pixel flag if it has one, else its
- * scenario flag (data/scenarios/1938/flags.json, rasterized to 36×24), else a flag made from its
- * id and colour (`foundedFlag`, PLAN 2.15c: the nations founded in a game). Cached as canvases
- * (map overlay) and data URLs (panels).
+ * Nation flags in the app (PLAN 1.37b): a nation's custom pixel flag if it has one, else the
+ * flag of its tag in its scenario's nation table (data/scenarios/1938/flags.json, rasterized to
+ * 36×24), else a flag made from its id and colour (`foundedFlag`: the nations founded in a game,
+ * PLAN 2.15c, and those of a scenario without a table, PLAN 2.16b). Cached as canvases (map
+ * overlay) and data URLs (panels).
  */
 import presetsJson from '../../data/flags/presets.json' with { type: 'json' };
 import flagsJson from '../../data/scenarios/1938/flags.json' with { type: 'json' };
-import nationsJson from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import type { FlagPresets, FlagSpec } from '../shared/flags';
 import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../shared/flagPixels';
 import { decodeRunsU32 } from '../shared/mapImport';
@@ -31,10 +31,12 @@ export class FlagStore {
   /**
    * `colorOf`: the nation's colour, once known. `foundedOf`: whether the nation was founded in
    * the game, so that one on the id of a scenario nation does not fly that nation's flag.
+   * `tagOf`: the nation's tag in its scenario's table (`ScenarioInfo.nationTags`), if it has one.
    */
   constructor(
     private readonly colorOf: (id: number) => number | undefined,
-    private readonly foundedOf: (id: number) => boolean = () => false,
+    private readonly foundedOf: (id: number) => boolean,
+    private readonly tagOf: (id: number) => string | undefined,
   ) {}
 
   setCustom(custom: [number, number[]][]): void {
@@ -53,7 +55,7 @@ export class FlagStore {
   /** The 36×24 pixels of nation `id`'s flag (a copy is safe to edit). */
   pixelsOf(id: number): Uint32Array {
     const custom = this.custom.get(id);
-    const tag = this.foundedOf(id) ? undefined : nationsJson.nations[id - 1]?.tag;
+    const tag = this.foundedOf(id) ? undefined : this.tagOf(id);
     const spec = tag ? SPECS[tag] : undefined;
     const colour = (this.colorOf(id) ?? UNKNOWN) & 0xffffff;
     // A made flag follows the nation's colour and whether it was founded: a flag asked for

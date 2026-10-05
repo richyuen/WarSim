@@ -40,10 +40,13 @@ export function createToyWorld(seed: number): World {
   }
 
   const colors = [0, 0x3b6fb6, 0xc8553d];
+  // Their names are literal, as the random world's are: no nation table names them (PLAN 2.16b).
+  const names = ['', 'West', 'East'];
   for (let n = 1; n <= 2; n++) {
     const id = world.nations.create();
     world.nations.cols.color[id] = colors[n]!;
     world.nations.cols.living[id] = 1;
+    world.names.set(id, names[n]!);
     world.nations.cols.capitalX[id] = n === 1 ? TOY_W * 0.25 : TOY_W * 0.75;
     world.nations.cols.capitalY[id] = TOY_H * 0.5;
   }

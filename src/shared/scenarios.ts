@@ -35,6 +35,12 @@ export interface ScenarioInfo {
   nations: number;
   /** Not offered on the title screen: it opens by its URL only (`?scenario=<id>`). */
   hidden: boolean;
+  /**
+   * The tags of the scenario's nation table by nation id - 1; none where the nations are made in
+   * code (the toy world) or by the seed (the random world). A nation with a tag has the name and
+   * the flag its scenario gives it (PLAN 2.16b).
+   */
+  nationTags: readonly string[];
 }
 
 interface MapJson {
@@ -65,7 +71,7 @@ export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   random: geometry(earthMap, scenarioRandom),
 };
 
-function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson, nations: number): ScenarioInfo {
+function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson, nations: number, nationTags: readonly string[] = []): ScenarioInfo {
   return {
     geometry: SCENARIO_GEOMETRY[id],
     startDay: dayOfIso(scenario.startDate),
@@ -74,13 +80,14 @@ function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson, nations: num
     mapNameKey: map.nameKey,
     nations,
     hidden: scenario.hidden === true,
+    nationTags,
   };
 }
 
 export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
   // The toy world's two nations are code (src/sim/toy.ts), not a nations file.
   toy: info('toy', toyMap, toyScenario, 2),
-  '1938': info('1938', earthMap, scenario1938, (nations1938.nations as { alive?: boolean }[]).filter((n) => n.alive !== false).length),
+  '1938': info('1938', earthMap, scenario1938, (nations1938.nations as { alive?: boolean }[]).filter((n) => n.alive !== false).length, nations1938.nations.map((n) => n.tag)),
   // Its nations are made by the seed (src/sim/randomWorld.ts); this is how many when none is asked for.
   random: info('random', earthMap, scenarioRandom, RANDOM_NATIONS_DEFAULT),
 };

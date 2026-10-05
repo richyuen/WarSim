@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-109 · 2026-10-05 · accepted — A scenario says whether it has a nation table; without one a nation's name and flag are its own (PLAN 2.16b)
+
+- **Context:** `FlagStore` and the worker's `nameOf` read the 1938 table by nation id in every
+  scenario. The toy world's two nations were "Germany" and "Austria" under their flags, and
+  the random world's sixty flew the flags of the first sixty nations of 1938.
+- **Decision:**
+  - `ScenarioInfo.nationTags` (`src/shared/scenarios.ts`): the tags of the scenario's nation
+    table by id, empty for the toy and the random world. It is the one place that says so.
+  - `FlagStore` is given `tagOf` by the map view; it no longer imports the nations of 1938. A
+    nation without a tag flies the made flag of PLAN 2.15c (`foundedFlag`: its id and colour).
+  - `Sim.scenario`; `nameOf` reads the table only for a nation with a tag.
+  - The toy world's nations are named in `world.names` ("West", "East"), as the random
+    world's are (ADR-108). The names are literal, not i18n keys: so are province names.
+- **Not changed:** `NationField.founded` still means "founded in the game" only.
+- **The pin did not move** (324bc358). The toy world's hash did (names are state); no test
+  pins it, and a toy autosave of before still loads (its names are those of 1938's keys).
+- **What it does not give.**
+  - A second nation table: the worker still knows only `NATIONS_1938`. Another year
+    (PLAN 7.4) brings its own table and its own flags file.
+  - A cleared God Mode name in a world without a table: the rename command with an empty
+    name deletes the entry, and the nation then reads "Free state N". A line of PLAN 2.17.
+
 ### ADR-108 · 2026-10-05 · accepted — The random world: the earth shared out by the seed (PLAN 2.16a)
 
 - **Context:** the critic's R2-B7: one scenario, one map, no random world; AoC's usual way to
@@ -411,7 +433,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     design, and two ids can come to the same pattern and colours. Of 406 nations founded by a
     revolt forced in every province of the 1938 start, all 406 flags differ.
   - Flags by scenario: `FlagStore` still reads the 1938 tags and flags whatever the scenario
-    (the toy world's nations fly flags of 1938). PLAN 2.16.
+    (the toy world's nations fly flags of 1938). PLAN 2.16. Done in PLAN 2.16b (ADR-109).
   - The GPU flag atlas (`buildFlagAtlas`, the bench of PLAN 1.6) holds the 103 scenario flags
     only; what the game draws goes through `FlagStore`.
 

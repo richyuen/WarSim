@@ -2285,9 +2285,15 @@ quick sweep as a smoke test.
       tick 1.47 ms, 511 formations after the year (seed 7 starts with 565).
     - *Not seen to fail:* the tests are of new code. The rule against a capital on an islet
       has no test: before it, a world of 200 had nations of one cell (La Digue).
-  - [ ] 2.16b Flags and names by scenario: `FlagStore` and the worker's `nameOf` read the
+  - [x] 2.16b Flags and names by scenario: `FlagStore` and the worker's `nameOf` read the
     1938 table only in the 1938 world (PLAN 7.4 "Flags by scenario"); a nation of the random
     world, and of the toy world, flies a made flag.
+    Done 2026-10-05 (ADR-109).
+    - *Tests:* `tests/unit/flagsByScenario.test.ts` (7); four seen to fail before the change
+      (the made flag in the toy and the random world, the toy world's names, the tags).
+    - *Looked at in the page* (a scratch script, three pictures not kept): the toy world's
+      two flags and the random world's are made flags; 1938 flies its own. No console error.
+    - *The pin did not move.* The toy world's hash did (its two names are state).
   - [ ] 2.16c The title screen: the random world on the list with its picture, a field for
     the number of nations, `?nations=N` in the URL and in the autosave.
   - [ ] 2.16d The whole: e2e from the title screen (count, names, flags, the same seed the
@@ -2297,6 +2303,8 @@ quick sweep as a smoke test.
       editor is reachable there).
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
+  - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world
+    deletes the nation's only name; it then reads "Free state N".
   - **Ally** with a nation that is in another alliance (France of the Anglo-French, Italy of
     the Anti-Comintern): nothing changes and nothing is said.
   - **The Territory brush gives no territory.** A drag of 250 px from France across the Alps
@@ -2590,9 +2598,9 @@ quick sweep as a smoke test.
     light fill (Japan's on China's) a sprite at 0.55 and one at 1 are close to the eye.
   - **The legend at T2 and T3.** It says "Hatched: occupied land" at every zoom; since PLAN
     2.11f occupied land is a tint with an eighth of the hatching there.
-  - **Flags by scenario.** `flagStore` maps nation ids to 1938 tags in every scenario (the
-    toy world's two nations wear the first two 1938 flags). A second scenario needs its flags
-    from its own data.
+  - **Flags by scenario.** Done in PLAN 2.16b (ADR-109) for the worlds without a nation
+    table. Left: a second table (another year) brings its own flags file; the worker and
+    `ScenarioInfo.nationTags` know only that of 1938.
   - **From the pictures of PLAN 2.14, shot again (2.14f6, 2026-10-05):** a tag at the view's
     top edge stands under the top bar (`contact-5m.png`; the nation, formation and ranking
     panels are no obstacles to a tag either); figures at 20 m/px are faint on a plain

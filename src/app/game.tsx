@@ -36,7 +36,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   // New-game options (PLAN 1.39b1); a non-looping map also renders without wrap copies.
   const options = optionsFromUrl(params);
   const geometry = options.loopingMap === false ? { ...scenario.geometry, wrapX: false } : scenario.geometry;
-  const view = params.get('view') === '0' ? null : new MapView(canvas, geometry, sim);
+  const view = params.get('view') === '0' ? null : new MapView(canvas, geometry, sim, scenario.nationTags);
   const hud = new Hud(sim, scenario.startDay);
   let player: PlayerControl | null = null;
   hud.installKeys(window);

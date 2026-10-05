@@ -189,6 +189,8 @@ export class MapView {
     private readonly canvas: HTMLCanvasElement,
     readonly geo: MapGeometry,
     private readonly sim: SimClient,
+    /** The tags of the scenario's nation table (`ScenarioInfo.nationTags`): whose flags it gives. */
+    private readonly nationTags: readonly string[] = [],
   ) {
     const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is required');
@@ -1225,6 +1227,7 @@ export class MapView {
   readonly flags = new FlagStore(
     (id) => this.ownColor.get(id),
     (id) => this.founded.has(id),
+    (id) => this.nationTags[id - 1],
   );
   private readonly capitals = new Map<number, [number, number]>();
   /** Where flags were drawn last frame, CSS px (tests). */
