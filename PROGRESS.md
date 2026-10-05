@@ -5701,3 +5701,35 @@ No rule changed and nothing on screen changed. One task came out of it.
   way not measured; `prefers-reduced-motion`; no unit test of the controller; `zoomDemo`,
   `camera` and `battleView` not run (they use `set` and `zoomTo`, which fly nothing).
 - **Next:** PLAN 2.14f5c, how far a block stands from its own formation.
+
+## 2026-10-05 — PLAN 2.14f5c: a deployed block stands no further from its formation than contact reaches
+
+- **Decided and built (ADR-98):** `DEPLOY_REACH` in `systems/elements.ts`, equal to
+  `CONTACT_CELLS` (1.5 cells, 29.4 km). `deployOf` takes the block that far along its line and
+  no further. It binds only on a block that comes up to another's block: two that are each
+  other's nearest go 0.67 cells at most.
+- **Without it** (60 days of Germany against Poland hour by hour; seed 99, and seed 7 by a
+  probe not kept): the furthest block 44.3 and 79.8 km from its formation; beyond contact in
+  3.4% and 5.1% of the block-hours.
+- **With it:** the share of formations with their enemy in one view at 20 m/px loses 1.7
+  points at most on the ten days looked at, 93.0% the lowest as before. The longest hop 40.0
+  km (50.0) and 34.9 (37.6); 489 hops on seed 99 (511).
+- **The cost:** a block held back stops short of the block it was going to: 7.8 and 10.1 km
+  from it in the median (3.3 without), 17.2 and 28.7 at most. Over half a view in 323 and
+  1,678 block-hours, 0.2% and 0.8% of all. Those hours' shots are that long.
+- **Tried and not taken:** 1.25, 1.0 and 0.75 cells. Each puts more blocks on one another;
+  0.75 fails the test's 90% (86.2%).
+- **Tests:** unit, in the hour-by-hour test of `deploy.test.ts` (no new run of 60 days): the
+  furthest block within `CONTACT_CELLS`, the limit met (5,733 block-hours), never by a pair
+  of each other's nearest, a block at the limit under 1.5 cells from its enemy's block. Seen
+  to fail with the limit off (2.26 cells). 690 unit tests, as before.
+- **A mistake on the way:** the first assertion compared with `DEPLOY_REACH` itself, and
+  with the limit set to infinity it could not fail. It asks for `CONTACT_CELLS`.
+- **A gotcha:** a block at the limit is 1.5 cells from its formation give or take a rounding
+  (`fx + ux * shift * k / 8`): count "at the limit" with a margin, not "over".
+- **Run by hand:** `toBattle` (2): green; day 60 lands on formations 45 and 563 as before.
+- **Not done:** hops of 40 km in an hour remain and were not looked at on the screen; no
+  picture of a held-back block; `battleView`, `zoomDemo` and `individuals` not run (their
+  pairs are each other's nearest, which the limit cannot touch; 2.14f6 runs the whole suite).
+- **Next:** PLAN 2.14f6, the whole: `zoomDemo1938`, the pictures of `docs/evidence/2.14/`
+  shot again, PARITY; it ticks 2.14f and 2.14 and runs the whole e2e suite.

@@ -39,6 +39,11 @@ export function slotPlace(world: World, fx: number, fy: number, facing: number, 
 export const CONTACT_CELLS = 1.5;
 /** Between the front rows of two formations deployed against each other, cells (a kilometre). */
 export const DEPLOY_GAP = 0.05;
+/**
+ * The furthest a deployed block stands from its formation's place, cells: as far as an enemy in
+ * contact can be (PLAN 2.14f5c). Two that are each other's nearest go 0.67 cells at most.
+ */
+export const DEPLOY_REACH = CONTACT_CELLS;
 
 /** Where the block of a formation in contact stands, and what it faces (`deployOf`). */
 export interface Deployment {
@@ -108,7 +113,10 @@ export function contactsOf(world: World): Map<number, number> {
  * are each other's nearest stand front to front, a kilometre apart. One whose nearest enemy is
  * deployed against a nearer formation comes up to that enemy's block from its own side (see
  * below): after 60 days of Germany against Poland 72% of the formations in contact were in
- * pairs of each other's nearest, and the rest had no enemy near their block without it.
+ * pairs of each other's nearest, and the rest had no enemy near their block without it. That
+ * enemy's block may stand on its far side, and its own enemy's further still: such a block goes
+ * `DEPLOY_REACH` from its formation at most and stops there, short of the block it was going to
+ * (without the limit one stood 80 km, four cells, from the formation the rules know).
  *
  * Not state, as an element's place is not (`slotPlace`): worked out from the formations'
  * places and `engaged` flags. The formation itself, its marker and its part in the rules stay
@@ -165,7 +173,8 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     const d = sqrt(dx * dx + dy * dy);
     if (d > 1e-9) {
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
-      const shift = Math.max(0, short < 0 ? d / 2 - DEPLOY_GAP / 2 - depth / 2 : d - short);
+      // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
+      const shift = Math.min(DEPLOY_REACH, Math.max(0, short < 0 ? d / 2 - DEPLOY_GAP / 2 - depth / 2 : d - short));
       const ux = dx / d;
       const uy = dy / d;
       out = { x: fx, y: fy, facing: atan2(dy, dx) };

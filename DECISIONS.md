@@ -167,6 +167,61 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-98 · 2026-10-05 · accepted — A deployed block stands no further from its formation than contact reaches (PLAN 2.14f5c)
+
+- **Context:** ADR-92, under "not done": "How far a block may stand from its formation has
+  no limit in `deployOf`." Two that are each other's nearest go half the way between them,
+  0.67 cells (13 km) at most. One whose nearest enemy is deployed against another comes up to
+  that enemy's block (ADR-89), which may stand on the enemy's far side, and that enemy's own
+  enemy's further still.
+- **Measured without a limit** (60 days of Germany against Poland, hour by hour; seed 99 in
+  `deploy.test.ts`, seed 7 by a probe not kept): the furthest block 44.3 and 79.8 km from its
+  formation; further than contact reaches (1.5 cells, 29.4 km) in 5,705 of 169,800 and 10,707
+  of 210,800 block-hours (3.4% and 5.1%). None of them of a pair of each other's nearest.
+- **Decision: a limit, at the contact distance** (`DEPLOY_REACH = CONTACT_CELLS`). The block
+  goes that far along its line and stops, facing as before.
+- **Why a limit.** The T1 marker stands on the formation and the T2 block at its deployment
+  (ADR-89 said "up to 0.45 cells away"; ADR-92 let the marker stay for that reason). At four
+  cells the block stands among formations the rules do not have it near: the two tiers then
+  show different places for one division. Now the two are never further apart than the
+  enemy it fights can be.
+- **Why this number.** Tried on both seeds (days 10, 20, 30, 45 and 60; the share of
+  formations in contact that have their nearest enemy in one view at 20 m/px):
+
+  | limit, cells | share in one view, the worst day | blocks on one another, the most | block-hours at the limit |
+  |---|---|---|---|
+  | none | 94.3% and 93.0% | 3 and 20 | 0 |
+  | 1.5 | 94.3% and 93.0% | 5 and 20 | 3.4% and 5.0% |
+  | 1.25 | 94.3% and 93.0% | 8 and 22 | 8.0% and 8.7% |
+  | 1.0 | 92.7% and 91.5% | 14 and 23 | 11.5% and 11.7% |
+  | 0.75 | 86.2% and 86.7% | 22 and 28 | 16.7% and 15.4% |
+
+  At 1.5 no day lost more than 1.7 points (95.9% to 94.2%, seed 7, day 45) and the test's
+  90% holds. At 0.75 it does not. 1.5 is also a number the rules already have.
+- **What it costs.** A block held back stops short of the block it was going to. In the
+  block-hours the limit holds (seed 99 and seed 7), from the block to its enemy's block:
+  median 3.3 km without the limit, at most 11.3 and 13.6; with it median 7.8 and 10.1 km, at
+  most 17.2 and 28.7. Over 14 km, half a view at 20 m/px: 323 and 1,678 block-hours, 0.2% and
+  0.8% of all, and none before. The shots of those hours are that long. They were the hours
+  in which the block was 29 to 80 km from its own formation.
+- **What cannot change:** a pair of each other's nearest (0.67 cells at most). So the pair a
+  war's banner leads to (ADR-93, ADR-95), the pair of `battleView1938` and every built pair
+  of the tests stand where they stood. `toBattle1938`, day 60: formations 45 and 563 as
+  before, the camera at the same place.
+- **Hops** (ADR-92's count; seed 99): 489 of more than a block's depth (511), 108 of more
+  than half a cell (109), the longest 40.0 km (50.0). Seed 7: the longest 34.9 km (37.6). The
+  limit is not what makes a hop rare: a block changes sides when its enemy's line does.
+- **Tests:** unit, in the hour-by-hour test of `deploy.test.ts`: no block further from its
+  formation than `CONTACT_CELLS` (the furthest 29.4 km, at the limit in 5,733 block-hours,
+  none of them each other's nearest; a block at the limit is nearer its enemy's block than
+  contact reaches, 17.2 km at most). Seen to fail with the limit off (2.26 cells).
+- **The pin:** not moved (a block's place is not state).
+- **What it does not give.**
+  - Hops of up to 40 km in an hour remain, and were not looked at on the screen.
+  - The chain of "its enemy's block" is followed four deep, as before.
+  - A block held back faces the block it does not reach; nothing on the screen says so.
+  - No picture of a held-back block was taken: the day-60 view of `toBattle1938` has none.
+
 ### ADR-97 · 2026-10-05 · accepted — The click on a war's banner flies to the battle (PLAN 2.14f5b4)
 
 - **Context:** ADR-91 made it a jump: "the camera has an eased zoom and no eased pan, and a

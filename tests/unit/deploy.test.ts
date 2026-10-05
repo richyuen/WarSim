@@ -3,7 +3,7 @@ import { FIRE_STRIDE, FireField } from '../../src/shared/events';
 import { SLOT_SPACING, slotGrid } from '../../src/sim/core/pose';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { contactsOf, DEPLOY_GAP, deployOf, elementIndex, elementPlace, slotCount, slotPlace } from '../../src/sim/systems/elements';
+import { cellDist, CONTACT_CELLS, contactsOf, DEPLOY_GAP, DEPLOY_REACH, deployOf, elementIndex, elementPlace, slotCount, slotPlace } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -204,7 +204,11 @@ describe('the blocks of formations in contact are deployed against each other (P
   // - of the hops, those with another nearest enemy than the hour before, and those of a
   //   formation that itself stood still (the line changed under it).
   // The first and last hours of a contact (to the line, and back) are counted apart.
-  it('over 60 days of Germany against Poland a block in contact seldom changes its line', () => {
+  //
+  // PLAN 2.14f5c, in the same hours: how far a block stands from its own formation. A block that
+  // comes up to the block of an enemy deployed the other way stood up to 44 km from the formation
+  // (80 km on seed 7), further than contact reaches (29 km). It now stops at `DEPLOY_REACH`.
+  it('over 60 days of Germany against Poland a block in contact seldom changes its line, and none stands further from its formation than contact reaches', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
     const HOP = slotGrid(28).rows * SLOT_SPACING;
@@ -212,6 +216,7 @@ describe('the blocks of formations in contact are deployed against each other (P
     const n = { hours: 0, begun: 0, ended: 0, moved: 0, hops: 0, otherEnemy: 0, stoodStill: 0, far: 0 };
     const sizes: number[] = [];
     const perFormation = new Map<number, number>();
+    const reach = { blockHours: 0, furthest: 0, atLimit: 0, mutualAtLimit: 0, gap: 0 };
     s.step(24 * 60, (w) => {
       const fc = w.formations.cols;
       const now = new Map<number, { x: number; y: number; enemy: number; fx: number; fy: number }>();
@@ -221,6 +226,16 @@ describe('the blocks of formations in contact are deployed against each other (P
         now.set(f, { x: d.x, y: d.y, enemy, fx: fc.x[f]!, fy: fc.y[f]! });
       }
       for (const [f, d] of now) {
+        const from = cellDist(w, d.fx, d.fy, d.x, d.y);
+        reach.blockHours++;
+        reach.furthest = Math.max(reach.furthest, from);
+        if (from > DEPLOY_REACH - 1e-6) {
+          // Held back: it stands short of the block it was going to.
+          reach.atLimit++;
+          if (contactsOf(w).get(d.enemy) === f) reach.mutualAtLimit++;
+          const theirs = now.get(d.enemy);
+          if (theirs) reach.gap = Math.max(reach.gap, cellDist(w, d.x, d.y, theirs.x, theirs.y));
+        }
         const b = was.get(f);
         if (!b) {
           n.begun++;
@@ -254,6 +269,18 @@ describe('the blocks of formations in contact are deployed against each other (P
         `median ${km(sizes[sizes.length >> 1] ?? 0)} km, longest ${km(sizes.at(-1) ?? 0)} km; ${perFormation.size} formations hopped, the most ${most} times; ` +
         `${n.begun} contacts begun, ${n.ended} ended`,
     );
+    console.log(
+      `the same hours: ${reach.blockHours} block-hours; the furthest block ${km(reach.furthest)} km from its formation; at the limit of ${km(DEPLOY_REACH)} km in ${reach.atLimit} (${((100 * reach.atLimit) / reach.blockHours).toFixed(1)}%), ` +
+        `${reach.mutualAtLimit} of them each other's nearest; a block at the limit is at most ${km(reach.gap)} km from its enemy's block`,
+    );
+    // No block further from its formation than an enemy in contact can be (the sums of the way
+    // there leave a rounding). The limit is met on this front, and never by two that are each
+    // other's nearest: they go half the way between them.
+    expect(reach.furthest).toBeLessThanOrEqual(CONTACT_CELLS + 1e-9);
+    expect(reach.atLimit).toBeGreaterThan(100);
+    expect(reach.mutualAtLimit).toBe(0);
+    // A block held back is still nearer its enemy's block than contact reaches.
+    expect(reach.gap).toBeLessThan(DEPLOY_REACH);
     expect(n.hours).toBeGreaterThan(1000);
     // A block stands still in most of its hours, and a hop is rare: the picture at T2 and T3 is
     // of lines that hold, not of blocks changing places.

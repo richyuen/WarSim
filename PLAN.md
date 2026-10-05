@@ -1937,7 +1937,7 @@ quick sweep as a smoke test.
       cell, the longest 50 km. *Not done:* a hop of 10 km in an hour not looked at on the
       screen; `deployOf` has no limit to how far a block stands from its formation (to
       2.14f5, below).
-    - [ ] 2.14f5 The banner of a war with a real front (from 2.14e); how far a block stands
+    - [x] 2.14f5 The banner of a war with a real front (from 2.14e); how far a block stands
       from its formation (from 2.14f4). **Split 2026-10-05** in three, one cause a commit:
       - [x] 2.14f5a Where the banner lands on a real front. After 60 days of Germany against
         Poland, click the banner and look at where it lands; log how the pair was chosen.
@@ -2037,7 +2037,7 @@ quick sweep as a smoke test.
           arrow ends it on the way). Pictures of the three flights looked at. The pin did
           not move. *Not done:* not seen at 60 frames a second on a graphics card;
           `prefers-reduced-motion`; no unit test of the controller.
-      - [ ] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest
+      - [x] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest
         hop of a block in the 60 days was 50 km, more than contact (29 km). Decide, with an
         ADR, whether `deployOf` limits it. *Measured 2026-10-05 with 2.14f5a* (seed 99, days
         10, 20, 30, 45 and 60; 96 to 177 formations in contact): median 12.3 to 12.6 km,
@@ -2048,6 +2048,18 @@ quick sweep as a smoke test.
         their enemy in one view (`deploy.test.ts`: over 90% asked) and to the longest hop.
         AT: unit, on the 60-day front: no block further from its formation than the limit
         decided, or the reason there is none; the pin as the gate finds it.
+        Done 2026-10-05 (ADR-98): a limit at the contact distance (`DEPLOY_REACH`, 1.5
+        cells, 29.4 km). *Without it* (60 days hour by hour, seeds 99 and 7): the furthest
+        block 44.3 and 79.8 km from its formation, 3.4% and 5.1% of the block-hours beyond
+        contact, none of a pair of each other's nearest. *With it:* the share in one view
+        loses 1.7 points at most (94.2% on the worst day changed; 93.0% the lowest, as
+        before); the longest hop 40.0 km (50.0) and 34.9 (37.6); 489 hops (511). *The cost:*
+        a block held back is 7.8 to 10.1 km from its enemy's block in the median (3.3
+        before), 28.7 at most; over half a view in 0.2% and 0.8% of all block-hours.
+        Limits of 1.25, 1.0 and 0.75 were tried: 0.75 fails the 90%. *Tests:* unit, in the
+        hour-by-hour test of `deploy.test.ts`, seen to fail with the limit off (2.26
+        cells). `toBattle1938` by hand: the same pair, the same place. *Not done:* hops of
+        40 km remain; no picture of a held-back block.
     - [ ] 2.14f6 The whole: `zoomDemo1938` passes or is restated with the reason; the
       pictures of `docs/evidence/2.14/` shot again on the final code and looked at;
       PARITY rows with their evidence. Ticks 2.14f and 2.14: the whole e2e suite.
