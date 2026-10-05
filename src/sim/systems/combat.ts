@@ -21,9 +21,8 @@
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
-import { sqrt } from '../core/dmath';
 import type { UnitRule, World } from '../world';
-import { applyLoss, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
+import { applyLoss, cellDist as dist, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
 export { CONTACT_CELLS };
@@ -36,15 +35,6 @@ const SALT_TARGET = 0x7a46;
 
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 const TERRAIN_ATK = terrainJson.terrain.map((t) => t.attack as Record<string, number | undefined>);
-
-/** Distance in cells between two points, wrapping east-west. */
-function dist(world: World, ax: number, ay: number, bx: number, by: number): number {
-  const w = world.cells.w;
-  let dx = Math.abs(ax - bx);
-  if (dx > w / 2) dx = w - dx;
-  const dy = ay - by;
-  return sqrt(dx * dx + dy * dy);
-}
 
 /** Groups formations into battles (ascending ids); sets `engaged`. */
 export function findBattles(world: World): number[][] {

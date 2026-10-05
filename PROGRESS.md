@@ -5453,3 +5453,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** a flight instead of a jump; the banner does not say whether there is a
   battle; a real front's battle was not looked at through the click. Under PLAN 2.14f.
 - **Next:** PLAN 2.14f, which ticks PLAN 2.14 and runs the whole e2e suite (ADR-87).
+
+## 2026-10-05 — PLAN 2.14f split in six; 2.14f1: one distance for contact
+
+- **The split:** 2.14f held lines from 2.14b, 2.14c1 and 2.14e, each its own cause. Now f1 the
+  shared distance, f2 tags clear of the banners and the bar, f3 the picked formation marked, f4
+  the handover of a pair in contact and the count of hops, f5 the banner of a real front, f6 the
+  whole (ticks 2.14: the full e2e suite).
+- **2.14f1 built:** `cellDist` in `elements.ts`; `findBattles`, `contactsOf` and `largestBattle`
+  read it. `contactsOf` took the signed wrapped difference before, the others the absolute one:
+  the squares are the same number.
+- **Tests:** none new; the pin (`324bc358`) and the 673 unit tests are the proof. No e2e: no
+  spec reads it and nothing drawn changed.
+- **Next:** PLAN 2.14f2, a tag does not stand under the war banners or the bottom bar.

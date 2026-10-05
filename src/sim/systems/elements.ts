@@ -56,6 +56,15 @@ function wrapDx(world: World, ax: number, bx: number): number {
   return dx;
 }
 
+/** Distance in cells between two points, wrapping east-west: the one measure of contact (`CONTACT_CELLS`). */
+export function cellDist(world: World, ax: number, ay: number, bx: number, by: number): number {
+  const w = world.cells.w;
+  let dx = Math.abs(ax - bx);
+  if (dx > w / 2) dx = w - dx;
+  const dy = ay - by;
+  return sqrt(dx * dx + dy * dy);
+}
+
 /**
  * For each formation in contact, the nearest enemy formation it is in contact with (the lower
  * id on a tie). Derived: `findBattles` sets it as it pairs them each hour; where it is not set
@@ -79,9 +88,7 @@ export function contactsOf(world: World): Map<number, number> {
     for (let j = i + 1; j < engaged.length; j++) {
       const b = engaged[j]!;
       if (!world.wars.atWar(c.nation[a]!, c.nation[b]!)) continue;
-      const dx = wrapDx(world, c.x[a]!, c.x[b]!);
-      const dy = c.y[b]! - c.y[a]!;
-      const d = sqrt(dx * dx + dy * dy);
+      const d = cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!);
       if (d > CONTACT_CELLS) continue;
       note(a, b, d);
       note(b, a, d);

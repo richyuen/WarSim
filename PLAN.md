@@ -1882,19 +1882,37 @@ quick sweep as a smoke test.
       two-against-one only. Lines for 2.14f.
   - [ ] 2.14f The whole: `zoomDemo1938` passes or is restated with the reason; the phase's
     close pictures shot again on the final code and looked at; PARITY.
-    - From 2.14b: the formation whose panel is open is marked on the map; a tag does not
-      stand under the war banners or the bottom bar.
-    - From 2.14c1: look at the handover at 300 m/px on a pair in contact (the marker at the
-      formation's place, the block up to 28 px from it), and decide whether the marker of
-      a formation in contact is drawn at its block; count how often a block changes its
-      line in a running war.
-    - From 2.14e: click the banner of a war with a real front (60 days of Germany against
-      Poland) and look at where it lands, and log how the pair was chosen: when no two of
-      the battle are each other's nearest, the two picked can stand 29 km apart with their
-      blocks towards others, wider than the view of 28 km (the e2e has the front-to-front
-      case only). Decide whether the jump becomes a flight, and whether a banner shows that
-      its war has a battle. `largestBattle` repeats the distance of `combat.ts` by hand:
-      share it.
+    **Split 2026-10-05,** one cause a commit (the lines came from 2.14b, 2.14c1 and 2.14e).
+    The last part ticks 2.14f and 2.14 and so runs the whole e2e suite (ADR-87):
+    - [x] 2.14f1 One distance for contact. `largestBattle` and `contactsOf` each repeated
+      the distance of `combat.ts` by hand. Done 2026-10-05: `cellDist` in
+      `src/sim/systems/elements.ts`, read by `findBattles`, `contactsOf` and
+      `largestBattle`. The same arithmetic (the absolute east-west difference, wrapped,
+      and `dmath.sqrt`): the pin did not move.
+    - [ ] 2.14f2 A tag does not stand under the war banners or the bottom bar (from 2.14b).
+      AT: e2e, in `tags1938`: with a formation at the bottom edge of the view and a war's
+      banner shown, no tag's box overlaps the banners or the bar; picture looked at.
+    - [ ] 2.14f3 The formation whose panel is open is marked on the map (from 2.14b).
+      AT: e2e, in `formationPanel1938`, failing first: at T1, T2 and T3 the picked
+      formation's marker or tag differs from the others by a stated measure, and no longer
+      when the panel is closed; pictures looked at.
+    - [ ] 2.14f4 The handover at 300 m/px on a pair in contact (from 2.14c1): the marker
+      stands at the formation's place, the block up to 28 px from it. Shoot the sequence
+      of the morph, look at it, and decide whether the marker of a formation in contact is
+      drawn at its block (an ADR either way). Count how often a block changes its line in
+      a running war (60 days of Germany against Poland, hour by hour; a number for
+      PROGRESS.md).
+    - [ ] 2.14f5 The banner of a war with a real front (from 2.14e). After 60 days of
+      Germany against Poland, click the banner and look at where it lands; log how the
+      pair was chosen. When no two of the battle are each other's nearest, the two picked
+      can stand 29 km apart with their blocks towards others, wider than the view of 28
+      km (the e2e has the front-to-front case only).
+      AT: unit, on the 60-day front: both blocks of the chosen pair are in the view the
+      camera takes; e2e picture looked at. Decide, each with an ADR: whether the jump
+      becomes a flight, and whether a banner shows that its war has a battle.
+    - [ ] 2.14f6 The whole: `zoomDemo1938` passes or is restated with the reason; the
+      pictures of `docs/evidence/2.14/` shot again on the final code and looked at;
+      PARITY rows with their evidence. Ticks 2.14f and 2.14: the whole e2e suite.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton

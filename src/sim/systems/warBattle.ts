@@ -10,9 +10,8 @@
  * does).
  */
 import type { WarBattle } from '../../shared/protocol';
-import { sqrt } from '../core/dmath';
 import type { World } from '../world';
-import { CONTACT_CELLS, contactsOf, deployOf, elementIndex, slotCount } from './elements';
+import { cellDist, CONTACT_CELLS, contactsOf, deployOf, elementIndex, slotCount } from './elements';
 
 export type WarBattleSite = Omit<WarBattle, 'tick'>;
 
@@ -38,10 +37,7 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
   const pairs: [number, number][] = [];
   for (const a of sides[0]) {
     for (const b of sides[1]) {
-      let dx = Math.abs(c.x[a]! - c.x[b]!);
-      if (dx > w / 2) dx = w - dx;
-      const dy = c.y[a]! - c.y[b]!;
-      if (sqrt(dx * dx + dy * dy) > CONTACT_CELLS) continue;
+      if (cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) > CONTACT_CELLS) continue;
       pairs.push([a, b]);
       if (!parent.has(a)) parent.set(a, a);
       if (!parent.has(b)) parent.set(b, b);
