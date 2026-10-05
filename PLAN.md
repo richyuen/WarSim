@@ -2086,7 +2086,7 @@ quick sweep as a smoke test.
       - *Not done:* the eight pictures of `docs/evidence/2.10/` are still of the world
         before PLAN 2.13 (the Phase 3 review, as 2.13 said); the critic's score of the
         differentiator is the critic's to give, at the Phase 3 review or when asked.
-- [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
+- [x] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton
     Island", "Free Kerguelen Islands", "Free Saint Barthélemy" and one that the game could
@@ -2234,8 +2234,25 @@ quick sweep as a smoke test.
         first; the test that was seen to fail is of that (origin 504 for 1676).
       - *Tests:* `tests/unit/nationNames.test.ts` (1 new; the forced revolt now asserts
         it). The pin did not move. By hand: `godUi1938` (2), green.
-  - [ ] 2.15f The whole: the AT above read line by line, the pictures shot again, PARITY.
-    Ticks 2.15: the whole e2e suite.
+  - [x] 2.15f The whole: the AT above read line by line, the pictures shot again, PARITY.
+    Ticks 2.15: the whole e2e suite. Done 2026-10-05.
+    - *The AT, line by line:*
+      - a Kill founds a stated few and starts no war: `godUi1938.spec.ts` (five; 2 → 2 wars);
+      - no "Free state N": `nationNames.test.ts` for the 406 of the forced revolt, and now
+        for the nations of a game (below);
+      - a flag for every nation founded in a game: this was a run by hand in 2.15c, not a
+        test. The three ten-year runs of the gate (`tests/helpers/aiSweep.ts`) now assert,
+        for every nation founded, an origin, a name that is not the number, and a flag of
+        two colours or more with its own colour on it: 43, 51 and 56 nations (seeds 1, 2,
+        3). Ten years, not the AT's 15: the runs the gate already makes, at no cost in time;
+        the 15 years of seed 2718 stay the run by hand of 2.15c (56 of 56);
+      - land that returns is no revolt: `revolts.test.ts`, `godMode.test.ts`,
+        `godUi1938.spec.ts`.
+    - *Pictures:* the four of the Kill shot again after 2.15e and looked at: the same to
+      the byte. The two of the atoll are of 2.15e2b; 2.15e3 changes nothing they show.
+    - *PARITY:* rows 16, 20 and 61, a line each. The score did not move (46.3%).
+    - *Not seen to fail:* the new assertions of the ten-year runs. The defects they guard
+      were fixed in 2.15b and 2.15c, and each has a unit test that was seen to fail.
 - [ ] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and
   nothing else: no other year, no other map, no random world with a number of nations. AoC
   has world scenarios for 1914, 1938, 1956 and today, regional maps, and a random simulation
@@ -2556,6 +2573,12 @@ quick sweep as a smoke test.
     "Free <province>", and 114 names are held by more than one province ("Valmiera" 21,
     "Central" 10, "Northern" 8, "Saint George" 7); a province without a name gives its
     country's, so "Free Colombia" can stand beside Colombia. Not seen in a game yet.
+  - **Land painted on the mask's water** (PLAN 2.15e2b, ADR-105, 2026-10-05). The editor can
+    paint land on a cell the fine mask has no land pixel for: the map draws sea there and a
+    formation raised on it stands off sure land, as the eight atolls did. The world's build
+    gives an islet to the cells of the scenario only.
+  - **The Spratly Islands are nobody's in 1938** (PLAN 2.15e2b): unowned land in the
+    scenario's data (France and Japan both claimed them). Not looked into.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
   - N3: occupied land stays hatched for years after a peace (Europe after 14 years of seed
     2718). A rule to look at, not a look: what a peace does with land that is held.

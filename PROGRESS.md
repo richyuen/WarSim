@@ -5966,3 +5966,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   start that are no capital have their coordinates outside the province of their cell.
 - **Next:** PLAN 2.15f, the whole of 2.15: the AT line by line, the pictures shot again,
   PARITY. It ticks 2.15, so the gate runs the whole e2e suite.
+
+## 2026-10-05 — PLAN 2.15f: 2.15 closed (the AT read line by line)
+
+- **Found:** one line of the AT was answered by a run by hand, not by a test: "every nation
+  founded in 15 years of a game has a flag that is not blank (a test…)".
+- **Built:** the three ten-year runs of the gate (`tests/helpers/aiSweep.ts`) assert for every
+  nation the game founded an origin, a name that is not "Free state N" and a flag of two
+  colours or more with its own colour on it. 43, 51 and 56 nations (seeds 1, 2, 3). No new
+  run: the gate's time is the same. Ten years, not 15 (said in PLAN).
+- **Not seen to fail:** these assertions; the unit tests of 2.15b and 2.15c were.
+- **The pin did not move** (324bc358): no rule changed.
+- **Pictures looked at:** `docs/evidence/2.15/kill-france-europe.png`, `-africa.png`,
+  `-history.png`, `founded-flag-panel.png`, shot again: the same to the byte as before
+  2.15e (102 → 106 living, five founded, 2 → 2 wars).
+- **PARITY:** rows 16, 20, 61 appended; 46.3%.
+- **PLAN 7.4, two lines:** land painted in the editor on the mask's water; the Spratly
+  Islands unowned in 1938.
+- **Gotchas:** vitest shows a passing test's `console.log` only with `--silent=false`.
+- **Seen, not looked into:** the panel of a founded nation says "Combat efficiency 0%".
+- **Next:** PLAN 2.16, more than one way to start.
