@@ -199,7 +199,9 @@ added without code changes.
    tests.
    Counted by numbered tasks, not by the parts a task is split into
    (clarified 2026-10-04, ADR-74, the user's decision): 2.8a, 2.8b and
-   2.8c1 are one task, counted once.
+   2.8c1 are one task, counted once. A task that comes out of a review
+   belongs to the task it follows up. A phase review is a review pass and
+   starts the count again.
 
 # KEEPING ITERATIONS SHORT
 

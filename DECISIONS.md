@@ -697,8 +697,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     review after PLAN 2.7 to this day that made four passes inside one numbered task and a
     fifth proposed one task later; each brought an independent read.
   - *What follows now:* since the last pass one numbered task is done (2.8). No pass is due.
-  - *Two readings of mine, told to the user and not yet answered; kept to until the user says
-    otherwise:*
+  - *Two readings of mine, told to the user and confirmed by the user the same day ("Yes,
+    those readings of the rule are correct"); in PROMPT.md's step 9 since:*
     - A task that comes out of a review belongs to the task it follows up (2.7f to 2.7z were
       all of 2.7).
     - A phase review is a review pass and starts the count again. The next is PLAN 2.11.

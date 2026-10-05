@@ -4763,3 +4763,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   and what is not. The third was green: 108 e2e in 6.9 minutes (5.5 before PLAN 2.8: twelve
   tests more, and the ground to draw at T2 and T3).
 - **Next:** PLAN 2.9 (the coast from the fine mask at T2 and T3; no element on water).
+
+## 2026-10-04 — The two readings of the review-pass rule confirmed by the user
+
+- Follow-up tasks of a review belong to the task they follow up; a phase review is a review
+  pass and starts the count again. Both are in PROMPT.md's step 9 now; ADR-74 has the user's
+  words.
+- **Next:** PLAN 2.9.
