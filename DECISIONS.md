@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-107 · 2026-10-05 · accepted — The game is on GitHub Pages, and every commit is pushed (the user's decision)
+
+- **Context:** the build already ran from any path (a relative base, the worker and the map
+  data found from the page, no SharedArrayBuffer: ADR-6). `main` was 137 commits ahead of
+  `origin`. The user asked for GitHub Pages, and for a push with every commit.
+- **Decision:**
+  - `.github/workflows/pages.yml` builds on every push to `main` (`npm ci`, `npm run build`)
+    and deploys `dist/` to https://richyuen.github.io/WarSim/. Pages' source is "GitHub
+    Actions".
+  - Every commit is pushed (PROMPT.md step 7).
+- **What it does not do:** the workflow does not run the gate; the gate runs before the
+  commit, on the machine. The build ships its source maps (5 of 13 MB).
+- **Never deployed:** `reference/` (ignored) and `critic/`'s scratch files (not in the build).
+
 ### ADR-106 · 2026-10-05 · accepted — A rebel nation's origin is the province of its capital's cell (PLAN 2.15e3)
 
 - **Context:** ADR-100 made the origin, which names a founded nation, the province of its

@@ -58,3 +58,5 @@ There is no memory between sessions. Read these files:
 - Never commit `reference/` or anything derived from AoC assets.
 - Never weaken or delete a test to make it pass.
 - Keep `main` runnable.
+- Push every commit (`git push`, ADR-107). A push to `main` deploys the build to GitHub Pages
+  (`.github/workflows/pages.yml`): https://richyuen.github.io/WarSim/

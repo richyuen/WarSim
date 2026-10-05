@@ -5986,3 +5986,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotchas:** vitest shows a passing test's `console.log` only with `--silent=false`.
 - **Seen, not looked into:** the panel of a founded nation says "Combat efficiency 0%".
 - **Next:** PLAN 2.16, more than one way to start.
+
+## 2026-10-05 — GitHub Pages, and a push with every commit (ADR-107, the user's decision)
+
+- **Built:** `.github/workflows/pages.yml`: a push to `main` builds and deploys `dist/` to
+  https://richyuen.github.io/WarSim/. PROMPT.md step 7 and CLAUDE.md: push every commit.
+- **The gate:** run for the workflow file (green); not run for the documents of this commit,
+  at the user's word.

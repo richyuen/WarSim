@@ -191,7 +191,9 @@ added without code changes.
    frames where relevant. Fix visible problems.
 6. Check performance against the budget when touching rendering or sim.
 7. Commit with a clear message; tick the task; append to PROGRESS.md; run
-   `npm run parity` and update PARITY.md rows you touched.
+   `npm run parity` and update PARITY.md rows you touched. Push every commit
+   (`git push`; added 2026-10-05, ADR-107, the user's decision): a push to
+   `main` builds the game and puts it on GitHub Pages.
 8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move
    on.
 9. Every ~5 numbered PLAN tasks (2.7, 2.8, 2.9, ...) do a review pass:
