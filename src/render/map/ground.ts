@@ -43,3 +43,17 @@ export function groundUniform(): Float32Array {
   }
   return out;
 }
+
+/**
+ * How much of the ground of T2 and T3, and of what stands on it, a zoom still shows: all of it
+ * up to `outM` m/px, the zoom at which T2 is left; none an octave beyond; smoothly between.
+ *
+ * Leaving T2 the layers go by the clock (the handover: 220 ms in full, then a fade), and the
+ * camera can be far out long before that. The ground's pass and the scatter are made for the
+ * zooms of T2: at 5000 m/px a pixel of the fine mask is half a screen pixel, and a tree symbol
+ * stands on every fourth pixel (PLAN 2.11l). So beyond T2 they go with the zoom as well.
+ */
+export function groundReach(mPerPx: number, outM: number): number {
+  const t = Math.min(1, Math.max(0, Math.log2(mPerPx / outM)));
+  return 1 - t * t * (3 - 2 * t);
+}

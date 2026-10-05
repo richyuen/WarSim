@@ -579,6 +579,34 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
       the cities need a small one), and `scatter.ts` stays as what the shader is checked
       against. The worker is the other place for it, and keeps the tests as they are.
 
+- **Fifth addendum, PLAN 2.11l (2026-10-05): the ground does not outlive its zoom.**
+  - *The defect, found by the fifth independent read (finding 4):* leaving T2 the element
+    sprites go by the clock (in full for 220 ms, then a fade), and this ADR tied the ground
+    and its instances to their share. The camera closes on its target at 18 a second: after a
+    spin of the wheel it is at 4000 m/px in a tenth of a second, with the ground's share
+    still 1. The scatter had no rule for zooms further out than its level 0 and gave every
+    lattice point of it: 20,502 trees for a view of 1920 × 1080 at 5000 m/px, cut off at the
+    cap of 12,000, at a line. And the ground's pass read the fine mask at half a screen pixel
+    to a pixel of it.
+  - *Decision, the view:* the ground's share is the sprites' share times a reach by zoom: 1
+    up to 345 m/px (T1's lower limit × the hysteresis: where T2 is left), 0 from an octave
+    beyond, smooth in the logarithm between. Inside T2 nothing changes. A camera that stops
+    between the two zooms sees the clock finish the fade as before.
+  - *Decision, the scatter:* further out than level 0 the levels go on, coarser, by leaving
+    out points of level 0 (every 2^k-th each way is level −k). The identity of a point is
+    the one it has at level 0, so nothing moves and no picture of T2 changes.
+    - *Not a floor by opacity,* which PLAN 2.11l's acceptance test had asked for: a level
+      that fades out over an octave is still given whole until its opacity is zero, four
+      times as many points at the end as at the start, and is cut off at the cap on the way.
+    - The view never asks the scatter for such a zoom now (the reach is 0 there). The scatter
+      is right there all the same: it is a function of a view, and tested as one.
+  - *Measured:* the reader's view at 5000 m/px, real map: 1,292 instances in 1.1 ms (5.0 ms
+    for the 12,000 before). Out by the wheel from 250 to 1500 m/px: two frames with ground
+    beyond 345 m/px, at most 4,390 instances in a frame. Bench A's view with instances: 8,685
+    and 0.5 ms of CPU, as before.
+  - *Not changed:* the element sprites themselves still go by the clock at whatever zoom
+    (at their least size of 5 px, a few blocks for half a second). The handover of ADR-71.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often

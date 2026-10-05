@@ -31,6 +31,7 @@ import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
 import type { LandMask } from '../shared/landMask';
@@ -150,6 +151,8 @@ export class MapView {
   private scatterKey = '';
   /** The scatter of the last frame that drew instances (tests and stats); null: none were drawn. */
   groundScatter: Scatter | null = null;
+  /** The share of the ground of T2 and T3, and of what stands on it, in the frame drawn last (tests). */
+  groundShare = 0;
   /** Whether the instances are drawn (off: the ground without them; tests of the ground's texture). */
   instances = true;
   /** Whether the element sprites and figures are drawn (off: tests read the ground they stand on). */
@@ -868,7 +871,7 @@ export class MapView {
    * terrain or cities have changed.
    */
   private drawGroundThings(cam: Camera, dpr: number): void {
-    const share = this.map.groundOn && this.instances ? this.shares.elements : 0;
+    const share = this.map.groundOn && this.instances ? this.groundShare : 0;
     const world = this.scatterWorld;
     if (share <= 0 || !world) {
       this.groundScatter = null;
@@ -1204,8 +1207,10 @@ export class MapView {
     const cam = this.controller.cam;
     // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
     this.tierShares(now);
-    // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN 2.8a).
-    this.map.draw(cam, dpr, this.shares.elements);
+    // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN
+    // 2.8a); and beyond T2 it goes with the zoom, whatever the handover's clock says (PLAN 2.11l).
+    this.groundShare = this.shares.elements * groundReach(this.metresPerPx, T1_MIN_M * ZOOM_HYSTERESIS);
+    this.map.draw(cam, dpr, this.groundShare);
     this.drawGroundThings(cam, dpr);
     this.drawSprites(cam, now);
     this.drawLabels(cam, dpr, now);

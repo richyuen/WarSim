@@ -209,6 +209,43 @@ describe('the scatter of trees, rocks and buildings (PLAN 2.8c1)', () => {
     expect(Array.from(some.data.subarray(0, 300 * SCATTER_STRIDE))).toEqual(Array.from(all.data.subarray(0, 300 * SCATTER_STRIDE)));
   });
 
+  // PLAN 2.11l (the fifth independent read, finding 4). Below 14 px a cell the scatter gave
+  // every lattice point of level 0, however close on the screen: 137,420 wanted at 1 px a cell
+  // in a view of 1920 × 1080, cut off at the cap, at a line. Leaving T2 the ground's share is a
+  // matter of time, so a fast zoom out showed that for half a second.
+  it('below the coarsest spacing the lattice thins: as dense on the screen as an octave nearer, and nothing a nearer view does not have', () => {
+    const [BW, BH] = [2048, 1024];
+    const big: ScatterWorld = { w: BW, h: BH, wrapX: true, kmPerCell: 19.57, terrain: new Uint8Array(BW * BH).fill(Terrain.Forest), mask: null, cities: cityIndex([], BW, BH, 19.57) };
+    const wide = (px: number): ScatterView => ({ cx: 1100.3, cy: 500.7, halfW: 960 / px, halfH: 540 / px, pxPerCell: px });
+    const count = (px: number): { all: number; full: number } => {
+      const list = instances(big, wide(px), 400_000);
+      return { all: list.length, full: list.filter((i) => i.alpha === 1).length };
+    };
+    // (Down to 1 px a cell: further out the view is higher than this world, which is the furthest the game's camera goes.)
+    for (const px of [13, 10.5, 9.9, 7, 3.9, 1.96, 0.98]) {
+      // The same moment of an octave, between 14 and 28 px a cell: the same picture, smaller.
+      const near = px * 2 ** Math.ceil(Math.log2(14 / px));
+      expect(near >= 14 && near < 28).toBe(true);
+      const [far, ref] = [count(px), count(near)];
+      expect(Math.abs(far.all - ref.all), `${px} px a cell: ${far.all} instances, ${ref.all} at ${near.toFixed(1)}`).toBeLessThan(0.08 * ref.all + 60);
+      expect(Math.abs(far.full - ref.full), `${px} px a cell: ${far.full} in full, ${ref.full} at ${near.toFixed(1)}`).toBeLessThan(0.08 * ref.full + 60);
+      // And within the cap wherever the nearer octave is.
+      if (ref.all < 12_000) expect(scatter(big, wide(px), 12_000).truncated, `${px} px a cell`).toBe(false);
+    }
+    // One place whatever the zoom: what a far view shows, the view at the spacing has, the same thing, in full.
+    const find = finder(instances(big, wide(14), 400_000));
+    const inNear = (i: Inst): boolean => Math.abs(i.x - 1100.3) < 960 / 14 - 2 && Math.abs(i.y - 500.7) < 540 / 14 - 2;
+    for (const px of [10.5, 7, 3.9]) {
+      const far = instances(big, wide(px), 400_000).filter(inNear);
+      expect(far.length, `${px} px a cell`).toBeGreaterThan(200);
+      for (const i of far) {
+        const same = find(i);
+        expect(same, `${px} px a cell: the instance at ${at(i)}`).toBeDefined();
+        expect([same!.kind, same!.variant, same!.alpha]).toEqual([i.kind, i.variant, 1]);
+      }
+    }
+  });
+
   it('a looping map has the same instances either side of its seam', () => {
     const w = world(Terrain.Forest, undefined, [], true);
     // A view that straddles the seam from the east side, and one from the west side.

@@ -5114,3 +5114,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   pixel. The walk's phase had been what differed.
 - **Tests:** 1 new unit test (640).
 - **Next:** PLAN 2.11l, the trees of the far zoom during the fade out of T2.
+
+## 2026-10-05 — PLAN 2.11l: the ground and what stands on it do not outlive their zoom
+
+- **Two fixes, each needed.** The view: beyond the zoom at which T2 is left the ground's share
+  also falls with the zoom, to nothing an octave out (`groundReach`). The scatter: further
+  out than its level 0 the levels go on, coarser, so the function is never denser on the
+  screen than an octave nearer.
+- **Not what the acceptance test asked of the scatter** (a floor: "nothing an octave below"):
+  a level that fades out by opacity is still given whole until it is gone, and is cut off at
+  the cap on the way. Coarser levels are the lattice's own answer. Said in PLAN and ADR-78.
+- **Tests, failing first:** unit, the scatter at seven zooms down to 1 px a cell against the
+  view an octave nearer (9,578 in full against 2,389 before); e2e, a jump from T2 to 5000 m/px
+  and the wheel's way out to 1500 (with the reach taken out: "the ground far out: 1").
+- **Measured:** the reader's view at 5000 m/px on the real map: 1,292 instances, 1.1 ms
+  (12,000 of 20,502, cut at a line, 5.0 ms). T2 as before: `fades1938` 42.0, bench A 8,685
+  instances and 0.5 ms.
+- **A slip of mine on the way, caught by `git status`:** undoing a mutation with `git
+  checkout` of the file took the view's whole uncommitted change with it. Put back and run
+  again before anything else. (The same slip took two new tests of PLAN 2.11j's year file an
+  hour earlier.) To undo a mutation: the reverse edit, not a checkout.
+- **Tests:** 2 new unit tests (642), 1 new e2e test (114).
+- **Next:** PLAN 2.11m, the map's canvas stays opaque.

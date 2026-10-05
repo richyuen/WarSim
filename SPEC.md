@@ -1041,6 +1041,12 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
 | **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap] |
 
+*How far out the ground reaches (PLAN 2.11l):* the ground and what stands on it come and go
+with the element sprites' share of the T1 ↔ T2 handover, which is a matter of time. Beyond
+the zoom at which T2 is left (345 m/px) they also go with the zoom: all of the share up to
+there, none of it from 690 m/px, smoothly between (`groundReach`). A camera that is far out
+before the handover's clock has run shows no ground made for T2.
+
 *The ground of T2 and T3, as built so far (PLAN 2.8a, ADR-78):* hillshade in the map pass
 (`mapShader.ts`). The worker sends the elevation level of the map's size after the map layers
 (`elevation`: int16 metres, one value a cell); the pass smooths it over the 4×4 cells around by
@@ -1074,7 +1080,8 @@ nested lattice, 2^l points to a cell at level l, each point of a level a point o
 one. An instance belongs to the coarsest level its point is on and stands near it, moved by a
 hash of the point: one place whatever the zoom. A view shows the levels whose points are 14 px
 apart or more, and the next finer level comes in by its opacity through the upper half of the
-octave of zoom before that. At a point: a building by how near a city is and how large (reach
+octave of zoom before that. Further out than level 0 the levels go on, coarser: level −k is
+every 2^k-th point of level 0 each way (PLAN 2.11l), so a view is never denser than that. At a point: a building by how near a city is and how large (reach
 3 to 18 km by size, densest at the middle); else a tree or a rock by the terrain class of the
 cell (forest 0.75 trees; mountains 0.42 rocks; plains 0.05 trees; ice nothing). Nothing on
 water: by the cell's class, and where the fine land mask is there only on sure land

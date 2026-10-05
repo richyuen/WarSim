@@ -137,10 +137,16 @@ export interface Scatter {
 export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out?: Float32Array): Scatter {
   const data = out && out.length >= cap * SCATTER_STRIDE ? out : new Float32Array(cap * SCATTER_STRIDE);
   const f = Math.log2(view.pxPerCell / SPACING_PX);
-  const level = Math.max(0, Math.floor(f));
+  // Below level 0 the levels go on, coarser: level −k is every 2^k-th point of level 0 each way
+  // (PLAN 2.11l; until then a view further out than level 0 got every point of it, however
+  // close on the screen).
+  const level = Math.floor(f);
   // The next finer level, on its way in through the upper half of the octave.
   const t = Math.min(1, Math.max(0, (f - level - 0.5) / 0.5));
-  const fade = f < 0 ? 0 : t * t * (3 - 2 * t);
+  const fade = t * t * (3 - 2 * t);
+  /** In points of level 0: how far apart the points of the level shown in full are, and those looked at. */
+  const coarse = level < 0 ? 2 ** -level : 1;
+  const stride = level < 0 && fade > 0 ? coarse / 2 : coarse;
   const mPerPx = (world.kmPerCell * 1000) / view.pxPerCell;
   // A margin of a symbol's width: what stands just outside the view reaches into it.
   const margin = 16 / view.pxPerCell;
@@ -148,16 +154,20 @@ export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out
   let count = 0;
   let truncated = false;
 
-  for (let l = 0; l <= level + (fade > 0 ? 1 : 0) && !truncated; l++) {
+  const finest = level < 0 ? 0 : level + (fade > 0 ? 1 : 0);
+  for (let l = 0; l <= finest && !truncated; l++) {
     const n = 2 ** l; // lattice points to a cell
-    const alpha = l <= level ? 1 : fade;
     const period = world.w * n;
-    const [i0, i1] = [Math.floor(x0 * n - JITTER), Math.ceil(x1 * n + JITTER)];
-    const [j0, j1] = [Math.max(0, Math.floor(y0 * n - JITTER)), Math.min(world.h * n, Math.ceil(y1 * n + JITTER))];
-    for (let j = j0; j <= j1 && !truncated; j++) {
-      for (let i = i0; i <= i1; i++) {
+    // (Of level 0, further out than it: only the points of the levels shown.)
+    const step = l === 0 ? stride : 1;
+    const [i0, i1] = [Math.ceil(Math.floor(x0 * n - JITTER) / step) * step, Math.ceil(x1 * n + JITTER)];
+    const [j0, j1] = [Math.ceil(Math.max(0, Math.floor(y0 * n - JITTER)) / step) * step, Math.min(world.h * n, Math.ceil(y1 * n + JITTER))];
+    for (let j = j0; j <= j1 && !truncated; j += step) {
+      for (let i = i0; i <= i1; i += step) {
         // A point of a coarser level is that level's.
         if (l > 0 && (i & 1) === 0 && (j & 1) === 0) continue;
+        // In full: the points of the level shown in full and of the coarser ones. The next finer level by its fade.
+        const alpha = level < 0 ? (i % coarse === 0 && j % coarse === 0 ? 1 : fade) : l <= level ? 1 : fade;
         // (The same point either side of the seam of a looping map.)
         const iw = world.wrapX ? ((i % period) + period) % period : i;
         const h = hash2(hash2(iw, j), l);

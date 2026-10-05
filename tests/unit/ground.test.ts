@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GROUND, GROUND_CLASSES, groundUniform } from '../../src/render/map/ground';
+import { GROUND, GROUND_CLASSES, groundReach, groundUniform } from '../../src/render/map/ground';
 import { Terrain } from '../../src/shared/terrain';
 
 // PLAN 2.8b: the ground of each terrain class at T2 and T3 (how the map pass's noise is laid on
@@ -32,5 +32,25 @@ describe('the ground by terrain class (PLAN 2.8b)', () => {
       expect(g.grain, `class ${t}`).toBeLessThanOrEqual(0.125);
       expect(g.bump, `class ${t}`).toBeGreaterThan(0);
     }
+  });
+});
+
+// PLAN 2.11l: leaving T2 the ground's share is a matter of time (220 ms in full, then a fade of
+// 250 ms), while the camera can be far out within a tenth of a second. The ground and what
+// stands on it are made for T2 and T3: beyond the zoom at which T2 is left they go with the zoom.
+describe('how far out the ground reaches (PLAN 2.11l)', () => {
+  it('all of it up to the zoom at which T2 is left, none an octave beyond, and smoothly between', () => {
+    const OUT = 345;
+    for (const m of [1, 30, 300, 344.9, 345]) expect(groundReach(m, OUT), `${m} m/px`).toBe(1);
+    for (const m of [690, 691, 2000, 5000, 28_000]) expect(groundReach(m, OUT), `${m} m/px`).toBe(0);
+    let before = 1;
+    for (let m = 345; m <= 690; m += 1) {
+      const r = groundReach(m, OUT);
+      expect(r, `${m} m/px`).toBeLessThanOrEqual(before);
+      // A percent of zoom never takes more than a twentieth of the ground away.
+      expect(before - r, `${m} m/px`).toBeLessThan(0.05);
+      before = r;
+    }
+    expect(groundReach(488, OUT)).toBeCloseTo(0.5, 1); // half an octave out
   });
 });

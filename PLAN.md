@@ -1259,7 +1259,7 @@ quick sweep as a smoke test.
     - The demo's eight pictures of two runs: the same, pixel for pixel (the four close ones
       differed by 4,500 to 56,000 px before).
     - The snapshot is as it was: the two flags travel, and the view makes the walk of them.
-  - [ ] 2.11l The ground and what stands on it do not outlive their zoom. (The fifth read,
+  - [x] 2.11l The ground and what stands on it do not outlive their zoom. (The fifth read,
     finding 4.) Leaving T2, the ground's share is a matter of time (full for 220 ms, then a
     fade of 250 ms) while the camera closes on its target at 18 a second. `scatter` has no
     floor: below its coarsest spacing it still gives every lattice point of level 0 at full
@@ -1271,6 +1271,25 @@ quick sweep as a smoke test.
     spacing, and nothing at all an octave below it; it is never cut short at 1920 × 1080
     above T2. e2e: a jump from T2 to 5000 m/px draws no instance and no ground from the first
     frame the camera is there. `fades1938` and `groundThings1938` pass. Bench A.
+    Done 2026-10-05 (ADR-78, fifth addendum). Two things, each needed:
+    - *The view:* the ground's share is the sprites' share times `groundReach`: all of it up
+      to 345 m/px (where T2 is left), none from 690 m/px, smoothly between. e2e, in
+      `groundThings1938`: a jump from T2 to 5000 m/px has the sprites still in full by the
+      clock and no ground and no instance from the first frame; out by the wheel to 1500 m/px
+      the ground is the sprites' share up to 345, less beyond, nothing from 690, never more
+      than the frame before, the scatter never cut short (4,390 instances at most). With the
+      reach taken out of the view the test fails ("the ground far out: 1").
+    - *The scatter:* below level 0 the levels go on, coarser (level −k is every 2^k-th point
+      of level 0 each way), so the pure function is as dense on the screen at any zoom as an
+      octave nearer. **Not the floor the AT asked for** ("nothing an octave below"): a floor
+      by opacity still gives every point until it is at zero, and is cut off at the cap on
+      the way. Unit, failing first: at 13 px a cell 9,578 instances in full where the view an
+      octave nearer has 2,389; now the two agree within 8% at seven zooms down to 1 px a
+      cell, and a far view shows nothing the view at the spacing does not have. On the real
+      map, the reader's view at 5000 m/px: 1,292 instances in 1.1 ms (20,502 wanted, 12,000
+      given, 5.0 ms).
+    - T2 and T3 are as they were: `fades1938` T2 → T1 42.0, bench A's view with instances
+      8,685 and 0.5 ms of CPU, as before.
   - [ ] 2.11m The map's canvas stays opaque. (A suspicion of the fifth read, settled here.)
     The sprites, the figures and the ground's instances blend with (SRC_ALPHA,
     ONE_MINUS_SRC_ALPHA) for alpha as for colour, into a canvas that has alpha: under a

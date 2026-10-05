@@ -213,3 +213,83 @@ test('the instances come in with the T1 → T2 handover, not at once; at T1 ther
   const t2 = await things(page);
   expect(t2.trees, 'instances at T2, at rest').toBeGreaterThan(2000);
 });
+
+// PLAN 2.11l (the fifth independent read, finding 4). Leaving T2 the sprites go by the clock
+// (in full for 220 ms, then a fade), and the ground went with them, at whatever zoom the camera
+// had reached by then: at 5000 m/px the trees of a view of 1920 × 1080 were 20,502, cut off at
+// 12,000, at a line; and the ground's pass read the fine mask at half a screen pixel to a pixel
+// of it. Beyond the zoom at which T2 is left the ground now goes with the zoom.
+test('beyond T2 the ground and what stands on it go with the zoom: far out there is none of either, whatever the clock says', async ({ page }) => {
+  test.setTimeout(180_000);
+  await open1938(page);
+  const at = await spots(page);
+  await lookAt(page, at.forest[0], at.forest[1], 250);
+  expect((await things(page)).trees, 'trees at rest at T2').toBeGreaterThan(1000);
+
+  interface Frame { m: number; sprites: number; ground: number; scattered: number; cut: boolean }
+  const rec = await page.evaluate(({ cx, cy }) => {
+    const v = window.__warsim!.view!;
+    // The view's own loop stops: the test gives the frames their times.
+    v.dispose();
+    const frame = (): Frame => ({ m: v.metresPerPx, sprites: v.shares.elements, ground: v.groundShare, scattered: v.groundScatter?.count ?? 0, cut: v.groundScatter?.truncated ?? false });
+    const scaleOf = (m: number): number => (v.metresPerPx * v.controller.cam.scale) / m;
+    let now = performance.now() + 60_000;
+    v.draw(now);
+    const rest = frame();
+    // A jump far out (a test's `set`, God's tools): 40 frames there.
+    v.controller.set({ cx, cy, scale: scaleOf(5000) });
+    const jump: Frame[] = [];
+    for (let k = 0; k < 40; k++) {
+      v.draw(now);
+      jump.push(frame());
+      now += 16;
+    }
+    // Back at rest in T2, then out by the camera's own eased zoom (a spin of the wheel), frame by frame.
+    v.controller.set({ cx, cy, scale: scaleOf(250) });
+    now += 5000;
+    v.draw(now);
+    now += 5000;
+    v.draw(now);
+    v.frameAt(now); // (the loop's own clock, set to the test's: its first step is then one of 16 ms)
+    const back = frame();
+    v.controller.zoomTo(scaleOf(1500));
+    const wheel: Frame[] = [];
+    for (let k = 0; k < 90; k++) {
+      now += 16;
+      v.frameAt(now);
+      wheel.push(frame());
+    }
+    return { rest, jump, back, wheel };
+  }, { cx: at.forest[0], cy: at.forest[1] });
+
+  expect(rec.rest).toMatchObject({ sprites: 1, ground: 1, cut: false });
+  expect(rec.rest.scattered).toBeGreaterThan(1000);
+  // The jump: the sprites' share is the clock's and still full in the first frames; of the ground there is nothing from the first frame on.
+  expect(rec.jump[0]!.m).toBeGreaterThan(4990);
+  expect(rec.jump[0]!.sprites, 'the sprites in the first frame far out').toBe(1);
+  expect(Math.max(...rec.jump.map((f) => f.ground)), 'the ground far out').toBe(0);
+  expect(Math.max(...rec.jump.map((f) => f.scattered)), 'instances far out').toBe(0);
+  expect(rec.jump.at(-1)!.sprites, 'the sprites when the handover is over').toBe(0);
+  // The wheel: back in T2 all is there again; on the way out the ground is the sprites' share up
+  // to 345 m/px, less beyond, nothing from 690 m/px on, never more than the frame before, and
+  // the scatter is never cut short.
+  expect(rec.back).toMatchObject({ sprites: 1, ground: 1 });
+  let before = 1;
+  let between = 0;
+  for (const f of rec.wheel) {
+    expect(f.cut, `${f.m.toFixed(0)} m/px`).toBe(false);
+    expect(f.scattered, `${f.m.toFixed(0)} m/px`).toBeLessThan(12_000);
+    expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeLessThanOrEqual(f.sprites);
+    expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeLessThanOrEqual(before);
+    if (f.m <= 345) expect(f.ground, `${f.m.toFixed(0)} m/px`).toBe(f.sprites);
+    if (f.m >= 690) expect(f.ground, `${f.m.toFixed(0)} m/px`).toBe(0);
+    if (f.ground === 0) expect(f.scattered, `${f.m.toFixed(0)} m/px`).toBe(0);
+    if (f.m > 345 && f.m < 690 && f.sprites === 1) between++;
+    before = f.ground;
+  }
+  console.log(`out of T2 by the wheel, 250 → 1500 m/px: ${rec.wheel.filter((f) => f.ground > 0).length} frames with ground, ${between} of them beyond 345 m/px with the sprites still in full; the most instances in a frame ${Math.max(...rec.wheel.map((f) => f.scattered))}; at rest far out: ground ${rec.wheel.at(-1)!.ground}, sprites ${rec.wheel.at(-1)!.sprites}`);
+  // (The way out has frames between the two zooms: the ground is seen going, not gone.)
+  expect(rec.wheel.filter((f) => f.ground > 0 && f.ground < 1).length, 'frames with the ground going').toBeGreaterThanOrEqual(1);
+  expect(rec.wheel.at(-1)!).toMatchObject({ sprites: 0, ground: 0, scattered: 0 });
+  expect(Math.abs(rec.wheel.at(-1)!.m - 1500)).toBeLessThan(2);
+});
