@@ -4884,3 +4884,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   frame by frame): tonight every spec that measures wall time failed twice on a slow machine.
 - Seamless is measured on the layers' shares along the path. The pixel measure of ADR-71 needs
   a camera at rest.
+
+## 2026-10-04 — PLAN 2.10a: the zoom demo, from the whole world to the men of a battle
+
+- **What it is:** `tests/e2e/zoomDemo1938.spec.ts`. Seed 1938, day 30. The camera eases from
+  the whole world (27,830 m/px) to 3 m/px in eight stops, two in each tier, held on a
+  Japanese division that fights in the pocket by Nanking. Eight pictures in
+  `docs/evidence/2.10/`, all looked at.
+- **Seamless, measured:** in 328 frames no layer's share moved by more than 0.096 in a frame
+  (limit 0.12) and none went back; the battle never left its place on the screen by a pixel.
+  With a fade of 20 ms the test fails (0.896): the measure sees a jump.
+- **The same world at every tier:** the page's hash is Node's after the month and after each
+  of four stepped hours; the division's counter, marker, 45 elements and 2,579 figures are
+  each there at their stop, the elements with Node's strengths and places.
+- **On the test's clock:** the view's loop is stopped and given its times. The night's slow
+  machine failed every spec that measures wall time; this one would only take longer.
+- **Not test first:** nothing older fails it. Said in PLAN.
+- **A decision recorded:** the battle is the scenario's own, where SPEC §10 said a spawned
+  one (ADR-71, addendum). The closest stop is 3 m/px, not 1.
+- **For 2.10b, seen:** every battalion draws 64 figures at a third of its strength; the
+  batteries beside them show 3 to 5 guns of 12.
+- **For the review (BLOCKERS):** occupied land's hatching covers the ground at T2 and T3; a
+  battle shows little fire at T3 because shots fly 30 to 60 km.
+- **Tests:** 1 new e2e test (113).
+- **Next:** PLAN 2.10b, how a battalion's losses show at T3.

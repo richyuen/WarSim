@@ -1536,7 +1536,8 @@ on screen.
   ranking and in the nation panel, never in cells: the map is a Miller projection
   (`src/sim/landArea.ts`, [ADR-52]); reports in `docs/sweeps/` (docs/sweeps/2026-10-03-sweep.md all green).
 - **Playwright e2e**: boot, start 1938, run 1 year, screenshot every map mode;
-  scripted seamless zoom world → close (8 stops) on a spawned battle; tank, naval and air
+  scripted seamless zoom world → close (8 stops) on a battle of the scenario's own
+  (`zoomDemo1938.spec.ts`, PLAN 2.10a; the spawned battle is `tiers1938.spec.ts`); tank, naval and air
   battle scenes; AI nuclear strike scene (seeded scenario with forced escalation
   conditions, AI-decided rather than God-forced); editor round trip; save/load.
   The test API is `window.__warsim`: now `sim` (SimClient: init/step/command/hash/save/load/

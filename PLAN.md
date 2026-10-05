@@ -1005,7 +1005,7 @@ quick sweep as a smoke test.
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.
   Split 2026-10-04: the demo and the choice are two causes, and the choice is to be made from
   the demo's pictures (ADR-71 hands it on that way).
-  - [ ] 2.10a The demo: one camera path from the whole world down to 1 m/px on a battle of the
+  - [x] 2.10a The demo: one camera path from the whole world down to 1 m/px on a battle of the
     1938 scenario's own (a front that fights, found by a run in Node, not a battle God made),
     in eight stops that cross all three tier boundaries, each tier at rest at least once, the
     two closest on the battle. The game is paused and stepped between stops; the path is drawn
@@ -1018,6 +1018,23 @@ quick sweep as a smoke test.
     its figures) and it fights at the close stops (fire or wrecks drawn); the sim's hash is
     what the same steps give in Node. Eight screenshots in `docs/evidence/2.10/`, looked at.
     The PARITY row of the semantic zoom gets them as evidence.
+    Done 2026-10-04 (ADR-71, addendum). `tests/e2e/zoomDemo1938.spec.ts`: seed 1938, day 30, a
+    Japanese division in the pocket by Nanking (6,594 men; its 40 battalions at 123 to 197 of
+    500, its 5 batteries at 3 to 5 of 12 guns), found by rule. Stops at 27,830 (the world),
+    6000, 1500, 500, 150, 50, 12 and 3 m/px, 328 frames in all, a minute alone.
+    - The closest stop is 3 m/px, not 1: at 1 m/px one battalion fills the view, and 2.10b
+      needs battalions and batteries in one picture. 1 m/px has `closeZoom1938` and `ground1938`.
+    - Every leg: the largest step of a share 0.096 (the limit 0.12), none back, the battle
+      never 1 px from its place on the screen (700, 326).
+    - Each stop at rest in its tier. The battle's counter ("457.1k", then "14.7k"), its marker
+      (in a stack of two, then alone: "6.6k"), its 45 elements with Node's strengths and
+      places, its figures (2,579 at 12 m/px). The hash is Node's after the month and after
+      each of the four hours stepped at the close stops; 57 to 60 shots by or at it an hour.
+    - Not test first: no older code fails it. That the measure sees a jump was tried: with a
+      fade of 20 ms it fails at the first boundary (a step of 0.896).
+    - The eight pictures were looked at. The two closest show what 2.10b decides: every
+      battalion draws its 64 figures at a third of its strength; the batteries beside them
+      show 3 to 5 guns of 12.
   - [ ] 2.10b How a battalion's losses show at T3: ADR-69's open choice (the cap of 64 figures
     hides them until the battalion is nearly gone), decided from 2.10a's two closest pictures,
     where a battalion that has lost men stands by one that has not. The candidates of ADR-69:

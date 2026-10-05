@@ -1146,6 +1146,40 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     frame; city labels fade by a curve of the zoom.
   - PLAN 2.10: ADR-69's open choice, how a battalion's losses show at T3. It is a matter of
     the look at the demo's close stops, not of fades.
+- **Addendum, PLAN 2.10a (2026-10-04): the zoom demo; along a path, seamless is measured on the shares.**
+  - *The measure:* this ADR measures popping in pixels, at a camera that has stepped and
+    stays. A demo zooms, and while the camera moves every edge moves. Along the path the
+    measure is the layers' shares: in every frame of every leg none moves by more than 0.12 (a
+    fade of 250 ms moves 0.096 in a frame of 16 ms), none goes back, and at each stop the
+    tier's layers are there in full. The pixels of each boundary stay with `fades1938`. With
+    a fade of 20 ms the demo fails at the first boundary (a step of 0.896).
+  - *The clock is the test's:* the view's loop is stopped and its turns are given times 16 ms
+    apart (`frameAt`, there since PLAN 2.7y), with a pause for the worker between two. The
+    camera's own eased zoom (`zoomTo`, what the wheel does) runs on that clock. Every spec
+    that measures wall time failed twice on this night's slow machine. This one takes longer
+    there and sees the same, except that a snapshot can come some frames later, which delays
+    a fade and does not make it a jump.
+  - *One eased zoom a leg, not a held key:* a key's zoom (× 3 a second) took 130 frames for
+    the leg to 6000 m/px, at 120 ms a frame in the tests' rasteriser. The eased zoom takes 35
+    to 55 a leg.
+    The measure does not depend on the camera's speed.
+  - *The battle is the scenario's, not God's* (SPEC §10 said "a spawned battle"): PLAN 2.5 has
+    the spawned one, alone in western China, for numbers to the man. A demo of the scenario
+    closes in on its own front. It is found by rule in Node, not by an id: of the divisions
+    that fired in the last hour and have stood for a day, the one whose battalions kept least
+    while each still has more than 64 men, with a battery that has lost guns. Seed 1938, day
+    30: a Japanese division in the pocket by Nanking, 6,594 men, battalions at 123 to 197 of
+    500, batteries at 3 to 5 of 12 guns. If a rule change leaves no such division, the test
+    says that, and not that the zoom is broken.
+  - *Eight stops, two a tier, the closest at 3 m/px:* at 1 m/px one battalion fills the view.
+    PLAN 2.10b needs battalions and batteries in one picture.
+  - *The same world:* the page's hash is Node's after the month and after each of the four
+    hours stepped at the close stops; the elements in the view have Node's strengths and
+    places.
+  - *Seen in the pictures, for the review (BLOCKERS):* the hatching of occupied land lies over
+    the ground at T2 and T3; shots fly 30 to 60 km, so at 3 m/px a battle shows little of its
+    fire.
+
 ### ADR-70 · 2026-10-04 · accepted — A slot is a place in the block the template made (PLAN 2.7a)
 
 - **Context:** an element's place was `slotPose(formation, slot, count)` with `count` the

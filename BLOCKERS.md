@@ -291,6 +291,24 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     east is shaded less steep than it is, against one to the south.
   - The cost of the ground in the tests' software rasteriser is not known per frame (what was
     read varied by a quarter from run to run); the e2e stage's length is watched instead.
+- Left by PLAN 2.10a (2026-10-04, ADR-71 addendum), seen in the demo's pictures, for the phase
+  review (PLAN 2.11):
+  - Occupied land at T2 and T3: its hatching, in screen px, lies over the ground's shading and
+    texture across the whole view (the four close pictures are of an occupied pocket).
+  - A battle shows little of its fire at T3: shots fly 30 to 60 km (the range is in cells) and
+    the view is 4 to 17 km wide. One tracer in the picture at 12 m/px, none at 3 m/px.
+  - A battalion at a third of its strength looks whole at T2 as well (a sprite dims only
+    below 8 units): PLAN 2.10b decides for T3.
+  - The demo does not go to 1 m/px (its closest stop is 3), and it only zooms in.
+  - A frame of the demo costs 100 to 200 ms in the tests' rasteriser (328 frames in 52 s); the
+    spec takes a minute alone and has a timeout of 300 s. How long it takes beside three
+    other workers is the gate's to show.
+  - The demo's battle hangs on the balance, by design: it needs a division that fires, has
+    stood for a day, has every battalion above 64 men and under half its strength, and a
+    battery with losses, and more than 10 shots by or at it in each stepped hour. A pin move
+    can make day 30 find another division, or none; then the test says that it has no battle.
+    The "under half" is 2.10b's need (a battalion that looks whole and is not) riding on
+    2.10a's test: once 2.10b has decided, see whether it still belongs.
 - Left by PLAN 2.9b2 (2026-10-04, ADR-79 third addendum), for the phase review (PLAN 2.11):
   - A GPU that takes no texture of 8192 px (WebGL2 promises 2048) draws the coverage's coast
     at T2 and T3, and nothing says so. The mask's land can be sea there (2 places at Dover).
