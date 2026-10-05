@@ -69,6 +69,8 @@ export type ToWorker =
   | { type: 'history'; reqId: number }
   /** PLAN 2.14b: one formation as JSON `FormationDetail` in the reply bytes (`null` when it is gone). */
   | { type: 'formation'; reqId: number; id: number }
+  /** PLAN 2.14e: the largest battle of war `war` as JSON `WarBattle` in the reply bytes (`null` when it has none). */
+  | { type: 'warBattle'; reqId: number; war: number }
   /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
   | { type: 'stats'; reqId: number }
   | { type: 'save'; reqId: number }
@@ -407,6 +409,26 @@ export interface FormationDetail {
   y: number;
   /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */
   units: { nameKey: string; cls: string; elements: number; strength: number; size: number }[];
+}
+
+/**
+ * Reply to `warBattle` (PLAN 2.14e): the largest battle of a war and where to look at it, for
+ * the click on the war's banner (`largestBattle` in sim/systems/warBattle.ts).
+ */
+export interface WarBattle {
+  war: number;
+  tick: number;
+  /**
+   * Where to look, in cells: the middle between the blocks of the two formations in `formations`,
+   * an attacker's and a defender's in contact, the pair with the most men among those that
+   * are each other's nearest enemy (they stand front to front, a kilometre apart).
+   */
+  x: number;
+  y: number;
+  formations: [number, number];
+  /** Formations and men of the battle: [attackers, defenders]. */
+  count: [number, number];
+  men: [number, number];
 }
 
 /** Reply to `inspect` (PLAN 1.32): enough sim state to assert God Mode effects. */

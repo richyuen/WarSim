@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-91 · 2026-10-05 · accepted — A click on a war's banner goes to its largest battle: by men, a jump, at 20 m/px (PLAN 2.14e, the critic's R2-B2)
+
+- **Context:** the critic: "Nothing leads to a battle. At T2 a division is a 30 px grid in a
+  view of 1,600 px; most T3 views are empty ground. There is no way from a war's banner, a
+  marker or the history to where the fighting is."
+- **Decision.**
+  - *Which battle.* Battles are derived each hour and not kept. For the click they are worked
+    out again for the one war, from the state (`largestBattle`, `sim/systems/warBattle.ts`):
+    formations of its two sides that are `engaged` and within the contact distance of one of
+    the other side, joined into battles; the largest is the one with the most men (of equals,
+    the lowest formation id). Read-only: no flag, no deployment and no hash changes.
+  - *Where in it.* A battle of a front is hundreds of kilometres long, and a view that shows
+    elements is 28 km wide. The camera goes between the blocks of one attacker's and one
+    defender's formation: of those that are each other's nearest enemy (they stand front to
+    front, ADR-89) the pair with the most men.
+  - *The zoom.* 20 m/px: the zoom at which the two blocks are whole in the view, with their
+    tags (PLAN 2.14c1's picture). A view smaller than 1400 px keeps 28 km across at more
+    metres a pixel, up to 250, where elements are still what is drawn.
+  - *A jump,* not a flight: the camera has an eased zoom and no eased pan, and a flight from
+    the world to 20 m/px passes four tiers in a second.
+  - *The click keeps what it did:* it selects the attackers' leader (PLAN 1.31b). A war with
+    no formations in contact leaves the camera where it is.
+- **Asked on the click, not sent with the statistics:** a flag "has a battle" on every banner
+  would be a grouping of every war's formations with each statistics message.
+- **What it does not give.** No way to the war's second battle, none from the history or from
+  a marker, and nothing on the banner says whether there is a battle to go to.
+
 ### ADR-90 · 2026-10-05 · accepted — At T2 and T3 the ground has the terrain's colour, and the fill is a cast on it (PLAN 2.14d, the critic's R2-B2)
 
 - **Context:** the critic: "The ground is the nation's colour. Berlin at 20 m/px is grey noise

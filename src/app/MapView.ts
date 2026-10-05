@@ -89,6 +89,15 @@ const MARKER_CELLS = 0.9;
 const STAND_IN_MAX_PX = 48;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
 const ELEMENT_CELLS = 0.026;
+/**
+ * Where the camera goes for a battle (`showBattle`, PLAN 2.14e): 20 m/px, the zoom at which two
+ * divisions deployed against each other are whole in a view of 1400 × 800 (PLAN 2.14c1). A
+ * smaller view keeps 28 km of ground across and 14 down at more metres a pixel, up to 250: under
+ * T2's limit (T1_MIN_M less the hysteresis), so that elements are what is drawn.
+ */
+const BATTLE_VIEW_M = 20;
+const BATTLE_VIEW_KM = 28;
+const BATTLE_VIEW_MAX_M = 250;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
 const FIGURE_MIN_PX = 2.5;
 /** Below this many m/px the last element section is kept for building the figures (twice T3's limit: a wheel step away). */
@@ -780,6 +789,19 @@ export class MapView {
     this.lastSubAt = now;
     this.subscription = sub;
     this.sim.subscribe(sub);
+  }
+
+  /**
+   * Brings a battle at (x, y) into view (PLAN 2.14e): the camera jumps onto it at
+   * BATTLE_VIEW_M per pixel, where the blocks of two divisions front to front are whole in the
+   * view with their tags (PLAN 2.14c1). A small view shows the same ground at more metres a
+   * pixel (BATTLE_VIEW_KM across and half of it down), but stays where elements are drawn.
+   */
+  showBattle(x: number, y: number): void {
+    const el = this.canvas;
+    const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, el.clientWidth), (BATTLE_VIEW_KM * 500) / Math.max(1, el.clientHeight)));
+    this.controller.set({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
+    this.dirty = true;
   }
 
   /** Metres per CSS pixel at the current zoom. */

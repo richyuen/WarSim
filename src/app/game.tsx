@@ -44,6 +44,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     hud.onMapMode = (m) => view.setMapMode(m);
     view.onSelect = (id) => (hud.selected.value = id);
     hud.onSelectNation = (id) => view.select(id);
+    hud.onShowBattle = (x, y) => view.showBattle(x, y);
     const p = new PlayerControl(hud, view);
     player = p;
     view.onPick = (x, y, sx, sy, shift) => {

@@ -172,7 +172,7 @@ export function App({
           onClose={() => hud.toggleHistory()}
         />
       ) : null}
-      {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} /> : null}
+      {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {stats && hud.showStats.value && !hud.showEditor.value ? (
         <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />
       ) : null}

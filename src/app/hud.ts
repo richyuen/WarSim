@@ -51,6 +51,21 @@ export class Hud {
   readonly selected = signal(0);
   /** Selects a nation from the UI (panel chips); main wires it to the map view. */
   onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
+  /** Brings a place into view at a zoom that shows a battle (PLAN 2.14e); main wires it to the map view. */
+  onShowBattle: (x: number, y: number) => void = () => {};
+
+  /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
+  toBattle(war: number): void {
+    void this.sim
+      .warBattle(war)
+      .then((b) => {
+        if (b) this.onShowBattle(b.x, b.y);
+      })
+      .catch(() => {
+        /* the worker is gone or busy with a load: the camera stays */
+      });
+  }
+
   /** The formation whose panel is open (0 = none; PLAN 2.14b), set by map clicks, and what the sim says of it. */
   readonly formation = signal(0);
   readonly formationInfo = signal<FormationDetail | null>(null);

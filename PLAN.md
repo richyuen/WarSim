@@ -1849,9 +1849,37 @@ quick sweep as a smoke test.
       (the critic's "no streets, no river" of Berlin stands). The handover at 300 m/px now
       changes the land's colour from the fill to the terrain over its 250 ms; its specs
       pass and it was not looked at as a sequence.
-  - [ ] 2.14e A way to the battle. A click on a war's banner brings its largest battle into
+  - [x] 2.14e A way to the battle. A click on a war's banner brings its largest battle into
     view, at a zoom that shows it.
     AT: the click moves the camera onto elements of both sides of that war in contact.
+    Done 2026-10-05 (ADR-91).
+    - *Which battle* (`largestBattle`, `src/sim/systems/warBattle.ts`; the worker's request
+      `warBattle`): the war's formations in contact across its two sides, joined into
+      battles; the one with the most men. Worked out on the click from the state, read-only.
+    - *Where:* between the blocks of an attacker's and a defender's formation that are each
+      other's nearest enemy, the pair with the most men. *The zoom:* 20 m/px, or as many
+      metres a pixel as keep 28 km across a smaller view (at most 250). A jump
+      (`MapView.showBattle`).
+    - *The click* still selects the attackers' leader. A war with no contact: the camera
+      stays. The banner's tooltip says where a click leads.
+    - *Tests:* e2e `toBattle1938.spec.ts` (at HEAD the camera stays on the world: the wait
+      for it ran out): Germany against Poland by God Mode, a division of each a cell apart,
+      a day; from the whole world the click puts the camera on the sim's answer at 20.0
+      m/px, 28 of 28 elements of each of the two formations on the screen, all in contact,
+      each with its tag; Germany's panel is open. Unit `warBattle.test.ts` (3): no contact
+      and no such war are null; of two battles the one with more men, and the other when it
+      has grown; the pair that are each other's nearest; the hash and the hour's
+      deployments (with the hour before's) are as they were; the worker's answer.
+    - *Picture looked at* (`docs/evidence/2.14/to-battle.png`): the two divisions front to
+      front in the middle of the view, their tags over them, the border beside them.
+    - *Run by hand* (ADR-87): `ranking`, `battleView`, `formationPanel`, `tags`, `toBattle`:
+      5 green.
+    - *The pin:* not moved; no rule changed.
+    - *Not done:* the jump is not a flight; no way to a war's other battles, nor from the
+      history or a marker; a banner does not say whether its war has a battle. In the
+      test's war the largest battle is the pair put down for it: a battle of a real front
+      (dozens of formations, the pair chosen among them) was tested in the unit test's
+      two-against-one only. Lines for 2.14f.
   - [ ] 2.14f The whole: `zoomDemo1938` passes or is restated with the reason; the phase's
     close pictures shot again on the final code and looked at; PARITY.
     - From 2.14b: the formation whose panel is open is marked on the map; a tag does not
@@ -1860,6 +1888,9 @@ quick sweep as a smoke test.
       formation's place, the block up to 28 px from it), and decide whether the marker of
       a formation in contact is drawn at its block; count how often a block changes its
       line in a running war.
+    - From 2.14e: click the banner of a war with a real front (60 days of Germany against
+      Poland) and look at where it lands; decide whether the jump becomes a flight, and
+      whether a banner shows that its war has a battle.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton

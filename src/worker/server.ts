@@ -19,6 +19,7 @@ import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
+import { largestBattle } from '../sim/systems/warBattle';
 import {
   FormationFlag,
   MAX_SNAPSHOT_ELEMENTS,
@@ -36,6 +37,7 @@ import {
   type UnitSymbol,
   type FormationDetail,
   type Inspection,
+  type WarBattle,
   type WarStat,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY } from '../shared/scenarios';
@@ -227,6 +229,13 @@ export class SimServer {
       case 'formation':
         this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(this.formationInfo(msg.id))), false);
         break;
+      case 'warBattle': {
+        const world = this.requireSim().world;
+        const site = Number.isInteger(msg.war) ? largestBattle(world, msg.war) : null;
+        const battle: WarBattle | null = site ? { ...site, tick: world.tick } : null;
+        this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(battle)), false);
+        break;
+      }
       case 'stats': {
         const rows = Float32Array.from(this.requireSim().world.stats.rows);
         this.reply(msg.reqId, new Uint8Array(rows.buffer), false);

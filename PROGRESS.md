@@ -5430,3 +5430,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   m/px not looked at as a sequence.
 - **Next:** PLAN 2.14e, a click on a war's banner brings its largest battle into view. Then
   2.14f, which ticks PLAN 2.14 and runs the whole e2e suite (ADR-87).
+
+## 2026-10-05 — PLAN 2.14e: a click on a war's banner goes to its largest battle (ADR-91)
+
+- **What the critic saw:** "Nothing leads to a battle": no way from a war's banner to where
+  the fighting is, and most close views are empty ground.
+- **Built:** the worker answers `warBattle` with the war's largest battle (most men) and a
+  point between two of its formations that stand front to front; the banner's click jumps
+  the camera there at 20 m/px (more on a small view, at most 250). It still selects the
+  attackers' leader. No contact in the war: the camera stays.
+- **Read-only:** battles are derived each hour, so the answer is worked out again for the one
+  war from the state. The hash and the hour's deployments are untouched (unit test).
+- **Tests:** 3 unit (673), 1 e2e (`toBattle1938`, seen to fail first: the camera stayed).
+  Picture looked at: both divisions and their tags in the middle of the view.
+- **A gotcha:** a division put on a neutral's land is sent home within the hour (Brazil's on
+  German soil was back in Brazil). The unit test clears the map's armies and uses Germany and
+  Poland instead.
+- **Another:** `console.log` in a vitest test did not reach the terminal here; the probe wrote
+  a file.
+- **The pin:** not moved. **Run by hand:** `ranking`, `battleView`, `formationPanel`, `tags`,
+  `toBattle`: 5 green.
+- **Not done:** a flight instead of a jump; the banner does not say whether there is a
+  battle; a real front's battle was not looked at through the click. Under PLAN 2.14f.
+- **Next:** PLAN 2.14f, which ticks PLAN 2.14 and runs the whole e2e suite (ADR-87).

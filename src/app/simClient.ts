@@ -11,6 +11,7 @@ import type { LandMask } from '../shared/landMask';
 import type {
   FromWorker,
   FormationDetail,
+  WarBattle,
   Inspection,
   PoliticalBuildResult,
   ProvinceBuildResult,
@@ -324,6 +325,13 @@ export class SimClient {
     const r = await this.status({ type: 'formation', id });
     if (!r.bytes) throw new Error('formation reply without bytes');
     return JSON.parse(new TextDecoder().decode(r.bytes)) as FormationDetail | null;
+  }
+
+  /** The largest battle of war `war` as the sim has it now (PLAN 2.14e), or null when the war has none. */
+  async warBattle(war: number): Promise<WarBattle | null> {
+    const r = await this.status({ type: 'warBattle', war });
+    if (!r.bytes) throw new Error('warBattle reply without bytes');
+    return JSON.parse(new TextDecoder().decode(r.bytes)) as WarBattle | null;
   }
 
   /** JSON summary of the world (PLAN 1.32; tests and the critic). */
