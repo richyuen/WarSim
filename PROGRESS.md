@@ -5177,3 +5177,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** 2 new unit tests (644).
 - **This was the last fix of the review.** Next: PLAN 2.11h, the phase's pictures on the final
   code and PARITY; then 2.11 is ticked and the critic runs.
+
+## 2026-10-05 — PLAN 2.11h: the phase's pictures on the final code, and PARITY. The Phase 2 review is done
+
+- **Pictures:** one run of the suite with pictures on re-shot 132. Compared each with its
+  committed one. Kept 55 of Phase 2 (the demo on the corrected world; T2 and T3 pictures from
+  before the ground; the opacity fix under trees and sprites). Put back 77 (Phase 1's, and
+  twelve that differ in nothing this phase changed).
+- **Looked at 12 of the 55,** one or more of each kind; the rest compared by pixel, not
+  viewed. The task's test asked for all: said so in PLAN.
+- **PARITY:** three rows have the phase's dated note and new evidence. 46.3%, unchanged.
+- **The Phase 2 review in numbers:** an independent read (five findings and a sixth from a
+  suspicion, all confirmed), sixteen watch lists sorted, eight fixes each with a test that
+  failed first, two smoke sweeps (limits green in both), three hash logs. Tests now: 644
+  unit, 11 in the sweep stage, 116 e2e.
+- **What I would do differently:** PLAN 2.9a changed where formations stand and tested only
+  formations at rest. The march bug it made was in four gated commits before a reader with
+  no part in the work ran a year and looked at how far things move in an hour.
+- **Next:** the critic (PROMPT step 2a; its one run for this phase). Then Phase 3, armour.

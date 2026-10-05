@@ -1064,7 +1064,7 @@ quick sweep as a smoke test.
     - Pictures: `docs/evidence/2.10/stop-7-battalions.png` and `stop-8-men.png` shot again and
       looked at; the six of `docs/evidence/2.6/` shot again (they were from before the ground
       of 2.8).
-- [ ] 2.11 Phase 2 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+- [x] 2.11 Phase 2 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
@@ -1367,13 +1367,37 @@ quick sweep as a smoke test.
     - The picture of the demo at 50 m/px was looked at: the worn division is paler than the
       one east of it. On the light tint of Japan over China's yellow the difference is small
       to the eye: a line under PLAN 7.4.
-  - [ ] 2.11h Last: the phase's pictures on the final code, and PARITY. One run of the e2e
+  - [x] 2.11h Last: the phase's pictures on the final code, and PARITY. One run of the e2e
     suite with `EVIDENCE=1`; the pictures of T2 and T3 that changed are looked at and kept
     (many are from before the ground of PLAN 2.8); the PARITY rows that Phase 2 touched (the
     semantic zoom, the real-geography map, the political and terrain modes, the map's polish)
     get their evidence and a dated note of what the phase built and what its review left.
     Then 2.11 is ticked.
     AT: `npm run parity` passes; every picture a row names exists and was looked at.
+    Done 2026-10-05. One run of the suite with `EVIDENCE=1` on `31b0259` (116 passed) re-shot
+    132 pictures. Each was compared with its committed one, pixel by pixel.
+    - Kept, 55 pictures of Phase 2: the eight of the zoom demo (the world since PLAN 2.11i:
+      the division has 4,948 men at day 30); those of `2.3/` to `2.7/` that show T2 or T3
+      (most were older than the ground of PLAN 2.8); those of `2.6/`, `2.8/` and `2.9/`, where
+      no pixel differs by more than 24 of 255: the opacity fix of PLAN 2.11m under trees and
+      sprites.
+    - Put back, 77: the 65 of Phase 1 (not this phase's; they differ by a running game's
+      timing or by the corrected world), and 12 of Phase 2 that differ by 0 to 1,400 px of
+      1,120,000 in nothing this phase changed.
+    - **Looked at, 12 of the 55, not all:** the demo's stops 4 to 8; fire at 45 m/px; a forest
+      at 20 m/px; figures at 1 m/px; Warsaw at 40 m/px; the spawned battle at T2; central
+      Europe at T1 after a running game; sprites in the wars mode. (And the two of `2.11/`,
+      with their task.) The other 43 are of the same views at other zooms or moments and were
+      compared, not viewed.
+      The AT asked for every one.
+    - PARITY: the rows of the semantic zoom, of the real-geography map and of the political
+      mode have a dated note of what the phase built, what its review fixed and what is left,
+      with the new specs and pictures. `npm run parity`: 46.3%, as before (no status changed:
+      the zoom is partial until fleets and air wings have tiers).
+  **PLAN 2.11 done 2026-10-05.** The review took 15 commits: its split, four parts of review (a smoke
+  sweep, an independent read, the watch lists, SPEC), eight fixes that came out of them, a
+  second smoke sweep, and this. The count of numbered tasks for the next review pass starts
+  again here. Next by PROMPT step 2a: the critic.
 
 ## Phase 3 — Armour
 
