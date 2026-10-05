@@ -1968,6 +1968,12 @@ quick sweep as a smoke test.
         camera has an eased zoom and no eased pan, ADR-91), and whether a banner shows that
         its war has a battle (ADR-91: not sent with the statistics; `contactsOf` is kept
         for the hour, so one pass over it may do). Built or "not now, because".
+        From 2.14f5a (ADR-93), for the same ADRs: the banner names the two leaders and the
+        click may land on their allies (Germany and Poland: Italians against the French);
+        count how many of the 752 landings have no leader's formation, and decide whether
+        the battle of a leader comes first or the banner says whose battle it leads to.
+        And "largest by men" was 67,984 against 472: decide whether the smaller side's men
+        count instead, or say why not.
       - [ ] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest
         hop of a block in the 60 days was 50 km, more than contact (29 km). Decide, with an
         ADR, whether `deployOf` limits it. *Measured 2026-10-05 with 2.14f5a* (seed 99, days
