@@ -174,7 +174,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   again, they are two things:
   1. 63 have a city as capital whose coordinates lie in a sea cell of the coarse grid (a
      city on the shore). A city is held by its cell (`cities.cell`), which is the nation's.
-     That is how every capital of the 1938 start is held, and no defect of the capital.
+     That is how every city is held (`captureCapital` and the capital checks read the
+     city's cell), and no defect of the capital.
   2. 11 have no city in their area (196 of the 406 have none) and took the middle of the
      area, which was not their land: a crescent, a strip of coast, a group of islands.
 - **Decision:** a rebel nation without a city takes as capital its own cell nearest the

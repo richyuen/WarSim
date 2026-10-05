@@ -5883,8 +5883,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   Ain, Gironde, Oran, Algiers).
 - **Gotchas:** the first form of the test asked of every capital that the cell of its
   coordinates be the nation's, and 63 were left after the fix: ask the city for its cell.
-  vitest shows no `console.log` of a test that passes when its output goes through a pipe
-  with `grep` on a line's start: the lines begin with "stdout |". A probe writes to a file.
+  vitest showed no `console.log` of a test that passed (the same line was there when the
+  test failed). A probe writes its lines to a file.
 - **Seen, not changed:** the militia of those 63 stand at the city's coordinates (2.15e2),
-  and their origin is the area's first province (2.15e3).
+  and their origin is the area's first province (2.15e3). A field capital that moves
+  (`relocateToField`) takes the middle of its cell, not the cell's land point.
+- **For 2.15e2:** it changes where the militia of a plain game's revolt stand, so the pin
+  is likely to move. If militia are left off sure land after it, an owned cell without
+  land in the fine mask is a cause of its own: split it. Not counted yet: how many capitals
+  of the 1938 start have their coordinates outside the city's cell (ADR-103 says "every
+  city"; the test looks at founded nations only).
 - **Next:** PLAN 2.15e2, the militia where production raises a formation.
