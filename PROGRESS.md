@@ -5296,3 +5296,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** no picture shot again (all of a running 1938 game are of the old world: at
   the Phase 3 review); the history panel with the new line not seen in a browser.
 - **Next:** PLAN 2.14, the close zoom shows a battle and says who is in it.
+
+## 2026-10-05 — PLAN 2.14 split into six parts (the critic's R2-B2, the close zoom)
+
+- **Why:** the finding has five causes (who is who, no formation panel, no battle in a close
+  view, the ground's colour, no way to a battle) and one cause goes into one commit.
+- **The parts:** 2.14a labels and sides at T2 and T3; 2.14b a formation panel; 2.14c a
+  battle fits a view at 20 m/px; 2.14d the ground is the terrain's; 2.14e the banner leads
+  to the battle; 2.14f the demo, the pictures, PARITY.
+- **Next:** PLAN 2.14a.

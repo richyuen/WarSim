@@ -1622,6 +1622,37 @@ quick sweep as a smoke test.
   two nations' land differs by less than a stated share away from the border; a click on a
   war's banner brings its largest battle into view. `zoomDemo1938` passes, or is restated
   with the reason.
+  **Split 2026-10-05,** one cause a commit, in the order a player meets them. Each part
+  takes its decision when it is taken up and has its own e2e, failing first, in a war made
+  by God Mode, with pictures looked at:
+  - [ ] 2.14a Who is who at T2 and T3. Every formation in the view has its flag, its
+    strength and its name by it (the marker's box gave way to nothing), and the elements and
+    figures of two nations differ in the picture.
+    AT: in a view at 150 m/px and at 12 m/px on a German and a Polish division, each has a
+    label with flag, strength and name within a stated distance of its elements, none over
+    another; the two sides' sprites and figures differ in colour by a stated measure.
+  - [ ] 2.14b A formation panel. A click on a formation (its marker, its label, one of its
+    elements) opens it: name, kind, nation, strength, its elements with theirs, supply,
+    whether it is engaged. No click at any zoom opened anything but the nation's panel.
+    AT: a click at T1, T2 and T3 opens the panel of that formation; its numbers are the
+    sim's; a click on ground closes it.
+  - [ ] 2.14c A battle fits a close view. Two formations in contact are both in one view at
+    20 m/px and face each other (the critic: the closest pair stood 29 km apart, a view is
+    32 km wide). The decision is of where engaged elements are drawn, or stand: at the cell
+    edge they fight across. Posture and facing for figures in contact.
+    AT: after 60 days of Germany against Poland, for every pair of formations in contact
+    there is a view at 20 m/px with elements of both; their figures face the enemy; a
+    battalion under fire differs from one at rest in the picture. If where elements stand
+    changes in the sim, the pin moves (ADR-55).
+  - [ ] 2.14d The ground at T2 and T3 is the terrain's. Its colour comes from the terrain,
+    the nation is a tint at the border (ADR-82's tint for occupied land with it).
+    AT: the ground of one terrain on two nations' land differs by less than a stated share
+    away from the border, and by more at it; Berlin, the Alps and Chad looked at.
+  - [ ] 2.14e A way to the battle. A click on a war's banner brings its largest battle into
+    view, at a zoom that shows it.
+    AT: the click moves the camera onto elements of both sides of that war in contact.
+  - [ ] 2.14f The whole: `zoomDemo1938` passes or is restated with the reason; the phase's
+    close pictures shot again on the final code and looked at; PARITY.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton
