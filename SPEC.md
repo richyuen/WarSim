@@ -1285,7 +1285,9 @@ is the formation's strength, which the sim recomputes from its elements at each 
   in at their real positions. The strength bar lingers above the group until T2 is fully in.
   (As built, PLAN 2.7c, ADR-72: over 250 ms the box fades and shrinks by 13% about its centre
   while the sprites fade in; the strength bar and the number stay for that time and fade over
-  the 220 ms after it. Out of T2 the same, backwards: the bar first, then the box. The box does
+  the 220 ms after it. Out of T2 the same, backwards: the bar first, then the box. Of a
+  formation in contact the bar goes and comes with the box, PLAN 2.14f4, ADR-92: its elements
+  stand at the block deployed against the enemy, up to 43 px from the marker. The box does
   not move: a marker stands on its formation's centre already. It shrinks by 13% and no more:
   see the ADR.)
 - T2→T3: an element sprite cross-fades into its individual expansion, which is laid out inside

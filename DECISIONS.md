@@ -167,6 +167,56 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-92 · 2026-10-05 · accepted — The marker of a formation in contact stays on the formation, not on its block; its bar goes with its box (PLAN 2.14f4)
+
+- **Context:** since ADR-89 the block of a formation in contact stands between it and its
+  nearest enemy, and the marker stands on the formation. At the boundary of 300 m/px the box
+  fades where the formation is and the elements come in elsewhere. Measured
+  (`battleView1938.spec.ts`): 27 px apart for a pair a cell apart, 43 px for a pair at 1.48
+  cells (contact ends at 1.5). PLAN 2.14c1 had "up to 28 px": that is the pair a cell apart.
+- **Looked at:** the morph in ten frames, for both distances. It reads as two boxes fading
+  while one fight appears between them, on the line that joins them. Nothing jumps: no pixel
+  is moved, the two layers cross-fade (ADR-71).
+- **Decision 1: the marker is not drawn at the block.**
+  - The blocks of a pair stand 10 px apart at 300 m/px and 1.7 px at 2,000 (0.17 cells: the
+    gap and a block's depth). A box is 26 px wide. Two enemies' boxes at their blocks would
+    overlap by 16 px or more at every zoom of T1, and `markerStacks` moves markers of two
+    nations apart by a few px, not by a box.
+  - The marker is the formation of the rules: contact, targets and pressure on territory read
+    that place (ADR-89). A click on it and the order arrow start there.
+  - A formation 1.5 cells from its enemy would be shown 0.67 cells (13 km) from where it is.
+- **Decision 2: the box does not slide to the block during the morph.** 43 px in 250 ms is
+  2.7 px a frame of a box with a white flag chip on a dark outline. ADR-72 kept the shrink to
+  13%, a corner moving by under 0.2 px a frame, because that was already 43 of the 48 allowed.
+- **Decision 3: the bar and the number of a formation in contact go with the box.** ADR-72
+  lets them linger for 220 ms so that the number stays with the group. Here they lingered
+  beside it: two stubs reading "11.9k" 27 to 43 px from the blocks, under or beside the tags
+  that carry the same number (ADR-88). `drawMarkers` gives an engaged marker's bar the box's
+  opacity. Out of T2 the same: bar and box come in together.
+- **Tests:** e2e, the second test of `battleView1938.spec.ts`: a German division not in
+  contact, and a German and a Polish one a cell apart. The offsets above; no box travels; in
+  every frame of the morph the bar of each of the pair has its box's opacity, and at 256 ms
+  nothing is left of them, while the bar of the one behind is in full. Seen to fail first
+  (16 ms: bar 1 against 0.988). Pictures: `docs/evidence/2.14/handover-contact-t1.png`,
+  `-96ms`, `-352ms`.
+- **How often a block changes its line** (`deploy.test.ts`, the world of seed 99 with Germany
+  at war with Poland, 60 days, hour by hour): 169,565 block-hours in contact. The block moved
+  at all in 598 (0.4%). 511 were hops of more than a block's depth (2.3 km): one in 332 hours
+  of a block. All 511 were of formations that stood still; 81 came with another nearest
+  enemy, the other 430 with the same one. Of those the cause was not looked into: that
+  enemy's own block went elsewhere, or the formation's row behind it changed (the median hop
+  is 3.3 km, which is a row). 109 were of more than half a cell, the longest 50 km.
+  231 formations hopped, the most 8 times. 701 contacts began and 605 ended, each one move
+  to the line or back.
+- **Not done:**
+  - A hop is drawn as one hour's move of the elements. 109 of them in 60 days are 10 km or
+    more in that hour: not looked at on the screen.
+  - The longest hop is longer than contact (29 km): a formation that comes up to the block of
+    an enemy deployed the other way can stand further from its own place than its enemy is.
+    How far a block may stand from its formation has no limit in `deployOf`. For PLAN 2.14f5,
+    which looks at the same pairs.
+  - A stack is drawn as its lead: the bar follows whether the lead is in contact.
+
 ### ADR-91 · 2026-10-05 · accepted — A click on a war's banner goes to its largest battle: by men, a jump, at 20 m/px (PLAN 2.14e, the critic's R2-B2)
 
 - **Context:** the critic: "Nothing leads to a battle. At T2 a division is a 30 px grid in a

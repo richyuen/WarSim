@@ -1918,12 +1918,25 @@ quick sweep as a smoke test.
       is none (the counters are nations'); in the morph at 300 m/px the frame fades with
       the box and does not shrink with it, not looked at as a sequence; the frame's cost
       in a frame was not measured (two strokes).
-    - [ ] 2.14f4 The handover at 300 m/px on a pair in contact (from 2.14c1): the marker
+    - [x] 2.14f4 The handover at 300 m/px on a pair in contact (from 2.14c1): the marker
       stands at the formation's place, the block up to 28 px from it. Shoot the sequence
       of the morph, look at it, and decide whether the marker of a formation in contact is
       drawn at its block (an ADR either way). Count how often a block changes its line in
       a running war (60 days of Germany against Poland, hour by hour; a number for
       PROGRESS.md).
+      Done 2026-10-05 (ADR-92). *Measured:* 27 px for a pair a cell apart, 43 px at 1.48
+      cells (the 28 was the first). *Decided:* the marker stays on the formation (two
+      enemies' boxes of 26 px would stand 10 px apart at their blocks, 1.7 at 2,000 m/px;
+      the rules read the formation's place) and does not slide there in the morph (2.7 px a
+      frame). *Changed:* the bar and the number of a formation in contact no longer linger
+      for 220 ms beside the group; they go with the box. e2e, the second test of
+      `battleView1938`, seen to fail first; pictures looked at
+      (`handover-contact-t1.png`, `-96ms`, `-352ms`). *The count* (unit, `deploy.test.ts`):
+      169,565 block-hours in contact, 511 hops of more than a block's depth (one in 332
+      hours of a block), 81 of them with another nearest enemy, 109 of more than half a
+      cell, the longest 50 km. *Not done:* a hop of 10 km in an hour not looked at on the
+      screen; `deployOf` has no limit to how far a block stands from its formation (to
+      2.14f5, below).
     - [ ] 2.14f5 The banner of a war with a real front (from 2.14e). After 60 days of
       Germany against Poland, click the banner and look at where it lands; log how the
       pair was chosen. When no two of the battle are each other's nearest, the two picked
@@ -1932,6 +1945,9 @@ quick sweep as a smoke test.
       AT: unit, on the 60-day front: both blocks of the chosen pair are in the view the
       camera takes; e2e picture looked at. Decide, each with an ADR: whether the jump
       becomes a flight, and whether a banner shows that its war has a battle.
+      From 2.14f4: the longest hop of a block in the 60 days was 50 km, more than contact
+      (29 km). Measure how far a block stands from its own formation on that front, and
+      decide whether `deployOf` limits it.
     - [ ] 2.14f6 The whole: `zoomDemo1938` passes or is restated with the reason; the
       pictures of `docs/evidence/2.14/` shot again on the final code and looked at;
       PARITY rows with their evidence. Ticks 2.14f and 2.14: the whole e2e suite.

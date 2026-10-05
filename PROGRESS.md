@@ -5512,3 +5512,39 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** no mark on the elements or figures; none at T0; the morph with a picked
   formation not looked at as a sequence; the frame's cost not measured.
 - **Next:** PLAN 2.14f4, the handover at 300 m/px on a pair in contact, and the count of hops.
+
+## 2026-10-05 — PLAN 2.14f4: the handover of a pair in contact; how often a block changes its line
+
+- **Shot and looked at:** the T1 → T2 morph in ten frames, a German and a Polish division a
+  cell apart and 1.48 cells apart. The boxes fade where the formations stand, 27 and 43 px
+  from where the blocks come in (the PLAN's 28 px was the first case only). It reads as two
+  boxes giving way to one fight between them; nothing jumps.
+- **Decided (ADR-92):** the marker stays on the formation. At their blocks two enemies' boxes
+  (26 px) would stand 10 px apart at 300 m/px and 1.7 px at 2,000. No slide in the morph
+  either: 2.7 px a frame.
+- **What was wrong, and built:** the strength bar and the number lingered 220 ms beside the
+  group, as stubs under the tags. Of a formation in contact they now go with the box (one
+  line in `drawMarkers`).
+- **Tests:** e2e, a second test in `battleView1938`: the offsets, no box travels, bar equal
+  to box in every frame for the pair, the bar of a division not in contact lingering as
+  before. Seen to fail first (bar 1 against 0.988 at 16 ms). Unit, in `deploy.test.ts`: the
+  count below, with a limit of 5% hops (measured 0.30%). 679 unit tests.
+- **The count** (seed 99, Germany at war with Poland, 60 days, hour by hour, every formation
+  of the world in contact): 169,565 block-hours; the block moved at all in 598 (0.4%); 511
+  hops of more than a block's depth (2.3 km), one in 332 hours of a block; all of formations
+  that stood still; 81 with another nearest enemy; 109 of more than half a cell; median 3.3
+  km, longest 50 km; 231 formations hopped, the most 8 times; 701 contacts begun, 605 ended.
+- **Found, not fixed:** the longest hop is longer than contact. A block that comes up to the
+  block of an enemy deployed the other way has no limit to its distance from its own
+  formation. Written under PLAN 2.14f5.
+- **A gotcha:** the camera's step across the boundary (0.04% of the zoom) moves a box 200 px
+  from the middle by 0.07 px: "does not travel" is measured from the frame of the step.
+- **Another:** the first frame after 250 ms on a grid of 16 ms is 256 ms, and the bar has
+  begun to go (0.998).
+- **Again:** a Git Bash heredoc with a spec in it did not parse; the Edit tool did it.
+- **The pin:** not moved; view only. **Run by hand:** `battleView` (2), `markers`,
+  `markerStacks` (4), `handover`, `morphNations`, `formationPanel`, `toBattle`, `fades`,
+  `labelFades`, `tags`: 14 green.
+- **Not done:** a hop of 10 km in one hour not looked at on the screen; why 430 hops kept
+  their enemy not looked into; the frame of the picked formation (2.14f3) in this morph.
+- **Next:** PLAN 2.14f5, the banner of a war with a real front.

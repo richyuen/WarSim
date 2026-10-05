@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { T1_MIN_M } from '../../src/render/units/markers';
 import type { Command } from '../../src/shared/commands';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -181,4 +182,120 @@ test('two formations in contact are both in one view at 20 m/px, and face each o
   // The ranks of a battalion in contact take about half the depth they take at rest.
   expect(fight.depth / rest.depth, 'depth of a battalion\'s figures, in contact against at rest').toBeLessThan(0.65);
   console.log(`5 m/px: in contact ${JSON.stringify(fight.frames)} figures by frame, a battalion ${(fight.depth * 19_570).toFixed(0)} m deep; at rest ${JSON.stringify(rest.frames)}, ${(rest.depth * 19_570).toFixed(0)} m deep`);
+});
+
+// PLAN 2.14f4 (ADR-92): the T1 → T2 handover of a pair in contact. A marker stands on its
+// formation, which the rules read; the block of a formation in contact stands between the two
+// (above). So at the boundary of 300 m/px the box goes where the formation is, and the
+// elements come in up to 43 px from it: at a cell apart 27 px, at the 1.5 cells of contact 43.
+// The marker stays on the formation (two enemies' boxes, 26 px wide, would stand 10 px apart
+// at their blocks). What the handover does not do is leave the strength bar and the number
+// behind for the 220 ms that they linger "on the group" (ADR-72): beside the group they go
+// with the box. A German division three cells behind, not in contact, keeps its bar as before.
+test('the T1 → T2 handover of a pair in contact: the boxes go where the formations stand, and their bars with them', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/2.14') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.setViewportSize(VIEW);
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const SITE = border();
+  await step(page, [
+    { kind: 'setSetting', key: 'aiEnabled', value: false },
+    { kind: 'declareWar', attacker: GER, defender: POL },
+    { kind: 'spawnFormation', nation: GER, x: SITE[0] - 3.5, y: SITE[1], strength: 0, template: infantry },
+    { kind: 'spawnFormation', nation: GER, x: SITE[0] - 0.5, y: SITE[1], strength: 0, template: infantry },
+    { kind: 'spawnFormation', nation: POL, x: SITE[0] + 0.5, y: SITE[1], strength: 0, template: infantry },
+  ]);
+  const [behind, german, polish] = (await page.evaluate(() => window.__warsim!.view!.formationIds())).sort((a, b) => a - b).slice(-3) as [number, number, number];
+  await step(page, [], 24);
+  // At rest at T1, just above the boundary.
+  await page.evaluate(({ x, y, m }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+  }, { x: SITE[0] - 1, y: SITE[1], m: T1_MIN_M * 1.0002 });
+  await settle(page);
+
+  const rec = await page.evaluate(async ({ x, y, m, ids }) => {
+    const v = window.__warsim!.view!;
+    const overlay = document.querySelector<HTMLCanvasElement>('canvas.map-nations')!;
+    const k = overlay.width / overlay.clientWidth;
+    /** The frame at `now`: the three markers, and the 560 × 180 px around the view's middle. */
+    const frame = (now: number, picture: boolean): { marks: ({ alpha: number; bar: number; cx: number } | null)[]; picture: string } => {
+      v.draw(now);
+      const marks = ids.map((id) => {
+        const r = v.markerRects.find((r) => r.id === id);
+        return r ? { alpha: r.alpha, bar: r.bar, cx: r.x + r.w / 2 } : null;
+      });
+      if (!picture) return { marks, picture: '' };
+      const crop = document.createElement('canvas');
+      crop.width = 560 * k;
+      crop.height = 180 * k;
+      const c2 = crop.getContext('2d')!;
+      for (const layer of document.querySelectorAll('canvas')) c2.drawImage(layer, overlay.width / 2 - crop.width / 2, overlay.height / 2 - crop.height / 2, crop.width, crop.height, 0, 0, crop.width, crop.height);
+      return { marks, picture: crop.toDataURL('image/png') };
+    };
+    const now = performance.now();
+    const rest = frame(now, true);
+    // The step across the boundary, then the camera stays. The elements of the view at the new zoom come from the worker.
+    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+    v.draw(now);
+    const t0 = performance.now();
+    while (Math.abs(v.elementsZoom / v.metresPerPx - 1) > 0.01) {
+      if (performance.now() - t0 > 20_000) throw new Error('no elements at the new zoom');
+      await new Promise((d) => setTimeout(d, 10));
+    }
+    const cam = v.controller.cam;
+    /** The middle of a formation's elements, px from the left. */
+    const block = (id: number): number => {
+      let sum = 0;
+      let n = 0;
+      for (let i = 0; i < v.elementCount; i++) {
+        if (v.elementFormation[i] !== id) continue;
+        sum += (v.elementX[i]! - cam.cx) * cam.scale + window.innerWidth / 2;
+        n++;
+      }
+      return sum / n;
+    };
+    const frames: { t: number; marks: ({ alpha: number; bar: number; cx: number } | null)[]; picture: string }[] = [];
+    for (let t = 0; t <= 480; t += 16) frames.push({ t, ...frame(now + t, t === 96 || t === 352) });
+    return { rest, frames, blocks: ids.map(block), m: v.metresPerPx };
+  }, { x: SITE[0] - 1, y: SITE[1], m: T1_MIN_M * 0.9998, ids: [behind, german, polish] });
+  writeFileSync(path.join(out, 'handover-contact-t1.png'), Buffer.from(rec.rest.picture.split(',')[1]!, 'base64'));
+  for (const f of rec.frames) if (f.picture) writeFileSync(path.join(out, `handover-contact-${f.t}ms.png`), Buffer.from(f.picture.split(',')[1]!, 'base64'));
+
+  // Where the boxes stand and where the elements come in: the one behind on its formation; the
+  // two in contact 27 px from theirs, towards each other, their blocks 10 px apart.
+  const [mb, mg, mp] = rec.rest.marks.map((m) => m!.cx) as [number, number, number];
+  const [bb, bg, bp] = rec.blocks as [number, number, number];
+  console.log(`at ${rec.m.toFixed(0)} m/px: the boxes at ${mb.toFixed(1)}, ${mg.toFixed(1)}, ${mp.toFixed(1)} px, the blocks at ${bb.toFixed(1)}, ${bg.toFixed(1)}, ${bp.toFixed(1)} px`);
+  expect(Math.abs(bb - mb), 'the block of the one behind, px from its box').toBeLessThan(1.5);
+  expect(bg - mg, 'the German block, px east of its box').toBeGreaterThan(24);
+  expect(bg - mg).toBeLessThan(30);
+  expect(mp - bp, 'the Polish block, px west of its box').toBeGreaterThan(24);
+  expect(mp - bp).toBeLessThan(30);
+  expect(bp - bg, 'px between the two blocks').toBeGreaterThan(8);
+  expect(bp - bg).toBeLessThan(13);
+
+  // (The step of the camera itself, 0.04% of the zoom, moves a box 200 px from the middle by 0.07 px.)
+  const stepped = rec.frames[0]!.marks.map((m) => m!.cx);
+  for (const f of rec.frames) {
+    const [b, g, p] = f.marks;
+    // The boxes do not travel (ADR-72): each stands where it stood at the step for as long as it is drawn.
+    for (const [i, m] of [b, g, p].entries()) if (m) expect(Math.abs(m.cx - stepped[i]!), `${f.t} ms: a box, px from where it stood`).toBeLessThan(0.01);
+    // In contact: the bar and the number have the box's opacity, in every frame.
+    for (const m of [g, p]) if (m) expect(m.bar, `${f.t} ms: the bar of a formation in contact`).toBe(m.alpha);
+  }
+  // Not in contact: the bar lingers, as before. 256 ms on the box is gone and the bar is there in full; the two in contact have nothing left.
+  const late = rec.frames.find((f) => f.t === 256)!.marks;
+  expect(late[0]!.alpha, 'the one behind, 256 ms on: its box').toBe(0);
+  expect(late[0]!.bar, 'the one behind, 256 ms on: its bar').toBeGreaterThan(0.99);
+  for (const m of [late[1], late[2]]) expect(m?.bar ?? 0, 'in contact, 256 ms on: the bar').toBeLessThan(0.011);
+  // And half-way, all three boxes are on their way out together.
+  const half = rec.frames.find((f) => f.t === 128)!.marks;
+  for (const m of half) {
+    expect(m!.alpha).toBeGreaterThan(0.3);
+    expect(m!.alpha).toBeLessThan(0.7);
+  }
+  expect(half[0]!.bar).toBe(1);
 });

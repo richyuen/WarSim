@@ -194,4 +194,69 @@ describe('the blocks of formations in contact are deployed against each other (P
     expect(both / engaged).toBeGreaterThan(0.9);
     expect(before / engaged).toBeLessThan(0.5);
   });
+
+  // PLAN 2.14f4: how often a block changes its line. Where a block stands follows from who the
+  // formation's nearest enemy is and where the two stand, hour by hour, and the worker shows
+  // each change as one hour's move of the elements. Counted here over the 60 days, for every
+  // hour a formation is in contact and was in contact the hour before (a "block-hour"):
+  // - *a hop:* the block's middle is more than a block's depth (0.12 cells, 2.3 km) from where
+  //   it stood the hour before. Less than that is the front creeping, which reads as a move.
+  // - of the hops, those with another nearest enemy than the hour before, and those of a
+  //   formation that itself stood still (the line changed under it).
+  // The first and last hours of a contact (to the line, and back) are counted apart.
+  it('over 60 days of Germany against Poland a block in contact seldom changes its line', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    const HOP = slotGrid(28).rows * SLOT_SPACING;
+    let was = new Map<number, { x: number; y: number; enemy: number; fx: number; fy: number }>();
+    const n = { hours: 0, begun: 0, ended: 0, moved: 0, hops: 0, otherEnemy: 0, stoodStill: 0, far: 0 };
+    const sizes: number[] = [];
+    const perFormation = new Map<number, number>();
+    s.step(24 * 60, (w) => {
+      const fc = w.formations.cols;
+      const now = new Map<number, { x: number; y: number; enemy: number; fx: number; fy: number }>();
+      for (const [f, d] of w.deployed ?? []) {
+        const enemy = contactsOf(w).get(f);
+        if (!d || enemy === undefined || !w.formations.has(f)) continue;
+        now.set(f, { x: d.x, y: d.y, enemy, fx: fc.x[f]!, fy: fc.y[f]! });
+      }
+      for (const [f, d] of now) {
+        const b = was.get(f);
+        if (!b) {
+          n.begun++;
+          continue;
+        }
+        n.hours++;
+        let dx = Math.abs(d.x - b.x);
+        if (dx > W / 2) dx = W - dx;
+        const moved = Math.hypot(dx, d.y - b.y);
+        if (moved > 1e-9) n.moved++;
+        if (moved <= HOP) continue;
+        n.hops++;
+        sizes.push(moved);
+        perFormation.set(f, (perFormation.get(f) ?? 0) + 1);
+        if (d.enemy !== b.enemy) n.otherEnemy++;
+        if (d.fx === b.fx && d.fy === b.fy) n.stoodStill++;
+        if (moved > 0.5) n.far++;
+      }
+      for (const f of was.keys()) if (!now.has(f)) n.ended++;
+      was = now;
+      w.out.events.length = 0;
+      w.out.fires.length = 0;
+    });
+    sizes.sort((a, b) => a - b);
+    const km = (cells: number): string => (cells * 19.57).toFixed(1);
+    const most = Math.max(0, ...perFormation.values());
+    console.log(
+      `60 days of Germany against Poland (seed 99), hour by hour: ${n.hours} block-hours in contact; the block moved at all in ${n.moved} (${((100 * n.moved) / n.hours).toFixed(1)}%); ` +
+        `${n.hops} hops of more than a block's depth (${((100 * n.hops) / n.hours).toFixed(2)}%, one in ${(n.hours / Math.max(1, n.hops)).toFixed(0)} hours a block): ` +
+        `${n.otherEnemy} with another nearest enemy, ${n.stoodStill} of a formation that stood still, ${n.far} of more than half a cell; ` +
+        `median ${km(sizes[sizes.length >> 1] ?? 0)} km, longest ${km(sizes.at(-1) ?? 0)} km; ${perFormation.size} formations hopped, the most ${most} times; ` +
+        `${n.begun} contacts begun, ${n.ended} ended`,
+    );
+    expect(n.hours).toBeGreaterThan(1000);
+    // A block stands still in most of its hours, and a hop is rare: the picture at T2 and T3 is
+    // of lines that hold, not of blocks changing places.
+    expect(n.hops / n.hours).toBeLessThan(0.05);
+  });
 });

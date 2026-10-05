@@ -286,12 +286,16 @@ export function drawMarkers(
       // Strength bar and number under the box, on their dark backing. They have an opacity of
       // their own: on the way to T2 they stay while the box goes (PLAN 2.7c).
       const text = strengthText(stack?.strength ?? m.strength);
-      if (barAlpha * part > 0.01) {
-        ctx.globalAlpha = barAlpha * part;
+      // Not those of a formation in contact (PLAN 2.14f4, ADR-92): its elements come in at the
+      // block deployed against the enemy, up to 43 px from here at the boundary, and the bar
+      // would linger beside the group and not on it. They go with the box.
+      const bar = (m.engaged ? boxAlpha : barAlpha) * part;
+      if (bar > 0.01) {
+        ctx.globalAlpha = bar;
         ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
         ctx.fillRect(x - 1, y + BOX_H, BOX_W + 2, 12);
         // How many formations it stands for: a tag, drawn after all the boxes (below).
-        if (members.length > 1) tags.push({ px, py, x, y, text: `×${members.length}`, alpha: barAlpha * part, of: placed.length });
+        if (members.length > 1) tags.push({ px, py, x, y, text: `×${members.length}`, alpha: bar, of: placed.length });
         const f = m.full > 0 ? Math.max(0, Math.min(1, m.strength / m.full)) : 1;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(x, y + BOX_H + 1, BOX_W, 2);
@@ -322,7 +326,7 @@ export function drawMarkers(
       ctx.restore();
       const marked = picked !== 0 && members.includes(picked);
       if (marked && boxAlpha * part > 0.01) frames.push({ px, py, x, y, alpha: boxAlpha * part });
-      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar: barAlpha * part, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members, picked: marked });
+      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members, picked: marked });
     }
   }
   // The tags of the stacks, above every box: a neighbour's box must not hide how many a marker
