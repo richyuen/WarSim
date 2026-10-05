@@ -26,11 +26,10 @@ import { placeOob, type OobGroup } from './data/oob';
 import { nearestCellWhere, reconcileIslands } from './data/ownership';
 import { buildProvinceRaster } from './data/provinces';
 import { cellOf, loadTerrain, type StraitDef } from './data/terrain';
-import { ECONOMY_TABLES_1938, fillEconomy, RULES_1938, SIZE_1938, startTreasury, TEMPLATES_LAND } from './scenario1938';
+import { addCities, addFormations, applyScenarioSettings, ECONOMY_TABLES_1938, fillEconomy, RULES_1938, SIZE_1938, startTreasury, TEMPLATES_LAND } from './scenario1938';
 import { MARGIN } from './ai/economic';
 import { monthlyAccounts } from './systems/economy';
-import { staticCe, type CeMode } from './systems/efficiency';
-import { equipFormation } from './systems/elements';
+import { staticCe } from './systems/efficiency';
 import { initProvinceCores } from './systems/revolts';
 import { navOf, World } from './world';
 
@@ -127,11 +126,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   world.landMask = assets.landMask ?? null;
   world.startDay = dayOfIso(scenarioRandom.startDate);
   const set = scenarioRandom.settings;
-  world.settings.revoltMode = set.revoltMode as 'province' | 'region';
-  world.settings.ceMode = set.combatEfficiency as CeMode;
-  world.settings.winnerTakesAll = set.winnerTakesAll;
-  world.settings.loopingMap = set.loopingMap;
-  world.settings.aiEnabled = set.aiEnabled;
+  applyScenarioSettings(world, set);
   world.rules = RULES_1938;
 
   // The map of the 1938 world: provinces, terrain, crossings, the islands and their islets.
@@ -275,23 +270,10 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
     nc.efficiency[id] = 1;
     nc.revivalsLeft[id] = set.revival.maxPerNation;
   }
-  world.cities.reserve(cities.length);
-  const cc = world.cities.cols;
+  addCities(world, cities);
   const labels = meta.map(provinceLabel);
-  for (const p of cities) {
-    const id = world.cities.create();
-    cc.def[id] = p.def;
-    cc.x[id] = p.x;
-    cc.y[id] = p.y;
-    cc.cell[id] = p.cell;
-    cc.size[id] = p.size;
-    cc.capitalOf[id] = p.capitalOf;
-    if (p.capitalOf === 0) continue;
-    nc.capitalX[p.capitalOf] = p.x;
-    nc.capitalY[p.capitalOf] = p.y;
-    // The name is state, as one given in God Mode is: no table of the scenario holds it.
-    world.names.set(p.capitalOf, labels[province[p.cell]! - 1] || p.name);
-  }
+  // The name is state, as one given in God Mode is: no table of the scenario holds it.
+  for (const p of cities) if (p.capitalOf !== 0) world.names.set(p.capitalOf, labels[province[p.cell]! - 1] || p.name);
 
   // Armies: infantry for ARMY_SHARE of the income, one division in four motorised or armoured
   // where there are eight; all of them together not above ARMY_TOTAL. They stand around the
@@ -329,17 +311,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   }
   const oob = placeOob({ w, h, owner: c.owner, controller: c.controller, terrain, tags, overlordOf: new Map(), groups });
   if (oob.unplaced.length) throw new Error(`random world: ${oob.unplaced.length} groups found no land`);
-  world.formations.reserve(oob.formations.length);
-  const f = world.formations.cols;
-  for (const p of oob.formations) {
-    const id = world.formations.create();
-    f.nation[id] = p.nation;
-    [f.x[id], f.y[id]] = world.standPoint(p.x, p.y);
-    f.facing[id] = 0;
-    f.template[id] = template(p.template);
-    f.supply[id] = 1;
-    equipFormation(world, id, f.template[id]!); // sets the strength from the elements
-  }
+  addFormations(world, oob.formations);
 
   initProvinceCores(world);
   startTreasury(world);

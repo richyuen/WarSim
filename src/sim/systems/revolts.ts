@@ -17,7 +17,8 @@
  * REGION_MAX provinces). A new rebel nation receives the area's land (owner and controller),
  * becomes its core, gets its largest city as capital (without a city: its own cell nearest the
  * middle of the area, PLAN 2.15e), MILITIA_PER_CELLS militia divisions
- * (1..MILITIA_MAX), raised where production raises a formation (`spawnPoint`), and START_GOLD; with probability 1/2 (hash) the former holder declares war.
+ * (1..MILITIA_MAX), raised where production raises a formation (`spawnPoint`), and START_GOLD; the former holder declares war
+ * on it (PLAN 1.40; not in a God Mode Kill, whose holder dies).
  * Unrest in the area resets to AFTER_REVOLT. Event `RevoltSpawned` (a = rebel, b = former holder).
  *
  * Defection (critic B1/B4, 2026-10-03): when the area's core nation is alive and is neither the

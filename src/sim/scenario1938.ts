@@ -21,8 +21,8 @@ import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
 import { addIslet } from '../shared/landMask';
 import type { ScenarioAssets } from '../shared/protocol';
 import { dayOfIso } from '../shared/calendar';
-import type { CityDef } from './data/cities';
-import { templateStrength, type OobGroup, type TemplateDef, type UnitTypeLite } from './data/oob';
+import type { CityDef, PlacedCity } from './data/cities';
+import { templateStrength, type OobGroup, type PlacedFormation, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
 import type { NationDef } from './data/schemas';
@@ -207,6 +207,52 @@ export function politicalMapInput1938(assets: ScenarioAssets, w: number, h: numb
   };
 }
 
+/** A scenario file's settings, as far as the world has them (review in PLAN 1.41: only revoltMode was read before). */
+export function applyScenarioSettings(world: World, set: (typeof scenario1938)['settings']): void {
+  world.settings.revoltMode = set.revoltMode as 'province' | 'region';
+  world.settings.ceMode = set.combatEfficiency as CeMode;
+  world.settings.winnerTakesAll = set.winnerTakesAll;
+  world.settings.loopingMap = set.loopingMap;
+  world.settings.aiEnabled = set.aiEnabled;
+}
+
+/** The placed cities as rows of the world, in their order; a capital gives its nation its place. They keep their index into cities.json (`def`), so names resolve without state. */
+export function addCities(world: World, cities: readonly PlacedCity[]): void {
+  world.cities.reserve(cities.length);
+  const cc = world.cities.cols;
+  const n = world.nations.cols;
+  for (const p of cities) {
+    const id = world.cities.create();
+    cc.def[id] = p.def;
+    cc.x[id] = p.x;
+    cc.y[id] = p.y;
+    cc.cell[id] = p.cell;
+    cc.size[id] = p.size;
+    cc.capitalOf[id] = p.capitalOf;
+    if (p.capitalOf !== 0) {
+      n.capitalX[p.capitalOf] = p.x;
+      n.capitalY[p.capitalOf] = p.y;
+    }
+  }
+}
+
+/** The placed formations of the start as rows of the world, in their order: on sure land, whole, in supply. */
+export function addFormations(world: World, formations: readonly PlacedFormation[]): void {
+  const templateIndex = new Map(TEMPLATES_LAND.map((t, i) => [t.id, i]));
+  world.formations.reserve(formations.length);
+  const f = world.formations.cols;
+  for (const p of formations) {
+    const id = world.formations.create();
+    const ti = templateIndex.get(p.template)!;
+    f.nation[id] = p.nation;
+    [f.x[id], f.y[id]] = world.standPoint(p.x, p.y);
+    f.facing[id] = 0;
+    f.template[id] = ti;
+    f.supply[id] = 1;
+    equipFormation(world, id, ti); // sets strength from the elements
+  }
+}
+
 /** Starting treasury and manpower pool of every nation, from its land and the army it starts with. */
 export function startTreasury(world: World): void {
   const accounts = monthlyAccounts(world, ECONOMY_TABLES_1938);
@@ -269,37 +315,9 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     n.efficiency[id] = 1;
   });
 
-  // Cities keep their index into cities.json (`def`), so names resolve without state.
-  world.cities.reserve(map.cities.length);
-  const cc = world.cities.cols;
-  for (const p of map.cities) {
-    const id = world.cities.create();
-    cc.def[id] = p.def;
-    cc.x[id] = p.x;
-    cc.y[id] = p.y;
-    cc.cell[id] = p.cell;
-    cc.size[id] = p.size;
-    cc.capitalOf[id] = p.capitalOf;
-    if (p.capitalOf !== 0) {
-      n.capitalX[p.capitalOf] = p.x;
-      n.capitalY[p.capitalOf] = p.y;
-    }
-  }
-
-  const templateIndex = new Map(TEMPLATES_LAND.map((t, i) => [t.id, i]));
+  addCities(world, map.cities);
   world.rules = RULES_1938;
-  world.formations.reserve(map.formations.length);
-  const f = world.formations.cols;
-  for (const p of map.formations) {
-    const id = world.formations.create();
-    const ti = templateIndex.get(p.template)!;
-    f.nation[id] = p.nation;
-    [f.x[id], f.y[id]] = world.standPoint(p.x, p.y);
-    f.facing[id] = 0;
-    f.template[id] = ti;
-    f.supply[id] = 1;
-    equipFormation(world, id, ti); // sets strength from the elements
-  }
+  addFormations(world, map.formations);
 
   // Province cores (rightful owners) for unrest and revolts (PLAN 1.19).
   initProvinceCores(
@@ -324,14 +342,9 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   }
 
   startTreasury(world);
-  // Scenario settings seed the world's (review in PLAN 1.41: only revoltMode was read before).
-  // Revolts by region keep the nation count in SPEC §10's range (PLAN 1.40). The revival
-  // cooldown stays the code's REVIVAL_COOLDOWN; a unit test pins the file to it.
-  const set = scenario1938.settings;
-  world.settings.revoltMode = set.revoltMode as 'province' | 'region';
-  world.settings.ceMode = set.combatEfficiency as CeMode;
-  world.settings.winnerTakesAll = set.winnerTakesAll;
-  world.settings.loopingMap = set.loopingMap;
-  world.settings.aiEnabled = set.aiEnabled;
+  // Scenario settings seed the world's. Revolts by region keep the nation count in SPEC §10's
+  // range (PLAN 1.40). The revival cooldown stays the code's REVIVAL_COOLDOWN; a unit test pins
+  // the file to it.
+  applyScenarioSettings(world, scenario1938.settings);
   return world;
 }
