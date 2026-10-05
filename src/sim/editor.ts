@@ -295,8 +295,7 @@ function strandedToLand(world: World): void {
       gone.push(f);
       return;
     }
-    fc.x[f] = (to % w) + 0.5;
-    fc.y[f] = Math.floor(to / w) + 0.5;
+    [fc.x[f], fc.y[f]] = world.cellPoint(to);
     world.paths.delete(f);
     fc.moving[f] = 0;
   });

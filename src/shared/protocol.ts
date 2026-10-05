@@ -1,4 +1,5 @@
 import type { GameOptions } from './gameOptions';
+import type { LandMask } from './landMask';
 /**
  * Main ↔ worker messages (SPEC §2.3) and the snapshot layout (SPEC §2.4).
  *
@@ -18,6 +19,12 @@ export interface ScenarioAssets {
   admin1Meta: Uint8Array;
   /** Terrain raster at the scenario's map size. */
   terrain: Uint8Array;
+  /**
+   * The fine land mask (PLAN 2.9a): where on a coastal cell a formation and its elements stand.
+   * A world built without it stands on the cells' middles, and is another world: its hash
+   * differs. Every way of building the 1938 world gives it (the worker, the Node loader).
+   */
+  landMask?: LandMask;
 }
 
 export interface SimInit {
@@ -300,6 +307,11 @@ export type FromWorker =
    * for it; a map without an elevation asset of its size sends none.
    */
   | { type: 'elevation'; w: number; h: number; data: Int16Array }
+  /**
+   * The fine land mask the world was built with (PLAN 2.9a): a copy for the page, which draws the
+   * coast of T2 and T3 from it. Sent once after `mapLayers`; a world without one sends none.
+   */
+  | { type: 'landMask'; mask: LandMask }
   /** Custom pixel flags (PLAN 1.37b): [nation, runs][] (runs as in `setFlag`), after init and on change. */
   | { type: 'flags'; custom: [number, number[]][] }
   /** City dots and names again after editor city edits (PLAN 1.36). */

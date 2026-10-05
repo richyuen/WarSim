@@ -205,6 +205,29 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   XL is 160 MB); the worker loads it already for the coverage and will load it before the
   world is built instead of after.
 
+- **Addendum, PLAN 2.9a (2026-10-04): done; the pin moved.**
+  - *The pin (ADR-55's pattern):* seed 99 after one year **f93cb674 → f5725b37**; after five
+    years 6b84c48c → 68e0a69e. The reason: a formation's place is state, and where it would
+    have been on the fine mask's water it is the cell's land point now. For what is drawn,
+    not for balance; balance was not measured again (ADR-58).
+  - *The control:* a world built without the mask still has f93cb674 after the year. The
+    rule is all that moved the hash.
+  - *After:* at the start and after 30 and 90 days no formation at rest and no element of one
+    is on the mask's water (200 elements at the start before). 8, 6 and 6 elements are drawn
+    in from a slot on water.
+  - *A cell's middle is land when the four mask pixels round it are.* The first version asked
+    the mask at the middle itself, which is a corner of four pixels and reads as one of them.
+    A formation on such a corner had its block in the other three: 33 elements were drawn in
+    at the start, 25 of them all the way to the formation's own place, in a heap. With four
+    pixels: 8 drawn in, none all the way.
+  - *One function for an element's place* (`slotPlace`): the snapshot, the fire events and the
+    event of an element's end. `wrecks1938` and `fire1938` hold unchanged.
+  - *Every way of building the 1938 world has the mask* (looked for): the worker's init, and
+    the Node loader that the tests, the sweeps, the runner and the diagnosis use. The runner
+    prints the new pin.
+  - *What was seen first* is the measurement in the context above, by a scratch script; the
+    committed tests need the task's own code and cannot run on the code before it.
+
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 
 - **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail

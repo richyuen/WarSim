@@ -4785,3 +4785,33 @@ No rule changed and nothing on screen changed. One task came out of it.
   by the ground's noise.
 - **One predicate** for "land at (x, y)", in `src/shared`.
 - **Next:** PLAN 2.9a, its test first.
+
+## 2026-10-04 — PLAN 2.9a: formations and their elements stand on land by the fine mask
+
+- **The pin moved:** seed 99 after one year f93cb674 → f5725b37, after five 6b84c48c →
+  68e0a69e (ADR-79, addendum). A world built without the mask still has f93cb674: the rule is
+  all that moved it. Balance not measured again (ADR-58).
+- **The rule:** the sim has the fine land mask now (`World.landMask`, static). A formation in a
+  cell stands at the middle when the four mask pixels round it are land, else at the cell's
+  land point; at a given place when that is land, else at its cell's point. An element stands
+  at its slot, or where that is water at the first land towards its formation.
+- **Before** (measured by a scratch script before any code; the committed tests cannot run on
+  the code before): 200 of 23,210 elements on the mask's water at the start, in 18 formations.
+- **After** (`coast1938.test.ts`): at the start and after 30 and 90 days none of the
+  formations at rest and none of their elements. 8, 6 and 6 elements drawn in from a slot on
+  water. On the march: 1 of 430 formations over water at day 90 (watch list).
+- **A first version was wrong in a way the numbers showed:** it took a cell's middle for land
+  by the one pixel that the middle reads as. 25 elements then stood in a heap on their
+  formation's place. A middle is land when all four pixels round it are.
+- **In the browser** (`coastElements1938`): the 20 formations nearest the water at 5 m/px, 360
+  elements, 0 on water, by the copy of the mask the worker sends. The browser's world has the
+  Node hash (`elements1938`); wrecks and tracers are where the sprites are (`wrecks1938`,
+  `fire1938`), unchanged.
+- **The first gate failed on that new spec alone** (unit and sweep stages green): it ran into
+  its timeout of four minutes under the whole suite. My fault, in the test: it brought the
+  17 MB mask over to Node and copied it again for every element it asked about. The page
+  asks its own copy now, the ground is off for the test, and it takes 8 s alone.
+- **Plumbing:** the worker loads the mask with the other assets, before the world is built;
+  the Node loader reads it once to a process; the runner prints the new pin.
+- **Tests:** 7 new unit tests, 1 new e2e. 629 unit tests in 83 files, 109 e2e.
+- **Next:** PLAN 2.9b (the coast of T2 and T3 drawn from the mask).

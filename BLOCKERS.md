@@ -256,6 +256,24 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     east is shaded less steep than it is, against one to the south.
   - The cost of the ground in the tests' software rasteriser is not known per frame (what was
     read varied by a quarter from run to run); the e2e stage's length is watched instead.
+- Left by PLAN 2.9a (2026-10-04, ADR-79 addendum), for the phase review (PLAN 2.11):
+  - A march is a straight line between two cells' points and can cross a bay: 1 of 430
+    formations on the march was over the mask's water at day 90 of seed 99 (0 of 134 at day
+    30). The tests are of formations at rest. It needs routing below the cell.
+  - Until PLAN 2.9b the coast is drawn from the coverage: an element on the mask's land can
+    stand a little into the drawn sea at T3, by up to half a mask pixel (1.2 km).
+  - The mask is the map's as shipped. Land and water painted in the editor are not in it: a
+    cell without land in the mask keeps its middle, and its elements their slots.
+  - The worker waits for the mask before it builds the world (430 KB to fetch, 17 MB to
+    unpack), and the page has a copy: how long the start takes with it was not measured. The
+    sim's process holds 17 MB more.
+  - Every unit test file that builds the 1938 world reads the mask (once to a process). The
+    unpacking that failed three times in parallel vitest runs (above) has one more file to fail
+    on; not seen in the runs of this task.
+  - The tick's time read 2.14 and 2.45 ms in two runs of a year (not pinned to cores); 2.28
+    and 2.14 before the task. Within what two runs differ by; not measured pinned.
+  - The e2e looks at seed 99 at the start, the 20 formations nearest the water (of 35 within
+    half a cell of it).
 - Left by PLAN 2.8c (2026-10-04, ADR-78 third and fourth addenda), for the phase review (PLAN 2.11):
   - The cap of 12,000 instances can be reached: a full view of forest has up to 10,900 at
     1920 × 1080, so a larger view goes past it. What is cut is the finest level, row by row

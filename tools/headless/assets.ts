@@ -6,6 +6,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
+import type { LandMask } from '../../src/shared/landMask';
 import type { ScenarioAssets } from '../../src/shared/protocol';
 
 export const EARTH_DIR = path.resolve(import.meta.dirname, '../../public/data/earth');
@@ -36,7 +37,19 @@ export function earthAsset(kind: string, width?: number): Buffer {
   return earthFile(a.path);
 }
 
+let landMask: LandMask | undefined;
+/** The fine land mask (PLAN 2.9a): read once for a process; no world writes to it. */
+export function earthLandMask(): LandMask {
+  if (!landMask) {
+    manifest ??= JSON.parse(readFileSync(path.join(EARTH_DIR, 'manifest.json'), 'utf8')) as typeof manifest;
+    const a = manifest!.assets.find((x) => x.kind === 'landmask') as { path: string; width: number; height?: number } | undefined;
+    if (!a) throw new Error('no earth asset landmask');
+    landMask = { w: a.width, h: a.height ?? a.width / 2, bits: new Uint8Array(earthFile(a.path)) };
+  }
+  return landMask;
+}
+
 /** The assets the 1938 scenario needs at map width w. */
 export function loadAssets1938(w: number): ScenarioAssets {
-  return { admin1Geometry: new Uint8Array(earthAsset('admin1-geometry')), admin1Meta: new Uint8Array(earthAsset('admin1-meta')), terrain: new Uint8Array(earthAsset('terrain', w)) };
+  return { admin1Geometry: new Uint8Array(earthAsset('admin1-geometry')), admin1Meta: new Uint8Array(earthAsset('admin1-meta')), terrain: new Uint8Array(earthAsset('terrain', w)), landMask: earthLandMask() };
 }

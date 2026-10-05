@@ -35,9 +35,9 @@ export const MARCH_DUTY = 0.3;
 export const TARGET_SNAP_CELLS = 3;
 export const REPATRIATE_CELLS = 80;
 
+/** Where a formation stands in a cell of its path: the middle, or the cell's land point (PLAN 2.9a). */
 function centre(world: World, cell: number): [number, number] {
-  const x = cell % world.cells.w;
-  return [x + 0.5, (cell - x) / world.cells.w + 0.5];
+  return world.cellPoint(cell);
 }
 
 /** Path of a moving formation (cached; rebuilt from its origin and target when missing). */

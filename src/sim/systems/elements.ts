@@ -10,6 +10,30 @@ import { EventKind } from '../../shared/events';
 import { SLOT_SPACING, slotPose } from '../core/pose';
 import type { World } from '../world';
 
+/**
+ * Where element `slot` of a formation at (`fx`, `fy`) stands: its slot in the block (`slotPose`);
+ * or, where the fine mask has that on water, the first land on the way from the slot to the
+ * formation's place (PLAN 2.9a, ADR-79). A block is 0.24 by 0.12 cells, and a spit can be
+ * narrower: the formation stands on land, and what of its block would stand in the sea draws
+ * in towards it.
+ *
+ * Not state: an element's place is worked out from its formation's. The snapshot, the fire
+ * events and the event of an element's end all ask here, so they have one place for it.
+ * Where the formation's own place is on the mask's water (on the march across a bay, on a
+ * crossing, on land painted in the editor) the slot is left as it is.
+ */
+export function slotPlace(world: World, fx: number, fy: number, facing: number, slot: number, count: number): [number, number] {
+  const p = slotPose(fx, fy, facing, slot, count, SLOT_SPACING);
+  if (!world.landMask || world.onLand(p[0], p[1]) || !world.onLand(fx, fy)) return p;
+  // In eighths of the way: the block's far corner is 0.134 cells out, a mask pixel is 0.125 wide.
+  for (let k = 1; k < 8; k++) {
+    const x = p[0] + ((fx - p[0]) * k) / 8;
+    const y = p[1] + ((fy - p[1]) * k) / 8;
+    if (world.onLand(x, y)) return [x, y];
+  }
+  return [fx, fy];
+}
+
 /** Live element ids per formation, ascending (derived; rebuilt after creates/removes or a load). */
 export function elementIndex(world: World): Map<number, number[]> {
   if (world.elementIndex) return world.elementIndex;
@@ -121,7 +145,7 @@ function settleElements(world: World, fid: number, list: number[]): void {
     if (e.cols.strength[id]! > 0) return true;
     // Its end is an event, not state (PLAN 2.4b): at the slot it stood in. Elements that go
     // with a disbanded or removed formation have none.
-    const [x, y] = slotPose(fc.x[fid]!, fc.y[fid]!, fc.facing[fid]!, e.cols.slot[id]!, slots, SLOT_SPACING);
+    const [x, y] = slotPlace(world, fc.x[fid]!, fc.y[fid]!, fc.facing[fid]!, e.cols.slot[id]!, slots);
     world.out.emit(world.tick, EventKind.ElementDestroyed, id, e.cols.unit[id]!, x, y);
     e.remove(id);
     return false;

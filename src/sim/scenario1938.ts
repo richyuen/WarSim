@@ -197,6 +197,7 @@ export function politicalMapInput1938(assets: ScenarioAssets, w: number, h: numb
 export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   const { w, h } = SIZE_1938;
   const world = new World(seed, w, h);
+  world.landMask = assets.landMask ?? null;
   world.startDay = dayOfIso(scenario1938.startDate);
   const tags = TAGS_1938;
   const input = politicalMapInput1938(assets, w, h);
@@ -260,8 +261,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     const id = world.formations.create();
     const ti = templateIndex.get(p.template)!;
     f.nation[id] = p.nation;
-    f.x[id] = p.x;
-    f.y[id] = p.y;
+    [f.x[id], f.y[id]] = world.standPoint(p.x, p.y);
     f.facing[id] = 0;
     f.template[id] = ti;
     f.supply[id] = 1;

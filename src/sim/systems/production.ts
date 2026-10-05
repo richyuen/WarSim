@@ -58,10 +58,10 @@ export function spawnPoint(world: World, nation: number): [number, number] | nul
   const cy = nc.capitalY[nation]!;
   const c = nearestCellWhere((i) => controller[i] === nation, cx, cy, w, h, SPAWN_REACH_CELLS);
   if (c < 0) return null;
-  const x = c % w;
-  // The capital's own cell keeps the exact capital position; elsewhere use the cell centre.
-  if (c === Math.floor(cy) * w + Math.floor(cx)) return [cx, cy];
-  return [x + 0.5, (c - x) / w + 0.5];
+  // The capital's own cell keeps the exact capital position; elsewhere the cell's middle. Either
+  // way on land by the fine mask (PLAN 2.9a): a capital on the shore, a coastal cell's middle.
+  if (c === Math.floor(cy) * w + Math.floor(cx)) return world.standPoint(cx, cy);
+  return world.cellPoint(c);
 }
 
 /** Where a formation raised now appears: `spawnPoint`, or the overseas theatre (module comment). */

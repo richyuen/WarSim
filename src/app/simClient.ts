@@ -7,6 +7,7 @@
  */
 import type { Command } from '../shared/commands';
 import type { HistoryRow } from '../shared/history';
+import type { LandMask } from '../shared/landMask';
 import type {
   FromWorker,
   Inspection,
@@ -102,6 +103,10 @@ export class SimClient {
       for (const l of this.elevationListeners) l(msg);
       return;
     }
+    if (msg.type === 'landMask') {
+      this.landMask = msg.mask;
+      return;
+    }
     const p = this.pending.get(msg.reqId);
     if (!p) return;
     this.pending.delete(msg.reqId);
@@ -194,6 +199,9 @@ export class SimClient {
     if (this.mapLayers) l(this.mapLayers);
     return () => this.layerListeners.delete(l);
   }
+
+  /** The fine land mask the world was built with (PLAN 2.9a); null until the worker has sent it, and for a world without one. */
+  landMask: LandMask | null = null;
 
   /** The land's height from the worker (PLAN 2.8a); late listeners get it at once. */
   elevation: Elevation | null = null;

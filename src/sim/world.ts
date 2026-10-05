@@ -20,6 +20,7 @@ import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 import { LandCounts } from './landCounts';
+import { landPoint, maskLand, type LandMask } from '../shared/landMask';
 
 export interface PendingCommand {
   seq: number;
@@ -421,6 +422,51 @@ export class World {
   elementIndex: Map<number, number[]> | null = null;
   /** Scenario rules for commands (set by the Sim; not state). */
   rules: ScenarioRules | null = null;
+  /**
+   * The fine land mask (PLAN 2.9a, ADR-79): static data of the map, not state (not saved, not
+   * hashed). With it a formation stands on land where a cell is partly sea; without it (the toy
+   * world, a world built without its asset) every rule below gives the place it is asked about.
+   */
+  landMask: LandMask | null = null;
+  /** Derived (not state): where a formation stands in a cell, for the cells that have been asked for. */
+  private readonly cellPoints = new Map<number, [number, number]>();
+
+  /** Whether the fine mask has land at (`x`, `y`), in cells; true where there is no mask to ask. */
+  onLand(x: number, y: number): boolean {
+    return !this.landMask || maskLand(this.landMask, this.cells.w, this.cells.h, x, y, this.settings.loopingMap);
+  }
+
+  /**
+   * Where a formation stands in `cell`: its middle; or, where the fine mask has water at the
+   * middle, the cell's land point (the point of it furthest from water). A cell without any
+   * land in the mask (a crossing, land painted in the editor) keeps its middle.
+   *
+   * A cell's middle is a corner of four mask pixels: it counts as land when all four are. With
+   * one of them alone, the elements whose slots lie the other way had no land between them and
+   * their formation, and stood in a heap on its place (25 of the 33 drawn in at the 1938 start).
+   */
+  cellPoint(cell: number): [number, number] {
+    const w = this.cells.w;
+    const cx = cell % w;
+    const cy = (cell - cx) / w;
+    const mid: [number, number] = [cx + 0.5, cy + 0.5];
+    if (!this.landMask) return mid;
+    const e = w / this.landMask.w / 2; // half a mask pixel, in cells
+    if (this.onLand(mid[0] - e, mid[1] - e) && this.onLand(mid[0] + e, mid[1] - e) && this.onLand(mid[0] - e, mid[1] + e) && this.onLand(mid[0] + e, mid[1] + e)) return mid;
+    let p = this.cellPoints.get(cell);
+    if (!p) this.cellPoints.set(cell, (p = landPoint(this.landMask, w, cx, cy, this.settings.loopingMap) ?? mid));
+    return [p[0], p[1]];
+  }
+
+  /** (`x`, `y`) where the fine mask has it on land; else where a formation stands in the cell that holds it. */
+  standPoint(x: number, y: number): [number, number] {
+    if (this.onLand(x, y)) return [x, y];
+    const w = this.cells.w;
+    const cx = Math.min(w - 1, Math.max(0, Math.floor(x)));
+    const cy = Math.min(this.cells.h - 1, Math.max(0, Math.floor(y)));
+    return this.cellPoint(cy * w + cx);
+  }
+
   /** Derived caches (not state): formation paths and the navigation graph. */
   paths = new Map<number, Int32Array>();
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;

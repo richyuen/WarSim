@@ -933,6 +933,11 @@ export class MapView {
     this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks);
   }
 
+  /** The formations of the last snapshot (tests). */
+  formationIds(): number[] {
+    return Array.from(this.formIds);
+  }
+
   /** Position of formation `id` from the last snapshot, or null. */
   formationPos(id: number): [number, number] | null {
     const i = this.formIds.indexOf(id);

@@ -12,6 +12,7 @@ import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { buildLandCoverage } from '../shared/landCoverage';
 import { decodeElevation } from '../shared/elevation';
+import type { LandMask } from '../shared/landMask';
 import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
 import { frameOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
@@ -46,8 +47,8 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { elementIndex, slotCount } from '../sim/systems/elements';
-import { blockReach, SLOT_SPACING, slotPose } from '../sim/core/pose';
+import { elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
+import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
@@ -332,9 +333,11 @@ export class SimServer {
       if (!msg.assetBase) throw new Error(`scenario '${msg.init.scenario}' needs assetBase`);
       const store = new AssetStore(msg.assetBase);
       const { w } = SCENARIO_GEOMETRY[msg.init.scenario];
-      const [geo, meta, terrain] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w)]);
-      this.startSim({ ...msg.init, assets: { admin1Geometry: geo.bytes, admin1Meta: meta.bytes, terrain: terrain.bytes } }, msg.reqId);
-      void this.sendMapLayers(store);
+      // The fine land mask with the rest: the world is built on it (PLAN 2.9a).
+      const [geo, meta, terrain, mask] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w), store.load('landmask')]);
+      const landMask: LandMask = { w: mask.asset.width, h: mask.asset.height ?? mask.asset.width / 2, bits: mask.bytes };
+      this.startSim({ ...msg.init, assets: { admin1Geometry: geo.bytes, admin1Meta: meta.bytes, terrain: terrain.bytes, landMask } }, msg.reqId);
+      void this.sendMapLayers(store, landMask);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       this.post({ type: 'error', reqId: msg.reqId, message: error.message, stack: error.stack ?? '' }, []);
@@ -342,12 +345,11 @@ export class SimServer {
   }
 
   /** Builds and sends the renderer's static layers (fine land coverage, terrain) once. */
-  private async sendMapLayers(store: AssetStore): Promise<void> {
+  private async sendMapLayers(store: AssetStore, mask: LandMask): Promise<void> {
     try {
-      const mask = await store.load('landmask');
       const world = this.requireSim().world;
-      const factor = Math.max(1, Math.round(mask.asset.width / (2 * world.cells.w)));
-      const land = buildLandCoverage(mask.bytes, mask.asset.width, mask.asset.height ?? mask.asset.width / 2, factor);
+      const factor = Math.max(1, Math.round(mask.w / (2 * world.cells.w)));
+      const land = buildLandCoverage(mask.bits, mask.w, mask.h, factor);
       const terrain = { w: world.cells.w, h: world.cells.h, data: world.cells.terrain.slice() };
       const terrainColors = terrainJson.terrain.map((t) => parseInt(t.color.slice(1), 16));
       const cities = this.cityList(world).map((c) => ({ id: c.id, name: c.name, x: c.x, y: c.y, size: c.size, capital: c.capitalOf !== 0 }));
@@ -360,6 +362,9 @@ export class SimServer {
     } catch {
       /* the cell-resolution coast stays: no fine layers */
     }
+    // A copy for the page (the worker's own is the world's): 17 MB, once.
+    const bits = mask.bits.slice();
+    this.post({ type: 'landMask', mask: { w: mask.w, h: mask.h, bits } }, [bits.buffer]);
     await this.sendElevation(store);
   }
 
@@ -879,8 +884,8 @@ export class SimServer {
       const slots = slotCount(world, f, list.length);
       for (const e of list) {
         const slot = ec.slot[e]!;
-        const [cx, cy] = slotPose(fx, fy, fa, slot, slots, SLOT_SPACING);
-        const [qx, qy] = slotPose(px, py, fa, slot, slots, SLOT_SPACING);
+        const [cx, cy] = slotPlace(world, fx, fy, fa, slot, slots);
+        const [qx, qy] = slotPlace(world, px, py, fa, slot, slots);
         id[j] = e;
         formation[j] = f;
         nation[j] = ft.cols.nation[f]!;

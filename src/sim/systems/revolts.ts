@@ -357,8 +357,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
       const f = world.formations.create();
       const fc = world.formations.cols;
       fc.nation[f] = id;
-      fc.x[f] = nc.capitalX[id]!;
-      fc.y[f] = nc.capitalY[id]!;
+      [fc.x[f], fc.y[f]] = world.standPoint(nc.capitalX[id]!, nc.capitalY[id]!);
       fc.supply[f] = 1;
       equipFormation(world, f, 0); // template 0 = infantry_div (militia)
     }

@@ -917,7 +917,7 @@ quick sweep as a smoke test.
   formations, 11 of them wholly (their formation's own place is on water: a cell is land when half of
   it is, and its middle need not be); 162, 353 and 124 after 30, 90 and 365 days. None is more than
   half a cell from land.
-  - [ ] 2.9a Formations stand on land by the fine mask, and so do their elements (the sim). The sim
+  - [x] 2.9a Formations stand on land by the fine mask, and so do their elements (the sim). The sim
     has the mask (it had only the cells' terrain). Where a formation takes a place that the mask
     calls water (the middle of a coastal cell, a place by a city on the shore), it takes the cell's
     land point instead: the point of the cell that is furthest from water. An element whose slot is
@@ -931,6 +931,19 @@ quick sweep as a smoke test.
     place. e2e, 1938 at T3 near coasts: the element places the view holds, against the mask the
     worker sent: 0 on water. The pinned hash of seed 99 moves (formations' places are state):
     logged in DECISIONS; no sweep (ADR-58).
+    Done 2026-10-04 (ADR-79, addendum). `src/shared/landMask.ts` (the predicate and a cell's land
+    point), `World.onLand`, `cellPoint`, `standPoint`, `slotPlace` in `systems/elements.ts`.
+    - `tests/unit/coast1938.test.ts` (3) and `tests/unit/landMask.test.ts` (4). Seed 99 at the
+      start, after 30 and 90 days: of 1,054, 677 and 294 formations at rest none is on the mask's
+      water, and none of their 23,210, 15,587 and 5,915 elements; 8, 6 and 6 elements are drawn in
+      from a slot on water. On the march: 0, 0 of 134 and 1 of 430 formations over water.
+    - What was seen first is the measurement above the split (200 elements on water at the
+      start): the committed tests use what the task added and cannot run on the code before.
+    - `tests/e2e/coastElements1938.spec.ts`: the 20 formations nearest the mask's water at 5 m/px,
+      360 elements in the view: 0 on water. `elements1938` (the browser's world has the Node hash),
+      `wrecks1938`, `fire1938`: unchanged.
+    - The pin: seed 99 after one year f93cb674 → f5725b37, after five 6b84c48c → 68e0a69e. A
+      world built without the mask still gives f93cb674.
   - [ ] 2.9b The coast is drawn from the fine mask at T2 and T3 (the renderer). Today the coast at
     every zoom is the 4096 × 2048 coverage (2 texels to a cell); the mask has 8. The pass with the
     ground reads the mask's bits (packed, eight to a texel, if a texture as wide as the mask does

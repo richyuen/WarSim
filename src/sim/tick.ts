@@ -58,8 +58,8 @@ function applyCommand(world: World, cmd: Command): void {
       const f = world.formations;
       const id = f.create();
       f.cols.nation[id] = cmd.nation;
-      f.cols.x[id] = cmd.x;
-      f.cols.y[id] = cmd.y;
+      // On land by the fine mask (PLAN 2.9a): a place given on the water of a coastal cell is the cell's land point.
+      [f.cols.x[id], f.cols.y[id]] = world.standPoint(cmd.x, cmd.y);
       f.cols.strength[id] = cmd.strength;
       // Of a scenario template (PLAN 2.5): with its elements, as production delivers one.
       if (cmd.template !== undefined && world.rules?.templates[cmd.template]) {
