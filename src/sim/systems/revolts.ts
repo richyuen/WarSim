@@ -22,11 +22,12 @@
  * Defection (critic B1/B4, 2026-10-03): when the area's core nation is alive and is neither the
  * holder nor bound to it (ally, overlord, puppet), the area returns to that nation instead of
  * founding a new state: conquests a holder cannot keep quiet go back to their rightful owner.
- * Same event, with a = the core nation.
+ * Event `LandCeded` (a = the core nation, b = the former holder), not a revolt (PLAN 2.15d: the
+ * history read "France broke away from Italy").
  * Otherwise, when a province next to the area belongs to rebels (a spawned nation, not bound to
  * the holder), the area joins them and becomes their core: an uprising spreads as one state
- * instead of founding a new one per revolt. The holder declares war on them unless already at
- * war or in a truce.
+ * instead of founding a new one per revolt (`RevoltSpawned` again, a = those rebels). The holder
+ * declares war on them unless already at war or in a truce.
  *
  * Overextension (critic B1, 2026-10-03): a holder with share s of the world's owned land (km²,
  * not cells: ADR-57) above OVEREXT_SHARE strains to hold its far provinces (centre more than
@@ -200,7 +201,7 @@ function revolt(world: World, p: number, holder: number): number[] {
   }
   const rising = risingNeighbour(world, area, holder);
   if (rising !== 0) {
-    defect(world, area, holder, rising);
+    defect(world, area, holder, rising, EventKind.RevoltSpawned);
     for (const q of area) world.provinces.core[q] = rising;
     if (!world.wars.atWar(holder, rising) && !world.wars.inTruce(holder, rising, world.tick)) declareWar(world, holder, rising);
     return area;
@@ -228,8 +229,11 @@ function risingNeighbour(world: World, area: number[], holder: number): number {
   return best;
 }
 
-/** The holder's land in `area` goes to living nation `to` (module comment: defection). */
-export function defect(world: World, area: number[], holder: number, to: number): void {
+/**
+ * The holder's land in `area` goes to living nation `to` (module comment: defection). The event
+ * is `kind`: land handed over, or a revolt where the area rises with rebels next to it.
+ */
+export function defect(world: World, area: number[], holder: number, to: number, kind: EventKind = EventKind.LandCeded): void {
   const inArea = new Set(area);
   const { owner, province, w } = world.cells;
   let cells = 0;
@@ -254,7 +258,7 @@ export function defect(world: World, area: number[], holder: number, to: number)
     }
   });
   if (lostCapital) relocateCapital(world, holder);
-  world.out.emit(world.tick, EventKind.RevoltSpawned, to, holder, cells > 0 ? sx / cells : NaN, cells > 0 ? sy / cells : NaN);
+  world.out.emit(world.tick, kind, to, holder, cells > 0 ? sx / cells : NaN, cells > 0 ? sy / cells : NaN);
 }
 
 /**

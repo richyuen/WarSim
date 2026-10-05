@@ -5846,3 +5846,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen, not changed:** the toy world's nations fly flags of 1938 (`FlagStore` reads the
   1938 tags in every scenario): PLAN 2.16 has the line already.
 - **Next:** PLAN 2.15d, land that returns is not logged as a revolt.
+
+## 2026-10-05 — PLAN 2.15d: land handed over is not a revolt
+
+- **Found:** one cause. `defect` wrote `RevoltSpawned` whoever called it: the conquest that
+  goes back to its core nation, the area that joins rebels, and every handover of a Kill.
+- **Built (ADR-102):** `EventKind.LandCeded` (36), in the history with two nation roles;
+  `defect` takes the kind and only the area that joins rebels is still a revolt. English:
+  "Land handed over", "Land of {b} went over to {a}". The filter lists it by itself (the
+  panel's types are those of its rows).
+- **Tests:** the defection in `revolts.test.ts` and the Kill in `godMode.test.ts`, both
+  seen to fail first (France: 15, 20, 28, 59 and 104 a second time among the revolts).
+- **The pin did not move** (324bc358): no defection in seed 99's first year.
+- **Run by hand:** `godUi1938`, the Kill (with `EVIDENCE=1`): green. Five handovers
+  (Free Paris, British India, Italy, United Kingdom, Netherlands), five revolts.
+- **Picture looked at:** `docs/evidence/2.15/kill-france-history.png`: 20 lines, "Land of
+  France went over to Italy", "Free Paris broke away from France", none of a living nation
+  breaking away. The three other pictures of the folder were shot again by the same run.
+- **Gotchas:** the first form of the Kill test asked for a revolt of the founded only;
+  Italy's Kill brings Ethiopia back through `spawnRebels`, which logs its revolt. Asked of
+  the nations born instead.
+- **Seen, not changed:** a revived nation reads "broke away" and "returned" (ADR-102).
+- **Next:** PLAN 2.15e, a rebel nation's capital and militia on its own land.

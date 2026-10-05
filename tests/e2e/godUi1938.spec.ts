@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { EventKind } from '../../src/shared/events';
 import type { Inspection } from '../../src/shared/protocol';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
@@ -176,6 +177,32 @@ test('Kill through the God tab: a few new nations, no new war', async ({ page },
 
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.15') : info.outputPath();
   mkdirSync(out, { recursive: true });
+
+  // The history (PLAN 2.15d): a revolt for each nation founded and no other; the land that went
+  // to a nation already there is "handed over", with a filter of its own. It read "Italy broke
+  // away from France".
+  const rows = await page.evaluate(() => window.__warsim!.sim.history());
+  const revolts = rows.filter((r) => r.kind === EventKind.RevoltSpawned);
+  const ceded = rows.filter((r) => r.kind === EventKind.LandCeded);
+  expect(revolts.map((r) => r.a).sort((a, b) => a - b)).toEqual([...born].sort((a, b) => a - b));
+  expect(ceded.length).toBeGreaterThanOrEqual(1);
+  expect(ceded.every((r) => r.b === FRA)).toBe(true);
+  const gained = living(before).filter((n) => n !== FRA && nation(after, n).cells > nation(before, n).cells);
+  expect([...new Set(ceded.map((r) => r.a))].filter((n) => living(before).includes(n)).sort((a, b) => a - b)).toEqual(gained.sort((a, b) => a - b));
+  await page.getByTestId('history-btn').click();
+  await expect(page.getByTestId('history-panel')).toBeVisible();
+  await page.getByTestId('history-kind').selectOption({ label: 'Land handed over' });
+  await expect(page.getByTestId('history-row')).toHaveCount(ceded.length);
+  const texts = await page.getByTestId('history-row').allInnerTexts();
+  for (const t of texts) expect(t).toMatch(/Land of France went over to \S/);
+  await page.getByTestId('history-kind').selectOption({ label: 'Revolt' });
+  await expect(page.getByTestId('history-row')).toHaveCount(born.length);
+  for (const t of await page.getByTestId('history-row').allInnerTexts()) expect(t).toMatch(/^.*Free .+ broke away from France$/s);
+  await page.getByTestId('history-kind').selectOption('');
+  await page.getByTestId('history-panel').screenshot({ path: path.join(out, 'kill-france-history.png') });
+  console.log(`history: ${texts.map((t) => t.replace(/\s+/g, ' ')).join(' | ')}`);
+  await page.getByTestId('history-close').click();
+
   // The panel of one of them: its flag beside its name.
   await page.evaluate((n) => window.__warsim!.view!.select(n), born[0]!);
   await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(born[0]!));

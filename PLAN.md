@@ -2167,9 +2167,19 @@ quick sweep as a smoke test.
     - *Pictures:* `docs/evidence/2.15/kill-france-europe.png` (a Nordic cross over Paris, a
       tricolour over Geneva, a canton with a star in Gironde) and `founded-flag-panel.png`.
     - *Not done:* see ADR-101, "what it does not give" (flags by scenario: PLAN 2.16).
-  - [ ] 2.15d Land that returns to a living nation, or goes to a neighbour in a Kill, is not
+  - [x] 2.15d Land that returns to a living nation, or goes to a neighbour in a Kill, is not
     logged as a revolt: an event of its own, with its line in the history and its filter.
     AT: unit on the events of a defection and of a Kill; the history's text in e2e.
+    Done 2026-10-05 (ADR-102).
+    - *The cause:* `defect` emitted `RevoltSpawned` for all three of its callers.
+    - *The rule:* `LandCeded` (36), "Land of {b} went over to {a}", type "Land handed
+      over", for land that goes back to its core nation and for every handover of a Kill. An
+      area that joins rebels next to it stays a revolt.
+    - *Tests:* unit in `revolts.test.ts` and `godMode.test.ts` (seen to fail); e2e in
+      `godUi1938.spec.ts`; `docs/evidence/2.15/kill-france-history.png`, looked at. The pin
+      did not move.
+    - *Not done:* see ADR-102, "what it does not change" (a revived nation still logs a
+      revolt beside its "returned").
   - [ ] 2.15e A rebel nation's capital and militia stand on its own land (the 74 of 406
     from PLAN 2.12a).
     AT: the forced revolt in every province of the 1938 start: no capital on a cell that is

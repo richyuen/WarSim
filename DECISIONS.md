@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-102 · 2026-10-05 · accepted — Land handed over is an event of its own, not a revolt (PLAN 2.15d)
+
+- **Context:** the critic's R2-B6: the history calls land that goes back to a living nation
+  a revolt ("France broke away from Italy"). `defect` (`systems/revolts.ts`) emitted
+  `RevoltSpawned` with a = the nation that received the land. It has three callers:
+  1. a restless conquest goes back to its living core nation;
+  2. a restless area joins rebels who hold the province next to it;
+  3. a God Mode Kill (ADR-99) gives land to a core nation, a claimant, a neighbour or the heir.
+  After a Kill of France the history said "Italy broke away from France", and the same of
+  British India, the United Kingdom and the Netherlands.
+- **Decision:** a new event kind, `LandCeded` = 36: a = who received the land, b = who held
+  it, (x, y) = the middle of the land. Callers 1 and 3 emit it. It is a historic kind
+  (`HISTORY_KINDS`), both of its roles are nations, its type reads "Land handed over" and
+  its line "Land of {b} went over to {a}".
+- **Caller 2 stays a revolt.** The area rises against its holder with rebels, becomes their
+  core, and the holder declares war on them: "Free Paris broke away from France" says what
+  happened. `defect` takes the kind; the default is `LandCeded`.
+- **One kind, not two.** "Returned to" is true of a core nation and false of a neighbour in a
+  Kill. One line that is true of both, and one filter, rather than two kinds a reader has to
+  tell apart.
+- **The filter** needed no change: the history panel lists the kinds that its rows hold.
+- **What it does not change.**
+  - A dead nation that returns on its land still logs a revolt beside its "returned"
+    (`reviveNation` founds it through `spawnRebels`): Ethiopia in a Kill of Italy reads
+    "Ethiopia broke away from Italy" and "Ethiopia returned". It did rise against the holder.
+  - A Kill writes one line for each handover, so a nation can have two (Free Paris: its
+    revolt, and the islands it takes as the heir).
+  - The cells outside any province that go to the heir at the end of a Kill have no line.
+  - A save from before keeps its rows of kind 23, which still read "broke away".
+- **The pin:** not moved (324bc358). The history is state and is hashed, but seed 99 has no
+  defection in its first year.
+- **Tests:** unit: `revolts.test.ts`, the defection (one `LandCeded` [Poland, Germany], no
+  `RevoltSpawned`, the same in the history's rows); `godMode.test.ts`, the Kill of France,
+  Yugoslavia, Italy and Luxembourg (a revolt for each nation born and no other; land handed
+  over by the dead nation only, to every nation that was there and gained land). Both seen to
+  fail first. `history.test.ts` holds every historic kind to its roles and its two strings.
+  e2e: `godUi1938.spec.ts`, the Kill of France: the rows, the two filters and their text.
+
 ### ADR-101 · 2026-10-05 · accepted — A founded nation flies a flag made from its id and its colour (PLAN 2.15c)
 
 - **Context:** the critic's R2-B6 saw 25 of 109 living nations after 14 years with "a blank

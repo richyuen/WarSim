@@ -102,7 +102,8 @@ describe('God Mode commands (PLAN 1.32a)', () => {
       const wars = new Set(w.wars.list.map((x) => x.id));
       const total = recount(w);
       s.command({ kind: 'collapseNation', nation: c });
-      const declared = kinds(run(s, 1), EventKind.WarDeclared);
+      const ev = run(s, 1);
+      const declared = kinds(ev, EventKind.WarDeclared);
       const after = living();
       const born = [...after].filter((n) => !before.has(n));
       // Italy's Kill also brings Ethiopia back and frees Albania: neither is a nation founded.
@@ -115,6 +116,15 @@ describe('God Mode commands (PLAN 1.32a)', () => {
       expect(w.nations.cols.cells[c], `${tag}: cells left`).toBe(0);
       expect([...recount(w).values()].reduce((a, n) => a + n, 0), `${tag}: owned land`).toBe([...total.values()].reduce((a, n) => a + n, 0));
       for (const n of founded) expect(w.nations.cols.cells[n], `${tag}: nation ${n}`).toBeGreaterThan(0);
+      // PLAN 2.15d: the history says a revolt of the nations born only (those founded, and
+      // Ethiopia, which returns with its own "returned"); land that went to a nation already
+      // there is land handed over ("Italy broke away from France" before).
+      const gainers = [...before].filter((n) => n !== c && (recount(w).get(n) ?? 0) > (total.get(n) ?? 0)).sort((a, b) => a - b);
+      const revolts = kinds(ev, EventKind.RevoltSpawned);
+      const ceded = kinds(ev, EventKind.LandCeded);
+      expect(revolts.map(([a]) => a).sort((a, b) => a! - b!), `${tag}: revolts`).toEqual([...born].sort((a, b) => a - b));
+      expect(ceded.every(([, b]) => b === c), `${tag}: ceded by`).toBe(true);
+      expect([...new Set(ceded.map(([a]) => a!))].filter((n) => before.has(n)).sort((a, b) => a - b), `${tag}: ceded to`).toEqual(gainers);
       expectCountsMatch(w);
       console.log(`Kill ${tag}: ${before.size} -> ${after.size} living, ${founded.length} founded (${founded.map((n) => w.nations.cols.cells[n]).join(', ')} cells), ${wars.size} -> ${w.wars.list.length} wars`);
     }

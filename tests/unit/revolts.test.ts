@@ -1,6 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
+import { HISTORY_STRIDE } from '../../src/sim/history';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_SHARE, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
@@ -171,8 +172,13 @@ describe('revolts (PLAN 1.19)', () => {
     const nations = w.nations.count;
     s.command({ kind: 'setUnrest', province: p, value: 100 });
     let ev: number[][] = [];
-    for (let m = 0; m < 12 && kinds(ev, EventKind.RevoltSpawned).length === 0; m++) ev = run(s, 24 * 31);
-    expect(kinds(ev, EventKind.RevoltSpawned)).toEqual([[POL, GER]]);
+    for (let m = 0; m < 12 && w.cells.owner[g.centre[p]!] === GER; m++) ev = ev.concat(run(s, 24 * 31));
+    // Land that goes back is not a revolt in the history (PLAN 2.15d: "Poland broke away from
+    // Germany"): an event of its own, a = who received it, b = who held it.
+    expect(kinds(ev, EventKind.LandCeded)).toEqual([[POL, GER]]);
+    expect(kinds(ev, EventKind.RevoltSpawned)).toEqual([]);
+    const logged = w.history.rows.filter((_, i) => i % HISTORY_STRIDE === 1);
+    expect(logged.filter((k) => k === EventKind.LandCeded || k === EventKind.RevoltSpawned)).toEqual([EventKind.LandCeded]);
     expect(w.nations.count).toBe(nations); // no new nation
     expect(w.cells.owner[g.centre[p]!]).toBe(POL);
     expect(w.cells.controller[g.centre[p]!]).toBe(POL);

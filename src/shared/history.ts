@@ -30,6 +30,7 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.MajorBattleEnded]: ['battle', 'nation'],
   [EventKind.NationAnnexed]: ['nation', 'nation'],
   [EventKind.FormationsDisbanded]: ['nation', 'number'],
+  [EventKind.LandCeded]: ['nation', 'nation'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
