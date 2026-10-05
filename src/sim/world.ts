@@ -4,7 +4,7 @@
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
-import type { Command, LoggedCommand } from '../shared/commands';
+import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
@@ -575,9 +575,15 @@ export class World {
     this.land = null;
   }
 
-  /** Queue a command for the next tick boundary. */
-  enqueue(cmd: Command): void {
+  /**
+   * Queue a command for the next tick boundary. One of a kind the sim does not know is refused
+   * (false): it is not queued, takes no sequence number and never reaches the command log, so
+   * the game is that of a sim that never got it (PLAN 2.12b).
+   */
+  enqueue(cmd: Command): boolean {
+    if (!isCommand(cmd)) return false;
     this.pending.push({ seq: this.nextCommandSeq++, cmd });
+    return true;
   }
 
   /** Authoritative parts in a fixed order (the save/hash layout). */

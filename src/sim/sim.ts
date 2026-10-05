@@ -85,8 +85,9 @@ export class Sim {
     }
   }
 
-  command(cmd: Command): void {
-    this.world.enqueue(cmd);
+  /** Queues `cmd`; false when it is of a kind the sim does not know and was refused (`World.enqueue`). */
+  command(cmd: Command): boolean {
+    return this.world.enqueue(cmd);
   }
 
   hash(): number {

@@ -118,6 +118,10 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
 - `cmd {cmd: Command, now?}`: applied at the next tick boundary, stamped with that tick,
   and appended to `commandLog`. `now` (God Mode and player UI, PLAN 1.32b) applies it at once
   between ticks with the same stamp (`Sim.applyNow`); plain commands stay pending (I3).
+  A command of a kind that is not in the `Command` type is refused at `World.enqueue`: not
+  queued, no sequence number, no line in the log, so the hash is that of a sim that never got
+  it (PLAN 2.12b). `COMMAND_KINDS` is held to the type by the compiler. A kind's fields are
+  checked by its handler, as before.
 - `inspect {full?}`: a JSON world summary (`Inspection`: seed, nations incl. dead, wars,
   alliances, buffs, majors, corridors, settings, terrain counts, raster hashes, editor stack
   depths; with `full` also cities, cores and unrest, ~600 KB) for tests and the critic (PLAN

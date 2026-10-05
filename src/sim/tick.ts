@@ -251,6 +251,11 @@ function applyCommand(world: World, cmd: Command): void {
       if (war) war.fightToDeath[cmd.side] = cmd.value;
       return;
     }
+    default: {
+      // Every kind has its case: one without does not compile (PLAN 2.12b).
+      const unhandled: never = cmd;
+      return unhandled;
+    }
   }
 }
 

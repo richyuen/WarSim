@@ -1402,7 +1402,7 @@ quick sweep as a smoke test.
   sweep, an independent read, the watch lists, SPEC), eight fixes that came out of them, a
   second smoke sweep, and this. The count of numbered tasks for the next review pass starts
   again here. Next by PROMPT step 2a: the critic.
-- [ ] 2.12 Critic R2-B4 (report of 2026-10-05 on `3d6a2b2`): a loaded game goes on as the game
+- [x] 2.12 Critic R2-B4 (report of 2026-10-05 on `3d6a2b2`): a loaded game goes on as the game
   that was saved, on any seed and in any year; and the worker's state hash is Node's.
   **The report says that what PLAN 2.11j claimed is false** beyond that task's own tests
   (seed 99 in its first year; a twin game of seed 3 for 100 days). Its cases, to be run
@@ -1503,12 +1503,30 @@ quick sweep as a smoke test.
     - *Set right:* PLAN 2.11j's claim (a note there), PARITY's row, the CLI's header.
     - *Found on the way, not this task's:* a rebel nation with no city in its area takes the
       middle of the area as its capital, and that can be sea (lines under PLAN 2.15).
-  - [ ] 2.12b A command of a kind the sim does not know is refused (the AT's (e); the
+  - [x] 2.12b A command of a kind the sim does not know is refused (the AT's (e); the
     critic's N20). It was applied as nothing and written into the command log, which is
     state: seven made-up kinds changed the hash.
     AT: failing first: such a command is not queued, logged or counted, and the hash is that
     of a game that never got it; the list of kinds is held to the `Command` type by the
     compiler.
+    Done 2026-10-05.
+    - *Where:* `World.enqueue`, before the sequence number is taken: the number is in the
+      save's meta, so a refusal at apply time would still have moved the hash. `Sim.command`
+      says whether it was taken; the worker warns on its console and, for a `now` command,
+      does not apply or send anything.
+    - *The list:* `COMMAND_KINDS` in `src/shared/commands.ts`, a `Record<Command['kind'],
+      true>`. Tried: a line taken out and a line added each fail `tsc` (TS2741, TS2353). The
+      switch of `applyCommand` ends in a `never`, so a kind without a case fails too.
+    - *Tests, failing first* (`unknownCommand.test.ts`, 3: "expected undefined to be false";
+      the worker's log had 17 lines for 18 made-up commands): nine made-up commands (a kind
+      nobody has, a known one in other case, `toString`, `__proto__`, a number, none, null, a
+      string, an array) into a sim and into the worker, plain and `now`: nothing pending, no
+      number taken, the log, the hash and the save bytes those of a twin that never got them.
+    - *Not done:* a known kind with wrong fields is still each handler's to check (most do:
+      `has(nation)`, `isFinite`). And a save written before this may hold such a command in
+      its log; it is loaded as it is.
+    - *The pin:* not moved (`4aafc3eb`): no command in that game.
+  **PLAN 2.12 done 2026-10-05:** the AT's (a) to (d) in 2.12a, (e) in 2.12b.
 - [ ] 2.13 Critic R2-B3, the first part: the 1938 order of battle is still there after the
   first tick. The critic's count, the same on seeds 1212 and 4242: at tick 0 there are 1,054
   formations, 72 of them armour, 34 of those Soviet. At tick 1 there are 826 and 33, and the

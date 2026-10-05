@@ -5250,3 +5250,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   look at more frames.
 - **Not looked into:** why that half second holds fewer frames in the suite than at PLAN
   2.11g, where the same spec passed with the same neighbours. A line in BLOCKERS.
+
+## 2026-10-05 — PLAN 2.12b: a command of a kind the sim does not know is refused. PLAN 2.12 is done
+
+- **What it was:** the worker queued whatever it was sent. A made-up kind took a sequence
+  number, was applied as nothing and was written into the command log: three pieces of state.
+- **Fixed at `World.enqueue`,** before the number is taken (the number is in the save's meta:
+  a refusal at apply time would still have moved the hash). `Sim.command` returns whether it
+  was taken; the worker warns and, for a `now` command, applies and sends nothing.
+- **The list of kinds** (`COMMAND_KINDS`) is a `Record<Command['kind'], true>`: tried, a line
+  taken out and a line added both fail `tsc`. `applyCommand`'s switch ends in a `never`.
+- **Tests, failing first:** 3 unit (650). Nine made-up commands into a sim and into the
+  worker's message handler, plain and `now`: log, sequence number, hash and save bytes are
+  those of a twin that never got them.
+- **Not seen in a browser:** the test drives `SimServer`, the code the worker runs, in Node.
+  No page was opened for this task.
+- **Hashes:** the pin did not move (`4aafc3eb`); no command in that game.
+- **Not done:** wrong fields of a known kind stay with each handler. An old save that holds
+  such a command in its log is loaded as it is.
+- **Next:** PLAN 2.13, the 1938 order of battle after the first tick (it will move the pin).

@@ -110,6 +110,70 @@ export type Command =
   /** PLAN 1.37b: a 36×24 pixel flag as runs [rgb, count, …]; empty runs restore the scenario flag. */
   | { kind: 'setFlag'; nation: number; runs: number[] };
 
+/**
+ * Every kind of command, held to the `Command` type by the compiler: a kind added to the type
+ * without a line here does not compile, nor does a line here without a kind (PLAN 2.12b).
+ */
+export const COMMAND_KINDS: Record<Command['kind'], true> = {
+  spawnFormation: true,
+  removeFormation: true,
+  queueFormation: true,
+  moveFormation: true,
+  setSetting: true,
+  setEfficiency: true,
+  lockEfficiency: true,
+  setSuppression: true,
+  setUnrest: true,
+  reviveNation: true,
+  grantBuff: true,
+  removeBuff: true,
+  setAi: true,
+  forceBreakthrough: true,
+  collapseNation: true,
+  paintControl: true,
+  declareWar: true,
+  forcePeace: true,
+  setWarFightToDeath: true,
+  createAlliance: true,
+  joinAlliance: true,
+  leaveAlliance: true,
+  setUnity: true,
+  setLoyalty: true,
+  createPuppet: true,
+  releasePuppet: true,
+  setAutonomy: true,
+  setPuppetLoyalty: true,
+  renameNation: true,
+  spawnRevolt: true,
+  setIncomeBonus: true,
+  offerPeace: true,
+  proposeAlliance: true,
+  setPlayer: true,
+  editPaint: true,
+  importLayer: true,
+  editUndo: true,
+  editRedo: true,
+  spawnCity: true,
+  removeCity: true,
+  setCapital: true,
+  setGold: true,
+  setCore: true,
+  annexNation: true,
+  setFlag: true,
+};
+
+/**
+ * Whether `cmd` is a command of a kind the sim knows. What comes from outside the types (a
+ * worker message, a page's test API) is asked this before it is queued: a command of another
+ * kind was applied as nothing, and its sequence number and its line in the command log are
+ * state (PLAN 2.12b). Its fields are not looked at: each kind's handler checks its own.
+ */
+export function isCommand(cmd: unknown): cmd is Command {
+  if (typeof cmd !== 'object' || cmd === null) return false;
+  const kind = (cmd as { kind?: unknown }).kind;
+  return typeof kind === 'string' && Object.hasOwn(COMMAND_KINDS, kind);
+}
+
 export interface LoggedCommand {
   /** Tick at which the command was applied. */
   tick: number;

@@ -195,7 +195,11 @@ export class SimServer {
         break;
       case 'cmd': {
         const sim = this.requireSim();
-        sim.command(msg.cmd);
+        // A command of a kind the sim does not know is refused and nothing follows (PLAN 2.12b).
+        if (!sim.command(msg.cmd)) {
+          console.warn(`sim worker: refused a command of an unknown kind: ${JSON.stringify(msg.cmd)?.slice(0, 120)}`);
+          break;
+        }
         // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
         // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
         if (msg.now) {
