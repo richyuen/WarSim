@@ -89,9 +89,16 @@ describe('critic cadence (ADR-59)', () => {
     expect(tickedReviews(plan('- [x] 0.22 Phase 0 review: re-read SPEC', DONE))).toEqual(['0.22', '1.41']);
   });
 
-  it('PLAN.md itself: the reviews of phases 0 and 1 are ticked, those of phases 2 to 6 exist and are open', () => {
+  // The Phase 2 review was ticked on 2026-10-05 (`3d6a2b2`, a commit of documents, whose gate is
+  // parity alone): this test then named a PLAN.md that was no more (ADR-85). It now holds every
+  // state the plan passes through: the reviews are ticked in the order of the phases, none out
+  // of turn, and those of phases 0 to 2 are done.
+  it('PLAN.md itself: the seven phase reviews exist, those of phases 0 to 2 are ticked, and the ticked ones are the first ones', () => {
     const text = readFileSync(path.resolve(import.meta.dirname, '../../PLAN.md'), 'utf8');
-    expect(tickedReviews(text)).toEqual(['0.22', '1.41']);
-    for (const id of ['2.11', '3.7', '4.8', '5.8', '6.9']) expect(text).toMatch(new RegExp(`^- \\[ \\] ${id.replace('.', '\\.')} Phase \\d review`, 'm'));
+    const all = ['0.22', '1.41', '2.11', '3.7', '4.8', '5.8', '6.9'];
+    const ticked = tickedReviews(text);
+    expect(ticked.length).toBeGreaterThanOrEqual(3);
+    expect(ticked).toEqual(all.slice(0, ticked.length));
+    for (const id of all.slice(ticked.length)) expect(text).toMatch(new RegExp(`^- \\[ \\] ${id.replace('.', '\\.')} Phase \\d review`, 'm'));
   });
 });

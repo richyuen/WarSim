@@ -235,7 +235,11 @@ test('a pan at T3 from empty ground onto a division shows its figures at once, n
   expect(ground.lit).toBe(0);
 
   // The pan onto the division, at the same zoom. The view's own frames are read as they are
-  // drawn, from the first that has the division's elements and for half a second after it.
+  // drawn, from the first that has the division's elements, for half a second after it and
+  // until there are six of them. (Half a second alone held 3 and 4 frames in two gate runs of
+  // 2026-10-05, beside three other pages drawn on the CPU, where the test asks for more than
+  // 5; alone it holds 19. How many frames a loaded machine draws is not what is tested: the
+  // first frame is, and every one after it.)
   const frames = await page.evaluate(async ({ x, y }) => {
     const v = window.__warsim!.view!;
     v.controller.set({ cx: x, cy: y, scale: v.controller.cam.scale });
@@ -250,7 +254,7 @@ test('a pan at T3 from empty ground onto a division shows its figures at once, n
       }
       if (since < 0) since = now;
       seen.push({ ms: Math.round(now - since), share: v.shares.individuals, figures: v.individualCount });
-      if (now - since > 500) return seen;
+      if (now - since > 500 && (seen.length > 5 || now - since > 10_000)) return seen;
     }
   }, { x: SITE[0], y: SITE[1] });
   const low = frames.reduce((a, f) => (f.share < a.share ? f : a));
