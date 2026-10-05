@@ -5609,3 +5609,31 @@ No rule changed and nothing on screen changed. One task came out of it.
   in the view"; seed 7 run once through the kept test, not kept; the tooltip does not say
   what largest means; `battleView` and `tags` not run (nothing they draw changed).
 - **Next:** PLAN 2.14f5b2, whose battle the banner leads to.
+
+## 2026-10-05 — PLAN 2.14f5b2: the banner leads to a battle of the two leaders it names
+
+- **Decided and built (ADR-95):** `largestBattle` puts first the battles where the two
+  leaders' formations are each other's nearest enemy, then those with one leader's, then
+  the rest; inside that, ADR-94. In the pair, each other's nearest still comes first, then
+  the leaders' formations, then men. An order, not a filter.
+- **Tried first:** "a formation of either leader". The built test showed why not: against
+  Poland alone every battle has Poles, so the allies' larger battle still won. On the front
+  it left 129 of 752 with one leader only.
+- **Numbers** (60 days, every six hours, every war; seed 99 by the kept test, seed 7 with
+  the seed changed once): no leader's formation 46 → 0 and 41 → 0; one 96 → 6 and 349 →
+  187; both 610 → 746 and 635 → 838. Each other's nearest, whole in the view, 3.6 km at
+  most: all as before. Under a tenth: 36 → 38 and 33 → 49.
+- **Tests:** unit, a fifth in `warBattle.test.ts` (Germany and Czechoslovakia against
+  Poland), and an assertion in the 60-day one; both seen to fail with the rule of HEAD.
+  e2e, an assertion in the second of `toBattle1938`. 681 unit tests.
+- **Picture looked at** (`to-battle-front.png`): the same landing as before, motorised
+  division 45 against infantry division 563; the file shot again is byte for byte the same.
+- **A gotcha:** Czechoslovakia is put into the war by pushing it onto `sides[0]` and
+  calling `wars.changed()`; `declareWar` takes allies only from alliances.
+- **Again:** a Python heredoc in Git Bash lost a backslash before a quote in a test's name,
+  and one with backticks did not parse; a file did it.
+- **The pin:** not moved. **Run by hand:** `toBattle` (2): green.
+- **Not done:** a war whose leaders never meet; the leader changing in a war; which wars
+  give "one" on seed 7; the tooltip; `battleView` and `tags` not run (nothing they draw
+  changed).
+- **Next:** PLAN 2.14f5b3, whether a banner shows that its war has a battle.

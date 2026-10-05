@@ -20,12 +20,13 @@ import { addDivision, nationId } from '../helpers/sim1938';
 const W = SIZE_1938.w;
 const GER = nationId('GER');
 const POL = nationId('POL');
+const CZS = nationId('CZS');
 
-/** Middles of German cells with a Polish one east of it and land between, top to bottom. */
-function borders(w: World): [number, number][] {
+/** Middles of cells of `west` (German ones, unless said) with a Polish one east of it and land between, top to bottom. */
+function borders(w: World, west = GER): [number, number][] {
   const { owner, w: cw, h: ch } = w.cells;
   const out: [number, number][] = [];
-  for (let y = 1; y < ch - 1; y++) for (let x = 1; x < cw - 2; x++) if (owner[y * cw + x] === GER && owner[y * cw + x + 1] === POL && w.onLand(x + 0.5, y + 0.5) && w.onLand(x + 1.5, y + 0.5) && w.onLand(x + 1, y + 0.5)) out.push([x + 0.5, y + 0.5]);
+  for (let y = 1; y < ch - 1; y++) for (let x = 1; x < cw - 2; x++) if (owner[y * cw + x] === west && owner[y * cw + x + 1] === POL && w.onLand(x + 0.5, y + 0.5) && w.onLand(x + 1.5, y + 0.5) && w.onLand(x + 1, y + 0.5)) out.push([x + 0.5, y + 0.5]);
   return out;
 }
 
@@ -118,6 +119,44 @@ describe('the largest battle of a war (PLAN 2.14e)', () => {
   });
 });
 
+// PLAN 2.14f5b2 (ADR-95): the banner names the two leaders of the war, and the click leads to a
+// battle of theirs when there is one, before a larger battle of their allies alone.
+describe('the largest battle of a war with allies in it (PLAN 2.14f5b2)', () => {
+  it('is a battle with a formation of a leader front to front, before a larger one of allies; without one, the largest', () => {
+    const { s, w, north } = game();
+    const czech = borders(w, CZS).find((p) => Math.abs(p[1] - north[1]) > 6);
+    if (!czech) throw new Error('no Czechoslovak border site six cells from the German one');
+    // North: one German division against one Polish. On the Czechoslovak border: two against two.
+    const n1 = addDivision(w, GER, north[0], north[1]);
+    const n2 = addDivision(w, POL, north[0] + 1, north[1]);
+    const c1 = addDivision(w, CZS, czech[0], czech[1]);
+    const c2 = addDivision(w, POL, czech[0] + 1, czech[1]);
+    addDivision(w, CZS, czech[0] - 0.2, czech[1] + 0.4);
+    addDivision(w, POL, czech[0] + 1.2, czech[1] - 0.4);
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    s.step(1);
+    const war = w.wars.list.find((x) => x.id === warOf(w, GER, POL))!;
+    // Czechoslovakia joins Germany's side: the leaders stay Germany and Poland.
+    war.sides[0].push(CZS);
+    w.wars.changed();
+    s.step(2);
+    expect(war.sides.map((side) => side[0])).toEqual([GER, POL]);
+    const fc = w.formations.cols;
+    expect([n1, n2, c1, c2].map((f) => fc.engaged[f])).toEqual([1, 1, 1, 1]);
+    const b = largestBattle(w, war.id)!;
+    expect(b.count).toEqual([1, 1]);
+    expect(b.formations).toEqual([n1, n2]);
+    expect(b.y).toBeCloseTo(north[1], 2);
+
+    // The German division gone: the battle that is left is Poland's too, and the larger one.
+    destroyFormation(w, n1);
+    s.step(1);
+    const left = largestBattle(w, war.id)!;
+    expect(left.count).toEqual([2, 2]);
+    expect(left.formations).toEqual([c1, c2]);
+  });
+});
+
 // PLAN 2.14f5a: the same on a real front. The tests above have the pair put down for them; here
 // the armies of the start fight for 60 days (Germany against Poland by command, and the wars
 // the AI declares meanwhile). Every six hours, for every war: the two formations the answer
@@ -131,7 +170,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
     /** Half the view less 50 px, in cells (a cell is 19.57 km). */
     const HALF = { w: (700 - 50) * 20 / 19_570, h: (400 - 50) * 20 / 19_570 };
-    const n = { asked: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0, uneven: 0 };
+    const n = { asked: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0] };
     const outside: string[] = [];
     let last: WarBattleSite | null = null;
     s.step(24 * 60, (w) => {
@@ -150,6 +189,8 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         if (ours) n.germanPolish++;
         if (Math.min(b.men[0], b.men[1]) * 10 < Math.max(b.men[0], b.men[1])) n.uneven++;
         const [a, d] = b.formations;
+        const fc = w.formations.cols;
+        n.leaders[(fc.nation[a] === war.sides[0][0] ? 1 : 0) + (fc.nation[d] === war.sides[1][0] ? 1 : 0)]!++;
         const rank = (contacts.get(a) === d ? 1 : 0) + (contacts.get(d) === a ? 1 : 0);
         if (rank === 2) n.mutual++;
         else if (rank === 1) n.oneWay++;
@@ -178,13 +219,16 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
       `60 days of Germany against Poland (seed 99), every six hours, every war: asked ${n.asked} times, a battle ${n.battles} times (${n.germanPolish} of Germany against Poland); ` +
         `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
         `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times; ` +
-        `one side under a tenth of the other in ${n.uneven}`,
+        `one side under a tenth of the other in ${n.uneven}; ` +
+        `of the two, the war's leaders have neither in ${n.leaders[0]}, one in ${n.leaders[1]}, both in ${n.leaders[2]}`,
     );
     expect(outside).toEqual([]);
     expect(n.battles).toBeGreaterThan(500);
     expect(n.germanPolish).toBeGreaterThan(200);
     // The largest battle is one of two sides (ADR-94): by the men of both it was 212 of 752 with one side under a tenth of the other, 36 by the smaller side's.
     expect(n.uneven).toBeLessThan(n.battles / 10);
+    // And one of the leaders the banner names (ADR-95): 46 of 752 had a formation of neither before, 96 of one, 610 of both.
+    expect(n.leaders[0]).toBe(0);
     // The front is there on the last day: the banner of this war leads somewhere.
     expect(last).not.toBeNull();
   });

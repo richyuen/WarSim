@@ -5,7 +5,9 @@
  * Battles are derived each hour and not kept (`findBattles`): here they are worked out again
  * for one war from the state, the formations' `engaged` flags and places. A battle of the war
  * is a set of formations of its two sides joined by contacts between the sides (within
- * CONTACT_CELLS); the largest is the one whose smaller side has the most men (ADR-94). Reads only: nothing of the state
+ * CONTACT_CELLS); a battle of the war's two leaders comes before one of a leader, before one of
+ * allies alone (ADR-95), and of those the largest is the one whose smaller side has the most men
+ * (ADR-94). Reads only: nothing of the state
  * and nothing of the hour's deployments changes (`deployOf` fills its cache, as the snapshot
  * does).
  */
@@ -15,7 +17,7 @@ import { cellDist, CONTACT_CELLS, contactsOf, deployOf, elementIndex, slotCount 
 
 export type WarBattleSite = Omit<WarBattle, 'tick'>;
 
-/** The largest battle of war `warId` (by the men of its smaller side, then of both; of equals, the one with the lowest formation id), or null when none of its formations are in contact across its sides. */
+/** The largest battle of war `warId` (the leaders' before their allies'; then by the men of its smaller side, then of both; of equals, the one with the lowest formation id), or null when none of its formations are in contact across its sides. */
 export function largestBattle(world: World, warId: number): WarBattleSite | null {
   const war = world.wars.list.find((w) => w.id === warId);
   if (!war) return null;
@@ -54,7 +56,15 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
     m[sideOf(c.nation[f]!)]! += c.strength[f]!;
     men.set(find(f), m);
   }
+  // The battles of the war's leaders, whom its banner names (ADR-95): by the leaders' formations (two, one, none) in a pair of each other's nearest enemy.
+  const contacts = contactsOf(world);
+  const leads = (f: number): number => (c.nation[f] === war.sides[0][0] || c.nation[f] === war.sides[1][0] ? 1 : 0);
+  const facing = (a: number, b: number): number => (contacts.get(a) === b ? 1 : 0) + (contacts.get(b) === a ? 1 : 0);
+  const led = new Map<number, number>();
+  for (const [a, b] of pairs) if (facing(a, b) === 2) led.set(find(a), Math.max(led.get(find(a)) ?? 0, leads(a) + leads(b)));
   const larger = (r: number, than: number): boolean => {
+    const l = (led.get(r) ?? 0) - (led.get(than) ?? 0);
+    if (l !== 0) return l > 0;
     const [a, b] = [men.get(r)!, men.get(than)!];
     const d = Math.min(a[0], a[1]) - Math.min(b[0], b[1]) || a[0] + a[1] - b[0] - b[1];
     return d > 0 || (d === 0 && r < than);
@@ -69,14 +79,13 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
     count[s]!++;
     strength[s]! += c.strength[f]!;
   }
-  // The pair to look at: each other's nearest before one's nearest before any in contact, then by men, then by ids.
-  const contacts = contactsOf(world);
+  // The pair to look at: each other's nearest before one's nearest before any in contact, then the leaders' formations (ADR-95), then by men, then by ids.
   let best: [number, number] | null = null;
   let bestRank = -1;
   let bestMen = -1;
   for (const [a, b] of pairs) {
     if (find(a) !== root) continue;
-    const rank = (contacts.get(a) === b ? 1 : 0) + (contacts.get(b) === a ? 1 : 0);
+    const rank = facing(a, b) * 3 + leads(a) + leads(b);
     const m = c.strength[a]! + c.strength[b]!;
     if (rank > bestRank || (rank === bestRank && m > bestMen)) {
       best = [a, b];

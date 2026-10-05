@@ -1979,7 +1979,7 @@ quick sweep as a smoke test.
           of `toBattle1938`: day 60 lands on 36,135 against 18,109, German motorised
           division 45 and Polish infantry division 563. Picture looked at. The pin did not
           move.
-        - [ ] 2.14f5b2 Whose battle the banner leads to. The banner names the two leaders
+        - [x] 2.14f5b2 Whose battle the banner leads to. The banner names the two leaders
           and the click may land on their allies. *Measured 2026-10-05 with 2.14f5b1* (the
           rule of ADR-94; seed 99 and seed 7): neither of the two formations is a leader's
           in 46 of 752 and 41 of 1,025 landings, one of them in 96 and 349, both in 610 and
@@ -1988,6 +1988,21 @@ quick sweep as a smoke test.
           or a leader's pair comes first, or the banner says whose battle it leads to.
           AT: unit, on the 60-day front: the count of landings with no leader's formation,
           at the limit decided; failing first if the rule changes.
+          Done 2026-10-05 (ADR-95). *Decided and built:* a battle with the two leaders'
+          formations front to front (each other's nearest) comes first, then one with one
+          leader's, then the rest; then ADR-94. In the pair, each other's nearest first, then
+          the leaders', then men. An order, not a filter: a war whose leaders are not in
+          contact gets its largest battle. *Tried first and dropped:* "either leader" (every
+          battle against Poland has Poles; 129 of 752 with one leader only). *After* (seed 99;
+          seed 7 once, not kept): neither 0 and 0, one 6 and 187, both 746 and 838; each
+          other's nearest and whole in the view in all; under a tenth 38 and 49 (36 and 33).
+          *Tests:* unit, a new one in `warBattle.test.ts` (Germany and Czechoslovakia against
+          Poland: one against one on the German border wins over two against two on the
+          Czechoslovak; the German division gone, the other), seen to fail with the old rule;
+          the 60-day test asks for no landing without a leader's formation (46 before). e2e,
+          the second of `toBattle1938`: a German and a Polish formation. The pin did not
+          move. *Not done:* a war whose leaders never meet leads to allies and does not say
+          so; the leader changing during a war has no test.
         - [ ] 2.14f5b3 Whether a banner shows that its war has a battle (ADR-91: not sent
           with the statistics; `contactsOf` is kept for the hour, so one pass over it may
           do). *Measured 2026-10-05:* one pass over `contactsOf` (a formation and its

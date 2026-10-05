@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-95 · 2026-10-05 · accepted — A war's banner leads to a battle of the two leaders it names, when there is one (PLAN 2.14f5b2)
+
+- **Context:** the banner of a war names its two leaders ("Germany +5 against Poland +9",
+  `sides[s][0]`; when a leader leaves the war the next member leads, on the banner and
+  here). The click went to the war's largest battle (ADR-94), whoever fought it. ADR-93 saw
+  it land on Italians against the French.
+- **Measured** (the kept 60-day test for seed 99; the same with seed 7 in its place, once):
+  with the rule of ADR-94, of the two formations the camera lands between, neither was a
+  leader's in 46 of 752 and 41 of 1,025 landings, one in 96 and 349, both in 610 and 635.
+- **Decision:** `largestBattle` ranks a war's battles first by the leaders' formations in a
+  pair of each other's nearest enemy: a battle with the two leaders front to front, before
+  one with a leader's formation front to front with an ally's, before the rest. Then as
+  ADR-94. Inside the battle the pair is chosen as before, each other's nearest first, and
+  among those the leaders' formations before men. A war with no leader's formation in
+  contact gets its largest battle as before: the rule is an order, not a filter.
+- **Why not "a leader's formation, either of them":** tried first. In "Germany +1 against
+  Poland" every battle has Poles in it, so a Czechoslovak battle counted as a leader's and
+  won by size (the built test failed on it). On the front it left 129 of 752 landings with
+  one leader only.
+- **Why the leaders come after "each other's nearest" in the pair:** ADR-93's finding (both
+  blocks whole in the view) rests on the pair being each other's nearest. A leader's
+  formation that is nobody's nearest can stand 29 km from its enemy.
+- **Not chosen:** the banner saying whose battle it leads to (the mismatch would stay; the
+  sim can answer the question the banner asks).
+- **After** (seed 99 and seed 7): neither 0 and 0, one 6 and 187, both 746 and 838. Each
+  other's nearest in all 752 and 1,025; blocks at most 3.6 km apart in both runs; whole in
+  the view every time. One side under a tenth of the other: 38 and 49 (36 and 33 with
+  ADR-94 alone): a leaders' battle is sometimes a less even one than the allies'.
+- **Tests:** unit, `warBattle.test.ts`. A new one: Germany and Czechoslovakia against
+  Poland, one division against one on the German border and two against two on the
+  Czechoslovak; the answer is the German pair; with the German division gone, the other.
+  Seen to fail with the rule of ADR-94 (two against two) and with "either leader". The
+  60-day test asks for no landing without a leader's formation (46 with the old rule, seen
+  to fail). e2e, the second of `toBattle1938`: the two on day 60 are a German and a Polish
+  formation.
+- **On the screen** (seed 99, day 60): as under ADR-94, German motorised division 45
+  against Polish infantry division 563, 36,135 men against 18,109. The picture shot again
+  came out the same file.
+- **The pin:** not moved; the answer reads the state and writes none of it.
+- **Not done:**
+  - A war whose leaders never meet (an ocean between them) leads to its allies' battles
+    and the banner does not say so.
+  - "One" in 187 of 1,025 on seed 7: which wars, not looked at.
+  - A test where the leader changes during the war (the first member leaves): none.
+  - The tooltip still says "to its largest battle".
+
 ### ADR-94 · 2026-10-05 · accepted — A war's largest battle is the one whose smaller side has the most men (PLAN 2.14f5b1)
 
 - **Context:** ADR-91 sends a click on a war's banner to its largest battle, "by men": the

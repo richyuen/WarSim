@@ -153,7 +153,7 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
 // PLAN 2.14f5a: the same click on a real front. No division is put down: the armies of the start
 // fight for 60 days (Germany against Poland by God Mode, the AI running). In the test above the
 // largest battle is the one pair there is. Here it is one of many, and the two formations the
-// click leads to are chosen by the sim (`largestBattle`: each other's nearest enemy, then men).
+// click leads to are chosen by the sim (`largestBattle`: each other's nearest enemy, then the leaders', then men).
 test('after 60 days of Germany against Poland the banner leads to two formations front to front', async ({ page }, info) => {
   test.setTimeout(300_000);
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/2.14') : info.outputPath();
@@ -178,7 +178,7 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   }, null, { timeout: 20_000 });
   await settle(page);
 
-  const seen = await page.evaluate(async (war) => {
+  const seen = await page.evaluate(async ({ war, ger, pol }) => {
     const v = window.__warsim!.view!;
     const battle = (await window.__warsim!.sim.warBattle(war))!;
     const cam = v.controller.cam;
@@ -213,14 +213,17 @@ test('after 60 days of Germany against Poland the banner leads to two formations
       b: side(battle.formations[1]),
       formationsOnScreen: others.size,
       tags: v.tagRects.filter((t) => t.id === battle.formations[0] || t.id === battle.formations[1]).length,
+      leaders: [v.formationsOf(ger).includes(battle.formations[0]), v.formationsOf(pol).includes(battle.formations[1])],
     };
-  }, war);
+  }, { war, ger: GER, pol: POL });
 
   expect(seen.battle.war).toBe(war);
   // A battle of the front, not a pair: more than two formations in it.
   expect(seen.battle.count[0] + seen.battle.count[1]).toBeGreaterThan(2);
   // And one of two sides (ADR-94): by the men of both it was 67,984 against 472 on this day.
   expect(Math.min(...seen.battle.men) * 10).toBeGreaterThan(Math.max(...seen.battle.men));
+  // And of the two the banner names (ADR-95): a German formation and a Polish one, not their allies'.
+  expect(seen.leaders).toEqual([true, true]);
   expect(seen.cam.cx).toBeCloseTo(seen.battle.x, 6);
   expect(seen.cam.cy).toBeCloseTo(seen.battle.y, 6);
   expect(seen.m).toBeCloseTo(20, 1);
