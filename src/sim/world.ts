@@ -20,7 +20,7 @@ import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 import { LandCounts } from './landCounts';
-import { landPoint, maskLand, type LandMask } from '../shared/landMask';
+import { cellInland, landPoint, maskSure, type LandMask } from '../shared/landMask';
 
 export interface PendingCommand {
   seq: number;
@@ -431,10 +431,29 @@ export class World {
   /** Derived (not state): where a formation stands in a cell, for the cells that have been asked for. */
   private readonly cellPoints = new Map<number, [number, number]>();
 
-  /** Whether the fine mask has land at (`x`, `y`), in cells; true where there is no mask to ask. */
+  /**
+   * Whether (`x`, `y`), in cells, is a place to stand on: surely land by the fine mask
+   * (`maskSure`: in a land pixel, and land in the picture drawn from the mask, whose shore
+   * wanders inside a pixel: PLAN 2.9b). True where there is no mask to ask.
+   */
   onLand(x: number, y: number): boolean {
-    return !this.landMask || maskLand(this.landMask, this.cells.w, this.cells.h, x, y, this.settings.loopingMap);
+    const mask = this.landMask;
+    if (!mask) return true;
+    // Most places asked about are inland, and combat asks for every shot: a cell's answer is
+    // kept (1 inland: every place in it will do; 2 by the coast: the mask is asked).
+    const { w, h } = this.cells;
+    const cx = Math.floor(x);
+    const cy = Math.floor(y);
+    if (cx >= 0 && cx < w && cy >= 0 && cy < h) {
+      const inland = (this.inland ??= new Uint8Array(w * h));
+      const cell = cy * w + cx;
+      if (inland[cell] === 0) inland[cell] = cellInland(mask, w, cx, cy, this.settings.loopingMap) ? 1 : 2;
+      if (inland[cell] === 1) return true;
+    }
+    return maskSure(mask, w, h, x, y, this.settings.loopingMap);
   }
+  /** Derived (not state): for each cell asked about, whether all of it is surely land (see `onLand`). */
+  private inland: Uint8Array | null = null;
 
   /**
    * Where a formation stands in `cell`: its middle; or, where the fine mask has water at the
@@ -450,9 +469,8 @@ export class World {
     const cx = cell % w;
     const cy = (cell - cx) / w;
     const mid: [number, number] = [cx + 0.5, cy + 0.5];
-    if (!this.landMask) return mid;
-    const e = w / this.landMask.w / 2; // half a mask pixel, in cells
-    if (this.onLand(mid[0] - e, mid[1] - e) && this.onLand(mid[0] + e, mid[1] - e) && this.onLand(mid[0] - e, mid[1] + e) && this.onLand(mid[0] + e, mid[1] + e)) return mid;
+    // (At the middle the four pixels count alike: surely land there is all four of them land.)
+    if (!this.landMask || this.onLand(mid[0], mid[1])) return mid;
     let p = this.cellPoints.get(cell);
     if (!p) this.cellPoints.set(cell, (p = landPoint(this.landMask, w, cx, cy, this.settings.loopingMap) ?? mid));
     return [p[0], p[1]];

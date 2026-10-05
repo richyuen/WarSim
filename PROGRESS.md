@@ -4815,3 +4815,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   the Node loader reads it once to a process; the runner prints the new pin.
 - **Tests:** 7 new unit tests, 1 new e2e. 629 unit tests in 83 files, 109 e2e.
 - **Next:** PLAN 2.9b (the coast of T2 and T3 drawn from the mask).
+
+## 2026-10-04 — PLAN 2.9b1: a place to stand on is surely land; the pin moves again
+
+- **The pin moved a second time:** seed 99 after one year f5725b37 → 99c1a04e, after five
+  68e0a69e → b203bc49 (ADR-79, second addendum). A world without the mask: f93cb674 still.
+- **Why, in a task that was to be the renderer's:** 2.9b draws a shore, and a shore wanders
+  inside a mask pixel. With 2.9a's rule (the pixel's bit) an element can be on the mask's land
+  and in the drawn sea: 5 of 193 looked at, with the coast drawn from the mask. So 2.9b is
+  split: this, the sim's rule, with its own commit; then the coast (2.9b2).
+- **The rule:** a place is surely land when the four mask pixels round it, blended, make 0.85
+  or more: in a land pixel, and land whatever the shore's noise does. One number for that
+  noise, in the module, which the shader will take.
+- **Test first:** `coast1938.test.ts`, reading the mask this way, fails on 2.9a's rule (five
+  elements of formation 367). With the rule: none at the start, after 30 and 90 days; 16, 8
+  and 8 elements drawn in from their slots (8, 6 and 6 before).
+- **The runner showed a cost:** a year's mean tick was 4.92 ms for 2.45, because combat asks
+  for a place with every shot. A cell's answer is kept once it is known to be inland. Pinned,
+  five years: 1.45 and 1.44 ms; the code before 2.9a: 1.50 and 1.49.
+- **Tests:** 2 new unit tests, 1 made stronger. 631 unit tests in 83 files.
+- **Next:** PLAN 2.9b2 (the coast drawn from the mask; written and set aside while this is
+  gated).

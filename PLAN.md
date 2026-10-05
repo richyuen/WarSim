@@ -944,7 +944,27 @@ quick sweep as a smoke test.
       `wrecks1938`, `fire1938`: unchanged.
     - The pin: seed 99 after one year f93cb674 → f5725b37, after five 6b84c48c → 68e0a69e. A
       world built without the mask still gives f93cb674.
-  - [ ] 2.9b The coast is drawn from the fine mask at T2 and T3 (the renderer). Today the coast at
+  - [x] 2.9b1 A place to stand on is surely land: in a land pixel of the mask, and land in any
+    picture drawn from the mask (the sim; split out of 2.9b on 2026-10-04, ADR-79's second
+    addendum). 2.9b's shore wanders inside a mask pixel, as it must to be a shore. With the rule
+    of 2.9a (the pixel's bit) an element could then stand in the drawn sea: with the coast drawn
+    from the mask and that rule, 5 of 193 elements of the 12 formations nearest the water (14
+    with the coverage's coast); with this rule, none. The pin moves a second time.
+    AT: unit: `maskField` and `maskSure` (a pixel's bit at its middle, a half on a straight
+    coast, never surely land in a water pixel; safe for the shore's noise at its largest);
+    1938: at the start and after 30 and 90 days every formation at rest and every one of its
+    elements is surely land.
+    Done 2026-10-04: `src/shared/landMask.ts` (`maskField`, `maskSure`, `SURE_LAND` 0.85,
+    `SHORE_NOISE` 0.35, `cellInland`), `World.onLand`. `tests/unit/landMask.test.ts` (6) and
+    `coast1938.test.ts`, which with the stronger reading fails on 2.9a's rule (elements of
+    formation 367 at the start). 16, 8 and 8 elements are drawn in from their slots now (8, 6, 6).
+    - The pin: seed 99 after one year f5725b37 → 99c1a04e, after five 68e0a69e → b203bc49; a world
+      without the mask still f93cb674.
+    - The tick: combat asks for every shot's place, and asking the mask each time doubled the
+      tick (4.92 ms for 2.45, a year unpinned). A cell's answer is kept once it is known to be
+      inland. Pinned, five years: 1.45 and 1.44 ms; on the code before 2.9a 1.50 and 1.49.
+  - [ ] 2.9b2 The coast is drawn from the fine mask at T2 and T3 (the renderer; 2.9b as it was
+    written, less the sim's rule above). Today the coast at
     every zoom is the 4096 × 2048 coverage (2 texels to a cell); the mask has 8. The pass with the
     ground reads the mask's bits (packed, eight to a texel, if a texture as wide as the mask does
     not fit) and draws the coast where they say; inside a mask px, 2.4 km, the line is moved by

@@ -4,9 +4,19 @@
  * formation and its elements stand: PLAN 2.9a), the renderer (the coast of T2 and T3) and the
  * tests read it through this module, so that "land at (x, y)" has one meaning.
  *
- * **The convention:** a point is on land when the bit of the mask pixel that holds it is set.
- * No interpolation: the coast runs along pixel edges, and a picture that smooths it must not
- * say otherwise further than half a pixel from that line.
+ * **The convention:** a point is on land when the bit of the mask pixel that holds it is set
+ * (`maskLand`). The coast runs along pixel edges.
+ *
+ * **The drawn coast** (PLAN 2.9b) is that coast made a shore: `maskField` blends the four
+ * pixels round a place, 1 where they are all land and 0 where none is, and the map's shader
+ * (`mapShader.ts`, the same blend) draws land where it is over a half, after moving the line by
+ * a noise of at most `SHORE_NOISE` × 4f(1 − f). So the picture can say other than the bit,
+ * inside the squares where the four pixels differ, and nowhere else.
+ *
+ * **Surely land** (`maskSure`): the field is `SURE_LAND` or more. Such a place is in a land
+ * pixel (with its own pixel water the field is 0.75 at most) and is drawn as land whatever the
+ * noise (0.85 − 0.35 × 4 × 0.85 × 0.15 = 0.67, over a half). It is where a formation and its
+ * elements stand, and where a tree does.
  */
 export interface LandMask {
   w: number;
@@ -30,6 +40,52 @@ export function maskLand(mask: LandMask, mapW: number, mapH: number, x: number, 
   let px = Math.floor((x * mask.w) / mapW);
   if (wrapX) px = ((px % mask.w) + mask.w) % mask.w;
   return maskBit(mask, px, Math.floor((y * mask.h) / mapH));
+}
+
+/**
+ * How far the drawn shore's noise can move the field, at a half (the shader takes it from
+ * here). `SURE_LAND` is safe for this much and no more: a larger noise needs a larger margin,
+ * and the unit test of the two holds them together.
+ */
+export const SHORE_NOISE = 0.35;
+/** The least of `maskField` at which a place is land in the mask and in every picture of it. */
+export const SURE_LAND = 0.85;
+
+/**
+ * How much land the four mask pixels round (`x`, `y`) hold, 0–1: their bits blended by how near
+ * each pixel's middle is. At a pixel's middle it is that pixel's bit; on the edge between a
+ * land pixel and a water pixel it is a half. Sums and products of doubles only: every engine
+ * gives the same number.
+ */
+export function maskField(mask: LandMask, mapW: number, mapH: number, x: number, y: number, wrapX: boolean): number {
+  const mx = (x * mask.w) / mapW - 0.5;
+  const my = (y * mask.h) / mapH - 0.5;
+  const x0 = Math.floor(mx);
+  const y0 = Math.floor(my);
+  const tx = mx - x0;
+  const ty = my - y0;
+  const at = (px: number, py: number): number => (maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py) ? 1 : 0);
+  return (at(x0, y0) * (1 - tx) + at(x0 + 1, y0) * tx) * (1 - ty) + (at(x0, y0 + 1) * (1 - tx) + at(x0 + 1, y0 + 1) * tx) * ty;
+}
+
+/**
+ * Whether cell (`cx`, `cy`) is inland: its mask pixels and the ring of pixels round them are
+ * all land. Every place in such a cell is surely land (the four pixels round any of them are
+ * among those), so who asks often can ask this once for a cell and remember it.
+ */
+export function cellInland(mask: LandMask, mapW: number, cx: number, cy: number, wrapX: boolean): boolean {
+  const k = Math.round(mask.w / mapW);
+  for (let py = cy * k - 1; py <= cy * k + k; py++) {
+    for (let px = cx * k - 1; px <= cx * k + k; px++) {
+      if (!maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py)) return false;
+    }
+  }
+  return true;
+}
+
+/** Whether (`x`, `y`) is surely land: in a land pixel of the mask, and land in the picture drawn from it. */
+export function maskSure(mask: LandMask, mapW: number, mapH: number, x: number, y: number, wrapX: boolean): boolean {
+  return maskField(mask, mapW, mapH, x, y, wrapX) >= SURE_LAND;
 }
 
 /**

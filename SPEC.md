@@ -290,18 +290,25 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   (NE 10m lakes, scalerank ≤ 7, no reservoirs; PLAN 1.2). It is used by
   the sim for element placement and naval passability at sub-cell scale, and by the
   renderer for coastlines. Both read the same bytes, so they never disagree.
-  *As built (PLAN 2.9a, ADR-79; `src/shared/landMask.ts`):* a point is on land when the bit of
-  the mask pixel that holds it is set. The world has the mask as static data (`World.landMask`:
-  not saved, not hashed; from `ScenarioAssets.landMask`, which the worker and the Node loader
-  both give). A formation at rest stands on land by it:
+  *As built (PLAN 2.9a and 2.9b1, ADR-79; `src/shared/landMask.ts`):* a point is on land when
+  the bit of the mask pixel that holds it is set (`maskLand`). A place to stand on is *surely
+  land* (`maskSure`): the four mask pixels round it, blended by how near each one's middle is
+  (`maskField`, 0–1, a half on a straight coast), make 0.85 or more. Such a place is in a land
+  pixel, and is land in the picture drawn from the mask, whose shore is moved inside a pixel
+  by a noise of at most 0.35 × 4f(1 − f) (`SHORE_NOISE`; the shader takes it from the module).
+  The world has the mask as static data (`World.landMask`: not saved, not hashed; from
+  `ScenarioAssets.landMask`, which the worker and the Node loader both give). A formation at
+  rest stands on sure land by it:
   - *In a cell* (a path's cells, a spawn, a move by the editor) it stands at the middle when
-    the four mask pixels round the middle are land, and else at the cell's land point: the
-    middle of the cell's pixel furthest from water (`World.cellPoint`).
+    that is surely land (the four mask pixels round the middle are land), and else at the
+    cell's land point: the middle of the cell's pixel furthest from water (`World.cellPoint`).
   - *At a given place* (the order of battle's, a capital's, a command's) it stands there when
-    that is land, and else at its cell's point (`World.standPoint`).
-  - *An element* stands at its slot in the block; where that is water, at the first land on
-    the way from the slot to its formation (`slotPlace`: the snapshot, the fire events and the
-    event of its end ask there). Not state.
+    that is surely land, and else at its cell's point (`World.standPoint`).
+  - *An element* stands at its slot in the block; where that is not surely land, at the first
+    sure land on the way from the slot to its formation (`slotPlace`: the snapshot, the fire
+    events and the event of its end ask there). Not state.
+  - *Asked often:* a cell whose pixels and the ring round them are all land is inland, every
+    place in it is surely land, and the world keeps that answer (`World.onLand`).
   - A cell with no land in the mask (a crossing, land painted in the editor) keeps its middle.
     A march goes straight from one cell's point to the next and can cross a bay. The coast is
     drawn from the coverage still: PLAN 2.9b.

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { tierOf, type FromWorker, type Snapshot, type Subscription } from '../../src/shared/protocol';
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { Terrain } from '../../src/shared/terrain';
-import { maskLand } from '../../src/shared/landMask';
+import { maskLand, maskSure } from '../../src/shared/landMask';
 import { SLOT_SPACING, slotPose } from '../../src/sim/core/pose';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -25,8 +25,10 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     const mask = assets.landMask!;
     const sim = new Sim({ scenario: '1938', seed: 99, assets });
     const w = sim.world;
-    // The test's own reading of the mask, not the world's: the bit of the pixel that holds the point.
-    const land = (x: number, y: number): boolean => maskLand(mask, W, H, x, y, true);
+    // The test's own reading of the mask, not the world's: the bit of the pixel that holds the
+    // point; and, since PLAN 2.9b, that the place is surely land (land in the picture drawn from
+    // the mask too, whose shore wanders inside a pixel).
+    const land = (x: number, y: number): boolean => maskLand(mask, W, H, x, y, true) && maskSure(mask, W, H, x, y, true);
     const f = w.formations.cols;
     for (const day of [0, 30, 90]) {
       while (sim.tick < day * 24) sim.step(24);

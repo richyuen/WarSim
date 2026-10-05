@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { landPoint, maskBit, maskLand, type LandMask } from '../../src/shared/landMask';
+import { cellInland, landPoint, maskBit, maskField, maskLand, maskSure, SHORE_NOISE, SURE_LAND, type LandMask } from '../../src/shared/landMask';
 
 // PLAN 2.9a (ADR-79): the fine land mask, read one way by the sim, the renderer and the tests.
 
@@ -34,6 +34,42 @@ describe('the fine land mask (PLAN 2.9a)', () => {
     // On a map that loops, x goes round: 4.2 is 0.2 (sea here), -0.2 is 3.8 (land).
     expect(maskLand(m, 4, 2, 4.2, 1, true)).toBe(false);
     expect(maskLand(m, 4, 2, -0.2, 1, true)).toBe(true);
+  });
+
+  it('the field: a pixel’s bit at its middle, a half on a straight coast, and surely land only inside a land pixel', () => {
+    // Land east of pixel column 12; 8 px to a cell: the coast is the line x = 1.5 cells.
+    const m = mask(4, 2, 8, (px) => px >= 12);
+    const f = (x: number, y = 1): number => maskField(m, 4, 2, x, y, false);
+    expect(f((12 + 0.5) / 8)).toBe(1); // the middle of the first land pixel
+    expect(f((11 + 0.5) / 8)).toBe(0); // and of the last water pixel
+    expect(f(1.5)).toBeCloseTo(0.5, 12); // on the coast
+    expect(f(1.5 + 0.25 / 8)).toBeCloseTo(0.75, 12);
+    expect(f(3)).toBe(1);
+    // Surely land: from 0.35 of a pixel inside the coast on.
+    expect(maskSure(m, 4, 2, 1.5 + 0.34 / 8, 1, false)).toBe(false);
+    expect(maskSure(m, 4, 2, 1.5 + 0.36 / 8, 1, false)).toBe(true);
+    // Never in a water pixel, whatever stands round it: a lake of one pixel in the land.
+    const lake = mask(4, 2, 8, (px, py) => !(px === 20 && py === 8));
+    let most = 0;
+    for (let dy = 0; dy <= 10; dy++) for (let dx = 0; dx <= 10; dx++) most = Math.max(most, maskField(lake, 4, 2, (20 + dx / 10) / 8, (8 + dy / 10) / 8, false));
+    expect(most).toBeLessThanOrEqual(0.75);
+    expect(most).toBeLessThan(SURE_LAND);
+    // The noise of the drawn shore, at its largest, leaves a surely-land place land: SHORE_NOISE × 4f(1 − f) off f,
+    // at SURE_LAND and at every field above it.
+    for (let f = SURE_LAND; f <= 1; f += 0.01) expect(f - SHORE_NOISE * 4 * f * (1 - f), `a field of ${f.toFixed(2)}`).toBeGreaterThan(0.5);
+    // And a place that is not surely land in a land pixel can be drawn as sea: the margin is needed.
+    expect(0.6 - SHORE_NOISE * 4 * 0.6 * 0.4).toBeLessThan(0.5);
+  });
+
+  it('an inland cell: its pixels and the ring round them are land, and then every place in it is surely land', () => {
+    const m = mask(4, 4, 8, (px, py) => !(px === 17 && py === 15)); // one pixel of water just above cell (2, 2)... in cell (2, 1)
+    expect(cellInland(m, 4, 1, 2, false)).toBe(true);
+    expect(cellInland(m, 4, 2, 2, false)).toBe(false); // the water touches its ring
+    expect(cellInland(m, 4, 2, 1, false)).toBe(false); // and lies in this one
+    for (let dy = 0; dy <= 8; dy++) for (let dx = 0; dx <= 8; dx++) expect(maskSure(m, 4, 4, 1 + dx / 8, 2 + dy / 8, false)).toBe(true);
+    // At the map's edge there is no land beyond: not inland on a map that does not loop.
+    expect(cellInland(m, 4, 0, 2, false)).toBe(false);
+    expect(cellInland(m, 4, 0, 2, true)).toBe(true);
   });
 
   it('the land point of a cell is the middle of its pixel furthest from water', () => {

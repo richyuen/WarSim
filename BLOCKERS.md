@@ -260,8 +260,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - A march is a straight line between two cells' points and can cross a bay: 1 of 430
     formations on the march was over the mask's water at day 90 of seed 99 (0 of 134 at day
     30). The tests are of formations at rest. It needs routing below the cell.
-  - Until PLAN 2.9b the coast is drawn from the coverage: an element on the mask's land can
-    stand a little into the drawn sea at T3, by up to half a mask pixel (1.2 km).
+  - Until PLAN 2.9b2 the coast is drawn from the coverage: an element on sure land can still
+    stand a little into the drawn sea at T3 (14 of 193 looked at with 2.9a's rule).
   - The mask is the map's as shipped. Land and water painted in the editor are not in it: a
     cell without land in the mask keeps its middle, and its elements their slots.
   - The worker waits for the mask before it builds the world (430 KB to fetch, 17 MB to

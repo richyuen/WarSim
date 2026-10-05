@@ -228,6 +228,35 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *What was seen first* is the measurement in the context above, by a scratch script; the
     committed tests need the task's own code and cannot run on the code before it.
 
+- **Second addendum, PLAN 2.9b1 (2026-10-04): the standing rule is "surely land"; the pin moved again.**
+  - *The pin:* seed 99 after one year **f5725b37 → 99c1a04e**; after five years 68e0a69e →
+    b203bc49. A world without the mask still has f93cb674. Balance not measured (ADR-58).
+  - *Why a task that was to be the renderer's changed the sim.* This ADR had 2.9b draw the
+    coast "moved by the ground's noise by less than half a px, so that it ... never says other
+    than the bit further than that from the line". A shore that wanders inside a pixel is land
+    by the bit and sea in the picture in places, and an element can stand there. Measured on
+    the 12 formations nearest the water (193 elements): 14 with the drawn sea under them with
+    the coverage's coast, 5 with the mask's coast and 2.9a's rule, none with the rule below.
+    So the rule moved, in a commit of its own (one cause to a commit), before the coast.
+  - *The rule:* the four mask pixels round a place, blended by nearness, make a field from 0
+    to 1 with the coast at a half. A place is surely land at 0.85 or more: then its own pixel
+    is land (with it water the field is 0.75 at most), and the shore's noise, which is at most
+    0.35 × 4f(1 − f), leaves it land (0.67 at 0.85). Formations and elements stand on sure
+    land; trees will (2.9b2).
+  - *One number in one place:* `SHORE_NOISE` is the module's, the shader takes it from there,
+    and a unit test holds it and `SURE_LAND` together. A shader with a larger noise of its own
+    would put elements in the drawn sea and nothing would say so.
+  - *Not the other way round* (the picture never draws sea in a land pixel): the shore then
+    has every convex corner of the pixels as a right angle, and an islet of one pixel is a
+    square.
+  - *The cost found by the runner:* combat asks for a place with every shot. Asking the mask
+    each time made a year's mean tick 4.92 ms for 2.45. A cell's answer is kept once the cell
+    is known to be inland (its pixels and the ring round them all land); then the mask is
+    asked for coastal cells only. Pinned to the performance cores, five years: 1.45 and
+    1.44 ms; the code before 2.9a: 1.50 and 1.49.
+  - *Seen first:* `coast1938.test.ts` reading the mask this way fails on 2.9a's rule (five
+    elements of formation 367 at the start).
+
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 
 - **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail
