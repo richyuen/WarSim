@@ -56,6 +56,7 @@ function copyElements(e: SnapshotElements): SnapshotElements {
     nation: e.nation.slice(0, n),
     frame: e.frame.slice(0, n),
     strength: e.strength.slice(0, n),
+    size: e.size.slice(0, n),
     x: e.x.slice(0, n),
     y: e.y.slice(0, n),
     prevX: e.prevX.slice(0, n),
@@ -674,7 +675,7 @@ export class MapView {
   private buildIndividuals(e: SnapshotElements): void {
     const t0 = performance.now();
     let total = 0;
-    for (let i = 0; i < e.count; i++) total += figureCount(e.strength[i]!);
+    for (let i = 0; i < e.count; i++) total += figureCount(e.strength[i]!, e.size[i]!);
     // More than the renderer is measured for: the element sprites stay (never at T3 in practice,
     // where a view holds a few formations).
     if (total > MAX_INDIVIDUALS) {
@@ -691,11 +692,13 @@ export class MapView {
     const ys = new Float64Array(total);
     let j = 0;
     for (let i = 0; i < e.count; i++) {
-      const n = figureCount(e.strength[i]!);
+      const n = figureCount(e.strength[i]!, e.size[i]!);
       if (n === 0) continue;
       const frame = e.frame[i]!;
-      const size = figureCells(gridSide(frame, n));
-      const off = figureOffsets(e.id[i]!, frame, n, e.facing[i]!);
+      // The grid of the whole element: what is left of it stands where it stood (PLAN 2.10b).
+      const side = gridSide(frame, figureCount(e.size[i]!, e.size[i]!));
+      const size = figureCells(side);
+      const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!);
       const x = this.unwrapped(e.x[i]!, e.prevX[i]!);
       const moving = (e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0;
       const rgba = this.spriteRgba(e.nation[i]!);

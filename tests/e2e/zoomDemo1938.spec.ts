@@ -15,8 +15,9 @@ import { assets1938 } from '../helpers/earth';
 // The battle is found by a run of the same sim in Node (the worker runs the same sim: I4): of
 // the divisions that fire in the last hour and have stood where they stand for a day, the one
 // whose battalions have lost most while each still has more than 64 men. Its batteries have lost
-// guns too. So the two closest stops show what PLAN 2.10b has to decide: battalions at a third
-// of their strength that draw 64 figures all the same, beside batteries that show every loss.
+// guns too. So the two closest stops show how losses look at T3 (PLAN 2.10b, ADR-80): battalions
+// at a third of their strength with a third of their 64 figures, beside batteries that show
+// every gun lost. (Until 2.10b each of those battalions drew 64: these pictures decided it.)
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -35,6 +36,8 @@ const VIEW = { width: 1400, height: 800 };
 const FRAME_MS = 16;
 /** The most a share moves in a frame of 16 ms (as `fades1938`: 0.096 for a fade of 250 ms, with room). */
 const MAX_STEP = 0.12;
+/** The figures of an element at T3 (ADR-80), written out here on its own: a figure a unit up to 64 units to an element; above, its share of 64, rounded up. */
+const figuresOf = (strength: number, size: number): number => (size <= 64 ? strength : Math.min(64, Math.ceil((strength * 64) / size)));
 
 interface Stop {
   name: string;
@@ -214,6 +217,15 @@ const leg = async (a: LegArgs): Promise<LegResult> => {
     if (rest || frames.length >= a.maxFrames || performance.now() - t0 > a.deadlineMs) break;
     await new Promise((done) => setTimeout(done, 0));
   }
+  // The picture of the stop: what the frame of rest started (a capital's flag making way for a
+  // counter that has just come to rest, a nation's name fading in) is let run out, a second at a
+  // time, so that the picture is the same on every run. The shares do not move: they are recorded.
+  for (let k = 0; rest && (k < 2 || (v.unitsAnimating(now) && k < 6)); k++) {
+    now += 1000;
+    v.frameAt(now);
+    v.draw(now);
+    frames.push({ m: v.metresPerPx, shares: [v.shares.markers, v.shares.elements, v.shares.individuals], sx: where()[0], sy: where()[1] });
+  }
   return {
     now,
     frames,
@@ -230,6 +242,8 @@ interface Seen {
   markers: { id: number; members: number[]; alpha: number; own: number; text: string; d: number }[];
   elements: { id: number; formation: number; strength: number; x: number; y: number }[];
   figures: number;
+  /** The element each figure is of. */
+  owners: number[];
 }
 
 /** In the page: what the frame on the screen has of each unit layer, with distances from the anchor in CSS px. */
@@ -254,6 +268,7 @@ const look = (a: { ax: number; ay: number; mapW: number }): Seen => {
     markers: v.markerRects.map((r) => ({ id: r.id, members: [...r.members], alpha: r.alpha, own: r.own, text: r.text, d: Math.hypot(r.x + r.w / 2 - ax, r.y + r.h / 2 - ay) })),
     elements: Array.from(v.elementId, (id, i) => ({ id, formation: v.elementFormation[i]!, strength: v.elementStrength[i]!, x: v.elementX[i]!, y: v.elementY[i]! })),
     figures: v.individualCount,
+    owners: Array.from(v.individualOwner.subarray(0, v.individualCount)),
   };
 };
 
@@ -287,14 +302,16 @@ const volley = async (a: { now: number; frameMs: number }): Promise<Volley> => {
   const { from, until } = v.fire;
   const at = from + (until - from) * 0.4;
   const most = { tracers: 0, flashes: 0, impacts: 0 };
-  let now = Math.max(a.now, from);
-  for (; now < at; now += a.frameMs) {
+  for (let t = Math.max(a.now, from); t < at; t += a.frameMs) {
     // The unit layers alone: the map under them is drawn once, for the picture.
-    v.drawUnitLayers(now);
+    v.drawUnitLayers(t);
     most.tracers = Math.max(most.tracers, v.fire.tracers.length);
     most.flashes = Math.max(most.flashes, v.fire.flashes);
     most.impacts = Math.max(most.impacts, v.fire.impacts);
   }
+  // The picture is of one moment of the volley, the same on every run.
+  const now = Math.max(a.now, at);
+  v.frameAt(now);
   v.draw(now);
   return { status: { tick: status.tick, hash: status.hash }, now, ...most, shooters: v.fire.shots.map((s) => s.shooter), targets: v.fire.shots.map((s) => s.target), span: until - from };
 };
@@ -335,7 +352,8 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
   const battalions = start.filter((e) => e.size > 64);
   const batteries = start.filter((e) => e.size <= 16);
   console.log(`the battle: formation ${node.formation} of ${tag} at ${node.x.toFixed(2)}, ${node.y.toFixed(2)}, ${node.men[0]} men in ${start.length} elements; its ${battalions.length} battalions have ${Math.min(...battalions.map((e) => e.strength))} to ${Math.max(...battalions.map((e) => e.strength))} of ${battalions[0]!.size} men, its ${batteries.length} batteries ${batteries.map((e) => e.strength).join(', ')} of ${batteries[0]!.size} guns; shots by or at it in the four hours: ${node.shots.slice(1).join(', ')}`);
-  // What 2.10b is to look at: battalions well under strength that still have more than 64 men.
+  // What the close pictures are there to show: battalions well under strength (and with more
+  // than 64 men: under the cap of ADR-69 these drew 64 figures each).
   expect(Math.max(...battalions.map((e) => e.strength / e.size))).toBeLessThan(0.5);
   expect(Math.min(...battalions.map((e) => e.strength))).toBeGreaterThan(64);
   for (const n of node.shots.slice(1)) expect(n).toBeGreaterThan(10);
@@ -418,7 +436,7 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
       const inView = (e: El): boolean => Math.abs(e.x - cam.cx) * cam.scale < VIEW.width / 2 && Math.abs(e.y - cam.cy) * cam.scale < VIEW.height / 2;
       const wanted = els.filter(inView);
       const got = new Map(seen.elements.filter((e) => e.formation === node.formation).map((e) => [e.id, e]));
-      const figures = wanted.reduce((n, e) => n + Math.min(e.strength, 64), 0);
+      const figures = wanted.reduce((n, e) => n + figuresOf(e.strength, e.size), 0);
       console.log(`  its elements: ${wanted.length} of ${els.length} in the view (${wanted.filter((e) => e.size > 64).length} battalions, ${wanted.filter((e) => e.size <= 16).length} batteries)${stop.tier === 3 ? `, ${figures} figures theirs of ${seen.figures}` : ''}; the hour's fire: ${fire!.shooters.length} shots in ${fire!.span.toFixed(0)} ms, at most ${fire!.tracers} tracers, ${fire!.flashes} flashes and ${fire!.impacts} impacts in a frame`);
       if (stop.m! >= 12) expect(wanted.length, `${name}: the whole division in the view`).toBe(els.length);
       for (const e of wanted) {
@@ -429,8 +447,15 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
       // Both kinds are in the two closest pictures: battalions under strength, and batteries.
       expect(wanted.filter((e) => e.size > 64).length, `${name}: battalions in the view`).toBeGreaterThanOrEqual(2);
       expect(wanted.filter((e) => e.size <= 16).length, `${name}: batteries in the view`).toBeGreaterThanOrEqual(1);
-      if (stop.tier === 3) expect(seen.figures, `${name}: figures`).toBeGreaterThanOrEqual(figures);
-      else expect(seen.figures, `${name}: figures at T2`).toBe(0);
+      if (stop.tier === 3) {
+        // Its figures are its losses: each element the view holds has its share of them, in the
+        // view or beside it, and a battalion under half its men (as these are) has at most 32.
+        const drawn = new Map<number, number>();
+        for (const o of seen.owners) drawn.set(o, (drawn.get(o) ?? 0) + 1);
+        for (const e of els) if (got.has(e.id)) expect(drawn.get(e.id) ?? 0, `${name}: the figures of element ${e.id}, ${e.strength} of ${e.size}`).toBe(figuresOf(e.strength, e.size));
+        expect(seen.figures, `${name}: figures`).toBeGreaterThanOrEqual(figures);
+        expect(Math.max(...wanted.filter((e) => e.size > 64).map((e) => drawn.get(e.id) ?? 0)), `${name}: the most figures of a battalion in the view`).toBeLessThanOrEqual(32);
+      } else expect(seen.figures, `${name}: figures at T2`).toBe(0);
       // And it fights: the hour's shots by or at its elements are the view's, and they are being
       // drawn. (A view gets the shots with an end in the box it subscribed to: all of them while
       // the whole division is in it, a part at the closest stop. `fire1938` has that to the shot.)

@@ -1028,7 +1028,7 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
 | **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows, battle markers |
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, roads near cities | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
-| **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals: one figure for each unit of strength, at most 64 to an element. So the count is the strength for vehicles, guns, ships and planes (an element holds 10–12), and for a battalion of 500 once fewer than 64 men are left [ADR-69] |
+| **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap] |
 
 *The ground of T2 and T3, as built so far (PLAN 2.8a, ADR-78):* hillshade in the map pass
 (`mapShader.ts`). The worker sends the elevation level of the map's size after the map layers
@@ -1180,16 +1180,21 @@ moment before its first elements arrive.
   where the element died while its formation moves on. At most 1,500 are held.
 - Nothing of it is sim state; a reload starts with no wrecks.
 
-*T3 individuals implemented (PLAN 2.6, `src/render/units/individuals.ts`, ADR-69):*
-- *Count:* `min(strength, 64)` figures for an element. No protocol change: the element section
-  already carries strength and atlas frame.
+*T3 individuals implemented (PLAN 2.6 and 2.10b, `src/render/units/individuals.ts`, ADR-69 and ADR-80):*
+- *Count:* an element whose unit type has up to 64 units to an element (guns 12, tanks 10,
+  planes 6 to 12, ships 1) has a figure for each unit it has. A battalion (500) has 64 when
+  whole and `ceil(64 × strength ÷ size)` while it loses men: 20 figures at 150 men. An element
+  with men has a figure, and all 64 only when it lacks less than a figure's worth. The
+  snapshot's element section carries the element's size besides its strength and atlas frame
+  (PLAN 2.10b; until then the count was `min(strength, 64)`, and a battalion showed its losses
+  only when fewer than 64 men were left).
 - *Place:* the footprint is a square of 0.024 cells around the element's slot pose (slots are
   0.03 apart), turned with the formation and divided into sub-slots: 8 × 8 for men and for
-  anything of more than 16, 4 × 4 for vehicles and guns. An element's figures take the sub-slots
+  anything that has more than 16 figures when whole, 4 × 4 for vehicles and guns. The grid is
+  the whole element's and does not change as it loses. An element's figures take the sub-slots
   in an order of its own (a shuffle by its id), each a little off its sub-slot's centre.
 - *Casualties:* a loss takes the last figure of that order away; the others stand where they
-  stood. A battalion above 64 men shows 64 whatever it lost: its losses show at T3 only below
-  the cap (see ADR-69 for what was weighed).
+  stood. So a battalion thins out across its block as it loses men (ADR-80).
 - *Drawing:* the view expands the elements of a snapshot that arrives at T3 into instances of
   the same instanced renderer as the element sprites, previous and current place alike, so the
   GPU still interpolates. The origin is the camera's cell (f32 offsets from the middle of the

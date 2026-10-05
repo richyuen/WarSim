@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-80 · 2026-10-04 · accepted — T3: a battalion is drawn by its share of 64 figures (PLAN 2.10b; in place of ADR-69's count)
+
+- **Context:** ADR-69 made an element `min(strength, 64)` figures and named the cost: "at T3 a
+  battalion of 500 and one of 100 look alike, and a battalion's losses show only when it is
+  nearly gone". It left two candidates. ADR-71 handed the choice to the zoom demo's close stops.
+  PLAN 2.10a's two closest pictures are of a Japanese division by Nanking with its 40
+  battalions at 123 to 197 of 500 men: each a full block of 64 figures. The batteries beside
+  them, at 3 to 5 of 12 guns, show every loss.
+- **Decision:** figures by the share. Where an element has up to 64 units when whole (guns,
+  tanks, planes, ships), a figure for each unit it has, as before. Above that (a battalion of
+  500, on foot, motorised or mechanised), 64 figures when whole and
+  `ceil(64 × strength ÷ size)` while it loses men. **This takes the place of ADR-69's
+  "Decision, the count".** The rest of ADR-69 (the place, the drawing) stands.
+- **Why the share and not a number under each element:** the task is how losses *show*. A
+  number captions the picture, and the picture still says 500 men at 142. It would also be a
+  new layer of text at T3: 45 numbers under a division's blocks, to place, to fade with the
+  T2 ↔ T3 handover, to keep clear of names. The share changes what the picture says, with
+  what is already drawn.
+- **What ADR-69 held against it, answered:**
+  - *"It needs the element's full size in the snapshot."* It does: `size`, 2 bytes an
+    element, from the unit type's element size, which the worker has in hand where it reads
+    the type's look. The atlas frame cannot stand in for it: a mechanised battalion is 500 men
+    with the vehicle's frame.
+  - *"It makes no figure a man."* For a battalion no figure was a man above 64 men either: 64
+    stood for 500. Under the cap a figure meant 8 men until the battalion was nearly gone and
+    one man after. Now it means the same throughout: a 64th of the battalion.
+- **Rounded up:** figure k stands while more than k − 1 figures' worth of men are left. So an
+  element with men has a figure (rounded to the nearest, a battalion of 1 to 3 men would have
+  none), a man lost takes a figure or none, and the block is whole only when it lacks less than
+  one figure's worth (493 of 500 and more).
+- **The grid is the whole element's:** `gridSide` chose 8 × 8 or 4 × 4 by the figures an
+  element *has* (more than 16: 8 × 8). A mechanised battalion down to 16 figures would have
+  changed to 4 × 4 in one frame, its figures twice the size and elsewhere. Under the cap that
+  took a battalion of fewer than 17 men; under the share it is a quarter of its strength. The
+  grid is now chosen by the figures of the whole element.
+- **Not changed:** T2. A sprite dims only below 8 units, so a battalion at a third looks whole
+  at T2 still (BLOCKERS, for the review). Nor the order in which figures go: gaps open across
+  the block, as ADR-69 decided, so a battalion at a third is a scatter in its footprint and
+  not a smaller block.
+- **Measured** (the demo, seed 1938, day 30): the division has 861 figures where it had
+  2,579; its battalions 16 to 26 each. Nothing costs more: fewer instances, and a count that
+  is one division and one rounding an element.
+- **Tests restated, for the user to overrule** (both asserted the cap): the unit test of the
+  count and of the grid, and `individuals1938`'s figures of each element. Seen first on the
+  code before: 1,584 figures against 1,580 there, and 64 against 19 for a battalion of 142 in
+  the demo.
+
 ### ADR-79 · 2026-10-04 · accepted — Formations stand on land by the fine mask; the coast of T2 and T3 is drawn from it (PLAN 2.9)
 
 - **Context:** SPEC has the fine land mask "used by the sim for element placement ... and by
@@ -1211,6 +1258,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Context:** SPEC §8 said of T3 "element → individuals (exact for vehicles, ships and planes;
   ≤ 64 sprites per infantry element, count = strength)". For a battalion of 500 that sentence
   can be read two ways: a cap, or 64 figures that each stand for eight men.
+- **Superseded in the count (2026-10-04, PLAN 2.10b): see ADR-80.** A battalion is drawn by
+  its share of 64 figures. What follows under "the count" is how it was until then.
 - **Decision, the count:** a cap. One figure for each unit of strength, at most 64 to an
   element. Tanks (10 to an element) and guns (12) are exact; a battalion shows 64 until fewer
   than 64 men are left, and is exact from there. SPEC's T3 row now says so.

@@ -10,11 +10,13 @@ import { assets1938 } from '../helpers/earth';
 import { settle } from './settle';
 
 // PLAN 2.6 AT: at T3 an element is drawn as its individuals, and their number is the sim's
-// strength: one figure for each unit, at most 64 (ADR-69). So tanks (10 to an element) and guns
-// (12) are exact, and a battalion shows 64 men until fewer are left. The battle is the spawned
-// one of PLAN 2.5 with a Japanese armoured division added, taken at the hour when Chinese
-// battalions have fallen below 64 men: every branch of the rule is on the map at once. The
-// strengths come from the same battle in Node (hashes compared), the figures from the view.
+// strength. Tanks (10 to an element) and guns (12) are exact: a figure each. A battalion of 500
+// has 64 figures when whole and its share of them while it loses men, rounded up (PLAN 2.10b,
+// ADR-80; until then it had 64 until fewer than 64 men were left, ADR-69). The battle is the
+// spawned one of PLAN 2.5 with a Japanese armoured division added, taken at the hour when
+// Chinese battalions have fallen below 64 men: every branch of the rule is on the map at once,
+// and the two rules differ most (50 men: 50 figures by the old one, 7 by this). The strengths
+// and sizes come from the same battle in Node (hashes compared), the figures from the view.
 
 const { w: W } = SIZE_1938;
 const SITE = [1578.5, 338.5] as const; // western China, far from every other formation
@@ -23,6 +25,8 @@ const JAP = nation('JAP');
 const CHI = nation('CHI');
 const template = (id: string): number => TEMPLATES_LAND.findIndex((t) => t.id === id);
 const MAX_FIGURES = 64;
+/** The rule, written out here on its own: a figure a unit where an element has up to 64 units; above, its share of 64, rounded up. */
+const figuresOf = (units: number, size: number): number => (size <= MAX_FIGURES ? units : Math.min(MAX_FIGURES, Math.ceil((units * MAX_FIGURES) / size)));
 /** Half the distance between two slots of a formation's block, cells: a figure stands inside its element's slot. */
 const HALF_SLOT = 0.015;
 
@@ -40,6 +44,8 @@ interface El {
   f: number;
   cls: string;
   units: number;
+  /** The units of the element when whole. */
+  size: number;
 }
 interface Formation {
   id: number;
@@ -57,7 +63,7 @@ function nodeBattle(): { formations: Formation[]; japanese: number[]; chinese: n
   const ids = w.formations.ids().filter((f) => Math.abs(fc.x[f]! - SITE[0]) <= 3 && Math.abs(fc.y[f]! - SITE[1]) <= 3);
   const japanese = ids.filter((f) => fc.nation[f] === JAP);
   const chinese = ids.find((f) => fc.nation[f] === CHI)!;
-  const read = (): El[] => ids.flatMap((f) => (elementIndex(w).get(f) ?? []).map((id) => ({ id, f, cls: w.rules!.units[w.elements.cols.unit[id]!]!.cls, units: w.elements.cols.strength[id]! })));
+  const read = (): El[] => ids.flatMap((f) => (elementIndex(w).get(f) ?? []).map((id) => ({ id, f, cls: w.rules!.units[w.elements.cols.unit[id]!]!.cls, units: w.elements.cols.strength[id]!, size: w.rules!.units[w.elements.cols.unit[id]!]!.size })));
   const hashes = [sim.hash()];
   for (const c of buffs(japanese)) sim.command(c);
   let thin = 0;
@@ -119,7 +125,7 @@ function byOwner(s: Seen): Map<number, { x: number; y: number }[]> {
   return m;
 }
 
-test('T3: an element is its individuals, one for each unit of strength and at most 64, inside its footprint', async ({ page }, info) => {
+test('T3: an element is its individuals, a figure a unit for guns and tanks and a battalion\'s share of 64, inside its footprint', async ({ page }, info) => {
   test.setTimeout(240_000);
   const node = nodeBattle();
   expect(node.formations).toHaveLength(3);
@@ -146,7 +152,7 @@ test('T3: an element is its individuals, one for each unit of strength and at mo
 
   // Each of the three formations in turn at 12 m/px: its elements and their figures.
   const sim = new Map(node.elements[0]!.map((e) => [e.id, e]));
-  const rows: { id: number; cls: string; units: number; figures: number }[] = [];
+  const rows: { id: number; cls: string; units: number; size: number; figures: number }[] = [];
   let slowestDraw = 0;
   for (const f of node.formations) {
     const s = await close(page, f.x, f.y, 12);
@@ -156,17 +162,20 @@ test('T3: an element is its individuals, one for each unit of strength and at mo
     const mine = node.elements[0]!.filter((e) => e.f === f.id);
     // The view holds this formation's elements, with the sim's strengths.
     expect(s.elements.map((e) => [e.id, e.units]).sort((a, b) => a[0]! - b[0]!)).toEqual(mine.map((e) => [e.id, e.units]));
-    expect(s.figures).toHaveLength(mine.reduce((n, e) => n + Math.min(e.units, MAX_FIGURES), 0));
+    expect(s.figures).toHaveLength(mine.reduce((n, e) => n + figuresOf(e.units, e.size), 0));
     for (const e of s.elements) {
       const own = figures.get(e.id) ?? [];
-      const { cls, units } = sim.get(e.id)!;
-      // The rule: a figure for each unit, at most 64. Tanks and guns are never above it.
-      expect(own.length, `${cls} element ${e.id} of ${units}`).toBe(Math.min(units, MAX_FIGURES));
+      const { cls, units, size } = sim.get(e.id)!;
+      // The rule: a battalion's share of 64 figures, rounded up. Tanks and guns: a figure each.
+      expect(own.length, `${cls} element ${e.id} of ${units} in ${size}`).toBe(figuresOf(units, size));
       if (cls !== 'inf' && cls !== 'mot' && cls !== 'mech') expect(own.length, `${cls} element ${e.id}`).toBe(units);
+      else expect(size, `${cls} element ${e.id}: a battalion's size`).toBeGreaterThan(MAX_FIGURES);
+      // An element with men has a figure.
+      if (units > 0) expect(own.length, `${cls} element ${e.id} of ${units}`).toBeGreaterThan(0);
       // Inside the footprint, and no two on one spot.
       for (const p of own) expect(Math.max(Math.abs(p.x - e.x), Math.abs(p.y - e.y)), `a figure of ${e.id}`).toBeLessThan(HALF_SLOT);
       expect(new Set(own.map((p) => `${p.x},${p.y}`)).size).toBe(own.length);
-      rows.push({ id: e.id, cls, units, figures: own.length });
+      rows.push({ id: e.id, cls, units, size, figures: own.length });
     }
     const tag = f.id === node.chinese ? 'chinese-infantry' : mine.some((e) => e.cls.startsWith('armor')) ? 'japanese-armour' : 'japanese-infantry';
     await page.screenshot({ path: path.join(out, `t3-12m-${tag}.png`) });
@@ -175,19 +184,23 @@ test('T3: an element is its individuals, one for each unit of strength and at mo
       await page.screenshot({ path: path.join(out, `t3-4m-${tag}.png`) });
     }
   }
-  // Every branch of the rule was on the map: battalions at the cap and under it, guns, tanks.
+  // Every branch of the rule was on the map: battalions with more than 64 men and with fewer
+  // (where one figure a man would draw more than the share), some that show their losses
+  // though they have more than 64 men (which the cap of ADR-69 hid), guns, tanks.
   const count = (pred: (r: (typeof rows)[number]) => boolean): number => rows.filter(pred).length;
   expect(count((r) => r.cls === 'inf' && r.units > MAX_FIGURES)).toBeGreaterThan(10);
   expect(count((r) => r.cls === 'inf' && r.units < MAX_FIGURES)).toBeGreaterThanOrEqual(6);
+  expect(count((r) => r.cls === 'inf' && r.units > MAX_FIGURES && r.figures < MAX_FIGURES)).toBeGreaterThanOrEqual(6);
+  for (const r of rows) if (r.cls === 'inf' && r.units < MAX_FIGURES && r.units > 8) expect(r.figures, `battalion ${r.id} of ${r.units}`).toBeLessThan(r.units);
   expect(count((r) => r.cls === 'art' || r.cls === 'at')).toBeGreaterThanOrEqual(6);
   expect(count((r) => r.cls.startsWith('armor'))).toBeGreaterThanOrEqual(30);
   // The AT's sample: 20 elements by a seeded draw, as a table.
   let seed = 2606;
   const draw = (): number => ((seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 4294967296);
   const sample = Array.from({ length: 20 }, () => rows[Math.floor(draw() * rows.length)]!);
-  for (const r of sample) expect(r.figures, `${r.cls} ${r.id}`).toBe(Math.min(r.units, MAX_FIGURES));
-  console.log(`T3: ${rows.length} elements checked: ${count((r) => r.cls.startsWith('armor'))} armour, ${count((r) => r.cls === 'art' || r.cls === 'at')} guns, ${count((r) => (r.cls === 'inf' || r.cls === 'mot') && r.units >= MAX_FIGURES)} battalions at the cap, ${count((r) => r.cls === 'inf' && r.units < MAX_FIGURES)} under it`);
-  console.log(`T3 sample (class strength→figures): ${sample.map((r) => `${r.cls} ${r.units}→${r.figures}`).join(', ')}`);
+  for (const r of sample) expect(r.figures, `${r.cls} ${r.id}`).toBe(figuresOf(r.units, r.size));
+  console.log(`T3: ${rows.length} elements checked: ${count((r) => r.cls.startsWith('armor'))} armour, ${count((r) => r.cls === 'art' || r.cls === 'at')} guns, ${count((r) => (r.cls === 'inf' || r.cls === 'mot') && r.figures === MAX_FIGURES)} battalions with all 64 figures, ${count((r) => r.cls === 'inf' && r.units > MAX_FIGURES && r.figures < MAX_FIGURES)} with fewer and more than 64 men, ${count((r) => r.cls === 'inf' && r.units < MAX_FIGURES)} with fewer than 64 men`);
+  console.log(`T3 sample (class strength of size→figures): ${sample.map((r) => `${r.cls} ${r.units} of ${r.size}→${r.figures}`).join(', ')}`);
 
   // One more hour of fighting, on the Chinese division: who is left stands where he stood; the
   // figures of a loss are the last of the element's order, and a dead element has none.

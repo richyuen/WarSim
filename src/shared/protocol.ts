@@ -161,6 +161,8 @@ export interface SnapshotElements {
   /** Atlas frame of the element's unit class (shared/unitLooks Frame). */
   frame: Uint8Array;
   strength: Uint16Array;
+  /** The element's units when whole (the unit type's element size): T3 draws a battalion by its share of it (PLAN 2.10b, ADR-80). */
+  size: Uint16Array;
   x: Float64Array;
   y: Float64Array;
   prevX: Float64Array;

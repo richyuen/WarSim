@@ -1000,7 +1000,7 @@ quick sweep as a smoke test.
     - Bench A (1080p, RTX 4070 Ti), two new views with a coast through them, the ground in
       full: 0.748 and 0.705 ms with the coverage's coast, 0.775 and 0.735 ms with the mask's.
       T0 0.52 ms (0.51).
-- [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
+- [x] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
   Also decide ADR-69's open choice at the close stops: how a battalion's losses show at T3 (ADR-71).
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.
   Split 2026-10-04: the demo and the choice are two causes, and the choice is to be made from
@@ -1035,12 +1035,35 @@ quick sweep as a smoke test.
     - The eight pictures were looked at. The two closest show what 2.10b decides: every
       battalion draws its 64 figures at a third of its strength; the batteries beside them
       show 3 to 5 guns of 12.
-  - [ ] 2.10b How a battalion's losses show at T3: ADR-69's open choice (the cap of 64 figures
+  - [x] 2.10b How a battalion's losses show at T3: ADR-69's open choice (the cap of 64 figures
     hides them until the battalion is nearly gone), decided from 2.10a's two closest pictures,
     where a battalion that has lost men stands by one that has not. The candidates of ADR-69:
     the strength as a number under each element, or figures by the share of the element's full
     size (which the snapshot would have to carry). Recorded in DECISIONS either way.
     AT: written when the choice is made; if the look changes, the two pictures are shot again.
+    **The choice (2026-10-04, ADR-80, in place of ADR-69's count): by the share.** A battalion
+    has 64 figures when whole and its share of them while it loses men, rounded up. Guns,
+    tanks, planes and ships stay a figure each. A number under the block would have captioned
+    a picture that still said 500 men.
+    AT, as written then: unit: the count for every strength of a battalion (a man lost takes a
+    figure or none, a battalion with men has a figure, the share to within a figure) and the
+    exact kinds; a mechanised battalion keeps its grid as it loses; the worker sends every
+    element's size. e2e: `individuals1938` and the demo, to the figure, against the sim in
+    Node. The demo's two closest pictures shot again and looked at.
+    Done 2026-10-04. The snapshot's element section has `size` (the unit type's element size);
+    `figureCount(strength, size)`; the grid is the whole element's (`gridSide(frame, whole)`).
+    - Seen first: on the code before, `individuals1938` (restated) has 1,584 figures where the
+      rule gives 1,580, and the demo 64 figures for a battalion of 142 where the rule gives 19.
+    - The demo's division: 861 figures where it had 2,579; its battalions 16 to 26 each.
+    - Restated, for the user to overrule: `tests/unit/individuals.test.ts` (the count, and the
+      grid by the whole element) and `tests/e2e/individuals1938.spec.ts` (each element's
+      figures). Both asserted ADR-69's cap.
+    - The demo's pictures now come out the same on every run for the four far stops (a second
+      of rest before each picture: a capital's flag and a nation's name were mid-fade at the
+      first). The four close ones differ by the walk animation's phase, which is the clock's.
+    - Pictures: `docs/evidence/2.10/stop-7-battalions.png` and `stop-8-men.png` shot again and
+      looked at; the six of `docs/evidence/2.6/` shot again (they were from before the ground
+      of 2.8).
 - [ ] 2.11 Phase 2 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,

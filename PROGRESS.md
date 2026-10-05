@@ -4908,3 +4908,31 @@ No rule changed and nothing on screen changed. One task came out of it.
   battle shows little fire at T3 because shots fly 30 to 60 km.
 - **Tests:** 1 new e2e test (113).
 - **Next:** PLAN 2.10b, how a battalion's losses show at T3.
+
+## 2026-10-04 — PLAN 2.10b: at T3 a battalion is drawn by its share of 64 figures (PLAN 2.10 done)
+
+- **The decision (ADR-80, in place of ADR-69's count):** a battalion has 64 figures when whole
+  and `ceil(64 × strength ÷ size)` while it loses men. Guns, tanks, planes and ships stay a
+  figure each. Made from the demo's two closest pictures: 40 battalions at 123 to 197 of 500
+  men each drew a full 64, beside batteries that showed 3 to 5 guns of 12.
+- **Why not a number under each element:** it would caption a picture that still says 500 men.
+- **What it took:** the snapshot's element section carries the element's size (2 bytes); the
+  count takes it; the grid of sub-slots is the whole element's (or a mechanised battalion at a
+  quarter of its men would have changed its grid in one frame).
+- **Seen first on the code before:** `individuals1938` 1,584 figures against 1,580; the demo
+  64 figures against 19 for a battalion of 142.
+- **After:** the demo's division has 861 figures (2,579 before), 16 to 26 a battalion.
+- **Restated tests, flagged for the user to overrule:** `tests/unit/individuals.test.ts` and
+  `tests/e2e/individuals1938.spec.ts`. Both asserted the cap.
+- **Found on the way:** the demo's first picture was of a moment in a fade (a flag, a nation's
+  name); each stop now rests a second before its picture, and the four far stops come out the
+  same on every run. The close ones differ by the walk animation's phase.
+- **For the review (BLOCKERS):** a division that has stood for a month is flagged as moving
+  and walks in place; a battalion at a third is a scatter, not a smaller block; T2 still shows
+  nothing of a battalion's losses.
+- **Pictures:** the demo's two closest shot again and looked at. The six of
+  `docs/evidence/2.6/` shot again too, under this rule and the ground of 2.8 (the entry of
+  PLAN 2.6 above describes the old ones: blocks of 64).
+- **Tests:** 2 new unit tests (633), no new e2e test (113).
+- **Next:** PLAN 2.11, the Phase 2 review. It is a review pass (the count starts again), with
+  an independent read and one `sweep:quick`. The critic runs after it.

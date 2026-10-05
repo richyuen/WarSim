@@ -292,3 +292,36 @@ describe('previous places after a load (PLAN 2.7x)', () => {
     expect(elsewhere).toBeGreaterThan(20); // ids whose formation of before the load stood somewhere else
   });
 });
+
+describe('an element\'s size in snapshots (PLAN 2.10b, ADR-80)', () => {
+  it('every element is sent with the units it has when whole, by its unit type, whatever it has lost', () => {
+    const { sim, snapshot } = setup();
+    const w = sim.world;
+    const ec = w.elements.cols;
+    const units = w.rules!.units;
+    // A month of war: divisions that have lost men.
+    sim.step(24 * 30);
+    const idx = elementIndex(w);
+    const lost = (f: number): number => (idx.get(f) ?? []).reduce((n, e) => n + (units[ec.unit[e]!]!.size - ec.strength[e]!), 0);
+    const worn = w.formations.ids().filter((f) => (idx.get(f)?.length ?? 0) > 0).sort((a, b) => lost(b) - lost(a) || a - b).slice(0, 5);
+    expect(lost(worn[0]!)).toBeGreaterThan(1000);
+    let sent = 0;
+    const kinds = new Set<string>();
+    for (const f of worn) {
+      const s = snapshot(boxOf(w.formations.cols.x[f]!, w.formations.cols.y[f]!, 200, 1920, 1080));
+      expect(s.elements.size).toHaveLength(s.elements.strength.length);
+      for (let i = 0; i < s.elements.count; i++) {
+        const e = s.elements.id[i]!;
+        const size = units[ec.unit[e]!]!.size;
+        expect(s.elements.size[i], `element ${e}`).toBe(size);
+        expect(s.elements.strength[i], `element ${e}`).toBe(ec.strength[e]);
+        expect(s.elements.strength[i]!, `element ${e}`).toBeLessThanOrEqual(size);
+        if (s.elements.formation[i] !== f) continue;
+        sent++;
+        if (ec.strength[e]! < size) kinds.add(size > 64 ? 'a battalion with losses' : 'guns or vehicles with losses');
+      }
+    }
+    expect(sent).toBeGreaterThan(50);
+    expect([...kinds].sort()).toEqual(['a battalion with losses', 'guns or vehicles with losses']);
+  });
+});

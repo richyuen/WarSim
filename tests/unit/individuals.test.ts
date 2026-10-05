@@ -3,8 +3,9 @@ import { hash2, pair } from '../../src/render/hash';
 import { Frame } from '../../src/shared/unitLooks';
 import { figureCells, figureCount, figureOffsets, FOOTPRINT_CELLS, gridSide, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
 
-// PLAN 2.6: an element as its individuals at T3 (ADR-69). How many, and where each stands. The
-// drawing and the sim's strengths are checked in the browser (tests/e2e/individuals1938.spec.ts).
+// PLAN 2.6 and 2.10b: an element as its individuals at T3 (ADR-69, ADR-80). How many, and where
+// each stands. The drawing and the sim's strengths are checked in the browser
+// (tests/e2e/individuals1938.spec.ts).
 
 const points = (off: number[]): [number, number][] => Array.from({ length: off.length / 2 }, (_, k) => [off[k * 2]!, off[k * 2 + 1]!]);
 
@@ -25,18 +26,45 @@ describe('placement hash', () => {
 });
 
 describe('how many figures', () => {
-  it('one for each unit of strength, at most 64', () => {
-    expect([0, 1, 9, 10, 12, 63, 64, 65, 152, 500].map(figureCount)).toEqual([0, 1, 9, 10, 12, 63, 64, 64, 64, 64]);
+  it('a figure for each unit where an element has up to 64 units: guns, tanks, planes, ships', () => {
     expect(MAX_FIGURES).toBe(64);
-    expect(figureCount(-3)).toBe(0);
+    for (const size of [1, 6, 10, 12, 64]) for (let s = 0; s <= size; s++) expect(figureCount(s, size), `${s} of ${size}`).toBe(s);
+    expect(figureCount(-3, 12)).toBe(0);
+    expect(figureCount(9.9, 12)).toBe(9);
   });
 
-  it('men stand in an 8 × 8 grid; vehicles and guns in a 4 × 4, larger', () => {
-    for (const n of [1, 12, 40, 64]) expect(gridSide(Frame.infantry, n)).toBe(8);
+  it('a battalion: 64 figures when whole, and its share of them while it loses men, rounded up', () => {
+    const of500 = (s: number): number => figureCount(s, 500);
+    // Until PLAN 2.10b (ADR-69's cap) every one of these above 64 men drew 64, and 63, 16, 8, 7 and 1 drew a figure a man.
+    expect([500, 493, 492, 485, 484, 250, 152, 65, 64, 63, 16, 8, 7, 1, 0].map(of500)).toEqual([64, 64, 63, 63, 62, 32, 20, 9, 9, 9, 3, 2, 1, 1, 0]);
+    expect(of500(-3)).toBe(0);
+    for (let s = 1; s <= 500; s++) {
+      // A man lost takes a figure away or none; an element with men has a figure; never more figures than men.
+      expect(of500(s) - of500(s - 1), `${s}`).toBeGreaterThanOrEqual(0);
+      expect(of500(s) - of500(s - 1), `${s}`).toBeLessThanOrEqual(1);
+      expect(of500(s), `${s}`).toBeGreaterThanOrEqual(1);
+      expect(of500(s), `${s}`).toBeLessThanOrEqual(s);
+      // What the eye reads off the block is the battalion's strength, to within a figure.
+      const over = of500(s) / MAX_FIGURES - s / 500;
+      expect(over, `${s}`).toBeGreaterThanOrEqual(0);
+      expect(over, `${s}`).toBeLessThan(1 / MAX_FIGURES);
+    }
+    // Any size above 64 is of this kind; more than whole (no state of the sim's) is whole.
+    for (const size of [65, 120, 1000]) {
+      expect(figureCount(size, size)).toBe(MAX_FIGURES);
+      expect(figureCount(1, size)).toBe(1);
+      expect(figureCount(Math.floor(size / 2), size)).toBe(Math.ceil((Math.floor(size / 2) * MAX_FIGURES) / size));
+    }
+    expect(figureCount(600, 500)).toBe(MAX_FIGURES);
+  });
+
+  it('the grid is the whole element\'s: men 8 × 8; vehicles and guns 4 × 4, larger; more than 16 of them 8 × 8', () => {
+    for (const whole of [1, 12, 40, 64]) expect(gridSide(Frame.infantry, whole)).toBe(8);
     for (const f of [Frame.tank, Frame.gun, Frame.ship, Frame.aircraft]) {
       expect(gridSide(f, 10)).toBe(4);
       expect(gridSide(f, 16)).toBe(4);
-      expect(gridSide(f, 17)).toBe(8); // a mechanised battalion: more than a 4 × 4 holds
+      expect(gridSide(f, 17)).toBe(8);
+      expect(gridSide(f, figureCount(500, 500))).toBe(8); // a mechanised battalion: more than a 4 × 4 holds
     }
     expect(figureCells(4)).toBeCloseTo(2 * figureCells(8), 12);
     expect(figureCells(8) * 8).toBeLessThan(FOOTPRINT_CELLS);
@@ -56,37 +84,53 @@ describe('where they stand', () => {
   });
 
   it('inside the footprint, apart from each other, the same every time', () => {
-    for (const [frame, n] of [[Frame.infantry, 64], [Frame.infantry, 23], [Frame.tank, 10], [Frame.gun, 12], [Frame.tank, 64]] as const) {
+    // [frame, the figures of the whole element, the figures it has]: the last a mechanised battalion that has lost most of its men.
+    for (const [frame, whole, n] of [[Frame.infantry, 64, 64], [Frame.infantry, 64, 23], [Frame.tank, 10, 10], [Frame.gun, 12, 12], [Frame.tank, 64, 64], [Frame.tank, 64, 10]] as const) {
+      const side = gridSide(frame, whole);
       for (const element of [1, 77, 19_353]) {
-        const off = figureOffsets(element, frame, n, 0.7);
+        const off = figureOffsets(element, side, n, 0.7);
         const p = points(off);
         expect(p).toHaveLength(n);
-        const pitch = FOOTPRINT_CELLS / gridSide(frame, n);
+        const pitch = FOOTPRINT_CELLS / side;
         for (const [dx, dy] of p) expect(Math.hypot(dx, dy)).toBeLessThan((FOOTPRINT_CELLS / 2) * Math.SQRT2);
         // Two figures are in different sub-slots: never closer than a sub-slot less the jitter of both.
         let nearest = Infinity;
         for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) nearest = Math.min(nearest, Math.hypot(p[i]![0] - p[j]![0], p[i]![1] - p[j]![1]));
         expect(nearest).toBeGreaterThan(pitch * 0.6);
-        expect(figureOffsets(element, frame, n, 0.7)).toEqual(off);
+        expect(figureOffsets(element, side, n, 0.7)).toEqual(off);
       }
     }
     // Facing east the block is square to the axes: every figure within half the footprint on each.
-    for (const [dx, dy] of points(figureOffsets(5, Frame.infantry, 64, 0))) {
+    for (const [dx, dy] of points(figureOffsets(5, 8, 64, 0))) {
       expect(Math.abs(dx)).toBeLessThan(FOOTPRINT_CELLS / 2);
       expect(Math.abs(dy)).toBeLessThan(FOOTPRINT_CELLS / 2);
     }
   });
 
   it('a loss takes the last figure of the order: the others stand where they stood', () => {
-    const full = figureOffsets(42, Frame.infantry, 64, 1.1);
-    for (const n of [63, 40, 1]) expect(figureOffsets(42, Frame.infantry, n, 1.1)).toEqual(full.slice(0, n * 2));
-    const tanks = figureOffsets(42, Frame.tank, 10, 1.1);
-    expect(figureOffsets(42, Frame.tank, 7, 1.1)).toEqual(tanks.slice(0, 14));
+    const full = figureOffsets(42, gridSide(Frame.infantry, 64), 64, 1.1);
+    for (const n of [63, 40, 1]) expect(figureOffsets(42, gridSide(Frame.infantry, 64), n, 1.1)).toEqual(full.slice(0, n * 2));
+    const tanks = figureOffsets(42, gridSide(Frame.tank, 10), 10, 1.1);
+    expect(figureOffsets(42, gridSide(Frame.tank, 10), 7, 1.1)).toEqual(tanks.slice(0, 14));
+    // A battalion's losses, man by man: each figure that is left is where it was when the battalion was whole.
+    for (let s = 500; s >= 1; s -= 7) {
+      const n = figureCount(s, 500);
+      expect(figureOffsets(42, 8, n, 1.1), `${s} men`).toEqual(full.slice(0, n * 2));
+    }
+    // A mechanised battalion keeps its grid of 8 × 8 down to its last vehicle's worth: with the
+    // grid taken from what is left, its 16 figures would stand in a 4 × 4, twice the size, elsewhere.
+    const side = gridSide(Frame.tank, figureCount(500, 500));
+    const mech = figureOffsets(42, side, 64, 1.1);
+    for (const s of [400, 125, 100, 8]) {
+      const n = figureCount(s, 500);
+      expect(figureOffsets(42, side, n, 1.1), `${s} men`).toEqual(mech.slice(0, n * 2));
+    }
+    expect(figureCount(125, 500)).toBe(16);
   });
 
   it('the block turns with the formation', () => {
-    const east = points(figureOffsets(9, Frame.gun, 12, 0));
-    const south = points(figureOffsets(9, Frame.gun, 12, Math.PI / 2));
+    const east = points(figureOffsets(9, 4, 12, 0));
+    const south = points(figureOffsets(9, 4, 12, Math.PI / 2));
     east.forEach(([x, y], k) => {
       expect(south[k]![0]).toBeCloseTo(-y, 12);
       expect(south[k]![1]).toBeCloseTo(x, 12);

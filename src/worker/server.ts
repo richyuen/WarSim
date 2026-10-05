@@ -78,6 +78,7 @@ const EMPTY_ELEMENTS: SnapshotElements = {
   nation: new Uint16Array(0),
   frame: new Uint8Array(0),
   strength: new Uint16Array(0),
+  size: new Uint16Array(0),
   x: new Float64Array(0),
   y: new Float64Array(0),
   prevX: new Float64Array(0),
@@ -862,6 +863,7 @@ export class SimServer {
     const nation = this.view(Uint16Array, total, buffers);
     const frame = this.view(Uint8Array, total, buffers);
     const strength = this.view(Uint16Array, total, buffers);
+    const size = this.view(Uint16Array, total, buffers);
     const x = this.view(Float64Array, total, buffers);
     const y = this.view(Float64Array, total, buffers);
     const prevX = this.view(Float64Array, total, buffers);
@@ -891,6 +893,7 @@ export class SimServer {
         nation[j] = ft.cols.nation[f]!;
         frame[j] = frameOf(units[ec.unit[e]!]?.cls ?? 'inf');
         strength[j] = ec.strength[e]!;
+        size[j] = units[ec.unit[e]!]?.size ?? ec.strength[e]!;
         x[j] = cx;
         y[j] = cy;
         prevX[j] = qx;
@@ -900,7 +903,7 @@ export class SimServer {
         j++;
       }
     }
-    return { count: total, id, formation, nation, frame, strength, x, y, prevX, prevY, facing, flags, truncated };
+    return { count: total, id, formation, nation, frame, strength, size, x, y, prevX, prevY, facing, flags, truncated };
   }
 
   /** Whether (x, y) is in the subscribed bbox, or within `reach` cells of it. */
