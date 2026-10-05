@@ -1210,7 +1210,7 @@ quick sweep as a smoke test.
     - In the world of before PLAN 2.11i the reader's case (seed 99, tick 2400) was the lane at
       Bab-el-Mandeb; in today's world seed 99 has no such case in a year, and seed 3's is the
       puppet. Both are tested directly.
-  - [ ] 2.11k A formation mustered in a theatre stands on sure land. (The fifth read, finding
+  - [x] 2.11k A formation mustered in a theatre stands on sure land. (The fifth read, finding
     3; PLAN 2.9a missed this path.) `musterPoint` returns a city's own place or a front
     cell's bare middle, and `productionSystem` writes it as it is. Seed 99, the first year: 13
     of 101 musters not on sure land (9 British divisions at Gibraltar, in a water pixel, all
@@ -1219,6 +1219,18 @@ quick sweep as a smoke test.
     AT: unit, failing first: a muster at a city that is not on sure land (Gibraltar) stands on
     sure land, and its elements too; 1938, seed 99, a year: no formation at rest off sure
     land on any day (the reader's count: 119,112 looks, 13 off). The pinned hash moves: logged.
+    Done 2026-10-05 (ADR-79, fifth addendum). `musterPoint` returns `standPoint` of the city,
+    or the front cell's `cellPoint`.
+    - Unit, failing first (`production.test.ts`): Japan's muster on the mainland at the start
+      (Dalian's own place: a land pixel, not sure land); Britain's at Gibraltar when at war
+      with Nationalist Spain (the city's place is in a water pixel); the division raised there
+      and its 28 elements, none in the sea.
+    - The year, in the gate's sweep stage (`tests/sweep/standYear.test.ts`): every formation at
+      rest, every day. **Seed 1, not 99:** in the world since PLAN 2.11i seed 99 has no such
+      muster in its first year (nor seed 1938); seed 1 has four British divisions at Gibraltar
+      on day 91, seeds 3 and 7 Japanese ones at Dalian. It failed on seed 1 before the fix.
+    - **The pin did not move** (the AT expected it to): 4aafc3eb, for the reason above. After
+      five years 9e83b0a7 → 49389306. The tick, pinned: 1.199 ms.
   - [ ] 2.11n The smoke run once more, on the sim as the review leaves it (after 2.11i, j
     and k). The first (2.11a) was of a world in which 90 formations a year walked round the
     map. One `npm run sweep:quick`; the five limits in PROGRESS beside the first run's.

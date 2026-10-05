@@ -419,6 +419,22 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     few lines up. That one is on cell columns, whole numbers: neighbours differ by 0 or 1 and
     the seam by the map's width less one. It is right as it stands.
 
+- **Fifth addendum, PLAN 2.11k (2026-10-05): a muster in a theatre was the one place 2.9a missed.**
+  - *The defect, found by the fifth independent read (finding 3):* a division raised in an
+    overseas theatre appears by the bloc's city nearest the front, and `musterPoint` returned
+    that city's own place, or a front cell's bare middle. Gibraltar's place is in a water
+    pixel of the mask: a British division raised there stood in the sea, all 28 elements of
+    it (`slotPlace` leaves the slots alone when the formation itself is not on land).
+  - *The fix:* `standPoint` of the city, `cellPoint` of the front cell.
+  - *The pin (ADR-55):* unmoved, 4aafc3eb. In the world since PLAN 2.11i seed 99 raises no
+    division at such a place in its first year. After five years 9e83b0a7 → 49389306.
+  - *The test this ADR lacked:* `coast1938.test.ts` looks at three days of one seed. The year
+    file of the gate now looks at every formation at rest on every day of a year, on seed 1,
+    where four divisions stood in the sea at Gibraltar on day 91.
+  - *Left as it is, on the list under PLAN 7.4:* the cities themselves. 140 of 5,757 have
+    their place in a water pixel of the mask and 387 not on sure land; their dots are drawn
+    there.
+
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 
 - **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail

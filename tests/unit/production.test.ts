@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
+import { maskSure } from '../../src/shared/landMask';
+import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_LAND, ECONOMY_TABLES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { MANPOWER_CAP_SHARE, MANPOWER_MONTHLY_RATE, monthlyAccounts, runEconomyMonth, UPKEEP_SCALE } from '../../src/sim/systems/economy';
-import { elementIndex } from '../../src/sim/systems/elements';
+import { elementIndex, slotCount, slotPlace } from '../../src/sim/systems/elements';
 import { musterPoint, productionSystem, queueFormation, spawnPoint } from '../../src/sim/systems/production';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -146,5 +148,47 @@ describe('production (PLAN 1.10 AT)', () => {
     const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
     w.wars.set(GER, POL, true);
     expect(musterPoint(w, GER)).toEqual(spawnPoint(w, GER));
+  });
+
+  // PLAN 2.11k (the fifth independent read, finding 3): PLAN 2.9a put every place a formation
+  // takes on sure land, and missed this one. A muster in a theatre was placed at a city's own
+  // place, or at a front cell's bare middle.
+  it('a muster in a theatre stands on sure land, by a city on the shore; and so does the division raised there, with its elements', () => {
+    const sim = sim1938();
+    const w = sim.world;
+    const { w: W, h: H } = SIZE_1938;
+    const mask = w.landMask!;
+    const sure = (x: number, y: number): boolean => maskSure(mask, W, H, x, y, true);
+    const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
+    // Japan, at war in China from the start, musters on the mainland.
+    const jap = musterPoint(w, nation('JAP'))!;
+    expect(sure(jap[0], jap[1]), `Japan's muster at ${jap[0].toFixed(3)}, ${jap[1].toFixed(3)}`).toBe(true);
+    // Britain at war with Nationalist Spain: its front is at Gibraltar, and the city's own place is in a water pixel of the mask.
+    const [ENG, NSP] = [nation('ENG'), nation('NSP')];
+    const [gx, gy] = cellOf(-5.3781, 36.1324, W, H);
+    expect(sure(gx, gy)).toBe(false);
+    w.wars.set(ENG, NSP, true);
+    w.frontier = null;
+    const at = musterPoint(w, ENG)!;
+    expect(Math.hypot(at[0] - gx, at[1] - gy), 'the muster is by Gibraltar').toBeLessThan(1.5);
+    expect(sure(at[0], at[1]), `Britain's muster at ${at[0].toFixed(3)}, ${at[1].toFixed(3)}`).toBe(true);
+    // The division raised there stands there, and none of its elements is in the sea.
+    const before = new Set(w.formations.ids());
+    expect(queueFormation(w, ENG, INF)).toBeGreaterThan(0);
+    sim.step((RULES_1938.templates[INF]!.days + 1) * 24);
+    const raised = w.formations.ids().filter((f) => !before.has(f) && w.formations.cols.nation[f] === ENG);
+    expect(raised).toHaveLength(1);
+    const f = raised[0]!;
+    const fc = w.formations.cols;
+    expect(Math.hypot(fc.x[f]! - gx, fc.y[f]! - gy)).toBeLessThan(1.5);
+    expect(sure(fc.x[f]!, fc.y[f]!)).toBe(true);
+    const els = elementIndex(w).get(f)!;
+    expect(els.length).toBeGreaterThan(20);
+    const slots = slotCount(w, f, els.length);
+    const wet = els.filter((e) => {
+      const [x, y] = slotPlace(w, fc.x[f]!, fc.y[f]!, fc.facing[f]!, w.elements.cols.slot[e]!, slots);
+      return !sure(x, y);
+    });
+    expect(wet).toEqual([]);
   });
 });

@@ -302,8 +302,9 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   - *In a cell* (a path's cells, a spawn, a move by the editor) it stands at the middle when
     that is surely land (the four mask pixels round the middle are land), and else at the
     cell's land point: the middle of the cell's pixel furthest from water (`World.cellPoint`).
-  - *At a given place* (the order of battle's, a capital's, a command's) it stands there when
-    that is surely land, and else at its cell's point (`World.standPoint`).
+  - *At a given place* (the order of battle's, a capital's, a command's, the city a division
+    is mustered by in a theatre: PLAN 2.11k) it stands there when that is surely land, and
+    else at its cell's point (`World.standPoint`).
   - *An element* stands at its slot in the block; where that is not surely land, at the first
     sure land on the way from the slot to its formation (`slotPlace`: the snapshot, the fire
     events and the event of its end ask there). Not state.

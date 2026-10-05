@@ -104,7 +104,9 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
       best = id;
     }
   });
-  return best !== 0 ? [cc.x[best]!, cc.y[best]!] : [fx, fy];
+  // On sure land by the fine mask, as every place a formation takes (PLAN 2.9a missed this
+  // one: a city on the shore, Gibraltar, has its own place in a water pixel: PLAN 2.11k).
+  return best !== 0 ? world.standPoint(cc.x[best]!, cc.y[best]!) : world.cellPoint(front);
 }
 
 export function productionSystem(world: World): void {

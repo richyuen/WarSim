@@ -5065,3 +5065,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   daffda22 → 9e83b0a7. The tick: 1.200 ms pinned (1.164).
 - **Tests:** 2 new unit tests (638), 2 new tests in the year file (10 in the sweep stage).
 - **Next:** PLAN 2.11k, a muster in a theatre stands on sure land.
+
+## 2026-10-05 — PLAN 2.11k: a muster in a theatre stands on sure land
+
+- **The fix:** `musterPoint` gives the city's `standPoint` or the front cell's `cellPoint`. It
+  gave the city's own place, and Gibraltar's is in a water pixel of the fine mask.
+- **Tests, failing first:** the directed one (Japan by Dalian, Britain by Gibraltar, the
+  division raised there with its elements); and every formation at rest on every day of a
+  year, on **seed 1** (four British divisions in the sea on day 91 before the fix).
+- **The pin did not move,** though the task expected it to: since PLAN 2.11i seed 99 has no
+  such muster in its first year. 4aafc3eb. Five years: 9e83b0a7 → 49389306. Tick 1.199 ms.
+- **This was the sim's last fix of the review.** Next: the smoke sweep once more (PLAN
+  2.11n), then what is drawn (2.11e, l, m, f, g), the pictures and PARITY (h), the critic.
+- **Tests:** 1 new unit test (639), 1 new test in the sweep stage (11).
