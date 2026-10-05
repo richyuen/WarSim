@@ -167,6 +167,56 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-83 · 2026-10-05 · accepted — The critic's second run: who ran it, where its findings went, in what order (PROMPT step 2a)
+
+- **Context:** PLAN 2.11 was ticked, so the critic was due (ADR-59: one run a phase). PROMPT
+  step 2a says to spawn the `critic` subagent. This session does not have that agent type
+  (`.claude/agents/critic.md` is in the repository; the session offers claude,
+  general-purpose, Explore, Plan and two helpers): "Agent type 'critic' not found".
+- **Decision 1: a general-purpose agent in the critic's place.** Its brief was the role text
+  of `.claude/agents/critic.md` with `CRITIC_PROMPT.md` as the whole of its task, and not a
+  word about what to look at. "Never act as the critic yourself" holds: the builder wrote no
+  part of the report.
+  - *What was missing:* the guard hook of the `critic` type (`critic-guard.mjs`: file tools
+    write under `critic/` only, no git write). In its place: the two rules, stated in the
+    brief, and a check after the run. HEAD was still `3d6a2b2`; `git status` showed the two
+    report files changed and new files under `critic/` only; no server was left listening.
+  - *Cost:* 50 minutes, 492,000 tokens, 246 tool calls.
+  - *The two report files are committed as the critic wrote them.* They are tracked (the
+    last report's commit, `23a990a`, is the user's), and left uncommitted a checkout or a
+    stash would lose them. The run's other files (`critic/c2_*`, its scripts and shots) stay
+    untracked like those of the first run: a PLAN task carries what it needs of them in its
+    own text, numbers and all.
+- **Decision 2: where the eight blocking findings went.**
+  - R2-B1, no naval, air or nuclear: Phases 4 to 6 are its tasks. A line under PLAN 4.5.
+    **The phases keep their order.** The critic ranks this first, and naval before armour
+    would answer it sooner; the order of the phases is the brief's, and I have not changed
+    it. The user can.
+  - R2-B4, a loaded game differs: PLAN 2.12. R2-B3: PLAN 2.13 for the formations disbanded
+    at tick 1; its second part (tanks that neither behave nor look like tanks) is Phase 3,
+    with a line under PLAN 3.6. R2-B2, the close zoom: PLAN 2.14, with the two lines PLAN
+    7.4 had on it. R2-B7, one scenario: PLAN 2.16. R2-B8, God actions: PLAN 2.17.
+  - R2-B6 is two things. A Kill that founds 36 states and 43 wars, a nation without a name,
+    blank flags and a return of land logged as a revolt are mechanisms that do not work:
+    PLAN 2.15. How often land breaks away in a plain game is balance: PLAN 1.42 (ADR-58).
+  - R2-B5 is two things. A world that does not change outside Europe is balance: PLAN 1.42
+    (ADR-58), logged once in PROGRESS, not disputed. A top speed of 10 to 12 s a year is
+    performance: a line under PLAN 7.1 and no task before Phase 3, because the top speed is
+    what the whole tick allows, and each of Phases 3 to 6 adds to the tick. Mine to answer
+    for: the critic holds that the pace matters more than the frame rate.
+  - The 21 findings that do not block: under PLAN 1.42, 7.1 and 7.4, a line each.
+- **Decision 3: the order of the new tasks.** Step 2b says highest severity first, and the
+  critic's order is R2-B2, B3, B4, B6, B7, B8. PLAN has B4, B3, B2, B6, B7, B8.
+  - *B4 first:* the state hash is what every other fix is measured with (the pin, the logs
+    of ADR-55, the twin games), and by the critic's case it parts between Node and the
+    worker, and a loaded game from a saved one.
+  - *B3 before B2:* it changes the 1938 world at its first tick (228 formations more are in it), and
+    the tests and pictures of B2 are of formations in that world. After B2 they would be
+    made twice.
+  - This is an order of work, not another judgement of severity. The user can overrule it.
+- **Not disputed:** none of the eight. R2-B4 says that a claim of PLAN 2.11j is false, with
+  a case that can be run; its task starts by running it.
+
 ### ADR-82 · 2026-10-05 · accepted — Occupied land at T2 and T3 is a tint, with an eighth of the hatching (PLAN 2.11f)
 
 - **Context:** occupied land (controller ≠ owner) is hatched: stripes of 7 screen px, the

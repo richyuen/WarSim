@@ -5195,3 +5195,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   formations at rest. The march bug it made was in four gated commits before a reader with
   no part in the work ran a year and looked at how far things move in an hour.
 - **Next:** the critic (PROMPT step 2a; its one run for this phase). Then Phase 3, armour.
+
+## 2026-10-05 — The critic's second run, on `3d6a2b2` (PROMPT step 2a)
+
+- **Scores:** map 6, diplomacy 5, dynamics 4, God Mode 5, editor and scenarios 5, stats 5,
+  UI 4, performance 6, stability 5; semantic zoom 5 (needs 8), naval 0, tanks 2, aircraft 0,
+  nuclear 0. **8 blocking.** Of the last report's seven: three fixed, three in part, one open.
+- **Where they went (ADR-83):** PLAN 2.12 to 2.17, before Phase 3: a loaded game differs
+  from the saved one on seed 2718; 228 of 1,054 formations are disbanded at tick 1; the
+  close zoom; states founded by a Kill; one scenario; God actions that fail without a word.
+  R2-B1 is Phases 4 to 6. **Deferred by ADR-58, logged here once:** R2-B5 (outside Europe
+  the world does not change) and how often land breaks away (R2-B6): PLAN 1.42. The top
+  speed of 10 to 12 s a year: PLAN 7.1.
+- **Who ran it:** a general-purpose agent with the critic's brief and no hints; the `critic`
+  agent type is not in this session (ADR-83). 50 minutes, 492,000 tokens.
+- **Next:** PLAN 2.12, starting with the critic's case of seed 2718.

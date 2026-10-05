@@ -1398,6 +1398,148 @@ quick sweep as a smoke test.
   sweep, an independent read, the watch lists, SPEC), eight fixes that came out of them, a
   second smoke sweep, and this. The count of numbered tasks for the next review pass starts
   again here. Next by PROMPT step 2a: the critic.
+- [ ] 2.12 Critic R2-B4 (report of 2026-10-05 on `3d6a2b2`): a loaded game goes on as the game
+  that was saved, on any seed and in any year; and the worker's state hash is Node's.
+  **The report says that what PLAN 2.11j claimed is false** beyond that task's own tests
+  (seed 99 in its first year; a twin game of seed 3 for 100 days). Its cases, to be run
+  first:
+  - Node, seed 2718: `npm run sim -- --scenario 1938 --seed 2718 --years 10 --save <file>`,
+    then `--load <file> --years 1`, ends year 11 at hash `931f19ad` with 694 formations,
+    5,865,965 men and 110 living nations. Eleven years straight end at `33ca7b81` with 695
+    formations, 5,872,955 men and 109 living nations, one more war declared and an
+    annexation that the loaded run never has.
+  - Browser, the same seed: Continue gives the save's world at years 1 to 8. At years 10, 12
+    and 14 the loaded world has another state hash from its first moment, and another again
+    30 days on. Side by side for two years: 5,865,965 men after one year against 5,872,955
+    (Node's two figures), and 105 living nations after two against 106.
+  - A sim that is loaded more than once: monthly saves through year 9, each loaded into one
+    second sim that is used again and again. Every load had the save's hash; one of eleven
+    (day 150) had another hash 30 days later. A `load` may leave something of the old game.
+  - Worker against Node with no save in it: seed 2718, equal through tick 70,128, different
+    from tick 70,152 (2 January 1946, the first step after nation 128 is created) and never
+    equal again; formations, total strength and nations the same on each of the next 363
+    days.
+  - Small, and of the same instrument: the worker took seven commands of made-up kinds and
+    its state hash changed (only the test API can send them).
+  - A lead, not a finding: nation 128 is in two of the report's findings (the hash parts
+    where it is created; a Kill founded a nation that the game named "Free state 128").
+    Look at what is sized, signed or keyed at 128: a table, a typed array, a store of names
+    or of flags.
+  What the fix also sets right: the claims of PLAN 2.11j, of PARITY ("bit-identical
+  save/load") and of the header of `tools/headless/cli.ts`.
+  AT: tests that fail first on these cases: (a) seed 2718, saved at year 10 and loaded into
+  a fresh sim, ends year 11 at the straight run's hash; (b) the same at the end of each year
+  of a long run on seeds no test has seen (how many seeds and years the sweep stage affords
+  is decided when the task is taken up, and said); (c) a sim loaded a second time goes on as
+  a fresh one; (d) a real browser worker and Node have one hash on every day of year 9 of
+  seed 2718; (e) a command of an unknown kind is refused and changes nothing. What steered
+  the sim and was in neither the save nor the hash is named in DECISIONS.
+- [ ] 2.13 Critic R2-B3, the first part: the 1938 order of battle is still there after the
+  first tick. The critic's count, the same on seeds 1212 and 4242: at tick 0 there are 1,054
+  formations, 72 of them armour, 34 of those Soviet. At tick 1 there are 826 and 33, and the
+  Soviet Union has no armour: its army falls by the 74,400 men of its 30 tank brigades and 4
+  tank corps, its monthly expenses from 1,210 to 853 (its income is 1,156). Poland's three
+  tank brigades go the same way. No line in the history says so: the world a player looks
+  at while the new game is paused is not the one that plays. The cause the critic names: the
+  economic AI disbands idle formations while its budget is short
+  (`src/sim/ai/economic.ts`), and the 1938 budgets are short from the first hour.
+  - The decision is made when the task is taken up: budgets that carry the armies of the
+    start, or a floor and a time of grace for disbanding. And a line in the history when a
+    formation is disbanded.
+  - **It will move the pin** (seed 99, one year; an ADR-55 log), and with it the world of
+    every picture and of every test that names a formation (the zoom demo's division). The
+    limits of the two Phase 2 smoke sweeps were measured on the world after the disbanding.
+  - Phase 3 builds on it: of 72 armour formations 33 are there to give armour rules to.
+  AT: failing first, on three seeds: at tick 1 a 1938 game has its 1,054 formations (72
+  armour, 34 of them Soviet), and in its first month none is disbanded for want of money; a
+  formation that is disbanded has its line in the history. The pin and the tick time logged.
+- [ ] 2.14 Critic R2-B2: the close zoom shows a battle, and says who is in it. The
+  differentiator scored 5 and needs 8. What the critic saw (Germany against Poland by God
+  Mode, 60 days; a ladder of 15 zooms from 12 km/px to 1 m/px; live frames):
+  - **Who is who.** At T2 and T3 the marker boxes are gone and nothing is in their place: no
+    flag, no strength, no name. German and Polish elements are the same grey dots at T2 and
+    the same white figures at T3. A click on one opens its nation's panel: there is no
+    formation panel and no tooltip anywhere, so a formation's name, kind and composition
+    cannot be read at any zoom. The closer the look, the less there is to find out.
+  - **No battle in a T3 view.** Enemy formations stand a cell or more apart, and a cell is
+    19.6 km: the closest pair after 60 days was 1.46 cells, 29 km, apart. At 20 m/px a view
+    is 32 by 18 km: centred between that pair it shows a border and trees and no unit. Both
+    are in one frame only at 40 m/px, at T2, as two specks. So a close view is one side's
+    battalions in ruled rectangles, with shots leaving the screen; figures in contact stand
+    in their grid and face one way, and but for the dashes a battalion under fire looks like
+    one at rest. (PLAN 7.4 had this as "What T3 shows of a battle".)
+  - **The ground is the nation's colour.** Berlin at 20 m/px is grey noise with specks, no
+    streets, no river; the Alps are salmon pink for being Swiss; Chad at 1 m/px is sky blue
+    for being French Equatorial Africa, and could be shallow sea. (PLAN 7.4 had this as
+    "Every ground is the fill's colour". ADR-82's tint for occupied land is part of it.)
+  - **Nothing leads to a battle.** At T2 a division is a 30 px grid in a view of 1,600 px;
+    most T3 views are empty ground. There is no way from a war's banner, a marker or the
+    history to where the fighting is.
+  The critic's fixes, each a decision when its part is taken up (the task is split then):
+  flag, strength and name on a formation at T2 and T3, and a formation panel; the two sides
+  of an engagement within one T3 view (the engaged elements drawn at the cell edge they
+  fight across); posture and facing for figures in contact; at T2 and T3 the ground's colour
+  from the terrain, with the nation as a tint at the border; a jump to the battle from the
+  war's banner.
+  AT: e2e in a war made by God Mode, failing first, pictures looked at: every formation in a
+  T2 or T3 view is told by flag, strength and name, and the two sides differ in the picture;
+  a click on a formation opens its panel (name, kind, elements, strength); two formations in
+  contact are both in one view at 20 m/px and face each other; the ground of one terrain on
+  two nations' land differs by less than a stated share away from the border; a click on a
+  war's banner brings its largest battle into view. `zoomDemo1938` passes, or is restated
+  with the reason.
+- [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
+  states, and every nation has a name and a flag.
+  - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton
+    Island", "Free Kerguelen Islands", "Free Saint Barthélemy" and one that the game could
+    not name, "Free state 128"; the war banners three rows deep and "+32"; 43 wars a month
+    later.
+  - After 14 years of seed 2718, 25 of 109 living nations are "Free <province>", each with a
+    blank flag.
+  - The history calls land that goes back to a living nation a revolt ("France broke away
+    from Italy").
+  - The critic's fix: a Kill hands land to neighbours and to claimants before it founds
+    anything. To whom, and how many new states at most, is a decision when the task is taken
+    up. Where a plain game's rule changes, the pin moves.
+  - Not here, by ADR-58: how often land breaks away in a plain game (a line under PLAN 1.42).
+  AT: failing first: a Kill of France through the God UI founds no more than a stated few
+  nations and starts no war by itself; no nation is named "Free state N"; every nation
+  founded in 15 years of a game has a flag that is not blank (a test, and a picture looked
+  at); land that returns to its owner is not logged as a revolt.
+- [ ] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and
+  nothing else: no other year, no other map, no random world with a number of nations. AoC
+  has world scenarios for 1914, 1938, 1956 and today, regional maps, and a random simulation
+  as its usual way to play (text; PARITY rows 75 and 78, both partial).
+  - What comes first is a decision when the task is taken up. A random world needs no new
+    data (nations grown from seeded cities on the map there is; names and flags made);
+    another year needs its borders; a regional map is a part of the world's.
+  - PLAN 7.4's "Flags by scenario" (flags are keyed to 1938 tags in every scenario) comes
+    with it, and the flags that PLAN 2.15 makes.
+  AT: from the title screen a game starts on a random world with a chosen number of nations:
+  the same seed gives the same world (hash); every nation has a name, a flag and a capital;
+  a year of it runs within the tick budget. And the title screen offers one scenario more
+  besides "World, 1938". e2e from the title screen; pictures looked at.
+- [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
+  the God tab on France:
+  - **Ally** with a nation that is in another alliance (France of the Anglo-French, Italy of
+    the Anti-Comintern): nothing changes and nothing is said.
+  - **The Territory brush gives no territory.** A drag of 250 px from France across the Alps
+    left a hatched band, and the nation's cells rose by 0: by the look of it the brush
+    paints the controller and not the owner. Its hint says "paint territory for this
+    nation", and the editor's brush changes the count. This is not the drag (PLAN 1.44b).
+  - **A killed nation stays on the map.** France, renamed "Gaul" and killed, is dead; its
+    name still stands on that band 30 days later, with Italian counters on it.
+  - **Revive** 30 days after a Kill does nothing and says nothing; the button is still
+    offered.
+  The critic's fix: every command that is refused says why; the brush paints owner and
+  controller as the editor's does; a dead nation holds nothing and has no name on the map.
+  AT: e2e through the God UI, failing first, one for each of the four: the action has its
+  effect, or the panel says in words why not; a dead nation has no cell and no name on the
+  map.
+  **PLAN 2.12 to 2.17 are the critic's second report (ADR-83).** They are numbered tasks and
+  count toward the next review pass. Their order is not the critic's (R2-B2, B3, B4, B6, B7,
+  B8): the two that change or question the world's state come before the one whose tests and
+  pictures are of that world.
 
 ## Phase 3 — Armour
 
@@ -1412,6 +1554,12 @@ quick sweep as a smoke test.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
+  From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):
+  tanks scored 2. At T2 a panzer division is a grey grid of dots like any other. At T3 its
+  tanks are rows of one white box with a circle and a bar, all pointing east, in the white
+  of riflemen; in contact they stand in their grid with other formations' figures drawn
+  through them. No turret turns, nothing drives, nothing burns. Of fuel, breakdown, tracked
+  terrain, combined arms and spearheads (PLAN 3.2 to 3.5) nothing is there to see.
   AT: tank battle demo e2e + screenshots viewed.
 - [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
@@ -1433,6 +1581,12 @@ quick sweep as a smoke test.
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
+  From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
+  5 and 6 are their tasks): without transport by sea the sea powers are out of every war.
+  The United Kingdom had 3,390,436 men in 317 formations and the same 17,000 cells for 20
+  years of seed 31337. A British division ordered to Calais walked to the coast of Kent and
+  stood there. The same holds for Japan's home army, for the United States and for every
+  colony. All 15 templates that can be built are land formations.
   AT: a scripted invasion lands and takes the coastal cells; it fails without sea control (test).
 - [ ] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
   AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
@@ -1512,6 +1666,21 @@ quick sweep as a smoke test.
     one of them held is not its own afterwards, also when a lower bloc refreshed with it took
     the lane, where the first result was right. How often a refresh goes full was not
     counted; the tick rose by 0.036 ms.
+  From the critic's report of 2026-10-05 (the pace in R2-B5; its N9 and N19):
+  - **The top speed.** At Max the game makes 885 ticks a second at the start and 794 after
+    ten years: 33 to 37 days a second, 10 to 12 s a year. AoC's text gives a month in 0.5 s
+    at 1× and 5× at most, so its usual speed is about twice this game's fastest (text only).
+    A tick of 1.5 ms, the budget, allows no more on one thread: a faster top speed needs
+    another budget or another way (the critic: leave out element-level work where nothing is
+    watched). It is here and not before Phase 3 because each of Phases 3 to 6 adds to the
+    tick (ADR-83).
+  - One zoom without a stop from the world to 1 m/px froze for 2,878 ms, after every tier
+    had been seen once (so not a first compile). At Max with the camera at 400 m/px the
+    frame gaps were 113 ms at p95 and 452 ms at worst, 14 over 100 ms in four seconds; at ×5
+    the close tiers drop a frame of 124 to 146 ms every few seconds.
+  - Headless, 40 years of seed 31337: a mean tick of 1.14 ms, p95 up to 8.6 ms.
+  - T0 unthrottled at 1920 × 1080 on an RTX 4070 Ti: 116 to 144 fps (a draw of 4.4 to 5.7
+    ms). No weak GPU has been measured.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
@@ -1545,6 +1714,20 @@ quick sweep as a smoke test.
   faller, both measured on realms (SPEC §10). The three FAILING reports stand as they are and are not re-judged; only
   seeds from 401 judge this task. The quick sweep (10 seeds × 20 years) comes first: run
   the deciding sweep when it shows risers and fallers on most seeds, not to find out.
+  From the critic's report of 2026-10-05 (R2-B5, and the rate in R2-B6; deferred by ADR-58,
+  not disputed, logged once in PROGRESS):
+  - Seed 31337, 40 years headless: the top five by cells are the Soviet Union, Canada, the
+    United States, Denmark (Greenland) and France in every year from 8 to 40. Australia has
+    25,987 cells from year 5 to year 40. The Soviet share is 26.5 to 28.3% for 33 years and
+    falls to 17.8% in the last seven. Men 4.76 M → 9.74 M. Nations 101 → 136 living, 180
+    ever founded.
+  - Seed 2718, 14 years in the browser: Europe changes; Brazil has 6.38 to 6.39% and
+    Australia 6.11% of the land in every yearly sample; the leader 15.9 to 16.8%.
+  - Land breaks away often: 396 of 1,226 events in those 14 years (32%) are "broke away".
+  - Of the same kind and not blocking: armies lose 61% and 87% of their men in 60 days of a
+    war that moves the front by a border strip (N1); a war takes in half the world ("United
+    Kingdom +33 ⚔ Angola", Poland against Xinjiang; N2).
+  - What the critic asks of the sweep: a run whose top five are the same for 20 years fails.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
@@ -1601,10 +1784,11 @@ quick sweep as a smoke test.
     - Shading and texture take one cell size for the whole map: away from the equator a cell
       is fewer km wide than high.
     - Every ground is the fill's colour: at T3 a forest floor, a field and a street differ by
-      roughness and a few hundredths of brightness. The instances keep their natural colours
-      in every map mode.
+      roughness and a few hundredths of brightness (now in PLAN 2.14, critic R2-B2). The
+      instances keep their natural colours in every map mode.
   - **What T3 shows of a battle.** Shots fly 30 to 60 km (the range is in cells) and a view at
-    T3 is 4 to 17 km wide: one tracer in the demo's picture at 12 m/px, none at 3. A battalion
+    T3 is 4 to 17 km wide: one tracer in the demo's picture at 12 m/px, none at 3 (now in
+    PLAN 2.14, critic R2-B2). A battalion
     at a third of its men is a scatter over its footprint, not a smaller block (ADR-69's
     order of losses). A stack's lead at T1 shows the strongest formation's kind only.
   - **From the fifth independent read (PLAN 2.11b):**
@@ -1629,6 +1813,32 @@ quick sweep as a smoke test.
   - **Flags by scenario.** `flagStore` maps nation ids to 1938 tags in every scenario (the
     toy world's two nations wear the first two 1938 flags). A second scenario needs its flags
     from its own data.
+  From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
+  - N3: occupied land stays hatched for years after a peace (Europe after 14 years of seed
+    2718). A rule to look at, not a look: what a peace does with land that is held.
+  - N4, N5: T1 in a war is a web of order arrows from formations off the screen; markers
+    overlap round Warsaw at the start, one under the capital's flag.
+  - N6: no city panel (the formation panel and the tooltips are PLAN 2.14).
+  - N7: Escape closes neither the nation panel nor the history; F1 to F6 and the number keys
+    do not change the map mode (eight modes behind one button that cycles); a double click
+    does not zoom.
+  - N8: at 1024 × 600, playing a nation, the pause button and the date are off the screen;
+    at a phone's width the ranking lies on the nation panel.
+  - N10: seven alliances are all named "Defensive Pact"; the history shows "#24" for one.
+  - N12, N13: choosing the editor's terrain layer leaves the map in the political mode (a
+    stroke changed 508 cells and nothing on screen); the flag editor has no undo, line or
+    circle.
+  - N14: ranking rows have no flags and five metrics (AoC: nine lists, the dead marked);
+    charts have no axis ticks and no value under the cursor; the economy tab is six numbers.
+  - N15, N16: map names and counters show through the Ranking panel; war banners stand three
+    rows deep over the map.
+  - N17: a black smear under a counter near Bern in 1952 of seed 2718.
+  - N18: no sound; one language.
+  - N21: while the game runs, half-faded counters are on screen all the time as the clusters
+    regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px).
+  - Against AoC's God panel: the World AI settings (one checkbox stands for about fifteen),
+    a nation spawned with a size, cities made and removed in the game, gold, CE, colour and
+    unity edited from the God tab, donations (PARITY has the rows).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

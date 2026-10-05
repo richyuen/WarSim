@@ -1,29 +1,123 @@
 {
-  "commit": "bb1dd4fd7f8ffe3b5896d6eda1f2c3dc1421a4e4",
+  "commit": "3d6a2b22a1a66a35920582b6b8f95f20bec2b8c1",
   "scores": {
-    "mapVisuals": 4,
+    "mapVisuals": 6,
     "diplomacyWarDepth": 5,
-    "emergentDynamics": 2,
-    "godMode": 6,
-    "editorScenarios": 4,
+    "emergentDynamics": 4,
+    "godMode": 5,
+    "editorScenarios": 5,
     "statsHistory": 5,
-    "uiUxPolish": 3,
-    "performance": 4,
-    "stability": 6,
-    "semanticZoom": 3,
+    "uiUxPolish": 4,
+    "performance": 6,
+    "stability": 5,
+    "semanticZoom": 5,
     "naval": 0,
-    "tanks": 0,
+    "tanks": 2,
     "aircraft": 0,
     "aiNukes": 0
   },
   "blocking": [
-    {"id": "B1", "title": "World is static over decades: top-10 land holders unchanged years 9-40, leader share fixed at 27.2%, China survives 12-year war at start size", "evidence": ["critic/headless_seed99_40y.json", "critic/s1.json", "critic/shots/s1_3_run_y12.png", "critic/shots/s1_4_after_asia.png"], "fix": "Give large nations real vulnerability (overextension, stability, splitting big empires), make occupation convert at peace, add top-10 churn and leader-share variance on unseen seeds to the sweep criteria"},
-    {"id": "B2", "title": "Semantic zoom shows nothing at close range: T2/T3 are dot/icon grids on flat colour, no terrain, combat or motion", "evidence": ["critic/shots/s3_paused_scale0256.png", "critic/shots/s3_paused_scale1024.png", "critic/shots/s3_live_scale256_3.png"], "fix": "Land PLAN 2.4-2.9 (fire visuals, T3 expansion, detail tiles, hillshade, coast) before claiming the feature; scale occupation hatch with zoom"},
-    {"id": "B3", "title": "Differentiators absent: no naval, aircraft or nukes; tanks listed in production but unbuildable", "evidence": ["critic/shots/s4_12_charts.png", "critic/shots/s1_01_1938_boot.png"], "fix": "Phases 3-6; meanwhile hide unbuildable armour templates"},
-    {"id": "B4", "title": "Revolt fragmentation spam: nations 100 -> 258, flagless 'Free <village>' states and 18-nation rebel coalitions", "evidence": ["critic/headless_seed99_40y.json", "critic/shots/s1_4_after_eu.png", "critic/shots/s1_3_run_y12.png"], "fix": "Cap rebel spawns per region/decade, merge into existing claimants, name by region, generate flags for spawned nations"},
-    {"id": "B5", "title": "No game entry point: '/' opens a two-nation toy test world, no menu or scenario select", "evidence": ["critic/shots/s1_00_default_url.png"], "fix": "Title/menu screen with scenario select; move the toy world behind a dev flag"},
-    {"id": "B6", "title": "Editor brush does not paint on drag (drag pans the camera)", "evidence": ["critic/s5.json", "critic/shots/s5_brush_click_then_drag.png"], "fix": "In brush/line mode left-drag paints, pan moves to right/middle drag; add an e2e that drags"},
-    {"id": "B7", "title": "Europe unreadable at world zoom: overlapping counters and translucent ghost duplicates", "evidence": ["critic/shots/s1_01_crop_europe_counters.png", "critic/shots/s4_07_crop_ghost_counters.png"], "fix": "Screen-space decluttering/aggregation at T0, finish split/merge fades while paused"}
+    {
+      "id": "R2-B1",
+      "title": "Naval, air and nuclear systems do not exist; without sea transport the maritime powers never fight (United Kingdom: 3.39 M men on the same 17,000 cells for 20 years)",
+      "evidence": [
+        "critic/c2_j.json",
+        "critic/shots/c2j_22_uk_after_30_days.png",
+        "critic/shots/c2j_23_channel_300m.png",
+        "critic/c2_headless_seed31337_40y.json"
+      ],
+      "fix": "Phases 4, 5 and 6. Sea transport first: it also unblocks the long-run dynamics (R2-B5)."
+    },
+    {
+      "id": "R2-B2",
+      "title": "The close zoom shows a diagram, not a battle: no flag, strength or name at T2/T3, both sides the same grey and white, no unit panel, the enemy outside any T3 view, figures in a grid under fire, ground coloured by nation",
+      "evidence": [
+        "critic/shots/c2x_crop_t2_both_sides_grey.png",
+        "critic/shots/c2b_10_ladder_00020m.png",
+        "critic/shots/c2e_live_fire_020m_l0_1.png",
+        "critic/shots/c2e_live_fire_008m_l0_2.png",
+        "critic/shots/c2x_crop_t3_figures.png",
+        "critic/shots/c2b_40_ground_berlin_0020m.png",
+        "critic/shots/c2b_31_closest_zoom.png",
+        "critic/c2_b.json",
+        "critic/c2_g.json"
+      ],
+      "fix": "Flag, strength and name on a formation at T2 and T3, and a formation panel on click. Draw engaged elements at the cell edge they fight across so both sides fit one T3 view. Posture and facing for figures in contact. Terrain-coloured ground with the nation as a border tint. A jump-to-battle from the war banner."
+    },
+    {
+      "id": "R2-B3",
+      "title": "228 of 1,054 formations, all 34 Soviet armour formations among them, are disbanded in the first tick of every 1938 game; the tanks that remain have no tank behaviour and no picture beyond an icon",
+      "evidence": [
+        "critic/c2_k2.json",
+        "critic/c2_k.json",
+        "critic/c2_e.json",
+        "critic/shots/c2x_crop_t3_tank_1m.png",
+        "critic/shots/c2x_crop_t3_tanks_in_contact.png"
+      ],
+      "fix": "Give the 1938 nations budgets that carry their historical armies, or keep the economic AI from disbanding below a floor and in the first months; log a disbanding in the history. Then Phase 3 (fuel, terrain, combined arms, spearheads, turret and wreck visuals)."
+    },
+    {
+      "id": "R2-B4",
+      "title": "A loaded game does not go on as the game that was saved (seed 2718: Node --save/--load at year 10 and the browser's Continue both play out differently); the worker's state hash also leaves Node's in year 9",
+      "evidence": [
+        "critic/c2_saveload_node.log",
+        "critic/c2_seed2718_11y.json",
+        "critic/c2_seed2718_loaded_plus1.json",
+        "critic/c2_f.json",
+        "critic/c2_g.json",
+        "critic/c2_i_node.log",
+        "critic/c2_i_node.json",
+        "critic/c2_i_page.json",
+        "critic/c2_h.json"
+      ],
+      "fix": "Test checkpoints on unseen seeds at every year-end of a 15-year run (save, load into a fresh sim, run a year, compare hash and outcome), in Node and in a real browser worker. Then find the sim-steering state that is not in world.parts() and the hashed state that differs between engines."
+    },
+    {
+      "id": "R2-B5",
+      "title": "Outside Europe the world does not change for decades (top five by land identical from year 8 to year 40 on seed 31337), and the fastest speed is 10-12 s per year",
+      "evidence": [
+        "critic/c2_headless_seed31337_40y.json",
+        "critic/c2_headless.log",
+        "critic/c2_a.json",
+        "critic/shots/c2a_31_charts_default.png",
+        "critic/shots/c2a_20_after_world.png",
+        "critic/c2_p.json"
+      ],
+      "fix": "Sea transport; wars that end in annexation instead of standing occupation; a top speed several times faster when no close tier is watched; a sweep criterion that fails a run whose top five do not change in 20 years."
+    },
+    {
+      "id": "R2-B6",
+      "title": "Statelet spam: God Kill turns one nation into 36 'Free X' nations and 43 wars; after 14 years 25 of 109 nations are 'Free <province>' with blank flags; 32% of the history is 'broke away'",
+      "evidence": [
+        "critic/c2_c.json",
+        "critic/shots/c2c_17_after_kill_3000m.png",
+        "critic/shots/c2x_crop_kill_war_banners.png",
+        "critic/shots/c2x_crop_rebel_flags_1952.png",
+        "critic/c2_a.json",
+        "critic/shots/c2a_32_history.png"
+      ],
+      "fix": "A collapse hands land to neighbours, claimants and a few regional successors, not one nation per province. Generated flags and regional names for spawned nations. Log land returned to a living nation as a return, not a revolt."
+    },
+    {
+      "id": "R2-B7",
+      "title": "One scenario, one map, no random world",
+      "evidence": [
+        "critic/shots/c2a_00_title.png",
+        "critic/c2_a.json"
+      ],
+      "fix": "At least a second start year and a random-nations start on the earth map, listed on the title screen."
+    },
+    {
+      "id": "R2-B8",
+      "title": "God Mode actions that fail silently or do something else: Ally with a nation allied elsewhere, Revive after a Kill, the Territory brush adds no cells, a killed nation's name and land stay on the map",
+      "evidence": [
+        "critic/c2_c.json",
+        "critic/shots/c2c_14_god_brush_drag.png",
+        "critic/shots/c2x_crop_dead_gaul_still_on_map.png",
+        "critic/shots/c2c_19b_god_revive.png"
+      ],
+      "fix": "Every refused command says why in the panel. The God brush paints owner and controller as the editor's does. A dead nation controls and labels nothing."
+    }
   ],
-  "timestamp": "2026-10-03T11:21:38Z"
+  "timestamp": "2026-10-05T08:45:35Z"
 }
