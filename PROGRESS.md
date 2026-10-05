@@ -5101,3 +5101,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   realm keeps a quarter to a third on four.
 - **What the two runs say together:** the limits did not see the defect of PLAN 2.11i, and do
   not move much without it. They are a smoke test, as ADR-58 has it.
+
+## 2026-10-05 — PLAN 2.11e: a formation that holds in contact is drawn holding
+
+- **The fix:** the walk of a sprite or a figure is for a formation on the march: `moving` and
+  not `engaged`. It was for `moving` alone, and the sim keeps `moving` on a formation it holds
+  in contact. The zoom demo's division had walked in place for a month.
+- **Tests:** the rule (unit); in the demo, failing first: the division, which has a march and
+  is in contact, is drawn standing at T2 and T3; every sprite of the four close views walks
+  when its formation is on the march and only then (23 do).
+- **A thing it settles:** the demo's eight pictures are now the same on every run, pixel for
+  pixel. The walk's phase had been what differed.
+- **Tests:** 1 new unit test (640).
+- **Next:** PLAN 2.11l, the trees of the far zoom during the fade out of T2.

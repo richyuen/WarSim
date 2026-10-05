@@ -1157,6 +1157,8 @@ into the box (by the block, not the centre: at the closest zooms the box is smal
 division; PLAN 2.7n1), a formation whole or not at all, at their slot
 poses (`sim/core/pose`, shared with the sim). They are drawn as instanced sprites, interpolated
 on the GPU, with facing and a procedural walk/drive animation, fading in as the markers fade out.
+The walk is for a formation on the march: one that has a march and holds in contact stands, as
+the sim holds it (`marching` in `src/shared/protocol.ts`, PLAN 2.11e).
 Where a snapshot has no elements, each formation is one stand-in sprite of 0.9 cells and at most
 48 px (PLAN 2.7n3): the toy world's formations, which have no elements, and any world for the
 moment before its first elements arrive.

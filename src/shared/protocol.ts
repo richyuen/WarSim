@@ -185,6 +185,15 @@ export function tierOf(mPerPx: number): Tier {
 /** Formation flags in `SnapshotFormations.flags`. */
 export const FormationFlag = { moving: 1, engaged: 2 } as const;
 
+/**
+ * Whether a formation with these flags is on the march: it has a march (`moving`) and is not
+ * held in contact (`engaged`). The sim moves it then and only then (`movementSystem`: "in
+ * contact: holds and fights"), so that is when its sprites walk (PLAN 2.11e).
+ */
+export function marching(flags: number): boolean {
+  return (flags & FormationFlag.moving) !== 0 && (flags & FormationFlag.engaged) === 0;
+}
+
 export interface SnapshotEvents {
   count: number;
   /** count·EVENT_STRIDE records [seq, tick, kind, a, b, x, y] (shared/events). */

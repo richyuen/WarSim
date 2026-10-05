@@ -80,6 +80,9 @@ interface Battle {
   men: number[];
   hashes: number[];
   shots: number[];
+  /** After each stepped hour: whether it has a march, and whether it is in contact (index 0: at START). */
+  moving: boolean[];
+  engaged: boolean[];
 }
 
 /** The battle, and what the stepped hours make of it, from the sim in Node. */
@@ -126,7 +129,7 @@ function nodeBattle(): Battle {
   const anchor: [number, number] = [[...group].reduce((s, e) => s + e.x, 0) / group.size, [...group].reduce((s, e) => s + e.y, 0) / group.size];
 
   const own = new Set(first.map((e) => e.id));
-  const out: Battle = { formation, nation: fc.nation[formation]!, x: fc.x[formation]!, y: fc.y[formation]!, anchor, elements: [first], men: [fc.strength[formation]!], hashes: [sim.hash()], shots: [0] };
+  const out: Battle = { formation, nation: fc.nation[formation]!, x: fc.x[formation]!, y: fc.y[formation]!, anchor, elements: [first], men: [fc.strength[formation]!], hashes: [sim.hash()], shots: [0], moving: [fc.moving[formation] === 1], engaged: [fc.engaged[formation] === 1] };
   for (let k = 0; k < CLOSE; k++) {
     let n = 0;
     sim.step(1, (wd) => {
@@ -140,6 +143,8 @@ function nodeBattle(): Battle {
     out.men.push(fc.strength[formation]!);
     out.hashes.push(sim.hash());
     out.shots.push(n);
+    out.moving.push(fc.moving[formation] === 1);
+    out.engaged.push(fc.engaged[formation] === 1);
   }
   return out;
 }
@@ -240,10 +245,12 @@ interface Seen {
   cam: { cx: number; cy: number; scale: number };
   counters: { nation: number; strength: number; alpha: number; folded: boolean; text: string; d: number }[];
   markers: { id: number; members: number[]; alpha: number; own: number; text: string; d: number }[];
-  elements: { id: number; formation: number; strength: number; x: number; y: number }[];
+  /** `flags`: the formation's, as the snapshot carried them; `walks`: whether the sprite is drawn walking. */
+  elements: { id: number; formation: number; strength: number; x: number; y: number; flags: number; walks: boolean }[];
   figures: number;
-  /** The element each figure is of. */
+  /** The element each figure is of, and whether the figure is drawn walking. */
   owners: number[];
+  walkers: boolean[];
 }
 
 /** In the page: what the frame on the screen has of each unit layer, with distances from the anchor in CSS px. */
@@ -266,9 +273,10 @@ const look = (a: { ax: number; ay: number; mapW: number }): Seen => {
     cam: { cx: cam.cx, cy: cam.cy, scale: cam.scale },
     counters: v.counters.drawn.map((d) => ({ nation: d.nation, strength: d.strength, alpha: d.alpha, folded: d.folded, text: d.text, d: far(d.wx, d.wy) })),
     markers: v.markerRects.map((r) => ({ id: r.id, members: [...r.members], alpha: r.alpha, own: r.own, text: r.text, d: Math.hypot(r.x + r.w / 2 - ax, r.y + r.h / 2 - ay) })),
-    elements: Array.from(v.elementId, (id, i) => ({ id, formation: v.elementFormation[i]!, strength: v.elementStrength[i]!, x: v.elementX[i]!, y: v.elementY[i]! })),
+    elements: Array.from(v.elementId, (id, i) => ({ id, formation: v.elementFormation[i]!, strength: v.elementStrength[i]!, x: v.elementX[i]!, y: v.elementY[i]!, flags: v.elementFlags[i]!, walks: v.elementWalks(i) })),
     figures: v.individualCount,
     owners: Array.from(v.individualOwner.subarray(0, v.individualCount)),
+    walkers: Array.from({ length: v.individualCount }, (_, j) => v.individualWalks(j)),
   };
 };
 
@@ -382,6 +390,8 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
   let hold: [number, number] | null = null;
   let shares: [number, number, number] = [0, 0, 0];
   let hour = 0;
+  /** Sprites drawn walking, over the close stops. */
+  let walking = 0;
   for (const [i, stop] of STOPS.entries()) {
     const r: LegResult = await page.evaluate(leg, { now, toM: stop.m, ax, ay, hold, mapW: W, frameMs: FRAME_MS, shares: stop.shares, tier: stop.tier, maxFrames: 600, deadlineMs: 90_000 });
     now = r.now;
@@ -444,6 +454,17 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
         expect(got.get(e.id)!.strength, `${name}: the strength of element ${e.id}`).toBe(e.strength);
         expect(Math.hypot(got.get(e.id)!.x - e.x, got.get(e.id)!.y - e.y), `${name}: the place of element ${e.id}`).toBeLessThan(1e-6);
       }
+      // It holds where it stands, and is drawn holding (PLAN 2.11e). It has a march and is in
+      // contact: the sim moves it nowhere, and its sprites and figures do not walk. Every
+      // sprite in the view walks when its formation is on the march, and only then.
+      expect({ moving: node.moving[hour], engaged: node.engaged[hour] }, `${name}: the division has a march and is in contact`).toEqual({ moving: true, engaged: true });
+      for (const e of seen.elements) expect(e.walks, `${name}: element ${e.id} of formation ${e.formation} (flags ${e.flags}) drawn walking`).toBe((e.flags & 1) !== 0 && (e.flags & 2) === 0);
+      expect(seen.elements.filter((e) => e.formation === node.formation && e.walks), `${name}: elements of the division drawn walking`).toEqual([]);
+      walking += seen.elements.filter((e) => e.walks).length;
+      if (stop.tier === 3) {
+        const of = new Set(els.map((e) => e.id));
+        expect(seen.owners.filter((o, j) => of.has(o) && seen.walkers[j]).length, `${name}: figures of the division drawn walking`).toBe(0);
+      }
       // Both kinds are in the two closest pictures: battalions under strength, and batteries.
       expect(wanted.filter((e) => e.size > 64).length, `${name}: battalions in the view`).toBeGreaterThanOrEqual(2);
       expect(wanted.filter((e) => e.size <= 16).length, `${name}: batteries in the view`).toBeGreaterThanOrEqual(1);
@@ -471,4 +492,7 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
     }
   }
   expect(hour).toBe(CLOSE);
+  // And the rule is not "nothing walks": formations on the march were in the views, walking.
+  console.log(`sprites drawn walking over the ${CLOSE} close stops: ${walking}`);
+  expect(walking).toBeGreaterThan(0);
 });

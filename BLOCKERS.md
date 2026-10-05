@@ -239,8 +239,9 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
       process). The unpacking that failed three times in parallel vitest runs (above) has one
       more file to fail on. Not seen since PLAN 2.9a.
     - *Close pictures differ from run to run where a formation walks* (the walk's phase is
-      the clock's; 4,500 to 56,000 px of 1,120,000 in the demo's four close stops). Look again
-      after PLAN 2.11e.
+      the clock's). Since PLAN 2.11e the demo's division stands, and the demo's eight pictures
+      of two runs are the same pixel for pixel; a picture with a formation on the march in it,
+      close enough for the sway to be a pixel, would still differ.
     - *Land and water painted in the editor are not in the fine mask.* A cell without land in
       the mask keeps its middle, its elements their slots, and the coast there is the cells'.
       By design until an editor paints the mask.

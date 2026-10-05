@@ -1238,7 +1238,7 @@ quick sweep as a smoke test.
     Done 2026-10-05, on `0819b6d`: seeds 1 to 10, 20 years, 4.9 minutes, every run finished.
     The five limits hold on all ten seeds, by about the margins of the first run. Numbers in
     PROGRESS. Not a verdict on the balance (ADR-58).
-  - [ ] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
+  - [x] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
     formation that has a march, and keeps it where it stands while it is `engaged`
     (`movement.ts`: "in contact: holds and fights"). The view plays the walk for `moving`
     alone: the zoom demo's division has not left its place in a month and its sprites and
@@ -1248,6 +1248,17 @@ quick sweep as a smoke test.
     e2e: the demo's division, flagged moving and engaged, is drawn standing at T2 and at T3,
     and a formation on the march is drawn walking. Then the demo's four close pictures of two
     runs are compared: the walk's phase was what made them differ.
+    Done 2026-10-05. `marching(flags)` in `src/shared/protocol.ts` (a march, and not in
+    contact); the element sprites and the figures walk by it. The T1 order arrow still shows
+    for a formation that has a march and is held: the order stands.
+    - Unit: the rule (`tests/unit/marching.test.ts`).
+    - e2e, failing first, in the zoom demo: the division has a march and is in contact (by the
+      sim in Node) and none of its sprites or figures is drawn walking; every sprite in the
+      four close views walks when its formation is on the march and only then; 23 do. Before:
+      "element 10476 of formation 385 (flags 3) drawn walking".
+    - The demo's eight pictures of two runs: the same, pixel for pixel (the four close ones
+      differed by 4,500 to 56,000 px before).
+    - The snapshot is as it was: the two flags travel, and the view makes the walk of them.
   - [ ] 2.11l The ground and what stands on it do not outlive their zoom. (The fifth read,
     finding 4.) Leaving T2, the ground's share is a matter of time (full for 220 ms, then a
     fade of 250 ms) while the camera closes on its target at 18 a second. `scatter` has no

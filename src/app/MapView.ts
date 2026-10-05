@@ -14,7 +14,7 @@ import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
-import { FormationFlag, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
+import { FormationFlag, marching, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 import { viewSubscription } from './subscription';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -604,6 +604,16 @@ export class MapView {
   elementX = new Float64Array(0);
   elementY = new Float64Array(0);
   elementStrength = new Uint16Array(0);
+  /** The flags of each element's formation, as the snapshot carried them (`FormationFlag`; tests). */
+  elementFlags = new Uint8Array(0);
+  /** Whether element sprite `i` was uploaded as walking (tests). */
+  elementWalks(i: number): boolean {
+    return this.elementProxies.data[i * PROXY_STRIDE + 6]! % 1 > 0.25;
+  }
+  /** Whether figure `j` was uploaded as walking (tests). */
+  individualWalks(j: number): boolean {
+    return this.individualProxies.data[j * PROXY_STRIDE + 6]! % 1 > 0.25;
+  }
   /** The tint of element sprite `i` as it was uploaded: [r, g, b] (tests). */
   elementTint(i: number): [number, number, number] {
     const c = this.elementProxies.colors;
@@ -624,6 +634,7 @@ export class MapView {
     this.elementX = e.x.slice(0, e.count);
     this.elementY = e.y.slice(0, e.count);
     this.elementStrength = e.strength.slice(0, e.count);
+    this.elementFlags = e.flags.slice(0, e.count);
     p.reserve(e.count);
     p.originX = Math.floor(this.geo.w / 2);
     p.originY = Math.floor(this.geo.h / 2);
@@ -635,7 +646,8 @@ export class MapView {
       p.data[o + 3] = e.y[i]! - p.originY;
       p.data[o + 4] = e.facing[i]!;
       p.data[o + 5] = ELEMENT_CELLS;
-      p.data[o + 6] = e.frame[i]! + ((e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0);
+      // The walk is for a formation on the march: one that holds in contact stands (PLAN 2.11e).
+      p.data[o + 6] = e.frame[i]! + (marching(e.flags[i]!) ? 0.5 : 0);
       // Depleted elements fade a little (an empty one is gone from the sim).
       p.data[o + 7] = 0.55 + 0.45 * Math.min(1, e.strength[i]! / 8);
       p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
@@ -700,7 +712,7 @@ export class MapView {
       const size = figureCells(side);
       const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!);
       const x = this.unwrapped(e.x[i]!, e.prevX[i]!);
-      const moving = (e.flags[i]! & FormationFlag.moving) !== 0 ? 0.5 : 0;
+      const moving = marching(e.flags[i]!) ? 0.5 : 0;
       const rgba = this.spriteRgba(e.nation[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
