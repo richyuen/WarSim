@@ -154,7 +154,10 @@ export class GroundInstances {
     if (this.count === 0 || share <= 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // Colour over what is there, by the source's alpha; the canvas itself stays opaque. (With
+    // one function for both, a shadow left the canvas at an alpha of 0.54 to 0.78 and the
+    // page's background showed through it: PLAN 2.11m.)
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.useProgram(this.program.program);
     twgl.setUniforms(this.program, { uViewport: [viewW, viewH], uDpr: dpr, uShare: share });
     gl.bindVertexArray(this.vao);

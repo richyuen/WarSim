@@ -1290,7 +1290,7 @@ quick sweep as a smoke test.
       given, 5.0 ms).
     - T2 and T3 are as they were: `fades1938` T2 → T1 42.0, bench A's view with instances
       8,685 and 0.5 ms of CPU, as before.
-  - [ ] 2.11m The map's canvas stays opaque. (A suspicion of the fifth read, settled here.)
+  - [x] 2.11m The map's canvas stays opaque. (A suspicion of the fifth read, settled here.)
     The sprites, the figures and the ground's instances blend with (SRC_ALPHA,
     ONE_MINUS_SRC_ALPHA) for alpha as for colour, into a canvas that has alpha: under a
     shadow or a soft edge the canvas ends at an alpha of 0.54 to 0.78, and the page's
@@ -1299,6 +1299,20 @@ quick sweep as a smoke test.
     AT: e2e, failing first: at T2 and T3, over a forest and over a division, every pixel of
     the map canvas has alpha 255; a screenshot of the page has the canvas's colours at the
     places sampled. The specs that read colours pass.
+    Done 2026-10-05. `blendFuncSeparate` in `ProxyRenderer` and `GroundInstances`: colour by
+    the source's alpha as before, the canvas's own alpha kept at 1.
+    - `tests/e2e/canvasOpaque1938.spec.ts`, failing first: four views (a forest at T2 and T3,
+      two divisions at T2 and T3). With everything but the map's canvas hidden, a screenshot
+      of the page is compared with the canvas's own pixels, every one of 1,120,000. Before, at
+      the first view: 254,968 px of the canvas under an alpha of 255 (the least 138), and
+      227,136 px of the page not the canvas's colour, by up to 26 of 255. Now 0 and 0 in all
+      four.
+    - The context still has alpha, so that the first of the two assertions can fail: a blend
+      state that leaves the canvas translucent would show there.
+    - The benches use the same two renderers and are right with them.
+    - Every picture of T2 and T3 taken so far was of the page, so each has the background
+      showing through under trees and sprites, by up to 26 of 255. They are shot again in
+      PLAN 2.11h.
   - [ ] 2.11f Occupied land at T2 and T3: the hatching gives way to the ground. The hatch is
     in screen px and lies over the hillshade, the texture and what stands on the ground,
     across the whole view: the four close pictures of the zoom demo are of an occupied pocket

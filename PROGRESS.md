@@ -5136,3 +5136,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   hour earlier.) To undo a mutation: the reverse edit, not a checkout.
 - **Tests:** 2 new unit tests (642), 1 new e2e test (114).
 - **Next:** PLAN 2.11m, the map's canvas stays opaque.
+
+## 2026-10-05 — PLAN 2.11m: the map's canvas stays opaque
+
+- **The defect:** sprites, figures and the ground's instances blended alpha as they blend
+  colour, into a canvas with alpha. Under every shadow and soft edge the canvas was left at an
+  alpha of 0.54 to 0.78 and the page's background came through. In the canvas the colours
+  were right, which is where the tests read them; on the page they were not, which is what a
+  player sees and what every screenshot is of.
+- **The fix:** `blendFuncSeparate` in the two instanced renderers.
+- **The test, failing first:** `canvasOpaque1938.spec.ts` compares a screenshot of the page
+  with the canvas's own pixels, all 1,120,000, in four views. Before: 227,136 px differ over
+  a forest at T2, by up to 26 of 255. Now none in any view.
+- **Tests:** 1 new e2e test (115).
+- **Next:** PLAN 2.11f, occupied land's hatching at T2 and T3.

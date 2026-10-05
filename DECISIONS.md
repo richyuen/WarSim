@@ -607,6 +607,24 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *Not changed:* the element sprites themselves still go by the clock at whatever zoom
     (at their least size of 5 px, a few blocks for half a second). The handover of ADR-71.
 
+- **Sixth addendum, PLAN 2.11m (2026-10-05): the map's canvas is opaque.**
+  - *The defect* (a suspicion of the fifth independent read, settled in the browser): the
+    instanced renderers of PLAN 2.3 and 2.8c2 blended with one function for colour and alpha,
+    (SRC_ALPHA, ONE_MINUS_SRC_ALPHA), into a canvas that has alpha. Over an opaque map that
+    leaves the colour right and the canvas's alpha at 1 − a(1 − a): 0.75 under a shadow at
+    half opacity, less where layers lie on each other (0.54 read). The browser then lets that
+    share of the page's background through. Over a forest at T2: 227,136 px of the page not
+    the canvas's colour, by up to 26 of 255.
+  - *The fix:* the alpha is blended (ONE, ONE_MINUS_SRC_ALPHA): over an alpha of 1 it stays 1.
+  - *Why no test saw it:* every test that reads colours reads the canvas (`readPixels`), where
+    the colour was right. Every picture looked at was a screenshot of the page, where the
+    error was a quarter of a dark blue under things that are dark already.
+  - *The test:* the page against the canvas, pixel for pixel, with the rest of the page
+    hidden. It is the only spec that compares the two.
+  - *Not done:* a context without alpha. It would make the page right whatever the blend
+    state, and it would make the canvas's alpha read 255 whatever is drawn: the test's first
+    assertion could then never fail.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often

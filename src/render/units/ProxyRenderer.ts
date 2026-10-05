@@ -149,7 +149,8 @@ export class ProxyRenderer {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // Colour over what is there, by the source's alpha; the canvas itself stays opaque (PLAN 2.11m).
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.useProgram(this.program.program);
     twgl.setUniforms(this.program, {
       uAtlas: this.atlas,
