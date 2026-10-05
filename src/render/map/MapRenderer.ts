@@ -59,6 +59,11 @@ export class MapRenderer {
   relief = true;
   private readonly ground = groundUniform();
 
+  /** The ground of T2 and T3 is drawn where the zoom shows it: the switch is on and the land's height has come. */
+  get groundOn(): boolean {
+    return this.relief && this.hasElevation;
+  }
+
   constructor(gl: WebGL2RenderingContext, w: number, h: number, opts: MapRendererOptions) {
     this.gl = gl;
     this.w = w;
@@ -214,7 +219,7 @@ export class MapRenderer {
     const [cyi, cyf] = splitCoord(cam.cy);
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     // The ground has a pass of its own: where none of it shows, the map is drawn by the pass of T0 and T1.
-    const share = this.relief && this.hasElevation ? detail : 0;
+    const share = this.groundOn ? detail : 0;
     const program = share > 0 ? this.groundProgram : this.program;
     gl.useProgram(program.program);
     twgl.setUniforms(program, {

@@ -1029,7 +1029,14 @@ colour.
 *Two programs:* the pass of T0 and T1 is compiled without any of this, and the pass with the
 ground is used while any of it shows (PLAN 2.8b: a branch in one program made T0 half as dear
 again).
-*Where trees, rocks and buildings stand (PLAN 2.8c1, `scatter.ts`; drawn by PLAN 2.8c2):* a
+*Trees, rocks and buildings, drawn (PLAN 2.8c2, `GroundInstances.ts`):* one instanced draw
+between the map and the unit sprites, of at most 12,000 instances, by the same share of the
+handover as the ground and under its one switch. The fragment shader draws each in its square:
+a crown with a lobed edge, a block of rock with cut corners, a roof of two slopes (tile or
+slate, along one of two directions that cross), each lit from the north-west with its shadow to
+the south-east. In natural colours on the nation's fill. The view scatters again only when the
+camera, its size, or the world's terrain or cities change.
+*Where they stand (PLAN 2.8c1, `scatter.ts`):* a
 nested lattice, 2^l points to a cell at level l, each point of a level a point of every finer
 one. An instance belongs to the coarsest level its point is on and stands near it, moved by a
 hash of the point: one place whatever the zoom. A view shows the levels whose points are 14 px

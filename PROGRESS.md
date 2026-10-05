@@ -4707,3 +4707,42 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not drawn yet:** nothing on screen has changed.
 - **Tests:** 10 new unit tests. 622 unit tests in 81 files, 105 e2e.
 - **Next:** PLAN 2.8c2 (the draw).
+
+## 2026-10-04 — PLAN 2.8c2: trees, rocks and buildings drawn; PLAN 2.8 done
+
+- **What it is:** at T2 and T3 the scatter's instances are drawn over the map and under the
+  units: trees in forests, rocks in mountains, buildings around cities. Each is drawn by the
+  fragment shader, lit from the north-west with a shadow; in natural colours on the nation's
+  fill. They come in with the ground, by the handover's share, under the ground's one switch.
+- **Tests** (`groundThings1938`, 3): a forest (3,230 to 5,434 trees), mountains (1,666 to 3,053
+  rocks) and Berlin (39, 1,871 and 5,661 buildings) at 150, 20 and 3 m/px; every instance
+  looked at is drawn where the scatter put it; the same counts and hashes on two loads; none
+  at T1, and through the handover no pixel changes by more than 7.9 of 255 in a frame.
+- **One of my own checks was too narrow:** "the picture differs at the instance's very middle"
+  failed for 28 of 372 buildings in Berlin, slate roofs on Germany's grey. The house is there
+  (its outline, its other slope): the check looks at the 5 × 5 px at the middle now. The spec
+  is new in this task; nothing committed was changed.
+- **The two ground specs look at the ground alone** (`view.instances` off): their numbers and
+  hashes are those of 2.8a and 2.8b. No assertion changed.
+- **Cost, on the bench** (Chrome, RTX 4070 Ti, 1080p): 8,685 instances scattered, uploaded and
+  drawn in every frame: 0.84 ms of GPU (the ground without them 0.86) and 0.5 ms of CPU. T0 and
+  T1 as before: 0.51, 0.48, 0.45.
+- **The user asked, while this was built, whether things should move to the GPU where possible
+  even if they cannot be unit tested.** Answered with the numbers above: by measurement, not
+  as a rule; the scatter stays on the CPU, and what would move it is written down (ADR-78,
+  fourth addendum).
+- **Pictures looked at:** a wood of dots on Finland's blue; grey rocks and a few trees on the
+  Rockies' relief; around Berlin's dot a town of red and slate roofs along two directions.
+  A first version of buildings drew a ridge on every roof, which at 7 px left two sticks: the
+  ridge comes with size now.
+- **PLAN 2.8 is done** (2.8a hillshade, 2.8b texture, 2.8c1 scatter, 2.8c2 draw). Its own AT is
+  met by `ground1938` (more detail at each of four zooms) and the three reload hashes.
+- **The first gate failed at e2e, by a fault of this task:** `fire1938` ran into its timeout
+  (15 s before, 4.1 minutes) and `wrecks1938` took 3.9 minutes for 34 s; the stage 11.6
+  minutes. I had made `MapView.dispose` delete the instance layer's GL objects. Two specs stop
+  the frame loop with `dispose` and then draw one moment for a picture: drawn with deleted
+  objects, the screenshot hung. `dispose` stops the view and deletes nothing, as before
+  (said so at the function now). The sim's ticks were as fast as ever in that run: not the
+  slow half hour of the watch list.
+- **Tests:** 3 new e2e. 622 unit tests in 81 files, 108 e2e.
+- **Next:** PLAN 2.9 (the coast at T2 and T3; no element on water).

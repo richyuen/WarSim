@@ -31,7 +31,9 @@ import { t, type MessageKey } from '../ui/i18n';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
+import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { CameraController } from './input/CameraController';
@@ -114,6 +116,8 @@ export class MapView {
   private readonly controlGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
   private terrainColors: number[] | null = null;
+  /** The fine land coverage the worker sent (the scatter keeps off the water by it). */
+  private fineLand: { w: number; h: number; data: Uint8Array } | null = null;
   private cities: { id: number; x: number; y: number }[] = [];
 
   /** The city row nearest cell (x, y) within `reach` cells, or 0 (editor tools, PLAN 1.36). */
@@ -136,6 +140,16 @@ export class MapView {
   onSelect: (id: number) => void = () => {};
   private readonly map: MapRenderer;
   private readonly proxies: ProxyRenderer;
+  /** The trees, rocks and buildings of T2 and T3 (PLAN 2.8c2): drawn over the map, under the units. */
+  private readonly groundThings: GroundInstances;
+  /** What the scatter needs of the world: set when the map layers come, kept up with the editor's terrain and cities. */
+  private scatterWorld: ScatterWorld | null = null;
+  /** The view the instances in hand were scattered for. */
+  private scatterKey = '';
+  /** The scatter of the last frame that drew instances (tests and stats); null: none were drawn. */
+  groundScatter: Scatter | null = null;
+  /** Whether the instances are drawn (off: the ground without them; tests of the ground's texture). */
+  instances = true;
   private snapArrival = 0;
   /** The length of the step the sprites are on, ms; 0: they stand where the tick has them. */
   private tickMs = 0;
@@ -162,6 +176,7 @@ export class MapView {
     this.map.setColor(0, 0x1d3557);
     const atlas = drawUnitAtlas();
     this.proxies = new ProxyRenderer(gl, atlas);
+    this.groundThings = new GroundInstances(gl);
     this.elementProxies = new ProxyRenderer(gl, atlas);
     this.individualProxies = new ProxyRenderer(gl, atlas);
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
@@ -247,6 +262,8 @@ export class MapView {
     sim.onCities((cities) => {
       this.cityLabels.setCities(cities);
       this.cities = cities;
+      if (this.scatterWorld) this.scatterWorld.cities = cityIndex(cities, this.geo.w, this.geo.h, this.geo.kmPerCell);
+      this.scatterKey = '';
       this.dirty = true;
     });
     sim.onTerrain((data, landChanged) => {
@@ -255,6 +272,11 @@ export class MapView {
       // Imported land/water: coasts follow the cells until it matches the start again.
       this.map.useLand(!landChanged);
       this.hasFineCoast = !landChanged;
+      if (this.scatterWorld) {
+        this.scatterWorld.terrain = data;
+        this.scatterWorld.land = landChanged ? null : this.fineLand;
+      }
+      this.scatterKey = '';
       this.dirty = true;
     });
     sim.onUnrest((u) => {
@@ -275,6 +297,9 @@ export class MapView {
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;
+      this.fineLand = m.land;
+      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, land: m.land, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell) };
+      this.scatterKey = '';
       this.dirty = true;
     });
     this.raf = requestAnimationFrame((t) => this.frame(t));
@@ -811,6 +836,29 @@ export class MapView {
     return out;
   }
 
+  /**
+   * Trees, rocks and buildings (PLAN 2.8c2): where the ground of T2 and T3 shows, by the same
+   * share. They are scattered again only when the camera, the view's size or the world's
+   * terrain or cities have changed.
+   */
+  private drawGroundThings(cam: Camera, dpr: number): void {
+    const share = this.map.groundOn && this.instances ? this.shares.elements : 0;
+    const world = this.scatterWorld;
+    if (share <= 0 || !world) {
+      this.groundScatter = null;
+      return;
+    }
+    const vw = this.canvas.clientWidth;
+    const vh = this.canvas.clientHeight;
+    const key = `${cam.cx},${cam.cy},${cam.scale},${vw},${vh}`;
+    if (key !== this.scatterKey || !this.groundScatter) {
+      this.groundScatter = scatter(world, { cx: cam.cx, cy: cam.cy, halfW: vw / 2 / cam.scale, halfH: vh / 2 / cam.scale, pxPerCell: cam.scale }, GROUND_CAP, this.groundThings.data);
+      this.groundThings.upload(this.groundScatter.count);
+      this.scatterKey = key;
+    }
+    this.groundThings.draw(vw, vh, dpr, share);
+  }
+
   /** The ground's relief at T2 and T3 (PLAN 2.8a). Off: the map of T0 and T1 at every zoom (tests compare the two). */
   get relief(): boolean {
     return this.map.relief;
@@ -1127,6 +1175,7 @@ export class MapView {
     this.tierShares(now);
     // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN 2.8a).
     this.map.draw(cam, dpr, this.shares.elements);
+    this.drawGroundThings(cam, dpr);
     this.drawSprites(cam, now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
@@ -1182,6 +1231,7 @@ export class MapView {
   /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */
   private readonly nameStates = new SwitchBank<number>();
 
+  /** Stops the frame loop and the camera's listeners. The GL objects stay: a view that is stopped can still be drawn (tests stop it and draw one moment). */
   dispose(): void {
     cancelAnimationFrame(this.raf);
     this.controller.dispose();

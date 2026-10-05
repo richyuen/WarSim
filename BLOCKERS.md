@@ -247,6 +247,16 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     east is shaded less steep than it is, against one to the south.
   - The cost of the ground in the tests' software rasteriser is not known per frame (what was
     read varied by a quarter from run to run); the e2e stage's length is watched instead.
+- Left by PLAN 2.8c (2026-10-04, ADR-78 third and fourth addenda), for the phase review (PLAN 2.11):
+  - The cap of 12,000 instances can be reached: a full view of forest has up to 10,900 at
+    1920 × 1080, so a larger view goes past it. What is cut is the finest level, row by row
+    from the top: on such a view the trees would thin out below a line. The e2e looks at
+    1400 × 800, where nothing is cut.
+  - Buildings stand along two directions from a hash: there are no streets, and a city's
+    buildings do not know its river or its coast beyond "not on water".
+  - A city's buildings reach to the seam of a looping map and not across it.
+  - The roads near cities of SPEC's tier table are not in PLAN 2.8 and are not drawn.
+  - The instances are drawn in every map mode in the same natural colours.
 - Left by PLAN 2.8b (2026-10-04, ADR-78 second addendum), for the phase review (PLAN 2.11):
   - The texture's octaves are measured in screen px and cells: like the hillshade, it does
     not know that a cell is fewer km wide than high away from the equator.

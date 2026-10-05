@@ -43,11 +43,13 @@ export interface GroundMeasure {
 
 /**
  * The map canvas at rest, drawn without the ground (`view.relief` off) and with it, and what the
- * ground does to the largest fill of the view.
+ * ground does to the largest fill of the view. The ground alone: its shading and its texture,
+ * without the trees, rocks and buildings that stand on it (PLAN 2.8c2, `groundThings1938`).
  */
 export function measureGround(page: Page): Promise<GroundMeasure> {
   return page.evaluate(() => {
     const v = window.__warsim!.view!;
+    v.instances = false;
     const c = document.getElementById('map') as HTMLCanvasElement;
     const gl = c.getContext('webgl2')!;
     const now = performance.now() + 1e6; // every fade is over

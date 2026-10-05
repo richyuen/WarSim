@@ -4,7 +4,10 @@
  */
 import type { Camera } from '../../render/camera';
 import { GpuTimer } from '../../render/gl/gpuTimer';
+import { GROUND_CAP, GroundInstances } from '../../render/map/GroundInstances';
 import { MapRenderer } from '../../render/map/MapRenderer';
+import { cityIndex, scatter, type ScatterWorld } from '../../render/map/scatter';
+import { Terrain } from '../../shared/terrain';
 import type { BenchAResult } from './benchApi';
 import { runFrames } from './benchUtil';
 import { makeSyntheticWorld } from './synthetic';
@@ -39,9 +42,20 @@ const fitScale = Math.min(canvas.clientWidth / W, canvas.clientHeight / H);
 let cam: Camera = { cx: W / 2, cy: H / 2, scale: fitScale };
 /** How much of the ground of T2 and T3 the pass draws (0: the map of T0 and T1). */
 let detail = 0;
+// What stands on the ground (PLAN 2.8c2): a world that is forest all over, as many instances as a view can have.
+const things = new GroundInstances(gl);
+const forest: ScatterWorld = { w: W, h: H, wrapX: true, kmPerCell: 19.57, terrain: new Uint8Array(W * H).fill(Terrain.Forest), land: null, cities: cityIndex([], W, H, 19.57) };
+/** Whether the instances are scattered and drawn in a frame, and how many the last frame had. */
+let withThings = false;
+let thingCount = 0;
 
 function frame(): void {
   map.draw(cam, dpr, detail);
+  if (!withThings) return;
+  const [vw, vh] = [canvas.clientWidth, canvas.clientHeight];
+  thingCount = scatter(forest, { cx: cam.cx, cy: cam.cy, halfW: vw / 2 / cam.scale, halfH: vh / 2 / cam.scale, pxPerCell: cam.scale }, GROUND_CAP, things.data).count;
+  things.upload(thingCount);
+  things.draw(vw, vh, dpr, detail);
 }
 
 const timer = new GpuTimer(gl);
@@ -75,6 +89,21 @@ async function run(): Promise<BenchAResult> {
     cam = c;
     drawMs[name] = await measureDraw(60);
   }
+  // And with what stands on it, scattered and uploaded again in every frame (the camera moves in each).
+  // 55 px a cell: the end of an octave of zoom, where a view has the most instances.
+  withThings = true;
+  cam = { cx: 1100.3, cy: 330.7, scale: 55 };
+  drawMs['close-55px-ground-things'] = await measureDraw(60);
+  const cpu: number[] = [];
+  for (let k = 0; k < 60; k++) {
+    cam = { ...cam, cx: cam.cx + 1e-3 };
+    const t = performance.now();
+    frame();
+    cpu.push(performance.now() - t);
+  }
+  drawMs['close-55px-ground-things-cpu'] = cpu.sort((a, b) => a - b)[30]!;
+  drawMs['close-55px-ground-things-count'] = thingCount;
+  withThings = false;
   detail = 0;
   cam = views[0]![1];
   const t0Stats = await runFrames(3, frame);

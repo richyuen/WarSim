@@ -31,6 +31,7 @@ function measure(page: Page): Promise<{ same: boolean; hashOn: string; hashOff: 
     const c = document.getElementById('map') as HTMLCanvasElement;
     const gl = c.getContext('webgl2')!;
     const now = performance.now() + 1e6; // every fade is over
+    v.instances = false; // the ground alone: what stands on it has a spec of its own (groundThings1938)
     const read = (relief: boolean): Uint8Array => {
       v.relief = relief;
       v.draw(now);

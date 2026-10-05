@@ -812,8 +812,12 @@ quick sweep as a smoke test.
   250 m/px to 1800: 40 markers, 14 of them parted at rest. Before: boxes moved by up to 2.71 px
   after their first frame, 5 pairs and more over a quarter with the boxes in full, at rest after 46
   frames. Now none moves, no pair, at rest after 36.
-- [ ] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
+- [x] 2.8 Procedural detail tiles (ground texture, trees, rocks, buildings near cities) by world-seeded noise, plus hillshade from the elevation pyramid.
   AT: screenshots at 4 zooms show increasing detail; the same location renders identically across reloads (image hash).
+  Done 2026-10-04 in its parts, 2.8a to 2.8c2. Its own AT: four zooms with more detail at each
+  (`ground1938`: 0.00, 1.2, 2.0 and 4.3 of 255 from a pixel to the next at 1000, 250, 60 and 5 m/px;
+  `docs/evidence/2.8/ground-alps-*.png`, viewed); the same place the same after a reload (`ground1938`,
+  `hillshade1938`, `groundThings1938`: hashes equal on two loads at T2 and T3).
   Split 2026-10-04 (ADR-78) by the way each part is drawn: each has its own cost, test and way to
   fail. What all three keep to:
   - *Nothing pops:* the detail comes in by the share of the T1 → T2 handover, as the sprites do
@@ -866,7 +870,7 @@ quick sweep as a smoke test.
     - `docs/evidence/2.8/ground-*.png`, viewed: the Alps read as a shaded relief, the plain as
       faint mottling, the Rockies at 1 m/px as rough ground with a fine grain; the fills keep
       their colours.
-  - [ ] 2.8c Instances: trees in forest cells, rocks on mountain cells, buildings around cities. A
+  - [x] 2.8c Instances: trees in forest cells, rocks on mountain cells, buildings around cities. A
     scatter seeded by the place, drawn as instanced quads, capped.
     AT: unit: the scatter is a pure function of the cell and its class (the same twice; none on
     water; denser in forest than on plains; buildings fall off with distance from a city by its
@@ -887,12 +891,25 @@ quick sweep as a smoke test.
       purpose is caught (the finer level in at once; a place that depends on the level shown;
       the seam not wrapped). Cost in Node, 1920 × 1080, all forest: 0.4 to 1.2 ms a scatter
       for 4,400 to 10,900 instances.
-    - [ ] 2.8c2 The draw: the scatter's instances as instanced quads over the map, under the
+    - [x] 2.8c2 The draw: the scatter's instances as instanced quads over the map, under the
       units; a tree, a rock and a building each drawn by the fragment shader, lit from the
       north-west as the ground is; by the handover's share.
       AT: the e2e AT above (a forest, a mountain range, a metropolis at T2 and T3, viewed; the
       hash after a reload; with the handover; the frame's cost with the cap reached, on the
       bench and in the e2e stage's length).
+      Done 2026-10-04 (ADR-78, fourth addendum): `GroundInstances.ts`, drawn by `MapView` between
+      the map and the sprites. `tests/e2e/groundThings1938.spec.ts`, 3 tests.
+      - A forest at 150, 20 and 3 m/px: 3,230, 3,800 and 5,434 trees; mountains: 1,666, 2,152 and
+        3,053 rocks (383 to 568 trees); Berlin: 39, 1,871 and 5,661 buildings. Of the instances
+        looked at (91 to 419 a view) every one is drawn where the scatter put it. None truncated.
+      - A forest at 150 and 5 m/px on two loads: the same counts and hashes.
+      - 320 → 280 m/px: none at T1; then 16 frames of change, no pixel by more than 7.9 of 255
+        from one frame to the next; the whole change 71.
+      - Bench A (1080p, RTX 4070 Ti), 8,685 instances scattered, uploaded and drawn in every
+        frame: 0.84 ms of GPU a frame (the ground without them: 0.86), 0.5 ms of CPU. The e2e
+        stage's length is in the commit.
+      - `docs/evidence/2.8/things-*.png`, viewed: a wood of dots, rocks on a mountainside, a
+        town of red and slate roofs along two streets' directions around Berlin's dot.
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.

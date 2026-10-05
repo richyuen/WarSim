@@ -284,6 +284,33 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     (with a margin: nothing stands on the coast line). PLAN 2.9 is of the same coast.
   - *Not done here:* the cities near the seam of a looping map reach only to it.
 
+- **Fourth addendum, PLAN 2.8c2 (2026-10-04): the instances drawn; and what goes on the GPU.**
+  - *Drawn by the fragment shader, not from an atlas:* three things, each a few lines of
+    shape and light. No picture to make, ship or keep in step with the light's direction.
+  - *Natural colours on the nation's fill:* green crowns on a blue Finland. The other way,
+    tones of the fill, would read as texture and say nothing of what stands there; at T2 that
+    is what a player looks for (cover, a town).
+  - *Under the ground's one switch and its share:* nothing of T2 shows without the rest.
+  - *The user's question, while this was built (2026-10-04): "should we move things to the GPU
+    where possible even if we cannot unit test them?"* Answered then, and kept to unless the
+    user says otherwise:
+    - What is paid for each pixel or each instance in each frame is on the GPU already: the
+      hillshade, the texture, the drawing of every tree. It is tested in the browser, by the
+      pixels: "cannot be unit tested" is not "cannot be tested".
+    - What is left on the CPU is where the instances stand. Measured in Chrome on the bench:
+      0.5 ms a frame for 8,685 instances, while the camera moves and not at rest; the main
+      thread's budget is 6 ms. On the GPU's side the instances cost nothing that can be read
+      (0.84 ms a frame with them, 0.86 without).
+    - Its rules (one place whatever the zoom; no opacity moves by more than a tenth in a step
+      of 1%; the seam; water) are tested in milliseconds, and three faults put in on purpose
+      were caught. A test by pixels looks at one view in seconds and would not see a tree
+      half a pixel off.
+    - *So: by measurement, not as a rule.* The scatter stays on the CPU. If a frame's CPU at T2
+      or T3 goes past its budget on the bench, or the cap begins to cut views that players
+      have, it moves to the vertex shader (the terrain and the coast are textures already;
+      the cities need a small one), and `scatter.ts` stays as what the shader is checked
+      against. The worker is the other place for it, and keeps the tests as they are.
+
 ### ADR-77 · 2026-10-04 · accepted — T1 markers of one nation that stand on each other are one marker (PLAN 2.7s1)
 
 - **Context:** a T1 marker stands on its formation's centre, and formations of one nation often
