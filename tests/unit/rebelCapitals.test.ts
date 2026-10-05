@@ -53,4 +53,34 @@ describe('where a rebel nation starts (PLAN 2.15e)', () => {
     expect(field).toBeGreaterThan(20);
     expect(abroad, 'nations with the capital on a cell that is not theirs').toEqual([]);
   }, 300_000);
+
+  // PLAN 2.15e2: the militia stood at the capital's coordinates. Those of a city on the shore
+  // are in a sea cell of the coarse grid, and some of them in a water pixel of the fine mask.
+  it('a revolt forced in every province of the 1938 start: every militia formation is on its own land', () => {
+    const world = sim1938().world;
+    const first = revoltEverywhere(world);
+    const { owner, w } = world.cells;
+    const fc = world.formations.cols;
+    let militia = 0;
+    const abroad: number[] = [];
+    const afloat: number[] = [];
+    const islets: number[] = [];
+    world.formations.forEach((f) => {
+      const n = fc.nation[f]!;
+      if (n < first) return;
+      militia++;
+      const x = fc.x[f]!;
+      const y = fc.y[f]!;
+      if (owner[Math.floor(y) * w + Math.floor(x)] !== n) abroad.push(f);
+      if (world.onLand(x, y)) return;
+      // A cell without sure land anywhere in the fine mask (an islet smaller than a pixel of
+      // it) has no place to stand on but its middle: a cause of its own, PLAN 2.15e2b.
+      const at = world.cellPoint(Math.floor(y) * w + Math.floor(x));
+      (world.onLand(at[0], at[1]) ? afloat : islets).push(f);
+    });
+    expect(militia).toBeGreaterThan(400);
+    expect(abroad.length, 'militia formations on a cell that is not their nation\'s').toBe(0);
+    expect(afloat.length, 'militia formations off sure land in a cell that has some').toBe(0);
+    expect(islets.length, 'militia formations in a cell without sure land (PLAN 2.15e2b)').toBeLessThanOrEqual(8);
+  }, 300_000);
 });

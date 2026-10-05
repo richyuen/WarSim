@@ -17,7 +17,7 @@
  * REGION_MAX provinces). A new rebel nation receives the area's land (owner and controller),
  * becomes its core, gets its largest city as capital (without a city: its own cell nearest the
  * middle of the area, PLAN 2.15e), MILITIA_PER_CELLS militia divisions
- * (1..MILITIA_MAX) and START_GOLD; with probability 1/2 (hash) the former holder declares war.
+ * (1..MILITIA_MAX), raised where production raises a formation (`spawnPoint`), and START_GOLD; with probability 1/2 (hash) the former holder declares war.
  * Unrest in the area resets to AFTER_REVOLT. Event `RevoltSpawned` (a = rebel, b = former holder).
  *
  * Defection (critic B1/B4, 2026-10-03): when the area's core nation is alive and is neither the
@@ -47,6 +47,7 @@ import { navOf, type World } from '../world';
 import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
+import { spawnPoint } from './production';
 import { declareWar } from './war';
 
 export const NON_CORE = 4;
@@ -379,7 +380,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
       const f = world.formations.create();
       const fc = world.formations.cols;
       fc.nation[f] = id;
-      [fc.x[f], fc.y[f]] = world.standPoint(nc.capitalX[id]!, nc.capitalY[id]!);
+      // Where production raises a formation (PLAN 2.15e2): a capital on the shore has its
+      // coordinates in a sea cell of the coarse grid, which is nobody's.
+      [fc.x[f], fc.y[f]] = spawnPoint(world, id) ?? world.standPoint(nc.capitalX[id]!, nc.capitalY[id]!);
       fc.supply[f] = 1;
       equipFormation(world, f, 0); // template 0 = infantry_div (militia)
     }

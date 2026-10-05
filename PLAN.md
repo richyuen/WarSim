@@ -2191,11 +2191,24 @@ quick sweep as a smoke test.
         city). The other 63 of the 74 have a city on the shore as capital: its coordinates
         are in a sea cell, its cell is the nation's. No defect of the capital.
       - *Tests:* `tests/unit/rebelCapitals.test.ts` (seen to fail: 11). The pin did not move.
-    - [ ] 2.15e2 The militia stand on the nation's land: at a capital on the shore they
+    - [x] 2.15e2 The militia stand on the nation's land: at a capital on the shore they
       stand at the city's coordinates, in a sea cell (106 of 577 on a cell that is not
       their nation's, 12 off sure land, before 2.15e1; 95 and 9 after). Raise them where
       production raises a formation (`spawnPoint`).
       AT: the forced revolt: every militia formation on a cell of its nation, on sure land.
+      Done 2026-10-05 (ADR-104), but for the 8 of 2.15e2b.
+      - *The cause:* `spawnRebels` put the militia at the capital's coordinates.
+      - *Measured:* 95 → 0 on a cell that is not theirs; 8 left off sure land, each the
+        militia of a nation of one cell that has no sure land in the fine mask.
+      - *Tests:* `tests/unit/rebelCapitals.test.ts`, the second (seen to fail: 95). The pin
+        did not move. By hand: `godUi1938` (2), green.
+    - [ ] 2.15e2b A cell that is owned and has no sure land in the fine mask (an islet
+      smaller than a pixel of it): `cellPoint` keeps its middle, in the water. 8 nations of
+      one cell among the 406 (cells 283,742; 1985,553; 59,501; 1432,627; 2047,650; 1868,698;
+      402,538; 1727,668). Look first at how many owned cells of the 1938 start are of this
+      kind and what the picture draws there, then decide: the best pixel of the cell, or
+      land the mask does not have.
+      AT: the forced revolt: no militia formation off sure land (the test's `islets` at 0).
     - [ ] 2.15e3 The origin is the province of the capital's cell, not of its coordinates
       (the 66 of PLAN 2.15b with the capital outside the origin: a city on the shore names
       its nation after the area's first province).

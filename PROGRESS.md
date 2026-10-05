@@ -5894,3 +5894,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   of the 1938 start have their coordinates outside the city's cell (ADR-103 says "every
   city"; the test looks at founded nations only).
 - **Next:** PLAN 2.15e2, the militia where production raises a formation.
+
+## 2026-10-05 — PLAN 2.15e2: a rebel nation's militia where production raises a formation
+
+- **Found:** one cause. `spawnRebels` put the militia at the capital's coordinates; those of
+  a city on the shore are in a sea cell of the coarse grid.
+- **Built (ADR-104):** the militia are raised at `spawnPoint` (the old place where it has no
+  answer). No import cycle: `production.ts` does not reach `revolts.ts`.
+- **Tests:** `tests/unit/rebelCapitals.test.ts`, the second (seen to fail: 95 on a cell that
+  is not their nation's; 0 after).
+- **Left, split as 2.15e2b:** 8 militia formations off sure land, each of a nation of one
+  cell that has no sure land in the fine mask (`cellPoint` keeps the middle). The test
+  holds them at 8 or fewer; 2.15e2b brings that to 0.
+- **The pin did not move** (324bc358).
+- **Run by hand:** `godUi1938` (2): green; the Kill of France as before (102 → 106, 2 → 2 wars).
+- **Gotchas:** `npx vitest run tests/sweep/...` finds no file: the sweep tests want
+  `--config vitest.sweep.config.ts`. A Python script in a Bash heredoc lost its `\'`: the
+  Edit tool for a test's text.
+- **Next:** PLAN 2.15e2b, the owned cell without sure land; then 2.15e3.

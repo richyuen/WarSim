@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-104 · 2026-10-05 · accepted — A rebel nation's militia are raised where production raises a formation (PLAN 2.15e2)
+
+- **Context:** the militia of a new rebel nation stood at the capital's coordinates
+  (`standPoint`). A city on the shore has those in a sea cell of the coarse grid (ADR-103,
+  point 1), which is nobody's. Of 577 militia formations of a revolt forced in every
+  province of the 1938 start, 95 stood on a cell that was not their nation's.
+- **Decision:** `spawnRebels` asks `spawnPoint` (`systems/production.ts`): the cell the
+  nation controls nearest its capital, at the capital's own place when that cell holds it,
+  else at the cell's land point. Where `spawnPoint` has no answer (no cell within
+  `SPAWN_REACH_CELLS`) the old place stays. A nation that returns from the dead through
+  `spawnRebels` takes the same way. One rule for every formation a nation gets at home.
+- **Measured:** 95 → 0 on a cell that is not theirs. Off sure land: 8, all of one kind: a
+  nation of one cell that has no sure land anywhere in the fine mask (an islet smaller than
+  a pixel of it), so `cellPoint` keeps the middle. Whatever stands in such a cell stands
+  there, a militia or not: a cause of its own, PLAN 2.15e2b.
+- **Not decided here:** what stands for land in such a cell (2.15e2b); a field capital that
+  moves takes the middle of its cell (`relocateToField`, seen in 2.15e1).
+- **The pin:** not moved (324bc358): no revolt at a capital on the shore in seed 99's
+  first year.
+- **Tests:** `tests/unit/rebelCapitals.test.ts`, the second: every militia formation on a
+  cell of its nation (seen to fail: 95), and on sure land where its cell has any; no more
+  than the 8 of 2.15e2b in a cell that has none.
+
 ### ADR-103 · 2026-10-05 · accepted — A rebel nation without a city has its capital on its own cell (PLAN 2.15e1)
 
 - **Context:** PLAN 2.12a counted, of 406 nations founded by a revolt forced in every
