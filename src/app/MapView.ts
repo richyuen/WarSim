@@ -6,7 +6,8 @@
 import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
+import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
+import { drawTags, layoutTags, type PlacedTag, type TagInput } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
@@ -790,6 +791,7 @@ export class MapView {
       this.dirty = true;
     }
     this.drawUnitMarkers(cam, now);
+    this.drawFormationTags(cam);
     this.drawFx(cam, now);
   }
 
@@ -869,6 +871,9 @@ export class MapView {
         }
       }
     }
+    // At T2 and T3 the formations' tags (PLAN 2.14a), as they stood in the last frame: they are
+    // laid out after the names of this one.
+    if (this.tactical.near === true) for (const g of this.tagRects) out.push({ x: g.x, y: g.y, w: g.w, h: g.h, clear: NAME_CLEAR_PX });
     for (const f of this.flagRects) out.push({ x: f.x - 1, y: f.y - 1, w: f.w + 2, h: f.h + 2 });
     return out;
   }
@@ -968,6 +973,98 @@ export class MapView {
     // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
     const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now, this.morph.scale < 1);
     this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks);
+  }
+
+  /** The tags of the formations in the view at T2 and T3, as they were drawn last (PLAN 2.14a; tests, and the names keep clear of them). */
+  tagRects: PlacedTag[] = [];
+  /** Tags that found no free place in the last frame (tests). */
+  tagsLeft = 0;
+  /** The opacity the tags were drawn with last (tests). */
+  tagOpacity = 0;
+
+  /** A formation's name as it is shown: its kind and its number ("Infantry division 658"). The flag beside it says whose. */
+  formationName(id: number, template: number): string {
+    const key = this.templates[template]?.nameKey;
+    return t('formation.name', { kind: key ? t(key as MessageKey) : t('formation.kind.unknown'), n: id });
+  }
+
+  /**
+   * The tags of T2 and T3 (PLAN 2.14a): flag, strength and name by every formation that has
+   * elements in the view. They come in with the sprites, as the markers' boxes go.
+   */
+  private drawFormationTags(cam: Camera): void {
+    const alpha = this.shares.elements;
+    this.tagOpacity = alpha;
+    this.tagRects = [];
+    this.tagsLeft = 0;
+    if (alpha <= 0.01) return;
+    const vw = this.canvas.clientWidth;
+    const vh = this.canvas.clientHeight;
+    const offs = wrapOffsets(cam, this.geo, vw);
+    // The box of each formation's elements on the screen, per copy of a looping map.
+    const boxes = new Map<string, [number, number, number, number]>();
+    const grow = (key: string, px: number, py: number, r: number): void => {
+      const b = boxes.get(key);
+      if (!b) boxes.set(key, [px - r, py - r, px + r, py + r]);
+      else {
+        if (px - r < b[0]) b[0] = px - r;
+        if (py - r < b[1]) b[1] = py - r;
+        if (px + r > b[2]) b[2] = px + r;
+        if (py + r > b[3]) b[3] = py + r;
+      }
+    };
+    if (this.elementCount > 0) {
+      // Half an element's sprite around its middle, as it is drawn.
+      const r = Math.max(2.5 * this.unitScale, this.elementPx / 2);
+      for (let i = 0; i < this.elementCount; i++) {
+        for (let k = 0; k < offs.length; k++) {
+          const [px, py] = worldToScreen(cam, this.elementX[i]! + offs[k]!, this.elementY[i]!, vw, vh);
+          if (px < -vw || px > 2 * vw || py < -vh || py > 2 * vh) continue;
+          grow(`${this.elementFormation[i]!}:${k}`, px, py, r);
+        }
+      }
+    } else {
+      // No elements arrived: the stand-in sprites of the formations (`drawSprites`).
+      const r = Math.min(STAND_IN_MAX_PX * this.unitScale, Math.max(8, MARKER_CELLS * cam.scale)) / 2;
+      for (let i = 0; i < this.formIds.length; i++) {
+        for (let k = 0; k < offs.length; k++) {
+          const [px, py] = worldToScreen(cam, this.formX[i]! + offs[k]!, this.formY[i]!, vw, vh);
+          if (px < -r || px > vw + r || py < -r || py > vh + r) continue;
+          grow(`${this.formIds[i]!}:${k}`, px, py, r);
+        }
+      }
+    }
+    if (boxes.size === 0) return;
+    const index = new Map<number, number>();
+    for (let i = 0; i < this.formIds.length; i++) index.set(this.formIds[i]!, i);
+    const items: TagInput[] = [];
+    for (const [key, b] of boxes) {
+      const id = Number(key.slice(0, key.indexOf(':')));
+      const i = index.get(id);
+      if (i === undefined) continue;
+      items.push({
+        id,
+        nation: this.formNation[i]!,
+        strength: this.formStrength[i]!,
+        text: strengthText(this.formStrength[i]!),
+        name: this.formationName(id, this.formTemplate[i]!),
+        engaged: (this.formFlags[i]! & FormationFlag.engaged) !== 0,
+        x0: b[0],
+        y0: b[1],
+        x1: b[2],
+        y1: b[3],
+      });
+    }
+    const ctx = this.overlay.getContext('2d')!;
+    const measure = (text: string, font: string): number => {
+      ctx.font = font;
+      return ctx.measureText(text).width;
+    };
+    const { placed, left } = layoutTags(items, measure, vw, vh, this.unitScale);
+    this.tagsLeft = left;
+    this.tagRects = placed;
+    const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
+    drawTags(ctx, placed, alpha, (n) => this.flags.canvasOf(n), hex, this.unitScale);
   }
 
   /** The formations of the last snapshot (tests). */
@@ -1139,11 +1236,16 @@ export class MapView {
     return this.controlGrid[y * this.geo.w + x] ?? 0;
   }
 
-  /** Tint of an element sprite or a figure: the nation's marker colour lightened toward white, so that it stands out on the nation's own fill. */
+  /**
+   * Tint of an element sprite or a figure: the nation's sprite colour (`nationColor`), as its
+   * stand-in sprite has it. Until PLAN 2.14a it was lifted a second time, 45% toward white: every
+   * nation's tint then lay between 178 and 255 a channel, Germany's elements and Poland's were
+   * two near-whites, and a close view did not say whose a battalion was. The dark outline of the
+   * atlas, not the lift, is what sets a sprite off against its nation's fill.
+   */
   private spriteRgba(id: number): [number, number, number, number] {
     const col = this.nationColor(id);
-    const lift = (v: number): number => Math.round(v + (255 - v) * 0.45);
-    return [lift((col >> 16) & 255), lift((col >> 8) & 255), lift(col & 255), 255];
+    return [(col >> 16) & 255, (col >> 8) & 255, col & 255, 255];
   }
 
   /** x on the side of prevX: across the seam of a looping map an interpolation must not sweep the whole map. */
@@ -1226,6 +1328,7 @@ export class MapView {
     // clear of the T0 counters (PLAN 1.45c), and the city names of the flags and of the unit
     // layer that is shown, counters or markers (PLAN 2.7r, 2.7u).
     this.drawUnitMarkers(cam, now);
+    this.drawFormationTags(cam);
     this.drawFx(cam, now);
     this.drawFlags(cam, now);
     this.drawCityLayer(cam, dpr, now);

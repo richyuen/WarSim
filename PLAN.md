@@ -1625,17 +1625,54 @@ quick sweep as a smoke test.
   **Split 2026-10-05,** one cause a commit, in the order a player meets them. Each part
   takes its decision when it is taken up and has its own e2e, failing first, in a war made
   by God Mode, with pictures looked at:
-  - [ ] 2.14a Who is who at T2 and T3. Every formation in the view has its flag, its
+  - [x] 2.14a Who is who at T2 and T3. Every formation in the view has its flag, its
     strength and its name by it (the marker's box gave way to nothing), and the elements and
     figures of two nations differ in the picture.
     AT: in a view at 150 m/px and at 12 m/px on a German and a Polish division, each has a
     label with flag, strength and name within a stated distance of its elements, none over
     another; the two sides' sprites and figures differ in colour by a stated measure.
+    Done 2026-10-05 (ADR-88).
+    - *The tags* (`src/render/units/tags.ts`, drawn by `MapView.drawFormationTags`): a small
+      dark label above the part of a formation that is in the view: flag, strength, and a
+      name, "Infantry division 1055" (its kind and its number; the flag says whose). It
+      comes in with the sprites as the marker's box goes, has the marker's red edge in
+      contact, gives way upward and then downward to a stronger formation's tag, and stays
+      in the view when its formation reaches out of it. City names keep clear of the tags.
+    - *The name is the view's, not the sim's:* no formation has a name in the state. The
+      kind is the template's, the number the formation's id. A numbering by nation ("3rd
+      Polish infantry division") would be a column of the state and a moved pin: a line
+      under 2.14b, where the panel shows the same name.
+    - *The colour:* sprites and figures wear `nationColor` as the stand-in sprites do. The
+      second lift toward white is gone: Germany (166, 166, 166) and Poland (226, 157, 169)
+      are 61 apart in RGB, where they were (206, 206, 206) and (239, 201, 208), 33 apart.
+    - *Tests:* e2e `tags1938.spec.ts`, on a German and a Polish division at war across their
+      border (at HEAD the view has no tags, and the tints are 33 apart where the spec asks
+      for more than 50): none at T1; at 150 m/px and at 12 m/px on each division, every
+      formation with an element on the screen has one tag, with its nation's flag drawn,
+      the strength the sim has and its name, at most 8 px from its elements (3.8), whole in
+      the view, none on another. Unit `tags.test.ts` (4): the layout.
+    - *Pictures looked at* (`docs/evidence/2.14/`): at 150 m/px the two tags stand over the
+      two divisions either side of the border, flags right (Germany's is the black, white
+      and red of the scenario's data); at 12 m/px the tag stands at the head of the
+      division's battalions.
+    - **What the pictures also show, and is not done:** at 12 m/px a figure is a few dark
+      pixels, on Poland's pink as on Germany's grey: the tint cannot be read at that size,
+      and it was no better before (`docs/evidence/2.10/stop-7-battalions.png`). The tag
+      says whose the figures are; the figures themselves do not. With the ground of 2.14d
+      (terrain, not the nation's fill) a nation-coloured figure has something to stand
+      against: looked at again there.
+    - *Run by hand* (ADR-87: this part's gate runs only the changed spec): `markerStacks`,
+      `fades`, `handover`, `cityNames`, `closeZoom`, `spriteColours`, `zoomDemo`,
+      `individuals`, `labelFades`, `fire`, `morphNations`, `canvasOpaque`: 20 of 20 green.
+    - *The pin:* not moved; nothing of the sim changed.
   - [ ] 2.14b A formation panel. A click on a formation (its marker, its label, one of its
     elements) opens it: name, kind, nation, strength, its elements with theirs, supply,
     whether it is engaged. No click at any zoom opened anything but the nation's panel.
     AT: a click at T1, T2 and T3 opens the panel of that formation; its numbers are the
     sim's; a click on ground closes it.
+    - From 2.14a: the name is `MapView.formationName` (kind and id). Decide here whether a
+      formation gets a number of its nation's own in the state ("3rd infantry division"):
+      a new column, a moved pin, and a rule for what a new or a revived formation is called.
   - [ ] 2.14c A battle fits a close view. Two formations in contact are both in one view at
     20 m/px and face each other (the critic: the closest pair stood 29 km apart, a view is
     32 km wide). The decision is of where engaged elements are drawn, or stand: at the cell

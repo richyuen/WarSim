@@ -5316,3 +5316,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **A count set right:** the entry of PLAN 2.13 above says 660 unit tests; it was 655.
 - **This commit's own gate** is the first under the rule: no task ticked, no spec changed.
 - **Next:** PLAN 2.14a, which was begun (the code read, nothing written).
+
+## 2026-10-05 — PLAN 2.14a: at T2 and T3 every formation has its flag, strength and name by it (ADR-88)
+
+- **What the critic saw:** nothing in place of the marker's box at close zoom, and two
+  nations' elements the same near-white.
+- **Built:** a tag layer (`render/units/tags.ts`): flag, strength, "Infantry division 1055",
+  above the part of the formation that is on the screen; red edge in contact; gives way to a
+  stronger formation's tag. The name is the view's (template name and id), no state.
+- **Colour:** the sprites' second lift toward white is gone. Germany and Poland are 61 apart
+  in RGB (33 before).
+- **Tests:** 1 e2e (`tags1938`), 4 unit (660). The pin did not move.
+- **Looked at three pictures** (`docs/evidence/2.14/`). The tags are right. At 12 m/px the
+  figures are dark specks on either nation's fill and their tint cannot be read; it was so
+  before. Said in PLAN; taken up with the ground of 2.14d.
+- **A gotcha:** a formation spawned on a third nation's land is sent home in its first hour.
+  The first version of the spec put a German and a Polish division in western China and
+  found no elements there. They now stand across their own border.
+- **Another:** a PowerShell replace with a template string in double quotes threw before it
+  wrote (the memory note on it held). Edits of code with `${…}` go through the Edit tool.
+- **Gate:** the first part under ADR-87: the changed spec only. Twelve spec files of the
+  close zoom run by hand, 20 tests green.
+- **Next:** PLAN 2.14b, a formation panel.

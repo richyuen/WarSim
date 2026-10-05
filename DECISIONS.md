@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-88 · 2026-10-05 · accepted — At T2 and T3 a formation has a tag: flag, strength, name; sprites wear the nation's sprite colour (PLAN 2.14a, the critic's R2-B2)
+
+- **Context:** the critic: "At T2 and T3 the marker boxes are gone and nothing is in their
+  place: no flag, no strength, no name. German and Polish elements are the same grey dots."
+  The marker's box morphs into the elements (ADR-72) and its bar and number go 220 ms later.
+- **Decision:**
+  - *A layer of its own, not the marker's lower row kept.* A tag is anchored on the part of
+    its formation that is on the screen, so a division wider than the view (T3) or half out
+    of it keeps one. The marker's stacks are laid out in the world's px and do not know the
+    screen's edges; and the marker's morph, its early return and the specs built on them
+    (`markerStacks1938`, `fades1938`) stay as they are.
+  - *Layout:* stronger formations first; above the formation, else up to four places
+    higher, else below; one that finds no place is left out and counted (`tagsLeft`).
+  - *The name* is derived in the view from the template's name and the formation's id. No
+    state, no pin.
+  - *The colour:* one lift (`v × 0.55 + 115`), as the stand-in sprites. The second lift
+    (45% toward white, "so that it stands out on the nation's own fill") put every nation
+    between 178 and 255 a channel. The outline of the atlas is what sets a sprite off.
+- **[AoC-DEVIATION]:** AoC has no formations to name; this is ours.
+- **Consequences:** `spriteColours1938` holds as before (one tint a nation in every mode).
+  At 12 m/px a figure is too small for its tint to be read on any fill: said under PLAN
+  2.14a and taken up with the ground of 2.14d. With many formations on one spot (a stack of
+  eleven or more) some have no tag; the formation panel of 2.14b is the way to them.
+
 ### ADR-87 · 2026-10-05 · accepted — The e2e suite runs in full when a numbered task is ticked, not for its parts (the user's decision)
 
 - **Context:** a gate with code in it takes 13 minutes, 7 to 9 of them the e2e stage (117
