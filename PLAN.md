@@ -2341,6 +2341,9 @@ quick sweep as a smoke test.
   missing tests. It belongs to the tasks it follows (ADR-74) and starts the count again.
   AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
   gate is green.
+  - From the gate of 2.16d: one run of the e2e suite took 15.6 min and `cityNames1938`
+    counted 39 and 31 ticks in four seconds; the next took 9.8. Do the three tests of
+    `randomWorld.spec.ts` slow their neighbours?
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world

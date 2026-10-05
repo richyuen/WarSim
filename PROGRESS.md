@@ -6105,3 +6105,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen, not changed:** the names (the last line under PLAN 2.16d; for PLAN 7.4).
 - **PARITY:** rows 75 and 78 appended; the score did not move (46.3%).
 - **Next:** PLAN 2.16R, the review pass over 2.12 to 2.16 (PROMPT step 9), then 2.17.
+
+## 2026-10-05 — The gate of PLAN 2.16d failed once on time, then passed; not explained
+
+- **First run:** e2e 15.6 min, 2 failed of 130, both in `cityNames1938.spec.ts`, the running
+  part: 39 and 31 ticks in four seconds at top speed (more than 50 asked). Unit, lint and
+  build were green.
+- **The spec alone, right after:** 673 and 757 ticks, green in 19 s. The machine read 2% load
+  then; its load during the first run was not measured.
+- **Second run, the same tree:** green, e2e 9.8 min, 577 and 330 ticks in that part. The
+  commit (8052c5c) was made on this run.
+- **Not looked into:** why the first run took 15.6 minutes. The suite has three tests more
+  (`randomWorld.spec.ts`, each a world of its own beside the others); whether they slow their
+  neighbours is a question for the review pass (PLAN 2.16R). No test was changed.
