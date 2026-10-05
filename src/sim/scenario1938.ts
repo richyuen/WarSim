@@ -26,6 +26,7 @@ import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
 import type { NationDef } from './data/schemas';
 import type { StraitDef } from './data/terrain';
+import { budgetOf } from './ai/economic';
 import { cellWeight, ECON_PER_BN, industrialCapacity, MANPOWER_START_SHARE, monthlyAccounts, type EconomyTables } from './systems/economy';
 import { equipFormation } from './systems/elements';
 import { initProvinceCores } from './systems/revolts';
@@ -43,6 +44,15 @@ export const NATIONS_1938 = nations1938.nations as unknown as NationDef[];
 export const TEMPLATES_LAND = templatesLand.templates as TemplateDef[];
 /** Starting treasury in months of gross income (ADR-22). */
 export const START_GOLD_MONTHS = 6;
+/**
+ * And not less than this many months of what the nation's budget is short with the army the
+ * order of battle gives it (`budgetOf`; PLAN 2.13). Some thirty nations of 1938 have armies
+ * their income does not carry (China's by half its income, Mongolia's by seven times), and for
+ * 16 of them six months of income is less than a year of that: they begin with the money for
+ * a year of their armies, and cut them as it runs out (`RUNWAY_MONTHS`), each cut a line in
+ * the history. Before, they cut them in the first hour of the game.
+ */
+export const START_ARMY_MONTHS = 12;
 
 const unitTypes = new Map((unitsLand.types as unknown as UnitTypeLite[]).map((u) => [u.id, u]));
 const unitUpkeep = new Map((unitsLand.types as unknown as { id: string; upkeep: { gold: number } }[]).map((u) => [u.id, u.upkeep.gold]));
@@ -291,9 +301,12 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   }
 
   // Starting treasury and manpower pool.
-  const { gross, expenses, population } = monthlyAccounts(world, ECONOMY_TABLES_1938);
+  const accounts = monthlyAccounts(world, ECONOMY_TABLES_1938);
+  const { gross, expenses, population } = accounts;
   world.nations.forEach((id) => {
-    world.nations.cols.gold[id] = START_GOLD_MONTHS * gross[id]!;
+    // The army of the start is paid for a year, whatever the income (PLAN 2.13): see START_ARMY_MONTHS.
+    const { balance, need } = budgetOf(world, id, accounts);
+    world.nations.cols.gold[id] = Math.max(START_GOLD_MONTHS * gross[id]!, START_ARMY_MONTHS * Math.max(0, need - balance));
     // Known before the first economy month (income map mode PLAN 1.30, economy panel PLAN 1.31a).
     world.nations.cols.income[id] = gross[id]!;
     world.nations.cols.expenses[id] = expenses[id]!;

@@ -4,9 +4,13 @@
  *
  * 1. Balance: with B = projected gross − upkeep − admin − CE cost − suppression − tribute (the
  *    month about to be charged), the nation needs B ≥ DEBT_PAYBACK × max(0, −gold) +
- *    MARGIN × income (pay any debt back within a year, keep a margin). While short, it disbands
- *    idle (not engaged) formations, weakest first (lowest id on ties); a disbanded formation
- *    stops its upkeep at once and returns DISBAND_MANPOWER of its men to the pool.
+ *    MARGIN × income (pay any debt back within a year, keep a margin). While it is short by S =
+ *    need − B and its gold is below RUNWAY_MONTHS × S, it disbands idle (not engaged)
+ *    formations, weakest first (lowest id on ties); a disbanded formation stops its upkeep at
+ *    once and returns DISBAND_MANPOWER of its men to the pool. A nation with gold enough runs
+ *    the deficit instead (PLAN 2.13: the AI disbanded 228 of the 1,054 formations of 1938 in
+ *    the first hour, the Soviet Union's with six years of its deficit in the treasury). One
+ *    `FormationsDisbanded` event, and so one line of the history, per nation and month.
  * 2. Suppression: SUPPRESS_LEVEL while a province it holds has unrest ≥ SUPPRESS_FROM
  *    and the budget has room (B > SUPPRESS_ROOM × income), else 0.
  * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (at most MAX_PARALLEL),
@@ -23,6 +27,7 @@
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  */
 import { isMonthStart } from '../../shared/calendar';
+import { EventKind } from '../../shared/events';
 import { elementIndex, destroyFormation } from '../systems/elements';
 import { monthlyAccounts, UPKEEP_SCALE, type EconomyTables } from '../systems/economy';
 import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
@@ -34,6 +39,11 @@ import type { World } from '../world';
 export const DEBT_PAYBACK = 1 / 12;
 export const MARGIN = 0.05;
 export const DISBAND_MANPOWER = 0.5;
+/**
+ * A nation short of money disbands only while its gold is below this many months of what it is
+ * short (PLAN 2.13): a treasury is there to be spent on the army before the army is sent home.
+ */
+export const RUNWAY_MONTHS = 3;
 export const SUPPRESS_LEVEL = 0.5;
 export const SUPPRESS_FROM = 40;
 export const SUPPRESS_ROOM = 0.15;
@@ -89,25 +99,23 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     world.nations.forEach((n) => {
       if (nc.living[n] !== 1 || nc.aiOff[n] === 1) return;
       // Projected accounts for the month about to be charged (the AI runs before the economy).
-      const income = Math.max(0, acc.gross[n]!);
-      const extra =
-        (COST_SHARE * Math.max(0, nc.efficiency[n]! - PEACE_CE)) / (WAR_CE - PEACE_CE) * income +
-        SUPPRESSION_COST * nc.suppression[n]! * income +
-        (nc.overlord[n] !== 0 ? TRIBUTE * (1 - nc.autonomy[n]! / 100) * income : 0);
-      let balance = income - acc.expenses[n]! - extra;
-      const need = DEBT_PAYBACK * Math.max(0, -nc.gold[n]!) + MARGIN * income;
-      // 1. Disband until the books balance.
+      const { income, need } = budgetOf(world, n, acc);
+      let { balance } = budgetOf(world, n, acc);
+      // 1. Disband while the books do not balance and the treasury cannot carry what is short.
       if (balance < need) {
         const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1).sort((a, b) => f.strength[a]! - f.strength[b]! || a - b);
+        let cut = 0;
         for (const id of idle) {
-          if (balance >= need) break;
+          if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance)) break;
           const u = upkeepOf(world, id);
           if (u <= 0) continue;
           nc.manpower[n] = nc.manpower[n]! + DISBAND_MANPOWER * f.strength[id]!;
           destroyFormation(world, id);
           balance += u;
           army.set(n, (army.get(n) ?? 0) - u);
+          cut++;
         }
+        if (cut > 0) world.out.emit(world.tick, EventKind.FormationsDisbanded, n, cut, NaN, NaN);
       }
       // 2. Suppression.
       nc.suppression[n] = restless.has(n) && balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
@@ -137,6 +145,22 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
     });
   };
+}
+
+/**
+ * The month about to be charged, as the economic AI sees it for nation `n`: `income` (gross, not
+ * below 0), `balance` (income − expenses − CE cost − suppression − tribute) and `need`, what the
+ * balance has to be (a debt paid back within a year, and a margin). `need − balance`, when
+ * above 0, is what the nation is short each month. `acc` is `monthlyAccounts` of the world.
+ */
+export function budgetOf(world: World, n: number, acc: { gross: ArrayLike<number>; expenses: ArrayLike<number> }): { income: number; balance: number; need: number } {
+  const nc = world.nations.cols;
+  const income = Math.max(0, acc.gross[n]!);
+  const extra =
+    (COST_SHARE * Math.max(0, nc.efficiency[n]! - PEACE_CE)) / (WAR_CE - PEACE_CE) * income +
+    SUPPRESSION_COST * nc.suppression[n]! * income +
+    (nc.overlord[n] !== 0 ? TRIBUTE * (1 - nc.autonomy[n]! / 100) * income : 0);
+  return { income, balance: income - acc.expenses[n]! - extra, need: DEBT_PAYBACK * Math.max(0, -nc.gold[n]!) + MARGIN * income };
 }
 
 /** Nations holding a province with unrest ≥ SUPPRESS_FROM (non-core land, or an overextended empire's periphery). */

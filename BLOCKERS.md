@@ -309,6 +309,12 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   than the sim makes fire. The drop is by design (the view says how many: `firesDropped`); the
   spec's "none dropped" holds on an idle machine only. If it recurs on an idle machine, look at
   the snapshot rate at T2 while the game runs at ×5. The counters' case of the same run is PLAN 2.7l.
+- For PLAN 7.1 (2026-10-05, PLAN 2.13): the mean tick of five pinned years of seed 99 is 1.502 ms, at
+  the budget of 1.5 (1.203 before). The armies of the start are no longer cut in the first hour: years
+  1 and 2 have some 200 formations more and take 2.11 and 1.97 ms a tick. Not tuned (ADR-58).
+- **Answered in part by PLAN 2.13 (ADR-86):** the entry below. The 228 are no longer disbanded in the
+  first tick; the nations whose income does not carry their army cut it as their gold runs out
+  (seed 99: 846 formations after a year, 687 after two). Which budgets are off is still open.
 - For Phase 7 (balance; seen 2026-10-04 while writing the test of PLAN 2.7o, not looked into): in the
   first tick of the 1938 world the economic AI disbands 228 of the 1,054 formations (seed 99; the
   same with and without commands), all in `economicAi` step 1, "disband until the books balance".

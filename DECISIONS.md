@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-86 · 2026-10-05 · accepted — A treasury is spent before an army is sent home; the treasury of the start carries the army of the start for a year (PLAN 2.13, the critic's R2-B3)
+
+- **Context:** the critic's second report: at tick 1 of every 1938 game 228 of the 1,054
+  formations were gone, 39 of the 72 armour formations, all 34 Soviet ones, and no line of
+  the history said so. Run here first (seed 99): 30 nations disband, China 70 of 140, the
+  Soviet Union 34 of 162, Nationalist Spain 22 of 40, Mongolia 4 of 4.
+- **What it was.** Step 1 of the economic AI disbanded until the month's books balanced with
+  a margin. It never looked at the treasury (but for a debt). The Soviet Union was short 112
+  a month plus its margin, with 6,936 in gold: five years of it. And the weakest formation
+  goes first, by men: a tank brigade is small, so the armour went before the rifle divisions.
+- **Decision, two rules and a line:**
+  - *The AI:* a nation short by S a month disbands only while its gold is below
+    `RUNWAY_MONTHS` (3) × S. It runs the deficit from the treasury first. As the gold runs
+    out it cuts as much as brings S down to a third of the gold, not the whole deficit at once.
+  - *The start:* a nation begins with six months of income (ADR-22) or, where that is more,
+    `START_ARMY_MONTHS` (12) of what its budget is short with the army the order of battle
+    gives it. 16 nations get more by it (Mongolia 4 → 98). Without it the AT ("none
+    disbanded in the first month", on three seeds) cannot be met by the first rule alone:
+    Mongolia's gold was half a month of its deficit, and a nation that neither disbands nor
+    has gold is bankrupt in its second month.
+  - *The line:* `FormationsDisbanded` (nation, how many), one event per nation and month,
+    kept in the history: "X could not pay its army and disbanded formations: N".
+- **Which of the task's two ways this is.** Not "budgets that carry the armies": that is the
+  1938 incomes and upkeeps, balance data, deferred by ADR-58. It is "a floor and a time of
+  grace", with the grace counted in gold, not in months: a clock would have ended on one day
+  for every nation, and would have had to be told from the bankruptcy it leads to.
+- **What it does not do.** The armies the incomes do not carry are still cut, later and
+  line by line: seed 99 has 846 formations after a year (826 after an hour, before), 687
+  after two, 658 after five. Whose budget is wrong, the income's or the order of battle's,
+  stays with Phase 7 (BLOCKERS). And the weakest still goes first: when the Soviet gold runs
+  low, its tank brigades are the first to go. A line under PLAN 3.1.
+- **The pin (ADR-55):** `4aafc3eb` → `324bc358`. Five years of seed 99: `5377e4c5`.
+- **The tick, pinned, five years of seed 99:** mean 1.502 ms (1.203 before; the budget is
+  1.5): the first two years have some 200 formations more (2.11 and 1.97 ms). Logged in
+  BLOCKERS for PLAN 7.1; not tuned now (ADR-58).
+- **Tests whose expectation the rule changed, each said in its place:**
+  - `economicAi.test.ts`: "a nation whose army costs more than it earns disbands": Mongolia
+    now does so with its treasury empty, not with the money of the start unspent.
+  - `economy.test.ts`: "starts with six months of income": or a year of its shortfall.
+  - `alliances.test.ts`: "fighting together raises unity" compared a game at war with a twin
+    "at peace" that the AI was free to take to war. With Poland's army whole, Poland joined
+    the Axis in the twin's first month and the Axis was in two wars there (unity 60.25
+    against 60). The AI is now off in both: the declared war is all that differs.
+- **Alternatives rejected:** a grace of N months with no rule after it (the 228 go on the
+  first day after, and the small nations are bankrupt before); starting gold alone (the AI
+  would still disband on day one: it did not read gold); raising incomes (ADR-58).
+
 ### ADR-85 · 2026-10-05 · accepted — The test that reads PLAN.md follows the plan: a ticked phase review does not break the gate
 
 - **Context:** `tests/unit/gate.test.ts` held PLAN.md to "the reviews of phases 0 and 1 are

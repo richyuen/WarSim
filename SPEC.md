@@ -1004,8 +1004,14 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   *Implemented v1 (PLAN 1.26, ADR-38; `src/sim/ai/economic.ts`), monthly, just before the economy
   charges the month, on projected accounts (gross − upkeep − admin − CE cost − suppression −
   tribute):*
-  - *Disbanding:* idle divisions go, weakest first, until the balance covers a 5% margin plus
-    debt repaid within a year. Half their men return to the manpower pool.
+  - *Disbanding:* a nation whose balance does not cover a 5% margin plus debt repaid within a
+    year is short by S a month. While its gold is below 3 × S (`RUNWAY_MONTHS`), idle
+    divisions go, weakest first; a nation with gold enough runs the deficit (PLAN 2.13,
+    ADR-86). Half their men return to the manpower pool. One `FormationsDisbanded` event per
+    nation and month, kept in the history.
+  - *The treasury of the start* is six months of income, or twelve months of S with the army
+    of the order of battle where that is more (`START_ARMY_MONTHS`; 16 nations of 1938): no
+    army of the start is disbanded in the first hour.
   - *Suppression:* 0.5 while a held province has unrest ≥ 40 and the budget has room.
   - *Building:* up to 1 + income/400 orders in training at once (at most 6; ADR-47). It needs
     army upkeep, counting the orders in training, under 35% × (0.3 + 0.7 × aggression/100) of

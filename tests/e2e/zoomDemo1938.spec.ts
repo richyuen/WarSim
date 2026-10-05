@@ -245,7 +245,7 @@ const leg = async (a: LegArgs): Promise<LegResult> => {
 
 interface Seen {
   cam: { cx: number; cy: number; scale: number };
-  counters: { nation: number; strength: number; alpha: number; folded: boolean; text: string; d: number }[];
+  counters: { nation: number; strength: number; others: number; alpha: number; folded: boolean; text: string; d: number }[];
   markers: { id: number; members: number[]; alpha: number; own: number; text: string; d: number }[];
   /** `flags`: the formation's, as the snapshot carried them; `walks`: whether the sprite is drawn walking; `alpha`: the sprite's own opacity. */
   elements: { id: number; formation: number; strength: number; size: number; x: number; y: number; flags: number; walks: boolean; alpha: number }[];
@@ -273,7 +273,7 @@ const look = (a: { ax: number; ay: number; mapW: number }): Seen => {
   };
   return {
     cam: { cx: cam.cx, cy: cam.cy, scale: cam.scale },
-    counters: v.counters.drawn.map((d) => ({ nation: d.nation, strength: d.strength, alpha: d.alpha, folded: d.folded, text: d.text, d: far(d.wx, d.wy) })),
+    counters: v.counters.drawn.map((d) => ({ nation: d.nation, strength: d.strength, others: d.others, alpha: d.alpha, folded: d.folded, text: d.text, d: far(d.wx, d.wy) })),
     markers: v.markerRects.map((r) => ({ id: r.id, members: [...r.members], alpha: r.alpha, own: r.own, text: r.text, d: Math.hypot(r.x + r.w / 2 - ax, r.y + r.h / 2 - ay) })),
     elements: Array.from(v.elementId, (id, i) => ({ id, formation: v.elementFormation[i]!, strength: v.elementStrength[i]!, size: v.elementSize[i]!, x: v.elementX[i]!, y: v.elementY[i]!, flags: v.elementFlags[i]!, walks: v.elementWalks(i), alpha: v.elementAlpha(i) })),
     figures: v.individualCount,
@@ -431,8 +431,13 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
     // The battle is in the picture, as the tier shows it.
     const els = node.elements[hour]!;
     if (stop.tier === 0) {
-      const own = seen.counters.filter((c) => c.nation === node.nation && c.alpha === 1 && !c.folded).sort((a, b) => a.d - b.d)[0];
-      console.log(`  its counter: ${own ? `"${own.text}" (${own.strength} men) ${own.d.toFixed(0)} px from the battle` : 'none'}; ${seen.counters.length} counters in all`);
+      // The counter of the battle's nation; or, where every counter of that nation is folded into
+      // a stronger neighbour's (PLAN 1.45b: its men are in that counter's number, which says "+n"),
+      // the nearest counter that stands for other nations too. (Since PLAN 2.13 the battle is a
+      // Romanian division's, and at the whole world's scale Romania's counter is folded.)
+      const shown = seen.counters.filter((c) => c.alpha === 1 && !c.folded).sort((a, b) => a.d - b.d);
+      const own = shown.find((c) => c.nation === node.nation) ?? shown.find((c) => c.others > 0);
+      console.log(`  its counter: ${own ? `"${own.text}" (${own.strength} men, of ${NATIONS_1938[own.nation - 1]?.tag}, with ${own.others} other nation(s)) ${own.d.toFixed(0)} px from the battle` : 'none'}; ${seen.counters.length} counters in all`);
       expect(own, `${name}: a counter of ${tag}`).toBeDefined();
       expect(own!.d, `${name}: the counter's distance from the battle, px`).toBeLessThan(150);
       expect(own!.strength, `${name}: the counter's men`).toBeGreaterThanOrEqual(node.men[0]!);

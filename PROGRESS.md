@@ -5269,3 +5269,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** wrong fields of a known kind stay with each handler. An old save that holds
   such a command in its log is loaded as it is.
 - **Next:** PLAN 2.13, the 1938 order of battle after the first tick (it will move the pin).
+
+## 2026-10-05 — PLAN 2.13: the armies of the start are still there after the first hour (the critic's R2-B3)
+
+- **The critic was right, and its count ran as reported:** seed 99, 1,054 formations at tick
+  0, 826 at tick 1; 72 armour, then 33; the Soviet Union 34, then none.
+- **The cause:** the economic AI disbanded until the month's books balanced and never looked
+  at the treasury. 30 nations cut their armies in the first hour, the Soviet Union with five
+  years of its deficit in gold. Weakest first, by men: the tank brigades.
+- **The fix (ADR-86):** a nation short by S a month disbands only while its gold is under
+  3 × S. A nation starts with six months of income or twelve months of S, whichever is more
+  (16 nations get more). One history line per nation and month that disbands, with the count.
+- **Tests, failing first:** 5 unit (660): three seeds keep 1,054 / 72 / 34 through the first
+  tick and disband nobody through 1 February; the line; a partial cut.
+- **Three older tests held the old rule** and now hold the new one (said in each and in the
+  ADR). One of them, the alliance test, compared a war with a twin "at peace" that the AI
+  took to war: with Poland's army whole, Poland joined the Axis there. The AI is off in both.
+- **The gate, first run:** red at the zoom demo only. Its battle is now a Romanian
+  division's, and at world zoom Romania's counter is folded into a Soviet one. The stop's
+  check takes the nation's counter or the nearest one that stands for other nations too.
+- **Hashes:** the pin `4aafc3eb` → `324bc358`. Five years of seed 99: `5377e4c5`.
+- **The tick is slower:** mean 1.502 ms over five pinned years (1.203), at the budget of 1.5.
+  Years 1 and 2 have some 200 formations more: 2.11 and 1.97 ms. BLOCKERS; not tuned.
+- **Formations of seed 99 by year-end:** 846, 687, 647, 683, 658. The armies the incomes do
+  not carry are cut later, each cut a line. Whose budget is wrong stays with Phase 7.
+- **Not done:** no picture shot again (all of a running 1938 game are of the old world: at
+  the Phase 3 review); the history panel with the new line not seen in a browser.
+- **Next:** PLAN 2.14, the close zoom shows a battle and says who is in it.

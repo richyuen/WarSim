@@ -32,6 +32,7 @@ export const HISTORY_KINDS: ReadonlySet<number> = new Set<number>([
   EventKind.MajorBattleStarted,
   EventKind.MajorBattleEnded,
   EventKind.NationAnnexed,
+  EventKind.FormationsDisbanded,
 ]);
 
 export class History implements Stateful {

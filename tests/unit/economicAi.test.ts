@@ -27,9 +27,12 @@ describe('economic AI (PLAN 1.26)', () => {
   it('a nation whose army costs more than it earns disbands its weakest idle divisions first', () => {
     const s = peaceful();
     const w = s.world;
-    // Mongolia's 1938 army far exceeds its income: the AI cuts it before the first month is charged.
+    // Mongolia's 1938 army far exceeds its income. Since PLAN 2.13 the AI cuts it only when the
+    // treasury cannot carry it (ADR-86; before, in the first hour of every game, with the money
+    // of the start unspent). With the treasury empty it is cut before the first month is charged.
     const before = w.formations.ids().filter((id) => w.formations.cols.nation[id] === MON!);
     expect(before.length).toBeGreaterThan(0);
+    w.nations.cols.gold[MON!] = 0;
     runEvents(s, 1);
     const after = w.formations.ids().filter((id) => w.formations.cols.nation[id] === MON!);
     expect(after.length).toBeLessThan(before.length);

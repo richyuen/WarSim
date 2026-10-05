@@ -1527,7 +1527,7 @@ quick sweep as a smoke test.
       its log; it is loaded as it is.
     - *The pin:* not moved (`4aafc3eb`): no command in that game.
   **PLAN 2.12 done 2026-10-05:** the AT's (a) to (d) in 2.12a, (e) in 2.12b.
-- [ ] 2.13 Critic R2-B3, the first part: the 1938 order of battle is still there after the
+- [x] 2.13 Critic R2-B3, the first part: the 1938 order of battle is still there after the
   first tick. The critic's count, the same on seeds 1212 and 4242: at tick 0 there are 1,054
   formations, 72 of them armour, 34 of those Soviet. At tick 1 there are 826 and 33, and the
   Soviet Union has no armour: its army falls by the 74,400 men of its 30 tank brigades and 4
@@ -1546,6 +1546,47 @@ quick sweep as a smoke test.
   AT: failing first, on three seeds: at tick 1 a 1938 game has its 1,054 formations (72
   armour, 34 of them Soviet), and in its first month none is disbanded for want of money; a
   formation that is disbanded has its line in the history. The pin and the tick time logged.
+  **Done 2026-10-05 (ADR-86).**
+  - *Run first, seed 99:* 1,054 → 826, as reported. 30 nations disband: China 70 of 140, the
+    Soviet Union 34 of 162 (its 34 armour formations: the weakest go first, and a tank
+    brigade is small), Nationalist Spain 22, Turkey 14, Mongolia 4 of 4. The Soviet Union was
+    short 112 a month and its margin, and had 6,936 in gold. The AI did not look at gold.
+  - *The decision: a floor and a grace, the grace in gold.* A nation short by S a month
+    disbands only while its gold is below 3 × S; and a nation starts with six months of
+    income or, where that is more, twelve months of S (16 nations). Not the budgets: incomes
+    and upkeeps are balance (ADR-58).
+  - *The line:* `FormationsDisbanded` (nation, how many), one per nation and month, in the
+    history: "X could not pay its army and disbanded formations: N".
+  - *Tests, failing first* (`startArmies.test.ts`, 5; "expected [826, 33, 0] to deeply equal
+    [1054, 72, 34]"): seeds 99, 1212 and 4242 have 1,054 formations, 72 armour and 34 Soviet
+    at tick 0 and at tick 1, every nation its own count; through 1 February none is
+    disbanded and none is bankrupt; Mongolia with an empty treasury disbands and the history
+    has the line with the count; China with a month of its deficit cuts a part (under 60;
+    70 before).
+  - *Three older tests said what the old rule did;* each now says the new one, in its place
+    and in ADR-86: Mongolia disbands with its treasury empty (`economicAi`); the treasury
+    of the start (`economy`); and "fighting together raises unity" (`alliances`), whose
+    twin "at peace" was taken to war by the AI: the AI is off in both games now.
+  - *The zoom demo* (`zoomDemo1938`): its battle is now a Romanian division's (formation
+    658; before, another world). At the two stops of T0 Romania's counter is folded into a
+    Soviet one ("1.10M", with two other nations; PLAN 1.45b). The stop's check takes the
+    nation's counter or, with none shown, the nearest counter that stands for other nations
+    too. The other six stops passed as they were.
+  - *The pin:* `4aafc3eb` → `324bc358`. *The tick,* pinned, five years of seed 99: mean
+    1.502 ms (1.203; the budget is 1.5), the first two years 2.11 and 1.97 with some 200
+    formations more: BLOCKERS, for PLAN 7.1.
+  - *The ten-year tests of the gate* (three games at peace with no bankruptcy; three with
+    wars, a peace and an alliance change; the year 9 save): green without a change.
+  - *Not done, and said:*
+    - **The pictures.** Every committed picture of a running 1938 game is of the world
+      before (the demo's eight of PLAN 2.10 among them: another battle). Not shot again in
+      this task; they are shot at the Phase 3 review with that phase's, unless a task
+      before it needs one.
+    - **Not seen in a browser:** the history panel with the new line. Its text is held by
+      the unit test of the history's strings; no page was opened.
+    - The armies the incomes do not carry are still cut, later: 846 formations after a
+      year, 687 after two, 658 after five (seed 99). Whose budget is wrong is Phase 7's.
+    - The weakest still goes first, so armour goes before infantry: a line under PLAN 3.1.
 - [ ] 2.14 Critic R2-B2: the close zoom shows a battle, and says who is in it. The
   differentiator scored 5 and needs 8. What the critic saw (Germany against Poland by God
   Mode, 60 days; a ladder of 15 zooms from 12 km/px to 1 m/px; live frames):
@@ -1647,6 +1688,10 @@ quick sweep as a smoke test.
 
 - [ ] 3.1 Armour unit types L/M/H + mech/mot, tech generations, production cost/time, upkeep.
   AT: schema + production test; tech gates the heavy tank until 1942+ research.
+  - From PLAN 2.13 (ADR-86): a nation short of money disbands its weakest idle formation
+    first, by men. A tank brigade is small, so armour goes before rifle divisions (all 34
+    Soviet armour formations went first, before 2.13 in the first hour, since then as the
+    gold runs low). Decide here what an armour formation is worth to the AI that cuts.
 - [ ] 3.2 Fuel/supply consumption and breakdown effects.
   AT: unsupplied armour slows, then loses org, then strength (test).
 - [ ] 3.3 Terrain modifiers for tracked mobility and combat.

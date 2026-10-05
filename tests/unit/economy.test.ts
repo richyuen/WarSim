@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { dayOfIso, tickOfDate } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
-import { ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938, START_GOLD_MONTHS } from '../../src/sim/scenario1938';
+import { budgetOf } from '../../src/sim/ai/economic';
+import { ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938, START_ARMY_MONTHS, START_GOLD_MONTHS } from '../../src/sim/scenario1938';
 import { cellKm2ByRow } from '../../src/sim/landCounts';
 import { Sim } from '../../src/sim/sim';
 import {
@@ -166,12 +167,19 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
     expect(admin('BRA')).toBeGreaterThan(admin('DEN')); // by cells Denmark paid the more
   });
 
-  it('every living nation earns something and starts with six months of income', () => {
+  it('every living nation earns something and starts with six months of income, or a year of what its army costs beyond its budget', () => {
+    // Since PLAN 2.13 (ADR-86) the second, where it is more: 16 nations of 1938.
+    const acc = monthlyAccounts(sim.world, ECONOMY_TABLES_1938);
+    let more = 0;
     NATIONS_1938.forEach((n, i) => {
       if (n.alive === false) return;
       expect(gross[i + 1], n.tag).toBeGreaterThan(0);
-      expect(sim.world.nations.cols.gold[i + 1]).toBeCloseTo(START_GOLD_MONTHS * gross[i + 1]!);
+      const { balance, need } = budgetOf(sim.world, i + 1, acc);
+      const short = START_ARMY_MONTHS * Math.max(0, need - balance);
+      if (short > START_GOLD_MONTHS * gross[i + 1]!) more++;
+      expect(sim.world.nations.cols.gold[i + 1], n.tag).toBeCloseTo(Math.max(START_GOLD_MONTHS * gross[i + 1]!, short));
     });
+    expect(more).toBe(16);
   });
 
   it('one year of play pays 12 months and keeps the major economies solvent', () => {

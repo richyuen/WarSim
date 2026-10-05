@@ -77,6 +77,12 @@ export const EventKind = {
    * gets the event.
    */
   ElementDestroyed: 34,
+  /**
+   * a = nation, b = how many of its formations the economic AI disbanded this month because the
+   * treasury could not carry them (global; PLAN 2.13). Each of them also has its
+   * `FormationDestroyed`.
+   */
+  FormationsDisbanded: 35,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

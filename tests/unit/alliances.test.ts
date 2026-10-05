@@ -52,6 +52,10 @@ describe('alliances (PLAN 1.17)', () => {
 
   it('allies and guarantors join a declared war; fighting together raises unity', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    // The AI is off in both games, so that the declared war is all that differs between them.
+    // (With it on, the twin "at peace" was not: since PLAN 2.13 left Poland its army, Poland
+    // joined the Axis there in the first month and the Axis was in two wars, 60.25 against 60.)
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
     run(s, 1);
     const war = s.world.wars.between(GER, POL)!.war;
@@ -60,6 +64,7 @@ describe('alliances (PLAN 1.17)', () => {
     expect(war.sides[1]).not.toContain(ENG); // allies of a guarantor are not chained in v1
     // Unity after a month at war vs a twin at peace.
     const peace = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    peace.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
     run(s, MONTH_TICKS[0]!);
     run(peace, 1 + MONTH_TICKS[0]!);
     expect(s.world.alliances.allianceOf(GER)!.unity).toBeGreaterThan(peace.world.alliances.allianceOf(GER)!.unity);
