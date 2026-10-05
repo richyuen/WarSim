@@ -288,6 +288,21 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   code before: 1,584 figures against 1,580 there, and 64 against 19 for a battalion of 142 in
   the demo.
 
+- **Addendum, PLAN 2.11g (2026-10-05): at T2 the sprite's opacity is the element's share.**
+  - *What was left open above:* "Not changed: T2. A sprite dims only below 8 units." A
+    battalion at a third of its men was a whole sprite at T2 and a third of its figures at
+    T3: the zoom across 30 m/px showed a loss that the view before it had not.
+  - *Decision:* opacity = 0.45 + 0.55 × strength ÷ size. Whole at full strength, never under
+    0.45 while a unit is left (the sim removes an empty element). The same rule for every
+    kind: a battery with 4 of 12 guns is as pale as a battalion with 167 of 500 men.
+  - *Not smaller* (a sprite is 5 px at the far end of T2, and its least size would hide the
+    change), *not a bar or a number under each* (a second layer, of some 500 marks in a view of
+    a front), *not darker* (the colour is the nation's).
+  - *What it does not do:* on a light nation colour over a light fill the difference between
+    0.55 and 1 is small to the eye. A line under PLAN 7.4.
+  - *Tests:* the rule (unit); in the zoom demo, every sprite of the close views against its
+    share, failing first.
+
 ### ADR-79 · 2026-10-04 · accepted — Formations stand on land by the fine mask; the coast of T2 and T3 is drawn from it (PLAN 2.9)
 
 - **Context:** SPEC has the fine land mask "used by the sim for element placement ... and by

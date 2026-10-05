@@ -1344,7 +1344,7 @@ quick sweep as a smoke test.
     - Bench A not run for it: one `mix` on occupied pixels in the ground's program.
     - Pictures: `docs/evidence/2.11/occupied-150m.png` and `occupied-20m.png`, looked at.
     - Left: the legend still says "Hatched: occupied land" at every zoom (a line under 7.4).
-  - [ ] 2.11g At T2 a sprite shows what is left of its element. A battalion at a third of its
+  - [x] 2.11g At T2 a sprite shows what is left of its element. A battalion at a third of its
     men is drawn as a whole one (a sprite dims only below 8 units), and then at T3 has a third
     of its figures (ADR-80). The snapshot carries the element's size since PLAN 2.10b. How it
     shows (dimmer, smaller, a mark) is this task's decision, recorded in DECISIONS. (From the
@@ -1353,6 +1353,20 @@ quick sweep as a smoke test.
     never gone while the element has units. e2e: in the demo's division the sprites of
     battalions under half strength differ from those of a whole division's in the same view.
     Pictures looked at; `spriteColours1938` and `fades1938` pass.
+    Done 2026-10-05 (ADR-80, addendum). **The decision: the sprite's opacity is the element's
+    share of its size,** in a straight line from 0.45 (all but nothing left) to 1 (whole).
+    `spriteAlpha` in `src/render/units/elementSprite.ts`.
+    - Unit (`elementSprite.test.ts`): whole at full strength, paler with every loss, never
+      under 0.45; a battalion and a battery at a third look alike.
+    - e2e, failing first, in the zoom demo's close stops: every sprite in the view has the
+      opacity of its share (before: "the sprite of element 10476, 101 of 500: expected 0.56,
+      received 1"); the division's battalions 0.53 to 0.62, the strongest sprite in the same
+      view 1.00.
+    - Not smaller sprites (at T2 they are 5 px and up: the least size would hide it), not a
+      mark under each (a second layer of 500 marks), not darker (the tint is the nation's).
+    - The picture of the demo at 50 m/px was looked at: the worn division is paler than the
+      one east of it. On the light tint of Japan over China's yellow the difference is small
+      to the eye: a line under PLAN 7.4.
   - [ ] 2.11h Last: the phase's pictures on the final code, and PARITY. One run of the e2e
     suite with `EVIDENCE=1`; the pictures of T2 and T3 that changed are looked at and kept
     (many are from before the ground of PLAN 2.8); the PARITY rows that Phase 2 touched (the
@@ -1584,6 +1598,8 @@ quick sweep as a smoke test.
   - **Picking.** A marker in a stack cannot be picked by a click on the map (the lead is what
     is there). A selection ring stays on an id that a new formation has taken, and such a
     formation takes the dead one's place in a stack for one fade.
+  - **A worn element at T2** is a paler sprite (PLAN 2.11g). On a light nation colour over a
+    light fill (Japan's on China's) a sprite at 0.55 and one at 1 are close to the eye.
   - **The legend at T2 and T3.** It says "Hatched: occupied land" at every zoom; since PLAN
     2.11f occupied land is a tint with an eighth of the hatching there.
   - **Flags by scenario.** `flagStore` maps nation ids to 1938 tags in every scenario (the

@@ -38,6 +38,8 @@ const FRAME_MS = 16;
 const MAX_STEP = 0.12;
 /** The figures of an element at T3 (ADR-80), written out here on its own: a figure a unit up to 64 units to an element; above, its share of 64, rounded up. */
 const figuresOf = (strength: number, size: number): number => (size <= 64 ? strength : Math.min(64, Math.ceil((strength * 64) / size)));
+/** The opacity of an element's sprite at T2 (PLAN 2.11g), written out here on its own: its share of its size, from 0.45 to 1. */
+const alphaOf = (strength: number, size: number): number => 0.45 + 0.55 * Math.min(1, strength / size);
 
 interface Stop {
   name: string;
@@ -245,8 +247,8 @@ interface Seen {
   cam: { cx: number; cy: number; scale: number };
   counters: { nation: number; strength: number; alpha: number; folded: boolean; text: string; d: number }[];
   markers: { id: number; members: number[]; alpha: number; own: number; text: string; d: number }[];
-  /** `flags`: the formation's, as the snapshot carried them; `walks`: whether the sprite is drawn walking. */
-  elements: { id: number; formation: number; strength: number; x: number; y: number; flags: number; walks: boolean }[];
+  /** `flags`: the formation's, as the snapshot carried them; `walks`: whether the sprite is drawn walking; `alpha`: the sprite's own opacity. */
+  elements: { id: number; formation: number; strength: number; size: number; x: number; y: number; flags: number; walks: boolean; alpha: number }[];
   figures: number;
   /** The element each figure is of, and whether the figure is drawn walking. */
   owners: number[];
@@ -273,7 +275,7 @@ const look = (a: { ax: number; ay: number; mapW: number }): Seen => {
     cam: { cx: cam.cx, cy: cam.cy, scale: cam.scale },
     counters: v.counters.drawn.map((d) => ({ nation: d.nation, strength: d.strength, alpha: d.alpha, folded: d.folded, text: d.text, d: far(d.wx, d.wy) })),
     markers: v.markerRects.map((r) => ({ id: r.id, members: [...r.members], alpha: r.alpha, own: r.own, text: r.text, d: Math.hypot(r.x + r.w / 2 - ax, r.y + r.h / 2 - ay) })),
-    elements: Array.from(v.elementId, (id, i) => ({ id, formation: v.elementFormation[i]!, strength: v.elementStrength[i]!, x: v.elementX[i]!, y: v.elementY[i]!, flags: v.elementFlags[i]!, walks: v.elementWalks(i) })),
+    elements: Array.from(v.elementId, (id, i) => ({ id, formation: v.elementFormation[i]!, strength: v.elementStrength[i]!, size: v.elementSize[i]!, x: v.elementX[i]!, y: v.elementY[i]!, flags: v.elementFlags[i]!, walks: v.elementWalks(i), alpha: v.elementAlpha(i) })),
     figures: v.individualCount,
     owners: Array.from(v.individualOwner.subarray(0, v.individualCount)),
     walkers: Array.from({ length: v.individualCount }, (_, j) => v.individualWalks(j)),
@@ -461,6 +463,17 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
       for (const e of seen.elements) expect(e.walks, `${name}: element ${e.id} of formation ${e.formation} (flags ${e.flags}) drawn walking`).toBe((e.flags & 1) !== 0 && (e.flags & 2) === 0);
       expect(seen.elements.filter((e) => e.formation === node.formation && e.walks), `${name}: elements of the division drawn walking`).toEqual([]);
       walking += seen.elements.filter((e) => e.walks).length;
+      // And what is left of each element is in its sprite (PLAN 2.11g): its share of its size,
+      // for every sprite in the view. The division's battalions, under half their men, are
+      // paler than three quarters; and at T2 a stronger formation's sprites are in the same view.
+      for (const e of seen.elements) expect(e.alpha, `${name}: the sprite of element ${e.id}, ${e.strength} of ${e.size}`).toBeCloseTo(alphaOf(e.strength, e.size), 5);
+      const pale = seen.elements.filter((e) => e.formation === node.formation && e.size > 64).map((e) => e.alpha);
+      const strongest = Math.max(...seen.elements.map((e) => e.alpha));
+      if (stop.tier === 2) {
+        console.log(`  the sprites' opacity: the division's battalions ${Math.min(...pale).toFixed(2)} to ${Math.max(...pale).toFixed(2)}; the strongest sprite in the view ${strongest.toFixed(2)}`);
+        expect(Math.max(...pale), `${name}: the division's battalions' sprites`).toBeLessThan(0.75);
+        expect(strongest, `${name}: the strongest sprite in the view`).toBeGreaterThan(Math.max(...pale) + 0.15);
+      }
       if (stop.tier === 3) {
         const of = new Set(els.map((e) => e.id));
         expect(seen.owners.filter((o, j) => of.has(o) && seen.walkers[j]).length, `${name}: figures of the division drawn walking`).toBe(0);

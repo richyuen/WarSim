@@ -5164,3 +5164,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   the texture and the trees of the plain, a faint weave over them.
 - **Tests:** 1 new e2e test (116).
 - **Next:** PLAN 2.11g, a sprite at T2 shows what is left of its element.
+
+## 2026-10-05 — PLAN 2.11g: at T2 a sprite shows what is left of its element
+
+- **The decision (ADR-80, addendum):** a sprite's opacity is its element's share of its size,
+  from 0.45 to 1. It was whole down to 8 units: a battalion at a fifth of its men looked like
+  a fresh one at T2, and had a fifth of its figures at T3.
+- **Tests:** the rule (unit); in the zoom demo, failing first: every sprite of the close views
+  has the opacity of its share. The demo's division: 0.53 to 0.62, beside a sprite at 1.00.
+- **Looked at:** the demo at 50 m/px. The worn division is paler than its neighbour. On
+  Japan's light tint over China's yellow it is not a strong cue: a line under PLAN 7.4.
+- **Tests:** 2 new unit tests (644).
+- **This was the last fix of the review.** Next: PLAN 2.11h, the phase's pictures on the final
+  code and PARITY; then 2.11 is ticked and the critic runs.

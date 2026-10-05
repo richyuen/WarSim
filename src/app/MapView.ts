@@ -10,6 +10,7 @@ import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, T1_MAX
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
+import { spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
@@ -609,6 +610,12 @@ export class MapView {
   elementStrength = new Uint16Array(0);
   /** The flags of each element's formation, as the snapshot carried them (`FormationFlag`; tests). */
   elementFlags = new Uint8Array(0);
+  /** The units of each element when whole, as the snapshot carried them (tests). */
+  elementSize = new Uint16Array(0);
+  /** The opacity element sprite `i` was uploaded with: what is left of the element (tests). */
+  elementAlpha(i: number): number {
+    return this.elementProxies.data[i * PROXY_STRIDE + 7]!;
+  }
   /** Whether element sprite `i` was uploaded as walking (tests). */
   elementWalks(i: number): boolean {
     return this.elementProxies.data[i * PROXY_STRIDE + 6]! % 1 > 0.25;
@@ -638,6 +645,7 @@ export class MapView {
     this.elementY = e.y.slice(0, e.count);
     this.elementStrength = e.strength.slice(0, e.count);
     this.elementFlags = e.flags.slice(0, e.count);
+    this.elementSize = e.size.slice(0, e.count);
     p.reserve(e.count);
     p.originX = Math.floor(this.geo.w / 2);
     p.originY = Math.floor(this.geo.h / 2);
@@ -651,8 +659,8 @@ export class MapView {
       p.data[o + 5] = ELEMENT_CELLS;
       // The walk is for a formation on the march: one that holds in contact stands (PLAN 2.11e).
       p.data[o + 6] = e.frame[i]! + (marching(e.flags[i]!) ? 0.5 : 0);
-      // Depleted elements fade a little (an empty one is gone from the sim).
-      p.data[o + 7] = 0.55 + 0.45 * Math.min(1, e.strength[i]! / 8);
+      // What is left of the element: its share of its size (PLAN 2.11g; an empty one is gone from the sim).
+      p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
       p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
     }
     p.upload(e.count);
