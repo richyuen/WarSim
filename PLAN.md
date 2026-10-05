@@ -1070,9 +1070,11 @@ quick sweep as a smoke test.
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
   Split 2026-10-05: the review is several causes. It is a review pass (PROMPT step 9): the
   count of numbered tasks starts again with it.
-  - [ ] 2.11a The smoke run: one `npm run sweep:quick`, on the phase's code as gated
+  - [x] 2.11a The smoke run: one `npm run sweep:quick`, on the phase's code as gated
     (`29053c1`). Its five limits in PROGRESS; a limit that fails in BLOCKERS, or a task if a
     defect of this phase's feature caused it. Run once, not again after the tasks below.
+    Done 2026-10-05: seeds 1 to 10, 20 years, 4.3 minutes. The five limits hold on all ten
+    seeds; no run stopped. Not a verdict on the balance (ADR-58); the numbers are in PROGRESS.
   - [ ] 2.11b The independent read (ADR-74) of everything written since the last one
     (`ece4b2f`: PLAN 2.7z to 2.10b, 23 source files, 1,261 lines added). The whole of it: the
     last read was narrowed, and this is the phase's. Each finding is checked against the code

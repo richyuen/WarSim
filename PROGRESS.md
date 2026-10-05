@@ -4967,3 +4967,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   instances' cap above 1920 × 1080 (7.1).
 - **Measured for it:** the 1938 page's start with the land mask: first frame at 0.22 s, the
   layers and the mask at about 1.0 s, the first snapshot by 1.4 s; unpacking the mask 15 ms.
+
+## 2026-10-05 — PLAN 2.11a: the smoke sweep of Phase 2: the five limits hold on ten seeds
+
+- **One `npm run sweep:quick`** on `29053c1`: seeds 1 to 10, 20 years each, ten processes,
+  4.3 minutes. Every run finished. Not a balance verdict (ADR-58): no constant is touched for it.
+- **The five limits, every seed** (SPEC §10; the report is in `.cache/`, not kept):
+  - land that changed controller in the last 5 years: 9.1 to 14.3% (limit: at least 1.0%);
+  - the largest nation's land at the end: 14.0 to 16.5% (under 35%);
+  - the largest nation's income at the end: 28.5 to 29.5% (under 40%);
+  - nations alive, least to most over the run: 97 to 126 (within the limits on every seed);
+  - years with a war: 100% on every seed.
+- **Reported, not judged at 20 years:** a riser on 6 of 10 seeds (the United States on five
+  of them, to 1.9 times its land on seed 10; Iraq to 4.9 times on seed 8), a faller on 10 of
+  10 (the British realm to about a quarter on five seeds, Belgium's to nothing on five).
+- **For Phase 7, not for now:** Belgium's realm (with the Congo) is gone or nearly on five of
+  ten seeds within 20 years, and the British realm loses three quarters on five. Balance.
