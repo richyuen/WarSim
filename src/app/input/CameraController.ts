@@ -2,14 +2,18 @@
  * Camera input (AoC parity rows "Camera controls"): mouse drag (left/middle/right), wheel zoom
  * anchored at the cursor, keyboard pan (arrows/WASD) and zoom (Q/E, +/−, numpad), touch drag
  * and two-finger pinch. Zoom is continuous and eased toward a target; pans are immediate.
+ * `flyTo` is the one eased pan: a flight to a place (PLAN 2.14f5b4), which any input of the
+ * user's ends where it is.
  * While a paint tool has the primary button (`leftPans` false, PLAN 1.44), the left button and
  * one finger do not pan: the middle and right buttons, two fingers and the keys still do.
  */
 import {
+  flight,
   normalize,
   panBy,
   zoomAt,
   type Camera,
+  type Flight,
   type MapGeometry,
 } from '../../render/camera';
 
@@ -44,6 +48,8 @@ export class CameraController {
   private drag: { id: number; x: number; y: number } | null = null;
   private readonly touches = new Map<number, [number, number]>();
   private pinch: { dist: number; mid: [number, number] } | null = null;
+  /** The flight under way and the seconds of it flown. */
+  private flying: { path: Flight; t: number } | null = null;
   private readonly detach: (() => void)[] = [];
   /** False while something else uses a primary-button drag (the editor's brush and line). */
   leftPans: () => boolean = () => true;
@@ -87,12 +93,28 @@ export class CameraController {
 
   /** Jumps immediately (test API, God tools). */
   set(cam: Camera): void {
+    this.flying = null;
     this.cam = normalize(cam, this.geo, this.viewW, this.viewH);
+    this.targetScale = this.cam.scale;
+  }
+
+  /** Flies to `cam`: pan and zoom in one eased movement (`flight`), ending on it exactly. */
+  flyTo(cam: Camera): void {
+    const to = normalize(cam, this.geo, this.viewW, this.viewH);
+    this.flying = { path: flight(this.cam, to, this.geo, this.viewW), t: 0 };
+    this.targetScale = this.cam.scale;
+  }
+
+  /** Ends a flight where it is: the user has taken the camera. */
+  private land(): void {
+    if (!this.flying) return;
+    this.flying = null;
     this.targetScale = this.cam.scale;
   }
 
   /** Eased zoom toward `scale`, anchored at a screen point (default: centre). */
   zoomTo(scale: number, anchor?: [number, number]): void {
+    this.land();
     const n = normalize({ ...this.cam, scale }, this.geo, this.viewW, this.viewH);
     this.targetScale = n.scale;
     this.anchor = anchor ?? [this.viewW / 2, this.viewH / 2];
@@ -100,11 +122,21 @@ export class CameraController {
 
   /** True while an animation or held key still changes the camera. */
   get animating(): boolean {
-    return this.keys.size > 0 || Math.abs(Math.log(this.targetScale / this.cam.scale)) > 1e-4;
+    return this.flying !== null || this.keys.size > 0 || Math.abs(Math.log(this.targetScale / this.cam.scale)) > 1e-4;
   }
 
   /** Per-frame update: held keys and zoom easing. `dt` in seconds. */
   update(dt: number): void {
+    if (this.flying && this.keys.size > 0) this.land();
+    if (this.flying) {
+      const f = this.flying;
+      f.t += Math.max(0, dt);
+      const part = f.t / (f.path.ms / 1000);
+      this.cam = normalize(f.path.at(part), this.geo, this.viewW, this.viewH);
+      this.targetScale = this.cam.scale;
+      if (part >= 1) this.flying = null;
+      return;
+    }
     let dx = 0;
     let dy = 0;
     let zoom = 0;
@@ -141,6 +173,7 @@ export class CameraController {
 
   private onWheel(e: WheelEvent): void {
     e.preventDefault();
+    this.land();
     const px = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
     this.targetScale *= Math.pow(WHEEL_ZOOM_PER_100, -px / 100);
     this.anchor = this.local(e);
@@ -148,6 +181,7 @@ export class CameraController {
 
   private onPointerDown(e: PointerEvent): void {
     if (e.pointerType === 'touch') {
+      this.land();
       this.touches.set(e.pointerId, this.local(e));
       this.startPinchIfTwo();
       return;
@@ -155,6 +189,7 @@ export class CameraController {
     if (e.button !== 0 && e.button !== 1 && e.button !== 2) return;
     if (e.button === 0 && !this.leftPans()) return;
     e.preventDefault();
+    this.land();
     this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
     this.el.setPointerCapture?.(e.pointerId);
   }

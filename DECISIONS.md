@@ -167,6 +167,58 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-97 · 2026-10-05 · accepted — The click on a war's banner flies to the battle (PLAN 2.14f5b4)
+
+- **Context:** ADR-91 made it a jump: "the camera has an eased zoom and no eased pan, and a
+  flight from the world to 20 m/px passes four tiers in a second". A jump from the world view
+  to 28 km of ground does not say where on the map the battle is.
+- **Decision: built.** `flight` in `render/camera.ts` (pure): the path of van Wijk and Nuij
+  (2003) between two cameras, pan and zoom in one movement, with ρ = √2 and a cubic ease at
+  both ends. 320 ms for each zoom by 4.1 times along the path, 250 ms at least and 1.6 s at
+  most. `CameraController.flyTo` flies it and ends on the target exactly;
+  `MapView.showBattle` is its one caller. `set` stays a jump (tests, God tools).
+- **The three starts** (a probe not kept: seed 99, day 60, a view of 1400 × 800, the view's
+  turns given times 16.7 ms apart; a picture every eighth frame, looked at):
+  - *The world view:* 89 frames (1.48 s). A zoom towards the place: the world, Europe,
+    Germany and Poland with their names, the markers of the front at 231 m/px, the elements
+    at 73, the figures from 24. The ground moves 21 px a frame at most.
+  - *20 m/px on another front, 5,900 km away* (the case a joint ease of pan and zoom smears):
+    90 frames. It zooms out to 4,276 m/px (Central Asia with its markers), crosses, and zooms
+    in on the border. 248 px a frame at most, under a fifth of the view.
+  - *20 m/px, 117 km away:* 78 frames; out to 91 m/px and in; 107 px a frame at most.
+- **ADR-91's reason, measured.** The wheel's ease passes the same four tiers in 0.6 s, and
+  `zoomDemo1938` holds it to be seamless; the flight takes 1.5 s over them. What it costs:
+  the view asks the worker for its box every 100 ms, so 13 to 16 subscriptions in a flight
+  where the jump has one, and the worker sends elements on the way (736 held at 93 m/px, 163
+  at the end). The view's turn took 1 to 6 ms in the mean in those frames (the script's side;
+  the browser of the tests draws on the processor).
+- **The user's hand ends it.** A key of the camera, the wheel, a press on the map or a touch
+  ends the flight where it is; it does not go on once the key is up.
+- **On a looping map** it goes the short way round.
+- **Tests:** unit, six in `camera.test.ts` (the ends exact; from the world the place stays in
+  the view and the zoom only grows; far apart at 20 m/px it zooms out to under three views
+  between the two, never moves away, under half a view a frame; the short way round; a zoom
+  on the spot; the limits of its time, and no step that is not a camera). e2e, the first of
+  `toBattle1938`: the frames of the view's own loop from the flight's first to its last (15
+  in 3.4 s in the tests' browser, 7 of them between the world and 40 m/px; the zoom only
+  grows), seen to fail with the jump ("no flight began"); and a second click with the left
+  arrow pressed on the way: the camera stays above 100 m/px. Both tests of the spec wait for
+  the flight's end before they ask where the camera is; what they ask is as it was (the
+  place to six decimals).
+- **The pin:** not moved (the view only).
+- **What it does not give.**
+  - How it looks at 60 frames a second on a graphics card was not seen: the tests' browser
+    draws 4 to 8 frames a second while the camera moves, and the pictures are of frames
+    stepped one by one, with the worker's answers arriving sooner, counted in frames, than
+    they would.
+  - The counters' splits (300 ms) and the handover's fade (250 ms) are passed while they
+    run; no measure of what is half shown on the way was taken.
+  - `prefers-reduced-motion` is not read: nothing in the game reads it yet.
+  - A flight is not held to the map's edge on its way out (it is normalized frame by frame,
+    so on a map that does not loop it slides along the edge).
+  - `CameraController` has no unit test of its own (it needs an element); the flight's end
+    by the user's hand is tested in the browser, by a key only.
+
 ### ADR-96 · 2026-10-05 · accepted — A war's banner shows whether the war has a battle (PLAN 2.14f5b3)
 
 - **Context:** ADR-91, under "what it does not give": "nothing on the banner says whether

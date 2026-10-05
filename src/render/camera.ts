@@ -99,3 +99,54 @@ export function wrapOffsets(cam: Camera, geo: MapGeometry, viewW: number): numbe
   for (let k = kMin; k <= kMax; k++) out.push(k * geo.w);
   return out;
 }
+
+/** How strongly a flight zooms out to cross a distance (van Wijk and Nuij's ρ). */
+const FLIGHT_RHO = Math.SQRT2;
+/** Milliseconds per unit of a flight's path (a zoom by e^√2, about 4.1 times, is one unit of √2), and the limits of the whole. */
+const FLIGHT_MS_PER_UNIT = 320;
+const FLIGHT_MIN_MS = 250;
+const FLIGHT_MAX_MS = 1600;
+
+/** A camera path from one view to another: `at(0)` is the start, `at(1)` the end, exactly. */
+export interface Flight {
+  ms: number;
+  /** The camera at `t` in [0, 1] of the way in time; eased at both ends. */
+  at(t: number): Camera;
+}
+
+/**
+ * The flight from `from` to `to` (PLAN 2.14f5b4): pan and zoom in one movement, on the path of
+ * van Wijk and Nuij ("Smooth and efficient zooming and panning", 2003). Far apart at a close
+ * zoom, it zooms out until both places are near in pixels, crosses, and zooms in; from the
+ * world view to a place in it, it is a zoom towards the place. On a looping map it goes the
+ * short way round. `from` and `to` are normalized cameras; a step of the path may not be (the
+ * caller normalizes what it shows).
+ */
+export function flight(from: Camera, to: Camera, geo: MapGeometry, viewW: number): Flight {
+  let dx = to.cx - from.cx;
+  if (geo.wrapX) dx -= Math.round(dx / geo.w) * geo.w;
+  const dy = to.cy - from.cy;
+  const w0 = viewW / from.scale;
+  const w1 = viewW / to.scale;
+  const d1 = Math.hypot(dx, dy);
+  const rho2 = FLIGHT_RHO * FLIGHT_RHO;
+  // Under a thousandth of the narrower view apart: a zoom on the spot (the path's formulas divide by the distance).
+  const still = d1 < Math.min(w0, w1) * 1e-3;
+  const r0 = still ? 0 : -Math.asinh((w1 * w1 - w0 * w0 + rho2 * rho2 * d1 * d1) / (2 * w0 * rho2 * d1));
+  const r1 = still ? 0 : -Math.asinh((w1 * w1 - w0 * w0 - rho2 * rho2 * d1 * d1) / (2 * w1 * rho2 * d1));
+  const S = still ? Math.abs(Math.log(w1 / w0)) / FLIGHT_RHO : (r1 - r0) / FLIGHT_RHO;
+  const ms = Math.min(FLIGHT_MAX_MS, Math.max(FLIGHT_MIN_MS, S * FLIGHT_RHO * FLIGHT_MS_PER_UNIT));
+  const at = (t: number): Camera => {
+    if (t <= 0) return from;
+    if (t >= 1) return to;
+    // Ease in and out (a cubic), so the flight neither starts nor lands at full speed.
+    const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    if (still) return { cx: from.cx + dx * e, cy: from.cy + dy * e, scale: from.scale * Math.pow(to.scale / from.scale, e) };
+    const s = e * S;
+    // The share of the way crossed, and the width of the view, at `s` along the path.
+    const u = (w0 / (rho2 * d1)) * (Math.cosh(r0) * Math.tanh(FLIGHT_RHO * s + r0) - Math.sinh(r0));
+    const w = (w0 * Math.cosh(r0)) / Math.cosh(FLIGHT_RHO * s + r0);
+    return { cx: from.cx + u * dx, cy: from.cy + u * dy, scale: viewW / w };
+  };
+  return { ms, at };
+}

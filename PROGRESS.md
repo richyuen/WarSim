@@ -5668,3 +5668,36 @@ No rule changed and nothing on screen changed. One task came out of it.
   battle, not the leaders'; wars past the eighth have no banner; no other locale to add the
   string to; `battleView` and `tags` not run (nothing on the map changed).
 - **Next:** PLAN 2.14f5b4, whether the jump becomes a flight.
+
+## 2026-10-05 — PLAN 2.14f5b4: the click on a war's banner flies to the battle
+
+- **Decided and built (ADR-97):** `flight` in `render/camera.ts`, the path of van Wijk and
+  Nuij: pan and zoom in one eased movement, 0.25 to 1.6 s. `CameraController.flyTo` flies it
+  and ends on the target exactly; `MapView.showBattle` calls it. A key, the wheel, a press or
+  a touch ends it where it is. `set` stays a jump.
+- **Why this path:** far apart at a close zoom it zooms out first, by itself. The case a
+  plain ease of pan and zoom smears (20 m/px, 5,900 km away) goes out to 4,276 m/px and moves
+  248 px of ground a frame at most.
+- **Numbers** (a probe not kept; day 60 of seed 99, 1400 × 800, frames 16.7 ms apart): from
+  the world 89 frames, 21 px a frame at most; from far 90; from 117 km away 78, out to 91
+  m/px. 13 to 16 subscriptions a flight against one for the jump; 736 elements held on the
+  way, 163 at the end. The view's turn 1 to 6 ms in the mean.
+- **ADR-91's "four tiers in a second":** the wheel's ease passes them in 0.6 s already.
+- **Tests:** unit, six new in `camera.test.ts` (690 unit tests). e2e, the first of
+  `toBattle1938`: the flight's frames, seen to fail with the jump ("no flight began"), and
+  the left arrow ending it on the way. Both tests wait for the flight's end before asking
+  where the camera is; what they ask did not change.
+- **Pictures looked at** (montages of every eighth frame of the three flights, in the
+  scratchpad, not kept): the world, Europe, Germany and Poland, markers, elements, figures;
+  from far, Central Asia in between. Nothing blank on the way.
+- **A mistake on the way:** the share of the way crossed was divided by the distance once
+  more; the camera stood still and jumped at the end. The unit tests caught it.
+- **Gotchas:** the tests' browser draws 4 to 8 frames a second while the camera moves
+  (SwiftShader), the jump too: it cannot say whether a flight is smooth. A screenshot takes
+  two seconds: pictures of a flight need the view's loop stopped (`cancelAnimationFrame` of
+  its `raf`) and `frameAt` given the times. `settle` does not wait for the camera.
+- **The pin:** not moved. **Run by hand:** `toBattle` (2): green.
+- **Not done:** not seen at 60 frames a second on a graphics card; the fades passed on the
+  way not measured; `prefers-reduced-motion`; no unit test of the controller; `zoomDemo`,
+  `camera` and `battleView` not run (they use `set` and `zoomTo`, which fly nothing).
+- **Next:** PLAN 2.14f5c, how far a block stands from its own formation.

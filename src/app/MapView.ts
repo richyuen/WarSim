@@ -803,7 +803,7 @@ export class MapView {
   }
 
   /**
-   * Brings a battle at (x, y) into view (PLAN 2.14e): the camera jumps onto it at
+   * Brings a battle at (x, y) into view (PLAN 2.14e): the camera flies onto it (PLAN 2.14f5b4), to
    * BATTLE_VIEW_M per pixel, where the blocks of two divisions front to front are whole in the
    * view with their tags (PLAN 2.14c1). A small view shows the same ground at more metres a
    * pixel (BATTLE_VIEW_KM across and half of it down), but stays where elements are drawn.
@@ -811,7 +811,7 @@ export class MapView {
   showBattle(x: number, y: number): void {
     const el = this.canvas;
     const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, el.clientWidth), (BATTLE_VIEW_KM * 500) / Math.max(1, el.clientHeight)));
-    this.controller.set({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
+    this.controller.flyTo({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
     this.dirty = true;
   }
 

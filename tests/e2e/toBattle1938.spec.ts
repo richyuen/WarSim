@@ -12,7 +12,7 @@ import { settle } from './settle';
 // in a view of 1,600 px and most T3 views are empty ground, and there was no way from a war's
 // banner to where the fighting is. A click on the banner now brings the war's largest battle
 // into view, at a zoom that shows both sides' elements (and selects the attackers' leader, as
-// it did).
+// it did). The camera flies there (PLAN 2.14f5b4).
 //
 // Germany against Poland by God Mode, a German and a Polish infantry division a cell apart
 // across their border, a day of it. The camera is on the whole world when the banner is clicked.
@@ -111,6 +111,34 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
 
   await banner.click();
 
+  // PLAN 2.14f5b4 (ADR-97): the camera flies there. Every frame of the view's own loop from the
+  // flight's first to its last: the zoom only grows, and there are frames on the way.
+  const flown = await page.evaluate(async () => {
+    const v = window.__warsim!.view!;
+    const c = v.controller;
+    const asked = performance.now();
+    while (!c.animating) {
+      if (performance.now() - asked > 20_000) throw new Error('no flight began');
+      await new Promise((done) => setTimeout(done, 1));
+    }
+    const began = performance.now();
+    const m: number[] = [];
+    await new Promise<void>((done) => {
+      const frame = (): void => {
+        m.push(v.metresPerPx);
+        if (c.animating) requestAnimationFrame(frame);
+        else done();
+      };
+      requestAnimationFrame(frame);
+    });
+    return { m, ms: performance.now() - began };
+  });
+  const between = flown.m.filter((m) => m < start.m / 2 && m > 40).length;
+  console.log(`the flight: ${flown.m.length} frames in ${flown.ms.toFixed(0)} ms, ${between} of them between ${(start.m / 2).toFixed(0)} and 40 m/px`);
+  expect(flown.ms).toBeGreaterThan(1000);
+  expect(between, 'frames on the way').toBeGreaterThanOrEqual(3);
+  for (let i = 1; i < flown.m.length; i++) expect(flown.m[i]!, `frame ${i}`).toBeLessThanOrEqual(flown.m[i - 1]! * (1 + 1e-9));
+
   // The camera goes to the battle, at a zoom of the elements' tiers; the elements arrive with the next snapshot.
   await page.waitForFunction((m0) => window.__warsim!.view!.metresPerPx < m0 / 10, start.m, { timeout: 20_000 });
   await page.waitForFunction(() => {
@@ -173,6 +201,21 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
 
   console.log(`banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; ${seen.a.on} and ${seen.b.on} elements of the two in the middle on the screen`);
   await page.screenshot({ path: path.join(out, 'to-battle.png') });
+
+  // A key of the camera's ends the flight where it is: the user has the camera, and it does not go on to the battle.
+  await page.evaluate((cam) => window.__warsim!.view!.controller.set(cam), start.cam);
+  await banner.click();
+  await page.waitForFunction((m0) => window.__warsim!.view!.controller.animating && window.__warsim!.view!.metresPerPx < m0 / 2, start.m, { timeout: 20_000 });
+  await page.keyboard.down('ArrowLeft');
+  await page.waitForTimeout(150);
+  await page.keyboard.up('ArrowLeft');
+  await page.waitForFunction(() => !window.__warsim!.view!.controller.animating, null, { timeout: 5_000 });
+  const taken = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, cam: { ...window.__warsim!.view!.controller.cam } }));
+  await page.waitForTimeout(500);
+  const later = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, cam: { ...window.__warsim!.view!.controller.cam } }));
+  expect(taken.m, 'the flight ended on the way').toBeGreaterThan(100);
+  expect(taken.m).toBeLessThan(start.m / 2);
+  expect(later).toEqual(taken);
 });
 
 // PLAN 2.14f5a: the same click on a real front. No division is put down: the armies of the start
@@ -210,6 +253,8 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   console.log(`day 60: ${lit} of 8 banners have a battle`);
   await banner.click();
   await page.waitForFunction((m0) => window.__warsim!.view!.metresPerPx < m0 / 10, start.m, { timeout: 20_000 });
+  // A flight (PLAN 2.14f5b4): what follows is asked of where it ends.
+  await page.waitForFunction(() => !window.__warsim!.view!.controller.animating, null, { timeout: 20_000 });
   await page.waitForFunction(() => {
     const v = window.__warsim!.view!;
     return v.elementCount > 0 && Math.abs(v.elementsZoom / v.metresPerPx - 1) < 0.01;

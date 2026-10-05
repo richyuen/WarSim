@@ -1964,8 +1964,8 @@ quick sweep as a smoke test.
         a battle with no two that are each other's nearest has no test of its own and the
         camera does not widen for it; a pair across a strait (blocks on their shores) was
         not looked for.
-      - [ ] 2.14f5b Four decisions, each with an ADR. **Split 2026-10-05** in four, one cause
-        a commit:
+      - [x] 2.14f5b Four decisions, each with an ADR. **Split 2026-10-05** in four, one cause
+        a commit (done 2026-10-05: ADR-94 to ADR-97):
         - [x] 2.14f5b1 What "largest" means: 67,984 against 472 was the largest battle by
           men. Decide whether the smaller side's men count instead, or say why not.
           Done 2026-10-05 (ADR-94). *Measured* (a probe not kept; seeds 99 and 7, 752 and
@@ -2023,8 +2023,20 @@ quick sweep as a smoke test.
           (`to-battle-banners.png`, `to-battle.png`, `to-battle-front.png`). The pin did not
           move. *Not done:* the flag is a second old at top speed; it does not say whose
           battle; wars past the eighth have no sign.
-        - [ ] 2.14f5b4 Whether the jump becomes a flight (the camera has an eased zoom and
+        - [x] 2.14f5b4 Whether the jump becomes a flight (the camera has an eased zoom and
           no eased pan, ADR-91). Built or "not now, because".
+          Done 2026-10-05 (ADR-97): built. *What:* `flight` in `render/camera.ts` (van Wijk
+          and Nuij's path: pan and zoom in one movement, eased; 0.25 to 1.6 s) and
+          `CameraController.flyTo`, called by `MapView.showBattle`; a key, the wheel, a press
+          or a touch ends it where it is. *Measured* (a probe not kept, day 60 of seed 99,
+          frames 16.7 ms apart): from the world view 89 frames, 21 px of ground a frame at
+          most; from 20 m/px 5,900 km away 90 frames, out to 4,276 m/px, 248 px a frame at
+          most; from 117 km away 78 frames, out to 91 m/px. 13 to 16 subscriptions a flight
+          (the jump: one). *Tests:* unit, six in `camera.test.ts`; e2e, the first of
+          `toBattle1938` (the frames of the flight, seen to fail with the jump; the left
+          arrow ends it on the way). Pictures of the three flights looked at. The pin did
+          not move. *Not done:* not seen at 60 frames a second on a graphics card;
+          `prefers-reduced-motion`; no unit test of the controller.
       - [ ] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest
         hop of a block in the 60 days was 50 km, more than contact (29 km). Decide, with an
         ADR, whether `deployOf` limits it. *Measured 2026-10-05 with 2.14f5a* (seed 99, days

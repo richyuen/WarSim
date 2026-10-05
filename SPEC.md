@@ -1400,6 +1400,9 @@ on screen.
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
   treasury, manpower) on the right, toggled by the bottom bar's Statistics button; one banner
   per active war (side leaders, ally counts, score bar) above the bottom bar, at most 8 + "+N".
+  A click on a banner selects the attackers' leader and, when the war has a battle (gold
+  swords; ADR-96), flies the camera to it at 20 m/px (`flight` in `render/camera.ts`: pan and
+  zoom in one eased movement, ended by any camera input; ADR-91, ADR-94, ADR-95, ADR-97).
   While paused, the worker keeps pumping (without ticking) until throttled derived messages are
   flushed, so a single step still updates the UI.
 - **Map modes** (implemented PLAN 1.17–1.30a, `src/shared/mapModes.ts`):
