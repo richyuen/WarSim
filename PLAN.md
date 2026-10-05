@@ -1075,11 +1075,24 @@ quick sweep as a smoke test.
     defect of this phase's feature caused it. Run once, not again after the tasks below.
     Done 2026-10-05: seeds 1 to 10, 20 years, 4.3 minutes. The five limits hold on all ten
     seeds; no run stopped. Not a verdict on the balance (ADR-58); the numbers are in PROGRESS.
-  - [ ] 2.11b The independent read (ADR-74) of everything written since the last one
+  - [x] 2.11b The independent read (ADR-74) of everything written since the last one
     (`ece4b2f`: PLAN 2.7z to 2.10b, 23 source files, 1,261 lines added). The whole of it: the
     last read was narrowed, and this is the phase's. Each finding is checked against the code
     here before it is anything; those a player can meet become tasks 2.11e and on, each with
     a test that fails first; the rest go on the watch list.
+    Done 2026-10-05 (ADR-74, addendum: the fifth read). Five findings, every one run by the
+    reader in Node; 356,000 tokens, 33 minutes. Checked here: four run again with the
+    reader's scripts, one read against the code; all hold. A suspicion of the reader's was
+    settled here in the browser and is a sixth.
+    - Tasks, most severe first: 2.11i (a march between two neighbouring cells is taken for
+      the seam and flies round the world: a regression of PLAN 2.9a), 2.11j (a loaded game
+      does not go on as the game that was saved: older than this phase), 2.11k (a formation
+      mustered in a theatre does not stand on sure land), 2.11l (the trees of T2 are scattered
+      for a far zoom during the fade out), 2.11m (the map's canvas is not opaque where sprites
+      and trees blend: the page's colour shows through).
+    - A line under PLAN 7.4, not a task: back from T2 with the camera still zooming, the T1
+      boxes are up to 6 px from where they rest and ease there in 150 ms.
+    - The rest: BLOCKERS, in the block of the watch lists.
   - [x] 2.11c The watch lists of the phase: 17 blocks in BLOCKERS wait for this review. Each
     item becomes a task, a line under the later phase that covers it, a carry with the reason
     it waits, or is closed. Two are looked at now and not carried: the division that stands
@@ -1111,6 +1124,54 @@ quick sweep as a smoke test.
       `MapView.hasFineCoast` (five specs wait on it).
   Tasks that come out of 2.11b and 2.11c follow as 2.11e and on. 2.11 is ticked when they
   are done; then the critic runs (PROMPT step 2a).
+  The order below is the order of work: the sim's three first (a regression of this phase,
+  a broken invariant, a rule that missed a path), then what is drawn.
+  - [ ] 2.11i A march between two neighbouring cells is not a crossing of the seam. (The fifth
+    read, finding 1; a regression of PLAN 2.9a.) `movementSystem` takes a step whose two ends
+    are more than 1 apart in x for a step across the map's seam and turns it round. That was
+    the seam's mark while every place was a cell's middle. Since 2.9a a cell's place can be
+    its land point, and two neighbours' points are up to 1.9 apart: the step is then walked
+    the long way round the map, some 100 cells an hour, facing along it.
+    - Seed 99, the first year: 90 formations, 1,587 formation-hours more than 3 cells off
+      their march, the furthest 1,024 cells (seed 1938: 56 and 909). 10,393 of 1,839,530
+      pairs of walkable neighbouring cells can do it; lakes too (Constance, Geneva).
+    - A formation that is engaged on its way stays there: a Polish division fought the French
+      for 30 hours 15 cells off its march; 942 shots in the year were by or at formations that
+      were off. A new order in flight starts from where the formation is: two Soviet
+      divisions ended 347 cells away (seed 1938, tick 8341).
+    - Nothing saw it: `coast1938.test.ts` skips formations on the march; `movement.test.ts`
+      has one march, over no such pair; the pinned hash holds whatever the code does; the
+      smoke sweep's limits were green with it.
+    AT: unit, failing first: on the 1938 map, a march over a pair of neighbouring cells whose
+    points are more than 1 apart in x (the test finds one by the mask) stays within a cell
+    and a half of both cells at every tick and faces along the step; a march across the true
+    seam still goes the short way. 1938, seed 99, the first 60 days: no formation's place
+    changes by more than its speed allows in an hour. The pinned hash moves: old and new in
+    DECISIONS (ADR-55). No sweep (ADR-58; the phase's one is run).
+  - [ ] 2.11j A game loaded from a save goes on as the game that was saved. (The fifth read,
+    finding 2; older than this phase.) SPEC §2.6 has it as I2, "must always pass". On the 1938
+    world it does not hold for every save: a load forces a full refresh of the supply network
+    (`World.load`: `supplyDirty = true`), while the game that goes on refreshes only the blocs
+    whose cells changed, and the two can give a crossing lane to different blocs
+    (`supply.ts` says so itself). Seed 99 saved at tick 2400: one tick later 3 cells of
+    Bab-el-Mandeb differ, by tick 3120 strengths and gold, and the year ends on another hash.
+    Saves at ticks 100, 700 and 1500 go on alike. The tests of I2 are on the toy world or 49
+    ticks from the start.
+    AT: unit, failing first: seed 99 saved at a tick where the two refreshes differ, loaded
+    into a fresh world: the same hash and the same sections as the game that went on, a tick,
+    a day and a month later. How (the load keeps what a partial refresh needs, or a partial
+    refresh is made to give what a full one gives) is the task's decision, in DECISIONS, with
+    SPEC §2.6 and the line on loading brought to agree. The pinned hash: unmoved if the load
+    is made to follow the game; moved and logged if the game's own refresh changes.
+  - [ ] 2.11k A formation mustered in a theatre stands on sure land. (The fifth read, finding
+    3; PLAN 2.9a missed this path.) `musterPoint` returns a city's own place or a front
+    cell's bare middle, and `productionSystem` writes it as it is. Seed 99, the first year: 13
+    of 101 musters not on sure land (9 British divisions at Gibraltar, in a water pixel, all
+    28 elements of each in the drawn sea for up to a day; 4 Japanese at Dalian). The test of
+    2.9a looks at days 0, 30 and 90; the first such muster is at tick 4321.
+    AT: unit, failing first: a muster at a city that is not on sure land (Gibraltar) stands on
+    sure land, and its elements too; 1938, seed 99, a year: no formation at rest off sure
+    land on any day (the reader's count: 119,112 looks, 13 off). The pinned hash moves: logged.
   - [ ] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
     formation that has a march, and keeps it where it stands while it is `engaged`
     (`movement.ts`: "in contact: holds and fights"). The view plays the walk for `moving`
@@ -1121,6 +1182,27 @@ quick sweep as a smoke test.
     e2e: the demo's division, flagged moving and engaged, is drawn standing at T2 and at T3,
     and a formation on the march is drawn walking. Then the demo's four close pictures of two
     runs are compared: the walk's phase was what made them differ.
+  - [ ] 2.11l The ground and what stands on it do not outlive their zoom. (The fifth read,
+    finding 4.) Leaving T2, the ground's share is a matter of time (full for 220 ms, then a
+    fade of 250 ms) while the camera closes on its target at 18 a second. `scatter` has no
+    floor: below its coarsest spacing it still gives every lattice point of level 0 at full
+    opacity. A hard spin of the wheel out of T2 then shows, for half a second, tree symbols
+    denser than their spacing, cut off at a line that climbs the screen (at 5000 m/px 20,502
+    wanted, 12,000 given, the last 303 px from the top of 1080); and the ground's pass reads
+    the fine mask at a zoom it was not made for.
+    AT: unit, failing first: `scatter` gives nothing at full opacity below its coarsest
+    spacing, and nothing at all an octave below it; it is never cut short at 1920 × 1080
+    above T2. e2e: a jump from T2 to 5000 m/px draws no instance and no ground from the first
+    frame the camera is there. `fades1938` and `groundThings1938` pass. Bench A.
+  - [ ] 2.11m The map's canvas stays opaque. (A suspicion of the fifth read, settled here.)
+    The sprites, the figures and the ground's instances blend with (SRC_ALPHA,
+    ONE_MINUS_SRC_ALPHA) for alpha as for colour, into a canvas that has alpha: under a
+    shadow or a soft edge the canvas ends at an alpha of 0.54 to 0.78, and the page's
+    background (#1b2a3a) shows through there. Read at T2 over a forest: 254,968 of 1,120,000
+    px under 255, the least 138. What `readPixels` gives a test is not what the page shows.
+    AT: e2e, failing first: at T2 and T3, over a forest and over a division, every pixel of
+    the map canvas has alpha 255; a screenshot of the page has the canvas's colours at the
+    places sampled. The specs that read colours pass.
   - [ ] 2.11f Occupied land at T2 and T3: the hatching gives way to the ground. The hatch is
     in screen px and lies over the hillshade, the texture and what stands on the ground,
     across the whole view: the four close pictures of the zoom demo are of an occupied pocket
@@ -1349,6 +1431,18 @@ quick sweep as a smoke test.
     T3 is 4 to 17 km wide: one tracer in the demo's picture at 12 m/px, none at 3. A battalion
     at a third of its men is a scatter over its footprint, not a smaller block (ADR-69's
     order of losses). A stack's lead at T1 shows the strongest formation's kind only.
+  - **From the fifth independent read (PLAN 2.11b):**
+    - Back from T2 with the camera still zooming (the only way a wheel leaves T2), the T1
+      boxes take the rest places of the first frame's zoom and keep them for the morph: up to
+      6 px off, then an ease of 150 ms. PLAN 2.7z holds for a camera that has stopped.
+    - Cities by the fine mask: 140 of 5,757 are in a water pixel of it and 387 not on sure
+      land (Gibraltar, Kalemie, Geneva, Amoy, Buffalo, Cochin; one capital in water, four not
+      on sure land). At T2 and T3 their dots stand in the drawn sea and no building stands at
+      their middle.
+    - Nine land cells have no land pixel in the mask (atolls, e.g. 169.5°W 16.7°N): a
+      formation there keeps a middle on the mask's water and T2 draws no island.
+    - The T1 order arrow ends at the target cell's middle; the formation will stand at the
+      cell's land point, up to 0.6 cells from it on a coastal cell.
   - **Picking.** A marker in a stack cannot be picked by a click on the map (the lead is what
     is there). A selection ring stays on an id that a new formation has taken, and such a
     formation takes the dead one's place in a stack for one fade.

@@ -858,6 +858,42 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     test, on the same input until it rests, on random inputs. The spec of one tick does not
     see a cycle.
 
+- **Addendum 2026-10-05, the fifth read (the Phase 2 review, PLAN 2.11b).** The same brief, on
+  the 23 source files changed since the fourth read (`ece4b2f`: PLAN 2.7z to 2.10b, 1,261
+  lines), at full width: the fourth was narrowed, and this is the phase's. Node only (a sweep
+  was running); nothing of what changed or why.
+  - **Five findings, each run by the reader; four run again here with its scripts, the fifth
+    read against the code. All hold.** 356,000 tokens, 33 minutes.
+    1. A march between two neighbouring cells is taken for the seam and walked round the
+       world (`movement.ts`: "more than 1 apart in x"). **A regression of PLAN 2.9a**, in
+       four gated commits since: 90 formations in seed 99's first year.
+    2. A game loaded from a save does not go on as the game that was saved (the supply
+       network is refreshed in full on a load, in part otherwise). Older than the phase and
+       outside the lines the reader was pointed at; I2 of SPEC §2.6.
+    3. A formation mustered in a theatre is placed raw: 9 British divisions in the sea at
+       Gibraltar. A path PLAN 2.9a missed.
+    4. `scatter` has no floor of zoom, and the ground's share is a matter of time: a fast zoom
+       out of T2 shows trees for the far zoom, cut off at a line.
+    5. Back from T2 with the camera still zooming, the T1 boxes are up to 6 px from their rest.
+  - **A sixth from a suspicion, settled here in the browser:** the map's canvas is not opaque
+    where sprites and trees blend (254,968 of 1,120,000 px at T2 over a forest, the least at
+    an alpha of 138 of 255): the page's background shows through.
+  - **Tasks before Phase 3:** PLAN 2.11i, j, k (the sim's, first), l, m. Finding 5 is a line
+    under PLAN 7.4: nothing is wrong at rest, and what is off is an ease of 6 px.
+  - **What finding 1 says about the phase's own checks.** Every one of them passed with it:
+    - the test of 2.9a looked at formations at rest and skipped those on the march, by design;
+    - the count "0 of 134 marches over water at day 30" was a count at one tick;
+    - the pinned hash holds whatever the code does: it moved with 2.9a and was logged as "formations stand on land";
+    - the smoke sweep's five limits were green: formations that fly for some hours do not move a border by a percent;
+    - the zoom demo closes in on a division that fights a Chinese division (494) which, in seed 99, is the first to fly.
+    A change of where things stand is a change of how they move between those places. The
+    task that fixes it adds the test that was missing: a bound on how far anything moves in
+    an hour, over a run.
+  - **What finding 2 says:** the invariant most relied on (a checkpoint is the run it was
+    taken from) was tested on the toy world and near the start. The reader found it by
+    running a save from the middle of a year.
+  - **The five reads together:** twenty-six findings, twenty of them tasks.
+
 - **Addendum 2026-10-04: the review pass is counted by numbered tasks (the user's decision).**
   - *What the user said,* when a pass was proposed after PLAN 2.8c2: "Let's clarify the
     5-iteration rule for review pass to proper numbered iterations (e.g., 2.7, etc.) instead of

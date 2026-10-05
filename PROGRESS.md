@@ -4994,3 +4994,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Dead code:** none. Looked at every export of the modules new in this phase.
 - **PARITY moved to the end of the review (2.11h):** its evidence is pictures, and 2.11e to g
   change what T2 and T3 look like.
+
+## 2026-10-05 — PLAN 2.11b: the fifth independent read: five findings, a regression of 2.9a among them
+
+- **The read:** everything since the fourth (23 source files, 1,261 lines), Node only, no
+  hints. 356,000 tokens, 33 minutes, 18 scratch scripts. Five findings, all run by the
+  reader. Four run again here with its scripts, one read against the code: all hold.
+- **Finding 1 is mine and it is bad:** since PLAN 2.9a a march between two neighbouring cells
+  whose standing points are more than 1 apart in x is taken for a crossing of the seam, and
+  the formation walks round the world at 100 cells an hour. 90 formations in seed 99's first
+  year, 1,587 formation-hours off their march, battles where they fly by, two Soviet
+  divisions left 347 cells from their march in seed 1938. Four gated commits carried it; the
+  smoke sweep was green with it. PLAN 2.11i, first.
+- **Finding 2 is older than the phase:** a game loaded from a save in mid-year does not go on
+  as the game that was saved (the supply network is refreshed in full on a load). I2 of the
+  SPEC. PLAN 2.11j.
+- **Finding 3:** a muster in a theatre is placed raw; nine British divisions in the sea at
+  Gibraltar. PLAN 2.11k.
+- **Finding 4:** a fast zoom out of T2 shows the trees of the far zoom for half a second, cut
+  off at a line. PLAN 2.11l.
+- **Finding 5:** T1 boxes 6 px off their rest while the camera still zooms out of T2. A line
+  under PLAN 7.4.
+- **A sixth, from a suspicion settled here in the browser:** the map's canvas is not opaque
+  where sprites and trees blend, and the page's background shows through (254,968 px at T2
+  over a forest). PLAN 2.11m.
+- **What the read found correct:** a year of seed 99 with every formation at rest on land and
+  every strength the sum of its elements (2,852,963 looks); the land mask's module against a
+  brute force (14,400 cells; 400,000 places); the 7,441 cells that stand off their middle,
+  all on sure land.
+- **Order of work now:** 2.11i, j, k (the sim), then e, l, m, f, g, then the pictures and
+  PARITY (h), then the critic.
