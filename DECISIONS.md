@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-100 · 2026-10-05 · accepted — A founded nation is named after the province of its capital, and a province without a name after its country (PLAN 2.15b)
+
+- **Context:** the critic's R2-B6 saw "Free state 128". PLAN 2.12a took away its cause there
+  (a nation that lost its origin as the table grew). Two more ways to the number were left.
+  - *Seven provinces of the earth data have no name* (`adm1` ending `+99?`, area 0: 2550
+    Antarctica, 2966 Kiribati, 3115 Colombia, 3123 Venezuela, 3124 Anguilla, 3142 Mexico,
+    3155 Russia). They are not empty: at the 1938 size six hold one cell and Antarctica's
+    18. A revolt there founded "Free state N".
+  - *The origin was the first province of the area*, where the revolt began or a Kill's seed
+    stood. The capital is the largest city of the area, which may be in another province.
+- **Decision.**
+  - `provinceLabel` (`src/shared/nationNames.ts`): a province is called by its name, else by
+    its country's (`admin`). The data is not changed: Natural Earth gives no name there, and
+    a made-up one would be ours.
+  - `foundedName`: "Free <label of the origin>". "Free state N" stays as the last resort for
+    a state without an origin (a save from before PLAN 2.12a); nothing founded now comes to
+    it.
+  - `spawnRebels` sets the origin after the capital: the province of the capital's cell
+    where that is in the area, else the area's first as before (an area without a city has
+    its capital in its middle, which may be the sea: PLAN 2.15e).
+- **The pin did not move** (324bc358): `origin` is in the state, but a plain game revolts by
+  province, where the area is one province. In region mode and in a Kill the origin of a
+  nation can now differ from before; nothing reads it but the name and `risingNeighbour`,
+  which asks only whether it is 0.
+- **What it does not give.**
+  - Two nations of one name. 114 names are held by more than one province ("Valmiera" 21,
+    "Central" 10, "Northern" 8), and "Free Colombia" can stand beside Colombia. A line under
+    PLAN 7.4.
+  - A name that follows the capital when it moves: the origin is where the nation was
+    founded.
+  - Names in a scenario that is not on the earth map: the labels are the earth data's.
+
 ### ADR-99 · 2026-10-05 · accepted — A God Mode Kill hands land back, founds five nations at most and starts no war (PLAN 2.15a)
 
 - **Context:** the critic's R2-B6. A Kill of France made 103 living nations 139 and left 43

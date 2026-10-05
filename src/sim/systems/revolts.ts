@@ -310,7 +310,6 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     nc.color[id] = rebelColor(world, id);
     nc.incomeMult[id] = 1;
     nc.manpowerMult[id] = 1;
-    nc.origin[id] = area[0]!;
     nc.aggression[id] = REBEL_AGGRESSION;
   }
   nc.living[id] = 1;
@@ -355,6 +354,12 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   } else {
     nc.capitalX[id] = cells > 0 ? sx / cells : 0;
     nc.capitalY[id] = cells > 0 ? sy / cells : 0;
+  }
+  // The origin, which names the nation: the province of its capital (PLAN 2.15b), where that is
+  // in the area (the middle of an area without a city need not be).
+  if (revive === 0) {
+    const at = province[Math.floor(nc.capitalY[id]!) * w + Math.floor(nc.capitalX[id]!)] ?? 0;
+    nc.origin[id] = inArea.has(at) ? at : area[0]!;
   }
   // Militia.
   if (world.rules) {

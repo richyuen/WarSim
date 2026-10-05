@@ -58,7 +58,7 @@ export const NATION_SCHEMA = {
   autonomy: 'f64',
   loyalty: 'f64',
   integration: 'f64',
-  /** Revolt suppression level 0..1 (PLAN 1.19) and, for spawned rebels, the origin province. */
+  /** Revolt suppression level 0..1 (PLAN 1.19) and, for a founded nation, its origin: the province of its capital when it was founded (PLAN 2.15b). */
   suppression: 'f64',
   origin: 'u32',
   /** Revivals left and the earliest revival tick (PLAN 1.20); consecutive bankrupt months. */

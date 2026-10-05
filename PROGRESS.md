@@ -5795,3 +5795,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   land handed over (2.15d), Algeria's 203 against 7,267 cells, Indochina and Madagascar to a
   neighbour, names and flags (2.15b, 2.15c), no claim left for Revive (2.17).
 - **Next:** PLAN 2.15b, no nation without a name.
+
+## 2026-10-05 — PLAN 2.15b: no nation without a name
+
+- **Found:** two ways to "Free state N" left after PLAN 2.12a. Seven provinces of the earth
+  data have no name (`+99?` rows, area 0) and still hold cells at the 1938 size (six hold
+  one, Antarctica's 18). And the origin, which names the nation, was the area's first
+  province, not the capital's.
+- **Built (ADR-100):** `src/shared/nationNames.ts`: `provinceLabel` (the name, else the
+  country's) and `foundedName`; the worker's `nameOf` uses them. `spawnRebels` sets the
+  origin after the capital: its province where that is in the area, else the area's first.
+- **Tests:** `tests/unit/nationNames.test.ts`, 4 (unit 695). The origin test seen to fail on
+  the old rule (446 for 445). A revolt forced in every province: 406 founded, each with an
+  origin and a name; 66 with the capital outside the origin (no city, the middle of the
+  area: 2.15e).
+- **The pin did not move** (324bc358): a plain game revolts by province, one province an area.
+- **Run by hand:** `godUi1938` (2): green; the Kill of France now reads Free Paris, Ain,
+  Gironde, Oran, Algiers. `revolts`, `godMode`, `tableGrowth`: green.
+- **Gotchas:** the test took the nations' columns before the revolts and read `undefined`
+  after the table grew: the defect of PLAN 2.12a, in a test. Take `cols` after what founds.
+  `tests/sweep/` is not in the plain vitest config: `--config vitest.sweep.config.ts`.
+- **Seen, not changed:** 114 province names are held by more than one province ("Valmiera"
+  21, "Central" 10): two nations of one name can come of it. A line under PLAN 7.4.
+- **Next:** PLAN 2.15c, a flag for every founded nation.

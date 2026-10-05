@@ -2128,10 +2128,21 @@ quick sweep as a smoke test.
       `godUi1938.spec.ts` through the God tab; `docs/evidence/2.15/kill-france-*.png`,
       looked at. The pin did not move.
     - *Not done:* see ADR-99, "what it does not give".
-  - [ ] 2.15b No nation without a name: where "Free state N" can still come from (a
+  - [x] 2.15b No nation without a name: where "Free state N" can still come from (a
     province with no name; the origin), and the origin on the province of the capital.
     AT: every province of the 1938 data has a name or the name has another source; every
-    nation founded has an origin; unit.
+    nation founded has an origin; unit. Done 2026-10-05 (ADR-100).
+    - *The causes:* seven provinces of the earth data have no name and hold cells (one each,
+      Antarctica's 18); and the origin was the area's first province, not the capital's.
+    - *The rule:* a province without a name is called by its country (`provinceLabel`); the
+      origin is the province of the capital where that is in the area. "Free state N" is
+      left for a state without an origin only (`foundedName`, `src/shared/nationNames.ts`).
+    - *Tests:* `tests/unit/nationNames.test.ts` (4): the data; the number only without an
+      origin; the origin on the capital's province (seen to fail: 446 for 445); a revolt
+      forced in every province founds 406 nations, each with an origin and a name. The pin
+      did not move.
+    - *Not done:* 66 of the 406 have their capital outside the origin (no city: the middle
+      of the area, 2.15e); two nations of one name (a line under PLAN 7.4).
   - [ ] 2.15c A flag for every founded nation, made from its id and colour by a function any
     scenario can use (PLAN 2.16 needs it). Look first at whether the plain flag is the
     cause or a colour not yet known when the flag is first asked for; a reused id must not
@@ -2463,6 +2474,10 @@ quick sweep as a smoke test.
     panels are no obstacles to a tag either); figures at 20 m/px are faint on a plain
     (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
     its swords and frame only (`to-battle-banners.png`).
+  - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). A founded nation is
+    "Free <province>", and 114 names are held by more than one province ("Valmiera" 21,
+    "Central" 10, "Northern" 8, "Saint George" 7); a province without a name gives its
+    country's, so "Free Colombia" can stand beside Colombia. Not seen in a game yet.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
   - N3: occupied land stays hatched for years after a peace (Europe after 14 years of seed
     2718). A rule to look at, not a look: what a peace does with land that is held.

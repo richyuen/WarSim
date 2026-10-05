@@ -42,6 +42,7 @@ import {
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
+import { foundedName, provinceLabel } from '../shared/nationNames';
 import { xxhash32View } from '../sim/core/hash';
 import { buildProvinceRaster } from '../sim/data/provinces';
 import { loadTerrain, type StraitDef } from '../sim/data/terrain';
@@ -330,7 +331,7 @@ export class SimServer {
   private startSim(init: SimInit, reqId: number): void {
     this.sim = new Sim(init);
     // Real-map scenarios get nation labels; province names name spawned nations.
-    this.provinceNames = init.assets ? (JSON.parse(new TextDecoder().decode(init.assets.admin1Meta)) as { name: string }[]).map((m) => m.name) : null;
+    this.provinceNames = init.assets ? (JSON.parse(new TextDecoder().decode(init.assets.admin1Meta)) as Admin1Meta[]).map(provinceLabel) : null;
     this.labelVersion = -1;
     this.lastLabelMs = -1;
     this.unrestVersion = -1;
@@ -798,8 +799,7 @@ export class SimServer {
     const def = NATIONS_1938[id - 1];
     if (def) return def.nameKey;
     const origin = this.requireSim().world.nations.cols.origin[id] ?? 0;
-    const province = this.provinceNames?.[origin - 1];
-    return province ? `=Free ${province}` : `=Free state ${id}`;
+    return `=${foundedName(id, origin, this.provinceNames)}`;
   }
 
   private advance(n: number): void {
