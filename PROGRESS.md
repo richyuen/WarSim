@@ -5466,3 +5466,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** none new; the pin (`324bc358`) and the 673 unit tests are the proof. No e2e: no
   spec reads it and nothing drawn changed.
 - **Next:** PLAN 2.14f2, a tag does not stand under the war banners or the bottom bar.
+
+## 2026-10-05 — PLAN 2.14f2: a tag does not stand under the war banners or the bottom bar
+
+- **What was wrong:** a formation at the bottom edge had its tag where the banners and the
+  bar are. The place below it is held in the view (`vh - h`), which is the bar's; the place
+  above a block cut by the edge is the banners'.
+- **Built:** `layoutTags` takes boxes to avoid and treats each as another tag, with the same
+  gap of 4 px. `MapView.tagObstacles` gives them (default none: the benches and `view=0`);
+  `game.tsx` reads the box of each `.war-banner`, of `.war-more` and of `.bottombar`, only in
+  frames that draw tags. Each banner's own box, not a band: the row is 603 px of 1,400.
+- **Tests:** 4 unit (677). e2e in `tags1938`: the German block in the middle of the width,
+  its top at 670, 772, 779 and 788 px of 800. Seen to fail first: 10 overlaps at the three
+  lower heights. Pictures looked at: the tags stand above the banners, clear of them.
+- **A gotcha:** 1938 starts with two wars (Spain, Japan and China): three banners with the
+  test's, not one.
+- **Another:** `git stash` of the fix without the unit test that calls the new parameter:
+  "webServer was not able to start" (the type error CLAUDE.md names).
+- **The pin:** not moved; view only. **Run by hand:** `tags`, `formationPanel`, `battleView`,
+  `cityNames`, `toBattle`: 7 green.
+- **Not done:** the figures under the bar are still under it, and their tag is then some
+  60 px above them; the panels at the sides are not obstacles.
+- **Next:** PLAN 2.14f3, the formation whose panel is open is marked on the map.

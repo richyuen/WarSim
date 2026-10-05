@@ -51,4 +51,38 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     expect(placed.map((t) => t.id)).toEqual(Array.from({ length: 2 * TAG_TRIES }, (_, k) => k + 1));
     for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) expect(over(placed[i]!, placed[j]!), `${i} on ${j}`).toBe(false);
   });
+
+  // PLAN 2.14f2: the war banners and the bottom bar are in the way as another tag is.
+  describe('what the page has above the map', () => {
+    // A formation cut by the bottom edge, with something above it: its tag's first free place
+    // was below, held in the view, which is where the bar is.
+    const above = item(1, 9000, 660, 700, 740, 760);
+    const cut = item(2, 8000, 660, 770, 740, 900);
+    const bar = { x: 500, y: 762, w: 400, h: 32 };
+
+    it('without them the tag of a formation at the bottom edge stands at the edge', () => {
+      const t = layoutTags([above, cut], measure, 1400, 800).placed.find((p) => p.id === 2)!;
+      expect(over(t, bar)).toBe(true);
+    });
+
+    it('a tag gives way to a box in its place: the next free place, a gap clear of the box', () => {
+      const { placed, left } = layoutTags([above, cut], measure, 1400, 800, 1, [bar]);
+      expect(left).toBe(0);
+      for (const t of placed) expect(over(t, { x: bar.x - TAG_GAP, y: bar.y - TAG_GAP, w: bar.w + 2 * TAG_GAP, h: bar.h + 2 * TAG_GAP }), `tag ${t.id}`).toBe(false);
+      expect(over(placed[0]!, placed[1]!)).toBe(false);
+      // The stronger formation's tag is where it was.
+      expect(placed[0]).toEqual(layoutTags([above, cut], measure, 1400, 800).placed[0]);
+    });
+
+    it('a box beside the tag is not in its way: boxes, not a band across the view', () => {
+      const aside = { x: 900, y: 762, w: 300, h: 32 };
+      expect(layoutTags([above, cut], measure, 1400, 800, 1, [aside]).placed).toEqual(layoutTags([above, cut], measure, 1400, 800).placed);
+    });
+
+    it('boxes on every place: the tag is left out and counted', () => {
+      const { placed, left } = layoutTags([item(5, 9000, 660, 300, 740, 340)], measure, 1400, 800, 1, [{ x: 0, y: 0, w: 1400, h: 800 }]);
+      expect(placed).toEqual([]);
+      expect(left).toBe(1);
+    });
+  });
 });

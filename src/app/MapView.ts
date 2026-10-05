@@ -7,7 +7,7 @@ import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labe
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
 import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
-import { drawTags, layoutTags, type PlacedTag, type TagInput } from '../render/units/tags';
+import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
@@ -1018,6 +1018,12 @@ export class MapView {
   tagsLeft = 0;
   /** The opacity the tags were drawn with last (tests). */
   tagOpacity = 0;
+  /**
+   * What the page has above the map that a tag does not stand under (PLAN 2.14f2): the war
+   * banners and the bottom bar, as boxes in CSS px of the page. The game wires it; a view
+   * without the page's interface has none.
+   */
+  tagObstacles: () => TagObstacle[] = () => [];
 
   /** A formation's name as it is shown: its kind and its number ("Infantry division 658"). The flag beside it says whose. */
   formationName(id: number, template: number): string {
@@ -1099,7 +1105,10 @@ export class MapView {
       ctx.font = font;
       return ctx.measureText(text).width;
     };
-    const { placed, left } = layoutTags(items, measure, vw, vh, this.unitScale);
+    // The page's boxes, from the canvas's corner.
+    const at = this.canvas.getBoundingClientRect();
+    const avoid = this.tagObstacles().filter((o) => o.w > 0 && o.h > 0).map((o) => ({ x: o.x - at.left, y: o.y - at.top, w: o.w, h: o.h }));
+    const { placed, left } = layoutTags(items, measure, vw, vh, this.unitScale, avoid);
     this.tagsLeft = left;
     this.tagRects = placed;
     const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;

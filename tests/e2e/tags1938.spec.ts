@@ -197,4 +197,50 @@ test('at T2 and T3 every formation in the view has its flag, strength and name b
     await page.screenshot({ path: path.join(out, `tags-t3-12m-${name}.png`) });
   }
   console.log(`tags at T2: ${t2.tags.map((t) => `"${t.text} ${t.name}" ${t.w}×${t.h} px, ${t.gap} px from its elements`).join('; ')}`);
+
+  // PLAN 2.14f2: a tag does not stand under the war banners or the bottom bar. The German
+  // division's block in the middle of the view's width, where the banners (the test's war and
+  // the wars of 1938's start) and the bar are, and its top edge at four heights near the bottom:
+  // the place above it is then under the banners, or the place below it, held in the view,
+  // under the bar.
+  await expect(page.locator(`[data-testid="war-banner"]`).first()).toBeVisible();
+  const bar = (await page.getByTestId('bottombar').boundingBox())!;
+  const row = (await page.getByTestId('war-banners').boundingBox())!;
+  const boxes = [bar];
+  for (const b of await page.getByTestId('war-banner').all()) boxes.push((await b.boundingBox())!);
+  expect(boxes.length, 'the bar and the banners').toBeGreaterThan(1);
+  const px = (b: { x: number; y: number; width: number; height: number }): string => `${b.width.toFixed(0)}×${b.height.toFixed(0)} px at ${b.x.toFixed(0)}, ${b.y.toFixed(0)}`;
+  console.log(`${boxes.length - 1} banners in ${px(row)}; the bar ${px(bar)}`);
+  const german = ours[0]!;
+  const under: string[] = [];
+  for (const top of [800 - 130, row.y + row.height + 30, bar.y + bar.height / 2, 800 - 12]) {
+    // The block's top edge to `top` px and its middle to the middle of the width.
+    await page.evaluate(({ id, top }) => {
+      const v = window.__warsim!.view!;
+      const cam = v.controller.cam;
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity;
+      for (let i = 0; i < v.elementCount; i++) {
+        if (v.elementFormation[i] !== id) continue;
+        x0 = Math.min(x0, v.elementX[i]!);
+        x1 = Math.max(x1, v.elementX[i]!);
+        y0 = Math.min(y0, v.elementY[i]!);
+      }
+      v.controller.set({ cx: (x0 + x1) / 2, cy: y0 - (top - window.innerHeight / 2) / cam.scale, scale: cam.scale });
+    }, { id: german, top: Math.round(top) });
+    await settle(page);
+    const seen = await look(page);
+    const where = `the German block's top at ${Math.round(top)} px`;
+    expect(seen.inView.map((f) => f.id), `${where}: on the screen`).toContain(german);
+    expect(seen.left, `${where}: tags left out`).toBe(0);
+    expect(seen.tags.map((t) => t.id).sort((a, b) => a - b), `${where}: tagged`).toEqual(seen.inView.map((f) => f.id));
+    for (const t of seen.tags) {
+      expect(t.y, where).toBeGreaterThanOrEqual(0);
+      expect(t.y + t.h, where).toBeLessThanOrEqual(800);
+      for (const [k, b] of boxes.entries()) {
+        if (t.x < b.x + b.width && b.x < t.x + t.w && t.y < b.y + b.height && b.y < t.y + t.h) under.push(`${where}: the tag of ${t.id} (${t.x}, ${t.y}, ${t.w}×${t.h}) under ${k === 0 ? 'the bar' : `banner ${k}`}`);
+      }
+    }
+    await page.screenshot({ path: path.join(out, `tags-bottom-${Math.round(top)}.png`), clip: { x: 300, y: 500, width: 800, height: 300 } });
+  }
+  expect(under, 'tags under the war banner or the bottom bar').toEqual([]);
 });

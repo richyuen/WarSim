@@ -1889,9 +1889,16 @@ quick sweep as a smoke test.
       `src/sim/systems/elements.ts`, read by `findBattles`, `contactsOf` and
       `largestBattle`. The same arithmetic (the absolute east-west difference, wrapped,
       and `dmath.sqrt`): the pin did not move.
-    - [ ] 2.14f2 A tag does not stand under the war banners or the bottom bar (from 2.14b).
+    - [x] 2.14f2 A tag does not stand under the war banners or the bottom bar (from 2.14b).
       AT: e2e, in `tags1938`: with a formation at the bottom edge of the view and a war's
       banner shown, no tag's box overlaps the banners or the bar; picture looked at.
+      Done 2026-10-05: `layoutTags` takes the boxes of each banner and of the bar
+      (`MapView.tagObstacles`, wired in `game.tsx`) and treats them as it treats another
+      tag: the next free place, a gap of 4 px clear; none free, left out and counted. Seen
+      to fail first (10 overlaps at three of the four heights); 4 unit tests; pictures
+      looked at. *Not done:* the figures themselves still stand under the bar (the map does
+      not end above it), and a tag may then be 60 px from its block; the other panels
+      (nation, formation, statistics) are not obstacles.
     - [ ] 2.14f3 The formation whose panel is open is marked on the map (from 2.14b).
       AT: e2e, in `formationPanel1938`, failing first: at T1, T2 and T3 the picked
       formation's marker or tag differs from the others by a stated measure, and no longer

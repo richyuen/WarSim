@@ -7,6 +7,9 @@
  * A tag stands above the part of its formation that is in the view (so a division that fills
  * the screen at T3, or reaches out of it, still has one), and gives way to a stronger
  * formation's tag: below its formation, then further out above and below. One that finds no free place is left out and counted.
+ *
+ * It gives way likewise to what the page has above the map (PLAN 2.14f2): the war banners and
+ * the bottom bar. A formation at the bottom edge had its tag under them.
  */
 
 /** A formation with something in the view: the box of its elements, CSS px. */
@@ -52,21 +55,31 @@ export const TAG_TRIES = 5;
 export const TAG_STRENGTH_FONT = (s: number): string => `700 ${Math.round(10 * s)}px system-ui, sans-serif`;
 export const TAG_NAME_FONT = (s: number): string => `500 ${Math.round(9 * s)}px system-ui, sans-serif`;
 
+/** A box of the page above the map that no tag stands under, CSS px of the view. */
+export interface TagObstacle {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 const overlap = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): boolean =>
   a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
 /**
  * Places the tags of `items` in a view of vw × vh px. `measure(text, font)` is the width of a
  * line. Stronger formations first (the lower id on a tie), so the layout does not depend on the
- * order of the list. Returns the placed tags and how many found no place.
+ * order of the list. No tag stands on one of `avoid`, nor nearer to it than to another tag.
+ * Returns the placed tags and how many found no place.
  */
-export function layoutTags(items: readonly TagInput[], measure: (text: string, font: string) => number, vw: number, vh: number, scale = 1): { placed: PlacedTag[]; left: number } {
+export function layoutTags(items: readonly TagInput[], measure: (text: string, font: string) => number, vw: number, vh: number, scale = 1, avoid: readonly TagObstacle[] = []): { placed: PlacedTag[]; left: number } {
   const placed: PlacedTag[] = [];
   let left = 0;
   const pad = TAG_PAD * scale;
   const lineH = 12 * scale;
   const h = 2 * lineH + 2 * pad;
   const edge = 2;
+  const kept = avoid.map((o) => ({ x: o.x - TAG_GAP, y: o.y - TAG_GAP, w: o.w + 2 * TAG_GAP, h: o.h + 2 * TAG_GAP }));
   const sorted = [...items].sort((a, b) => b.strength - a.strength || a.id - b.id);
   for (const it of sorted) {
     // The part of the formation that is in the view.
@@ -90,7 +103,7 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       // In the view: one that would stand above its top edge stands at it, on its own elements.
       const y = Math.round(Math.min(Math.max(ty, edge), Math.max(edge, vh - h - edge)));
       const box = { x, y, w, h };
-      if (placed.some((p) => overlap(p, box))) continue;
+      if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
       const gap = y + h <= vy0 ? vy0 - (y + h) : y >= vy1 ? y - vy1 : 0;
       placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, ...box, gap, flag: false });
       done = true;

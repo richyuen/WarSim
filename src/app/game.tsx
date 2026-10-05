@@ -45,6 +45,12 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     view.onSelect = (id) => (hud.selected.value = id);
     hud.onSelectNation = (id) => view.select(id);
     hud.onShowBattle = (x, y) => view.showBattle(x, y);
+    // A formation's tag does not stand under the war banners or the bottom bar (PLAN 2.14f2):
+    // each banner's own box, for they are a row in the middle and not a band across the view.
+    view.tagObstacles = () => [...document.querySelectorAll('.war-banner, .war-more, .bottombar')].map((e) => {
+      const r = e.getBoundingClientRect();
+      return { x: r.left, y: r.top, w: r.width, h: r.height };
+    });
     const p = new PlayerControl(hud, view);
     player = p;
     view.onPick = (x, y, sx, sy, shift) => {
