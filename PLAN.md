@@ -1719,6 +1719,73 @@ quick sweep as a smoke test.
     there is a view at 20 m/px with elements of both; their figures face the enemy; a
     battalion under fire differs from one at rest in the picture. If where elements stand
     changes in the sim, the pin moves (ADR-55).
+    **Split 2026-10-05:** where the blocks stand (c1) and how a battalion in contact looks
+    (c2) are two causes; the second needs a frame the atlas does not have.
+    - [x] 2.14c1 The blocks of formations in contact are deployed against each other. Done
+      2026-10-05 (ADR-89).
+      - *What it was:* a formation holds its place while it fights, and contact is 1.5
+        cells between formations (29 km); nothing brought the elements nearer. Nor did
+        anything turn a formation to its enemy: `facing` is the last march's heading.
+      - *The decision: derived, not state.* An element's place was already worked out from
+        its formation's (`slotPlace`), read by the snapshot, the fire events and the event
+        of an element's end, and by no rule. For a formation in contact the block now
+        stands on the line to its nearest enemy in contact, its front row half a kilometre
+        short of the middle between the two, facing it (`deployOf`, `elementPlace`). Two
+        that are each other's nearest stand front to front, a kilometre apart. One whose
+        nearest enemy faces a nearer formation comes up to that enemy's block from its own
+        side (a line further back when it comes from the side that enemy faces). A block
+        does not go onto the mask's water. **The formations, their markers and every rule
+        are where they were: the pin did not move** (`324bc358`).
+      - *Moving the formations themselves* (the other way) would be state: contact
+        distances, the choice of targets and the pressure on territory all read a
+        formation's place. Not taken.
+      - *The worker* sends a deployed block where it stands, and as its place of an hour
+        ago where the sim had it the hour before (`deployedBefore`): in the hour a contact
+        begins the elements go to the line, when the enemy changes to the new line, when
+        it ends back, each as one hour's move. The wreck of an element lies where it
+        stood, not where its block is going.
+      - *Measured (unit, `deploy.test.ts`):* after 60 days of Germany against Poland on
+        seed 99, 96 formations are in contact. **93 of them (97%) share a view at 20 m/px
+        with their nearest enemy, half or more of each side's elements in it; with the
+        blocks at the formations' places it was 2 (2%).** 3 pairs of the 96 blocks stand
+        with their middles under 0.1 cells apart (on one another). A shot is at most 0.32
+        cells long where it was a cell or more.
+      - *The AT restated:* "for every pair in contact" is not met and cannot be by blocks
+        that stand in one place: a formation in contact with three enemies faces one. The
+        measure is the nearest enemy, and 97%.
+      - *Tests:* unit `deploy.test.ts` (5: the pair front to front, a kilometre apart,
+        facing, on land, the formations unmoved; the shots; not state: thrown away and
+        after a load the same, the hash the same; formations not in contact as before;
+        the 60 days) and `deploySnapshot.test.ts` (the worker's places of now and of an
+        hour ago in a contact's first and second hour). e2e `battleView1938.spec.ts`: at
+        20 m/px on the point between a German and a Polish division a cell apart, 28 of
+        28 elements of each on the screen, facing east and west, 78 px between the front
+        rows, each with its tag. Picture looked at (`docs/evidence/2.14/battle-20m.png`).
+      - *Specs restated, each with the reason in its place:* `zoomDemo1938` (its expected
+        places are the sim's `elementPlace`), `individuals1938` (its views are on the
+        blocks; of what a view holds, the formation's own; a figure's bound is the
+        footprint's corner, since a block now faces at any angle), `tags1938` and
+        `formationPanel1938` (T3 on the blocks), `tags.test.ts` (a tag that gives way
+        stands below its block before it goes a place higher: two blocks front to front
+        have one tag above and one below).
+      - *Run by hand* (ADR-87): thirteen spec files of the close zoom, 19 tests green
+        (`zoomDemo`, `tags`, `formationPanel`, `fire`, `elements`, `wrecks`,
+        `coastElements`, `coastPicture`, `individuals`, `closeZoom`, `handover`,
+        `morphNations`, `fades`).
+      - **Not done, and said:**
+        - *The seam at 300 m/px.* The T1 marker stands at the formation's place and the
+          T2 block up to 0.45 cells from it (28 px there): the box that shrinks into its
+          elements (ADR-72) now shrinks beside them for a formation in contact. The
+          specs of the handover pass; the picture of it on an engaged pair was not looked
+          at. A line under 2.14f.
+        - *Hops.* When a formation's nearest enemy changes, its block goes to another
+          line in an hour. How often in a running war was not counted.
+        - 3% of the formations in contact, and the 3 pairs of blocks on one another.
+    - [ ] 2.14c2 A battalion in contact looks like one: posture and spread of its figures
+      at T3 (they stand in the parade grid of a battalion at rest), and its sprite at T2.
+      AT: e2e, pictures looked at: the figures of a battalion in contact differ from those
+      of one at rest by a stated measure (their spread across the front, a frame of their
+      own), and go back when the contact ends.
   - [ ] 2.14d The ground at T2 and T3 is the terrain's. Its colour comes from the terrain,
     the nation is a tint at the border (ADR-82's tint for occupied land with it).
     AT: the ground of one terrain on two nations' land differs by less than a stated share
@@ -1730,6 +1797,10 @@ quick sweep as a smoke test.
     close pictures shot again on the final code and looked at; PARITY.
     - From 2.14b: the formation whose panel is open is marked on the map; a tag does not
       stand under the war banners or the bottom bar.
+    - From 2.14c1: look at the handover at 300 m/px on a pair in contact (the marker at the
+      formation's place, the block up to 28 px from it), and decide whether the marker of
+      a formation in contact is drawn at its block; count how often a block changes its
+      line in a running war.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton

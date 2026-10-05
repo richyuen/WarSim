@@ -1,6 +1,7 @@
 /**
- * Slotted element poses (SPEC §3.6, PLAN 1.11): where element `slot` of a formation stands
- * when not engaged, as a pure function of the formation's position and facing. The same code
+ * Slotted element poses (SPEC §3.6, PLAN 1.11): where element `slot` of a formation stands,
+ * as a pure function of where its block stands and what it faces: the formation's own place
+ * and facing, or, for one in contact, its deployment (`deployOf` in systems/elements.ts). The same code
  * runs in the sim (engagement start positions) and the snapshot builder (semantic zoom), so
  * every tier shows the same positions.
  *

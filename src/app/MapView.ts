@@ -617,6 +617,10 @@ export class MapView {
   elementAlpha(i: number): number {
     return this.elementProxies.data[i * PROXY_STRIDE + 7]!;
   }
+  /** The facing element sprite `i` was uploaded with, radians (tests). */
+  elementFacing(i: number): number {
+    return this.elementProxies.data[i * PROXY_STRIDE + 4]!;
+  }
   /** Whether element sprite `i` was uploaded as walking (tests). */
   elementWalks(i: number): boolean {
     return this.elementProxies.data[i * PROXY_STRIDE + 6]! % 1 > 0.25;

@@ -5,7 +5,7 @@ import type {} from '../../src/app/testApi';
 import { FIRE_STRIDE, FireField } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { elementIndex, slotPlace } from '../../src/sim/systems/elements';
+import { elementIndex, elementPlace } from '../../src/sim/systems/elements';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 2.10a: the semantic zoom in one piece. One camera path from the whole world down to
@@ -119,7 +119,8 @@ function nodeBattle(): Battle {
   const count = w.rules!.templates[fc.template[formation]!]!.elements.reduce((s, x) => s + x.count, 0);
   const read = (): El[] =>
     (elementIndex(w).get(formation) ?? []).map((e) => {
-      const [x, y] = slotPlace(w, fc.x[formation]!, fc.y[formation]!, fc.facing[formation]!, ec.slot[e]!, count);
+      // Where the sim has the element: the division is in contact, and its block is deployed against the enemy (PLAN 2.14c1).
+      const [x, y] = elementPlace(w, formation, ec.slot[e]!, count);
       return { id: e, strength: ec.strength[e]!, size: size(e), x, y };
     });
   const first = read();

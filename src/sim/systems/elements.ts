@@ -7,7 +7,8 @@
  * tactical view shows. Formations without elements (toy scenario, tests) keep a bare strength.
  */
 import { EventKind } from '../../shared/events';
-import { SLOT_SPACING, slotPose } from '../core/pose';
+import { atan2, cos, sin, sqrt } from '../core/dmath';
+import { SLOT_SPACING, slotGrid, slotPose } from '../core/pose';
 import type { World } from '../world';
 
 /**
@@ -32,6 +33,188 @@ export function slotPlace(world: World, fx: number, fy: number, facing: number, 
     if (world.onLand(x, y)) return [x, y];
   }
   return [fx, fy];
+}
+
+/** Enemy formations within this many cells of each other are in contact (`findBattles`). */
+export const CONTACT_CELLS = 1.5;
+/** Between the front rows of two formations deployed against each other, cells (a kilometre). */
+export const DEPLOY_GAP = 0.05;
+
+/** Where the block of a formation in contact stands, and what it faces (`deployOf`). */
+export interface Deployment {
+  x: number;
+  y: number;
+  facing: number;
+}
+
+/** East-west distance from a to b on the map's own side of the seam. */
+function wrapDx(world: World, ax: number, bx: number): number {
+  const w = world.cells.w;
+  let dx = bx - ax;
+  if (dx > w / 2) dx -= w;
+  else if (dx < -w / 2) dx += w;
+  return dx;
+}
+
+/**
+ * For each formation in contact, the nearest enemy formation it is in contact with (the lower
+ * id on a tie). Derived: `findBattles` sets it as it pairs them each hour; where it is not set
+ * (a loaded game before its first hour) it is worked out here from the same state, the
+ * formations' `engaged` flags and places, and comes out the same.
+ */
+export function contactsOf(world: World): Map<number, number> {
+  if (world.contacts) return world.contacts;
+  const c = world.formations.cols;
+  const engaged: number[] = [];
+  world.formations.forEach((id) => {
+    if (c.engaged[id] === 1) engaged.push(id);
+  });
+  const near = new Map<number, [number, number]>();
+  const note = (a: number, b: number, d: number): void => {
+    const n = near.get(a);
+    if (!n || d < n[1] || (d === n[1] && b < n[0])) near.set(a, [b, d]);
+  };
+  for (let i = 0; i < engaged.length; i++) {
+    const a = engaged[i]!;
+    for (let j = i + 1; j < engaged.length; j++) {
+      const b = engaged[j]!;
+      if (!world.wars.atWar(c.nation[a]!, c.nation[b]!)) continue;
+      const dx = wrapDx(world, c.x[a]!, c.x[b]!);
+      const dy = c.y[b]! - c.y[a]!;
+      const d = sqrt(dx * dx + dy * dy);
+      if (d > CONTACT_CELLS) continue;
+      note(a, b, d);
+      note(b, a, d);
+    }
+  }
+  world.contacts = new Map([...near].map(([f, [enemy]]) => [f, enemy]));
+  return world.contacts;
+}
+
+/**
+ * Where the block of formation `f` (of `count` slots) is deployed, or null when it is not in
+ * contact (PLAN 2.14c1). A formation holds its place while it fights, and two that fight stand
+ * a cell or more apart (up to `CONTACT_CELLS`: 29 km): a close view showed one side and its
+ * shots leaving the screen. So the elements of a formation in contact go forward to meet the
+ * enemy: the block stands on the line to the nearest enemy it is in contact with, its front
+ * row half of `DEPLOY_GAP` short of the middle between the two, and faces that enemy. Two that
+ * are each other's nearest stand front to front, a kilometre apart. One whose nearest enemy is
+ * deployed against a nearer formation comes up to that enemy's block from its own side (see
+ * below): after 60 days of Germany against Poland 72% of the formations in contact were in
+ * pairs of each other's nearest, and the rest had no enemy near their block without it.
+ *
+ * Not state, as an element's place is not (`slotPlace`): worked out from the formations'
+ * places and `engaged` flags. The formation itself, its marker and its part in the rules stay
+ * where the sim has it. A block does not go into the sea: on the fine mask's water it stands
+ * as far forward as there is land (across a strait the two sides stay on their shores).
+ */
+export function deployOf(world: World, f: number, count: number, chain = 0): Deployment | null {
+  const c = world.formations.cols;
+  if (c.engaged[f] !== 1) return null;
+  const cache = (world.deployed ??= new Map<number, Deployment | null>());
+  const held = cache.get(f);
+  if (held !== undefined) return held;
+  const contacts = contactsOf(world);
+  const enemy = contacts.get(f);
+  let out: Deployment | null = null;
+  if (enemy !== undefined && world.formations.has(enemy)) {
+    const fx = c.x[f]!;
+    const fy = c.y[f]!;
+    const depth = slotGrid(count).rows * SLOT_SPACING;
+    // What it goes towards, and how far short of it its block's middle stops.
+    let tx = c.x[enemy]!;
+    let ty = c.y[enemy]!;
+    let short = -1;
+    if (contacts.get(enemy) !== f) {
+      // Its nearest enemy has a nearer one of its own and is deployed against that. This one
+      // comes up to where that enemy's block stands, as near as a formation it faced would
+      // stand; the next such formation (by distance from that enemy, then id) a line further
+      // back, and so on.
+      const others: [number, number][] = [];
+      for (const [g, e] of contacts) {
+        if (e !== enemy || contacts.get(enemy) === g || !world.formations.has(g)) continue;
+        const gx = wrapDx(world, c.x[enemy]!, c.x[g]!);
+        const gy = c.y[g]! - c.y[enemy]!;
+        others.push([g, sqrt(gx * gx + gy * gy)]);
+      }
+      others.sort((p, q) => p[1] - q[1] || p[0] - q[0]);
+      let line = Math.max(0, others.findIndex((o) => o[0] === f));
+      const enemySlots = slotCount(world, enemy, elementIndex(world).get(enemy)?.length ?? 0);
+      const theirs = chain < 4 ? deployOf(world, enemy, enemySlots, chain + 1) : null;
+      if (theirs) {
+        tx = theirs.x;
+        ty = theirs.y;
+        // From much the same side as the one that enemy faces (within 60°): a line further
+        // back, behind it. From another side it stands as near as that one does.
+        const ax = wrapDx(world, tx, fx);
+        const ay = fy - ty;
+        const al = sqrt(ax * ax + ay * ay);
+        if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) line++;
+      }
+      short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + depth / 2 + line * (depth + DEPLOY_GAP);
+    }
+    const dx = wrapDx(world, fx, tx);
+    const dy = ty - fy;
+    const d = sqrt(dx * dx + dy * dy);
+    if (d > 1e-9) {
+      // Each other's nearest: to the middle between the two, less half the gap and half its depth.
+      const shift = Math.max(0, short < 0 ? d / 2 - DEPLOY_GAP / 2 - depth / 2 : d - short);
+      const ux = dx / d;
+      const uy = dy / d;
+      out = { x: fx, y: fy, facing: atan2(dy, dx) };
+      // As far forward as the block's middle has land under it, in eighths of the way.
+      for (let k = 8; k >= 1; k--) {
+        const x = fx + (ux * shift * k) / 8;
+        const y = fy + (uy * shift * k) / 8;
+        if (!world.landMask || world.onLand(x, y)) {
+          out = { x, y, facing: out.facing };
+          break;
+        }
+      }
+    }
+  }
+  cache.set(f, out);
+  return out;
+}
+
+/**
+ * Where element `slot` of formation `f` stands: in its block at the formation's place, or, for
+ * a formation in contact, in its block deployed against the enemy (`deployOf`), on land either
+ * way (`slotPlace`). The one place of an element for the snapshot, the fire events and the
+ * event of its end.
+ */
+export function elementPlace(world: World, f: number, slot: number, count: number): [number, number] {
+  const c = world.formations.cols;
+  const d = deployOf(world, f, count);
+  return d ? slotPlace(world, d.x, d.y, d.facing, slot, count) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
+}
+
+/**
+ * Where element `slot` of formation `f` stood in the hour before this one's contacts were
+ * found: where its sprite was last shown. For the event of its end, which comes in the hour
+ * the blocks may be deployed anew (a nearer enemy, a first contact): the wreck lies where the
+ * element stood, not where its block is going. Where the hour before is not known (a loaded
+ * game's first hour, after a command) it is the place of now.
+ */
+export function elementPlaceBefore(world: World, f: number, slot: number, count: number): [number, number] {
+  const before = world.deployedBefore;
+  if (!before) return elementPlace(world, f, slot, count);
+  const c = world.formations.cols;
+  const d = before.get(f);
+  return d ? slotPlace(world, d.x, d.y, d.facing, slot, count) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
+}
+
+/**
+ * The hour's deployments, all of them, as `findBattles` has paired the formations (PLAN
+ * 2.14c1): worked out for every formation in contact at once, so that what the hour before
+ * left (`deployedBefore`) does not depend on who asked for which.
+ */
+export function deployAll(world: World, contacts: Map<number, number>): void {
+  world.deployedBefore = world.deployed;
+  world.contacts = contacts;
+  world.deployed = new Map();
+  const idx = elementIndex(world);
+  for (const f of [...contacts.keys()].sort((a, b) => a - b)) deployOf(world, f, slotCount(world, f, idx.get(f)?.length ?? 0));
 }
 
 /** Live element ids per formation, ascending (derived; rebuilt after creates/removes or a load). */
@@ -139,13 +322,12 @@ export function settleFormation(world: World, fid: number): void {
 
 function settleElements(world: World, fid: number, list: number[]): void {
   const e = world.elements;
-  const fc = world.formations.cols;
   const slots = slotCount(world, fid, list.length);
   const live = list.filter((id) => {
     if (e.cols.strength[id]! > 0) return true;
     // Its end is an event, not state (PLAN 2.4b): at the slot it stood in. Elements that go
     // with a disbanded or removed formation have none.
-    const [x, y] = slotPlace(world, fc.x[fid]!, fc.y[fid]!, fc.facing[fid]!, e.cols.slot[id]!, slots);
+    const [x, y] = elementPlaceBefore(world, fid, e.cols.slot[id]!, slots);
     world.out.emit(world.tick, EventKind.ElementDestroyed, id, e.cols.unit[id]!, x, y);
     e.remove(id);
     return false;

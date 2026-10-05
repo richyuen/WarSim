@@ -185,8 +185,10 @@ test('at T2 and T3 every formation in the view has its flag, strength and name b
   console.log(`tints: Germany ${g.join(', ')}; Poland ${p.join(', ')}; ${apart.toFixed(0)} apart in RGB`);
   expect(apart, 'the tints of Germany and Poland, apart in RGB').toBeGreaterThan(TINT_APART);
 
-  // T3, 12 m/px: a division is wider than the view. On each in turn, and between the two.
-  for (const [name, x] of [['german', SITE[0] - 0.5], ['polish', SITE[0] + 0.5]] as const) {
+  // T3, 12 m/px, on each division's block in turn. The two are in contact, and since PLAN
+  // 2.14c1 their blocks stand front to front in the middle between the formations' places,
+  // 0.17 cells from middle to middle: each view has both.
+  for (const [name, x] of [['german', SITE[0] - 0.085], ['polish', SITE[0] + 0.085]] as const) {
     await zoomTo(page, x, SITE[1], 12);
     const t3 = await look(page);
     expect(t3.figures, `T3 on the ${name} division: figures`).toBeGreaterThan(200);

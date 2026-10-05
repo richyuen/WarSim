@@ -5,8 +5,8 @@
  * elements were or what they were part of.
  *
  * A tag stands above the part of its formation that is in the view (so a division that fills
- * the screen at T3, or reaches out of it, still has one), and gives way upward, then downward,
- * to a stronger formation's tag. One that finds no free place is left out and counted.
+ * the screen at T3, or reaches out of it, still has one), and gives way to a stronger
+ * formation's tag: below its formation, then further out above and below. One that finds no free place is left out and counted.
  */
 
 /** A formation with something in the view: the box of its elements, CSS px. */
@@ -81,8 +81,10 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
     const above = vy0 - TAG_GAP - h;
     const below = vy1 + TAG_GAP;
     const tries: number[] = [];
-    for (let k = 0; k < TAG_TRIES; k++) tries.push(above - k * step);
-    for (let k = 0; k < TAG_TRIES; k++) tries.push(below + k * step);
+    // Above, then below, then a place further out on each side: the nearest free one. (Two
+    // formations in contact stand front to front, PLAN 2.14c1: one has its tag above its
+    // block and the other below, each by its own.)
+    for (let k = 0; k < TAG_TRIES; k++) tries.push(above - k * step, below + k * step);
     let done = false;
     for (const ty of tries) {
       // In the view: one that would stand above its top edge stands at it, on its own elements.

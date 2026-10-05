@@ -689,6 +689,15 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   support guns are towed. Infantry marches ≈ 29 km/day on plains.
 - *Slotted poses:* `slotPose` (`src/sim/core/pose.ts`) places elements in a ≈ 2:1 block, front row
   first, rotated to the facing; it is shared by the sim and the snapshot builder.
+- *Deployment (PLAN 2.14c1, ADR-89; `deployOf`, `elementPlace` in `systems/elements.ts`):* a
+  formation in contact holds its place (formations in contact stand up to 1.5 cells apart), but
+  its block of elements is deployed: on the line to its nearest enemy in contact, facing it,
+  its front row half a kilometre short of the middle between the two; one whose nearest enemy
+  faces a nearer formation comes up to that enemy's block. Derived from the formations' places
+  and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
+  rule does. So a view at 20 m/px holds both sides of a fight (97% of the formations in
+  contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the
+  formation's place.
 
 *Implemented v1 (PLAN 1.14, ADR-27; `src/sim/systems/territory.ts`):*
 - *Pressure:* each formation of a nation at war projects strength/1000 × (0.5 + 0.5 supply) ×

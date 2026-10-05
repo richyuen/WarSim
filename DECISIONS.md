@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-89 · 2026-10-05 · accepted — The blocks of formations in contact are deployed against each other; it is derived, not state (PLAN 2.14c1, the critic's R2-B2)
+
+- **Context:** the critic: "Enemy formations stand a cell or more apart, and a cell is 19.6
+  km: the closest pair after 60 days was 29 km apart. At 20 m/px a view is 32 by 18 km:
+  centred between that pair it shows a border and trees and no unit." Its fix: "the engaged
+  elements drawn at the cell edge they fight across".
+- **What the code had.** Contact is 1.5 cells between formations' places; a formation in
+  contact holds where it is; nothing turns it to the enemy. An element's place is not state:
+  `slotPlace` works it out from the formation's place and facing, for the snapshot, the fire
+  events and the event of an element's end. No rule reads it.
+- **Decision.** For a formation in contact the block is deployed (`deployOf` in
+  `systems/elements.ts`): on the line to its nearest enemy in contact, facing it, the front
+  row half of `DEPLOY_GAP` (0.05 cells, a kilometre) short of the middle between the two.
+  One whose nearest enemy faces a nearer formation comes up to that enemy's block instead.
+  Not onto the mask's water. `findBattles` already walks every pair in contact: it notes
+  each formation's nearest enemy and works out the hour's deployments (`deployAll`), and
+  keeps the hour before's for the places of an hour ago. All of it is derived: null after a
+  load or a command, and then worked out again from `engaged` and the places, the same.
+- **Why not move the formations.** That is state, and the place of a formation feeds the
+  contact rule, the choice of targets (`prox`), the pressure on territory and the march. It
+  would move the pin and the balance for a matter of what a close view shows.
+- **Is it a picture that disagrees with the sim?** (PROMPT: "no fake per-zoom animation that
+  disagrees with the sim".) The place is the sim's own: one function, in the sim, gives it to
+  the worker, to the fire events and to the wrecks, in Node as in the browser, and a test
+  holds the page's elements to it to 1e-6 (`zoomDemo1938`). What differs between tiers is
+  that the T1 marker stands at the formation's place and the T2 block at its deployment, up
+  to 0.45 cells away: a division's place and its line. Said under PLAN 2.14c1 and taken up
+  in 2.14f.
+- **Measured:** 97% of the formations in contact after 60 days of a war share a view at
+  20 m/px with their nearest enemy (2% before). The pin did not move.
+- **Alternatives rejected:** the centroid of the enemies in contact (a formation between
+  two enemies would stand before neither); a matching of pairs (leaves the odd ones out).
+
 ### ADR-88 · 2026-10-05 · accepted — At T2 and T3 a formation has a tag: flag, strength, name; sprites wear the nation's sprite colour (PLAN 2.14a, the critic's R2-B2)
 
 - **Context:** the critic: "At T2 and T3 the marker boxes are gone and nothing is in their

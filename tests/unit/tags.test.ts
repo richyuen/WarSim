@@ -18,7 +18,7 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     expect(Math.abs(t.x + t.w / 2 - 430)).toBeLessThanOrEqual(1);
   });
 
-  it('two formations on one spot: the weaker one gives way upward, and the order of the list does not matter', () => {
+  it('two formations on one spot: the weaker one has its tag below (the nearest free place), and the order of the list does not matter', () => {
     const a = item(1, 9000, 400, 300, 460, 340);
     const b = item(2, 5000, 405, 302, 465, 342);
     const one = layoutTags([a, b], measure, 1400, 800).placed;
@@ -26,7 +26,9 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     expect(one).toEqual(two);
     expect(one.map((t) => t.id)).toEqual([1, 2]);
     expect(over(one[0]!, one[1]!)).toBe(false);
-    expect(one[1]!.y).toBeLessThan(one[0]!.y);
+    // Since PLAN 2.14c1 (two in contact stand front to front): below its own block, a gap away, not a place higher.
+    expect(one[1]!.y).toBe(342 + TAG_GAP);
+    expect(one[1]!.gap).toBe(TAG_GAP);
   });
 
   it('a formation that reaches out of the view has its tag in the view, by the part that shows', () => {

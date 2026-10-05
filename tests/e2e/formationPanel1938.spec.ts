@@ -166,8 +166,9 @@ test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s n
   await expect(page.getByTestId('formation-panel')).toHaveCount(0);
   await expect(page.getByTestId('nation-panel')).toBeVisible();
 
-  // T3, 12 m/px, on the Polish division: a click on one of its battalions.
-  await zoomTo(page, SITE[0] + 0.5, SITE[1], 12, true);
+  // T3, 12 m/px, on the Polish division's block (deployed against the German one, in the
+  // middle between the two formations' places: PLAN 2.14c1): a click on one of its battalions.
+  await zoomTo(page, SITE[0] + 0.085, SITE[1], 12, true);
   await page.mouse.click(...(await at(polish, 'element')));
   await expectPanel(polish, 'POL', 'T3, a Polish battalion');
   await page.screenshot({ path: path.join(out, 'formation-panel-t3.png') });

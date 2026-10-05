@@ -327,6 +327,9 @@ class WorldCore implements Stateful {
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.paths.clear();
     w.elementIndex = null;
+    w.contacts = null;
+    w.deployed = null;
+    w.deployedBefore = null;
     w.nav = null;
     w.frontier = null;
     w.dropLandCounts();
@@ -430,6 +433,16 @@ export class World {
   frontierWars = -1;
   /** Derived (not state): live element ids per formation, ascending; null = rebuild. */
   elementIndex: Map<number, number[]> | null = null;
+  /**
+   * Derived, for where the blocks of formations in contact stand (PLAN 2.14c1, `deployOf` in
+   * systems/elements.ts): each such formation's nearest enemy in contact, set by `findBattles`
+   * every hour, and the deployments worked out from it so far. Null: not worked out (a load, a
+   * command); they come again from the state.
+   */
+  contacts: Map<number, number> | null = null;
+  deployed: Map<number, { x: number; y: number; facing: number } | null> | null = null;
+  /** The deployments of the hour before (see elementPlaceBefore in systems/elements.ts); null: not known. */
+  deployedBefore: Map<number, { x: number; y: number; facing: number } | null> | null = null;
   /** Scenario rules for commands (set by the Sim; not state). */
   rules: ScenarioRules | null = null;
   /**

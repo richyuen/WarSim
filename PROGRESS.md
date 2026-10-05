@@ -5360,3 +5360,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   banners. Both under PLAN 2.14f.
 - **Next:** PLAN 2.14c, a battle fits a view at 20 m/px. It may move where elements stand,
   and with it the pin.
+
+## 2026-10-05 — PLAN 2.14c1: the blocks of formations in contact are deployed against each other (ADR-89)
+
+- **What the critic saw:** no close view holds a battle. Formations in contact stand up to 29
+  km apart and a view at 20 m/px is 28 km wide.
+- **The decision:** the formations stay where the sim has them; their blocks of elements go
+  forward to meet the enemy. An element's place was already derived (`slotPlace`), read by
+  the snapshot, the fire events and the wrecks and by no rule: so this is not state, and
+  **the pin did not move** (`324bc358`; five years of seed 99 `5377e4c5`, as before).
+- **The rule:** on the line to the nearest enemy in contact, facing it, front rows a
+  kilometre apart. A formation whose nearest enemy faces a nearer one comes up to that
+  enemy's block from its own side. Not onto water.
+- **Measured, 60 days of Germany against Poland, seed 99:** 93 of 96 formations in contact
+  (97%) share a view at 20 m/px with their nearest enemy; 2 of 96 before. With pairs of each
+  other's nearest alone it was 72%: the second rule made the rest. A first try of that rule
+  (a line behind, always) made it 61% by a measure that centred the view on one side; the
+  measure now centres it between the two.
+- **The worker** sends the elements' places of an hour ago from the sim's own record of the
+  hour before: they go to the line in the hour a contact begins and do not jump there. A
+  first version kept that record in the worker; the sim's is complete and the same in Node.
+- **Tests:** 6 unit (667), 1 e2e (`battleView1938`). Picture looked at: two divisions front
+  to front at 20 m/px, batteries behind, each with its tag.
+- **Four specs and one unit test restated** for where a block in contact now stands (said in
+  each): `zoomDemo`, `individuals`, `tags`, `formationPanel`; `tags.test`.
+- **The tick:** mean 1.508 ms over five pinned years (1.502): the hour's deployments.
+- **A gotcha:** a PowerShell here-string in double quotes turned `` `e `` of a code comment
+  into an escape character. Found by reading the line back; code goes through the Edit tool.
+- **Not done:** the seam at 300 m/px (the T1 marker at the formation's place, the block up
+  to 28 px away) was not looked at; how often a block changes its line was not counted.
+  Both under PLAN 2.14f. PLAN 2.14c2 (a battalion in contact looks like one) is next.
+- **Run by hand:** thirteen close-zoom spec files, 19 tests green.

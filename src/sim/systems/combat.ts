@@ -23,10 +23,10 @@ import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
 import { sqrt } from '../core/dmath';
 import type { UnitRule, World } from '../world';
-import { applyLoss, elementIndex, settleFormation, slotCount, slotPlace } from './elements';
+import { applyLoss, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
-export const CONTACT_CELLS = 1.5;
+export { CONTACT_CELLS };
 const BUCKET_CELLS = 2;
 /** Target units removed per hour by a full element per point of soft/hard attack. */
 export const FIRE_SCALE = 0.1;
@@ -66,6 +66,7 @@ export function findBattles(world: World): number[][] {
     if (!b) buckets.set(k, (b = []));
     b.push(id);
   });
+  const near = new Map<number, [number, number]>();
   const parent = new Map<number, number>();
   const find = (a: number): number => {
     let r = a;
@@ -86,7 +87,13 @@ export function findBattles(world: World): number[][] {
         if (!list) continue;
         for (const b of list) {
           if (b <= a || !world.wars.atWar(c.nation[a]!, c.nation[b]!)) continue;
-          if (dist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) > CONTACT_CELLS) continue;
+          const d = dist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!);
+          if (d > CONTACT_CELLS) continue;
+          // Each one's nearest enemy in contact (the lower id on a tie): where its block deploys (`deployOf`).
+          const na = near.get(a);
+          if (!na || d < na[1] || (d === na[1] && b < na[0])) near.set(a, [b, d]);
+          const nb = near.get(b);
+          if (!nb || d < nb[1] || (d === nb[1] && a < nb[0])) near.set(b, [a, d]);
           if (!parent.has(a)) parent.set(a, a);
           if (!parent.has(b)) parent.set(b, b);
           const ra = find(a);
@@ -98,6 +105,8 @@ export function findBattles(world: World): number[][] {
       }
     }
   }
+  // Derived, for where the blocks stand this hour; not state (`contactsOf` gives the same from the state).
+  deployAll(world, new Map([...near].map(([id, [enemy]]) => [id, enemy])));
   const groups = new Map<number, number[]>();
   for (const a of [...parent.keys()].sort((p, q) => p - q)) {
     const r = find(a);
@@ -200,8 +209,8 @@ export function combatSystem(world: World): void {
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;
         const tl = idx.get(tf)!;
-        const [x0, y0] = slotPlace(world, f.x[sf]!, f.y[sf]!, f.facing[sf]!, ec.slot[s]!, slotCount(world, sf, sl.length));
-        const [x1, y1] = slotPlace(world, f.x[tf]!, f.y[tf]!, f.facing[tf]!, ec.slot[t]!, slotCount(world, tf, tl.length));
+        const [x0, y0] = elementPlace(world, sf, ec.slot[s]!, slotCount(world, sf, sl.length));
+        const [x1, y1] = elementPlace(world, tf, ec.slot[t]!, slotCount(world, tf, tl.length));
         const subtick = hash32(world.seed, world.tick, s, 0x5b7) % 60;
         fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, x0, y0, x1, y1);
       }

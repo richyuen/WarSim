@@ -5,7 +5,7 @@ import type {} from '../../src/app/testApi';
 import type { Command } from '../../src/shared/commands';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { elementIndex } from '../../src/sim/systems/elements';
+import { deployOf, elementIndex, slotCount } from '../../src/sim/systems/elements';
 import { assets1938 } from '../helpers/earth';
 import { settle } from './settle';
 
@@ -27,8 +27,8 @@ const template = (id: string): number => TEMPLATES_LAND.findIndex((t) => t.id ==
 const MAX_FIGURES = 64;
 /** The rule, written out here on its own: a figure a unit where an element has up to 64 units; above, its share of 64, rounded up. */
 const figuresOf = (units: number, size: number): number => (size <= MAX_FIGURES ? units : Math.min(MAX_FIGURES, Math.ceil((units * MAX_FIGURES) / size)));
-/** Half the distance between two slots of a formation's block, cells: a figure stands inside its element's slot. */
-const HALF_SLOT = 0.015;
+/** How far from its element's middle a figure can stand: the corner of the footprint (0.024 cells square), and a hair. */
+const FOOTPRINT_REACH = 0.012 * Math.SQRT2 + 1e-9;
 
 const SETUP: Command[] = [
   { kind: 'setAi', nation: JAP, enabled: false },
@@ -74,14 +74,20 @@ function nodeBattle(): { formations: Formation[]; japanese: number[]; chinese: n
   }
   hashes.push(sim.hash());
   const elements = [read()];
+  // Where each one's block stands in that hour: the three are in contact, and their blocks are
+  // deployed against the enemy (PLAN 2.14c1), not at the formations' places.
+  const formations = ids.map((id) => {
+    const d = deployOf(w, id, slotCount(w, id, elementIndex(w).get(id)?.length ?? 0));
+    return { id, x: d ? d.x : fc.x[id]!, y: d ? d.y : fc.y[id]! };
+  });
   sim.step(1);
   hashes.push(sim.hash());
   elements.push(read());
-  return { formations: ids.map((id) => ({ id, x: fc.x[id]!, y: fc.y[id]! })), japanese, chinese, thin, hashes, elements };
+  return { formations, japanese, chinese, thin, hashes, elements };
 }
 
 interface Seen {
-  elements: { id: number; units: number; x: number; y: number }[];
+  elements: { id: number; f: number; units: number; x: number; y: number }[];
   figures: { owner: number; x: number; y: number }[];
   shown: boolean;
   mPerPx: number;
@@ -108,7 +114,7 @@ async function close(page: Page, x: number, y: number, mPerPx: number): Promise<
     for (let i = 0; i < 10; i++) v.draw();
     const drawMs = (performance.now() - t0) / 10;
     return {
-      elements: Array.from(v.elementId, (id, i) => ({ id, units: v.elementStrength[i]!, x: v.elementX[i]!, y: v.elementY[i]! })),
+      elements: Array.from(v.elementId, (id, i) => ({ id, f: v.elementFormation[i]!, units: v.elementStrength[i]!, x: v.elementX[i]!, y: v.elementY[i]! })),
       figures: Array.from(v.individualOwner, (owner, i) => ({ owner, x: v.individualX[i]!, y: v.individualY[i]! })),
       shown: v.individualsShown,
       mPerPx: v.metresPerPx,
@@ -155,8 +161,11 @@ test('T3: an element is its individuals, a figure a unit for guns and tanks and 
   const rows: { id: number; cls: string; units: number; size: number; figures: number }[] = [];
   let slowestDraw = 0;
   for (const f of node.formations) {
-    const s = await close(page, f.x, f.y, 12);
-    expect(s.shown, `formation ${f.id}`).toBe(true);
+    const all = await close(page, f.x, f.y, 12);
+    expect(all.shown, `formation ${f.id}`).toBe(true);
+    // Of what the view holds, this formation's: the enemy's block stands a kilometre off (PLAN 2.14c1).
+    const own1 = new Set(all.elements.filter((e) => e.f === f.id).map((e) => e.id));
+    const s = { ...all, elements: all.elements.filter((e) => own1.has(e.id)), figures: all.figures.filter((p) => own1.has(p.owner)) };
     slowestDraw = Math.max(slowestDraw, s.drawMs);
     const figures = byOwner(s);
     const mine = node.elements[0]!.filter((e) => e.f === f.id);
@@ -173,7 +182,10 @@ test('T3: an element is its individuals, a figure a unit for guns and tanks and 
       // An element with men has a figure.
       if (units > 0) expect(own.length, `${cls} element ${e.id} of ${units}`).toBeGreaterThan(0);
       // Inside the footprint, and no two on one spot.
-      for (const p of own) expect(Math.max(Math.abs(p.x - e.x), Math.abs(p.y - e.y)), `a figure of ${e.id}`).toBeLessThan(HALF_SLOT);
+      // Since PLAN 2.14c1 a block in contact faces its enemy, at any angle: the footprint (a
+      // square of 0.024 cells, turned with the block) is inside the circle through its corners.
+      // (Until then every block of this test faced east, and the bound was the slot's half, 0.015, along each axis.)
+      for (const p of own) expect(Math.hypot(p.x - e.x, p.y - e.y), `a figure of ${e.id}`).toBeLessThan(FOOTPRINT_REACH);
       expect(new Set(own.map((p) => `${p.x},${p.y}`)).size).toBe(own.length);
       rows.push({ id: e.id, cls, units, size, figures: own.length });
     }

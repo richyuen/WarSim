@@ -264,6 +264,11 @@ export function applyPendingCommands(world: World): void {
   if (world.pending.length === 0) return;
   const queue = world.pending;
   world.pending = [];
+  // A command may move, make or end a formation: where the blocks of those in contact stand is
+  // worked out again from the state (`contactsOf`, `deployOf`; derived, not state).
+  world.contacts = null;
+  world.deployed = null;
+  world.deployedBefore = null;
   queue.sort((a, b) => a.seq - b.seq);
   for (const { seq, cmd } of queue) {
     world.commandLog.push({ tick: world.tick, seq, cmd });

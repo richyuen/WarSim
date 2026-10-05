@@ -48,7 +48,7 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
+import { deployOf, elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -892,7 +892,11 @@ export class SimServer {
       ft.forEach((f) => {
         if (truncated) return;
         const list = idx.get(f);
-        if (!list || !this.inBbox(ft.cols.x[f]!, ft.cols.y[f]!, world, blockReach(slotCount(world, f, list.length), SLOT_SPACING))) return;
+        if (!list) return;
+        // By where its block stands: at the formation's place, or deployed against the enemy (PLAN 2.14c1).
+        const slots = slotCount(world, f, list.length);
+        const at = deployOf(world, f, slots);
+        if (!this.inBbox(at ? at.x : ft.cols.x[f]!, at ? at.y : ft.cols.y[f]!, world, blockReach(slots, SLOT_SPACING))) return;
         if (total + list.length > MAX_SNAPSHOT_ELEMENTS) {
           truncated = true;
           return;
@@ -925,14 +929,27 @@ export class SimServer {
       const born = this.born(world, f);
       const px = born ? fx : this.prevX[f]!;
       const py = born ? fy : this.prevY[f]!;
-      const fa = ft.cols.facing[f]!;
       const fl = (ft.cols.moving[f] === 1 ? FormationFlag.moving : 0) | (ft.cols.engaged[f] === 1 ? FormationFlag.engaged : 0);
       // The block as the template made it: an element keeps its slot when others die (PLAN 2.7a).
       const slots = slotCount(world, f, list.length);
+      // Where the block stands now and where it stood an hour ago (PLAN 2.14c1). A formation
+      // in contact holds its place, and its block is deployed against the enemy: in the hour
+      // the contact begins the elements go from the formation's place to the line, when the
+      // enemy it faces changes they go to the new line, and when the contact ends they come
+      // back: each in the one hour's move the view draws. The sim keeps the deployments of the
+      // hour before (`deployedBefore`); where it has none (a load, a command) nothing moves.
+      const at = deployOf(world, f, slots);
+      const before = world.deployedBefore ? (world.deployedBefore.get(f) ?? null) : at;
+      const fa = at ? at.facing : ft.cols.facing[f]!;
+      const bx = at ? at.x : fx;
+      const by = at ? at.y : fy;
+      const qcx = before && !born ? before.x : at && born ? bx : px;
+      const qcy = before && !born ? before.y : at && born ? by : py;
+      const qfa = before && !born ? before.facing : fa;
       for (const e of list) {
         const slot = ec.slot[e]!;
-        const [cx, cy] = slotPlace(world, fx, fy, fa, slot, slots);
-        const [qx, qy] = slotPlace(world, px, py, fa, slot, slots);
+        const [cx, cy] = slotPlace(world, bx, by, fa, slot, slots);
+        const [qx, qy] = slotPlace(world, qcx, qcy, qfa, slot, slots);
         id[j] = e;
         formation[j] = f;
         nation[j] = ft.cols.nation[f]!;
