@@ -2184,6 +2184,22 @@ quick sweep as a smoke test.
     from PLAN 2.12a).
     AT: the forced revolt in every province of the 1938 start: no capital on a cell that is
     not the nation's, no militia off sure land.
+    Split 2026-10-05 (the 74 are two things: ADR-103):
+    - [x] 2.15e1 A nation without a city takes its own cell nearest the middle of its area.
+      Done 2026-10-05 (ADR-103).
+      - *The cause:* the middle of an area need not be in it. 11 of the 406 (196 have no
+        city). The other 63 of the 74 have a city on the shore as capital: its coordinates
+        are in a sea cell, its cell is the nation's. No defect of the capital.
+      - *Tests:* `tests/unit/rebelCapitals.test.ts` (seen to fail: 11). The pin did not move.
+    - [ ] 2.15e2 The militia stand on the nation's land: at a capital on the shore they
+      stand at the city's coordinates, in a sea cell (106 of 577 on a cell that is not
+      their nation's, 12 off sure land, before 2.15e1; 95 and 9 after). Raise them where
+      production raises a formation (`spawnPoint`).
+      AT: the forced revolt: every militia formation on a cell of its nation, on sure land.
+    - [ ] 2.15e3 The origin is the province of the capital's cell, not of its coordinates
+      (the 66 of PLAN 2.15b with the capital outside the origin: a city on the shore names
+      its nation after the area's first province).
+      AT: the forced revolt: the capital's cell is in the origin for all 406.
   - [ ] 2.15f The whole: the AT above read line by line, the pictures shot again, PARITY.
     Ticks 2.15: the whole e2e suite.
 - [ ] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and

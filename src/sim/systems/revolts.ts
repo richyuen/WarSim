@@ -15,7 +15,8 @@
  * A revolt takes the province (mode 'province') or, in mode 'region', also the neighbouring
  * provinces with the same holder and core whose unrest ≥ REGION_JOIN (breadth-first, up to
  * REGION_MAX provinces). A new rebel nation receives the area's land (owner and controller),
- * becomes its core, gets its largest city as capital, MILITIA_PER_CELLS militia divisions
+ * becomes its core, gets its largest city as capital (without a city: its own cell nearest the
+ * middle of the area, PLAN 2.15e), MILITIA_PER_CELLS militia divisions
  * (1..MILITIA_MAX) and START_GOLD; with probability 1/2 (hash) the former holder declares war.
  * Unrest in the area resets to AFTER_REVOLT. Event `RevoltSpawned` (a = rebel, b = former holder).
  *
@@ -41,6 +42,7 @@
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
+import { nearestCellWhere } from '../data/ownership';
 import { navOf, type World } from '../world';
 import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
@@ -337,8 +339,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     world.provinces.core[q] = id;
     world.provinces.unrest[q] = AFTER_REVOLT;
   }
-  // Capital: the largest city of the area (lowest id on ties), else the area's centroid. If the
-  // holder's own capital lies in the area, the rebels take it and the holder relocates.
+  // Capital: the largest city of the area (lowest id on ties), else its cell nearest the area's
+  // centroid. If the holder's own capital lies in the area, the rebels take it and the holder
+  // relocates.
   const cc = world.cities.cols;
   let best = 0;
   let holderLostCapital = false;
@@ -357,8 +360,11 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     nc.capitalX[id] = cc.x[best]!;
     nc.capitalY[id] = cc.y[best]!;
   } else {
-    nc.capitalX[id] = cells > 0 ? sx / cells : 0;
-    nc.capitalY[id] = cells > 0 ? sy / cells : 0;
+    // The middle of a crescent, of a strip of coast or of a group of islands is not the
+    // nation's land, and is often the sea (PLAN 2.15e): its own cell nearest that middle.
+    const h = owner.length / w;
+    const mid = cells > 0 ? nearestCellWhere((c) => owner[c] === id, sx / cells, sy / cells, w, h, Math.max(w, h)) : -1;
+    [nc.capitalX[id], nc.capitalY[id]] = mid >= 0 ? world.cellPoint(mid) : [0, 0];
   }
   // The origin, which names the nation: the province of its capital (PLAN 2.15b), where that is
   // in the area (the middle of an area without a city need not be).

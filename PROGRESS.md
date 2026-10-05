@@ -5868,3 +5868,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   the nations born instead.
 - **Seen, not changed:** a revived nation reads "broke away" and "returned" (ADR-102).
 - **Next:** PLAN 2.15e, a rebel nation's capital and militia on its own land.
+
+## 2026-10-05 — PLAN 2.15e1: a rebel nation without a city has its capital on its own cell
+
+- **Found:** the 74 of PLAN 2.12a are two things. 63 are cities on the shore: the capital's
+  coordinates are in a sea cell of the coarse grid, the city's cell (`cities.cell`) is the
+  nation's. No defect of the capital. 11 have no city (196 of the 406 have none) and took
+  the middle of their area, which was not theirs.
+- **Built (ADR-103):** without a city, `spawnRebels` takes the nation's own cell nearest the
+  middle (`nearestCellWhere`), at its land point (`cellPoint`). 2.15e is split in three.
+- **Tests:** `tests/unit/rebelCapitals.test.ts`, 1 (seen to fail: 11).
+- **The pin did not move** (324bc358).
+- **Run by hand:** `godUi1938` (2): green; the Kill of France reads as before (Free Paris,
+  Ain, Gironde, Oran, Algiers).
+- **Gotchas:** the first form of the test asked of every capital that the cell of its
+  coordinates be the nation's, and 63 were left after the fix: ask the city for its cell.
+  vitest shows no `console.log` of a test that passes when its output goes through a pipe
+  with `grep` on a line's start: the lines begin with "stdout |". A probe writes to a file.
+- **Seen, not changed:** the militia of those 63 stand at the city's coordinates (2.15e2),
+  and their origin is the area's first province (2.15e3).
+- **Next:** PLAN 2.15e2, the militia where production raises a formation.

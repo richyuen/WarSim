@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-103 · 2026-10-05 · accepted — A rebel nation without a city has its capital on its own cell (PLAN 2.15e1)
+
+- **Context:** PLAN 2.12a counted, of 406 nations founded by a revolt forced in every
+  province of the 1938 start, 74 with the capital "on a cell that is not theirs". Looked at
+  again, they are two things:
+  1. 63 have a city as capital whose coordinates lie in a sea cell of the coarse grid (a
+     city on the shore). A city is held by its cell (`cities.cell`), which is the nation's.
+     That is how every capital of the 1938 start is held, and no defect of the capital.
+  2. 11 have no city in their area (196 of the 406 have none) and took the middle of the
+     area, which was not their land: a crescent, a strip of coast, a group of islands.
+- **Decision:** a rebel nation without a city takes as capital its own cell nearest the
+  middle of its area (`nearestCellWhere`, as a field capital that moves:
+  `relocateToField`), at the cell's land point (`World.cellPoint`). A nation that returns
+  from the dead through `spawnRebels` takes the same way.
+- **Not decided here:** where the militia stand (2.15e2) and which province names a nation
+  whose city is on the shore (2.15e3). The 63 of point 1 are behind both.
+- **The pin:** not moved (324bc358): no revolt without a city in seed 99's first year.
+- **Tests:** `tests/unit/rebelCapitals.test.ts`: the forced revolt in every province; the
+  capital's cell is the city's or, without a city, that of its coordinates, and the nation
+  owns it. Seen to fail first (11).
+
 ### ADR-102 · 2026-10-05 · accepted — Land handed over is an event of its own, not a revolt (PLAN 2.15d)
 
 - **Context:** the critic's R2-B6: the history calls land that goes back to a living nation
