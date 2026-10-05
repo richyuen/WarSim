@@ -70,21 +70,42 @@ test('T0 counters never overlap: what does not fit is folded into a neighbour, a
     await page.screenshot({ path: path.join(out, `declutter-world-${tag}.png`) });
     await page.screenshot({ path: path.join(out, `declutter-europe-crop-${tag}.png`), clip: europe });
 
-    // Closer over Europe, down to just above T1: still no overlap, and what was folded comes
-    // out: central Europe (5°–25° E, 45°–55° N) shows more counters at each step.
+    // Closer over Europe, down to just above T1: still no overlap, and central Europe (5°–25° E,
+    // 45°–55° N) shows more counters as the view closes in.
+    //
+    // Restated with PLAN 2.11i (ADR-79, fourth addendum). It read "more at each step". The
+    // counters are clusters of a level, and the level holds over a range of zoom (here two
+    // levels for the four steps). A finer level has more clusters: more counters. Within a
+    // level the clusters are the same, and the count grows only if a counter that was folded
+    // into a neighbour has room now, which is a matter of where the formations stand. A year
+    // into seed 1938 one did between 6 and 8 px per cell, in a world where formations walked
+    // round the map (the defect of 2.11i); without them none does (24 and 24). So: more where
+    // the level changes, never fewer within a level, more over the whole way in.
     const [x0, y0] = cellOf(5, 55, W, H);
     const [x1, y1] = cellOf(25, 45, W, H);
-    const central = (): Promise<number> => page.evaluate(({ x0, y0, x1, y1 }) => window.__warsim!.view!.counters.drawn.filter((d) => d.wx >= x0 && d.wx <= x1 && d.wy >= y0 && d.wy <= y1).length, { x0, y0, x1, y1 });
-    let before = await central();
+    const central = (): Promise<{ n: number; level: number | null }> =>
+      page.evaluate(({ x0, y0, x1, y1 }) => {
+        const c = window.__warsim!.view!.counters;
+        return { n: c.drawn.filter((d) => d.wx >= x0 && d.wx <= x1 && d.wy >= y0 && d.wy <= y1).length, level: c.level };
+      }, { x0, y0, x1, y1 });
+    const first = await central();
+    let before = first;
+    let finer = 0;
     for (const scale of [1.5, 3, 6, 8]) {
       const b = await rest(page, EX, EY, scale);
       expect(overlaps(b), `${when}, ${scale} px per cell`).toEqual([]);
       expect([...new Set(b.map((x) => x.alpha))], `${when}, ${scale} px per cell`).toEqual([1]);
       const now = await central();
-      expect(now, `${when}, ${scale} px per cell`).toBeGreaterThan(before);
+      if (now.level !== before.level) {
+        finer++;
+        expect(now.n, `${when}, ${scale} px per cell, a finer level of clusters (${before.level} → ${now.level})`).toBeGreaterThan(before.n);
+      } else expect(now.n, `${when}, ${scale} px per cell, the same level of clusters (${now.level})`).toBeGreaterThanOrEqual(before.n);
       before = now;
       if (scale === 3) await page.screenshot({ path: path.join(out, `declutter-europe-${tag}.png`) });
     }
+    // The four steps go through finer levels more than once, and end with several times the counters.
+    expect(finer, when).toBeGreaterThanOrEqual(2);
+    expect(before.n, when).toBeGreaterThan(2 * first.n);
   }
 
   // Running, a year in: among the counters drawn in full no two overlap, frame after frame.

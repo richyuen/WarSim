@@ -336,6 +336,44 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     the elements passes there too: the 14 in the drawn sea were cleared by 2.9b1's rule, with
     either coast, in the 12 formations looked at. It stands as a guard.
 
+- **Fourth addendum, PLAN 2.11i (2026-10-05): the land points broke the march at the seam's test. The pin moved.**
+  - *The pin:* seed 99 after one year **99c1a04e → 4aafc3eb**; after five years b203bc49 →
+    daffda22. A world without the mask still has f93cb674. Balance not measured (ADR-58).
+  - *The defect, found by the fifth independent read (ADR-74):* `movementSystem` knew a step
+    across the seam of a looping map by its ends being "more than 1 apart in x", and turned
+    it round. True while every place was a cell's middle. This ADR gave coastal cells a land
+    point, and two neighbours' points are up to 1.9 apart: such a step was walked the long
+    way round the world, 100 cells an hour, the formation facing along it, fighting where it
+    passed, and taking a new order from where it was. Seed 99, the first year: 90 formations,
+    1,587 formation-hours more than 3 cells off their march.
+  - *The fix:* a step is across the seam when its ends are more than half the map apart, as
+    `combat.ts`, `production.ts`, `revolts.ts` and `majorBattles.ts` measure it.
+  - *Why nothing of this ADR's saw it,* and what is there now:
+    - its tests are of formations at rest (`coast1938.test.ts` skips those on the march, by
+      design: a march may cross a bay);
+    - "0 of 134 marches over water at day 30" was a count at one tick, of water, not of where
+      a march should be;
+    - the pin holds whatever the code does;
+    - now: a year-free bound, in the unit suite. Seed 99, 60 days: no formation on the march
+      is more than a cell from where it was an hour before (it failed at hour 112).
+  - *The tick,* pinned, five years: 1.164 ms twice; 1.45 with the flights. Another world (the
+    flights made battles), not faster code.
+  - *Both hashes of this ADR's earlier addenda were of a world with the defect:* f5725b37
+    (2.9a) and 99c1a04e (2.9b1). So was the smoke sweep of the phase review (PLAN 2.11a).
+    ADR-58 means one smoke run of the phase's code: it is run once more, after PLAN 2.11k,
+    the last change of the sim in this review (PLAN 2.11n). Nothing is tuned for either.
+  - *An assertion restated with it, for the user to overrule:* `declutter1938.spec.ts` (PLAN
+    1.45b) asserted that central Europe shows more T0 counters at each of four steps of zoom,
+    at the start and a year into seed 1938. Two of the steps stay within one level of
+    clusters, where the count grows only if a folded counter finds room. A year in, one did
+    between 6 and 8 px a cell in the world with the flights; in this one none does (24 and
+    24; no overlap, nothing at less than full, as before). It now asserts: more where the
+    level changes, never fewer within a level, at least two finer levels on the way, and more
+    than twice the counters at the end. Passes on both trees: not a test of the fix.
+  - *Not the same thing, for the next reader:* `movement.ts` also has `if (dx > 1) dx -= w` a
+    few lines up. That one is on cell columns, whole numbers: neighbours differ by 0 or 1 and
+    the seam by the map's width less one. It is right as it stands.
+
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 
 - **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail

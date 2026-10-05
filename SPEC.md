@@ -310,8 +310,11 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   - *Asked often:* a cell whose pixels and the ring round them are all land is inland, every
     place in it is surely land, and the world keeps that answer (`World.onLand`).
   - A cell with no land in the mask (a crossing, land painted in the editor) keeps its middle.
-    A march goes straight from one cell's point to the next and can cross a bay. The coast of
-    T2 and T3 is drawn from the same mask (§ the map's coastline, PLAN 2.9b2).
+    A march goes straight from one cell's point to the next and can cross a bay. Two
+    neighbouring cells' points can be up to 1.9 apart in x; a step is across the map's seam
+    when its ends are more than half the map apart, and then goes the short way (PLAN
+    2.11i). The coast of T2 and T3 is drawn from the same mask (§ the map's coastline, PLAN
+    2.9b2).
 - Elevation: ETOPO 2022 60″ box-averaged into Miller cells. The 4096×2048 int16 level is a derived
   product for offline tools. 2048/1024/512 levels ship in `public/data/earth/` (ADR-13 codec), and
   `manifest.json` lists sizes and sha256 for all assets and sources (`npm run data`).

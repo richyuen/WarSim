@@ -244,9 +244,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     - *Land and water painted in the editor are not in the fine mask.* A cell without land in
       the mask keeps its middle, its elements their slots, and the coast there is the cells'.
       By design until an editor paints the mask.
-    - *From the fifth read (PLAN 2.11b), not established or not reached:* a formation in
-      flight (PLAN 2.11i) projects territory pressure wherever it is that hour (gone with the
-      fix; not measured); a figure at the edge of an element's footprint, 0.096 mask px from
+    - *From the fifth read (PLAN 2.11b), not established or not reached:* a figure at the
+      edge of an element's footprint, 0.096 mask px from
       its element, can stand where the field is 0.75 and the shore's noise makes sea of it;
       `World.inland` and `cellPoints` do not record `loopingMap`, so a change of that option
       after cells were asked leaves the seam's columns with the old answer;

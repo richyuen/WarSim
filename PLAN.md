@@ -1075,6 +1075,9 @@ quick sweep as a smoke test.
     defect of this phase's feature caused it. Run once, not again after the tasks below.
     Done 2026-10-05: seeds 1 to 10, 20 years, 4.3 minutes. The five limits hold on all ten
     seeds; no run stopped. Not a verdict on the balance (ADR-58); the numbers are in PROGRESS.
+    **Found the same day to have run on a world with the defect of PLAN 2.11i** (formations
+    walking round the map). "Run once" was written before that was known: it is run once
+    more on the code after 2.11k, as PLAN 2.11n.
   - [x] 2.11b The independent read (ADR-74) of everything written since the last one
     (`ece4b2f`: PLAN 2.7z to 2.10b, 23 source files, 1,261 lines added). The whole of it: the
     last read was narrowed, and this is the phase's. Each finding is checked against the code
@@ -1126,7 +1129,7 @@ quick sweep as a smoke test.
   are done; then the critic runs (PROMPT step 2a).
   The order below is the order of work: the sim's three first (a regression of this phase,
   a broken invariant, a rule that missed a path), then what is drawn.
-  - [ ] 2.11i A march between two neighbouring cells is not a crossing of the seam. (The fifth
+  - [x] 2.11i A march between two neighbouring cells is not a crossing of the seam. (The fifth
     read, finding 1; a regression of PLAN 2.9a.) `movementSystem` takes a step whose two ends
     are more than 1 apart in x for a step across the map's seam and turns it round. That was
     the seam's mark while every place was a cell's middle. Since 2.9a a cell's place can be
@@ -1148,6 +1151,27 @@ quick sweep as a smoke test.
     seam still goes the short way. 1938, seed 99, the first 60 days: no formation's place
     changes by more than its speed allows in an hour. The pinned hash moves: old and new in
     DECISIONS (ADR-55). No sweep (ADR-58; the phase's one is run).
+    Done 2026-10-05 (ADR-79, fourth addendum). `movementSystem` turns a step round when its
+    ends are more than half the map apart in x, as the rest of the sim measures across the
+    seam. Three tests in `tests/unit/movement.test.ts`:
+    - 80 marches over 40 pairs of neighbouring cells whose points are more than 1 apart in x
+      (the map has more than 1,000 such pairs of one nation's land): never more than 3 cells
+      from the start, facing along the step. Failed first: in the first hour formations were
+      190, 366 and 73 cells from their cells.
+    - A march across the true seam (Chukotka) stays within 2 cells of it. Passed before and
+      passes now: a guard for the new test of the seam.
+    - Seed 99, 60 days, every formation on the march, every hour: none more than a cell from
+      where it was. Failed first at hour 112 (formation 494, 66 and then 99.9 cells an hour).
+    - The pin: seed 99 after one year 99c1a04e → 4aafc3eb, after five b203bc49 → daffda22. A
+      world without the mask: f93cb674 still (there every place is a middle, and the old
+      test and the new agree).
+    - The tick, pinned, five years: 1.164 ms twice (1.45 before: another world, with fewer
+      battles in wrong places; not faster code).
+    - The zoom demo finds the same division; a month in it now has 4,948 men (6,594 with the
+      flights: the Chinese division that flew, 494, is one it fights).
+    - The first gate failed on `declutter1938.spec.ts`: one of its assertions was of where
+      formations stood a year into seed 1938. Restated to what the fold guarantees and
+      flagged (ADR-79, fourth addendum).
   - [ ] 2.11j A game loaded from a save goes on as the game that was saved. (The fifth read,
     finding 2; older than this phase.) SPEC §2.6 has it as I2, "must always pass". On the 1938
     world it does not hold for every save: a load forces a full refresh of the supply network
@@ -1172,6 +1196,10 @@ quick sweep as a smoke test.
     AT: unit, failing first: a muster at a city that is not on sure land (Gibraltar) stands on
     sure land, and its elements too; 1938, seed 99, a year: no formation at rest off sure
     land on any day (the reader's count: 119,112 looks, 13 off). The pinned hash moves: logged.
+  - [ ] 2.11n The smoke run once more, on the sim as the review leaves it (after 2.11i, j
+    and k). The first (2.11a) was of a world in which 90 formations a year walked round the
+    map. One `npm run sweep:quick`; the five limits in PROGRESS beside the first run's.
+    AT: as 2.11a. No constant is tuned for it.
   - [ ] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
     formation that has a march, and keeps it where it stands while it is `engaged`
     (`movement.ts`: "in contact: holds and fights"). The view plays the walk for `moving`
@@ -1402,6 +1430,10 @@ quick sweep as a smoke test.
       some counters turn twice (56 of 7,394 on a wheel notch in); the second frame of a
       counter layer newly shown turns 1.3% of them (the frame after a merge lands, and the
       second frame of T1 → T0).
+    - Within one level of clusters a larger scale can fold a counter into another neighbour
+      than a smaller one did (a year into seed 1938 over central Europe, 6 to 8 px a cell:
+      12.1k of one nation's go from a counter of its own to another nation's, and a counter
+      takes in a nation it had not). Seen in the gate of PLAN 2.11i.
     - T1 markers: parting one pair can push a box onto a neighbour and leave it there (44 of
       5,249 made-up clusters of four); in 1.2 to 1.6% of clusters of 3 to 5 more than the 8
       rounds would part every pair; "no box more than a quarter under another" is about area,

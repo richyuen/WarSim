@@ -5024,3 +5024,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   all on sure land.
 - **Order of work now:** 2.11i, j, k (the sim), then e, l, m, f, g, then the pictures and
   PARITY (h), then the critic.
+
+## 2026-10-05 — PLAN 2.11i: a march between two neighbouring cells is not a crossing of the seam; the pin moves
+
+- **The pin moved:** seed 99 after one year 99c1a04e → 4aafc3eb, after five b203bc49 →
+  daffda22 (ADR-79, fourth addendum). Without the mask: f93cb674 still.
+- **The defect was mine, of PLAN 2.9a:** the march took two ends "more than 1 apart in x"
+  for the seam. With land points two neighbours can be 1.9 apart, and the step went round
+  the world. Now: more than half the map apart.
+- **Tests first:** 80 marches over such pairs (190, 366, 73 cells off in the first hour, on
+  the old code); seed 99 for 60 days, no marching formation more than a cell from where it
+  was an hour before (failed at hour 112). A march across the true seam: a guard, green
+  before and after.
+- **The tick:** 1.164 ms pinned over five years (1.45 before). Another world, not faster code.
+- **Every number of the phase that came from a run after 2.9a came from a world with flights
+  in it:** the smoke sweep, the demo's division (6,594 men then, 4,948 now at day 30), the
+  pins. The sweep is run once more after the sim's last fix of this review (PLAN 2.11n); the
+  demo's pictures are shot again at the end (2.11h).
+- **The first gate was red on one old spec, and the spec was restated (flagged for the
+  user):** `declutter1938` asserted more T0 counters over central Europe at each of four
+  steps of zoom. A year into the corrected world the last step has the same 24 as the one
+  before: both are one level of clusters, and nothing folded finds room there. No overlap,
+  nothing hidden. It now asserts more where the level changes, never fewer within a level,
+  and more than twice as many at the end.
+- **Tests:** 3 new unit tests (636).
+- **Next:** PLAN 2.11j, a loaded game goes on as the game that was saved.

@@ -162,8 +162,12 @@ export function movementSystem(world: World): void {
     }
     const [bx0, by] = centre(world, path[i + 1]!);
     let bx = bx0;
-    if (bx - ax > 1) bx -= w;
-    if (ax - bx > 1) bx += w;
+    // A step across the seam of a looping map goes the short way: its two ends are a map
+    // apart in x. (Not "more than 1 apart": that was the seam's mark while every place was a
+    // cell's middle. Two neighbouring cells' land points can be 1.9 apart, and the step was
+    // then walked round the world: PLAN 2.11i.)
+    if (bx - ax > w / 2) bx -= w;
+    else if (ax - bx > w / 2) bx += w;
     const x = ax + (bx - ax) * frac;
     c.x[id] = x < 0 ? x + w : x >= w ? x - w : x;
     c.y[id] = ay + (by - ay) * frac;

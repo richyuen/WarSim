@@ -291,3 +291,139 @@ describe('route edge cases', () => {
     expect(f.moving[id]).toBe(0);
   });
 });
+
+// PLAN 2.11i (the fifth independent read, finding 1): since PLAN 2.9a a cell's place can be its
+// land point, and the points of two neighbouring cells can be more than 1 apart in x. The march
+// took "more than 1 apart" for a step across the seam of the looping map and walked it the long
+// way round the world, some 100 cells an hour.
+describe('a march between two neighbouring cells is not a crossing of the seam (PLAN 2.11i)', () => {
+  /** The distance in x the short way round, cells. */
+  const acrossX = (a: number, b: number): number => {
+    const d = Math.abs(a - b);
+    return Math.min(d, W - d);
+  };
+  const place = (world: World, nation: number, at: readonly [number, number]): number => {
+    const f = world.formations;
+    const id = f.create();
+    f.cols.nation[id] = nation;
+    f.cols.template[id] = INF;
+    f.cols.x[id] = at[0];
+    f.cols.y[id] = at[1];
+    f.cols.strength[id] = 10_000;
+    return id;
+  };
+
+  it('on the 1938 map, between cells whose standing points are more than 1 apart in x, a formation stays by the two cells and faces along the step', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const { terrain, controller } = w.cells;
+    const land = (c: number): boolean => terrain[c] !== Terrain.Water && terrain[c] !== Terrain.Crossing;
+    // Land cells in neighbouring columns, of one nation, whose points are more than 1 apart in x.
+    const pairs: [number, number][] = [];
+    for (let y = 1; y < H - 1; y++) {
+      for (let x = 0; x < W - 1; x++) {
+        const a = y * W + x;
+        if (!land(a) || controller[a] === 0) continue;
+        for (const dy of [-1, 0, 1]) {
+          const b = (y + dy) * W + x + 1;
+          if (land(b) && controller[b] === controller[a] && Math.abs(w.cellPoint(a)[0] - w.cellPoint(b)[0]) > 1) pairs.push([a, b]);
+        }
+      }
+    }
+    expect(pairs.length).toBeGreaterThan(1000);
+    // Forty of them, from all over the map, each walked both ways.
+    const marches: { id: number; from: number; to: number }[] = [];
+    for (let k = 0; k < 40; k++) {
+      const [a, b] = pairs[Math.floor((k * pairs.length) / 40)]!;
+      for (const [from, to] of [[a, b], [b, a]] as const) {
+        const id = place(w, controller[from]!, w.cellPoint(from));
+        s.command({ kind: 'moveFormation', id, x: (to % W) + 0.5, y: Math.floor(to / W) + 0.5 });
+        marches.push({ id, from, to });
+      }
+    }
+    const fc = w.formations.cols;
+    const far: string[] = [];
+    const turned: string[] = [];
+    let direct = 0;
+    let onTheStep = 0;
+    for (let hour = 1; hour <= 24 * 4; hour++) {
+      s.step(1);
+      for (const m of marches) {
+        if (!w.formations.has(m.id)) continue;
+        const [ax, ay] = w.cellPoint(m.from);
+        const [bx, by] = w.cellPoint(m.to);
+        const [x, y] = [fc.x[m.id]!, fc.y[m.id]!];
+        // By the two cells: no further from the start than the two points are apart, and a cell more.
+        if (acrossX(x, ax) > 3 || Math.abs(y - ay) > 3) far.push(`hour ${hour}: formation ${m.id} at ${x.toFixed(2)}, ${y.toFixed(2)} on its way from ${ax.toFixed(2)}, ${ay.toFixed(2)} to ${bx.toFixed(2)}, ${by.toFixed(2)}`);
+        const path = fc.moving[m.id] === 1 ? w.paths.get(m.id) : undefined;
+        if (path?.length === 2 && fc.pathStep[m.id] === 0 && fc.stepFrac[m.id]! > 0) {
+          // On the one step from the one cell to the other: facing along it.
+          onTheStep++;
+          const along = Math.atan2(by - ay, bx - ax);
+          if (Math.cos(fc.facing[m.id]! - along) < 0.999) turned.push(`hour ${hour}: formation ${m.id} faces ${fc.facing[m.id]!.toFixed(3)} on a step along ${along.toFixed(3)}`);
+        }
+        if (hour === 1 && path?.length === 2) direct++;
+      }
+    }
+    // Most of the marches are the one step (a route may go round by a third cell).
+    expect(direct).toBeGreaterThan(40);
+    expect(onTheStep).toBeGreaterThan(200);
+    expect(far.slice(0, 5)).toEqual([]);
+    expect(turned.slice(0, 5)).toEqual([]);
+  });
+
+  it('a march across the true seam still goes the short way', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    expect(w.settings.loopingMap).toBe(true);
+    const { terrain, controller } = w.cells;
+    // Land of one nation in the last column and the first (Chukotka lies across the 180th meridian).
+    let pair: [number, number] | null = null;
+    for (let y = 1; y < H - 1 && !pair; y++) {
+      const [a, b] = [y * W + W - 1, y * W];
+      if (terrain[a]! > Terrain.Crossing && terrain[b]! > Terrain.Crossing && controller[a] !== 0 && controller[a] === controller[b]) pair = [a, b];
+    }
+    expect(pair).not.toBeNull();
+    const [east, west] = pair!;
+    const id = place(w, controller[east]!, w.cellPoint(east));
+    s.command({ kind: 'moveFormation', id, x: 0.5, y: Math.floor(west / W) + 0.5 });
+    const fc = w.formations.cols;
+    let widest = 0;
+    let arrived = false;
+    for (let hour = 1; hour <= 24 * 6 && !arrived; hour++) {
+      s.step(1);
+      // Never away from the seam: within two cells of it on one side or the other.
+      widest = Math.max(widest, Math.min(fc.x[id]!, W - fc.x[id]!));
+      arrived = fc.moving[id] === 0 && Math.floor(fc.x[id]!) === 0;
+    }
+    expect(arrived).toBe(true);
+    expect(widest).toBeLessThan(2);
+  });
+
+  it('1938, seed 99, the first 60 days: no formation on the march is more than a cell from where it was an hour before', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    const fc = w.formations.cols;
+    const before = new Map<number, { x: number; y: number; generation: number }>();
+    const jumps: string[] = [];
+    let looks = 0;
+    for (let hour = 1; hour <= 24 * 60; hour++) {
+      before.clear();
+      w.formations.forEach((f) => {
+        if (fc.moving[f] === 1) before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! });
+      });
+      s.step(1);
+      for (const [f, was] of before) {
+        // The same formation, still on its march (an order, an arrival or its end is not a step of the march).
+        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation || fc.moving[f] !== 1) continue;
+        looks++;
+        const d = Math.hypot(acrossX(fc.x[f]!, was.x), fc.y[f]! - was.y);
+        if (d > 1) jumps.push(`hour ${hour}: formation ${f} from ${was.x.toFixed(2)}, ${was.y.toFixed(2)} to ${fc.x[f]!.toFixed(2)}, ${fc.y[f]!.toFixed(2)}: ${d.toFixed(1)} cells`);
+      }
+    }
+    expect(looks).toBeGreaterThan(50_000);
+    expect(jumps.length, jumps.slice(0, 5).join('; ')).toBe(0);
+  }, 120_000);
+});
