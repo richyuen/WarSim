@@ -182,7 +182,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     world's are (ADR-108). The names are literal, not i18n keys: so are province names.
 - **Not changed:** `NationField.founded` still means "founded in the game" only.
 - **The pin did not move** (324bc358). The toy world's hash did (names are state); no test
-  pins it, and a toy autosave of before still loads (its names are those of 1938's keys).
+  pins it. A toy autosave of before still loads; its two nations have no entry and no tag
+  and read "Free state 1" and "Free state 2" (in an inspection: the toy world has no panels).
 - **What it does not give.**
   - A second nation table: the worker still knows only `NATIONS_1938`. Another year
     (PLAN 7.4) brings its own table and its own flags file.
