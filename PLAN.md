@@ -1808,10 +1808,47 @@ quick sweep as a smoke test.
       - *Run by hand* (ADR-87): twelve spec files of the close zoom, 18 tests green.
       - *Not done:* no muzzle flash or movement on a prone figure beyond the shots already
         drawn between the blocks; tanks and guns in contact look as at rest.
-  - [ ] 2.14d The ground at T2 and T3 is the terrain's. Its colour comes from the terrain,
+  - [x] 2.14d The ground at T2 and T3 is the terrain's. Its colour comes from the terrain,
     the nation is a tint at the border (ADR-82's tint for occupied land with it).
     AT: the ground of one terrain on two nations' land differs by less than a stated share
     away from the border, and by more at it; Berlin, the Alps and Chad looked at.
+    Done 2026-10-05 (ADR-90).
+    - *What it was:* the ground of T2 and T3 was a multiplier on the fill (relief, grain, a
+      shade by terrain class): its colour was the nation's everywhere.
+    - *Now:* with the ground's share the fill gives way to the terrain's colour (the
+      smooth blend the terrain mode has), and stays as a cast on it: 0.14 of the fill away
+      from borders, 0.62 at a border (fading over about half a cell), 0.42 on occupied
+      land. In the ground's program only, and only where the land is coloured by a nation
+      or a map mode's palette: the terrain and unrest modes are as they were; T0 and T1
+      are untouched; with relief off (the setting) the fills stay.
+    - *Occupied land (ADR-82)* is told by its cast, and an eighth of the hatching is still
+      what the picture has: the stripes keep 0.12 / 0.42 of themselves in the fill, of
+      which 0.42 shows (`occupiedGround1938` as it was: contrast 6.0 of 50.7).
+    - *Measured* (e2e `groundColour1938.spec.ts`, the ground alone, mean of 300 px
+      square): plains deep in Germany and deep in the Soviet Union. The fills are (93,
+      93, 93) and (143, 29, 29), 103 apart in RGB. The grounds are (146, 162, 104) and
+      (154, 153, 96), **14 apart: 0.14 of the fills' difference**, each nearer the plains'
+      colour (156, 174, 107) than its nation's; the same at 150 and at 20 m/px. Either
+      side of the German-Polish border, 0.15 to 0.45 cells from the cells' edge: 44 apart.
+    - *Looked at* (`docs/evidence/2.14/ground-*.png`): Berlin at 20 m/px is green plain
+      with its houses, where it was grey; the Alps at 60 m/px are rock, with a pink cast
+      towards the Italian border at the bottom of the view; Chad at 5 m/px is sand, where
+      it was sky blue; the German-Polish border at 150 m/px has a grey band on one side
+      and a pink one on the other, on green. Coasts have the cast too (the sea counts as
+      another id): a band of the nation's colour along the shore.
+    - *The figures of 2.14a, looked at again* (`contact-5m.png`, shot again): on the
+      terrain's ground the German figures are grey and the Polish ones pink, told apart
+      at 5 m/px. At 12 m/px a figure is still a few dark pixels.
+    - *Tests:* e2e `groundColour1938`; unit `ground.test.ts` (the casts' order). Run by
+      hand (ADR-87), 15 spec files that read the ground or a fill, 27 tests green:
+      `occupiedGround`, `ground`, `hillshade`, `groundThings`, `coastPicture`, `coast`,
+      `canvasOpaque`, `mapModes`, `occupation`, `terrain`, `zoomDemo`, `fades`,
+      `closeZoom`, `handover`, `coastElements`.
+    - *Not done:* a small nation is all border: Switzerland's Alps keep a cast across the
+      country. Terrain is one class to a cell of 19.6 km, blended: no rivers, no streets
+      (the critic's "no streets, no river" of Berlin stands). The handover at 300 m/px now
+      changes the land's colour from the fill to the terrain over its 250 ms; its specs
+      pass and it was not looked at as a sequence.
   - [ ] 2.14e A way to the battle. A click on a war's banner brings its largest battle into
     view, at a zoom that shows it.
     AT: the click moves the camera onto elements of both sides of that war in contact.

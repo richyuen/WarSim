@@ -14,7 +14,7 @@
  */
 
 import { SHORE_NOISE } from '../../shared/landMask';
-import { HATCH_AT_GROUND } from './ground';
+import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST } from './ground';
 
 export const MAP_VS = `#version 300 es
 precision highp float;
@@ -348,10 +348,35 @@ void main() {
 #ifdef GROUND
     // With the ground of T2 and T3 the hatching gives way to it (PLAN 2.11f): the two stripes
     // close on the tint between them, by the ground's share, and a little of each is left.
-    stripe = mix(stripe, 0.5, uDetail * ${(1 - HATCH_AT_GROUND).toFixed(3)});
+    // (Of the fill, of which the ground keeps OCCUPIED_CAST on occupied land, PLAN 2.14d: so
+    // that HATCH_AT_GROUND of the hatching is what is left in the picture.)
+    stripe = mix(stripe, 0.5, uDetail * ${(1 - HATCH_AT_GROUND / OCCUPIED_CAST).toFixed(3)});
 #endif
     col = mix(col * 0.72, mix(col, pal(occOwner[bi]), 0.35), stripe);
   }
+
+  // The ground of T2 and T3 is the terrain's (PLAN 2.14d, ADR-90). Until then the ground was
+  // the fill, lit and grained: Berlin was grey noise for being German, the Alps salmon pink for
+  // being Swiss, Chad sky blue for being French. With the ground's share the fill gives way to
+  // the colour of the terrain (the blend of the terrain mode), and stays as a cast on it: a
+  // little everywhere, so that a view with no border in it still says whose the land is by
+  // more than its tags; more towards a border, where the two fills meet as they always did;
+  // and more on occupied land, which the tint tells apart (ADR-82). In the modes that colour
+  // the land by something else (terrain, unrest) nothing changes.
+#ifdef GROUND
+  if (uDetail > 0.0 && !water && uMode == 0) {
+    vec2 tq = cellPos - 0.5;
+    ivec2 t0 = ivec2(floor(tq));
+    vec2 tf = tq - floor(tq);
+    vec3 terr = mix(mix(terrainCol(terrainAt(t0)), terrainCol(terrainAt(t0 + ivec2(1, 0))), tf.x),
+                    mix(terrainCol(terrainAt(t0 + ivec2(0, 1))), terrainCol(terrainAt(t0 + ivec2(1, 1))), tf.x), tf.y);
+    // How far inland: 0 on a border, 1 where no other id is within two cells.
+    float inland = n > 1 ? acc[bi] - second : 1.0;
+    float fillShare = mix(${BORDER_CAST.toFixed(3)}, ${GROUND_CAST.toFixed(3)}, smoothstep(0.0, ${BORDER_BAND.toFixed(3)}, inland));
+    if (occ[bi] > 0.5 * acc[bi]) fillShare = max(fillShare, ${OCCUPIED_CAST.toFixed(3)});
+    col = mix(col, mix(terr, col, fillShare), uDetail);
+  }
+#endif
 
   // Hillshade (PLAN 2.8a, ADR-78): the fill is lit by the slope of the ground, the light from
   // the north-west. The height is smoothed over the 4×4 cells around by the cubic B-spline the

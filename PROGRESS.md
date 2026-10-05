@@ -5407,3 +5407,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin:** not touched (view only).
 - **Run by hand:** twelve close-zoom spec files, 18 tests green.
 - **Next:** PLAN 2.14d, the ground at T2 and T3 is the terrain's.
+
+## 2026-10-05 — PLAN 2.14d: at T2 and T3 the ground has the terrain's colour (ADR-90)
+
+- **What the critic saw:** Berlin grey, the Alps salmon pink, Chad sky blue: the ground was
+  the nation's fill.
+- **Built:** in the ground's shader the fill gives way to the terrain's colour and stays as a
+  cast: 0.14 inland, 0.62 at a border, 0.42 on occupied land. T0, T1, the terrain and unrest
+  modes and "relief off" are untouched.
+- **Measured:** plains deep in Germany and in the Soviet Union are 14 apart in RGB (the fills
+  103); either side of the German-Polish border 44.
+- **Looked at** Berlin, the Alps, Chad and the border; and the phase's other pictures, shot
+  again on the new ground. At 5 m/px the two sides' figures are now told apart by colour.
+- **A gotcha:** `cast` is a reserved word of GLSL ES 3. The program did not link, and the
+  page said only "Cannot read properties of null (reading 'program')". The shader's log is in
+  the page's console: a spec that listens to it for one run finds the line.
+- **ADR-82's test** (an eighth of the hatching) went red by a hair (2.52 against 2.54): the
+  cast had thinned the stripes. The stripes now keep 0.12 / 0.42 of themselves in the fill.
+- **Tests:** 1 e2e, 1 unit (670). View only: the pin is untouched. Run by hand: 15 spec
+  files that read the ground or a fill, 27 tests green.
+- **Not done:** small nations are cast all over; no streets or rivers; the handover at 300
+  m/px not looked at as a sequence.
+- **Next:** PLAN 2.14e, a click on a war's banner brings its largest battle into view. Then
+  2.14f, which ticks PLAN 2.14 and runs the whole e2e suite (ADR-87).

@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-90 · 2026-10-05 · accepted — At T2 and T3 the ground has the terrain's colour, and the fill is a cast on it (PLAN 2.14d, the critic's R2-B2)
+
+- **Context:** the critic: "The ground is the nation's colour. Berlin at 20 m/px is grey noise
+  with specks; the Alps are salmon pink for being Swiss; Chad at 1 m/px is sky blue for being
+  French Equatorial Africa, and could be shallow sea." PLAN 2.8b had decided it so ("the fill
+  keeps its colour: it says whose the land is"), and ADR-82 had built the tint of occupied
+  land on it.
+- **Decision.** In the ground's program, where the land is coloured by a palette (the
+  political mode and the modes that recolour nations), the colour is
+  `mix(terrain, fill, share)`, by the ground's share of the handover. `share` is 0.14 away
+  from borders, 0.62 on a border, falling over about half a cell, and at least 0.42 on
+  occupied land. The terrain's colour is the terrain mode's blend of the four cells around.
+- **Why a cast everywhere, and not none.** A view at 20 m/px seldom has a border in it. With
+  no cast a formation's tag would be all that says whose land it is; with 0.14, plains in
+  Germany and in the Soviet Union are 14 apart in RGB where the fills are 103 apart: one
+  terrain, seen to be two countries when put side by side.
+- **ADR-82 stands,** restated on the new ground: occupied land has more of the (occupied)
+  fill than land at home, and an eighth of the hatching is left in the picture.
+- **[AoC-DEVIATION]:** AoC's map is the nation's colour at every zoom; it has no close zoom.
+- **What it does not give.** Terrain is a class to a cell of 19.6 km: the ground of Berlin is
+  the plain's green with houses on it, not a city with streets and a river. A nation a few
+  cells across is border all over. Finer ground is PLAN 7.4's.
 ### ADR-89 · 2026-10-05 · accepted — The blocks of formations in contact are deployed against each other; it is derived, not state (PLAN 2.14c1, the critic's R2-B2)
 
 - **Context:** the critic: "Enemy formations stand a cell or more apart, and a cell is 19.6

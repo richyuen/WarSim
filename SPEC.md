@@ -1084,6 +1084,13 @@ times, and lights it from the north-west, 41° up: level ground is unchanged, a 
 0.58 to 1.28 of its fill, by a soft limit. The sea is level. It comes in by the sprites' share
 of the T1 → T2 handover and shows in every map mode. A map without elevation of its size (the
 toy world) is drawn flat: the one switch is for the ground as a whole.
+*The ground's colour (PLAN 2.14d, ADR-90):* with the ground's share the fill gives way to the
+terrain's colour (the terrain mode's blend of the four cells around) and stays as a cast on
+it: 0.14 of the fill away from borders, 0.62 on a border falling over about half a cell, at
+least 0.42 on occupied land (ADR-82's tint; an eighth of the hatching is left in the picture).
+Only where the land is coloured by a palette (not in the terrain and unrest modes), and not
+at T0 and T1. Plains in two nations are 14 apart in RGB where the fills are 103 apart.
+
 *Ground texture (PLAN 2.8b):* the same pass adds small relief and grain from noise seeded by
 the place. Gradient noise in octaves, 2^k lattice points to a cell, the lattice points named
 and hashed as integers (a float that held the cell and the place in it is too coarse at 1 m/px)

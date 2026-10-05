@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GROUND, GROUND_CLASSES, groundReach, groundUniform } from '../../src/render/map/ground';
+import { BORDER_BAND, BORDER_CAST, GROUND, GROUND_CAST, GROUND_CLASSES, groundReach, groundUniform, HATCH_AT_GROUND, OCCUPIED_CAST } from '../../src/render/map/ground';
 import { Terrain } from '../../src/shared/terrain';
 
 // PLAN 2.8b: the ground of each terrain class at T2 and T3 (how the map pass's noise is laid on
@@ -52,5 +52,19 @@ describe('how far out the ground reaches (PLAN 2.11l)', () => {
       before = r;
     }
     expect(groundReach(488, OUT)).toBeCloseTo(0.5, 1); // half an octave out
+  });
+});
+
+describe('the fill as a cast on the terrain\'s colour (PLAN 2.14d)', () => {
+  it('slight inland, strong at a border, between the two on occupied land; and an eighth of the hatching is left in the picture', () => {
+    expect(GROUND_CAST).toBeGreaterThan(0.05); // a view with no border in it still has its nation's cast
+    expect(GROUND_CAST).toBeLessThan(0.2); // and one terrain on two nations' land is nearly one colour
+    expect(BORDER_CAST).toBeGreaterThan(0.5); // at a border the fills meet as fills
+    expect(OCCUPIED_CAST).toBeGreaterThan(GROUND_CAST * 2);
+    expect(OCCUPIED_CAST).toBeLessThan(BORDER_CAST);
+    expect(BORDER_BAND).toBeGreaterThan(0);
+    expect(BORDER_BAND).toBeLessThanOrEqual(1);
+    // The shader keeps HATCH_AT_GROUND / OCCUPIED_CAST of the stripes in the fill, of which OCCUPIED_CAST shows.
+    expect(HATCH_AT_GROUND / OCCUPIED_CAST).toBeLessThan(1);
   });
 });

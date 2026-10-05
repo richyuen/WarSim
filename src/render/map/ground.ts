@@ -1,7 +1,8 @@
 /**
  * What the ground of each terrain class looks like at T2 and T3 (PLAN 2.8b, ADR-78): how the map
- * pass's noise is laid on a fill. The fill keeps its colour (it says whose the land is); the
- * class says how rough the ground is.
+ * pass's noise is laid on the land: how rough each class is. Its colour is the terrain's too
+ * since PLAN 2.14d (the casts below): until then the fill kept its colour, and the ground of
+ * Berlin was Germany's grey.
  */
 import { Terrain } from '../../shared/terrain';
 
@@ -65,3 +66,15 @@ export function groundReach(mPerPx: number, outM: number): number {
  * than the ground's own variation on a plain, and occupied land is told by its tint.
  */
 export const HATCH_AT_GROUND = 0.12;
+
+/**
+ * The ground of T2 and T3 has the terrain's colour, and the fill (the nation's colour, or the
+ * map mode's) is a cast on it (PLAN 2.14d, ADR-90): the share of the fill in the ground's
+ * colour away from every border, at a border, and on occupied land; and how far from a border
+ * the stronger cast reaches, as the difference of the two strongest ids' weights (0 on the
+ * border, about 0.5 half a cell from it, 1 two cells inland).
+ */
+export const GROUND_CAST = 0.14;
+export const BORDER_CAST = 0.62;
+export const OCCUPIED_CAST = 0.42;
+export const BORDER_BAND = 0.6;
