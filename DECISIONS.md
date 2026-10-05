@@ -172,8 +172,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Context:** since ADR-89 the block of a formation in contact stands between it and its
   nearest enemy, and the marker stands on the formation. At the boundary of 300 m/px the box
   fades where the formation is and the elements come in elsewhere. Measured
-  (`battleView1938.spec.ts`): 27 px apart for a pair a cell apart, 43 px for a pair at 1.48
-  cells (contact ends at 1.5). PLAN 2.14c1 had "up to 28 px": that is the pair a cell apart.
+  (`battleView1938.spec.ts`): 27 px apart for a pair a cell apart. The most is 43 px, from
+  the constants: a block goes forward by `d/2 - DEPLOY_GAP/2 - depth/2`, which at the 1.5
+  cells where contact ends is 0.665 cells, 13 km. A probe spec with a pair at 1.48 cells
+  showed 43 px; it was not kept. PLAN 2.14c1 had "up to 28 px": that is the pair a cell apart.
 - **Looked at:** the morph in ten frames, for both distances. It reads as two boxes fading
   while one fight appears between them, on the line that joins them. Nothing jumps: no pixel
   is moved, the two layers cross-fade (ADR-71).
@@ -192,7 +194,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   lets them linger for 220 ms so that the number stays with the group. Here they lingered
   beside it: two stubs reading "11.9k" 27 to 43 px from the blocks, under or beside the tags
   that carry the same number (ADR-88). `drawMarkers` gives an engaged marker's bar the box's
-  opacity. Out of T2 the same: bar and box come in together.
+  opacity. Out of T2 the same by the code, bar and box come in together; the test runs
+  T1 to T2 only.
 - **Tests:** e2e, the second test of `battleView1938.spec.ts`: a German division not in
   contact, and a German and a Polish one a cell apart. The offsets above; no box travels; in
   every frame of the morph the bar of each of the pair has its box's opacity, and at 256 ms
@@ -216,6 +219,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     How far a block may stand from its formation has no limit in `deployOf`. For PLAN 2.14f5,
     which looks at the same pairs.
   - A stack is drawn as its lead: the bar follows whether the lead is in contact.
+  - `fades1938.spec.ts` asserts a bar in full when the box is half gone, on the first marker
+    of its frame. That marker is not in contact. If the order of the markers changes and it
+    is one in contact, that assertion fails for this reason.
 
 ### ADR-91 · 2026-10-05 · accepted — A click on a war's banner goes to its largest battle: by men, a jump, at 20 m/px (PLAN 2.14e, the critic's R2-B2)
 
