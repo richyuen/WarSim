@@ -14,7 +14,7 @@ const KM = 20;
 function world(base: number, paint: (x: number, y: number) => number | undefined = () => undefined, cities: { x: number; y: number; size: number }[] = [], wrapX = false): ScatterWorld {
   const terrain = new Uint8Array(W * H).fill(base);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) terrain[y * W + x] = paint(x, y) ?? base;
-  return { w: W, h: H, wrapX, kmPerCell: KM, terrain, land: null, cities: cityIndex(cities, W, H, KM) };
+  return { w: W, h: H, wrapX, kmPerCell: KM, terrain, mask: null, cities: cityIndex(cities, W, H, KM) };
 }
 
 /** A view of 1400 × 800 px on (`cx`, `cy`) at `px` px to a cell. */
@@ -82,14 +82,20 @@ describe('the scatter of trees, rocks and buildings (PLAN 2.8c1)', () => {
     expect(a.filter((i) => i.x < 20).length).toBe(0);
     // A crossing is sea too.
     expect(instances(world(Terrain.Crossing), view(20, 12, 300)).length).toBe(0);
-    // The fine coast: land by the cells, but the coverage (two texels a cell) says the sea begins at x = 20.5.
+    // The fine coast: land by the cells, but the fine mask (8 pixels a cell) says the sea begins at x = 20.5.
+    // Nothing stands in the last third of a mask pixel before it either: there the drawn shore
+    // wanders, and a place is land for the scatter where it is surely land (PLAN 2.9b, `maskSure`).
     const fine = world(Terrain.Forest);
-    const land = { w: W * 2, h: H * 2, data: new Uint8Array(W * 2 * H * 2) };
-    for (let y = 0; y < land.h; y++) for (let x = 0; x < land.w; x++) land.data[y * land.w + x] = x < 41 ? 255 : 0;
-    fine.land = land;
+    const mask = { w: W * 8, h: H * 8, bits: new Uint8Array((W * 8 * H * 8) / 8) };
+    for (let y = 0; y < mask.h; y++)
+      for (let x = 0; x < 164; x++) {
+        const i = y * mask.w + x;
+        mask.bits[i >> 3]! |= 1 << (i & 7);
+      }
+    fine.mask = mask;
     const b = instances(fine, view(20.5, 12, 300));
     expect(b.filter((i) => i.x < 20.4).length).toBeGreaterThan(100);
-    expect(b.filter((i) => i.x > 20.6).length).toBe(0);
+    expect(b.filter((i) => i.x > 20.5 - 0.3 / 8).length).toBe(0);
   });
 
   it('a forest is dense, a plain has a tree here and there, mountains have rocks, ice has nothing', () => {

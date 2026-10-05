@@ -33,6 +33,7 @@ import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
+import type { LandMask } from '../shared/landMask';
 import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
@@ -116,8 +117,8 @@ export class MapView {
   private readonly controlGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
   private terrainColors: number[] | null = null;
-  /** The fine land coverage the worker sent (the scatter keeps off the water by it). */
-  private fineLand: { w: number; h: number; data: Uint8Array } | null = null;
+  /** The fine land mask the worker sent (PLAN 2.9b): the coast of T2 and T3, and where nothing of the scatter stands. */
+  private fineMask: LandMask | null = null;
   private cities: { id: number; x: number; y: number }[] = [];
 
   /** The city row nearest cell (x, y) within `reach` cells, or 0 (editor tools, PLAN 1.36). */
@@ -150,6 +151,8 @@ export class MapView {
   groundScatter: Scatter | null = null;
   /** Whether the instances are drawn (off: the ground without them; tests of the ground's texture). */
   instances = true;
+  /** Whether the element sprites and figures are drawn (off: tests read the ground they stand on). */
+  sprites = true;
   private snapArrival = 0;
   /** The length of the step the sprites are on, ms; 0: they stand where the tick has them. */
   private tickMs = 0;
@@ -274,7 +277,7 @@ export class MapView {
       this.hasFineCoast = !landChanged;
       if (this.scatterWorld) {
         this.scatterWorld.terrain = data;
-        this.scatterWorld.land = landChanged ? null : this.fineLand;
+        this.scatterWorld.mask = landChanged ? null : this.fineMask;
       }
       this.scatterKey = '';
       this.dirty = true;
@@ -287,6 +290,15 @@ export class MapView {
       this.map.setElevation(e.w, e.h, e.data);
       this.dirty = true;
     });
+    sim.onLandMask((mask) => {
+      // The scatter's water, read on the CPU whatever the GPU takes, and the coast of T2 and T3
+      // (PLAN 2.9b2). Where the texture does not fit, the drawn coast stays the coverage's.
+      this.fineMask = mask;
+      this.map.setLandMask(mask);
+      if (this.scatterWorld) this.scatterWorld.mask = this.fineMask;
+      this.scatterKey = '';
+      this.dirty = true;
+    });
     sim.onMapLayers((m) => {
       this.map.setLand(m.land.w, m.land.h, m.land.data);
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
@@ -297,8 +309,7 @@ export class MapView {
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;
-      this.fineLand = m.land;
-      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, land: m.land, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell) };
+      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.fineMask, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell) };
       this.scatterKey = '';
       this.dirty = true;
     });
@@ -763,7 +774,7 @@ export class MapView {
    */
   private drawSprites(cam: Camera, now: number): void {
     const unitsIn = this.shares.elements;
-    if (unitsIn <= 0.01) return;
+    if (unitsIn <= 0.01 || !this.sprites) return;
     const dpr = window.devicePixelRatio || 1;
     const t = this.tickProgress(now);
     const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);

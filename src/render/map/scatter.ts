@@ -12,11 +12,13 @@
  *
  * **What stands at a point** is a matter of the ground there: buildings by how near a city is
  * and how large; else trees and rocks by the terrain class of the cell. Nothing stands on
- * water: by the cell's class and, where the fine coast is known, by its land coverage.
+ * water: by the cell's class and, where the fine mask is known, by its four pixels round the
+ * place (PLAN 2.9b: where the drawn coast cannot be).
  *
  * **Its size** is a symbol's at T2, a few px that stand for "wood here" or "town here", and the
  * thing's own once the zoom shows it larger than that (a crown of 9 m is 9 px at 1 m/px).
  */
+import { maskSure, type LandMask } from '../../shared/landMask';
 import { Terrain } from '../../shared/terrain';
 import { hash2, pair } from '../hash';
 
@@ -105,8 +107,8 @@ export interface ScatterWorld {
   kmPerCell: number;
   /** Terrain class of each cell. */
   terrain: Uint8Array;
-  /** The fine land coverage (0–255 a texel, `LandCoverage`), or null: the coast follows the cells. */
-  land: { w: number; h: number; data: Uint8Array } | null;
+  /** The fine land mask, or null: the coast follows the cells. */
+  mask: LandMask | null;
   cities: CityIndex;
 }
 
@@ -127,22 +129,6 @@ export interface Scatter {
   level: number;
   /** There were more than the cap. */
   truncated: boolean;
-}
-
-/** Whether (`x`, `y`) is land by the fine coverage, with a margin: an instance does not stand on the coast line. */
-function onLand(land: { w: number; h: number; data: Uint8Array }, world: ScatterWorld, x: number, y: number): boolean {
-  const u = (x * land.w) / world.w - 0.5;
-  const v = (y * land.h) / world.h - 0.5;
-  const u0 = Math.floor(u);
-  const v0 = Math.floor(v);
-  const fu = u - u0;
-  const fv = v - v0;
-  const at = (ix: number, iy: number): number => {
-    const cx = world.wrapX ? ((ix % land.w) + land.w) % land.w : Math.min(land.w - 1, Math.max(0, ix));
-    return land.data[Math.min(land.h - 1, Math.max(0, iy)) * land.w + cx]!;
-  };
-  const cov = (at(u0, v0) * (1 - fu) + at(u0 + 1, v0) * fu) * (1 - fv) + (at(u0, v0 + 1) * (1 - fu) + at(u0 + 1, v0 + 1) * fu) * fv;
-  return cov > 0.55 * 255;
 }
 
 /**
@@ -194,7 +180,8 @@ export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out
         else if (r < cover.tree) kind = ScatterKind.Tree;
         else if (r < cover.tree + cover.rock) kind = ScatterKind.Rock;
         else continue;
-        if (world.land && !onLand(world.land, world, x, y)) continue;
+        // Surely land (PLAN 2.9b): in a land pixel of the fine mask, and land in the picture drawn from it.
+        if (world.mask && !maskSure(world.mask, world.w, world.h, x, y, world.wrapX)) continue;
         if (count === cap) {
           truncated = true;
           break;

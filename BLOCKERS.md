@@ -291,12 +291,22 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     east is shaded less steep than it is, against one to the south.
   - The cost of the ground in the tests' software rasteriser is not known per frame (what was
     read varied by a quarter from run to run); the e2e stage's length is watched instead.
+- Left by PLAN 2.9b2 (2026-10-04, ADR-79 third addendum), for the phase review (PLAN 2.11):
+  - A GPU that takes no texture of 8192 px (WebGL2 promises 2048) draws the coverage's coast
+    at T2 and T3, and nothing says so. The mask's land can be sea there (2 places at Dover).
+    Not met: the tests' rasteriser and the bench's GPU take the texture.
+  - A lake that the mask has and the coverage has not comes in at T2: it is not there at T1.
+  - The page holds the mask twice, 16.8 MB on the CPU and as much on the GPU.
+  - Two of the nine views of `coastPicture1938` have little of one kind to compare (456 places
+    surely land at the Aegean's 10 m/px, 641 surely water at the fjord's 150; the floor is 300).
+  - That an element on sure land has drawn land under it rests on the unit test of the two
+    constants and on the 202 elements looked at. The e2e's own "surely" (3 × 3 pixels) is
+    stricter than `maskSure`, so it does not test the band between the two.
+  - Bench A's coast is made of blobs; no real coast was timed on a GPU.
 - Left by PLAN 2.9a (2026-10-04, ADR-79 addendum), for the phase review (PLAN 2.11):
   - A march is a straight line between two cells' points and can cross a bay: 1 of 430
     formations on the march was over the mask's water at day 90 of seed 99 (0 of 134 at day
     30). The tests are of formations at rest. It needs routing below the cell.
-  - Until PLAN 2.9b2 the coast is drawn from the coverage: an element on sure land can still
-    stand a little into the drawn sea at T3 (14 of 193 looked at with 2.9a's rule).
   - The mask is the map's as shipped. Land and water painted in the editor are not in it: a
     cell without land in the mask keeps its middle, and its elements their slots.
   - The worker waits for the mask before it builds the world (430 KB to fetch, 17 MB to

@@ -310,8 +310,8 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   - *Asked often:* a cell whose pixels and the ring round them are all land is inland, every
     place in it is surely land, and the world keeps that answer (`World.onLand`).
   - A cell with no land in the mask (a crossing, land painted in the editor) keeps its middle.
-    A march goes straight from one cell's point to the next and can cross a bay. The coast is
-    drawn from the coverage still: PLAN 2.9b.
+    A march goes straight from one cell's point to the next and can cross a bay. The coast of
+    T2 and T3 is drawn from the same mask (§ the map's coastline, PLAN 2.9b2).
 - Elevation: ETOPO 2022 60″ box-averaged into Miller cells. The 4096×2048 int16 level is a derived
   product for offline tools. 2048/1024/512 levels ship in `public/data/earth/` (ADR-13 codec), and
   `manifest.json` lists sizes and sha256 for all assets and sources (`npm run data`).
@@ -1256,6 +1256,20 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
     the strongest land id nearby (unclaimed land is neutral grey).
   - The coast line uses the coverage gradient; the cell-based coast lines are off once the fine
     layer is present.
+  - *The coast of T2 and T3 (PLAN 2.9b2, ADR-79)* is the mask's own, four times as fine as the
+    coverage. The mask's bits are a texture (R8UI, 2048 × 8192, eight pixels to a texel). The
+    pass with the ground blends the four mask pixels round a fragment (the rule of
+    `maskField`, `src/shared/landMask.ts`) and draws land over a half. Where the four differ, a
+    noise of at most 0.35 × 4f(1 − f) moves the line (`SHORE_NOISE`; the ground's noise from
+    its third octave down to a wavelength of 4 px): a shore at 1 m/px is not a ruler's edge.
+    The picture can differ from the mask's bit only between four pixels that differ.
+    - The two coasts cross-fade with the T1 ↔ T2 handover: each says land or sea, a pixel is
+      land by as much as the two say by their shares, and each has its coast line by its share.
+    - At T0 and T1 the coast is the coverage's, pixel for pixel as before.
+    - The mask has lakes that the coverage has not; they are drawn at T2 and T3.
+    - What stands on the ground (PLAN 2.8c) stands on sure land (`maskSure`), read on the CPU.
+    - Without the texture (a GPU that takes none of 8192 px; land painted in the editor) the
+      coast stays the coverage's, or the cells'.
   - Terrain map mode (`fillMode` 1) bilinearly blends the terrain colours of the 4 nearest cells
     and keeps national borders.
   Since PLAN 1.28a the border distance is d/|∇d| with the gradient from the analytic B-spline

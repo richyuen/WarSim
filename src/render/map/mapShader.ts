@@ -13,6 +13,8 @@
  * the same way) gets screen-space diagonal hatching.
  */
 
+import { SHORE_NOISE } from '../../shared/landMask';
+
 export const MAP_VS = `#version 300 es
 precision highp float;
 // Full-screen triangle; no attributes.
@@ -54,6 +56,10 @@ uniform float uCellM;      // metres to a cell
 uniform float uRelief;     // how much steeper than it is the ground is shaded
 uniform vec3 uGround[12];  // the ground of each terrain class: (bump, grain, shade) (PLAN 2.8b, ground.ts)
 uniform float uBump;       // the slope the small relief of mountains is shaded with
+uniform highp usampler2D uMask;  // the fine land mask, eight of its pixels to a texel, the lowest bit first (PLAN 2.9b)
+uniform int uHasMask;
+uniform ivec2 uMaskSize;   // the mask's size in its pixels
+uniform int uMaskPerCell;  // mask pixels to a cell
 #endif
 
 out vec4 outColor;
@@ -142,6 +148,39 @@ vec3 groundOctave(int k, vec2 local) {
   float kxy = va - vb - vc + vd;
   vec2 slope = ga + u.x * (gb - ga) + u.y * (gc - ga) + u.x * u.y * (ga - gb - gc + gd) + du * (u.yx * kxy + vec2(vb, vc) - va);
   return vec3(slope, va + u.x * (vb - va) + u.y * (vc - va) + u.x * u.y * kxy);
+}
+
+// The fine mask's bit at pixel p (PLAN 2.9b): 1 land, 0 water; none beyond its rows.
+float maskBitAt(ivec2 p) {
+  if (p.y < 0 || p.y >= uMaskSize.y) return 0.0;
+  int x = (p.x + 4 * uMaskSize.x) % uMaskSize.x;
+  uint b = texelFetch(uMask, ivec2(x >> 3, p.y), 0).r;
+  return float((b >> uint(x & 7)) & 1u);
+}
+
+// How much land there is at local (cells from the centre cell) by the fine mask, 0..1, the
+// coast at a half: the four mask pixels round the place, blended, and the shore moved inside
+// them by the ground's noise. Where the four agree it is 0 or 1 and nothing moves it: the drawn
+// coast never leaves the squares between a land pixel's middle and a water pixel's.
+float maskField(vec2 local, float pxPerCell) {
+  vec2 m = local * float(uMaskPerCell) - 0.5;
+  vec2 fm = floor(m);
+  vec2 t = m - fm;
+  ivec2 p = uCenterCell * uMaskPerCell + ivec2(fm);
+  float f = mix(mix(maskBitAt(p), maskBitAt(p + ivec2(1, 0)), t.x), mix(maskBitAt(p + ivec2(0, 1)), maskBitAt(p + ivec2(1, 1)), t.x), t.y);
+  if (f <= 0.0 || f >= 1.0) return f;
+  // A shore, not a ruler's edge: octaves from a mask pixel's width down to 4 px on screen.
+  float n = 0.0;
+  float amp = 1.0;
+  float sum = 0.0;
+  for (int k = 3; k < 14; k++) {
+    if (pxPerCell / float(1 << k) < 4.0) break;
+    n += groundOctave(k, local).z * amp;
+    sum += amp;
+    amp *= 0.6;
+  }
+  if (sum > 0.0) f += ${SHORE_NOISE.toFixed(3)} * clamp(n / (0.7 * sum), -1.0, 1.0) * 4.0 * f * (1.0 - f);
+  return f;
 }
 #endif
 
@@ -252,12 +291,34 @@ void main() {
   vec2 luv = vec2(fract(cellPos.x / float(uMapSize.x)), cellPos.y / float(uMapSize.y));
   float cov = texture(uLand, luv).r;
   float covW = max(fwidth(cov), 1e-6);
+#ifdef GROUND
+  // The coast of T2 and T3 is the fine mask's (PLAN 2.9b, ADR-79), the mask the sim stands its
+  // formations on; the coverage is a quarter as fine. The two coasts cross-fade by the
+  // handover's share, as every tier change does: a place that is sea by the one and land by
+  // the other fades. (A blend of the two fields moved the shore across such places instead,
+  // and each pixel it passed went from sea to land in one frame.)
+  float fine = cov;
+  float fineShare = 0.0;
+  if (uDetail > 0.0 && uHasMask == 1 && uHasLand == 1) {
+    fine = maskField(local, uScale / uDpr);
+    fineShare = uDetail;
+  }
+  float fineW = max(fwidth(fine), 1e-6);
+#endif
   // Off-map rows (above the top, below the bottom) are sea: clamped coverage would otherwise
   // stretch the polar rows into grey stripes when fully zoomed out (review after PLAN 1.31).
   bool offMap = cellPos.y < 0.0 || cellPos.y >= float(uMapSize.y);
   // Water: fine coverage when loaded; else the terrain layer (unowned land stays land); else the
   // cell rule (toy map: unowned = sea).
   bool water = offMap || (uHasLand == 1 ? cov <= 0.5 : uHasTerrain == 1 ? terrainAt(ivec2(floor(cellPos))) == 0u : best == 0u);
+#ifdef GROUND
+  // How much of this pixel is land: by the coverage's coast and the mask's, each by its share.
+  // What follows draws it as land when any of it is.
+  bool coarseLand = !water;
+  bool fineLand = !offMap && fine > 0.5;
+  float landShare = fineShare > 0.0 ? mix(coarseLand ? 1.0 : 0.0, fineLand ? 1.0 : 0.0, fineShare) : (coarseLand ? 1.0 : 0.0);
+  water = landShare <= 0.0;
+#endif
   // Land the cell rule called water takes the strongest land id around it.
   uint fid = best != 0u ? best : secondId;
 
@@ -374,11 +435,21 @@ void main() {
     col = mix(col, lineCol, a * (cellCoast ? 0.55 : 1.0));
   }
   // Fine coast line on the land side.
+#ifdef GROUND
+  if (uHasLand == 1 && !water) {
+    // Each coast has its line, by its share; then the pixel is land by as much as the two say.
+    float a = coarseLand ? (1.0 - smoothstep(halfW - 0.5, halfW + 0.5, (cov - 0.5) / covW)) * (1.0 - fineShare) : 0.0;
+    if (fineLand) a += (1.0 - smoothstep(halfW - 0.5, halfW + 0.5, (fine - 0.5) / fineW)) * fineShare;
+    col = mix(col, col * 0.62, a * 0.8);
+    col = mix(pal(0u), col, landShare);
+  }
+#else
   if (uHasLand == 1 && !water) {
     float cpx = (cov - 0.5) / covW;
     float a = 1.0 - smoothstep(halfW - 0.5, halfW + 0.5, cpx);
     col = mix(col, col * 0.62, a * 0.8);
   }
+#endif
   outColor = vec4(col, 1.0);
 }
 `;

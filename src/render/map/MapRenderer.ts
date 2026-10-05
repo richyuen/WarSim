@@ -5,6 +5,7 @@
  */
 import * as twgl from 'twgl.js';
 import { splitCoord, type Camera } from '../camera';
+import type { LandMask } from '../../shared/landMask';
 import { groundUniform } from './ground';
 import { MAP_FS, MAP_FS_GROUND, MAP_VS } from './mapShader';
 
@@ -58,6 +59,10 @@ export class MapRenderer {
   /** Whether the ground's relief is drawn where the zoom shows it (off: the map of T0 and T1 at every zoom). */
   relief = true;
   private readonly ground = groundUniform();
+  /** The fine land mask (PLAN 2.9b): eight of its pixels to a texel; a 1×1 placeholder until it comes. */
+  private maskTex: WebGLTexture;
+  private maskSize: [number, number] = [8, 1];
+  private hasMask = false;
 
   /** The ground of T2 and T3 is drawn where the zoom shows it: the switch is on and the land's height has come. */
   get groundOn(): boolean {
@@ -83,6 +88,24 @@ export class MapRenderer {
     this.provinceTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
     this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.elevationTex = this.makeTexture(gl.R16I, gl.RED_INTEGER, gl.SHORT, 1, 1, new Int16Array([0]), gl.NEAREST);
+    this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
+  }
+
+  /**
+   * The fine land mask, for the coast of T2 and T3 (PLAN 2.9b). Its bits go to the GPU as they
+   * are, a byte to a texel: a texture as wide as the mask (16384) is more than many a GPU takes.
+   * Returns false, and the coast stays the coverage's, when the texture would not fit.
+   */
+  setLandMask(mask: LandMask): boolean {
+    const gl = this.gl;
+    const [tw, th] = [mask.w / 8, mask.h];
+    const max = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
+    if (!Number.isInteger(tw) || tw > max || th > max || mask.w % this.w !== 0) return false;
+    gl.deleteTexture(this.maskTex);
+    this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, tw, th, mask.bits, gl.NEAREST);
+    this.maskSize = [mask.w, mask.h];
+    this.hasMask = true;
+    return true;
   }
 
   /** The land's height (metres, one value a cell: `w` × `h` must be the map's size). */
@@ -249,6 +272,10 @@ export class MapRenderer {
       uRelief: this.opts.reliefScale,
       uGround: this.ground,
       uBump: this.opts.bumpSlope,
+      uMask: this.maskTex,
+      uHasMask: this.hasMask ? 1 : 0,
+      uMaskSize: this.maskSize,
+      uMaskPerCell: this.maskSize[0] / this.w,
     });
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -265,6 +292,7 @@ export class MapRenderer {
     gl.deleteTexture(this.provinceTex);
     gl.deleteTexture(this.unrestTex);
     gl.deleteTexture(this.elevationTex);
+    gl.deleteTexture(this.maskTex);
     gl.deleteVertexArray(this.vao);
     gl.deleteProgram(this.program.program);
     gl.deleteProgram(this.groundProgram.program);

@@ -4851,3 +4851,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   process seen between the runs.
 - **Changed in how I work:** a sampler of the processor's clock and the busiest processes runs
   beside every gate from now on; the healthy gate's reading is recorded for comparison.
+
+## 2026-10-04 — PLAN 2.9b2: the coast of T2 and T3 is drawn from the fine mask; PLAN 2.9 done
+
+- **What it is:** at T2 and T3 the shore is the mask's (8 px to a cell; the coverage has 2),
+  with a noise inside a mask pixel so that it is a shore and not steps. The mask the sim
+  stands its formations on and the mask in the picture are one.
+- **Against the mask:** nine views (Dover, the Aegean, a fjord; 150, 40, 10 m/px), 0 places
+  against. On the commit before: 2 at Dover. Elements: 202 looked at, 0 in the drawn sea.
+- **T0 and T1 as they were:** the same hashes at Dover on this commit and the one before.
+- **Found by an older spec:** my first shader blended the two coasts' fields, and the shore
+  moved across pixels in the handover (51.3 of 255 in a frame; `groundThings1938`, limit 48).
+  The two coasts cross-fade now.
+- **Not test first, said plainly:** the spec's test of elements passes on the commit before
+  too. 2.9b1's rule had already cleared the 14; here it is a guard.
+- **Seen in the pictures:** lakes the coverage lacks appear at T2 (two pictures of 2.8 shot
+  again). Trees and houses keep off the water.
+- **Cost:** bench A, 1080p, RTX 4070 Ti: +0.03 ms a frame where a coast is in view (0.748 →
+  0.775 ms). T0 0.52 ms.
+- **Tests:** 3 new e2e tests (112), 631 unit tests.
+- **Watch list (BLOCKERS):** a GPU without 8192-px textures keeps the old coast silently;
+  lakes pop in by a fade at T2 but are absent at T1; the mask is held twice (34 MB).
+- **Next:** PLAN 2.10, the scripted zoom from the world to a battle (8 stops), and ADR-69's
+  open choice.

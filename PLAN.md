@@ -910,8 +910,11 @@ quick sweep as a smoke test.
         stage's length is in the commit.
       - `docs/evidence/2.8/things-*.png`, viewed: a wood of dots, rocks on a mountainside, a
         town of red and slate roofs along two streets' directions around Berlin's dot.
-- [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
+- [x] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
+  Done 2026-10-04 in three parts (2.9a, 2.9b1, 2.9b2). The AT: `coastElements1938` (360 elements
+  of 20 formations at T3 by a coast, 0 on the mask's water) and `coastPicture1938` (202 elements,
+  0 with the drawn sea under them).
   Split 2026-10-04 (ADR-79). Measured first, 1938, seed 99, by the nearest bit of the fine mask
   (16384 × 8192, 8 px to a cell): at the start 200 of 23,210 elements stand on its water, in 18
   formations, 11 of them wholly (their formation's own place is on water: a cell is land when half of
@@ -963,7 +966,7 @@ quick sweep as a smoke test.
     - The tick: combat asks for every shot's place, and asking the mask each time doubled the
       tick (4.92 ms for 2.45, a year unpinned). A cell's answer is kept once it is known to be
       inland. Pinned, five years: 1.45 and 1.44 ms; on the code before 2.9a 1.50 and 1.49.
-  - [ ] 2.9b2 The coast is drawn from the fine mask at T2 and T3 (the renderer; 2.9b as it was
+  - [x] 2.9b2 The coast is drawn from the fine mask at T2 and T3 (the renderer; 2.9b as it was
     written, less the sim's rule above). Today the coast at
     every zoom is the 4096 × 2048 coverage (2 texels to a cell); the mask has 8. The pass with the
     ground reads the mask's bits (packed, eight to a texel, if a texture as wide as the mask does
@@ -975,6 +978,28 @@ quick sweep as a smoke test.
     at sampled places further than half a mask px from the coast (0 against); no element sprite's
     middle is on a water pixel of the picture; the coast at T1 is as it was (hash); `fades1938`
     passes; screenshots viewed; bench A within the budget.
+    Done 2026-10-04 (ADR-79, third addendum). The mask's bits as a texture of 2048 × 8192
+    (`MapRenderer.setLandMask`); in the pass with the ground the four mask pixels round a
+    fragment, blended (the rule of `maskField`), with a noise of at most `SHORE_NOISE` where they
+    differ; land over a half. The scatter asks `maskSure`.
+    `tests/e2e/coastPicture1938.spec.ts` (3 tests); pictures in `docs/evidence/2.9/`, looked at.
+    - Land and water against the mask, nine views (Dover, the Aegean, a fjord of Norway; 150, 40
+      and 10 m/px), at places 6 px apart whose 3 × 3 mask pixels are all the one: 0 against. On
+      the commit before: 2 places of the mask's land drawn as sea at Dover, 150 m/px.
+    - Elements: 202 of the 12 formations nearest the water, 0 with the drawn sea under their
+      middle. 0 on the commit before as well: 2.9b1's rule had cleared the 14. A guard.
+    - T0 and T1: the Strait of Dover at 4000, 1000 and 400 m/px is the same picture with the
+      ground and without it, and has the same three hashes on the commit before.
+    - The handover: the two coasts cross-fade. A first version blended the two fields; the shore
+      then moved across the pixels between the coasts, each from sea to land in one frame, and
+      `groundThings1938` failed on it (51.3 of 255 in a frame; its limit is 48). `fades1938`:
+      T1 → T2 43.1, as before.
+    - Lakes that the coverage is too coarse for are in the picture at T2 now. Two pictures of
+      2.8 are shot again for it (a lake in the mountains' view; in the Alps' at 250 m/px the
+      coast line of a lake's shore at the frame's lower edge, 154 px).
+    - Bench A (1080p, RTX 4070 Ti), two new views with a coast through them, the ground in
+      full: 0.748 and 0.705 ms with the coverage's coast, 0.775 and 0.735 ms with the mask's.
+      T0 0.52 ms (0.51).
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
   Also decide ADR-69's open choice at the close stops: how a battalion's losses show at T3 (ADR-71).
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.

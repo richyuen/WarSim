@@ -1,6 +1,6 @@
 {
   "bench": "A",
-  "date": "2026-10-04T23:20:46.030Z",
+  "date": "2026-10-05T02:31:28.765Z",
   "result": {
     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti (0x00002782) Direct3D11 vs_5_0 ps_5_0, D3D11)",
     "viewport": [
@@ -13,34 +13,38 @@
       1024
     ],
     "nations": 150,
-    "genMs": 436.29999999701977,
-    "uploadMs": 2.1999999955296516,
+    "genMs": 434.29999999701977,
+    "uploadMs": 2.2000000029802322,
     "drawMs": {
-      "T0-world": 0.512256,
-      "europe-4px": 0.4801365333333333,
-      "close-48px": 0.44697600000000004,
-      "close-48px-ground": 0.8612352,
-      "close-400px-ground": 0.9383253333333333,
-      "close-55px-ground-things": 0.8375125333333333,
+      "T0-world": 0.5187754666666666,
+      "europe-4px": 0.483072,
+      "close-48px": 0.4500650666666666,
+      "close-48px-ground": 0.8660992000000001,
+      "close-400px-ground": 0.952064,
+      "close-48px-ground-coast-coverage": 0.7482831999999999,
+      "close-400px-ground-coast-coverage": 0.7049386666666667,
+      "close-48px-ground-coast-mask": 0.7750314666666667,
+      "close-400px-ground-coast-mask": 0.7349589333333333,
+      "close-55px-ground-things": 0.8099328,
       "close-55px-ground-things-cpu": 0.5,
       "close-55px-ground-things-count": 8685
     },
     "t0": {
-      "frames": 12948,
-      "seconds": 5.916200000000001,
-      "fps": 2188.5669855650585,
+      "frames": 11942,
+      "seconds": 4.3203,
+      "fps": 2764.1598963034976,
       "frameMsP50": 0.09999999999990905,
       "frameMsP95": 0.20000000000004547,
       "cpuMsP50": 0,
       "cpuMsP95": 0.10000000149011612
     },
     "t0TileChurn": {
-      "frames": 3694,
-      "seconds": 3.0041,
-      "fps": 1229.6528078293,
-      "frameMsP50": 0.3000000000010914,
+      "frames": 2108,
+      "seconds": 3.1617000000000006,
+      "fps": 666.7299237751841,
+      "frameMsP50": 0.3999999999996362,
       "frameMsP95": 0.6000000000003638,
-      "cpuMsP50": 0.29999999701976776,
+      "cpuMsP50": 0.30000000447034836,
       "cpuMsP95": 0.5,
       "tilesPerFrame": 32
     }

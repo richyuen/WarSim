@@ -105,6 +105,7 @@ export class SimClient {
     }
     if (msg.type === 'landMask') {
       this.landMask = msg.mask;
+      for (const l of this.landMaskListeners) l(msg.mask);
       return;
     }
     const p = this.pending.get(msg.reqId);
@@ -202,6 +203,12 @@ export class SimClient {
 
   /** The fine land mask the world was built with (PLAN 2.9a); null until the worker has sent it, and for a world without one. */
   landMask: LandMask | null = null;
+  private readonly landMaskListeners = new Set<(m: LandMask) => void>();
+  onLandMask(l: (m: LandMask) => void): () => void {
+    this.landMaskListeners.add(l);
+    if (this.landMask) l(this.landMask);
+    return () => this.landMaskListeners.delete(l);
+  }
 
   /** The land's height from the worker (PLAN 2.8a); late listeners get it at once. */
   elevation: Elevation | null = null;

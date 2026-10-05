@@ -257,6 +257,38 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - *Seen first:* `coast1938.test.ts` reading the mask this way fails on 2.9a's rule (five
     elements of formation 367 at the start).
 
+- **Third addendum, PLAN 2.9b2 (2026-10-04): the coast of T2 and T3 is drawn from the mask. PLAN 2.9 is done.**
+  - *The texture:* the mask's bits as they are, a byte to a texel: R8UI, 2048 × 8192, 16.8 MB.
+    A texture as wide as the mask (16384) is more than many a GPU takes; this one needs 8192.
+    No smaller levels: the pass that reads it runs under 300 m/px, where a mask pixel is 8 px
+    of the screen or more.
+  - *The line:* four fetches and a blend, the rule of `maskField` on the CPU. Where the four
+    agree the answer is the bit and nothing more is computed. Where they differ a noise moves
+    the line, by `SHORE_NOISE` at most, by nothing at 0 and at 1. So the picture and the bit
+    can differ only in the squares between four pixel middles that differ. The e2e compares at
+    places whose 3 × 3 pixels agree and finds none against in nine views.
+  - *The handover is a cross-fade of two coasts, not a blend of two fields.* The first version
+    mixed the coverage and the mask's field by the share. The shore then travelled from the one
+    coast to the other, and every pixel on its way went from sea to land in one frame.
+    `groundThings1938` caught it (51.3 of 255 in a frame; its limit is 48). Now each coast says
+    land or sea, the pixel is land by the two shares, and each has its coast line by its share.
+  - *T0 and T1 are untouched:* the program without the ground has none of this (`#ifdef`). The
+    Strait of Dover at 4000, 1000 and 400 m/px has the same hashes on this commit and on the
+    one before (9f48d9a8, 937c10bf, c1e5e771, the tests' rasteriser).
+  - *Lakes:* the mask has lakes that the coverage (the share of a block of 4 × 4, land over a
+    half) has not. They are in the picture at T2 and come in with the handover. No formation
+    stood in them since 2.9a; no tree does now. A lake that is not there at T1: watch list.
+  - *The scatter* asks `maskSure` on the CPU, whatever the GPU took. The coverage is no longer
+    its water.
+  - *Cost* (bench A, 1080p, RTX 4070 Ti, the ground in full; two new views with a coast through
+    them, 47 % and 31 % land): 0.748 → 0.775 ms and 0.705 → 0.735 ms with the mask in the
+    coverage's place. T0 0.52 ms (0.51). The page holds the mask twice, 16.8 MB on the CPU
+    (the scatter) and as much on the GPU.
+  - *Test first, and one test that was not:* the first test of `coastPicture1938` fails on the
+    commit before (2 places of the mask's land drawn as sea at Dover, 150 m/px). Its test of
+    the elements passes there too: the 14 in the drawn sea were cleared by 2.9b1's rule, with
+    either coast, in the 12 formations looked at. It stands as a guard.
+
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 
 - **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail
