@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-111 · 2026-10-05 · accepted — A loaded world gives the new-game form its number of nations; the range is said once (PLAN 2.16d)
+
+- **Context:** two lines left by ADR-110. A game continued by a URL without `nations` showed
+  60 in its new-game form whatever the world had, and its next autosave lost the number. The
+  title screen said "2 to 200" among the scenario's facts and again beside the field.
+- **Decision:**
+  - The game keeps its new-game options in a signal (`setup` in `src/app/game.tsx`): the
+    URL's, and for a scenario with a range the number of living nations of a loaded world,
+    brought into the range. The settings panel's form starts from it and the autosave records
+    it.
+  - A continued game whose URL has the number keeps it: that is the number the game was
+    started with, and the world's may have changed since (a nation dead, a revolt). A
+    scenario file, staged from the title screen or loaded in the editor, always gives the
+    world's number: it is another world than the URL's.
+  - The world does not record how many nations it started with. A URL typed without the
+    number for a game of some years gets the number of nations alive now, not that of its
+    start. Not state: the pin does not move for a default of a form.
+  - The hint with the range beside the field is the settings panel's (`rangeHint`); on the
+    title screen the range stands among the facts only.
+- **The scenario file of a random world** (not tried in ADR-108) works with no change: its
+  header's base is `random`, the title screen starts that scenario, names are state and the
+  flags are made from id and colour.
+- **The pin did not move** (324bc358): no rule of the sim changed.
+
 ### ADR-110 · 2026-10-05 · accepted — The random world on the title screen: a picture of one such world, and the number of nations in the URL (PLAN 2.16c)
 
 - **Context:** the random world opened by its URL only (ADR-108). The title screen shows a

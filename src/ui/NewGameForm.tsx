@@ -9,6 +9,8 @@ export interface NewGameFormProps {
   options: GameOptions;
   /** The scenario lets the player say how many nations there are (the random world, PLAN 2.16c). */
   nationsRange?: { min: number; max: number; default: number } | undefined;
+  /** The range is said beside the field (not where the page says it already: the title screen's facts). */
+  rangeHint?: boolean;
   /** Label of the start button. */
   startLabel: string;
   onStart: (seed: number, options: GameOptions) => void;
@@ -29,7 +31,7 @@ function withCe(opts: GameOptions, v: string): GameOptions {
  * The seed (or a random one) and the new-game options of PLAN 1.39b1, with the button that starts
  * the game. Shared by the title screen (PLAN 1.43) and the settings panel.
  */
-export function NewGameForm({ seed, options, nationsRange, startLabel, onStart }: NewGameFormProps) {
+export function NewGameForm({ seed, options, nationsRange, rangeHint = true, startLabel, onStart }: NewGameFormProps) {
   const [next, setNext] = useState(String(seed));
   const [count, setCount] = useState(String(options.nations ?? nationsRange?.default ?? ''));
   const [opts, setOpts] = useState<GameOptions>(options);
@@ -72,9 +74,11 @@ export function NewGameForm({ seed, options, nationsRange, startLabel, onStart }
             aria-invalid={!countValid}
             onInput={(e) => setCount((e.currentTarget as HTMLInputElement).value)}
           />
-          <span class="form-hint" data-testid="settings-nations-range">
-            {t('settings.nationsRange', { min: nationsRange.min, max: nationsRange.max })}
-          </span>
+          {rangeHint ? (
+            <span class="form-hint" data-testid="settings-nations-range">
+              {t('settings.nationsRange', { min: nationsRange.min, max: nationsRange.max })}
+            </span>
+          ) : null}
         </label>
       ) : null}
       <div class="panel-sub">{t('settings.options')}</div>

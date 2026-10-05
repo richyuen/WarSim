@@ -6078,3 +6078,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   of the second; balance, not looked into (ADR-58). The two lines under PLAN 2.16d.
 - **Next:** PLAN 2.16d, the whole: the e2e from the title screen, the tick of a year, PARITY
   rows 75 and 78, and the full e2e suite.
+
+## 2026-10-05 — PLAN 2.16d: the random world, the whole (ADR-111). PLAN 2.16 is done
+
+- **Built:** `tests/e2e/randomWorld.spec.ts` (3 tests) and two small fixes it asked for: the
+  new-game form of a loaded world starts from that world's number of nations (`setup`, a
+  signal in `game.tsx`; the autosave records it), and the title screen says "2 to 200" once
+  (`rangeHint` of `NewGameForm`).
+- **Seen to fail before the fixes:** the range twice on the title screen; "60" in the form of
+  a world of 24 continued by a URL without `nations`.
+- **Tried:** a scenario file exported from a random world and loaded from the title screen.
+  It worked with no change (hash, names, made flags).
+- **Measured:** `npm run sim -- --scenario random --nations 60 --seed 99 --years 1 --affinity
+  0xFFFF`: mean tick 1.446 ms (budget 1.5), p95 6.35 ms, 12.7 s, 511 formations (1.47 in
+  2.16a).
+- **Run by hand before the gate:** `npx playwright test randomWorld title` (10): green.
+- **Pictures looked at** (`docs/evidence/2.16/`, six): 40 nations in colours that differ,
+  names along them, counters with made flags, the ranking with names; at 6 and 24 px a flag
+  at the capital of North Kazakhstan beside its city's name; the title screen with one
+  "2 to 200"; the world of 24 from its file with "Lyonesse" in a war banner.
+- **Gotchas:** a city's position in an inspection is its true one, and on a coast its cell
+  can be sea (Bengkulu): the spec asks for the nation's control in that cell or the eight
+  around it; the exact cell is the unit test's. `view.nationName` gives the name as shown,
+  without the `=` of a literal. The title spec with `EVIDENCE=1` writes the pictures of 1.43
+  again: they were put back, not committed.
+- **Seen, not changed:** the names (the last line under PLAN 2.16d; for PLAN 7.4).
+- **PARITY:** rows 75 and 78 appended; the score did not move (46.3%).
+- **Next:** PLAN 2.16R, the review pass over 2.12 to 2.16 (PROMPT step 9), then 2.17.

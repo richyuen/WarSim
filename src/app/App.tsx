@@ -44,7 +44,8 @@ export function App({
   settings: Settings;
   /** The world's seed: the URL's, or a loaded world's own. */
   seed: ReadonlySignal<number>;
-  options: GameOptions;
+  /** The game's new-game options: the URL's, with the number of nations a loaded world has. */
+  options: ReadonlySignal<GameOptions>;
   nameOf: (id: number) => string | null;
   /** Leaves the game for the title screen (PLAN 1.43). */
   onMenu: () => void;
@@ -90,7 +91,7 @@ export function App({
           uiScales={UI_SCALES}
           unitScales={UNIT_SCALES}
           seed={seed.value}
-          options={options}
+          options={options.value}
           nationsRange={SCENARIO_INFO[scenarioIdOf(base) ?? '1938'].nationsRange}
           onUiScale={(v) => settings.setUiScale(v)}
           onUnitScale={(v) => settings.setUnitScale(v)}

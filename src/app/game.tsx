@@ -1,6 +1,6 @@
 import { effect, signal } from '@preact/signals';
 import { render } from 'preact';
-import type { ScenarioId } from '../shared/protocol';
+import type { Inspection, ScenarioId } from '../shared/protocol';
 import { SCENARIO_INFO } from '../shared/scenarios';
 import { App } from './App';
 import { Autosave } from './autosave';
@@ -86,7 +86,10 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     });
     view.setMapMode(hud.mapMode.value);
   }
-  const autosave = new Autosave(sim, scenarioId, () => ({ seed: seed.value, options }));
+  // What the settings panel's new-game form starts from and the autosave records: the URL's
+  // options, with the number of nations a loaded world has (PLAN 2.16d).
+  const setup = signal(options);
+  const autosave = new Autosave(sim, scenarioId, () => ({ seed: seed.value, options: setup.value }));
   const settings = new Settings(view);
   // F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).
   window.addEventListener('keydown', (e) => {
@@ -103,12 +106,22 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       .catch(() => {})
       .then(() => location.assign(location.pathname));
   };
-  const showWorldSeed = async (): Promise<void> => {
-    seed.value = (await sim.inspect()).seed;
+  // A loaded world has its own seed and its own number of nations. A continued game keeps the
+  // number of its URL (`keep`): that is the number it was started with, and the world's may have
+  // changed since.
+  const showWorld = async (keep: boolean): Promise<Inspection> => {
+    const world = await sim.inspect();
+    seed.value = world.seed;
+    const range = scenario.nationsRange;
+    if (range && !(keep && setup.value.nations !== undefined)) {
+      const living = world.nations.filter((n) => n.living).length;
+      setup.value = { ...setup.value, nations: Math.min(range.max, Math.max(range.min, living)) };
+    }
+    return world;
   };
   if (uiRoot) {
     render(
-      <App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} options={options} nameOf={(id) => view?.nationName(id) ?? null} onMenu={toMenu} onLoaded={() => void showWorldSeed()} />,
+      <App hud={hud} player={player} view={view} base={scenarioId} settings={settings} seed={seed} options={setup} nameOf={(id) => view?.nationName(id) ?? null} onMenu={toMenu} onLoaded={() => void showWorld(false)} />,
       uiRoot,
     );
   }
@@ -133,13 +146,12 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   if (loaded) {
     // The loaded world has its own looping setting, and the map view was built from the URL
     // before it was there: when they differ, the URL is corrected and the game boots again.
-    const world = await sim.inspect();
+    const world = await showWorld(!staged);
     const looping = world.settings.loopingMap && scenario.geometry.wrapX;
     if (looping !== geometry.wrapX) {
       location.replace(withLooping(params, looping));
       return;
     }
-    seed.value = world.seed;
   }
   autosave.start(() => !hud.paused.value);
   // Persisted speed and pause (PLAN 1.8); ?paused=1 forces a paused start (tests).

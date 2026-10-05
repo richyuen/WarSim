@@ -2253,7 +2253,7 @@ quick sweep as a smoke test.
     - *PARITY:* rows 16, 20 and 61, a line each. The score did not move (46.3%).
     - *Not seen to fail:* the new assertions of the ten-year runs. The defects they guard
       were fixed in 2.15b and 2.15c, and each has a unit test that was seen to fail.
-- [ ] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and
+- [x] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and
   nothing else: no other year, no other map, no random world with a number of nations. AoC
   has world scenarios for 1914, 1938, 1956 and today, regional maps, and a random simulation
   as its usual way to play (text; PARITY rows 75 and 78, both partial).
@@ -2304,7 +2304,7 @@ quick sweep as a smoke test.
     - *Pictures looked at* (not kept; 2.16d keeps its own): the preview, the title screen with
       the random world chosen, the world of 24 nations started from it.
     - *The pin did not move.*
-  - [ ] 2.16d The whole: e2e from the title screen (count, names, flags, the same seed the
+  - [x] 2.16d The whole: e2e from the title screen (count, names, flags, the same seed the
     same hash), the tick of a year measured, pictures looked at, PARITY rows 75 and 78.
     Ticks 2.16: the whole e2e suite.
     - Not tried in 2.16a: a scenario file exported from a random world, loaded again (the
@@ -2312,6 +2312,35 @@ quick sweep as a smoke test.
     - From 2.16c (ADR-110): a continue URL without `nations` leaves the settings panel's form
       at 60 whatever the loaded world has; and the title screen says "2 to 200" twice (the
       facts and the hint beside the field).
+    Done 2026-10-05 (ADR-111).
+    - *Tests:* `tests/e2e/randomWorld.spec.ts` (3). From the title screen, 40 nations of seed
+      11: a name each (40 that differ), a capital each on ground it holds, a flag each (the
+      made flag of its id and colour; 40 that differ), its name on the map; the page's hash is
+      Node's at the start and after a month; the same seed again the same hash, seed 12
+      another world. A scenario file of a world of 24, exported after ten days and a rename,
+      loaded from the title screen: the file's hash, its names, its flags.
+    - *Seen to fail:* two. The range stood twice on the title screen; the form of a game
+      continued by a URL without the number read 60 for a world of 24. Both fixed here: the
+      hint beside the field is the settings panel's only, and the form (and the autosave's
+      record) takes the number of living nations of a loaded world.
+    - *Tried, and it worked:* the scenario file. Nothing changed for it.
+    - *Measured* (pinned, seed 99, 60 nations, one year): mean tick 1.446 ms (budget 1.5),
+      p95 6.35 ms, 511 formations.
+    - *Pictures* (`docs/evidence/2.16/`, looked at): the title screen with the random world
+      chosen; the world of 40 at the start, at 6 and at 24 px per cell over its largest
+      nation's capital; the world of 24 from its file.
+    - *PARITY:* rows 75 and 78, a line each; both stay partial.
+    - *Seen, not changed:* a nation called "Central" (the province of its capital), and
+      "Formosa" in South America, "Gao" over half of Africa: the name is the capital's
+      province whatever the nation's size. The name along Chile is cut at the coast
+      ("Formos"). For PLAN 7.4.
+  **PLAN 2.16 done 2026-10-05.** It is the fifth numbered task since the Phase 2 review
+  (2.12 to 2.16): the review pass of PROMPT step 9 is due, and comes before 2.17.
+- [ ] 2.16R Review pass (PROMPT step 9) over PLAN 2.12 to 2.16: refactor debt, dead code,
+  SPEC re-read for drift (the random world, flags and names by scenario, the title screen),
+  missing tests. It belongs to the tasks it follows (ADR-74) and starts the count again.
+  AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
+  gate is green.
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world
