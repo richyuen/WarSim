@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { FromWorker, WarBattle } from '../../src/shared/protocol';
+import type { FromWorker, Inspection, WarBattle } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { cellDist, contactsOf, deployOf, destroyFormation, elementIndex, elementPlace, slotCount } from '../../src/sim/systems/elements';
-import { largestBattle, type WarBattleSite } from '../../src/sim/systems/warBattle';
+import { largestBattle, warsWithBattle, type WarBattleSite } from '../../src/sim/systems/warBattle';
 import type { World } from '../../src/sim/world';
 import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
@@ -55,6 +55,54 @@ describe('the largest battle of a war (PLAN 2.14e)', () => {
     const war = warOf(w, GER, POL);
     expect(largestBattle(w, war)).toBeNull();
     expect(largestBattle(w, 999_999)).toBeNull();
+    expect([...warsWithBattle(w)]).toEqual([]);
+  });
+
+  it('is known for every war before the click: the wars with a battle are those with an answer (PLAN 2.14f5b3)', () => {
+    const { s, w, north, south } = game();
+    addDivision(w, GER, north[0], north[1]);
+    addDivision(w, POL, north[0] + 1, north[1]);
+    // A second war with its two divisions out of contact.
+    addDivision(w, CZS, south[0], south[1]);
+    addDivision(w, POL, south[0] + 4, south[1]);
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    s.command({ kind: 'declareWar', attacker: CZS, defender: POL });
+    s.step(2);
+    const hash = s.hash();
+    const fighting = warOf(w, GER, POL);
+    const quiet = warOf(w, CZS, POL);
+    expect(largestBattle(w, fighting)).not.toBeNull();
+    expect(largestBattle(w, quiet)).toBeNull();
+    expect([...warsWithBattle(w)]).toEqual([fighting]);
+    expect(s.hash()).toBe(hash);
+  });
+
+  it('is known for a war none of whose formations has its nearest enemy in it', () => {
+    // Three wars at one place, German, Czechoslovak and Polish divisions in a row 0.7 of a cell
+    // apart: the German's and the Pole's nearest enemy is the Czechoslovak between them, and they
+    // are in contact with each other (1.4 cells of the 1.5). Put so by hand, no hour run: what is
+    // asked is the answer from the state.
+    const { s, w, north } = game();
+    const g = addDivision(w, GER, north[0], north[1]);
+    const z = addDivision(w, CZS, north[0] + 0.7, north[1]);
+    const p = addDivision(w, POL, north[0] + 1.4, north[1]);
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    s.command({ kind: 'declareWar', attacker: GER, defender: CZS });
+    s.command({ kind: 'declareWar', attacker: CZS, defender: POL });
+    s.step(1);
+    const c = w.formations.cols;
+    [c.x[g], c.x[z], c.x[p]] = [north[0], north[0] + 0.7, north[0] + 1.4];
+    for (const f of [g, z, p]) {
+      c.y[f] = north[1];
+      c.engaged[f] = 1;
+    }
+    w.contacts = null;
+    w.deployed = null;
+    const contacts = contactsOf(w);
+    expect([contacts.get(g), contacts.get(p)]).toEqual([z, z]);
+    const wars = [warOf(w, GER, POL), warOf(w, GER, CZS), warOf(w, CZS, POL)];
+    for (const war of wars) expect(largestBattle(w, war), `war ${war}`).not.toBeNull();
+    expect([...warsWithBattle(w)].sort((a, b) => a - b)).toEqual([...wars].sort((a, b) => a - b));
   });
 
   it('is the one whose smaller side has the most men (ADR-94); the point is between two of its formations that face each other; asking changes nothing', () => {
@@ -170,7 +218,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
     /** Half the view less 50 px, in cells (a cell is 19.57 km). */
     const HALF = { w: (700 - 50) * 20 / 19_570, h: (400 - 50) * 20 / 19_570 };
-    const n = { asked: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0] };
+    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0] };
     const outside: string[] = [];
     let last: WarBattleSite | null = null;
     s.step(24 * 60, (w) => {
@@ -179,9 +227,15 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
       if (w.tick % 6 !== 0) return;
       const idx = elementIndex(w);
       const contacts = contactsOf(w);
+      const fc = w.formations.cols;
+      const known = warsWithBattle(w);
       for (const war of w.wars.list) {
         n.asked++;
         const b = largestBattle(w, war.id);
+        // What the banner shows before the click (PLAN 2.14f5b3) is what the click finds.
+        if (known.has(war.id) === (b !== null)) n.known++;
+        const across = (x: number, y: number): boolean => [0, 1].some((i) => war.sides[i]!.includes(fc.nation[x]!) && war.sides[1 - i]!.includes(fc.nation[y]!));
+        if ([...contacts].some(([f, e]) => across(f, e))) n.byNearest++;
         const ours = war.sides[0].includes(GER) && war.sides[1].includes(POL);
         if (ours) last = b;
         if (!b) continue;
@@ -189,7 +243,6 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         if (ours) n.germanPolish++;
         if (Math.min(b.men[0], b.men[1]) * 10 < Math.max(b.men[0], b.men[1])) n.uneven++;
         const [a, d] = b.formations;
-        const fc = w.formations.cols;
         n.leaders[(fc.nation[a] === war.sides[0][0] ? 1 : 0) + (fc.nation[d] === war.sides[1][0] ? 1 : 0)]!++;
         const rank = (contacts.get(a) === d ? 1 : 0) + (contacts.get(d) === a ? 1 : 0);
         if (rank === 2) n.mutual++;
@@ -220,7 +273,8 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
         `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times; ` +
         `one side under a tenth of the other in ${n.uneven}; ` +
-        `of the two, the war's leaders have neither in ${n.leaders[0]}, one in ${n.leaders[1]}, both in ${n.leaders[2]}`,
+        `of the two, the war's leaders have neither in ${n.leaders[0]}, one in ${n.leaders[1]}, both in ${n.leaders[2]}; ` +
+        `the wars said to have a battle are those with an answer in ${n.known} of ${n.asked} (${n.byNearest} wars found by a formation's nearest enemy)`,
     );
     expect(outside).toEqual([]);
     expect(n.battles).toBeGreaterThan(500);
@@ -231,6 +285,8 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     expect(n.leaders[0]).toBe(0);
     // The front is there on the last day: the banner of this war leads somewhere.
     expect(last).not.toBeNull();
+    // The banner's sign of a battle (ADR-96) and the click agree, every time.
+    expect(n.known).toBe(n.asked);
   });
 });
 
@@ -255,6 +311,35 @@ describe('the worker\'s answer to `warBattle` (PLAN 2.14e)', () => {
       if (b) expect(b).toMatchObject({ war: war.id, tick: 30 });
     }
     expect(server.sim!.hash()).toBe(hash);
+    expect(replies.filter((r) => r.type === 'error')).toEqual([]);
+  });
+
+  it('the war rows of the statistics say which wars have a battle (PLAN 2.14f5b3)', () => {
+    const replies: FromWorker[] = [];
+    const server = new SimServer((msg) => replies.push(msg));
+    server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 99, assets: assets1938(W) } }, 0);
+    server.handle({ type: 'cmd', cmd: { kind: 'declareWar', attacker: GER, defender: POL } }, 0);
+    let reqId = 100;
+    const json = <T>(msg: { type: 'inspect' } | { type: 'warBattle'; war: number }): T => {
+      const id = reqId++;
+      server.handle({ ...msg, reqId: id }, 0);
+      const r = replies.find((m) => m.type === 'reply' && m.reqId === id);
+      if (!r || r.type !== 'reply' || !r.bytes) throw new Error('no reply with bytes');
+      return JSON.parse(new TextDecoder().decode(r.bytes)) as T;
+    };
+    const seen = { rows: 0, battle: 0, none: 0 };
+    for (let i = 0; i < 12; i++) {
+      server.handle({ type: 'step', reqId: reqId++, n: 6 }, 0);
+      for (const row of json<Inspection>({ type: 'inspect' }).wars) {
+        seen.rows++;
+        if (row.battle) seen.battle++;
+        else seen.none++;
+        expect(row.battle, `hour ${6 * (i + 1)}, war ${row.id}`).toBe(json<WarBattle | null>({ type: 'warBattle', war: row.id }) !== null);
+      }
+    }
+    // Both answers occur in the first three days of Germany against Poland.
+    expect(seen.battle).toBeGreaterThan(0);
+    expect(seen.none).toBeGreaterThan(0);
     expect(replies.filter((r) => r.type === 'error')).toEqual([]);
   });
 });

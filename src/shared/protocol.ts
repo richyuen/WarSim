@@ -470,4 +470,9 @@ export interface WarStat {
   defenders: number[];
   score: number;
   startTick: number;
+  /**
+   * Whether the war has a battle now: formations of its two sides in contact (PLAN 2.14f5b3,
+   * ADR-96; `warsWithBattle`). True where `warBattle` has an answer, as of this message's tick.
+   */
+  battle: boolean;
 }

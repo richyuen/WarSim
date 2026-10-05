@@ -21,6 +21,8 @@ const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === 
 const infantry = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
 const GER = nation('GER');
 const POL = nation('POL');
+const BRA = nation('BRA');
+const MEX = nation('MEX');
 const VIEW = { width: 1400, height: 800 };
 
 /** A German cell with a Polish one east of it, where the order of battle has fewest formations near: the point between the two cells' middles. */
@@ -68,6 +70,8 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
   await step(page, [
     { kind: 'setSetting', key: 'aiEnabled', value: false },
     { kind: 'declareWar', attacker: GER, defender: POL },
+    // A war with no battle: its two sides have a sea and a continent between them (PLAN 2.14f5b3).
+    { kind: 'declareWar', attacker: BRA, defender: MEX },
     { kind: 'spawnFormation', nation: GER, x: SITE[0] - 0.5, y: SITE[1], strength: 0, template: infantry },
     { kind: 'spawnFormation', nation: POL, x: SITE[0] + 0.5, y: SITE[1], strength: 0, template: infantry },
   ]);
@@ -84,6 +88,27 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
   const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
   const banner = page.locator(`[data-testid="war-banner"][data-war="${war}"]`);
   await expect(banner).toHaveCount(1, { timeout: 20_000 });
+
+  // PLAN 2.14f5b3 (ADR-96): the banner says whether there is a battle to go to. Brazil against
+  // Mexico has none: its swords are dim, its tooltip says so, and the click selects the leader
+  // and leaves the camera where it is. Germany against Poland has one.
+  const quietWar = await page.evaluate(async ({ a, d }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(a) && w.defenders.includes(d))!, { a: BRA, d: MEX });
+  expect(quietWar.battle).toBe(false);
+  expect(await page.evaluate((id) => window.__warsim!.sim.warBattle(id), quietWar.id)).toBeNull();
+  const quiet = page.locator(`[data-testid="war-banner"][data-war="${quietWar.id}"]`);
+  await expect(quiet).toHaveAttribute('data-battle', '0', { timeout: 20_000 });
+  await expect(banner).toHaveAttribute('data-battle', '1', { timeout: 20_000 });
+  await expect(quiet).toHaveAttribute('title', /No battle now/);
+  await expect(banner).toHaveAttribute('title', /to its largest battle/);
+  const swords = (b: typeof banner): Promise<{ color: string; opacity: string }> => b.locator('.war-swords').evaluate((e) => ({ color: getComputedStyle(e).color, opacity: getComputedStyle(e).opacity }));
+  expect(await swords(banner)).toEqual({ color: 'rgb(233, 196, 106)', opacity: '1' });
+  expect(Number((await swords(quiet)).opacity)).toBeLessThan(0.5);
+  await page.getByTestId('war-banners').screenshot({ path: path.join(out, 'to-battle-banners.png') });
+  await quiet.click();
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(BRA));
+  await settle(page);
+  expect(await page.evaluate(() => ({ ...window.__warsim!.view!.controller.cam }))).toEqual(start.cam);
+
   await banner.click();
 
   // The camera goes to the battle, at a zoom of the elements' tiers; the elements arrive with the next snapshot.
@@ -170,6 +195,19 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
   const banner = page.locator(`[data-testid="war-banner"][data-war="${war}"]`);
   await expect(banner).toHaveCount(1, { timeout: 20_000 });
+  // Every banner shown says what its click would find (PLAN 2.14f5b3): lit with a battle, dim without.
+  await expect.poll(async () => page.evaluate(async () => {
+    const wrong: string[] = [];
+    let lit = 0;
+    for (const b of document.querySelectorAll<HTMLElement>('[data-testid="war-banner"]')) {
+      const has = (await window.__warsim!.sim.warBattle(Number(b.dataset['war']))) !== null;
+      if (has) lit++;
+      if ((b.dataset['battle'] === '1') !== has) wrong.push(b.dataset['war']!);
+    }
+    return { wrong, banners: document.querySelectorAll('[data-testid="war-banner"]').length, some: lit > 0 };
+  }), { timeout: 20_000 }).toEqual({ wrong: [], banners: 8, some: true });
+  const lit = await page.locator('[data-testid="war-banner"][data-battle="1"]').count();
+  console.log(`day 60: ${lit} of 8 banners have a battle`);
   await banner.click();
   await page.waitForFunction((m0) => window.__warsim!.view!.metresPerPx < m0 / 10, start.m, { timeout: 20_000 });
   await page.waitForFunction(() => {

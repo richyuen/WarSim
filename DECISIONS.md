@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-96 · 2026-10-05 · accepted — A war's banner shows whether the war has a battle (PLAN 2.14f5b3)
+
+- **Context:** ADR-91, under "what it does not give": "nothing on the banner says whether
+  there is a battle to go to". A click on a war with none selected the leader and left the
+  camera where it was, and nothing said why. ADR-91 did not send it with the statistics
+  because it took the flag for "a grouping of every war's formations with each statistics
+  message".
+- **Decision: built.** Each war row of the statistics (`WarStat`, at most once a second, and
+  in `inspect`) has `battle`: whether formations of its two sides are in contact, which is
+  where `largestBattle` has an answer. On the banner the swords are gold with a battle and
+  dim without, the frame is dimmer without, and the tooltip's second line reads "Click: to
+  its largest battle" or "No battle now". The click does what it did.
+- **How it is known** (`warsWithBattle`, `sim/systems/warBattle.ts`), without the grouping:
+  one pass over the hour's contacts (`contactsOf`: each formation in contact and its nearest
+  enemy) marks every war that has the two on opposite sides. A formation's nearest enemy may
+  be of another war, so a war not marked is looked at pair by pair, its formations in contact
+  only, to the first pair within the contact distance. The two steps together are the
+  condition of `largestBattle` (a pair of the two sides, both `engaged`, within
+  `CONTACT_CELLS`), not a measure near it.
+- **Measured** (the kept 60-day test, seed 99, every six hours, every war): the wars marked
+  are those with an answer in 1,708 of 1,708 askings; the pass over the contacts found all
+  752 with a battle by itself. The second step is seen to be needed in a built case only
+  (three wars at one place: the German's and the Pole's nearest enemy is the Czechoslovak
+  between them). Cost on day 60 (11 wars, 909 formations, 96 in contact): 0.019 ms with the
+  hour's contacts kept, 0.076 ms when they are worked out again (after a command).
+- **Reads only:** no state and no hash changes; the pin did not move.
+- **What it does not give.** The flag is as old as the statistics message, a second at top
+  speed; the click asks anew, so for that second a lit banner may lead nowhere and a dim one
+  to a battle. It says *a* battle, not the leaders' (ADR-95: a war whose leaders are not in
+  contact leads to allies). The sign is a 10 px glyph and a frame: seen at a look in a row of
+  banners, not from across the room. The wars past the eighth have no banner and no sign.
+  No count of battles, and no way to a war's second battle.
+
 ### ADR-95 · 2026-10-05 · accepted — A war's banner leads to a battle of the two leaders it names, when there is one (PLAN 2.14f5b2)
 
 - **Context:** the banner of a war names its two leaders ("Germany +5 against Poland +9",

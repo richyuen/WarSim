@@ -350,6 +350,14 @@ body {
 .war-swords {
   color: #e9c46a;
 }
+/* A war with no battle now (PLAN 2.14f5b3): the click has nowhere to go. */
+.war-quiet {
+  border-color: rgba(231, 111, 81, 0.28);
+}
+.war-quiet .war-swords {
+  color: #f1e6d2;
+  opacity: 0.3;
+}
 .war-score {
   height: 3px;
   background: rgba(255, 255, 255, 0.2);

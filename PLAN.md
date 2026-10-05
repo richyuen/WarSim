@@ -2003,11 +2003,26 @@ quick sweep as a smoke test.
           the second of `toBattle1938`: a German and a Polish formation. The pin did not
           move. *Not done:* a war whose leaders never meet leads to allies and does not say
           so; the leader changing during a war has no test.
-        - [ ] 2.14f5b3 Whether a banner shows that its war has a battle (ADR-91: not sent
+        - [x] 2.14f5b3 Whether a banner shows that its war has a battle (ADR-91: not sent
           with the statistics; `contactsOf` is kept for the hour, so one pass over it may
           do). *Measured 2026-10-05:* one pass over `contactsOf` (a formation and its
           nearest enemy on the two sides of the war) agreed with "`largestBattle` is not
           null" in all 1,708 and 1,796 askings. Built or "not now, because".
+          Done 2026-10-05 (ADR-96): built. *What:* each war row of the statistics has
+          `battle` (`warsWithBattle`: the pass over the contacts, and for a war it does not
+          mark, its formations in contact pair by pair, so that it is the condition of
+          `largestBattle` and not a measure near it). On the banner: gold swords with a
+          battle, dim swords and a dimmer frame without; the tooltip says "No battle now".
+          *Tests:* unit, three new in `warBattle.test.ts` (two wars, one with a battle; a war
+          none of whose formations has its nearest enemy in it; the worker's war rows against
+          `warBattle` over three days of 1938), and the 60-day test asks that the wars marked
+          are those with an answer (1,708 of 1,708); each seen to fail with the code broken
+          (the flag false, the second step off, nothing marked). e2e, `toBattle1938`: Brazil
+          against Mexico is dim, says so, and its click leaves the camera; on day 60 every
+          banner shown says what its click finds (3 of 8 lit). Pictures looked at
+          (`to-battle-banners.png`, `to-battle.png`, `to-battle-front.png`). The pin did not
+          move. *Not done:* the flag is a second old at top speed; it does not say whose
+          battle; wars past the eighth have no sign.
         - [ ] 2.14f5b4 Whether the jump becomes a flight (the camera has an eased zoom and
           no eased pan, ADR-91). Built or "not now, because".
       - [ ] 2.14f5c How far a block stands from its own formation. From 2.14f4: the longest

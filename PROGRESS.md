@@ -5637,3 +5637,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   give "one" on seed 7; the tooltip; `battleView` and `tags` not run (nothing they draw
   changed).
 - **Next:** PLAN 2.14f5b3, whether a banner shows that its war has a battle.
+
+## 2026-10-05 — PLAN 2.14f5b3: a war's banner shows whether the war has a battle
+
+- **Decided and built (ADR-96):** each war row of the statistics has `battle`; the banner's
+  swords are gold with a battle and dim without, its frame dimmer, and the tooltip says "No
+  battle now" in place of "Click: to its largest battle". The click does what it did.
+- **How:** `warsWithBattle` in `warBattle.ts`. One pass over the hour's contacts; a war it
+  does not mark is looked at pair by pair, formations in contact only. ADR-91's reason not
+  to (a grouping of every war's formations each second) does not hold: no grouping is needed.
+- **Why two steps:** the pass alone is "a formation whose nearest enemy is across this war",
+  which is not what `largestBattle` asks. On the front it found all 752 battles of 1,708
+  askings by itself; a built case (three wars at one place) needs the second step.
+- **Cost** (day 60 of seed 99: 11 wars, 909 formations, 96 in contact; a scratch test, not
+  kept): 0.019 ms a call with the hour's contacts, 0.076 ms without. Once a second at most.
+- **Tests:** unit, three new in `warBattle.test.ts` and an assertion in the 60-day one; seen
+  to fail with the flag always false (1), the second step off (1) and nothing marked (4).
+  684 unit tests. e2e, `toBattle1938`: the first test has a second war, Brazil against
+  Mexico (dim, "No battle now", the click selects Brazil and the camera stays); the second
+  asks of every banner on day 60 that its sign is what `warBattle` answers (3 of 8 lit).
+- **Pictures looked at:** `to-battle-banners.png` (new: three dim, Germany against Poland
+  lit), `to-battle.png` and `to-battle-front.png` (shot again: the banners differ, the map
+  does not). The banners' size is as before (they are obstacles to tags).
+- **Found on the way:** the test of the worker's `warBattle` on the toy world asks about
+  "every war of the toy world", and the toy world of seed 3 has none in 30 hours, nor a
+  battle in 80 days: that loop asserts nothing. Left as it is; the new test uses 1938.
+- **A gotcha:** vitest here does not print a test's `console.log`; `--silent=false` does.
+- **The pin:** not moved (a read). **Run by hand:** `toBattle` (2): green.
+- **Not done:** the flag is a second old at top speed and the click asks anew; it says a
+  battle, not the leaders'; wars past the eighth have no banner; no other locale to add the
+  string to; `battleView` and `tags` not run (nothing on the map changed).
+- **Next:** PLAN 2.14f5b4, whether the jump becomes a flight.

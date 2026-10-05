@@ -19,7 +19,7 @@ import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
-import { largestBattle } from '../sim/systems/warBattle';
+import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import {
   FormationFlag,
   MAX_SNAPSHOT_ELEMENTS,
@@ -621,8 +621,9 @@ export class SimServer {
     const puppets = new Map<number, number[]>();
     const enemies = new Map<number, Set<number>>();
     const wars: WarStat[] = [];
+    const fighting = warsWithBattle(world);
     for (const war of world.wars.list) {
-      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick });
+      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick, battle: fighting.has(war.id) });
       for (const [a, b] of [[war.sides[0], war.sides[1]], [war.sides[1], war.sides[0]]] as const) {
         for (const x of a) {
           const set = enemies.get(x) ?? new Set<number>();

@@ -106,3 +106,48 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
   else if (dx < -w / 2) dx += w;
   return { war: warId, x: (((pa[0] + dx / 2) % w) + w) % w, y: (pa[1] + pb[1]) / 2, formations: [a, b], count, men: strength };
 }
+
+/**
+ * The wars that have a battle now: those `largestBattle` answers for (PLAN 2.14f5b3, ADR-96).
+ * What the banner of a war shows before the click. One pass over the hour's contacts finds
+ * the wars with a formation whose nearest enemy is on the other side; a war not found so is
+ * looked at pair by pair, its formations in contact only, to the first pair within
+ * CONTACT_CELLS (a formation's nearest enemy may be of another war). Reads only (`contactsOf`
+ * fills its cache).
+ */
+export function warsWithBattle(world: World): Set<number> {
+  const out = new Set<number>();
+  const wars = world.wars.list;
+  if (wars.length === 0) return out;
+  const c = world.formations.cols;
+  // Per nation, the wars it is in and on which side.
+  const warsOf = new Map<number, [number, number][]>();
+  wars.forEach((war, i) => {
+    for (const s of [0, 1] as const) {
+      for (const n of war.sides[s]) {
+        const list = warsOf.get(n);
+        if (list) list.push([i, s]);
+        else warsOf.set(n, [[i, s]]);
+      }
+    }
+  });
+  for (const [f, enemy] of contactsOf(world)) {
+    const theirs = warsOf.get(c.nation[enemy]!);
+    if (!theirs) continue;
+    for (const [i, s] of warsOf.get(c.nation[f]!) ?? []) if (theirs.some(([j, t]) => j === i && t !== s)) out.add(wars[i]!.id);
+  }
+  if (out.size === wars.length) return out;
+  const engaged = new Map<number, number[]>();
+  world.formations.forEach((id) => {
+    if (c.engaged[id] !== 1) return;
+    const list = engaged.get(c.nation[id]!);
+    if (list) list.push(id);
+    else engaged.set(c.nation[id]!, [id]);
+  });
+  for (const war of wars) {
+    if (out.has(war.id)) continue;
+    const [attackers, defenders] = war.sides.map((side) => side.flatMap((n) => engaged.get(n) ?? []));
+    if (attackers!.some((a) => defenders!.some((b) => cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= CONTACT_CELLS))) out.add(war.id);
+  }
+  return out;
+}
