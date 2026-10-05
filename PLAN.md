@@ -1231,10 +1231,13 @@ quick sweep as a smoke test.
       on day 91, seeds 3 and 7 Japanese ones at Dalian. It failed on seed 1 before the fix.
     - **The pin did not move** (the AT expected it to): 4aafc3eb, for the reason above. After
       five years 9e83b0a7 → 49389306. The tick, pinned: 1.199 ms.
-  - [ ] 2.11n The smoke run once more, on the sim as the review leaves it (after 2.11i, j
+  - [x] 2.11n The smoke run once more, on the sim as the review leaves it (after 2.11i, j
     and k). The first (2.11a) was of a world in which 90 formations a year walked round the
     map. One `npm run sweep:quick`; the five limits in PROGRESS beside the first run's.
     AT: as 2.11a. No constant is tuned for it.
+    Done 2026-10-05, on `0819b6d`: seeds 1 to 10, 20 years, 4.9 minutes, every run finished.
+    The five limits hold on all ten seeds, by about the margins of the first run. Numbers in
+    PROGRESS. Not a verdict on the balance (ADR-58).
   - [ ] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
     formation that has a march, and keeps it where it stands while it is `engaged`
     (`movement.ts`: "in contact: holds and fights"). The view plays the walk for `moving`

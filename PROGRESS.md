@@ -5078,3 +5078,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **This was the sim's last fix of the review.** Next: the smoke sweep once more (PLAN
   2.11n), then what is drawn (2.11e, l, m, f, g), the pictures and PARITY (h), the critic.
 - **Tests:** 1 new unit test (639), 1 new test in the sweep stage (11).
+
+## 2026-10-05 — PLAN 2.11n: the smoke sweep once more, on the corrected sim: the five limits hold
+
+- **One `npm run sweep:quick`** on `0819b6d` (after PLAN 2.11i, j and k): seeds 1 to 10, 20
+  years, ten processes, 4.9 minutes. Every run finished. Nothing is tuned for it (ADR-58).
+- **The five limits, every seed, beside the first run's** (2.11a, on the world in which
+  formations walked round the map):
+
+  | Limit | This run | The first run | The limit |
+  |---|---|---|---|
+  | Land that changed controller in the last 5 years | 7.7 to 16.5% | 9.1 to 14.3% | at least 1.0% |
+  | The largest nation's land at the end | 13.9 to 16.8% | 14.0 to 16.5% | under 35% |
+  | The largest nation's income at the end | 28.1 to 30.0% | 28.5 to 29.5% | under 40% |
+  | Nations alive, least to most | 96 to 139 | 97 to 126 | passes on every seed |
+  | Years with a war | 100% | 100% | passes on every seed |
+
+- **Reported, not judged at 20 years:** a riser on 7 of 10 seeds (6 before), a faller on 10
+  of 10.
+- **For Phase 7, not for now (balance):** within 20 years China's realm is gone on seed 10
+  (Japan at 2.8 times its land), Italy's on seed 8, Belgium's on four seeds; the British
+  realm keeps a quarter to a third on four.
+- **What the two runs say together:** the limits did not see the defect of PLAN 2.11i, and do
+  not move much without it. They are a smoke test, as ADR-58 has it.
