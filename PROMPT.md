@@ -194,8 +194,12 @@ added without code changes.
    `npm run parity` and update PARITY.md rows you touched.
 8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move
    on.
-9. Every ~5 iterations do a review pass: refactor debt, delete dead code,
-   re-read SPEC.md for drift, add missing tests.
+9. Every ~5 numbered PLAN tasks (2.7, 2.8, 2.9, ...) do a review pass:
+   refactor debt, delete dead code, re-read SPEC.md for drift, add missing
+   tests.
+   Counted by numbered tasks, not by the parts a task is split into
+   (clarified 2026-10-04, ADR-74, the user's decision): 2.8a, 2.8b and
+   2.8c1 are one task, counted once.
 
 # KEEPING ITERATIONS SHORT
 

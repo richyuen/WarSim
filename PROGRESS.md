@@ -4746,3 +4746,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   slow half hour of the watch list.
 - **Tests:** 3 new e2e. 622 unit tests in 81 files, 108 e2e.
 - **Next:** PLAN 2.9 (the coast at T2 and T3; no element on water).
+
+## 2026-10-04 — The review pass is counted by numbered tasks (the user's decision)
+
+- **The user, when a pass was proposed after 2.8c2:** the five iterations of step 9 are
+  numbered tasks (2.7, 2.8, …), not the parts a task is split into. PROMPT.md step 9 and
+  ADR-74 say so now.
+- **So no pass is due:** one numbered task (2.8) is done since the last. The entry before this
+  one had "a review pass is due" in its first draft; it went out before the commit.
+- **Two readings of mine, told to the user and not answered yet** (ADR-74): follow-up tasks of
+  a review belong to the task they follow up; a phase review (next: PLAN 2.11) is a pass and
+  starts the count again.
+- **The gate of 2.8c2 took three runs.** The first failed by the task's own fault (in its
+  entry). The second lost `markers1938` to a network error at page load,
+  `net::ERR_NO_BUFFER_SPACE`, after many runs back to back; in BLOCKERS, with what is guessed
+  and what is not. The third was green: 108 e2e in 6.9 minutes (5.5 before PLAN 2.8: twelve
+  tests more, and the ground to draw at T2 and T3).
+- **Next:** PLAN 2.9 (the coast from the fine mask at T2 and T3; no element on water).

@@ -689,6 +689,22 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     test, on the same input until it rests, on random inputs. The spec of one tick does not
     see a cycle.
 
+- **Addendum 2026-10-04: the review pass is counted by numbered tasks (the user's decision).**
+  - *What the user said,* when a pass was proposed after PLAN 2.8c2: "Let's clarify the
+    5-iteration rule for review pass to proper numbered iterations (e.g., 2.7, etc.) instead of
+    all these subiterations 2.8a, 2.8b, 2.8c1, etc." PROMPT.md's step 9 says so now.
+  - *What it had been:* every part of a split task had counted as an iteration. From the
+    review after PLAN 2.7 to this day that made four passes inside one numbered task and a
+    fifth proposed one task later; each brought an independent read.
+  - *What follows now:* since the last pass one numbered task is done (2.8). No pass is due.
+  - *Two readings of mine, told to the user and not yet answered; kept to until the user says
+    otherwise:*
+    - A task that comes out of a review belongs to the task it follows up (2.7f to 2.7z were
+      all of 2.7).
+    - A phase review is a review pass and starts the count again. The next is PLAN 2.11.
+  - *The independent read* still comes with a pass, its width chosen for each (the addendum
+    below).
+
 - **Addendum 2026-10-04, the fourth read (review pass after PLAN 2.7v–u), narrowed by the user.**
   - *The user's decision:* asked why another pass came before PLAN 2.8, the user was given three
     ways (the read as before; no read until the phase review; a read of the two changes with

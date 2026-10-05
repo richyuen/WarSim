@@ -142,6 +142,15 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   - **If it comes back:** look while it runs (`Get-Process` by CPU over a few seconds; the
     timeline of ticks, snapshots and frames by half seconds, as above), before running it
     again.
+- e2e, once (2026-10-04, the second gate run of PLAN 2.8c2): `markers1938` waited 60 s for the
+  page and it did not come. Its trace has one console error: "Failed to load resource:
+  net::ERR_NO_BUFFER_SPACE". The page loaded nothing of the game.
+  - Two full gate runs and some thirty runs of single specs had gone before it within the
+    hour, each page a dozen requests to the preview server; 153 sockets were in TIME_WAIT just
+    before the third run, which was green. That many runs back to back is my guess at the
+    cause; not shown.
+  - If it comes back in a single gate run on a rested machine, look at the server's and the
+    browser's connections (keep-alive of `vite preview`) before running again.
 - e2e flake (2026-10-03): `speed.spec.ts` once did not find the speed label within 15 s on `/`
   in a full e2e run; it passed alone and in the next full run (61 passed). No source change was
   involved. If it recurs, look at the page boot under 4 parallel workers.
