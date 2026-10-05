@@ -10,6 +10,8 @@ export interface SettingsPanelProps {
   seed: number;
   /** This game's options (the new-game form starts from them). */
   options: GameOptions;
+  /** This scenario lets the player say how many nations a new game has (the random world). */
+  nationsRange?: { min: number; max: number; default: number } | undefined;
   onUiScale: (v: number) => void;
   onUnitScale: (v: number) => void;
   onScreenshot: () => void;
@@ -25,7 +27,7 @@ export interface SettingsPanelProps {
  * screen, and the seed with a new game (or a random seed). Speed and pause persist on their own
  * (bottom bar).
  */
-export function SettingsPanel({ uiScale, unitScale, uiScales, unitScales, seed, options, onUiScale, onUnitScale, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
+export function SettingsPanel({ uiScale, unitScale, uiScales, unitScales, seed, options, nationsRange, onUiScale, onUnitScale, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
   const pct = (v: number): string => `${Math.round(v * 100)}%`;
   return (
     <aside class="history-panel settings-panel" data-testid="settings-panel">
@@ -69,7 +71,7 @@ export function SettingsPanel({ uiScale, unitScale, uiScales, unitScales, seed, 
           {t('settings.currentSeed', { seed })}
         </span>
       </div>
-      <NewGameForm seed={seed} options={options} startLabel={t('settings.newGame')} onStart={onNewGame} />
+      <NewGameForm seed={seed} options={options} nationsRange={nationsRange} startLabel={t('settings.newGame')} onStart={onNewGame} />
     </aside>
   );
 }

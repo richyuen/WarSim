@@ -1,6 +1,7 @@
 /**
  * New-game options in the URL (PLAN 1.39b1): ?looping=0, ?aggr=random, ?traits=random,
- * ?gold=random|equal, ?ce=<mode>. Absent = the scenario's own setting. And the URLs that load a
+ * ?gold=random|equal, ?ce=<mode>, ?nations=N (the random world, PLAN 2.16c). Absent = the
+ * scenario's own setting. And the URLs that load a
  * game (PLAN 1.43b): ?continue=1 (the autosave), ?load=scenario (the staged scenario file).
  */
 import type { GameOptions } from '../shared/gameOptions';
@@ -16,6 +17,9 @@ export function optionsFromUrl(params: URLSearchParams): GameOptions {
   if (gold === 'random' || gold === 'equal') o.gold = gold;
   const ce = params.get('ce') as (typeof CE)[number] | null;
   if (ce && CE.includes(ce)) o.ceMode = ce;
+  // A whole number; the sim brings it into the range the random world allows.
+  const nations = params.get('nations');
+  if (nations !== null && /^\d{1,4}$/.test(nations)) o.nations = Number(nations);
   return o;
 }
 
@@ -27,6 +31,7 @@ export function newGameUrl(base: string, seed: number, o: GameOptions): string {
   if (o.traits === 'random') q.set('traits', 'random');
   if (o.gold && o.gold !== 'scenario') q.set('gold', o.gold);
   if (o.ceMode) q.set('ce', o.ceMode);
+  if (o.nations !== undefined) q.set('nations', String(o.nations));
   return `?${q.toString()}`;
 }
 

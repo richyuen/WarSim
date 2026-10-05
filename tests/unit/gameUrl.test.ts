@@ -18,6 +18,16 @@ describe('game URLs (PLAN 1.39b1, 1.43b)', () => {
     expect(query(newGameUrl('1938', 7, {}))).toEqual({ scenario: '1938', seed: '7', paused: '1' });
   });
 
+  // PLAN 2.16c: the random world's number of nations.
+  it('a random world carries its number of nations, in a new game and in Continue', () => {
+    const url = newGameUrl('random', 7, { nations: 24 });
+    expect(query(url)).toEqual({ scenario: 'random', seed: '7', paused: '1', nations: '24' });
+    expect(optionsFromUrl(new URLSearchParams(url.slice(1)))).toEqual({ nations: 24 });
+    expect(query(continueUrl({ scenario: 'random', seed: 7, options: { nations: 24, gold: 'equal' } }))).toEqual({ scenario: 'random', seed: '7', paused: '1', gold: 'equal', nations: '24', continue: '1' });
+    // Not a whole number: no option, and the world has the number it has when none is asked for.
+    for (const bad of ['', 'many', '12.5', '-3', '1e2', '99999999999']) expect(optionsFromUrl(new URLSearchParams({ scenario: 'random', nations: bad })), bad).toEqual({});
+  });
+
   it('Continue is the URL of the game that wrote the autosave, with continue=1', () => {
     expect(query(continueUrl({ scenario: '1938', seed: 77, options: { loopingMap: false, ceMode: 'locked' } }))).toEqual({
       scenario: '1938',

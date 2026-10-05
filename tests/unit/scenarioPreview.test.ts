@@ -8,7 +8,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { decodePng, encodePng } from '../../tools/data/png';
-import { politicalPreviewRgb, preview1938, previewPath, PREVIEW_H, PREVIEW_W, SEA_RGB, UNOWNED_RGB } from '../../tools/data/preview';
+import { politicalPreviewRgb, preview1938, previewPath, previewRandom, PREVIEW_H, PREVIEW_RANDOM_SEED, PREVIEW_W, SEA_RGB, UNOWNED_RGB } from '../../tools/data/preview';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.43c: the title screen's map of a scenario's start is a committed image made by
@@ -48,6 +48,43 @@ describe('scenario previews (PLAN 1.43c)', () => {
     for (const [tag, lon, lat] of places) expect(at(lon, lat), tag).toEqual(rgbOf(NATIONS_1938.find((n) => n.tag === tag)!.color));
     expect(at(-40, 30), 'mid-Atlantic').toEqual([...SEA_RGB]);
     expect(at(-150, -20), 'South Pacific').toEqual([...SEA_RGB]);
+  });
+
+  // PLAN 2.16c: the random world's picture is one random world, the one the game builds for the
+  // preview's seed with the number of nations of a game that asks for none.
+  it('the committed preview of the random world is the world its seed gives in the game', () => {
+    const png = decodePng(readFileSync(path.join(root, previewPath('random'))));
+    expect([png.w, png.h]).toEqual([PREVIEW_W, PREVIEW_H]);
+    const rgb = previewRandom(assets1938(SIZE_1938.w));
+    // If this fails after a change of the random world's rules or the map assets: npm run data -- --previews
+    expect(Buffer.from(png.rgb).equals(Buffer.from(rgb)), 'preview.png is out of date').toBe(true);
+
+    // The game's world of that seed: at the capital of every nation whose capital the picture
+    // has as a cell of its own land, well inside, the picture has the nation's colour.
+    const sim = new Sim({ scenario: 'random', seed: PREVIEW_RANDOM_SEED, assets: assets1938(SIZE_1938.w) });
+    const { cells, nations } = sim.world;
+    expect(nations.count).toBe(SCENARIO_INFO.random.nations);
+    const step = SIZE_1938.w / PREVIEW_W;
+    const inside = (x: number, y: number, id: number): boolean => {
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (cells.controller[(y + dy) * step * SIZE_1938.w + (x + dx) * step] !== id) return false;
+      return true;
+    };
+    const colours = new Set<number>();
+    let seen = 0;
+    for (let id = 1; id <= nations.count; id++) {
+      const colour = nations.cols.color[id]! & 0xffffff;
+      colours.add(colour);
+      const x = Math.floor(nations.cols.capitalX[id]! / step);
+      const y = Math.floor(nations.cols.capitalY[id]! / step);
+      if (y < 2 || y >= PREVIEW_H - 2 || x < 2 || x >= PREVIEW_W - 2 || !inside(x, y, id)) continue;
+      seen++;
+      const i = (y * PREVIEW_W + x) * 3;
+      expect((rgb[i]! << 16) | (rgb[i + 1]! << 8) | rgb[i + 2]!, `nation ${id}`).toBe(colour);
+    }
+    expect(seen).toBeGreaterThan(nations.count / 2);
+    expect(colours.size).toBe(nations.count);
+    // Another seed, another picture.
+    expect(Buffer.from(previewRandom(assets1938(SIZE_1938.w), PREVIEW_RANDOM_SEED + 1)).equals(Buffer.from(rgb))).toBe(false);
   });
 
   it('draws nations in their colours, a border where the holder changes and a darker coast', () => {

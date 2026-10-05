@@ -18,7 +18,7 @@ import { dayOfIso } from '../shared/calendar';
 import { addIslet } from '../shared/landMask';
 import { provinceLabel } from '../shared/nationNames';
 import type { ScenarioAssets } from '../shared/protocol';
-import { RANDOM_NATIONS_DEFAULT } from '../shared/scenarios';
+import { RANDOM_NATIONS } from '../shared/scenarios';
 import { Terrain } from '../shared/terrain';
 import { hash32, hashToUnit } from './core/hash';
 import { CITY_SNAP_CELLS, placeCities, type CityDef } from './data/cities';
@@ -34,10 +34,7 @@ import { equipFormation } from './systems/elements';
 import { initProvinceCores } from './systems/revolts';
 import { navOf, World } from './world';
 
-/** How many nations a random world may start with, and how many it has when none is asked for. */
-export const RANDOM_NATIONS = { min: 2, max: 200, default: RANDOM_NATIONS_DEFAULT } as const;
-
-/** The count a random world is built with for the count asked for (none, a fraction, out of range). */
+/** The count a random world is built with (`RANDOM_NATIONS`, shared/scenarios) for the count asked for (none, a fraction, out of range). */
 export function randomNationCount(asked: number | undefined): number {
   if (asked === undefined || !Number.isFinite(asked)) return RANDOM_NATIONS.default;
   return Math.max(RANDOM_NATIONS.min, Math.min(RANDOM_NATIONS.max, Math.round(asked)));

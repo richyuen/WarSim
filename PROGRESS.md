@@ -6057,3 +6057,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   idle machine, a figure of 2026-10-04); the machine read 1% load between runs.
 - **Gotcha:** never pipe the gate into `tail` in front of `&& git commit`: write it to a
   file and read `$?`.
+
+## 2026-10-05 — PLAN 2.16c: the random world on the title screen (ADR-110)
+
+- **Built:** the random world is second on the list (`hidden` dropped). Its picture
+  (`public/data/scenarios/random/preview.png`, `previewRandom` in `tools/data/preview.ts`) is
+  the world of seed 7 with 60 nations, taken from the game's own builder. `NewGameForm` has a
+  field for the number of nations where the scenario has a range
+  (`ScenarioInfo.nationsRange`); `?nations=N` in `gameUrl.ts`; the settings panel of a random
+  game has the field too. `RANDOM_NATIONS` moved to `shared/scenarios.ts`.
+- **Tests:** `gameUrl.test.ts` (+1, seen to fail), `scenarioPreview.test.ts` (+1; two seen to
+  fail before the picture was there), `title.spec.ts` (+1).
+- **Run by hand:** `npx playwright test title` (7): green. The first run of the new test failed
+  on its own locator (it counted the scenario-file input among the list's buttons).
+- **Looked at:** the preview (60 nations in colours that differ, borders along provinces); the
+  title screen with the random world chosen (the field under the seed, Start on the screen); a
+  world of 24 nations started from it (names on the map and in the ranking, made flags).
+- **The pin did not move** (324bc358).
+- **Seen, not changed:** in the world of 24 the largest nation (Vologda) holds twice the land
+  of the second; balance, not looked into (ADR-58). The two lines under PLAN 2.16d.
+- **Next:** PLAN 2.16d, the whole: the e2e from the title screen, the tick of a year, PARITY
+  rows 75 and 78, and the full e2e suite.

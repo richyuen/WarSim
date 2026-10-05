@@ -18,6 +18,7 @@ import { SettingsPanel } from '../ui/SettingsPanel';
 import { screenshotLabel } from './screenshotLabel';
 import { newGameUrl } from './gameUrl';
 import type { GameOptions } from '../shared/gameOptions';
+import { SCENARIO_INFO, scenarioIdOf } from '../shared/scenarios';
 import { downloadBytes, exportScenarioFile, importScenarioFile, scenarioFileName } from './scenarioFiles';
 import { useEffect, useState } from 'preact/hooks';
 import type { ReadonlySignal } from '@preact/signals';
@@ -90,6 +91,7 @@ export function App({
           unitScales={UNIT_SCALES}
           seed={seed.value}
           options={options}
+          nationsRange={SCENARIO_INFO[scenarioIdOf(base) ?? '1938'].nationsRange}
           onUiScale={(v) => settings.setUiScale(v)}
           onUnitScale={(v) => settings.setUnitScale(v)}
           onScreenshot={() => {

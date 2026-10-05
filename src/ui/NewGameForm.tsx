@@ -7,6 +7,8 @@ export interface NewGameFormProps {
   seed: number;
   /** The options the form starts from. */
   options: GameOptions;
+  /** The scenario lets the player say how many nations there are (the random world, PLAN 2.16c). */
+  nationsRange?: { min: number; max: number; default: number } | undefined;
   /** Label of the start button. */
   startLabel: string;
   onStart: (seed: number, options: GameOptions) => void;
@@ -27,8 +29,9 @@ function withCe(opts: GameOptions, v: string): GameOptions {
  * The seed (or a random one) and the new-game options of PLAN 1.39b1, with the button that starts
  * the game. Shared by the title screen (PLAN 1.43) and the settings panel.
  */
-export function NewGameForm({ seed, options, startLabel, onStart }: NewGameFormProps) {
+export function NewGameForm({ seed, options, nationsRange, startLabel, onStart }: NewGameFormProps) {
   const [next, setNext] = useState(String(seed));
+  const [count, setCount] = useState(String(options.nations ?? nationsRange?.default ?? ''));
   const [opts, setOpts] = useState<GameOptions>(options);
   const sel = (testid: string, value: string, values: readonly string[], key: (v: string) => MessageKey, set: (v: string) => void) => (
     <select data-testid={testid} value={value} onChange={(e) => set((e.currentTarget as HTMLSelectElement).value)}>
@@ -39,7 +42,13 @@ export function NewGameForm({ seed, options, startLabel, onStart }: NewGameFormP
       ))}
     </select>
   );
-  const valid = /^\d{1,10}$/.test(next.trim()) && Number(next) <= 0xffffffff;
+  const seedValid = /^\d{1,10}$/.test(next.trim()) && Number(next) <= 0xffffffff;
+  const countValid = !nationsRange || (/^\d{1,4}$/.test(count.trim()) && Number(count) >= nationsRange.min && Number(count) <= nationsRange.max);
+  // The number of nations goes with the scenario that asks for it, and with no other.
+  const chosen = (): GameOptions => {
+    const { nations: _old, ...rest } = opts;
+    return nationsRange ? { ...rest, nations: Number(count) } : rest;
+  };
   return (
     <div class="new-game">
       <label class="form-row">
@@ -49,6 +58,25 @@ export function NewGameForm({ seed, options, startLabel, onStart }: NewGameFormP
           {t('settings.randomSeed')}
         </button>
       </label>
+      {nationsRange ? (
+        <label class="form-row">
+          <span class="form-name">{t('settings.nations')}</span>
+          <input
+            data-testid="settings-nations"
+            type="number"
+            inputMode="numeric"
+            min={nationsRange.min}
+            max={nationsRange.max}
+            step={1}
+            value={count}
+            aria-invalid={!countValid}
+            onInput={(e) => setCount((e.currentTarget as HTMLInputElement).value)}
+          />
+          <span class="form-hint" data-testid="settings-nations-range">
+            {t('settings.nationsRange', { min: nationsRange.min, max: nationsRange.max })}
+          </span>
+        </label>
+      ) : null}
       <div class="panel-sub">{t('settings.options')}</div>
       <label class="form-row">
         <span class="form-name">{t('settings.looping')}</span>
@@ -70,7 +98,7 @@ export function NewGameForm({ seed, options, startLabel, onStart }: NewGameFormP
         <span class="form-name">{t('settings.ce')}</span>
         {sel('opt-ce', opts.ceMode ?? 'scenario', ['scenario', 'dynamic', 'progressive', 'static', 'locked', 'random'], (v) => `settings.ce.${v}` as MessageKey, (v) => setOpts(withCe(opts, v)))}
       </label>
-      <button type="button" class="start-btn" data-testid="settings-new-game" disabled={!valid} onClick={() => onStart(Number(next) >>> 0, opts)}>
+      <button type="button" class="start-btn" data-testid="settings-new-game" disabled={!seedValid || !countValid} onClick={() => onStart(Number(next) >>> 0, chosen())}>
         {startLabel}
       </button>
     </div>

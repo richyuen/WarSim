@@ -3,11 +3,12 @@
 // scenario data only, so `npm run data -- --previews` needs none of the pipeline's downloads.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import type { ScenarioId } from '../../src/shared/protocol';
-import { scenarioPreviewPath } from '../../src/shared/scenarios';
+import type { ScenarioAssets, ScenarioId } from '../../src/shared/protocol';
+import { RANDOM_NATIONS, scenarioPreviewPath } from '../../src/shared/scenarios';
 import { isLand } from '../../src/shared/terrain';
 import { buildPoliticalMap } from '../../src/sim/data/politicalMap';
-import { NATIONS_1938, politicalMapInput1938 } from '../../src/sim/scenario1938';
+import { createRandomWorld } from '../../src/sim/randomWorld';
+import { NATIONS_1938, politicalMapInput1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { loadAssets1938 } from '../headless/assets';
 import { decodePng, encodePng } from './png';
 
@@ -53,6 +54,32 @@ export function preview1938(): Uint8Array {
   return politicalPreviewRgb(PREVIEW_W, PREVIEW_H, map.controller, map.terrain, [0, ...NATIONS_1938.map((n) => parseInt(n.color.slice(1), 16))]);
 }
 
+/** The random world the title screen shows: one of them, the one this seed gives (ADR-110). */
+export const PREVIEW_RANDOM_SEED = 7;
+
+/**
+ * A random world's start at the preview size: the world the game builds for `seed` and `nations`
+ * (at the game's size, from `assets`), every second cell of every second row.
+ */
+export function previewRandom(assets: ScenarioAssets, seed = PREVIEW_RANDOM_SEED, nations: number = RANDOM_NATIONS.default): Uint8Array {
+  const world = createRandomWorld(seed, nations, assets);
+  const { w, h } = SIZE_1938;
+  const step = w / PREVIEW_W;
+  if (step !== Math.floor(step) || h / step !== PREVIEW_H) throw new Error(`the preview is not a whole fraction of ${w}×${h}`);
+  const holder = new Uint16Array(PREVIEW_W * PREVIEW_H);
+  const terrain = new Uint8Array(PREVIEW_W * PREVIEW_H);
+  for (let y = 0; y < PREVIEW_H; y++) {
+    for (let x = 0; x < PREVIEW_W; x++) {
+      const from = y * step * w + x * step;
+      holder[y * PREVIEW_W + x] = world.cells.controller[from]!;
+      terrain[y * PREVIEW_W + x] = world.cells.terrain[from]!;
+    }
+  }
+  const colors = [0];
+  for (let id = 1; id <= world.nations.count; id++) colors.push(world.nations.cols.color[id]! & 0xffffff);
+  return politicalPreviewRgb(PREVIEW_W, PREVIEW_H, holder, terrain, colors);
+}
+
 /** Repo-relative path of a scenario's preview (served from `public/`). */
 export const previewPath = (scenario: ScenarioId): string => `public/${scenarioPreviewPath(scenario)}`;
 
@@ -62,7 +89,11 @@ export const previewPath = (scenario: ScenarioId): string => `public/${scenarioP
  */
 export function writePreviews(root: string, check: boolean): string[] {
   const changed: string[] = [];
-  for (const [scenario, rgb] of [['1938', preview1938()]] as const) {
+    const previews: [ScenarioId, Uint8Array][] = [
+    ['1938', preview1938()],
+    ['random', previewRandom(loadAssets1938(SIZE_1938.w))],
+  ];
+  for (const [scenario, rgb] of previews) {
     const rel = previewPath(scenario);
     const file = path.join(root, rel);
     const same = existsSync(file) && Buffer.from(decodePng(readFileSync(file)).rgb).equals(Buffer.from(rgb));

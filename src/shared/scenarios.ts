@@ -12,8 +12,8 @@ import scenario1938 from '../../data/scenarios/1938/scenario.json' with { type: 
 import scenarioRandom from '../../data/scenarios/random/scenario.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 
-/** How many nations the random world starts with when no number is asked for (PLAN 2.16). */
-export const RANDOM_NATIONS_DEFAULT = 60;
+/** How many nations a random world may start with, and how many it has when none is asked for (PLAN 2.16). */
+export const RANDOM_NATIONS = { min: 2, max: 200, default: 60 } as const;
 
 export interface ScenarioGeometry {
   w: number;
@@ -33,6 +33,8 @@ export interface ScenarioInfo {
   mapNameKey: string;
   /** Nations alive at the start. */
   nations: number;
+  /** Where the player says how many nations there are (the random world): the numbers to choose from. */
+  nationsRange?: { min: number; max: number; default: number };
   /** Not offered on the title screen: it opens by its URL only (`?scenario=<id>`). */
   hidden: boolean;
   /**
@@ -89,11 +91,11 @@ export const SCENARIO_INFO: Record<ScenarioId, ScenarioInfo> = {
   toy: info('toy', toyMap, toyScenario, 2),
   '1938': info('1938', earthMap, scenario1938, (nations1938.nations as { alive?: boolean }[]).filter((n) => n.alive !== false).length, nations1938.nations.map((n) => n.tag)),
   // Its nations are made by the seed (src/sim/randomWorld.ts); this is how many when none is asked for.
-  random: info('random', earthMap, scenarioRandom, RANDOM_NATIONS_DEFAULT),
+  random: { ...info('random', earthMap, scenarioRandom, RANDOM_NATIONS.default), nationsRange: RANDOM_NATIONS },
 };
 
 /** The scenarios the title screen offers, in its order (PLAN 1.43). */
-export const LISTED_SCENARIOS: readonly ScenarioId[] = (['1938', 'toy'] as const).filter((id) => !SCENARIO_INFO[id].hidden);
+export const LISTED_SCENARIOS: readonly ScenarioId[] = (['1938', 'random', 'toy'] as const).filter((id) => !SCENARIO_INFO[id].hidden);
 
 /**
  * Where a listed scenario's preview image is served, relative to the page (PLAN 1.43c): the

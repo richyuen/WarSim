@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-110 · 2026-10-05 · accepted — The random world on the title screen: a picture of one such world, and the number of nations in the URL (PLAN 2.16c)
+
+- **Context:** the random world opened by its URL only (ADR-108). The title screen shows a
+  scenario by a committed picture of its start, and a random world has no one start.
+- **Decision:**
+  - *On the list,* second, after the 1938 world (`hidden` dropped from its `scenario.json`).
+  - *The picture* is one random world: seed 7 with 60 nations, the number of a game that asks
+    for none. It is the world the game builds for that seed (built at the game's 2048 × 1024,
+    every second cell of every second row), not a drawing of its own. The description and the
+    picture's alt text say that every seed gives another. A picture drawn in the page for the
+    seed in the field would need the map assets and the world's builder on the title screen,
+    where no world runs (ADR-60): not done.
+  - *The number of nations* is a field of the new-game form, shown where the scenario has a
+    range (`ScenarioInfo.nationsRange`; the range itself moved from the sim to
+    `shared/scenarios.ts`, `RANDOM_NATIONS`). Start is disabled outside 2 to 200. The facts
+    beside the picture read "2 to 200" where another scenario has its count.
+  - *In the URL* as `?nations=N` (a whole number of up to four digits, else no option; the
+    sim brings it into the range, as before). The autosave's record keeps a game's options,
+    so Continue carries it with no change there. The form sends the option only for a
+    scenario with a range: a 1938 URL never has it.
+- **Not done:** a continue URL typed without `nations` loads the saved world as it is, and the
+  settings panel's form then starts from 60, not from the world's count (the seed is corrected
+  from the loaded world, the count is not). A line of PLAN 2.16d.
+- **The pin did not move** (324bc358): no rule of the sim changed.
+
 ### ADR-109 · 2026-10-05 · accepted — A scenario says whether it has a nation table; without one a nation's name and flag are its own (PLAN 2.16b)
 
 - **Context:** `FlagStore` and the worker's `nameOf` read the 1938 table by nation id in every

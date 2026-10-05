@@ -526,6 +526,15 @@ body {
 .form-row input {
   width: 8rem;
 }
+.form-row input[type='number'] {
+  width: 4.5rem;
+}
+.form-row input[aria-invalid='true'] {
+  border-color: #e76f51;
+}
+.form-hint {
+  opacity: 0.7;
+}
 .start-btn {
   width: 100%;
   margin-top: 0.5rem;

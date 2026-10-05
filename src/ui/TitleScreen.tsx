@@ -125,7 +125,7 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
           </h2>
           <div class="title-detail-grid">
             <div>
-              <img class="title-preview" data-testid="title-preview" src={previewUrl(chosen)} width={1024} height={512} alt={t('title.previewAlt', { name: t(info.nameKey as MessageKey) })} />
+              <img class="title-preview" data-testid="title-preview" src={previewUrl(chosen)} width={1024} height={512} alt={t(info.nationsRange ? 'title.previewAltExample' : 'title.previewAlt', { name: t(info.nameKey as MessageKey) })} />
               <p class="title-desc">{t(info.descKey as MessageKey)}</p>
               <div class="form-row">
                 <span class="form-name">{t('title.startDate')}</span>
@@ -139,10 +139,10 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
               </div>
               <div class="form-row">
                 <span class="form-name">{t('title.nations')}</span>
-                <span data-testid="title-nations">{info.nations}</span>
+                <span data-testid="title-nations">{info.nationsRange ? t('settings.nationsRange', { min: info.nationsRange.min, max: info.nationsRange.max }) : info.nations}</span>
               </div>
             </div>
-            <NewGameForm key={chosen} seed={seed} options={{}} startLabel={t('title.start')} onStart={(s, o) => onStart(chosen, s, o)} />
+            <NewGameForm key={chosen} seed={seed} options={{}} nationsRange={info.nationsRange} startLabel={t('title.start')} onStart={(s, o) => onStart(chosen, s, o)} />
           </div>
         </section>
       </div>

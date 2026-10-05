@@ -2294,13 +2294,24 @@ quick sweep as a smoke test.
     - *Looked at in the page* (a scratch script, three pictures not kept): the toy world's
       two flags and the random world's are made flags; 1938 flies its own. No console error.
     - *The pin did not move.* The toy world's hash did (its two names are state).
-  - [ ] 2.16c The title screen: the random world on the list with its picture, a field for
+  - [x] 2.16c The title screen: the random world on the list with its picture, a field for
     the number of nations, `?nations=N` in the URL and in the autosave.
+    Done 2026-10-05 (ADR-110).
+    - *Tests:* `tests/unit/gameUrl.test.ts` (one more; seen to fail), `scenarioPreview.test.ts`
+      (one more; it and "every listed scenario has a preview image" seen to fail before the
+      picture was written), `tests/e2e/title.spec.ts` (one more: the list, the picture, the
+      field, a world of 24 with Node's hash, Continue).
+    - *Pictures looked at* (not kept; 2.16d keeps its own): the preview, the title screen with
+      the random world chosen, the world of 24 nations started from it.
+    - *The pin did not move.*
   - [ ] 2.16d The whole: e2e from the title screen (count, names, flags, the same seed the
     same hash), the tick of a year measured, pictures looked at, PARITY rows 75 and 78.
     Ticks 2.16: the whole e2e suite.
     - Not tried in 2.16a: a scenario file exported from a random world, loaded again (the
       editor is reachable there).
+    - From 2.16c (ADR-110): a continue URL without `nations` leaves the settings panel's form
+      at 60 whatever the loaded world has; and the title screen says "2 to 200" twice (the
+      facts and the hint beside the field).
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world

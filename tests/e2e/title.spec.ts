@@ -320,3 +320,103 @@ test('a game URL that asks for a staged scenario file when none is staged return
   await expect(page.getByTestId('title-file-error')).toHaveText('The scenario file could not be loaded. Choose it again.');
   expect(page.workers()).toHaveLength(0);
 });
+// PLAN 2.16c: the random world is on the list with a picture of one such world and a field for
+// the number of nations; the number is in the game's URL, in its new-game form and in Continue.
+test('the title screen starts a random world with the chosen number of nations, and Continue keeps the number', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  const shots = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.16') : info.outputPath();
+  mkdirSync(shots, { recursive: true });
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/');
+
+  // Second on the list, after the 1938 world; the 1938 world has no field for the number.
+  const items = page.locator('button[data-testid^="title-scenario-"]');
+  await expect(items).toHaveCount(2);
+  await expect(items.nth(1)).toHaveAttribute('data-testid', 'title-scenario-random');
+  await expect(items.nth(1)).toContainText('Random world');
+  await expect(page.getByTestId('settings-nations')).toHaveCount(0);
+  await items.nth(1).click();
+  await expect(page.getByTestId('title-chosen')).toHaveText('Random world');
+  await expect(page.getByTestId('title-nations')).toHaveText('2 to 200');
+  await expect(page.getByTestId('title-map')).toHaveText('Earth · 2048 × 1024');
+
+  // Its picture: one random world, of many colours, with the sea where the sea is.
+  const preview = page.getByTestId('title-preview');
+  await expect(preview).toHaveAttribute('alt', 'Political map of one Random world; every seed gives another');
+  await expect.poll(() => preview.evaluate((img: HTMLImageElement) => (img.complete ? [img.naturalWidth, img.naturalHeight] : null))).toEqual([1024, 512]);
+  const picture = await preview.evaluate((img: HTMLImageElement, sea: number[]) => {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const ctx = c.getContext('2d')!;
+    ctx.drawImage(img, 0, 0);
+    const d = ctx.getImageData(0, 0, c.width, c.height).data;
+    const count = new Map<number, number>();
+    for (let i = 0; i < d.length; i += 4) {
+      const rgb = (d[i]! << 16) | (d[i + 1]! << 8) | d[i + 2]!;
+      count.set(rgb, (count.get(rgb) ?? 0) + 1);
+    }
+    const at = (sea[1]! * c.width + sea[0]!) * 4;
+    // Colours that fill some land (a border and a coast are shades of them, on few cells).
+    return { large: [...count.values()].filter((n) => n >= 60).length, sea: [d[at]!, d[at + 1]!, d[at + 2]!] };
+  }, cellOf(-40, 30, 1024, 512).map(Math.floor));
+  expect(picture.sea).toEqual([0x1d, 0x35, 0x57]);
+  expect(picture.large).toBeGreaterThan(SCENARIO_INFO.random.nations * 0.8);
+
+  // The field: the number of a game that asks for none; Start only for a whole number in the range.
+  const field = page.getByTestId('settings-nations');
+  const start = page.getByTestId('settings-new-game');
+  await expect(field).toHaveValue(String(SCENARIO_INFO.random.nations));
+  await expect(start).toBeEnabled();
+  for (const bad of ['1', '201', '', '12.5']) {
+    await field.fill(bad);
+    await expect(start, `"${bad}"`).toBeDisabled();
+  }
+  await field.fill('24');
+  await expect(start).toBeEnabled();
+  await expect(start).toBeInViewport({ ratio: 1 });
+  await page.getByTestId('settings-seed').fill('7');
+  await page.screenshot({ path: path.join(shots, 'title-random.png') });
+  // The 1938 world again, and back: the number is the random world's, and the form starts anew.
+  await page.getByTestId('title-scenario-1938').click();
+  await expect(field).toHaveCount(0);
+  await page.getByTestId('title-scenario-random').click();
+  await expect(field).toHaveValue(String(SCENARIO_INFO.random.nations));
+  await field.fill('24');
+  await page.getByTestId('settings-seed').fill('7');
+
+  await Promise.all([page.waitForURL(/scenario=random/), start.click()]);
+  for (const p of ['seed=7', 'nations=24']) expect(page.url()).toContain(p);
+  await ready(page);
+  const s: Inspection = await page.evaluate(() => window.__warsim!.sim.inspect());
+  expect(s.tick).toBe(0);
+  expect(s.nations.filter((n) => n.living).length).toBe(24);
+  const node = new Sim({ scenario: 'random', seed: 7, options: { nations: 24 }, assets: assets1938(SIZE_1938.w) });
+  expect((await page.evaluate(() => window.__warsim!.sim.hash())).hash).toBe(node.hash());
+  await page.waitForTimeout(500); // let the first frames draw
+  await page.screenshot({ path: path.join(shots, 'started-random-24.png') });
+
+  // The game's own new-game form has the number, and Main menu → Continue brings it back.
+  const left = await page.evaluate(() => window.__warsim!.sim.step(48));
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-nations')).toHaveValue('24');
+  await Promise.all([page.waitForURL((u) => u.search === ''), page.getByTestId('settings-menu').click()]);
+  await expect(page.getByTestId('title-save')).toContainText('Random world');
+  await Promise.all([page.waitForURL(/continue=1/), page.getByTestId('title-continue').click()]);
+  for (const p of ['scenario=random', 'seed=7', 'nations=24']) expect(page.url()).toContain(p);
+  await ready(page);
+  await page.waitForFunction(() => window.__warsim!.hud.tick.value === 48, null, { timeout: 30_000 });
+  expect(await page.evaluate(() => window.__warsim!.sim.hash())).toEqual(left);
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-nations')).toHaveValue('24');
+
+  // A game of the 1938 world has no such field.
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await ready(page);
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('settings-new-game')).toBeVisible();
+  await expect(page.getByTestId('settings-nations')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

@@ -1548,6 +1548,12 @@ on screen.
   - A game is its URL. Start navigates to `?scenario=<id>&seed=<n>&paused=1` plus the options,
     as New game in the settings panel does; a reload restarts that game and the URL can be shared.
   - The toy world is a test world (`hidden`): it opens by `?scenario=toy` only.
+  - The random world (PLAN 2.16c) [ADR-110] is second on the list. Its picture is one random
+    world (seed 7, 60 nations: `previewRandom`, `tools/data/preview.ts`), and the text says so.
+    Its new-game form has a field for the number of nations (`ScenarioInfo.nationsRange`, 2 to
+    200, 60 at first; Start only for a whole number in the range). The number is the game
+    option `nations`, `?nations=N` in the URL, so it is in the autosave's record and in
+    Continue, and the game's own new-game form starts from it.
   - Settings → Main menu autosaves the game and returns to `/`.
   - Loading a game (PLAN 1.43b) [ADR-61]:
     - *Continue:* shown when there is an autosave, with its scenario, in-game date and the time

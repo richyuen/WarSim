@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { ScenarioAssets } from '../../src/shared/protocol';
 import { Terrain } from '../../src/shared/terrain';
-import { createRandomWorld, RANDOM_NATIONS, randomNationCount } from '../../src/sim/randomWorld';
+import { RANDOM_NATIONS } from '../../src/shared/scenarios';
+import { createRandomWorld, randomNationCount } from '../../src/sim/randomWorld';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { assets1938 } from '../helpers/earth';
