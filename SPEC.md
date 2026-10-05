@@ -173,7 +173,7 @@ Implementation (PLAN 0.13):
 | dirtyTiles | list of 64×64 tiles: `owner u16[]`, `controller u16[]`, `flags u8[]` | changed tiles only |
 | nations | per nation: color, stats row (gold, income, mil size, land, …), flags. As built: a row for every nation, the destroyed ones too, with `living` (a destroyed nation has no capital flag). The view keeps of the nations what the last snapshot says and nothing else: a world loaded into a running game can have fewer nations (PLAN 2.7q) | 100s × 64 B, when changed |
 | formations | all land formations, fleets, air wings: id, nation, kind, x, y (f64), prevX, prevY, facing, strength, maxStrength, org, state bits | ~4k × 48 B |
-| elements | **only** for formations intersecting the subscribed bbox when tier ≥ T1.5: type, strength, x, y, prevX, prevY, facing, state | ≤ 40k × 32 B |
+| elements | **only** for formations intersecting the subscribed bbox when tier ≥ T1.5: type, strength, x, y, prevX, prevY, facing, state. As built (`SnapshotElements`): id, formation, nation, the atlas frame of the unit's class, strength, size (the units of the element when whole, since PLAN 2.10b), x, y, prevX, prevY, facing, the formation's flags (moving, engaged) | ≤ 40k × 32 B |
 | events | ring slice since the last ack, filtered by bbox/tier for spatial events (fire, death, explosion), global events always included | bounded ring |
 | derived | label curves, map-mode textures (throttled, optional) | when changed |
 
@@ -1027,8 +1027,8 @@ It was dropped: a camera resting on a curve showed two layers half there.
 |---|---|---|---|
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
 | **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows, battle markers |
-| **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, roads near cities | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
-| **T3 Close** | < 30 | full-res procedural detail tiles | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap] |
+| **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
+| **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap] |
 
 *The ground of T2 and T3, as built so far (PLAN 2.8a, ADR-78):* hillshade in the map pass
 (`mapShader.ts`). The worker sends the elevation level of the map's size after the map layers
@@ -1066,7 +1066,8 @@ apart or more, and the next finer level comes in by its opacity through the uppe
 octave of zoom before that. At a point: a building by how near a city is and how large (reach
 3 to 18 km by size, densest at the middle); else a tree or a rock by the terrain class of the
 cell (forest 0.75 trees; mountains 0.42 rocks; plains 0.05 trees; ice nothing). Nothing on
-water, by the cell's class and by the fine coast's coverage. Size: a symbol of 6 or 7 px at
+water: by the cell's class, and where the fine land mask is there only on sure land
+(`maskSure`, since PLAN 2.9b2; the coverage before). Size: a symbol of 6 or 7 px at
 T2, the thing's own (a crown of 9 m, a house of 14 m) once the zoom shows it larger.
 
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
@@ -1252,8 +1253,7 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   neighbourhood accumulates cubic B-spline weight (a C2-smooth indicator field). The max
   wins; the border is where the best and second weights meet, at a constant screen-px width
   (d / fwidth(d)). A bounded value-noise domain warp (≤ 0.32 cell) makes borders organic.
-  Occupation hatching uses the same weights. The coastline will come from the fine land-mask
-  pyramid.
+  Occupation hatching uses the same weights.
   Since PLAN 1.28b the coastline comes from the 16384 × 8192 land mask:
   - The worker reduces it once to a 4096 × 2048 coverage texture (land fraction of each 4×4-bit
     block; `src/shared/landCoverage.ts`) and posts it with the terrain layer (`mapLayers`).

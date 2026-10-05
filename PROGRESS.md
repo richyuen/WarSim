@@ -4983,3 +4983,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   10 (the British realm to about a quarter on five seeds, Belgium's to nothing on five).
 - **For Phase 7, not for now:** Belgium's realm (with the Congo) is gone or nearly on five of
   ten seeds within 20 years, and the British realm loses three quarters on five. Balance.
+
+## 2026-10-05 — PLAN 2.11d: SPEC brought back to what Phase 2 built; no dead code
+
+- **SPEC, five passages:** the tier table said "roads near cities" at T2 (not built: a line
+  under PLAN 7.4) and "full-res procedural detail tiles" at T3 (ADR-78 decided against
+  tiles); the snapshot table's elements row named fields that are not the ones sent; the
+  ground's instances were said to keep off the water by the coverage (the fine mask since
+  2.9b2); one sentence still promised the coast from a "land-mask pyramid".
+- **Dead code:** none. Looked at every export of the modules new in this phase.
+- **PARITY moved to the end of the review (2.11h):** its evidence is pictures, and 2.11e to g
+  change what T2 and T3 look like.

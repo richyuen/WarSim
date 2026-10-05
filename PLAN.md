@@ -1094,9 +1094,21 @@ quick sweep as a smoke test.
     - The start with the mask: the first frame 0.22 s after navigation, the map layers and the
       mask at 0.95 to 1.09 s, the first snapshot at 1.1 to 1.4 s (five starts, alone, the
       tests' rasteriser); the mask is read and unpacked in 15 ms in Node. Closed.
-  - [ ] 2.11d SPEC re-read for drift (§3.1, §8, the map's rendering); the PARITY rows of the
+  - [x] 2.11d SPEC re-read for drift (§3.1, §8, the map's rendering); the PARITY rows of the
     phase with their evidence; code that nothing uses since the last pass deleted (a commit of
     its own, gated).
+    Done 2026-10-05, but for PARITY, which goes last (2.11h): its evidence is the pictures,
+    and the tasks below change what T2 and T3 look like.
+    - SPEC, five passages that no longer said what is built: the tier table's T2 row (the
+      coast from the fine mask; roads near cities are not built: a line under PLAN 7.4) and T3
+      row ("full-res procedural detail tiles": the same ground for each pixel, finer; no tiles,
+      ADR-78); the snapshot table's elements row (the fields as built, with `size`); where the
+      ground's instances stand (sure land by the mask, not the coverage); and a sentence that
+      still promised the coastline from a "land-mask pyramid".
+    - Dead code: none found. Every export of the phase's new modules is used by another
+      source file, inside its own, or by a test. Two that look unused and are not:
+      `maskLand` (the tests' own reading of the mask since the sim asks `maskSure`) and
+      `MapView.hasFineCoast` (five specs wait on it).
   Tasks that come out of 2.11b and 2.11c follow as 2.11e and on. 2.11 is ticked when they
   are done; then the critic runs (PROMPT step 2a).
   - [ ] 2.11e A formation in contact holds, and is drawn holding. The sim sets `moving` for a
@@ -1129,6 +1141,13 @@ quick sweep as a smoke test.
     never gone while the element has units. e2e: in the demo's division the sprites of
     battalions under half strength differ from those of a whole division's in the same view.
     Pictures looked at; `spriteColours1938` and `fades1938` pass.
+  - [ ] 2.11h Last: the phase's pictures on the final code, and PARITY. One run of the e2e
+    suite with `EVIDENCE=1`; the pictures of T2 and T3 that changed are looked at and kept
+    (many are from before the ground of PLAN 2.8); the PARITY rows that Phase 2 touched (the
+    semantic zoom, the real-geography map, the political and terrain modes, the map's polish)
+    get their evidence and a dated note of what the phase built and what its review left.
+    Then 2.11 is ticked.
+    AT: `npm run parity` passes; every picture a row names exists and was looked at.
 
 ## Phase 3 — Armour
 
