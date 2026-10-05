@@ -167,6 +167,80 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-85 · 2026-10-05 · accepted — The test that reads PLAN.md follows the plan: a ticked phase review does not break the gate
+
+- **Context:** `tests/unit/gate.test.ts` held PLAN.md to "the reviews of phases 0 and 1 are
+  ticked, those of phases 2 to 6 are open". PLAN 2.11 was ticked in `3d6a2b2`, a commit of
+  documents: its gate is parity alone (ADR-55), and so was that of the commit after. The first
+  gate of code since (PLAN 2.12a) failed at this test, on a PLAN.md that was right.
+- **Decision:** the test is changed, not the plan. It now says what it was there for (the
+  parser finds the real plan's reviews, by their names): all seven exist, the ticked ones are
+  the first ones in the order of the phases, the rest are open, and those of phases 0 to 2
+  are ticked. It needs no edit at the reviews of phases 3 to 6.
+- **Is it weaker?** It no longer fails when a later review is ticked in its turn, which was
+  never a fault. It still fails for a review ticked out of turn, renamed, or lost, and for
+  one of phases 0 to 2 unticked.
+- **Not done:** the gate of a commit of documents still runs no unit test, so a test that
+  reads a document can go red in such a commit and be seen only at the next gate of code.
+  This is the one test of that kind (`gate.test.ts` reads PLAN.md; the parity script reads
+  PARITY.md and is in every gate).
+
+### ADR-84 · 2026-10-05 · accepted — How long a table is, is no part of the game: no reference to its columns is held across a create (PLAN 2.12a, the critic's R2-B4)
+
+- **Context:** the critic's second report: on seed 2718 a game saved at year 10 and loaded
+  ends year 11 as another game than the one that went on (Node: `931f19ad` against
+  `33ca7b81`, 694 formations against 695; the browser's Continue the same), and the worker's
+  hash leaves Node's with the step after nation 128 is founded. Run here first: as reported.
+  PLAN 2.11j had claimed the first could not happen; its tests looked at the cause that task
+  had found (the supply network), in a first year.
+- **What it was.** `Table` grows by doubling, and a growth replaces its arrays (`cols`,
+  `alive`, `generation`). `Table.create` says so in its comment. `spawnRebels` took
+  `nations.cols`, then created the row, then wrote the nation into what it had taken. A
+  write past the end of a typed array does nothing, and a read there gives `undefined`.
+  - *In every 1938 game that went on long enough,* the nation with id 128 (the table has
+    128 rows after the scenario's 103) was founded with nothing: not living, no origin, no
+    colour, no gold, capital at (0, 0); it owned its land and its holder was at war with it;
+    its militia, up to four formations, stood at (NaN, NaN). All of it in the save and in
+    the hash.
+  - *A loaded game:* `Table.deserialize` makes a table as long as the save's rows (130),
+    where the table of the game that went on is 256 long. The loaded one grows at its next
+    nation. How long a table is was in no save and no hash, and it decided which nation was
+    lost: that is what steered the sim.
+  - *The worker against Node:* on the code of before, in a real browser, they part in the
+    tick in which the table grows and in no tick before. Why to the bit is not known. A NaN
+    out of arithmetic has bits of its own and the hash is over bytes; that is the likely
+    part. With the fix they are equal on every day of the year in which the table grows.
+- **Decision:** the rule the table's comment had is kept and is now held by a test: **a
+  reference to a table's columns is taken after a create, and again after any call that may
+  create a row of that table.** How long a table is can then have no effect.
+  - *Six places broke it:* `spawnRebels`; `spawnCity`; the month's revolt loop;
+    `collapseNation`; `collapseSystem`; and `Table.forEach`, which held `alive` across its
+    callback. (`reviveNation` founds no nation and is made alike for the next change.)
+  - *The test's instrument:* `Table.volatile`. With it every create moves the table to new
+    arrays and fills the old ones with 0x5a. A reference held across a create then reads
+    rubbish and writes nowhere at every create, where otherwise only at a growth. A game
+    with it on must go as the game without it. It found `spawnCity` on the first day and the
+    revolt loop only in a three-year game; the rest were read from there.
+- **Not chosen:**
+  - *A loaded table as long as the doubling would have made it.* The loaded game would then
+    lose the same nation as the game that went on: the test of save and load would pass and
+    nation 128 would still be founded dead.
+  - *Tables of a fixed length* (65,536 nations, as the land tallies have). It would do for
+    nations; formations and elements have no such bound.
+  - *All NaN made alike in the hash.* The state has no NaN now but the history's "no place",
+    which the language writes one way; tests say so (after forced revolts, and after ten
+    years in the sweep stage's three games). A NaN that appears is a defect to be found, as
+    this one was.
+- **Tests:** in PLAN 2.12a, with what each said when it failed first.
+- **What the gate now holds of "a loaded game goes on as the saved one":** the saves of year
+  9 of three ten-year games (12 s on the sweep stage). By hand: every year-end of ten years
+  on five seeds, 50 of 50. **Not in the gate:** such a check on a seed and in a year nobody
+  has run, which is where the critic found this one.
+- **Hashes (ADR-55):** the pin `4aafc3eb` did not move, nor seed 99's five years
+  (`49389306`): no table grows in them. A game is another one from the tick in which its
+  nations table first grows (seed 2718: year 9).
+- **Depends on this:** PLAN 2.15's "Free state 128" (the lost origin was its name).
+
 ### ADR-83 · 2026-10-05 · accepted — The critic's second run: who ran it, where its findings went, in what order (PROMPT step 2a)
 
 - **Context:** PLAN 2.11 was ticked, so the critic was due (ADR-59: one run a phase). PROMPT

@@ -114,7 +114,8 @@ export function revoltSystem(world: World): void {
   const pv = world.provinces;
   if (pv.count === 0 || !isMonthStart(world.startDay, world.tick)) return;
   const g = navOf(world).graph;
-  const nc = world.nations.cols;
+  // Taken anew after every revolt below: one that founds a nation may move the table (PLAN 2.12).
+  let nc = world.nations.cols;
   const { owner, controller } = world.cells;
   // Suppression costs.
   world.nations.forEach((n) => {
@@ -184,6 +185,7 @@ export function revoltSystem(world: World): void {
     const chance = (MAX_P * (pv.unrest[p]! - REVOLT_FROM)) / (100 - REVOLT_FROM) * (1 - SUPPRESS_P * supp) * (guard ? 1 - GARRISON_P : 1);
     if (hashToUnit(hash32(world.seed, world.tick, p, SALT_REVOLT)) >= chance) continue;
     for (const q of revolt(world, p, o)) revolted[q] = 1;
+    nc = world.nations.cols;
   }
 }
 
@@ -296,10 +298,13 @@ function revoltArea(world: World, p: number, holder: number): number[] {
  */
 export function spawnRebels(world: World, area: number[], holder: number, revive = 0): number {
   const nt = world.nations;
-  const nc = nt.cols;
   let id = revive;
-  if (id === 0) {
-    id = nt.create();
+  if (id === 0) id = nt.create();
+  // The columns after the create: a row that makes the table grow moves it to new arrays, and
+  // what is written into the old ones at the new id is lost (PLAN 2.12: nation 128 of a 1938
+  // game was founded dead, without origin, colour or capital, its militia at NaN).
+  const nc = nt.cols;
+  if (revive === 0) {
     world.names.delete(id); // a reused id does not inherit a God Mode name
     nc.color[id] = rebelColor(world, id);
     nc.incomeMult[id] = 1;

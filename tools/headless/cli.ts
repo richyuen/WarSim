@@ -1,7 +1,8 @@
 // `npm run sim -- [--scenario toy|1938] [--seed 7] [--years 10] [--out run.json] [--save state.bin] [--load state.bin] [--affinity 0xFFFF]`
 // Runs a scenario headless in Node and writes per-year metrics JSON (SPEC §10, PLAN 0.20).
 // Checkpoints: `--save` writes the final state; `--load` continues from one (saves are
-// bit-identical, so years 11–20 from a year-10 checkpoint equal years 11–20 of a 20-year run).
+// bit-identical, so years 11–20 from a year-10 checkpoint equal years 11–20 of a 20-year run:
+// that was not so until PLAN 2.12, and `tests/helpers/aiSweep.ts` now holds a year of it).
 // Timings: `--affinity <mask>` pins the run to those CPUs (see `affinity.ts`); a tick time
 // measured for a budget is measured that way.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';

@@ -55,6 +55,33 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   quick sweeps (20 years, seen seeds) show a riser in 6–8 of 10 seeds and a faller in 10 of
   10; no 50-year run has been judged by the criteria of ADR-54.
 
+### PLAN 2.12a is in the working tree and not committed: the gate was stopped for want of memory (2026-10-05, 05:29)
+
+- **What happened:** the full gate for PLAN 2.12a was started at 05:29:06 with the CPU sampler
+  beside it. In the unit stage, 41.7 s in, test workers died as they started ("Worker exited
+  unexpectedly with exit code 3221225794 during starting state", 31 files and 209 tests done),
+  and the gate said "FAILED at test". The harness then stopped both jobs: the system was
+  critically low on memory. It says not to start them again unasked. Nothing was started
+  again.
+- **The machine a minute later:** 12.7 GB of 31.8 GB free; 23.1 GB committed of a limit of
+  42.3 GB, with nothing of the gate left running. All processes together hold 8.5 GB of
+  private memory and the kernel's pools 2.5 GB: some 12 GB of the commit is with nothing this
+  account can see. The unit stage starts 24 workers; it has fitted in every gate until now.
+- **Not this task's tests, as far as measured:** the new twin test's two games take 452 MB at
+  their peak with the moving tables and 425 MB without (one 1938 game is some 80 MB).
+- **State of the work:** the fix, its tests and its documents are in the working tree, with
+  PLAN 2.12a ticked and a PROGRESS entry that gives test counts (647 unit, 117 e2e) no gate
+  has confirmed yet. Run by hand before the gate and green: typecheck, lint of the changed
+  files, the three unit tests, the e2e, the pin; the three ten-year games ran with the new
+  check only on the code of before (seed 1 failing, as it should). **Not run on the fix: the
+  sweep stage and the e2e suite as a whole.**
+- **To go on:** `npm run check` (the full gate), then the commit of PLAN 2.12a with explicit
+  paths. Then PLAN 2.12b: its change and its test are set aside in `.cache/p212/`
+  (`p212b-commands.patch`, to `git apply`; `commandKinds.test.ts`, to `tests/unit/`).
+- **A lead for the slow half hours below:** a machine at its commit limit pages and
+  compresses, and is slow in every stage alike. The sampler has not recorded memory; it
+  should.
+
 ## Watch list (not blocking)
 
 - `reference/NOTES.md` (the user's taste notes, highest-priority reference) does not exist
@@ -301,3 +328,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     must hold more than 8 frames, more than 50 ticks and at least one fade of a name. Gate runs
     on the idle machine gave 20 to 44 frames, 235 to 1,561 ticks and 6 to 51 fades.
   - A way to tell: `npm run test` takes 40 s on the idle machine and took 72 s then.
+  - `closeZoom1938`, the pan at T3 (2026-10-05, the gate on PLAN 2.12a, the machine idle in the
+    second of two runs): 4 and 3 frames in half a second inside the suite, 19 alone. The spec now
+    waits for six frames. Not looked into: whether a frame at 5 m/px on 1,584 figures has become
+    slower beside other pages since PLAN 2.11g (the unit stage took 47.9 s in that run, 41 at its
+    best).

@@ -42,8 +42,8 @@ export function spawnCity(world: World, x: number, y: number, name: string, size
   }
   const s = Math.max(1, Math.min(5, Math.round(size)));
   const bonus = n > 0 ? (CITY_ECON_PER_SIZE * s * sum) / n : 0;
-  const cc = world.cities.cols;
   const id = world.cities.create();
+  const cc = world.cities.cols; // after the create, which may move the table to new arrays (PLAN 2.12)
   cc.def[id] = NO_DEF;
   cc.x[id] = cx + 0.5;
   cc.y[id] = cy + 0.5;

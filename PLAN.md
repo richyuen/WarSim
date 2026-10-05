@@ -1210,6 +1210,10 @@ quick sweep as a smoke test.
     - In the world of before PLAN 2.11i the reader's case (seed 99, tick 2400) was the lane at
       Bab-el-Mandeb; in today's world seed 99 has no such case in a year, and seed 3's is the
       puppet. Both are tested directly.
+    - **2026-10-05, the critic's second report (PLAN 2.12): the claim in this task's title
+      was wider than its tests.** They held for the supply network. A loaded game still
+      differed late in a long game, from another cause (how long a table is: PLAN 2.12a),
+      which no test here could meet: no table grows in a first year.
   - [x] 2.11k A formation mustered in a theatre stands on sure land. (The fifth read, finding
     3; PLAN 2.9a missed this path.) `musterPoint` returns a city's own place or a front
     cell's bare middle, and `productionSystem` writes it as it is. Seed 99, the first year: 13
@@ -1434,6 +1438,77 @@ quick sweep as a smoke test.
   a fresh one; (d) a real browser worker and Node have one hash on every day of year 9 of
   seed 2718; (e) a command of an unknown kind is refused and changes nothing. What steered
   the sim and was in neither the save nor the hash is named in DECISIONS.
+  - [x] 2.12a The cause, and its fix. Done 2026-10-05 (ADR-84). **What steered the sim and
+    was in no save and no hash: how long a table is.**
+    - *The cause.* A table of the state grows by doubling, and a growth moves it to new
+      arrays. `spawnRebels` took the nations' columns, created the nation's row, and wrote
+      the nation into the columns it had taken. When that row made the table grow, every
+      write fell outside the old arrays and was lost. In a 1938 game that is the nation with
+      id 128: founded dead, without origin, colour, gold or capital, at war with its holder,
+      its militia (up to four formations) at (NaN, NaN). It is the critic's "Free state 128"
+      (a line under PLAN 2.15).
+    - *Why a loaded game differed.* A loaded table is as long as its save (131 rows at seed
+      2718's year 10), where the table of the game that went on has doubled (256). The loaded
+      table grows at its next nation: the two games lose different nations.
+    - *Why the worker's hash left Node's.* On the code of before, in a real browser, the two
+      part in the tick in which the table grows and not before
+      (`tests/e2e/workerNodeGrowth1938.spec.ts`: tick 6, "nations up to 130, the table
+      grew"). What differs is not known to the bit: a NaN out of arithmetic has bits of its
+      own, and they were in the state.
+    - *The critic's case, run first:* straight `33ca7b81`, 695 formations; loaded
+      `931f19ad`, 694. As reported.
+    - *Fixed, seven places:* `spawnRebels`; the editor's `spawnCity` (the same mistake; the
+      cities table of a 1938 game is far from its next growth); the month's revolt loop,
+      which held the columns across every revolt (after a growth it read the old arrays: a
+      nation founded since was not living there, and its provinces were passed over);
+      `collapseNation` and `collapseSystem`, the same; `reviveNation`, made alike though it
+      founds nothing; and `Table.forEach`, which held the table's `alive` across what its
+      callback creates.
+    - *How the others were found:* a switch on the table for tests (`volatile`): every create
+      moves the table and spoils the arrays it left. A game with the switch on must go as the
+      game without it. It found the city on its first day and the revolt loop only in a
+      three-year game (seed 2718 on day 305, seed 99 on day 609); the collapse code and
+      `forEach` were read from there.
+    - *Tests, each failing first:*
+      - unit (`tableGrowth.test.ts`, 3): the nation founded as the table grows is whole
+        ("nation 128, whose row made the table grow from 128 to 256: living: expected 0 to be
+        1"), and no number of the state is NaN but the history's "no place"; a loaded world
+        goes on as the saved one across a growth, also loaded into a sim another game has
+        used ("nation 130 of the loaded world: living: expected 0"); 45 days of a game with
+        revolts by command and by the month's system, a Kill, a revival, production and a
+        city, beside the same game with moving tables (parted on day 1).
+      - e2e (`workerNodeGrowth1938.spec.ts`): revolts by command in a browser worker and in
+        Node across the growth; then saved, continued on a fresh page, and on as Node's.
+      - the sweep stage's three ten-year games (seeds 1 to 3): the game saved at the end of
+        year 9 and loaded ends year 10 as the game that went on (seed 1 failed first: its
+        table grows in year 8; seeds 2 and 3 had not grown by then), and after ten years no
+        number of the state is a stray NaN.
+    - *The AT's five cases:*
+      - (a) and (b) by hand, not in the gate (21 sim-years a seed): seeds 2718 and 31337
+        (the critic's, in no test) and 1, 2, 3, saved at the end of each of ten years, each
+        save loaded into a fresh sim and run a year: **50 of 50 end their year at the hash of
+        the game that went on.** Seed 2718 from the save of year 10: `72214edc`, both. In the
+        gate: the year 9 check above, 12 s more on the stage.
+      - (c) in the unit test.
+      - (d) the e2e above in the gate; and by hand in a real browser: seed 2718, the worker
+        against Node at the end of each of years 1 to 8 and **on each of the 365 days of year
+        9 (in which the table grows): equal.** 3.2 minutes; not kept.
+      - (e) is PLAN 2.12b.
+    - *Beyond the tests:* four years of the twin game with moving tables on seeds 1, 99, 2718
+      and 31337: equal on every day (13,000 creates of elements, 470 of formations, 9 to 15
+      of nations in each).
+    - *Hashes (ADR-55):* the pin did not move, `4aafc3eb`: no table grows in seed 99's first
+      year. Nor in its first five: `49389306`. Seed 2718 is as before through year 8 and
+      another game from year 9. The tick, pinned, five years: 1.203 ms (1.199).
+    - *Set right:* PLAN 2.11j's claim (a note there), PARITY's row, the CLI's header.
+    - *Found on the way, not this task's:* a rebel nation with no city in its area takes the
+      middle of the area as its capital, and that can be sea (lines under PLAN 2.15).
+  - [ ] 2.12b A command of a kind the sim does not know is refused (the AT's (e); the
+    critic's N20). It was applied as nothing and written into the command log, which is
+    state: seven made-up kinds changed the hash.
+    AT: failing first: such a command is not queued, logged or counted, and the hash is that
+    of a game that never got it; the list of kinds is held to the `Command` type by the
+    compiler.
 - [ ] 2.13 Critic R2-B3, the first part: the 1938 order of battle is still there after the
   first tick. The critic's count, the same on seeds 1212 and 4242: at tick 0 there are 1,054
   formations, 72 of them armour, 34 of those Soviet. At tick 1 there are 826 and 33, and the
@@ -1502,6 +1577,15 @@ quick sweep as a smoke test.
     anything. To whom, and how many new states at most, is a decision when the task is taken
     up. Where a plain game's rule changes, the pin moves.
   - Not here, by ADR-58: how often land breaks away in a plain game (a line under PLAN 1.42).
+  - From PLAN 2.12a (2026-10-05): "Free state 128" was the nation whose row made the nations
+    table grow; it lost its origin with everything else, and the name is made from the
+    origin. That is fixed. Whether a nation can still be founded without a name is to be
+    looked at here (the name falls back to "Free state N" when the origin has no name).
+  - Found in PLAN 2.12a, not fixed there: a rebel nation with no city in its area takes the
+    middle of the area as its capital, and its militia stand there. Of 406 nations founded by
+    a revolt forced in every province of the 1938 start, 74 had their capital on a cell that
+    is not theirs, 71 of them on a sea cell; 110 of their 577 militia formations were not on
+    sure land. (PLAN 2.11k set this right for what production raises.)
   AT: failing first: a Kill of France through the God UI founds no more than a stated few
   nations and starts no war by itself; no nation is named "Free state N"; every nation
   founded in 15 years of a game has a flag that is not blank (a test, and a picture looked

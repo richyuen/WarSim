@@ -13,6 +13,9 @@ import { makeArray, takeSection, type ArrayOf, type DType, type Section } from '
 export type Schema = Record<string, DType>;
 export type Columns<S extends Schema> = { [K in keyof S]: ArrayOf<S[K]> };
 
+/** What `volatile` leaves in the arrays a table has moved out of. */
+const SPOILED = 0x5a;
+
 export class Table<S extends Schema> {
   readonly name: string;
   readonly schema: S;
@@ -35,6 +38,16 @@ export class Table<S extends Schema> {
   highWater = 1;
   /** Live row count. */
   count = 0;
+  /**
+   * A switch for tests (PLAN 2.12): every `create` moves the table to new arrays, as a growth
+   * does, and spoils the old ones. A reference to `cols` that is held across a create then
+   * reads rubbish and writes nowhere at every create, where otherwise it does so only at a
+   * growth: at a size nobody chose, and at another one in a loaded table. A game with the
+   * switch on must go as the game without it. Not state.
+   */
+  volatile = false;
+  /** How often the table has moved to new arrays (growths, and every create while `volatile`). Not state. */
+  moves = 0;
 
   constructor(name: string, schema: S, initialCapacity = 64) {
     this.name = name;
@@ -64,13 +77,17 @@ export class Table<S extends Schema> {
     while (cap < minCap) cap *= 2;
     const cols = Table.allocCols(this.schema, cap);
     for (const key of this.keys) (cols[key] as ArrayOf<DType>).set(this.cols[key] as ArrayOf<DType>);
+    const old = this.cols;
     this.cols = cols;
     const alive = new Uint8Array(cap);
     alive.set(this.alive);
+    if (this.volatile) this.alive.fill(SPOILED);
     this.alive = alive;
     const generation = new Uint32Array(cap);
     generation.set(this.generation);
     this.generation = generation;
+    if (this.volatile) for (const key of this.keys) (old[key] as ArrayOf<DType>).fill(SPOILED);
+    this.moves++;
   }
 
   /**
@@ -81,15 +98,21 @@ export class Table<S extends Schema> {
     if (this.highWater + rows > this.capacity) this.grow(this.highWater + rows);
   }
 
-  /** Allocates a zeroed row and returns its id. Note: may replace `cols` (see `reserve`). */
+  /**
+   * Allocates a zeroed row and returns its id. **May replace `cols`** (see `reserve`): take
+   * `cols` after the create, and again after any call that may create a row of this table. A
+   * reference from before reads the old arrays and writes nowhere (PLAN 2.12; the `volatile`
+   * twin game in `tests/unit/tableGrowth.test.ts` holds the sim to it).
+   */
   create(): number {
     let id: number;
     if (this.freeLen > 0) {
       id = this.free[--this.freeLen]!;
     } else {
       id = this.highWater++;
-      if (id >= this.capacity) this.grow(id + 1);
     }
+    if (id >= this.capacity) this.grow(id + 1);
+    else if (this.volatile) this.grow(this.capacity);
     this.alive[id] = 1;
     this.generation[id]!++;
     this.count++;
@@ -119,11 +142,11 @@ export class Table<S extends Schema> {
   }
 
   /** Calls fn for every live id in ascending order. Rows created during iteration beyond the
-   *  starting highWater are not visited; removing the current or a later row is safe. */
+   *  starting highWater are not visited; removing the current or a later row is safe, also
+   *  after a create in `fn` has moved the table (`alive` is read anew for each id: PLAN 2.12). */
   forEach(fn: (id: number) => void): void {
     const hw = this.highWater;
-    const alive = this.alive;
-    for (let id = 1; id < hw; id++) if (alive[id] === 1) fn(id);
+    for (let id = 1; id < hw; id++) if (this.alive[id] === 1) fn(id);
   }
 
   /** Live ids in ascending order (allocates; prefer forEach in hot paths). */

@@ -54,9 +54,9 @@ export function reviveNation(world: World, n: number, area: number[]): boolean {
     byHolder.set(h, l);
   }
   if (byHolder.size === 0) return false;
-  const nc = world.nations.cols;
-  nc.revivalsLeft[n] = nc.revivalsLeft[n]! - 1;
+  world.nations.cols.revivalsLeft[n] = world.nations.cols.revivalsLeft[n]! - 1;
   for (const [h, ps] of [...byHolder].sort((a, b) => a[0] - b[0])) spawnRebels(world, ps, h, n);
+  const nc = world.nations.cols; // after the rebels: see `Table.create` (PLAN 2.12)
   world.out.emit(world.tick, EventKind.NationRevived, n, nc.revivalsLeft[n]!, nc.capitalX[n]!, nc.capitalY[n]!);
   return true;
 }
@@ -72,7 +72,9 @@ export function reviveOnCores(world: World, n: number): boolean {
  * most REGION_MAX connected provinces, and c dies.
  */
 export function collapseNation(world: World, c: number, forced = false): void {
-  const nc = world.nations.cols;
+  // Taken anew after every revival and every founding below: a new nation's row may move the
+  // table to new arrays (PLAN 2.12).
+  let nc = world.nations.cols;
   if (!world.nations.has(c) || nc.living[c] !== 1) return;
   // A collapse is a default: debts are void afterwards (PLAN 1.24 review: without it a broke
   // nation re-collapsed every COLLAPSE_MONTHS forever).
@@ -109,6 +111,7 @@ export function collapseNation(world: World, c: number, forced = false): void {
   for (const [d, ps] of [...byClaimant].sort((a, b) => a[0] - b[0])) {
     if (!forced && nc.living[c] !== 1) break;
     if (reviveNation(world, d, ps)) for (const p of ps) taken.add(p);
+    nc = world.nations.cols;
   }
   // 2. Restless provinces revolt, one rebel nation per connected group.
   // Forced: every remaining province, in groups of at most REGION_MAX.
@@ -128,6 +131,7 @@ export function collapseNation(world: World, c: number, forced = false): void {
       }
     }
     const r = spawnRebels(world, group, c);
+    nc = world.nations.cols;
     if (nc.cells[r]! > largestCells) {
       largest = r;
       largestCells = nc.cells[r]!;
@@ -148,8 +152,8 @@ export function collapseNation(world: World, c: number, forced = false): void {
 /** Monthly: bankruptcy streaks and collapse. */
 export function collapseSystem(world: World): void {
   if (world.provinces.count === 0 || !isMonthStart(world.startDay, world.tick)) return;
-  const nc = world.nations.cols;
   world.nations.forEach((n) => {
+    const nc = world.nations.cols; // anew for each nation: a collapse founds nations (PLAN 2.12)
     if (nc.living[n] !== 1) return;
     nc.brokeMonths[n] = nc.bankrupt[n] === 1 ? nc.brokeMonths[n]! + 1 : 0;
     if (nc.brokeMonths[n]! >= COLLAPSE_MONTHS) {

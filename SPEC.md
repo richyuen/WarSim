@@ -252,6 +252,13 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) �
 - **State hash**: `hashSections` chains (name, dtype, length, xxhash32(data)) over every
   authoritative section (`World.parts()`: meta incl. tick and seed, RNG states, command log and
   pending commands, cell layers, entity tables). Events and derived outputs are excluded.
+- **How long a table is, is no part of the state** (PLAN 2.12, ADR-84). A table grows by
+  doubling, and a growth moves it to new arrays; a loaded table is as long as its save. So no
+  reference to a table's columns is held across a create (`Table.create`): it would read the
+  old arrays and write nowhere, at a size nobody chose and at another one after a load.
+  `tests/unit/tableGrowth.test.ts` runs a game whose tables move at every create beside the
+  same game without (`Table.volatile`). And no number of the state is a NaN out of
+  arithmetic: its bits are in the hash and need not be the same in two engines.
 - **Invariant tests** (must always pass): (I1) same seed + commands → same hash
   at N ticks; (I2) save → load → continue == uninterrupted, bit-identical bytes;
   (I3) Node run == worker run; (I4) random viewport/subscription churn leaves the hash
@@ -1592,7 +1599,7 @@ on screen.
   names. One run per phase, and one for the DONE condition. Each blocking issue of a report
   becomes a PLAN task. (Until ADR-59: every 5 commits that fixed no critic finding, ADR-49.)
 - **Checkpoints and diagnostics** (ADR-48): `npm run sim -- --save f` writes the final state and
-  `--load f` continues from it (bit-identical saves: tested on the toy world). `npm run diag`
+  `--load f` continues from it (bit-identical saves: tested on the toy world, and late in 1938 games: PLAN 2.12). `npm run diag`
   prints wars and great-power state at chosen years, from 1938 or from a checkpoint.
   `npm run sweep:quick` (10 seeds × 20 years, report in `.cache/sweep/reports`) is for tuning:
   it is judged by the limits and reports riser and faller without a verdict (ADR-54).

@@ -5210,3 +5210,43 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Who ran it:** a general-purpose agent with the critic's brief and no hints; the `critic`
   agent type is not in this session (ADR-83). 50 minutes, 492,000 tokens.
 - **Next:** PLAN 2.12, starting with the critic's case of seed 2718.
+
+## 2026-10-05 — PLAN 2.12a: a loaded game goes on as the game that was saved (the critic's R2-B4)
+
+- **The critic was right, and its case ran as reported:** seed 2718, saved at year 10 and
+  loaded: `931f19ad` against `33ca7b81`.
+- **The cause (ADR-84):** a table that grows moves to new arrays, and `spawnRebels` wrote a
+  new nation into the arrays it had taken before the row was made. The nation whose row made
+  the table grow (id 128 in a 1938 game) was founded dead, with militia at (NaN, NaN). A
+  loaded table is as long as its save, so it grew at another nation: the two games lost
+  different ones. How long a table is was what steered the sim, and it is in no save.
+- **The worker's hash against Node's:** the same nation. In a browser on the old code they
+  part in the tick the table grows.
+- **Fixed in seven places.** Two were found by a game whose tables move at every create (a
+  switch for tests) run beside the same game without, one of them only in its third year;
+  the rest by reading from there.
+- **Tests, failing first:** 3 unit (647), 1 e2e (117), and the sweep stage's ten-year games
+  now load their year 9 save and compare year 10 (seed 1 failed).
+- **By hand:** five seeds saved at each of ten year-ends: 50 of 50 loaded games go on as the
+  saved one. Worker against Node on seed 2718: equal on each of the 365 days of year 9.
+- **Hashes:** the pin did not move (`4aafc3eb`); five years of seed 99 neither. Tick 1.203 ms.
+- **What I would do differently:** PLAN 2.11j claimed "a loaded game goes on as the saved
+  one" and tested the one cause it had found, in a first year. The check that would have
+  met this one (save late, load, run a year, compare) costs 12 s in the gate.
+- **Next:** PLAN 2.12b, a command of an unknown kind is refused. Then 2.13.
+
+## 2026-10-05 — The gate on PLAN 2.12a: two tests that were not about the code
+
+- **Found on entry:** PLAN 2.12a written and logged, not committed. The gate had not run on it.
+- **First run, red at the unit tests:** `gate.test.ts` held PLAN.md to "the Phase 2 review is
+  open". It was ticked in `3d6a2b2`, a commit of documents, whose gate is parity alone. The
+  test now follows the plan through every phase review (ADR-85).
+- **Second and third run, red at one e2e:** `closeZoom1938`, the pan at T3: 4 and then 3
+  frames in its half second, where it asks for more than 5. Alone: 19 frames, green. The
+  machine was idle in the third run (e2e 117 specs in 8.5 min; 108 took 6.9 at PLAN 2.11).
+  The count of frames is how many a page draws beside three others on the CPU, not what the
+  test is about. It now reads frames for half a second and until it has six; its two
+  assertions (figures in the first frame, no frame with the sprites) are as they were and
+  look at more frames.
+- **Not looked into:** why that half second holds fewer frames in the suite than at PLAN
+  2.11g, where the same spec passed with the same neighbours. A line in BLOCKERS.
