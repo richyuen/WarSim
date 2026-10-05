@@ -2350,10 +2350,40 @@ quick sweep as a smoke test.
     why. Each finding is checked against the code here before it is anything; those a
     player can meet become tasks 2.16Rf and on, before 2.17, each with a test that fails
     first, most severe first; the rest go on the watch list.
-  - [ ] 2.16Rb SPEC re-read for drift: the random world (§2.2, §3.4), flags and names by
+  - [x] 2.16Rb SPEC re-read for drift: the random world (§2.2, §3.4), flags and names by
     scenario, the title screen and the URL options (`?scenario=1938|toy` in two places,
     `?nations=N`), the protocol fields new since 2.11.
-  - [ ] 2.16Rc Dead code and refactor debt in the same 55 files.
+    Done 2026-10-05. Each decision since the Phase 2 review (ADR-84 to ADR-111) was looked
+    for in SPEC; nine were not there, or only in part. Written in, each checked against the
+    code and not against its ADR alone:
+    - §2.2: `randomWorld.ts`, `tags`, `FormationPanel`, the shared modules new since;
+      `?scenario=1938|random|toy`.
+    - §2.3: `init` with `options` and `assets`; the request `warBattle` and the wars'
+      `battle` (ADR-91, 94, 95, 96).
+    - §3.4: the random world (ADR-108); a nation's name and flag by scenario
+      (`nationTags`, ADR-109; `foundedName`, ADR-100).
+    - §4: a rebel nation's capital without a city (ADR-103), its origin (ADR-106), where its
+      militia are raised (ADR-104); `LandCeded` (ADR-102).
+    - §8: the formation tags of T2 and T3 (ADR-88), which SPEC did not have at all.
+    - §9: the formation panel; a loaded world's number of nations (ADR-111); `nations`
+      among the new-game options. §10: the URL options.
+    - *Not in SPEC and left out:* ADR-83, 85, 87, 107 (how the work is done, not what the
+      game does); ADR-93 (no rule changed).
+  - [x] 2.16Rc Dead code and refactor debt in the same 55 files.
+    Done 2026-10-05.
+    - *Looked for:* exports of the 55 files that no other source file uses (a scratch
+      script: 140 names, all of them constants a test reads, types, or names of before the
+      Phase 2 review; none is dead code of 2.12 to 2.16); i18n keys without a use (none new;
+      `map.tick` is the i18n test's, six `government.*` wait for a panel that shows the
+      government); TODO and FIXME (none).
+    - *Fixed:* the two builders of a world on the earth map wrote the cities, the
+      formations and the settings each in its own loop. They are `addCities`,
+      `addFormations` and `applyScenarioSettings` of `scenario1938.ts` now, used by both.
+      The pin holds (the gate), and four random worlds have the hash they had (seeds 7, 11,
+      3 and 5 with 60, 40, 200 and 2 nations; seed 11 after a month too: a scratch script
+      run before and after).
+    - *Fixed:* the head of `revolts.ts` said the holder declares war on rebels "with
+      probability 1/2". It has been every time since PLAN 1.40 (ADR-44).
   - [ ] 2.16Rd The e2e suite's time. From the gate of 2.16d: one run of the suite took 15.6
     min and `cityNames1938` counted 39 and 31 ticks in four seconds; the next took 9.8. Do
     the three tests of `randomWorld.spec.ts` slow their neighbours? Measured by the tests'
@@ -2361,6 +2391,10 @@ quick sweep as a smoke test.
     place in the run changes; no assertion does.
   - [ ] 2.16Re Missing tests: what a to d find without one (2.16a: the rule against a
     capital on an islet has no test).
+    - Done 2026-10-05, the islet: `randomWorld.test.ts` asks of each of its three worlds
+      that every capital's piece of land has 12 cells. Seen to fail with the rule switched
+      off (`HOME_CELLS` 0): a piece of 3 cells in the world of 60, of 4 in that of 200.
+    - Open until a and d are done.
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world

@@ -77,6 +77,7 @@ src/sim/ai/        strategic, operational, economic, nuclear
 src/sim/data/      projection.ts (Miller), provinces.ts, schemas.ts (zod, DATA_FILES, validateDataSet),
                    terrain.ts (crossings), ownership.ts, cities.ts, oob.ts, politicalMap.ts (the whole map build chain)
 src/sim/scenario1938.ts  the 1938 world builder (map inputs, cells, nations, cities, OOB, economy values)
+src/sim/randomWorld.ts   the random world builder (the earth map shared out by the seed, §3.4)
 src/sim/toy.ts     the Phase 0 toy world (determinism suites)
 src/sim/tick.ts    tick orchestration (fixed order, §2.5)
 src/sim/sim.ts     Sim facade (init/step/command/hash/save/load) used by worker, Node and tests
@@ -84,20 +85,22 @@ src/sim/world.ts   World: cell layers, entity tables, RNG, command log (all seri
 src/shared/        protocol.ts (messages, snapshot layout), commands.ts (Command union), events.ts (event kinds,
                    fire records), unitLooks.ts (a unit class's sprite, fire and wreck), constants, enums,
                    rasterize.ts (scanline fill, shared by sim, tools and flags), terrain.ts, color.ts, flags.ts,
-                   calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry + start day)
+                   calendar.ts (Gregorian hourly), speed.ts (speed levels), scenarios.ts (geometry, start day,
+                   the scenario list, a scenario's nation tags), nationNames.ts (the names of founded nations),
+                   gameOptions.ts (the new-game options), landMask.ts (sure land)
 src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), pool.ts, assets.ts, deriveLabels.ts
 src/render/        camera.ts, timing.ts (the animations' clock; TimedSwitch and SwitchBank: what shows at a
                    zoom as states with timed fades), gl/ (gpuTimer), map/ (MapRenderer), labels/,
                    hash.ts (placement noise), units/ (ProxyRenderer, atlas, counters, markers, handover,
-                   individuals, formationDots), fx/ (fire: tracers, flashes, impacts; wrecks: the
+                   individuals, formationDots, tags), fx/ (fire: tracers, flashes, impacts; wrecks: the
                    ends of elements); later lod/
 src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
-                   Actions and God tabs, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
+                   Actions and God tabs, FormationPanel, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
                    FlagEditor, WarBanners, MapLegend), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
                    en.json = source of truth}
                    (no src/editor/: the editor is src/sim/editor.ts and scenarioEdit.ts, src/ui/EditorPanel.tsx
                    and FlagEditor.tsx, and src/app/scenarioFiles.ts)
-src/app/           main.tsx (no ?scenario → title screen; ?scenario=1938|toy → game.tsx), MapView.ts, simClient.ts,
+src/app/           main.tsx (no ?scenario → title screen; ?scenario=1938|random|toy → game.tsx), MapView.ts, simClient.ts,
                    hud.ts (persisted speed/pause, editor and God tools, drag painting), input/ (CameraController),
                    settings.ts, autosave.ts and saveDb.ts (IndexedDB), scenarioFiles.ts, gameUrl.ts, player.ts,
                    flagStore.ts, testApi.ts (__warsim), bench/ (bench.html pages: A B BP P R T W F)
@@ -114,7 +117,9 @@ tests/unit, tests/e2e (timing specs: *.perf.spec.ts, run after the parallel suit
 Main → worker (implemented: init, step, cmd, hash, inspect, save, load, speed, pause, subscribe,
 ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and get a `reply`,
 `provinces`, `terrain`, `political` or `error` back):
-- `init {init: {scenario, seed}}` (later: scenario bytes/URL, map size, settings). A fresh sim starts paused.
+- `init {init: {scenario, seed, options?, assets?}}`: `scenario` is `'1938' | 'random' | 'toy'`,
+  `options` the new-game options (`GameOptions`, §9), `assets` the map assets of the two worlds
+  on the earth map (the worker loads them when absent). A fresh sim starts paused.
 - `cmd {cmd: Command, now?}`: applied at the next tick boundary, stamped with that tick,
   and appended to `commandLog`. `now` (God Mode and player UI, PLAN 1.32b) applies it at once
   between ticks with the same stamp (`Sim.applyNow`); plain commands stay pending (I3).
@@ -129,6 +134,12 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
 - `formation {id}`: one formation as JSON (`FormationDetail`: nation, template, men now and when
   whole, supply, engaged, moving, its elements by unit type) for the formation panel, or `null`
   (PLAN 2.14b). Read-only, as `inspect`.
+- `warBattle {war}`: the largest battle of a war as JSON (`WarBattle`: where to look, the pair
+  of formations there, formations and men of each side), or `null` when the war has none (PLAN
+  2.14e; `largestBattle`, `src/sim/systems/warBattle.ts`). Worked out from the state when
+  asked; read-only. A battle of the war's two leaders comes before one of a leader, before one
+  of allies alone (ADR-95); of those, the one whose smaller side has the most men (ADR-94).
+  Each war of `nationStats` says whether it has one (`battle`, ADR-96).
 - `exportScenario`: the world without run history as state bytes + `scenarioHash` (PLAN 1.38).
 - `speed {ticksPerSecond | 'max'}`, `pause {paused}`, `step {n}`
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`
@@ -464,6 +475,33 @@ extraCores. The capital snaps to the nearest owned cell within 2 cells (coastal 
 PLAN 1.5 binds it to a city. `diplomacy.json` holds alliances (one per nation, unity), guarantees
 and wars in progress. Neighbouring nations differ in colour by ΔE*ab > 15 (`src/shared/color.ts`).
 
+**The random world (PLAN 2.16a, ADR-108; `src/sim/randomWorld.ts`).** Scenario `random`: the
+earth map, terrain, cities, economy tables, units, templates, rules and start date of the 1938
+world, with nations made by the seed. Its data is `data/scenarios/random/scenario.json` alone.
+- *Count:* the new-game option `nations`, brought into 2 to 200, 60 when none is asked for
+  (`RANDOM_NATIONS`, `src/shared/scenarios.ts`).
+- *Capitals:* drawn from the map's cities: of 12 cities drawn, the one farthest from the
+  capitals there are. One to a province, none on a piece of land under 12 cells.
+- *Land:* a province goes to the nation that reaches it first over the province graph (the
+  crossings are nodes); a nation's kilometre costs 0.6 to 1.8 by the seed, so the nations
+  differ in size. A province no road reaches goes to the nearest capital by the same measure.
+- *Nations:* named after the province of the capital (`provinceLabel`), the name in
+  `world.names` (state, saved); no `origin` (that marks a nation founded in a game); a colour by
+  golden-angle hue; aggression 15 to 85; no traits, alliances, wars or puppets.
+- *Armies:* infantry divisions for half the income, one in eight armoured and one in eight
+  motorised where there are eight, round the nation's six largest cities; 900 at most.
+- *Seeded* by `hash32(seed, …)`, not by the world's streams. The same seed and count give the
+  same world (`tests/unit/randomWorld.test.ts`).
+
+**A nation's name and flag by scenario (PLAN 2.16b, ADR-109).** `ScenarioInfo.nationTags`
+(`src/shared/scenarios.ts`) holds the tags of a scenario's nation table by nation id: the 103
+of 1938, none for the random and the toy world. A nation's name is, in this order: its entry in
+`world.names` (a God Mode rename, the names of the random and the toy world), the name key of
+its tag, the name of a founded nation (`foundedName`, `src/shared/nationNames.ts`: "Free
+<province>", the province being its `origin`, called by its own name or else its country's;
+PLAN 2.15b, ADR-100). The worker's `nameOf` resolves it; a literal name travels with a leading
+`=`. The flag follows the same rule (below).
+
 **Flags (PLAN 1.6, ADR-19).** `FlagSpec = {aspect, layers}` (`src/shared/flags.ts`), with layers:
 stripes, rect, cross (Nordic/Greek), saltire, hoist triangle, disc, star, crescent, poly, canton
 (nested layers) and preset (`data/flags/presets.json`, `$n` colour parameters). `flagShapes`
@@ -476,8 +514,8 @@ tag → spec.
 `foundedFlag(id, colour)` (`src/shared/flagPixels.ts`): one of the editor's 11 presets by a hash
 of the two, in the nation's colour, a dark or pale second and an accent. It is the view's and
 not in the state. `FlagStore` (`src/app/flagStore.ts`) gives, in this order: the painted flag
-(`world.flags`), the scenario's (not for a nation whose snapshot row says `founded`), the made
-one; a cached flag is made again when what it was made from changes (the colour, `founded`).
+(`world.flags`), the scenario's (for a nation with a tag in `nationTags` whose snapshot row does
+not say `founded`), the made one; a cached flag is made again when what it was made from changes (the colour, `founded`).
 
 **Economy (PLAN 1.9, ADR-22; `src/sim/systems/economy.ts`).**
 - *Cell values* (`cells.econ`, u32, $M/yr, saved): each NE admin-0 unit's industrial capacity is
@@ -782,13 +820,20 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   - *Suppression:* costs 15% × level of gross income.
   - *Revolt area:* one province, or (`revoltMode` 'region') adjacent provinces of the same holder
     and core with unrest ≥ 40, up to 8.
-  - *Rebels:* a new nation (origin province) takes the land and becomes its core. Its capital is
-    the area's largest city; if that was the holder's capital, the holder relocates. It gets 1–4
-    militia divisions and 50 gold. The holder always declares war on them (PLAN 1.40, ADR-44;
-    it was a 50% chance).
+  - *Rebels:* a new nation takes the land and becomes its core. Its capital is the area's
+    largest city; without a city, its own cell nearest the middle of the area (PLAN 2.15e1,
+    ADR-103). If the city was the holder's capital, the holder relocates. Its `origin`, which
+    names it (§3.4), is the province of its capital's cell (ADR-100, ADR-106). It gets 1–4
+    militia divisions, raised where production raises a formation (`spawnPoint`: ADR-104), and
+    50 gold. The holder always declares war on them (PLAN 1.40, ADR-44; it was a 50% chance).
+    Event `RevoltSpawned`.
   - *Defection and spreading (ADR-47):* a revolt on land whose core nation is alive (and not
     bound to the holder) returns the area to that nation. Otherwise, next to a rebel state it
     joins that state. Only otherwise does it found a new nation.
+  - *Land handed over (PLAN 2.15d, ADR-102):* a defection, and each handover of a God Kill, is
+    the event `LandCeded` (a = who received the land, b = who held it), not a revolt: "Land of
+    {b} went over to {a}" in the history. An area that joins a rebel state stays a
+    `RevoltSpawned`.
   - *Overextension (ADR-47):* a holder above 4% of the world's owned land gains, in provinces
     more than 80 cells from its capital, 1.25 × min(2, share/4% − 1) unrest a month, plus 2 on
     core land while one of its wars has exhausted its side to ≥ 60. The share is of km², not
@@ -1307,6 +1352,15 @@ is the formation's strength, which the sim recomputes from its elements at each 
   see the ADR.)
 - T2→T3: an element sprite cross-fades into its individual expansion, which is laid out inside
   the element footprint. (As built, PLAN 2.7b: a cross-fade over 250 ms.)
+- *Formation tags at T2 and T3 (PLAN 2.14a, ADR-88; `src/render/units/tags.ts`, drawn on the
+  overlay by `MapView`):* where the marker's box has given way to the elements, every formation
+  with something in the view has a tag: its nation's flag, its strength, its name ("Infantry
+  division 658": the template's name and the formation's id, derived in the view, not state).
+  A tag stands above the part of its formation that is on the screen. Stronger formations are
+  placed first; one that finds no place above, further out or below is left out and counted
+  (`tagsLeft`). It does not stand under the war banners or the bottom bar (PLAN 2.14f2). The
+  tag of the formation whose panel is open is framed and placed before any other (PLAN
+  2.14f3). A click on a tag or on a formation opens the formation panel (§9).
 - The map shader blends the detail layers by `z`, and border width is constant in screen px.
 
 **Interest management.** Main sends `subscribe` whenever the camera moves (throttled to
@@ -1411,6 +1465,12 @@ on screen.
   selected by a map click. Overview and Economy tabs; nation chips select. Data comes from the
   worker's `nationStats` message (every living nation + active wars, at most 1 Hz while ticks
   advance, and after init/load); real-map scenarios only.
+- **Formation panel** (PLAN 2.14b, `src/ui/FormationPanel.tsx`): opens on a click on a
+  formation, at any zoom that shows formations, where the nation panel stands. Its name and
+  kind, whose it is (the chip leads to the nation panel), its men against a whole one's, its
+  supply, whether it is in contact or on the march, its elements by unit type. The numbers are
+  the sim's (`formation {id}`, §2.3), asked for again as ticks advance; the panel closes when
+  the formation is gone. The formation is marked on the map while the panel is open.
 - **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
   treasury, manpower) on the right, toggled by the bottom bar's Statistics button; one banner
@@ -1553,7 +1613,11 @@ on screen.
     Its new-game form has a field for the number of nations (`ScenarioInfo.nationsRange`, 2 to
     200, 60 at first; Start only for a whole number in the range). The number is the game
     option `nations`, `?nations=N` in the URL, so it is in the autosave's record and in
-    Continue, and the game's own new-game form starts from it.
+    Continue, and the game's own new-game form starts from it. A world loaded without the
+    number in its URL (a scenario file; a continue URL typed without it) gives the form its
+    number of living nations, brought into the range (`setup` in `src/app/game.tsx`; ADR-111).
+    The range is said once on the title screen, among the scenario's facts; the hint beside
+    the field is the settings panel's.
   - Settings → Main menu autosaves the game and returns to `/`.
   - Loading a game (PLAN 1.43b) [ADR-61]:
     - *Continue:* shown when there is an autosave, with its scenario, in-game date and the time
@@ -1582,8 +1646,10 @@ on screen.
   (`settings.loopingMap`, saved; off = no wrap in pathing, territory, operational AI or
   rendering), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
   manpower multipliers and aggression bias), starting gold (random 0.25–2× or equal = median),
-  CE mode. Applied once at init from the seed; carried in the URL
-  (`looping=0&aggr=random&traits=random&gold=random|equal&ce=…`).
+  CE mode, and for the random world the number of nations (`nations`, §3.4). Applied once at
+  init from the seed; carried in the URL
+  (`looping=0&aggr=random&traits=random&gold=random|equal&ce=…&nations=N`). The type is
+  `GameOptions` (`src/shared/gameOptions.ts`).
 - **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,
   wheel and touch pinch. Speed and pause persist. Autosave. Screenshot key (F2 → PNG).
   UI size (rem scale). Unit-size setting. Looping map. Map size picker (PLAN 7.1b, ADR-43: the
@@ -1634,8 +1700,9 @@ on screen.
   The test API is `window.__warsim`: now `sim` (SimClient: init/step/command/hash/save/load/
   speed/pause/subscribe/buildProvinces) and `view` (camera, controller.set/zoomTo, frames,
   draw); later `god(cmd)`, `fps()`. It exists only in a game, not on the title screen. URL
-  options: `?scenario=1938|toy` (none = the title screen), `?seed=`, `?paused=1`, `?view=0`,
-  `?continue=1`, `?load=scenario`.
+  options: `?scenario=1938|random|toy` (none = the title screen), `?seed=`, `?paused=1`,
+  `?view=0`, `?continue=1`, `?load=scenario`, and the new-game options of §9 (`?looping=0`,
+  `?aggr=`, `?traits=`, `?gold=`, `?ce=`, `?nations=N` for the random world).
 - **Bench** (`npm run bench [-- A B BP R]`): Chromium on the real GPU (headless with
   `--use-angle=d3d11 --enable-gpu --ignore-gpu-blocklist`; without them it is SwiftShader).
   GPU time comes from EXT_disjoint_timer_query_webgl2 (gl.finish does not block under ANGLE).
