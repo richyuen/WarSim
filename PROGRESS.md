@@ -5733,3 +5733,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   pairs are each other's nearest, which the limit cannot touch; 2.14f6 runs the whole suite).
 - **Next:** PLAN 2.14f6, the whole: `zoomDemo1938`, the pictures of `docs/evidence/2.14/`
   shot again, PARITY; it ticks 2.14f and 2.14 and runs the whole e2e suite.
+
+## 2026-10-05 — PLAN 2.14f6: the whole of 2.14; it ticks 2.14f and 2.14
+
+- **No code changed.** Pictures, PARITY, PLAN.
+- **`zoomDemo1938`:** passes as written (1.2 min alone): Romanian division 658, day 30 of seed
+  1938, eight stops, a share's largest step 0.096, 44 sprites drawn walking over the close
+  stops. Not restated: it asks nothing of 2.14, whose five specs hold what 2.14 built.
+- **The pictures:** the 19 of `docs/evidence/2.14/` shot again (`EVIDENCE=1` with
+  `battleView`, `formationPanel`, `groundColour`, `tags`, `toBattle` only: 7 tests green, 49
+  s) and each looked at. Six byte for byte as before; 13 differ by a few bytes and show the
+  same. Day 60 lands on formations 45 and 563 as before. Nothing found wrong.
+- **Seen in them, not changed** (lines under PLAN 7.4): a tag under the top bar in
+  `contact-5m.png`; faint figures at 20 m/px in `to-battle-front.png`; a dim banner little
+  different from a lit one in `to-battle-banners.png`.
+- **PARITY:** no row had a word of 2.14 (the parts wrote none). Appended with evidence: Table
+  1 row 74, Table 2 rows 1 and 10. Statuses unchanged, 46.3%.
+- **Gotchas:** `EVIDENCE` is one switch for every spec: set for the whole suite it would
+  write over `docs/evidence/1.2`, `1.3`, `1.6` and `2.10` too. Name the specs. `tags1938`
+  also writes four `tags-bottom-*.png` into the folder: deleted, not committed.
+- **Not done:** the eight pictures of `docs/evidence/2.10/` are of the world before PLAN
+  2.13 (the Phase 3 review). The differentiator's score is the critic's, at the next run.
+- **The whole e2e suite** (ADR-87: the tick of a numbered task): 124 passed in 9.4 min, run
+  by hand (`npm run e2e`), nothing to fix from the parts. **A gotcha:** `npm run check` ran
+  parity only, because the commit that ticks 2.14 changes documents and pictures alone; the
+  gate's "full e2e on a tick" does not reach a tick with no code. Not changed here: a line
+  for the next review pass (the gate, or this rule's wording in CLAUDE.md).
+- **Next:** PLAN 2.15, a nation's end does not found dozens of states.

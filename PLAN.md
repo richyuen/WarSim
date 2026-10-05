@@ -1587,7 +1587,7 @@ quick sweep as a smoke test.
     - The armies the incomes do not carry are still cut, later: 846 formations after a
       year, 687 after two, 658 after five (seed 99). Whose budget is wrong is Phase 7's.
     - The weakest still goes first, so armour goes before infantry: a line under PLAN 3.1.
-- [ ] 2.14 Critic R2-B2: the close zoom shows a battle, and says who is in it. The
+- [x] 2.14 Critic R2-B2: the close zoom shows a battle, and says who is in it. The
   differentiator scored 5 and needs 8. What the critic saw (Germany against Poland by God
   Mode, 60 days; a ladder of 15 zooms from 12 km/px to 1 m/px; live frames):
   - **Who is who.** At T2 and T3 the marker boxes are gone and nothing is in their place: no
@@ -1880,7 +1880,7 @@ quick sweep as a smoke test.
       test's war the largest battle is the pair put down for it: a battle of a real front
       (dozens of formations, the pair chosen among them) was tested in the unit test's
       two-against-one only. Lines for 2.14f.
-  - [ ] 2.14f The whole: `zoomDemo1938` passes or is restated with the reason; the phase's
+  - [x] 2.14f The whole: `zoomDemo1938` passes or is restated with the reason; the phase's
     close pictures shot again on the final code and looked at; PARITY.
     **Split 2026-10-05,** one cause a commit (the lines came from 2.14b, 2.14c1 and 2.14e).
     The last part ticks 2.14f and 2.14 and so runs the whole e2e suite (ADR-87):
@@ -2060,9 +2060,32 @@ quick sweep as a smoke test.
         hour-by-hour test of `deploy.test.ts`, seen to fail with the limit off (2.26
         cells). `toBattle1938` by hand: the same pair, the same place. *Not done:* hops of
         40 km remain; no picture of a held-back block.
-    - [ ] 2.14f6 The whole: `zoomDemo1938` passes or is restated with the reason; the
+    - [x] 2.14f6 The whole: `zoomDemo1938` passes or is restated with the reason; the
       pictures of `docs/evidence/2.14/` shot again on the final code and looked at;
       PARITY rows with their evidence. Ticks 2.14f and 2.14: the whole e2e suite.
+      Done 2026-10-05. No code changed.
+      - *`zoomDemo1938`:* passes as it was written, not restated (Romanian division 658 on
+        day 30 of seed 1938; the eight stops, the largest step of a share 0.096). It asks
+        nothing of 2.14: the tags, the two sides and the ground's colour are in the
+        pictures of its close stops, held by the five specs below and not by the demo.
+      - *The pictures:* the 19 of `docs/evidence/2.14/` shot again by `battleView`,
+        `formationPanel`, `groundColour`, `tags` and `toBattle` with `EVIDENCE` set (7
+        tests green), and each looked at. Six came out byte for byte as they were
+        (`tags-t2-150m`, the three of the handover, `to-battle`, `to-battle-front`); the
+        other 13 differ by a few bytes and show what they showed. Nothing found wrong.
+        The four `tags-bottom-*.png` the run also writes are not kept, as before.
+      - *Seen in them, not changed:* in `contact-5m.png` the German division's tag is at
+        the view's top edge, under the top bar (2.14f2's "the other panels are not
+        obstacles"). In `to-battle-front.png` the figures at 20 m/px are faint on the
+        plain. In `to-battle-banners.png` a dim banner differs from a lit one by its
+        swords and frame only, little at a glance. Lines for PLAN 7.4.
+      - *PARITY:* no row had a word of 2.14. Appended, with evidence: Table 1 row 74 (unit
+        visuals: the tags and the formation panel), Table 2 row 1 (semantic zoom: all of
+        2.14) and row 10 (the ground's colour). The statuses stay partial; the score did
+        not move (46.3%).
+      - *Not done:* the eight pictures of `docs/evidence/2.10/` are still of the world
+        before PLAN 2.13 (the Phase 3 review, as 2.13 said); the critic's score of the
+        differentiator is the critic's to give, at the Phase 3 review or when asked.
 - [ ] 2.15 Critic R2-B6, the part that is not balance: a nation's end does not found dozens of
   states, and every nation has a name and a flag.
   - God Mode's Kill on France: 103 → 139 living nations at once, among them "Free Clipperton
@@ -2401,6 +2424,11 @@ quick sweep as a smoke test.
   - **Flags by scenario.** `flagStore` maps nation ids to 1938 tags in every scenario (the
     toy world's two nations wear the first two 1938 flags). A second scenario needs its flags
     from its own data.
+  - **From the pictures of PLAN 2.14, shot again (2.14f6, 2026-10-05):** a tag at the view's
+    top edge stands under the top bar (`contact-5m.png`; the nation, formation and ranking
+    panels are no obstacles to a tag either); figures at 20 m/px are faint on a plain
+    (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
+    its swords and frame only (`to-battle-banners.png`).
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
   - N3: occupied land stays hatched for years after a peace (Europe after 14 years of seed
     2718). A rule to look at, not a look: what a peace does with land that is held.
