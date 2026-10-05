@@ -1273,7 +1273,9 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   neighbourhood accumulates cubic B-spline weight (a C2-smooth indicator field). The max
   wins; the border is where the best and second weights meet, at a constant screen-px width
   (d / fwidth(d)). A bounded value-noise domain warp (≤ 0.32 cell) makes borders organic.
-  Occupation hatching uses the same weights.
+  Occupation hatching uses the same weights. With the ground of T2 and T3 the hatching gives
+  way to it (PLAN 2.11f, ADR-82): by the ground's share the two stripes close on the tint
+  between them, and an eighth of the hatching stays (`HATCH_AT_GROUND`).
   Since PLAN 1.28b the coastline comes from the 16384 × 8192 land mask:
   - The worker reduces it once to a 4096 × 2048 coverage texture (land fraction of each 4×4-bit
     block; `src/shared/landCoverage.ts`) and posts it with the terrain layer (`mapLayers`).

@@ -5150,3 +5150,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   a forest at T2, by up to 26 of 255. Now none in any view.
 - **Tests:** 1 new e2e test (115).
 - **Next:** PLAN 2.11f, occupied land's hatching at T2 and T3.
+
+## 2026-10-05 — PLAN 2.11f: occupied land at T2 and T3: the hatching gives way to the ground
+
+- **The decision (ADR-82):** with the ground, an eighth of the hatching stays, and occupied
+  land is told by its tint. A quarter, tried first, was still twice the ground's variation.
+- **Measured, failing first:** the stripes' contrast on Japan's land in north China: 50.7 of
+  255 at T1; at 150 and 20 m/px 50.3 before and 6.0 now, where the ground itself varies by 5
+  to 6. Occupied land (196, 189, 155) against the occupier's own (229, 226, 207).
+- **As they were:** T0 and T1 (the same picture with the ground and without it), the
+  handover (`fades1938` 43.1 and 42.0).
+- **Looked at:** `docs/evidence/2.11/occupied-150m.png` and `occupied-20m.png`: the relief,
+  the texture and the trees of the plain, a faint weave over them.
+- **Tests:** 1 new e2e test (116).
+- **Next:** PLAN 2.11g, a sprite at T2 shows what is left of its element.

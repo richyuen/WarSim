@@ -1313,7 +1313,7 @@ quick sweep as a smoke test.
     - Every picture of T2 and T3 taken so far was of the page, so each has the background
       showing through under trees and sprites, by up to 26 of 255. They are shot again in
       PLAN 2.11h.
-  - [ ] 2.11f Occupied land at T2 and T3: the hatching gives way to the ground. The hatch is
+  - [x] 2.11f Occupied land at T2 and T3: the hatching gives way to the ground. The hatch is
     in screen px and lies over the hillshade, the texture and what stands on the ground,
     across the whole view: the four close pictures of the zoom demo are of an occupied pocket
     and show stripes. Every war has occupied land, and it is where a player zooms in. How
@@ -1324,6 +1324,26 @@ quick sweep as a smoke test.
     (the measure of `ground1938`, within a stated share); occupied and unoccupied land still
     differ in the picture; at T0 and T1 the picture is as it was (hash); the change comes with
     the T1 ↔ T2 handover's share (`fades1938` passes). Pictures looked at; bench A.
+    Done 2026-10-05 (ADR-82). **The decision: with the ground, an eighth of the hatching
+    stays** (`HATCH_AT_GROUND` 0.12). The two stripes close on the tint between them by the
+    ground's share: occupied land at T2 and T3 is told by that tint (the occupier's colour,
+    darker, a sixth of the owner's in it), with a weave no stronger than the ground's own
+    variation on a plain.
+    - `tests/e2e/occupiedGround1938.spec.ts`, failing first, on Japan's land in north China at
+      the start. The stripes are known, so their contrast is measured: the mean brightness on
+      a stripe less that between two. At T1 50.7 of 255. At 150 and 20 m/px with the ground
+      6.0 (50.3 before: nine times the ground's own variation, 5.1 and 6.0); without the
+      ground (the tests' switch) 50.7, as at T1.
+    - At T1 the picture is the same with the ground and without it. Occupied land against
+      the occupier's own at 150 m/px: (196, 189, 155) against (229, 226, 207), and no stripes
+      at home.
+    - Not as the AT had it in one point: "the ground shows as on the same land unoccupied,
+      within a stated share" became the stripes against the ground's variation. The same
+      land is not to be had unoccupied, and the ground was always under the stripes.
+    - The handover: `fades1938` T1 → T2 43.1, T2 → T1 42.0, as before.
+    - Bench A not run for it: one `mix` on occupied pixels in the ground's program.
+    - Pictures: `docs/evidence/2.11/occupied-150m.png` and `occupied-20m.png`, looked at.
+    - Left: the legend still says "Hatched: occupied land" at every zoom (a line under 7.4).
   - [ ] 2.11g At T2 a sprite shows what is left of its element. A battalion at a third of its
     men is drawn as a whole one (a sprite dims only below 8 units), and then at T3 has a third
     of its figures (ADR-80). The snapshot carries the element's size since PLAN 2.10b. How it
@@ -1564,6 +1584,8 @@ quick sweep as a smoke test.
   - **Picking.** A marker in a stack cannot be picked by a click on the map (the lead is what
     is there). A selection ring stays on an id that a new formation has taken, and such a
     formation takes the dead one's place in a stack for one fade.
+  - **The legend at T2 and T3.** It says "Hatched: occupied land" at every zoom; since PLAN
+    2.11f occupied land is a tint with an eighth of the hatching there.
   - **Flags by scenario.** `flagStore` maps nation ids to 1938 tags in every scenario (the
     toy world's two nations wear the first two 1938 flags). A second scenario needs its flags
     from its own data.

@@ -14,6 +14,7 @@
  */
 
 import { SHORE_NOISE } from '../../shared/landMask';
+import { HATCH_AT_GROUND } from './ground';
 
 export const MAP_VS = `#version 300 es
 precision highp float;
@@ -344,6 +345,11 @@ void main() {
   // hatched region has smooth edges and never leaks across the controller border.
   if (!water && uMode == 0 && occ[bi] > 0.5 * acc[bi]) {
     float stripe = step(0.5, fract((gl_FragCoord.x + gl_FragCoord.y) / (7.0 * uDpr)));
+#ifdef GROUND
+    // With the ground of T2 and T3 the hatching gives way to it (PLAN 2.11f): the two stripes
+    // close on the tint between them, by the ground's share, and a little of each is left.
+    stripe = mix(stripe, 0.5, uDetail * ${(1 - HATCH_AT_GROUND).toFixed(3)});
+#endif
     col = mix(col * 0.72, mix(col, pal(occOwner[bi]), 0.35), stripe);
   }
 

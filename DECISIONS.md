@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-82 · 2026-10-05 · accepted — Occupied land at T2 and T3 is a tint, with an eighth of the hatching (PLAN 2.11f)
+
+- **Context:** occupied land (controller ≠ owner) is hatched: stripes of 7 screen px, the
+  occupier's colour darkened against a third of the owner's colour mixed in. That is the
+  picture of T0 and T1, and the legend's word for it. PLAN 2.8 put a ground under T2 and T3
+  (hillshade, texture, trees, buildings) and the hatching stayed on top of it at full
+  strength: 50 of 255 between two stripes where the ground varies by 5. The zoom demo's four
+  close pictures, of a pocket in China, are stripes. Every war makes occupied land, and it is
+  where a player zooms in.
+- **Decision:** with the ground the hatching gives way to it. By the ground's share the two
+  stripes close on the tint between them, and an eighth of the hatching stays.
+  - *The tint* is what tells occupied land at T2 and T3: the occupier's colour, darker, with
+    a sixth of the owner's colour in it. Japan's land in north China is (196, 189, 155)
+    where Japan's own is (229, 226, 207).
+  - *An eighth, and not none:* the hatching is the map's word for occupation at every other
+    zoom, and a weave of 6 of 255 is about what the ground itself varies by on a plain (5 to
+    6), so it does not lie over anything.
+  - *An eighth, and not a quarter* (tried first, as the task was first written): 13 of 255
+    is still more than twice the ground's variation on a plain.
+  - *By the ground's share,* so it comes and goes with the T1 ↔ T2 handover like the ground,
+    and not at all without the ground (a world without elevation, the tests' switch).
+- **Not chosen:** stripes that widen with the zoom (at T3 they would be bands across the
+  view); hatching only along the edge of occupied land (the edge is the front, which has its
+  border already); no change at T2 and less at T3 (T2 is where the pocket is seen whole).
+- **Tests:** the stripes are known, so their contrast is measured against whatever else is
+  in the picture (`occupiedGround1938.spec.ts`): 50.7 at T1; 6.0 at 150 and at 20 m/px with
+  the ground (50.3 before); 50.7 there without the ground.
+- **Left:** the legend says "Hatched: occupied land" at every zoom. A line under PLAN 7.4.
+
 ### ADR-81 · 2026-10-05 · accepted — The supply network is a function of the world: a refresh of some blocs gives what a full one gives (PLAN 2.11j)
 
 - **Context:** the fifth independent read (ADR-74) saved seed 99 at tick 2400, loaded it, and

@@ -57,3 +57,11 @@ export function groundReach(mPerPx: number, outM: number): number {
   const t = Math.min(1, Math.max(0, Math.log2(mPerPx / outM)));
   return 1 - t * t * (3 - 2 * t);
 }
+
+/**
+ * How much of the hatching of occupied land stays where the ground of T2 and T3 is in full
+ * (PLAN 2.11f). The hatching is the picture of T0 and T1. With the ground it would lie over
+ * the hillshade and the texture across the whole view: it gives way, to a weave no stronger
+ * than the ground's own variation on a plain, and occupied land is told by its tint.
+ */
+export const HATCH_AT_GROUND = 0.12;
