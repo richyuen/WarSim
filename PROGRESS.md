@@ -5943,3 +5943,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   before the fix were all opened only now (four of the eight had been); they say the same.
 - **Seen, not changed:** in 1938 the Spratly Islands are unowned land (France and Japan
   both claimed them): a line for the scenario's data, not looked into.
+
+## 2026-10-05 — PLAN 2.15e3: a rebel nation's origin is the province of its capital's cell
+
+- **Found:** one cause. `spawnRebels` read the origin's province at the capital's
+  coordinates; a shore city has those in a sea cell, in no province of the area, and the
+  origin fell back to the area's first province.
+- **The AT as written did not fail.** Asked of the capital's cell, 0 of the 406 of the
+  forced revolt had it outside the origin before the fix: those areas have their city in
+  the first province, so the fallback named them right. The 66 of PLAN 2.15b were counted
+  by the coordinates. The defect needs an area of several provinces with the shore city
+  not in the first (a revolt neighbours join; a piece of a Kill).
+- **Built (ADR-106):** the origin is the province of the city's cell, or of the nation's own
+  cell taken as a field capital.
+- **Tests:** `tests/unit/nationNames.test.ts`: 1 new, a shore city in an area of two
+  provinces given with the other first (seen to fail: origin 504 for 1676); the forced
+  revolt now asserts the capital's cell in the origin (it only counted before).
+- **The pin did not move** (324bc358).
+- **Run by hand:** `godUi1938` (2): green; the Kill of France names its five as before.
+- **Not measured:** how many nations of a plain game were named after the wrong province
+  (a 15-year run is three minutes; the rule is the same either way). 337 cities of the
+  start that are no capital have their coordinates outside the province of their cell.
+- **Next:** PLAN 2.15f, the whole of 2.15: the AT line by line, the pictures shot again,
+  PARITY. It ticks 2.15, so the gate runs the whole e2e suite.

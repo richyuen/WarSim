@@ -2180,8 +2180,8 @@ quick sweep as a smoke test.
       did not move.
     - *Not done:* see ADR-102, "what it does not change" (a revived nation still logs a
       revolt beside its "returned").
-  - [ ] 2.15e A rebel nation's capital and militia stand on its own land (the 74 of 406
-    from PLAN 2.12a).
+  - [x] 2.15e A rebel nation's capital and militia stand on its own land (the 74 of 406
+    from PLAN 2.12a). Done 2026-10-05 in four parts (ADR-103 to ADR-106).
     AT: the forced revolt in every province of the 1938 start: no capital on a cell that is
     not the nation's, no militia off sure land.
     Split 2026-10-05 (the 74 are two things: ADR-103):
@@ -2221,10 +2221,19 @@ quick sweep as a smoke test.
         fail: the 8), e2e in `coast1938.spec.ts`; `docs/evidence/2.15/atoll-clipperton-*.png`,
         looked at. The pin did not move.
       - *Not done:* land painted in the editor on the mask's water (ADR-105).
-    - [ ] 2.15e3 The origin is the province of the capital's cell, not of its coordinates
+    - [x] 2.15e3 The origin is the province of the capital's cell, not of its coordinates
       (the 66 of PLAN 2.15b with the capital outside the origin: a city on the shore names
       its nation after the area's first province).
       AT: the forced revolt: the capital's cell is in the origin for all 406.
+      Done 2026-10-05 (ADR-106).
+      - *The cause:* `spawnRebels` read the province at the capital's coordinates; those of
+        a shore city are in a sea cell, and the origin fell back to the area's first.
+      - *Found:* the AT as written passed before the fix (0 of 406: the forced revolt's
+        areas have their city in the first province). The 66 were a count by coordinates.
+        The defect shows in an area of several provinces whose shore city is not in the
+        first; the test that was seen to fail is of that (origin 504 for 1676).
+      - *Tests:* `tests/unit/nationNames.test.ts` (1 new; the forced revolt now asserts
+        it). The pin did not move. By hand: `godUi1938` (2), green.
   - [ ] 2.15f The whole: the AT above read line by line, the pictures shot again, PARITY.
     Ticks 2.15: the whole e2e suite.
 - [ ] 2.16 Critic R2-B7: more than one way to start. The title screen lists "World, 1938" and

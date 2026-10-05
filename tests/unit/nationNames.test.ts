@@ -14,10 +14,24 @@ import { assets1938, earthAdmin1 } from '../helpers/earth';
 const sim1938 = (seed = 5): Sim => new Sim({ scenario: '1938', seed, assets: assets1938(SIZE_1938.w) });
 const labels = (): string[] => earthAdmin1().meta.map(provinceLabel);
 
-/** The province of nation `id`'s capital. */
-function capitalProvince(world: World, id: number): number {
+/** The cell of every capital that is a city, by nation. */
+function capitalCities(world: World): Map<number, number> {
+  const cc = world.cities.cols;
+  const cells = new Map<number, number>();
+  world.cities.forEach((ci) => {
+    if (cc.capitalOf[ci] !== 0) cells.set(cc.capitalOf[ci]!, cc.cell[ci]!);
+  });
+  return cells;
+}
+
+/**
+ * The province of nation `id`'s capital: of the city's cell where the capital is a city (a city
+ * on the shore has its coordinates in a sea cell of the coarse grid: PLAN 2.15e3).
+ */
+function capitalProvince(world: World, id: number, cities: Map<number, number>): number {
   const nc = world.nations.cols;
-  return world.cells.province[Math.floor(nc.capitalY[id]!) * world.cells.w + Math.floor(nc.capitalX[id]!)]!;
+  const cell = cities.get(id) ?? Math.floor(nc.capitalY[id]!) * world.cells.w + Math.floor(nc.capitalX[id]!);
+  return world.cells.province[cell]!;
 }
 
 describe('the names of founded nations (PLAN 2.15b)', () => {
@@ -60,24 +74,56 @@ describe('the names of founded nations (PLAN 2.15b)', () => {
     expect(foundedName(id, world.nations.cols.origin[id]!, labels())).toBe(`Free ${labels()[area[1]! - 1]}`);
   });
 
+  // PLAN 2.15e3: a city on the shore has its coordinates in a sea cell of the coarse grid, which
+  // is in no province of the area, and the origin fell back to the area's first province.
+  it('the origin is the province of the capital\'s cell, not of its coordinates', () => {
+    const world = sim1938().world;
+    const g = navOf(world).graph;
+    const { owner, province, w } = world.cells;
+    const cc = world.cities.cols;
+    const withCity = new Set<number>();
+    world.cities.forEach((ci) => withCity.add(province[cc.cell[ci]!]!));
+    let shore = 0;
+    let found: { city: number; holder: number; area: number[] } | null = null;
+    world.cities.forEach((ci) => {
+      if (cc.capitalOf[ci] !== 0) return;
+      const holder = owner[cc.cell[ci]!]!;
+      const p = province[cc.cell[ci]!]!;
+      if (holder === 0 || p === 0 || p >= world.provinces.count) return;
+      if (province[Math.floor(cc.y[ci]!) * w + Math.floor(cc.x[ci]!)] === p) return; // not on the shore
+      shore++;
+      if (found !== null) return;
+      const q = (g.adj[p] ?? []).find((n) => n < world.provinces.count && !withCity.has(n) && owner[g.centre[n] ?? -1] === holder);
+      if (q !== undefined) found = { city: ci, holder, area: [q, p] };
+    });
+    expect(shore, 'cities with their coordinates outside the province of their cell').toBeGreaterThan(10);
+    expect(found, 'such a city beside a province without one').not.toBeNull();
+    const { city, holder, area } = found!;
+    const id = spawnRebels(world, area, holder);
+    expect(cc.capitalOf[city], 'the city is the capital').toBe(id);
+    expect(world.nations.cols.origin[id], 'origin').toBe(area[1]);
+    expect(foundedName(id, world.nations.cols.origin[id]!, labels())).toBe(`Free ${labels()[area[1]! - 1]}`);
+  });
+
   it('a revolt forced in every province of the 1938 start: every nation founded has a name', () => {
     const world = sim1938().world;
     const l = labels();
     const first = world.nations.highWater;
     for (let p = 1; p < world.provinces.count; p++) forceRevolt(world, p);
     const nc = world.nations.cols; // after the revolts: the table has grown (PLAN 2.12a)
+    const cities = capitalCities(world);
     let founded = 0;
-    let elsewhere = 0;
+    const elsewhere: number[] = [];
     for (let id = first; id < world.nations.highWater; id++) {
       founded++;
       const origin = nc.origin[id]!;
       expect(origin, `nation ${id}: an origin`).toBeGreaterThan(0);
       expect(foundedName(id, origin, l), `nation ${id}, origin ${origin}`).not.toMatch(/^Free state \d+$/);
-      // (A capital off the nation's land is PLAN 2.15e: there the origin is the area's first.)
-      if (capitalProvince(world, id) !== origin) elsewhere++;
+      if (capitalProvince(world, id, cities) !== origin) elsewhere.push(id);
     }
-    console.log(`forced revolts: ${founded} nations founded, ${elsewhere} with the capital outside the origin`);
     expect(founded).toBeGreaterThan(300);
+    // PLAN 2.15e3: a city on the shore named its nation after the area's first province.
+    expect(elsewhere.length, 'nations with the capital outside the origin').toBe(0);
     expect(first).toBe(NATIONS_1938.length + 1);
   }, 300_000);
 });

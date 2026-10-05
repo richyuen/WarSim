@@ -356,7 +356,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     if (best === 0 || cc.size[ci]! > cc.size[best]!) best = ci;
   });
   if (holderLostCapital) relocateCapital(world, holder);
+  let capitalCell: number;
   if (best !== 0) {
+    capitalCell = cc.cell[best]!;
     cc.capitalOf[best] = id;
     nc.capitalX[id] = cc.x[best]!;
     nc.capitalY[id] = cc.y[best]!;
@@ -366,11 +368,14 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     const h = owner.length / w;
     const mid = cells > 0 ? nearestCellWhere((c) => owner[c] === id, sx / cells, sy / cells, w, h, Math.max(w, h)) : -1;
     [nc.capitalX[id], nc.capitalY[id]] = mid >= 0 ? world.cellPoint(mid) : [0, 0];
+    capitalCell = mid;
   }
-  // The origin, which names the nation: the province of its capital (PLAN 2.15b), where that is
-  // in the area (the middle of an area without a city need not be).
+  // The origin, which names the nation: the province of its capital (PLAN 2.15b). Of the
+  // capital's cell, not of its coordinates: those of a city on the shore are in a sea cell of
+  // the coarse grid, in no province of the area (PLAN 2.15e3). The area's first province is left
+  // for a nation founded without a cell.
   if (revive === 0) {
-    const at = province[Math.floor(nc.capitalY[id]!) * w + Math.floor(nc.capitalX[id]!)] ?? 0;
+    const at = capitalCell >= 0 ? province[capitalCell]! : 0;
     nc.origin[id] = inArea.has(at) ? at : area[0]!;
   }
   // Militia.

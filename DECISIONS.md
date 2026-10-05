@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-106 · 2026-10-05 · accepted — A rebel nation's origin is the province of its capital's cell (PLAN 2.15e3)
+
+- **Context:** ADR-100 made the origin, which names a founded nation, the province of its
+  capital. `spawnRebels` read that province at the capital's coordinates. A city on the
+  shore has those in a sea cell of the coarse grid (ADR-103, point 1), which is in no
+  province of the area, and the origin fell back to the area's first province. 337 of the
+  cities of the 1938 start that are no capital have their coordinates outside the province
+  of their cell.
+- **Decision:** the origin is the province of the capital's cell: the city's cell
+  (`cities.cell`) where the capital is a city, else the nation's own cell that was taken
+  (ADR-103). Both are the nation's, so both are in the area. The area's first province is
+  left for a nation founded without a cell.
+- **What the count of PLAN 2.15b was:** its "66 of 406 with the capital outside the origin"
+  compared the origin with the province of the coordinates. An area of the forced revolt
+  has its city in its first province nearly always, so the fallback gave the right name
+  there: asked of the capital's cell, the 406 had 0 outside the origin before this change.
+  The defect needs an area of several provinces with the shore city not in the first: a
+  revolt that neighbours join (`REGION_JOIN`) and the pieces of a Kill.
+- **The pin:** not moved (324bc358).
+- **Tests:** `tests/unit/nationNames.test.ts`: a shore city beside a province without one,
+  the area given with the other province first (seen to fail: origin 504 for 1676); the
+  forced revolt now asserts the capital's cell in the origin for every nation founded.
+  By hand: `godUi1938` (2), green; the Kill of France names its five as before.
+
 ### ADR-105 · 2026-10-05 · accepted — An atoll the fine mask has no pixel for gets an islet in it (PLAN 2.15e2b)
 
 - **Context:** ADR-104 left 8 militia formations off sure land, each in a cell "without sure
