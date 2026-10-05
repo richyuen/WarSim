@@ -218,6 +218,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     so on a map that does not loop it slides along the edge).
   - `CameraController` has no unit test of its own (it needs an element); the flight's end
     by the user's hand is tested in the browser, by a key only.
+  - A drag begun before the flight does not end it (the flight starts when the worker has
+    answered, some milliseconds after the click): the press is what lands it, not the move.
+  - "The wheel's ease passes the four tiers in 0.6 s" is worked out from its rate (18 a
+    second), not measured, and it is the eased zoom of `zoomTo`: one notch of the wheel does
+    not ask for that span.
 
 ### ADR-96 · 2026-10-05 · accepted — A war's banner shows whether the war has a battle (PLAN 2.14f5b3)
 
