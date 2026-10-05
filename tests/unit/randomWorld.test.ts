@@ -5,6 +5,7 @@ import { RANDOM_NATIONS } from '../../src/shared/scenarios';
 import { createRandomWorld, randomNationCount } from '../../src/sim/randomWorld';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 2.16a: the random world, the earth shared out among nations the seed makes.
@@ -82,6 +83,12 @@ describe('random world (PLAN 2.16a)', () => {
         expect(nc.gold[id]).toBeGreaterThanOrEqual(0);
         expect(nc.manpower[id]).toBeGreaterThanOrEqual(0);
       });
+      // No capital on an islet (PLAN 2.16Re): its piece of land has a dozen cells. Before the
+      // rule a world of 200 had nations of one cell.
+      const piece = navOf(world).grid.component;
+      const pieceCells = new Map<number, number>();
+      for (let c = 0; c < owner.length; c++) if (terrain[c]! >= Terrain.Plains && province[c]! > 0) pieceCells.set(piece[c]!, (pieceCells.get(piece[c]!) ?? 0) + 1);
+      for (const [id, cell] of capitals) expect(pieceCells.get(piece[cell]!), `the land of ${id}'s capital`).toBeGreaterThanOrEqual(12);
       expect(colours.size).toBe(count);
       // Two provinces of the earth may share a name (a "Central" in several countries); few do.
       expect(names.size).toBeGreaterThanOrEqual(count - 3);
