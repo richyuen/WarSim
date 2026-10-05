@@ -912,6 +912,36 @@ quick sweep as a smoke test.
         town of red and slate roofs along two streets' directions around Berlin's dot.
 - [ ] 2.9 Coastline from the fine mask at T2/T3; elements never rendered on water.
   AT: e2e samples element positions at T3 near coasts against the mask (0 violations).
+  Split 2026-10-04 (ADR-79). Measured first, 1938, seed 99, by the nearest bit of the fine mask
+  (16384 × 8192, 8 px to a cell): at the start 200 of 23,210 elements stand on its water, in 18
+  formations, 11 of them wholly (their formation's own place is on water: a cell is land when half of
+  it is, and its middle need not be); 162, 353 and 124 after 30, 90 and 365 days. None is more than
+  half a cell from land.
+  - [ ] 2.9a Formations stand on land by the fine mask, and so do their elements (the sim). The sim
+    has the mask (it had only the cells' terrain). Where a formation takes a place that the mask
+    calls water (the middle of a coastal cell, a place by a city on the shore), it takes the cell's
+    land point instead: the point of the cell that is furthest from water. An element whose slot is
+    on water all the same (a spit narrower than the block) stands on the nearest land towards its
+    formation. One predicate, in `src/shared`, for the sim, the renderer and the tests.
+    Not in it: a formation on the march between two cells' land points can cross a bay (routing;
+    watch list).
+    AT: unit, 1938: at the start and after 30 and 90 days no formation at rest has its place on the
+    mask's water, and no element of a formation at rest stands on it (today: 200 at the start);
+    the place of an element in a snapshot, in a fire event and in the event of its end is one
+    place. e2e, 1938 at T3 near coasts: the element places the view holds, against the mask the
+    worker sent: 0 on water. The pinned hash of seed 99 moves (formations' places are state):
+    logged in DECISIONS; no sweep (ADR-58).
+  - [ ] 2.9b The coast is drawn from the fine mask at T2 and T3 (the renderer). Today the coast at
+    every zoom is the 4096 × 2048 coverage (2 texels to a cell); the mask has 8. The pass with the
+    ground reads the mask's bits (packed, eight to a texel, if a texture as wide as the mask does
+    not fit) and draws the coast where they say; inside a mask px, 2.4 km, the line is moved by
+    the ground's noise by less than half a px, so that a coast at 1 m/px is not a ruler's edge and
+    never says other than the bit. From T1 the coast changes to it with the handover's share. The
+    scatter of 2.8c keeps off the water by the same predicate.
+    AT: e2e: at T2 and T3 on a coast, land and water in the picture agree with the mask's bit
+    at sampled places further than half a mask px from the coast (0 against); no element sprite's
+    middle is on a water pixel of the picture; the coast at T1 is as it was (hash); `fades1938`
+    passes; screenshots viewed; bench A within the budget.
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
   Also decide ADR-69's open choice at the close stops: how a battalion's losses show at T3 (ADR-71).
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.

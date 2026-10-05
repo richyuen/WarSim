@@ -4770,3 +4770,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   pass and starts the count again. Both are in PROMPT.md's step 9 now; ADR-74 has the user's
   words.
 - **Next:** PLAN 2.9.
+
+## 2026-10-04 — PLAN 2.9 split in two (ADR-79)
+
+- **Read and measured first:** the sim does not have the fine land mask at all; a formation
+  stands at a cell's middle, and a coastal cell's middle can be water. 1938, seed 99: 200 of
+  23,210 elements on the mask's water at the start, in 18 formations (11 wholly), 124 to 353
+  through a year; none more than half a cell from land. An element's place is not state: it is
+  worked out from its formation's.
+- **2.9a, the sim:** formations take their cell's land point where their place would be on
+  water; an element on water all the same stands on the nearest land towards its formation.
+  The pinned hash will move. Marches across a bay are not in it.
+- **2.9b, the renderer:** the coast of T2 and T3 from the mask's bits, moved inside a mask px
+  by the ground's noise.
+- **One predicate** for "land at (x, y)", in `src/shared`.
+- **Next:** PLAN 2.9a, its test first.

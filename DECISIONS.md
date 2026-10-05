@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-79 · 2026-10-04 · accepted — Formations stand on land by the fine mask; the coast of T2 and T3 is drawn from it (PLAN 2.9)
+
+- **Context:** SPEC has the fine land mask "used by the sim for element placement ... and by
+  the renderer for coastlines. Both read the same bytes, so they never disagree." Neither is
+  so. The sim knows only the cells' terrain, and a cell is land when half of it is: its
+  middle, where a formation stands, need not be. The renderer draws every coast from a
+  coverage a quarter as fine as the mask.
+- **Measured** (1938, seed 99, by the mask's nearest bit): 200 of 23,210 elements on water
+  at the start, in 18 formations, 11 of them wholly; between 124 and 353 through a year. The
+  furthest is half a cell out.
+- **Decision 1: the fix is in the sim.** A formation that would take a place on the mask's
+  water takes its cell's land point, the point of the cell furthest from water. Its place is
+  state, so the pinned hash of seed 99 moves; logged when it does. No sweep follows (ADR-58:
+  one `sweep:quick` at the phase review).
+  - *Why not a correction of what is shown:* 11 of the 18 formations are wholly on water
+    because the formation is. Moving their elements to land one by one heaps 28 sprites on a
+    shore; moving the block by half a cell puts it 10 km from its own marker (ADR-70 has the
+    block about the formation's place at every tier).
+  - *An element on water all the same* (the block is 0.24 by 0.12 cells; a spit can be
+    narrower) stands on the nearest land towards its formation's place. That is not state:
+    an element's place is worked out from its formation's, and the snapshot, the fire events
+    and the event of its end use one function.
+  - *Not in it:* a march between two cells' land points is a straight line and can cross a
+    bay. That needs routing below the cell; on the watch list, and the test is of formations
+    at rest.
+- **Decision 2: one predicate.** "Land at (x, y)" is the mask's bit of the px that holds the
+  point, written once in `src/shared` and used by the sim's rule, the renderer's threshold
+  and the tests. (The renderer thresholds a bilinear coverage at a half today: that and the
+  bit differ by up to half a px.)
+- **Decision 3: the coast of T2 and T3 from the mask,** in the pass with the ground. A mask px
+  is 2.4 km, 2,400 px at 1 m/px: inside it the coast is moved by the ground's noise, by less
+  than half a px, so that it is a shore and not a ruler's edge, and never says other than
+  the bit further than that from the line. The coast of T0 and T1 stays the coverage's.
+- **The order:** 2.9a first (the task's own test, and the pin), then 2.9b.
+- **Cost known beforehand:** the mask is 16.8 MB of bits in the sim's process (the budget at
+  XL is 160 MB); the worker loads it already for the coverage and will load it before the
+  world is built instead of after.
+
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 
 - **Context:** PLAN 2.8 asks for hillshade from the elevation pyramid and procedural detail
