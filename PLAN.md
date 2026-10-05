@@ -2341,9 +2341,26 @@ quick sweep as a smoke test.
   missing tests. It belongs to the tasks it follows (ADR-74) and starts the count again.
   AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
   gate is green.
-  - From the gate of 2.16d: one run of the e2e suite took 15.6 min and `cityNames1938`
-    counted 39 and 31 ticks in four seconds; the next took 9.8. Do the three tests of
-    `randomWorld.spec.ts` slow their neighbours?
+  Split 2026-10-05, as PLAN 2.11 was: the pass is several causes. No part is a numbered
+  task: the gate runs the specs a part changes (ADR-87). No sweep: this is a pass of step 9,
+  not a phase review (ADR-58).
+  - [ ] 2.16Ra The independent read (ADR-74), the sixth: the 51 files of `src/` and the four
+    of `tools/` changed since the fifth (`3d6a2b2`: PLAN 2.12 to 2.16, 2,506 lines added in
+    `src/`), the new lines first. The same brief: defects only, nothing of what changed or
+    why. Each finding is checked against the code here before it is anything; those a
+    player can meet become tasks 2.16Rf and on, before 2.17, each with a test that fails
+    first, most severe first; the rest go on the watch list.
+  - [ ] 2.16Rb SPEC re-read for drift: the random world (§2.2, §3.4), flags and names by
+    scenario, the title screen and the URL options (`?scenario=1938|toy` in two places,
+    `?nations=N`), the protocol fields new since 2.11.
+  - [ ] 2.16Rc Dead code and refactor debt in the same 55 files.
+  - [ ] 2.16Rd The e2e suite's time. From the gate of 2.16d: one run of the suite took 15.6
+    min and `cityNames1938` counted 39 and 31 ticks in four seconds; the next took 9.8. Do
+    the three tests of `randomWorld.spec.ts` slow their neighbours? Measured by the tests'
+    own times in the suite against their times alone, not reasoned. If they do, the spec's
+    place in the run changes; no assertion does.
+  - [ ] 2.16Re Missing tests: what a to d find without one (2.16a: the rule against a
+    capital on an islet has no test).
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world
