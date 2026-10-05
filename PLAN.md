@@ -1068,6 +1068,26 @@ quick sweep as a smoke test.
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  Split 2026-10-05: the review is several causes. It is a review pass (PROMPT step 9): the
+  count of numbered tasks starts again with it.
+  - [ ] 2.11a The smoke run: one `npm run sweep:quick`, on the phase's code as gated
+    (`29053c1`). Its five limits in PROGRESS; a limit that fails in BLOCKERS, or a task if a
+    defect of this phase's feature caused it. Run once, not again after the tasks below.
+  - [ ] 2.11b The independent read (ADR-74) of everything written since the last one
+    (`ece4b2f`: PLAN 2.7z to 2.10b, 23 source files, 1,261 lines added). The whole of it: the
+    last read was narrowed, and this is the phase's. Each finding is checked against the code
+    here before it is anything; those a player can meet become tasks 2.11e and on, each with
+    a test that fails first; the rest go on the watch list.
+  - [ ] 2.11c The watch lists of the phase: 17 blocks in BLOCKERS wait for this review. Each
+    item becomes a task, a line under the later phase that covers it, a carry with the reason
+    it waits, or is closed. Two are looked at now and not carried: the division that stands
+    and is flagged as moving (PLAN 2.10b), and how long the worker's start takes with the land
+    mask (PLAN 2.9a).
+  - [ ] 2.11d SPEC re-read for drift (§3.1, §8, the map's rendering); the PARITY rows of the
+    phase with their evidence; code that nothing uses since the last pass deleted (a commit of
+    its own, gated).
+  Tasks that come out of 2.11b and 2.11c follow as 2.11e and on. 2.11 is ticked when they
+  are done; then the critic runs (PROMPT step 2a).
 
 ## Phase 3 — Armour
 

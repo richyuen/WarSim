@@ -4936,3 +4936,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** 2 new unit tests (633), no new e2e test (113).
 - **Next:** PLAN 2.11, the Phase 2 review. It is a review pass (the count starts again), with
   an independent read and one `sweep:quick`. The critic runs after it.
+
+## 2026-10-05 — PLAN 2.11 begun: the Phase 2 review, split in four
+
+- 2.11a the smoke sweep (one `sweep:quick`, on `29053c1`); 2.11b the independent read of all
+  that was written since the last one (23 source files, 1,261 lines; the last read cost
+  325,000 tokens and 45 minutes on fewer); 2.11c the 17 watch lists that wait for this review;
+  2.11d SPEC, PARITY and dead code.
+- What the review makes is tasks, not fixes: what the read and the lists turn up follows as
+  2.11e and on, one cause to a commit. 2.11 is ticked after them, and then the critic runs.
+- The count of numbered tasks for the next review pass starts again here.
