@@ -53,7 +53,9 @@ describe('flags of founded nations (PLAN 2.15c)', () => {
     console.log(`forced revolts: ${founded} nations founded, ${seen.size} different flags`);
     expect(founded).toBeGreaterThan(300);
     expect(seen.size).toBe(founded);
-  });
+    // The limit of the same run in nationNames and rebelCapitals: it takes 34 s alone and
+    // 93 s beside the suite's other long tests, against the default 90.
+  }, 300_000);
 
   it('the same id and colour give the same flag; any colour gives two colours or more', () => {
     let two = 0;

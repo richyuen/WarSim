@@ -6041,3 +6041,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   its names show only in an inspection.
 - **PARITY:** row 48 appended.
 - **Next:** PLAN 2.16c, the title screen: the random world on the list.
+
+## 2026-10-05 — After PLAN 2.16b: a test at its time limit, and a commit pushed on a failed gate
+
+- **What went wrong:** the gate was run a second time before the commit of 2.16b with its
+  output piped through `tail`, which hid its exit code: it had failed at the unit stage, and
+  the commit (c4f3aa2) was made and pushed all the same. The first run on the same code was
+  green, and so was a third on the pushed commit; `main` was not broken by the change.
+- **The failure:** `foundedFlags.test.ts`, the revolt forced in every province: "Test timed
+  out in 90000ms" (92.8, 93.0 and 94.1 s in three runs of the suite; 34 s alone). The same
+  with the new test file left out (94.1 s), so 2.16b is not its cause. The same run in
+  `nationNames.test.ts` and `rebelCapitals.test.ts` took 89 to 95 s and has a limit of 300 s.
+- **Changed:** that test has the limit of its two siblings (300 s). No assertion changed.
+- **Not looked into:** why the unit stage takes 126 to 136 s now (BLOCKERS says 40 s on the
+  idle machine, a figure of 2026-10-04); the machine read 1% load between runs.
+- **Gotcha:** never pipe the gate into `tail` in front of `&& git commit`: write it to a
+  file and read `$?`.
