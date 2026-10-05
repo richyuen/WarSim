@@ -237,3 +237,92 @@ describe('supply v1 (PLAN 1.12)', () => {
     expect(best).toBeLessThan(60);
   });
 });
+
+// PLAN 2.11j (the fifth independent read, finding 2). The network was said to be derived from
+// the cities and the control of the cells, and a partial refresh to be a full one done cheaply.
+// It was not, where a crossing lane is in play: a lane that a refreshed bloc no longer reaches
+// stayed unclaimed though a neighbour reaches it, and a lane held by a higher bloc stayed with
+// it though a lower one now reaches it. A load refreshes in full, so a loaded game went on
+// otherwise than the game that was saved (I2).
+describe('a partial refresh gives what a full one gives (PLAN 2.11j)', () => {
+  /** The network a full refresh makes of the world as it is; the world's own layer is put back. */
+  const differs = (a: Uint16Array, b: Uint16Array): number => {
+    let n = 0;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) n++;
+    return n;
+  };
+
+  it('a lane that its bloc no longer reaches goes to the neighbour that does, though the neighbour is not refreshed', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    refreshSupplyNetwork(w);
+    const { supply, controller, terrain } = w.cells;
+    const bloc = (c: number): number => (controller[c] === 0 ? 0 : blocOf(w, controller[c]!));
+    // A lane cell held by one bloc with land of another bloc beside it.
+    let lane = -1;
+    let other = 0;
+    for (let c = W; c < W * (H - 1) && lane < 0; c++) {
+      if (terrain[c] !== Terrain.Crossing || controller[c] !== 0 || supply[c] === 0) continue;
+      for (const n of [c - 1, c + 1, c - W, c + W]) {
+        const b = bloc(n);
+        if (b !== 0 && b !== supply[c] && supply[n] === b && b > supply[c]!) {
+          lane = c;
+          other = b;
+        }
+      }
+    }
+    expect(lane).toBeGreaterThan(0);
+    const holder = supply[lane]!;
+    // The holder's land within 8 cells of the lane goes to a third nation, far from here: the
+    // holder and that nation are refreshed, the neighbour is not.
+    const third = nationId('BRA');
+    expect(blocOf(w, third)).not.toBe(other);
+    const [lx, ly] = [lane % W, Math.floor(lane / W)];
+    let given = 0;
+    for (let dy = -8; dy <= 8; dy++) {
+      for (let dx = -8; dx <= 8; dx++) {
+        const c = (ly + dy) * W + ((lx + dx + W) % W);
+        if (controller[c] !== 0 && bloc(c) === holder) {
+          w.setController(c, third);
+          given++;
+        }
+      }
+    }
+    expect(given).toBeGreaterThan(0);
+    expect(w.supplyDirty).toBe(false);
+    expect([...w.supplyDirtyNations].map((n) => (n === 0 ? 0 : blocOf(w, n)))).not.toContain(other);
+    refreshSupplyNetwork(w);
+    // What the cell-by-cell rule makes of the whole world: the neighbour has the lane.
+    const whole = referenceNetwork(w, w.cells.supply);
+    expect(whole[lane]).toBe(other);
+    expect(w.cells.supply[lane]).toBe(other);
+    expect(differs(w.cells.supply, whole)).toBe(0);
+  });
+
+  it('the cells of a puppet that is annexed leave the network of its overlord at the next refresh', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    const [ALB, GRE, YUG] = [nationId('ALB'), nationId('GRE'), nationId('YUG')];
+    // Albania a puppet of Greece: its cells are in Greece's network.
+    w.nations.cols.overlord[ALB] = GRE;
+    w.supplyDirty = true;
+    refreshSupplyNetwork(w);
+    const cells: number[] = [];
+    for (let c = 0; c < W * H; c++) if (w.cells.controller[c] === ALB) cells.push(c);
+    expect(cells.length).toBeGreaterThan(20);
+    expect(cells.filter((c) => w.cells.supply[c] === GRE).length).toBeGreaterThan(20);
+    // Annexed by Yugoslavia: its cells change hands, and it is no one's puppet any more. Greece
+    // lost and won no cell, and Albania's bloc is now its own.
+    for (const c of cells) {
+      w.setController(c, YUG);
+      w.setOwner(c, YUG);
+    }
+    w.nations.cols.overlord[ALB] = 0;
+    expect(w.supplyDirty).toBe(false);
+    expect(w.supplyDirtyNations.has(GRE)).toBe(false);
+    refreshSupplyNetwork(w);
+    expect(cells.filter((c) => w.cells.supply[c] === GRE)).toEqual([]);
+    expect(cells.filter((c) => w.cells.supply[c] === blocOf(w, YUG)).length).toBeGreaterThan(20);
+    expect(differs(w.cells.supply, referenceNetwork(w, w.cells.supply))).toBe(0);
+  });
+});

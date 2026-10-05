@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-81 · 2026-10-05 · accepted — The supply network is a function of the world: a refresh of some blocs gives what a full one gives (PLAN 2.11j)
+
+- **Context:** the fifth independent read (ADR-74) saved seed 99 at tick 2400, loaded it, and
+  got another game: I2 of SPEC §2.6 did not hold. A load refreshes the supply network in full;
+  the game that goes on refreshes the blocs whose cells changed; and `supply.ts` said itself
+  that the two "can resolve a crossing lane differently". The marks of what to refresh are
+  "derived (not state)" in `world.ts` and are not saved. So two worlds with one hash could go
+  on differently. The year-long test of I2 (PLAN 1.27) saves seed 3 at a tick where they do not.
+- **Decision:** make the statement true. The network is a function of the cities, the
+  control of the cells and the blocs. A refresh of some blocs gives what a full one gives; the
+  marks are not state; the save is as it was.
+- **What stood in the way:**
+  1. *Lanes.* Blocs meet at the crossing lanes, which go to the lowest bloc that reaches
+     them. A refresh of bloc b alone left a lane unclaimed that b no longer reached, though a
+     neighbour reaches it; and left a lane with a higher bloc that b now reaches. Now: the
+     lanes a bloc holds are remembered with its spans, and the refresh is done again in full
+     when one of them is not the bloc's own afterwards, or when the flood comes to a lane in
+     a higher bloc's network.
+  2. *A bloc looked up too late.* A changed cell marked its old and new nation, and the
+     refresh looked up their blocs when it ran. A puppet annexed in between has no overlord
+     by then: its cells, flooded as its overlord's, stayed in the overlord's network under
+     their new holder. Not in the reader's finding; found here by running two games side by
+     side (seed 3, tick 1885: 28 cells). Now: a changed cell also marks the bloc in whose
+     network it lay, read from the layer. And as a net under it, a flood that comes to a cell
+     its bloc controls in another network makes the refresh full.
+- **Why not save the marks** (the load would then follow the game): the network would stay a
+  matter of the order things happened in. A full refresh from anywhere else (the editor, a
+  game option, a puppet made or freed) would then change lanes that nothing had touched. And
+  the hash would have to cover the marks, or two worlds with one hash would still part.
+- **Why not always a full refresh:** 6 ms every 12 hours of a war is 0.5 ms a tick, of 1.5.
+- **Cost:** pinned, five years of seed 99: 1.200 ms a tick twice (1.164 before). That is
+  0.036 ms a tick, some 7% of what always refreshing in full would cost. How many refreshes
+  were done again in full was not counted.
+  - One kind is done again for nothing: a lane that bloc b held and a lower refreshed bloc
+    takes in the same refresh. The result was right already. A line under PLAN 7.1.
+- **The pin (ADR-55):** unmoved. Seed 99's first year meets neither case and has 4aafc3eb
+  still. After five years daffda22 → 9e83b0a7: it meets one later.
+- **Tests:** two directed unit tests (the lane; the annexed puppet), and in the gate's year
+  file a game beside one that refreshes in full every time (seed 3, a hundred days) and a
+  load from the middle of a war (seed 3, tick 1890). All four fail on the code before.
+  Beyond them: the two games for a year on seeds 3, 7 and 1938, never apart.
+- **What it says about the invariant:** I2 was tested where it held. A test of "the loaded
+  game is the game" needs a save from a state the game is in only sometimes; the side-by-side
+  run finds such states without knowing them.
+
 ### ADR-80 · 2026-10-04 · accepted — T3: a battalion is drawn by its share of 64 figures (PLAN 2.10b; in place of ADR-69's count)
 
 - **Context:** ADR-69 made an element `min(strength, 64)` figures and named the cost: "at T3 a

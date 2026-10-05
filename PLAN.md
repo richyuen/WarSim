@@ -1172,7 +1172,7 @@ quick sweep as a smoke test.
     - The first gate failed on `declutter1938.spec.ts`: one of its assertions was of where
       formations stood a year into seed 1938. Restated to what the fold guarantees and
       flagged (ADR-79, fourth addendum).
-  - [ ] 2.11j A game loaded from a save goes on as the game that was saved. (The fifth read,
+  - [x] 2.11j A game loaded from a save goes on as the game that was saved. (The fifth read,
     finding 2; older than this phase.) SPEC §2.6 has it as I2, "must always pass". On the 1938
     world it does not hold for every save: a load forces a full refresh of the supply network
     (`World.load`: `supplyDirty = true`), while the game that goes on refreshes only the blocs
@@ -1187,6 +1187,29 @@ quick sweep as a smoke test.
     refresh is made to give what a full one gives) is the task's decision, in DECISIONS, with
     SPEC §2.6 and the line on loading brought to agree. The pinned hash: unmoved if the load
     is made to follow the game; moved and logged if the game's own refresh changes.
+    Done 2026-10-05 (ADR-81). The choice: a refresh of some blocs is made to give what a full
+    one gives, so the marks stay "not state" as the code always said, and the save does not
+    change. Two things were in the way, and the reader's lane was only one:
+    - *Lanes.* A lane that a refreshed bloc no longer reached stayed unclaimed though a
+      neighbour reaches it; a lane held by a higher bloc stayed with it though a lower one now
+      reaches it. Now such a refresh is done again in full.
+    - *A puppet that is annexed.* Its cells lay in its overlord's network, and the refresh
+      looked up its bloc when it ran, by when it had none: the cells stayed in the overlord's
+      network under their new holder (seed 3, tick 1885: 28 Albanian cells in Greece's network,
+      held by Yugoslavia). Now a changed cell marks the bloc in whose network it lay.
+    - Tests, all failing first: unit, two directed (a lane released: 0 where the rule gives the
+      neighbour; the annexed puppet: 114 cells left in the overlord's network). In the year
+      file of the gate: seed 3 beside a game that refreshes in full every time, a hundred days
+      (parted at tick 1885 before); seed 3 saved at tick 1890 and loaded (another hash a day
+      later, before).
+    - Beyond the tests: the two games side by side for a year on seeds 3, 7 and 1938: the
+      networks never differ and the hashes are equal.
+    - The pin did not move (seed 99's first year meets neither case): 4aafc3eb. After five
+      years daffda22 → 9e83b0a7 (it meets one later). The tick, pinned, five years: 1.200 ms
+      twice (1.164 before).
+    - In the world of before PLAN 2.11i the reader's case (seed 99, tick 2400) was the lane at
+      Bab-el-Mandeb; in today's world seed 99 has no such case in a year, and seed 3's is the
+      puppet. Both are tested directly.
   - [ ] 2.11k A formation mustered in a theatre stands on sure land. (The fifth read, finding
     3; PLAN 2.9a missed this path.) `musterPoint` returns a city's own place or a front
     cell's bare middle, and `productionSystem` writes it as it is. Seed 99, the first year: 13
@@ -1368,6 +1391,10 @@ quick sweep as a smoke test.
     no layer has been looked at at such a ratio.
   - What the ground costs a frame where there is no GPU (the tests' rasteriser: readings
     varied by a quarter).
+  - From PLAN 2.11j (ADR-81): a supply refresh of some blocs is done again in full when a lane
+    one of them held is not its own afterwards, also when a lower bloc refreshed with it took
+    the lane, where the first result was right. How often a refresh goes full was not
+    counted; the tick rose by 0.036 ms.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.

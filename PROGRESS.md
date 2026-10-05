@@ -5049,3 +5049,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   and more than twice as many at the end.
 - **Tests:** 3 new unit tests (636).
 - **Next:** PLAN 2.11j, a loaded game goes on as the game that was saved.
+
+## 2026-10-05 — PLAN 2.11j: a loaded game goes on as the game that was saved
+
+- **The decision (ADR-81):** the supply network is made what the code always said it was, a
+  function of the cities, the control and the blocs. A refresh of some blocs gives what a
+  full one gives, so a load, which refreshes in full, changes nothing. The save is as it was.
+- **Two causes, the reader's and one more:** lanes (a released lane stayed unclaimed; a lower
+  bloc did not take a lane from a higher one), and a puppet that is annexed (its cells stayed
+  in its overlord's network: found here by running two games side by side, seed 3, tick 1885).
+- **Tests, all failing first:** two directed unit tests; in the gate's year file, seed 3
+  beside a game that always refreshes in full, and seed 3 loaded from a save at tick 1890.
+- **Checked further:** a year side by side on seeds 3, 7 and 1938: never apart.
+- **The pin did not move:** 4aafc3eb (seed 99's first year meets neither case). Five years:
+  daffda22 → 9e83b0a7. The tick: 1.200 ms pinned (1.164).
+- **Tests:** 2 new unit tests (638), 2 new tests in the year file (10 in the sweep stage).
+- **Next:** PLAN 2.11k, a muster in a theatre stands on sure land.
