@@ -1003,6 +1003,27 @@ quick sweep as a smoke test.
 - [ ] 2.10 Scripted seamless zoom demo (world → close on an active battle), 8 stops, screenshots.
   Also decide ADR-69's open choice at the close stops: how a battalion's losses show at T3 (ADR-71).
   AT: Playwright test passes; screenshots viewed; PARITY row for semantic zoom gets evidence.
+  Split 2026-10-04: the demo and the choice are two causes, and the choice is to be made from
+  the demo's pictures (ADR-71 hands it on that way).
+  - [ ] 2.10a The demo: one camera path from the whole world down to 1 m/px on a battle of the
+    1938 scenario's own (a front that fights, found by a run in Node, not a battle God made),
+    in eight stops that cross all three tier boundaries, each tier at rest at least once, the
+    two closest on the battle. The game is paused and stepped between stops; the path is drawn
+    frame by frame on a clock of the test's own, so that a loaded machine changes how long the
+    test takes and not what it sees.
+    AT: e2e: in every frame of every leg no unit layer's share moves by more than a fade's
+    step (seamless is measured on the shares: while the camera moves, pixels move); at each
+    stop, at rest, the one layer of that tier is there in full and the subscription is that
+    tier's; the battle is in the picture at every stop (its counter, its marker, its elements,
+    its figures) and it fights at the close stops (fire or wrecks drawn); the sim's hash is
+    what the same steps give in Node. Eight screenshots in `docs/evidence/2.10/`, looked at.
+    The PARITY row of the semantic zoom gets them as evidence.
+  - [ ] 2.10b How a battalion's losses show at T3: ADR-69's open choice (the cap of 64 figures
+    hides them until the battalion is nearly gone), decided from 2.10a's two closest pictures,
+    where a battalion that has lost men stands by one that has not. The candidates of ADR-69:
+    the strength as a number under each element, or figures by the share of the element's full
+    size (which the snapshot would have to carry). Recorded in DECISIONS either way.
+    AT: written when the choice is made; if the look changes, the two pictures are shot again.
 - [ ] 2.11 Phase 2 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,

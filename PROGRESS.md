@@ -4874,3 +4874,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   lakes pop in by a fade at T2 but are absent at T1; the mask is held twice (34 MB).
 - **Next:** PLAN 2.10, the scripted zoom from the world to a battle (8 stops), and ADR-69's
   open choice.
+
+## 2026-10-04 — PLAN 2.10 split: the demo (2.10a), then the losses at T3 (2.10b)
+
+- The demo and ADR-69's open choice are two causes. The choice is made from the demo's close
+  pictures, so the demo comes first, with a battle stepped far enough that a battalion with
+  losses stands by one without.
+- The demo runs on a clock of the test's own (paused game, stepped; the camera path drawn
+  frame by frame): tonight every spec that measures wall time failed twice on a slow machine.
+- Seamless is measured on the layers' shares along the path. The pixel measure of ADR-71 needs
+  a camera at rest.
