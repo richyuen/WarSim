@@ -6803,3 +6803,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (two of five since the phase review).
 - **Next:** PLAN 3.2b (the fuel rule; written, in a stash while this is gated).
 - **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, parity; no e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 3.2a2: abreast, not behind (ADR-133 replaces the rule of ADR-132)
+
+- **What went wrong with 3.2a:** it was gated without the fuel rule and committed. With the
+  fuel rule back, two more 60-day tests of `deploy.test.ts` failed, by 3.2a's rule itself: a
+  line 1.5 cells behind its formation is 2.4 from its enemy's block (the test's limit: 1.5),
+  and ten lines one behind another are 30 km deep, so 88% shared a view with their enemy
+  (limit 90%). The first run of 3.2b had shown only the first failing `expect` of each test.
+- **One wrong try in between:** a floor for the way back. Every line past it stood on it (40
+  pairs on one another). Dropped after the advisor's review.
+- **Changed:** `deployOf`: the lines with room one behind another as before; a line without
+  room begins a file abreast, right and left by turns, `DEPLOY_ABREAST` (1 cell) at most.
+- **Tests:** the stack test of 3.2a is replaced by one that asks more (none on another by
+  depth or width, none behind the stack's place, each in one view with the enemy's block, on
+  land); red on ADR-132's rule. All seven of `deploy.test.ts` pass with the fuel rule and
+  without it.
+- **Learned:** a test that tells of a mechanism ("the last behind") passes on a mechanism
+  that breaks what the suite is for. And: after a change that moves seed 99's game, read
+  every `expect` of the 60-day tests, not the first that fails.
+- **The pin did not move** (0eb1fb78).
+- **Not done:** not looked at in the browser. Tick time not measured.
+- **Review pass:** not due.
+- **Next:** PLAN 3.2b (the fuel rule, in a stash; the pin will move to 8498494a or near).
+- **Gate:** green (code: typecheck, lint, unit 779, the ten-year tests 12, build, parity; no e2e for a part, ADR-87).

@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-133 · 2026-10-06 · accepted — A line with no room before its formation's place stands abreast, not behind (PLAN 3.2a2; replaces the rule of ADR-132)
+
+- **Context:** ADR-132, an hour old, put a line of a stack that has no room before its
+  formation's place behind that place, up to `DEPLOY_REACH` behind. With the fuel rule
+  (PLAN 3.2b, not committed) two 60-day tests of `deploy.test.ts` then failed:
+  - "a block held back is nearer its enemy's block than contact reaches": 2.38 cells. A line
+    1.5 behind its formation is that far from a block 0.9 before it, by the rule itself.
+  - "90% of the formations in contact share a view at 20 m/px with their nearest enemy":
+    88%. Ten of the fifteen that did not were the stack of ADR-132: a column 30 km deep.
+- **What the tests ask of a block:** not on another; near its enemy's block; in one view with
+  it. ADR-132 gave the first by taking the other two. Its own test asserted its mechanism
+  ("the last behind their own place"), not these.
+- **Tried and not taken:** a floor for the way back at the reach from the enemy's block. All
+  lines past the floor stand on it: 40 pairs on one another on that day.
+- **Decision:** the lines that have room before the formation's place stand one behind
+  another, as since ADR-89. The next line begins a new file abreast of them: right and left
+  by turns, a block's width and `DEPLOY_GAP` out, `DEPLOY_ABREAST` (1 cell) at most, and
+  never further than `DEPLOY_REACH` from the formation. No block stands behind its
+  formation's place. A block abreast is on land or stays at its formation's place.
+  Ten divisions on one cell a cell from one enemy: three lines of four, three and three.
+- **What cannot change:** a pair of each other's nearest, and every line that had room: the
+  rule before ADR-132 for them, to the digit.
+- **The test of ADR-132 is replaced** by one of the three things asked, which is more than it
+  asked: no two of the ten blocks nearer than a block's depth and the gap in a file or its
+  width and the gap in a line; the first across the gap from the enemy; none behind the
+  stack's place; each in one view with the enemy's block; all on land. It fails on ADR-132's
+  rule (a block 1.1 cells behind) and on the rule before it.
+- **Measured:** the seven tests of `deploy.test.ts` pass with the fuel rule and without it.
+- **Not state:** the pin stands (0eb1fb78).
+- **Not done:** not looked at in the browser. Formations that come to one enemy from several
+  sides count their lines together (ADR-89), so a stack begins its files sooner than it need.
+  More files than fit in a cell to each side stand on the last.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-132 · 2026-10-06 · accepted — A line of a stack that has no room before its formation's place is deployed behind it (PLAN 3.2a)
 
 - **Context:** formations whose nearest enemy faces a nearer formation come up to that enemy's

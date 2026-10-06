@@ -2833,6 +2833,13 @@ quick sweep as a smoke test.
     against one enemy stand in ten lines, none on another.
     - Done 2026-10-06 (ADR-132). `deployOf`: a line with no room before its formation's place
       stands behind it, `DEPLOY_REACH` at most. Not state; the pin stands.
+  - [x] 3.2a2 **Abreast, not behind** (3.2a's rule failed two other 60-day tests of
+    `deploy.test.ts` on 3.2b's game: a rear line 2.4 cells from its enemy's block, and 88% in
+    one view). AT: the stack test asks what the suite asks: none on another, each in one view
+    with the enemy's block; all seven tests pass with the fuel rule and without.
+    - Done 2026-10-06 (ADR-133, which replaces the rule of ADR-132). A line with no room
+      begins a file abreast of the lines that have: ten on one cell are three lines of four,
+      three and three. Not state; the pin stands.
   - [ ] 3.2b **Fuel: the march burns supply, and what moves on engines slows as it runs dry.**
     A fuel figure per template from `fuelPerHour` of the unit data. AT: unit, failing first:
     in a pocket a panzer division on the march is dry in half the time of one that stands and

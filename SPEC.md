@@ -798,7 +798,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   its front row half a kilometre short of the middle between the two; one whose nearest enemy
   faces a nearer formation comes up to that enemy's block, and no block goes further from its
   formation than contact reaches (`DEPLOY_REACH`, 1.5 cells; ADR-98); a line of a stack with no
-  room before its formation's place stands behind it (ADR-132). Derived from the formations' places
+  room before its formation's place stands abreast of the lines that have, a block's width out
+  to the right and left by turns (ADR-133). Derived from the formations' places
   and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
   rule does. So a view at 20 m/px holds both sides of a fight (97% of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the

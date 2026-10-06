@@ -149,23 +149,33 @@ describe('the blocks of formations in contact are deployed against each other (P
     expect(deployOf(w, a, 28)).not.toBeNull();
   });
 
-  it('ten divisions on one cell against one enemy stand in ten lines, the last of them behind their own place', () => {
+  it('ten divisions on one cell against one enemy stand in lines abreast: none on another, all near the block of the enemy', () => {
     const { s, a, b, site } = pair();
     const w = s.world;
     const stack = [a, ...Array.from({ length: 9 }, () => addDivision(w, GER, site[0], site[1]))];
     s.step(2);
     const blocks = stack.map((f) => deployOf(w, f, 28)!);
-    const depth = slotGrid(28).rows * SLOT_SPACING;
-    const xs = blocks.map((d) => d.x).sort((p, q) => q - p);
-    // One line behind another, a block's depth and the gap apart, none on another.
-    for (let i = 1; i < xs.length; i++) expect(xs[i - 1]! - xs[i]!).toBeGreaterThan(depth);
-    // The first faces the Pole across the gap; the last has no room before the stack's place.
-    expect(deployOf(w, b, 28)!.x - xs[0]!).toBeCloseTo(DEPLOY_GAP + depth, 9);
-    expect(xs.at(-1)!).toBeLessThan(site[0]);
+    const theirs = deployOf(w, b, 28)!;
+    const grid = slotGrid(28);
+    const [width, depth] = [grid.cols * SLOT_SPACING, grid.rows * SLOT_SPACING];
+    // None on another: a block's depth and the gap apart in a file, its width and the gap in a line.
+    for (let i = 0; i < blocks.length; i++) {
+      for (let j = i + 1; j < blocks.length; j++) {
+        const [dx, dy] = [Math.abs(blocks[i]!.x - blocks[j]!.x), Math.abs(blocks[i]!.y - blocks[j]!.y)];
+        expect(dx > depth + DEPLOY_GAP - 1e-9 || dy > width + DEPLOY_GAP - 1e-9).toBe(true);
+      }
+    }
+    // The first faces the Pole across the gap; no line stands behind the stack's place.
+    const xs = blocks.map((d) => d.x);
+    expect(theirs.x - Math.max(...xs)).toBeCloseTo(DEPLOY_GAP + depth, 9);
+    expect(Math.min(...xs)).toBeGreaterThanOrEqual(site[0]);
     for (const d of blocks) {
-      expect(d.y).toBeCloseTo(site[1], 9);
       expect(Math.cos(d.facing)).toBeCloseTo(1, 9);
-      expect(Math.abs(d.x - site[0])).toBeLessThanOrEqual(DEPLOY_REACH);
+      expect(cellDist(w, d.x, d.y, site[0], site[1])).toBeLessThanOrEqual(DEPLOY_REACH);
+      // Every block and the enemy's in one view at 20 m/px, centred between the two, 50 px clear of its edges.
+      expect(theirs.x - d.x).toBeLessThan(VIEW.w - 0.1);
+      expect(Math.abs(theirs.y - d.y)).toBeLessThan(VIEW.h - 0.1);
+      expect(w.onLand(d.x, d.y)).toBe(true);
     }
   });
 

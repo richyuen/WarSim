@@ -44,6 +44,8 @@ export const DEPLOY_GAP = 0.05;
  * contact can be (PLAN 2.14f5c). Two that are each other's nearest go 0.67 cells at most.
  */
 export const DEPLOY_REACH = CONTACT_CELLS;
+/** The furthest a block stands to the side of its formation's line to the enemy, cells (ADR-133). */
+export const DEPLOY_ABREAST = 1;
 
 /** Where the block of a formation in contact stands, and what it faces (`deployOf`). */
 export interface Deployment {
@@ -116,7 +118,8 @@ export function contactsOf(world: World): Map<number, number> {
  * pairs of each other's nearest, and the rest had no enemy near their block without it. That
  * enemy's block may stand on its far side, and its own enemy's further still: such a block goes
  * `DEPLOY_REACH` from its formation at most and stops there, short of the block it was going to
- * (without the limit one stood 80 km, four cells, from the formation the rules know).
+ * (without the limit one stood 80 km, four cells, from the formation the rules know). A line
+ * with no room before its formation's place stands abreast of the lines that have (ADR-133).
  *
  * Not state, as an element's place is not (`slotPlace`): worked out from the formations'
  * places and `engaged` flags. The formation itself, its marker and its part in the rules stay
@@ -140,6 +143,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     let tx = c.x[enemy]!;
     let ty = c.y[enemy]!;
     let short = -1;
+    let line = 0;
     if (contacts.get(enemy) !== f) {
       // Its nearest enemy has a nearer one of its own and is deployed against that. This one
       // comes up to where that enemy's block stands, as near as a formation it faced would
@@ -153,7 +157,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         others.push([g, sqrt(gx * gx + gy * gy)]);
       }
       others.sort((p, q) => p[1] - q[1] || p[0] - q[0]);
-      let line = Math.max(0, others.findIndex((o) => o[0] === f));
+      line = Math.max(0, others.findIndex((o) => o[0] === f));
       const enemySlots = slotCount(world, enemy, elementIndex(world).get(enemy)?.length ?? 0);
       const theirs = chain < 4 ? deployOf(world, enemy, enemySlots, chain + 1) : null;
       if (theirs) {
@@ -166,7 +170,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         const al = sqrt(ax * ax + ay * ay);
         if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) line++;
       }
-      short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + depth / 2 + line * (depth + DEPLOY_GAP);
+      short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + depth / 2;
     }
     const dx = wrapDx(world, fx, tx);
     const dy = ty - fy;
@@ -174,16 +178,26 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     if (d > 1e-9) {
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
-      // A line that has no room before its formation's place stands behind it (a stack of
-      // ten divisions on one cell is ten lines deep, not three lines and seven blocks in one).
-      const shift = Math.min(DEPLOY_REACH, short < 0 ? Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2) : Math.max(-DEPLOY_REACH, d - short));
+      let shift = Math.min(DEPLOY_REACH, Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2));
+      let side = 0;
+      if (short >= 0) {
+        // On the way to a block: as many lines as have room before its own place, one behind
+        // another. A line with no room stands abreast of those, right and left by turns, a
+        // block's width and the gap out (ten divisions on one cell against one enemy are
+        // three lines of three or four, not ten blocks in one, nor a column of thirty km).
+        const step = depth + DEPLOY_GAP;
+        const rows = Math.max(1, Math.floor((d - short) / step) + 1);
+        const file = Math.floor(line / rows);
+        side = Math.min(DEPLOY_ABREAST, Math.ceil(file / 2) * (slotGrid(count).cols * SLOT_SPACING + DEPLOY_GAP)) * (file % 2 === 1 ? 1 : -1);
+        shift = Math.min(sqrt(DEPLOY_REACH * DEPLOY_REACH - side * side), Math.max(0, d - short - (line % rows) * step));
+      }
       const ux = dx / d;
       const uy = dy / d;
       out = { x: fx, y: fy, facing: atan2(dy, dx) };
       // As far forward as the block's middle has land under it, in eighths of the way.
-      for (let k = 8; k >= 1; k--) {
-        const x = fx + (ux * shift * k) / 8;
-        const y = fy + (uy * shift * k) / 8;
+      for (let k = 8; k >= (side === 0 ? 1 : 0); k--) {
+        const x = fx + (ux * shift * k) / 8 - uy * side;
+        const y = fy + (uy * shift * k) / 8 + ux * side;
         if (!world.landMask || world.onLand(x, y)) {
           out = { x, y, facing: out.facing };
           break;
