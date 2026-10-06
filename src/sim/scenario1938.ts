@@ -7,6 +7,7 @@
  */
 import earthMap from '../../data/maps/earth/map.json' with { type: 'json' };
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
+import combatJson from '../../data/combat.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
@@ -116,6 +117,8 @@ const techIndex = new Map(TECH_DEFS.map((t, i) => [t.id, i]));
 const TECHS_1938: readonly TechRule[] = TECH_DEFS.map((t) => ({ id: t.id, year: t.year, prereqs: t.prereqs.map((p) => techIndex.get(p)!), category: t.category, gold: t.cost.gold, days: t.cost.days }));
 /** Tech indices the nation table gives a nation at the start, by nation id. */
 const GIVEN_TECHS_1938 = new Map(NATIONS_1938.flatMap((n, i) => (n.techs ? [[i + 1, n.techs.map((t) => techIndex.get(t)!)] as const] : [])));
+/** The arm of a unit class, as a bit: infantry 1, artillery 2, armour 4 (`ARM_ALL`). */
+const ARM_OF_CLASS = new Map<string, number>([combatJson.combinedArms.arms.infantry, combatJson.combinedArms.arms.artillery, combatJson.combinedArms.arms.armour].flatMap((classes, i) => classes.map((c) => [c, 1 << i] as const)));
 export const RULES_1938: ScenarioRules = {
   namedNations: NATIONS_1938.length,
   techs: TECHS_1938,
@@ -131,6 +134,7 @@ export const RULES_1938: ScenarioRules = {
     fuel: u.stats.fuelPerHour,
     terrainAtk: TERRAIN_IDS.map((t) => u.terrainMods[t]?.atk ?? 1),
     terrainDef: TERRAIN_IDS.map((t) => u.terrainMods[t]?.def ?? 1),
+    arm: ARM_OF_CLASS.get(u.class) ?? 0,
   })),
   templates: TEMPLATES_LAND.map((t) => ({
     ...templateMobility(t),

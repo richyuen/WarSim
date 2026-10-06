@@ -167,6 +167,65 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-139 · 2026-10-06 · accepted — Combined arms: four rules in a table; the first, a side with infantry, artillery and armour alive in a battle fires × 1.15 (PLAN 3.4a)
+
+- **Context:** PLAN 3.4, "combined arms (inf + art + armour bonus; AT vs armour; armour vs
+  infantry in the open)", AT "matrix test of unit-mix outcomes matches the design table in
+  SPEC". SPEC had no table: §6.1 had four sentences. Read first what was there (PLAN 1.13):
+  a shooter's `hard` against an armoured target and its `soft` against any other, halved
+  when the armour beats its piercing. So an AT gun (hard 18, piercing 45) already hits every
+  tank of 1938 in full, and a rifle battalion (hard 1, piercing 2) a light tank at 0.5.
+  Nothing read who else was in the battle.
+- **Decision, the table (SPEC §6.1):** four rules, each a factor on a volley's damage, one
+  part of PLAN 3.4 each. The figures of a rule go into `data/combat.json` with the part that
+  reads them, and the tests read that file.
+  1. *The three arms* (3.4a, this one): a side with infantry, artillery and armour alive in
+     the battle fires × 1.15.
+  2. *The screen* (3.4b): armour on close ground whose side has no infantry in the battle
+     takes more.
+  3. *Guns on guns* (3.4c): the fire of AT guns whose enemy has artillery in the battle is
+     less.
+  4. *The open* (3.4d): armour's fire at what is not armoured on open ground is more, unless
+     the target's side has AT guns in the battle.
+  The figures of 2 to 4 are the table's proposals until their part; 3.4c and 3.4d measure
+  first what `hard`, the piercing and the terrain table (grassland 1.1, desert 1.05) already
+  give, and a rule that would do the same thing twice is dropped there, with the reason.
+- **Decision, 3.4a:**
+  - *The arms:* by unit class, in the data: infantry = `inf`, `mot`, `mech` (cavalry is of
+    class `inf`); artillery = `art`; armour = `armor_l`, `armor_m`, `armor_h`. AT and AA guns
+    are of no arm: a rifle division with an AT gun and no howitzer has one arm.
+  - *A side:* for a shooting formation, the formations of its battle that its nation is not
+    at war with, itself among them. A battle is a group joined by contacts and not two camps:
+    of three nations of which two are at peace with each other and at war with the third,
+    those two are a side, allied or not. Not asked: an alliance.
+  - *Present:* an element of the arm with strength above 0 at the hour's start, in any
+    formation of the side. No share is asked: one tank brigade gives the bonus to every
+    division of its battle. A threshold by share was weighed and left: by elements the
+    panzer division's own guns are 2 of 44 and the tank corps's 2 of 53, and by health a
+    howitzer battery is 1.8% of a rifle division, so any figure would be set by the
+    templates of today. Phase 7 may ask it again.
+  - *A factor on the damage only*, beside supply and org (`COMBINED_ARMS`). The choice of
+    target does not know of it: the same volleys as before, each × 1.15 or × 1.
+  - *1.15:* a figure of mine, not tuned (ADR-58). Less than the ground gives (a forest
+    ÷ 1.25) and more than nothing.
+- **What it gives** (48 hours on plains against a holding infantry division, the attacker on
+  the move): the panzer division of 1938 takes 3,363 men for 792 (2,921 for 804 before,
+  ADR-137: × 1.151); a tank brigade, which has no guns, 1,382 for 611; the Soviet rifle
+  division, whose three light tank companies make the third arm, 1,509 for 986; an infantry
+  division 1,027 for 1,023. Of the nineteen land templates eight have the three arms
+  themselves: the two panzer divisions, the heavy panzer, light mechanised, mechanised and
+  main battle tank divisions, the tank corps and the Soviet rifle division.
+- **Tests:** `tests/unit/combinedArms.test.ts` (6; three red before the rule: the tank
+  brigade with a division with guns beside it, that division and an ally's, a light tank
+  company of a panzer division beside one of a tank brigade. Green before and kept: the
+  data, the guns destroyed, the other side's fire).
+- **The pin moved:** 5bb98ff4 → 50b337c6 (seed 99, one year).
+- **Saves:** no state added.
+- **Not done:** rules 2 to 4; nothing of it on the page (who has the bonus in a battle is
+  not shown: PLAN 3.6 or the review 3.7 to place it); how many formation-hours of a year
+  have the bonus was not counted; the AI does not know of it (PLAN 3.5); tick time not
+  measured (one pass over a battle's elements an hour, and an OR per pair of formations).
+
 ### ADR-138 · 2026-10-06 · accepted — A template crosses a cell at the least `speed` of its manoeuvre elements for that ground (PLAN 3.3b)
 
 - **Context:** the last of `terrainMods {atk, def, speed}` that nothing read (ADR-137 put the

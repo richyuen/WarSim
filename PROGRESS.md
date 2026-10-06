@@ -7030,3 +7030,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (four of five since the last one, with 3.3 ticked).
 - **Next:** PLAN 3.4 (combined arms).
 - **Gate:** green on the second run (code: typecheck, lint, unit 803, the ten-year tests 12, build, e2e in full 139 in 10.2 min, parity). The first run failed at e2e in `toBattle1938` (above).
+
+## 2026-10-06 — PLAN 3.4a: combined arms, the first rule: the three arms (ADR-139)
+
+- **Read first:** `hard` against armour, `soft` against the rest and the piercing are in since
+  PLAN 1.13; nothing read who else is in a battle. The AT of 3.4 names a design table in
+  SPEC that was not there. It is in §6.1 now: four rules, and 3.4 is split into four parts.
+- **Changed:** `data/combat.json` (new; `combinedArms`: the classes of three arms and the
+  bonus) and its schema; `UnitRule.arm`; `combat.ts`: the arms each formation of a battle has
+  alive, and × 1.15 on the fire of a formation whose side has all three. A side is the
+  battle's formations its nation is not at war with.
+- **Tests:** `tests/unit/combinedArms.test.ts` (6), written first; three red before the rule
+  (1 where 1.15 was due), three green before and kept (the data, the guns destroyed, the
+  other side's fire). The tests of 3.3a stand: the panzer division has the bonus on both
+  grounds.
+- **Measured** (a script in `.cache/`, not kept; 48 hours on plains against a holding
+  infantry division): the panzer division 3,363 men for 792 (2,921 for 804 before), a tank
+  brigade 1,382 for 611, the Soviet rifle division 1,509 for 986, an infantry division 1,027
+  for 1,023.
+- **The pin moved:** 5bb98ff4 → 50b337c6 (ADR-139).
+- **Not done:** rules 2 to 4 (3.4b to 3.4d; their figures in SPEC are proposals); no share of
+  a side is asked of an arm; nothing drawn or on the page, so no picture and no spec run
+  (`toBattle1938` not run: 3.4d runs it by hand before the full e2e); how many
+  formation-hours of a year have the bonus not counted; tick time not measured; no sweep
+  (ADR-58).
+- **Review pass:** not due (four of five since the last one; 3.4 is not ticked). It is due
+  after 3.4d, before 3.5.
+- **Next:** PLAN 3.4b (the screen: armour on close ground with no infantry of its side).
+- **Gate:** green (code: typecheck, lint, unit 810, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).

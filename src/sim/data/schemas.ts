@@ -75,6 +75,18 @@ export const TerrainDef = z.strictObject({
 });
 export const TerrainFile = z.strictObject({ terrain: z.array(TerrainDef) });
 
+// ── combat (data/combat.json) ────────────────────────────────────────────────
+
+const arm = z.array(z.enum(LAND_CLASSES)).min(1);
+export const CombatFile = z.strictObject({
+  /** PLAN 3.4a: a side of a battle with all three arms alive in it fires × `bonus`. */
+  combinedArms: z.strictObject({
+    /** The unit classes of each arm. */
+    arms: z.strictObject({ infantry: arm, artillery: arm, armour: arm }),
+    bonus: mult,
+  }),
+});
+
 // ── unit types (data/units/*.json) ───────────────────────────────────────────
 
 export const UnitStats = z.strictObject({
@@ -366,6 +378,7 @@ export type FlagsFile = { flags: Record<string, FlagSpec> };
 /** Paths are relative to `data/`, with `/` separators. */
 export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^terrain\.json$/, schema: TerrainFile },
+  { pattern: /^combat\.json$/, schema: CombatFile },
   { pattern: /^units\/[a-z0-9_]+\.json$/, schema: UnitsFile },
   { pattern: /^tech\/[a-z0-9_]+\.json$/, schema: TechFile },
   { pattern: /^traits\/[a-z0-9_]+\.json$/, schema: TraitsFile },

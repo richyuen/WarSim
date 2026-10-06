@@ -2909,6 +2909,40 @@ quick sweep as a smoke test.
       the page.
 - [ ] 3.4 Combined arms (inf + art + armour bonus; AT vs armour; armour vs infantry in the open).
   AT: matrix test of unit-mix outcomes matches the design table in SPEC.
+  Read first, 2026-10-06: in since PLAN 1.13, `hard` against armour and `soft` against the
+  rest, halved when the armour beats the piercing. Nothing read who else is in the battle,
+  and SPEC had no table. The table is in SPEC §6.1 now (ADR-139): four rules, one part each.
+  - [x] 3.4a **The three arms.** A side of a battle with infantry, artillery and armour alive
+    in it fires × the bonus of `data/combat.json`. AT: unit, failing first: every volley of a
+    tank brigade with a division with guns beside it is its volley alone × the bonus; so is
+    that division's and an ally's; none with the guns destroyed; the other side as before.
+    - Done 2026-10-06 (ADR-139). `data/combat.json` (`combinedArms`), its schema;
+      `UnitRule.arm`; one factor in `combat.ts` (`COMBINED_ARMS` 1.15).
+      `tests/unit/combinedArms.test.ts` (6; three red first). The pin: 5bb98ff4 → 50b337c6.
+      No new state.
+    - Not done: no share of the side is asked of an arm (one tank brigade serves a whole
+      battle); nothing of it on the page.
+  - [ ] 3.4b **The screen.** Armour on forest or urban ground whose side has no infantry alive
+    in the battle takes × a figure of `data/combat.json` (the table's proposal: 1.3). AT:
+    unit, failing first: every volley at a tank of a brigade of tanks alone in a forest is
+    the one with a rifle division beside it × the figure; the same on plains × 1; at its
+    infantry × 1.
+  - [ ] 3.4c **Guns on guns.** Measure first: of the tanks a rifle division takes from a tank
+    brigade, the share its AT gun takes (so "AT vs armour" is in the table by a number).
+    Then: the fire of AT guns whose enemy has artillery alive in the battle × a figure (the
+    proposal: 0.7). AT: unit, failing first: an AT gun's volleys at a tank brigade and at a
+    panzer division (which has guns), same target type, differ by the figure; the howitzers'
+    do not.
+  - [ ] 3.4d **The open, and the matrix.** Measure first what the terrain table gives armour
+    against infantry on plains, grassland and desert beside forest. Then: armour's fire at
+    what is not armoured on open ground × a figure (the proposal: 1.25) unless the target's
+    side has AT guns alive in the battle; or the rule is dropped with the reason, if the
+    table already does it. The task's AT: a matrix of mixes (tank brigade, panzer division,
+    rifle division with and without its AT gun, with and without howitzers) on plains and in
+    a forest, 48 hours each, whose outcomes stand to one another as the table's four rules
+    say (ratios between mixes, not men). Ticks 3.4 (the full e2e; `toBattle1938` by hand
+    first). The review pass of step 9 is due after it (the fifth numbered task since the
+    last one).
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.

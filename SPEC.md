@@ -968,14 +968,15 @@ bombardment) participants join through their missions.
   defence (when the target holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys.
   The terrain is the target's cell. Attack is the shooter's class figure of `terrain.json` ×
   its unit type's `terrainMods.atk`; defence is the ground's figure × the target's unit
-  type's `terrainMods.def` (PLAN 3.3a, ADR-137).
+  type's `terrainMods.def` (PLAN 3.3a, ADR-137). × 1.15 for a shooter whose side has
+  infantry, artillery and armour alive in the battle (PLAN 3.4a, ADR-139; the table of §6.1).
 - *Death:* an element at 0 is removed when its formation settles, and emits `ElementDestroyed`
   (element, unit, the slot it stood in; PLAN 2.4b). The event is a tick output, not state.
 - *Measured:*
   - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
     (square law: 0.268).
   - An 80-division battle costs 3.2 ms per tick.
-- *Deferred:* org and retreat (step 4), combined arms, entrenchment, experience, night and
+- *Deferred:* org and retreat (step 4), rules 2 to 4 of combined arms (§6.1), entrenchment, experience, night and
   weather, and persistent or major battles (§5.4).
 1. **Target selection** (deterministic): each element scores enemy elements in range
    by `typeMatch(weapon, targetArmor) × proximity × threat` and picks a target with
@@ -1063,6 +1064,22 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - Combined arms: armour is vulnerable to AT guns, CAS and heavy armour, and is strong vs
   infantry in the open. Infantry screens armour in urban/forest terrain. Artillery suppresses AT.
   Bonuses apply only when the elements are actually present in the battle.
+  *The design table (PLAN 3.4, ADR-139).* Each rule is a factor on a volley's damage and
+  never on the choice of target. A formation's *side* is the formations of its battle that
+  its nation is not at war with, itself among them; an arm is *present* on a side while an
+  element of it there has strength left. The classes of an arm and the figures are in
+  `data/combat.json` from the part that reads them.
+
+  | # | rule | when | factor | part |
+  |---|------|------|--------|------|
+  | 1 | The three arms | the shooter's side has infantry (`inf`, `mot`, `mech`), artillery (`art`) and armour (`armor_l/m/h`) present | fire × 1.15 | 3.4a, implemented |
+  | 2 | The screen | the target is armour on forest or urban ground and its side has no infantry present | damage taken × 1.3 (proposed) | 3.4b |
+  | 3 | Guns on guns | the shooter is an AT gun and the enemy side has artillery present | fire × 0.7 (proposed) | 3.4c |
+  | 4 | The open | the shooter is armour, the target is not armoured and stands on plains, grassland or desert, and the target's side has no AT gun present | fire × 1.25 (proposed) | 3.4d |
+
+  Beside the table, in since PLAN 1.13 (§5.2): a shooter's `hard` against an armoured target
+  and its `soft` against another, × 0.5 when the armour beats its piercing. That is "AT vs
+  armour": the AT gun of 1938 (hard 18, piercing 45) hits every tank of 1938 in full.
 - Tactical view: tank sprites with turret facing their target, muzzle flash, burning wrecks.
 
 ### 6.2 Naval
