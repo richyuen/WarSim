@@ -6546,3 +6546,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin did not move** (7fc8e685).
 - **Next:** PLAN 2.17e2, then 2.17e3 (which ticks 2.17 and takes the whole e2e suite).
 - **Gate:** green (code: typecheck, lint, unit 747, the ten-year tests 11, build, parity; no e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 2.17e2: the words of a refusal go with the selection that sent the command (ADR-125)
+
+- **The defect:** Ally refused on France, a click on Italy: Italy's God tab read "Not done: …".
+  `Hud.refusal` was cleared by the next command only.
+- **Changed** (`src/app/hud.ts` only): the words are cleared on every change of the selection
+  (an `effect` on `selected`) and in `toggleGod`; a refusal is shown only while the selection
+  is the one its command was sent under (`commandFor`).
+- **Tests, seen to fail first:** the Ally test of `godUi1938.spec.ts` (one `god-refusal` on
+  Italy's tab); `tests/unit/hudRefusal.test.ts` (4; 3 failed with the fix taken out). The
+  refusal that arrives after the selection has moved on is held by the unit test only: it
+  cannot be timed in a browser.
+- **Not told apart:** a late refusal after the selection has left and come back, or after a
+  later command of the same selection (the `refused` message does not name its command). In
+  ADR-125, with the way to close it.
+- **Run by hand** (a part, ADR-87): `godUi1938`, `godMode1938`, `editorDrag1938` with `--project chromium`: 20 green (1.4 min).
+- **Not looked at:** no screenshot (the change takes words away; `god-refusal.png` is as it was).
+- **Not done:** no sweep (ADR-58); no sim code changed, tick time not measured.
+- **The pin did not move** (7fc8e685).
+- **Next:** PLAN 2.17e3 (the God tab on a nation that has just died; it ticks 2.17e and 2.17 and takes the whole e2e suite).
+- **Gate:** green (code: typecheck, lint, unit 751, build, the changed spec `godUi1938` 6, parity; no ten-year tests: no sim input changed; no full e2e for a part, ADR-87).

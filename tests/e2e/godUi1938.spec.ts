@@ -269,6 +269,22 @@ test('a God action that is refused says why: Ally with a nation of another allia
   await page.getByTestId('god-war').click();
   await expect(page.getByTestId('god-refusal')).toContainText('they are allies');
   expect(atWar(await inspect(page), FRA, ITA)).toBe(false);
+
+  // The words are France's: a click on another nation, and they are gone (PLAN 2.17e2). Nor do they
+  // come back with France, or stay through God Mode switched off and on.
+  await select(12.5, 43, ITA);
+  await expect(page.getByTestId('panel-god')).toBeVisible();
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  await select(2.5, 47, FRA);
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  await page.getByTestId('god-war').click();
+  await expect(page.getByTestId('god-refusal')).toContainText('they are allies');
+  await page.getByTestId('god-btn').click();
+  await expect(page.getByTestId('panel-god')).toHaveCount(0);
+  await page.getByTestId('god-btn').click();
+  await page.getByTestId('tab-god').click();
+  await expect(page.getByTestId('panel-god')).toBeVisible();
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
 });
 
 // PLAN 2.17b (the critic's R2-B8): the Territory brush set the controller and not the owner. A

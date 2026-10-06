@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-125 · 2026-10-06 · accepted — The words of a refusal belong to the selection that sent the command (PLAN 2.17e2)
+
+- **Context:** `Hud.refusal` (ADR-117) was cleared by the next command only. Ally refused on
+  France, then a click on Italy: Italy's God tab read "Not done: …". `Hud.command` is the
+  editor's way too, so a refused editor command left words for a God tab opened later. Read
+  after the commit of PLAN 2.17a, not run until now.
+- **Decision:** in `src/app/hud.ts`:
+  - an `effect` on `selected` sets `refusal` to 0 on every change of the selection (both
+    writers of `selected`, the map's click and `onSelectNation`, are covered by it);
+  - `toggleGod` sets it to 0, on and off;
+  - `command` remembers the selection it was sent under (`commandFor`), and the `refused`
+    listener shows the reason only while the selection is still that one.
+- **Why in the Hud and not in the tab:** `GodTab` is drawn from the Hud's signal and has no
+  state of the words; the tab's own state (Kill armed, the typed name) is PLAN 2.17e3.
+- **Not done:** the `refused` message does not name its command. A refusal that arrives after
+  the selection has left and come back to the same nation is shown; so is one of an earlier
+  command after a later command of the same selection was carried out. The worker applies a
+  God command on receipt and answers within the same task, so a click cannot come between
+  on a page that is not stalled. A sequence number in `cmd` and `refused` would close it.
+- **No sim code changed; the pin did not move** (7fc8e685).
+- **Tests:** `godUi1938.spec.ts`, the Ally test (failed first: one `god-refusal` on Italy's
+  tab): gone after a click on another nation, not back with France, gone through God Mode off
+  and on. `tests/unit/hudRefusal.test.ts` (4 tests on a client that answers when told to;
+  3 failed first), among them the refusal that arrives late.
+
 ### ADR-124 · 2026-10-06 · accepted — The empty rename of a nation with no other name is refused (PLAN 2.17e1)
 
 - **Context:** `renameNation` with the empty name deletes the nation's entry in `world.names`:

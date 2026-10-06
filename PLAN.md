@@ -2706,11 +2706,17 @@ quick sweep as a smoke test.
         world; the toy world has no rules). A nation founded in the game has its province's
         name to go back to and is not refused. `tests/unit/refusal.test.ts` (two tests; the
         toy one failed first: the command was applied and the name deleted).
-    - [ ] 2.17e2 **The words outlive their nation.** `Hud.refusal` is cleared when the
+    - [x] 2.17e2 **The words outlive their nation.** `Hud.refusal` is cleared when the
       selection changes and when God Mode is switched on or off; a refusal that arrives after
       the selection has moved on is not shown.
       AT: e2e, failing first, added to the Ally test of `godUi1938.spec.ts`: the words are
       gone after a click on another nation.
+      - Done 2026-10-06 (ADR-125): `Hud` clears the words on every change of the selection and
+        in `toggleGod`, and shows a refusal only while the selection is the one the command
+        was sent under. The e2e failed first (the words on Italy's tab). The late refusal
+        cannot be timed in a browser: `tests/unit/hudRefusal.test.ts` (4; 3 failed first).
+      - Not told apart: a refusal of an earlier command that arrives after the selection has
+        gone away and come back is shown (the `refused` message does not name its command).
     - [ ] 2.17e3 **The God tab on a nation that has just died.** Read 2026-10-06, not run: the
       worker's `nations` are the living, so the panel closes with the next statistics; until
       then its buttons send commands that name the dead nation (rename, income bonus and the

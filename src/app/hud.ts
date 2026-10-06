@@ -4,7 +4,7 @@
  * and are applied to the sim worker on start. Keyboard: Space toggles pause, `,` / `.` change speed
  * (+/− already zoom the camera).
  */
-import { signal } from '@preact/signals';
+import { effect, signal } from '@preact/signals';
 import { dateOfTick } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
@@ -132,7 +132,16 @@ export class Hud {
     const mode = load(KEY_MAP_MODE);
     this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
     sim.onStats((m) => (this.stats.value = m));
-    sim.onRefused((reason) => (this.refusal.value = reason));
+    // The words are for the nation whose panel sent the command: a refusal that arrives after
+    // the selection has moved on is not shown, and none stays through a change of the selection
+    // (PLAN 2.17e2).
+    sim.onRefused((reason) => {
+      if (this.selected.peek() === this.commandFor) this.refusal.value = reason;
+    });
+    effect(() => {
+      void this.selected.value;
+      this.refusal.value = 0;
+    });
     sim.onMapLayers((m) => (this.templates.value = m.templates));
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';
     const metric = load(KEY_RANK_METRIC);
@@ -356,14 +365,19 @@ export class Hud {
   toggleGod(): void {
     this.godMode.value = !this.godMode.value;
     if (!this.godMode.value) this.setGodTool(null);
+    // The editor sends its commands this way too: none of its refusals is the God tab's.
+    this.refusal.value = 0;
   }
 
   /** Why the sim did not carry out the last command sent from here (`Refusal`; 0 = it did; PLAN 2.17a). */
   readonly refusal = signal(0);
+  /** The selection when the last command was sent: a refusal is shown to that nation's panel only. */
+  private commandFor = 0;
 
   /** Issues a God command, applied at once (also while paused). */
   command(cmd: Command): void {
     this.refusal.value = 0;
+    this.commandFor = this.selected.peek();
     this.sim.command(cmd, true);
   }
 
