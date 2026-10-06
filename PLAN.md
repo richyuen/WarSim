@@ -2784,15 +2784,15 @@ quick sweep as a smoke test.
       nations with an income of 1,000 or more know it on 1942-08-28).
     - Seen and left for Phase 7 (ADR-58): the small nations hardly learn (Portugal one tech
       in six years, Monaco none).
-  - [ ] 3.1e **Research on the page.** The nation panel names what a nation is researching,
-    how far each line is, and its budget; the tech names are in the i18n catalog.
-    AT: e2e: Germany's panel in 1938 lists three techs by name with a share paid that grows
-    over a month; a picture looked at.
   - [ ] 3.1c **Templates for what the gate holds back.** Heavy tank battalion or division,
     a second-generation armoured division, mechanised division, MBT division; i18n names;
     marker symbols; the AI's panzer order takes the best armoured template it knows.
     AT: unit, failing first: the heavy template is refused in 1938 and built once
     `armor_heavy_1` is known (the task's AT); production test of its cost, days and upkeep.
+  - [ ] 3.1e **Research on the page.** The nation panel names what a nation is researching,
+    how far each line is, and its budget; the tech names are in the i18n catalog.
+    AT: e2e: Germany's panel in 1938 lists three techs by name with a share paid that grows
+    over a month; a picture looked at.
   - [ ] 3.1d **What an armour formation is worth to the AI that cuts** (from PLAN 2.13,
     above). AT: seed 99, a nation short of money: its rifle divisions go before its armour of
     the same upkeep; the Soviet armour count after the first cut. Ticks 3.1.
