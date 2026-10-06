@@ -52,11 +52,18 @@ export interface GodTabProps {
 export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, refusal, onCommand, onTool }: GodTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
-  const [name, setName] = useState('');
+  // The name typed and the armed Kill are this nation's (PLAN 2.17e3): each is kept with the
+  // nation it was for, and is nothing on another nation's tab. The nation chosen below, the
+  // buff and the nation to revive are the player's choice and stay.
+  const [typed, setTyped] = useState({ nation: 0, name: '' });
+  const name = typed.nation === n ? typed.name : '';
+  const setName = (v: string) => setTyped({ nation: n, name: v });
   const [target, setTarget] = useState(0);
   const [buff, setBuff] = useState<(typeof BUFFS)[number]>('attack');
   const [revive, setRevive] = useState(0);
-  const [armKill, setArmKill] = useState(false);
+  const [armed, setArmed] = useState(0);
+  const armKill = armed === n;
+  const setArmKill = (on: boolean) => setArmed(on ? n : 0);
   const tgt = target !== 0 && others.some((o) => o.id === target) ? target : (others[0]?.id ?? 0);
   // The nation chosen while it is dead: one revived since is no longer in the list.
   const toRevive = dead.some((d) => d.id === revive) ? revive : (dead[0]?.id ?? 0);

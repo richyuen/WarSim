@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-126 · 2026-10-06 · accepted — A nation that has died is not selected any more, and what a God tab holds is its nation's (PLAN 2.17e3)
+
+- **Context:** read at PLAN 2.17e1, run now. Two causes, both seen to fail in one e2e:
+  - `Hud.selected` kept the id of a nation that had died. The worker's `nations` are the
+    living, so the panel closed with the next statistics; the legend of the diplomacy mode
+    still named the nation, the colours were its relations, and the Territory brush stayed
+    armed for it. An armed brush takes every click of the map (`Hud.pick`), paints nothing
+    with no panel to say why, and the only switch for it is in the God tab that had closed.
+  - `GodTab` kept its state through a change of the selection: Kill armed on France read
+    "Click again to kill" on Germany's tab, one click from killing Germany; the name typed
+    for France stood in Germany's field.
+- **Decision:**
+  - `src/app/hud.ts`, the `onStats` listener: a selected nation that the statistics list
+    among the dead is deselected through `onSelectNation(0)`, the map view's way, so that
+    the palette, the legend and the brush follow. By the statistics and not when the Kill is
+    sent: a Kill that is refused (the last nation) keeps its nation and its words (ADR-125).
+    Only a nation listed dead: one founded since the last statistics is not in `nations`
+    yet, and stays selected.
+  - the same file, the `effect` on `selected`: with no nation selected an armed Territory
+    brush is switched off. This covers the panel's own close button too, where the same
+    trap stood. The revolt and breakthrough tools are left: they end with their click.
+  - `src/ui/GodTab.tsx`: the name typed and the armed Kill are kept with the id of the
+    nation they were for, and are nothing on another nation's tab (nor on the first one's
+    when the selection comes back: a Kill is armed by a click on the tab that shows it).
+    The nation chosen for War, Ally and Puppet, the buff and the nation to revive stay from
+    one nation to the next: they are the player's choice, not a property of the nation.
+  - **Tried and taken back:** `GodTab` keyed by the nation's id. It also forgot the nation
+    chosen, and the Ally test (select Italy, back to France, War) then declared war on the
+    first nation of the list instead of the ally: the gate's e2e failed on it.
+- **Deviation from nothing in AoC:** no source says what its panel does when its nation dies.
+- **Not done:**
+  - between the Kill and the statistics that follow it (one message while paused, up to a
+    second at speed) the tab is still drawn, and Rename, the income bonus and the AI switch
+    of the dead nation are taken by the sim (`whyNoNation` asks only that the nation
+    exists). Refusing them is a rule of the sim and another cause.
+  - a panel that was closed opens on Overview, also after a death: the God tab is one more
+    click away. As it was for the close button.
+  - a world loaded over a selection whose id it does not have: neither living nor dead, it
+    stays selected with no panel. Not run.
+  - the nation the player controls and the editor's nation are not the selection and were
+    not looked at.
+- **No sim code changed; the pin did not move** (7fc8e685).
+- **Tests:** `godUi1938.spec.ts`, "Kill from the nation's own God tab" (failed first, twice:
+  "Click again to kill" on Germany's tab; then, with that mended, `selected` 19 after
+  France's death). `tests/unit/hudDeadSelection.test.ts` (5; 3 failed with the Hud's change
+  taken out). `docs/evidence/2.17/killed-from-own-tab.png`.
+
 ### ADR-125 · 2026-10-06 · accepted — The words of a refusal belong to the selection that sent the command (PLAN 2.17e2)
 
 - **Context:** `Hud.refusal` (ADR-117) was cleared by the next command only. Ally refused on

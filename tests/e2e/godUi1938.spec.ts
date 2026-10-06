@@ -466,3 +466,71 @@ test('Revive after a Kill says why not: the cooldown; after it the nation lives 
   await page.waitForTimeout(1_500);
   await page.screenshot({ path: path.join(out, 'revived-after-cooldown.png') });
 });
+
+// PLAN 2.17e3 (the critic's R2-B8): the God tab on a nation that has just died. The panel closed
+// with the next statistics, and the dead nation stayed selected: the legend named it, the
+// diplomacy colours were its, and the Territory brush stayed armed for it and took the map's
+// clicks. And what the tab held was not the nation's: Kill armed on France read "Click again to
+// kill" on Germany's tab.
+test('Kill from the nation’s own God tab: the panel is gone, nothing is selected, and no Kill is armed on the next nation', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const [FRA, GER] = [id('FRA'), id('GER')];
+  const select = async (n: number): Promise<void> => {
+    await page.evaluate((x) => window.__warsim!.view!.select(x), n);
+    await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(n));
+  };
+
+  await page.getByTestId('god-btn').click();
+  await page.evaluate(() => window.__warsim!.hud.setMapMode('diplomacy'));
+  await select(FRA);
+  await page.getByTestId('tab-god').click();
+
+  // What the tab holds is France's: a name typed and not sent, and Kill armed.
+  await page.getByTestId('god-rename-input').fill('Gaul');
+  await page.getByTestId('god-kill').click();
+  await expect(page.getByTestId('god-kill')).toHaveText('Click again to kill');
+  await select(GER);
+  await expect(page.getByTestId('panel-god')).toBeVisible();
+  await expect(page.getByTestId('god-kill')).toHaveText('Kill');
+  await expect(page.getByTestId('god-rename-input')).toHaveValue('');
+  // One click on Germany's Kill arms it and kills nobody.
+  await page.getByTestId('god-kill').click();
+  await expect(page.getByTestId('god-kill')).toHaveText('Click again to kill');
+  expect(nation(await inspect(page), GER).living).toBe(true);
+
+  // France again, the brush armed for it, and Kill from its own tab.
+  await select(FRA);
+  await expect(page.getByTestId('god-kill')).toHaveText('Kill');
+  await page.getByTestId('god-tool-brush').click();
+  await expect(page.locator('canvas#map')).toHaveCSS('cursor', 'crosshair');
+  await expect(page.locator('.legend-selected')).toHaveText('France');
+  await page.getByTestId('god-kill').click();
+  await page.getByTestId('god-kill').click();
+  await expect.poll(async () => nation(await inspect(page), FRA).living).toBe(false);
+
+  // The panel is gone, and so is the selection: on the map, in the legend, for the brush.
+  await expect(page.getByTestId('nation-panel')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => [window.__warsim!.hud.selected.value, window.__warsim!.view!.selected])).toEqual([0, 0]);
+  await expect(page.locator('.legend-selected')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__warsim!.hud.godTool.value)).toBeNull();
+  await expect(page.locator('canvas#map')).not.toHaveCSS('cursor', 'crosshair');
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.17') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.screenshot({ path: path.join(out, 'killed-from-own-tab.png') });
+
+  // A click on the map selects again (the armed brush took it), and the tab that opens has
+  // nothing of France's: no Kill armed, no name, no words.
+  await lookAt(page, 10.5, 51);
+  await page.mouse.click(700, 400);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(GER));
+  // A panel that was closed opens on its first tab, as after its own close button.
+  await page.getByTestId('tab-god').click();
+  await expect(page.getByTestId('god-kill')).toHaveText('Kill');
+  await expect(page.getByTestId('god-rename-input')).toHaveValue('');
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  expect(nation(await inspect(page), GER).living).toBe(true);
+});

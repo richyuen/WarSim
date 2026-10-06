@@ -131,7 +131,14 @@ export class Hud {
     this.paused.value = load(KEY_PAUSED) === '1';
     const mode = load(KEY_MAP_MODE);
     this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
-    sim.onStats((m) => (this.stats.value = m));
+    sim.onStats((m) => {
+      this.stats.value = m;
+      // A nation that has died is not selected any more (PLAN 2.17e3): its panel is gone, and the
+      // legend, the diplomacy colours and the brush were its still. By the statistics that list it
+      // dead, not when a Kill is sent: a Kill that is refused keeps its nation and its words.
+      const selected = this.selected.peek();
+      if (selected !== 0 && m.dead.some((d) => d.id === selected)) this.onSelectNation(0);
+    });
     // The words are for the nation whose panel sent the command: a refusal that arrives after
     // the selection has moved on is not shown, and none stays through a change of the selection
     // (PLAN 2.17e2).
@@ -139,8 +146,11 @@ export class Hud {
       if (this.selected.peek() === this.commandFor) this.refusal.value = reason;
     });
     effect(() => {
-      void this.selected.value;
+      const selected = this.selected.value;
       this.refusal.value = 0;
+      // The Territory brush paints for the selected nation. With none it painted nothing, took the
+      // map's clicks all the same, and no God tab was open to switch it off (PLAN 2.17e3).
+      if (selected === 0 && this.godTool.peek() === 'brush') this.setGodTool(null);
     });
     sim.onMapLayers((m) => (this.templates.value = m.templates));
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';

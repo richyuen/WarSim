@@ -6567,3 +6567,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin did not move** (7fc8e685).
 - **Next:** PLAN 2.17e3 (the God tab on a nation that has just died; it ticks 2.17e and 2.17 and takes the whole e2e suite).
 - **Gate:** green (code: typecheck, lint, unit 751, build, the changed spec `godUi1938` 6, parity; no ten-year tests: no sim input changed; no full e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 2.17e3: a nation that has died is not selected any more, and what a God tab holds is its nation's (ADR-126)
+
+- **Ticks 2.17e and 2.17** (the critic's R2-B8). The work was in the tree from the session before; this one looked at the picture, ran the gate and committed.
+- **The defects, both run and seen:**
+  - `Hud.selected` kept a dead nation: the panel closed with the next statistics, the legend
+    and the diplomacy colours were the dead nation's, and the Territory brush stayed armed,
+    taking every click of the map with no tab left to switch it off.
+  - `GodTab` kept its state through a change of the selection: Kill armed on France read
+    "Click again to kill" on Germany's tab; France's typed name stood in Germany's field.
+- **Changed:** `src/app/hud.ts` (a selected nation the statistics list dead is deselected
+  through `onSelectNation(0)`; with no nation selected an armed Territory brush is switched
+  off, also after the panel's close button). `src/ui/GodTab.tsx` (the typed name and the
+  armed Kill are kept with their nation's id).
+- **Tried and taken back:** `GodTab` keyed by the nation's id; it forgot the nation chosen
+  for War, and the Ally test then declared war on the wrong nation.
+- **Tests, seen to fail first:** `godUi1938.spec.ts`, "Kill from the nation's own God tab"
+  (twice, once on each cause); `tests/unit/hudDeadSelection.test.ts` (5; 3 failed first).
+- **Looked at:** `docs/evidence/2.17/killed-from-own-tab.png`: no panel, the legend says
+  "Click a nation to select it", the nations the Kill founded are in the ranking.
+- **Not a task:** between the Kill and the next statistics the dead nation's Rename, income
+  bonus and AI switch are taken by the sim. `whyNoNation` (`src/sim/tick.ts`) takes them on
+  purpose: a dead nation keeps its name and settings for a revival. Left as the rule it is.
+- **Not done** (ADR-126): a world loaded over a selection whose id it does not have; the
+  controlled nation and the editor's nation were not looked at. No sweep (ADR-58); no sim
+  code changed, tick time not measured.
+- **The pin did not move** (7fc8e685).
+- **Review pass:** not due (the count started again with 2.17: one of five).
+- **Next:** PLAN 3.1 (armour unit types): Phase 3 begins.
+- **Gate:** green (code: typecheck, lint, unit 756, build, the whole e2e suite 137 in 10.2 min because 2.17 is ticked, parity; no ten-year tests: no sim input changed).

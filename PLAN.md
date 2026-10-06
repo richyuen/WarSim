@@ -2537,7 +2537,7 @@ quick sweep as a smoke test.
       draws" (the other fault `settle`'s head describes). It has not failed.
   **2.16R done 2026-10-05** with 2.16Rf to 2.16Rk: they are what the pass found. The count of
   numbered tasks starts again with 2.17.
-- [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
+- [x] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world
     deletes the nation's only name; it then reads "Free state N".
@@ -2685,7 +2685,7 @@ quick sweep as a smoke test.
       revival's rule: `defect` and `spawnRebels` move the cells the centre's owner owns of a
       province, in every transfer; taking a third nation's cells would be land moved with no
       war behind it (ADR-119). The split province is in BLOCKERS.md for Phase 7.
-  - [ ] 2.17e **What is left of the list above.** The empty rename in a world without a
+  - [x] 2.17e **What is left of the list above.** The empty rename in a world without a
     nation table (ADR-109): refused, or the name kept. The God tab left open on a nation
     that has just died: what it shows and what its buttons send.
     From 2.17a, read after its commit and not run: **the words outlive their nation.**
@@ -2717,7 +2717,7 @@ quick sweep as a smoke test.
         cannot be timed in a browser: `tests/unit/hudRefusal.test.ts` (4; 3 failed first).
       - Not told apart: a refusal of an earlier command that arrives after the selection has
         gone away and come back is shown (the `refused` message does not name its command).
-    - [ ] 2.17e3 **The God tab on a nation that has just died.** Read 2026-10-06, not run: the
+    - [x] 2.17e3 **The God tab on a nation that has just died.** Read 2026-10-06, not run: the
       worker's `nations` are the living, so the panel closes with the next statistics; until
       then its buttons send commands that name the dead nation (rename, income bonus and the
       AI switch are taken: `whyNoNation`; the others are refused as dead). `Hud.selected`
@@ -2727,6 +2727,14 @@ quick sweep as a smoke test.
       button reads "confirm" for Germany (to be run; `armKill`, `name` in `GodTab`).
       AT: e2e, failing first: Kill from the nation's own God tab: the panel is gone, no
       nation is selected, and the tab opened on another nation has no Kill armed.
+      - Done 2026-10-06 (ADR-126). Run: both as read. `Hud` deselects, through the map view, a
+        nation the statistics list dead, and switches the Territory brush off when no nation
+        is selected (armed, it took every click of the map with no tab left to switch it
+        off). `GodTab` keeps the armed Kill and the typed name with their nation: Kill
+        armed on France read "Click again to kill" on Germany's tab. The e2e failed first on each cause;
+        `tests/unit/hudDeadSelection.test.ts` (5; 3 failed first).
+      - Not done: until the statistics after the Kill arrive, the dead nation's Rename, income
+        bonus and AI switch are taken by the sim (a rule of the sim, another cause).
   **PLAN 2.12 to 2.17 are the critic's second report (ADR-83).** They are numbered tasks and
   count toward the next review pass. Their order is not the critic's (R2-B2, B3, B4, B6, B7,
   B8): the two that change or question the world's state come before the one whose tests and
