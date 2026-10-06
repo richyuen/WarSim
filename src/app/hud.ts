@@ -70,25 +70,37 @@ export class Hud {
   readonly formation = signal(0);
   readonly formationInfo = signal<FormationDetail | null>(null);
   private formationAsked = false;
+  /**
+   * Which formation of that id (PLAN 2.16Ri): the id's count in the first answer. A freed id is
+   * given to the next formation made, and the panel is not that one's.
+   */
+  private formationGeneration: number | undefined;
 
   /** Opens the panel of formation `id`; 0 closes it. */
   selectFormation(id: number): void {
     if (id === this.formation.value) return;
     this.formation.value = id;
     this.formationInfo.value = null;
+    this.formationGeneration = undefined;
     this.refreshFormation();
   }
 
-  /** Asks the sim for the open formation again (one request at a time). A formation that is gone closes its panel. */
+  /** Asks the sim for the open formation again (one request at a time). A formation that is gone closes its panel, whether or not another has its id. */
   refreshFormation(): void {
     const id = this.formation.value;
     if (id === 0 || this.formationAsked) return;
     this.formationAsked = true;
+    const generation = this.formationGeneration;
+    // Whether the answer was for a panel that is no longer the open one.
+    let stale = false;
     void this.sim
-      .formation(id)
+      .formation(id, generation)
       .then((info) => {
-        if (this.formation.value !== id) return;
+        // Closed, or closed and opened again on the same id, while this was asked.
+        stale = this.formation.value !== id || this.formationGeneration !== generation;
+        if (stale) return;
         if (info === null) this.formation.value = 0;
+        else this.formationGeneration = info.generation;
         this.formationInfo.value = info;
       })
       .catch(() => {
@@ -97,7 +109,7 @@ export class Hud {
       .finally(() => {
         this.formationAsked = false;
         // Another formation was picked while this one was asked for.
-        if (this.formation.value !== 0 && this.formation.value !== id) this.refreshFormation();
+        if (this.formation.value !== 0 && (this.formation.value !== id || stale)) this.refreshFormation();
       });
   }
   /** Statistics ranking (PLAN 1.31b): shown and metric, both persisted. */
@@ -124,6 +136,8 @@ export class Hud {
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';
     const metric = load(KEY_RANK_METRIC);
     if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;
+    // A loaded world's formations are others, whatever their ids and counts (a load does not raise the counts).
+    sim.onLoad(() => this.selectFormation(0));
     sim.onSnapshotReceived((s) => {
       this.tick.value = s.tick;
       // The open formation panel follows the game.

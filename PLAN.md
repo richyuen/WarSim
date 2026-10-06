@@ -2476,7 +2476,7 @@ quick sweep as a smoke test.
       any province went to the largest nation founded (468 cells) and go to the one on
       Reykjavík (8 cells). The test failed first; the read before the revivals has no test
       (no such case in 1938 at the start). The pin did not move.
-  - [ ] 2.16Ri Finding 6: **the formation panel follows an id that another formation has
+  - [x] 2.16Ri Finding 6: **the formation panel follows an id that another formation has
     taken.** A table gives a freed id to the next row made (`Table.create`); the panel and
     the frame on the map know the id only. The formation whose panel is open is destroyed,
     another nation raises one, and the panel shows that one. How often in a game: not
@@ -2486,6 +2486,19 @@ quick sweep as a smoke test.
       back (`MapView.formationTitle` reads the last snapshot's ids).
     AT: failing first: the worker's answer for a formation removed and its id taken again
     says so (unit), and the panel closes (e2e, `formationPanel1938`).
+    - Done 2026-10-05 (ADR-115): the answer has the id's count (`generation`); the HUD asks
+      with it, and the worker answers `null` for a count that is another. A load closes the
+      panel too. Both tests failed first. The suspicion did not hold: a snapshot has every
+      formation, and the panel of one 300 cells outside the view stayed.
+    - Not closed: the first ask is by the id alone (one tick wide; ADR-115).
+  - [ ] 2.16Rk From 2.16Ri: **the player's selection follows a taken id too.**
+    `MapView.selectedFormations` is a set of ids, kept while the id is in the snapshot. A
+    selected formation is destroyed, another nation's takes its id, and the next click on
+    ground sends `moveFormation` for it; `orderMove` asks nothing of whose it is. Read, not
+    run.
+    AT: failing first (e2e, `player1938`): the player's selected formation removed and one of
+    another nation spawned in the same tick: nothing is selected, and a click on ground
+    orders nothing.
   - [ ] 2.16Rj From 2.16Rd: **`loadedWorld1938.spec.ts` failed once in a run of the suite**
     (one of five suite runs; twelve runs of the spec alone, four at a time, were green).
     After the forced revolt in Masovia, with the camera on the rebels' capital at 6 px a
@@ -2495,7 +2508,7 @@ quick sweep as a smoke test.
     changed.
     AT: the cause named. A defect: a test that fails first, and the fix. A wait: the spec
     waits for what it reads, with no assertion changed.
-  **2.16R stays open until 2.16Rf to 2.16Rj are done:** they are what the pass found.
+  **2.16R stays open until 2.16Rf to 2.16Rk are done:** they are what the pass found.
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world

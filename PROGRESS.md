@@ -6237,3 +6237,33 @@ No rule changed and nothing on screen changed. One task came out of it.
   in ADR-114); the random world's nine not counted again; no run in the page (nothing drawn
   changed), no sweep (ADR-58), tick time not measured (the Kill's path only).
 - **Next:** PLAN 2.16Ri.
+
+## 2026-10-05 — PLAN 2.16Ri: the formation panel knows its formation by id and count (ADR-115)
+
+- **The defect:** a freed id goes to the next formation made. The panel and the frame on the
+  map knew the id only: the formation destroyed, another raised, and the panel showed that one.
+- **The fix:** the worker's answer has the id's count (`Table.generation`); the HUD asks with
+  the count of the first answer, and the worker answers `null` when the count is another. The
+  panel closes on `null`, as it did for a formation that is gone. A load closes it too
+  (`SimClient.onLoad`): a load does not raise the counts.
+- **Tests, seen to fail first:**
+  - `formationDetail.test.ts`: a toy formation removed and one spawned in the same tick.
+  - `formationPanel1938.spec.ts`, a second test (7 s): "the panel of the Polish division that
+    is gone: expected 0, received 1" with the HUD of before; "the panel after a load" with the
+    load's hook switched off.
+- **The reader's suspicion** (the panel goes while its formation is out of view): not so; tried
+  in the same test, 300 cells outside the view over a tick.
+- **Run by hand** (a part, ADR-87): `npx playwright test tests/e2e/formationPanel1938.spec.ts
+  --project chromium`, both tests green (27 s).
+- **Seen:**
+  - The player's selection is by id too, and a move order asks nothing of whose the formation
+    is: PLAN 2.16Rk, read and not run.
+  - With the source of before and the new unit test, Playwright says only "webServer was not
+    able to start" (the type error of CLAUDE.md's note). The e2e was seen to fail with the
+    HUD alone put back.
+- **Not done:** the first ask is by the id alone (one tick wide, ADR-115); no screenshot
+  looked at (nothing new is drawn: a panel that closes); no sweep (ADR-58); tick time not
+  measured (nothing of the sim changed).
+- **The pin did not move** (7fc8e685).
+- **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, the changed spec, parity; no full e2e for a part, ADR-87).
+- **Next:** PLAN 2.16Rk, then 2.16Rj.

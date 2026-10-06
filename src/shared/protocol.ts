@@ -67,8 +67,12 @@ export type ToWorker =
   | { type: 'inspect'; reqId: number; full?: boolean }
   /** PLAN 1.34a: the history log as JSON `HistoryRow[]` in the reply bytes. */
   | { type: 'history'; reqId: number }
-  /** PLAN 2.14b: one formation as JSON `FormationDetail` in the reply bytes (`null` when it is gone). */
-  | { type: 'formation'; reqId: number; id: number }
+  /**
+   * PLAN 2.14b: one formation as JSON `FormationDetail` in the reply bytes (`null` when it is gone).
+   * With `generation` (that of an earlier reply): that formation and no other, so `null` too
+   * when another has taken its id since (PLAN 2.16Ri).
+   */
+  | { type: 'formation'; reqId: number; id: number; generation?: number }
   /** PLAN 2.14e: the largest battle of war `war` as JSON `WarBattle` in the reply bytes (`null` when it has none). */
   | { type: 'warBattle'; reqId: number; war: number }
   /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
@@ -395,6 +399,11 @@ export interface NationStat {
  */
 export interface FormationDetail {
   id: number;
+  /**
+   * How often the id has been given out (`Table.generation`): with the id it says which
+   * formation this is, in this worker and between two loads. Ids are given out again.
+   */
+  generation: number;
   tick: number;
   nation: number;
   /** Index of its template (the view has the template's name), and the men of a whole one (0 = no template). */

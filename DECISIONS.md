@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-115 · 2026-10-05 · accepted — The formation panel knows its formation by id and count; a load closes it (PLAN 2.16Ri)
+
+- **Context:** the sixth read's finding 6. A table gives a freed id to the next row made, the
+  last freed first (`Table.create`). The panel and the frame on the map knew their formation
+  by the id alone. The formation whose panel is open is destroyed, some nation raises one in
+  the same hour or later, and the panel shows that one: another kind, another nation.
+- **Decision:**
+  - `FormationDetail` has `generation`: how often the id has been given out
+    (`Table.generation`, ADR-74's entry of 2.7o, which the worker already compares for a
+    formation's place of a tick ago).
+  - The request `formation` may carry a `generation`. Then the worker answers `null` also
+    when the id's count is another: the formation asked for is gone.
+  - The HUD keeps the count of the first answer and asks with it from then on. `null` closes
+    the panel as before, and the frame on the map goes with it.
+  - A load closes the panel (`SimClient.onLoad`). A load does not raise the counts (2.7x), so
+    a loaded world's formation of the same id would pass for the old one.
+- **Why the worker says it and not the HUD:** the HUD could compare the counts of two answers
+  itself. Asked with the count, the answer for a formation that is gone is the same `null`
+  whether or not its id is taken, and there is one path that closes the panel.
+- **Rejected:** the count in the snapshot's formations (four bytes a formation in every
+  snapshot, for a panel that asks once a tick); a column in the table (state: the save and
+  the pin would move for a thing only the view needs, as in 2.7o).
+- **Not closed:** the first ask is by the id alone, for the click reads the id from a snapshot
+  that has no counts. A formation destroyed, and its id taken, between that snapshot and the
+  worker's answer opens the panel of the new one, where the click was. One tick wide.
+- **The reader's suspicion** (the panel goes while its formation is outside the subscribed
+  view): not so. A snapshot has every formation (`server.ts`, "Formations (all; …)"); only
+  elements are by the view's box. Tried in the page: the panel of a formation 300 cells
+  outside the view stays over a tick.
+- **Tests, seen to fail first:**
+  - `tests/unit/formationDetail.test.ts`: a toy formation removed and one spawned for the
+    other nation in the same tick has its id; asked with the first one's count the answer is
+    `null`, asked by the id alone it is the new one with another count.
+  - `tests/e2e/formationPanel1938.spec.ts`, its second test: the Polish division's panel
+    open, the division removed and a German one spawned: the panel closes and the German
+    marker has no frame (with the HUD of before: "the panel of the Polish division that is
+    gone: expected 0, received 1"). A click opens the German one's, and it stays over two
+    ticks. A load closes it (without the hook: "the panel after a load").
+- **Seen, not fixed here (PLAN 2.16Rk):** the player's selection (`MapView.selectedFormations`)
+  is by id too, and `moveFormation` asks nothing of whose the formation is.
+- **The pin did not move** (7fc8e685): nothing of the sim changed.
+
 ### ADR-114 · 2026-10-05 · accepted — A Kill's capital province is that of the capital's cell, read before the revivals (PLAN 2.16Rh)
 
 - **Context:** the sixth read's finding 3. ADR-99 names the capital's province twice: it is

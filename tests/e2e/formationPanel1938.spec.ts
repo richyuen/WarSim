@@ -253,3 +253,70 @@ test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s n
   await expect(page.getByTestId('formation-strength')).toHaveText(new RegExp(`^${num(later)} of `), { timeout: 15_000 });
   console.log(`the Polish division a day on: ${num(later)} men; status "${(await panel(page))!.status}"`);
 });
+
+// PLAN 2.16Ri (the sixth read, finding 6): a table gives a freed id to the next row made, and
+// the panel knew its formation by the id alone. The Polish division whose panel is open is
+// removed and Germany raises one in the same hour: it has the Polish one's id. (Before: the
+// panel stayed open and said "Germany", and the frame stood around the German marker.) The
+// panel closes; a click on the German division opens the German one's. A loaded world's
+// formations are others too, with the same ids: a load closes the panel.
+test('the panel closes when its formation is gone, though another has taken its id; and at a load', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const SITE = border();
+  await step(page, [
+    { kind: 'setSetting', key: 'aiEnabled', value: false },
+    { kind: 'spawnFormation', nation: POL, x: SITE[0] + 0.5, y: SITE[1], strength: 0, template: infantry },
+  ]);
+  const id = Math.max(...(await page.evaluate(() => window.__warsim!.view!.formationIds())));
+  const whose = (): Promise<number | undefined> => page.evaluate(async (id) => (await window.__warsim!.sim.inspect(true)).formations.find((f) => f.id === id)?.nation, id);
+  const centre = async (): Promise<[number, number]> => {
+    await settle(page);
+    return page.evaluate((id) => {
+      const r = window.__warsim!.view!.markerRects.find((m) => m.id === id || m.members.includes(id))!;
+      return [r.x + r.w / 2, r.y + r.h / 2];
+    }, id);
+  };
+  const open = page.getByTestId('formation-panel');
+  await zoomTo(page, SITE[0] + 0.5, SITE[1], 500, false);
+  expect(await whose()).toBe(POL);
+  await page.mouse.click(...(await centre()));
+  await expect(open).toHaveAttribute('data-formation', String(id));
+  await expect(page.getByTestId('formation-nation')).toHaveText('Poland');
+
+  // The reader's suspicion: the panel goes while its formation is out of view. It does not (a
+  // snapshot has every formation, in view or not).
+  await zoomTo(page, SITE[0] + 300, SITE[1] - 40, 500, false);
+  await step(page, []);
+  await expect(open).toHaveAttribute('data-formation', String(id));
+  await expect(page.getByTestId('formation-nation')).toHaveText('Poland');
+  await zoomTo(page, SITE[0] + 0.5, SITE[1], 500, false);
+
+  // The Polish division goes and a German one comes, with its id.
+  await step(page, [
+    { kind: 'removeFormation', id },
+    { kind: 'spawnFormation', nation: GER, x: SITE[0] + 0.5, y: SITE[1], strength: 0, template: infantry },
+  ]);
+  expect(await whose(), 'the freed id is given to the German division').toBe(GER);
+  await expect(open, 'the panel of the Polish division that is gone').toHaveCount(0, { timeout: 10_000 });
+  expect((await frame(page, id, 'marker'))!.lit, 'the frame\'s pixels around the German marker, which is not picked').toBe(0);
+
+  // A click on the German division: its own panel, and it stays as the game goes on.
+  await page.mouse.click(...(await centre()));
+  await expect(open).toHaveAttribute('data-formation', String(id));
+  await expect(page.getByTestId('formation-nation')).toHaveText('Germany');
+  await step(page, []);
+  await step(page, []);
+  await expect(page.getByTestId('formation-nation')).toHaveText('Germany');
+  await expect(page.getByTestId('formation-strength')).toBeVisible();
+
+  // A load, here of the same world: the panel closes.
+  await page.evaluate(async () => {
+    const sim = window.__warsim!.sim;
+    await sim.load(await sim.save());
+  });
+  await expect(open, 'the panel after a load').toHaveCount(0, { timeout: 10_000 });
+  expect(await whose()).toBe(GER);
+});

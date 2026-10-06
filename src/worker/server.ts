@@ -228,7 +228,7 @@ export class SimServer {
         this.reply(msg.reqId, this.historyRows(), false);
         break;
       case 'formation':
-        this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(this.formationInfo(msg.id))), false);
+        this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(this.formationInfo(msg.id, msg.generation))), false);
         break;
       case 'warBattle': {
         const world = this.requireSim().world;
@@ -729,10 +729,14 @@ export class SimServer {
     return new TextEncoder().encode(JSON.stringify(out));
   }
 
-  /** One formation for its panel (PLAN 2.14b), or null when there is none of that id. */
-  private formationInfo(id: number): FormationDetail | null {
+  /**
+   * One formation for its panel (PLAN 2.14b), or null when there is none of that id. Asked with
+   * a `generation`, null also when the id is another formation's by now (PLAN 2.16Ri).
+   */
+  private formationInfo(id: number, generation?: number): FormationDetail | null {
     const world = this.requireSim().world;
     if (!Number.isInteger(id) || id <= 0 || !world.formations.has(id)) return null;
+    if (generation !== undefined && world.formations.generation[id] !== generation) return null;
     const fc = world.formations.cols;
     const ec = world.elements.cols;
     const template = fc.template[id]!;
@@ -752,6 +756,7 @@ export class SimServer {
     }
     return {
       id,
+      generation: world.formations.generation[id]!,
       tick: world.tick,
       nation: fc.nation[id]!,
       template,

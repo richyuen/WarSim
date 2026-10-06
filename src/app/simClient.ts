@@ -320,9 +320,12 @@ export class SimClient {
     return JSON.parse(new TextDecoder().decode(r.bytes)) as HistoryRow[];
   }
 
-  /** One formation as the sim has it now (PLAN 2.14b), or null when it is gone. */
-  async formation(id: number): Promise<FormationDetail | null> {
-    const r = await this.status({ type: 'formation', id });
+  /**
+   * One formation as the sim has it now (PLAN 2.14b), or null when it is gone. With the
+   * `generation` of an earlier answer: null too when the id is another formation's by now.
+   */
+  async formation(id: number, generation?: number): Promise<FormationDetail | null> {
+    const r = await this.status(generation === undefined ? { type: 'formation', id } : { type: 'formation', id, generation });
     if (!r.bytes) throw new Error('formation reply without bytes');
     return JSON.parse(new TextDecoder().decode(r.bytes)) as FormationDetail | null;
   }
@@ -357,7 +360,16 @@ export class SimClient {
 
   async load(bytes: Uint8Array): Promise<SimStatus> {
     const copy = bytes.slice();
-    return (await this.status({ type: 'load', bytes: copy }, [copy.buffer])).status;
+    const status = (await this.status({ type: 'load', bytes: copy }, [copy.buffer])).status;
+    for (const l of this.loadListeners) l();
+    return status;
+  }
+
+  /** Called after each load: the world is another one, and what was remembered of the old one by id no longer holds. */
+  private readonly loadListeners = new Set<() => void>();
+  onLoad(l: () => void): () => void {
+    this.loadListeners.add(l);
+    return () => this.loadListeners.delete(l);
   }
 
   terminate(): void {

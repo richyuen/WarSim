@@ -131,9 +131,11 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
   alliances, buffs, majors, corridors, settings, terrain counts, raster hashes, editor stack
   depths; with `full` also cities, cores and unrest, ~600 KB) for tests and the critic (PLAN
   1.32a). Read-only replies (inspect, history, stats) report `status.hash` NaN: not computed.
-- `formation {id}`: one formation as JSON (`FormationDetail`: nation, template, men now and when
-  whole, supply, engaged, moving, its elements by unit type) for the formation panel, or `null`
-  (PLAN 2.14b). Read-only, as `inspect`.
+- `formation {id, generation?}`: one formation as JSON (`FormationDetail`: the count of its id
+  (`Table.generation`), nation, template, men now and when whole, supply, engaged, moving, its
+  elements by unit type) for the formation panel, or `null` (PLAN 2.14b). With `generation`,
+  `null` also when the id's count is another: ids are given out again, and the formation asked
+  for is gone (ADR-115). Read-only, as `inspect`.
 - `warBattle {war}`: the largest battle of a war as JSON (`WarBattle`: where to look, the pair
   of formations there, formations and men of each side), or `null` when the war has none (PLAN
   2.14e; `largestBattle`, `src/sim/systems/warBattle.ts`). Worked out from the state when
@@ -1478,8 +1480,9 @@ on screen.
   formation, at any zoom that shows formations, where the nation panel stands. Its name and
   kind, whose it is (the chip leads to the nation panel), its men against a whole one's, its
   supply, whether it is in contact or on the march, its elements by unit type. The numbers are
-  the sim's (`formation {id}`, §2.3), asked for again as ticks advance; the panel closes when
-  the formation is gone. The formation is marked on the map while the panel is open.
+  the sim's (`formation {id}`, §2.3), asked for again as ticks advance with the count of the
+  first answer; the panel closes when the formation is gone, whether or not another has taken
+  its id, and at a load (ADR-115). The formation is marked on the map while the panel is open.
 - **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
   treasury, manpower) on the right, toggled by the bottom bar's Statistics button; one banner
