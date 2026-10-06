@@ -2336,7 +2336,7 @@ quick sweep as a smoke test.
       ("Formos"). For PLAN 7.4.
   **PLAN 2.16 done 2026-10-05.** It is the fifth numbered task since the Phase 2 review
   (2.12 to 2.16): the review pass of PROMPT step 9 is due, and comes before 2.17.
-- [ ] 2.16R Review pass (PROMPT step 9) over PLAN 2.12 to 2.16: refactor debt, dead code,
+- [x] 2.16R Review pass (PROMPT step 9) over PLAN 2.12 to 2.16: refactor debt, dead code,
   SPEC re-read for drift (the random world, flags and names by scenario, the title screen),
   missing tests. It belongs to the tasks it follows (ADR-74) and starts the count again.
   AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
@@ -2506,7 +2506,7 @@ quick sweep as a smoke test.
       selection. The e2e test and a unit test failed first.
     - Not closed: the player's own next formation with the id of the player's own destroyed
       one stays selected (ADR-116).
-  - [ ] 2.16Rj From 2.16Rd: **`loadedWorld1938.spec.ts` failed once in a run of the suite**
+  - [x] 2.16Rj From 2.16Rd: **`loadedWorld1938.spec.ts` failed once in a run of the suite**
     (one of five suite runs; twelve runs of the spec alone, four at a time, were green).
     After the forced revolt in Masovia, with the camera on the rebels' capital at 6 px a
     cell and the view at rest (`settle`), `flagRects` was empty: no flag of any nation, where
@@ -2515,7 +2515,28 @@ quick sweep as a smoke test.
     changed.
     AT: the cause named. A defect: a test that fails first, and the fix. A wait: the spec
     waits for what it reads, with no assertion changed.
-  **2.16R stays open until 2.16Rf to 2.16Rk are done:** they are what the pass found.
+    - Done 2026-10-05: **a wait, in `settle`.** It drew a frame and then asked whether
+      anything animates, at the time after the draw. The frame that takes the camera to 6 px
+      a cell starts the flags' fade (250 ms and a tail of 50) at opacity 0; if that frame
+      takes longer than the fade, the answer is "no" and `settle` returns with no flag. The
+      view's own loop asks at the frame's time (PLAN 2.7m); `settle` does now, and the same
+      loop in `closeZoom1938.spec.ts`. No assertion changed, and nothing of `src/`.
+    - *Shown* in a scratch spec (not kept): the camera step and a first frame made to take
+      350 ms in one task: `settle` as it was, 1 draw and 0 flags; at the frame's time, 3
+      draws and 22 flags.
+    - *Not shown:* that this is what happened in the run that failed. It needs a frame of
+      more than 300 ms where the idle machine takes 26 ms, drawn by `settle` before the
+      view's loop draws one. Frames of 170 ms for 25 are on record for a busy machine
+      (BLOCKERS). The other ways to an empty `flagRects` were read and are closed: the
+      capitals are refilled in the same call that clears them, a snapshot has every
+      nation's row, and `controller.set` does not ease.
+    - *No test kept:* a spec that makes `settle`'s own draw the slow one has to keep the
+      view's loop from drawing first, and the ways tried to do that test the patch more
+      than the helper.
+    - *Seen, not changed:* `battleView1938.spec.ts` waits "until nothing animates, then
+      draws" (the other fault `settle`'s head describes). It has not failed.
+  **2.16R done 2026-10-05** with 2.16Rf to 2.16Rk: they are what the pass found. The count of
+  numbered tasks starts again with 2.17.
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world

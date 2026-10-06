@@ -6296,3 +6296,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin did not move** (7fc8e685).
 - **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, the changed spec, parity; no full e2e for a part, ADR-87).
 - **Next:** PLAN 2.16Rj, the last of 2.16R.
+
+## 2026-10-05 — PLAN 2.16Rj: `settle` asks at the frame's own time; 2.16R done
+
+- **The cause, a wait and not a defect of the view:** `settle` drew a frame and asked
+  `unitsAnimating()` at the time after the draw. A frame that starts a fade and takes longer
+  than the fade (250 ms and a tail of 50) gets "no": the flags stay at opacity 0 and
+  `flagRects` is empty. The view's loop asks at the frame's time (PLAN 2.7m). `settle` does
+  now; so does the same loop in `closeZoom1938.spec.ts`. Nothing of `src/` changed, and no
+  assertion.
+- **Shown** in a scratch spec (deleted): camera to 6 px a cell and a first frame of 350 ms
+  in one task. As it was: 1 draw, 0 flags. At the frame's time: 3 draws, 22 flags.
+- **Not shown:** that the failed run was this. It needs a frame of over 300 ms (26 ms on the
+  idle machine) drawn by `settle` before the view's loop draws. The other ways to no flag at
+  all were read and closed (PLAN 2.16Rj).
+- **A first probe misled:** with the camera step and `settle` in two `evaluate` calls the
+  view's loop drew the slow frame first, and `settle` came out with 22 flags.
+- **No test kept** for the helper (PLAN 2.16Rj says why).
+- **Run by hand:** `loadedWorld1938`, `closeZoom1938`, `flagsClear1938` with
+  `--project chromium`: 5 green (22 s).
+- **Not done:** no screenshot looked at (nothing drawn changed); no sweep (ADR-58: a pass of
+  step 9, not a phase review); no ADR (a test helper).
+- **2.16R is ticked** with this, its last part: the gate ran the whole e2e suite (ADR-87).
+- **Gate:** green (code: typecheck, lint, unit 733, build, the whole e2e suite: 132 passed in 10.3 min, parity).
+- **Next:** PLAN 2.17 (the critic's R2-B8, God Mode). The count of numbered tasks toward the
+  next review pass starts again with it.

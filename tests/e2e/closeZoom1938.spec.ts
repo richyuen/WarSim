@@ -66,8 +66,10 @@ function look(page: Page, cx: number, cy: number, mPerPx: number): Promise<Seen>
       if (performance.now() - t0 > 10_000) throw new Error(`no snapshot for the view at ${cx}, ${cy}, ${m} m/px`);
     }
     for (const t0 = performance.now(); ; await sleep(25)) {
-      v.draw();
-      if (!v.unitsAnimating()) break;
+      // At the frame's own time (PLAN 2.16Rj, `settle.ts`).
+      const now = performance.now();
+      v.draw(now);
+      if (!v.unitsAnimating(now)) break;
       if (performance.now() - t0 > 10_000) throw new Error('the view did not come to rest');
     }
     // The sprite layers alone, on cleared canvases, composited on black.
