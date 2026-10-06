@@ -2770,12 +2770,24 @@ quick sweep as a smoke test.
       armour asks for it.
     - Until 3.1b nobody learns anything: the heavy tank cannot be had at all, and the medium
       tank only by the five that start with it.
-  - [ ] 3.1b **Research.** Daily, per nation: the next tech whose prerequisites are known and
+  - [x] 3.1b **Research.** Daily, per nation: the next tech whose prerequisites are known and
     whose year has come, paid over its days from a share of the budget the economic AI sets
     (the ten-year test "no bankruptcy in peace" must hold). Decide: the year is a floor, or
     research ahead of it costs more (the schema's comment says the second).
     AT: unit: no nation knows `armor_heavy_1` before 1942 in a 1938 game without commands;
     a rich nation knows it within two years of 1942; the money is taken from the treasury.
+    - Done 2026-10-06 (ADR-128). `src/sim/systems/research.ts`: the table `world.research`
+      and the nation column `research` (gold per day; 5% of income, at most three lines'
+      worth, set by the economic AI). The year is a floor. The nuclear techs are held back
+      for Phase 6. `tests/unit/research.test.ts` (6; each of nine rules taken out fails one)
+      and `tests/sweep/researchYears.test.ts` (seed 99 to 1944: nobody before 1942; the seven
+      nations with an income of 1,000 or more know it on 1942-08-28).
+    - Seen and left for Phase 7 (ADR-58): the small nations hardly learn (Portugal one tech
+      in six years, Monaco none).
+  - [ ] 3.1e **Research on the page.** The nation panel names what a nation is researching,
+    how far each line is, and its budget; the tech names are in the i18n catalog.
+    AT: e2e: Germany's panel in 1938 lists three techs by name with a share paid that grows
+    over a month; a picture looked at.
   - [ ] 3.1c **Templates for what the gate holds back.** Heavy tank battalion or division,
     a second-generation armoured division, mechanised division, MBT division; i18n names;
     marker symbols; the AI's panzer order takes the best armoured template it knows.

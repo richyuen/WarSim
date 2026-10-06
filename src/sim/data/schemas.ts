@@ -115,7 +115,7 @@ export const TechDef = z.strictObject({
   id,
   nameKey: key,
   category: z.enum(TECH_CATEGORIES),
-  /** Earliest historical year; research before it costs extra (ahead-of-time penalty). */
+  /** The year from which it can be researched: a floor, nobody is ahead of it (PLAN 3.1b, ADR-128). */
   year: z.number().int().min(1900).max(2100),
   cost: z.strictObject({ gold: nonNeg, industry: nonNeg, days: z.number().int().min(1) }),
   prereqs: z.array(id),

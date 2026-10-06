@@ -6639,3 +6639,46 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (one of five since the phase review; 3.1 is not ticked).
 - **Next:** PLAN 3.1b (research).
 - **Gate:** green (code: typecheck, lint, unit 762, the ten-year tests 11, build, the changed spec `playerActions1938` 1, parity; no full e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 3.1b: research, a daily payment out of a budget the economic AI sets; the year of a tech is a floor (ADR-128)
+
+- **Decided:** the year of a tech is a floor, not a price. The AT "nobody knows the heavy tank
+  before 1942" then holds in every game. The schema's comment said "costs extra"; changed.
+- **Changed:**
+  - `src/sim/systems/research.ts` (new), in the system list after production: daily, a
+    nation pays min(gold ÷ days, the rest, what is left of the budget) on each of up to
+    three lines; a paid tech is known. `nextTech`: the earliest not known whose
+    prerequisites are known and whose year has come.
+  - State: the table `world.research` (nation, tech, paid) and the nation column `research`
+    (gold per day). `TechRule` has the category, the gold and the days.
+  - The economic AI sets the budget monthly: 5% of income, at most 2.44 gold a day (three
+    lines of the dearest tech), 0 in debt or when it would disband. The build step has the
+    month's research less to spend.
+  - `eliminateNation` drops the lines; a founded nation starts without a budget.
+  - Event `TechResearched` (not in the history).
+- **Held back:** the nuclear techs are nobody's next tech (Phase 6 decides who goes for the bomb).
+- **Tests:** `tests/unit/research.test.ts` (6). All passed when first run, so each rule was
+  taken out in turn and a test seen to fail: the floor (2 tests), the nuclear hold, the
+  prerequisites, the empty treasury, the bankrupt nation, the budget, the lines of the dead,
+  the AI's zero in debt, the AI's cap. `tests/sweep/researchYears.test.ts` (seed 99, six
+  years, 79 s): nobody before 1942; the rich know `armor_medium_2` in 1942 and the heavy tank
+  in 1944. Its first run was red by accident and to the point: it loaded `research.ts` while
+  the floor was taken out for the unit tests, and six nations knew the heavy tank in 1941.
+  Alone it is green.
+- **Measured** (seed 99, no commands): 267 techs learned in six years. GER, SOV, ITA, FRA,
+  ENG, JAP and USA know the heavy tank on 1942-08-28. In 1944 they know 34 of the 37 techs
+  in the queue, Poland 22, Portugal 18 (17 at the start), Monaco 17 (none learned).
+- **Run by hand** (a part, ADR-87): `playerActions1938` with `--project chromium`, green
+  (Poland's armoured division still reads "not researched" at the start).
+- **Not looked at in the browser:** nothing of research is drawn yet. PLAN 3.1e is new: the
+  nation panel names what is researched.
+- **The pin moved:** 329eedd8 → 0eb1fb78.
+- **Gotcha:** a background test run reads the source files when it starts. Do not edit or
+  mutate sources while one starts.
+- **Not done** (ADR-128): the small nations hardly learn (prices against incomes: Phase 7,
+  ADR-58, no sweep); `cost.industry` unread; no command for a budget or a tech, and with the
+  AI off for all nobody researches; research money is not in `expenses`; no heavy template
+  (3.1c). Tick time: 2.17 ms mean over the one-year run, unpinned (2.15 before), not compared pinned.
+- **Review pass:** not due (3.1 is not ticked).
+- **Next:** PLAN 3.1c (templates for what the gate holds back).
+- **Gate:** green (code: typecheck, lint, unit 768, the ten-year tests 12, build, parity; no e2e for a part, ADR-87).

@@ -26,6 +26,11 @@
  *    cannot pay for now is replaced by the infantry division if that one can be paid (critic B1,
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  *    So is one whose techs the nation does not know (PLAN 3.1a).
+ * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
+ *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
+ *    nothing for a nation in debt or one that step 1 would have disband (short, and the
+ *    treasury below RUNWAY_MONTHS of what is short): research is cut before the army is. The
+ *    month's research counts against the balance the build step works with.
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -35,6 +40,7 @@ import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
 import { TRIBUTE } from '../systems/puppets';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { queueFormation } from '../systems/production';
+import { DAYS_PER_MONTH, RESEARCH_SHARE, researchCap } from '../systems/research';
 import { knowsTechs } from '../tech';
 import type { World } from '../world';
 
@@ -121,8 +127,12 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       // 2. Suppression.
       nc.suppression[n] = restless.has(n) && balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
-      // 3. Build.
       if (!world.rules) return;
+      // 4. Research.
+      const carried = balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance);
+      nc.research[n] = nc.gold[n]! > 0 && carried ? Math.min((RESEARCH_SHARE * income) / DAYS_PER_MONTH, researchCap(world.rules)) : 0;
+      balance -= nc.research[n]! * DAYS_PER_MONTH;
+      // 3. Build.
       const atWar = world.wars.list.some((w) => w.sides[0].includes(n) || w.sides[1].includes(n));
       const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME));
       // The orders in training count as army already, and against the balance.

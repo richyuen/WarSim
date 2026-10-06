@@ -167,6 +167,55 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-128 · 2026-10-06 · accepted — Research: a daily payment out of a budget the economic AI sets; the year of a tech is a floor (PLAN 3.1b)
+
+- **Context:** since ADR-127 a nation knows techs and nobody learns one. PLAN 3.1b left one
+  thing to decide: the year of a tech is a floor, or research ahead of it costs more (the
+  schema's comment said the second).
+- **Decision:**
+  - *The year is a floor.* The AT of the part is "no nation knows `armor_heavy_1` before
+    1942". With a price for being early that is a matter of constants and of how rich the
+    richest nation of a game is; with a floor it holds in every game. The schema's comment is
+    changed to say so.
+  - *State:* a table `world.research` (nation, tech, gold paid), of the shape of the
+    production queue, and a nation column `research`, the budget in gold per day. Both are
+    saved and hashed. The table stands after `production` in the save.
+  - *The payment:* daily, min(gold ÷ days of the tech, what is left of it, what is left of
+    the budget), line by line; three lines at most. One mechanism gives both ends: a great
+    power learns a tech in its days, a small nation in proportion to what it can pay.
+  - *The budget* is the economic AI's: 5% of income, capped at what three lines can take
+    (2.44 gold a day, 74 a month), 0 in debt and 0 for the nation that would disband. It is
+    not in `budgetOf`: a nation short of money cuts research, then the army, and the
+    disbanding rule of ADR-86 reads the same numbers as before. It is taken off the balance
+    the build step sees.
+  - *Never into debt:* no payment by a bankrupt nation or out of a treasury that does not
+    hold it. The ten-year tests "no bankruptcy in peace" hold.
+  - *The nuclear techs are held back* from the queue. In order of year every nation would
+    start `atomic_research` in 1939 and have the bomb in 1945 without having decided
+    anything; differentiator 5 asks for a decision (Phase 6).
+  - *An event,* `TechResearched` (nation, tech). Not a line of the history: 267 of them in
+    six years of seed 99.
+- **Measured** (seed 99, no commands, 1938 to 1944): 267 techs learned (37, 59, 62, 37, 36,
+  36 a year). GER, SOV, ITA, FRA, ENG, JAP and USA know the heavy tank on 1942-08-28 (240
+  days from 1 January 1942), nobody before 1942. Of 37 techs in the queue the seven know 34
+  in 1944, Poland 22 (income 37 to 226), Portugal 18 (income 50; one tech in six years),
+  Monaco 17 (income 1; none).
+- **The pin moved:** 329eedd8 → 0eb1fb78 (seed 99, one year). A column and a table more, gold
+  leaves the treasuries daily, and the build step has the research of the month less.
+- **Saves:** a save from before has no `research` section and does not load, as with ADR-127.
+- **Not done, and where:**
+  - The gap between the great powers and everybody else is wide: the prices of the techs
+    (70 to 260 gold) are first-pass values against incomes of 1 to 5,500 a month. Balance:
+    Phase 7 (ADR-58). Not tuned here.
+  - `cost.industry` is read by nothing.
+  - The page shows no research (PLAN 3.1e). No command sets a budget or a tech; a nation
+    whose AI is off keeps its last budget, and with the AI off for all from the start
+    nobody has one.
+  - The money is not in the nation's `expenses` (nor are suppression, CE cost and tribute):
+    the panel's income less expenses is not the change of the treasury.
+  - No heavy template yet (PLAN 3.1c): knowing the heavy tank builds nothing.
+- **Deviation from AoC:** none known; as ADR-127.
+
 ### ADR-127 · 2026-10-06 · accepted — What a nation knows is state, and a template is refused to the nation that lacks its techs (PLAN 3.1a)
 
 - **Context:** PLAN 3.1 asks that tech gates the heavy tank until research of 1942 or later.

@@ -103,10 +103,10 @@ export const BUILD_MIX_1938 = {
  * here is its bit in a nation's state: a tech put in before the last one moves the bits of
  * those after it, and a save from before then means other techs by them.
  */
-const TECH_DEFS = [techIndustry, techLand, techArmor, techNaval, techAir, techElectronics, techNuclear].flatMap((f) => f.techs as { id: string; year: number; prereqs: string[] }[]);
+const TECH_DEFS = [techIndustry, techLand, techArmor, techNaval, techAir, techElectronics, techNuclear].flatMap((f) => f.techs as { id: string; category: string; year: number; cost: { gold: number; days: number }; prereqs: string[] }[]);
 if (TECH_DEFS.length > MAX_TECHS) throw new Error(`${TECH_DEFS.length} techs: a nation's techs are ${MAX_TECHS} bits`);
 const techIndex = new Map(TECH_DEFS.map((t, i) => [t.id, i]));
-const TECHS_1938: readonly TechRule[] = TECH_DEFS.map((t) => ({ id: t.id, year: t.year, prereqs: t.prereqs.map((p) => techIndex.get(p)!) }));
+const TECHS_1938: readonly TechRule[] = TECH_DEFS.map((t) => ({ id: t.id, year: t.year, prereqs: t.prereqs.map((p) => techIndex.get(p)!), category: t.category, gold: t.cost.gold, days: t.cost.days }));
 /** Tech indices the nation table gives a nation at the start, by nation id. */
 const GIVEN_TECHS_1938 = new Map(NATIONS_1938.flatMap((n, i) => (n.techs ? [[i + 1, n.techs.map((t) => techIndex.get(t)!)] as const] : [])));
 export const RULES_1938: ScenarioRules = {

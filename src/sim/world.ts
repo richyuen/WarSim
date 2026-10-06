@@ -80,6 +80,17 @@ export const NATION_SCHEMA = {
   /** The techs it knows, a bit each (PLAN 3.1a, `sim/tech.ts`): bits 0..31 and 32..63 of the index into ScenarioRules.techs. */
   tech0: 'u32',
   tech1: 'u32',
+  /** Research budget, gold per day (PLAN 3.1b, `systems/research.ts`); the economic AI sets it monthly. */
+  research: 'f64',
+} as const;
+
+/** Research lines (PLAN 3.1b): one tech a nation is working on. */
+export const RESEARCH_SCHEMA = {
+  nation: 'u16',
+  /** Index into ScenarioRules.techs. */
+  tech: 'u16',
+  /** Gold paid towards it so far. */
+  paid: 'f64',
 } as const;
 
 /** Production queue rows (PLAN 1.10): one formation in training. */
@@ -373,6 +384,7 @@ export class World {
   formations = new Table('formations', FORMATION_SCHEMA, 128);
   cities = new Table('cities', CITY_SCHEMA, 16);
   production = new Table('production', PRODUCTION_SCHEMA, 16);
+  research = new Table('research', RESEARCH_SCHEMA, 16);
   elements = new Table('elements', ELEMENT_SCHEMA, 1024);
   wars = new Wars();
   alliances = new Alliances();
@@ -611,7 +623,7 @@ export class World {
 
   /** Authoritative parts in a fixed order (the save/hash layout). */
   parts(): Stateful[] {
-    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history, this.stats, this.edits];
+    return [this.core, this.cells, this.nations, this.formations, this.cities, this.production, this.research, this.elements, this.wars, this.alliances, this.provinces, this.buffs, this.battles, this.history, this.stats, this.edits];
   }
 
   cellIndex(x: number, y: number): number {

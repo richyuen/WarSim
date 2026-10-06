@@ -93,6 +93,8 @@ export const EventKind = {
   LandCeded: 36,
   /** a = command seq, b = why (`Refusal`, shared/commands), x = y = NaN (global): the command was not carried out (PLAN 2.17a). */
   CommandRefused: 37,
+  /** a = nation, b = tech (index into the scenario's techs): it knows the tech now (global; PLAN 3.1b). */
+  TechResearched: 38,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

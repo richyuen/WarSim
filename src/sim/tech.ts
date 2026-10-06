@@ -11,7 +11,8 @@
  * scenario's first year (what every army of the day had), the techs of the templates its
  * formations of the start have (an army is not ahead of its own country), and what the
  * scenario's nation table gives it. A nation founded later knows what the nation it left knew
- * (`spawnRebels`); a nation that returns knows what it knew.
+ * (`spawnRebels`); a nation that returns knows what it knew. After the start a nation learns by
+ * research (`systems/research.ts`).
  */
 import { civilFromDays } from '../shared/calendar';
 import type { World } from './world';
@@ -22,6 +23,11 @@ export interface TechRule {
   year: number;
   /** Indices into `ScenarioRules.techs`. */
   prereqs: readonly number[];
+  /** The schema's category (`data/tech/*.json`). */
+  category: string;
+  /** What its research costs, and the days it takes at least (PLAN 3.1b, `systems/research.ts`). */
+  gold: number;
+  days: number;
 }
 
 /** Bits 0..31 and 32..63, both as unsigned 32-bit numbers. */

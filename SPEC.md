@@ -699,7 +699,32 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   in `nations.json` (1938: the medium tank for SOV, FRA, ENG and JAP; Germany fields it).
 - *A nation founded in a revolt or by a Kill* knows what the nation it left knew. A nation
   that returns knows what it knew.
-- *Not yet:* research (PLAN 3.1b). Tech modifiers (`armorAttack` and the others) are not read.
+- *Not yet:* tech modifiers (`armorAttack` and the others) are not read.
+
+**Research v1 (PLAN 3.1b, ADR-128; `src/sim/systems/research.ts`).**
+- *The budget:* `nations.research`, gold per day. The economic AI sets it monthly:
+  RESEARCH_SHARE (5%) of the month's income, at most `researchCap` (MAX_LINES lines of the
+  dearest tech by the day, 2.44 gold a day); 0 for a nation in debt, and for one short of
+  money whose treasury holds less than RUNWAY_MONTHS of what is short (it would disband:
+  research is cut before the army). The month's research counts against the balance the build
+  step works with. A nation whose AI is off keeps the budget it had.
+- *Lines:* `world.research` (nation, tech, gold paid), saved and hashed; at most MAX_LINES (3) a
+  nation. Daily at 00:00, line by line in the order opened: pay min(the tech's gold ÷ its
+  days, what is left to pay, what is left of the day's budget) from the treasury. A paid tech
+  is known (`TechResearched`) and its line closed. A line is opened only with budget left.
+  So a tech takes its days at least; a nation with a tenth of the pace takes ten times as long.
+- *Never into debt:* a bankrupt nation pays nothing, and nothing is paid out of a treasury that
+  does not hold the day's payment.
+- *What is next* (`nextTech`): not known, not in a line, prerequisites known, year come; the
+  earliest, the first in the scenario's order on ties. **The year is a floor**: nobody
+  researches ahead of the calendar (the schema's comment once said "costs extra").
+- *Held back:* the `nuclear` category is nobody's next tech. Who goes for the bomb is decided
+  in Phase 6.
+- *A dead nation's* lines are dropped. A founded nation starts with no budget until the
+  economic AI's next month.
+- *Not yet:* `cost.industry` is read by nothing (industry is not a sim input). The page does
+  not show research (PLAN 3.1e). No command sets a budget or picks a tech: a player's nation
+  researches on the budget the AI last gave it.
 
 ---
 

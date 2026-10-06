@@ -14,7 +14,7 @@
  *   controlled cell nearest the old capital (a field capital). A field capital is lost by any
  *   change of control and relocates the same way; a nation with no cell left is eliminated.
  *
- * Elimination: `living` = 0, its formations and production orders are removed, its wars end,
+ * Elimination: `living` = 0, its formations, production orders and research lines are removed, its wars end,
  * the land it occupied goes back to its owners and its land that others occupy becomes theirs
  * (`leaveLand`), `NationEliminated` is emitted.
  */
@@ -160,6 +160,9 @@ export function eliminateNation(world: World, n: number): void {
   });
   world.production.forEach((id) => {
     if (world.production.cols.nation[id] === n) world.production.remove(id);
+  });
+  world.research.forEach((id) => {
+    if (world.research.cols.nation[id] === n) world.research.remove(id);
   });
   world.cities.forEach((id) => {
     if (world.cities.cols.capitalOf[id] === n) world.cities.cols.capitalOf[id] = 0;
