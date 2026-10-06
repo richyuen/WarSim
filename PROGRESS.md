@@ -7173,3 +7173,31 @@ No rule changed and nothing on screen changed. One task came out of it.
   three arms; `sideArmsOf` and `enemies` ask `atWar` of every pair of a battle's formations
   (n² a battle, an hour): 3.4Rd measures before anything is changed.
 - **Gate:** documents (parity).
+
+## 2026-10-06 — PLAN 3.4Rc, 3.4Re: dead code and the tests' battlefield; why armour without infantry stays; a finding (3.4Rf)
+
+- **3.4Rc.** Looked for: exports added since the sixth read that nothing else names (44
+  added; one dead, `NO_TECHS`, removed), i18n keys without a use (none), TODO (none).
+  `supplyFactor` of `combat.ts` is `shooterFactor` (it held supply, org and the three arms).
+  The three combat tests that each built the same emptied world with a patch of ground share
+  `battlefield` of `tests/helpers/sim1938.ts`; 42 of 42 pass, no expect changed. The pin holds.
+- **3.4Re** (scratch scripts, not kept; seed 99, 360 days, every hour, 22 s a run): 34
+  formations had armour and no infantry alive at some hour (15 tank brigades, a tank corps,
+  5 light mechanised divisions, 13 Soviet rifle divisions), 7,334 hours in contact; 29 were
+  never out of contact after it (8 to 583 hours); 31 were gone by the year's end. They stay
+  by rule: contact holds every formation, and nothing retreats (SPEC §5.2 step 4, no task).
+  A line under PLAN 3.5, which decides whether the retreat is its part or a task before it.
+- **Found beside it: armour fights dry.** Formation-hours in contact, on engines: 29,324 (72
+  formations), 47.3 % with supply 0, 44.3 % with org 0 (39 formations), 44.3 % on a cell the
+  nation controls. On foot: 276,105 hours, 22.1 % with supply 0, 62.0 % on an own cell. Out
+  of contact, on engines: 20.8 % dry, 19.9 % with no org (49 of 84 formations). So the org
+  and breakdown rules of PLAN 3.2c and 3.2d are on for close to half of armour's fighting,
+  by where an attacker stands and not by encirclement alone. One seed, causes not told
+  apart: **PLAN 3.4Rf**, before 3.5, measures by cause on two seeds and decides one rule.
+  Not tuned here.
+- **Gotcha:** the first record of 3.4Re in PLAN gave counts read off the first 25 rows of 34;
+  the script was made to print the totals and the record corrected before the commit.
+- **Still running:** the seventh read (3.4Ra). **Not done:** 3.4Rd (tick time: the machine
+  must be idle for it).
+- **Gate:** green (code: typecheck, lint, unit 839, the ten-year tests 12, build, parity; no
+  spec changed).

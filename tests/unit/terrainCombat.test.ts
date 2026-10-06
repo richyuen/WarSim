@@ -2,24 +2,17 @@ import { describe, expect, it } from 'vitest';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
 import { Terrain, TERRAIN_IDS } from '../../src/shared/terrain';
-import { cellOf } from '../../src/sim/data/terrain';
-import { SIZE_1938, TEMPLATES_LAND, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
-import { Sim } from '../../src/sim/sim';
+import { TEMPLATES_LAND, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { combatSystem } from '../../src/sim/systems/combat';
-import { destroyFormation } from '../../src/sim/systems/elements';
 import { FIRE_STRIDE, type World } from '../../src/sim/world';
-import { assets1938 } from '../helpers/earth';
-import { addDivision, nationId } from '../helpers/sim1938';
+import { addDivision, battlefield, FIELD_X as X0, FIELD_Y as Y0, nationId } from '../helpers/sim1938';
 
 // PLAN 3.3a: the ground in a battle, by unit class (`data/terrain.json`, in since PLAN 1.13) and
 // by unit type (`terrainMods` of `data/units/land.json`, read by nothing before this task).
 // AT of 3.3: identical battles on plains and in forest yield the expected outcome swing.
 
-const W = SIZE_1938.w;
-const H = SIZE_1938.h;
 const GER = nationId('GER');
 const POL = nationId('POL');
-const [X0, Y0] = cellOf(30.0, 50.0, W, H).map(Math.floor) as [number, number];
 const template = (id: string): number => TEMPLATES_LAND.findIndex((t) => t.id === id);
 
 type Mods = Partial<Record<string, { atk: number; def: number; speed: number }>>;
@@ -28,11 +21,7 @@ const unitOf = (i: number): { id: string; class: string; terrainMods: Mods } => 
 
 /** The same battle on one ground: `attacker` (on the move) against `defender` (holding), a cell apart. */
 function battle(terrain: number, attacker: string, defender: string): { world: World; att: number; def: number } {
-  const s = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
-  const world = s.world;
-  world.formations.ids().forEach((id) => destroyFormation(world, id));
-  world.wars.set(GER, POL, true);
-  for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) world.cells.terrain[(Y0 + dy) * W + X0 + dx] = terrain;
+  const world = battlefield(terrain, [[GER, POL]]);
   const att = addDivision(world, GER, X0 + 0.5, Y0 + 0.5, template(attacker));
   world.formations.cols.moving[att] = 1;
   const def = addDivision(world, POL, X0 + 1.5, Y0 + 0.5, template(defender));

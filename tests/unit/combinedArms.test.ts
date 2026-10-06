@@ -2,24 +2,17 @@ import { describe, expect, it } from 'vitest';
 import combatJson from '../../data/combat.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
 import { Terrain } from '../../src/shared/terrain';
-import { cellOf } from '../../src/sim/data/terrain';
-import { SIZE_1938, TEMPLATES_LAND, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
-import { Sim } from '../../src/sim/sim';
+import { TEMPLATES_LAND, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { combatSystem } from '../../src/sim/systems/combat';
-import { destroyFormation } from '../../src/sim/systems/elements';
 import { FIRE_STRIDE, type World } from '../../src/sim/world';
-import { assets1938 } from '../helpers/earth';
-import { addDivision, nationId } from '../helpers/sim1938';
+import { addDivision, battlefield, FIELD_X as X0, FIELD_Y as Y0, nationId } from '../helpers/sim1938';
 
 // PLAN 3.4a: the combined-arms bonus (SPEC §6.1, the table's first row; `data/combat.json`).
 // A side of a battle with infantry, artillery and armour all alive in it fires × `bonus`.
 
-const W = SIZE_1938.w;
-const H = SIZE_1938.h;
 const GER = nationId('GER');
 const ITA = nationId('ITA');
 const POL = nationId('POL');
-const [X0, Y0] = cellOf(30.0, 50.0, W, H).map(Math.floor) as [number, number];
 const template = (id: string): number => TEMPLATES_LAND.findIndex((t) => t.id === id);
 const BONUS = combatJson.combinedArms.bonus;
 const ARMS = combatJson.combinedArms.arms;
@@ -31,12 +24,7 @@ type Stand = [nation: number, template: string, dx: number, dy: number];
 
 /** A battle on `terrain`: the formations of `stands` around one cell, Germany and Italy at war with Poland. */
 function battle(stands: Stand[], terrain: number = Terrain.Plains): { world: World; ids: number[] } {
-  const s = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
-  const world = s.world;
-  world.formations.ids().forEach((id) => destroyFormation(world, id));
-  world.wars.set(GER, POL, true);
-  world.wars.set(ITA, POL, true);
-  for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) world.cells.terrain[(Y0 + dy) * W + X0 + dx] = terrain;
+  const world = battlefield(terrain, [[GER, POL], [ITA, POL]]);
   const ids = stands.map(([nation, t, dx, dy]) => addDivision(world, nation, X0 + 0.5 + dx, Y0 + 0.5 + dy, template(t)));
   return { world, ids };
 }

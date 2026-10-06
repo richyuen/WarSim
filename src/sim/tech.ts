@@ -34,7 +34,6 @@ export interface TechRule {
 export type TechMask = readonly [number, number];
 
 export const MAX_TECHS = 64;
-export const NO_TECHS: TechMask = [0, 0];
 
 export function techMask(indices: Iterable<number>): TechMask {
   let lo = 0;

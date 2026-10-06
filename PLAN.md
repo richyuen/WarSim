@@ -3023,20 +3023,78 @@ quick sweep as a smoke test.
       nation's: the refusal's words (ADR-125), the armed Kill, the typed name, the dead
       nation deselected, the brush switched off (ADR-126).
     - *Left out:* ADR-132 (superseded by ADR-133, which is in §4).
-  - [ ] 3.4Rc Dead code and refactor debt in the same files: exports nothing uses, i18n keys
+  - [x] 3.4Rc Dead code and refactor debt in the same files: exports nothing uses, i18n keys
     without a use, TODO and FIXME; the four rule factors and the two maps of arms of
     `combat.ts`; the battle that `combinedArms.test.ts` and `combinedArmsMatrix.test.ts`
     each build. The pin (80e8050a) holds: a refactor that moves it changed a rule.
+    Done 2026-10-06. The pin holds (the gate).
+    - *Looked for* (a scratch script over the diff since `5d24625`): the 44 exports added
+      that no other source file names (16: 14 are constants or functions a test reads or
+      the file itself uses, `CombatFile` and `RESEARCH_SCHEMA` are used where they
+      stand); the i18n keys added without a use (none: three `template.*` are built from
+      their prefix); TODO and FIXME (none).
+    - *Fixed:* `NO_TECHS` of `tech.ts`, used by nothing, is gone. `supplyFactor` of
+      `combat.ts` had come to hold the supply, the org and the three arms: it is
+      `shooterFactor`, and the file's head gives the two formation figures by what they
+      are.
+    - *Fixed:* `combinedArms.test.ts`, `combinedArmsMatrix.test.ts` and
+      `terrainCombat.test.ts` each emptied the 1938 world, set the wars and laid the
+      same seven cells square of ground. It is `battlefield` of
+      `tests/helpers/sim1938.ts` now. No test's expects changed: 42 of 42 pass.
+    - *Left for 3.4Rd to measure before it is touched:* per battle and hour, the side's
+      arms and each formation's enemies are found by asking `atWar` of every pair of
+      the battle's formations.
   - [ ] 3.4Rd Tick time, not measured since PLAN 3.1: `npm run sim -- --scenario 1938
     --seed 99 --years 5 --affinity 0xFFFF` beside the last figure in PROGRESS and the
     budget. A slower tick is logged with its numbers; one over budget is a task before the
     next that needs a sweep.
-  - [ ] 3.4Re The three tank brigades of 3.4b that stood some 11,000 volleys each in contact
+  - [x] 3.4Re The three tank brigades of 3.4b that stood some 11,000 volleys each in contact
     with their infantry gone: which they are, why they stay (no order to leave, no path, a
     rule that holds them), and whether that is a defect (a task here) or the AI's not
     knowing the rule (a line under PLAN 3.5). The read of 3.4Ra may settle it; its tasks
     take the letters after this one.
+    Done 2026-10-06 (a scratch script, not kept; seed 99, 360 days, every hour).
+    - *Which:* 34 formations had armour and no infantry alive at some hour: 15 tank
+      brigades (12 Soviet, 2 Japanese, 1 Spanish Republican), a Soviet tank corps, 5
+      light mechanised divisions (4 Czechoslovak, 1 Italian) and 13 Soviet rifle
+      divisions down to their tanks; for 7,334 hours in contact and 13,860 out of it. 31
+      were gone by the year's end.
+    - *Why they stay:* a rule. A formation in contact holds and fights
+      (`movementSystem`: `engaged` stops the march, and the operational AI gives
+      orders to the free only), and nothing retreats: SPEC §5.2 step 4 has no task. 29
+      of the 34 were never out of contact from the hour their infantry died, for 8 to
+      583 hours. Not a defect of 3.4b, and not armour's alone: it is every
+      formation's. A line under PLAN 3.5.
+    - *Found beside it, a task (3.4Rf):* 20 of the 21 that are not rifle divisions had no
+      org left at some hour. Of
+      the hours that formations on engines were in contact, 47.3 % were with no supply
+      and 44.3 % with no org (39 of 72 formations); on foot 22.1 % with no supply. In
+      contact a formation on engines stood on a cell its nation controls 44 % of the
+      hours, on foot 62 %. So for close to half of armour's fighting the rules of PLAN
+      3.2c and 3.2d are on: its fire × 0.25 (and × 0.5 for the supply), a tenth of its
+      vehicles a day.
+  - [ ] 3.4Rf **Armour in contact is without supply for 47 % of its hours** (found in
+    3.4Re). A formation is fed on a cell of its bloc's network or of a nation at war on
+    its side, and the cell under an attacker is the enemy's until the territory rule
+    turns it. On foot that costs half the fire and 2 % a day; on engines, since PLAN
+    3.2, the org too, three quarters of the fire with it and the vehicles. Before PLAN
+    3.5 sends armour ahead: measure first, by cause, the dry hours in contact (the cell
+    is the enemy's; nobody's; an ally's who is not in the war; the 12 hours between two
+    refreshes of the network) and by nation, on two seeds. Then one rule, decided on
+    those numbers and written in DECISIONS: a formation beside its network is fed, or
+    the org is lost only to what encircles (no cell of its network within some cells),
+    or the rules stand and SPEC says that armour on the attack runs dry in a day. AT:
+    unit, failing first, for the rule chosen; the share of dry hours in contact on
+    engines beside that on foot, before and after, in PROGRESS. The pin moves if a rule
+    does.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
+  From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
+  contact holds until one side is destroyed, armour with its infantry gone as any other
+  (34 such formations in seed 99's first year, 7,334 hours in contact, 31 gone by its end), and
+  the operational AI orders the free only. A spearhead that cannot be taken out of a fight
+  is spent in its first one. Decide here whether the retreat of SPEC §5.2 step 4 (org lost
+  to damage, a formation with little org marches away from the enemy) is a part of this
+  task or a task of its own before it; it has none today.
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):

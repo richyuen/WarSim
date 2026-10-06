@@ -13,7 +13,8 @@
  * proximity, drawn with
  * hash32(seed, tick, element) and kept for COOLDOWN hours. Damage in target units is
  *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class and unit type, target cell)
- *       × supplyFactor(shooter) × combinedArms(shooter's side) × gunsOnGuns(shooter) × screen(target) × open(shooter, target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
+ *       × (0.5 + 0.5 supply) × (ORG_FIRE + (1 − ORG_FIRE) org) of the shooter's formation
+ *       × combinedArms(shooter's side) × gunsOnGuns(shooter) × screen(target) × open(shooter, target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
  * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing,
  * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle,
  * gunsOnGuns is SUPPRESSED for an AT gun whose enemy has artillery alive in the battle,
@@ -185,7 +186,8 @@ export function combatSystem(world: World): void {
       const enemies = battle.filter((o) => world.wars.atWar(f.nation[sf]!, f.nation[o]!));
       const hostile = new Set(enemies);
       const sideArms = sideArmsOf.get(sf)!;
-      const supplyFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1);
+      // What every volley of the formation has: its supply, its org, its side's three arms.
+      const shooterFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1);
       let enemyArms = 0;
       for (const o of enemies) enemyArms |= arms.get(o)!;
       const atFire = (enemyArms & ARM_ARTILLERY) !== 0 ? SUPPRESSED : 1;
@@ -256,7 +258,7 @@ export function combatSystem(world: World): void {
         const guns = (us.arm & ARM_AT) !== 0 ? atFire : 1;
         // Armour at what has no armour, on open ground, with no AT gun of the target's side in the battle (PLAN 3.4d).
         const open = (us.arm & ARM_ARMOUR) !== 0 && ut.armor === 0 && OPEN[terrain] && (sideArmsOf.get(tf)! & ARM_AT) === 0 ? IN_THE_OPEN : 1;
-        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult * screen * guns * open) / def / buffDef / ut.hpPerUnit;
+        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * shooterFactor * buffAtk * lossMult * screen * guns * open) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;

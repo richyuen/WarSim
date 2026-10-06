@@ -1,6 +1,9 @@
-import { NATIONS_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
-import { equipFormation } from '../../src/sim/systems/elements';
+import { cellOf } from '../../src/sim/data/terrain';
+import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { destroyFormation, equipFormation } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
+import { assets1938 } from './earth';
 
 /** Shared 1938 sim helpers for the system tests (PLAN 1.11–1.14). */
 
@@ -21,6 +24,22 @@ export function addDivision(world: World, nation: number, x: number, y: number, 
   c.org[id] = 1;
   equipFormation(world, id, template);
   return id;
+}
+
+/** The middle cell of `battlefield`'s ground (30° E, 50° N). */
+export const [FIELD_X, FIELD_Y] = cellOf(30.0, 50.0, SIZE_1938.w, SIZE_1938.h).map(Math.floor) as [number, number];
+
+/**
+ * The 1938 world (seed 5) with no formation in it, the pairs of `wars` at war, and seven cells
+ * square of `terrain` around (FIELD_X, FIELD_Y): the ground of the combat tests' battles.
+ */
+export function battlefield(terrain: number, wars: [number, number][]): World {
+  const w = SIZE_1938.w;
+  const world = new Sim({ scenario: '1938', seed: 5, assets: assets1938(w) }).world;
+  world.formations.ids().forEach((id) => destroyFormation(world, id));
+  for (const [a, b] of wars) world.wars.set(a, b, true);
+  for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) world.cells.terrain[(FIELD_Y + dy) * w + FIELD_X + dx] = terrain;
+  return world;
 }
 
 /** Steps `ticks`, collecting every event as a [tick, kind, a, b, x, y] record (fires dropped). */
