@@ -755,6 +755,8 @@ export class SimServer {
       full: rules?.templates[template] ? (ECONOMY_TABLES_1938.templateStrength[template] ?? 0) : 0,
       strength: fc.strength[id]!,
       supply: fc.supply[id]!,
+      org: fc.org[id]!,
+      fuel: rules?.templates[template]?.fuel ?? 0,
       engaged: fc.engaged[id] === 1,
       moving: fc.moving[id] === 1,
       x: fc.x[id]!,

@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-136 · 2026-10-06 · accepted — Breakdowns: with no supply and no org a formation on engines loses its vehicles and towed guns; org and fuel on the formation panel (PLAN 3.2d)
+
+- **Context:** PLAN 3.2's AT: "unsupplied armour slows, then loses org, then strength". The
+  first two stages are ADR-134 and ADR-135. Every formation without supply loses 2% a day and
+  what its ground takes besides (ADR-25), armour as infantry: nothing made a tank without
+  fuel worth less than a man without bread.
+- **Decision:**
+  - *The rule:* a formation whose mobility is not "foot" (the gate of ADR-134 and ADR-135),
+    with supply 0 and org 0, loses `BREAKDOWN_PER_DAY` = 0.1 a day of its vehicles and towed
+    guns, by the hour, besides the attrition. It starts in the hour the org reaches 0, so the
+    AT's order holds by construction: for the panzer division of 1938 on the march, slower
+    from hour 1, dry in hour 5, no org in hour 36, and its tanks from then.
+  - *What breaks down:* an element whose unit type burns fuel and is not counted in men
+    (`UnitRule.fuel` > 0 and `menPerUnit` > 1): the five tanks and the heavy artillery
+    (towed by tractors). PLAN said "the elements that burn fuel (vehicles, not men)", and the
+    motorised and the mechanised infantry burn fuel and are counted in men: their lorries
+    are not in the state, so there is nothing of theirs to leave by the road. Their men go at
+    the attrition alone. A dry panzer division is in the end a weak infantry division, not
+    nothing.
+  - *Both conditions.* Supply 0 and org 0: an org lost another way (to damage, when a task
+    has that) on a network that feeds the formation breaks nothing.
+  - `UnitRule.fuel` is new: `fuelPerHour` of the unit data, which `TemplateRule.fuel` already
+    summed.
+- **Why a tenth a day:** five times the base attrition, so plainly more; a division's tanks
+  are down by half in about five days and it is not wiped out in one. Not tuned (ADR-58).
+- **The panel** (`FormationPanel.tsx`, `FormationDetail.org` and `.fuel`): two rows after the
+  supply. "Org", a percentage. "Fuel on the march": the template's figure ("38 an hour",
+  "4.6 an hour", "None"). Not a fuel level: there is none (ADR-134), the supply row is what
+  the formation burns. The elements table already shows the tanks going.
+- **What it does to a game** (seed 99, no command, counted each hour of the first year): 69
+  formations on engines have supply 0 and org 0 at some hour, 77,955 formation-hours in all
+  (47 days each on average), 8,805 of them in contact. So armour that is cut off stays cut
+  off for weeks, and now melts there. Whose these formations are, where they stand and why
+  they are not fed or moved was not looked into: the AI does not know of supply (PLAN 3.5),
+  and the balance waits (ADR-58).
+- **The pin moved:** 3fad5d18 → 9dd4093d (seed 99, one year): the rule changes the game, by
+  the count above.
+- **Saves:** no state added; a save from PLAN 3.2c loads and goes on by the new rule.
+- **Tests:** `tests/unit/breakdown.test.ts` (4): which unit types break down; the three
+  stages in order on the pocket of ADR-134 (red first: the tanks whole after two days with no
+  org); nothing with supply left or on the network; save and load.
+  `tests/e2e/formationPanel1938.spec.ts`: the two rows of an infantry division ("100%",
+  "None"), and a new test of a panzer division set down deep in Poland, at war and far from
+  every formation: 38 an hour; 88% and 100% in the first hour; 0% and 47% after a day; 0% in
+  hour 39; 87 hours in, 238 of 340 tanks and 3,504 of 4,000 motorised infantry
+  (`docs/evidence/3.2/formation-panel-panzer-dry.png`, `-broken-down.png`).
+- **Found by the e2e's first set-up:** a formation on foreign ground at peace marches home
+  (three hours for one cell), so it is on its network again before it is dry. The test's
+  division is at war.
+- **Not decided here:** org lost to damage and the retreat (SPEC §5.2 step 4, to be placed at
+  the phase review 3.7); recovery of what broke down (production replaces formations, not
+  elements); wrecks of abandoned tanks on the map (an element that ends leaves one, PLAN
+  2.4b; a tank lost from a company that lives leaves none).
+
 ### ADR-135 · 2026-10-06 · accepted — Org: a formation column; what moves on engines loses it with no supply, and its fire falls with it (PLAN 3.2c)
 
 - **Context:** PLAN 3.2's AT: "unsupplied armour slows, then loses org, then strength". The

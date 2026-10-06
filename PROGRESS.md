@@ -6917,3 +6917,46 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.2d (breakdowns: with no org the elements that burn fuel are lost; fuel
   and org on the formation panel; the AT of 3.2 in one test; ticks 3.2, so the full e2e).
 - **Gate:** green (code: typecheck, lint, unit 787, the ten-year tests 12, build, the changed spec `zoomDemo1938`, parity; no full e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 3.2d: breakdowns; org and fuel on the formation panel (ADR-136). PLAN 3.2 done
+
+- **Decided first:** what breaks down. PLAN said "the elements that burn fuel (vehicles, not
+  men)", and the motorised infantry burns fuel and is counted in men. Taken: unit types that
+  burn fuel and are not counted in men (the tanks, the heavy artillery).
+- **Changed:**
+  - `UnitRule.fuel` (`fuelPerHour` of the unit data).
+  - `systems/elements.ts`: `breakDown` (a share of each such element, carried as losses are).
+  - `systems/supply.ts`: `BREAKDOWN_PER_DAY` 0.1; at supply 0 and org 0, for what does not
+    walk, before the hour's attrition (which settles the formation).
+  - `FormationDetail.org`, `.fuel`; `FormationPanel.tsx`: "Org" and "Fuel on the march"
+    (the template's figure; no fuel level, ADR-134); four keys in `en.json`.
+- **Tests:** `tests/unit/breakdown.test.ts` (4), written first: the three stages of PLAN
+  3.2's AT in one test, red at "the tanks go" (340 of 340 after two days with no org). My
+  first expectation of the men's loss was wrong, not the code: 2% a day, and the ground of
+  the Soviet north takes more (ADR-25); the test now measures the rate against the infantry
+  division beside it. `formationDetail.test.ts`: the answer has `org` and `fuel`.
+- **e2e:** `formationPanel1938.spec.ts`: the first test reads the two rows too; a new test of
+  a panzer division off its network (numbers in ADR-136). Its first set-up, a German division
+  on Polish ground at peace, failed: such a formation marches home and is fed again in three
+  hours. It is set down deep in Poland at war now. Run with `--project chromium`, 3 green.
+- **Looked at:** `docs/evidence/3.2/formation-panel-panzer-broken-down.png` (Armoured division
+  1055: 4,709 of 5,700 men, supply 0%, org 0%, 38 an hour, light tanks 210 of 300, medium 28
+  of 40, motorised infantry 3,504 of 4,000, heavy artillery 18 of 24) and
+  `docs/evidence/2.14/formation-panel-t2.png` (shot again: the Polish infantry division with
+  "Org 100%" and "Fuel on the march None"). The three pictures of `2.14/formation-panel-*`
+  are of today's game.
+- **The pin moved:** 3fad5d18 → 9dd4093d (ADR-136).
+- **Counted** (seed 99, a year, every hour): 69 formations on engines with no supply and no
+  org at some hour, 77,955 formation-hours, 8,805 in contact.
+- **Found, not looked into:** those 69 stand dry for 47 days each on average. Whose they
+  are and why nothing feeds or moves them is a question for PLAN 3.5 (the AI and its
+  armour) and Phase 7.
+- **Learned:** a formation on foreign ground at peace goes home: a test that wants one off
+  its network needs a war or a ring.
+- **Not done:** tick time not compared with before (one comparison a dry formation an hour,
+  and a pass over its elements when it has no org; this run of seed 99, unpinned: mean
+  2.28 ms); no sweep (ADR-58); no wreck for a tank lost from a company that lives; org lost
+  to damage (phase review 3.7).
+- **Review pass:** not due (three of five since the last one, with 3.2 ticked).
+- **Next:** PLAN 3.3 (terrain modifiers for tracked mobility and combat).
+- **Gate:** green on the second run (code: typecheck, lint, unit 791, the ten-year tests 12, build, e2e in full 139, parity). The first run failed at e2e in `tickClock` alone (a wait of 3 s for a frame, the toy world; alone it passed three times in a row; logged in BLOCKERS, the spec not changed).

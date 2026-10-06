@@ -22,12 +22,14 @@
  * template's fuel besides (PLAN 3.2b). At 0 it attrits: (BASE_ATTRITION_PER_DAY +
  * terrain supplyAttrition) of its strength per day, applied hourly; and one that moves on
  * engines loses ORG_RATE of its org per hour there, which it gets back on a network (PLAN 3.2c).
+ * With no org left there its vehicles and towed guns break down: BREAKDOWN_PER_DAY of them a
+ * day besides (PLAN 3.2d).
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { Terrain } from '../../shared/terrain';
 import { Mobility } from '../nav/grid';
 import type { World } from '../world';
-import { bleedFormation } from './elements';
+import { bleedFormation, breakDown } from './elements';
 
 /** Network refresh period (12 h since PLAN 1.25: armies in motion keep it dirty; dry within 12 + 8 h). */
 export const SUPPLY_REFRESH_HOURS = 12;
@@ -46,6 +48,12 @@ export const MARCH_BURN = SUPPLY_RATE / 40;
  * network that feeds it. Off the network with supply left it stands.
  */
 export const ORG_RATE = 1 / 32;
+/**
+ * Breakdowns (PLAN 3.2d): the share of its vehicles and towed guns that a formation on engines
+ * loses in a day with no supply and no org, besides the attrition of every formation without
+ * supply. Its men go at that attrition alone.
+ */
+export const BREAKDOWN_PER_DAY = 0.1;
 const TERRAIN_ATTRITION = terrainJson.terrain.map((t) => t.supplyAttrition);
 
 /** Supply bloc of a nation: its overlord's id, or its own when it has none. */
@@ -210,7 +218,10 @@ export function supplySystem(world: World): void {
     if (inSupply) c.org[id] = Math.min(1, c.org[id]! + ORG_RATE);
     if (c.supply[id] === 0) {
       // As the speed rule has it (movement.ts): a formation with a manoeuvre element on foot is not one on engines.
-      if (rule && rule.mobility !== Mobility.foot) c.org[id] = Math.max(0, c.org[id]! - ORG_RATE);
+      if (rule && rule.mobility !== Mobility.foot) {
+        c.org[id] = Math.max(0, c.org[id]! - ORG_RATE);
+        if (c.org[id] === 0) breakDown(world, id, BREAKDOWN_PER_DAY / 24);
+      }
       const perHour = (BASE_ATTRITION_PER_DAY + (TERRAIN_ATTRITION[terrain[cell]!] ?? 0)) / 24;
       bleedFormation(world, id, perHour);
     }

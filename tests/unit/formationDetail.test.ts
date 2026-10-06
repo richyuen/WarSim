@@ -24,7 +24,7 @@ describe('the worker\'s answer to `formation` (PLAN 2.14b)', () => {
     const id = w.formations.ids()[0]!;
     const hash = server.sim!.hash();
     const d = ask(server, replies, id)!;
-    expect(d).toMatchObject({ id, tick: 30, nation: w.formations.cols.nation[id], strength: w.formations.cols.strength[id], supply: w.formations.cols.supply[id], x: w.formations.cols.x[id], y: w.formations.cols.y[id] });
+    expect(d).toMatchObject({ id, tick: 30, nation: w.formations.cols.nation[id], strength: w.formations.cols.strength[id], supply: w.formations.cols.supply[id], org: w.formations.cols.org[id], fuel: 0, x: w.formations.cols.x[id], y: w.formations.cols.y[id] });
     expect(d.engaged).toBe(w.formations.cols.engaged[id] === 1);
     expect(d.moving).toBe(w.formations.cols.moving[id] === 1);
     // A toy formation has no template and no elements.

@@ -1040,7 +1040,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   Unsupplied armour loses speed, then org, then strength (breakdowns).
   *Implemented (PLAN 3.2b, ADR-134):* the fuel figure, the burn on the march off the network and
   the speed (§4, Supply v1). *(PLAN 3.2c, ADR-135):* the org, lost with no supply and read by
-  combat. Breakdowns: PLAN 3.2d.
+  combat. *(PLAN 3.2d, ADR-136):* breakdowns. With no supply and no org a formation on engines
+  loses a tenth a day of its vehicles and towed guns (the elements that burn fuel and are not
+  counted in men), besides the attrition of every formation without supply; its men go at
+  that attrition alone. The formation panel has the org and the fuel the template burns.
 - Terrain: big bonus on plains/grassland/desert, heavy penalties in forest, marsh, mountains
   and urban. Tracked mobility costs from the terrain table.
 - Combined arms: armour is vulnerable to AT guns, CAS and heavy armour, and is strong vs

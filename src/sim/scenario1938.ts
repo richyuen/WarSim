@@ -90,7 +90,7 @@ function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number;
   const fuel = t.elements.reduce((s, e) => s + unitMove.get(e.type)!.stats.fuelPerHour * e.count, 0);
   return { mobility, speedKmh: Math.min(...els.map((u) => u.stats.speed_kmh)), fuel };
 }
-type UnitStats = { id: string; class: string; elementSize: number; techReq?: string; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number } };
+type UnitStats = { id: string; class: string; elementSize: number; techReq?: string; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; fuelPerHour: number } };
 const UNITS_LAND = unitsLand.types as unknown as UnitStats[];
 const unitIndex = new Map(UNITS_LAND.map((u, i) => [u.id, i]));
 /** The id of each unit type by its index in `RULES_1938.units` (its name is the i18n key `unit.<id>`). */
@@ -125,6 +125,7 @@ export const RULES_1938: ScenarioRules = {
     armor: u.stats.armor,
     piercing: u.stats.piercing,
     hpPerUnit: u.stats.hpPerUnit,
+    fuel: u.stats.fuelPerHour,
   })),
   templates: TEMPLATES_LAND.map((t) => ({
     ...templateMobility(t),

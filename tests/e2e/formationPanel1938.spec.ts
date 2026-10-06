@@ -50,6 +50,31 @@ function border(): readonly [number, number] {
   return best;
 }
 
+/** The middle of the Polish cell farthest from every formation, among those with Polish ground alone six cells around. */
+function inland(): readonly [number, number] {
+  const w = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) }).world;
+  const { owner, w: cw, h: ch } = w.cells;
+  const fc = w.formations.cols;
+  const forms = w.formations.ids().map((f) => [fc.x[f]!, fc.y[f]!] as const);
+  const R = 6;
+  let best: [number, number] | null = null;
+  let far = 0;
+  for (let y = R; y < ch - R; y++) {
+    for (let x = R; x < cw - R; x++) {
+      let ok = true;
+      for (let dy = -R; ok && dy <= R; dy++) for (let dx = -R; ok && dx <= R; dx++) if (owner[(y + dy) * cw + x + dx] !== POL) ok = false;
+      if (!ok) continue;
+      const d = Math.min(...forms.map(([fx, fy]) => Math.hypot(fx - (x + 0.5), fy - (y + 0.5))));
+      if (d > far) {
+        far = d;
+        best = [x + 0.5, y + 0.5];
+      }
+    }
+  }
+  if (!best) throw new Error('no Polish cell with Polish ground alone around it');
+  return best;
+}
+
 async function step(page: Page, cmds: Command[]): Promise<void> {
   await page.evaluate(async (cmds) => {
     const sim = window.__warsim!.sim;
@@ -79,7 +104,7 @@ async function zoomTo(page: Page, x: number, y: number, mPerPx: number, elements
 }
 
 /** What the panel says, read from the page. */
-async function panel(page: Page): Promise<{ id: number; name: string; kind: string; nation: string; strength: string; supply: string; status: string; units: string[] } | null> {
+async function panel(page: Page): Promise<{ id: number; name: string; kind: string; nation: string; strength: string; supply: string; org: string; fuel: string; status: string; units: string[] } | null> {
   const p = page.getByTestId('formation-panel');
   if ((await p.count()) === 0) return null;
   await expect(page.getByTestId('formation-strength')).toBeVisible({ timeout: 10_000 });
@@ -90,6 +115,8 @@ async function panel(page: Page): Promise<{ id: number; name: string; kind: stri
     nation: (await page.getByTestId('formation-nation').innerText()).trim(),
     strength: (await page.getByTestId('formation-strength').innerText()).trim(),
     supply: (await page.getByTestId('formation-supply').innerText()).trim(),
+    org: (await page.getByTestId('formation-org').innerText()).trim(),
+    fuel: (await page.getByTestId('formation-fuel').innerText()).trim(),
     status: (await page.getByTestId('formation-status').innerText()).trim(),
     units: (await page.getByTestId('formation-units').locator('tr').allInnerTexts()).map((s) => s.replace(/\s+/g, ' ').trim()),
   };
@@ -152,6 +179,9 @@ test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s n
     // Its men now, as the sim has them (the two are in contact: the first hour cost some), of a whole one's.
     expect(p!.strength, `${where}: men`).toBe(`${num(f.strength)} of ${num(ECONOMY_TABLES_1938.templateStrength[infantry]!)}`);
     expect(p!.supply, where).toBe('100%');
+    // PLAN 3.2d: a division on foot, on its network.
+    expect(p!.org, `${where}: org`).toBe('100%');
+    expect(p!.fuel, `${where}: fuel`).toBe('None');
     // One row a unit type of the template, with as many elements as the template gives it.
     expect(p!.units.length, `${where}: unit types`).toBe(template.elements.length);
     expect(p!.units.reduce((s, row) => s + Number(row.split('×')[0]), 0), `${where}: elements`).toBe(f.elements);
@@ -252,6 +282,88 @@ test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s n
   const later = await page.evaluate(async (id) => (await window.__warsim!.sim.inspect(true)).formations.find((f) => f.id === id)!.strength, polish);
   await expect(page.getByTestId('formation-strength')).toHaveText(new RegExp(`^${num(later)} of `), { timeout: 15_000 });
   console.log(`the Polish division a day on: ${num(later)} men; status "${(await panel(page))!.status}"`);
+});
+
+// PLAN 3.2d: fuel and org on the panel. A German panzer division set down deep in Poland, at
+// war with it and far from every formation: off its network, and nobody comes (no AI). (At peace
+// it would march home.) (Before: the panel had the supply alone, so nothing said why a division that had
+// run dry was slow and shot little, nor that its tanks were going.) Its fuel is its template's;
+// its supply, its org and its tanks are the sim's of the hour: the supply gone in eight hours,
+// the org in 32 more, and from then on its tanks faster than its men.
+test('the panel of a panzer division off its network: its fuel, its supply and its org as they go, then its tanks', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/3.2') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const SITE = inland();
+  const panzer = TEMPLATES_LAND.findIndex((t) => t.id === 'panzer_div');
+  await step(page, [
+    { kind: 'setSetting', key: 'aiEnabled', value: false },
+    { kind: 'declareWar', attacker: GER, defender: POL },
+    { kind: 'spawnFormation', nation: GER, x: SITE[0], y: SITE[1], strength: 0, template: panzer },
+  ]);
+  const id = Math.max(...(await page.evaluate(() => window.__warsim!.view!.formationIds())));
+  const detail = (): Promise<{ supply: number; org: number; fuel: number; units: { nameKey: string; strength: number; size: number }[] }> => page.evaluate(async (id) => (await window.__warsim!.sim.formation(id))!, id);
+  const hours = async (n: number): Promise<void> => {
+    await page.evaluate(async (n) => {
+      const tick = (await window.__warsim!.sim.step(n)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+        wait();
+      });
+    }, n);
+  };
+  const pct = (v: number): string => `${Math.round(v * 100)}%`;
+  const tanks = (d: { units: { nameKey: string; strength: number }[] }): number => d.units.filter((u) => u.nameKey.startsWith('unit.tank_')).reduce((s, u) => s + u.strength, 0);
+  const menOf = (d: { units: { nameKey: string; strength: number }[] }): number => d.units.find((u) => u.nameKey === 'unit.infantry_motorised')!.strength;
+
+  await zoomTo(page, SITE[0], SITE[1], 500, false);
+  const centre = await page.evaluate((id) => {
+    const r = window.__warsim!.view!.markerRects.find((m) => m.id === id || m.members.includes(id))!;
+    return [r.x + r.w / 2, r.y + r.h / 2] as [number, number];
+  }, id);
+  await page.mouse.click(...centre);
+  await expect(page.getByTestId('formation-panel')).toHaveAttribute('data-formation', String(id));
+
+  // The first hour: an eighth of its supply gone, its org whole.
+  const first = await detail();
+  expect(first.fuel).toBe(38);
+  expect(first.supply).toBe(7 / 8);
+  expect(first.org).toBe(1);
+  expect((await panel(page))!.kind).toBe('Armoured division');
+  await expect(page.getByTestId('formation-fuel')).toHaveText('38 an hour');
+  await expect(page.getByTestId('formation-supply')).toHaveText('88%');
+  await expect(page.getByTestId('formation-org')).toHaveText('100%');
+  expect(tanks(first)).toBe(340);
+
+  // A day on: dry since hour 8, and 17 hours of its org gone.
+  await hours(23);
+  const day = await detail();
+  expect(day.supply).toBe(0);
+  expect(day.org).toBe(1 - 17 / 32);
+  await expect(page.getByTestId('formation-supply')).toHaveText('0%', { timeout: 15_000 });
+  await expect(page.getByTestId('formation-org')).toHaveText(pct(day.org));
+  expect(pct(day.org)).toBe('47%');
+  expect(tanks(day)).toBe(340);
+  await page.screenshot({ path: path.join(out, 'formation-panel-panzer-dry.png') });
+
+  // Hour 39: no org. Two days on its tanks have gone faster than its men, and the panel's rows say so.
+  await hours(15);
+  expect((await detail()).org).toBe(0);
+  await expect(page.getByTestId('formation-org')).toHaveText('0%', { timeout: 15_000 });
+  await hours(48);
+  const late = await detail();
+  const tanksLost = 1 - tanks(late) / 340;
+  const menLost = 1 - menOf(late) / menOf(first);
+  expect(tanksLost).toBeGreaterThan(0.15);
+  expect(tanksLost).toBeGreaterThan(2 * menLost);
+  expect(menLost).toBeGreaterThan(0);
+  const light = late.units.find((u) => u.nameKey === 'unit.tank_light')!;
+  await expect(page.getByTestId('formation-units').locator('tr[data-unit="unit.tank_light"]')).toContainText(`${num(light.strength)} of ${num(light.size)}`, { timeout: 15_000 });
+  await page.screenshot({ path: path.join(out, 'formation-panel-panzer-broken-down.png') });
+  console.log(`the panzer division after ${1 + 23 + 15 + 48} hours off its network: ${tanks(late)} of 340 tanks, ${menOf(late)} of ${menOf(first)} motorised infantry`);
 });
 
 // PLAN 2.16Ri (the sixth read, finding 6): a table gives a freed id to the next row made, and

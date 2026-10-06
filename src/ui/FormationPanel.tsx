@@ -3,12 +3,16 @@ import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 
 const num = (v: number): string => Math.round(v).toLocaleString('en-US');
+/** A template's fuel figure: tenths below ten (the motorised division's 4.6), else whole. */
+const fuel = (v: number): string => (v < 10 ? String(Math.round(v * 10) / 10) : num(v));
 const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
 
 /**
  * The formation panel (PLAN 2.14b): what a click on a formation opens, at any zoom that shows
- * formations. Its name and kind, whose it is, its men against a whole one's, its supply, whether
- * it is in contact or on the march, and its elements by unit type. The numbers are the sim's
+ * formations. Its name and kind, whose it is, its men against a whole one's, its supply and its
+ * org, the fuel it burns on the march (PLAN 3.2d: it has no fuel level of its own, the supply is
+ * what it burns), whether it is in contact or on the march, and its elements by unit type. The
+ * numbers are the sim's
  * (`FormationDetail`), asked for again as the game goes on. It stands where the nation panel
  * stands; the nation's chip leads back to that one.
  */
@@ -68,6 +72,8 @@ export function FormationPanel({
         <>
           {row('formation.strength', info.full > 0 ? t('formation.strengthOf', { n: num(info.strength), full: num(info.full) }) : num(info.strength), 'formation-strength')}
           {row('formation.supply', `${Math.round(info.supply * 100)}%`, 'formation-supply')}
+          {row('formation.org', `${Math.round(info.org * 100)}%`, 'formation-org')}
+          {row('formation.fuel', info.fuel > 0 ? t('formation.fuelPerHour', { n: fuel(info.fuel) }) : t('formation.fuelNone'), 'formation-fuel')}
           {row('formation.status', t(status), 'formation-status')}
           <div class="panel-sub">{t('formation.elements')}</div>
           <table class="formation-units" data-testid="formation-units">

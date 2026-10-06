@@ -131,6 +131,8 @@ export interface UnitRule {
   armor: number;
   piercing: number;
   hpPerUnit: number;
+  /** Fuel an element of it burns in an hour on the march (`fuelPerHour` of the unit data). */
+  fuel: number;
 }
 export interface ScenarioRules {
   templates: readonly TemplateRule[];

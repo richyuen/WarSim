@@ -339,6 +339,22 @@ export function bleedFormation(world: World, fid: number, fraction: number): voi
   settleFormation(world, fid);
 }
 
+/**
+ * Breakdowns (PLAN 3.2d): removes the share `fraction` of what formation `fid` has in vehicles
+ * and towed guns, which are its elements that burn fuel and are not counted in men. The caller
+ * settles the formation (`bleedFormation` of the same hour does).
+ */
+export function breakDown(world: World, fid: number, fraction: number): void {
+  const els = elementIndex(world).get(fid);
+  if (!els) return;
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  for (const e of els) {
+    const u = units[ec.unit[e]!]!;
+    if (u.fuel > 0 && u.menPerUnit > 1) applyLoss(world, e, ec.strength[e]! * fraction);
+  }
+}
+
 /** Removes dead elements of `fid`, recomputes strength; destroys the formation if none remain. */
 export function settleFormation(world: World, fid: number): void {
   const list = elementIndex(world).get(fid);

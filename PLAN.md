@@ -2824,7 +2824,7 @@ quick sweep as a smoke test.
     - Found: without commands the Soviet Union disbands nothing in six years of seed 99, and
       those six years are the same game with the rule and without it (the pin stands). The
       world's armour formations fall from 72 to 12 in them, in battle (PLAN 3.5, Phase 7).
-- [ ] 3.2 Fuel/supply consumption and breakdown effects.
+- [x] 3.2 Fuel/supply consumption and breakdown effects.
   AT: unsupplied armour slows, then loses org, then strength (test).
   Split 2026-10-06 (one cause a commit; there is no `org` in the state yet):
   - [x] 3.2a **A stack's lines deploy behind its place** (found by 3.2b's first test run: its
@@ -2864,10 +2864,20 @@ quick sweep as a smoke test.
     - Not done: org is not lost to damage and nothing retreats (SPEC §5.2 step 4: no task
       yet; to be placed at the phase review 3.7); the AI does not know of it (3.5); nothing on
       the page (3.2d).
-  - [ ] 3.2d **Breakdowns.** With no org left the elements that burn fuel are lost (vehicles,
+  - [x] 3.2d **Breakdowns.** With no org left the elements that burn fuel are lost (vehicles,
     not men) faster than the 2% a day of every unsupplied formation. On the formation panel:
     fuel and org. AT: the task's (slows, then org, then strength, in that order, one test);
     e2e of the panel. Ticks 3.2.
+    - Done 2026-10-06 (ADR-136). `BREAKDOWN_PER_DAY` 0.1 of the elements that burn fuel and
+      are not counted in men (tanks, heavy artillery), at supply 0 and org 0, for what does
+      not walk; the men of the motorised infantry go at the attrition alone.
+      `tests/unit/breakdown.test.ts` (4; the AT's three stages in one, red first). The panel:
+      "Org" and "Fuel on the march" (the template's figure: there is no fuel level, ADR-134);
+      `tests/e2e/formationPanel1938.spec.ts` (a panzer division set down deep in Poland;
+      `docs/evidence/3.2/`). The pin: 3fad5d18 → 9dd4093d. No new state.
+    - Found: in the first year of seed 99, 69 formations on engines stand dry with no org for
+      77,955 formation-hours in all (47 days each on average). Whose they are and where was
+      not looked into (PLAN 3.5: the AI does not know of supply; Phase 7).
 - [ ] 3.3 Terrain modifiers for tracked mobility and combat.
   AT: identical battles on plains vs forest yield the expected outcome swing.
 - [ ] 3.4 Combined arms (inf + art + armour bonus; AT vs armour; armour vs infantry in the open).

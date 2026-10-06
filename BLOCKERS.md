@@ -395,3 +395,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     waits for six frames. Not looked into: whether a frame at 5 m/px on 1,584 figures has become
     slower beside other pages since PLAN 2.11g (the unit stage took 47.9 s in that run, 41 at its
     best).
+  - `tickClock`, the pause in a tick (2026-10-06, the gate of PLAN 3.2d, the suite in 10.1 min):
+    "waited 3000 ms for a frame at the tick's end", once in 138 tests. Alone, three times in a
+    row, it passed (the tick's end after 913 to 1,049 ms). It runs the toy world, which has no unit
+    rules: the rule of that commit is not on its path. The load of the machine in that run is
+    not known. The spec was not changed.

@@ -432,6 +432,9 @@ export interface FormationDetail {
   strength: number;
   /** Supply 0..1. */
   supply: number;
+  /** Org 0..1 (PLAN 3.2c), and the fuel its template burns in an hour on the march (0 = none, or no template). */
+  org: number;
+  fuel: number;
   engaged: boolean;
   moving: boolean;
   x: number;
