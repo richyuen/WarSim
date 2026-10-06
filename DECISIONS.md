@@ -215,6 +215,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - A reason for Revive finer than "nothing here to do it with" (PLAN 2.17d), nor one for the
     Kill of the last living nation, which is still carried out as nothing (PLAN 2.17c).
   - A God tab that greys what would be refused.
+- **Known, left:** a declaration refused as a command emits `WarRejected` (from `declareWar`)
+  and `CommandRefused`; the AI's refused declaration emits the first only. The history log
+  keeps neither (its kinds are a list, `history.ts`). The words of a refusal stay when
+  another nation is selected without a command: a line of PLAN 2.17e.
 - **The pin did not move** (7fc8e685): events are not state, and the pinned run has no
   command.
 - **Tests, seen to fail first:**

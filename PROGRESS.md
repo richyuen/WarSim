@@ -6349,3 +6349,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin did not move** (7fc8e685).
 - **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, the changed spec, parity; no full e2e for a part, ADR-87).
 - **Next:** PLAN 2.17b, the Territory brush.
+- **After the commit (read, not run):** the words of a refusal stay on the tab when another
+  nation is selected; logged under PLAN 2.17e and in ADR-117. `CommandRefused` does not reach
+  the history log (its kinds are a list).

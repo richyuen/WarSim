@@ -2606,6 +2606,12 @@ quick sweep as a smoke test.
   - [ ] 2.17e **What is left of the list above.** The empty rename in a world without a
     nation table (ADR-109): refused, or the name kept. The God tab left open on a nation
     that has just died: what it shows and what its buttons send.
+    From 2.17a, read after its commit and not run: **the words outlive their nation.**
+    `Hud.refusal` is cleared by the next command only. Ally refused on France, then a click
+    on Germany: Germany's God tab reads "Not done: …". And `Hud.command` is the editor's way
+    too: a refused editor paint leaves words for a God tab opened later. To be cleared when
+    the selection changes and when God Mode is switched off.
+    AT, added to the e2e: the words are gone after a click on another nation.
     AT: unit, the rename in the toy world; e2e, the tab after a Kill of its own nation.
   **PLAN 2.12 to 2.17 are the critic's second report (ADR-83).** They are numbered tasks and
   count toward the next review pass. Their order is not the critic's (R2-B2, B3, B4, B6, B7,
