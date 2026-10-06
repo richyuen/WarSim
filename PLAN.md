@@ -3007,9 +3007,22 @@ quick sweep as a smoke test.
     nothing of what changed or why. Each finding is checked against the code here before it
     is anything; those a player can meet become tasks 3.4Re and on, before 3.5, each with a
     test that fails first, most severe first; the rest go on the watch list.
-  - [ ] 3.4Rb SPEC re-read for drift: each decision since the last pass (ADR-112 to
+  - [x] 3.4Rb SPEC re-read for drift: each decision since the last pass (ADR-112 to
     ADR-142) looked for in SPEC (§2.3, §3.6, §3.7, §4, §5.2, §6.1, §7, §9) and checked
     against the code, not against its ADR alone.
+    Done 2026-10-06. Of the 31 decisions, 26 are cited in SPEC; §3.7 (techs, research),
+    §4 (fuel, org, the lines abreast), §6.1 (breakdowns, terrain by unit type, the four
+    rules) were read beside `research.ts`, `supply.ts`, `movement.ts`, `elements.ts` and
+    `combat.ts` and say what the code does. Written in, each from the code:
+    - §5.2: the damage line had no org (× 0.25 + 0.75 org, ADR-135), no efficiency, buffs
+      or the Major Battle's × 1.5; "Deferred" still named org and major battles, both
+      there (org as lost to want of supply; lost to damage and the retreat are not).
+    - §4: `moveFormation` carries `nation`, and is refused for another nation's formation
+      (ADR-116). The revival's rule for a third nation's share cites ADR-123.
+    - §9: the selection is of the played nation (ADR-116); what a God tab holds is its
+      nation's: the refusal's words (ADR-125), the armed Kill, the typed name, the dead
+      nation deselected, the brush switched off (ADR-126).
+    - *Left out:* ADR-132 (superseded by ADR-133, which is in §4).
   - [ ] 3.4Rc Dead code and refactor debt in the same files: exports nothing uses, i18n keys
     without a use, TODO and FIXME; the four rule factors and the two maps of arms of
     `combat.ts`; the battle that `combinedArms.test.ts` and `combinedArmsMatrix.test.ts`

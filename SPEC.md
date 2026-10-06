@@ -789,7 +789,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   dearer. Left as it is, because a strict bound would widen every search. Berlin → Moscow takes 9 ms, Lisbon → Khabarovsk (840 cells)
   83 ms (before PLAN 1.42a, which made the same search about 40% faster: a typed-array heap
   reused across searches, the step and bound arithmetic inlined).
-- *Orders:* `moveFormation {id, x, y}`.
+- *Orders:* `moveFormation {id, x, y, nation?}`. With `nation` the order is refused (`NoSuch`) when
+  the formation is gone or is not that nation's (ADR-116): a player's click names the nation it plays, and
+  a freed id that another nation's formation has taken is not ordered by it.
   - A target unreachable from the formation snaps to the nearest reachable cell within 3;
     otherwise the order is rejected (`MoveRejected`).
   - Order state is moving, originCell, targetCell, pathStep and stepFrac. The path is a cache,
@@ -872,7 +874,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     (death + 2 years; 0 for nations dead at the start). It returns through a revolt on a
     province it has a core on (instead of new rebels), through its holder's collapse, or by God
     `reviveNation`. It takes each province from the owner of its centre: what a third nation
-    owns of that province stays with it. A holder left without the centre of any province
+    owns of that province stays with it (ADR-123: as in every transfer by province). A holder left without the centre of any province
     also gives up the cells it owns and controls outside any province, and is eliminated at
     once if it then controls no cell (ADR-122).
   - *Collapse:* 6 consecutive bankrupt months. Puppets go free, dead claimants revive on
@@ -964,8 +966,11 @@ bombardment) participants join through their missions.
     `hash32(seed, tick, element)` and held for 4 h.
   - Weighting by health makes every element type bleed at the same rate.
   - Weights are tabled per (formation, unit type), and the draw is a binary search.
-- *Damage* (target units) = eff × fullness × 0.1 × terrain attack × (0.5 + 0.5 supply) ÷ terrain
-  defence (when the target holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys.
+- *Damage* (target units) = eff × fullness × 0.1 × terrain attack × (0.5 + 0.5 supply) ×
+  (0.25 + 0.75 org) (PLAN 3.2c, ADR-135; §4, Supply v1) ÷ terrain defence (when the target
+  holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys. Besides: × the shooter's
+  nation's combat efficiency (§5.3) and its attack buffs, ÷ the target's defence buffs, × 1.5
+  in a Major Battle (§5.4).
   The terrain is the target's cell. Attack is the shooter's class figure of `terrain.json` ×
   its unit type's `terrainMods.atk`; defence is the ground's figure × the target's unit
   type's `terrainMods.def` (PLAN 3.3a, ADR-137). × 1.15 for a shooter whose side has
@@ -980,8 +985,10 @@ bombardment) participants join through their missions.
   - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
     (square law: 0.268).
   - An 80-division battle costs 3.2 ms per tick.
-- *Deferred:* org and retreat (step 4), entrenchment, experience, night and
-  weather, and persistent or major battles (§5.4).
+- *Deferred:* org lost to damage and the retreat (step 4; the org there is, is lost to want
+  of supply: §4), entrenchment, experience, night and weather. Of the modifiers of step 2
+  below, entrenchment, river crossing, experience, air superiority and night/weather are
+  read by nothing yet.
 1. **Target selection** (deterministic): each element scores enemy elements in range
    by `typeMatch(weapon, targetArmor) × proximity × threat` and picks a target with
    `hash32(seed, tick, element.id)` (weighted). Targets are cached for `cooldown` ticks.
@@ -1696,6 +1703,9 @@ on screen.
   clicks player orders. A click on an own formation selects it (Shift toggles, Esc clears;
   rings on the overlay); a click elsewhere orders the selection to march there (into enemy land
   = attack). "Release control" turns the AI back on. The bottom bar shows the nation and count.
+  The selection is of the played nation (ADR-116): each snapshot takes out of it an id that
+  is gone or is another nation's by now (`MapView.selectionNation`), the bar's count
+  follows, and a load empties it.
   The controlled nation gets an Actions tab (PLAN 1.33b, `src/ui/ActionsTab.tsx`):
   - `declareWar`, `offerPeace` and `proposeAlliance` (refusable, unlike God commands):
     - peace is accepted when the offering side leads by ≥ 25 or the other side's exhaustion is
@@ -1716,6 +1726,12 @@ on screen.
   of the editor's undo history; the keys of undo and redo work while the editor is open.
   God commands are sent with `now`: applied at once between ticks with the next step's tick
   stamp (`Sim.applyNow`), so they show while paused and replay identically.
+  What the tab holds is its nation's (`src/app/hud.ts`, `GodTab.tsx`): the words of a refusal
+  are shown only while the selection is the one the command was sent under, and go with any
+  change of the selection or of God Mode (ADR-125); an armed Kill and a typed name are
+  nothing on another nation's tab; a selected nation that the statistics list among the dead
+  is deselected, and with no nation selected an armed territory brush is switched off
+  (ADR-126).
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes
   globally or per nation; grant warheads; force a strike. All of these are Commands.

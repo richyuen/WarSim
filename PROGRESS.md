@@ -7155,3 +7155,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   0xC0000142), which is not a verdict on the code.
 - **Gotcha:** a gate in the background is stopped when the session sits idle and memory
   is short. The fifth ran in the background with a foreground loop waiting on its log.
+
+## 2026-10-06 — PLAN 3.4R: the review pass over 2.17 and 3.1 to 3.4, split; 3.4Rb, SPEC re-read
+
+- **The split:** five parts (3.4Ra the seventh independent read, Rb SPEC, Rc dead code and
+  refactor, Rd tick time, Re the three tank brigades of 3.4b). No part is a numbered task.
+- **3.4Ra started:** a reader with no part in the code, the 35 files of `src/` and four of
+  `data/` changed since the sixth read (`5d24625`), the brief of ADR-74. Its report is the
+  next entry.
+- **3.4Rb done (documents).** ADR-112 to ADR-142 looked for in SPEC: 26 of 31 cited. §3.7,
+  §4 and §6.1 read beside the code of research, supply, movement, elements and combat: they
+  say what it does. Written in: §5.2 (the damage line had no org, efficiency, buffs or the
+  Major Battle's factor; "Deferred" named two things that are there), §4 (`moveFormation`
+  with `nation`; ADR-123), §9 (the player's selection, ADR-116; the God tab's words and
+  state, ADR-125 and 126).
+- **Seen while reading, for 3.4Rc:** `supplyFactor` of `combat.ts` holds supply, org and the
+  three arms; `sideArmsOf` and `enemies` ask `atWar` of every pair of a battle's formations
+  (n² a battle, an hour): 3.4Rd measures before anything is changed.
+- **Gate:** documents (parity).
