@@ -359,6 +359,17 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   2000, no command: 45 cells are controlled by a nation other than their owner with no war
   between the two. A Kill no longer adds to them (ADR-119). Where the 45 come from (a war
   that ends for one side, a peace that leaves cells, an alliance joined) is not known.
+- For Phase 7 (measured 2026-10-06, PLAN 2.17d2; left as it is by PLAN 2.17d3, ADR-123): a
+  province split by a peace stays split through every transfer. A peace moves cells; a
+  defection, a revolt, a collapse, a Kill and a revival move the cells of a province that the
+  owner of its centre owns (`defect`, `spawnRebels`), and no others. 1938, seed 99: France
+  killed at tick 0 and revived two years on holds 8,963 of its 10,473 cells; 1,253 cells of
+  provinces whose centre is France's again are Nationalist Spain's (608), three nations' the
+  Kill founded (627) and nobody's (18): patches inside France. To be decided with the
+  balance: every transfer takes the province whole (and what war, if any, stands behind the
+  cells taken from a third nation), or a peace keeps provinces whole, or the patches are left
+  to the wars that follow. Not measured: how many provinces a game without commands has split
+  after 10 and 50 years.
 - Specs that measure time and fail on a slow machine (2026-10-04, gate runs with another project's
   dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
   changed. If one fails on an idle machine it is a finding.

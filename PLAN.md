@@ -2672,7 +2672,7 @@ quick sweep as a smoke test.
     - The patches, looked at (a scratch run, the two years played): 1,253 cells of provinces
       whose centre the revived France owns stay others' (Nationalist Spain 608, three founded
       nations 627, nobody 18). They are conquests that split a province. To 2.17d3.
-  - [ ] 2.17d3 **A revival leaves what third nations own of its provinces.** Measured in
+  - [x] 2.17d3 **A revival leaves what third nations own of its provinces.** Measured in
     ADR-122: France revived after two years of war holds 8,963 cells, and 1,253 cells of its
     own provinces are Nationalist Spain's and three founded nations'; nation 106 lives on
     without a cell of its own, on land it occupies. To be decided: a revival takes every
@@ -2681,6 +2681,10 @@ quick sweep as a smoke test.
     and this is logged for Phase 7. The pin says whether year one of seed 99 has the case.
     AT: unit, failing first if the rule changes: a province split by a peace, then a revival
     on it; else the line in BLOCKERS.md.
+    - Done 2026-10-06 (ADR-123): the rule is not changed, and no code moved. It is not the
+      revival's rule: `defect` and `spawnRebels` move the cells the centre's owner owns of a
+      province, in every transfer; taking a third nation's cells would be land moved with no
+      war behind it (ADR-119). The split province is in BLOCKERS.md for Phase 7.
   - [ ] 2.17e **What is left of the list above.** The empty rename in a world without a
     nation table (ADR-109): refused, or the name kept. The God tab left open on a nation
     that has just died: what it shows and what its buttons send.

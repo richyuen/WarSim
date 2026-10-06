@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-123 · 2026-10-06 · accepted — A revival leaves what third nations own of its provinces; the split province is logged for Phase 7 (PLAN 2.17d3)
+
+- **Context:** ADR-122 measured it and did not decide: France killed, two years of war played,
+  then revived (1938, seed 99) holds 8,963 of its 10,473 cells, and 1,253 cells of provinces
+  whose centre is France's again stay others': Nationalist Spain 608, three nations the Kill
+  founded 627, nobody 18. PLAN 2.17d3 asked: a revival takes every cell of a province it
+  takes, whoever owns it, or the patches are left to the wars that follow.
+- **Decision:** not changed. A revival takes the share of the owner of the province's centre,
+  as before. No code moved.
+- **Why:**
+  - *It is not the revival's rule.* `defect` and `spawnRebels` (`revolts.ts`) both move the
+    cells of a province that the holder owns, and no others. Every transfer by province (a
+    defection, a revolt, a collapse, a Kill, a revival) leaves a third nation's share of a
+    split province where it is. The cause is one step earlier: a peace moves cells, and a
+    transfer moves provinces. A revival that took the whole province would be the one
+    transfer that does.
+  - *It would be land moved with no war behind it.* A revival is at war with the holders of
+    the centres only (`byHolder`). Spain's 608 cells would change owner between two nations
+    at peace, which is what ADR-119 ended for a Kill; and a war declared on every third
+    owner as well would widen every ordinary revival by a revolt.
+  - *The critic's finding is met without it* (R2-B8, PLAN 2.17d): the revived nation holds
+    the centre of every province of its core, its capital and its name on the map, and a
+    Revive that is refused says which rule refuses it.
+  - *What it does to the world over decades is balance* (ADR-58): how often a peace splits a
+    province, and whether the patches go in the wars that follow.
+- **Rejected:**
+  - *The whole province from the nations the Kill founded only.* A rule for God Mode alone,
+    and they hold those cells by conquest from each other like anyone.
+- **Not reopened:** nation 106, alive with no cell of its own on land it occupies (ADR-122:
+  a holder that still controls a cell lives on, by the rule of `capitals.ts`).
+- **Logged:** BLOCKERS.md, for Phase 7, with the numbers and the question (whole provinces
+  in every transfer, or a peace that keeps provinces whole, or neither).
+- **No test added** (the AT: a test if the rule changes, else the line in BLOCKERS.md).
+  **The pin did not move** (7fc8e685): documents only.
+
 ### ADR-122 · 2026-10-06 · accepted — A revival takes the slivers of a holder it leaves without a province (PLAN 2.17d2)
 
 - **Context:** France killed and revived (ADR-121) had 10,451 of its 10,473 cells. The other 22

@@ -6502,3 +6502,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin did not move** (7fc8e685).
 - **Next:** PLAN 2.17d3, then 2.17e (which ticks 2.17 and takes the whole e2e suite).
 - **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, parity; no e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 2.17d3: a revival leaves what third nations own of its provinces (ADR-123, documents)
+
+- **The question** (left by ADR-122): France revived after two years of war holds 8,963 of
+  10,473 cells; 1,253 cells of its own provinces stay Nationalist Spain's (608), three founded
+  nations' (627) and nobody's (18). Take the whole province, or leave the patches.
+- **Decided: left.** No code changed.
+  - `defect` and `spawnRebels` move the cells of a province that the centre's owner owns, in
+    every transfer (defection, revolt, collapse, Kill, revival). The patches come from a peace
+    that moves cells, not from the revival.
+  - Taking a third nation's cells is land moved with no war behind it (what ADR-119 ended for
+    a Kill); a war on every third owner widens every revival by a revolt.
+  - The critic's R2-B8 for Revive is met by 2.17d and 2.17d2.
+- **Logged:** BLOCKERS.md, for Phase 7 (the numbers, the three ways out, and what is not
+  measured: how many provinces a game without commands has split). PARITY row 19, a line added.
+- **No test** (the AT asks for one only if the rule changes). No run made: the numbers are ADR-122's.
+- **Not done:** no sweep (ADR-58); no e2e (a part, ADR-87, and documents only).
+- **The pin did not move** (7fc8e685).
+- **Next:** PLAN 2.17e (the empty rename, the God tab on a nation that has just died, the
+  words that outlive their nation). It ticks 2.17 and takes the whole e2e suite.
+- **Gate:** green (documents: parity).
