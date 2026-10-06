@@ -25,6 +25,10 @@ export class PlayerControl {
         this.clearSelection();
       }
     });
+    // A selected formation that is gone leaves the selection in the view; the count follows.
+    view.onSelectionDropped = () => (this.selectedCount.value = view.selectedFormations.size);
+    // A loaded world's formations are others, with the same ids (PLAN 2.16Rk).
+    hud.sim.onLoad(() => this.clearSelection());
   }
 
   take(id: number): void {
@@ -42,6 +46,7 @@ export class PlayerControl {
   }
 
   clearSelection(): void {
+    this.view.selectionNation = this.nation.value;
     this.view.selectedFormations.clear();
     this.selectedCount.value = 0;
     this.view.requestDraw();
@@ -75,7 +80,7 @@ export class PlayerControl {
       return true;
     }
     if (sel.size === 0) return false;
-    for (const id of [...sel].sort((a, b) => a - b)) this.hud.command({ kind: 'moveFormation', id, x: x + 0.5, y: y + 0.5 });
+    for (const id of [...sel].sort((a, b) => a - b)) this.hud.command({ kind: 'moveFormation', id, x: x + 0.5, y: y + 0.5, nation: n });
     return true;
   }
 }

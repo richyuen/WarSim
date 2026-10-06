@@ -76,6 +76,8 @@ function applyCommand(world: World, cmd: Command): void {
       queueFormation(world, cmd.nation, cmd.template);
       return;
     case 'moveFormation':
+      // A player's order names its nation: the id may be another nation's formation by now (PLAN 2.16Rk).
+      if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return;
       orderMove(world, cmd.id, cmd.x, cmd.y);
       return;
     case 'setSetting':

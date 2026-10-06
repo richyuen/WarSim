@@ -2491,7 +2491,7 @@ quick sweep as a smoke test.
       panel too. Both tests failed first. The suspicion did not hold: a snapshot has every
       formation, and the panel of one 300 cells outside the view stayed.
     - Not closed: the first ask is by the id alone (one tick wide; ADR-115).
-  - [ ] 2.16Rk From 2.16Ri: **the player's selection follows a taken id too.**
+  - [x] 2.16Rk From 2.16Ri: **the player's selection follows a taken id too.**
     `MapView.selectedFormations` is a set of ids, kept while the id is in the snapshot. A
     selected formation is destroyed, another nation's takes its id, and the next click on
     ground sends `moveFormation` for it; `orderMove` asks nothing of whose it is. Read, not
@@ -2499,6 +2499,13 @@ quick sweep as a smoke test.
     AT: failing first (e2e, `player1938`): the player's selected formation removed and one of
     another nation spawned in the same tick: nothing is selected, and a click on ground
     orders nothing.
+    - Done 2026-10-05 (ADR-116): run, and so it was (the German division marched). The view
+      drops from the selection an id that is another nation's, and the bar's count follows
+      (it did not, for any selected formation that was destroyed). The player's order names
+      its nation and the sim refuses it for another's formation. A load empties the
+      selection. The e2e test and a unit test failed first.
+    - Not closed: the player's own next formation with the id of the player's own destroyed
+      one stays selected (ADR-116).
   - [ ] 2.16Rj From 2.16Rd: **`loadedWorld1938.spec.ts` failed once in a run of the suite**
     (one of five suite runs; twelve runs of the spec alone, four at a time, were green).
     After the forced revolt in Masovia, with the camera on the rebels' capital at 6 px a

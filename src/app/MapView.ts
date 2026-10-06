@@ -399,7 +399,15 @@ export class MapView {
     this.formFlags = f.flags.slice(0, f.count);
     this.formTarget = f.target.slice(0, f.count);
     this.majors = s.majors.slice();
-    for (const id of this.selectedFormations) if (!this.formIds.includes(id)) this.selectedFormations.delete(id);
+    // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk).
+    let dropped = false;
+    for (const id of this.selectedFormations) {
+      const i = this.formIds.indexOf(id);
+      if (i >= 0 && (this.selectionNation === 0 || this.formNation[i] === this.selectionNation)) continue;
+      this.selectedFormations.delete(id);
+      dropped = true;
+    }
+    if (dropped) this.onSelectionDropped?.();
     const p = this.proxies;
     p.reserve(f.count);
     p.originX = Math.floor(this.geo.w / 2);
@@ -547,6 +555,10 @@ export class MapView {
 
   /** Player-selected formations (PLAN 1.33a), ringed on the overlay. */
   readonly selectedFormations = new Set<number>();
+  /** Whose the selected formations are (0 = anyone's): one of another nation leaves the selection. */
+  selectionNation = 0;
+  /** Called when a snapshot took formations out of the selection. */
+  onSelectionDropped: (() => void) | null = null;
   private formIds = new Uint32Array(0);
   private formNation = new Uint16Array(0);
   private formX = new Float64Array(0);

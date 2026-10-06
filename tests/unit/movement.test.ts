@@ -93,6 +93,28 @@ describe('land movement (PLAN 1.11)', () => {
     expect(s.world.formations.cols.moving[id]).toBe(0);
   });
 
+  // PLAN 2.16Rk: a freed id goes to the next formation made. A player's order names its nation,
+  // and an order for an id that is another nation's by now moves nothing.
+  it('an order that names a nation moves a formation of that nation only', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    const pol = spawn(s.world, 'POL', INF, 21.0, 52.23);
+    s.command({ kind: 'removeFormation', id: pol });
+    s.step(1);
+    const ger = spawn(s.world, 'GER', INF, 13.4, 52.5);
+    expect(ger, 'the freed id is given to the German division').toBe(pol);
+    const [tx, ty] = cellOf(10.0, 48.8, W, H);
+    const c = s.world.formations.cols;
+    s.command({ kind: 'moveFormation', id: ger, x: tx, y: ty, nation: nationId('POL') });
+    s.step(1);
+    expect(c.moving[ger], 'ordered in the name of Poland').toBe(0);
+    s.command({ kind: 'moveFormation', id: ger + 1000, x: tx, y: ty, nation: nationId('GER') });
+    s.step(1); // an id that no formation has: nothing, as before
+    s.command({ kind: 'moveFormation', id: ger, x: tx, y: ty, nation: nationId('GER') });
+    s.step(1);
+    expect(c.moving[ger], 'ordered in the name of Germany').toBe(1);
+  });
+
   it('infantry marches ~30 km a day on the plains; armour is faster', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     s.world.settings.aiEnabled = false; // isolate the mechanism from the AI (PLAN 1.24–1.26)

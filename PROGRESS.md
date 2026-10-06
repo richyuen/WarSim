@@ -6267,3 +6267,32 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin did not move** (7fc8e685).
 - **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, the changed spec, parity; no full e2e for a part, ADR-87).
 - **Next:** PLAN 2.16Rk, then 2.16Rj.
+
+## 2026-10-05 — PLAN 2.16Rk: the player's selection is of the player's nation (ADR-116)
+
+- **The defect, run and seen:** Poland's selected division removed and a German one spawned in
+  the same hour has its id. It stayed selected, the bar said "1 selected", and a click on
+  Polish ground sent the German division marching.
+- **A second one beside it:** the bar's count changed at a click only. Any selected formation
+  that was destroyed left "1 selected".
+- **The fix:**
+  - The view takes out of the selection an id that is gone or another nation's
+    (`MapView.selectionNation`), and says so; the bar's count follows.
+  - `moveFormation` may name a nation; the sim then orders only that nation's formation. The
+    player's click names it.
+  - A load empties the selection.
+- **Tests, seen to fail first:**
+  - `movement.test.ts`: an order in the name of Poland for a German division with a Polish
+    one's id.
+  - `player1938.spec.ts`, a second test (8 s): the selection, the bar and the German
+    division's place a day on; the bar after a load (with the hook switched off).
+- **Run by hand** (a part, ADR-87): `npx playwright test` on `player1938`,
+  `formationPanel1938`, `boot1938` and `markers1938` with `--project chromium`: 6 green (28 s).
+  The last two send `moveFormation` without a nation.
+- **Not closed:** the player's own next formation with the id of the player's own destroyed
+  one stays selected (ADR-116).
+- **Not done:** no screenshot looked at (nothing new is drawn: a ring that goes); no sweep
+  (ADR-58); tick time not measured (one comparison in a command's path).
+- **The pin did not move** (7fc8e685).
+- **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, the changed spec, parity; no full e2e for a part, ADR-87).
+- **Next:** PLAN 2.16Rj, the last of 2.16R.

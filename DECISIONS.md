@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-116 · 2026-10-05 · accepted — The player's selection is of the player's nation, and a player's order names its nation (PLAN 2.16Rk)
+
+- **Context:** seen in PLAN 2.16Ri. `MapView.selectedFormations` is a set of ids, kept while
+  the id is in the snapshot. A freed id goes to the next formation made. The player's selected
+  formation is destroyed, another nation raises one, and it is selected; the next click on
+  ground sent `moveFormation` for it, and `orderMove` asks nothing of whose it is. Run in the
+  page before the fix: Poland's selected division removed, a German one spawned in the same
+  hour at home, a click on Polish ground: the German division marched (1100.2 → 1102.9 in a
+  day), and the bar said "1 selected".
+- **Decision:**
+  - The view knows whose the selection is (`MapView.selectionNation`, set by `PlayerControl`
+    with the nation it plays). A snapshot takes out of the selection an id that is gone or is
+    another nation's.
+  - The view says so (`onSelectionDropped`), and the bar's count follows. Before, the count
+    changed at a click only: a selected formation that was destroyed left "1 selected", taken
+    id or not.
+  - `moveFormation` may carry `nation`. Then the sim orders nothing when the formation is not
+    that nation's. The player's click sends it. Without `nation` the command is as before
+    (tests, and a God Mode order should there be one).
+  - A load empties the selection (`SimClient.onLoad`), as it closes the panel (ADR-115).
+- **Why both the view and the sim:** the view's check is a snapshot late; an order sent
+  between a tick and its snapshot would still reach the other nation's formation. The sim's
+  check is at the tick the order is applied.
+- **Not closed:** the player's own formation destroyed and the player's own next one given its
+  id, between two snapshots: it is selected, and an order moves it. Both are the player's, so
+  no nation is ordered about by another; the count of ADR-115 would tell them apart, and the
+  snapshot has none (rejected there: four bytes a formation in every snapshot).
+- **Tests, seen to fail first:**
+  - `tests/unit/movement.test.ts`, "an order that names a nation…": a German division with a
+    Polish one's id, ordered in the name of Poland, does not move ("expected 1 to be +0" with
+    the `tick.ts` of before); in the name of Germany it does.
+  - `tests/e2e/player1938.spec.ts`, its second test, three assertions with the source of
+    before: the selection `[540]` where `[]` is asked, the bar "1 selected", the German
+    division moved. With the load's hook switched off: "the bar after a load".
+- **The pin did not move** (7fc8e685): the pinned run has no commands.
+
 ### ADR-115 · 2026-10-05 · accepted — The formation panel knows its formation by id and count; a load closes it (PLAN 2.16Ri)
 
 - **Context:** the sixth read's finding 6. A table gives a freed id to the next row made, the

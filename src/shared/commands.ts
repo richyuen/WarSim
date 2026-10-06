@@ -15,8 +15,11 @@ export type Command =
   | { kind: 'removeFormation'; id: number }
   /** Queue a formation of scenario template `template` (index) for `nation` (PLAN 1.10). */
   | { kind: 'queueFormation'; nation: number; template: number }
-  /** Order formation `id` to march to cell (x, y) over land (PLAN 1.11). */
-  | { kind: 'moveFormation'; id: number; x: number; y: number }
+  /**
+   * Order formation `id` to march to cell (x, y) over land (PLAN 1.11). With `nation`: only
+   * when the formation is that nation's (a player's order; an id is given out again, PLAN 2.16Rk).
+   */
+  | { kind: 'moveFormation'; id: number; x: number; y: number; nation?: number }
   /** Global sim setting (PLAN 1.15): capturing a capital annexes the loser's territory. */
   | { kind: 'setSetting'; key: 'winnerTakesAll'; value: boolean }
   /** PLAN 1.19: revolts take one province or a restless region. */
