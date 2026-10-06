@@ -2594,7 +2594,9 @@ quick sweep as a smoke test.
       first: 10,473 cells before and after); the God test of `editorDrag1938.spec.ts` now
       says owner and one undo step. `docs/evidence/2.17/god-brush-territory.png`.
     - For 2.17c: the old owner's formations stay on the painted land (Italian counters on
-      the French band), as after an editor's paint.
+      the French band), as after an editor's paint. And the head of `paintControl` in
+      `src/sim/tick.ts` still calls its segment "a dragged God brush": to be put right with
+      the next commit of `src/sim` (read after the commit; no sim code changed in this part).
   - [ ] 2.17c **A dead nation holds nothing and has no name on the map.** The band the brush
     left was France's control without ownership; after the Kill it stayed, with the name on
     it. To be found: whether 2.17b leaves any way to it (ADR-112 gives back what a dead
