@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-120 · 2026-10-05 · accepted — A Kill gives a cell of a neighbour's province to the neighbour, not to the heir (PLAN 2.17c2)
+
+- **Context:** `docs/evidence/2.17/killed-painted-0d.png` as PLAN 2.17c left it: France, painted
+  over the Alps with the God brush and killed, left four spots of "Free Ain" inside Italy's
+  north. A Kill shares out the provinces whose centre the dead nation owns. A cell it owns in
+  a province whose centre is another's is "outside the provinces shared out", and the last
+  sweep of `killNation` gave all of those to the heir. Such cells are not the brush's alone:
+  wherever a border runs through a province, one side owns cells without the centre.
+- **Decision:** in the last sweep of `killNation` a cell of a province whose centre a living
+  nation owns goes to that nation, as owner and controller. The heir takes the cells outside
+  any province and those of a province whose centre nobody living owns. A cell a living
+  nation occupies is still left to `eliminateNation` and becomes the occupier's (ADR-119).
+  Each nation that receives cells this way gets one `LandCeded` at their middle, in the order
+  of the ids (as `leaveLand` does); the heir's share stays without a line, as before.
+- **Why the centre's owner:** the centre is what says whose a province is everywhere else
+  (`held` in `collapseNation`, `forceRevolt`, `whyNotKill`), and it needs no search.
+- **Rejected:**
+  - *The nation with the most cells beside the piece* (`leaveToNeighbour`'s rule). It needs
+    the connected pieces of the cells left; the centre's owner gives the same answer for a
+    border strip and for a painted band.
+  - *No line of history.* The e2e of PLAN 2.15d holds that every nation that gains by a Kill
+    has a "Land handed over" row.
+- **Not changed:** a Kill without an heir (`leaveToNeighbour`, ADR-113): one receiver, one
+  line. The rule applies when there is an heir.
+- **Tests, seen to fail first:** `tests/unit/killLand.test.ts` (France given all of the
+  Italian province with the most cells beside it but the centre and the cells round it, then
+  killed: 153 cells of it were nation 104's, a nation founded). `tests/e2e/godUi1938.spec.ts`,
+  the fifth test: it now reads the holder of every 10 px of the view before the stroke; at
+  once after the Kill every point that was not France's has its first holder (9 points were
+  nation 104's), and after 30 days none is a founded nation's. The 32 points of the stroke's
+  middle did not find the spots: the test passed on the old code with them.
+- **The pin did not move** (7fc8e685): no Kill in a game without commands.
+
 ### ADR-119 · 2026-10-05 · accepted — What a God Mode Kill leaves: an occupied cell is the occupier's, and the last nation without a province is not killed (PLAN 2.17c)
 
 - **Context:** the critic's R2-B8: France, painted over the Alps with the God brush, renamed

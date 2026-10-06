@@ -2620,7 +2620,7 @@ quick sweep as a smoke test.
       `paintControl` is put right.
     - Not reached by an e2e: the refusal (no world with a God tab has a last nation without
       a province).
-  - [ ] 2.17c2 **A Kill after a brush stroke leaves pieces of the heir inside the neighbour.**
+  - [x] 2.17c2 **A Kill after a brush stroke leaves pieces of the heir inside the neighbour.**
     Seen in `docs/evidence/2.17/killed-painted-0d.png`: four spots of "Free Ain" in Italy's
     north. The painted cells in a province whose centre the stroke did not reach are outside
     the provinces shared out and go to the heir (the last sweep of `killNation`). To be
@@ -2629,6 +2629,12 @@ quick sweep as a smoke test.
     AT: unit, failing first: France painted over part of an Italian province and killed: no
     founded nation owns a cell of a province whose centre Italy owns. The e2e of 2.17c gets
     the same line for the band.
+    - Done 2026-10-05 (ADR-120), as proposed: the last sweep of `killNation` gives such a cell
+      to the living owner of its province's centre, with one `LandCeded` for each receiver.
+      `killLand.test.ts` failed first (153 cells with nation 104). The e2e reads every 10 px
+      of the view, not the stroke's middle (which missed the spots), and failed first too
+      (9 points). The screenshots are taken anew: no spot in Italy.
+    - Not changed: a Kill with no heir (ADR-113).
   - [ ] 2.17d **Revive after a Kill.** `reviveOnCores` is false 30 days after a Kill, and the
     button says nothing: the cause to be read (`revival.ts`: a cooldown, cores gone with the
     fragments, no core land). What God Mode goes past, and a reason of its own for what it

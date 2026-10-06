@@ -819,7 +819,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     nation of the toy world) has no heir: its land goes to the living nation with the most
     cells beside it, else to the nearest (ADR-113). No dead nation owns or controls a cell.
     A cell outside the provinces shared out that a living nation occupies becomes that
-    nation's, not the heir's (ADR-119). The Kill of the only living nation is carried out if
+    nation's, not the heir's (ADR-119). One in a province whose centre a living nation owns
+    goes to that nation (ADR-120); the heir takes those outside any province. The Kill of the only living nation is carried out if
     it owns a province's centre (its land founds what follows) and refused if it owns none.
   - *Death rule:* losing the capital while holding no core land is death; the capturer annexes
     the rest.

@@ -349,11 +349,18 @@ test('a nation painted over a neighbour, renamed and killed holds nothing and ha
   await page.getByTestId('god-tool-brush').click();
   await lookAt(page, 7, 45.2, SCALE);
   const way = Array.from({ length: 32 }, (_, i): [number, number] => [600 + (250 * i) / 31, 400]);
+  // Every 10 px of the view (the band and France west of it): the controller the map draws.
+  const grid: [number, number][] = [];
+  for (let y = 5; y < 800; y += 10) for (let x = 5; x < 1400; x += 10) grid.push([x, y]);
+  const held = await holders(grid);
+  const old = new Set((await inspect(page)).nations.filter((n) => n.living).map((n) => n.id));
   await page.mouse.move(600, 400);
   await page.mouse.down();
   await page.mouse.move(850, 400, { steps: 12 });
   await page.mouse.up();
   await expect.poll(async () => (await holders(way)).filter((n) => n !== FRA).length).toBe(0);
+  const painted = (await holders(grid)).filter((n, i) => n === FRA && held[i] !== FRA).length;
+  expect(painted, 'points of the view the stroke took from a neighbour').toBeGreaterThanOrEqual(10);
   await page.getByTestId('god-tool-brush').click();
 
   await page.getByTestId('god-rename-input').fill('Gaul');
@@ -365,9 +372,6 @@ test('a nation painted over a neighbour, renamed and killed holds nothing and ha
   await expect.poll(async () => nation(await inspect(page), FRA).living).toBe(false);
 
   // At once, and 30 days later: no cell, no name, no formation.
-  // Every 10 px of the view (the band and France west of it): the controller the map draws.
-  const grid: [number, number][] = [];
-  for (let y = 5; y < 800; y += 10) for (let x = 5; x < 1400; x += 10) grid.push([x, y]);
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.17') : info.outputPath();
   mkdirSync(out, { recursive: true });
   for (const days of [0, 30]) {
@@ -378,6 +382,11 @@ test('a nation painted over a neighbour, renamed and killed holds nothing and ha
     expect(s.formations.filter((f) => f.nation === FRA), `after ${days} days: formations`).toEqual([]);
     await expect.poll(async () => (await holders(grid)).filter((n) => n === FRA).length, `after ${days} days: cells controlled in the view`).toBe(0);
     await expect.poll(async () => (await names()).filter((l) => l.id === FRA || l.text === 'Gaul'), `after ${days} days: the name on the map`).toEqual([]);
+    // The neighbour's land under the stroke is the neighbour's again, and no piece of a nation the
+    // Kill founded is left in it (PLAN 2.17c2, ADR-120: four spots of "Free Ain" in Italy's north).
+    const now = await holders(grid);
+    if (days === 0) expect(now.filter((n, i) => held[i] !== FRA && n !== held[i]), 'at once: points of the view not their first holder’s').toEqual([]);
+    expect(now.filter((n, i) => held[i] !== FRA && n !== 0 && !old.has(n)), `after ${days} days: points outside France of a nation founded`).toEqual([]);
     await page.evaluate(() => window.__warsim!.view!.select(0));
     await page.waitForTimeout(800);
     await page.screenshot({ path: path.join(out, `killed-painted-${days}d.png`) });

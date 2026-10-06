@@ -28,6 +28,7 @@
  *      province go to the heir: the nation founded on the old capital, else the largest
  *      founded, else whoever received the most land. A cell outside those provinces that a
  *      living nation occupies is that nation's (ADR-112's rule for every death, ADR-119).
+ *      A cell of a province whose centre a living nation owns goes to that nation (ADR-120).
  *   4. With no heir (the nation owns the centre of no province) its land goes to the living
  *      nation with the most cells beside it (`leaveToNeighbour`, ADR-113).
  * The Kill of the only living nation is refused if it has no province to found a nation in
@@ -315,14 +316,28 @@ function killNation(world: World, c: number, rest: number[], capitalProvince: nu
   }
   if (heir === 0) for (const [n, cells] of [...received].sort((a, b) => a[0] - b[0])) if (heir === 0 || cells > received.get(heir)!) heir = n;
   if (heir !== 0 && islands.length > 0) give(islands, heir);
-  // Cells outside any province (slivers) that c still holds go to the heir; then c is gone. One
-  // that another nation occupies is left for `eliminateNation`, which gives it to the occupier
-  // (ADR-112): given to the heir, it stayed occupied with no war behind it (ADR-119).
+  // What c still holds is outside the provinces shared out; then c is gone. A cell of a province
+  // whose centre a living nation owns goes to that nation (ADR-120): given to the heir, the cells
+  // a God brush had painted stood as spots of the heir inside the neighbour. The others (outside
+  // any province, or a province nobody living holds) go to the heir. One that another nation
+  // occupies is left for `eliminateNation`, which gives it to the occupier (ADR-112): given to
+  // the heir, it stayed occupied with no war behind it (ADR-119).
+  const returned = new Map<number, { cells: number; sx: number; sy: number }>();
+  const width = world.cells.w;
   for (let cell = 0; cell < owner.length; cell++) {
     if (heir === 0 || owner[cell] !== c || living(controller[cell]!)) continue;
-    world.setOwner(cell, heir);
-    if (controller[cell] === c) world.setController(cell, heir);
+    const holder = owner[g.centre[province[cell]!] ?? -1] ?? 0;
+    const to = province[cell] !== 0 && living(holder) ? holder : heir;
+    world.setOwner(cell, to);
+    if (controller[cell] === c) world.setController(cell, to);
+    if (to === heir) continue;
+    const got = returned.get(to) ?? { cells: 0, sx: 0, sy: 0 };
+    got.cells++;
+    got.sx += (cell % width) + 0.5;
+    got.sy += Math.floor(cell / width) + 0.5;
+    returned.set(to, got);
   }
+  for (const [to, got] of [...returned].sort((a, b) => a[0] - b[0])) world.out.emit(world.tick, EventKind.LandCeded, to, c, got.sx / got.cells, got.sy / got.cells);
   if (heir === 0) leaveToNeighbour(world, c);
   eliminateNation(world, c);
 }

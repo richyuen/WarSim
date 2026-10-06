@@ -6412,3 +6412,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** no sweep (ADR-58); tick time not measured (the change is in a command's path).
 - **Logged for Phase 7** (BLOCKERS): the 45 cells occupied with no war before any Kill.
 - **The pin did not move** (7fc8e685).
+
+## 2026-10-05 — PLAN 2.17c2: a Kill gives a neighbour's province back to the neighbour (ADR-120)
+
+- **The defect:** a cell the dead nation owns in a province whose centre is another's is
+  outside the provinces a Kill shares out. The last sweep of `killNation` gave it to the heir:
+  four spots of "Free Ain" in Italy's north after a brush stroke and a Kill.
+- **The fix** (`killNation`, the last sweep): such a cell goes to the living owner of its
+  province's centre, with one `LandCeded` for each nation that receives. The heir keeps the
+  cells outside any province and those of a province with no living holder. A Kill with no
+  heir is not changed (ADR-113).
+- **Tests, seen to fail first:** `killLand.test.ts`, a new test (France given an Italian
+  province but for its centre, then killed: 153 cells were nation 104's).
+  `godUi1938.spec.ts`, the fifth test: every 10 px of the view, held before the stroke and
+  after the Kill (9 points were nation 104's).
+- **Gotcha:** the first e2e line read the 32 points of the stroke's middle and passed on the
+  old code: the spots lie off the middle. And "every point has its first holder" holds at
+  once only: 30 days on, 451 points of the view had gone to nation 1 (by the picture, Germany
+  at war). At 30 days the test asks that no point outside France is a founded nation's.
+- **Run by hand** (a part, ADR-87): `godUi1938`, `godMode1938`, `occupation1938`,
+  `editorDrag1938`, `player1938` with `--project chromium`: 22 green (52 s).
+- **Looked at:** `docs/evidence/2.17/killed-painted-0d.png` and `-30d.png`, taken anew: Italy's
+  north is one green, no spot of Free Ain; Free Paris, Free Ain, Free Gironde on France's land.
+- **Not done:** no sweep (ADR-58); tick time not measured (the change is in a command's path).
+- **Next:** PLAN 2.17d, Revive after a Kill.

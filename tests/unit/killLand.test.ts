@@ -3,7 +3,7 @@ import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import type { SimInit } from '../../src/shared/protocol';
-import type { World } from '../../src/sim/world';
+import { navOf, type World } from '../../src/sim/world';
 import { deadLand } from '../helpers/deadLand';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -119,6 +119,58 @@ describe('a God Mode Kill leaves no land with the dead (PLAN 2.16Rg)', () => {
     expect(w.nations.cols.origin[heir], 'its origin').toBe(province[cell]);
     expect(w.nations.highWater - born, 'nations founded').toBeGreaterThan(1);
     expect([...new Set(slivers.map((i) => owner[i]!))], 'who took the cells outside any province').toEqual([heir]);
+  });
+
+  // PLAN 2.17c2 (ADR-120): the God brush gives a nation cells of a province whose centre stays
+  // its neighbour's. A Kill gave them to the heir: spots of "Free Ain" inside Italy's north.
+  it('part of a neighbour’s province: it goes back to the neighbour, not to a nation founded', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets });
+    const w = s.world;
+    const [FRA, ITA] = [nationId('FRA'), nationId('ITA')];
+    const { owner, controller, province, w: width } = w.cells;
+    const centre = navOf(w).graph.centre;
+    const centreOf = (p: number): number => centre[p] ?? -1;
+    // The Italian province with the most cells beside France.
+    const beside = new Map<number, number>();
+    for (let c = 0; c < owner.length; c++) {
+      const p = province[c]!;
+      if (owner[c] !== ITA || p === 0 || owner[centreOf(p)] !== ITA) continue;
+      if ([c - width, c - 1, c + 1, c + width].some((q) => owner[q] === FRA)) beside.set(p, (beside.get(p) ?? 0) + 1);
+    }
+    const p = [...beside].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0]?.[0] ?? 0;
+    expect(p, 'an Italian province beside France').toBeGreaterThan(0);
+    // France gets all of it but the centre and the cells round the centre.
+    const [mx, my] = [centreOf(p) % width, Math.floor(centreOf(p) / width)];
+    const painted: number[] = [];
+    for (let c = 0; c < owner.length; c++) {
+      if (province[c] !== p || owner[c] !== ITA) continue;
+      if (Math.abs((c % width) - mx) <= 1 && Math.abs(Math.floor(c / width) - my) <= 1) continue;
+      w.setOwner(c, FRA);
+      w.setController(c, FRA);
+      painted.push(c);
+    }
+    expect(painted.length, 'cells painted').toBeGreaterThan(0);
+    expect(owner[centreOf(p)], 'the centre').toBe(ITA);
+    const total = owner.reduce((a, o) => a + (o !== 0 ? 1 : 0), 0);
+    const old = new Set<number>();
+    w.nations.forEach((n) => {
+      if (w.nations.cols.living[n] === 1) old.add(n);
+    });
+    s.command({ kind: 'collapseNation', nation: FRA });
+    const ev = runEvents(s, 1);
+    expect(w.nations.cols.living[FRA], 'France lives').toBe(0);
+    const strays = new Map<number, number>();
+    for (let c = 0; c < owner.length; c++) {
+      const q = province[c]!;
+      if (q === 0 || owner[c] === 0 || old.has(owner[c]!) || owner[centreOf(q)] !== ITA) continue;
+      strays.set(owner[c]!, (strays.get(owner[c]!) ?? 0) + 1);
+    }
+    expect([...strays], 'founded nations with cells of a province whose centre is Italy’s').toEqual([]);
+    expect(painted.filter((c) => owner[c] !== ITA || controller[c] !== ITA).length, 'painted cells not Italy’s').toBe(0);
+    expect(eventKinds(ev, EventKind.LandCeded).filter(([to]) => to === ITA).length, 'LandCeded to Italy').toBeGreaterThanOrEqual(1);
+    expect(deadLand(w)).toEqual([]);
+    expect(owner.reduce((a, o) => a + (o !== 0 ? 1 : 0), 0), 'cells with an owner').toBe(total);
+    w.nations.forEach((n) => expect(w.nations.cols.cells[n], `count of nation ${n}`).toBe(owner.reduce((a, o) => a + (o === n ? 1 : 0), 0)));
   });
 
   it('1938 at tick 2000, with wars and occupations: every nation', () => {
