@@ -6118,3 +6118,50 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not looked into:** why the first run took 15.6 minutes. The suite has three tests more
   (`randomWorld.spec.ts`, each a world of its own beside the others); whether they slow their
   neighbours is a question for the review pass (PLAN 2.16R). No test was changed.
+
+## 2026-10-05 — PLAN 2.16R: the review pass over 2.12 to 2.16. Its five parts are done; five tasks came out of it
+
+- **The split** (as PLAN 2.11): a the independent read, b SPEC, c dead code, d the e2e
+  suite's time, e missing tests. No part is a numbered task; no sweep (a pass of step 9).
+- **a, the sixth read (ADR-74, addendum).** A reader with no part in the code, the 55 files
+  changed since `3d6a2b2`, defects only, Node only: nine findings, eight of them run, five
+  suspicions; 259,000 tokens, 32 minutes. Checked here by reading: 1, 2, 3 and 6 hold.
+  Not run again here: each is the failing test of its task.
+  - Tasks before 2.17: 2.16Rf (a nation eliminated in a plain game keeps its land: seed 99,
+    1,389 cells from tick 4006), 2.16Rg (a Kill that leaves land or occupations with the
+    dead), 2.16Rh (a Kill reads the capital's province at the capital's coordinates),
+    2.16Ri (the formation panel follows a reused id).
+  - Lines: PLAN 2.17 (commands that name a dead nation), PLAN 7.4 (several random nations
+    of one name from 150 nations up). The rest: BLOCKERS.
+  - *What it found correct:* a save in mid-month with Kills before and after it, and with
+    `volatile` tables, on the random, the 1938 and the toy world (hashes and bytes); a random
+    save loaded into a Sim of another seed, count and looping option; a scenario exported,
+    loaded and exported again; 60 random worlds at the start (the count, no land unowned, a
+    capital, a name and an army each on its own land); `Table.create` and `remove` (a reused
+    row carries nothing over); `flight` over 20,000 pairs of cameras; `layoutTags` on
+    degenerate boxes; the two new history kinds.
+- **b, SPEC.** Nine decisions of ADR-84 to ADR-111 were not in SPEC or only in part: the
+  random world, names and flags by scenario, rebel capitals, origin and militia, `LandCeded`,
+  the tags of T2 and T3 (not there at all), the formation panel, `warBattle`, the URL options.
+- **c, dead code.** No dead export and no unused i18n key of 2.12 to 2.16. The two builders of
+  a world on the earth map share `addCities`, `addFormations` and `applyScenarioSettings`; the
+  pin holds, and four random worlds hash as before (a scratch script, before and after). A
+  stale line at the head of `revolts.ts`.
+- **d, the suite's time.** The three tests of `randomWorld.spec.ts` do not slow their
+  neighbours: 35 s of 36 test-minutes; the tests beside them 77 s with and 76 s without. Four
+  whole runs: 10.0 to 10.2 min, green. The 15.6 min of the gate of 2.16d were the machine's.
+- **e, tests.** The rule against a capital on an islet has one (seen to fail with the rule
+  off: a piece of 3 cells, and of 4).
+- **Gotchas:**
+  - `--grep-invert` and named spec files leave nothing out of an e2e run while the `perf`
+    project runs (it depends on `chromium`): three runs "without" the spec had it. Use
+    `--project chromium`. I had reported the first of them as the comparison before I
+    counted its tests.
+  - A stale export script and a count of exports tell little here: constants are exported
+    for the tests by habit.
+- **Seen, a task:** `loadedWorld1938.spec.ts` failed once in five suite runs (no flag at all
+  at the rebels' capital after `settle`); twelve runs alone were green. PLAN 2.16Rj.
+- **Gates:** green for b, c and e together (one gate of the tree, three commits: `0f2b762`,
+  `2d7dafc`, `5d24625`); documents for a and d. The e2e suite was run by hand five times.
+- **The pin did not move** (324bc358).
+- **Next:** PLAN 2.16Rf, then g, h, i, j; 2.16R is ticked with the last; then 2.17.

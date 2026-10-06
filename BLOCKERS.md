@@ -360,6 +360,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     2026-10-05 (the gate of PLAN 2.16d): 39 and 31 ticks in one run of the suite that took
     15.6 min, 577 and 330 in the next (9.8 min), 673 and 757 alone. The load of the machine in
     the first run is not known.
+    2026-10-05 (PLAN 2.16Rd): five runs of the suite on the idle machine, 9.7 to 10.2 min:
+    275 to 617 ticks. The random world's spec is not what slowed the run of 15.6 min.
   - A way to tell: `npm run test` takes 40 s on the idle machine and took 72 s then.
   - `closeZoom1938`, the pan at T3 (2026-10-05, the gate on PLAN 2.12a, the machine idle in the
     second of two runs): 4 and 3 frames in half a second inside the suite, 19 alone. The spec now

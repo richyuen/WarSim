@@ -2398,17 +2398,35 @@ quick sweep as a smoke test.
       run before and after).
     - *Fixed:* the head of `revolts.ts` said the holder declares war on rebels "with
       probability 1/2". It has been every time since PLAN 1.40 (ADR-44).
-  - [ ] 2.16Rd The e2e suite's time. From the gate of 2.16d: one run of the suite took 15.6
+  - [x] 2.16Rd The e2e suite's time. From the gate of 2.16d: one run of the suite took 15.6
     min and `cityNames1938` counted 39 and 31 ticks in four seconds; the next took 9.8. Do
     the three tests of `randomWorld.spec.ts` slow their neighbours? Measured by the tests'
     own times in the suite against their times alone, not reasoned. If they do, the spec's
     place in the run changes; no assertion does.
-  - [ ] 2.16Re Missing tests: what a to d find without one (2.16a: the rule against a
+    Done 2026-10-05: **they do not.** Nothing changed.
+    - *Measured* on the machine with nothing else running, each test's time from
+      Playwright's JSON report: the whole suite four times (130 tests; 10.2, 10.0, 10.0 and
+      10.0 min with the build, all green), and once the `chromium` project without
+      `randomWorld.spec.ts` (126 tests, 9.7 min).
+    - The three tests take 17.6, 10.5 and 7.1 s: 35 s of the 36.1 minutes of test time.
+    - The five tests that ran beside one of them took 77 s with and 76 s without; the 121
+      others 2,052 s and 2,022 s. Two runs of the same suite differ by as much (2%).
+    - `cityNames1938`, the running part, in the five runs: 597 to 617 ticks at 4000 m/px
+      and 275 to 422 at 1000 m/px (more than 50 are asked).
+    - *So the 15.6 minutes of the gate of 2.16d were the machine's,* not the suite's: what
+      ran beside it then is not known. The line in BLOCKERS (specs that measure time) stays.
+    - *A filter that does not filter:* `--grep-invert`, and spec files named on the command
+      line, leave nothing out while the `perf` project runs: it depends on `chromium` and
+      brings the whole of it. Three runs meant to be without the spec had it. With
+      `--project chromium` the filter holds.
+    - *Seen in the run without the spec:* `loadedWorld1938.spec.ts` failed once (PLAN 2.16Rj).
+  - [x] 2.16Re Missing tests: what a to d find without one (2.16a: the rule against a
     capital on an islet has no test).
     - Done 2026-10-05, the islet: `randomWorld.test.ts` asks of each of its three worlds
       that every capital's piece of land has 12 cells. Seen to fail with the rule switched
       off (`HOME_CELLS` 0): a piece of 3 cells in the world of 60, of 4 in that of 200.
-    - Open until a and d are done.
+    - Done with a and d (2026-10-05): each finding of the read brings its failing test
+      with its task (2.16Rf to 2.16Ri); d found no test missing.
   - [ ] 2.16Rf From the sixth read, finding 1a: **a nation eliminated in a plain game keeps
     its land.** `eliminateNation` (`systems/capitals.ts`) hands over no cell. Seed 99 of
     1938, no command: nation 72 is eliminated at tick 4006 (`relocateToField` finds it no
@@ -2451,6 +2469,16 @@ quick sweep as a smoke test.
       back (`MapView.formationTitle` reads the last snapshot's ids).
     AT: failing first: the worker's answer for a formation removed and its id taken again
     says so (unit), and the panel closes (e2e, `formationPanel1938`).
+  - [ ] 2.16Rj From 2.16Rd: **`loadedWorld1938.spec.ts` failed once in a run of the suite**
+    (one of five suite runs; twelve runs of the spec alone, four at a time, were green).
+    After the forced revolt in Masovia, with the camera on the rebels' capital at 6 px a
+    cell and the view at rest (`settle`), `flagRects` was empty: no flag of any nation, where
+    the rebels' is asked for. A view at rest that draws no capital flag is either a wait the
+    spec lacks or a defect of the view after a revolt; which, is not known. The spec was not
+    changed.
+    AT: the cause named. A defect: a test that fails first, and the fix. A wait: the spec
+    waits for what it reads, with no assertion changed.
+  **2.16R stays open until 2.16Rf to 2.16Rj are done:** they are what the pass found.
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world
