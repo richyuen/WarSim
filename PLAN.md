@@ -2652,7 +2652,7 @@ quick sweep as a smoke test.
       in words 30 days on from Italy's God tab, then the rest of the two years (16,800 ticks
       in 26 s) and the revival: France holds Paris and has its name on the map.
       `docs/evidence/2.17/revive-refused-cooldown.png`, `revived-after-cooldown.png`.
-  - [ ] 2.17d2 **The heir outlives the revival on cells outside any province.** Seen in the
+  - [x] 2.17d2 **The heir outlives the revival on cells outside any province.** Seen in the
     unit test of 2.17d: France killed and revived has 10,451 of its 10,473 cells; the other
     22 lie in no province (slivers of coast), went to the heir at the Kill and stay nation
     104's, which lives on them without a province. To be decided: a revival takes from a
@@ -2664,6 +2664,23 @@ quick sweep as a smoke test.
     of that province stays with it. To be looked at with this, not decided.
     AT: unit, failing first: France killed and revived at the end of its cooldown: no nation
     the Kill founded owns a cell outside any province.
+    - Done 2026-10-06 (ADR-122), for every revival: a holder `reviveNation` leaves without the
+      centre of any province gives the revived nation the cells it owns and controls outside
+      any province, and is eliminated at once if it then controls no cell. France has 10,473
+      of 10,473 cells again and the heir is dead. `tests/unit/reviveAfterKill.test.ts` failed
+      first (22 cells). The pin did not move.
+    - The patches, looked at (a scratch run, the two years played): 1,253 cells of provinces
+      whose centre the revived France owns stay others' (Nationalist Spain 608, three founded
+      nations 627, nobody 18). They are conquests that split a province. To 2.17d3.
+  - [ ] 2.17d3 **A revival leaves what third nations own of its provinces.** Measured in
+    ADR-122: France revived after two years of war holds 8,963 cells, and 1,253 cells of its
+    own provinces are Nationalist Spain's and three founded nations'; nation 106 lives on
+    without a cell of its own, on land it occupies. To be decided: a revival takes every
+    cell of a province it takes, whoever owns it (and what that does to a revolt's revival,
+    which is at war with its holder only), or the patches are left to the wars that follow
+    and this is logged for Phase 7. The pin says whether year one of seed 99 has the case.
+    AT: unit, failing first if the rule changes: a province split by a peace, then a revival
+    on it; else the line in BLOCKERS.md.
   - [ ] 2.17e **What is left of the list above.** The empty rename in a world without a
     nation table (ADR-109): refused, or the name kept. The God tab left open on a nation
     that has just died: what it shows and what its buttons send.

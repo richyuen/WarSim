@@ -6475,3 +6475,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 2.17d2, then 2.17e (which ticks 2.17 and takes the whole e2e suite).
 - **The pin did not move** (7fc8e685).
 - **Gate:** green (code: typecheck, lint, unit 745, the ten-year tests 11, build, the changed spec's 6, parity; no full e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 2.17d2: a revival takes the slivers of a holder it leaves without a province (ADR-122)
+
+- **The defect:** France killed and revived had 10,451 of 10,473 cells. The 22 others lie in
+  no province; the Kill gives them to the heir, a revival takes land by province, and nation
+  104 lived on on them with a field capital.
+- **Changed** (`reviveNation`, for every revival): a holder left without the centre of any
+  province gives the revived nation the cells it owns and controls outside any province, and
+  is eliminated at once if it then controls no cell. A sliver another nation occupies stays
+  for `eliminateNation` to give the occupier (ADR-112).
+- **Test, seen to fail first:** `tests/unit/reviveAfterKill.test.ts` (22 cells outside any
+  province with a founded nation). It now asks too: the heir dead with no cell, France with
+  every cell it had (10,473).
+- **Looked at, not decided** (a scratch test, deleted: the two years played between the Kill
+  and the revival, 32 s): France returns on 8,963 cells; 1,253 cells of provinces whose centre
+  is France's stay Nationalist Spain's (608), three founded nations' (627) and nobody's (18).
+  A peace moves cells, not provinces, and a revival takes the share of the centre's owner.
+  Nation 106 lives on with no cell of its own, on land it occupies. PLAN 2.17d3, added.
+- **Gotcha:** vitest swallows `console.log` of a passing test here; `--silent=false` shows it.
+- **Run by hand** (a part, ADR-87): `godUi1938` with `--project chromium`: 6 green (57 s).
+  Through the God tab France returns on 10,044 cells (10,036 before this change). No picture
+  taken anew: 22 cells of coast are not to be seen in `revived-after-cooldown.png`.
+- **Not done:** no sweep (ADR-58); tick time not measured (the change is in a revival's path,
+  three passes over the cells for each revival).
+- **The pin did not move** (7fc8e685).
+- **Next:** PLAN 2.17d3, then 2.17e (which ticks 2.17 and takes the whole e2e suite).
+- **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, parity; no e2e for a part, ADR-87).

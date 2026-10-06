@@ -6,6 +6,8 @@
  * It returns on provinces where it holds a core (core or claim) through a revolt (the revolt
  * area goes to the eligible dead claimant with the lowest id instead of a new rebel nation),
  * through a collapse of the holder, or by God Mode (`reviveNation`: all its core provinces).
+ * A holder the revival leaves without the centre of any province also gives up the cells it owns
+ * and controls outside any province, and is eliminated if it then controls no cell (ADR-122).
  *
  * Collapse: a nation bankrupt for COLLAPSE_MONTHS consecutive months (counted monthly), or by
  * God Mode (`collapseNation`), fragments: its puppets go free; each province it holds with an
@@ -87,6 +89,22 @@ export function reviveNation(world: World, n: number, area: number[], war = true
   world.nations.cols.revivalsLeft[n] = world.nations.cols.revivalsLeft[n]! - 1;
   for (const [h, ps] of [...byHolder].sort((a, b) => a[0] - b[0])) spawnRebels(world, ps, h, n, war);
   const nc = world.nations.cols; // after the rebels: see `Table.create` (PLAN 2.12)
+  // A holder left without the centre of any province gives up the cells it owns outside any
+  // province too (slivers of coast): the heir of a Kill lived on on 22 of them (ADR-122). One
+  // that another nation occupies stays the holder's, for `eliminateNation` to give the occupier.
+  const { owner, controller, province } = world.cells;
+  const landed = new Set<number>();
+  for (let p = 1; p < world.provinces.count; p++) landed.add(owner[g.centre[p] ?? -1] ?? 0);
+  for (const h of [...byHolder.keys()].sort((a, b) => a - b)) {
+    if (landed.has(h) || nc.living[h] !== 1) continue;
+    for (let cell = 0; cell < owner.length; cell++) {
+      if (owner[cell] !== h || controller[cell] !== h || province[cell] !== 0) continue;
+      world.setOwner(cell, n);
+      world.setController(cell, n);
+    }
+    // With no cell under its control it is gone now, as `relocateToField` would find in an hour.
+    if (!controller.includes(h)) eliminateNation(world, h);
+  }
   world.out.emit(world.tick, EventKind.NationRevived, n, nc.revivalsLeft[n]!, nc.capitalX[n]!, nc.capitalY[n]!);
   return true;
 }

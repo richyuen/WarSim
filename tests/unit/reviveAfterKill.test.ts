@@ -47,6 +47,7 @@ describe('Revive after a God Mode Kill (PLAN 2.17d)', () => {
 
     expect(send(s, { kind: 'collapseNation', nation: FRA })).toEqual({ applied: 1, refused: [] });
     expect(nc().living[FRA]).toBe(0);
+    const heir = w.cells.owner[paris]!;
     const kept = new Set(w.provinces.provincesOf(FRA));
     expect(cores.filter((p) => !kept.has(p)), 'provinces France has lost its core on').toEqual([]);
 
@@ -68,15 +69,22 @@ describe('Revive after a God Mode Kill (PLAN 2.17d)', () => {
     const centre = navOf(w).graph.centre;
     expect(cores.filter((p) => w.cells.owner[centre[p]!] !== FRA), 'provinces of its core that it does not hold').toEqual([]);
     expect(nc().cells[FRA]! / cells, 'the share of its cells it has again').toBeGreaterThan(0.95);
-    // No nation the Kill founded keeps a cell of a province France has a core on. (Two live on:
-    // the heir on its cells outside any province, PLAN 2.17d2; one on land it took in Morocco.)
+    // No nation the Kill founded keeps a cell of a province France has a core on, nor one outside
+    // any province: the heir had 22 of those (slivers of coast) and lived on them without a
+    // province (PLAN 2.17d2). One lives on, on land it took in Morocco.
     const core = new Set(w.provinces.provincesOf(FRA));
     const left = new Map<number, number>();
+    let outside = 0;
     w.cells.owner.forEach((o, c) => {
       if (o < born || o === FRA) return;
       left.set(o, (left.get(o) ?? 0) + 1);
-      expect(core.has(w.cells.province[c]!), `nation ${o} owns a cell of province ${w.cells.province[c]}, of France's core`).toBe(false);
+      if (w.cells.province[c] === 0) outside++;
+      else expect(core.has(w.cells.province[c]!), `nation ${o} owns a cell of province ${w.cells.province[c]}, of France's core`).toBe(false);
     });
+    expect(outside, 'cells outside any province that a nation the Kill founded owns').toBe(0);
+    expect(heir, 'the nation founded on Paris').toBeGreaterThanOrEqual(born);
+    expect([nc().living[heir], nc().cells[heir]], 'the heir, left without a province: alive, cells').toEqual([0, 0]);
+    expect(nc().cells[FRA], 'every cell it had, the slivers of coast among them').toBe(cells);
     console.log(`France: ${cells} cells, ${cores.length} core provinces held; after the Kill and the revival ${nc().cells[FRA]} cells; founded nations left: ${JSON.stringify([...left])}`);
     // Alive now: a second Revive says so.
     expect(send(s, { kind: 'reviveNation', nation: FRA })).toEqual({ applied: 0, refused: [Refusal.Alive] });

@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-122 · 2026-10-06 · accepted — A revival takes the slivers of a holder it leaves without a province (PLAN 2.17d2)
+
+- **Context:** France killed and revived (ADR-121) had 10,451 of its 10,473 cells. The other 22
+  lie in no province (slivers of coast). The Kill gives such cells to the heir, and a revival
+  takes land by province (`spawnRebels`), so they stayed nation 104's: a nation alive on 22
+  cells with a field capital and no province.
+- **Decision** (`reviveNation`, after the provinces are taken): a holder that no longer owns
+  the centre of any province gives the revived nation the cells it owns and controls outside
+  any province. If it then controls no cell it is eliminated at once (`eliminateNation`), as
+  `relocateToField` would find within the hour.
+  - *For every revival,* not God Mode's alone: a revolt and a holder's collapse go through
+    `reviveNation` too, and the cause (land taken by province leaves the cells of no province
+    behind) is the same.
+  - *A sliver another nation occupies* is not taken: it stays the holder's, and
+    `eliminateNation` gives it to the occupier (ADR-112, as ADR-119 does at a Kill).
+  - *A holder that still controls a cell* (land it occupies in a war of its own) lives on, by
+    the rule every nation is under (`capitals.ts`: a field capital on a cell it controls).
+- **Rejected:** *the Kill gives the slivers to nobody, or to a neighbour.* The heir must own
+  them while the dead nation is dead: no land without an owner, and they are France's coast.
+- **Not changed, seen:** a holder that an ordinary revolt (`spawnRebels` without a revival)
+  leaves on slivers alone. Another cause; not met in a run.
+- **The pin did not move** (7fc8e685): seed 99 has no such revival in its first year.
+- **Measured** (`tests/unit/reviveAfterKill.test.ts`, 1938, seed 99, the Kill at tick 0, 30
+  days run, the revival at tick 17,520): France has 10,473 of 10,473 cells; the heir is dead
+  with no cell; of the nations the Kill founded one lives, on 77 cells it took in Morocco.
+  The test failed first (22 cells outside any province).
+- **Looked at, not decided: the patches of other nations inside a revived France.** A scratch
+  run with the two years played between the Kill and the revival (1938, seed 99): before the
+  revival, 10,194 cells of France's core provinces are others' (Nationalist Spain 5,374, the
+  founded nations 104 to 108 4,800, nobody 18, two more). After it France has 8,963 cells, and 1,253 cells of
+  provinces whose centre is now France's are still others': Nationalist Spain 608, nation 107
+  542, 105 58, 108 27, nobody 18. They are conquests: a peace moves cells, not provinces, so
+  a province is split between the owner of its centre and a neighbour, and a revival takes
+  the share of the centre's owner only. Nation 106 is left alive with no cell of its own, on
+  land it occupies. Whether a revival should take the whole province from everyone is PLAN
+  2.17d3.
+
 ### ADR-121 · 2026-10-06 · accepted — Revive after a Kill: the dead nation keeps a claim on its core land, and a Revive that is refused says which rule refuses it (PLAN 2.17d)
 
 - **Context:** the critic's R2-B8: Revive 30 days after a Kill of France did nothing and said

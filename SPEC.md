@@ -806,7 +806,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   - *Revival:* a dead nation keeps `revivalsLeft` (2 at the start) and `revivalAt`
     (death + 2 years; 0 for nations dead at the start). It returns through a revolt on a
     province it has a core on (instead of new rebels), through its holder's collapse, or by God
-    `reviveNation`.
+    `reviveNation`. It takes each province from the owner of its centre: what a third nation
+    owns of that province stays with it. A holder left without the centre of any province
+    also gives up the cells it owns and controls outside any province, and is eliminated at
+    once if it then controls no cell (ADR-122).
   - *Collapse:* 6 consecutive bankrupt months. Puppets go free, dead claimants revive on
     their provinces, and restless (≥ 50) provinces revolt in connected groups.
   - *God Kill* (`collapseNation`, PLAN 2.15a, ADR-99): the nation dies and nobody declares
