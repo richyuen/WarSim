@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-124 · 2026-10-06 · accepted — The empty rename of a nation with no other name is refused (PLAN 2.17e1)
+
+- **Context:** `renameNation` with the empty name deletes the nation's entry in `world.names`:
+  "the scenario's name again". The toy and the random world have no nation table (ADR-109):
+  the entry is the only name, and without it the nation read "Free state N". Known since
+  PLAN 2.16b; the God tab sends the empty name when Rename is clicked on an empty field.
+- **Decision:** the command is refused (`Refusal.NoOtherName`, 18; "Not done: the nation has
+  no other name to go back to; give it one.") for a nation that has neither a name in the
+  scenario's table nor a province it was founded in (`origin`). Nothing changes.
+  - `ScenarioRules.namedNations`: nations 1..n are named by the scenario's table. 103 for
+    1938, 0 for the random world (its rules are a copy of 1938's with that one number), and
+    the toy world has no rules, which reads as 0. It is the sim's side of
+    `ScenarioInfo.nationTags`, which the worker's `nameOf` reads; rules are not state.
+  - `Sim` no longer sets `world.rules` after the world is made: both makers set their own.
+- **Why refused and not "the name kept in silence":** PLAN 2.17 is that a command does what
+  it says or says why not. And the first name cannot be given back: `world.names` does not
+  tell a name of the scenario from one God Mode gave ("West" renamed "Occident": "West" is
+  gone), and a second map of first names would be state for this alone.
+- **Not changed:**
+  - A nation founded in the game (a revolt, a Kill) in any world: the empty name is carried
+    out and it is "Free <province>" again (ADR-100).
+  - 1938: the empty name restores the table's name, as `godMode.test.ts` holds.
+  - A founded nation whose origin is 0 (a save from before PLAN 2.12a) is refused too: its
+    other name would be the number.
+- **The pin did not move** (7fc8e685).
+- **Tests:** `tests/unit/refusal.test.ts`: the toy world (failed first: applied, the name
+  deleted), and the random world (a nation of the start refused, one a Kill founded not).
+
 ### ADR-123 · 2026-10-06 · accepted — A revival leaves what third nations own of its provinces; the split province is logged for Phase 7 (PLAN 2.17d3)
 
 - **Context:** ADR-122 measured it and did not decide: France killed, two years of war played,

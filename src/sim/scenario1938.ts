@@ -91,6 +91,7 @@ export const BUILD_MIX_1938 = {
   panzer: TEMPLATES_LAND.findIndex((t) => t.id === 'panzer_div'),
 };
 export const RULES_1938: ScenarioRules = {
+  namedNations: NATIONS_1938.length,
   units: UNITS_LAND.map((u) => ({
     cls: u.class,
     size: u.elementSize,

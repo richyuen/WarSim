@@ -1516,7 +1516,8 @@ on screen.
 - **Map modes still planned**: sea control, air superiority, fallout, supply (with their
   phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
-  section `world.names`), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God
+  section `world.names`; the empty name gives back the scenario's name or the founding
+  province's, and is refused for a nation with neither: ADR-124), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God
   Kill: the nation dies, its land goes back to claimants or founds at most five nations, and
   no war starts: ADR-99), `reviveNation` (within the revival
   rules; refused with the reason: it lives, no other nation holds land it has a core on, no

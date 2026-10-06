@@ -241,6 +241,9 @@ function applyCommand(world: World, cmd: Command): Refusal {
       const why = whyNoNation(world, cmd.nation);
       if (why) return why;
       const name = cmd.name.trim().slice(0, MAX_NAME);
+      // The empty name gives back the scenario's name, or that of the province the nation was
+      // founded in. A nation with neither keeps the name it has (PLAN 2.17e1).
+      if (name === '' && cmd.nation > (world.rules?.namedNations ?? 0) && world.nations.cols.origin[cmd.nation] === 0) return Refusal.NoOtherName;
       if (name === '') world.names.delete(cmd.nation);
       else world.names.set(cmd.nation, name);
       world.namesVersion++;

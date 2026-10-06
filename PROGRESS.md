@@ -6523,3 +6523,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 2.17e (the empty rename, the God tab on a nation that has just died, the
   words that outlive their nation). It ticks 2.17 and takes the whole e2e suite.
 - **Gate:** green (documents: parity).
+
+## 2026-10-06 — PLAN 2.17e1: the empty rename of a nation with no other name is refused (ADR-124)
+
+- **Split:** PLAN 2.17e has three causes; 2.17e1 (this), 2.17e2 (the words outlive their
+  nation), 2.17e3 (the God tab on a nation that has just died; it ticks 2.17).
+- **The defect:** Rename on an empty field in the toy or the random world deleted the
+  nation's only name; it read "Free state N".
+- **Changed:** `renameNation` with the empty name is refused (`Refusal.NoOtherName`) for a
+  nation with no name in the scenario's table and no founding province. The sim knows the
+  table's length from `ScenarioRules.namedNations` (1938: 103; random: 0; toy: no rules).
+  The words: "Not done: the nation has no other name to go back to; give it one."
+- **Tests, the first seen to fail** (applied, the name deleted): `tests/unit/refusal.test.ts`,
+  the toy world and the random world (a nation a Kill founded is not refused).
+- **Read for 2.17e3, not run:** a dead nation leaves the panel with the next statistics, and
+  stays selected (legend, diplomacy colours, the brush armed); `GodTab` keeps Kill armed
+  and the typed name when another nation is selected. In PLAN 2.17e3.
+- **Run by hand** (a part, ADR-87): `godUi1938`, `godMode1938`, `randomWorld` with `--project chromium`: 20 green (1.1 min).
+- **Not looked at:** no screenshot; the words go through the channel of 2.17a, whose e2e is
+  among those run.
+- **Not done:** no sweep (ADR-58); tick time not measured (the change is in a command's path).
+- **The pin did not move** (7fc8e685).
+- **Next:** PLAN 2.17e2, then 2.17e3 (which ticks 2.17 and takes the whole e2e suite).
+- **Gate:** green (code: typecheck, lint, unit 747, the ten-year tests 11, build, parity; no e2e for a part, ADR-87).

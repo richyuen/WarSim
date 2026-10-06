@@ -28,6 +28,7 @@ const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.NoRevivals]: 'refusal.noRevivals',
   [Refusal.Cooldown]: 'refusal.cooldown',
   [Refusal.NoCoreLand]: 'refusal.noCoreLand',
+  [Refusal.NoOtherName]: 'refusal.noOtherName',
 };
 
 export interface GodTabProps {

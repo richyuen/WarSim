@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { Refusal, type Command } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import type { FromWorker } from '../../src/shared/protocol';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { SimServer } from '../../src/worker/server';
+import { assets1938 } from '../helpers/earth';
 import { runEvents } from '../helpers/sim1938';
 
 // PLAN 2.17a (the critic's R2-B8): a command that is not carried out says why. It was applied as
@@ -111,6 +113,39 @@ describe('a command that is not carried out says why (PLAN 2.17a)', () => {
     expect(controller).toEqual(controllers);
     // A dead nation is refused as dead, whoever else lives.
     expect(send(s, { kind: 'collapseNation', nation: 2 }).refused).toEqual([Refusal.DeadNation]);
+  });
+
+  // PLAN 2.17e1: the toy world's nations have no name but the one in `world.names` (ADR-109).
+  // The empty rename deleted it, and the nation read "Free state 1".
+  it('the empty rename of a nation with no other name is refused: it keeps its name', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    expect(s.world.names.get(1)).toBe('West');
+    expect(send(s, { kind: 'renameNation', nation: 1, name: '   ' })).toEqual({ applied: 0, refused: [Refusal.NoOtherName] });
+    expect(s.world.names.get(1)).toBe('West');
+    // A name of its own is taken, and the empty one after it is refused still: "West" is gone.
+    expect(send(s, { kind: 'renameNation', nation: 1, name: 'Occident' }).refused).toEqual([]);
+    expect(send(s, { kind: 'renameNation', nation: 1, name: '' }).refused).toEqual([Refusal.NoOtherName]);
+    expect(s.world.names.get(1)).toBe('Occident');
+  });
+
+  it('the random world: refused for a nation of the start, carried out for one a Kill founded', () => {
+    const s = new Sim({ scenario: 'random', seed: 7, options: { nations: 12 }, assets: assets1938(SIZE_1938.w) });
+    const given = s.world.names.get(1);
+    expect(given).toBeTruthy();
+    expect(send(s, { kind: 'renameNation', nation: 1, name: '' }).refused).toEqual([Refusal.NoOtherName]);
+    expect(s.world.names.get(1)).toBe(given);
+    // A nation founded in the game is named after the province of its capital (ADR-100): it has a name to go back to.
+    const before = s.world.nations.count;
+    expect(send(s, { kind: 'collapseNation', nation: 1 }).refused).toEqual([]);
+    const nc = s.world.nations.cols;
+    let founded = 0;
+    s.world.nations.forEach((n) => {
+      if (founded === 0 && n > before && nc.living[n] === 1 && nc.origin[n] !== 0) founded = n;
+    });
+    expect(founded).toBeGreaterThan(0);
+    expect(send(s, { kind: 'renameNation', nation: founded, name: 'Lyonesse' }).refused).toEqual([]);
+    expect(send(s, { kind: 'renameNation', nation: founded, name: '' })).toEqual({ applied: 1, refused: [] });
+    expect(s.world.names.has(founded)).toBe(false);
   });
 
   it('a refused command is in the command log: a replay refuses it again', () => {

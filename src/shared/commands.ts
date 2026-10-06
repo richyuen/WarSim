@@ -68,7 +68,7 @@ export type Command =
   | { kind: 'releasePuppet'; subject: number }
   | { kind: 'setAutonomy'; subject: number; value: number }
   | { kind: 'setPuppetLoyalty'; subject: number; value: number }
-  /** PLAN 1.32 God Mode: rename a nation ('' restores its scenario name). */
+  /** PLAN 1.32 God Mode: rename a nation ('' restores its scenario name, or that of the province it was founded in; refused for a nation with neither). */
   | { kind: 'renameNation'; nation: number; name: string }
   /** PLAN 1.32 God Mode: province `province` revolts now (its area per `revoltMode`). */
   | { kind: 'spawnRevolt'; province: number }
@@ -216,6 +216,8 @@ export const Refusal = {
   Cooldown: 16,
   /** A revival of a nation with a core on no province that another nation holds. */
   NoCoreLand: 17,
+  /** An empty rename of a nation that has no name but the one it would lose (a world without a nation table). */
+  NoOtherName: 18,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

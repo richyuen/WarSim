@@ -127,7 +127,8 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   world.startDay = dayOfIso(scenarioRandom.startDate);
   const set = scenarioRandom.settings;
   applyScenarioSettings(world, set);
-  world.rules = RULES_1938;
+  // The rules of 1938 without its nation table: a nation here has the name it was given (ADR-108).
+  world.rules = { ...RULES_1938, namedNations: 0 };
 
   // The map of the 1938 world: provinces, terrain, crossings, the islands and their islets.
   const meta = JSON.parse(new TextDecoder().decode(assets.admin1Meta)) as Admin1Meta[];

@@ -116,6 +116,8 @@ export interface UnitRule {
 export interface ScenarioRules {
   templates: readonly TemplateRule[];
   units: readonly UnitRule[];
+  /** Nations 1..n have a name in the scenario's nation table; a nation after them has the name in `World.names`, or that of the province it was founded in. */
+  namedNations: number;
 }
 
 export const FORMATION_SCHEMA = {

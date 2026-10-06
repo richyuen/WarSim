@@ -2695,6 +2695,32 @@ quick sweep as a smoke test.
     the selection changes and when God Mode is switched off.
     AT, added to the e2e: the words are gone after a click on another nation.
     AT: unit, the rename in the toy world; e2e, the tab after a Kill of its own nation.
+    **Split 2026-10-06** (one cause a commit); 2.17e3 ticks 2.17e and 2.17 and takes the whole
+    e2e suite (ADR-87).
+    - [x] 2.17e1 **The empty rename of a nation with no other name.**
+      AT: unit, failing first: the toy world's nation keeps its name, and the command is
+      refused with a reason.
+      - Done 2026-10-06 (ADR-124): refused with `Refusal.NoOtherName` ("the nation has no
+        other name to go back to; give it one."). The sim is told how many nations the
+        scenario's table names (`ScenarioRules.namedNations`: 103 in 1938, 0 in the random
+        world; the toy world has no rules). A nation founded in the game has its province's
+        name to go back to and is not refused. `tests/unit/refusal.test.ts` (two tests; the
+        toy one failed first: the command was applied and the name deleted).
+    - [ ] 2.17e2 **The words outlive their nation.** `Hud.refusal` is cleared when the
+      selection changes and when God Mode is switched on or off; a refusal that arrives after
+      the selection has moved on is not shown.
+      AT: e2e, failing first, added to the Ally test of `godUi1938.spec.ts`: the words are
+      gone after a click on another nation.
+    - [ ] 2.17e3 **The God tab on a nation that has just died.** Read 2026-10-06, not run: the
+      worker's `nations` are the living, so the panel closes with the next statistics; until
+      then its buttons send commands that name the dead nation (rename, income bonus and the
+      AI switch are taken: `whyNoNation`; the others are refused as dead). `Hud.selected`
+      stays the dead nation's id: the legend names it, the diplomacy colours are its, and the
+      Territory brush stays armed for it with no tab to say why a stroke is refused. And the
+      tab's own state is not the nation's: Kill armed on France, a click on Germany, and the
+      button reads "confirm" for Germany (to be run; `armKill`, `name` in `GodTab`).
+      AT: e2e, failing first: Kill from the nation's own God tab: the panel is gone, no
+      nation is selected, and the tab opened on another nation has no Kill armed.
   **PLAN 2.12 to 2.17 are the critic's second report (ADR-83).** They are numbered tasks and
   count toward the next review pass. Their order is not the critic's (R2-B2, B3, B4, B6, B7,
   B8): the two that change or question the world's state come before the one whose tests and

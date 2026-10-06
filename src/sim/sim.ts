@@ -6,7 +6,7 @@ import type { Command } from '../shared/commands';
 import type { ScenarioId, SimInit } from '../shared/protocol';
 import { loadBytes, saveBytes, stateHash } from './core/state';
 import { applyPendingCommands, step, type System } from './tick';
-import { BUILD_MIX_1938, createWorld1938, ECONOMY_TABLES_1938, RULES_1938 } from './scenario1938';
+import { BUILD_MIX_1938, createWorld1938, ECONOMY_TABLES_1938 } from './scenario1938';
 import { allianceSystem } from './systems/alliances';
 import { economicAi } from './ai/economic';
 import { operationalAi } from './ai/operational';
@@ -48,7 +48,6 @@ export class Sim {
         if (!init.assets) throw new Error(`scenario '${init.scenario}' needs its map assets`);
         // The random world has the map, the units and the rules of 1938, and nations of its own.
         this.world = init.scenario === '1938' ? createWorld1938(init.seed, init.assets) : createRandomWorld(init.seed, init.options?.nations, init.assets);
-        this.world.rules = RULES_1938;
         if (init.options) applyGameOptions(this.world, init.options);
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
         // engagement and combat (8), territory (9).
