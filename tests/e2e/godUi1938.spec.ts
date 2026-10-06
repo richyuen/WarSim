@@ -270,3 +270,58 @@ test('a God action that is refused says why: Ally with a nation of another allia
   await expect(page.getByTestId('god-refusal')).toContainText('they are allies');
   expect(atWar(await inspect(page), FRA, ITA)).toBe(false);
 });
+
+// PLAN 2.17b (the critic's R2-B8): the Territory brush set the controller and not the owner. A
+// drag from France across the Alps left a hatched band, and France's cells rose by 0.
+test('the Territory brush gives territory: a drag from France across the Alps', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const FRA = id('FRA');
+  const SCALE = 8;
+  const holders = (points: [number, number][]): Promise<number[]> => page.evaluate((ps) => ps.map(([x, y]) => window.__warsim!.view!.nationAt(x, y)), points);
+
+  await page.getByTestId('god-btn').click();
+  await lookAt(page, 2.5, 47);
+  await page.mouse.click(700, 400);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(FRA));
+  await page.getByTestId('tab-god').click();
+  await page.getByTestId('god-tool-brush').click();
+
+  // 250 px at 8 px a cell: from the Rhône valley over the Alps into the plain of the Po.
+  await lookAt(page, 7, 45.2, SCALE);
+  const from: [number, number] = [600, 400];
+  const to: [number, number] = [850, 400];
+  const way = Array.from({ length: 32 }, (_, i): [number, number] => [from[0] + ((to[0] - from[0]) * i) / 31, from[1]]);
+  const held = await holders(way);
+  expect(held[0]).toBe(FRA);
+  const foreign = held.filter((n) => n !== FRA).length;
+  expect(foreign).toBeGreaterThanOrEqual(10);
+  const before = await inspect(page);
+  const others = [...new Set(held.filter((n) => n !== FRA && n !== 0))];
+
+  await page.mouse.move(from[0], from[1]);
+  await page.mouse.down();
+  await page.mouse.move(to[0], to[1], { steps: 12 });
+  await page.mouse.up();
+  await expect.poll(async () => (await holders(way)).filter((n) => n !== FRA).length).toBe(0);
+
+  // France owns what it painted: its cells rose by what the nations under the stroke lost.
+  await expect.poll(async () => nation(await inspect(page), FRA).cells).toBeGreaterThan(nation(before, FRA).cells);
+  const after = await inspect(page);
+  const gained = nation(after, FRA).cells - nation(before, FRA).cells;
+  expect(gained).toBeGreaterThanOrEqual(foreign);
+  expect(others.reduce((a, n) => a + nation(before, n).cells - nation(after, n).cells, 0)).toBe(gained);
+  // No hatched band: owner and controller were painted as one edit, and one undo takes both back.
+  expect(after.edits).toEqual({ undo: 1, redo: 0 });
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.17') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.evaluate(() => window.__warsim!.view!.select(0));
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: path.join(out, 'god-brush-territory.png') });
+  await page.evaluate(() => window.__warsim!.sim.command({ kind: 'editUndo' }, true));
+  await expect.poll(async () => (await inspect(page)).rasters).toEqual(before.rasters);
+});

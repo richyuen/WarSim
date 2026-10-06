@@ -10,7 +10,9 @@ import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 // removes the whole stroke; a right-drag pans and paints nothing; with no paint tool active a
 // left-drag pans as before.
 // PLAN 1.44b AT: with the God territory tool, a left-drag across ≥ 20 cells gives every cell
-// under its path to the selected nation's control and the camera does not move; a right-drag pans.
+// under its path to the selected nation and the camera does not move; a right-drag pans.
+// PLAN 2.17b (ADR-118): the land is the nation's, owner and controller (it was control alone),
+// and the stroke is one step of the editor's undo history.
 
 const { w: W, h: H } = SIZE_1938;
 const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
@@ -218,10 +220,12 @@ test('God Mode: the territory brush paints on a left-drag; the right button pans
   await drag(page, from, to);
   await expect.poll(async () => (await holders(page, way)).filter((n) => n !== GER).length).toBe(0);
   expect(await camera(page)).toEqual(before);
-  // Control, not ownership: the land is occupied, and the selection is still Germany.
+  // Ownership with the control (PLAN 2.17b): the land is Germany's, in one undo step, and the
+  // selection is still Germany.
   const h1 = await rasters(page);
   expect(h1.controller).not.toBe(h0.controller);
-  expect(h1.owner).toBe(h0.owner);
+  expect(h1.owner).not.toBe(h0.owner);
+  expect(await edits(page)).toEqual({ undo: 1, redo: 0 });
   await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(GER));
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.44') : info.outputPath();
   mkdirSync(out, { recursive: true });
@@ -238,6 +242,13 @@ test('God Mode: the territory brush paints on a left-drag; the right button pans
   expect(await page.evaluate(() => window.__warsim!.view!.nationAt(760, 600))).not.toBe(GER);
   await page.mouse.click(760, 600);
   await expect.poll(() => page.evaluate(() => window.__warsim!.view!.nationAt(760, 600))).toBe(GER);
+  // The click is a stroke of its own; the two undone, the map is as it was.
+  expect(await edits(page)).toEqual({ undo: 2, redo: 0 });
+  const h3 = await rasters(page);
+  for (let i = 0; i < 2; i++) await page.evaluate(() => window.__warsim!.sim.command({ kind: 'editUndo' }, true));
+  await expect.poll(() => rasters(page)).toEqual(h0);
+  for (let i = 0; i < 2; i++) await page.evaluate(() => window.__warsim!.sim.command({ kind: 'editRedo' }, true));
+  await expect.poll(() => rasters(page)).toEqual(h3);
 
   // The tool off again: a left-drag pans and paints nothing.
   await page.getByTestId('god-tool-brush').click();

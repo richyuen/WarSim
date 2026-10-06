@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-118 · 2026-10-05 · accepted — The God Mode territory brush gives the land: it sends the editor's nation paint (PLAN 2.17b)
+
+- **Context:** the critic's R2-B8: a drag of the Territory brush from France across the Alps
+  left a hatched band, and France's cells rose by 0. The brush sent `paintControl`, which sets
+  the controller alone: the band was land France occupied, of Italy and Switzerland, with no
+  war behind it. The hint says "paint territory for this nation". PLAN 1.44b had written the
+  control down as meant ("Control, not ownership", an assertion of `editorDrag1938.spec.ts`).
+- **Decision:**
+  - The brush sends `editPaint` on the nation layer for the selected nation (`Hud.godPaint`):
+    radius 5 as before, no mask, `brush` with `stroke: 'start'` at the press and `line` with
+    `stroke: 'more'` on the way. Owner and controller are set together, by the one function
+    that does it for the editor (`paint` in `src/sim/editor.ts`).
+  - A stroke is one step of the editor's undo history, and is saved with it. Ctrl+Z and
+    Ctrl+Y stay the editor's (they work while it is open); the God tab has no undo button.
+  - `paintControl` stays as it is. It is the command of an occupation: eight unit test files, the
+    replay test and `occupation1938.spec.ts` make occupied land with it, and a saved command
+    log may hold it. The page no longer sends it.
+  - The assertion of PLAN 1.44b that the owner raster is unchanged is turned round (the owner
+    raster changes, the stroke is one undo step, two undos give the first map). It stated the
+    behaviour this decision ends; nothing else of that test changed.
+- **Rejected:**
+  - *`paintControl` sets the owner too.* It would take the occupation out of the tests of
+    capture, war and revival, which need a cell held by one nation and owned by another.
+  - *A command of its own for the God brush.* It would be `paint` on the nation layer under
+    another name, without the undo.
+  - *No undo for a God stroke* (a paint that passes the stack by). The stack's diffs assume
+    that they see every paint of the layer; and an undo of a slip of the hand is wanted.
+- **Consequences:**
+  - What the editor's paint does not do, the God brush does not do either: formations of the
+    old owner stay where they stand, on land that is now another nation's and with no war; a
+    capital painted over stays the capital of a nation that no longer owns its cell until the
+    capital rules look at it; cores stay the provinces'. Seen in the screenshot (Italian
+    counters on the French band), not changed here: PLAN 2.17c looks at what a painted and
+    killed nation leaves.
+  - The brush can no longer make land that is controlled and not owned. What PLAN 2.17c has
+    left to find is whether another way leaves a dead nation such land.
+  - A drag across the seam of the map: `lineCells` wraps each cell's x, as `paintControl` did.
+  - The largest radius is the editor's 32 (it was 64); the brush uses 5.
+- **Evidence:** `tests/e2e/godUi1938.spec.ts` (the fourth test: failed first with France's
+  cells at 10,473 before and after the drag), `tests/e2e/editorDrag1938.spec.ts` (the God
+  test), `docs/evidence/2.17/god-brush-territory.png`.
+
 ### ADR-117 · 2026-10-05 · accepted — A command that is not carried out says why; Ally does not break an alliance, the God tab has "Leave alliance" for that (PLAN 2.17a)
 
 - **Context:** the critic's R2-B8: Ally with a nation of another alliance did nothing and said

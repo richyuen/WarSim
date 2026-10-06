@@ -793,8 +793,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     the provinces', so it can revive there.
   - `winnerTakesAll` (a saved setting; command `setSetting`) annexes everything the loser
     controls, plus the loser's land the capturer already occupies.
-  - God brush `paintControl {nation, x, y, r}` sets control on land cells; with `x2, y2`, on the
-    cells within r of the segment to that point (the brush dragged, PLAN 1.44b).
+  - `paintControl {nation, x, y, r}` sets control on land cells; with `x2, y2`, on the
+    cells within r of the segment to that point. It is the command of occupation (tests, a
+    replay). The God Mode territory brush sent it until PLAN 2.17b and sends the editor's
+    nation paint since (ADR-118).
   - The war-score jump comes with 1.16.
 - **Capital capture**: the war score jumps, the capital relocates to the largest owned city, and with
   the `winnerTakesAll` setting the capturer annexes all of the loser's controlled territory.
@@ -1538,9 +1540,12 @@ on screen.
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).
   Map tools (revolt, breakthrough from two clicks, territory brush) take the next map clicks.
-  The territory brush also paints on a left-drag (PLAN 1.44b): a disc at the press, then
-  `paintControl` with `x2, y2` to every further cell the pointer enters; the right or middle
-  button pans meanwhile. It sets control, not ownership, and has no undo.
+  The territory brush also paints on a left-drag (PLAN 1.44b): a disc at the press, then the
+  way to every further cell the pointer enters; the right or middle button pans meanwhile.
+  It gives the land to the selected nation, owner and controller (PLAN 2.17b, ADR-118): it
+  sends the editor's `editPaint` on the nation layer (radius 5, no mask; `brush` with
+  `stroke: 'start'` at the press, `line` with `stroke: 'more'` after). A stroke is one step
+  of the editor's undo history; the keys of undo and redo work while the editor is open.
   God commands are sent with `now`: applied at once between ticks with the next step's tick
   stamp (`Sim.applyNow`), so they show while paused and replay identically.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;

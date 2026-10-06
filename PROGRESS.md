@@ -6352,3 +6352,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **After the commit (read, not run):** the words of a refusal stay on the tab when another
   nation is selected; logged under PLAN 2.17e and in ADR-117. `CommandRefused` does not reach
   the history log (its kinds are a list).
+
+## 2026-10-05 — PLAN 2.17b: the Territory brush gives territory (ADR-118)
+
+- **The defect:** the God brush sent `paintControl`, the controller alone. A drag from France
+  across the Alps: a hatched band, France's cells 10,473 before and after.
+- **The fix:** the brush sends the editor's `editPaint` on the nation layer (`Hud.godPaint`):
+  owner and controller, a stroke one step of the editor's undo history. `paintControl` is
+  not changed (the tests of occupation use it); the page no longer sends it. Nothing of
+  `src/sim` changed.
+- **Tests:** `godUi1938.spec.ts`, a fourth test, seen to fail first (the cells did not rise):
+  the drag, France's gain equal to the loss of the nations under the stroke, one undo step,
+  and the undo gives the first rasters. `editorDrag1938.spec.ts`, the God test: its
+  "owner unchanged" of PLAN 1.44b is turned round (ADR-118 says why), with the undo steps.
+- **Run by hand** (a part, ADR-87): `godUi1938`, `editorDrag1938`, `godMode1938`,
+  `occupation1938`, `editor1938`, `player1938` with `--project chromium`: 22 green (55 s).
+- **Looked at:** `docs/evidence/2.17/god-brush-territory.png`: the band from the Rhône over
+  the Alps into the plain of the Po is France's blue, with a plain border and no hatching.
+  `docs/evidence/1.44/god-brush-stroke.png` written anew by the same run.
+- **Seen, not changed:** Italian counters stand on the band, on French land with no war (the
+  editor's paint leaves them too). Logged under PLAN 2.17b for 2.17c.
+- **Not done:** no unit test (the change is in what the page sends; `paint` has its own);
+  no sweep (ADR-58); tick time not measured (no sim code changed).
+- **Next:** PLAN 2.17c, the dead nation's land and name. The brush no longer makes land that
+  is controlled and not owned: 2.17c is to find whether another way does.
+- **The pin did not move** (no sim input changed; the gate left the ten-year tests out).
+- **Gate:** green (code: typecheck, lint, unit 740, build, the two changed specs, parity; no full e2e for a part, ADR-87).

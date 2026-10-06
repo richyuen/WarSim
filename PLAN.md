@@ -2582,12 +2582,19 @@ quick sweep as a smoke test.
       `godUi1938.spec.ts` (a third test); both failed first.
     - Not done here: a finer reason for Revive (2.17d); the Kill of the last living nation
       (2.17c); the empty rename (2.17e).
-  - [ ] 2.17b **The Territory brush gives territory.** `paintControl` sets the controller
+  - [x] 2.17b **The Territory brush gives territory.** `paintControl` sets the controller
     only. It paints owner and controller as the editor's nation brush does (`paint` in
     `src/sim/editor.ts`: to be read for what of it the God brush may share, the undo history
     among it).
     AT: e2e through the God tab, failing first: a drag from France across the Alps raises
     France's cells, and no hatched band is left. A screenshot, looked at.
+    - Done 2026-10-05 (ADR-118): the brush sends `editPaint` on the nation layer
+      (`Hud.godPaint`); a stroke is one undo step of the editor's history. `paintControl`
+      stays, as the command of an occupation. `godUi1938.spec.ts` (a fourth test, failed
+      first: 10,473 cells before and after); the God test of `editorDrag1938.spec.ts` now
+      says owner and one undo step. `docs/evidence/2.17/god-brush-territory.png`.
+    - For 2.17c: the old owner's formations stay on the painted land (Italian counters on
+      the French band), as after an editor's paint.
   - [ ] 2.17c **A dead nation holds nothing and has no name on the map.** The band the brush
     left was France's control without ownership; after the Kill it stayed, with the name on
     it. To be found: whether 2.17b leaves any way to it (ADR-112 gives back what a dead

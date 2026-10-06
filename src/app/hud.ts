@@ -260,21 +260,30 @@ export class Hud {
   /** Where the drag is: its tool, and the last point (brushes) or the press (line), in world cells. */
   private drag: { tool: 'brush' | 'line' | 'god'; x: number; y: number } | null = null;
 
-  /** A press at world (x, y): a brush stamps (the editor's opens a stroke); the line waits for the release. */
+  /**
+   * The God Mode territory brush (PLAN 2.17b): the editor's nation paint for the selected nation,
+   * owner and controller together, so the land is the nation's and not land it occupies. A
+   * dragged stroke is one step of the editor's undo history.
+   */
+  private godPaint(tool: 'brush' | 'line', x: number, y: number, x2: number, y2: number, stroke: 'start' | 'more'): void {
+    this.command({ kind: 'editPaint', layer: 'nation', tool, x, y, x2, y2, r: BRUSH_RADIUS, value: this.selected.value, mask: null, stroke });
+  }
+
+  /** A press at world (x, y): a brush stamps and opens a stroke; the line waits for the release. */
   dragStart(x: number, y: number): void {
     const tool = this.dragTool();
     if (!tool) return;
     this.drag = { tool, x, y };
     if (tool === 'brush') this.editPaint('brush', x, y, x, y, 'start');
-    else if (tool === 'god') this.command({ kind: 'paintControl', nation: this.selected.value, x, y, r: BRUSH_RADIUS });
+    else if (tool === 'god') this.godPaint('brush', x, y, x, y, 'start');
   }
 
-  /** The pointer entered another cell: a brush paints the way there (the editor's as part of its stroke). */
+  /** The pointer entered another cell: a brush paints the way there, as part of its stroke. */
   dragMove(x: number, y: number): void {
     const d = this.drag;
     if (!d || d.tool === 'line') return;
     if (d.tool === 'brush') this.editPaint('line', d.x, d.y, x, y, 'more');
-    else this.command({ kind: 'paintControl', nation: this.selected.value, x: d.x, y: d.y, r: BRUSH_RADIUS, x2: x, y2: y });
+    else this.godPaint('line', d.x, d.y, x, y, 'more');
     d.x = x;
     d.y = y;
   }
