@@ -196,6 +196,7 @@ export function App({
         <NationPanel
           nation={nation}
           byId={byId}
+          techs={hud.techs.value}
           flagUrl={view && flagVersion >= 0 ? view.flags.urlOf(nation.id) : null}
           onSelect={(id) => hud.onSelectNation(id)}
           actions={

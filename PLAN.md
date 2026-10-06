@@ -2800,10 +2800,19 @@ quick sweep as a smoke test.
     - Not done: nobody orders the mechanised division but a player (the AI's order against
       armour is still the motorised division: PLAN 3.5); no marker symbol of its own for a
       mechanised or a heavy formation; no sprite of its own for the heavy tank (PLAN 3.6).
-  - [ ] 3.1e **Research on the page.** The nation panel names what a nation is researching,
+  - [x] 3.1e **Research on the page.** The nation panel names what a nation is researching,
     how far each line is, and its budget; the tech names are in the i18n catalog.
     AT: e2e: Germany's panel in 1938 lists three techs by name with a share paid that grows
     over a month; a picture looked at.
+    - Done 2026-10-06 (ADR-130). A Research block on the Economy tab: the budget per month and
+      a row per line with the tech's name and the share paid. `mapLayers.techs` (once) and
+      `NationStat.research`, `.lines` (with the statistics). `tests/e2e/research1938.spec.ts`
+      (nothing on day 0; three lines on day 2, 0% each; a month on the same three at 20%, 16%
+      and 25%), `tests/unit/techNames.test.ts` (all 43 techs have a name),
+      `docs/evidence/3.1/research-germany.png`. No sim file changed; the pin stands.
+    - Not done: the budget shown is what the AI allows, not what the lines take (Germany: 109
+      a month allowed, about 55 paid, since a line takes its gold ÷ its days at most); what a
+      nation already knows is not listed; the research money is still not in "Expenses".
   - [ ] 3.1d **What an armour formation is worth to the AI that cuts** (from PLAN 2.13,
     above). AT: seed 99, a nation short of money: its rifle divisions go before its armour of
     the same upkeep; the Soviet armour count after the first cut. Ticks 3.1.

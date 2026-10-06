@@ -727,9 +727,14 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   in Phase 6.
 - *A dead nation's* lines are dropped. A founded nation starts with no budget until the
   economic AI's next month.
-- *Not yet:* `cost.industry` is read by nothing (industry is not a sim input). The page does
-  not show research (PLAN 3.1e). No command sets a budget or picks a tech: a player's nation
+- *Not yet:* `cost.industry` is read by nothing (industry is not a sim input). No command sets a budget or picks a tech: a player's nation
   researches on the budget the AI last gave it.
+- *On the page* (PLAN 3.1e, ADR-130): the Economy tab of the nation panel has a Research block:
+  the budget per month (the day's budget × 365 ÷ 12, like the income above it) and one row per
+  line, in the order the lines were opened: the tech's name (`tech.<id>` of the i18n catalog)
+  and the share of its gold that is paid, rounded down. The worker sends the scenario's techs
+  once (`mapLayers.techs`: name key, gold, days) and each nation's budget and lines with the
+  nation statistics (`NationStat.research`, `.lines`).
 
 ---
 

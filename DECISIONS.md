@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-130 · 2026-10-06 · accepted — Research on the nation panel: the budget per month, a line by name and share paid (PLAN 3.1e)
+
+- **Context:** since ADR-128 nations research, and nothing of it was drawn: a tech showed only
+  as a build row losing its "not researched". The page had the techs a nation knows as bits
+  and no tech's name.
+- **Decision:**
+  - *Where:* a Research block at the foot of the Economy tab, not a tab of its own: three rows
+    and a budget, and the money is the same money as the rows above it.
+  - *The budget per month,* though the sim holds it per day: the tab's income, expenses and
+    balance are per month. The worker multiplies by `DAYS_PER_MONTH` (the economic AI's own
+    month), so the page imports nothing of the sim.
+  - *The share paid is rounded down:* a line reads 100% only when it is paid for, and then it
+    is gone.
+  - *The catalog of techs is sent once* with the map layers (`mapLayers.techs`), as the
+    templates are; the nation statistics, sent every second for every nation, carry indices
+    and numbers only.
+- **Not done:** the budget is what the AI allows, and the lines take less (a line takes its
+  gold ÷ its days at most: Germany 109 a month allowed, about 55 paid). The page does not say
+  what is paid. Research money is not in the Expenses row (ADR-128). No list of what a nation
+  knows. No command for a budget or a tech.
+- **Proof:** `tests/e2e/research1938.spec.ts`, `tests/unit/techNames.test.ts`,
+  `docs/evidence/3.1/research-germany.png` (looked at: "Budget / month 109", "Assembly lines
+  20%", "Strategic bombers 16%", "Air transport 25%" on 2 February 1938). The pinned hash did
+  not move (0eb1fb78): no sim file changed.
+
 ### ADR-129 · 2026-10-06 · accepted — Four templates behind the tech gate, and the AI's armour order is the best it knows and can pay for (PLAN 3.1c)
 
 - **Context:** since ADR-128 the great powers know the medium tank of 1941, the heavy tank

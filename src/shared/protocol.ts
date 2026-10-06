@@ -322,6 +322,8 @@ export type FromWorker =
       province: Uint16Array;
       /** Buildable land templates (index = command template id; PLAN 1.33b). */
       templates: TemplateInfo[];
+      /** The scenario's techs (index = the tech's bit in `NationStat.techs`; PLAN 3.1e). */
+      techs: TechInfo[];
     }
   /**
    * The land's height for the hillshade (PLAN 2.8a): metres, one value a cell of the map (`w` ×
@@ -360,6 +362,13 @@ export interface TemplateInfo {
   techs: readonly [number, number];
 }
 
+/** A tech for the nation panel (PLAN 3.1e): its name and what its research costs. */
+export interface TechInfo {
+  nameKey: string;
+  gold: number;
+  days: number;
+}
+
 export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison';
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
@@ -396,6 +405,10 @@ export interface NationStat {
   queue: { template: number; readyDay: number }[];
   /** The techs it knows, as bits 0..31 and 32..63 (PLAN 3.1a). */
   techs: readonly [number, number];
+  /** Its research budget in gold per month, like `income` (the sim holds it per day; PLAN 3.1b). */
+  research: number;
+  /** What it is researching, in the order the lines were opened: index into `mapLayers.techs` and the gold paid. */
+  lines: { tech: number; paid: number }[];
 }
 
 /**

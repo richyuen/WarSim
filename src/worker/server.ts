@@ -20,6 +20,7 @@ import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
+import { DAYS_PER_MONTH } from '../sim/systems/research';
 import {
   FormationFlag,
   MAX_SNAPSHOT_ELEMENTS,
@@ -356,7 +357,8 @@ export class SimServer {
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
       const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: symbolOf(t), techs: rules[i]!.techs }));
-      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates }, [land.data.buffer, terrain.data.buffer, province.buffer]);
+      const techs = (world.rules?.techs ?? []).map((t) => ({ nameKey: `tech.${t.id}`, gold: t.gold, days: t.days }));
+      this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates, techs }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
     }
@@ -598,6 +600,14 @@ export class SimServer {
       q.push({ template: pc.template[p]!, readyDay: pc.readyDay[p]! });
       queues.set(n, q);
     });
+    const lines = new Map<number, { tech: number; paid: number }[]>();
+    const rc = world.research.cols;
+    for (const r of world.research.ids()) {
+      const n = rc.nation[r]!;
+      const l = lines.get(n) ?? [];
+      l.push({ tech: rc.tech[r]!, paid: rc.paid[r]! });
+      lines.set(n, l);
+    }
     const puppets = new Map<number, number[]>();
     const enemies = new Map<number, Set<number>>();
     const wars: WarStat[] = [];
@@ -651,6 +661,8 @@ export class SimServer {
         living: nc.living[id] === 1,
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
         techs: [nc.tech0[id]!, nc.tech1[id]!],
+        research: nc.research[id]! * DAYS_PER_MONTH,
+        lines: lines.get(id) ?? [],
       });
     });
     return { nations, wars };

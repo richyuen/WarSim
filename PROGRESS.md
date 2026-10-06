@@ -6717,3 +6717,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (3.1 is not ticked).
 - **Next:** PLAN 3.1e (research on the page), then 3.1d, which ticks 3.1.
 - **Gate:** green (code: typecheck, lint, unit 773, the ten-year tests 12, build, the changed spec `playerActions1938` 1, parity; no full e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 3.1e: research on the nation panel (ADR-130)
+
+- **Changed:** no sim file.
+  - `protocol.ts`: `mapLayers.techs` (name key, gold, days of every tech, once) and
+    `NationStat.research` (gold per month), `.lines` (tech index, gold paid; the order the
+    lines were opened). `worker/server.ts` fills them; `hud.techs`; `NationPanel` takes `techs`.
+  - `NationPanel.tsx`: a Research block at the foot of the Economy tab. Three i18n keys.
+- **Found first, with a throwaway test** (seed 1938, Germany): no budget on day 0, 3.58 a day
+  from day 1, three lines from day 2 (`assembly_line`, `bombers_str_1`, `air_transport`), each
+  paid 0.6 a day. So the spec steps two days before it asks for three lines.
+- **Tests:** `tests/e2e/research1938.spec.ts` (new, 4 s): nothing in research on day 0; three
+  lines by name on day 2; the budget on the page is the statistics' and at most 5% of income;
+  a month on the same three, each more than 5 points further and under 100%.
+  `tests/unit/techNames.test.ts`: all 43 techs have a name in `en.json`.
+- **Run by hand** (a part, ADR-87): `research1938` with `--project chromium`, green.
+- **Looked at:** `docs/evidence/3.1/research-germany.png` (2 February 1938): "Research",
+  "Budget / month 109", "Assembly lines 20%", "Strategic bombers 16%", "Air transport 25%"
+  under the manpower row; the block fits the panel.
+- **The pin did not move** (0eb1fb78).
+- **Gotcha:** vitest here does not print a test's `console.log`; a probe writes a file.
+- **Not done** (ADR-130): the budget row is what the AI allows (109), not what the lines take
+  (about 55); no list of what a nation knows; research money is not in Expenses; no command
+  for a budget or a tech. Tick time: nothing in a tick's path changed; the statistics message
+  (once a second) walks the research table once more. Not measured.
+- **Review pass:** not due (3.1 is not ticked).
+- **Next:** PLAN 3.1d (what an armour formation is worth to the AI that cuts), which ticks 3.1.
+- **Gate:** green (code: typecheck, lint, unit 774, the ten-year tests 12, build, the changed spec `research1938` 1, parity; no full e2e for a part, ADR-87). By hand besides: `nationPanel1938`, `playerActions1938`, `i18n`, green.

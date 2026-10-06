@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import type { NationStat } from '../shared/protocol';
+import type { NationStat, TechInfo } from '../shared/protocol';
 import { ActionsTab, type ActionsTabProps } from './ActionsTab';
 import { GodTab, type GodTabProps } from './GodTab';
 import { t, type MessageKey } from './i18n';
@@ -18,7 +18,7 @@ type Tab = 'overview' | 'economy' | 'actions' | 'god';
 /**
  * Left nation panel (PLAN 1.31a): the selected nation's name and colour, then an Overview tab
  * (land, army, alliance, overlord or puppets, enemies) and an Economy tab (income, expenses,
- * balance, treasury, bonus, manpower). Nation chips select that nation. Actions (bonus −/+,
+ * balance, treasury, bonus, manpower; what it is researching, PLAN 3.1e). Nation chips select that nation. Actions (bonus −/+,
  * war, peace…) arrive with God Mode and player control (PLAN 1.32/1.33).
  */
 export interface ControlProps {
@@ -31,6 +31,7 @@ export interface ControlProps {
 export function NationPanel({
   nation,
   byId,
+  techs,
   onSelect,
   god,
   control,
@@ -39,6 +40,8 @@ export function NationPanel({
 }: {
   nation: NationStat;
   byId: Map<number, NationStat>;
+  /** The scenario's techs, for the names and prices of what the nation is researching (PLAN 3.1e). */
+  techs: readonly TechInfo[];
   onSelect: (id: number) => void;
   god?: Omit<GodTabProps, 'nation'> | null;
   control?: ControlProps | null;
@@ -141,6 +144,23 @@ export function NationPanel({
           {row('panel.incomeBonus', `${nation.incomeBonus >= 0 ? '+' : ''}${nation.incomeBonus}%`)}
           {row('panel.manpower', num(nation.manpower), 'stat-manpower')}
           {nation.bankrupt ? <div class="panel-warn">{t('panel.bankrupt')}</div> : null}
+          <div class="panel-block" data-testid="panel-research">
+            <div class="panel-sub">{t('panel.research')}</div>
+            {row('panel.researchBudget', num(nation.research), 'research-budget')}
+            {nation.lines.length > 0 ? (
+              nation.lines.map((l) => {
+                const tech = techs[l.tech];
+                return (
+                  <div key={l.tech} class="panel-row" data-testid="research-line">
+                    <span>{tech ? t(tech.nameKey as MessageKey) : `#${l.tech}`}</span>
+                    <span data-testid="research-paid">{tech && tech.gold > 0 ? Math.floor((100 * l.paid) / tech.gold) : 0}%</span>
+                  </div>
+                );
+              })
+            ) : (
+              <div class="panel-note">{t('panel.researchNone')}</div>
+            )}
+          </div>
         </section>
       )}
     </aside>

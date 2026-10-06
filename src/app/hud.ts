@@ -10,7 +10,7 @@ import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
-import type { FormationDetail, TemplateInfo } from '../shared/protocol';
+import type { FormationDetail, TechInfo, TemplateInfo } from '../shared/protocol';
 import type { EditorState } from '../shared/editorState';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
@@ -117,6 +117,8 @@ export class Hud {
   readonly rankMetric = signal<RankMetric>('land');
   /** Buildable templates of the scenario (PLAN 1.33b), from the worker's map layers. */
   readonly templates = signal<TemplateInfo[]>([]);
+  /** The scenario's techs (PLAN 3.1e), from the worker's map layers. */
+  readonly techs = signal<TechInfo[]>([]);
   /** Nation panel / war banner data from the worker (PLAN 1.31). */
   readonly stats = signal<NationStats | null>(null);
   /** Speed and pause as last reported by the worker (snapshots), for tests and diagnostics. */
@@ -152,7 +154,10 @@ export class Hud {
       // map's clicks all the same, and no God tab was open to switch it off (PLAN 2.17e3).
       if (selected === 0 && this.godTool.peek() === 'brush') this.setGodTool(null);
     });
-    sim.onMapLayers((m) => (this.templates.value = m.templates));
+    sim.onMapLayers((m) => {
+      this.templates.value = m.templates;
+      this.techs.value = m.techs;
+    });
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';
     const metric = load(KEY_RANK_METRIC);
     if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;
