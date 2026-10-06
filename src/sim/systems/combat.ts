@@ -13,11 +13,12 @@
  * proximity, drawn with
  * hash32(seed, tick, element) and kept for COOLDOWN hours. Damage in target units is
  *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class and unit type, target cell)
- *       × supplyFactor(shooter) × combinedArms(shooter's side) × gunsOnGuns(shooter) × screen(target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
+ *       × supplyFactor(shooter) × combinedArms(shooter's side) × gunsOnGuns(shooter) × screen(target) × open(shooter, target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
  * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing,
  * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle,
- * gunsOnGuns is SUPPRESSED for an AT gun whose enemy has artillery alive in the battle, and
- * screen is UNSCREENED for armour on close ground whose side has no infantry alive in the battle.
+ * gunsOnGuns is SUPPRESSED for an AT gun whose enemy has artillery alive in the battle,
+ * screen is UNSCREENED for armour on close ground whose side has no infantry alive in the battle, and
+ * open is IN_THE_OPEN for armour firing at a target with no armour on open ground whose side has no AT gun alive in the battle.
  * All fire in an hour is computed before any loss is applied (simultaneous volleys), so the
  * order of elements cannot bias the result; total fire ∝ surviving strength (Lanchester square).
  * Each volley emits a FireEvent (TickOutputs.fires; not state).
@@ -55,6 +56,12 @@ export const UNSCREENED = combatJson.screen.taken;
  */
 export const SUPPRESSED = combatJson.gunsOnGuns.fire;
 const CLOSE = TERRAIN_IDS.map((id) => (combatJson.screen.terrain as string[]).includes(id));
+/**
+ * The fire of armour at a target with no armour on open ground (`OPEN`) whose side has no AT gun
+ * alive in the battle (PLAN 3.4d, `open` of `data/combat.json`).
+ */
+export const IN_THE_OPEN = combatJson.open.fire;
+const OPEN = TERRAIN_IDS.map((id) => (combatJson.open.terrain as string[]).includes(id));
 
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 const TERRAIN_ATK = terrainJson.terrain.map((t) => t.attack as Record<string, number | undefined>);
@@ -247,7 +254,9 @@ export function combatSystem(world: World): void {
         const screen = (ut.arm & ARM_ARMOUR) !== 0 && CLOSE[terrain] && (sideArmsOf.get(tf)! & ARM_INFANTRY) === 0 ? UNSCREENED : 1;
         // An AT gun under the enemy's artillery (PLAN 3.4c).
         const guns = (us.arm & ARM_AT) !== 0 ? atFire : 1;
-        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult * screen * guns) / def / buffDef / ut.hpPerUnit;
+        // Armour at what has no armour, on open ground, with no AT gun of the target's side in the battle (PLAN 3.4d).
+        const open = (us.arm & ARM_ARMOUR) !== 0 && ut.armor === 0 && OPEN[terrain] && (sideArmsOf.get(tf)! & ARM_AT) === 0 ? IN_THE_OPEN : 1;
+        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult * screen * guns * open) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;

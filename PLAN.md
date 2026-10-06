@@ -2907,7 +2907,7 @@ quick sweep as a smoke test.
       crosses a marsh and mountains at that infantry's 0.6 (in the test).
     - Not done: the route is still found by the class's move cost alone; nothing of it on
       the page.
-- [ ] 3.4 Combined arms (inf + art + armour bonus; AT vs armour; armour vs infantry in the open).
+- [x] 3.4 Combined arms (inf + art + armour bonus; AT vs armour; armour vs infantry in the open).
   AT: matrix test of unit-mix outcomes matches the design table in SPEC.
   Read first, 2026-10-06: in since PLAN 1.13, `hard` against armour and `soft` against the
   rest, halved when the armour beats the piercing. Nothing read who else is in the battle,
@@ -2957,7 +2957,7 @@ quick sweep as a smoke test.
       brigade or a garrison alone.
     - Not done: no share of the enemy is asked of his artillery (one battery holds down
       every AT gun of a battle); nothing of it on the page.
-  - [ ] 3.4d **The open, and the matrix.** Measure first what the terrain table gives armour
+  - [x] 3.4d **The open, and the matrix.** Measure first what the terrain table gives armour
     against infantry on plains, grassland and desert beside forest. Then: armour's fire at
     what is not armoured on open ground × a figure (the proposal: 1.25) unless the target's
     side has AT guns alive in the battle; or the rule is dropped with the reason, if the
@@ -2967,6 +2967,37 @@ quick sweep as a smoke test.
     say (ratios between mixes, not men). Ticks 3.4 (the full e2e; `toBattle1938` by hand
     first). The review pass of step 9 is due after it (the fifth numbered task since the
     last one).
+    - Measured first (48 hours and the first hour, three seeds): a light tank company's
+      volley at a holding battalion is 1.16 on grassland, 1.05 in the desert and 0.58 in a
+      forest of the one on plains. The table already tells open from close. What it did
+      not do: a division's AT gun cost a tank brigade 3.5 to 3.8 tanks against 0.5 without,
+      and took nothing from what the tanks did (1,312 men from either).
+    - Kept, as that condition (ADR-142). `open` of `data/combat.json` (plains, grassland,
+      desert; 1.25), its schema; one factor in `combat.ts` (`IN_THE_OPEN`). The target is
+      one with no `armor` figure: guns and howitzers too, mechanised infantry not.
+      `tests/unit/combinedArms.test.ts` (10 more; six red first). The pin: 78650f1b →
+      80e8050a. No new state.
+    - The matrix: `tests/unit/combinedArmsMatrix.test.ts` (6 tests, 20 fights; the table is
+      in SPEC §6.1). Each rule is a ratio of two cells, to 3 %: 1.150, 1.301, 0.697, 1.250.
+      The brigade with its infantry destroyed and the panzer division with its howitzers
+      destroyed are mixes of it besides those the task named: rules 1 to 3 are read on
+      them.
+    - Seed 99, the first 360 days: 91,023 of 431,212 volleys of armour at a target with no
+      armour on open ground were under the rule, by 82 formations at 87.
+    - Not done: nothing of the four rules on the page; the AI does not know of them (PLAN
+      3.5); no share is asked in any of the four.
+  **PLAN 3.4 done 2026-10-06.** It is the fifth numbered task since the review pass 2.16R
+  (2.17, 3.1 to 3.4): the review pass of PROMPT step 9 is due, and comes before 3.5.
+- [ ] 3.4R Review pass (PROMPT step 9) over PLAN 2.17 and 3.1 to 3.4: refactor debt, dead
+  code, SPEC re-read for drift (tech and research, fuel, org and breakdown, terrain by unit
+  type, the four rules of combined arms), missing tests. It belongs to the tasks it follows
+  (ADR-74) and starts the count again.
+  AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
+  gate is green.
+  To look at, noted in the parts: `combat.ts` has four rule factors and two maps of arms
+  built per battle, tick time not measured since 3.4a; three tank brigades stood some
+  11,000 volleys each in contact with their infantry gone (3.4b); the helpers of
+  `combinedArms.test.ts` and `combinedArmsMatrix.test.ts` build the same battle twice.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.

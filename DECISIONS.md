@@ -167,6 +167,84 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-142 · 2026-10-06 · accepted — The open: armour's fire at a target with no armour on plains, grassland or desert whose side has no AT gun alive in the battle is × 1.25; the matrix (PLAN 3.4d)
+
+- **Context:** the fourth rule of the table of ADR-139 (SPEC §6.1): "armour is strong vs
+  infantry in the open". The task asked first what the terrain table already gives, and
+  allowed the rule to be dropped if the table does it.
+- **Measured before the rule** (a scratch test, not kept; 48 hours and the first hour,
+  seeds 5 to 7, a tank brigade and a panzer division against a holding `infantry_div` and
+  an `infantry_div_cadre`, which has no AT gun):
+  - One volley of a light tank company at a battalion, plains = 1: grassland 1.158 (the
+    class's 1.1 ÷ the ground's defence 0.95), desert 1.05, forest 0.582 (0.8 ÷ 1.25 ÷ the
+    battalion's own 1.1 of ADR-137). Over 48 hours the brigade takes 1,347 to 1,356 men on
+    plains, 1,556 to 1,567 on grassland, 1,412 to 1,422 in the desert, 792 to 797 in a
+    forest.
+  - Of the men a division loses to a tank brigade its tanks take 95 to 97 %, the two
+    motorised companies the rest; to a panzer division 77 to 83 % (the rest to its
+    infantry and howitzers).
+  - The AT gun: the brigade loses 3.5 to 3.8 tanks to the division with one and 0.51 to
+    0.55 to the cadre division; it takes 1,302 to 1,319 men by its tanks from either.
+- **Kept, and why:** the table tells open ground from close already, by 1.72 between plains
+  and a forest, so "the open" alone would be the same thing twice. What the table cannot
+  say is the row's condition: an AT gun cost the tanks seven times the losses and took
+  nothing from their fire. The rule is that condition. It is not the terrain table's
+  figure made larger.
+- **Decision:**
+  - *The shooter:* an element of the armour arm (ADR-139), by its arm as in ADR-140.
+  - *The target:* an element whose `armor` figure is 0, the split `effectiveness` makes
+    between `soft` and `hard`: the rule is a factor on a tank's soft fire. So mechanised
+    infantry (armour 4) is not run down, and guns and howitzers are. By the arm, as in
+    ADR-140, mechanised infantry would be: it rides under armour, left out.
+  - *The ground:* the target's cell, plains, grassland or desert (`open.terrain` of
+    `data/combat.json`). Tundra, ice and hills are not: the table gives armour less than 1
+    there. Holding or moving.
+  - *No AT gun:* the target's side (ADR-139) has no element of a class of
+    `gunsOnGuns.shooter` with strength at the hour's start. The gun of another formation
+    of that side covers it, and an ally's; the shooter's own side's guns are nothing to
+    it. No share is asked, as in ADR-139 to ADR-141: one battery covers a battle.
+  - *A factor on the damage* (`IN_THE_OPEN`, `open.fire` 1.25). The choice of target does
+    not know of it. *1.25:* the table's proposal, a figure of mine, not tuned (ADR-58).
+  - Anti-air guns are not AT guns here, though their piercing (20) beats a light tank.
+- **When it bites:** seed 99, the first 360 days (a counter in `combat.ts` for one run, not
+  kept): 542,522 volleys of armour, 532,553 at a target with no armour, 431,212 of those on
+  open ground, 91,023 of those under the rule (21 %), by 82 formations at 87. Of the land
+  templates four have an AT gun (`infantry_div`, `infantry_div_square`, `motorised_div`,
+  `mech_div`); the cadre, colonial, light, mountain, cavalry and
+  garrison formations and the Soviet rifle division have none.
+- **The matrix** (`tests/unit/combinedArmsMatrix.test.ts`, 6 tests, 20 fights of 48 hours,
+  seed 5; the table is in SPEC §6.1). Attackers: the tank brigade, the panzer division,
+  the brigade with its infantry destroyed, the division with its howitzers destroyed.
+  Defenders: an `infantry_div` whole, without its AT gun, without its howitzers, with
+  neither. Plains and a forest. Each rule is a ratio of two cells, asked to 3 %:
+  rule 1 1.150 (the panzer division's tanks with and without its howitzers), rule 2 1.301
+  in a forest and 1 on plains, rule 3 0.697, rule 4 1.250 on plains (1.253 for the panzer
+  division) and 1 in a forest. The AT battery takes 73 to 84 % of the tanks lost.
+  - *Why 3 % holds:* in 48 hours a formation loses so little (4 of 200 tanks, 1,400 of
+    12,000 men) that the dead take almost nothing from the fire. A longer fight would
+    need wider bands.
+  - *Rule 3 is read on the panzer division against itself:* against the tank brigade the
+    ratio is 0.62, since the division's own fire kills the gun's crew faster and the
+    brigade's does not.
+  - *The defender's howitzers* do nothing a rule names: the attacker has no AT gun to hold
+    down. They are in the matrix for "AT vs armour": without them the division takes 0.93
+    to 0.98 of the tanks.
+- **Tests:** `tests/unit/combinedArms.test.ts` (10 more, written first; six red before the
+  rule: the three open grounds, the armoured target beside the Italian infantry, the gun
+  of another formation and an ally's, the shooter's own gun. Green before and kept: the
+  data, forest, hills, urban).
+- **The zoom demo's game** (`tests/e2e/zoomDemo1938.spec.ts`) is seed 1944's, not seed
+  1938's: the rule changed that game, and on its day 30 no division that fires, stands,
+  has two batteries and fits the picture has its battalions under half their men (the best
+  has 0.58 to 0.77). The finder and every expect are as they were. In seed 1944's game it
+  is a Latvian division with 95 to 164 of 500 men a battalion, and 148 sprites of other
+  formations are drawn walking over the close stops.
+- **The pin moved:** 78650f1b → 80e8050a (seed 99, one year).
+- **Saves:** no state added.
+- **Not done:** nothing of the four rules on the page (PLAN 3.6, or 3.7 to place it); the
+  AI does not know of any (PLAN 3.5); no share of AT guns to tanks; tick time not measured
+  (one test a volley, on a lookup the screen already makes).
+
 ### ADR-141 · 2026-10-06 · accepted — Guns on guns: an AT gun whose enemy has artillery alive in the battle fires × 0.7 (PLAN 3.4c)
 
 - **Context:** the third rule of the table of ADR-139 (SPEC §6.1): "artillery suppresses AT".

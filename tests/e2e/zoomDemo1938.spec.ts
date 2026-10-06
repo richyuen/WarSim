@@ -24,6 +24,13 @@ import { assets1938 } from '../helpers/earth';
 // (a battle in Europe is a third of the way down), so every element is to stand within a quarter
 // of the view of the point the camera closes in on. (Since PLAN 3.2c: the division with the
 // most losses in that game reaches 277 px above that point, held 253 px from the top.)
+// The game is seed 1944's since PLAN 3.4d (ADR-142): the rule changed seed 1938's game, and on
+// its day 30 the division that fires, stands and fits has battalions at 0.58 to 0.77 of their
+// men, which is not what the close pictures are there to show; those with under half do not fit
+// the picture or have one battery. Of the seeds 1925 to 1965 on day 30, 1944 is the nearest whose
+// division (a Latvian one, with a march and in contact) has every battalion under 0.45 and over
+// 90 men and four batteries, with formations on the march in the view at 150 m/px (in seed
+// 1943's game, one nearer, nothing marches there).
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -38,6 +45,7 @@ import { assets1938 } from '../helpers/earth';
 
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
+const SEED = 1944;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
 const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;
@@ -97,7 +105,7 @@ interface Battle {
 
 /** The battle, and what the stepped hours make of it, from the sim in Node. */
 function nodeBattle(): Battle {
-  const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+  const sim = new Sim({ scenario: '1938', seed: SEED, assets: assets1938(W) });
   const w = sim.world;
   const fc = w.formations.cols;
   const ec = w.elements.cols;
@@ -369,7 +377,7 @@ function steps(before: [number, number, number], frames: readonly Frame[]): { up
 
 async function open(page: Page): Promise<void> {
   await page.setViewportSize(VIEW);
-  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.goto(`/?scenario=1938&paused=1&seed=${SEED}`);
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null && window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
 }
 

@@ -308,3 +308,91 @@ describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () =>
     expect(dmg / dmgFree).toBeCloseTo(1, 10);
   });
 });
+
+// PLAN 3.4d: the open (SPEC §6.1, the table's fourth row; `open` of `data/combat.json`).
+// Armour's fire at a target with no armour on open ground is × `fire`, unless the target's
+// side has an AT gun alive in the battle.
+describe('armour against the unarmoured in the open (PLAN 3.4d)', () => {
+  const OPEN = combatJson.open;
+  const AT = combatJson.gunsOnGuns.shooter;
+  /**
+   * The volleys of the first stand, a Polish formation, at its enemies, by shooter type, target
+   * type and the target's stand. `noAt`: the enemies' AT guns destroyed before the hour (the
+   * same battle but those guns, so the same targets to pick among but one battery).
+   */
+  const fired = (stands: Stand[], noAt: boolean, terrain: number = Terrain.Plains): Map<string, number> => {
+    const { world, ids } = battle(stands, terrain);
+    const ec = world.elements.cols;
+    world.elements.forEach((el) => {
+      if (noAt && ec.formation[el] !== ids[0] && AT.includes(classOf(ec.unit[el]!))) ec.strength[el] = 0;
+    });
+    const out = new Map<string, number>();
+    for (const [s, [target, dmg]] of volleysOf(world, ids[0]!)) {
+      out.set(`${UNIT_IDS_1938[ec.unit[s]!]}>${UNIT_IDS_1938[ec.unit[target]!]}@${ids.indexOf(ec.formation[target]!)}`, dmg);
+    }
+    return out;
+  };
+  /** Of the volleys both have whose key `pick` takes: each of `free` is that of `covered` × `factor`; how many. */
+  const expectFire = (covered: Map<string, number>, free: Map<string, number>, pick: (k: string) => boolean, factor: number): number => {
+    let compared = 0;
+    for (const [k, dmg] of free) {
+      if (!pick(k) || !covered.has(k)) continue;
+      expect(dmg / covered.get(k)!, k).toBeCloseTo(factor, 10);
+      compared++;
+    }
+    return compared;
+  };
+  const tankAt = (target: string, stand = 1) => (k: string): boolean => k === `tank_light>${target}@${stand}`;
+
+  it('the data names plains, grassland and desert and a figure above 1', () => {
+    expect(OPEN.fire).toBeGreaterThan(1);
+    expect(OPEN.terrain).toEqual(['plains', 'grassland', 'desert']);
+  });
+
+  it.each([
+    [Terrain.Plains, OPEN.fire], [Terrain.Grassland, OPEN.fire], [Terrain.Desert, OPEN.fire],
+    [Terrain.Forest, 1], [Terrain.Hills, 1], [Terrain.Urban, 1],
+  ])('on ground %i a tank’s volley at the infantry and the howitzers of a division with no AT gun left is × %f of the one with the gun alive', (terrain, factor) => {
+    const stands: Stand[] = [[POL, 'tank_brigade', 0, 0], [GER, 'infantry_div', 1, 0]];
+    const covered = fired(stands, false, terrain);
+    const free = fired(stands, true, terrain);
+    expect(expectFire(covered, free, tankAt('infantry'), factor)).toBe(1);
+    expect(expectFire(covered, free, (k) => k.startsWith('tank_light>'), factor)).toBeGreaterThan(0);
+    // The brigade's own infantry is not armour: its fire is the same.
+    expect(expectFire(covered, free, (k) => k.startsWith('infantry_motorised>'), 1)).toBeGreaterThan(0);
+  });
+
+  it('a target with armour takes × 1: the tanks and the mechanised infantry of a heavy panzer division', () => {
+    // The Italian division beside it brings the AT gun, and its own infantry is what the rule is read on.
+    const stands: Stand[] = [[POL, 'tank_corps', 0, 0], [GER, 'heavy_panzer_div', 1, 0], [ITA, 'infantry_div', 0, 1]];
+    const covered = fired(stands, false);
+    const free = fired(stands, true);
+    expect(expectFire(covered, free, tankAt('infantry_mechanised'), 1)).toBe(1);
+    expect(expectFire(covered, free, (k) => /^tank_light>tank_/.test(k), 1)).toBeGreaterThan(0);
+    expect(expectFire(covered, free, tankAt('infantry', 2), OPEN.fire)).toBe(1);
+    // The corps's howitzers are not armour either.
+    expect(expectFire(covered, free, (k) => k.startsWith('artillery_heavy>'), 1)).toBeGreaterThan(0);
+  });
+
+  it('the AT gun of another formation of the target’s side covers it, and so does an ally’s', () => {
+    for (const nation of [GER, ITA]) {
+      const stands: Stand[] = [[POL, 'tank_brigade', 0, 0], [GER, 'garrison_brigade', 1, 0], [nation, 'infantry_div', 0, 1]];
+      expect(expectFire(fired(stands, false), fired(stands, true), tankAt('infantry'), OPEN.fire)).toBe(1);
+    }
+    // With no gun on that side the fire is the same as with its guns destroyed.
+    const stands: Stand[] = [[POL, 'tank_brigade', 0, 0], [GER, 'garrison_brigade', 1, 0], [ITA, 'infantry_div_cadre', 0, 1]];
+    expect(expectFire(fired(stands, false), fired(stands, true), tankAt('infantry'), 1)).toBe(1);
+  });
+
+  it('the gun covers its side and not its enemy: the tanks’ own AT gun gives the target nothing', () => {
+    // A Polish division with a gun beside the Polish tanks: the garrison has none, and takes the fire in full
+    // (× the bonus of the three arms: that division's howitzers are the tanks' third arm).
+    const lone: Stand[] = [[POL, 'tank_brigade', 0, 0], [GER, 'garrison_brigade', 1, 0]];
+    const withGun: Stand[] = [...lone, [POL, 'infantry_div', 0, 1]];
+    const covered: Stand[] = [[POL, 'tank_brigade', 0, 0], [GER, 'infantry_div', 1, 0]];
+    const open = fired(covered, true).get('tank_light>infantry@1')! / fired(covered, false).get('tank_light>infantry@1')!;
+    expect(open).toBeCloseTo(OPEN.fire, 10);
+    expect(fired(withGun, false).get('tank_light>infantry@1')! / fired(lone, false).get('tank_light>infantry@1')!).toBeCloseTo(BONUS, 10);
+    expect(fired(lone, false).get('tank_light>infantry@1')! / fired(covered, true).get('tank_light>infantry@1')!).toBeCloseTo(1, 10);
+  });
+});

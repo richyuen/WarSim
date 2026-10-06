@@ -89,6 +89,11 @@ export const CombatFile = z.strictObject({
   screen: z.strictObject({ terrain: z.array(z.enum(TERRAIN_IDS)).min(1), taken: mult }),
   /** PLAN 3.4c: a unit of one of the classes `shooter` whose enemy has artillery alive in the battle fires × `fire`. */
   gunsOnGuns: z.strictObject({ shooter: arm, fire: mult }),
+  /**
+   * PLAN 3.4d: armour's fire at a target with no armour on one of `terrain` is × `fire`, unless the
+   * target's side has a unit of `gunsOnGuns.shooter` alive in the battle.
+   */
+  open: z.strictObject({ terrain: z.array(z.enum(TERRAIN_IDS)).min(1), fire: mult }),
 });
 
 // ── unit types (data/units/*.json) ───────────────────────────────────────────

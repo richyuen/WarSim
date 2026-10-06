@@ -14,5 +14,9 @@
   "gunsOnGuns": {
     "shooter": ["at"],
     "fire": 0.7
+  },
+  "open": {
+    "terrain": ["plains", "grassland", "desert"],
+    "fire": 1.25
   }
 }

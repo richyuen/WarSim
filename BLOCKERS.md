@@ -377,6 +377,11 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     2026-10-06 (the gate of PLAN 3.1d, two runs of the suite, 9.8 and 10.1 min): in the first its
     wait of 60 s for the first frame and the map layers of a paused 1938 page ran out; alone
     (40 s) and in the second run it passed. The load of the machine in the first run is not known.
+  - `coast1938`, "off-map rows" (2026-10-06, the second gate of PLAN 3.4d, the suite in 10.3 min):
+    its wait of 60 s for the first frame and the fine coast of a paused 1938 page ran out, once in
+    138 tests. Alone it passed three of three (2.4 s), and in the next full run. The same wait as
+    `individuals1938` above. The load of the machine in that run is not known. The spec was not
+    changed.
   - `fire1938`: more than 10 of something drawn in a window of frames (9), and no fire dropped (6,614).
   - `handover1938`: a wait of 120 s. `labelFades1938`: the test's 240 s. `title`: 15 s for the
     title screen, and an autosave read before it was written.

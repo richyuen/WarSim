@@ -971,14 +971,16 @@ bombardment) participants join through their missions.
   type's `terrainMods.def` (PLAN 3.3a, ADR-137). × 1.15 for a shooter whose side has
   infantry, artillery and armour alive in the battle (PLAN 3.4a, ADR-139; the table of §6.1).
   × 1.3 on a volley at armour on forest or urban ground whose side has no infantry alive in
-  the battle (PLAN 3.4b, ADR-140).
+  the battle (PLAN 3.4b, ADR-140). × 0.7 for an AT gun whose enemy has artillery alive in the
+  battle (PLAN 3.4c, ADR-141). × 1.25 for armour at a target with no armour on plains,
+  grassland or desert whose side has no AT gun alive in the battle (PLAN 3.4d, ADR-142).
 - *Death:* an element at 0 is removed when its formation settles, and emits `ElementDestroyed`
   (element, unit, the slot it stood in; PLAN 2.4b). The event is a tick output, not state.
 - *Measured:*
   - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
     (square law: 0.268).
   - An 80-division battle costs 3.2 ms per tick.
-- *Deferred:* org and retreat (step 4), rules 3 and 4 of combined arms (§6.1), entrenchment, experience, night and
+- *Deferred:* org and retreat (step 4), entrenchment, experience, night and
   weather, and persistent or major battles (§5.4).
 1. **Target selection** (deterministic): each element scores enemy elements in range
    by `typeMatch(weapon, targetArmor) × proximity × threat` and picks a target with
@@ -1077,7 +1079,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   | 1 | The three arms | the shooter's side has infantry (`inf`, `mot`, `mech`), artillery (`art`) and armour (`armor_l/m/h`) present | fire × 1.15 | 3.4a, implemented |
   | 2 | The screen | the target is armour (by its arm, not its `armor` figure) on forest or urban ground and its side has no infantry present; holding or moving | damage taken × 1.3 | 3.4b, implemented (ADR-140) |
   | 3 | Guns on guns | the shooter is an AT gun (class `at`) and its enemy (the battle's formations its nation is at war with) has artillery present | fire × 0.7 | 3.4c, implemented (ADR-141) |
-  | 4 | The open | the shooter is armour, the target is not armoured and stands on plains, grassland or desert, and the target's side has no AT gun present | fire × 1.25 (proposed) | 3.4d |
+  | 4 | The open | the shooter is armour (by its arm), the target has no armour (its `armor` figure is 0: not a tank, not mechanised infantry) and stands on plains, grassland or desert, and the target's side has no AT gun (class `at`) present | fire × 1.25 | 3.4d, implemented (ADR-142) |
 
   Beside the table, in since PLAN 1.13 (§5.2): a shooter's `hard` against an armoured target
   and its `soft` against another, × 0.5 when the armour beats its piercing. That is "AT vs
@@ -1086,6 +1088,49 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   infantry division (24 battalions, 3 batteries, 1 AT battery) takes from a tank brigade,
   its one AT battery takes 73 to 76 % (75 to 77 % in a forest), its battalions 21 to 22 %,
   its howitzers 3 to 5 %; from a panzer division 85 to 89 %.
+  Measured before rule 4 (PLAN 3.4d; one volley of a light tank company at a holding
+  battalion, plains = 1): grassland 1.16 (the tank's 1.1 ÷ the ground's 0.95), desert 1.05,
+  forest 0.58 (0.8 ÷ 1.25 ÷ the battalion's own 1.1). So the terrain table already tells
+  open ground from close, for every target and whoever is beside it. What it did not do:
+  a division's AT gun changed what it took from the tanks (3.5 to 3.8 tanks in 48 hours
+  against 0.5 for a division with none) and nothing of what the tanks took from it
+  (1,312 men from either). Rule 4 is that.
+
+  *The matrix* (`tests/unit/combinedArmsMatrix.test.ts`, the AT of PLAN 3.4; seed 5, 48
+  hours, both holding, an attacker against an `infantry_div`; "men" are the battalions' men
+  lost, "to tanks" those the tanks' fire took, "by AT" the tanks the AT battery took):
+
+  | ground | attacker | defender | men | to tanks | tanks lost | by AT |
+  |--------|----------|----------|-----|----------|------------|-------|
+  | plains | tank brigade | the division | 1,356 | 1,319 | 3.76 | 2.73 |
+  | plains | tank brigade | no AT gun | 1,685 | 1,649 | 1.01 | 0 |
+  | plains | tank brigade | no howitzers | 1,372 | 1,326 | 3.48 | 2.73 |
+  | plains | tank brigade | rifles alone | 1,727 | 1,680 | 0.74 | 0 |
+  | plains | panzer division | the division | 3,261 | 2,684 | 1.96 | 1.63 |
+  | plains | panzer division | no AT gun | 3,944 | 3,363 | 0.30 | 0 |
+  | plains | panzer division | no howitzers | 3,330 | 2,739 | 1.89 | 1.63 |
+  | plains | panzer division | rifles alone | 4,041 | 3,450 | 0.25 | 0 |
+  | plains | tank brigade, its infantry destroyed | the division | 1,319 | 1,319 | 5.26 | 2.73 |
+  | plains | panzer division, its howitzers destroyed | the division | 2,538 | 2,334 | 2.70 | 2.34 |
+  | forest | tank brigade | the division | 797 | 767 | 3.17 | 2.39 |
+  | forest | tank brigade | no AT gun | 797 | 767 | 0.78 | 0 |
+  | forest | tank brigade | no howitzers | 807 | 771 | 3.00 | 2.39 |
+  | forest | tank brigade | rifles alone | 817 | 782 | 0.60 | 0 |
+  | forest | panzer division | the division | 1,952 | 1,546 | 1.70 | 1.43 |
+  | forest | panzer division | no AT gun | 1,952 | 1,546 | 0.26 | 0 |
+  | forest | panzer division | no howitzers | 1,992 | 1,578 | 1.66 | 1.43 |
+  | forest | panzer division | rifles alone | 2,004 | 1,590 | 0.22 | 0 |
+  | forest | tank brigade, its infantry destroyed | the division | 767 | 767 | 5.72 | 3.11 |
+  | forest | panzer division, its howitzers destroyed | the division | 1,496 | 1,344 | 2.35 | 2.06 |
+
+  What the test asks of it, each ratio to 3 % (48 hours cost a formation so little that the
+  dead hardly move it). Rule 1: the panzer division's tanks take × 1.15 of what they take
+  with its howitzers destroyed. Rule 2: in a forest the AT battery takes × 1.3 of tanks from
+  the brigade with no infantry (3.11 for 2.39), on plains × 1. Rule 3: the health the AT
+  battery takes off the panzer division's tanks is × 0.7 of that with the division's
+  howitzers destroyed. Rule 4: on plains the tanks take × 1.25 of men from the division with
+  no AT gun, in a forest × 1. "AT vs armour": the battery takes over 0.7 of the tanks lost,
+  and a division without it under 0.3 of what the whole one takes.
 - Tactical view: tank sprites with turret facing their target, muzzle flash, burning wrecks.
 
 ### 6.2 Naval
