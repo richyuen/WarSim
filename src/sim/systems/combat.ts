@@ -12,8 +12,8 @@
  * battalion draws more fire than a battery, so every element type bleeds at the same rate) ×
  * proximity, drawn with
  * hash32(seed, tick, element) and kept for COOLDOWN hours. Damage in target units is
- *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class, target cell)
- *       × supplyFactor(shooter) ÷ terrainDefence(target cell, if holding) ÷ target hpPerUnit
+ *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class and unit type, target cell)
+ *       × supplyFactor(shooter) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
  * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing.
  * All fire in an hour is computed before any loss is applied (simultaneous volleys), so the
  * order of elements cannot bias the result; total fire ∝ surviving strength (Lanchester square).
@@ -194,8 +194,9 @@ export function combatSystem(world: World): void {
         const ut = units[ec.unit[t]!]!;
         const cell = cellOf(tf);
         const terrain = world.cells.terrain[cell]!;
-        const atk = TERRAIN_ATK[terrain]![us.cls] ?? 1;
-        const def = f.moving[tf] === 1 ? 1 : (TERRAIN_DEF[terrain] ?? 1);
+        // The ground the target stands on, by the shooter's class and by its unit type (PLAN 3.3a).
+        const atk = (TERRAIN_ATK[terrain]![us.cls] ?? 1) * us.terrainAtk[terrain]!;
+        const def = f.moving[tf] === 1 ? 1 : (TERRAIN_DEF[terrain] ?? 1) * ut.terrainDef[terrain]!;
         const bf = world.buffs;
         // Combat efficiency (PLAN 1.22; 0 = unset, e.g. toy nations, counts as 1).
         const ce = world.nations.cols.efficiency[f.nation[sf]!] || 1;

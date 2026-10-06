@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-137 · 2026-10-06 · accepted — A unit type's own figures for the ground are in a volley, beside its class's (PLAN 3.3a)
+
+- **Context:** PLAN 3.3, "terrain modifiers for tracked mobility and combat". Read first what
+  was there. In since PLAN 1.11 and 1.13: the move cost by mobility class (`moveCost.tracked`
+  of `data/terrain.json`, read by the march and the route), the fire by unit class
+  (`attack.armor_l` … of the same table) and the ground's defence for a target that holds.
+  So a panzer division already took less from infantry in a forest than on plains. Not in:
+  `terrainMods {atk, def, speed}` of each unit type in `data/units/land.json`. The schema
+  checks it and nothing read it: infantry's 1.1 and the AT gun's 1.15 in a forest, the
+  heavy tank's 0.8 in a marsh, the cavalry's 0.9 in a forest. This is the `atk` and the
+  `def`; the `speed` is PLAN 3.3b.
+- **Decision:** damage × the shooter's unit type's `atk` for the ground the target stands on,
+  ÷ the target's unit type's `def` for that ground when its formation holds. Both multiply
+  the class table's figures (`UnitRule.terrainAtk`, `.terrainDef`: by terrain, 1 where the
+  data has none, made once from the data).
+  - *Whose ground:* the target's, for both, as the class table since PLAN 1.13. SPEC §5.2
+    says "terrain (attacker and defender)": the shooter's own ground is still not read. Two
+    formations in contact are 1.5 cells apart at most, and a second cell's figure would make
+    a tank in a wood firing out of it worse than one in the open firing in, which is not
+    plainly right. Left as it was.
+  - *The cover is the holder's:* a formation on the move has no `def` of its unit types, as
+    it has none of the ground (PLAN 1.13).
+  - *No number changed.* SPEC §6.1 said "big bonus on plains/grassland/desert" for armour;
+    the table has 1.1 on grassland, 1.05 in the desert and nothing on plains. The prose is
+    corrected, not the table (ADR-58).
+- **What the tables give** (the same battle on two grounds, `tests/unit/terrainCombat.test.ts`):
+  a panzer division of 1938 against a holding infantry division takes 0.59 of its plains
+  toll in a forest in 48 hours (1,723 men for 2,921; the tables' bounds: 0.52 to 0.73), and pays the same (812 for 804);
+  the class table alone had that test green before the rule. What was red: the volleys of
+  each of the five pairs of the test (e.g. the AT gun's fire in a forest, 1 where 1.05 was
+  due), and infantry holding a forest against infantry: 0.805 of its loss on plains before
+  (1 ÷ 1.25), 1 ÷ 1.375 now.
+- **The pin moved:** 9dd4093d → 037e1db2 (seed 99, one year): infantry and AT guns are in
+  most battles, and forest and urban ground under many.
+- **Saves:** no state added.
+- **Not done:** the `speed` (PLAN 3.3b); the shooter's ground (above); how much of a year's
+  fire the rule touches was not counted; tick time not measured (two multiplications a
+  volley, the figures indexed by the terrain's number).
+
 ### ADR-136 · 2026-10-06 · accepted — Breakdowns: with no supply and no org a formation on engines loses its vehicles and towed guns; org and fuel on the formation panel (PLAN 3.2d)
 
 - **Context:** PLAN 3.2's AT: "unsupplied armour slows, then loses org, then strength". The

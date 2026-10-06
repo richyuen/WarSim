@@ -133,6 +133,13 @@ export interface UnitRule {
   hpPerUnit: number;
   /** Fuel an element of it burns in an hour on the march (`fuelPerHour` of the unit data). */
   fuel: number;
+  /**
+   * Its own figures for the ground (PLAN 3.3a; `terrainMods` of the unit data), by terrain, 1
+   * where it has none: its fire at a target on that ground, and the fire it takes holding it.
+   * They multiply the class's figures of `data/terrain.json`.
+   */
+  terrainAtk: readonly number[];
+  terrainDef: readonly number[];
 }
 export interface ScenarioRules {
   templates: readonly TemplateRule[];

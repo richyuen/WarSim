@@ -6960,3 +6960,34 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (three of five since the last one, with 3.2 ticked).
 - **Next:** PLAN 3.3 (terrain modifiers for tracked mobility and combat).
 - **Gate:** green on the second run (code: typecheck, lint, unit 791, the ten-year tests 12, build, e2e in full 139, parity). The first run failed at e2e in `tickClock` alone (a wait of 3 s for a frame, the toy world; alone it passed three times in a row; logged in BLOCKERS, the spec not changed).
+
+## 2026-10-06 — PLAN 3.3a: a unit type's own figures for the ground, in combat (ADR-137)
+
+- **Read first:** what PLAN 3.3 names was mostly there. The tracked move cost (PLAN 1.11),
+  the fire by unit class and the ground's defence (PLAN 1.13) are read from
+  `data/terrain.json`. `terrainMods {atk, def, speed}` of each unit type was checked by the
+  schema and read by nothing. 3.3 is split: 3.3a the `atk` and `def` in combat (this), 3.3b
+  the `speed` on the march.
+- **Changed:** `UnitRule.terrainAtk`, `.terrainDef` (by terrain, from the unit data);
+  `combat.ts`: the shooter's unit type's `atk` and the holding target's unit type's `def`
+  multiply the class table's figures. The ground is the target's, as before.
+- **Tests:** `tests/unit/terrainCombat.test.ts` (7), written first. Five compare the first
+  hour's volleys of one battle on plains and on another ground, one for one, with the two
+  tables (red: the AT gun's fire in a forest 1 where 1.05 was due). One is infantry holding
+  a forest (red: 0.805 of its loss on plains, 0.727 due). The task's AT (a panzer division
+  against holding infantry: 0.59 of its plains toll in a forest, and the same price) was
+  green before the rule, on the class table alone: it is kept, and is not what proves 3.3a.
+- **My test was wrong twice, not the code:** it took the element with the lower id for the
+  attacker's (ids of destroyed formations' elements are used again; it asks the target's
+  formation now), and it expected the attacker of a forest to lose exactly what it loses on
+  plains (it loses a man more of 166: more of the defender lives to fire).
+- **The pin moved:** 9dd4093d → 037e1db2 (ADR-137).
+- **SPEC §6.1 corrected:** "big bonus on plains/grassland/desert" was never in the table
+  (1.1, 1.05 and nothing on plains). The prose says what the table has; no number changed.
+- **Not done:** the shooter's own ground (ADR-137 says why not); nothing drawn or on the
+  page, so no picture and no spec run; tick time not measured (two multiplications a
+  volley); no sweep (ADR-58).
+- **Review pass:** not due (three of five since the last one; 3.3 is not ticked).
+- **Next:** PLAN 3.3b (the unit types' `speed` for the ground on the march; ticks 3.3, so
+  the full e2e).
+- **Gate:** green (code: typecheck, lint, unit 798, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).

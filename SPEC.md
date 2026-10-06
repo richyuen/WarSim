@@ -964,6 +964,9 @@ bombardment) participants join through their missions.
   - Weights are tabled per (formation, unit type), and the draw is a binary search.
 - *Damage* (target units) = eff × fullness × 0.1 × terrain attack × (0.5 + 0.5 supply) ÷ terrain
   defence (when the target holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys.
+  The terrain is the target's cell. Attack is the shooter's class figure of `terrain.json` ×
+  its unit type's `terrainMods.atk`; defence is the ground's figure × the target's unit
+  type's `terrainMods.def` (PLAN 3.3a, ADR-137).
 - *Death:* an element at 0 is removed when its formation settles, and emits `ElementDestroyed`
   (element, unit, the slot it stood in; PLAN 2.4b). The event is a tick output, not state.
 - *Measured:*
@@ -1044,8 +1047,14 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   loses a tenth a day of its vehicles and towed guns (the elements that burn fuel and are not
   counted in men), besides the attrition of every formation without supply; its men go at
   that attrition alone. The formation panel has the org and the fuel the template burns.
-- Terrain: big bonus on plains/grassland/desert, heavy penalties in forest, marsh, mountains
-  and urban. Tracked mobility costs from the terrain table.
+- Terrain: a small bonus on grassland and in the desert, heavy penalties in forest, marsh,
+  mountains and urban. Tracked mobility costs from the terrain table.
+  *Implemented:* the move cost by mobility class (PLAN 1.11) and the fire by unit class
+  (PLAN 1.13), both of `data/terrain.json`: a light tank's fire is × 1.1 on grassland, 0.8 in
+  forest, 0.65 in a city, 0.55 in a marsh, 0.5 in mountains, and tracks cross a forest at
+  half their pace. *(PLAN 3.3a, ADR-137):* a unit type's own `terrainMods.atk` and `.def`
+  multiply those in a volley (infantry holding a forest takes ÷ 1.1 more, the heavy tank's
+  fire in a marsh is × 0.8 more). *Not yet:* its `speed` (PLAN 3.3b).
 - Combined arms: armour is vulnerable to AT guns, CAS and heavy armour, and is strong vs
   infantry in the open. Infantry screens armour in urban/forest terrain. Artillery suppresses AT.
   Bonuses apply only when the elements are actually present in the battle.
