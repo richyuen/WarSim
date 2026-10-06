@@ -2635,12 +2635,35 @@ quick sweep as a smoke test.
       of the view, not the stroke's middle (which missed the spots), and failed first too
       (9 points). The screenshots are taken anew: no spot in Italy.
     - Not changed: a Kill with no heir (ADR-113).
-  - [ ] 2.17d **Revive after a Kill.** `reviveOnCores` is false 30 days after a Kill, and the
+  - [x] 2.17d **Revive after a Kill.** `reviveOnCores` is false 30 days after a Kill, and the
     button says nothing: the cause to be read (`revival.ts`: a cooldown, cores gone with the
     fragments, no core land). What God Mode goes past, and a reason of its own for what it
     does not.
     AT: e2e through the God tab, failing first: Kill, then Revive: the nation lives on its
     core land, or the panel says why not.
+    - Done 2026-10-06 (ADR-121). Two causes. The Kill took the cores: a nation founded is the
+      core of its provinces, and France kept a core on 25 of 170, none in France. The dead
+      nation now keeps a claim on them. And the cooldown of two years, which the panel did
+      not name ("there is nothing here to do it with"): `whyNotRevive` gives the reason
+      (alive, no core land, no revival left, the cooldown). God Mode goes past neither the
+      cooldown nor the count: `revival.test.ts` holds the command to both.
+    - `tests/unit/reviveAfterKill.test.ts` (failed first: 145 provinces lost, reason 12) and
+      `godUi1938.spec.ts`, the sixth test (failed first: 25 provinces): the Kill, the refusal
+      in words 30 days on from Italy's God tab, then the rest of the two years (16,800 ticks
+      in 26 s) and the revival: France holds Paris and has its name on the map.
+      `docs/evidence/2.17/revive-refused-cooldown.png`, `revived-after-cooldown.png`.
+  - [ ] 2.17d2 **The heir outlives the revival on cells outside any province.** Seen in the
+    unit test of 2.17d: France killed and revived has 10,451 of its 10,473 cells; the other
+    22 lie in no province (slivers of coast), went to the heir at the Kill and stay nation
+    104's, which lives on them without a province. To be decided: a revival takes from a
+    holder it leaves without a province's centre the cells that holder owns outside any
+    province (for every revival, or for God Mode's alone: the pin says which moves it); and
+    what becomes of a holder left with no cell. Seen too, in `revived-after-cooldown.png`
+    (two years of war between the Kill and the revival): patches of other nations inside
+    France. A revival takes a province from the owner of its centre; what a third nation owns
+    of that province stays with it. To be looked at with this, not decided.
+    AT: unit, failing first: France killed and revived at the end of its cooldown: no nation
+    the Kill founded owns a cell outside any province.
   - [ ] 2.17e **What is left of the list above.** The empty rename in a world without a
     nation table (ADR-109): refused, or the name kept. The God tab left open on a nation
     that has just died: what it shows and what its buttons send.

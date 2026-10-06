@@ -204,10 +204,18 @@ export const Refusal = {
   NoAlliance: 10,
   /** No such war, alliance, province, formation, city or buff. */
   NoSuch: 11,
-  /** Nothing to do it with: a revival without core land, a revolt of a province that has no holder. */
+  /** Nothing to do it with: a revolt of a province that has no holder. */
   NoEffect: 12,
   /** A Kill of the only living nation, which owns the centre of no province: nobody its land could go to. */
   LastNation: 13,
+  /** A revival of a nation that lives. */
+  Alive: 14,
+  /** A revival of a nation that has returned as often as one may. */
+  NoRevivals: 15,
+  /** A revival before the cooldown after the nation's death is over. */
+  Cooldown: 16,
+  /** A revival of a nation with a core on no province that another nation holds. */
+  NoCoreLand: 17,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

@@ -24,6 +24,10 @@ const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.NoSuch]: 'refusal.noSuch',
   [Refusal.NoEffect]: 'refusal.noEffect',
   [Refusal.LastNation]: 'refusal.lastNation',
+  [Refusal.Alive]: 'refusal.alive',
+  [Refusal.NoRevivals]: 'refusal.noRevivals',
+  [Refusal.Cooldown]: 'refusal.cooldown',
+  [Refusal.NoCoreLand]: 'refusal.noCoreLand',
 };
 
 export interface GodTabProps {
@@ -53,7 +57,9 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, refusal, 
   const [revive, setRevive] = useState(0);
   const [armKill, setArmKill] = useState(false);
   const tgt = target !== 0 && others.some((o) => o.id === target) ? target : (others[0]?.id ?? 0);
-  const myWars = wars.filter((w) => w.attackers.includes(n) || w.defenders.includes(n));
+  // The nation chosen while it is dead: one revived since is no longer in the list.
+  const toRevive = dead.some((d) => d.id === revive) ? revive : (dead[0]?.id ?? 0);
+  const myWars =wars.filter((w) => w.attackers.includes(n) || w.defenders.includes(n));
   const nameOf = (id: number): string => {
     const o = nations.find((x) => x.id === id);
     return o ? displayName(o.name) : `#${id}`;
@@ -138,14 +144,14 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, refusal, 
 
       {dead.length > 0 ? (
         <div class="god-row">
-          <select data-testid="god-revive-target" value={revive || dead[0]!.id} onChange={(e) => setRevive(Number((e.currentTarget as HTMLSelectElement).value))}>
+          <select data-testid="god-revive-target" value={toRevive} onChange={(e) => setRevive(Number((e.currentTarget as HTMLSelectElement).value))}>
             {dead.map((d) => (
               <option key={d.id} value={d.id}>
                 {displayName(d.name)}
               </option>
             ))}
           </select>
-          {btn('god-revive', t('god.revive'), () => onCommand({ kind: 'reviveNation', nation: revive || dead[0]!.id }))}
+          {btn('god-revive', t('god.revive'), () => onCommand({ kind: 'reviveNation', nation: toRevive }))}
         </div>
       ) : null}
       <div class="god-row">

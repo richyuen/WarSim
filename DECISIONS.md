@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-121 · 2026-10-06 · accepted — Revive after a Kill: the dead nation keeps a claim on its core land, and a Revive that is refused says which rule refuses it (PLAN 2.17d)
+
+- **Context:** the critic's R2-B8: Revive 30 days after a Kill of France did nothing and said
+  nothing. Since ADR-117 it said "there is nothing here to do it with", which names no cause.
+  There were two (a headless run, 1938, seed 1938, the Kill at tick 0):
+  - *The cooldown.* `eliminateNation` sets `revivalAt` to the death + two years
+    (`REVIVAL_COOLDOWN`), and `reviveNation` refuses before it.
+  - *The cores.* `spawnRebels` makes a nation it founds the core of its provinces. A Kill
+    founds nations on the dead nation's own land, so France kept a core on 25 of 170 provinces
+    (those handed to a neighbour or to the heir as islands, none in France), Yugoslavia on 1
+    of 276, Poland on 1 of 19. After the cooldown the Revive "worked": France on 413 cells of
+    10,473, Yugoslavia on 1 cell.
+- **Decision:**
+  - *A Kill leaves the dead nation a claim* (`Provinces.addClaim`) on every province it was
+    the core nation of and that a founded nation took (`killNation`, before
+    `eliminateNation`). The founded nation stays the core. The dead nation is then a dead
+    claimant there like Ethiopia in Italian East Africa: it returns by God Mode's Revive, by
+    a revolt on that land, or by the collapse of its holder, each within the rules.
+  - *God Mode goes past no rule of a revival:* not the cooldown, not the count
+    (`revivalsLeft`). `tests/unit/revival.test.ts` (PLAN 1.20) holds the `reviveNation`
+    command itself to both, and no test is weakened.
+  - *A Revive that is refused says which rule* (`whyNotRevive`, four new `Refusal`s): the
+    nation is alive; no other nation holds a province it has a core on; it has returned as
+    often as a nation may; it died less than two years ago. In that order: the reason that
+    time does not mend comes first, so a world without provinces (the toy world) is told "no
+    core land" and not a count it never used.
+  - The God tab's list of the dead: the nation chosen is sent only while it is in the list
+    (one revived since fell back to nothing and was sent as it was).
+- **Rejected:**
+  - *God Mode ignores the cooldown.* It is what a player who has just killed a nation may
+    want, and AoC states no cooldown (PARITY row 19, a deviation PROMPT asks for). It breaks
+    the test of PLAN 1.20, and a rule God Mode may break needs a second command or a flag in
+    the command log. Left to the user: the panel now says what stands in the way.
+  - *The dead nation stays the core, the founded nation gets the claim.* A Kill's step 1
+    gives a province back to its living core nation; the founded nations' own Kill, unrest
+    and coring read `core`. The claim changes none of that.
+  - *A date in the words* ("not before 1 January 1940"). A `Refusal` is a number in an event;
+    the text has no argument. The cooldown is the same two years for every nation.
+- **What it changes outside God Mode:** nothing in a game without a Kill (the pin did not
+  move: 7fc8e685). After a Kill, a revolt in a founded nation, or its collapse, brings the
+  dead nation back once its cooldown is over, instead of founding another.
+- **Measured** (`tests/unit/reviveAfterKill.test.ts`, 1938, seed 99): France, 10,473 cells and
+  170 core provinces held, killed at tick 0 and revived at tick 17,520: all 170 provinces
+  held again, 10,451 cells. The 22 missing lie in no province and stay the heir's (PLAN
+  2.17d2). Through the God tab with two years of the world between (`godUi1938.spec.ts`):
+  10,036 cells, Paris France's, the name on the map.
+- **Tests, seen to fail first:** the unit test (145 provinces without France's core after the
+  Kill; reason 12, `NoEffect`, for a living nation) and the sixth test of
+  `tests/e2e/godUi1938.spec.ts` (25 provinces with a core of France after the Kill, with
+  `tick.ts` and `revival.ts` of HEAD put back).
+
 ### ADR-120 · 2026-10-05 · accepted — A Kill gives a cell of a neighbour's province to the neighbour, not to the heir (PLAN 2.17c2)
 
 - **Context:** `docs/evidence/2.17/killed-painted-0d.png` as PLAN 2.17c left it: France, painted

@@ -822,6 +822,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     nation's, not the heir's (ADR-119). One in a province whose centre a living nation owns
     goes to that nation (ADR-120); the heir takes those outside any province. The Kill of the only living nation is carried out if
     it owns a province's centre (its land founds what follows) and refused if it owns none.
+    The dead nation keeps a claim on each province it was the core nation of and a founded
+    nation took (the founded nation is the core there): it returns on them as any dead
+    claimant does, by a revolt or by God `reviveNation` once its cooldown is over (ADR-121).
   - *Death rule:* losing the capital while holding no core land is death; the capturer annexes
     the rest.
 - **Cores**: provinces list core nations. Revival spawns a dead nation from its cores
@@ -1513,7 +1516,8 @@ on screen.
   section `world.names`), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God
   Kill: the nation dies, its land goes back to claimants or founds at most five nations, and
   no war starts: ADR-99), `reviveNation` (within the revival
-  rules), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
+  rules; refused with the reason: it lives, no other nation holds land it has a core on, no
+  revival left, the cooldown: ADR-121), `spawnRevolt`, `forceBreakthrough`, `grantBuff`, `setAi` / `aiEnabled`,
   `setIncomeBonus`, plus the edits from 1.17–1.24. `sim.inspect()` returns a JSON world summary
   (tests, critic). Owned-cell counts (`nations.cells`) are maintained by `World.setOwner`.
   `spawnFormation {nation, x, y, strength, template?}` (PLAN 2.5, ADR-68): with a template of

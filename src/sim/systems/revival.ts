@@ -32,7 +32,9 @@
  *   4. With no heir (the nation owns the centre of no province) its land goes to the living
  *      nation with the most cells beside it (`leaveToNeighbour`, ADR-113).
  * The Kill of the only living nation is refused if it has no province to found a nation in
- * (`whyNotKill`, ADR-119).
+ * (`whyNotKill`, ADR-119). The dead nation keeps a claim on every province it was the core
+ * nation of and a founded nation took: it can return there, by God Mode after its cooldown
+ * (`whyNotRevive` says why not) or through a revolt, as any dead claimant (ADR-121).
  *
  * Capital loss without cores (AoC's death rule, deferred in ADR-28): a nation that loses its
  * capital while holding no province it has a core on dies; the capturer annexes what it held.
@@ -92,6 +94,25 @@ export function reviveNation(world: World, n: number, area: number[], war = true
 /** God Mode revival: all provinces where n has a core and someone else holds the land. */
 export function reviveOnCores(world: World, n: number): boolean {
   return reviveNation(world, n, world.provinces.provincesOf(n));
+}
+
+/**
+ * Why God Mode may not revive nation n (PLAN 2.17d, ADR-121), the reason that time does not mend
+ * first: it lives; no other nation holds a province it has a core on; it has returned as often
+ * as a nation may; its cooldown is not over. God Mode goes past none of the rules of a revival.
+ */
+export function whyNotRevive(world: World, n: number): Refusal {
+  if (!world.nations.has(n)) return Refusal.NoNation;
+  const nc = world.nations.cols;
+  if (nc.living[n] === 1) return Refusal.Alive;
+  const centre = navOf(world).graph.centre;
+  const held = (p: number): boolean => {
+    const h = world.cells.owner[centre[p] ?? -1] ?? 0;
+    return h !== 0 && h !== n;
+  };
+  if (!world.provinces.provincesOf(n).some(held)) return Refusal.NoCoreLand;
+  if (nc.revivalsLeft[n] === 0) return Refusal.NoRevivals;
+  return world.tick < nc.revivalAt[n]! ? Refusal.Cooldown : Refusal.None;
 }
 
 /**
@@ -213,6 +234,9 @@ function killNation(world: World, c: number, rest: number[], capitalProvince: nu
     cellsIn.set(province[cell]!, (cellsIn.get(province[cell]!) ?? 0) + 1);
   }
   const cellsOf = (ps: number[]): number => ps.reduce((a, p) => a + (cellsIn.get(p) ?? 0), 0);
+  // The land c is the core nation of: a nation founded on it becomes its core (`spawnRebels`),
+  // and c keeps a claim there, on which it can return (ADR-121).
+  const cored = rest.filter((p) => pv.core[p] === c);
   const received = new Map<number, number>();
   const give = (area: number[], to: number): void => {
     defect(world, area, c, to);
@@ -339,6 +363,7 @@ function killNation(world: World, c: number, rest: number[], capitalProvince: nu
   }
   for (const [to, got] of [...returned].sort((a, b) => a[0] - b[0])) world.out.emit(world.tick, EventKind.LandCeded, to, c, got.sx / got.cells, got.sy / got.cells);
   if (heir === 0) leaveToNeighbour(world, c);
+  for (const p of cored) pv.addClaim(p, c);
   eliminateNation(world, c);
 }
 

@@ -6436,3 +6436,42 @@ No rule changed and nothing on screen changed. One task came out of it.
   north is one green, no spot of Free Ain; Free Paris, Free Ain, Free Gironde on France's land.
 - **Not done:** no sweep (ADR-58); tick time not measured (the change is in a command's path).
 - **Next:** PLAN 2.17d, Revive after a Kill.
+
+## 2026-10-06 — PLAN 2.17d: Revive after a Kill (ADR-121)
+
+- **Two causes,** read from a headless run before any code (1938, the Kill at tick 0):
+  - the cooldown: `revivalAt` is the death + two years, and the panel's words named nothing
+    ("there is nothing here to do it with");
+  - the cores: `spawnRebels` makes a founded nation the core of its provinces, so the Kill
+    left France a core on 25 of 170 provinces (none in France), Yugoslavia on 1 of 276, Poland
+    on 1 of 19. After the cooldown the Revive gave France 413 cells of 10,473.
+- **Changed:**
+  - `killNation`: the dead nation keeps a claim on each province it was the core of.
+  - `whyNotRevive` (`revival.ts`) and four `Refusal`s with their words: alive, no core land,
+    no revival left, the cooldown. God Mode goes past none of the rules: `revival.test.ts`
+    holds the command to the cooldown and the count.
+  - `GodTab`: the dead nation chosen is sent only while it is in the list.
+- **Tests, seen to fail first:** `tests/unit/reviveAfterKill.test.ts` (145 provinces without
+  France's core; reason 12 for a living nation). `godUi1938.spec.ts`, the sixth test (25
+  provinces, with `tick.ts` and `revival.ts` of HEAD put back).
+- **The e2e runs the two years:** 16,800 ticks in 26 s in the page, so the revival is in the
+  spec and not only in the unit test (the whole test: 36 s).
+- **Gotchas:**
+  - A command sent before the first step is applied at tick 0: `revivalAt` is 17,520, not 17,521.
+  - "No nation the Kill founded lives after the revival" is false twice over: the heir keeps
+    22 cells outside any province (PLAN 2.17d2, added), and Free Oran had taken land in French
+    Morocco within 30 days. The test asks that none owns a cell of a province of France's core.
+  - France's name was not in `nationLabels` at 10 and 6 px a cell over Paris and is at 3: the
+    name stands on its largest piece, Algeria. Not a defect of the revival.
+- **Run by hand** (a part, ADR-87): `godUi1938`, `godMode1938`, `occupation1938`,
+  `editorDrag1938`, `player1938` with `--project chromium`: 23 green (1.3 min).
+- **Looked at:** `docs/evidence/2.17/revive-refused-cooldown.png` (Italy's God tab: "Not done:
+  the nation died less than two years ago; none returns sooner.") and
+  `revived-after-cooldown.png` (1 January 1940: France blue from the Channel to the
+  Mediterranean and in Algeria). **Seen, not changed:** patches of other nations inside
+  France after two years of war; a revival takes a province from the owner of its centre
+  only. Noted under PLAN 2.17d2.
+- **Not done:** no sweep (ADR-58); tick time not measured (the change is in a command's path).
+- **Next:** PLAN 2.17d2, then 2.17e (which ticks 2.17 and takes the whole e2e suite).
+- **The pin did not move** (7fc8e685).
+- **Gate:** green (code: typecheck, lint, unit 745, the ten-year tests 11, build, the changed spec's 6, parity; no full e2e for a part, ADR-87).

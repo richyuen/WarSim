@@ -9,7 +9,7 @@ import { declareWar, makePeace, offerPeace, whyNotWar } from './systems/war';
 import { canJoin, leaveAlliance, noWarAmong, proposeAlliance } from './systems/alliances';
 import { annexNation, makePuppet, releasePuppet } from './systems/puppets';
 import { removeCity, setCapital, setCore, spawnCity } from './scenarioEdit';
-import { collapseNation, reviveOnCores, whyNotKill } from './systems/revival';
+import { collapseNation, reviveOnCores, whyNotKill, whyNotRevive } from './systems/revival';
 import { MAX_CE, MIN_CE } from './systems/efficiency';
 import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
@@ -149,8 +149,7 @@ function applyCommand(world: World, cmd: Command): Refusal {
       return why;
     }
     case 'reviveNation':
-      if (!world.nations.has(cmd.nation)) return Refusal.NoNation;
-      return done(reviveOnCores(world, cmd.nation));
+      return whyNotRevive(world, cmd.nation) || done(reviveOnCores(world, cmd.nation));
     case 'collapseNation': {
       const why = whyNotNation(world, cmd.nation) || whyNotKill(world, cmd.nation);
       if (!why) collapseNation(world, cmd.nation, true); // God Mode Kill: everything fragments

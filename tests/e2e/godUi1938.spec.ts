@@ -6,7 +6,7 @@ import { EventKind } from '../../src/shared/events';
 import type { Inspection } from '../../src/shared/protocol';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
-import { KILL_STATES } from '../../src/sim/systems/revival';
+import { KILL_STATES, REVIVAL_COOLDOWN } from '../../src/sim/systems/revival';
 
 // PLAN 1.32b AT: every God action is driven through the God tab of the nation panel (and its map
 // tools), and its effect is read back via `sim.inspect()`. Paused: commands apply at once.
@@ -391,4 +391,62 @@ test('a nation painted over a neighbour, renamed and killed holds nothing and ha
     await page.waitForTimeout(800);
     await page.screenshot({ path: path.join(out, `killed-painted-${days}d.png`) });
   }
+});
+
+// PLAN 2.17d (the critic's R2-B8): Revive 30 days after a Kill did nothing, and the reason given
+// was none ("there is nothing here to do it with"). The Kill had taken France's cores, and the
+// cooldown after a death was not said. Seen from Italy's God tab: France's own is PLAN 2.17e's.
+test('Revive after a Kill says why not: the cooldown; after it the nation lives on its core land', async ({ page }, info) => {
+  test.setTimeout(300_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const [FRA, ITA] = [id('FRA'), id('ITA')];
+  const cells = nation(await inspect(page), FRA).cells;
+
+  await page.getByTestId('god-btn').click();
+  await page.evaluate((f) => window.__warsim!.view!.select(f), FRA);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(FRA));
+  await page.getByTestId('tab-god').click();
+  await page.getByTestId('god-kill').click();
+  await page.getByTestId('god-kill').click();
+  await expect.poll(async () => nation(await inspect(page), FRA).living).toBe(false);
+  // France has a core on Paris still: the nation founded there did not take it for good.
+  const cores = (await page.evaluate(() => window.__warsim!.sim.inspect(true))).cores;
+  expect(cores.filter((c) => c.nations.includes(FRA)).length, 'provinces France has a core on after the Kill').toBeGreaterThan(50);
+
+  // 30 days later, from Italy's God tab.
+  await page.evaluate((h) => window.__warsim!.sim.step(h), 24 * 30);
+  await page.evaluate((n) => window.__warsim!.view!.select(n), ITA);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(ITA));
+  await page.getByTestId('tab-god').click();
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  await page.getByTestId('god-revive-target').selectOption(String(FRA));
+  await page.getByTestId('god-revive').click();
+  await expect(page.getByTestId('god-refusal')).toContainText('died less than two years ago');
+  expect(nation(await inspect(page), FRA).living).toBe(false);
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.17') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.screenshot({ path: path.join(out, 'revive-refused-cooldown.png') });
+
+  // The rest of the two years of the cooldown (16,800 ticks, 26 s): then France returns.
+  const started = Date.now();
+  await page.evaluate((h) => window.__warsim!.sim.step(h), REVIVAL_COOLDOWN - 24 * 30);
+  console.log(`the cooldown: ${REVIVAL_COOLDOWN - 24 * 30} ticks in ${((Date.now() - started) / 1000).toFixed(0)} s`);
+  await page.getByTestId('god-revive-target').selectOption(String(FRA));
+  await page.getByTestId('god-revive').click();
+  await expect.poll(async () => nation(await inspect(page), FRA).living).toBe(true);
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  await lookAt(page, 2.35, 48.86, 10);
+  await expect.poll(() => page.evaluate(() => window.__warsim!.view!.nationAt(700, 400)), 'who holds Paris').toBe(FRA);
+  const back = nation(await inspect(page), FRA).cells;
+  console.log(`France: ${cells} cells before the Kill, ${back} after the revival`);
+  expect(back).toBeGreaterThan(cells * 0.5);
+  await page.evaluate(() => window.__warsim!.view!.select(0));
+  // Its name is on the map again.
+  await lookAt(page, 2.5, 44, 3);
+  await expect.poll(() => page.evaluate((f) => (window.__warsim!.view!.draw(), window.__warsim!.view!.nationLabels.filter((l) => l.id === f).map((l) => l.text)), FRA), 'the name on the map').toEqual(['France']);
+  await page.waitForTimeout(1_500);
+  await page.screenshot({ path: path.join(out, 'revived-after-cooldown.png') });
 });
