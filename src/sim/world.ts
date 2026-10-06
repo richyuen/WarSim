@@ -112,6 +112,8 @@ export interface TemplateRule {
   /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked) and march speed, km/h. */
   mobility: number;
   speedKmh: number;
+  /** Fuel its elements burn in an hour on the march (PLAN 3.2b; `fuelPerHour` of the unit data × count). */
+  fuel: number;
   /** Elements per unit type (PLAN 1.13): unit = index into ScenarioRules.units. */
   elements: readonly { unit: number; count: number }[];
   /** The techs a nation must know to raise it (PLAN 3.1a): those of its unit types, with their prerequisites. */

@@ -18,7 +18,8 @@
  * Formations (hourly): a formation on a cell of its own bloc's network, or of the network of a
  * bloc fighting on its side of a war (PLAN 1.42b: allies feed each other's armies while they
  * fight together), gains SUPPLY_RATE per hour
- * towards 1; otherwise it loses SUPPLY_RATE towards 0. At 0 it attrits: (BASE_ATTRITION_PER_DAY +
+ * towards 1; otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
+ * template's fuel besides (PLAN 3.2b). At 0 it attrits: (BASE_ATTRITION_PER_DAY +
  * terrain supplyAttrition) of its strength per day, applied hourly.
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
@@ -31,6 +32,12 @@ export const SUPPLY_REFRESH_HOURS = 12;
 /** Per hour; a power of two so the level steps exactly between 0 and 1 (8 h to drain or refill). */
 export const SUPPLY_RATE = 1 / 8;
 export const BASE_ATTRITION_PER_DAY = 0.02;
+/**
+ * What an hour on the march off the network takes more of the supply level, per unit of the
+ * template's fuel (PLAN 3.2b): the panzer division of 1938 (38 an hour) is dry in 4.1 h on the
+ * march and in 8 standing. On its network a formation is refilled faster than it burns.
+ */
+export const MARCH_BURN = SUPPLY_RATE / 40;
 const TERRAIN_ATTRITION = terrainJson.terrain.map((t) => t.supplyAttrition);
 
 /** Supply bloc of a nation: its overlord's id, or its own when it has none. */
@@ -189,7 +196,8 @@ export function supplySystem(world: World): void {
     const bloc = blocOf(world, c.nation[id]!);
     const inSupply = net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, c.nation[id]!));
     const s = c.supply[id]!;
-    c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE);
+    const burn = c.moving[id] === 1 && c.engaged[id] !== 1 ? MARCH_BURN * (world.rules?.templates[c.template[id]!]?.fuel ?? 0) : 0;
+    c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE - burn);
     if (c.supply[id] === 0) {
       const perHour = (BASE_ATTRITION_PER_DAY + (TERRAIN_ATTRITION[terrain[cell]!] ?? 0)) / 24;
       bleedFormation(world, id, perHour);

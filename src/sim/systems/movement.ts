@@ -21,7 +21,7 @@
  */
 import { EventKind } from '../../shared/events';
 import { atan2 } from '../core/dmath';
-import { MOVE_COST, stepKm, type MobilityId } from '../nav/grid';
+import { Mobility, MOVE_COST, stepKm, type MobilityId } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
 import { findRoute } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
@@ -31,6 +31,13 @@ import { blocOf } from './supply';
 
 /** Share of each hour a formation marches (rest, forming up, roads): infantry ≈ 29 km/day. */
 export const MARCH_DUTY = 0.3;
+/**
+ * The share of its speed a formation that moves on engines keeps with no supply (PLAN 3.2b):
+ * between that and all of it by its supply level. A panzer division of 1938 without fuel goes
+ * at a rifle division's 4 km/h. A formation with a manoeuvre element on foot goes at that
+ * element's pace, fuel or none.
+ */
+export const DRY_SPEED = 0.25;
 /** A target cell unreachable from the formation snaps to a reachable one within this many cells. */
 export const TARGET_SNAP_CELLS = 3;
 export const REPATRIATE_CELLS = 80;
@@ -122,7 +129,8 @@ export function movementSystem(world: World): void {
       return;
     }
     const costRow = MOVE_COST[rule.mobility]!;
-    const kmPerHour = rule.speedKmh * MARCH_DUTY * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
+    const fuelled = rule.mobility === Mobility.foot ? 1 : DRY_SPEED + (1 - DRY_SPEED) * c.supply[id]!;
+    const kmPerHour = rule.speedKmh * MARCH_DUTY * fuelled * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
     let i = c.pathStep[id]!;
     let frac = c.stepFrac[id]!;
     let budget = 1; // hours this tick

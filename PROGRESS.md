@@ -6827,3 +6827,34 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due.
 - **Next:** PLAN 3.2b (the fuel rule, in a stash; the pin will move to 8498494a or near).
 - **Gate:** green (code: typecheck, lint, unit 779, the ten-year tests 12, build, parity; no e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 3.2b: fuel: the march burns supply off the network, and engines slow as they run dry (ADR-134)
+
+- **Found first:** a formation has one supply level and no `org`; `fuelPerHour` of the unit
+  data was read by nothing; the speed of a march is one line of `movement.ts` and nothing
+  else estimates it.
+- **Changed:**
+  - `TemplateRule.fuel` (`scenario1938.ts`): Σ `fuelPerHour` × count. Panzer division 38,
+    motorised 4.6, Soviet rifle division 3, on foot 0.
+  - `systems/supply.ts`: off the network, moving and not in contact: `MARCH_BURN` × fuel an
+    hour more (fuel/320).
+  - `systems/movement.ts`: mobility not foot: speed × (0.25 + 0.75 × supply) (`DRY_SPEED`).
+- **Tests:** `tests/unit/fuel.test.ts` (4): written first, three red on the rule before, the
+  fourth the guard that nothing changes on the network. The same pocket and the same orders
+  with the ring and without it; the infantry stands where it does in the fed game.
+- **The pin moved:** 0eb1fb78 → 8498494a (ADR-134).
+- **What the changed game found:** PLAN 3.2a and 3.2a2 above (a stack of ten divisions on one
+  cell in the 60-day tests of `deploy.test.ts`).
+- **Seen, not counted:** the head of an advance stands on ground that is not yet on its
+  network (the refresh is every 12 h), so armour slows there first. On day 60 of Germany
+  against Poland a panzer and a motorised division in contact are at supply 0.
+- **Not done:** org (3.2c), breakdowns and the panel (3.2d); no sweep (ADR-58); tick time not
+  measured (one multiplication more for a formation on the march, one for one off the
+  network).
+- **Gotcha:** a gate was started in the same step as the script that writes the documents and
+  moves the pin; the script failed in its heredoc and the gate ran on the old pin. A gate
+  starts after the tree is seen to be what it should be.
+- **Review pass:** not due (two of five since the phase review).
+- **Next:** PLAN 3.2c (org: a formation column that combat reads; every place that makes a
+  formation sets it to 1; what a save without the column loads as).
+- **Gate:** green (code: typecheck, lint, unit 783, the ten-year tests 12, build, parity; no e2e for a part, ADR-87). A run before it, started by mistake on the old pin, failed at the pin alone.

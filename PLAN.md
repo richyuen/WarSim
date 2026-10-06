@@ -2840,11 +2840,17 @@ quick sweep as a smoke test.
     - Done 2026-10-06 (ADR-133, which replaces the rule of ADR-132). A line with no room
       begins a file abreast of the lines that have: ten on one cell are three lines of four,
       three and three. Not state; the pin stands.
-  - [ ] 3.2b **Fuel: the march burns supply, and what moves on engines slows as it runs dry.**
+  - [x] 3.2b **Fuel: the march burns supply, and what moves on engines slows as it runs dry.**
     A fuel figure per template from `fuelPerHour` of the unit data. AT: unit, failing first:
     in a pocket a panzer division on the march is dry in half the time of one that stands and
     then moves at a quarter of its speed; a rifle division moves as before; on the network
     nothing changes.
+    - Done 2026-10-06 (ADR-134). `TemplateRule.fuel`; `MARCH_BURN` (fuel/320 an hour more, off
+      the network, on the march); `DRY_SPEED` 0.25 for what does not walk. No new state.
+      `tests/unit/fuel.test.ts` (4; three fail on the rule before). The pin: 0eb1fb78 →
+      8498494a.
+    - Not done: how often armour marches dry in a war was not counted; the AI does not know
+      of it (PLAN 3.5); nothing on the page (3.2d).
   - [ ] 3.2c **Org.** A formation column `org` 0..1 that combat reads; a formation with fuel
     in its template and no supply loses it, and gets it back in supply. AT: unit: the dry
     panzer division's org falls after its speed has, the rifle division's does not; its

@@ -167,6 +167,56 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-134 · 2026-10-06 · accepted — Fuel: off its network the march burns a formation's supply, and what moves on engines slows as it runs dry (PLAN 3.2b)
+
+- **Context:** PLAN 3.2's AT: "unsupplied armour slows, then loses org, then strength".
+  `fuelPerHour` is in the unit data since PLAN 1.1 and no rule read it. A formation has one
+  supply level, 0 to 1 (ADR-25): on its network it rises by 1/8 an hour, off it it falls by
+  1/8, and at 0 it loses 2% of its strength a day. Its speed did not depend on it.
+- **Decision:**
+  - *A fuel figure per template* (`TemplateRule.fuel`): Σ `fuelPerHour` × count over its
+    elements. 0 for every division on foot or on horse; `rifle_div_soviet` 3 (its tank
+    battalion); `motorised_div` 4.6; `panzer_div` 38; `tank_corps` 46.6; `heavy_panzer_div`
+    47.4; `mbt_div` 52.6.
+  - *Burn:* off its network, a formation on the march (moving and not in contact, as the
+    movement rule has it) loses `MARCH_BURN` × fuel an hour besides the 1/8: 1/320 for each
+    unit of fuel. The panzer division of 1938 is dry in 4.1 h on the march and in 8 standing.
+  - *Speed:* a formation whose mobility is not "foot" (no manoeuvre element walks) moves at
+    `DRY_SPEED` + (1 − `DRY_SPEED`) × supply of its speed; `DRY_SPEED` = 0.25. Dry, the
+    panzer division of 1938 goes at 4 km/h, a rifle division's pace.
+  - *No fuel level of its own.* Fuel is a part of the supply a formation carries. A second
+    level would need a second network or a second rate on the same one, and the formation
+    panel a second bar, for the same picture: off the network armour stops first.
+- **What does not change:**
+  - On its network nothing: a formation is refilled by 1/8 an hour whatever it burns, so a
+    division on the march at home stays at 1 and at full speed (a test). A rule that drained
+    supply on the network would put every motorised formation on the march below 1 for good,
+    and with it its fire (× 0.5 + 0.5 supply) and its pressure on the front.
+  - A formation with a manoeuvre element on foot: it goes at that element's pace, and its
+    tanks do not set it. The Soviet rifle division burns a little more and walks as before.
+  - A formation that stands or fights burns nothing more.
+- **Why these numbers:** 40 units of fuel double the drain: the first panzer division is at
+  about that, so "armour on the march lasts half as long". A quarter of the speed: 16 km/h ×
+  0.25 is the 4 km/h of the infantry it then waits for. Neither is tuned (ADR-58).
+- **What it does to a game:** ground just taken is not on the taker's network until the next
+  refresh (12 h, ADR-25), so the head of an advance is off the network for hours at a time,
+  and its armour is the first to slow there. On day 60 of Germany against Poland (seed 99) a
+  panzer division and a motorised division in contact stand at supply 0. How often armour
+  marches dry in a war was not counted.
+- **The pin moved:** 0eb1fb78 → 8498494a (seed 99, one year).
+- **Saves:** no state added. A save from before goes on by the new rule.
+- **Proof:** `tests/unit/fuel.test.ts` (4): the figures; on the network supply stays 1; in a
+  pocket after four hours the infantry and a standing panzer division have 0.5, the marching
+  panzer division under 0.05, the motorised between 0.4 and 0.5, the Soviet rifle division
+  between the two; then the dry panzer and motorised divisions cover a quarter of what the
+  fed ones do over the same ground, and the infantry and the Soviet rifle division stand
+  where they do in the fed game, to the digit. Three of the four fail on the rule before
+  (the fourth is the guard for the network).
+- **Not done:** org and breakdowns (PLAN 3.2c, 3.2d); nothing on the page (3.2d); the AI does
+  not know that its armour is dry (PLAN 3.5); no stockpile of fuel and no oil (a nation's
+  fuel is its gold).
+- **Deviation from AoC:** an addition; AoC has no unit types and no supply.
+
 ### ADR-133 · 2026-10-06 · accepted — A line with no room before its formation's place stands abreast, not behind (PLAN 3.2a2; replaces the rule of ADR-132)
 
 - **Context:** ADR-132, an hour old, put a line of a stack that has no room before its
