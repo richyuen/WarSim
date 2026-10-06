@@ -13,9 +13,10 @@
  * proximity, drawn with
  * hash32(seed, tick, element) and kept for COOLDOWN hours. Damage in target units is
  *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class and unit type, target cell)
- *       × supplyFactor(shooter) × combinedArms(shooter's side) × screen(target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
+ *       × supplyFactor(shooter) × combinedArms(shooter's side) × gunsOnGuns(shooter) × screen(target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
  * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing,
- * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle, and
+ * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle,
+ * gunsOnGuns is SUPPRESSED for an AT gun whose enemy has artillery alive in the battle, and
  * screen is UNSCREENED for armour on close ground whose side has no infantry alive in the battle.
  * All fire in an hour is computed before any loss is applied (simultaneous volleys), so the
  * order of elements cannot bias the result; total fire ∝ surviving strength (Lanchester square).
@@ -25,7 +26,7 @@ import combatJson from '../../../data/combat.json' with { type: 'json' };
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
 import { TERRAIN_IDS } from '../../shared/terrain';
-import { ARM_ALL, ARM_ARMOUR, ARM_INFANTRY, type UnitRule, type World } from '../world';
+import { ARM_ALL, ARM_ARMOUR, ARM_ARTILLERY, ARM_AT, ARM_INFANTRY, type UnitRule, type World } from '../world';
 import { applyLoss, cellDist as dist, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
@@ -48,6 +49,11 @@ export const COMBINED_ARMS = combatJson.combinedArms.bonus;
  * (PLAN 3.4b, `screen` of `data/combat.json`).
  */
 export const UNSCREENED = combatJson.screen.taken;
+/**
+ * The fire of an AT gun whose enemy has artillery alive in the battle (PLAN 3.4c, `gunsOnGuns`
+ * of `data/combat.json`). Its enemy: the battle's formations its nation is at war with.
+ */
+export const SUPPRESSED = combatJson.gunsOnGuns.fire;
 const CLOSE = TERRAIN_IDS.map((id) => (combatJson.screen.terrain as string[]).includes(id));
 
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
@@ -172,7 +178,10 @@ export function combatSystem(world: World): void {
       const enemies = battle.filter((o) => world.wars.atWar(f.nation[sf]!, f.nation[o]!));
       const hostile = new Set(enemies);
       const sideArms = sideArmsOf.get(sf)!;
-      const supplyFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * (sideArms === ARM_ALL ? COMBINED_ARMS : 1);
+      const supplyFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1);
+      let enemyArms = 0;
+      for (const o of enemies) enemyArms |= arms.get(o)!;
+      const atFire = (enemyArms & ARM_ARTILLERY) !== 0 ? SUPPRESSED : 1;
       const tables = new Map<number, { cand: number[]; cum: number[]; total: number }>();
       for (const s of idx.get(sf) ?? []) {
         const us = units[ec.unit[s]!]!;
@@ -236,7 +245,9 @@ export function combatSystem(world: World): void {
         const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
         // Armour on close ground with no infantry of its side in the battle (PLAN 3.4b).
         const screen = (ut.arm & ARM_ARMOUR) !== 0 && CLOSE[terrain] && (sideArmsOf.get(tf)! & ARM_INFANTRY) === 0 ? UNSCREENED : 1;
-        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult * screen) / def / buffDef / ut.hpPerUnit;
+        // An AT gun under the enemy's artillery (PLAN 3.4c).
+        const guns = (us.arm & ARM_AT) !== 0 ? atFire : 1;
+        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult * screen * guns) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;

@@ -117,8 +117,8 @@ const techIndex = new Map(TECH_DEFS.map((t, i) => [t.id, i]));
 const TECHS_1938: readonly TechRule[] = TECH_DEFS.map((t) => ({ id: t.id, year: t.year, prereqs: t.prereqs.map((p) => techIndex.get(p)!), category: t.category, gold: t.cost.gold, days: t.cost.days }));
 /** Tech indices the nation table gives a nation at the start, by nation id. */
 const GIVEN_TECHS_1938 = new Map(NATIONS_1938.flatMap((n, i) => (n.techs ? [[i + 1, n.techs.map((t) => techIndex.get(t)!)] as const] : [])));
-/** The arm of a unit class, as a bit: infantry 1, artillery 2, armour 4 (`ARM_ALL`). */
-const ARM_OF_CLASS = new Map<string, number>([combatJson.combinedArms.arms.infantry, combatJson.combinedArms.arms.artillery, combatJson.combinedArms.arms.armour].flatMap((classes, i) => classes.map((c) => [c, 1 << i] as const)));
+/** The arm of a unit class, as a bit: infantry 1, artillery 2, armour 4 (`ARM_ALL`), the AT guns 8 (`ARM_AT`). */
+const ARM_OF_CLASS = new Map<string, number>([combatJson.combinedArms.arms.infantry, combatJson.combinedArms.arms.artillery, combatJson.combinedArms.arms.armour, combatJson.gunsOnGuns.shooter].flatMap((classes, i) => classes.map((c) => [c, 1 << i] as const)));
 export const RULES_1938: ScenarioRules = {
   namedNations: NATIONS_1938.length,
   techs: TECHS_1938,

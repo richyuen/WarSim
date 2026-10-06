@@ -7086,3 +7086,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (3.4 is not ticked). It is due after 3.4d, before 3.5.
 - **Next:** PLAN 3.4c (guns on guns; it measures first).
 - **Gate:** green (code: typecheck, lint, unit 818, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).
+
+## 2026-10-06 — PLAN 3.4c: combined arms, the third rule: guns on guns (ADR-141)
+
+- **Measured first** (a scratch test, not kept; plains, 48 hours, seeds 5 to 7): of the 3.5
+  to 3.8 tanks an `infantry_div` takes from a tank brigade its one AT battery takes 73 to
+  76 %, its 24 battalions 21 to 22 %, its howitzers 3 to 5 %; from a panzer division 85 to
+  89 %. In SPEC §6.1 beside the table.
+- **Changed:** `data/combat.json` (`gunsOnGuns`: class `at`, 0.7) and its schema; `ARM_AT`,
+  `ARM_ARTILLERY` in `world.ts`, the AT guns' bit in `scenario1938.ts`; `combat.ts`: the arms
+  of a formation's enemies once per formation, and × 0.7 on every volley of an AT gun whose
+  enemy has artillery alive. The three-arms test is `(arms & ARM_ALL) === ARM_ALL` now.
+- **Tests:** `tests/unit/combinedArms.test.ts`, 5 more, written first; two red before the
+  rule (the panzer division against the tank brigade; guns of the enemy's other formation
+  or of his ally), three green before and kept.
+- **Gotcha:** with a formation beside the brigade the division's one AT gun picked another
+  target, and a ratio read by a fixed key was NaN. The test compares with the same battle
+  with the guns destroyed and asks for the same target type.
+- **When it bites** (a counter for one run, not kept; seed 99, one year): 93,872 of 106,140
+  volleys of AT guns, by 265 formations; 7,245 of 16,708 at armour. Nearly every division
+  has guns: the rule is close to a flat × 0.7 on the AT gun (ADR-141 says so; not tuned).
+- **The pin moved:** 13e0a82d → 78650f1b (ADR-141).
+- **Not done:** rule 4 and the matrix (3.4d); no share of artillery asked; nothing drawn or
+  on the page, so no picture and no spec run; tick time not measured; no sweep (ADR-58).
+- **Review pass:** not due (3.4 is not ticked). It is due after 3.4d, before 3.5.
+- **Next:** PLAN 3.4d (the open, and the matrix; it measures first, ticks 3.4, full e2e).
+- **Gate:** green (code: typecheck, lint, unit 823, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).

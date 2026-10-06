@@ -10,5 +10,9 @@
   "screen": {
     "terrain": ["forest", "urban"],
     "taken": 1.3
+  },
+  "gunsOnGuns": {
+    "shooter": ["at"],
+    "fire": 0.7
   }
 }

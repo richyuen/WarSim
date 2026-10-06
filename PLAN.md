@@ -2937,12 +2937,26 @@ quick sweep as a smoke test.
     - Seed 99, the first year: 34,160 volleys at unscreened armour of 39,920 at armour on
       close ground, all at 3 tank brigades that had lost their infantry.
     - Not done: nothing of it on the page; the AI does not know of it (PLAN 3.5).
-  - [ ] 3.4c **Guns on guns.** Measure first: of the tanks a rifle division takes from a tank
+  - [x] 3.4c **Guns on guns.** Measure first: of the tanks a rifle division takes from a tank
     brigade, the share its AT gun takes (so "AT vs armour" is in the table by a number).
     Then: the fire of AT guns whose enemy has artillery alive in the battle × a figure (the
     proposal: 0.7). AT: unit, failing first: an AT gun's volleys at a tank brigade and at a
     panzer division (which has guns), same target type, differ by the figure; the howitzers'
     do not.
+    - Measured first (48 hours on plains, three seeds, before the rule): the one AT battery
+      of an infantry division takes 73 to 76 % of the tanks the division takes from a tank
+      brigade, its 24 battalions 21 to 22 %, its howitzers 3 to 5 % (in SPEC §6.1). The
+      "rifle division" is `infantry_div`: the Soviet rifle division has no AT gun.
+    - Done 2026-10-06 (ADR-141). `gunsOnGuns` of `data/combat.json` (class `at`; 0.7), its
+      schema; `ARM_AT`, `ARM_ARTILLERY`; one factor in `combat.ts` (`SUPPRESSED`).
+      `tests/unit/combinedArms.test.ts` (5 more; two red first). The pin: 13e0a82d →
+      78650f1b. No new state.
+    - Seed 99, the first year: 93,872 of 106,140 volleys of AT guns were held down (265
+      formations), 7,245 of the 16,708 at armour. Nearly every division has guns, so the
+      rule is close to a flat × 0.7 on the AT gun; where it is not is against a tank
+      brigade or a garrison alone.
+    - Not done: no share of the enemy is asked of his artillery (one battery holds down
+      every AT gun of a battle); nothing of it on the page.
   - [ ] 3.4d **The open, and the matrix.** Measure first what the terrain table gives armour
     against infantry on plains, grassland and desert beside forest. Then: armour's fire at
     what is not armoured on open ground × a figure (the proposal: 1.25) unless the target's

@@ -146,13 +146,19 @@ export interface UnitRule {
    */
   terrainAtk: readonly number[];
   terrainDef: readonly number[];
-  /** Its arm for the combined-arms bonus (PLAN 3.4a; `combinedArms.arms` of `data/combat.json`): a bit of `ARM_ALL`, 0 for a class of none. */
+  /**
+   * Its arm for the combined-arms rules (PLAN 3.4; `combinedArms.arms` and `gunsOnGuns.shooter`
+   * of `data/combat.json`): a bit of `ARM_ALL`, or `ARM_AT`, 0 for a class of none.
+   */
   arm: number;
 }
 /** Infantry 1, artillery 2, armour 4: a side of a battle with all three has the bonus. */
 export const ARM_INFANTRY = 1;
+export const ARM_ARTILLERY = 2;
 export const ARM_ARMOUR = 4;
 export const ARM_ALL = 7;
+/** The AT guns (PLAN 3.4c): not one of the three arms. */
+export const ARM_AT = 8;
 export interface ScenarioRules {
   templates: readonly TemplateRule[];
   units: readonly UnitRule[];

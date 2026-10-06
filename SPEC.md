@@ -1076,12 +1076,16 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   |---|------|------|--------|------|
   | 1 | The three arms | the shooter's side has infantry (`inf`, `mot`, `mech`), artillery (`art`) and armour (`armor_l/m/h`) present | fire × 1.15 | 3.4a, implemented |
   | 2 | The screen | the target is armour (by its arm, not its `armor` figure) on forest or urban ground and its side has no infantry present; holding or moving | damage taken × 1.3 | 3.4b, implemented (ADR-140) |
-  | 3 | Guns on guns | the shooter is an AT gun and the enemy side has artillery present | fire × 0.7 (proposed) | 3.4c |
+  | 3 | Guns on guns | the shooter is an AT gun (class `at`) and its enemy (the battle's formations its nation is at war with) has artillery present | fire × 0.7 | 3.4c, implemented (ADR-141) |
   | 4 | The open | the shooter is armour, the target is not armoured and stands on plains, grassland or desert, and the target's side has no AT gun present | fire × 1.25 (proposed) | 3.4d |
 
   Beside the table, in since PLAN 1.13 (§5.2): a shooter's `hard` against an armoured target
   and its `soft` against another, × 0.5 when the armour beats its piercing. That is "AT vs
   armour": the AT gun of 1938 (hard 18, piercing 45) hits every tank of 1938 in full.
+  Measured before rule 3 (PLAN 3.4c; 48 hours on plains, three seeds): of the tanks an
+  infantry division (24 battalions, 3 batteries, 1 AT battery) takes from a tank brigade,
+  its one AT battery takes 73 to 76 % (75 to 77 % in a forest), its battalions 21 to 22 %,
+  its howitzers 3 to 5 %; from a panzer division 85 to 89 %.
 - Tactical view: tank sprites with turret facing their target, muzzle flash, burning wrecks.
 
 ### 6.2 Naval

@@ -231,3 +231,80 @@ describe('the screen of infantry for armour on close ground (PLAN 3.4b)', () => 
     expectScaled(fire(true), fire(false), 1);
   });
 });
+
+// PLAN 3.4c: guns on guns (SPEC §6.1, the table's third row; `gunsOnGuns` of `data/combat.json`).
+// An AT gun whose enemy has artillery alive in the battle fires × `fire`.
+describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () => {
+  const GUNS = combatJson.gunsOnGuns;
+  /**
+   * The Polish division's volleys on plains at the German formation `of` (stand 0) and at
+   * `beside`, another formation of its side, by shooter and target type (the ground and the
+   * stance are the same for both, so a volley of one type at another is one figure). `dead`:
+   * the arm destroyed before the hour, in every formation of that side.
+   */
+  const fired = (of: string, dead?: keyof typeof ARMS, beside?: Stand): Map<string, number> => {
+    const stands: Stand[] = [[GER, of, 0, 0], [POL, 'infantry_div', 1, 0]];
+    if (beside) stands.push(beside);
+    const { world, ids } = battle(stands);
+    const ec = world.elements.cols;
+    world.elements.forEach((el) => {
+      if (dead && ec.formation[el] !== ids[1] && ARMS[dead].includes(classOf(ec.unit[el]!))) ec.strength[el] = 0;
+    });
+    const out = new Map<string, number>();
+    for (const [s, [target, dmg]] of volleysOf(world, ids[1]!)) out.set(`${UNIT_IDS_1938[ec.unit[s]!]}>${UNIT_IDS_1938[ec.unit[target]!]}`, dmg);
+    return out;
+  };
+  /** The one volley of the division's AT gun: its target's type, and the damage. */
+  const atVolley = (m: Map<string, number>): [string, number] => {
+    const at = [...m].filter(([k]) => k.startsWith('anti_tank>'));
+    expect(at.length).toBe(1);
+    return at[0]!;
+  };
+  const AT_ON_TANK = 'anti_tank>tank_light';
+  /** The tank brigade has no guns: what the Poles fire at it is the volley the rule leaves alone. */
+  const base = (): Map<string, number> => fired('tank_brigade');
+
+  it('the data names the AT guns and a figure below 1', () => {
+    expect(GUNS.fire).toBeLessThan(1);
+    expect(GUNS.fire).toBeGreaterThan(0);
+    expect(GUNS.shooter).toEqual(['at']);
+    expect(CLASS_OF.get('anti_tank')).toBe('at');
+    expect(base().has(AT_ON_TANK)).toBe(true);
+  });
+
+  it('an AT gun’s volley at a tank of a panzer division, which has guns, is its volley at one of a tank brigade × the figure', () => {
+    expect(fired('panzer_div').get(AT_ON_TANK)! / base().get(AT_ON_TANK)!).toBeCloseTo(GUNS.fire, 10);
+  });
+
+  it('the howitzers’ and the rifles’ volleys are the same at both', () => {
+    const atBrigade = base();
+    const atDivision = fired('panzer_div');
+    const shooters = new Set<string>();
+    for (const [k, dmg] of atDivision) {
+      if (k.startsWith('anti_tank>') || !atBrigade.has(k)) continue;
+      expect(dmg / atBrigade.get(k)!, k).toBeCloseTo(1, 10);
+      shooters.add(k.split('>')[0]!);
+    }
+    expect([...shooters].sort()).toEqual(['artillery', 'infantry']);
+  });
+
+  it('the guns must be alive: with the panzer division’s artillery destroyed the AT gun fires in full', () => {
+    expect(fired('panzer_div', 'artillery').get(AT_ON_TANK)! / base().get(AT_ON_TANK)!).toBeCloseTo(1, 10);
+  });
+
+  it('the guns of an ally of the enemy count, and so do those of another formation of his', () => {
+    // Against the same battle with those guns destroyed: the gun picks among the same targets but two batteries.
+    for (const nation of [GER, ITA]) {
+      const beside: Stand = [nation, 'infantry_div_cadre', 0, 1];
+      const [target, dmg] = atVolley(fired('tank_brigade', undefined, beside));
+      const [targetFree, dmgFree] = atVolley(fired('tank_brigade', 'artillery', beside));
+      expect(target).toBe(targetFree);
+      expect(dmg / dmgFree).toBeCloseTo(GUNS.fire, 10);
+    }
+    // Rifles alone beside the brigade: no guns, the volley in full.
+    const [target, dmg] = atVolley(fired('tank_brigade', undefined, [GER, 'garrison_brigade', 0, 1]));
+    const [targetFree, dmgFree] = atVolley(fired('tank_brigade', 'artillery', [GER, 'infantry_div_cadre', 0, 1]));
+    expect(target).toBe(targetFree);
+    expect(dmg / dmgFree).toBeCloseTo(1, 10);
+  });
+});

@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-141 · 2026-10-06 · accepted — Guns on guns: an AT gun whose enemy has artillery alive in the battle fires × 0.7 (PLAN 3.4c)
+
+- **Context:** the third rule of the table of ADR-139 (SPEC §6.1): "artillery suppresses AT".
+  Its figure was a proposal there. The task asked for a number first: how much of "AT vs
+  armour" the AT gun is.
+- **Measured before the rule** (a scratch test, not kept; plains, 48 hours, seeds 5 to 7,
+  an `infantry_div` of 24 battalions, 3 batteries and 1 AT battery holding against one
+  formation): of the 3.5 to 3.8 tanks it takes from a tank brigade, the AT battery takes
+  73 to 76 %, the battalions 21 to 22 %, the howitzers 3 to 5 %. In a forest 75 to 77 %.
+  From a panzer division (2.7 to 3.1 tanks) 85 to 89 %. So one element of 28 does three
+  quarters of a division's work against tanks, and a factor on it is a factor on that.
+- **Decision:**
+  - *The shooter:* an element of a class of `gunsOnGuns.shooter` of `data/combat.json`
+    (`at`). It has a bit of its own in `UnitRule.arm` (`ARM_AT`, 8), beside the three arms
+    and not one of them: the bonus of ADR-139 asks for `(arms & ARM_ALL) === ARM_ALL` now.
+  - *The enemy's artillery:* a formation of the battle that the shooter's nation is at war
+    with has an element of the artillery arm (`combinedArms.arms.artillery`) with strength
+    at the hour's start. The shooter's own side's guns do not count, and no share is asked,
+    as in ADR-139 and ADR-140.
+  - *A factor on the gun's fire* (`SUPPRESSED`, `gunsOnGuns.fire` 0.7), at whatever it
+    shoots, armour or not. The choice of target does not know of it.
+  - *0.7:* the table's proposal, a figure of mine, not tuned (ADR-58).
+- **When it bites:** seed 99, the first year (a counter in `combat.ts` for one run, not
+  kept): 106,140 volleys of AT guns, 93,872 of them under the rule, by 265 formations;
+  16,708 at armour, 7,245 of those under the rule. Every division template but the tank
+  brigade and the garrison brigade has guns, so against most enemies the rule is a flat
+  × 0.7 on the AT gun, and it tells apart only the enemy with no guns: a tank brigade or
+  a garrison alone, or a division whose batteries are dead. That is weaker than the row
+  reads. A share of artillery to guns would make it tell more; not done (ADR-58: no tuning
+  now), and PLAN 3.4d's matrix reads the rule as it is.
+- **Tests:** `tests/unit/combinedArms.test.ts` (5 more; two red before the rule: the AT
+  gun's volley at a tank of a panzer division against the one at a tank brigade, and the
+  same brigade with a division with guns beside it, German or Italian, against that
+  battle with those guns destroyed. Green before and kept: the data, the howitzers' and
+  the rifles' volleys the same at both, the panzer division's guns destroyed × 1).
+- **The AT's "same target type":** the division has one AT battery, so one volley an hour;
+  where another formation stands beside the brigade the gun may pick another target, and
+  the test compares with the same battle with the guns destroyed and asks for the same
+  target type in both.
+- **The pin moved:** 13e0a82d → 78650f1b (seed 99, one year).
+- **Saves:** no state added.
+- **Not done:** rule 4 and the matrix (PLAN 3.4d); nothing of it on the page; anti-air
+  guns are not held down; tick time not measured (one OR per enemy formation per shooter
+  formation, one test a volley).
+
 ### ADR-140 · 2026-10-06 · accepted — The screen: armour on forest or urban ground whose side has no infantry alive in the battle takes × 1.3 (PLAN 3.4b)
 
 - **Context:** the second rule of the table of ADR-139 (SPEC §6.1): "infantry screens armour
