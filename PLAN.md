@@ -2442,7 +2442,7 @@ quick sweep as a smoke test.
       the dead occupied goes back to its owner, what a living nation occupied of it becomes
       that nation's, with a `LandCeded` for each. Also the capital taken with no core left,
       where a third nation's occupation stayed the dead nation's. The pin moved (7fc8e685).
-  - [ ] 2.16Rg Findings 1b and 2: **a God Mode Kill that leaves land with the dead.**
+  - [x] 2.16Rg Findings 1b and 2: **a God Mode Kill that leaves land with the dead.**
     - A nation that owns the centre cell of no province (Danzig with 7 cells and the
       Chinese Communists with 226 in 1938; either nation of the toy world) is killed with
       every cell still its own: `held` is empty, no heir is found, and the last sweep of
@@ -2457,6 +2457,12 @@ quick sweep as a smoke test.
     AT: failing first: every living nation of 1938 at tick 0 and at tick 2000, and of a
     random world, killed in a copy of the world: afterwards no cell has it as owner or as
     controller.
+    - Done 2026-10-05 (ADR-113): a Kill that finds no heir gives the land the nation owns and
+      controls to the living nation with the most cells beside it, else to the nearest
+      (`leaveToNeighbour`), with one `LandCeded`. Danzig goes to Poland, the Chinese
+      Communists' land to China. `tests/unit/killLand.test.ts`: failed for nations 5 and 70
+      of 1938 at both ticks and for both toy nations; the random world was green already
+      (2.16Rf). The pin did not move.
   - [ ] 2.16Rh Finding 3: **a Kill reads the capital's province at the capital's
     coordinates**, which for a city on the shore lie in a sea cell or in another province
     (ADR-103, ADR-106: the same defect `spawnRebels` had). 8 of the 102 nations of 1938, 9
@@ -2495,6 +2501,13 @@ quick sweep as a smoke test.
     owned cells without a controller; a NaN in `setEfficiency`, `setSuppression`,
     `setUnrest` or a formation's place goes into the state. Which of these the God tab can
     send (a panel left open on a nation that has just died) is to be looked at here.
+  - From PLAN 2.16Rg (ADR-113): the Kill of the last living nation moves nothing and says
+    nothing; the dead nation keeps its land.
+  - From PLAN 2.16Rg, measured and not looked into: a Kill with an heir gives the heir the
+    cells outside the provinces shared out and leaves a third nation's occupation of them,
+    with no war behind it. 1938, seed 99, tick 2000, cells occupied by a nation not at war
+    with their owner: 45 before any Kill; 7, 2 and 3 more after the Kills of nations 6, 7 and
+    11, fewer after five others.
   - **Ally** with a nation that is in another alliance (France of the Anglo-French, Italy of
     the Anti-Comintern): nothing changes and nothing is said.
   - **The Territory brush gives no territory.** A drag of 250 px from France across the Alps

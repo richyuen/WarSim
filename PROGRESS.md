@@ -6192,3 +6192,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** green (code: typecheck, lint, unit, build, parity, the ten-year tests; no e2e for
   a part, ADR-87).
 - **Next:** PLAN 2.16Rg.
+
+## 2026-10-05 — PLAN 2.16Rg: a Kill without an heir gives the land to a neighbour (ADR-113)
+
+- **The defect:** a God Mode Kill shares out the provinces whose centre the nation owns. A
+  nation that owns no centre (Danzig, the Chinese Communists, either toy nation) had nothing
+  shared out and no heir, and died as owner and controller of all its land.
+- **The rule** (`leaveToNeighbour`, step 4 of the Kill, only without an heir): the cells the
+  nation owns and controls go to the living nation with the most cells beside them, else to
+  the nearest; one `LandCeded`; no nation founded. Danzig goes to Poland, the Chinese
+  Communists' 226 cells to China.
+- **Tests, seen to fail first** (`tests/unit/killLand.test.ts`): every living nation killed in
+  a copy of the world. Failed: nations 5 and 70 of 1938 at tick 0 and at tick 2000 (7 and 226
+  cells kept), both toy nations. Green before the fix: the random world (its controller half
+  was 2.16Rf's).
+- **The test's cost:** 64 s alone (20 to 25 s for each world of 100 Kills), on a unit stage
+  that took 40 s. The AT asks for every nation at two ticks.
+- **Not decided here:** the Kill of the last living nation moves nothing (a line of PLAN 2.17).
+- **Seen, not looked into:**
+  - 45 cells of seed 99 at tick 2000 are occupied by a nation not at war with their owner, in
+    a game without commands (BLOCKERS, watch list). A Kill with an heir adds some (7, 2 and 3
+    for nations 6, 7 and 11): a line of PLAN 2.17. A scratch count, not a test.
+  - The toy world's `cells` column has two writers (BLOCKERS, watch list).
+- **Not done:** no run in the page (nothing drawn changed; the history line is the existing
+  `LandCeded` text), no sweep (ADR-58), tick time not measured (the Kill's path only).
+- **The pin did not move** (7fc8e685).
+- **Gate:** green (code: typecheck, lint, unit, build, parity, the ten-year tests; no e2e for
+  a part, ADR-87).
+- **Next:** PLAN 2.16Rh.

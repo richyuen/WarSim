@@ -26,12 +26,15 @@
  *      (lowest id on a tie); one with no neighbour (an island) and the cells outside any
  *      province go to the heir: the nation founded on the old capital, else the largest
  *      founded, else whoever received the most land.
+ *   4. With no heir (the nation owns the centre of no province) its land goes to the living
+ *      nation with the most cells beside it (`leaveToNeighbour`, ADR-113).
  *
  * Capital loss without cores (AoC's death rule, deferred in ADR-28): a nation that loses its
  * capital while holding no province it has a core on dies; the capturer annexes what it held.
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
+import { nearestCellWhere } from '../data/ownership';
 import { navOf, type World } from '../world';
 import { releasePuppet } from './puppets';
 import { defect, REVOLT_FROM, spawnRebels } from './revolts';
@@ -288,7 +291,56 @@ function killNation(world: World, c: number, rest: number[]): void {
       if (controller[cell] === c) world.setController(cell, heir);
     }
   }
+  if (heir === 0) leaveToNeighbour(world, c);
   eliminateNation(world, c);
+}
+
+/**
+ * A Kill that found no heir (PLAN 2.16Rg, ADR-113): c owns the centre of no province (a city
+ * inside another's province, a nation of a world without provinces), so nothing was founded and
+ * nobody received anything. The cells c owns and controls go to the living nation that owns the
+ * most cells beside them (lowest id on a tie), else to the one whose land is nearest their
+ * middle: one `LandCeded`. What others occupy of c is theirs by `eliminateNation`. With no
+ * other nation alive nothing moves.
+ */
+function leaveToNeighbour(world: World, c: number): void {
+  const { owner, controller, w } = world.cells;
+  const h = owner.length / w;
+  const nc = world.nations.cols;
+  const living = (n: number): boolean => n !== 0 && n !== c && world.nations.has(n) && nc.living[n] === 1;
+  const wrap = world.settings.loopingMap;
+  const beside = new Map<number, number>();
+  const mine: number[] = [];
+  let sx = 0;
+  let sy = 0;
+  for (let cell = 0; cell < owner.length; cell++) {
+    if (owner[cell] !== c || controller[cell] !== c) continue;
+    mine.push(cell);
+    const x = cell % w;
+    sx += x + 0.5;
+    sy += Math.floor(cell / w) + 0.5;
+    const west = x > 0 ? cell - 1 : wrap ? cell + w - 1 : -1;
+    const east = x < w - 1 ? cell + 1 : wrap ? cell - w + 1 : -1;
+    for (const q of [cell - w, west, east, cell + w]) {
+      if (q < 0 || q >= owner.length || !living(owner[q]!)) continue;
+      beside.set(owner[q]!, (beside.get(owner[q]!) ?? 0) + 1);
+    }
+  }
+  if (mine.length === 0) return;
+  sx /= mine.length;
+  sy /= mine.length;
+  let to = 0;
+  for (const [n, k] of [...beside].sort((a, b) => a[0] - b[0])) if (to === 0 || k > beside.get(to)!) to = n;
+  if (to === 0) {
+    const near = nearestCellWhere((q) => living(owner[q]!), sx, sy, w, h, Math.max(w, h));
+    if (near < 0) return;
+    to = owner[near]!;
+  }
+  for (const cell of mine) {
+    world.setOwner(cell, to);
+    world.setController(cell, to);
+  }
+  world.out.emit(world.tick, EventKind.LandCeded, to, c, sx, sy);
 }
 
 /**

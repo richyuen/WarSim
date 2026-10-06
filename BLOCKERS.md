@@ -84,6 +84,15 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 
 ## Watch list (not blocking)
 
+- Seen 2026-10-05 with PLAN 2.16Rg, not looked into: **land occupied with no war behind it in
+  a game without commands.** 1938, seed 99, tick 2000: 45 cells whose controller is not their
+  owner and is not at war with it (a scratch count over the grid; which nations, and by which
+  peace or death, is not known). Nothing takes such a cell back. A defect if a peace or a
+  death leaves them; to be asked with PLAN 2.17's "a dead nation holds nothing".
+- Seen 2026-10-05 with PLAN 2.16Rg: the toy world's `nations.cols.cells` is the daily count of
+  cells *controlled* (`toyCount`), 0 before the first day, while `World.setOwner` keeps the
+  same column as cells *owned*. Two writers of one column.
+
 - `reference/NOTES.md` (the user's taste notes, highest-priority reference) does not exist
   (checked 2026-10-02). Visual/feel decisions rely on `reference/screens/`, the trailer and
   itch/Steam/devlog text, and are marked lower confidence until notes appear.

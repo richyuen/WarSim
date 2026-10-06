@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-113 · 2026-10-05 · accepted — A Kill without an heir: the land goes to the neighbour with the most cells beside it (PLAN 2.16Rg)
+
+- **Context:** the sixth read's finding 1b. A God Mode Kill shares out the provinces whose
+  centre cell the nation owns (ADR-99). A nation that owns no such centre has none: Danzig
+  (7 cells) and the Chinese Communists (226) in 1938, both nations of the toy world, which has
+  no provinces. Nothing is founded, nobody receives anything, there is no heir, and the last
+  sweep of `killNation` moved cells to the heir only. The nation died as owner and controller
+  of all its land (ADR-112 leaves the cells a nation both owns and controls to whoever ends
+  it).
+- **Decision** (`leaveToNeighbour` in `systems/revival.ts`, step 4 of the Kill, only when
+  there is no heir):
+  - The cells the nation owns and controls go, owner and controller, to the living nation
+    that owns the most cells beside them (4 neighbours, across the map's seam when it loops;
+    the lowest id on a tie). It is step 3's rule for a piece that founds nothing, counted in
+    cells because there are no provinces to count.
+  - With no nation beside them (an islet): to the living nation whose land is nearest the
+    middle of those cells.
+  - One `LandCeded`. No nation is founded: `spawnRebels` makes its area's provinces the
+    rebels' core, and the province here is another nation's.
+  - What a living nation occupies of the dead is that nation's (`eliminateNation`, ADR-112),
+    not the neighbour's.
+  - All the cells go to one receiver, also those of a part that lies elsewhere.
+  - A Kill leaves no land without an owner. The exception: no other nation is alive. Then
+    nothing moves and the dead nation keeps its land; a Kill that refuses and says why is
+    PLAN 2.17's.
+- **Seen:** Danzig goes to Poland, the Chinese Communists' land to China; in the toy world
+  each nation's land to the other.
+- **Tests, seen to fail first** (`tests/unit/killLand.test.ts`): every living nation killed in
+  a copy of the world: 1938 at tick 0 and at tick 2000 (102 nations; nations 5 and 70 kept 7
+  and 226 cells), a random world of 60 at tick 2000 (green before: its controller half was
+  ADR-112's), the toy world (16,359 and 15,357 cells kept). Afterwards no dead nation is owner
+  or controller of a cell and as many cells have an owner as before.
+- **The pin did not move** (7fc8e685): no Kill in a game without commands.
+
 ### ADR-112 · 2026-10-05 · accepted — A dead nation holds no land: what it occupied goes back, what others occupied of it is theirs (PLAN 2.16Rf)
 
 - **Context:** the sixth read's finding 1a. `eliminateNation` moved no cell. A nation whose
