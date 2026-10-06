@@ -15,7 +15,8 @@
  *   change of control and relocates the same way; a nation with no cell left is eliminated.
  *
  * Elimination: `living` = 0, its formations and production orders are removed, its wars end,
- * `NationEliminated` is emitted.
+ * the land it occupied goes back to its owners and its land that others occupy becomes theirs
+ * (`leaveLand`), `NationEliminated` is emitted.
  */
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
@@ -107,6 +108,33 @@ export function relocateCapital(world: World, n: number): void {
   relocateToField(world, n);
 }
 
+/**
+ * The dead hold no land (PLAN 2.16Rf): what `n` occupied goes back to its owner, and what a
+ * living nation occupied of `n`'s becomes that nation's (`LandCeded`, one for each of them, the
+ * lowest id first). Cells `n` both owns and controls stay: whoever ends a nation that still
+ * holds land hands it over first (annexation, the God Mode Kill).
+ */
+function leaveLand(world: World, n: number): void {
+  const nc = world.nations.cols;
+  const { owner, controller, w } = world.cells;
+  const got = new Map<number, { cells: number; sx: number; sy: number }>();
+  // A rare event: one grid pass is acceptable here (not the hourly hot loop).
+  for (let c = 0; c < owner.length; c++) {
+    const o = owner[c]!;
+    const k = controller[c]!;
+    if (k === n && o !== n) world.setController(c, o);
+    else if (o === n && k !== n && k !== 0 && nc.living[k] === 1) {
+      world.setOwner(c, k);
+      const g = got.get(k) ?? { cells: 0, sx: 0, sy: 0 };
+      g.cells++;
+      g.sx += (c % w) + 0.5;
+      g.sy += Math.floor(c / w) + 0.5;
+      got.set(k, g);
+    }
+  }
+  for (const [to, g] of [...got].sort((a, b) => a[0] - b[0])) world.out.emit(world.tick, EventKind.LandCeded, to, n, g.sx / g.cells, g.sy / g.cells);
+}
+
 export function eliminateNation(world: World, n: number): void {
   const nc = world.nations.cols;
   if (nc.living[n] !== 1) return;
@@ -123,5 +151,6 @@ export function eliminateNation(world: World, n: number): void {
   });
   world.wars.endAllOf(n);
   world.alliances.removeNation(n);
+  leaveLand(world, n);
   world.out.emit(world.tick, EventKind.NationEliminated, n, 0, NaN, NaN);
 }

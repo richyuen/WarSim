@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-112 · 2026-10-05 · accepted — A dead nation holds no land: what it occupied goes back, what others occupied of it is theirs (PLAN 2.16Rf)
+
+- **Context:** the sixth read's finding 1a. `eliminateNation` moved no cell. A nation whose
+  last controlled cell fell (`relocateToField`) died as the owner of all its occupied land:
+  seed 99 of 1938, nation 72 at tick 4006 with 1,389 cells, all held by nation 69, and so for
+  the rest of the game. The same after a capital taken with no core left
+  (`captureCapital`): the capturer took what it held itself, and what a third nation at war
+  with the loser held stayed the dead nation's. Such land is tinted as occupied for ever, pays
+  the occupier's share only, and a revival skips it (`reviveNation` takes no land from the
+  nation that revives).
+- **Decision** (`leaveLand` in `systems/capitals.ts`, called by `eliminateNation`, so by
+  every death):
+  - A cell the dead nation controlled and did not own goes back to its owner.
+  - A cell it owned that a living nation controls becomes that nation's: the nation is gone,
+    there is no peace to hand the land back in, and the occupier is who holds it. The cores
+    and claims are the provinces' and do not move, so the dead nation can revive there.
+  - One `LandCeded` for each receiver (the lowest id first), before `NationEliminated`.
+  - A cell it both owns and controls is left: whoever ends a nation that still holds land
+    hands it over first (annexation, integration, the God Mode Kill). The Kill that finds no
+    heir still leaves such cells: PLAN 2.16Rg.
+- **Not tuned:** who gains from it is balance (Phase 7, ADR-58). No sweep.
+- **Tests, seen to fail first:** `capitals.test.ts` (Poland occupied by Germany and the
+  Soviet Union, Warsaw taken: 1,452 cells stayed Poland's; a dead Poland stayed the controller
+  of 5 Lithuanian cells); `baselineHash.test.ts` asks at every month's start that no dead
+  nation is owner or controller of a cell (`tests/helpers/deadLand.ts`; it failed at tick
+  4344 with nation 72), and so do the three ten-year runs of `aiSweep`.
+- **The pin moved:** 324bc358 → 7fc8e685 (a rule of the sim: owners change at tick 4006 of
+  seed 99).
+
 ### ADR-111 · 2026-10-05 · accepted — A loaded world gives the new-game form its number of nations; the range is said once (PLAN 2.16d)
 
 - **Context:** two lines left by ADR-110. A game continued by a URL without `nations` showed

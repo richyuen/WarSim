@@ -6165,3 +6165,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   `2d7dafc`, `5d24625`); documents for a and d. The e2e suite was run by hand five times.
 - **The pin did not move** (324bc358).
 - **Next:** PLAN 2.16Rf, then g, h, i, j; 2.16R is ticked with the last; then 2.17.
+
+## 2026-10-05 — PLAN 2.16Rf: a dead nation holds no land (ADR-112)
+
+- **The defect:** `eliminateNation` moved no cell. A nation that lost its last controlled cell
+  died as the owner of everything others occupied of it (seed 99: nation 72 at tick 4006,
+  1,389 cells held by nation 69). A second way in, found while writing the test: a capital
+  taken with no core left gave the capturer its own occupation only, and a third nation's
+  stayed the dead nation's.
+- **The rule** (`leaveLand`, called by `eliminateNation`): what the dead occupied goes back to
+  its owner; what a living nation occupied of it becomes that nation's, with one `LandCeded`
+  for each receiver. Cells it both owns and controls are left to the caller (annexation, the
+  Kill): the Kill without an heir is PLAN 2.16Rg.
+- **Tests, seen to fail first:**
+  - `capitals.test.ts`: Poland occupied by Germany and the Soviet Union, Warsaw taken
+    ("nation 4: owner of 1452 cells, controller of 0"); a dead Poland on 5 Lithuanian cells
+    ("owner of 2222 cells, controller of 5").
+  - `baselineHash.test.ts` asks it at every month's start of the pinned year: failed at tick
+    4344 with "nation 72: owner of 1389 cells, controller of 0". The three ten-year runs of
+    `aiSweep` ask the same (`tests/helpers/deadLand.ts`).
+- **The pin moved:** 324bc358 → 7fc8e685.
+- **Also 2.16Rg's second finding** (the dead as controller of others' cells after a Kill): the
+  same cause, so fixed here; its test stays with 2.16Rg and is not written yet.
+- **Not done:** no run in the page (nothing drawn changed; the history line is the existing
+  `LandCeded` text), no sweep (ADR-58), tick time not measured (one grid pass per death).
+- **Gate:** green (code: typecheck, lint, unit, build, parity, the ten-year tests; no e2e for
+  a part, ADR-87).
+- **Next:** PLAN 2.16Rg.

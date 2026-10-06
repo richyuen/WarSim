@@ -2427,7 +2427,7 @@ quick sweep as a smoke test.
       off (`HOME_CELLS` 0): a piece of 3 cells in the world of 60, of 4 in that of 200.
     - Done with a and d (2026-10-05): each finding of the read brings its failing test
       with its task (2.16Rf to 2.16Ri); d found no test missing.
-  - [ ] 2.16Rf From the sixth read, finding 1a: **a nation eliminated in a plain game keeps
+  - [x] 2.16Rf From the sixth read, finding 1a: **a nation eliminated in a plain game keeps
     its land.** `eliminateNation` (`systems/capitals.ts`) hands over no cell. Seed 99 of
     1938, no command: nation 72 is eliminated at tick 4006 (`relocateToField` finds it no
     cell it controls) with 1,389 cells still owned by it, all held by nation 69; so at tick
@@ -2438,6 +2438,10 @@ quick sweep as a smoke test.
     AT: failing first: over a run of 1938 with no command, at every month's end no cell has
     a dead nation as its owner or as its controller. The same asked of the gate's three
     ten-year runs (`tests/helpers/aiSweep.ts`).
+    - Done 2026-10-05 (ADR-112): `eliminateNation` hands the land over (`leaveLand`): what
+      the dead occupied goes back to its owner, what a living nation occupied of it becomes
+      that nation's, with a `LandCeded` for each. Also the capital taken with no core left,
+      where a third nation's occupation stayed the dead nation's. The pin moved (7fc8e685).
   - [ ] 2.16Rg Findings 1b and 2: **a God Mode Kill that leaves land with the dead.**
     - A nation that owns the centre cell of no province (Danzig with 7 cells and the
       Chinese Communists with 226 in 1938; either nation of the toy world) is killed with
@@ -2446,6 +2450,8 @@ quick sweep as a smoke test.
     - The cells the dead nation controlled and did not own keep it as controller: 16 of
       the 102 nations of 1938 killed at tick 2000 leave some (Germany 73, the Soviet Union
       350), 21 of 60 in a random world. No war with the dead, so nothing takes them back.
+      2026-10-05: 2.16Rf gives these back to their owners in `eliminateNation` (ADR-112);
+      not counted again since. The test asked for below stays this task's.
     - This is a cause of what the critic saw as "a killed nation stays on the map" (PLAN
       2.17, its third point): that point's test is here, its name on the map stays there.
     AT: failing first: every living nation of 1938 at tick 0 and at tick 2000, and of a

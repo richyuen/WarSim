@@ -50,7 +50,7 @@ describe('collapse and revival (PLAN 1.20)', () => {
 
     for (let life = 1; life < REVIVALS + 1; life++) {
       // Dies: Italy retakes all its land, then the nation is eliminated (a test shortcut for
-      // a lost war; eliminateNation itself never moves land).
+      // a lost war; eliminateNation leaves the land a nation both owns and controls).
       w.cells.owner.forEach((o, c) => {
         if (o !== ETH) return;
         w.setOwner(c, ITA!);

@@ -86,7 +86,9 @@ export const EventKind = {
   /**
    * Land changed hands without a war and without a new state (PLAN 2.15d): a restless conquest
    * went back to its living core nation, or a God Mode Kill handed land to a core nation, a
-   * claimant, a neighbour or the heir. a = who received it, b = who held it, (x, y) = its middle.
+   * claimant, a neighbour or the heir. Or a nation died, and what a living nation occupied of
+   * its land became that nation's (PLAN 2.16Rf). a = who received it, b = who held it, (x, y) =
+   * its middle.
    */
   LandCeded: 36,
 } as const;

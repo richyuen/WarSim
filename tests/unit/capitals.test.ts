@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { eliminateNation } from '../../src/sim/systems/capitals';
 import type { World } from '../../src/sim/world';
+import { deadLand } from '../helpers/deadLand';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
 
@@ -154,6 +156,47 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     ev = stepEvents(s);
     expect(eventsOf(ev, EventKind.NationEliminated)).toEqual([[LUX, 0, NaN, NaN]]);
     expect(w.nations.cols.living[LUX]).toBe(0);
+  });
+
+  // PLAN 2.16Rf: a dead nation is the owner and the controller of no cell.
+  it('a nation that dies with its capital leaves the land a third nation holds to that nation', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    const SOV = nationId('SOV');
+    w.wars.set(GER, POL, true);
+    w.wars.set(SOV, POL, true);
+    // Poland is occupied whole: the east by the Soviet Union, the rest and Warsaw by Germany.
+    const warsaw = capitalCity(w, POL);
+    const split = w.cities.cols.x[warsaw]! + 3;
+    let east = 0;
+    w.cells.owner.forEach((o, c) => {
+      if (o !== POL) return;
+      const soviet = (c % W) + 0.5 > split;
+      if (soviet) east++;
+      w.setController(c, soviet ? SOV : GER);
+    });
+    expect(east).toBeGreaterThan(10);
+    const sovCells = w.cells.owner.reduce((n, c) => n + (c === SOV ? 1 : 0), 0);
+    const ev = stepEvents(s);
+    expect(eventsOf(ev, EventKind.NationEliminated)).toEqual([[POL, 0, NaN, NaN]]);
+    expect(deadLand(w)).toEqual([]);
+    expect(w.cells.owner.reduce((n, c) => n + (c === SOV ? 1 : 0), 0)).toBe(sovCells + east);
+    expect(eventsOf(ev, EventKind.LandCeded).map(([a, b]) => [a, b])).toEqual([[SOV, POL]]);
+  });
+
+  it('a nation that dies gives up the land of others it holds', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    const LIT = nationId('LIT');
+    const lit: number[] = [];
+    w.cells.owner.forEach((o, c) => {
+      if (o === LIT && lit.length < 5) lit.push(c);
+      if (o === POL) w.setController(c, GER);
+    });
+    for (const c of lit) w.setController(c, POL);
+    eliminateNation(w, POL);
+    expect(deadLand(w)).toEqual([]);
+    for (const c of lit) expect([w.cells.owner[c], w.cells.controller[c]]).toEqual([LIT, LIT]);
   });
 
   it('the winner-takes-all setting is saved', () => {

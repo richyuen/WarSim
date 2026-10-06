@@ -785,6 +785,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     the largest owned and controlled city (`CapitalMoved`); without one it becomes a field capital
     on the nearest held cell. A nation with no land left is eliminated (formations, production
     and wars removed).
+  - The dead hold no land (PLAN 2.16Rf, ADR-112; `leaveLand`): when a nation is eliminated, the
+    cells it occupied go back to their owners, and the cells of its own that a living nation
+    occupies become that nation's (`LandCeded`, one event for each receiver). Its cores stay
+    the provinces', so it can revive there.
   - `winnerTakesAll` (a saved setting; command `setSetting`) annexes everything the loser
     controls, plus the loser's land the capturer already occupies.
   - God brush `paintControl {nation, x, y, r}` sets control on land cells; with `x2, y2`, on the
@@ -831,7 +835,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     bound to the holder) returns the area to that nation. Otherwise, next to a rebel state it
     joins that state. Only otherwise does it found a new nation.
   - *Land handed over (PLAN 2.15d, ADR-102):* a defection, and each handover of a God Kill, is
-    the event `LandCeded` (a = who received the land, b = who held it), not a revolt: "Land of
+    the event `LandCeded` (a = who received the land, b = who held it), as is the land of a
+    dead nation that goes to its occupier (ADR-112), not a revolt: "Land of
     {b} went over to {a}" in the history. An area that joins a rebel state stays a
     `RevoltSpawned`.
   - *Overextension (ADR-47):* a holder above 4% of the world's owned land gains, in provinces

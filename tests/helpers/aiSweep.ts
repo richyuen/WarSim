@@ -1,11 +1,13 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { expect } from 'vitest';
+import { isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
 import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../../src/shared/flagPixels';
 import { foundedName, provinceLabel } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { deadLand } from './deadLand';
 import { assets1938, earthAdmin1 } from './earth';
 import { strayNaN } from './stateNumbers';
 
@@ -37,6 +39,8 @@ export function aiSweep(seed: number): void {
       }
       ev.length = 0;
       w.out.fires.length = 0;
+      // PLAN 2.16Rf: at every month's end no cell has a dead nation as its owner or its controller.
+      if (isMonthStart(w.startDay, w.tick)) expect(deadLand(w), `seed ${seed}, tick ${w.tick}: land of the dead`).toEqual([]);
     });
     yearly.push(year);
     // Invariant (review in PLAN 1.34a): no alliance has two members at war with each other.
