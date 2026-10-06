@@ -1,5 +1,5 @@
 {
-  "comment": "Land formation templates (PLAN 1.7): one formation is roughly one division or brigade, built from unit-type elements (SPEC 3.6: an infantry element is 500 men, a gun element 12 guns, a tank element 10 tanks).",
+  "comment": "Land formation templates (PLAN 1.7): one formation is roughly one division or brigade, built from unit-type elements (SPEC 3.6: an infantry element is 500 men, a gun element 12 guns, a tank element 10 tanks). A formation and an order are saved with the index of their template: a new template goes at the end (PLAN 3.1c).",
   "templates": [
     { "id": "infantry_div", "nameKey": "template.infantry_div", "elements": [{ "type": "infantry", "count": 24 }, { "type": "artillery", "count": 3 }, { "type": "anti_tank", "count": 1 }] },
     { "id": "infantry_div_square", "nameKey": "template.infantry_div_square", "elements": [{ "type": "infantry", "count": 40 }, { "type": "artillery", "count": 4 }, { "type": "anti_tank", "count": 1 }] },
@@ -15,6 +15,10 @@
     { "id": "rifle_div_soviet", "nameKey": "template.rifle_div_soviet", "elements": [{ "type": "infantry", "count": 24 }, { "type": "artillery", "count": 4 }, { "type": "tank_light", "count": 3 }] },
     { "id": "cavalry_div", "nameKey": "template.cavalry_div", "elements": [{ "type": "cavalry", "count": 14 }, { "type": "artillery", "count": 2 }] },
     { "id": "cavalry_brigade", "nameKey": "template.cavalry_brigade", "elements": [{ "type": "cavalry", "count": 7 }, { "type": "artillery", "count": 1 }] },
-    { "id": "garrison_brigade", "nameKey": "template.garrison_brigade", "elements": [{ "type": "infantry", "count": 6 }] }
+    { "id": "garrison_brigade", "nameKey": "template.garrison_brigade", "elements": [{ "type": "infantry", "count": 6 }] },
+    { "id": "panzer_div_2", "nameKey": "template.panzer_div_2", "elements": [{ "type": "tank_medium_2", "count": 24 }, { "type": "infantry_motorised", "count": 8 }, { "type": "artillery_heavy", "count": 2 }] },
+    { "id": "heavy_panzer_div", "nameKey": "template.heavy_panzer_div", "elements": [{ "type": "tank_medium_2", "count": 18 }, { "type": "tank_heavy", "count": 6 }, { "type": "infantry_mechanised", "count": 8 }, { "type": "artillery_heavy", "count": 2 }] },
+    { "id": "mech_div", "nameKey": "template.mech_div", "elements": [{ "type": "infantry_mechanised", "count": 18 }, { "type": "tank_light", "count": 4 }, { "type": "artillery_heavy", "count": 3 }, { "type": "anti_tank", "count": 1 }] },
+    { "id": "mbt_div", "nameKey": "template.mbt_div", "elements": [{ "type": "tank_mbt", "count": 24 }, { "type": "infantry_mechanised", "count": 10 }, { "type": "artillery_heavy", "count": 3 }] }
   ]
 }

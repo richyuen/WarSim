@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-129 · 2026-10-06 · accepted — Four templates behind the tech gate, and the AI's armour order is the best it knows and can pay for (PLAN 3.1c)
+
+- **Context:** since ADR-128 the great powers know the medium tank of 1941, the heavy tank
+  and mechanised infantry by 1942, and no template has one of them in it: knowing them built
+  nothing. PLAN 3.1c left open whether the heavy template is a battalion or a division.
+- **Decision:**
+  - *Four templates, at the end of the file.* A formation and an order are saved with the
+    index of their template, so the fifteen of 1938 keep theirs (a unit test holds the order).
+
+    | template | elements | gold | days | upkeep a month | men | km/h | asks for |
+    |---|---|---|---|---|---|---|---|
+    | `panzer_div` (1938, for comparison) | 30 light, 4 medium, 8 mot, 2 heavy guns | 3,829 | 225 | 18.6 | 5,700 | 12 | `armor_medium_1` |
+    | `panzer_div_2` Medium armoured division | 24 `tank_medium_2`, 8 mot, 2 heavy guns | 4,844 | 240 | 23.4 | 5,500 | 12 | `armor_medium_2` |
+    | `heavy_panzer_div` Heavy armoured division | 18 `tank_medium_2`, 6 `tank_heavy`, 8 mech, 2 heavy guns | 5,600 | 330 | 27.4 | 5,530 | 9 | `armor_heavy_1`, `armor_medium_2`, `mechanisation` |
+    | `mech_div` Mechanised division | 18 mech, 4 light, 3 heavy guns, 1 AT | 2,485 | 180 | 12.4 | 9,710 | 14 | `mechanisation` |
+    | `mbt_div` Main battle tank division | 24 `tank_mbt`, 10 mech, 3 heavy guns | 7,980 | 360 | 39.9 | 6,530 | 14 | `armor_mbt`, `mechanisation` |
+
+    Cost, days, upkeep and techs are computed from the units, as for every template.
+  - *The heavy tank comes in a division, not as a battalion of its own.* The AI that is short
+    of money sends home its weakest idle formation by men (ADR-86; PLAN 3.1d is to decide
+    what armour is worth to it): a battalion of 50 tanks would be the first to go, each
+    time. And the AI's armour order is one formation: a battalion is not what a great power
+    raises instead of an armoured division.
+  - *The AI's armour order* (every third order of a rich nation at war) is the first of
+    `BuildMix.armour` (MBT, heavy, medium of 1941, the division of 1938) whose techs the
+    nation knows and whose price with the reserve of three months it has; with the gold for
+    none of them the best it knows, which the rule of PLAN 1.42c then replaces by infantry.
+    "Best" is the order of the list, by generation, not a number computed from the stats:
+    what the stats are worth in a battle is PLAN 3.3 and 3.4.
+  - *Markers:* `symbolOf` moved from the worker to `shared/unitLooks`, where a unit test
+    reaches it. It took "motorised" by the end of the unit's id, so a mechanised division
+    had the rifle cross of infantry on foot. Mechanised infantry counts with the motorised.
+    No new symbol: the six of PLAN 2.1 stay.
+- **The pin did not move** (seed 99, one year: 0eb1fb78): in 1938 nobody knows a tech of the
+  four, and the list ends in the division the AI ordered before.
+- **Saves:** a save from before loads (no column, no table; the indices of the fifteen stand).
+- **Not done, and where:**
+  - Nobody but a player orders the mechanised division: the AI's order against armour-heavy
+    enemies is the motorised division still (PLAN 3.5, the mix).
+  - A heavy or a mechanised formation has no marker symbol and no sprite of its own (PLAN 3.6).
+  - Whether the heavy division is worth 330 days and 5,600 gold against the medium one is
+    not measured: the combat rules that tell them apart are PLAN 3.3 and 3.4, the balance
+    Phase 7 (ADR-58).
+- **Deviation from AoC:** none known; AoC has no unit types (ADR-127).
+
 ### ADR-128 · 2026-10-06 · accepted — Research: a daily payment out of a budget the economic AI sets; the year of a tech is a floor (PLAN 3.1b)
 
 - **Context:** since ADR-127 a nation knows techs and nobody learns one. PLAN 3.1b left one

@@ -34,6 +34,14 @@ test('player actions: build a formation, declare war, offer peace, propose an al
   await expect(panzer).toBeDisabled();
   await expect(panzer.locator('xpath=..')).toContainText('not researched');
   await expect(page.getByTestId(`act-build-${names.indexOf('template.tank_brigade')}`).locator('xpath=..')).not.toContainText('not researched');
+  // The four templates of PLAN 3.1c are on the list by name, and nobody can order them in 1938.
+  for (const [id, name] of [['panzer_div_2', 'Medium armoured division'], ['heavy_panzer_div', 'Heavy armoured division'], ['mech_div', 'Mechanised division'], ['mbt_div', 'Main battle tank division']] as const) {
+    const button = page.getByTestId(`act-build-${names.indexOf(`template.${id}`)}`);
+    await expect(button, id).toBeDisabled();
+    await expect(button.locator('xpath=..'), id).toContainText(name);
+    await expect(button.locator('xpath=..'), id).toContainText('not researched');
+  }
+  await page.getByTestId(`act-build-${names.indexOf('template.mbt_div')}`).scrollIntoViewIfNeeded();
   if (process.env['EVIDENCE']) {
     const dir = path.resolve(import.meta.dirname, '../../docs/evidence/3.1');
     mkdirSync(dir, { recursive: true });

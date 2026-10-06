@@ -14,7 +14,7 @@ import { buildLandCoverage } from '../shared/landCoverage';
 import { decodeElevation } from '../shared/elevation';
 import type { LandMask } from '../shared/landMask';
 import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
-import { frameOf, weaponOf, wreckOf } from '../shared/unitLooks';
+import { frameOf, symbolOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
@@ -34,7 +34,6 @@ import {
   type SimInit,
   type ToWorker,
   type NationStat,
-  type UnitSymbol,
   type FormationDetail,
   type Inspection,
   type WarBattle,
@@ -91,26 +90,6 @@ const EMPTY_ELEMENTS: SnapshotElements = {
   flags: new Uint8Array(0),
   truncated: false,
 };
-
-/** Marker symbol of a template (PLAN 2.1): by its dominant element type. */
-function symbolOf(t: { id: string; elements: readonly { type: string; count: number }[] }): UnitSymbol {
-  if (t.id.startsWith('garrison')) return 'garrison';
-  if (t.id.startsWith('mountain')) return 'mountain';
-  let tanks = 0;
-  let motor = 0;
-  let horse = 0;
-  let all = 0;
-  for (const e of t.elements) {
-    all += e.count;
-    if (e.type.startsWith('tank')) tanks += e.count;
-    else if (e.type.endsWith('motorised')) motor += e.count;
-    else if (e.type === 'cavalry') horse += e.count;
-  }
-  if (tanks * 2 >= all) return 'armour';
-  if (horse * 2 >= all) return 'cavalry';
-  if ((tanks + motor) * 2 >= all) return 'motorised';
-  return 'infantry';
-}
 
 export class SimServer {
   sim: Sim | null = null;

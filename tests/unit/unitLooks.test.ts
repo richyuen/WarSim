@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LOOKS } from '../../src/render/fx/fire';
-import { Frame, frameOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
+import { Frame, frameOf, symbolOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
+import { TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { AIR_CLASSES, LAND_CLASSES, SEA_CLASSES, UNIT_CLASSES } from '../../src/sim/data/schemas';
 
 // What a unit class looks like to the view (`shared/unitLooks`): the worker turns the sim's
@@ -41,5 +42,21 @@ describe('wreckOf', () => {
     for (const cls of ['art', 'at', 'aa']) expect(wreckOf(cls), cls).toBe(Wreck.gun);
     for (const cls of ['armor_l', 'armor_m', 'armor_h', 'mech', 'mot']) expect(wreckOf(cls), cls).toBe(Wreck.vehicle);
     expect(new Set(LAND_CLASSES.map(wreckOf)).size).toBe(3);
+  });
+});
+
+describe('symbolOf', () => {
+  it('a template has the marker symbol of what most of it is', () => {
+    const symbol = (id: string): string => symbolOf(TEMPLATES_LAND.find((t) => t.id === id)!);
+    expect(symbol('infantry_div')).toBe('infantry');
+    expect(symbol('rifle_div_soviet')).toBe('infantry');
+    expect(symbol('motorised_div')).toBe('motorised');
+    expect(symbol('cavalry_div')).toBe('cavalry');
+    expect(symbol('mountain_div')).toBe('mountain');
+    expect(symbol('garrison_brigade')).toBe('garrison');
+    for (const id of ['panzer_div', 'tank_brigade', 'tank_corps', 'light_mech_div']) expect(symbol(id), id).toBe('armour');
+    // PLAN 3.1c: infantry in half-tracks is not infantry on foot (the mechanised division had the rifle cross).
+    expect(symbol('mech_div')).toBe('motorised');
+    for (const id of ['panzer_div_2', 'heavy_panzer_div', 'mbt_div']) expect(symbol(id), id).toBe('armour');
   });
 });

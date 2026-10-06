@@ -14,6 +14,8 @@ import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938
 // (The 10-peaceful-years AT runs in tests/sweep/econSweep*.test.ts.)
 
 const W = SIZE_1938.w;
+/** The armoured division of 1938, the last of the AI's armour (PLAN 3.1c). */
+const PANZER = BUILD_MIX_1938.armour[BUILD_MIX_1938.armour.length - 1]!;
 const [GER, POL, SWE, MON, LUX] = ['GER', 'POL', 'SWE', 'MON', 'LUX'].map(nationId) as number[];
 
 function peaceful(): Sim {
@@ -65,7 +67,7 @@ describe('economic AI (PLAN 1.26)', () => {
     w.formations.ids().filter((id) => w.formations.cols.nation[id] === GER!).forEach((id) => destroyFormation(w, id));
     // Poland's own 1938 army already uses its war share of income: clear it so it has room to build.
     w.formations.ids().filter((id) => w.formations.cols.nation[id] === POL!).forEach((id) => destroyFormation(w, id));
-    for (let k = 0; k < 6; k++) addDivision(w, GER!, 500 + k, 300, BUILD_MIX_1938.panzer);
+    for (let k = 0; k < 6; k++) addDivision(w, GER!, 500 + k, 300, PANZER);
     runEvents(s, 1);
     const polOrders = w.production.ids().filter((id) => w.production.cols.nation[id] === POL!).map((id) => w.production.cols.template[id]!);
     expect(polOrders).toContain(BUILD_MIX_1938.motorised);
@@ -125,11 +127,11 @@ describe('economic AI (PLAN 1.26)', () => {
       runEvents(s, 1);
       return w.production.ids().filter((id) => w.production.cols.nation[id] === GER!).map((id) => w.production.cols.template[id]!);
     };
-    const panzer = RULES_1938.templates[BUILD_MIX_1938.panzer]!.gold;
+    const panzer = RULES_1938.templates[PANZER]!.gold;
     const infantry = RULES_1938.templates[BUILD_MIX_1938.infantry]!.gold;
     expect(panzer).toBeGreaterThan(infantry);
     // Enough for the panzer division and the reserve: it is ordered first.
-    expect(order((income) => panzer + RESERVE_MONTHS * income + 1)[0]).toBe(BUILD_MIX_1938.panzer);
+    expect(order((income) => panzer + RESERVE_MONTHS * income + 1)[0]).toBe(PANZER);
     // Enough for infantry only: infantry is ordered (before PLAN 1.42c nothing was).
     expect(order((income) => infantry + RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
     // Not enough for either: nothing.

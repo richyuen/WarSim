@@ -646,8 +646,13 @@ Element (authoritative unit proxy) {
 - Element sizes (initial): infantry/mot/mech 500 men, artillery/AT/AA 12 guns,
   armour 10 tanks, each ship 1, air 4–12 planes. Typical division: 20–30 elements.
 - **Templates and starting OOB (PLAN 1.7, ADR-20).**
-  - `data/templates/land.json`: 15 land templates, from infantry (12.5k men) and square (20.9k)
+  - `data/templates/land.json`: 15 land templates of 1938, from infantry (12.5k men) and square (20.9k)
     divisions to panzer (340 tanks), Soviet tank corps (450), cavalry and garrison units.
+    Four more that no 1938 army fields and the tech gate holds back (PLAN 3.1c, ADR-129): the
+    medium armoured division (`armor_medium_2`, 1941), the heavy armoured division
+    (`armor_heavy_1`, 1942, and `mechanisation`), the mechanised division (`mechanisation`,
+    1940) and the main battle tank division (`armor_mbt`, 1950). A formation is saved with
+    the index of its template: a new template goes at the end.
   - `data/scenarios/1938/oob.json`: 225 groups, 1054 formations.
   - `placeOob` (`src/sim/data/oob.ts`, part of `buildPoliticalMap`) floods each group out from its
     anchor over land the nation controls, or that its puppets own and control, keeping formations
@@ -1159,8 +1164,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     capital raises new formations in the theatre (nearest own city to the front), an abstraction
     of sealift until PLAN 4.5.
   - *Build mix:* cadre divisions if income < 20; motorised divisions against armour-heavy
-    enemies (≥ 20% tanks); a panzer division every third order for rich nations (≥ 200) at war;
-    infantry otherwise.
+    enemies (≥ 20% tanks); an armoured division every third order for rich nations (≥ 200) at war,
+    the best it knows the techs of and has the gold for (MBT, heavy, medium of 1941, the
+    division of 1938; PLAN 3.1c); infantry otherwise.
 - **Peace**: settlement by war score. Terms are cells/provinces up to score, puppet creation,
   and white peace. Broke or exhausted nations sue for peace.
 - **Anti-hegemon dynamics** (long-run requirement): administrative cost rises

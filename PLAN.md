@@ -2784,11 +2784,22 @@ quick sweep as a smoke test.
       nations with an income of 1,000 or more know it on 1942-08-28).
     - Seen and left for Phase 7 (ADR-58): the small nations hardly learn (Portugal one tech
       in six years, Monaco none).
-  - [ ] 3.1c **Templates for what the gate holds back.** Heavy tank battalion or division,
+  - [x] 3.1c **Templates for what the gate holds back.** Heavy tank battalion or division,
     a second-generation armoured division, mechanised division, MBT division; i18n names;
     marker symbols; the AI's panzer order takes the best armoured template it knows.
     AT: unit, failing first: the heavy template is refused in 1938 and built once
     `armor_heavy_1` is known (the task's AT); production test of its cost, days and upkeep.
+    - Done 2026-10-06 (ADR-129). Four templates at the end of `data/templates/land.json`:
+      `panzer_div_2` (240 medium tanks of 1941), `heavy_panzer_div` (180 of them and 60
+      heavy tanks, mechanised infantry), `mech_div`, `mbt_div`. `BuildMix.armour` is a list,
+      the best first; the AI's armour order is the first it knows and has the gold for.
+      `symbolOf` is in `shared/unitLooks` and counts mechanised infantry with the motorised.
+      `tests/unit/armourTemplates.test.ts` (4, all failed first; the gold rule taken out fails
+      one), `tests/unit/unitLooks.test.ts` (the symbols), the build list in
+      `playerActions1938.spec.ts`, `docs/evidence/3.1/build-list-poland.png`.
+    - Not done: nobody orders the mechanised division but a player (the AI's order against
+      armour is still the motorised division: PLAN 3.5); no marker symbol of its own for a
+      mechanised or a heavy formation; no sprite of its own for the heavy tank (PLAN 3.6).
   - [ ] 3.1e **Research on the page.** The nation panel names what a nation is researching,
     how far each line is, and its budget; the tech names are in the i18n catalog.
     AT: e2e: Germany's panel in 1938 lists three techs by name with a share paid that grows

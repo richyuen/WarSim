@@ -4,6 +4,7 @@
  * rules, so the worker translates with these: snapshot elements carry a `Frame`, fire records a
  * `Weapon`, ElementDestroyed events a `Wreck`.
  */
+import type { UnitSymbol } from './protocol';
 
 /** Frames of the unit sprite atlas (`render/units/atlas`), in its order. */
 export const Frame = { infantry: 0, tank: 1, ship: 2, aircraft: 3, gun: 4, prone: 5 } as const;
@@ -44,4 +45,27 @@ export function wreckOf(cls: string): Wreck {
   if (cls === 'inf') return Wreck.men;
   if (cls === 'art' || cls === 'at' || cls === 'aa') return Wreck.gun;
   return Wreck.vehicle;
+}
+
+/**
+ * Marker symbol of a template (PLAN 2.1): by its dominant element type. Infantry in lorries and
+ * infantry in half-tracks (PLAN 3.1c) are both the motorised symbol.
+ */
+export function symbolOf(t: { id: string; elements: readonly { type: string; count: number }[] }): UnitSymbol {
+  if (t.id.startsWith('garrison')) return 'garrison';
+  if (t.id.startsWith('mountain')) return 'mountain';
+  let tanks = 0;
+  let motor = 0;
+  let horse = 0;
+  let all = 0;
+  for (const e of t.elements) {
+    all += e.count;
+    if (e.type.startsWith('tank')) tanks += e.count;
+    else if (e.type.endsWith('motorised') || e.type.endsWith('mechanised')) motor += e.count;
+    else if (e.type === 'cavalry') horse += e.count;
+  }
+  if (tanks * 2 >= all) return 'armour';
+  if (horse * 2 >= all) return 'cavalry';
+  if ((tanks + motor) * 2 >= all) return 'motorised';
+  return 'infantry';
 }

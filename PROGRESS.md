@@ -6682,3 +6682,38 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (3.1 is not ticked).
 - **Next:** PLAN 3.1c (templates for what the gate holds back).
 - **Gate:** green (code: typecheck, lint, unit 768, the ten-year tests 12, build, parity; no e2e for a part, ADR-87).
+
+## 2026-10-06 — PLAN 3.1c: four templates behind the tech gate; the AI's armour order is the best it knows and can pay for (ADR-129)
+
+- **Decided:** the heavy tank comes in a division, not as a battalion of its own (the AI that
+  cuts sends home the weakest by men first, and its armour order is one formation).
+- **Changed:**
+  - `data/templates/land.json`: `panzer_div_2`, `heavy_panzer_div`, `mech_div`, `mbt_div`, at
+    the end (a formation is saved with its template's index). Names in `en.json`.
+  - `BuildMix.panzer` (one index) is `BuildMix.armour` (a list, the best first).
+    `bestArmour` in `ai/economic.ts`: the first known that the treasury pays with its reserve.
+  - `symbolOf` moved from `worker/server.ts` to `shared/unitLooks.ts`; mechanised infantry
+    counts with the motorised (a mechanised division had the infantry cross).
+- **Tests:** `tests/unit/armourTemplates.test.ts` (4; all four red before the templates were
+  there; with the gold rule taken out of `bestArmour` the fourth is red). `unitLooks.test.ts`:
+  the symbols of 13 templates. `economicAi.test.ts` names the division of 1938 by the end of
+  the list; its assertions are as they were.
+- **Run by hand** (a part, ADR-87): `playerActions1938` with `--project chromium`, green; it
+  now asks that the four rows are on Poland's list by name, off, and say "not researched".
+- **Looked at:** `docs/evidence/3.1/build-list-poland.png`, shot again: 19 rows, the last four
+  "Medium armoured division", "Heavy armoured division", "Mechanised division", "Main battle
+  tank division", each "not researched" with a grey button; the list fits the panel at 800 px
+  of height with "In training" below it.
+- **The pin did not move** (0eb1fb78): nobody knows a tech of the four in 1938.
+- **Gotchas:**
+  - An order queued at tick 0 with `queueFormation` is there after `days × 24 + 1` steps, not
+    `days × 24` (the test in `production.test.ts` has a step for the command first).
+  - A long Bash heredoc with a Markdown table in it was cut short and ran nothing, without an
+    error (exit 0). The documents were then edited with the Edit tool.
+- **Not done** (ADR-129): the AI never orders the mechanised division (PLAN 3.5); no marker
+  symbol or sprite of its own for a heavy or mechanised formation (PLAN 3.6); what the heavy
+  division is worth in a battle is not measured (PLAN 3.3, 3.4). No sweep (ADR-58). Tick
+  time: nothing in a tick's path changed but the monthly pick of a template; not measured.
+- **Review pass:** not due (3.1 is not ticked).
+- **Next:** PLAN 3.1e (research on the page), then 3.1d, which ticks 3.1.
+- **Gate:** green (code: typecheck, lint, unit 773, the ten-year tests 12, build, the changed spec `playerActions1938` 1, parity; no full e2e for a part, ADR-87).

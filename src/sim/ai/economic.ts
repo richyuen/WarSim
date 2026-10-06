@@ -22,7 +22,9 @@
  *    great powers sat on unspent treasuries.) Mix: poor nations
  *    (income < POOR_INCOME) raise cadre divisions; against armour-heavy enemies (≥ ARMOUR_HEAVY of
  *    their elements are tanks) motorised divisions (AT and heavy guns); rich nations at war add a
- *    panzer division every third order; infantry divisions otherwise. An order the treasury
+ *    armoured division every third order, the best of `mix.armour` whose techs they know and
+ *    whose price, with the reserve, they have (PLAN 3.1c: the division of 1938 until the medium
+ *    tank of 1941 is known, and so on); infantry divisions otherwise. An order the treasury
  *    cannot pay for now is replaced by the infantry division if that one can be paid (critic B1,
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  *    So is one whose techs the nation does not know (PLAN 3.1a).
@@ -69,7 +71,8 @@ export interface BuildMix {
   infantry: number;
   cadre: number;
   motorised: number;
-  panzer: number;
+  /** The armoured divisions, the best first (PLAN 3.1c). */
+  armour: readonly number[];
 }
 
 export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World) => void {
@@ -203,8 +206,19 @@ function restlessNations(world: World): Set<number> {
 function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix): number {
   if (income < POOR_INCOME) return mix.cadre;
   if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;
-  if (atWar && income >= RICH_INCOME && (world.nations.cols.builds[n] ?? 0) % 3 === 2) return mix.panzer;
+  if (atWar && income >= RICH_INCOME && (world.nations.cols.builds[n] ?? 0) % 3 === 2) return bestArmour(world, n, income, mix);
   return mix.infantry;
+}
+
+/**
+ * The first of `mix.armour` (the best first) that `n` knows the techs of and has the gold for,
+ * the reserve kept; with the gold for none, the best it knows; knowing none, the last.
+ */
+function bestArmour(world: World, n: number, income: number, mix: BuildMix): number {
+  const templates = world.rules!.templates;
+  const known = mix.armour.filter((t) => templates[t] !== undefined && knowsTechs(world, n, templates[t]!.techs));
+  const gold = world.nations.cols.gold[n]!;
+  return known.find((t) => gold >= templates[t]!.gold + RESERVE_MONTHS * income) ?? known[0] ?? mix.armour[mix.armour.length - 1]!;
 }
 
 /** Share of tank elements among the elements of n's enemies' formations. */

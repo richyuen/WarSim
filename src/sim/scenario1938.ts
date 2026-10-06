@@ -96,7 +96,7 @@ export const BUILD_MIX_1938 = {
   infantry: TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div'),
   cadre: TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div_cadre'),
   motorised: TEMPLATES_LAND.findIndex((t) => t.id === 'motorised_div'),
-  panzer: TEMPLATES_LAND.findIndex((t) => t.id === 'panzer_div'),
+  armour: ['mbt_div', 'heavy_panzer_div', 'panzer_div_2', 'panzer_div'].map((id) => TEMPLATES_LAND.findIndex((t) => t.id === id)),
 };
 /**
  * The tech tree (PLAN 3.1a), the files in the order of the schema's categories. A tech's place
