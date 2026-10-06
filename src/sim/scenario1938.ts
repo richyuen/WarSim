@@ -281,6 +281,7 @@ export function addFormations(world: World, formations: readonly PlacedFormation
     f.facing[id] = 0;
     f.template[id] = ti;
     f.supply[id] = 1;
+    f.org[id] = 1;
     equipFormation(world, id, ti); // sets strength from the elements
   }
 }

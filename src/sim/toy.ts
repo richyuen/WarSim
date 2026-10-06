@@ -74,6 +74,7 @@ function spawnNear(world: World, nation: number, dx: number, dy: number): number
   f.cols.y[id] = clampY(world.nations.cols.capitalY[nation]! + dy);
   f.cols.facing[id] = nation === 1 ? 0 : TAU / 2;
   f.cols.strength[id] = 300;
+  f.cols.org[id] = 1;
   world.out.emit(world.tick, EventKind.FormationSpawned, id, nation, f.cols.x[id]!, f.cols.y[id]!);
   return id;
 }

@@ -765,6 +765,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   foot, 38 for the panzer division of 1938). Off the network a formation on the march loses
   fuel/320 an hour more: that panzer division is dry in 4.1 h. On the network nothing changes.
   A formation with no manoeuvre element on foot moves at 0.25 + 0.75 × supply of its speed.
+- *Org* (PLAN 3.2c, ADR-135): a formation column, 0 to 1, 1 when made. A formation with no
+  manoeuvre element on foot loses 1/32 an hour while its supply is 0; every formation on a
+  network that feeds it gains 1/32 an hour. Its fire is × (0.25 + 0.75 × org). Org lost to
+  damage and the retreat (§5.2 step 4) are not modelled.
 
 **Land movement (PLAN 1.11, ADR-24; `src/sim/nav/`, `src/sim/systems/movement.ts`).**
 - *Grid:* the true km per cell row comes from the Miller geometry. Move cost per [mobility][terrain]
@@ -1035,7 +1039,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - Production cost and time (industry heavy), monthly upkeep, and **fuel per hour moving**.
   Unsupplied armour loses speed, then org, then strength (breakdowns).
   *Implemented (PLAN 3.2b, ADR-134):* the fuel figure, the burn on the march off the network and
-  the speed (§4, Supply v1). Org and breakdowns: PLAN 3.2c and 3.2d.
+  the speed (§4, Supply v1). *(PLAN 3.2c, ADR-135):* the org, lost with no supply and read by
+  combat. Breakdowns: PLAN 3.2d.
 - Terrain: big bonus on plains/grassland/desert, heavy penalties in forest, marsh, mountains
   and urban. Tracked mobility costs from the terrain table.
 - Combined arms: armour is vulnerable to AT guns, CAS and heavy armour, and is strong vs

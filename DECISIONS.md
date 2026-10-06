@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-135 · 2026-10-06 · accepted — Org: a formation column; what moves on engines loses it with no supply, and its fire falls with it (PLAN 3.2c)
+
+- **Context:** PLAN 3.2's AT: "unsupplied armour slows, then loses org, then strength". The
+  first stage is ADR-134. There was no org in the state: SPEC §3 and §5.2 name one (drained by
+  damage, a retreat below 0.15), and no rule had it.
+- **Decision:**
+  - *A column* `formations.org`, f64, 0 to 1. Every place that makes a formation sets it to 1:
+    the start (`addFormations`), production, a revolt's militia, the Spawn command, the toy
+    world.
+  - *Loss:* a formation whose mobility is not "foot" loses `ORG_RATE` = 1/32 an hour while its
+    supply is 0. So the order of the AT holds by construction: the speed falls with the supply
+    from the first hour off the network, the org only once nothing is left. A dry panzer
+    division has no org after 32 h more.
+  - *Gain:* every formation on a network that feeds it gains `ORG_RATE` an hour, to 1. Off the
+    network with supply left the org stands.
+  - *Combat:* a formation's fire is × (`ORG_FIRE` + (1 − `ORG_FIRE`) × org), `ORG_FIRE` = 0.25,
+    beside the supply factor (0.5 + 0.5 × supply) that was there. With no supply and no org:
+    an eighth. What it takes does not depend on its org.
+- **Whose org falls: the gate is the mobility, not the fuel figure.** PLAN 3.2c said "a
+  formation with fuel in its template", and its AT "the rifle division's does not". The Soviet
+  rifle division has a fuel of 3 (its tank battalion), so both cannot hold. The AT stands, by
+  the gate of ADR-134's speed rule: a formation with a manoeuvre element on foot is not one on
+  engines. Its men walk and fight without the battalion's fuel. PLAN's sentence is corrected.
+- **Why a floor on the fire:** a formation with no org still shoots. With × org alone it would
+  deal nothing and stand in contact until 2% a day had worn it away.
+- **Why these numbers:** 1/32 is a power of two, as the supply rate is (the level steps exactly
+  between 0 and 1): a day and a third from dry to none, some four times the 8 h in which the
+  supply itself goes. The same rate back. A quarter of the fire: the same share as of the
+  speed. None is tuned (ADR-58).
+- **Not decided here:** org lost to damage and the retreat of SPEC §5.2 step 4 (no task has
+  them yet); the loss of vehicles with no org left and the panel (PLAN 3.2d); the AI does not
+  know of it (PLAN 3.5); the front's pressure (`territory.ts`) and the nation's combat
+  efficiency (`efficiency.ts`) read the supply as before and not the org.
+- **What it does to a game** (seed 99, no command, counted each hour): in the first year 74
+  formations are below 1 at some hour, 87,582 formation-hours in all, 19,722 of them in
+  contact; the lowest is 0. On day 60, 7 of 968 formations are below 1; on day 365, 6 of 849.
+  What these formations lost by it was not counted.
+- **The pin moved:** 8498494a → 3fad5d18 (seed 99, one year). The new section alone moves it
+  (the hash is of every section); the game is another one too, by the count above.
+- **Saves:** a save from before has no `formations.org` section and does not load, as with
+  ADR-127 and ADR-128. Checkpoints in `.cache/ck/` are to be written again.
+- **Tests:** `tests/unit/org.test.ts` (4), written first and red (no column). The pocket of
+  `fuel.test.ts` is now `tests/helpers/pocket.ts`, used by both.
+- **The zoom demo picks a division that fits its picture** (`tests/e2e/zoomDemo1938.spec.ts`).
+  Seed 1938 on day 30 is another game too. The spec takes the division that has lost most;
+  that was formation 660 and is 663 now, whose block reaches 0.17 cells north of the point
+  the camera closes in on: 277 px at 12 m/px, and the zoom holds that point 253 px from the
+  top (where the world view has it), so one battalion of 27 was above the screen and "the
+  whole division in the view" failed. Nothing is wrong on the page: a zoom held on a point
+  off the middle cuts what is far on the short side. The spec's choice now has one more
+  condition, every element within a quarter of the view of that point at 12 m/px; it takes
+  formation 653 (2,898 men, battalions of 68 to 162 of 500). No `expect` was changed. The
+  pictures of `docs/evidence/2.10/` are of the game before and were not shot again.
+
 ### ADR-134 · 2026-10-06 · accepted — Fuel: off its network the march burns a formation's supply, and what moves on engines slows as it runs dry (PLAN 3.2b)
 
 - **Context:** PLAN 3.2's AT: "unsupplied armour slows, then loses org, then strength".

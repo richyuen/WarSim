@@ -113,6 +113,13 @@ function effectiveness(us: UnitRule, ut: UnitRule): number {
   return ut.armor > us.piercing ? base * ARMOR_PEN : base;
 }
 
+/**
+ * The share of its fire a formation with no org keeps (PLAN 3.2c): between that and all of it
+ * by its org. Not nothing: a formation out of order still shoots, and one that dealt no damage
+ * would stand in contact for good.
+ */
+export const ORG_FIRE = 0.25;
+
 export function combatSystem(world: World): void {
   const battles = findBattles(world);
   const inMajor = updateMajorBattles(world, battles); // PLAN 1.23: also ends unmatched ones
@@ -132,7 +139,7 @@ export function combatSystem(world: World): void {
     const lossMult = inMajor.has(battle[0]!) ? MAJOR_LOSS_MULT : 1;
     for (const sf of battle) {
       const enemies = battle.filter((o) => world.wars.atWar(f.nation[sf]!, f.nation[o]!));
-      const supplyFactor = 0.5 + 0.5 * f.supply[sf]!;
+      const supplyFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!);
       const hostile = new Set(enemies);
       const tables = new Map<number, { cand: number[]; cum: number[]; total: number }>();
       for (const s of idx.get(sf) ?? []) {

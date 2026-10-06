@@ -6877,3 +6877,43 @@ No rule changed and nothing on screen changed. One task came out of it.
   has the note on ADR-133.
 - **Next:** PLAN 3.2c (org).
 - **Gate:** green (documents: parity).
+
+## 2026-10-06 — PLAN 3.2c: org, a formation column; what moves on engines loses it with no supply, and its fire falls with it (ADR-135)
+
+- **Found first:** PLAN 3.2c said "a formation with fuel in its template" loses org, and its
+  AT that the rifle division's does not; the Soviet rifle division has a fuel of 3. The AT
+  stands: the gate is the mobility, as for the speed (ADR-134). PLAN's sentence corrected.
+- **Changed:**
+  - `FORMATION_SCHEMA.org` (f64). Set to 1 where a formation is made: `addFormations`,
+    production, the militia of a revolt, the Spawn command, the toy world; and in the tests'
+    helpers (`addDivision`, the pocket, `supply.test.ts`).
+  - `systems/supply.ts`: `ORG_RATE` 1/32 an hour. On a network that feeds it a formation
+    gains it; at supply 0 one whose mobility is not foot loses it.
+  - `systems/combat.ts`: fire × (`ORG_FIRE` + (1 − `ORG_FIRE`) × org), `ORG_FIRE` 0.25.
+  - `movement.ts`: the comment on `DRY_SPEED` corrected (3 km/h, behind a rifle division's 4).
+- **Tests:** `tests/unit/org.test.ts` (4), written first, all red (no column): the order in
+  the pocket (speed, then org; the rifle and the infantry division keep theirs), the gain on
+  the network and none off it, the fire in one hour of combat (a half, a quarter; what the
+  division takes is the same), save and load into a live sim. `tests/helpers/pocket.ts` is
+  the set-up of `fuel.test.ts`, moved; its four tests are as they were.
+- **The pin moved:** 8498494a → 3fad5d18 (ADR-135).
+- **Counted** (seed 99, a year, every hour): 74 formations below 1 at some hour; 87,582
+  formation-hours, 19,722 of them in contact; lowest 0.
+- **Specs by hand** (ADR-87, `--project chromium`): `battleView1938` (2), `toBattle1938` (2)
+  green as written. `zoomDemo1938` red at first: "stop 7, battalions: the whole division in
+  the view", 26 of 27. Its game of seed 1938 has another worst-hit division on day 30, whose
+  block is longer to the north than the zoom leaves room for (ADR-135, the last point). The
+  spec's choice of a division has a condition more; no `expect` changed; green. Looked at
+  `stop-7-battalions.png`: the Romanian division whole in the view, its fire, a Soviet tank
+  brigade above it.
+- **Learned:** a spec that picks its subject from a game by a rule ("the one that lost most")
+  has to name everything its picture needs of the subject, or the next rule change picks one
+  that does not fit.
+- **Not done:** org lost to damage and the retreat (SPEC §5.2 step 4: no task; to be placed
+  at the phase review 3.7); nothing on the page (3.2d); tick time not measured (two
+  comparisons and at most two additions a formation an hour, one multiplication a shooter);
+  no sweep (ADR-58); the pictures of `docs/evidence/2.10/` and `2.14/` not shot again.
+- **Review pass:** not due (two of five since the phase review; 3.2 is not ticked).
+- **Next:** PLAN 3.2d (breakdowns: with no org the elements that burn fuel are lost; fuel
+  and org on the formation panel; the AT of 3.2 in one test; ticks 3.2, so the full e2e).
+- **Gate:** green (code: typecheck, lint, unit 787, the ten-year tests 12, build, the changed spec `zoomDemo1938`, parity; no full e2e for a part, ADR-87).

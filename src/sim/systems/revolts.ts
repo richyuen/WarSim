@@ -394,6 +394,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
       // coordinates in a sea cell of the coarse grid, which is nobody's.
       [fc.x[f], fc.y[f]] = spawnPoint(world, id) ?? world.standPoint(nc.capitalX[id]!, nc.capitalY[id]!);
       fc.supply[f] = 1;
+      fc.org[f] = 1;
       equipFormation(world, f, 0); // template 0 = infantry_div (militia)
     }
   }

@@ -2852,10 +2852,18 @@ quick sweep as a smoke test.
       8498494a.
     - Not done: how often armour marches dry in a war was not counted; the AI does not know
       of it (PLAN 3.5); nothing on the page (3.2d).
-  - [ ] 3.2c **Org.** A formation column `org` 0..1 that combat reads; a formation with fuel
-    in its template and no supply loses it, and gets it back in supply. AT: unit: the dry
-    panzer division's org falls after its speed has, the rifle division's does not; its
-    damage in a battle falls with it; save and load.
+  - [x] 3.2c **Org.** A formation column `org` 0..1 that combat reads; a formation that moves
+    on engines (no manoeuvre element on foot; this said "with fuel in its template", which the
+    rifle division of the AT has) and has no supply loses it, and gets it back in supply. AT:
+    unit: the dry panzer division's org falls after its speed has, the rifle division's does
+    not; its damage in a battle falls with it; save and load.
+    - Done 2026-10-06 (ADR-135). `formations.org`; `ORG_RATE` 1/32 an hour (lost at supply 0
+      by what does not walk, got back on the network by all); fire × (0.25 + 0.75 × org)
+      (`ORG_FIRE`). `tests/unit/org.test.ts` (4, red first). The pin: 8498494a → 3fad5d18. A
+      save from before does not load.
+    - Not done: org is not lost to damage and nothing retreats (SPEC §5.2 step 4: no task
+      yet; to be placed at the phase review 3.7); the AI does not know of it (3.5); nothing on
+      the page (3.2d).
   - [ ] 3.2d **Breakdowns.** With no org left the elements that burn fuel are lost (vehicles,
     not men) faster than the 2% a day of every unsupplied formation. On the formation panel:
     fuel and org. AT: the task's (slows, then org, then strength, in that order, one test);

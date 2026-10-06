@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { FIRE_STRIDE, FireField } from '../../src/shared/events';
+import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex, elementPlace } from '../../src/sim/systems/elements';
@@ -18,6 +19,11 @@ import { assets1938 } from '../helpers/earth';
 // guns too. So the two closest stops show how losses look at T3 (PLAN 2.10b, ADR-80): battalions
 // at a third of their strength with a third of their 64 figures, beside batteries that show
 // every gun lost. (Until 2.10b each of those battalions drew 64: these pictures decided it.)
+// And one whose block fits the picture of the stop at 12 m/px, which asks for the whole division:
+// the zoom holds the battle where the world view has it, which is not the middle of the screen
+// (a battle in Europe is a third of the way down), so every element is to stand within a quarter
+// of the view of the point the camera closes in on. (Since PLAN 3.2c: the division with the
+// most losses in that game reaches 277 px above that point, held 253 px from the top.)
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -33,6 +39,8 @@ import { assets1938 } from '../helpers/earth';
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
 const VIEW = { width: 1400, height: 800 };
+/** Screen px to a cell at the stop that asks for the whole division. */
+const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;
 const FRAME_MS = 16;
 /** The most a share moves in a frame of 16 ms (as `fades1938`: 0.096 for a fade of 250 ms, with room). */
 const MAX_STEP = 0.12;
@@ -108,28 +116,38 @@ function nodeBattle(): Battle {
   const battalions = (f: number): number[] => (idx.get(f) ?? []).filter((e) => size(e) > 64);
   const batteries = (f: number): number[] => (idx.get(f) ?? []).filter((e) => size(e) <= 16);
   const kept = (f: number): number => battalions(f).reduce((s, e) => s + ec.strength[e]!, 0) / battalions(f).reduce((s, e) => s + size(e), 0);
-  const candidates = [...firing].filter((f) => {
-    if (!w.formations.has(f)) return false;
-    const was = dayBefore.get(f);
-    if (!was || was[0] !== fc.x[f] || was[1] !== fc.y[f]) return false;
-    return battalions(f).length >= 8 && battalions(f).every((e) => ec.strength[e]! > 64) && batteries(f).length >= 2 && batteries(f).some((e) => ec.strength[e]! < size(e));
-  });
-  const formation = candidates.sort((a, b) => kept(a) - kept(b) || a - b)[0];
-  if (formation === undefined) throw new Error('no division that fires, stands and has lost men: the demo has no battle');
-  const count = w.rules!.templates[fc.template[formation]!]!.elements.reduce((s, x) => s + x.count, 0);
-  const read = (): El[] =>
-    (elementIndex(w).get(formation) ?? []).map((e) => {
+  const read = (formation: number): El[] => {
+    const count = w.rules!.templates[fc.template[formation]!]!.elements.reduce((s, x) => s + x.count, 0);
+    return (elementIndex(w).get(formation) ?? []).map((e) => {
       // Where the sim has the element: the division is in contact, and its block is deployed against the enemy (PLAN 2.14c1).
       const [x, y] = elementPlace(w, formation, ec.slot[e]!, count);
       return { id: e, strength: ec.strength[e]!, size: size(e), x, y };
     });
-  const first = read();
-  // The anchor: the batteries and, for each, the battalion nearest to it.
-  const guns = first.filter((e) => e.size <= 16);
-  const men = first.filter((e) => e.size > 64);
-  const group = new Set(guns);
-  for (const g of guns) group.add([...men].sort((a, b) => Math.hypot(a.x - g.x, a.y - g.y) - Math.hypot(b.x - g.x, b.y - g.y))[0]!);
-  const anchor: [number, number] = [[...group].reduce((s, e) => s + e.x, 0) / group.size, [...group].reduce((s, e) => s + e.y, 0) / group.size];
+  };
+  /** The anchor: the batteries and, for each, the battalion nearest to it. */
+  const anchorOf = (els: El[]): [number, number] => {
+    const guns = els.filter((e) => e.size <= 16);
+    const men = els.filter((e) => e.size > 64);
+    const group = new Set(guns);
+    for (const g of guns) group.add([...men].sort((a, b) => Math.hypot(a.x - g.x, a.y - g.y) - Math.hypot(b.x - g.x, b.y - g.y))[0]!);
+    return [[...group].reduce((s, e) => s + e.x, 0) / group.size, [...group].reduce((s, e) => s + e.y, 0) / group.size];
+  };
+  /** Every element within a quarter of the view of the anchor at 12 m/px. */
+  const fits = (f: number): boolean => {
+    const els = read(f);
+    const [ax, ay] = anchorOf(els);
+    return els.every((e) => Math.abs(e.x - ax) * PX_PER_CELL_AT_12 < VIEW.width / 4 && Math.abs(e.y - ay) * PX_PER_CELL_AT_12 < VIEW.height / 4);
+  };
+  const candidates = [...firing].filter((f) => {
+    if (!w.formations.has(f)) return false;
+    const was = dayBefore.get(f);
+    if (!was || was[0] !== fc.x[f] || was[1] !== fc.y[f]) return false;
+    return battalions(f).length >= 8 && battalions(f).every((e) => ec.strength[e]! > 64) && batteries(f).length >= 2 && batteries(f).some((e) => ec.strength[e]! < size(e)) && fits(f);
+  });
+  const formation = candidates.sort((a, b) => kept(a) - kept(b) || a - b)[0];
+  if (formation === undefined) throw new Error('no division that fires, stands, has lost men and fits the picture: the demo has no battle');
+  const first = read(formation);
+  const anchor = anchorOf(first);
 
   const own = new Set(first.map((e) => e.id));
   const out: Battle = { formation, nation: fc.nation[formation]!, x: fc.x[formation]!, y: fc.y[formation]!, anchor, elements: [first], men: [fc.strength[formation]!], hashes: [sim.hash()], shots: [0], moving: [fc.moving[formation] === 1], engaged: [fc.engaged[formation] === 1] };
@@ -142,7 +160,7 @@ function nodeBattle(): Battle {
       wd.out.events.length = 0;
     });
     if (!w.formations.has(formation)) throw new Error(`formation ${formation} did not live through hour ${k + 1} of the demo`);
-    out.elements.push(read());
+    out.elements.push(read(formation));
     out.men.push(fc.strength[formation]!);
     out.hashes.push(sim.hash());
     out.shots.push(n);

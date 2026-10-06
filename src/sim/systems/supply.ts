@@ -20,10 +20,12 @@
  * fight together), gains SUPPLY_RATE per hour
  * towards 1; otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
  * template's fuel besides (PLAN 3.2b). At 0 it attrits: (BASE_ATTRITION_PER_DAY +
- * terrain supplyAttrition) of its strength per day, applied hourly.
+ * terrain supplyAttrition) of its strength per day, applied hourly; and one that moves on
+ * engines loses ORG_RATE of its org per hour there, which it gets back on a network (PLAN 3.2c).
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { Terrain } from '../../shared/terrain';
+import { Mobility } from '../nav/grid';
 import type { World } from '../world';
 import { bleedFormation } from './elements';
 
@@ -38,6 +40,12 @@ export const BASE_ATTRITION_PER_DAY = 0.02;
  * march and in 8 standing. On its network a formation is refilled faster than it burns.
  */
 export const MARCH_BURN = SUPPLY_RATE / 40;
+/**
+ * Org per hour (PLAN 3.2c), a power of two as SUPPLY_RATE is: lost by a formation that moves on
+ * engines while its supply is 0 (none left after 32 h), and got back by every formation on a
+ * network that feeds it. Off the network with supply left it stands.
+ */
+export const ORG_RATE = 1 / 32;
 const TERRAIN_ATTRITION = terrainJson.terrain.map((t) => t.supplyAttrition);
 
 /** Supply bloc of a nation: its overlord's id, or its own when it has none. */
@@ -196,9 +204,13 @@ export function supplySystem(world: World): void {
     const bloc = blocOf(world, c.nation[id]!);
     const inSupply = net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, c.nation[id]!));
     const s = c.supply[id]!;
-    const burn = c.moving[id] === 1 && c.engaged[id] !== 1 ? MARCH_BURN * (world.rules?.templates[c.template[id]!]?.fuel ?? 0) : 0;
+    const rule = world.rules?.templates[c.template[id]!];
+    const burn = c.moving[id] === 1 && c.engaged[id] !== 1 ? MARCH_BURN * (rule?.fuel ?? 0) : 0;
     c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE - burn);
+    if (inSupply) c.org[id] = Math.min(1, c.org[id]! + ORG_RATE);
     if (c.supply[id] === 0) {
+      // As the speed rule has it (movement.ts): a formation with a manoeuvre element on foot is not one on engines.
+      if (rule && rule.mobility !== Mobility.foot) c.org[id] = Math.max(0, c.org[id]! - ORG_RATE);
       const perHour = (BASE_ATTRITION_PER_DAY + (TERRAIN_ATTRITION[terrain[cell]!] ?? 0)) / 24;
       bleedFormation(world, id, perHour);
     }

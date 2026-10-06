@@ -18,6 +18,7 @@ export function addDivision(world: World, nation: number, x: number, y: number, 
   c.x[id] = x;
   c.y[id] = y;
   c.supply[id] = 1;
+  c.org[id] = 1;
   equipFormation(world, id, template);
   return id;
 }

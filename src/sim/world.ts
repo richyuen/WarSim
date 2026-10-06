@@ -158,6 +158,8 @@ export const FORMATION_SCHEMA = {
   stepFrac: 'f64',
   /** Supply level 0..1 (PLAN 1.12). */
   supply: 'f64',
+  /** Org 0..1 (PLAN 3.2c): its order; what moves on engines loses it with no supply. Combat reads it. */
+  org: 'f64',
   /** 1 while in contact with an enemy (PLAN 1.13): holds position and fights. */
   engaged: 'u8',
 } as const;

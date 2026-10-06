@@ -33,8 +33,8 @@ import { blocOf } from './supply';
 export const MARCH_DUTY = 0.3;
 /**
  * The share of its speed a formation that moves on engines keeps with no supply (PLAN 3.2b):
- * between that and all of it by its supply level. A panzer division of 1938 without fuel goes
- * at a rifle division's 4 km/h. A formation with a manoeuvre element on foot goes at that
+ * between that and all of it by its supply level. A panzer division of 1938 (12 km/h, the pace
+ * of its motorised infantry) goes at 3 without fuel, behind a rifle division's 4. A formation with a manoeuvre element on foot goes at that
  * element's pace, fuel or none.
  */
 export const DRY_SPEED = 0.25;

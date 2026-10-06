@@ -27,6 +27,7 @@ function spawnAt(world: World, tag: string, cell: number): number {
   f.cols.y[id] = Math.floor(cell / W) + 0.5;
   f.cols.strength[id] = 10_000;
   f.cols.supply[id] = 1;
+  f.cols.org[id] = 1;
   return id;
 }
 const spawn = (world: World, tag: string, lon: number, lat: number): number => spawnAt(world, tag, cellAt(lon, lat));
