@@ -1154,8 +1154,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   tribute):*
   - *Disbanding:* a nation whose balance does not cover a 5% margin plus debt repaid within a
     year is short by S a month. While its gold is below 3 × S (`RUNWAY_MONTHS`), idle
-    divisions go, weakest first; a nation with gold enough runs the deficit (PLAN 2.13,
-    ADR-86). Half their men return to the manpower pool. One `FormationsDisbanded` event per
+    formations go; a nation with gold enough runs the deficit (PLAN 2.13, ADR-86). The order:
+    the least of its upkeep in tanks first (`EconomyTables.templateArmour`: 0 for a division
+    on foot, on horse or in lorries, 0.14 for the mechanised division, 0.20 for the Soviet
+    rifle division, 0.66 to 0.93 for the armour formations), among those the weakest by men,
+    then the lowest id (PLAN 3.1d, ADR-131: by men alone the tank brigades went before every
+    rifle division). Half their men return to the manpower pool. One `FormationsDisbanded` event per
     nation and month, kept in the history.
   - *The treasury of the start* is six months of income, or twelve months of S with the army
     of the order of battle where that is more (`START_ARMY_MONTHS`; 16 nations of 1938): no

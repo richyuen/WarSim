@@ -73,6 +73,11 @@ export interface EconomyTables {
   templateUpkeep: readonly number[];
   /** Full strength (men) per template index. */
   templateStrength: readonly number[];
+  /**
+   * The share of a template's upkeep that its tanks take, 0 to 1, per template index: what the
+   * AI that is short of money sends home last (PLAN 3.1d).
+   */
+  templateArmour: readonly number[];
 }
 
 /** Admin cost of holding `km2` of land. */

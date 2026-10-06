@@ -2742,7 +2742,7 @@ quick sweep as a smoke test.
 
 ## Phase 3 — Armour
 
-- [ ] 3.1 Armour unit types L/M/H + mech/mot, tech generations, production cost/time, upkeep.
+- [x] 3.1 Armour unit types L/M/H + mech/mot, tech generations, production cost/time, upkeep.
   AT: schema + production test; tech gates the heavy tank until 1942+ research.
   - From PLAN 2.13 (ADR-86): a nation short of money disbands its weakest idle formation
     first, by men. A tank brigade is small, so armour goes before rifle divisions (all 34
@@ -2813,9 +2813,17 @@ quick sweep as a smoke test.
     - Not done: the budget shown is what the AI allows, not what the lines take (Germany: 109
       a month allowed, about 55 paid, since a line takes its gold ÷ its days at most); what a
       nation already knows is not listed; the research money is still not in "Expenses".
-  - [ ] 3.1d **What an armour formation is worth to the AI that cuts** (from PLAN 2.13,
+  - [x] 3.1d **What an armour formation is worth to the AI that cuts** (from PLAN 2.13,
     above). AT: seed 99, a nation short of money: its rifle divisions go before its armour of
     the same upkeep; the Soviet armour count after the first cut. Ticks 3.1.
+    - Done 2026-10-06 (ADR-131). The cut takes first what has the least of its upkeep in
+      tanks (`EconomyTables.templateArmour`), among those the weakest by men. The Soviet
+      Union with its treasury emptied (seed 99, at peace, short 343 a month): 34 of 34
+      armour formations after the first cut (0 of 34 before); the 32 cavalry divisions and
+      35 rifle divisions go. `tests/unit/armourWorth.test.ts` (4, all failed first).
+    - Found: without commands the Soviet Union disbands nothing in six years of seed 99, and
+      those six years are the same game with the rule and without it (the pin stands). The
+      world's armour formations fall from 72 to 12 in them, in battle (PLAN 3.5, Phase 7).
 - [ ] 3.2 Fuel/supply consumption and breakdown effects.
   AT: unsupplied armour slows, then loses org, then strength (test).
 - [ ] 3.3 Terrain modifiers for tracked mobility and combat.

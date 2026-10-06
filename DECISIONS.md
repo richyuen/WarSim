@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-131 · 2026-10-06 · accepted — The AI that cuts sends home what has the least of its upkeep in tanks first (PLAN 3.1d)
+
+- **Context:** a nation short of money, its treasury below three months of what is short,
+  disbands idle formations, the weakest by men first (ADR-86). A tank brigade has 1,800 men, a
+  rifle division 12,600: the armour went before everything else. PLAN 2.13 left "what an
+  armour formation is worth to the AI that cuts" to PLAN 3.1.
+- **Measured first** (1938, seed 99):
+  - The Soviet Union at peace with its treasury emptied is short 343 a month. Its first cut
+    by the rule of ADR-86: all 30 tank brigades and all 4 tank corps, no rifle division and
+    no cavalry division. Armour after the first cut: 0 of 34.
+  - A template's price is 200 to 208 months of its upkeep, whatever it is made of (both are
+    sums over the same units). "What it costs to raise again for each gold a month saved"
+    tells no formation from another.
+  - What does differ for the same upkeep: the days to raise it again (90 for the infantry
+    divisions, 180 to 360 for armour) and the men (2,500 for a gold of upkeep on foot, 160 to
+    310 in armour; half of them go back to the pool).
+- **Decision:** the order of the cut is (1) the share of the template's upkeep that its tanks
+  take, least first, (2) men, fewest first, (3) id. The share is a table beside the upkeep
+  (`EconomyTables.templateArmour`), computed from the unit data: 0 for every division on
+  foot, on horse or in lorries; `mech_div` 0.14; `rifle_div_soviet` 0.20; `light_mech_div`
+  0.66; `heavy_panzer_div` 0.82; `panzer_div` 0.83; `mbt_div` 0.84; `panzer_div_2` 0.86;
+  `tank_corps` 0.88; `tank_brigade` 0.93. How much is cut, and when, is as before.
+- **Why this number and not another:**
+  - *Days to raise again* (the first idea): the Soviet rifle division takes 180 days, as the
+    tank brigade does (the days of a template are those of its slowest unit, and it has a
+    tank battalion). The tie would be broken by men, and the brigades would go first still.
+  - *Gold for a man* (upkeep ÷ men): it puts armour last, and it also reorders the infantry
+    by differences of a tenth (a full square division of 20,580 men before a cadre division
+    of 6,240). Among formations without tanks "the weakest first" stands.
+  - *What it is worth in a battle:* not known before PLAN 3.3 and 3.4.
+  - *Two classes, armour or not:* the same order for the templates there are, and a line to
+    draw for a template that is half tanks. The share needs no line.
+- **After** (the same Soviet Union): the 32 cavalry divisions go, then 35 of the 96 rifle
+  divisions; armour after the first cut: 34 of 34. With no formation without tanks left, the
+  armour goes (a unit test): the rule is an order, not a protection.
+- **What it does not change:** six years of seed 99 without commands are the same game, to
+  the hash of every year (7, 14, 3, 0, 3 and 0 formations disbanded; the two orders
+  took the same formations each time, and the Soviet Union is never short enough; which
+  nations cut, and whether one of them had armour, was not looked at). The armour formations of the
+  world fall from 72 to 57, 37, 39, 38, 26 and 12 in those years, in battle, not by this
+  rule: PLAN 3.5 (the AI's mix) and Phase 7.
+- **The pin did not move** (0eb1fb78).
+- **Saves:** no state added.
+- **Proof:** `tests/unit/armourWorth.test.ts` (4; all four fail on the rule before).
+- **Deviation from AoC:** none known; AoC has no unit types (ADR-127).
+
 ### ADR-130 · 2026-10-06 · accepted — Research on the nation panel: the budget per month, a line by name and share paid (PLAN 3.1e)
 
 - **Context:** since ADR-128 nations research, and nothing of it was drawn: a tech showed only

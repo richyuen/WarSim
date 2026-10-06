@@ -6,7 +6,11 @@
  *    month about to be charged), the nation needs B ≥ DEBT_PAYBACK × max(0, −gold) +
  *    MARGIN × income (pay any debt back within a year, keep a margin). While it is short by S =
  *    need − B and its gold is below RUNWAY_MONTHS × S, it disbands idle (not engaged)
- *    formations, weakest first (lowest id on ties); a disbanded formation stops its upkeep at
+ *    formations: those with the least of their upkeep in tanks first (`templateArmour`), among
+ *    them the weakest by men (lowest id on ties). (PLAN 3.1d: by men alone a tank brigade of
+ *    1,800 went before every rifle division, and a formation's price is 200 months of its
+ *    upkeep whatever it is, so the price tells nothing apart; armour takes twice to four times
+ *    the days to raise again and gives the fewest men back.) A disbanded formation stops its upkeep at
  *    once and returns DISBAND_MANPOWER of its men to the pool. A nation with gold enough runs
  *    the deficit instead (PLAN 2.13: the AI disbanded 228 of the 1,054 formations of 1938 in
  *    the first hour, the Soviet Union's with six years of its deficit in the treasury). One
@@ -86,6 +90,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     if (!world.settings.aiEnabled || !isMonthStart(world.startDay, world.tick)) return;
     const nc = world.nations.cols;
     const f = world.formations.cols;
+    const armourOf = (id: number): number => tables.templateArmour[f.template[id]!] ?? 0;
     // Per nation: own formations and their upkeep.
     const own = new Map<number, number[]>();
     const army = new Map<number, number>();
@@ -114,7 +119,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       let { balance } = budgetOf(world, n, acc);
       // 1. Disband while the books do not balance and the treasury cannot carry what is short.
       if (balance < need) {
-        const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1).sort((a, b) => f.strength[a]! - f.strength[b]! || a - b);
+        const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1).sort((a, b) => armourOf(a) - armourOf(b) || f.strength[a]! - f.strength[b]! || a - b);
         let cut = 0;
         for (const id of idle) {
           if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance)) break;

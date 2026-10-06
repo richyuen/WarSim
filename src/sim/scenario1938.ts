@@ -65,10 +65,13 @@ export const START_ARMY_MONTHS = 12;
 
 const unitTypes = new Map((unitsLand.types as unknown as UnitTypeLite[]).map((u) => [u.id, u]));
 const unitUpkeep = new Map((unitsLand.types as unknown as { id: string; upkeep: { gold: number } }[]).map((u) => [u.id, u.upkeep.gold]));
-/** Template tables for the economy (upkeep and full strength per template index). */
+const tankTypes = new Set((unitsLand.types as unknown as { id: string; class: string }[]).filter((u) => u.class.startsWith('armor')).map((u) => u.id));
+const upkeepOfElements = (t: TemplateDef, only?: ReadonlySet<string>): number => t.elements.reduce((s, e) => s + (only && !only.has(e.type) ? 0 : (unitUpkeep.get(e.type) ?? 0) * e.count), 0);
+/** Template tables for the economy (upkeep, full strength and the tanks' share of the upkeep per template index). */
 export const ECONOMY_TABLES_1938: EconomyTables = {
-  templateUpkeep: TEMPLATES_LAND.map((t) => t.elements.reduce((s, e) => s + (unitUpkeep.get(e.type) ?? 0) * e.count, 0)),
+  templateUpkeep: TEMPLATES_LAND.map((t) => upkeepOfElements(t)),
   templateStrength: TEMPLATES_LAND.map((t) => templateStrength(t, unitTypes).men),
+  templateArmour: TEMPLATES_LAND.map((t) => upkeepOfElements(t, tankTypes) / (upkeepOfElements(t) || 1)),
 };
 /** Command rules: template cost and training time (PLAN 1.10, ADR-23). */
 const unitCost = new Map((unitsLand.types as unknown as { id: string; cost: { gold: number; manpower: number; days: number } }[]).map((u) => [u.id, u.cost]));

@@ -27,7 +27,7 @@ import { assets1938 } from '../helpers/earth';
 
 // PLAN 1.9: one test per economic rule on a tiny world, plus the 1938 income ranking.
 
-const TABLES: EconomyTables = { templateUpkeep: [10], templateStrength: [1000] };
+const TABLES: EconomyTables = { templateUpkeep: [10], templateStrength: [1000], templateArmour: [0] };
 const START = dayOfIso('1938-01-01');
 
 /** 4×1 world, two nations; every cell worth 1 bn (1000 $M). */

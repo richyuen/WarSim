@@ -6745,3 +6745,40 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (3.1 is not ticked).
 - **Next:** PLAN 3.1d (what an armour formation is worth to the AI that cuts), which ticks 3.1.
 - **Gate:** green (code: typecheck, lint, unit 774, the ten-year tests 12, build, the changed spec `research1938` 1, parity; no full e2e for a part, ADR-87). By hand besides: `nationPanel1938`, `playerActions1938`, `i18n`, green.
+
+## 2026-10-06 — PLAN 3.1d: what armour is worth to the AI that cuts; 3.1 ticked (ADR-131)
+
+- **Found first, with a throwaway test** (seed 99):
+  - Without commands the Soviet Union disbands nothing for money in four years. The AT's
+    "after the first cut" is a set-up: wars ended, the treasury emptied, one run of the AI.
+  - So set up, it is short 343 a month, and its first cut by the old rule was all 34 armour
+    formations and nothing else.
+  - A template's price is 200 to 208 months of its upkeep whatever it is made of: the price
+    tells no formation from another. The days do (90 against 180 to 360), but the Soviet
+    rifle division has a tank battalion and takes 180 days, as the tank brigade does.
+- **Changed:**
+  - `EconomyTables.templateArmour`: the share of a template's upkeep that its tanks take
+    (`scenario1938.ts`, from the unit data; 0 for all on foot, 0.20 for the Soviet rifle
+    division, 0.93 for the tank brigade).
+  - `ai/economic.ts`: the idle formations are sorted by that share, then by men, then by id.
+    One line; how much is cut and when is as before.
+- **Tests:** `tests/unit/armourWorth.test.ts` (4; all four red on the rule before, run with
+  the source change stashed): the shares; Sweden with four worn tank brigades and rifle
+  divisions of the same upkeep sends home the divisions only; with one rifle division and
+  more brigades than it can pay, the brigades go too; the Soviet Union keeps 34 of 34 armour
+  through its first cut (0 of 34 before) and sends home 32 cavalry and 35 rifle divisions.
+  `economy.test.ts`: its one-template table has the new column (0).
+- **The pin did not move** (0eb1fb78). Six years of seed 99 are the same game with the rule
+  and without it, hash by hash: 7, 14, 3, 0, 3 and 0 formations disbanded, the same
+  ones by either order (whether a nation that cut had armour was not looked at).
+- **Seen, not this task's:** the armour formations of the world go from 72 to 57, 37, 39, 38,
+  26 and 12 in those six years, in battle. The AI replaces few of them (an armour order is
+  every third order of a rich nation at war). PLAN 3.5 and Phase 7 (ADR-58).
+- **Gotcha:** a test that adds formations "until the budget is short of five" was short of
+  six: the loop stops anywhere within one formation's upkeep of the mark. The test now counts
+  what must go from what is short.
+- **Not done:** no sweep (ADR-58). Tick time: the sort of the monthly cut has one comparison
+  more, and it runs only for a nation that is short; not measured.
+- **Review pass:** not due (two of five since the phase review: 2.17 and 3.1).
+- **Next:** PLAN 3.2 (fuel and supply consumption, breakdown).
+- **Gate:** green on the second run (code: typecheck, lint, unit 778, the ten-year tests 12, build, e2e in full 138 in 10.1 min, parity). The first run failed at e2e: `individuals1938` waited 60 s for the page's first frame and map layers and did not get them (136 passed, 1 did not run); alone it passed in 40 s, and in the second run of the suite. Logged in BLOCKERS with the specs that measure time; the spec was not changed.

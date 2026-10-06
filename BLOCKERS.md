@@ -374,6 +374,9 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
   changed. If one fails on an idle machine it is a finding.
   - `individuals1938`: a frame under 25 ms (170 ms).
+    2026-10-06 (the gate of PLAN 3.1d, two runs of the suite, 9.8 and 10.1 min): in the first its
+    wait of 60 s for the first frame and the map layers of a paused 1938 page ran out; alone
+    (40 s) and in the second run it passed. The load of the machine in the first run is not known.
   - `fire1938`: more than 10 of something drawn in a window of frames (9), and no fire dropped (6,614).
   - `handover1938`: a wait of 120 s. `labelFades1938`: the test's 240 s. `title`: 15 s for the
     title screen, and an autosave read before it was written.
