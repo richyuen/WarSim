@@ -174,7 +174,9 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     if (d > 1e-9) {
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
-      const shift = Math.min(DEPLOY_REACH, Math.max(0, short < 0 ? d / 2 - DEPLOY_GAP / 2 - depth / 2 : d - short));
+      // A line that has no room before its formation's place stands behind it (a stack of
+      // ten divisions on one cell is ten lines deep, not three lines and seven blocks in one).
+      const shift = Math.min(DEPLOY_REACH, short < 0 ? Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2) : Math.max(-DEPLOY_REACH, d - short));
       const ux = dx / d;
       const uy = dy / d;
       out = { x: fx, y: fy, facing: atan2(dy, dx) };

@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-132 · 2026-10-06 · accepted — A line of a stack that has no room before its formation's place is deployed behind it (PLAN 3.2a)
+
+- **Context:** formations whose nearest enemy faces a nearer formation come up to that enemy's
+  block, each a line further back (ADR-89), and no block goes further than `DEPLOY_REACH` from
+  its formation (ADR-98). How far forward a block goes was `max(0, distance − what it stops
+  short by)`: a line with no room before its formation's place stood on that place, and so did
+  every line after it.
+- **Found** by the first test run of the fuel rule (PLAN 3.2b), which changes seed 99's game:
+  on day 60 of `deploy.test.ts` ten divisions of China and a puppet of it stand on one cell
+  against one Japanese division, and all ten blocks were drawn in one place: 45 of the 49
+  pairs of blocks "on one another", against the test's limit of 10% of 128 blocks. Seven of
+  the ten were lines without room.
+- **Decision:** such a line stands behind its formation's place, as far as its place in the
+  column asks, at most `DEPLOY_REACH` behind. On land, as before.
+- **After** (the same day, with the fuel rule): 5 pairs of 128 blocks. One of them is two of
+  that stack at the limit behind; the others are pairs of two formations a hundredth of a
+  cell apart, each the other's neighbour in the same line, as before.
+- **What cannot change:** a pair of each other's nearest, and every line that had room. The
+  seven tests of `deploy.test.ts` before this one pass on both sides of the change without
+  the fuel rule.
+- **Not state:** where a block stands is derived (ADR-89). The pin stands (0eb1fb78).
+- **Proof:** `deploy.test.ts`, "ten divisions on one cell against one enemy stand in ten
+  lines" (fails on the rule before: two lines 0.075 cells apart, a block being 0.12 deep).
+- **Not done:** not looked at in the browser (the specs of the battle views are of pairs of
+  each other's nearest, which do not change). A stack of more lines than fit in 1.5 cells
+  behind (about twelve) has its last blocks on one another still.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-131 · 2026-10-06 · accepted — The AI that cuts sends home what has the least of its upkeep in tanks first (PLAN 3.1d)
 
 - **Context:** a nation short of money, its treasury below three months of what is short,

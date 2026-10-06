@@ -149,6 +149,26 @@ describe('the blocks of formations in contact are deployed against each other (P
     expect(deployOf(w, a, 28)).not.toBeNull();
   });
 
+  it('ten divisions on one cell against one enemy stand in ten lines, the last of them behind their own place', () => {
+    const { s, a, b, site } = pair();
+    const w = s.world;
+    const stack = [a, ...Array.from({ length: 9 }, () => addDivision(w, GER, site[0], site[1]))];
+    s.step(2);
+    const blocks = stack.map((f) => deployOf(w, f, 28)!);
+    const depth = slotGrid(28).rows * SLOT_SPACING;
+    const xs = blocks.map((d) => d.x).sort((p, q) => q - p);
+    // One line behind another, a block's depth and the gap apart, none on another.
+    for (let i = 1; i < xs.length; i++) expect(xs[i - 1]! - xs[i]!).toBeGreaterThan(depth);
+    // The first faces the Pole across the gap; the last has no room before the stack's place.
+    expect(deployOf(w, b, 28)!.x - xs[0]!).toBeCloseTo(DEPLOY_GAP + depth, 9);
+    expect(xs.at(-1)!).toBeLessThan(site[0]);
+    for (const d of blocks) {
+      expect(d.y).toBeCloseTo(site[1], 9);
+      expect(Math.cos(d.facing)).toBeCloseTo(1, 9);
+      expect(Math.abs(d.x - site[0])).toBeLessThanOrEqual(DEPLOY_REACH);
+    }
+  });
+
   it('after 60 days of Germany against Poland most formations in contact have their enemy\'s elements in one view at 20 m/px', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });

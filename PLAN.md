@@ -2826,6 +2826,26 @@ quick sweep as a smoke test.
       world's armour formations fall from 72 to 12 in them, in battle (PLAN 3.5, Phase 7).
 - [ ] 3.2 Fuel/supply consumption and breakdown effects.
   AT: unsupplied armour slows, then loses org, then strength (test).
+  Split 2026-10-06 (one cause a commit; there is no `org` in the state yet):
+  - [x] 3.2a **A stack's lines deploy behind its place** (found by 3.2b's first test run: its
+    changed game puts ten divisions on one cell on day 60 of `deploy.test.ts`, and seven of
+    their blocks were drawn in one place). AT: unit, failing first: ten divisions on one cell
+    against one enemy stand in ten lines, none on another.
+    - Done 2026-10-06 (ADR-132). `deployOf`: a line with no room before its formation's place
+      stands behind it, `DEPLOY_REACH` at most. Not state; the pin stands.
+  - [ ] 3.2b **Fuel: the march burns supply, and what moves on engines slows as it runs dry.**
+    A fuel figure per template from `fuelPerHour` of the unit data. AT: unit, failing first:
+    in a pocket a panzer division on the march is dry in half the time of one that stands and
+    then moves at a quarter of its speed; a rifle division moves as before; on the network
+    nothing changes.
+  - [ ] 3.2c **Org.** A formation column `org` 0..1 that combat reads; a formation with fuel
+    in its template and no supply loses it, and gets it back in supply. AT: unit: the dry
+    panzer division's org falls after its speed has, the rifle division's does not; its
+    damage in a battle falls with it; save and load.
+  - [ ] 3.2d **Breakdowns.** With no org left the elements that burn fuel are lost (vehicles,
+    not men) faster than the 2% a day of every unsupplied formation. On the formation panel:
+    fuel and org. AT: the task's (slows, then org, then strength, in that order, one test);
+    e2e of the panel. Ticks 3.2.
 - [ ] 3.3 Terrain modifiers for tracked mobility and combat.
   AT: identical battles on plains vs forest yield the expected outcome swing.
 - [ ] 3.4 Combined arms (inf + art + armour bonus; AT vs armour; armour vs infantry in the open).

@@ -6782,3 +6782,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (two of five since the phase review: 2.17 and 3.1).
 - **Next:** PLAN 3.2 (fuel and supply consumption, breakdown).
 - **Gate:** green on the second run (code: typecheck, lint, unit 778, the ten-year tests 12, build, e2e in full 138 in 10.1 min, parity). The first run failed at e2e: `individuals1938` waited 60 s for the page's first frame and map layers and did not get them (136 passed, 1 did not run); alone it passed in 40 s, and in the second run of the suite. Logged in BLOCKERS with the specs that measure time; the spec was not changed.
+
+## 2026-10-06 — PLAN 3.2a: a stack's lines deploy behind its place (ADR-132); 3.2 split in four
+
+- **3.2 split:** 3.2a (this), 3.2b fuel and speed, 3.2c org (no such column yet), 3.2d
+  breakdowns and the panel. 3.2b was written first and is not committed: its rule works and
+  its test passes, and it changed seed 99's game enough for `deploy.test.ts` (day 60 of
+  Germany against Poland) to fail: 49 pairs of blocks on one another among 128.
+- **Found:** 45 of the 49 are one stack: ten Chinese divisions on one cell against one
+  Japanese division. `deployOf` put each a line further back and clamped the way forward at
+  0, so every line without room stood on the formation's place. An old limit, not the fuel
+  rule's: the game before did not happen to have such a stack on that day.
+- **Changed:** `systems/elements.ts`, one line: a line without room stands behind its
+  formation's place, `DEPLOY_REACH` at most.
+- **Tests:** `deploy.test.ts` +1 (ten divisions on one cell: ten lines, the first across the
+  gap from the enemy, the last behind the stack's place); red on the rule before. The other
+  seven pass with and without the change. With the fuel rule: 5 pairs on day 60.
+- **The pin did not move** (0eb1fb78): not state.
+- **Not done:** not looked at in the browser. Tick time: not measured (the same arithmetic).
+- **Review pass:** not due (two of five since the phase review).
+- **Next:** PLAN 3.2b (the fuel rule; written, in a stash while this is gated).
+- **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, parity; no e2e for a part, ADR-87).
