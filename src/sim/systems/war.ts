@@ -42,6 +42,7 @@
  * at most ±CAPITAL_BONUS_MAX per war (field capitals fall again and again).
  */
 import { isDayStart } from '../../shared/calendar';
+import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { annexNation, makePuppet } from './puppets';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
@@ -83,21 +84,22 @@ function withPuppets(world: World, leader: number): number[] {
   return out;
 }
 
+/** Why `attacker` may not declare war on `defender`; `Refusal.None` when it may (PLAN 2.17a). */
+export function whyNotWar(world: World, attacker: number, defender: number): Refusal {
+  const nc = world.nations.cols;
+  if (!world.nations.has(attacker) || !world.nations.has(defender)) return Refusal.NoNation;
+  if (attacker === defender) return Refusal.SameNation;
+  if (nc.living[attacker] !== 1 || nc.living[defender] !== 1) return Refusal.DeadNation;
+  if (world.wars.atWar(attacker, defender)) return Refusal.AtWar;
+  if (world.wars.inTruce(attacker, defender, world.tick)) return Refusal.Truce;
+  if (nc.overlord[attacker] === defender || nc.overlord[defender] === attacker) return Refusal.Subject;
+  return world.alliances.allied(attacker, defender) ? Refusal.Allied : Refusal.None;
+}
+
 /** Applies a declaration; returns the war or null (with a `WarRejected` event). */
 export function declareWar(world: World, attacker: number, defender: number): War | null {
   const nc = world.nations.cols;
-  const ok =
-    attacker !== defender &&
-    world.nations.has(attacker) &&
-    world.nations.has(defender) &&
-    nc.living[attacker] === 1 &&
-    nc.living[defender] === 1 &&
-    !world.wars.atWar(attacker, defender) &&
-    !world.wars.inTruce(attacker, defender, world.tick) &&
-    nc.overlord[attacker] !== defender &&
-    nc.overlord[defender] !== attacker &&
-    !world.alliances.allied(attacker, defender);
-  if (!ok) {
+  if (whyNotWar(world, attacker, defender) !== Refusal.None) {
     world.out.emit(world.tick, EventKind.WarRejected, attacker, defender, NaN, NaN);
     return null;
   }

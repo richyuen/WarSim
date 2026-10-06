@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import type { Command } from '../shared/commands';
+import { Refusal, type Command } from '../shared/commands';
 import type { NationStat, WarStat } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
@@ -9,6 +9,21 @@ const BUFFS = ['attack', 'defense', 'speed', 'income', 'manpower', 'unrest'] as 
 /** A granted buff: +25% (unrest: +2.5 a month) for 30 days. */
 const BUFF_MAGNITUDE = 0.25;
 const BUFF_HOURS = 24 * 30;
+/** Why the sim did not carry out a command, in words (PLAN 2.17a). */
+const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
+  [Refusal.NotANumber]: 'refusal.notANumber',
+  [Refusal.NoNation]: 'refusal.noNation',
+  [Refusal.DeadNation]: 'refusal.deadNation',
+  [Refusal.SameNation]: 'refusal.sameNation',
+  [Refusal.AtWar]: 'refusal.atWar',
+  [Refusal.Truce]: 'refusal.truce',
+  [Refusal.Subject]: 'refusal.subject',
+  [Refusal.Allied]: 'refusal.allied',
+  [Refusal.InAlliance]: 'refusal.inAlliance',
+  [Refusal.NoAlliance]: 'refusal.noAlliance',
+  [Refusal.NoSuch]: 'refusal.noSuch',
+  [Refusal.NoEffect]: 'refusal.noEffect',
+};
 
 export interface GodTabProps {
   nation: NationStat;
@@ -17,6 +32,8 @@ export interface GodTabProps {
   dead: { id: number; name: string }[];
   aiEnabled: boolean;
   tool: GodToolId | null;
+  /** Why the last command sent was not carried out (`Refusal`; 0 = it was). */
+  refusal: number;
   onCommand: (cmd: Command) => void;
   onTool: (tool: GodToolId) => void;
 }
@@ -26,7 +43,7 @@ export interface GodTabProps {
  * nation, plus map tools (revolt, breakthrough, territory brush) that take the next map clicks.
  * Kill asks for a second click instead of a browser dialog.
  */
-export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, onCommand, onTool }: GodTabProps) {
+export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, refusal, onCommand, onTool }: GodTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [name, setName] = useState('');
@@ -47,6 +64,11 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, onCommand
   );
   return (
     <section class="god-tab" data-testid="panel-god">
+      {refusal !== 0 ? (
+        <div class="panel-warn" data-testid="god-refusal" role="status">
+          {t('refusal.lead')} {t(REFUSAL_KEY[refusal as Exclude<Refusal, 0>] ?? 'refusal.noEffect')}
+        </div>
+      ) : null}
       <div class="god-row">
         <input data-testid="god-rename-input" value={name} placeholder={displayName(nation.name)} onInput={(e) => setName((e.currentTarget as HTMLInputElement).value)} />
         {btn('god-rename', t('god.rename'), () => onCommand({ kind: 'renameNation', nation: n, name }))}
@@ -82,6 +104,7 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, onCommand
           onCommand(nation.alliance ? { kind: 'joinAlliance', nation: tgt, alliance: nation.alliance.id } : { kind: 'createAlliance', leader: n, members: [tgt], nameKey: 'alliance.defensive' }),
         )}
         {btn('god-puppet', t('god.puppet'), () => onCommand({ kind: 'createPuppet', overlord: n, subject: tgt, autonomy: 50 }))}
+        {nation.alliance ? btn('god-leave', t('god.leave'), () => onCommand({ kind: 'leaveAlliance', nation: n })) : null}
       </div>
       {myWars.map((w) => (
         <div class="god-row" key={w.id}>

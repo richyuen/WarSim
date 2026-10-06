@@ -2569,6 +2569,44 @@ quick sweep as a smoke test.
   AT: e2e through the God UI, failing first, one for each of the four: the action has its
   effect, or the panel says in words why not; a dead nation has no cell and no name on the
   map.
+  **Split 2026-10-05** (one cause a commit). The four e2e of the AT are those of 2.17a to 2.17d;
+  2.17e ticks 2.17 and takes the whole e2e suite (ADR-87).
+  - [x] 2.17a **A command that is not carried out says why** (the channel the others use), and
+    **Ally**. Also from the sixth read: no formation, control, land or membership for a dead
+    nation, no control for nation 0, no NaN into the state.
+    AT: unit, the reasons; e2e through the God tab, failing first: Ally with a nation of
+    another alliance says why in words and changes nothing.
+    - Done 2026-10-05 (ADR-117): `applyCommand` returns a `Refusal`; `CommandRefused`; the
+      worker's `refused` message; "Not done: …" at the head of the God tab. Ally is refused
+      with the reason, and the tab has "Leave alliance". `tests/unit/refusal.test.ts` (7),
+      `godUi1938.spec.ts` (a third test); both failed first.
+    - Not done here: a finer reason for Revive (2.17d); the Kill of the last living nation
+      (2.17c); the empty rename (2.17e).
+  - [ ] 2.17b **The Territory brush gives territory.** `paintControl` sets the controller
+    only. It paints owner and controller as the editor's nation brush does (`paint` in
+    `src/sim/editor.ts`: to be read for what of it the God brush may share, the undo history
+    among it).
+    AT: e2e through the God tab, failing first: a drag from France across the Alps raises
+    France's cells, and no hatched band is left. A screenshot, looked at.
+  - [ ] 2.17c **A dead nation holds nothing and has no name on the map.** The band the brush
+    left was France's control without ownership; after the Kill it stayed, with the name on
+    it. To be found: whether 2.17b leaves any way to it (ADR-112 gives back what a dead
+    nation occupied), and why the name was drawn. With it: the Kill of the last living
+    nation is refused with a reason (ADR-113); and the cells a Kill with an heir leaves
+    under a third nation's occupation without a war, to be decided here or logged for
+    Phase 7.
+    AT: e2e through the God tab, failing first: a nation painted over a neighbour's land,
+    renamed and killed has no cell under its control and no name on the map.
+  - [ ] 2.17d **Revive after a Kill.** `reviveOnCores` is false 30 days after a Kill, and the
+    button says nothing: the cause to be read (`revival.ts`: a cooldown, cores gone with the
+    fragments, no core land). What God Mode goes past, and a reason of its own for what it
+    does not.
+    AT: e2e through the God tab, failing first: Kill, then Revive: the nation lives on its
+    core land, or the panel says why not.
+  - [ ] 2.17e **What is left of the list above.** The empty rename in a world without a
+    nation table (ADR-109): refused, or the name kept. The God tab left open on a nation
+    that has just died: what it shows and what its buttons send.
+    AT: unit, the rename in the toy world; e2e, the tab after a Kill of its own nation.
   **PLAN 2.12 to 2.17 are the critic's second report (ADR-83).** They are numbered tasks and
   count toward the next review pass. Their order is not the critic's (R2-B2, B3, B4, B6, B7,
   B8): the two that change or question the world's state come before the one whose tests and

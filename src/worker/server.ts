@@ -849,6 +849,9 @@ export class SimServer {
     const ev = world.out.events;
     for (let i = 0; i < ev.length; i += 6) {
       let b = ev[i + 3]!;
+      // A refusal goes to the page at once and whatever it looks at: the panel that sent the
+      // command says why (PLAN 2.17a).
+      if (ev[i + 1] === EventKind.CommandRefused) this.post({ type: 'refused', reason: b }, []);
       if (ev[i + 1] === EventKind.ElementDestroyed) {
         // The end of an element is for a view that draws elements (PLAN 2.4b); it gets what the
         // unit leaves behind in place of the unit.

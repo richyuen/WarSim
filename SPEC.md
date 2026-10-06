@@ -1513,6 +1513,13 @@ on screen.
   `spawnFormation {nation, x, y, strength, template?}` (PLAN 2.5, ADR-68): with a template of
   the scenario the formation has its elements and fights, as one from production does; without
   one it is a bare strength with no elements (the toy world). It has no button in the God tab.
+  **A command that is not carried out says why** (PLAN 2.17a, ADR-117): `applyCommand` returns a
+  `Refusal` (`shared/commands`), the tick emits `CommandApplied` or `CommandRefused` (b = the
+  reason) after the command, the worker posts `{type: 'refused', reason}` to the page, and the
+  God tab says it in words. Refused: a NaN or an infinity anywhere in a command; a dead nation
+  where a living state is needed (a formation, control, land, an alliance, a puppet, a war); a
+  nation that is not there. Ally with a nation in an alliance is refused; "Leave alliance" is
+  the button for that.
 - **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel
   (`setPlayer`, saved as `settings.player`, so loads and resumed autosaves keep it) turns that
   nation's AI off (strategic, operational and economic AI all skip it) and makes map

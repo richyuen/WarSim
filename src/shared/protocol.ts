@@ -302,6 +302,8 @@ export type FromWorker =
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }
+  /** A command was not carried out; `reason` is a `Refusal` (shared/commands; PLAN 2.17a). */
+  | { type: 'refused'; reason: number }
   | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
   | { type: 'terrain'; reqId: number; result: TerrainBuildResult }
   | { type: 'political'; reqId: number; result: PoliticalBuildResult }

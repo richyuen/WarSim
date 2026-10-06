@@ -167,6 +167,64 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-117 · 2026-10-05 · accepted — A command that is not carried out says why; Ally does not break an alliance, the God tab has "Leave alliance" for that (PLAN 2.17a)
+
+- **Context:** the critic's R2-B8: Ally with a nation of another alliance did nothing and said
+  nothing. `applyCommand` returned nothing, and `CommandApplied` was emitted before the
+  command ran, so it stood for a refusal too. The page read no event but the wrecks. The
+  sixth read (PLAN 2.16Ra) had found commands carried out that should not be: a formation,
+  control, land and a membership for a dead nation, control for nation 0, a NaN into the state.
+- **Decision:**
+  - `applyCommand` returns a `Refusal` (`src/shared/commands.ts`; 0 = carried out). The tick
+    emits `CommandApplied` or `CommandRefused` (a = seq, b = the reason) after the command,
+    not before. A refused command is in the command log as before: the log and the sequence
+    number are state, and a replay refuses it again.
+  - The worker posts every `CommandRefused` to the page as `{ type: 'refused', reason }`, at
+    once and whatever the page's subscription is. The HUD holds the reason of the last command
+    it sent (`Hud.refusal`, cleared by the next command), and the God tab says it in words
+    ("Not done: …", `refusal.*` in `en.json`).
+  - **Who may be named.** A command that gives something only a living state can hold
+    (`spawnFormation`, `forceBreakthrough`, `paintControl`, `editPaint` on the nation layer
+    with a nation other than 0, `createAlliance`, `joinAlliance`, `createPuppet`,
+    `annexNation`, `collapseNation`, `setPlayer`) is refused for a dead nation. A command
+    that sets a value of the nation's row (name, flag, gold, income bonus, AI, efficiency,
+    suppression, autonomy, loyalty) is refused only for a nation that is not there: a dead
+    nation keeps these for its revival, and the editor may set them.
+  - **Numbers.** A command with a NaN or an infinite number anywhere in it is refused before
+    its kind is looked at (`finiteCommand`). JSON writes NaN as null, so such a command was
+    not even the same command after a save.
+  - **Ally** with a nation in an alliance is refused with that reason; it does not take the
+    nation out of its alliance. The God tab gets **Leave alliance** on the selected nation
+    (the command was there; AoC's God Mode has "Break alliance", TEXT). Two clicks that each
+    do one thing, in place of one that ends an alliance the user did not name.
+  - `whyNotWar` (`war.ts`) is the one list of reasons against a declaration; `declareWar`
+    asks it.
+- **Rejected:**
+  - *Ally forces the move* (leave, then join). The leader of the Anti-Comintern pact allied
+    to France would dissolve or hand on a pact with one click on another nation's panel, and
+    a join refused for a war with a member would leave the nation out of both.
+  - *The reason in the snapshot's events.* They are filtered by the view's box and copied by
+    the map view only; a message of its own needs neither.
+  - *The command's kind in the message.* The panel shows the reason of the last command it
+    sent; it needs no kind.
+- **What it does not give:**
+  - Words for a player's offer that the other side refuses (`PeaceRejected`,
+    `AllianceRejected`), for an order to march with no route (`MoveRejected`) and for a
+    build order without the gold (`ProductionRejected`): these have events of their own, and
+    the command counts as carried out. The Actions tab does not show `Hud.refusal`.
+  - A reason for Revive finer than "nothing here to do it with" (PLAN 2.17d), nor one for the
+    Kill of the last living nation, which is still carried out as nothing (PLAN 2.17c).
+  - A God tab that greys what would be refused.
+- **The pin did not move** (7fc8e685): events are not state, and the pinned run has no
+  command.
+- **Tests, seen to fail first:**
+  - `tests/unit/refusal.test.ts` (7; 5 failed with the `src/` of before): the dead nation,
+    nation 0, the NaN, the reasons of war, alliance and puppet, the worker's message.
+  - `tests/e2e/godUi1938.spec.ts`, "a God action that is refused says why…": France's Ally
+    with Italy says "in an alliance already" and Italy stays where it is; the next action
+    takes the words away; Italy leaves, France's Ally takes it in; war on it says "they are
+    allies". Failed before on the missing words.
+
 ### ADR-116 · 2026-10-05 · accepted — The player's selection is of the player's nation, and a player's order names its nation (PLAN 2.16Rk)
 
 - **Context:** seen in PLAN 2.16Ri. `MapView.selectedFormations` is a set of ids, kept while

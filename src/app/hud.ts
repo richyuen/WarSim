@@ -132,6 +132,7 @@ export class Hud {
     const mode = load(KEY_MAP_MODE);
     this.mapMode.value = (MAP_MODES as readonly string[]).includes(mode ?? '') ? (mode as MapMode) : 'political';
     sim.onStats((m) => (this.stats.value = m));
+    sim.onRefused((reason) => (this.refusal.value = reason));
     sim.onMapLayers((m) => (this.templates.value = m.templates));
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';
     const metric = load(KEY_RANK_METRIC);
@@ -348,8 +349,12 @@ export class Hud {
     if (!this.godMode.value) this.setGodTool(null);
   }
 
+  /** Why the sim did not carry out the last command sent from here (`Refusal`; 0 = it did; PLAN 2.17a). */
+  readonly refusal = signal(0);
+
   /** Issues a God command, applied at once (also while paused). */
   command(cmd: Command): void {
+    this.refusal.value = 0;
     this.sim.command(cmd, true);
   }
 

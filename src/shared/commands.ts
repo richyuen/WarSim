@@ -177,6 +177,49 @@ export function isCommand(cmd: unknown): cmd is Command {
   return typeof kind === 'string' && Object.hasOwn(COMMAND_KINDS, kind);
 }
 
+/**
+ * Why a command was not carried out (PLAN 2.17a): the `b` of `EventKind.CommandRefused`. 0 is
+ * "carried out". A refused command changes nothing but the command log, which has its line.
+ */
+export const Refusal = {
+  None: 0,
+  /** A number in the command is NaN or infinite. */
+  NotANumber: 1,
+  /** A nation the command names is not in the world. */
+  NoNation: 2,
+  /** A nation the command names is dead. */
+  DeadNation: 3,
+  /** Both sides of the command are the same nation. */
+  SameNation: 4,
+  /** The two are at war, or the nation is at war with a member of the alliance. */
+  AtWar: 5,
+  Truce: 6,
+  /** One is the other's puppet. */
+  Subject: 7,
+  /** Allies do not go to war. */
+  Allied: 8,
+  /** A nation the command would ally is in an alliance already. */
+  InAlliance: 9,
+  /** The nation is in no alliance. */
+  NoAlliance: 10,
+  /** No such war, alliance, province, formation, city or buff. */
+  NoSuch: 11,
+  /** Nothing to do it with: a revival without core land, a revolt of a province that has no holder. */
+  NoEffect: 12,
+} as const;
+export type Refusal = (typeof Refusal)[keyof typeof Refusal];
+
+/** Whether every number in `cmd` is finite: a NaN is not state, and JSON writes it as null (the command log). */
+export function finiteCommand(cmd: Command): boolean {
+  const ok = (v: unknown): boolean => {
+    if (typeof v === 'number') return Number.isFinite(v);
+    if (Array.isArray(v)) return v.every(ok);
+    if (typeof v === 'object' && v !== null) return Object.values(v).every(ok);
+    return true;
+  };
+  return ok(cmd);
+}
+
 export interface LoggedCommand {
   /** Tick at which the command was applied. */
   tick: number;

@@ -110,6 +110,10 @@ export class SimClient {
       for (const l of this.landMaskListeners) l(msg.mask);
       return;
     }
+    if (msg.type === 'refused') {
+      for (const l of this.refusedListeners) l(msg.reason);
+      return;
+    }
     const p = this.pending.get(msg.reqId);
     if (!p) return;
     this.pending.delete(msg.reqId);
@@ -276,6 +280,13 @@ export class SimClient {
     const r = await this.request({ type: 'buildPolitical', assetBase, w, h });
     if (!('political' in r)) throw new Error('unexpected reply to buildPolitical');
     return r.political;
+  }
+
+  private readonly refusedListeners = new Set<(reason: number) => void>();
+  /** A command the sim did not carry out, and why (`Refusal`, shared/commands; PLAN 2.17a). */
+  onRefused(l: (reason: number) => void): () => void {
+    this.refusedListeners.add(l);
+    return () => this.refusedListeners.delete(l);
   }
 
   /** Queues `cmd`; with `now` it is applied at once (between ticks; God Mode UI). */

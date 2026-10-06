@@ -8,7 +8,7 @@ export const EventKind = {
   FormationSpawned: 1,
   /** a = formation id, b = nation, (x, y) = last position. */
   FormationDestroyed: 2,
-  /** a = command seq, b = 0, x = y = NaN (global). */
+  /** a = command seq, b = 0, x = y = NaN (global): the command was carried out. */
   CommandApplied: 3,
   /** a = nation, b = 1 when it goes bankrupt / 0 when it recovers (global). */
   Bankruptcy: 4,
@@ -91,6 +91,8 @@ export const EventKind = {
    * its middle.
    */
   LandCeded: 36,
+  /** a = command seq, b = why (`Refusal`, shared/commands), x = y = NaN (global): the command was not carried out (PLAN 2.17a). */
+  CommandRefused: 37,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

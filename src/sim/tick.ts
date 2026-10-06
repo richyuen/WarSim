@@ -2,10 +2,10 @@
  * Tick orchestration (SPEC §2.5). Systems run in a fixed order; each is `(world) => void`
  * and reads no wall-clock time, render state or subscriptions.
  */
-import type { Command } from '../shared/commands';
+import { finiteCommand, Refusal, type Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation, equipFormation } from './systems/elements';
-import { declareWar, makePeace, offerPeace } from './systems/war';
+import { declareWar, makePeace, offerPeace, whyNotWar } from './systems/war';
 import { canJoin, leaveAlliance, noWarAmong, proposeAlliance } from './systems/alliances';
 import { annexNation, makePuppet, releasePuppet } from './systems/puppets';
 import { removeCity, setCapital, setCore, spawnCity } from './scenarioEdit';
@@ -51,10 +51,29 @@ function paintControl(world: World, nation: number, x: number, y: number, r: num
   }
 }
 
-function applyCommand(world: World, cmd: Command): void {
+/** Why a command may not set a value of nation `n`: it is not there. A dead nation keeps its name, flag, gold and settings for a revival. */
+function whyNoNation(world: World, n: number): Refusal {
+  return world.nations.has(n) ? Refusal.None : Refusal.NoNation;
+}
+
+/** Why a command may not name nation `n` as one that acts or is acted on: it is not there, or it is dead. */
+function whyNotNation(world: World, n: number): Refusal {
+  if (!world.nations.has(n)) return Refusal.NoNation;
+  return world.nations.cols.living[n] === 1 ? Refusal.None : Refusal.DeadNation;
+}
+
+/**
+ * Carries out `cmd`, or says why not (PLAN 2.17a). A command that is refused leaves the state as
+ * it was. The offers of a player (`offerPeace`, `proposeAlliance`), an order to march and an
+ * order to build have events of their own for a "no" and count as carried out here.
+ */
+function applyCommand(world: World, cmd: Command): Refusal {
+  if (!finiteCommand(cmd)) return Refusal.NotANumber;
+  const done = (ok: boolean, why: Refusal = Refusal.NoEffect): Refusal => (ok ? Refusal.None : why);
   switch (cmd.kind) {
     case 'spawnFormation': {
-      if (!world.nations.has(cmd.nation)) return;
+      const why = whyNotNation(world, cmd.nation);
+      if (why) return why;
       const f = world.formations;
       const id = f.create();
       f.cols.nation[id] = cmd.nation;
@@ -67,191 +86,242 @@ function applyCommand(world: World, cmd: Command): void {
         f.cols.supply[id] = 1;
         equipFormation(world, id, cmd.template); // sets strength from the elements
       }
-      return;
+      return Refusal.None;
     }
     case 'removeFormation':
-      if (world.formations.has(cmd.id)) destroyFormation(world, cmd.id); // with its elements and cached path
-      return;
+      if (!world.formations.has(cmd.id)) return Refusal.NoSuch;
+      destroyFormation(world, cmd.id); // with its elements and cached path
+      return Refusal.None;
     case 'queueFormation':
       queueFormation(world, cmd.nation, cmd.template);
-      return;
+      return Refusal.None;
     case 'moveFormation':
       // A player's order names its nation: the id may be another nation's formation by now (PLAN 2.16Rk).
-      if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return;
+      if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return Refusal.NoSuch;
       orderMove(world, cmd.id, cmd.x, cmd.y);
-      return;
+      return Refusal.None;
     case 'setSetting':
       if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;
       else if (cmd.key === 'revoltMode') world.settings.revoltMode = cmd.value;
       else if (cmd.key === 'ceMode') world.settings.ceMode = cmd.value;
       else world.settings.aiEnabled = cmd.value;
-      return;
-    case 'setEfficiency':
-      if (world.nations.has(cmd.nation)) world.nations.cols.efficiency[cmd.nation] = Math.max(MIN_CE, Math.min(MAX_CE, cmd.value));
-      return;
-    case 'lockEfficiency':
-      if (world.nations.has(cmd.nation)) world.nations.cols.ceLocked[cmd.nation] = cmd.locked ? 1 : 0;
-      return;
-    case 'setSuppression':
-      if (world.nations.has(cmd.nation)) world.nations.cols.suppression[cmd.nation] = Math.max(0, Math.min(1, cmd.level));
-      return;
+      return Refusal.None;
+    case 'setEfficiency': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) world.nations.cols.efficiency[cmd.nation] = Math.max(MIN_CE, Math.min(MAX_CE, cmd.value));
+      return why;
+    }
+    case 'lockEfficiency': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) world.nations.cols.ceLocked[cmd.nation] = cmd.locked ? 1 : 0;
+      return why;
+    }
+    case 'setSuppression': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) world.nations.cols.suppression[cmd.nation] = Math.max(0, Math.min(1, cmd.level));
+      return why;
+    }
     case 'grantBuff': {
-      if (!(cmd.hours > 0) || !Number.isFinite(cmd.magnitude)) return;
+      if (!(cmd.hours > 0)) return Refusal.NoEffect;
       const b = world.buffs.add({ targetKind: cmd.targetKind, target: cmd.target, kind: cmd.buff, magnitude: cmd.magnitude, expiresTick: world.tick + Math.ceil(cmd.hours), nameKey: cmd.nameKey });
       world.out.emit(world.tick, EventKind.BuffGranted, b.id, b.target, NaN, NaN);
-      return;
+      return Refusal.None;
     }
     case 'removeBuff': {
       const b = world.buffs.remove(cmd.id);
-      if (b) world.out.emit(world.tick, EventKind.BuffExpired, b.id, b.target, NaN, NaN);
-      return;
+      if (!b) return Refusal.NoSuch;
+      world.out.emit(world.tick, EventKind.BuffExpired, b.id, b.target, NaN, NaN);
+      return Refusal.None;
     }
     case 'forceBreakthrough': {
-      if (!world.nations.has(cmd.nation)) return;
+      const why = whyNotNation(world, cmd.nation);
+      if (why) return why;
       const id = world.battles.nextId++;
       world.battles.history.push({ tick: world.tick, kind: EventKind.MajorBattleEnded, a: id, b: cmd.nation, x: cmd.x, y: cmd.y });
       world.out.emit(world.tick, EventKind.MajorBattleEnded, id, cmd.nation, cmd.x, cmd.y);
       addCorridor(world, cmd.nation, cmd.x, cmd.y, cmd.toX - cmd.x, cmd.toY - cmd.y);
-      return;
+      return Refusal.None;
     }
-    case 'setAi':
-      if (world.nations.has(cmd.nation)) world.nations.cols.aiOff[cmd.nation] = cmd.enabled ? 0 : 1;
-      return;
+    case 'setAi': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) world.nations.cols.aiOff[cmd.nation] = cmd.enabled ? 0 : 1;
+      return why;
+    }
     case 'reviveNation':
-      reviveOnCores(world, cmd.nation);
-      return;
-    case 'collapseNation':
-      collapseNation(world, cmd.nation, true); // God Mode Kill: everything fragments
-      return;
+      if (!world.nations.has(cmd.nation)) return Refusal.NoNation;
+      return done(reviveOnCores(world, cmd.nation));
+    case 'collapseNation': {
+      const why = whyNotNation(world, cmd.nation);
+      if (!why) collapseNation(world, cmd.nation, true); // God Mode Kill: everything fragments
+      return why;
+    }
     case 'setUnrest':
-      if (cmd.province > 0 && cmd.province < world.provinces.count) {
-        world.provinces.unrest[cmd.province] = Math.max(0, Math.min(100, cmd.value));
-        world.provinces.version++;
-      }
-      return;
-    case 'paintControl':
-      paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r, cmd.x2, cmd.y2);
-      return;
-    case 'declareWar':
-      declareWar(world, cmd.attacker, cmd.defender);
-      return;
+      if (!(cmd.province > 0 && cmd.province < world.provinces.count)) return Refusal.NoSuch;
+      world.provinces.unrest[cmd.province] = Math.max(0, Math.min(100, cmd.value));
+      world.provinces.version++;
+      return Refusal.None;
+    case 'paintControl': {
+      const why = whyNotNation(world, cmd.nation);
+      if (!why) paintControl(world, cmd.nation, cmd.x, cmd.y, cmd.r, cmd.x2, cmd.y2);
+      return why;
+    }
+    case 'declareWar': {
+      const why = whyNotWar(world, cmd.attacker, cmd.defender);
+      declareWar(world, cmd.attacker, cmd.defender); // a refused one has its event (`WarRejected`)
+      return why;
+    }
     case 'forcePeace': {
       const war = world.wars.list.find((w) => w.id === cmd.war);
-      if (war) makePeace(world, war);
-      return;
+      if (!war) return Refusal.NoSuch;
+      makePeace(world, war);
+      return Refusal.None;
     }
     case 'createAlliance': {
-      if (!noWarAmong(world, [cmd.leader, ...cmd.members])) return;
+      const all = [cmd.leader, ...cmd.members];
+      for (const m of all) {
+        const why = whyNotNation(world, m);
+        if (why) return why;
+      }
+      if (all.some((m) => world.alliances.allianceOf(m) !== undefined)) return Refusal.InAlliance;
+      if (!noWarAmong(world, all)) return Refusal.AtWar;
       const a = world.alliances.create(cmd.leader, cmd.members, cmd.nameKey, 50);
-      if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
-      return;
+      if (!a) return Refusal.NoEffect;
+      for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
+      return Refusal.None;
     }
     case 'joinAlliance': {
       const a = world.alliances.list.find((x) => x.id === cmd.alliance);
-      if (a && world.nations.has(cmd.nation) && canJoin(world, cmd.nation, a) && world.alliances.join(cmd.nation, a)) world.out.emit(world.tick, EventKind.AllianceJoined, cmd.nation, a.id, NaN, NaN);
-      return;
+      if (!a) return Refusal.NoSuch;
+      const why = whyNotNation(world, cmd.nation);
+      if (why) return why;
+      if (world.alliances.allianceOf(cmd.nation) !== undefined) return Refusal.InAlliance;
+      if (!canJoin(world, cmd.nation, a)) return Refusal.AtWar;
+      if (!world.alliances.join(cmd.nation, a)) return Refusal.NoEffect;
+      world.out.emit(world.tick, EventKind.AllianceJoined, cmd.nation, a.id, NaN, NaN);
+      return Refusal.None;
     }
     case 'leaveAlliance':
+      if (world.alliances.allianceOf(cmd.nation) === undefined) return Refusal.NoAlliance;
       leaveAlliance(world, cmd.nation);
-      return;
+      return Refusal.None;
     case 'setUnity': {
       const a = world.alliances.list.find((x) => x.id === cmd.alliance);
-      if (a) a.unity = Math.max(0, Math.min(100, cmd.value));
-      return;
+      if (!a) return Refusal.NoSuch;
+      a.unity = Math.max(0, Math.min(100, cmd.value));
+      return Refusal.None;
     }
     case 'setLoyalty': {
       const a = world.alliances.allianceOf(cmd.nation);
-      if (a) a.loyalty[a.members.indexOf(cmd.nation)] = Math.max(0, Math.min(100, cmd.value));
-      return;
+      if (!a) return Refusal.NoAlliance;
+      a.loyalty[a.members.indexOf(cmd.nation)] = Math.max(0, Math.min(100, cmd.value));
+      return Refusal.None;
     }
-    case 'createPuppet':
-      makePuppet(world, cmd.overlord, cmd.subject, cmd.autonomy);
-      return;
+    case 'createPuppet': {
+      const why = whyNotNation(world, cmd.overlord) || whyNotNation(world, cmd.subject);
+      if (why) return why;
+      if (cmd.overlord === cmd.subject) return Refusal.SameNation;
+      return done(makePuppet(world, cmd.overlord, cmd.subject, cmd.autonomy), Refusal.Subject);
+    }
     case 'releasePuppet':
+      if (!world.nations.has(cmd.subject)) return Refusal.NoNation;
+      if (world.nations.cols.overlord[cmd.subject] === 0) return Refusal.NoEffect;
       releasePuppet(world, cmd.subject);
-      return;
-    case 'setAutonomy':
-      if (world.nations.has(cmd.subject)) world.nations.cols.autonomy[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
-      return;
-    case 'setPuppetLoyalty':
-      if (world.nations.has(cmd.subject)) world.nations.cols.loyalty[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
-      return;
+      return Refusal.None;
+    case 'setAutonomy': {
+      const why = whyNoNation(world, cmd.subject);
+      if (!why) world.nations.cols.autonomy[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
+      return why;
+    }
+    case 'setPuppetLoyalty': {
+      const why = whyNoNation(world, cmd.subject);
+      if (!why) world.nations.cols.loyalty[cmd.subject] = Math.max(0, Math.min(100, cmd.value));
+      return why;
+    }
     case 'renameNation': {
-      if (!world.nations.has(cmd.nation)) return;
+      const why = whyNoNation(world, cmd.nation);
+      if (why) return why;
       const name = cmd.name.trim().slice(0, MAX_NAME);
       if (name === '') world.names.delete(cmd.nation);
       else world.names.set(cmd.nation, name);
       world.namesVersion++;
-      return;
+      return Refusal.None;
     }
     case 'spawnRevolt':
-      forceRevolt(world, cmd.province);
-      return;
-    case 'setIncomeBonus':
-      if (world.nations.has(cmd.nation)) world.nations.cols.incomeBonus[cmd.nation] = Math.round(Math.max(-100, Math.min(100, cmd.value)));
-      return;
+      return done(forceRevolt(world, cmd.province));
+    case 'setIncomeBonus': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) world.nations.cols.incomeBonus[cmd.nation] = Math.round(Math.max(-100, Math.min(100, cmd.value)));
+      return why;
+    }
     case 'setPlayer': {
       const nc = world.nations.cols;
       const prev = world.settings.player;
-      if (cmd.nation !== 0 && (!world.nations.has(cmd.nation) || nc.living[cmd.nation] !== 1)) return;
+      const why = cmd.nation === 0 ? Refusal.None : whyNotNation(world, cmd.nation);
+      if (why) return why;
       if (prev !== 0 && world.nations.has(prev)) nc.aiOff[prev] = 0;
       if (cmd.nation !== 0) nc.aiOff[cmd.nation] = 1;
       world.settings.player = cmd.nation;
-      return;
+      return Refusal.None;
     }
     case 'spawnCity':
-      spawnCity(world, cmd.x, cmd.y, cmd.name, cmd.size);
-      return;
+      return done(spawnCity(world, cmd.x, cmd.y, cmd.name, cmd.size) !== 0);
     case 'removeCity':
-      removeCity(world, cmd.city);
-      return;
+      return done(removeCity(world, cmd.city), Refusal.NoSuch);
     case 'setCapital':
-      setCapital(world, cmd.nation, cmd.city);
-      return;
-    case 'setGold':
-      if (world.nations.has(cmd.nation) && Number.isFinite(cmd.value)) world.nations.cols.gold[cmd.nation] = cmd.value;
-      return;
+      return done(setCapital(world, cmd.nation, cmd.city));
+    case 'setGold': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) world.nations.cols.gold[cmd.nation] = cmd.value;
+      return why;
+    }
     case 'setCore':
-      setCore(world, cmd.province, cmd.nation, cmd.on);
-      return;
-    case 'annexNation':
-      annexNation(world, cmd.annexer, cmd.target);
-      return;
+      return done(setCore(world, cmd.province, cmd.nation, cmd.on));
+    case 'annexNation': {
+      const why = whyNotNation(world, cmd.annexer) || whyNotNation(world, cmd.target);
+      if (why) return why;
+      return done(annexNation(world, cmd.annexer, cmd.target), Refusal.SameNation);
+    }
     case 'setFlag': {
-      if (!world.nations.has(cmd.nation)) return;
+      const why = whyNoNation(world, cmd.nation);
+      if (why) return why;
       if (cmd.runs.length === 0) world.flags.delete(cmd.nation);
       else {
         const px = decodeRunsU32(cmd.runs, FLAG_W * FLAG_H);
-        if (!px) return;
+        if (!px) return Refusal.NoEffect;
         world.flags.set(cmd.nation, px);
       }
       world.flagsVersion++;
-      return;
+      return Refusal.None;
     }
-    case 'editPaint':
-      paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask, cmd.stroke);
-      return;
+    case 'editPaint': {
+      // Land for a dead nation would be land of no living state: 0 (no nation) may be painted.
+      const why = cmd.layer === 'nation' && cmd.value !== 0 ? whyNotNation(world, cmd.value) : Refusal.None;
+      if (!why) paint(world, cmd.layer, cmd.tool, cmd.x, cmd.y, cmd.x2, cmd.y2, cmd.r, cmd.value, cmd.mask, cmd.stroke);
+      return why;
+    }
     case 'importLayer': {
       const values = decodeRuns(cmd.runs, world.cells.w * world.cells.h);
-      if (values) importLayer(world, cmd.layer, values);
-      return;
+      if (!values) return Refusal.NoEffect;
+      importLayer(world, cmd.layer, values);
+      return Refusal.None;
     }
     case 'editUndo':
       undoEdit(world);
-      return;
+      return Refusal.None;
     case 'editRedo':
       redoEdit(world);
-      return;
+      return Refusal.None;
     case 'offerPeace':
       offerPeace(world, cmd.war, cmd.from);
-      return;
+      return Refusal.None;
     case 'proposeAlliance':
       proposeAlliance(world, cmd.from, cmd.to);
-      return;
+      return Refusal.None;
     case 'setWarFightToDeath': {
       const war = world.wars.list.find((w) => w.id === cmd.war);
-      if (war) war.fightToDeath[cmd.side] = cmd.value;
-      return;
+      if (!war) return Refusal.NoSuch;
+      war.fightToDeath[cmd.side] = cmd.value;
+      return Refusal.None;
     }
     default: {
       // Every kind has its case: one without does not compile (PLAN 2.12b).
@@ -274,8 +344,9 @@ export function applyPendingCommands(world: World): void {
   queue.sort((a, b) => a.seq - b.seq);
   for (const { seq, cmd } of queue) {
     world.commandLog.push({ tick: world.tick, seq, cmd });
-    world.out.emit(world.tick, EventKind.CommandApplied, seq, 0, NaN, NaN);
-    applyCommand(world, cmd);
+    // After the command's own events: which of the two it is, is known only then (PLAN 2.17a).
+    const why = applyCommand(world, cmd);
+    world.out.emit(world.tick, why === Refusal.None ? EventKind.CommandApplied : EventKind.CommandRefused, seq, why, NaN, NaN);
   }
 }
 

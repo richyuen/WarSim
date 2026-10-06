@@ -6321,3 +6321,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** green (code: typecheck, lint, unit 733, build, the whole e2e suite: 132 passed in 10.3 min, parity).
 - **Next:** PLAN 2.17 (the critic's R2-B8, God Mode). The count of numbered tasks toward the
   next review pass starts again with it.
+
+## 2026-10-05 — PLAN 2.17a: a command that is not carried out says why (ADR-117)
+
+- **2.17 split** into 2.17a to 2.17e (PLAN): the channel and Ally; the Territory brush; the
+  dead nation's land and name; Revive; the rename and the tab of a dead nation.
+- **The defect:** `applyCommand` returned nothing and `CommandApplied` came before the command.
+  The page read no event. Ally with a nation of another alliance: nothing, and no word.
+- **The fix:**
+  - `Refusal` codes (`shared/commands.ts`); `applyCommand` returns one; `CommandApplied` or
+    `CommandRefused` after the command.
+  - The worker posts `refused` to the page; `Hud.refusal`; the God tab says "Not done: …".
+  - Ally is refused with the reason. The God tab has "Leave alliance".
+  - Closed with it (the sixth read): a dead nation gets no formation, control, land,
+    membership, puppet or war; nation 0 no control; a NaN or an infinity refuses the command.
+- **Left as it was, on purpose:** the setters of a nation's row (name, flag, gold, bonus, AI)
+  still take a dead nation (ADR-117 says why).
+- **Tests, seen to fail first:** `tests/unit/refusal.test.ts` (7; 5 failed on the `src/` of
+  before); `godUi1938.spec.ts`, a third test (failed on the missing words).
+- **Run by hand** (a part, ADR-87): `godUi1938`, `godMode1938`, `player1938` with
+  `--project chromium`: 16 green (33 s).
+- **Looked at:** `docs/evidence/2.17/god-refusal.png`: the words stand in the warning colour
+  over the rename row, two lines in the panel's width; "Leave alliance" under the three
+  diplomacy buttons.
+- **Not done:** no sweep (ADR-58); tick time not measured (one walk over a command's fields
+  when a command is applied; none in the pinned run).
+- **The pin did not move** (7fc8e685).
+- **Gate:** green (code: typecheck, lint, unit, the ten-year tests, build, the changed spec, parity; no full e2e for a part, ADR-87).
+- **Next:** PLAN 2.17b, the Territory brush.

@@ -220,6 +220,7 @@ export function App({
                   dead: stats.dead,
                   aiEnabled: stats.aiEnabled,
                   tool: hud.godTool.value,
+                  refusal: hud.refusal.value,
                   onCommand: (c) => hud.command(c),
                   onTool: (tl) => hud.setGodTool(tl),
                 }

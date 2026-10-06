@@ -215,3 +215,58 @@ test('Kill through the God tab: a few new nations, no new war', async ({ page },
   await page.waitForTimeout(1_500);
   await page.screenshot({ path: path.join(out, 'kill-france-africa.png') });
 });
+
+// PLAN 2.17a (the critic's R2-B8): Ally with a nation of another alliance did nothing and said
+// nothing. The panel says why not, and the God tab has the button that makes it possible.
+test('a God action that is refused says why: Ally with a nation of another alliance', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const [FRA, ITA] = [id('FRA'), id('ITA')];
+  const select = async (lon: number, lat: number, n: number): Promise<void> => {
+    await lookAt(page, lon, lat);
+    await page.mouse.click(700, 400);
+    await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(n));
+  };
+  const leaderOf = async (n: number): Promise<number | undefined> => nation(await inspect(page), n).alliance?.leader;
+
+  await page.getByTestId('god-btn').click();
+  await select(2.5, 47, FRA);
+  await page.getByTestId('tab-god').click();
+  const [ofFrance, ofItaly] = [await leaderOf(FRA), await leaderOf(ITA)];
+  expect(ofFrance).toBeDefined();
+  expect(ofItaly).toBeDefined();
+  expect(ofItaly).not.toBe(ofFrance);
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+
+  // Ally with Italy: refused, in words, and nothing has changed.
+  await page.getByTestId('god-target').selectOption(String(ITA));
+  await page.getByTestId('god-ally').click();
+  await expect(page.getByTestId('god-refusal')).toContainText('in an alliance already');
+  expect(await leaderOf(ITA)).toBe(ofItaly);
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.17') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.screenshot({ path: path.join(out, 'god-refusal.png') });
+
+  // The next action that is carried out takes the words away.
+  const bonus = nation(await inspect(page), FRA).incomeBonus;
+  await page.getByTestId('god-bonus-up').click();
+  await expect.poll(async () => nation(await inspect(page), FRA).incomeBonus).toBe(bonus + 10);
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+
+  // Italy leaves its alliance; then France's Ally takes it in, and war on an ally says why not.
+  await select(12.5, 43, ITA);
+  await page.getByTestId('god-leave').click();
+  await expect.poll(() => leaderOf(ITA)).toBeUndefined();
+  await expect(page.getByTestId('god-leave')).toHaveCount(0);
+  await select(2.5, 47, FRA);
+  await page.getByTestId('god-target').selectOption(String(ITA));
+  await page.getByTestId('god-ally').click();
+  await expect.poll(() => leaderOf(ITA)).toBe(ofFrance);
+  await expect(page.getByTestId('god-refusal')).toHaveCount(0);
+  await page.getByTestId('god-war').click();
+  await expect(page.getByTestId('god-refusal')).toContainText('they are allies');
+  expect(atWar(await inspect(page), FRA, ITA)).toBe(false);
+});
