@@ -2833,6 +2833,7 @@ quick sweep as a smoke test.
     against one enemy stand in ten lines, none on another.
     - Done 2026-10-06 (ADR-132). `deployOf`: a line with no room before its formation's place
       stands behind it, `DEPLOY_REACH` at most. Not state; the pin stands.
+    - Replaced the same day by 3.2a2 (ADR-133): abreast, not behind.
   - [x] 3.2a2 **Abreast, not behind** (3.2a's rule failed two other 60-day tests of
     `deploy.test.ts` on 3.2b's game: a rear line 2.4 cells from its enemy's block, and 88% in
     one view). AT: the stack test asks what the suite asks: none on another, each in one view

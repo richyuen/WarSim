@@ -182,8 +182,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     movement rule has it) loses `MARCH_BURN` × fuel an hour besides the 1/8: 1/320 for each
     unit of fuel. The panzer division of 1938 is dry in 4.1 h on the march and in 8 standing.
   - *Speed:* a formation whose mobility is not "foot" (no manoeuvre element walks) moves at
-    `DRY_SPEED` + (1 − `DRY_SPEED`) × supply of its speed; `DRY_SPEED` = 0.25. Dry, the
-    panzer division of 1938 goes at 4 km/h, a rifle division's pace.
+    `DRY_SPEED` + (1 − `DRY_SPEED`) × supply of its speed; `DRY_SPEED` = 0.25. The
+    panzer division of 1938 marches at 12 km/h (its slowest manoeuvre element, the motorised
+    infantry) and dry at 3, behind a rifle division's 4. (Corrected the same day: this said
+    "at 4 km/h, a rifle division's pace", from the light tank's 16.)
   - *No fuel level of its own.* Fuel is a part of the supply a formation carries. A second
     level would need a second network or a second rate on the same one, and the formation
     panel a second bar, for the same picture: off the network armour stops first.
@@ -196,12 +198,13 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     tanks do not set it. The Soviet rifle division burns a little more and walks as before.
   - A formation that stands or fights burns nothing more.
 - **Why these numbers:** 40 units of fuel double the drain: the first panzer division is at
-  about that, so "armour on the march lasts half as long". A quarter of the speed: 16 km/h ×
-  0.25 is the 4 km/h of the infantry it then waits for. Neither is tuned (ADR-58).
+  about that, so "armour on the march lasts half as long". A quarter of the speed: a
+  formation on engines without fuel is about as slow as one on foot (3 to 4 km/h for the
+  templates there are). Neither is tuned (ADR-58).
 - **What it does to a game:** ground just taken is not on the taker's network until the next
   refresh (12 h, ADR-25), so the head of an advance is off the network for hours at a time,
   and its armour is the first to slow there. On day 60 of Germany against Poland (seed 99) a
-  panzer division and a motorised division in contact stand at supply 0. How often armour
+  panzer division in contact stands at supply 0. How often armour
   marches dry in a war was not counted.
 - **The pin moved:** 0eb1fb78 → 8498494a (seed 99, one year).
 - **Saves:** no state added. A save from before goes on by the new rule.
@@ -251,7 +254,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   More files than fit in a cell to each side stand on the last.
 - **Deviation from AoC:** none; AoC has no blocks of elements.
 
-### ADR-132 · 2026-10-06 · accepted — A line of a stack that has no room before its formation's place is deployed behind it (PLAN 3.2a)
+### ADR-132 · 2026-10-06 · superseded by ADR-133 — A line of a stack that has no room before its formation's place is deployed behind it (PLAN 3.2a)
 
 - **Context:** formations whose nearest enemy faces a nearer formation come up to that enemy's
   block, each a line further back (ADR-89), and no block goes further than `DEPLOY_REACH` from

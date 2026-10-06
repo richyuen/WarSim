@@ -6858,3 +6858,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.2c (org: a formation column that combat reads; every place that makes a
   formation sets it to 1; what a save without the column loads as).
 - **Gate:** green (code: typecheck, lint, unit 783, the ten-year tests 12, build, parity; no e2e for a part, ADR-87). A run before it, started by mistake on the old pin, failed at the pin alone.
+
+## 2026-10-06 — After PLAN 3.2b: what the advisor's review found (documents)
+
+- **Specs not run for 3.2a2 and 3.2b** (a part that touches what is drawn runs its specs by
+  hand, ADR-87). Run now with `--project chromium`: `battleView1938` (2), `toBattle1938` (2),
+  `zoomDemo1938` (1): green, as written. Day 60 of seed 99 is another game since the fuel
+  rule: the banner leads to formations 15 and 563 (45 and 563 before), 9 + 8 formations in
+  the battle. The pictures of `docs/evidence/2.14/` are of the game before and were not shot
+  again; no picture of a stack abreast was looked at.
+- **ADR-134 corrected:** the panzer division of 1938 marches at 12 km/h (its motorised
+  infantry sets the pace), so dry it goes at 3, not "4, a rifle division's pace". The rule is
+  as it was. The comment on `DRY_SPEED` in `movement.ts` says the same wrong thing: to be
+  corrected in the commit of PLAN 3.2c.
+- **ADR-134:** "and a motorised division" at supply 0 on day 60 was not in the probe's
+  output; taken out.
+- **ADR-132** marked superseded by ADR-133; PLAN 3.2a points to 3.2a2; PARITY row 1 (ours)
+  has the note on ADR-133.
+- **Next:** PLAN 3.2c (org).
+- **Gate:** green (documents: parity).
