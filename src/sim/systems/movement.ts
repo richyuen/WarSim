@@ -5,7 +5,8 @@
  * fraction of the way to the next one (all state). The path itself is derived: computed by
  * `findRoute` from origin to target when ordered and recomputed identically after a load
  * (it depends only on static layers). Formations move along cell centres; the time to enter a
- * cell is step km × terrain move cost for the template's mobility ÷ (speed × MARCH_DUTY).
+ * cell is step km × terrain move cost for the template's mobility ÷ (speed × MARCH_DUTY × the
+ * template's own share of its speed on that ground, PLAN 3.3b).
  * A formation waits before a cell held by a nation it is at war with until the territory system
  * flips it, so armies advance with their front instead of running ahead of it.
  * Water is impassable to land formations; crossing cells are walkable (straits). A target cell not
@@ -146,7 +147,8 @@ export function movementSystem(world: World): void {
       let dx = (b % w) - (a % w);
       if (dx > 1) dx -= w; // wrap
       if (dx < -1) dx += w;
-      const segHours = (stepKm(nav.grid, by > ay ? ay : by, dx, by - ay) * costRow[world.cells.terrain[b]!]!) / kmPerHour;
+      const ground = world.cells.terrain[b]!;
+      const segHours = (stepKm(nav.grid, by > ay ? ay : by, dx, by - ay) * costRow[ground]!) / (kmPerHour * rule.terrainSpeed[ground]!);
       const left = segHours * (1 - frac);
       if (budget >= left) {
         budget -= left;

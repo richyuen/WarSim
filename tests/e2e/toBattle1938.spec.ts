@@ -219,10 +219,14 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
 });
 
 // PLAN 2.14f5a: the same click on a real front. No division is put down: the armies of the start
-// fight for 60 days (Germany against Poland by God Mode, the AI running). In the test above the
+// fight (Germany against Poland by God Mode, the AI running). In the test above the
 // largest battle is the one pair there is. Here it is one of many, and the two formations the
 // click leads to are chosen by the sim (`largestBattle`: each other's nearest enemy, then the leaders', then men).
-test('after 60 days of Germany against Poland the banner leads to two formations front to front', async ({ page }, info) => {
+// The day is the first tenth day from the 20th on which the war has such a battle (PLAN 3.3b):
+// it was day 60 by hand, and the game of seed 99 is another with every rule. With the ground
+// in the march (ADR-138) Poland's front is gone by day 50, and day 60's largest battle was one
+// formation against one, 56 men against 10,325. What is asked of the day is asked below, as before.
+test('weeks into Germany against Poland the banner leads to two formations front to front', async ({ page }, info) => {
   test.setTimeout(300_000);
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/2.14') : info.outputPath();
   mkdirSync(out, { recursive: true });
@@ -230,12 +234,26 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   await page.goto('/?scenario=1938&paused=1&seed=99');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
   await step(page, [{ kind: 'declareWar', attacker: GER, defender: POL }]);
-  for (let day = 0; day < 60; day += 10) await step(page, [], day === 0 ? 239 : 240);
+  const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
+  await step(page, [], 239);
+  let day = 10;
+  // A battle of a front: more than two formations, and neither side ten times the other's men.
+  // And a world with a full row of banners (8, `MAX_BANNERS`), which the test reads below.
+  const front = async (): Promise<boolean> => page.evaluate(async (war) => {
+    const b = await window.__warsim!.sim.warBattle(war);
+    const wars = (await window.__warsim!.sim.inspect()).wars.length;
+    return wars >= 8 && b !== null && b.count[0] + b.count[1] > 2 && Math.min(...b.men) * 10 > Math.max(...b.men);
+  }, war);
+  do {
+    await step(page, [], 240);
+    day += 10;
+  } while (!(await front()) && day < 90);
+  expect(await front(), 'no tenth day to the 90th has a battle of a front in this war and eight wars').toBe(true);
+  console.log(`the war has a battle of a front on day ${day}`);
 
   const start = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, elements: window.__warsim!.view!.elementCount }));
   expect(start.m).toBeGreaterThan(5_000);
   expect(start.elements).toBe(0);
-  const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
   const banner = page.locator(`[data-testid="war-banner"][data-war="${war}"]`);
   await expect(banner).toHaveCount(1, { timeout: 20_000 });
   // Every banner shown says what its click would find (PLAN 2.14f5b3): lit with a battle, dim without.
@@ -250,7 +268,7 @@ test('after 60 days of Germany against Poland the banner leads to two formations
     return { wrong, banners: document.querySelectorAll('[data-testid="war-banner"]').length, some: lit > 0 };
   }), { timeout: 20_000 }).toEqual({ wrong: [], banners: 8, some: true });
   const lit = await page.locator('[data-testid="war-banner"][data-battle="1"]').count();
-  console.log(`day 60: ${lit} of 8 banners have a battle`);
+  console.log(`day ${day}: ${lit} of 8 banners have a battle`);
   await banner.click();
   await page.waitForFunction((m0) => window.__warsim!.view!.metresPerPx < m0 / 10, start.m, { timeout: 20_000 });
   // A flight (PLAN 2.14f5b4): what follows is asked of where it ends.
@@ -303,7 +321,7 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   expect(seen.battle.war).toBe(war);
   // A battle of the front, not a pair: more than two formations in it.
   expect(seen.battle.count[0] + seen.battle.count[1]).toBeGreaterThan(2);
-  // And one of two sides (ADR-94): by the men of both it was 67,984 against 472 on this day.
+  // And one of two sides (ADR-94): by the men of both it was 67,984 against 472 on day 60 of the game of that time.
   expect(Math.min(...seen.battle.men) * 10).toBeGreaterThan(Math.max(...seen.battle.men));
   // And of the two the banner names (ADR-95): a German formation and a Polish one, not their allies'.
   expect(seen.leaders).toEqual([true, true]);
@@ -321,6 +339,6 @@ test('after 60 days of Germany against Poland the banner leads to two formations
   expect(apart).toBeLessThan(300);
   expect(seen.tags).toBe(2);
 
-  console.log(`day 60, banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; formations ${seen.battle.formations.join(' and ')}: ${seen.a.on} of ${seen.a.all} and ${seen.b.on} of ${seen.b.all} elements on the screen, the blocks' middles ${apart.toFixed(0)} px apart; ${seen.formationsOnScreen} formations have elements on the screen`);
+  console.log(`day ${day}, banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; formations ${seen.battle.formations.join(' and ')}: ${seen.a.on} of ${seen.a.all} and ${seen.b.on} of ${seen.b.all} elements on the screen, the blocks' middles ${apart.toFixed(0)} px apart; ${seen.formationsOnScreen} formations have elements on the screen`);
   await page.screenshot({ path: path.join(out, 'to-battle-front.png') });
 });

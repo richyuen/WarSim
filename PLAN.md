@@ -2878,7 +2878,7 @@ quick sweep as a smoke test.
     - Found: in the first year of seed 99, 69 formations on engines stand dry with no org for
       77,955 formation-hours in all (47 days each on average). Whose they are and where was
       not looked into (PLAN 3.5: the AI does not know of supply; Phase 7).
-- [ ] 3.3 Terrain modifiers for tracked mobility and combat.
+- [x] 3.3 Terrain modifiers for tracked mobility and combat.
   AT: identical battles on plains vs forest yield the expected outcome swing.
   Read first, 2026-10-06: the tracked move cost (PLAN 1.11) and the fire by unit class and
   the ground's defence (PLAN 1.13) are in. What nothing read: `terrainMods {atk, def, speed}`
@@ -2892,13 +2892,21 @@ quick sweep as a smoke test.
       before the rule, on the class table alone). The pin: 9dd4093d → 037e1db2. No new state.
     - Not done: the shooter's own ground is not read (the target's, for both, as since 1.13);
       nothing of it on the page.
-  - [ ] 3.3b **A unit type's `speed` for the ground, on the march.** A template moves over a
+  - [x] 3.3b **A unit type's `speed` for the ground, on the march.** A template moves over a
     cell at the least `speed` of its manoeuvre elements for that ground (as its speed and
     mobility are theirs, `templateMobility`), × the class's move cost as now. The route is
     still found by the class's cost. AT: unit, failing first: a cavalry division crosses a
     forest at 0.8 of the pace the move cost alone gives it, and plains at its own; a heavy
     panzer division a marsh at 0.7; a panzer division a forest at the table's half, as
     before. Ticks 3.3 (the full e2e).
+    - Done 2026-10-06 (ADR-138). `TemplateRule.terrainSpeed` (by terrain, the least of the
+      manoeuvre elements'); one factor in `movement.ts`. `tests/unit/terrainMarch.test.ts`
+      (5; three red first, the two "as before" green before the rule). The pin: 037e1db2 →
+      5bb98ff4. No new state.
+    - Found while writing it: the panzer division of 1938 has motorised infantry, so it
+      crosses a marsh and mountains at that infantry's 0.6 (in the test).
+    - Not done: the route is still found by the class's move cost alone; nothing of it on
+      the page.
 - [ ] 3.4 Combined arms (inf + art + armour bonus; AT vs armour; armour vs infantry in the open).
   AT: matrix test of unit-mix outcomes matches the design table in SPEC.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.

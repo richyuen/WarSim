@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-138 · 2026-10-06 · accepted — A template crosses a cell at the least `speed` of its manoeuvre elements for that ground (PLAN 3.3b)
+
+- **Context:** the last of `terrainMods {atk, def, speed}` that nothing read (ADR-137 put the
+  `atk` and the `def` in a volley). The data: cavalry 0.8 in a forest and 0.7 in mountains,
+  motorised infantry 0.6 in mountains and in a marsh, the heavy tank 0.7 in a marsh; 1
+  wherever a figure is given for the `atk` or `def` alone. The march had the move cost by
+  mobility class only (`moveCost` of `data/terrain.json`, PLAN 1.11).
+- **Decision:** the hours to enter a cell are step km × the class's move cost ÷ (the pace ×
+  `TemplateRule.terrainSpeed[the cell's terrain]`). `terrainSpeed` is made once from the data,
+  by terrain: the least `speed` of the template's manoeuvre elements for that ground, 1
+  where they have none.
+  - *Whose figure:* the manoeuvre elements', as the template's speed and mobility are theirs
+    (`templateMobility`). Support guns are carried: an AT gun's or a howitzer's figure would
+    not set it (none has one below 1 today).
+  - *The least, not a mean:* a division goes at the pace of its slowest part, as with
+    `speed_kmh`. So the panzer division of 1938 crosses a marsh and mountains at 0.6: it has
+    8 elements of motorised infantry beside its 34 of tanks. The same holds for the motorised
+    division, the light mechanised division, the tank brigade, the tank corps and the panzer
+    division of 1941. The heavy panzer division's infantry is mechanised and has no figure:
+    its heavy tanks' 0.7 in a marsh is its own.
+  - *Which cell:* the one entered, as for the move cost.
+  - *The route is not changed:* it is still found by the class's move cost (`findRoute`, the
+    province graph's sums). A cavalry division may so take a forest that a route by its own
+    figures would go round. One table of costs for each mobility class is what makes the
+    province graph three sums and not one for each template; left so.
+  - *Fuel:* it burns by the hour on the march (ADR-134), so a cell crossed more slowly costs
+    more of it. Meant: an engine that labours through a marsh burns for longer.
+- **What it gives** (`tests/unit/terrainMarch.test.ts`, a row of one ground, six hours): the
+  cavalry division in a forest 0.8 ÷ 1.5 of its pace on plains (0.667 before), and 1.4 times
+  the infantry division's there (1.75 on plains); the heavy panzer division in a marsh
+  0.7 ÷ 3.5 of its pace on plains (0.2; 0.286 before). As before: the panzer division in a
+  forest at half, infantry in a forest at 1 ÷ 1.5.
+- **The pin moved:** 037e1db2 → 5bb98ff4 (seed 99, one year).
+- **Another game, and a spec that leaned on a day of the old one:** Germany against Poland
+  from the first hour (seed 99) goes apart from the tenth day and Poland falls sooner: 24
+  Polish formations on day 35 for 28, 11 on day 50 for 23, 8 on day 60 for 19. No day on
+  which it breaks off; not looked into further (balance, ADR-58). `toBattle1938.spec.ts`
+  asked day 60 for a battle of a front under the war's banner: that day's largest is now one
+  formation against one (56 men against 10,325). The spec now steps to the first tenth day
+  from the 20th with what it asks (more than two formations, neither side ten times the
+  other's men, eight wars for the row of banners): day 40 in this game, 4 + 4 formations.
+  No assertion of it changed.
+- **Saves:** no state added.
+- **Not done:** the route by the template's own figures (above); nothing of it on the page
+  (the formation panel shows the template's speed, not its speed on the ground it stands
+  on); how many formation-hours of a year the rule touches was not counted; tick time not
+  measured (one figure indexed by the terrain's number and one multiplication a cell entered).
+
 ### ADR-137 · 2026-10-06 · accepted — A unit type's own figures for the ground are in a volley, beside its class's (PLAN 3.3a)
 
 - **Context:** PLAN 3.3, "terrain modifiers for tracked mobility and combat". Read first what

@@ -6991,3 +6991,42 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.3b (the unit types' `speed` for the ground on the march; ticks 3.3, so
   the full e2e).
 - **Gate:** green (code: typecheck, lint, unit 798, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).
+
+## 2026-10-06 — PLAN 3.3b: a unit type's speed for the ground, on the march (ADR-138). PLAN 3.3 done
+
+- **Changed:** `TemplateRule.terrainSpeed` (by terrain: the least `terrainMods.speed` of the
+  template's manoeuvre elements, 1 where they have none; made in `templateMobility`);
+  `movement.ts`: the pace over the cell entered × that figure. The route is found as before.
+- **Tests:** `tests/unit/terrainMarch.test.ts` (5), written first: a division at home marches
+  east along a row of one ground for six hours, and its cells an hour are compared. Red
+  first: the table of the templates (no `terrainSpeed`), the cavalry division in a forest
+  (0.667 of its pace on plains where 0.533 was due), the heavy panzer division in a marsh
+  (0.286 where 0.2 was due). Green before the rule and kept: the panzer division in a forest
+  at half, infantry in a forest at 1 ÷ 1.5.
+- **Found while writing it:** the panzer division of 1938 has motorised infantry, whose 0.6
+  in a marsh and in mountains is now the division's. So have six of the nine armoured and
+  motorised templates. It is what "the least of its manoeuvre elements" says; in the test.
+- **The pin moved:** 037e1db2 → 5bb98ff4 (ADR-138).
+- **SPEC §4 and §6.1:** the march's formula and the terrain paragraph name the figure.
+- **Not done:** the route by a template's own figures (ADR-138 says why not); nothing drawn
+  or on the page, so no picture; tick time not measured (one multiplication a cell
+  entered); no sweep (ADR-58); how many formation-hours of a year it touches not counted.
+- **The first gate failed at e2e**, in `toBattle1938` alone ("after 60 days of Germany
+  against Poland…": "more than two formations in it", 2). Not the view: day 60 of seed 99 is
+  another game. A probe (`.cache/`, not kept), Polish formations and the war's largest battle,
+  before → with the rule: day 20 37 → 36 (3 + 3 → 4 + 4), day 35 28 → 24, day 40 26 → 22
+  (4 + 6 → 4 + 4), day 50 23 → 11 (4 + 4 → 2 + 2), day 60 19 → 8 (5 + 6 → 1 + 1, 56 men
+  against 10,325). The two games differ from day 10 and drift; no day on which one breaks.
+  Why Poland falls sooner was not looked into (ADR-58; its cavalry brigades are slower in
+  its forests now, which is a guess).
+- **The spec finds its day now:** it steps ten days at a time from day 20 to the first with
+  a battle of a front under the banner (more than two formations, neither side ten times the
+  other's men) and eight wars (the row of banners it reads), to day 90 at most, and fails if
+  there is none. Day 40 in this game: 4 + 4 formations, 31,774 against 17,895 men, formations
+  13 and 575, 131 px apart. Every assertion is as it was; the test's name says "weeks into"
+  for "after 60 days". It was pinned to a day by hand, and 3.2a and 3.2b had already met
+  that (this log, above). Run by hand with `--project chromium`: 2 green.
+- **Not looked at:** no picture (the spec's `docs/evidence/2.14/` shots are of an older game).
+- **Review pass:** not due (four of five since the last one, with 3.3 ticked).
+- **Next:** PLAN 3.4 (combined arms).
+- **Gate:** green on the second run (code: typecheck, lint, unit 803, the ten-year tests 12, build, e2e in full 139 in 10.2 min, parity). The first run failed at e2e in `toBattle1938` (above).

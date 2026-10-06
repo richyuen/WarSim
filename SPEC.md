@@ -795,7 +795,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   - Order state is moving, originCell, targetCell, pathStep and stepFrac. The path is a cache,
     recomputed from origin and target after a load.
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
-  (speed × 0.3 march duty). It faces its travel direction, and emits `FormationArrived` at the end.
+  (speed × 0.3 march duty × the template's share of its speed on that ground: the least
+  `terrainMods.speed` of its manoeuvre elements, PLAN 3.3b, ADR-138; the route is found by the
+  move cost alone). It faces its travel direction, and emits `FormationArrived` at the end.
 - *Mobility:* a template moves like its slowest manoeuvre element (inf, cav, mot, mech, armour);
   support guns are towed. Infantry marches ≈ 29 km/day on plains.
 - *Slotted poses:* `slotPose` (`src/sim/core/pose.ts`) places elements in a ≈ 2:1 block, front row
@@ -1054,7 +1056,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   forest, 0.65 in a city, 0.55 in a marsh, 0.5 in mountains, and tracks cross a forest at
   half their pace. *(PLAN 3.3a, ADR-137):* a unit type's own `terrainMods.atk` and `.def`
   multiply those in a volley (infantry holding a forest takes ÷ 1.1 more, the heavy tank's
-  fire in a marsh is × 0.8 more). *Not yet:* its `speed` (PLAN 3.3b).
+  fire in a marsh is × 0.8 more). *(PLAN 3.3b, ADR-138):* a template crosses a cell at the
+  least `terrainMods.speed` of its manoeuvre elements for that ground, × the pace the move
+  cost gives (cavalry in a forest 0.8, the heavy tank in a marsh 0.7, motorised infantry in
+  a marsh or mountains 0.6, and with it every division that has some).
 - Combined arms: armour is vulnerable to AT guns, CAS and heavy armour, and is strong vs
   infantry in the open. Infantry screens armour in urban/forest terrain. Artillery suppresses AT.
   Bonuses apply only when the elements are actually present in the battle.

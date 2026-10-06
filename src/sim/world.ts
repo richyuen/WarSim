@@ -112,6 +112,12 @@ export interface TemplateRule {
   /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked) and march speed, km/h. */
   mobility: number;
   speedKmh: number;
+  /**
+   * Its share of that speed on each ground (PLAN 3.3b; `terrainMods.speed` of the unit data), by
+   * terrain: the least of its manoeuvre elements', 1 where they have none. It multiplies the
+   * pace the mobility class's move cost gives; the route is found by the move cost alone.
+   */
+  terrainSpeed: readonly number[];
   /** Fuel its elements burn in an hour on the march (PLAN 3.2b; `fuelPerHour` of the unit data × count). */
   fuel: number;
   /** Elements per unit type (PLAN 1.13): unit = index into ScenarioRules.units. */
