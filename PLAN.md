@@ -2344,12 +2344,26 @@ quick sweep as a smoke test.
   Split 2026-10-05, as PLAN 2.11 was: the pass is several causes. No part is a numbered
   task: the gate runs the specs a part changes (ADR-87). No sweep: this is a pass of step 9,
   not a phase review (ADR-58).
-  - [ ] 2.16Ra The independent read (ADR-74), the sixth: the 51 files of `src/` and the four
+  - [x] 2.16Ra The independent read (ADR-74), the sixth: the 51 files of `src/` and the four
     of `tools/` changed since the fifth (`3d6a2b2`: PLAN 2.12 to 2.16, 2,506 lines added in
     `src/`), the new lines first. The same brief: defects only, nothing of what changed or
     why. Each finding is checked against the code here before it is anything; those a
     player can meet become tasks 2.16Rf and on, before 2.17, each with a test that fails
     first, most severe first; the rest go on the watch list.
+    Done 2026-10-05 (ADR-74, addendum: the sixth read). Nine findings, eight run by the
+    reader in Node (`.cache/read6/`, not kept in the repo), five suspicions it could not
+    settle; 259,000 tokens, 32 minutes. Checked here by reading the lines it names: findings
+    1 to 3 and 6 hold as far as reading shows; each is run again as the failing test of its
+    task. Determinism held wherever it tried (a save in mid-month with Kills before and
+    after it; a random save loaded into a Sim of another seed and count).
+    - Tasks, most severe first: 2.16Rf (a nation eliminated in a plain game keeps its land),
+      2.16Rg (a Kill that leaves the dead nation's land or its occupations), 2.16Rh (a Kill
+      reads the capital's province at the capital's coordinates), 2.16Ri (the formation
+      panel follows an id that another formation has taken).
+    - Lines under later tasks: PLAN 2.17 (commands that name a dead nation), PLAN 7.4 (the
+      random world's names).
+    - Already a line of PLAN 2.17: the empty rename in a world without a table (finding 5).
+    - The rest: BLOCKERS, the watch list.
   - [x] 2.16Rb SPEC re-read for drift: the random world (§2.2, §3.4), flags and names by
     scenario, the title screen and the URL options (`?scenario=1938|toy` in two places,
     `?nations=N`), the protocol fields new since 2.11.
@@ -2395,10 +2409,58 @@ quick sweep as a smoke test.
       that every capital's piece of land has 12 cells. Seen to fail with the rule switched
       off (`HOME_CELLS` 0): a piece of 3 cells in the world of 60, of 4 in that of 200.
     - Open until a and d are done.
+  - [ ] 2.16Rf From the sixth read, finding 1a: **a nation eliminated in a plain game keeps
+    its land.** `eliminateNation` (`systems/capitals.ts`) hands over no cell. Seed 99 of
+    1938, no command: nation 72 is eliminated at tick 4006 (`relocateToField` finds it no
+    cell it controls) with 1,389 cells still owned by it, all held by nation 69; so at tick
+    8760. Older than 2.12: the file is not among the 55.
+    - What becomes of the land is decided when the task is taken up (to who holds it, by
+      the look of it: the nation is dead, and its cores and its revival are the provinces').
+      A rule of the sim: the pin may move.
+    AT: failing first: over a run of 1938 with no command, at every month's end no cell has
+    a dead nation as its owner or as its controller. The same asked of the gate's three
+    ten-year runs (`tests/helpers/aiSweep.ts`).
+  - [ ] 2.16Rg Findings 1b and 2: **a God Mode Kill that leaves land with the dead.**
+    - A nation that owns the centre cell of no province (Danzig with 7 cells and the
+      Chinese Communists with 226 in 1938; either nation of the toy world) is killed with
+      every cell still its own: `held` is empty, no heir is found, and the last sweep of
+      `killNation` asks for an heir.
+    - The cells the dead nation controlled and did not own keep it as controller: 16 of
+      the 102 nations of 1938 killed at tick 2000 leave some (Germany 73, the Soviet Union
+      350), 21 of 60 in a random world. No war with the dead, so nothing takes them back.
+    - This is a cause of what the critic saw as "a killed nation stays on the map" (PLAN
+      2.17, its third point): that point's test is here, its name on the map stays there.
+    AT: failing first: every living nation of 1938 at tick 0 and at tick 2000, and of a
+    random world, killed in a copy of the world: afterwards no cell has it as owner or as
+    controller.
+  - [ ] 2.16Rh Finding 3: **a Kill reads the capital's province at the capital's
+    coordinates**, which for a city on the shore lie in a sea cell or in another province
+    (ADR-103, ADR-106: the same defect `spawnRebels` had). 8 of the 102 nations of 1938, 9
+    of 60 in a random world. The heir ("the nation founded on the old capital") and the
+    first seed of `spread` then fall back to the largest. And the province is read after
+    the revivals of step 1, which may have moved the capital.
+    AT: failing first: the Kill of one of the eight (Iceland): the nation founded on its
+    capital's cell is the heir.
+  - [ ] 2.16Ri Finding 6: **the formation panel follows an id that another formation has
+    taken.** A table gives a freed id to the next row made (`Table.create`); the panel and
+    the frame on the map know the id only. The formation whose panel is open is destroyed,
+    another nation raises one, and the panel shows that one. How often in a game: not
+    measured.
+    - A suspicion of the reader's, traced only, to be tried in the page here: the panel
+      goes while its formation is outside the subscribed view and comes back on the pan
+      back (`MapView.formationTitle` reads the last snapshot's ids).
+    AT: failing first: the worker's answer for a formation removed and its id taken again
+    says so (unit), and the panel closes (e2e, `formationPanel1938`).
 - [ ] 2.17 Critic R2-B8: a God Mode action does what it says, or says why not. Seen through
   the God tab on France:
   - From PLAN 2.16b (ADR-109): a rename to the empty name in the random or the toy world
     deletes the nation's only name; it then reads "Free state N".
+  - From the sixth read (PLAN 2.16Ra), not settled there: commands that name a dead nation
+    are taken (`spawnFormation`, `paintControl`, `joinAlliance`, `editPaint` gave a dead
+    nation a formation, control, a membership, land); `paintControl` for nation 0 leaves
+    owned cells without a controller; a NaN in `setEfficiency`, `setSuppression`,
+    `setUnrest` or a formation's place goes into the state. Which of these the God tab can
+    send (a panel left open on a nation that has just died) is to be looked at here.
   - **Ally** with a nation that is in another alliance (France of the Anglo-French, Italy of
     the Anti-Comintern): nothing changes and nothing is said.
   - **The Territory brush gives no territory.** A drag of 250 px from France across the Alps
@@ -2700,6 +2762,10 @@ quick sweep as a smoke test.
     panels are no obstacles to a tag either); figures at 20 m/px are faint on a plain
     (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
     its swords and frame only (`to-battle-banners.png`).
+  - **The random world's names** (the sixth read, PLAN 2.16Ra, 2026-10-05): with 150 and 200
+    nations most seeds have several of one name (seed 7 with 200: four called "Eastern";
+    seed 1 three "Central"); none seen at 60 or fewer on ten seeds. One capital to a
+    province, but the provinces' names repeat across countries. With the line below.
   - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). A founded nation is
     "Free <province>", and 114 names are held by more than one province ("Valmiera" 21,
     "Central" 10, "Northern" 8, "Saint George" 7); a province without a name gives its

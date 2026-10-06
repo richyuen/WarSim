@@ -2129,6 +2129,36 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     running a save from the middle of a year.
   - **The five reads together:** twenty-six findings, twenty of them tasks.
 
+- **Addendum 2026-10-05, the sixth read (the review pass after PLAN 2.12 to 2.16, PLAN 2.16Ra).**
+  The same brief, on the 51 files of `src/` and four of `tools/` changed since the fifth read
+  (`3d6a2b2`, 2,506 lines), the new lines first; Node only; nothing of what changed or why,
+  and PLAN, PROGRESS, DECISIONS and the git log's messages not to be read.
+  - **Nine findings, eight run by the reader; five suspicions.** 259,000 tokens, 32 minutes.
+    Checked here by reading the lines named: 1, 2, 3 and 6 hold as far as reading shows, and
+    each is run again as the failing test of its task (as the first read's were).
+    1. Land stays owned by a dead nation: (a) in a plain game, by `eliminateNation` (seed 99:
+       1,389 cells from tick 4006 on); (b) in a Kill of a nation that owns no province's
+       centre cell.
+    2. A Kill leaves the cells its victim occupied under a dead controller.
+    3. A Kill reads the capital's province at the capital's coordinates.
+    4. The random world with 150 nations or more: several of one name.
+    5. An empty rename in a world without a table gives "Free state N" (known: ADR-109).
+    6. The formation panel follows a reused id onto another formation.
+    7. `editPaint` with a line to 1e9 or Infinity (from outside the types only).
+    8. For an hour after a load or a command, blocks in contact drawn elsewhere.
+    9. The order of a Kill's events.
+  - **Tasks before PLAN 2.17:** 2.16Rf (1a), 2.16Rg (1b and 2), 2.16Rh (3), 2.16Ri (6).
+    Lines: PLAN 2.17 (the commands that name a dead nation, a suspicion), PLAN 7.4 (4). The
+    rest is in BLOCKERS.
+  - **Where the findings were.** 1a is in a file no task of 2.12 to 2.16 touched
+    (`capitals.ts`), found from the Kill's code outwards. 1b, 2 and 3 are in the Kill of PLAN
+    2.15a, whose unit test kills four nations (France, Yugoslavia, Italy, Luxembourg) at the
+    start; the reader killed every nation, and at tick 2000 too. ADR-103 and ADR-106 mended, in
+    `spawnRebels`, the very reading of a shore capital's coordinates that finding 3 finds in
+    `killNation` forty lines away.
+  - **What it found correct** is in PROGRESS of this date.
+  - **The six reads together:** thirty-five findings, twenty-four of them tasks.
+
 - **Addendum 2026-10-04: the review pass is counted by numbered tasks (the user's decision).**
   - *What the user said,* when a pass was proposed after PLAN 2.8c2: "Let's clarify the
     5-iteration rule for review pass to proper numbered iterations (e.g., 2.7, etc.) instead of

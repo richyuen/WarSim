@@ -232,6 +232,30 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   before and after passed all 61. Paused pages run no tick, so the A* change under test was not
   involved. Contention does not explain 10×: if it recurs, keep the trace
   (`test-results/…/trace.zip`) and look at the worker boot handshake.
+- **From the sixth read (PLAN 2.16Ra, 2026-10-05), for the review of Phase 3.** None is a
+  task: what a player can meet of the read is PLAN 2.16Rf to 2.16Ri.
+  - *Run by the reader, low:*
+    - `editPaint` with the tool `line` and a coordinate of 1e9 takes 13 s, with Infinity it
+      does not end (`lineCells`, `src/sim/editor.ts`). Only a worker message or the page's
+      test API can send it: `isCommand` looks at the kind, each handler at its own fields,
+      and this one not at these. The editor's own inputs are guarded.
+    - For the hour after a load, or after any command, the blocks of formations in contact
+      can stand elsewhere than in the game that ran on (seed 99, 2,500 ticks: 975
+      formation-hours, 1.4 cells at most): `findBattles` fills the contacts before combat
+      destroys formations in the tick, and what is asked after a load is worked out from
+      the state after. A picture only; the hashes were equal.
+    - In a Kill the dying nation emits `CapitalMoved` up to five times (89 of 102), and for
+      20 to 33 its `NationEliminated` comes before the last `RevoltSpawned` or `LandCeded`.
+      `CapitalMoved` is not in the history. No state was found lost by it.
+  - *Suspicions, not settled:*
+    - After a command `world.deployed` is filled again by whoever asks (the view's box),
+      and the next hour's `deployedBefore` is that part: a wreck or an hour's slide could
+      start from the formation's place and not its block. Wants a snapshot test with a
+      command between two hours.
+    - The toy world: `nations.cells` is 0 at the start and drifts from the count of owned
+      cells; a formation of strength 0 was alive at tick 500. A fixture.
+    - The random world grows its nations over the graph that wraps at the seam also when
+      `loopingMap` is off (the option is applied after the build).
 - **The watch lists of Phase 2 after its review (PLAN 2.11c, 2026-10-05).** Sixteen lists stood
   here, from four independent reads and twelve tasks, each "for the phase review". Every item of
   theirs is now one of four things. What became a task or a line under a later task is in
