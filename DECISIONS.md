@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-140 · 2026-10-06 · accepted — The screen: armour on forest or urban ground whose side has no infantry alive in the battle takes × 1.3 (PLAN 3.4b)
+
+- **Context:** the second rule of the table of ADR-139 (SPEC §6.1): "infantry screens armour
+  in urban/forest terrain". Its figure was a proposal there.
+- **Decision:**
+  - *The target:* an element of the armour arm (`armor_l`, `armor_m`, `armor_h` of
+    `combinedArms.arms`), by its arm and not by its `armor` figure: mechanised infantry has
+    armour 4 and is infantry, and is not asked for a screen.
+  - *The ground:* the cell of the target's formation, forest or urban (`screen.terrain` of
+    `data/combat.json`, ids of the terrain table). Whether the formation holds or moves is
+    not asked: the ground's defence is for holding, the screen is not.
+  - *No infantry:* the target's side (ADR-139: the battle's formations its nation is not at
+    war with, itself among them) has no element of the infantry arm with strength at the
+    hour's start. The infantry of the tanks' own formation is a screen, and so is an ally's.
+    No share is asked, as in ADR-139.
+  - *A factor on the damage taken* (`UNSCREENED`, `screen.taken` 1.3), on every volley at
+    such an element whoever fires it. The choice of target does not know of it.
+  - *1.3:* the table's proposal, a figure of mine, not tuned (ADR-58). In a forest it gives
+    back to the shooter a little more than the ground's ÷ 1.25 takes from it.
+  - The arms of every formation's side are found once per battle now; the bonus of ADR-139
+    reads the same map.
+- **When it bites:** every template with tanks has infantry of its own (the tank brigade two
+  motorised companies of 22 elements, the panzer division eight of 44), so a formation is
+  unscreened only once its own infantry is dead and no other infantry of its side is in the
+  battle. Seed 99, the first year (counted with a counter in `combat.ts`, not kept): of
+  482,082 volleys at armour 39,920 were at armour on forest or urban ground, and 34,160 of
+  those at armour with no screen, all of them at 3 formations, all tank brigades. So of
+  armour that fights on close ground most volleys fall on a few brigades that have lost
+  their two companies and stand on; a formation with more infantry was never unscreened in
+  that year.
+- **Tests:** `tests/unit/combinedArms.test.ts` (8 more; three red before the rule: the tanks
+  of a brigade with its infantry destroyed, in a forest and in a city, against the same with
+  a rifle brigade beside it, and against the brigade with its own infantry alive. Green
+  before and kept: the data, plains and hills × 1, the guns of a division with no infantry
+  × 1, the tanks' own fire).
+- **The AT's "at its infantry × 1"** cannot be read on the brigade: its infantry is what the
+  test destroys. In its place: what is not armour and has no infantry of its side (the
+  howitzers and the AT gun of a rifle division whose battalions are destroyed) takes × 1.
+- **The pin moved:** 50b337c6 → 13e0a82d (seed 99, one year).
+- **Saves:** no state added.
+- **Not done:** rules 3 and 4; nothing of it on the page; the AI does not keep infantry with
+  its tanks for it (PLAN 3.5); jungle is not a terrain class, and hills and marsh are not
+  close ground here; tick time not measured (one lookup a volley).
+
 ### ADR-139 · 2026-10-06 · accepted — Combined arms: four rules in a table; the first, a side with infantry, artillery and armour alive in a battle fires × 1.15 (PLAN 3.4a)
 
 - **Context:** PLAN 3.4, "combined arms (inf + art + armour bonus; AT vs armour; armour vs

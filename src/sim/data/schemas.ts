@@ -85,6 +85,8 @@ export const CombatFile = z.strictObject({
     arms: z.strictObject({ infantry: arm, artillery: arm, armour: arm }),
     bonus: mult,
   }),
+  /** PLAN 3.4b: armour on one of `terrain` whose side has no infantry alive in the battle takes × `taken`. */
+  screen: z.strictObject({ terrain: z.array(z.enum(TERRAIN_IDS)).min(1), taken: mult }),
 });
 
 // ── unit types (data/units/*.json) ───────────────────────────────────────────

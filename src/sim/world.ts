@@ -150,6 +150,8 @@ export interface UnitRule {
   arm: number;
 }
 /** Infantry 1, artillery 2, armour 4: a side of a battle with all three has the bonus. */
+export const ARM_INFANTRY = 1;
+export const ARM_ARMOUR = 4;
 export const ARM_ALL = 7;
 export interface ScenarioRules {
   templates: readonly TemplateRule[];

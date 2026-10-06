@@ -13,9 +13,10 @@
  * proximity, drawn with
  * hash32(seed, tick, element) and kept for COOLDOWN hours. Damage in target units is
  *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class and unit type, target cell)
- *       × supplyFactor(shooter) × combinedArms(shooter's side) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
- * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing, and
- * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle.
+ *       × supplyFactor(shooter) × combinedArms(shooter's side) × screen(target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
+ * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing,
+ * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle, and
+ * screen is UNSCREENED for armour on close ground whose side has no infantry alive in the battle.
  * All fire in an hour is computed before any loss is applied (simultaneous volleys), so the
  * order of elements cannot bias the result; total fire ∝ surviving strength (Lanchester square).
  * Each volley emits a FireEvent (TickOutputs.fires; not state).
@@ -23,7 +24,8 @@
 import combatJson from '../../../data/combat.json' with { type: 'json' };
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
-import { ARM_ALL, type UnitRule, type World } from '../world';
+import { TERRAIN_IDS } from '../../shared/terrain';
+import { ARM_ALL, ARM_ARMOUR, ARM_INFANTRY, type UnitRule, type World } from '../world';
 import { applyLoss, cellDist as dist, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
@@ -41,6 +43,12 @@ const SALT_TARGET = 0x7a46;
  * at war with, itself among them.
  */
 export const COMBINED_ARMS = combatJson.combinedArms.bonus;
+/**
+ * What armour takes on close ground (`CLOSE`) when its side has no infantry alive in the battle
+ * (PLAN 3.4b, `screen` of `data/combat.json`).
+ */
+export const UNSCREENED = combatJson.screen.taken;
+const CLOSE = TERRAIN_IDS.map((id) => (combatJson.screen.terrain as string[]).includes(id));
 
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 const TERRAIN_ATK = terrainJson.terrain.map((t) => t.attack as Record<string, number | undefined>);
@@ -153,11 +161,17 @@ export function combatSystem(world: World): void {
       for (const s of idx.get(fid) ?? []) if (ec.strength[s]! > 0) a |= units[ec.unit[s]!]!.arm;
       arms.set(fid, a);
     }
+    // The arms of each formation's side: of the battle's formations its nation is not at war with.
+    const sideArmsOf = new Map<number, number>();
+    for (const fid of battle) {
+      let a = 0;
+      for (const o of battle) if (!world.wars.atWar(f.nation[fid]!, f.nation[o]!)) a |= arms.get(o)!;
+      sideArmsOf.set(fid, a);
+    }
     for (const sf of battle) {
       const enemies = battle.filter((o) => world.wars.atWar(f.nation[sf]!, f.nation[o]!));
       const hostile = new Set(enemies);
-      let sideArms = 0;
-      for (const o of battle) if (!hostile.has(o)) sideArms |= arms.get(o)!;
+      const sideArms = sideArmsOf.get(sf)!;
       const supplyFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * (sideArms === ARM_ALL ? COMBINED_ARMS : 1);
       const tables = new Map<number, { cand: number[]; cum: number[]; total: number }>();
       for (const s of idx.get(sf) ?? []) {
@@ -220,7 +234,9 @@ export function combatSystem(world: World): void {
         const ce = world.nations.cols.efficiency[f.nation[sf]!] || 1;
         const buffAtk = ce * Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
         const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
-        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult) / def / buffDef / ut.hpPerUnit;
+        // Armour on close ground with no infantry of its side in the battle (PLAN 3.4b).
+        const screen = (ut.arm & ARM_ARMOUR) !== 0 && CLOSE[terrain] && (sideArmsOf.get(tf)! & ARM_INFANTRY) === 0 ? UNSCREENED : 1;
+        const dmg = (eff(t) * fullness * FIRE_SCALE * atk * supplyFactor * buffAtk * lossMult * screen) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;

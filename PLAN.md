@@ -2922,11 +2922,21 @@ quick sweep as a smoke test.
       No new state.
     - Not done: no share of the side is asked of an arm (one tank brigade serves a whole
       battle); nothing of it on the page.
-  - [ ] 3.4b **The screen.** Armour on forest or urban ground whose side has no infantry alive
+  - [x] 3.4b **The screen.** Armour on forest or urban ground whose side has no infantry alive
     in the battle takes × a figure of `data/combat.json` (the table's proposal: 1.3). AT:
     unit, failing first: every volley at a tank of a brigade of tanks alone in a forest is
     the one with a rifle division beside it × the figure; the same on plains × 1; at its
     infantry × 1.
+    - Done 2026-10-06 (ADR-140). `screen` of `data/combat.json` (forest, urban; 1.3), its
+      schema; `ARM_INFANTRY`, `ARM_ARMOUR`; one factor in `combat.ts` (`UNSCREENED`), and a
+      side's arms found once per battle. `tests/unit/combinedArms.test.ts` (8 more; three red
+      first). The pin: 50b337c6 → 13e0a82d. No new state.
+    - The AT as run: the brigade has two companies of infantry of its own, so "alone" is
+      with those destroyed, and "at its infantry × 1" is read on the guns of a rifle
+      division with no battalion left (not armour: × 1).
+    - Seed 99, the first year: 34,160 volleys at unscreened armour of 39,920 at armour on
+      close ground, all at 3 tank brigades that had lost their infantry.
+    - Not done: nothing of it on the page; the AI does not know of it (PLAN 3.5).
   - [ ] 3.4c **Guns on guns.** Measure first: of the tanks a rifle division takes from a tank
     brigade, the share its AT gun takes (so "AT vs armour" is in the table by a number).
     Then: the fire of AT guns whose enemy has artillery alive in the battle × a figure (the

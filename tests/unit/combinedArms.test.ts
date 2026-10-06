@@ -23,19 +23,20 @@ const [X0, Y0] = cellOf(30.0, 50.0, W, H).map(Math.floor) as [number, number];
 const template = (id: string): number => TEMPLATES_LAND.findIndex((t) => t.id === id);
 const BONUS = combatJson.combinedArms.bonus;
 const ARMS = combatJson.combinedArms.arms;
+const SCREEN = combatJson.screen;
 const CLASS_OF = new Map((unitsLand.types as unknown as { id: string; class: string }[]).map((u) => [u.id, u.class]));
 const classOf = (unit: number): string => CLASS_OF.get(UNIT_IDS_1938[unit]!)!;
 
 type Stand = [nation: number, template: string, dx: number, dy: number];
 
-/** A battle on plains: the formations of `stands` around one cell, Germany and Italy at war with Poland. */
-function battle(stands: Stand[]): { world: World; ids: number[] } {
+/** A battle on `terrain`: the formations of `stands` around one cell, Germany and Italy at war with Poland. */
+function battle(stands: Stand[], terrain: number = Terrain.Plains): { world: World; ids: number[] } {
   const s = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
   const world = s.world;
   world.formations.ids().forEach((id) => destroyFormation(world, id));
   world.wars.set(GER, POL, true);
   world.wars.set(ITA, POL, true);
-  for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) world.cells.terrain[(Y0 + dy) * W + X0 + dx] = Terrain.Plains;
+  for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) world.cells.terrain[(Y0 + dy) * W + X0 + dx] = terrain;
   const ids = stands.map(([nation, t, dx, dy]) => addDivision(world, nation, X0 + 0.5 + dx, Y0 + 0.5 + dy, template(t)));
   return { world, ids };
 }
@@ -151,5 +152,82 @@ describe('the combined-arms bonus (PLAN 3.4a)', () => {
       compared++;
     }
     expect(compared).toBeGreaterThan(0);
+  });
+});
+
+// PLAN 3.4b: the screen (SPEC §6.1, the table's second row; `screen` of `data/combat.json`).
+// Armour on close ground whose side has no infantry alive in the battle takes × `taken`.
+// Every template with tanks has infantry of its own, so the tests destroy it first.
+describe('the screen of infantry for armour on close ground (PLAN 3.4b)', () => {
+  /**
+   * The Polish division's volleys at the German formation `of` (stand 0), by shooter and target
+   * type. `dead`: the arm of that formation destroyed before the hour. A formation beside it
+   * changes whom the Poles pick, not what a volley of one type at another does.
+   */
+  const taken = (terrain: number, of: string, dead: keyof typeof ARMS, beside?: string): Map<string, number> => {
+    const stands: Stand[] = [[GER, of, 0, 0], [POL, 'infantry_div', 1, 0]];
+    if (beside) stands.push([GER, beside, 0, 1]);
+    const { world, ids } = battle(stands, terrain);
+    const ec = world.elements.cols;
+    world.elements.forEach((el) => {
+      if (ec.formation[el] === ids[0] && ARMS[dead].includes(classOf(ec.unit[el]!))) ec.strength[el] = 0;
+    });
+    const out = new Map<string, number>();
+    for (const [s, [target, dmg]] of volleysOf(world, ids[1]!)) {
+      if (ec.formation[target] === ids[0]) out.set(`${UNIT_IDS_1938[ec.unit[s]!]}>${UNIT_IDS_1938[ec.unit[target]!]}`, dmg);
+    }
+    return out;
+  };
+  /** Every volley of `alone` whose kind is in `screened` too is that one × `factor`; how many kinds. */
+  const expectTaken = (screened: Map<string, number>, alone: Map<string, number>, factor: number): number => {
+    let compared = 0;
+    for (const [k, dmg] of alone) {
+      if (!screened.has(k)) continue;
+      expect(dmg / screened.get(k)!, k).toBeCloseTo(factor, 10);
+      compared++;
+    }
+    return compared;
+  };
+
+  it('the data names forest and urban ground and a figure above 1', () => {
+    expect(SCREEN.taken).toBeGreaterThan(1);
+    expect(SCREEN.terrain).toEqual(['forest', 'urban']);
+  });
+
+  it.each([[Terrain.Forest, SCREEN.taken], [Terrain.Urban, SCREEN.taken], [Terrain.Plains, 1], [Terrain.Hills, 1]])('on ground %i the tanks of a brigade with no infantry take × %f of what they take with a rifle brigade beside them', (terrain, factor) => {
+    const screened = taken(terrain, 'tank_brigade', 'infantry', 'garrison_brigade');
+    const alone = taken(terrain, 'tank_brigade', 'infantry');
+    for (const k of alone.keys()) expect(k.endsWith('>tank_light'), k).toBe(true);
+    expect(expectTaken(screened, alone, factor)).toBeGreaterThan(0);
+  });
+
+  it('its own infantry is a screen: the brigade as it is takes the same alone and with a rifle brigade beside it', () => {
+    const tanksOnly = (m: Map<string, number>): Map<string, number> => new Map([...m].filter(([k]) => k.endsWith('>tank_light')));
+    const dead = tanksOnly(taken(Terrain.Forest, 'tank_brigade', 'infantry'));
+    // `artillery`: the brigade has none, so nothing of it is destroyed.
+    const whole = tanksOnly(taken(Terrain.Forest, 'tank_brigade', 'artillery'));
+    expect(expectTaken(whole, dead, SCREEN.taken)).toBeGreaterThan(0);
+    expect(expectTaken(tanksOnly(taken(Terrain.Forest, 'tank_brigade', 'artillery', 'garrison_brigade')), whole, 1)).toBeGreaterThan(0);
+  });
+
+  it('what is not armour takes × 1: the guns of a division with no infantry left, in a forest', () => {
+    const screened = taken(Terrain.Forest, 'infantry_div', 'infantry', 'garrison_brigade');
+    const alone = taken(Terrain.Forest, 'infantry_div', 'infantry');
+    expect([...alone.keys()].some((k) => k.endsWith('>artillery'))).toBe(true);
+    expect(expectTaken(screened, alone, 1)).toBeGreaterThan(0);
+  });
+
+  it('the screen is of the target’s side: the tanks’ own fire is as it was', () => {
+    const fire = (beside: boolean): Map<number, [number, number]> => {
+      const stands: Stand[] = [[GER, 'tank_brigade', 0, 0], [POL, 'infantry_div', 1, 0]];
+      if (beside) stands.push([GER, 'garrison_brigade', 0, 1]);
+      const { world, ids } = battle(stands, Terrain.Forest);
+      const ec = world.elements.cols;
+      world.elements.forEach((el) => {
+        if (ec.formation[el] === ids[0] && ARMS.infantry.includes(classOf(ec.unit[el]!))) ec.strength[el] = 0;
+      });
+      return volleysOf(world, ids[0]!);
+    };
+    expectScaled(fire(true), fire(false), 1);
   });
 });

@@ -970,13 +970,15 @@ bombardment) participants join through their missions.
   its unit type's `terrainMods.atk`; defence is the ground's figure × the target's unit
   type's `terrainMods.def` (PLAN 3.3a, ADR-137). × 1.15 for a shooter whose side has
   infantry, artillery and armour alive in the battle (PLAN 3.4a, ADR-139; the table of §6.1).
+  × 1.3 on a volley at armour on forest or urban ground whose side has no infantry alive in
+  the battle (PLAN 3.4b, ADR-140).
 - *Death:* an element at 0 is removed when its formation settles, and emits `ElementDestroyed`
   (element, unit, the slot it stood in; PLAN 2.4b). The event is a tick output, not state.
 - *Measured:*
   - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
     (square law: 0.268).
   - An 80-division battle costs 3.2 ms per tick.
-- *Deferred:* org and retreat (step 4), rules 2 to 4 of combined arms (§6.1), entrenchment, experience, night and
+- *Deferred:* org and retreat (step 4), rules 3 and 4 of combined arms (§6.1), entrenchment, experience, night and
   weather, and persistent or major battles (§5.4).
 1. **Target selection** (deterministic): each element scores enemy elements in range
    by `typeMatch(weapon, targetArmor) × proximity × threat` and picks a target with
@@ -1073,7 +1075,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   | # | rule | when | factor | part |
   |---|------|------|--------|------|
   | 1 | The three arms | the shooter's side has infantry (`inf`, `mot`, `mech`), artillery (`art`) and armour (`armor_l/m/h`) present | fire × 1.15 | 3.4a, implemented |
-  | 2 | The screen | the target is armour on forest or urban ground and its side has no infantry present | damage taken × 1.3 (proposed) | 3.4b |
+  | 2 | The screen | the target is armour (by its arm, not its `armor` figure) on forest or urban ground and its side has no infantry present; holding or moving | damage taken × 1.3 | 3.4b, implemented (ADR-140) |
   | 3 | Guns on guns | the shooter is an AT gun and the enemy side has artillery present | fire × 0.7 (proposed) | 3.4c |
   | 4 | The open | the shooter is armour, the target is not armoured and stands on plains, grassland or desert, and the target's side has no AT gun present | fire × 1.25 (proposed) | 3.4d |
 

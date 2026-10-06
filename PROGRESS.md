@@ -7058,3 +7058,31 @@ No rule changed and nothing on screen changed. One task came out of it.
   after 3.4d, before 3.5.
 - **Next:** PLAN 3.4b (the screen: armour on close ground with no infantry of its side).
 - **Gate:** green (code: typecheck, lint, unit 810, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).
+
+## 2026-10-06 — PLAN 3.4b: combined arms, the second rule: the screen (ADR-140)
+
+- **Changed:** `data/combat.json` (`screen`: forest and urban, 1.3) and its schema;
+  `ARM_INFANTRY`, `ARM_ARMOUR` in `world.ts`; `combat.ts`: the arms of each formation's side,
+  once per battle (the bonus of 3.4a reads it too), and × 1.3 on a volley at an element of
+  the armour arm on close ground whose side has no infantry alive. By the arm, not the
+  `armor` figure (mechanised infantry has 4); holding or moving.
+- **Tests:** `tests/unit/combinedArms.test.ts`, 8 more, written first; three red before the
+  rule (forest, urban, and the brigade's own infantry as a screen), five green before and
+  kept (the data, plains, hills, the guns of a division with no infantry, the tanks' fire).
+- **The AT, as run:** no template is tanks alone (the tank brigade has two motorised
+  companies), so the tests destroy the brigade's infantry in both arrangements, and "at its
+  infantry × 1" is read on what is not armour: the guns of a rifle division with no
+  battalion left. Volleys are compared by shooter type and target type, since a formation
+  beside the brigade changes whom the Poles pick.
+- **Measured** (a counter in `combat.ts` for one run, not kept; seed 99, one year): 482,082
+  volleys at armour, 39,920 of them at armour on forest or urban ground, 34,160 of those
+  unscreened, all at 3 tank brigades. Not looked into: why those three stand so long in
+  contact with their infantry gone (some 11,000 volleys each).
+- **Gotcha:** `console.log` in a test of the sweep config did not reach the output through
+  `grep`; the count was written to a file.
+- **The pin moved:** 50b337c6 → 13e0a82d (ADR-140).
+- **Not done:** rules 3 and 4 (3.4c, 3.4d); nothing drawn or on the page, so no picture and
+  no spec run; tick time not measured; no sweep (ADR-58).
+- **Review pass:** not due (3.4 is not ticked). It is due after 3.4d, before 3.5.
+- **Next:** PLAN 3.4c (guns on guns; it measures first).
+- **Gate:** green (code: typecheck, lint, unit 818, the ten-year tests 12, build, parity; no e2e for a part that changes no spec, ADR-87).
