@@ -3001,12 +3001,24 @@ quick sweep as a smoke test.
   Split 2026-10-06, as PLAN 2.16R was: the pass is several causes. No part is a numbered
   task: the gate runs the specs a part changes (ADR-87). No sweep: this is a pass of step 9,
   not a phase review (ADR-58).
-  - [ ] 3.4Ra The independent read (ADR-74), the seventh: the 35 files of `src/` changed
+  - [x] 3.4Ra The independent read (ADR-74), the seventh: the 35 files of `src/` changed
     since the sixth (`5d24625`: PLAN 2.16Rf to 3.4d, 1,373 lines added in `src/` and
     `data/`), the new lines first, and the four data files. The same brief: defects only,
     nothing of what changed or why. Each finding is checked against the code here before it
     is anything; those a player can meet become tasks 3.4Re and on, before 3.5, each with a
     test that fails first, most severe first; the rest go on the watch list.
+    Done 2026-10-06 (ADR-74, addendum: the seventh read). Six findings, all run by the
+    reader in Node (`.cache/read7/`, vitest files, not kept in the repo), four suspicions;
+    296,000 tokens, 31 minutes. Checked here by reading the lines it names: findings 1 to
+    5 hold as far as reading shows; each is run again as the failing test of its task.
+    Determinism held wherever it tried (replays, a save in mid-month, two chains of 20
+    loads with Kills, revivals, wars and revolts between: 0 differences), and a Kill of
+    every living nation at three ticks left nothing of the dead.
+    - Tasks, most severe first: 3.4Rg (a played nation never researches), 3.4Rh (a nation
+      painted away lives on with no cell), 3.4Ri (undo, redo and an import give land to
+      the dead), 3.4Rj (a cell taken from an occupier stays occupied with no war), 3.4Rk
+      (a puppet that dies returns as a puppet).
+    - The rest (commands the page never sends; four suspicions): BLOCKERS, the watch list.
   - [x] 3.4Rb SPEC re-read for drift: each decision since the last pass (ADR-112 to
     ADR-142) looked for in SPEC (§2.3, §3.6, §3.7, §4, §5.2, §6.1, §7, §9) and checked
     against the code, not against its ADR alone.
@@ -3087,6 +3099,57 @@ quick sweep as a smoke test.
     unit, failing first, for the rule chosen; the share of dry hours in contact on
     engines beside that on foot, before and after, in PROGRESS. The pin moves if a rule
     does.
+  - [ ] 3.4Rg **A nation the player controls never gets a research budget** (the seventh
+    read, finding 1). `nations.research` is written by the economic AI alone, which skips
+    a nation whose AI is off and every nation when the AI is off for the world. France,
+    Germany or Britain taken at tick 0: budget 0, no line, 18 techs after two years (27
+    under the AI); with `aiEnabled` off from the start, no line in the world in a year.
+    A nation taken later keeps the budget of that month for good, in debt too. SPEC §3.7
+    had it as "not yet"; with the gate of PLAN 3.1a it shuts a player out of every
+    template behind a tech. Decide: the budget is set for every living nation by the
+    rule the AI uses (it is a rule of the economy, not a choice of the AI), or a command
+    and a control on the Economy tab. AT: unit, failing first: a nation taken at tick 0
+    opens a line in its first month and knows a tech the AI's twin knows after two
+    years; the same with the world's AI off. The pin moves only if the AI's nations
+    change.
+  - [ ] 3.4Rh **A nation whose land is painted away lives on with no cell** (finding 2).
+    `capitalsSystem` returns early for a nation whose capital city is held by one it is
+    not at war with, so it is never seen to have lost it: Luxembourg painted for Germany
+    and Switzerland for France with the God brush (ADR-118) were living with 0 cells and
+    0 income a year later, and owned land again after two, never having died; Albania
+    painted to nobody likewise. Paris painted for Germany stays France's capital in
+    German land until a war captures it. AT: unit, failing first: a nation painted away
+    whole is eliminated within the day (`NationEliminated`); a capital painted for
+    another moves, as one lost in a war does. Decide in DECISIONS whether the paint or
+    the capital rule sees to it.
+  - [ ] 3.4Ri **Undo, redo and an import give land to a dead nation** (finding 3).
+    `editPaint` refuses a dead nation (PLAN 2.17); `apply` of `editor.ts` restores a
+    stroke's cells whoever owned them, and `importLayer` asks `nations.has`, not
+    `living`. Run by the reader at tick 9000: a stroke near Paris, Kill France, undo: 29
+    cells of dead France, there 40 days later; a redo after a Kill: 13 cells; an import
+    naming dead Austria: 500. The God brush's strokes are in that history since ADR-118.
+    AT: unit, failing first, the three; no cell owned or controlled by a dead nation
+    after any of them. Decide what an undone cell of a dead nation becomes (nobody's, or
+    the stroke's undo is refused).
+  - [ ] 3.4Rj **A cell taken from an occupier by a third nation stays occupied with no
+    war** (finding 4; older than the lines read). `territory.ts` turns a cell to the
+    neighbour at war with its holder, whoever owns it; `makePeace` gives back only what
+    the two sides own. So a Polish cell that Lithuania held and Germany took, Germany
+    and Poland on one side, stays German-held: 39 to 118 cells in seed 99 over two
+    years, 8 to 198 in seed 7; China's 14 cells under the Soviets stand from tick 5000
+    to 17600. They count as lost and occupied on both nations' panels. Not balance: a
+    state the rules have no way out of. AT: unit, failing first: a cell whose owner and
+    controller are not at war and not overlord and puppet goes back to its owner (at the
+    flip, or at the next peace of either: decided on what the run shows); a count over
+    two years of two seeds that is 0 at every month's start. The pin moves.
+  - [ ] 3.4Rk **A puppet that dies returns as its overlord's puppet** (finding 5).
+    `eliminateNation` leaves `overlord` and the autonomy; only an annexation clears
+    them. Albania killed at tick 2500 and revived at 20020 is Italy's puppet again; 35 of
+    96 Kills at tick 9000 left a dead nation with an overlord. A nation revived with a
+    dead overlord has that nation's supply bloc until the month's start (a suspicion of
+    the read, to be run here). A decision first, in DECISIONS: a revival is a revolt
+    against its holder and comes back free, or the tie outlives the death. AT: unit,
+    failing first, for the rule chosen, by a Kill and by a revolt's revival.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
   contact holds until one side is destroyed, armour with its infantry gone as any other

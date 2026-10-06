@@ -3505,6 +3505,37 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **What it found correct** is in PROGRESS of this date.
   - **The six reads together:** thirty-five findings, twenty-four of them tasks.
 
+- **Addendum 2026-10-06, the seventh read (the review pass after PLAN 2.17 and 3.1 to 3.4, PLAN 3.4Ra).**
+  The same brief, on the 35 files of `src/` and four of `data/` changed since the sixth read
+  (`5d24625`, 1,373 lines), the new lines first; Node only; nothing of what changed or why,
+  and PLAN, PROGRESS, DECISIONS, BLOCKERS and the git log's messages not to be read.
+  - **Six findings, all run by the reader; four suspicions.** 296,000 tokens, 31 minutes.
+    Checked here by reading the lines named: 1 to 5 hold as far as reading shows, and each
+    is run again as the failing test of its task.
+    1. A nation the player controls never gets a research budget (`economic.ts`: the AI
+       alone writes it). A defect of PLAN 3.1b that SPEC had listed as "not yet".
+    2. A nation painted away with the God brush lives on with no cell (`capitalsSystem`).
+    3. Undo, redo and an import give land to a dead nation (`editor.ts`).
+    4. A cell taken from an occupier by a nation not at war with its owner stays occupied
+       with no war (`territory.ts`, `makePeace`): tens to 198 cells, every game.
+    5. A puppet that dies keeps its overlord and returns as a puppet.
+    6. Commands the page never sends, applied with values out of range (a negative
+       strength, a member twice, a fractional province).
+  - **Tasks before PLAN 3.5:** 3.4Rg (1), 3.4Rh (2), 3.4Ri (3), 3.4Rj (4), 3.4Rk (5). The
+    rest is in BLOCKERS.
+  - **Where the findings were.** None is in the four rules of combined arms, the fuel, the
+    org or the terrain, which the reader read and ran without a finding. 1 is the edge of
+    PLAN 3.1b that its own notes named and no test stood on. 2 and 3 are where PLAN 2.17b
+    (the brush gives land, through the editor's paint) met code written for a war and for
+    an editor with no dead nations: the brush's test paints a part of a nation, the reader
+    painted the whole of three. 4 is older than every line it was given, found by
+    following the Kill's comment that calls such a cell wrong.
+  - **What it did not see:** that armour fights without supply for 47 % of its hours in
+    contact (PLAN 3.4Re, found here by a count over a year). A rule that works as written
+    and is on more often than was meant is not found by a read for defects: it wants a
+    count of how often, which no part of PLAN 3.2 made.
+  - **The seven reads together:** forty-one findings, twenty-nine of them tasks.
+
 - **Addendum 2026-10-04: the review pass is counted by numbered tasks (the user's decision).**
   - *What the user said,* when a pass was proposed after PLAN 2.8c2: "Let's clarify the
     5-iteration rule for review pass to proper numbered iterations (e.g., 2.7, etc.) instead of

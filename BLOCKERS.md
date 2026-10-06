@@ -241,6 +241,25 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   before and after passed all 61. Paused pages run no tick, so the A* change under test was not
   involved. Contention does not explain 10×: if it recurs, keep the trace
   (`test-results/…/trace.zip`) and look at the worker boot handshake.
+- **From the seventh read (PLAN 3.4Ra, 2026-10-06), for the review of Phase 3.** None is a
+  task: what a player can meet of the read is PLAN 3.4Rg to 3.4Rk.
+  - *Run by the reader, low: commands the page never sends, applied as given.*
+    `spawnFormation` with a strength of -5 (the column wraps to 4.29 thousand million men,
+    gone in 60 days) or at (1e9, -1e9) (placed at the map's corner); `createAlliance` with
+    one member twice; `setWarFightToDeath` with side 5; `setCore` with province 1.5
+    (`setUnrest` with it reports applied and changes nothing); `grantBuff` on nation 0, on
+    a dead nation or on a formation that is not there; `offerPeace` from nation 0 or a
+    dead nation reports `CommandApplied`. NaN and infinities are refused (ADR-117); a
+    number that is finite and out of range is not looked at.
+  - *Suspicions, not settled:*
+    - The Economy tab's balance is income less expenses; research is paid from the
+      treasury besides (France: about 51 a month of 1,074). Wants a month's change of gold
+      beside the figure shown.
+    - 2,979 `MoveRejected` in two years of seed 99 with no player: which orders of the
+      operational AI are refused, and why, is not known.
+    - A refusal of one command that arrives after a second was sent under the same
+      selection reads as the second's (ADR-125, "not done").
+    - A revived nation keeps the research budget it died with until the month's start.
 - **From the sixth read (PLAN 2.16Ra, 2026-10-05), for the review of Phase 3.** None is a
   task: what a player can meet of the read is PLAN 2.16Rf to 2.16Ri.
   - *Run by the reader, low:*

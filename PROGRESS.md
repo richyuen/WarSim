@@ -7201,3 +7201,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   must be idle for it).
 - **Gate:** green (code: typecheck, lint, unit 839, the ten-year tests 12, build, parity; no
   spec changed).
+
+## 2026-10-06 — PLAN 3.4Ra: the seventh independent read: six findings, five of them tasks before 3.5
+
+- **The read** (ADR-74, addendum): 35 files of `src/`, four of `data/`, the brief unchanged;
+  296,000 tokens, 31 minutes; its scripts are vitest files in `.cache/read7/` (not in the repo).
+- **Findings, each read here against the lines it names (1 to 5 hold):**
+  1. a played nation never gets a research budget (3.4Rg);
+  2. a nation painted away with the God brush lives on with no cell (3.4Rh);
+  3. undo, redo and an import give land to a dead nation (3.4Ri);
+  4. a cell taken from an occupier by a third nation stays occupied with no war, 8 to 198
+     cells over two years of two seeds (3.4Rj; older than the lines read);
+  5. a dead puppet keeps its overlord and returns as a puppet (3.4Rk, a decision first);
+  6. commands the page never sends, applied out of range (BLOCKERS).
+- **What it ran and found correct:** replays equal on seeds 99 and 7 and in a random world;
+  a save at tick 9000 gives the continuous run's hashes at 13000 and 17600; a save in
+  mid-month, then a Kill and 2,000 ticks: equal bytes; two chains of 20 loads with random
+  God commands between: 0 differences. A Kill of every living nation at ticks 2500, 9000 and
+  17600 (101, 96, 96) and of 62 in random worlds: nothing of the dead left. Research at six
+  marks on two seeds: never over 3 lines, no tech ahead of its year or without its
+  prerequisites, nothing paid above the price; no formation of a template its nation lacks
+  the techs for. 113 refused commands changed no state. Combat, movement and supply of
+  PLAN 3.2 to 3.4: read, nothing found.
+- **What the read did not see and a count did:** armour dry in contact (3.4Rf). The lesson is
+  in the addendum: a rule new to the sim wants a count of how often it is on, over a year,
+  in the task that adds it.
+- **Next:** 3.4Rd (tick time), then 3.4Rf to 3.4Rk, then PLAN 3.5.
+- **Gate:** documents (parity).
