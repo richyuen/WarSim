@@ -3,8 +3,9 @@
  *
  * `queueFormation` (the command): a formation of a scenario template costs its elements' gold
  * and manpower (scenario rules), paid at once. The nation must have both (gold may not go below
- * zero for new orders); otherwise the order is rejected with an event. Accepted orders become
- * rows of `world.production`.
+ * zero for new orders) and know the techs of the template's unit types (PLAN 3.1a, `sim/tech.ts`);
+ * otherwise the order is rejected with an event. Accepted orders become rows of
+ * `world.production`.
  *
  * Rows store the day they are ready (queue day + training days), so a formation queued on day
  * d appears at 00:00 of day d + N. All orders train in parallel. Daily at 00:00, a bankrupt
@@ -22,6 +23,7 @@ import { equipFormation } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
+import { knowsTechs } from '../tech';
 import { navOf, type World } from '../world';
 import { frontierOf } from './territory';
 
@@ -35,7 +37,7 @@ export const TRAIN_TIME_SCALE = 3;
 export function queueFormation(world: World, nation: number, template: number): number {
   const rule = world.rules?.templates[template];
   const nc = world.nations.cols;
-  if (!rule || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower) {
+  if (!rule || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) {
     world.out.emit(world.tick, EventKind.ProductionRejected, template, nation, NaN, NaN);
     return 0;
   }

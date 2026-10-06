@@ -356,6 +356,8 @@ export interface TemplateInfo {
   men: number;
   /** Marker symbol class from the template's elements (PLAN 2.1). */
   symbol: UnitSymbol;
+  /** The techs a nation must know to raise it, as bits (PLAN 3.1a; `NationStat.techs`). */
+  techs: readonly [number, number];
 }
 
 export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison';
@@ -392,6 +394,8 @@ export interface NationStat {
   incomeMult: number;
   /** Formations in training: template index and the day (ticks / 24) they are ready. */
   queue: { template: number; readyDay: number }[];
+  /** The techs it knows, as bits 0..31 and 32..63 (PLAN 3.1a). */
+  techs: readonly [number, number];
 }
 
 /**

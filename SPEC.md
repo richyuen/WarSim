@@ -683,6 +683,24 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - Command rules (template cost and time) reach the sim as `world.rules`, set by the Sim and not
   state. Industry as a production input arrives with tech/research.
 
+**Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
+- *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files
+  in the order of the schema's categories. A tech's index is its bit.
+- *State:* the nation columns `tech0` and `tech1` (bits 0..31 and 32..63; 43 techs today, 64 at
+  most). Saved and hashed with the nation table.
+- *A template's techs* (`TemplateRule.techs`): the `techReq` of its unit types and all their
+  prerequisites.
+- *The gate:* `queueFormation` rejects (`ProductionRejected`) a template whose techs the nation
+  does not know. The economic AI then orders the infantry division, or the cadre division,
+  which asks for none. The build list shows such a template as "not researched", its button
+  off.
+- *The start* (`grantStartTechs`): every nation knows the techs dated before the scenario's
+  first year; the techs of the templates its own formations have; and the `techs` of its row
+  in `nations.json` (1938: the medium tank for SOV, FRA, ENG and JAP; Germany fields it).
+- *A nation founded in a revolt or by a Kill* knows what the nation it left knew. A nation
+  that returns knows what it knew.
+- *Not yet:* research (PLAN 3.1b). Tech modifiers (`armorAttack` and the others) are not read.
+
 ---
 
 ## 4. Territory, fronts and the strategic layer

@@ -376,7 +376,7 @@ export class SimServer {
       this.startLand = Uint8Array.from(world.cells.terrain, (t) => (t >= Terrain.Plains ? 1 : 0));
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
-      const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: symbolOf(t) }));
+      const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: symbolOf(t), techs: rules[i]!.techs }));
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
       /* the cell-resolution coast stays: no fine layers */
@@ -671,6 +671,7 @@ export class SimServer {
         incomeMult: nc.incomeMult[id]!,
         living: nc.living[id] === 1,
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
+        techs: [nc.tech0[id]!, nc.tech1[id]!],
       });
     });
     return { nations, wars };

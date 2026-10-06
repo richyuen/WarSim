@@ -255,6 +255,8 @@ export const NationDef = z.strictObject({
     .optional(),
   /** false = a dead nation that exists only through its cores (revivable, PLAN 1.20). */
   alive: z.boolean().optional(),
+  /** Techs it knows at the start beyond those every nation knows and those of its order of battle (PLAN 3.1a). */
+  techs: z.array(id).min(1).optional(),
 });
 export const NationsFile = z.strictObject({ nations: z.array(NationDef).min(1).max(65535) });
 
@@ -537,6 +539,9 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
         const def = traits.get(t);
         if (!def) errors.push(`${f}: nations[${i}].traits[${j}]: unknown trait '${t}'`);
         else for (const e of def.excludes) if (n.traits.includes(e)) errors.push(`${f}: nations[${i}].traits: '${t}' excludes '${e}'`);
+      });
+      n.techs?.forEach((t, j) => {
+        if (!techs.has(t)) errors.push(`${f}: nations[${i}].techs[${j}]: unknown tech '${t}'`);
       });
       if (n.overlord) {
         const o = byTag.get(n.overlord.tag);

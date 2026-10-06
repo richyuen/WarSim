@@ -69,13 +69,15 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand }:
       <div class="panel-sub">{t('act.production')}</div>
       {templates.map((tp, i) => {
         const affordable = nation.gold >= tp.gold && nation.manpower >= tp.manpower;
+        // The sim refuses a template whose techs the nation does not know (PLAN 3.1a).
+        const known = (nation.techs[0] & tp.techs[0]) >>> 0 === tp.techs[0] && (nation.techs[1] & tp.techs[1]) >>> 0 === tp.techs[1];
         return (
           <div class="god-row act-template" key={i}>
             <span class="god-war-name" title={t('act.templateInfo', { men: num(tp.men), gold: num(tp.gold), manpower: num(tp.manpower), days: tp.days })}>
               {t(tp.nameKey as MessageKey)}
-              <span class="act-cost"> {t('act.cost', { gold: num(tp.gold), days: tp.days })}</span>
+              <span class="act-cost"> {known ? t('act.cost', { gold: num(tp.gold), days: tp.days }) : t('act.needsResearch')}</span>
             </span>
-            <button type="button" class="god-btn" data-testid={`act-build-${i}`} disabled={!affordable} onClick={() => onCommand({ kind: 'queueFormation', nation: n, template: i })}>
+            <button type="button" class="god-btn" data-testid={`act-build-${i}`} disabled={!affordable || !known} onClick={() => onCommand({ kind: 'queueFormation', nation: n, template: i })}>
               {t('act.build')}
             </button>
           </div>

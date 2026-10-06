@@ -320,6 +320,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     nc.incomeMult[id] = 1;
     nc.manpowerMult[id] = 1;
     nc.aggression[id] = REBEL_AGGRESSION;
+    // It knows what the nation it leaves knew (PLAN 3.1a); a reused id does not keep the dead nation's.
+    nc.tech0[id] = world.nations.has(holder) ? nc.tech0[holder]! : 0;
+    nc.tech1[id] = world.nations.has(holder) ? nc.tech1[holder]! : 0;
   }
   nc.living[id] = 1;
   nc.bankrupt[id] = 0;

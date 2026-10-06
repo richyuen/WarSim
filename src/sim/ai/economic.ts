@@ -25,6 +25,7 @@
  *    panzer division every third order; infantry divisions otherwise. An order the treasury
  *    cannot pay for now is replaced by the infantry division if that one can be paid (critic B1,
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
+ *    So is one whose techs the nation does not know (PLAN 3.1a).
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -34,6 +35,7 @@ import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
 import { TRIBUTE } from '../systems/puppets';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { queueFormation } from '../systems/production';
+import { knowsTechs } from '../tech';
 import type { World } from '../world';
 
 export const DEBT_PAYBACK = 1 / 12;
@@ -134,6 +136,14 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
           t = mix.infantry;
           rule = plain;
+        }
+        // And one it has not the techs for by the plain division, or the cadre one, which asks for none (PLAN 3.1a).
+        for (const next of [mix.infantry, mix.cadre]) {
+          if (knowsTechs(world, n, rule.techs)) break;
+          const other = world.rules.templates[next];
+          if (!other) continue;
+          t = next;
+          rule = other;
         }
         const newUpkeep = upkeepOfTemplate(t);
         if (balance - newUpkeep <= need) return;

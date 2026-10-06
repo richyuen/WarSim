@@ -26,6 +26,20 @@ test('player actions: build a formation, declare war, offer peace, propose an al
   await page.getByTestId('tab-actions').click();
   await expect(page.getByTestId('panel-actions')).toBeVisible();
 
+  // A template whose techs Poland does not know cannot be ordered (PLAN 3.1a): the panzer
+  // division asks for the medium tank. The tank brigade of its own army is known to it (whether
+  // it has the gold for one is another matter).
+  const names = await page.evaluate(() => window.__warsim!.hud.templates.value.map((t) => t.nameKey));
+  const panzer = page.getByTestId(`act-build-${names.indexOf('template.panzer_div')}`);
+  await expect(panzer).toBeDisabled();
+  await expect(panzer.locator('xpath=..')).toContainText('not researched');
+  await expect(page.getByTestId(`act-build-${names.indexOf('template.tank_brigade')}`).locator('xpath=..')).not.toContainText('not researched');
+  if (process.env['EVIDENCE']) {
+    const dir = path.resolve(import.meta.dirname, '../../docs/evidence/3.1');
+    mkdirSync(dir, { recursive: true });
+    await page.screenshot({ path: path.join(dir, 'build-list-poland.png') });
+  }
+
   // Production: build template 0 (infantry division).
   const t0 = await page.evaluate(() => window.__warsim!.hud.templates.value[0]!);
   const before = await pol(page);

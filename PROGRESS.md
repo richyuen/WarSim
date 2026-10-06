@@ -6597,3 +6597,45 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review pass:** not due (the count started again with 2.17: one of five).
 - **Next:** PLAN 3.1 (armour unit types): Phase 3 begins.
 - **Gate:** green (code: typecheck, lint, unit 756, build, the whole e2e suite 137 in 10.2 min because 2.17 is ticked, parity; no ten-year tests: no sim input changed).
+
+## 2026-10-06 — PLAN 3.1a: what a nation knows is state, and a template is refused to the nation that lacks its techs (ADR-127)
+
+- **Phase 3 begins.** PLAN 3.1 is split into four parts (3.1a to 3.1d); this is the first.
+- **Found at the start:** the armour unit types, their cost, days and upkeep and the tech tree
+  are data since PLAN 1.1. The sim knew no tech: `queueFormation` did not read `techReq`, no
+  nation knew or learned anything, and no template has a heavy tank in it. The "tech gates
+  the heavy tank" of the task was a line in a schema test.
+- **Changed:**
+  - `src/sim/tech.ts` (new): a tech is a bit of the nation columns `tech0`/`tech1` (saved,
+    hashed); `knowsTechs`, `grantTechs`, `techClosure`, `grantStartTechs`.
+  - `ScenarioRules.techs` and `TemplateRule.techs` (the closure of its units' `techReq`),
+    built in `scenario1938.ts`.
+  - `queueFormation` rejects a template whose techs the nation lacks. The economic AI orders
+    the infantry division, or the cadre division, in its place.
+  - The start: the techs dated before 1938, those the nation's own formations field, and
+    `techs` in `nations.json` (new, optional; validated): the medium tank for SOV, FRA, ENG,
+    JAP. Germany fields it. The random world: the first two rules.
+  - `spawnRebels`: a nation founded knows what its holder knew.
+  - The page: the build list writes "not researched" and switches the button off.
+- **Data changed:** `artillery_2` is dated 1937 (was 1940): the 1938 order of battle fields
+  the heavy gun, and the motorised division the AI raises against armour asks for it.
+- **Tests:** `tests/unit/tech.test.ts` (6). With the gate and the AI's fallback taken out, two
+  fail (the refusal; the AI's third order). The other four were written with the code and not
+  seen to fail. One was wrong when first run: it compared the gold across a step that charges a month.
+- **Run by hand** (a part, ADR-87): `playerActions1938` with `--project chromium`, green.
+  First run red: the test asked that Poland's tank brigade button be on; it is off for want
+  of gold. It now asks that the row does not say "not researched".
+- **Looked at:** `docs/evidence/3.1/build-list-poland.png`: "Armoured division not
+  researched", its button grey; the tank brigade and the others with their prices.
+- **The pin moved:** 7fc8e685 → 329eedd8 (two more columns; a rich nation without the medium
+  tank trains infantry on its third order).
+- **Gotcha:** `vitest run tests/sweep/…` finds no test: the sweep tests have their own config
+  (`npm run test:sweep`). The new hash came from `npm run sim -- --scenario 1938 --seed 99 --years 1`.
+- **Not done:** nobody learns a tech until 3.1b, so the heavy tank cannot be had and the
+  medium tank only by five nations; no heavy template (3.1c), so the task's AT is not met
+  yet; tech modifiers are read by nothing; an old save does not load (two new columns). No
+  sweep (ADR-58). Tick time: no code in a tick's path changed; the one-year run above read
+  2.15 ms mean unpinned, not compared.
+- **Review pass:** not due (one of five since the phase review; 3.1 is not ticked).
+- **Next:** PLAN 3.1b (research).
+- **Gate:** green (code: typecheck, lint, unit 762, the ten-year tests 11, build, the changed spec `playerActions1938` 1, parity; no full e2e for a part, ADR-87).

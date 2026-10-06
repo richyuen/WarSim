@@ -26,6 +26,7 @@ import { placeOob, type OobGroup } from './data/oob';
 import { nearestCellWhere, reconcileIslands } from './data/ownership';
 import { buildProvinceRaster } from './data/provinces';
 import { cellOf, loadTerrain, type StraitDef } from './data/terrain';
+import { grantStartTechs } from './tech';
 import { addCities, addFormations, applyScenarioSettings, ECONOMY_TABLES_1938, fillEconomy, RULES_1938, SIZE_1938, startTreasury, TEMPLATES_LAND } from './scenario1938';
 import { MARGIN } from './ai/economic';
 import { monthlyAccounts } from './systems/economy';
@@ -313,6 +314,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   const oob = placeOob({ w, h, owner: c.owner, controller: c.controller, terrain, tags, overlordOf: new Map(), groups });
   if (oob.unplaced.length) throw new Error(`random world: ${oob.unplaced.length} groups found no land`);
   addFormations(world, oob.formations);
+  grantStartTechs(world);
 
   initProvinceCores(world);
   startTreasury(world);

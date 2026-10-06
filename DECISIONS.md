@@ -167,6 +167,56 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-127 · 2026-10-06 · accepted — What a nation knows is state, and a template is refused to the nation that lacks its techs (PLAN 3.1a)
+
+- **Context:** PLAN 3.1 asks that tech gates the heavy tank until research of 1942 or later.
+  The data said so since PLAN 1.1 (`techReq`, the tree, a schema test on the year). The sim
+  knew no tech: `queueFormation` did not read `techReq` and no nation knew anything. PLAN 3.1
+  is split into four parts; this is the first.
+- **Decision:**
+  - *State:* two `u32` columns of the nation table, `tech0` and `tech1`, a bit a tech, by the
+    tech's index in `ScenarioRules.techs`. 43 techs today; the build of the rules throws
+    beyond 64. A column and not a JSON section as the buffs are: it is hashed and saved with
+    the table, and a test of "knows" is two ANDs.
+  - *The order of the bits* is the order of the tech files by the schema's categories. A tech
+    put in before the last one moves the bits after it.
+  - *A template* asks for the closure of its units' `techReq` over the prerequisites, so a
+    nation handed a tech without what leads to it does not build with it.
+  - *The gate* is in `queueFormation`, with the gold and the manpower: one event,
+    `ProductionRejected`, no new refusal code. Without scenario rules (the toy world) there
+    are no templates and nothing to gate.
+  - *The start:* (1) every nation, living or dead, knows the techs dated before the
+    scenario's first year; (2) a nation knows the techs of the templates its formations of
+    the start have; (3) `techs` in its row of `nations.json`. Not "everything up to and with
+    1938": Mongolia and Luxembourg would start with the medium tank. By (2) Germany alone
+    knows the medium tank; (3) gives it to the Soviet Union (T-28), France (Char D, Somua),
+    the United Kingdom (the cruisers and the Medium Mk II) and Japan (Type 89), whose 1938
+    order of battle here has light tanks only.
+  - *A nation founded later* (a revolt, a Kill) takes the columns of the nation it left; a
+    reused id does not keep the dead nation's. A nation that returns keeps its own.
+  - *The economic AI:* an order it has not the techs for becomes the infantry division, and
+    that one the cadre division (no techs). Without it `queueFormation` returns 0 and the
+    nation orders nothing more that month.
+  - *The page:* `NationStat.techs` and `TemplateInfo.techs`; the build list writes "not
+    researched" in place of the cost and switches the button off.
+- **Data changed:** `artillery_2` (the heavy gun, `artillery_heavy`) is dated 1937, was 1940.
+  Germany, Italy and Nationalist Spain field it in 1938 (the motorised division), and the
+  motorised division is what the AI raises against armour: dated 1940 it would have been
+  refused to every other nation until research exists.
+- **The pin moved:** 7fc8e685 → 329eedd8 (seed 99, one year). The nation table has two more
+  columns, and a rich nation at war without the medium tank trains infantry where it trained
+  a panzer division on every third order.
+- **Saves:** a save from before has no `nations.tech0` section and does not load. The same
+  as for every column added to a table so far; no save is kept across versions yet.
+- **Not done, and where:**
+  - Nobody learns anything until PLAN 3.1b: the heavy tank cannot be had, the medium tank
+    only by five nations. The United States, rich and without it, train infantry in a war.
+  - No template has a heavy tank in it (PLAN 3.1c), so the task's own AT is not met yet.
+  - Tech modifiers (`armorAttack`, `landAttack`, …) are read by nothing.
+  - The editor and God Mode cannot give or take a tech.
+- **Deviation from AoC:** none known. No text source read so far names a tech tree in AoC;
+  ours is an addition under differentiators 3 to 5.
+
 ### ADR-126 · 2026-10-06 · accepted — A nation that has died is not selected any more, and what a God tab holds is its nation's (PLAN 2.17e3)
 
 - **Context:** read at PLAN 2.17e1, run now. Two causes, both seen to fail in one e2e:

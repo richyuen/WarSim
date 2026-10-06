@@ -2748,6 +2748,42 @@ quick sweep as a smoke test.
     first, by men. A tank brigade is small, so armour goes before rifle divisions (all 34
     Soviet armour formations went first, before 2.13 in the first hour, since then as the
     gold runs low). Decide here what an armour formation is worth to the AI that cuts.
+  - Split 2026-10-06 (ADR-127). Found at the start: the unit types, their costs, days and
+    upkeep and the tech tree are data since PLAN 1.1, and the schema test holds the heavy
+    tank's tech at 1942 or later. The sim knew no tech: `queueFormation` did not read
+    `techReq`, no nation knew or learned anything, and no template has a heavy tank, a
+    second-generation medium, an MBT or mechanised infantry in it.
+  - [x] 3.1a **What a nation knows, and the gate.** Techs as state of the nation; the techs of
+    the start; `queueFormation` refuses a template whose techs the nation lacks; the economic
+    AI orders what it can build; the build list says so.
+    AT: unit, failing first: a nation with a full treasury is refused the panzer division
+    without the medium tank and gets it with it.
+    - Done 2026-10-06 (ADR-127). `src/sim/tech.ts`; two bitset columns of the nation table
+      (saved, hashed); `TemplateRule.techs` is the closure of its units' `techReq`. The start:
+      what is dated before the scenario's first year, what the nation's own formations field,
+      and `techs` of the nation table (the medium tank for SOV, FRA, ENG, JAP; Germany fields
+      it). A nation founded in a revolt knows what its holder knew. `tests/unit/tech.test.ts`
+      (6; the refusal and the AI's order failed with the gate taken out); the build list in
+      `playerActions1938.spec.ts`, `docs/evidence/3.1/build-list-poland.png`.
+    - Data changed: `artillery_2` (the heavy gun) is dated 1937, not 1940: three armies of
+      the 1938 order of battle field it, and the motorised division the AI raises against
+      armour asks for it.
+    - Until 3.1b nobody learns anything: the heavy tank cannot be had at all, and the medium
+      tank only by the five that start with it.
+  - [ ] 3.1b **Research.** Daily, per nation: the next tech whose prerequisites are known and
+    whose year has come, paid over its days from a share of the budget the economic AI sets
+    (the ten-year test "no bankruptcy in peace" must hold). Decide: the year is a floor, or
+    research ahead of it costs more (the schema's comment says the second).
+    AT: unit: no nation knows `armor_heavy_1` before 1942 in a 1938 game without commands;
+    a rich nation knows it within two years of 1942; the money is taken from the treasury.
+  - [ ] 3.1c **Templates for what the gate holds back.** Heavy tank battalion or division,
+    a second-generation armoured division, mechanised division, MBT division; i18n names;
+    marker symbols; the AI's panzer order takes the best armoured template it knows.
+    AT: unit, failing first: the heavy template is refused in 1938 and built once
+    `armor_heavy_1` is known (the task's AT); production test of its cost, days and upkeep.
+  - [ ] 3.1d **What an armour formation is worth to the AI that cuts** (from PLAN 2.13,
+    above). AT: seed 99, a nation short of money: its rifle divisions go before its armour of
+    the same upkeep; the Soviet armour count after the first cut. Ticks 3.1.
 - [ ] 3.2 Fuel/supply consumption and breakdown effects.
   AT: unsupplied armour slows, then loses org, then strength (test).
 - [ ] 3.3 Terrain modifiers for tracked mobility and combat.

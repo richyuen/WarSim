@@ -20,6 +20,7 @@ import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 import { LandCounts } from './landCounts';
+import type { TechMask, TechRule } from './tech';
 import { cellInland, landPoint, maskSure, type LandMask } from '../shared/landMask';
 
 export interface PendingCommand {
@@ -76,6 +77,9 @@ export const NATION_SCHEMA = {
   brokeMonths: 'u16',
   /** Men lost in combat and attrition, cumulative (PLAN 1.34b statistics). */
   casualties: 'f64',
+  /** The techs it knows, a bit each (PLAN 3.1a, `sim/tech.ts`): bits 0..31 and 32..63 of the index into ScenarioRules.techs. */
+  tech0: 'u32',
+  tech1: 'u32',
 } as const;
 
 /** Production queue rows (PLAN 1.10): one formation in training. */
@@ -99,6 +103,8 @@ export interface TemplateRule {
   speedKmh: number;
   /** Elements per unit type (PLAN 1.13): unit = index into ScenarioRules.units. */
   elements: readonly { unit: number; count: number }[];
+  /** The techs a nation must know to raise it (PLAN 3.1a): those of its unit types, with their prerequisites. */
+  techs: TechMask;
 }
 
 /** Combat-relevant unit type stats (PLAN 1.13; from data/units, per full element). */
@@ -116,6 +122,8 @@ export interface UnitRule {
 export interface ScenarioRules {
   templates: readonly TemplateRule[];
   units: readonly UnitRule[];
+  /** The tech tree (PLAN 3.1a); a tech's index is its bit in a nation's `tech0`/`tech1`. */
+  techs: readonly TechRule[];
   /** Nations 1..n have a name in the scenario's nation table; a nation after them has the name in `World.names`, or that of the province it was founded in. */
   namedNations: number;
 }

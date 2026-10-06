@@ -12,6 +12,13 @@ import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'j
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
 import scenario1938 from '../../data/scenarios/1938/scenario.json' with { type: 'json' };
+import techAir from '../../data/tech/air.json' with { type: 'json' };
+import techArmor from '../../data/tech/armor.json' with { type: 'json' };
+import techElectronics from '../../data/tech/electronics.json' with { type: 'json' };
+import techIndustry from '../../data/tech/industry.json' with { type: 'json' };
+import techLand from '../../data/tech/land.json' with { type: 'json' };
+import techNaval from '../../data/tech/naval.json' with { type: 'json' };
+import techNuclear from '../../data/tech/nuclear.json' with { type: 'json' };
 import templatesLand from '../../data/templates/land.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
 import diplomacy1938 from '../../data/scenarios/1938/diplomacy.json' with { type: 'json' };
@@ -36,6 +43,7 @@ import { LOYALTY_BASE, LOYALTY_PER_AUTONOMY } from './systems/puppets';
 import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import type { CeMode } from './systems/efficiency';
 import { Mobility } from './nav/grid';
+import { grantStartTechs, MAX_TECHS, techClosure, type TechRule } from './tech';
 import type { ScenarioRules } from './world';
 import { sin } from './core/dmath';
 import { millerLat, Y_TOP } from './data/projection';
@@ -78,7 +86,7 @@ function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number 
   const mobility = els.some((u) => u.mobility === 'foot') ? Mobility.foot : els.some((u) => u.mobility === 'tracked') ? Mobility.tracked : Mobility.motor;
   return { mobility, speedKmh: Math.min(...els.map((u) => u.stats.speed_kmh)) };
 }
-type UnitStats = { id: string; class: string; elementSize: number; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number } };
+type UnitStats = { id: string; class: string; elementSize: number; techReq?: string; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number } };
 const UNITS_LAND = unitsLand.types as unknown as UnitStats[];
 const unitIndex = new Map(UNITS_LAND.map((u, i) => [u.id, i]));
 /** The id of each unit type by its index in `RULES_1938.units` (its name is the i18n key `unit.<id>`). */
@@ -90,8 +98,20 @@ export const BUILD_MIX_1938 = {
   motorised: TEMPLATES_LAND.findIndex((t) => t.id === 'motorised_div'),
   panzer: TEMPLATES_LAND.findIndex((t) => t.id === 'panzer_div'),
 };
+/**
+ * The tech tree (PLAN 3.1a), the files in the order of the schema's categories. A tech's place
+ * here is its bit in a nation's state: a tech put in before the last one moves the bits of
+ * those after it, and a save from before then means other techs by them.
+ */
+const TECH_DEFS = [techIndustry, techLand, techArmor, techNaval, techAir, techElectronics, techNuclear].flatMap((f) => f.techs as { id: string; year: number; prereqs: string[] }[]);
+if (TECH_DEFS.length > MAX_TECHS) throw new Error(`${TECH_DEFS.length} techs: a nation's techs are ${MAX_TECHS} bits`);
+const techIndex = new Map(TECH_DEFS.map((t, i) => [t.id, i]));
+const TECHS_1938: readonly TechRule[] = TECH_DEFS.map((t) => ({ id: t.id, year: t.year, prereqs: t.prereqs.map((p) => techIndex.get(p)!) }));
+/** Tech indices the nation table gives a nation at the start, by nation id. */
+const GIVEN_TECHS_1938 = new Map(NATIONS_1938.flatMap((n, i) => (n.techs ? [[i + 1, n.techs.map((t) => techIndex.get(t)!)] as const] : [])));
 export const RULES_1938: ScenarioRules = {
   namedNations: NATIONS_1938.length,
+  techs: TECHS_1938,
   units: UNITS_LAND.map((u) => ({
     cls: u.class,
     size: u.elementSize,
@@ -105,6 +125,13 @@ export const RULES_1938: ScenarioRules = {
   templates: TEMPLATES_LAND.map((t) => ({
     ...templateMobility(t),
     elements: t.elements.map((e) => ({ unit: unitIndex.get(e.type)!, count: e.count })),
+    techs: techClosure(
+      TECHS_1938,
+      t.elements.flatMap((e) => {
+        const req = UNITS_LAND[unitIndex.get(e.type)!]!.techReq;
+        return req === undefined ? [] : [techIndex.get(req)!];
+      }),
+    ),
     gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitCost.get(e.type)!.gold * e.count, 0),
     manpower: t.elements.reduce((s, e) => s + unitCost.get(e.type)!.manpower * e.count, 0),
     days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitCost.get(e.type)!.days)),
@@ -319,6 +346,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   addCities(world, map.cities);
   world.rules = RULES_1938;
   addFormations(world, map.formations);
+  grantStartTechs(world, GIVEN_TECHS_1938);
 
   // Province cores (rightful owners) for unrest and revolts (PLAN 1.19).
   initProvinceCores(
