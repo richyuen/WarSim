@@ -99,6 +99,20 @@ describe('a command that is not carried out says why (PLAN 2.17a)', () => {
     expect(send(s, { kind: 'declareWar', attacker: 2, defender: 1 }).refused).toEqual([Refusal.Subject]);
   });
 
+  // PLAN 2.17c (ADR-119): the Kill of the only living nation moved nothing and said nothing, and
+  // the dead nation kept all its land.
+  it('the Kill of the last living nation is refused: it lives and keeps its land', () => {
+    const s = toyWithDead();
+    const { owner, controller } = s.world.cells;
+    const [owners, controllers] = [owner.slice(), controller.slice()];
+    expect(send(s, { kind: 'collapseNation', nation: 1 })).toEqual({ applied: 0, refused: [Refusal.LastNation] });
+    expect(s.world.nations.cols.living[1]).toBe(1);
+    expect(owner).toEqual(owners);
+    expect(controller).toEqual(controllers);
+    // A dead nation is refused as dead, whoever else lives.
+    expect(send(s, { kind: 'collapseNation', nation: 2 }).refused).toEqual([Refusal.DeadNation]);
+  });
+
   it('a refused command is in the command log: a replay refuses it again', () => {
     const s = toyWithDead();
     const before = s.world.commandLog.length;

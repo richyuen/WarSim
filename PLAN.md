@@ -2597,7 +2597,7 @@ quick sweep as a smoke test.
       the French band), as after an editor's paint. And the head of `paintControl` in
       `src/sim/tick.ts` still calls its segment "a dragged God brush": to be put right with
       the next commit of `src/sim` (read after the commit; no sim code changed in this part).
-  - [ ] 2.17c **A dead nation holds nothing and has no name on the map.** The band the brush
+  - [x] 2.17c **A dead nation holds nothing and has no name on the map.** The band the brush
     left was France's control without ownership; after the Kill it stayed, with the name on
     it. To be found: whether 2.17b leaves any way to it (ADR-112 gives back what a dead
     nation occupied), and why the name was drawn. With it: the Kill of the last living
@@ -2606,6 +2606,29 @@ quick sweep as a smoke test.
     Phase 7.
     AT: e2e through the God tab, failing first: a nation painted over a neighbour's land,
     renamed and killed has no cell under its control and no name on the map.
+    - Done 2026-10-05 (ADR-119). **The e2e did not fail first.** The name is drawn from the
+      controller raster; the band was control without ownership, kept through the death. The
+      brush (ADR-118) and the death (ADR-112, after the critic's commit) had ended both. The
+      test (`godUi1938.spec.ts`, the fifth) fails with those two put back: 166 points of the
+      view still France's. It is kept as the pin.
+    - Changed: a cell outside the provinces shared out that a living nation occupies goes to
+      the occupier, not to the heir (the 7, 2 and 3 cells of PLAN 2.16Rg; `killLand.test.ts`
+      failed first). The Kill of the last living nation is refused only if it owns no
+      province's centre (`Refusal.LastNation`; `refusal.test.ts` failed first): with one, the
+      Kill founds what follows, and that is left to work.
+    - The Italian counters: `repatriationSystem` sends them home daily. The head of
+      `paintControl` is put right.
+    - Not reached by an e2e: the refusal (no world with a God tab has a last nation without
+      a province).
+  - [ ] 2.17c2 **A Kill after a brush stroke leaves pieces of the heir inside the neighbour.**
+    Seen in `docs/evidence/2.17/killed-painted-0d.png`: four spots of "Free Ain" in Italy's
+    north. The painted cells in a province whose centre the stroke did not reach are outside
+    the provinces shared out and go to the heir (the last sweep of `killNation`). To be
+    decided: such a cell goes to the living nation that owns its province's centre, and only
+    cells in no province (and those of a province with no living holder) to the heir.
+    AT: unit, failing first: France painted over part of an Italian province and killed: no
+    founded nation owns a cell of a province whose centre Italy owns. The e2e of 2.17c gets
+    the same line for the band.
   - [ ] 2.17d **Revive after a Kill.** `reviveOnCores` is false 30 days after a Kill, and the
     button says nothing: the cause to be read (`revival.ts`: a cooldown, cores gone with the
     fragments, no core land). What God Mode goes past, and a reason of its own for what it

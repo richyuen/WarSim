@@ -355,6 +355,10 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   armies they cannot pay for). How much is not on record: a player who opens 1938 sees, after one
   hour of the game, 78% of the armies the scenario's data gives. Which nations, and whether their
   income or their order of battle is off, is a question for the balance work.
+- For Phase 7 (seen 2026-10-05, PLAN 2.16Rg and 2.17c, not looked into): 1938, seed 99, tick
+  2000, no command: 45 cells are controlled by a nation other than their owner with no war
+  between the two. A Kill no longer adds to them (ADR-119). Where the 45 come from (a war
+  that ends for one side, a peace that leaves cells, an alliance joined) is not known.
 - Specs that measure time and fail on a slow machine (2026-10-04, gate runs with another project's
   dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
   changed. If one fails on an idle machine it is a finding.

@@ -23,6 +23,7 @@ const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.NoAlliance]: 'refusal.noAlliance',
   [Refusal.NoSuch]: 'refusal.noSuch',
   [Refusal.NoEffect]: 'refusal.noEffect',
+  [Refusal.LastNation]: 'refusal.lastNation',
 };
 
 export interface GodTabProps {

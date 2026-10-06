@@ -26,14 +26,18 @@
  *   3. A piece that founds none goes to the living nation with the most provinces next to it
  *      (lowest id on a tie); one with no neighbour (an island) and the cells outside any
  *      province go to the heir: the nation founded on the old capital, else the largest
- *      founded, else whoever received the most land.
+ *      founded, else whoever received the most land. A cell outside those provinces that a
+ *      living nation occupies is that nation's (ADR-112's rule for every death, ADR-119).
  *   4. With no heir (the nation owns the centre of no province) its land goes to the living
  *      nation with the most cells beside it (`leaveToNeighbour`, ADR-113).
+ * The Kill of the only living nation is refused if it has no province to found a nation in
+ * (`whyNotKill`, ADR-119).
  *
  * Capital loss without cores (AoC's death rule, deferred in ADR-28): a nation that loses its
  * capital while holding no province it has a core on dies; the capturer annexes what it held.
  */
 import { isMonthStart } from '../../shared/calendar';
+import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import { navOf, type World } from '../world';
@@ -87,6 +91,27 @@ export function reviveNation(world: World, n: number, area: number[], war = true
 /** God Mode revival: all provinces where n has a core and someone else holds the land. */
 export function reviveOnCores(world: World, n: number): boolean {
   return reviveNation(world, n, world.provinces.provincesOf(n));
+}
+
+/**
+ * Why God Mode may not kill living nation c (PLAN 2.17c, ADR-119): it is the only one alive and
+ * owns the centre of no province. Nothing would be founded and nobody revived, its land would go
+ * to nobody (`leaveToNeighbour`), and a dead nation holds none (ADR-112). With a province of its
+ * own the last nation can be killed: its land founds the nations that follow it.
+ */
+export function whyNotKill(world: World, c: number): Refusal {
+  const nc = world.nations.cols;
+  let others = false;
+  world.nations.forEach((n) => {
+    if (n !== c && nc.living[n] === 1) others = true;
+  });
+  if (others) return Refusal.None;
+  const centre = navOf(world).graph.centre;
+  for (let p = 1; p < world.provinces.count; p++) {
+    const cell = centre[p] ?? -1;
+    if (cell >= 0 && world.cells.owner[cell] === c) return Refusal.None;
+  }
+  return Refusal.LastNation;
 }
 
 /**
@@ -290,12 +315,13 @@ function killNation(world: World, c: number, rest: number[], capitalProvince: nu
   }
   if (heir === 0) for (const [n, cells] of [...received].sort((a, b) => a[0] - b[0])) if (heir === 0 || cells > received.get(heir)!) heir = n;
   if (heir !== 0 && islands.length > 0) give(islands, heir);
-  // Cells outside any province (slivers) go to the heir; then c is gone.
+  // Cells outside any province (slivers) that c still holds go to the heir; then c is gone. One
+  // that another nation occupies is left for `eliminateNation`, which gives it to the occupier
+  // (ADR-112): given to the heir, it stayed occupied with no war behind it (ADR-119).
   for (let cell = 0; cell < owner.length; cell++) {
-    if (heir !== 0 && owner[cell] === c) {
-      world.setOwner(cell, heir);
-      if (controller[cell] === c) world.setController(cell, heir);
-    }
+    if (heir === 0 || owner[cell] !== c || living(controller[cell]!)) continue;
+    world.setOwner(cell, heir);
+    if (controller[cell] === c) world.setController(cell, heir);
   }
   if (heir === 0) leaveToNeighbour(world, c);
   eliminateNation(world, c);

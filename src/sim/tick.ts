@@ -9,7 +9,7 @@ import { declareWar, makePeace, offerPeace, whyNotWar } from './systems/war';
 import { canJoin, leaveAlliance, noWarAmong, proposeAlliance } from './systems/alliances';
 import { annexNation, makePuppet, releasePuppet } from './systems/puppets';
 import { removeCity, setCapital, setCore, spawnCity } from './scenarioEdit';
-import { collapseNation, reviveOnCores } from './systems/revival';
+import { collapseNation, reviveOnCores, whyNotKill } from './systems/revival';
 import { MAX_CE, MIN_CE } from './systems/efficiency';
 import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
@@ -27,8 +27,9 @@ const MAX_NAME = 40;
 
 /**
  * Sets the controller of land cells within r cells of (x, y) (wrapping x; water untouched). With
- * (x2, y2) the brush is stamped at every cell step of the segment to it (a dragged God brush,
- * PLAN 1.44b), so no cell under the segment is skipped.
+ * (x2, y2) the brush is stamped at every cell step of the segment to it (PLAN 1.44b), so no cell
+ * under the segment is skipped. The command of an occupation: the God brush paints the owner
+ * too, with `editPaint` (ADR-118).
  */
 function paintControl(world: World, nation: number, x: number, y: number, r: number, x2 = x, y2 = y): void {
   const { w, h, terrain } = world.cells;
@@ -151,7 +152,7 @@ function applyCommand(world: World, cmd: Command): Refusal {
       if (!world.nations.has(cmd.nation)) return Refusal.NoNation;
       return done(reviveOnCores(world, cmd.nation));
     case 'collapseNation': {
-      const why = whyNotNation(world, cmd.nation);
+      const why = whyNotNation(world, cmd.nation) || whyNotKill(world, cmd.nation);
       if (!why) collapseNation(world, cmd.nation, true); // God Mode Kill: everything fragments
       return why;
     }

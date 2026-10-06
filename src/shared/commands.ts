@@ -206,6 +206,8 @@ export const Refusal = {
   NoSuch: 11,
   /** Nothing to do it with: a revival without core land, a revolt of a province that has no holder. */
   NoEffect: 12,
+  /** A Kill of the only living nation, which owns the centre of no province: nobody its land could go to. */
+  LastNation: 13,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

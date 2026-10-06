@@ -3,6 +3,7 @@ import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import type { SimInit } from '../../src/shared/protocol';
+import type { World } from '../../src/sim/world';
 import { deadLand } from '../helpers/deadLand';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -12,12 +13,27 @@ import { eventKinds, nationId, runEvents } from '../helpers/sim1938';
 
 const assets = assets1938(SIZE_1938.w);
 
-/** One line for every nation whose Kill leaves it alive or with a cell, as owner or as controller. */
+/** Cells that a nation other than their owner controls with no war between the two (PLAN 2.17c). */
+function occupiedInPeace(w: World): number {
+  const { owner, controller } = w.cells;
+  let n = 0;
+  for (let c = 0; c < owner.length; c++) {
+    const [o, k] = [owner[c]!, controller[c]!];
+    if (o !== 0 && k !== 0 && o !== k && !w.wars.atWar(o, k)) n++;
+  }
+  return n;
+}
+
+/**
+ * One line for every nation whose Kill leaves it alive or with a cell, as owner or as controller,
+ * or leaves more cells occupied with no war behind them than there were (ADR-119).
+ */
 function killEach(init: SimInit, ticks: number): string[] {
   const base = new Sim(init);
   base.step(ticks);
   const bytes = base.save();
   const total = base.world.cells.owner.reduce((a, o) => a + (o !== 0 ? 1 : 0), 0);
+  const inPeace = occupiedInPeace(base.world);
   const victims: number[] = [];
   base.world.nations.forEach((n) => {
     if (base.world.nations.cols.living[n] === 1) victims.push(n);
@@ -35,6 +51,8 @@ function killEach(init: SimInit, ticks: number): string[] {
     // Nobody's land is no answer: what was owned is owned.
     const owned = w.cells.owner.reduce((a, o) => a + (o !== 0 ? 1 : 0), 0);
     if (owned !== total) bad.push(`Kill of nation ${n} (${cells} cells): ${total - owned} cells without an owner`);
+    const more = occupiedInPeace(w) - inPeace;
+    if (more > 0) bad.push(`Kill of nation ${n} (${cells} cells): ${more} more cells occupied with no war (${inPeace} before)`);
   }
   return bad;
 }
@@ -110,6 +128,31 @@ describe('a God Mode Kill leaves no land with the dead (PLAN 2.16Rg)', () => {
   it('a random world of 60 at tick 2000: every nation', () => {
     expect(killEach({ scenario: 'random', seed: 7, assets, options: { nations: 60 } }, 2000)).toEqual([]);
   }, 300_000);
+
+  // PLAN 2.17c (ADR-119): the last living nation of a world with provinces can be killed. Its
+  // land founds what follows it; only one with no province of its own is refused (`refusal.test.ts`).
+  it('the last living nation, with provinces of its own: killed, and its land founds nations', () => {
+    const s = new Sim({ scenario: 'random', seed: 7, assets, options: { nations: 2 } });
+    const w = s.world;
+    s.command({ kind: 'annexNation', annexer: 1, target: 2 });
+    s.applyNow();
+    const alive = (): number[] => {
+      const l: number[] = [];
+      w.nations.forEach((n) => {
+        if (w.nations.cols.living[n] === 1) l.push(n);
+      });
+      return l;
+    };
+    expect(alive(), 'after the annexation').toEqual([1]);
+    const total = w.cells.owner.reduce((a, o) => a + (o !== 0 ? 1 : 0), 0);
+    s.command({ kind: 'collapseNation', nation: 1 });
+    const ev = runEvents(s, 1);
+    expect(ev.filter((e) => e[1] === EventKind.CommandRefused), 'refused').toEqual([]);
+    expect(alive().includes(1), 'nation 1 lives').toBe(false);
+    expect(alive().length, 'nations founded').toBeGreaterThanOrEqual(1);
+    expect(deadLand(w)).toEqual([]);
+    expect(w.cells.owner.reduce((a, o) => a + (o !== 0 ? 1 : 0), 0), 'cells with an owner').toBe(total);
+  });
 
   it('the toy world, which has no provinces: either nation', () => {
     expect(killEach({ scenario: 'toy', seed: 7 }, 0)).toEqual([]);

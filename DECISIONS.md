@@ -167,6 +167,63 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-119 · 2026-10-05 · accepted — What a God Mode Kill leaves: an occupied cell is the occupier's, and the last nation without a province is not killed (PLAN 2.17c)
+
+- **Context:** the critic's R2-B8: France, painted over the Alps with the God brush, renamed
+  "Gaul" and killed, kept the band and its name on it 30 days later. PLAN 2.17c had three
+  questions: whether any way to that is left and why the name was drawn; the Kill of the last
+  living nation, which moved nothing and said nothing (ADR-113); the cells a Kill with an heir
+  leaves under a third nation's occupation with no war (measured in PLAN 2.16Rg).
+- **Found:**
+  - *The band and the name.* The name on the map is derived from the controller raster alone
+    (`deriveNationLabels`, `worker/server.ts`). The band was land France controlled and did
+    not own (the brush of before ADR-118), and a death moved no cell (before ADR-112, which is
+    55 commits after the critic's). Both are ended: the brush gives ownership, and
+    `eliminateNation` gives back what the dead controlled. No code changed for it. The e2e of
+    the AT passed on its first run; it fails with the two put back (the brush sending
+    `paintControl`, `eliminateNation` without `leaveLand`): 166 points of the view still
+    France's.
+  - *The counters on the band* are the old owner's formations, which the paint leaves where
+    they stand. `repatriationSystem` sends them home at the next day's start, and after the
+    Kill the band is Italy's or Switzerland's again where the stroke took a province's
+    centre. Not changed.
+  - *The last nation.* With a province of its own the last living nation can be killed: the
+    Kill founds the nations that follow it (a piece with no city and no neighbour founds one).
+    Only a nation that owns the centre of no province dies as the holder of its land.
+- **Decision:**
+  - **An occupied cell outside the provinces shared out is the occupier's.** The last sweep of
+    `killNation` gave every cell the nation still owned to the heir and left a third nation's
+    control of it: occupation of the heir's land with no war. It now leaves a cell that a
+    living nation controls to `eliminateNation`, which makes it that nation's (ADR-112's rule
+    for every death). The heir takes what the dead nation held itself.
+  - **The Kill of the only living nation that owns the centre of no province is refused**
+    (`whyNotKill` in `systems/revival.ts`, `Refusal.LastNation`, "it is the last living
+    nation and has no province to found another in; its land would have nobody to go to").
+- **Rejected:**
+  - *Refuse the Kill of every last nation* (the words of PLAN 2.17c). In a world with
+    provinces that Kill works, and a world of one nation is where a user may want it.
+  - *The occupied cells to the heir, the occupation ended.* It takes from the occupier what
+    it holds; every other death leaves it that (ADR-112).
+- **Not decided here:**
+  - The 45 cells of seed 99 at tick 2000 that are occupied with no war before any Kill: where
+    they come from is not known. Logged in BLOCKERS for Phase 7.
+  - `defect` gives a province whole, and with it the cells a third nation occupied of it.
+  - A Kill after a God brush stroke leaves small pieces of the heir inside the neighbour:
+    the painted cells in provinces whose centre the stroke did not reach are "outside the
+    provinces shared out". Seen in the screenshot; PLAN 2.17c2.
+- **Not reached by any e2e:** the refusal. The worlds with a God tab have provinces, and a
+  Kill there founds nations, so a last nation without a province does not come about by hand
+  short of Danzig alone in the world. `REFUSAL_KEY` is a typed record: a reason without words
+  does not compile.
+- **Tests, seen to fail first:** `tests/unit/killLand.test.ts` (no Kill leaves more cells
+  occupied with no war: 1938 at tick 2000 failed for nations 6, 7 and 11 with 7, 2 and 3 more,
+  the numbers of PLAN 2.16Rg), `tests/unit/refusal.test.ts` (the toy world's last nation: it
+  was `CommandApplied` with nothing done). Green before and after: the last nation of a random
+  world, annexed down to one, is killed and founds nations (`killLand.test.ts`), and
+  `tests/e2e/godUi1938.spec.ts`, the fifth test (above).
+  `docs/evidence/2.17/killed-painted-0d.png`, `killed-painted-30d.png`.
+- **The pin did not move** (7fc8e685): no Kill in a game without commands.
+
 ### ADR-118 · 2026-10-05 · accepted — The God Mode territory brush gives the land: it sends the editor's nation paint (PLAN 2.17b)
 
 - **Context:** the critic's R2-B8: a drag of the Territory brush from France across the Alps

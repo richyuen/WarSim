@@ -6378,3 +6378,37 @@ No rule changed and nothing on screen changed. One task came out of it.
   is controlled and not owned: 2.17c is to find whether another way does.
 - **The pin did not move** (no sim input changed; the gate left the ten-year tests out).
 - **Gate:** green (code: typecheck, lint, unit 740, build, the two changed specs, parity; no full e2e for a part, ADR-87).
+
+## 2026-10-05 — PLAN 2.17c: what a God Mode Kill leaves (ADR-119)
+
+- **The critic's defect was already ended.** The name on the map comes from the controller
+  raster; the band was France's control without ownership, kept through its death. ADR-118
+  (the brush gives ownership) and ADR-112 (a death gives back what the dead controlled; 55
+  commits after the critic's) ended it. No code changed for it.
+- **The e2e of the AT passed on its first run** (`godUi1938.spec.ts`, the fifth test: brush
+  over the Alps, rename to "Gaul", Kill; at once and after 30 days no cell owned, none
+  controlled in the view, no name, no formation). Seen to fail with the old brush and the
+  old death put back by hand: 166 points of the view still France's. Both files restored.
+- **Changed:**
+  - `killNation`, the last sweep: a cell a living nation occupies is left to
+    `eliminateNation` and becomes the occupier's; it went to the heir and stayed occupied
+    with no war.
+  - `whyNotKill`, `Refusal.LastNation`: the Kill of the only living nation is refused if it
+    owns the centre of no province. **Not what PLAN said** ("the last living nation is
+    refused"): with a province the Kill founds the nations that follow, and that works.
+  - The head of `paintControl` (`tick.ts`) no longer calls it the God brush's.
+- **Tests, seen to fail first:** `killLand.test.ts` (no Kill adds cells occupied with no war:
+  nations 6, 7 and 11 at tick 2000 added 7, 2 and 3), `refusal.test.ts` (the toy world's last
+  nation: applied as nothing). Green before too: the last nation of a random world is killed
+  and founds nations (`killLand.test.ts`).
+- **Tried and dropped:** an e2e of the refusal. The toy world has no panels; in a random
+  world of two the first Kill founds nations, so the second nation is not the last.
+- **Run by hand** (a part, ADR-87): `godUi1938`, `godMode1938`, `occupation1938`,
+  `editorDrag1938`, `player1938` with `--project chromium`: 22 green (50 s).
+- **Looked at:** `docs/evidence/2.17/killed-painted-0d.png` and `-30d.png`: no "Gaul", no
+  France; "Free Paris", "Free Ain", "Free Gironde" on its land; the band is Italy's green
+  again. **Seen, not changed:** four spots of Free Ain's colour inside Italy's north, the
+  painted cells of provinces whose centre the stroke missed. PLAN 2.17c2, added.
+- **Not done:** no sweep (ADR-58); tick time not measured (the change is in a command's path).
+- **Logged for Phase 7** (BLOCKERS): the 45 cells occupied with no war before any Kill.
+- **The pin did not move** (7fc8e685).

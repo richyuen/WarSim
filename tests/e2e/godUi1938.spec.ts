@@ -325,3 +325,61 @@ test('the Territory brush gives territory: a drag from France across the Alps', 
   await page.evaluate(() => window.__warsim!.sim.command({ kind: 'editUndo' }, true));
   await expect.poll(async () => (await inspect(page)).rasters).toEqual(before.rasters);
 });
+
+// PLAN 2.17c (the critic's R2-B8): France, painted over the Alps, renamed "Gaul" and killed, kept
+// the band it had painted and its name on it 30 days later, with Italian counters there.
+test('a nation painted over a neighbour, renamed and killed holds nothing and has no name on the map', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const FRA = id('FRA');
+  const SCALE = 8;
+  const holders = (points: [number, number][]): Promise<number[]> => page.evaluate((ps) => ps.map(([x, y]) => window.__warsim!.view!.nationAt(x, y)), points);
+  const names = (): Promise<{ id: number; text: string }[]> => page.evaluate(() => (window.__warsim!.view!.draw(), window.__warsim!.view!.nationLabels.map((l) => ({ id: l.id, text: l.text }))));
+
+  await page.getByTestId('god-btn').click();
+  await lookAt(page, 2.5, 47);
+  await page.mouse.click(700, 400);
+  await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(FRA));
+  await page.getByTestId('tab-god').click();
+
+  // The band of PLAN 2.17b: from the Rhône valley over the Alps into the plain of the Po.
+  await page.getByTestId('god-tool-brush').click();
+  await lookAt(page, 7, 45.2, SCALE);
+  const way = Array.from({ length: 32 }, (_, i): [number, number] => [600 + (250 * i) / 31, 400]);
+  await page.mouse.move(600, 400);
+  await page.mouse.down();
+  await page.mouse.move(850, 400, { steps: 12 });
+  await page.mouse.up();
+  await expect.poll(async () => (await holders(way)).filter((n) => n !== FRA).length).toBe(0);
+  await page.getByTestId('god-tool-brush').click();
+
+  await page.getByTestId('god-rename-input').fill('Gaul');
+  await page.getByTestId('god-rename').click();
+  await expect.poll(async () => (await names()).some((l) => l.text === 'Gaul')).toBe(true);
+
+  await page.getByTestId('god-kill').click();
+  await page.getByTestId('god-kill').click();
+  await expect.poll(async () => nation(await inspect(page), FRA).living).toBe(false);
+
+  // At once, and 30 days later: no cell, no name, no formation.
+  // Every 10 px of the view (the band and France west of it): the controller the map draws.
+  const grid: [number, number][] = [];
+  for (let y = 5; y < 800; y += 10) for (let x = 5; x < 1400; x += 10) grid.push([x, y]);
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.17') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  for (const days of [0, 30]) {
+    if (days > 0) await page.evaluate((h) => window.__warsim!.sim.step(h), 24 * days);
+    const s = await page.evaluate(() => window.__warsim!.sim.inspect(true));
+    expect(nation(s, FRA).living, `after ${days} days`).toBe(false);
+    expect(nation(s, FRA).cells, `after ${days} days: cells owned`).toBe(0);
+    expect(s.formations.filter((f) => f.nation === FRA), `after ${days} days: formations`).toEqual([]);
+    await expect.poll(async () => (await holders(grid)).filter((n) => n === FRA).length, `after ${days} days: cells controlled in the view`).toBe(0);
+    await expect.poll(async () => (await names()).filter((l) => l.id === FRA || l.text === 'Gaul'), `after ${days} days: the name on the map`).toEqual([]);
+    await page.evaluate(() => window.__warsim!.view!.select(0));
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: path.join(out, `killed-painted-${days}d.png`) });
+  }
+});

@@ -818,6 +818,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     founded, else whoever received the most. A nation that owns the centre of no province (Danzig, a
     nation of the toy world) has no heir: its land goes to the living nation with the most
     cells beside it, else to the nearest (ADR-113). No dead nation owns or controls a cell.
+    A cell outside the provinces shared out that a living nation occupies becomes that
+    nation's, not the heir's (ADR-119). The Kill of the only living nation is carried out if
+    it owns a province's centre (its land founds what follows) and refused if it owns none.
   - *Death rule:* losing the capital while holding no core land is death; the capturer annexes
     the rest.
 - **Cores**: provinces list core nations. Revival spawns a dead nation from its cores
