@@ -73,6 +73,36 @@ describe('a God Mode Kill leaves no land with the dead (PLAN 2.16Rg)', () => {
     }
   });
 
+  // PLAN 2.16Rh (the sixth read, finding 3): Reykjavík's coordinates lie in a sea cell of the
+  // grid, in no province. The heir is the nation founded on the capital's cell, and the heir
+  // takes the cells outside any province.
+  it('a capital on the shore: the nation founded on its cell is the heir', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets });
+    const w = s.world;
+    const c = nationId('ICE');
+    const { owner, province } = w.cells;
+    const cc = w.cities.cols;
+    let capital = 0;
+    w.cities.forEach((ci) => {
+      if (cc.capitalOf[ci] === c) capital = ci;
+    });
+    expect(capital, 'the capital city').toBeGreaterThan(0);
+    const cell = cc.cell[capital]!;
+    expect(owner[cell], 'the capital’s cell').toBe(c);
+    expect(province[cell], 'its province').toBeGreaterThan(0);
+    const slivers: number[] = [];
+    for (let i = 0; i < owner.length; i++) if (owner[i] === c && province[i] === 0) slivers.push(i);
+    expect(slivers.length, 'cells outside any province').toBeGreaterThan(0);
+    const born = w.nations.highWater;
+    s.command({ kind: 'collapseNation', nation: c });
+    s.applyNow();
+    const heir = owner[cell]!;
+    expect(heir, 'founded on the capital').toBeGreaterThanOrEqual(born);
+    expect(w.nations.cols.origin[heir], 'its origin').toBe(province[cell]);
+    expect(w.nations.highWater - born, 'nations founded').toBeGreaterThan(1);
+    expect([...new Set(slivers.map((i) => owner[i]!))], 'who took the cells outside any province').toEqual([heir]);
+  });
+
   it('1938 at tick 2000, with wars and occupations: every nation', () => {
     expect(killEach({ scenario: '1938', seed: 99, assets }, 2000)).toEqual([]);
   }, 300_000);

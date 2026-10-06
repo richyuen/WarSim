@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-114 · 2026-10-05 · accepted — A Kill's capital province is that of the capital's cell, read before the revivals (PLAN 2.16Rh)
+
+- **Context:** the sixth read's finding 3. ADR-99 names the capital's province twice: it is
+  the first seed of a piece that founds several nations, and the nation founded on it is the
+  heir. `killNation` read it at the capital's coordinates. A city on the shore has its
+  coordinates in a sea cell of the grid (province 0) or in the next province; its cell
+  (`cities.cell`, snapped to land when the scenario is built) is where it stands.
+  `spawnRebels` had the same defect and reads the cell since ADR-103 and ADR-106. And the
+  province was read after the revivals of the Kill's first step: a revival that takes the
+  capital's city moves the capital to another city (`relocateCapital`).
+- **Decision:**
+  - `capitalCell` (`systems/capitals.ts`): the cell of the nation's capital city, else (a
+    field capital, whose coordinates are a cell's middle) the cell of its coordinates.
+  - `collapseNation` reads that cell's province before the revivals and hands it to
+    `killNation`.
+  - Nothing else of ADR-99 changes. When the capital's province goes to a revived nation or
+    back to a living core nation, no founded nation has it, and the heir is the largest
+    founded, as before.
+- **Seen** (1938 at the start, seed 99, a scratch run): eight nations have a capital whose
+  coordinates are not in its cell's province: Iceland, Liberia, French West Africa, Lebanon,
+  Newfoundland, Panama and Brazil in no province, Mozambique in another (1772 for 611).
+  Killed, Iceland founds five nations; the one on Reykjavík has 8 cells, the largest 468, and
+  Iceland's 25 cells outside any province went to the largest. They go to Reykjavík's now.
+  In all eight the capital is also the largest city, so the first seed was right by its
+  fallback.
+- **Test, seen to fail first** (`tests/unit/killLand.test.ts`): the Kill of Iceland: the
+  nation that owns Reykjavík's cell is founded by the Kill, has that cell's province as its
+  origin, and owns every cell of Iceland's that is outside any province ("expected [105] to
+  deeply equal [104]").
+- **Not run by any test:** the read before the revivals. No nation of 1938 at the start has
+  a dead claimant on its capital's province. Also not: a capital in the next province whose
+  city is not the largest of its piece (the first seed).
+- **Not looked into:** the random world's nine (the finding's count); the rule is the same.
+- **The pin did not move** (7fc8e685): no Kill in a game without commands.
+
 ### ADR-113 · 2026-10-05 · accepted — A Kill without an heir: the land goes to the neighbour with the most cells beside it (PLAN 2.16Rg)
 
 - **Context:** the sixth read's finding 1b. A God Mode Kill shares out the provinces whose

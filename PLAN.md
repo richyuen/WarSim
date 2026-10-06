@@ -2463,7 +2463,7 @@ quick sweep as a smoke test.
       Communists' land to China. `tests/unit/killLand.test.ts`: failed for nations 5 and 70
       of 1938 at both ticks and for both toy nations; the random world was green already
       (2.16Rf). The pin did not move.
-  - [ ] 2.16Rh Finding 3: **a Kill reads the capital's province at the capital's
+  - [x] 2.16Rh Finding 3: **a Kill reads the capital's province at the capital's
     coordinates**, which for a city on the shore lie in a sea cell or in another province
     (ADR-103, ADR-106: the same defect `spawnRebels` had). 8 of the 102 nations of 1938, 9
     of 60 in a random world. The heir ("the nation founded on the old capital") and the
@@ -2471,6 +2471,11 @@ quick sweep as a smoke test.
     the revivals of step 1, which may have moved the capital.
     AT: failing first: the Kill of one of the eight (Iceland): the nation founded on its
     capital's cell is the heir.
+    - Done 2026-10-05 (ADR-114): `capitalCell` gives the capital city's cell, and
+      `collapseNation` reads its province before the revivals. Iceland's 25 cells outside
+      any province went to the largest nation founded (468 cells) and go to the one on
+      Reykjavík (8 cells). The test failed first; the read before the revivals has no test
+      (no such case in 1938 at the start). The pin did not move.
   - [ ] 2.16Ri Finding 6: **the formation panel follows an id that another formation has
     taken.** A table gives a freed id to the next row made (`Table.create`); the panel and
     the frame on the map know the id only. The formation whose panel is open is destroyed,

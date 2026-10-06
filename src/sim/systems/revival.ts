@@ -21,7 +21,8 @@
  *      (the sum of their sizes; highest averages), no more than it has provinces with a city.
  *      A piece that founds several is divided among provinces with a city, each taking the
  *      provinces nearest to it: the first is the capital's (else the largest city's), each
- *      further one a large city's far from those already chosen (`spread`).
+ *      further one a large city's far from those already chosen (`spread`). The capital's
+ *      province is that of its city's cell, as the Kill began (`capitalCell`, ADR-114).
  *   3. A piece that founds none goes to the living nation with the most provinces next to it
  *      (lowest id on a tie); one with no neighbour (an island) and the cells outside any
  *      province go to the heir: the nation founded on the old capital, else the largest
@@ -38,7 +39,7 @@ import { nearestCellWhere } from '../data/ownership';
 import { navOf, type World } from '../world';
 import { releasePuppet } from './puppets';
 import { defect, REVOLT_FROM, spawnRebels } from './revolts';
-import { eliminateNation } from './capitals';
+import { capitalCell, eliminateNation } from './capitals';
 
 export const REVIVALS = 2;
 export const REVIVAL_COOLDOWN = 24 * 730;
@@ -119,6 +120,9 @@ export function collapseNation(world: World, c: number, forced = false): void {
   world.nations.forEach((p) => {
     if (nc.overlord[p] === c && nc.living[p] === 1) releasePuppet(world, p);
   });
+  // The capital's province, for the Kill: read before the revivals, one of which may take the
+  // capital and so move it (PLAN 2.16Rh).
+  const capitalProvince = world.cells.province[capitalCell(world, c)] ?? 0;
   // 1. Dead claimants revive on their provinces.
   const byClaimant = new Map<number, number[]>();
   for (const p of held) {
@@ -135,7 +139,7 @@ export function collapseNation(world: World, c: number, forced = false): void {
     nc = world.nations.cols;
   }
   if (forced) {
-    killNation(world, c, held.filter((p) => !taken.has(p)));
+    killNation(world, c, held.filter((p) => !taken.has(p)), capitalProvince);
     return;
   }
   // 2. Restless provinces revolt, one rebel nation per connected group.
@@ -166,11 +170,14 @@ interface Piece {
   states: number;
 }
 
-/** The end of a God Mode Kill (module comment): `rest` is what c still holds, ascending. */
-function killNation(world: World, c: number, rest: number[]): void {
+/**
+ * The end of a God Mode Kill (module comment): `rest` is what c still holds, ascending;
+ * `capitalProvince` is the province of its capital's cell as the Kill began.
+ */
+function killNation(world: World, c: number, rest: number[], capitalProvince: number): void {
   const pv = world.provinces;
   const g = navOf(world).graph;
-  const { owner, controller, province, w } = world.cells;
+  const { owner, controller, province } = world.cells;
   const living = (n: number): boolean => n !== 0 && n !== c && world.nations.has(n) && world.nations.cols.living[n] === 1;
   const cellsIn = new Map<number, number>();
   let held = 0;
@@ -180,7 +187,6 @@ function killNation(world: World, c: number, rest: number[]): void {
     cellsIn.set(province[cell]!, (cellsIn.get(province[cell]!) ?? 0) + 1);
   }
   const cellsOf = (ps: number[]): number => ps.reduce((a, p) => a + (cellsIn.get(p) ?? 0), 0);
-  const capitalProvince = province[Math.floor(world.nations.cols.capitalY[c]!) * w + Math.floor(world.nations.cols.capitalX[c]!)] ?? 0;
   const received = new Map<number, number>();
   const give = (area: number[], to: number): void => {
     defect(world, area, c, to);

@@ -6220,3 +6220,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** green (code: typecheck, lint, unit, build, parity, the ten-year tests; no e2e for
   a part, ADR-87).
 - **Next:** PLAN 2.16Rh.
+
+## 2026-10-05 — PLAN 2.16Rh: a Kill's capital province is that of the capital's cell (ADR-114)
+
+- **The defect:** `killNation` read the capital's province at the capital's coordinates. For
+  eight nations of 1938 those are in a sea cell (no province) or in the next province
+  (Mozambique). The heir then was the largest nation founded, not the one on the capital.
+- **The fix:** `capitalCell` (`systems/capitals.ts`): the capital city's cell, else the cell
+  of a field capital's coordinates. `collapseNation` reads its province before the revivals
+  of step 1 (one of them may take the capital and move it) and hands it to `killNation`.
+- **Test, seen to fail first** (`killLand.test.ts`): the Kill of Iceland. Its 25 cells outside
+  any province went to nation 105 (468 cells), not to 104 on Reykjavík (8 cells).
+- **Where the heir shows:** only in the islands and the cells outside any province. In all
+  eight the capital is the largest city, so the first seed was right by its fallback.
+- **Not done:** no test of the read before the revivals (no case in 1938 at the start; said
+  in ADR-114); the random world's nine not counted again; no run in the page (nothing drawn
+  changed), no sweep (ADR-58), tick time not measured (the Kill's path only).
+- **Next:** PLAN 2.16Ri.

@@ -46,6 +46,21 @@ export function capitalsSystem(world: World): void {
   });
 }
 
+/**
+ * The cell of n's capital: its capital city's, else (a field capital) the one its coordinates
+ * are in. Not the coordinates' cell for a city: those of a city on the shore are in a sea cell
+ * of the coarse grid or in the next province (PLAN 2.15e3, 2.16Rh).
+ */
+export function capitalCell(world: World, n: number): number {
+  const cc = world.cities.cols;
+  const nc = world.nations.cols;
+  let city = 0;
+  world.cities.forEach((ci) => {
+    if (city === 0 && cc.capitalOf[ci] === n) city = ci;
+  });
+  return city !== 0 ? cc.cell[city]! : Math.floor(nc.capitalY[n]!) * world.cells.w + Math.floor(nc.capitalX[n]!);
+}
+
 /** Moves the capital to the nation's controlled cell nearest the old one, or eliminates it. */
 function relocateToField(world: World, n: number): void {
   const nc = world.nations.cols;

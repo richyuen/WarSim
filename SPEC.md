@@ -809,7 +809,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     war over it. Puppets go free and dead claimants revive; land with a living core nation or
     claimant goes to it; the rest founds at most 5 nations (one for every 200 cells), shared
     among its connected pieces by their cities; a piece that founds nothing goes to its
-    neighbour, an island to the heir. A nation that owns the centre of no province (Danzig, a
+    neighbour, an island to the heir. The heir is the nation founded on the province of the
+    capital's cell (its city's cell, read as the Kill begins: ADR-114), else the largest
+    founded, else whoever received the most. A nation that owns the centre of no province (Danzig, a
     nation of the toy world) has no heir: its land goes to the living nation with the most
     cells beside it, else to the nearest (ADR-113). No dead nation owns or controls a cell.
   - *Death rule:* losing the capital while holding no core land is death; the capturer annexes
