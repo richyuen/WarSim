@@ -199,6 +199,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   and 226 cells), a random world of 60 at tick 2000 (green before: its controller half was
   ADR-112's), the toy world (16,359 and 15,357 cells kept). Afterwards no dead nation is owner
   or controller of a cell and as many cells have an owner as before.
+- **Not run by any test:** the second rule (no nation beside the land, so the nearest). Every
+  nation the tests kill without an heir has a neighbour.
 - **The pin did not move** (7fc8e685): no Kill in a game without commands.
 
 ### ADR-112 · 2026-10-05 · accepted — A dead nation holds no land: what it occupied goes back, what others occupied of it is theirs (PLAN 2.16Rf)
