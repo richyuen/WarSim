@@ -2998,6 +2998,31 @@ quick sweep as a smoke test.
   built per battle, tick time not measured since 3.4a; three tank brigades stood some
   11,000 volleys each in contact with their infantry gone (3.4b); the helpers of
   `combinedArms.test.ts` and `combinedArmsMatrix.test.ts` build the same battle twice.
+  Split 2026-10-06, as PLAN 2.16R was: the pass is several causes. No part is a numbered
+  task: the gate runs the specs a part changes (ADR-87). No sweep: this is a pass of step 9,
+  not a phase review (ADR-58).
+  - [ ] 3.4Ra The independent read (ADR-74), the seventh: the 35 files of `src/` changed
+    since the sixth (`5d24625`: PLAN 2.16Rf to 3.4d, 1,373 lines added in `src/` and
+    `data/`), the new lines first, and the four data files. The same brief: defects only,
+    nothing of what changed or why. Each finding is checked against the code here before it
+    is anything; those a player can meet become tasks 3.4Re and on, before 3.5, each with a
+    test that fails first, most severe first; the rest go on the watch list.
+  - [ ] 3.4Rb SPEC re-read for drift: each decision since the last pass (ADR-112 to
+    ADR-142) looked for in SPEC (§2.3, §3.6, §3.7, §4, §5.2, §6.1, §7, §9) and checked
+    against the code, not against its ADR alone.
+  - [ ] 3.4Rc Dead code and refactor debt in the same files: exports nothing uses, i18n keys
+    without a use, TODO and FIXME; the four rule factors and the two maps of arms of
+    `combat.ts`; the battle that `combinedArms.test.ts` and `combinedArmsMatrix.test.ts`
+    each build. The pin (80e8050a) holds: a refactor that moves it changed a rule.
+  - [ ] 3.4Rd Tick time, not measured since PLAN 3.1: `npm run sim -- --scenario 1938
+    --seed 99 --years 5 --affinity 0xFFFF` beside the last figure in PROGRESS and the
+    budget. A slower tick is logged with its numbers; one over budget is a task before the
+    next that needs a sweep.
+  - [ ] 3.4Re The three tank brigades of 3.4b that stood some 11,000 volleys each in contact
+    with their infantry gone: which they are, why they stay (no order to leave, no path, a
+    rule that holds them), and whether that is a defect (a task here) or the AI's not
+    knowing the rule (a line under PLAN 3.5). The read of 3.4Ra may settle it; its tasks
+    take the letters after this one.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
