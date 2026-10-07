@@ -167,6 +167,47 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-162 · 2026-10-07 · accepted — A tank that an element loses leaves its hull at T3: burning if the element was fired at, left behind if not (PLAN 3.6d)
+
+- **Context:** a wreck was left only when a whole element was gone (ADR-67). An element of
+  tanks is 10 tanks and loses them one at a time, no more than one in an hour: at T3 a
+  figure was there in one frame and not in the next, and nothing marked the place.
+- **Decision:**
+  - `HullFx` (`render/fx/hulls.ts`) compares the element section of a snapshot with the one
+    the view kept of the snapshot before (`MapView.elementSection`, kept under 60 m/px). For
+    an element of tanks in both (a hull frame: `turretOf`), the figures it had and has no
+    more (`figureCount`, the last of its order: `figureOffsets`) each leave a hull where the
+    figure stood: at the old snapshot's place and facing.
+  - **Not every tank that is lost burns.** PLAN 3.6d said "leaves a burning hull". The first
+    pictures had 18 hulls burning in an empty field: a brigade on the march had lost a tank
+    from each of 18 elements in two hours, to breakdowns (PLAN 3.2d), with no enemy near. The
+    view cannot read the cause from a strength, but a combat loss comes in the tick of a fire
+    record whose target is the element (`combat.ts`: the losses of a tick are those of its
+    volleys), and the view gets the fire records of every target in its box. So: lost in a
+    snapshot that has a fire record at the element, the hull burns (flame 6 s, smoke 9 s
+    more, a fade of 2.5 s; its turret thrown round by a hash of the element and the figure).
+    Lost otherwise, it was left behind: a grey hull, its gun in line, no flame and no smoke,
+    for as long. PLAN 3.6d's text and AT are restated.
+  - **None for an element first seen** (the camera came, or the element did), and none
+    across a clock that went back (a game loaded into this one), or for an id whose
+    formation, frame or size is another's.
+  - **None for an element that is gone.** It left the view's box, or it ended. The last tank
+    of an element ends with it, and the element leaves its wreck with the burst (ADR-67): in
+    120 days of seed 1938 every element of tanks that ended had one tank left. A hull on top
+    of that wreck would be the same tank twice.
+  - Drawn on the overlay with the figures' share (nothing at T2: there a loss is the
+    sprite's opacity, as for every element), at the figure's size as the shader has it.
+  - View only: no sim state, no field in the snapshot; the pin does not move.
+- **Where it can be wrong:**
+  - An element fired at and losing a tank to attrition in the same hour: its hull burns.
+  - The worker drops fire records beyond its cap (`fires.dropped`, 0 at ×5): a tank lost
+    under a dropped record is drawn as left behind.
+  - A snapshot that spans several ticks (top speed) has the losses and the fire of all of
+    them: a tank left behind in one and its element fired at in another burns.
+- **Not done:** a hull does not block or hide anything, and figures drive over it; at T2 no
+  hull (an element's sprite is 5 px there, a hull would be less than one); the wreck of an
+  element's end at T3 is still the T2 mark at 30 px, not a hull.
+
 ### ADR-161 · 2026-10-07 · accepted — At T3 a shot leaves the muzzle of one of its shooter's figures (PLAN 3.6c)
 
 - **Context:** a fire record has the shooter's slot and the target's. At T3 an element is

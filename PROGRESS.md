@@ -8137,3 +8137,48 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS:** the `precision` timeout of the hand run, with the other specs that ran out
   once under load.
 - **Next:** PLAN 3.6d (tanks burn where they are lost).
+
+## 2026-10-07 — PLAN 3.6d: a tank that an element loses leaves its hull, burning if it was lost under fire (ADR-162)
+
+- **Done:** `src/render/fx/hulls.ts` (`HullFx`, `tanksLost`): the view compares the element
+  section of a snapshot with the one before, and a figure that an element of tanks had and
+  has no more leaves a hull where it stood, at the old pose. Drawn on the overlay with the
+  figures' share, at a figure's size. `MapView` hands it the two sections and the targets of
+  the snapshot's fire records. View only; the pin did not move.
+- **The task was restated on the way** (ADR-162). It said every lost tank burns. The first
+  pictures had 18 hulls burning in an empty field: a Japanese tank brigade on the march had
+  lost one tank from each of 18 elements in two hours, to breakdowns (PLAN 3.2d), with no
+  enemy near. Now a tank lost in a snapshot with a fire record at its element burns (flame
+  6 s, smoke 9 s, fade 2.5 s), and one lost otherwise is left behind: a grey hull, gun in
+  line, no flame. So a breakdown has something to see at T3 too.
+- **Learned about the sim:** an element of tanks loses one tank at a time and never more
+  than one in an hour; in 120 days of seed 1938 every element of tanks that ended had one
+  tank left. So an element's end is its last tank's, and it keeps its wreck: no hull there.
+  Tank losses in the world: none before day 18, then 1 to 54 a day.
+- **Tests:** `hullFx.test.ts` new (10): which figures, where, the three cases without a hull
+  (first seen, gone, nothing lost), tanks only, an id that is another element, under fire or
+  not, the clock, the cap. `burning1938.spec.ts` new (2 tests, 30 to 50 s each):
+  - under fire, day 27, 12 hours at 4 m/px: 7 hulls for 7 tanks lost by elements the view
+    held, 6 in the viewport, all 7 burning; the sim had 5 lost under fire in that 0.2-cell
+    square;
+  - without fire, day 15: 20 hulls for 20 tanks, 19 in the viewport, none burning;
+  - each hull on its figure's place of the old pose (to 1e-9 cells), no tank of its element
+    on it, as many figures as tanks left; whether it burns is what the sim says of that hour;
+    440 element-hours of strengths the same as the sim's; hashes before and after.
+  `tests/helpers/armourLosses.ts`: where armour loses tanks, under fire or without.
+- **Not tested in the browser:** both kinds in one view; an element that ends while the view
+  holds it (0 in both windows; the unit test has the case).
+- **Specs by hand** (`--project=chromium`): `burning1938`, `wrecks1938`, `muzzles1938`,
+  `turrets1938`, `closeZoom1938`, `individuals1938`, `fire1938`, `handover1938`: 12 tests,
+  green, 1.9 min.
+- **Looked at** (`docs/evidence/3.6/`): at 4 m/px six hulls burning among the tanks of the
+  brigade that lost them, each the size and the facing of a tank, smoke rising; at 1.5 m/px
+  two of them, the black hull under the flame, turret askew; the same a few seconds on, the
+  flame out and the hull smoking; the hulls left behind, grey, on the ground the brigade has
+  driven off. The first run's pictures are how the breakdowns were found.
+- **Measured:** nothing of the hulls' own. `fire1938.spec.ts` gave 1.17 ms a frame for the
+  fire layer in the run of eight spec files together (0.73 to 0.79 alone on the commit
+  before, 1.02 in a run of eleven): that view is at T2 and has no hull.
+- **Gotcha:** the ground where a column loses tanks holds no element at the window's start;
+  the spec waits for a snapshot at the zoom, not for elements (as `muzzles1938`).
+- **Next:** PLAN 3.6e (the tank battle demo; it ticks 3.6 and runs the full e2e).

@@ -93,7 +93,7 @@ src/render/        camera.ts, timing.ts (the animations' clock; TimedSwitch and 
                    zoom as states with timed fades), gl/ (gpuTimer), map/ (MapRenderer), labels/,
                    hash.ts (placement noise), units/ (ProxyRenderer, atlas, counters, markers, handover,
                    individuals, turrets, formationDots, tags), fx/ (fire: tracers, flashes, impacts; wrecks: the
-                   ends of elements); later lod/
+                   ends of elements; hulls: the tanks an element loses at T3); later lod/
 src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
                    Actions and God tabs, FormationPanel, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
                    FlagEditor, WarBanners, MapLegend), i18n/{index.ts: t(), locale signal, pseudo-locale 'qps';
@@ -1638,6 +1638,16 @@ moment before its first elements arrive.
   tank's along its turret of the frame, a gun's and a rifle's along the figure's facing, and
   a cannon's flash is a tongue along the barrel. From the slot to the muzzle with the close
   tier's share. A shooter outside the view's box fires from its slot.
+  *A tank that is lost leaves its hull* (PLAN 3.6d, ADR-162, `render/fx/hulls.ts`): the view
+  compares the elements of a snapshot with those of the snapshot before, and a figure that an
+  element of tanks had and has no more leaves a hull on its place, at the old pose. If a fire
+  record of the snapshot has the element as its target, the hull burns: flame for 6 s of real
+  time, smoke for 9 s more, a fade of 2.5 s. If none has (a breakdown, attrition: PLAN 3.2d),
+  the tank was left behind: a grey hull with its gun in line, for as long, without flame or
+  smoke. None for an element first seen, and none for one that is gone: the last tank of an
+  element ends with it and leaves the element's wreck (PLAN 2.4b). Drawn with the figures'
+  share, at a figure's size; at T2 a loss is the sprite's opacity, as for every element. At
+  most 2,000 are held. View state on the render clock: a reload starts with none.
 - *The T2 ↔ T3 change* is a handover like the others (see above), since PLAN 2.7b.
 - *Measured:* 3,345 figures of 89 elements (three divisions at 28 m/px): 0.7 ms to build per
   snapshot, 0.5 ms of CPU to draw a frame.

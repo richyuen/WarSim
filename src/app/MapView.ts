@@ -14,6 +14,8 @@ import { TierHandover } from '../render/units/handover';
 import { spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
+import { FIRE_STRIDE, FireField } from '../shared/events';
+import { HullFx } from '../render/fx/hulls';
 import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
 import { FormationFlag, marching, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
@@ -432,6 +434,9 @@ export class MapView {
       p.colors[i * 4 + 3] = 255;
     }
     p.upload(f.count);
+    // The elements of the snapshot before, for the tanks lost since (PLAN 3.6d). Not across a
+    // clock that went back: a game loaded into this one.
+    const elementsBefore = s.tick >= this.lastTick ? this.elementSection : null;
     this.uploadElements(s.elements);
     this.dirty = true;
     const arrived = performance.now();
@@ -452,6 +457,15 @@ export class MapView {
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
+    // A tank lost under fire burns: its element is the target of a fire record of this snapshot.
+    let targets: Set<number> | null = null;
+    this.hulls.add(elementsBefore, s.elements, arrived, (id) => {
+      if (!targets) {
+        targets = new Set();
+        for (let i = 0; i < s.fires.count; i++) targets.add(s.fires.data[i * FIRE_STRIDE + FireField.target]!);
+      }
+      return targets.has(id);
+    });
     this.lastTick = s.tick;
     this.snapshots++;
   }
@@ -598,6 +612,8 @@ export class MapView {
   readonly turretAims = new TurretAims();
   /** The ends of elements at T2 and the wrecks they leave (PLAN 2.4b). */
   readonly wrecks = new WreckFx();
+  /** The tanks lost between two snapshots, where they stood: burning, or left behind (PLAN 3.6d). */
+  readonly hulls = new HullFx();
 
   /**
    * True while a unit layer still animates: a counter split, merge or fold, a handover between
@@ -1068,8 +1084,8 @@ export class MapView {
   }
 
   /**
-   * Over the element sprites (PLAN 2.4): the wrecks of the elements that died, then tracers,
-   * muzzle flashes and impacts.
+   * Over the element sprites (PLAN 2.4): the wrecks of the elements that died, the hulls of the
+   * tanks lost at T3 (PLAN 3.6d), then tracers, muzzle flashes and impacts.
    */
   private drawFx(cam: Camera, now: number): void {
     const ctx = this.overlay.getContext('2d')!;
@@ -1077,7 +1093,10 @@ export class MapView {
     const vh = this.canvas.clientHeight;
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
     // At T3 a shot leaves the muzzle of a figure, where the turret of this frame has it (PLAN 3.6c).
-    const close = { share: this.individualCount > 0 ? this.shares.individuals : 0, minPx: FIGURE_MIN_PX, turret: (id: number, hull: number, t: number) => this.turretAims.angleAt(id, hull, t) };
+    const figures = this.individualCount > 0 ? this.shares.individuals : 0;
+    // A burning hull is a figure's: it is there with the figures.
+    this.hulls.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity * figures, FIGURE_MIN_PX, this.unitScale);
+    const close = { share: figures, minPx: FIGURE_MIN_PX, turret: (id: number, hull: number, t: number) => this.turretAims.angleAt(id, hull, t) };
     this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale, close);
   }
 
@@ -1515,7 +1534,7 @@ export class MapView {
     // or units still interpolating toward the latest tick. An idle map costs nothing.
     const c = this.controller.cam;
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
-    const animating = this.unitsAnimating(now) || this.wrecks.animating(now);
+    const animating = this.unitsAnimating(now) || this.wrecks.animating(now) || this.hulls.animating(now);
     const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || animating || this.unitsAnimated;
     if (!(this.resize() || this.dirty || camMoved || interpolating)) return false;
     this.draw(now);
@@ -1527,7 +1546,7 @@ export class MapView {
     // for a change that this draw starts, and "no" again once the clock is past the change's
     // end. A camera step and then a gap of more than the 300 ms of a split left the counters on
     // their parents' centroids, with nothing to draw them on.
-    this.unitsAnimated = this.unitsAnimating(now) || this.wrecks.animating(now);
+    this.unitsAnimated = this.unitsAnimating(now) || this.wrecks.animating(now) || this.hulls.animating(now);
     return true;
   }
 

@@ -3723,10 +3723,23 @@ quick sweep as a smoke test.
       about 20 degrees for a near target: ADR-161); a gun's
       tongue is along its formation's facing, not measured against its targets; a shooter
       outside the view's box fires from its slot; nothing filmed in a running game.
-  - [ ] 3.6d **Tanks burn where they are lost.** A wreck is left only when a whole element
+  - [x] 3.6d **Tanks burn where they are lost.** A wreck is left only when a whole element
     (10 tanks) is gone. A tank that leaves an element's figures between two snapshots leaves
     a burning hull on its place: flame for a while, smoke after, then gone. Not for an
     element first seen. AT: unit; a spec (as many burning hulls as tanks lost in the view).
+    **Restated 2026-10-07 (ADR-162):** tanks are lost without fire too (breakdowns, PLAN
+    3.2d; attrition), and the first pictures had a column on the march burning in an empty
+    field. A tank lost in a snapshot that has a fire record at its element burns; one lost
+    otherwise is left behind, a grey hull without flame. AT: as many hulls as tanks lost in
+    the view, burning where the sim had the element fired at in that hour and only there.
+    **Done 2026-10-07 (ADR-162).** `HullFx` (`render/fx/hulls.ts`), from the element
+    sections of two snapshots, drawn with the figures. `hullFx.test.ts` new (10).
+    `burning1938.spec.ts` new (2 tests): 7 hulls for 7 tanks lost under fire in 12 hours, all
+    burning; 20 for 20 lost on a march, none burning; 440 element-hours of strengths the
+    same as the sim's. Pictures at 4 and 1.5 m/px looked at.
+    - *Not done:* the browser has not had both kinds in one view; an element's end at T3 is
+      still the T2 wreck mark; figures drive over a hull; nothing at T2; the frame's time
+      with hulls was not measured; nothing filmed in a running game.
   - [ ] 3.6e **The tank battle demo** (`tankBattle1938.spec.ts`): a battle of armour found
     or set up, flown to from T1 to T3; turrets off the hull's facing, a flash at a tank, a
     burning hull; pictures in `docs/evidence/3.6/`, looked at; PARITY. Ticks 3.6 (the full
