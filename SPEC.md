@@ -578,9 +578,11 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     to the death or not.
   - *Deadlock (ADR-47):* a war older than 5 years ends on its score, fight to the death or not.
   - *After peace:* a 2-year truce between the leaders. Idle formations left on land of a nation
-    they are not at war with march home (`repatriationSystem`, daily), or are moved to the
-    spawn point when no route exists (none that keeps off a second such nation's ground,
-    ADR-149).
+    they are not at war with march home (`repatriationSystem`, daily): to the nearest cell of
+    their nation within 80 cells, or to its spawn point. The march home, and no other order,
+    crosses the ground of any nation (`formations.home`, ADR-169); it is not fed there, it
+    waits before an enemy's cell, and the operational AI leaves it alone until it arrives.
+    A formation is set on the spawn point only where no land leads there.
   - *God commands:* `forcePeace`, `setWarFightToDeath`.
 - **Alliance / union** {id, nameKey, members[], leader, unity 0..100, loyalty per
   member}. Low unity → members leave and the alliance can dissolve.

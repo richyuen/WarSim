@@ -312,6 +312,7 @@ function strandedToLand(world: World): void {
     [fc.x[f], fc.y[f]] = world.cellPoint(to);
     world.paths.delete(f);
     fc.moving[f] = 0;
+    fc.home[f] = 0;
   });
   for (const f of gone) destroyFormation(world, f);
 }

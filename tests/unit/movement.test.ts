@@ -409,30 +409,153 @@ describe('no march across a nation that is not in the war (PLAN 3.4Rl)', () => {
     expect(stood.has(path[6]!)).toBe(false);
   });
 
-  it('the way home keeps off a second such nation: an Italian division in Germany at peace is moved to its spawn point', () => {
+  // PLAN 3.7h (ADR-169). Until then this test was "the way home keeps off a second such nation:
+  // an Italian division in Germany at peace is moved to its spawn point": 80 formations a year
+  // of two seeds were gone from one place and stood in another.
+  /** A 1938 world at peace, the AI off, with an Italian division in central Germany: Austria and Switzerland lie between. */
+  function farFromHome(): { s: Sim; far: number } {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    for (const war of [...s.world.wars.list]) s.world.wars.end(war);
+    const far = spawn(s.world, 'ITA', INF, 10.0, 51.0);
+    equipFormation(s.world, far, INF);
+    return { s, far };
+  }
+  const acrossX = (a: number, b: number): number => Math.min(Math.abs(a - b), W - Math.abs(a - b));
+
+  it('the way home crosses a second such nation: an Italian division in Germany at peace marches home through Austria and arrives', () => {
+    const { s, far } = farFromHome();
     const w = s.world;
-    w.settings.aiEnabled = false;
-    for (const war of [...w.wars.list]) w.wars.end(war);
     const c = w.formations.cols;
     const at = (f: number): number => w.cells.controller[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)]!;
-    const far = spawn(w, 'ITA', INF, 10.0, 51.0); // central Germany: Austria and Switzerland lie between
     const near = spawn(w, 'ITA', INF, 4.83, 45.76); // Lyon: France borders Italy
     expect(at(far)).toBe(nationId('GER'));
     expect(at(near)).toBe(nationId('FRA'));
-    s.step(1); // 00:00: the daily check
-    expect(c.moving[far]).toBe(0);
-    expect(at(far)).toBe(nationId('ITA'));
-    expect(c.moving[near]).toBe(1);
-    const stood = new Set<number>();
-    for (let h = 0; h < 24 * 40 && c.moving[near] === 1; h++) {
-      s.step(1);
-      stood.add(at(near));
+    const men = c.strength[far]!;
+    const stood = new Map<number, Set<number>>([[far, new Set()], [near, new Set()]]);
+    let furthest = 0;
+    for (let h = 0; h < 24 * 60 && (h === 0 || c.moving[far] === 1 || c.moving[near] === 1); h++) {
+      const was = [c.x[far]!, c.y[far]!];
+      s.step(1); // the first is 00:00: the daily check
+      if (h === 0) expect([c.moving[far], c.home[far], c.moving[near], c.home[near]]).toEqual([1, 1, 1, 1]);
+      furthest = Math.max(furthest, Math.hypot(acrossX(c.x[far]!, was[0]!), c.y[far]! - was[1]!));
+      for (const f of [far, near]) stood.get(f)!.add(at(f));
     }
-    expect(c.moving[near]).toBe(0);
-    expect(at(near)).toBe(nationId('ITA'));
-    expect([...stood].sort((a, b) => a - b)).toEqual([nationId('FRA'), nationId('ITA')].sort((a, b) => a - b));
+    expect(furthest, 'cells in an hour').toBeLessThanOrEqual(1);
+    expect([c.moving[far], c.home[far], at(far)]).toEqual([0, 0, nationId('ITA')]);
+    expect([c.moving[near], c.home[near], at(near)]).toEqual([0, 0, nationId('ITA')]);
+    const third = [...stood.get(far)!].filter((n) => n !== nationId('GER') && n !== nationId('ITA'));
+    expect(third.length, 'nations crossed between Germany and Italy').toBeGreaterThan(0);
+    expect(third.every((n) => n === nationId('AUT') || n === nationId('SWI'))).toBe(true);
+    expect([...stood.get(near)!].sort((a, b) => a - b)).toEqual([nationId('FRA'), nationId('ITA')].sort((a, b) => a - b));
+    // Not fed on the way (ADR-143): the march costs men.
+    expect(c.strength[far]).toBeLessThan(men);
+    expect(c.strength[far]).toBeGreaterThan(men * 0.5);
+    // At home it stays.
+    s.step(48);
+    expect(c.moving[far]).toBe(0);
   });
+
+  it('an order of a player from there is refused as before, and one that is taken ends the march home', () => {
+    const { s, far } = farFromHome();
+    const c = s.world.formations.cols;
+    s.step(2);
+    expect([c.moving[far], c.home[far]]).toEqual([1, 1]);
+    const target = c.targetCell[far];
+    order(s, far, 9.19, 45.46); // Milan
+    expect(hour(s, far, EventKind.MoveRejected)).toBe(true);
+    expect([c.moving[far], c.home[far], c.targetCell[far]]).toEqual([1, 1, target]);
+    order(s, far, 11.0, 50.0); // on in Germany: its holder's ground, which it may walk
+    expect(hour(s, far, EventKind.MoveRejected)).toBe(false);
+    expect([c.moving[far], c.home[far]]).toEqual([1, 0]);
+    expect(c.targetCell[far]).not.toBe(target);
+  });
+
+  // Seed 7, formation 897 (French Equatorial Africa's, in Angola): its AI ordered it to a front
+  // every day from the middle of a step into the Belgian Congo, the march ended at once before
+  // that ground, and the next midnight sent it home again: 23 times, and never home.
+  it('the operational AI leaves a formation on its march home alone', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    for (const war of [...w.wars.list]) w.wars.end(war);
+    w.wars.start([nationId('ITA')], [nationId('SWI')], 0);
+    const c = w.formations.cols;
+    const id = spawn(w, 'ITA', INF, 4.83, 45.76); // Lyon: France, and the Swiss front is nearer than home (taken for it at hour 5, before)
+    equipFormation(w, id, INF);
+    s.step(1);
+    expect([c.moving[id], c.home[id]]).toEqual([1, 1]);
+    const target = c.targetCell[id]!;
+    expect(w.cells.controller[target]).toBe(nationId('ITA'));
+    for (let h = 0; h < 24 * 4 && c.moving[id] === 1; h++) {
+      s.step(1);
+      if (c.moving[id] === 1) expect([c.home[id], c.targetCell[id]], `hour ${h}`).toEqual([1, target]);
+    }
+  });
+
+  it('a march home waits before a cell that has become an enemy\'s, and takes no cell, with its nation at war elsewhere', () => {
+    const { s, far } = farFromHome();
+    const w = s.world;
+    const c = w.formations.cols;
+    w.wars.start([nationId('ITA')], [nationId('POL')], 0);
+    s.step(1);
+    const path = [...w.paths.get(far)!];
+    const held = Uint16Array.from(w.cells.controller);
+    held[path[9]!] = nationId('POL');
+    w.setController(path[9]!, nationId('POL'));
+    const stood = new Set<number>();
+    for (let h = 0; h < 24 * 20; h++) {
+      s.step(1);
+      stood.add(Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!));
+    }
+    expect([c.moving[far], c.home[far]]).toEqual([1, 1]);
+    expect(Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!)).toBe(path[8]);
+    expect(stood.has(path[9]!)).toBe(false);
+    expect(stood.size).toBeGreaterThan(6);
+    const changed: number[] = [];
+    for (let k = 0; k < held.length; k++) if (w.cells.controller[k] !== held[k]) changed.push(k);
+    expect(changed).toEqual([]);
+  });
+
+  it('a march home saved on its way and loaded goes on as the game that ran on', () => {
+    const { s, far } = farFromHome();
+    s.step(24 * 3);
+    const c = s.world.formations.cols;
+    expect([c.moving[far], c.home[far]]).toEqual([1, 1]);
+    const bytes = s.save();
+    const loaded = new Sim({ scenario: '1938', seed: 9, assets: assets1938(W) });
+    loaded.load(bytes);
+    expect(Buffer.from(loaded.save()).equals(Buffer.from(bytes))).toBe(true);
+    expect(loaded.world.formations.cols.home[far]).toBe(1);
+    for (const t of [s, loaded]) t.step(24 * 40);
+    expect(c.moving[far]).toBe(0);
+    expect(s.world.cells.controller[Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!)]).toBe(nationId('ITA'));
+    expect(loaded.hash()).toBe(s.hash());
+  });
+
+  // Before: seed 7 at hours 769 and 1225 (Estonian divisions in Lithuania and the Soviet Union, 26
+  // and 16 cells in the hour).
+  it('1938, seed 7, the first 55 days: no formation is more than 3 cells from where it was an hour before, but one set on another landmass', () => {
+    const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
+    const w = s.world;
+    const fc = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    const before = new Map<number, { x: number; y: number; generation: number }>();
+    const jumps: string[] = [];
+    let homeward = 0;
+    for (let hour = 1; hour <= 24 * 55; hour++) {
+      before.clear();
+      w.formations.forEach((f) => before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! }));
+      s.step(1);
+      for (const [f, was] of before) {
+        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation) continue;
+        if (fc.home[f] === 1) homeward++;
+        const d = Math.hypot(acrossX(fc.x[f]!, was.x), fc.y[f]! - was.y);
+        if (d > 3 && comp[Math.floor(was.y) * W + Math.floor(was.x)] === comp[Math.floor(fc.y[f]!) * W + Math.floor(fc.x[f]!)]) jumps.push(`hour ${hour}: formation ${f} from ${was.x.toFixed(2)}, ${was.y.toFixed(2)} to ${fc.x[f]!.toFixed(2)}, ${fc.y[f]!.toFixed(2)}: ${d.toFixed(1)} cells`);
+      }
+    }
+    expect(homeward, 'formation-hours on a march home').toBeGreaterThan(100);
+    expect(jumps.length, jumps.slice(0, 5).join('; ')).toBe(0);
+  }, 120_000);
 
   it('a march is the march that was ordered after a load: its path is saved, not found again', () => {
     const s = world('GER', 'FRA');

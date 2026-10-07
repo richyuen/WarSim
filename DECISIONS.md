@@ -346,6 +346,54 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   with how many of their men; how many are still set on the spawn point, and why.
 - **Consequences:** a column of the formations' table (a save from before has none and
   loads with 0); the pin moves.
+- **Addendum 2026-10-07, coded and counted (PLAN 3.7h):**
+  - *Wrong above:* a save from before does not load ("missing section formations.home"),
+    as with every column added (ADR-135, ADR-150).
+  - *One rule more, found by the count:* the operational AI leaves a formation on its march
+    home alone, as it does one on the retreat. "Any other order takes the mark away" let
+    the AI take it: in seed 7 formation 897 (French Equatorial Africa's, in Angola) was
+    ordered to a front each day from the middle of a step into the Belgian Congo, the
+    march ended at once before that ground (ADR-151 puts the step's other end first on
+    the path, and the walk bars it), and midnight sent it home again: 23 marches home, none
+    ended. With the first code 22 and 6 marches of the year were taken by another order
+    and 10 and 23 ended on a third nation's ground. An order of a player and a retreat
+    still clear the mark. What it costs: a formation a day from a front of its nation is
+    walked home first where the AI would have taken it (an Italian division in Lyon with
+    Italy at war with Switzerland, the test's case).
+  - *A step that is shut* (ADR-171) orders a march home again as a march home.
+  - *Jumps* (a year, more than 3 cells in a tick, `.cache/p37/jumps2.ts`): 7 and 33 at
+    HEAD before (seed 99, seed 7; 43 and 37 at the diagnosis, the games have changed with
+    ADR-170), 0 and 0 after. None was set on a spawn point: no formation's home was on
+    another landmass in these years.
+  - *The marches home of the year* (`.cache/p37h/home.ts`, scratch):
+
+    | | seed 99 | seed 7 |
+    | --- | --- | --- |
+    | begun | 150 | 165 |
+    | arrived on their own ground | 118 | 163 |
+    | hours of the march, median and longest | 302, 2,068 | 108, 1,033 |
+    | men at arrival, of those at the start (all; median; least) | 70 %; 80 %; 0.4 % | 94 %; 96 %; 1.8 % |
+    | died on the way | 2 | 0 |
+    | on the way at the year's end | 30 | 2 |
+    | formation-hours on a march home | 73,733 | 28,996 |
+
+  - *Beside ADR-149's table* (`.cache/rl/third.ts`, the first 360 days; before is HEAD):
+
+    | formation-hours on a third nation's ground | seed 99 | seed 7 |
+    | --- | --- | --- |
+    | in contact | 71 → 73 | 32 → 45 |
+    | out of contact | 54,960 (128 formations) → 90,238 (151) | 20,093 (121) → 39,759 (185) |
+    | with no supply, in contact and out | 49,249 → 81,997 | 14,669 → 30,205 |
+    | orders refused | 858 → 603 | 3,451 → 3,204 |
+
+    The hours out of contact rise by 35,278 and 19,666, less than the marches home take
+    (73,733 and 28,996; before, the marches home that an order allowed were among the
+    54,960 and 20,093). They are 17 % and 6 % of what ADR-149 was written against. The
+    games part (other hashes), so each column is two games and no verdict on more than
+    that. The longest: Syria's from the Sudan (2,068 hours, 4 % of the men), a Mongolian
+    brigade from Romania (420 cells). Whether a march of months with no supply should
+    rather intern the formation (the second rule above) is Phase 7's, with the balance.
+  - *The pin:* `7cfb8b6d` → `83057b85`.
 
 ### ADR-168 · 2026-10-07 · accepted — A tag is tied to its elements: it stands on its formation's own side of a contact, and one that stands off has a line to them (PLAN 3.7d)
 

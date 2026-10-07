@@ -32,10 +32,18 @@
  *
  * Repatriation (daily at 00:00; critic B1, 2026-10-03): an idle formation standing on land held
  * by a nation outside its supply bloc that it is neither at war with nor fighting beside
- * (occupied land handed back at a peace, mostly) marches to the nearest cell its own nation controls within REPATRIATE_CELLS; if
- * there is none or no route, it is moved to its nation's spawn point. Such formations used to
+ * (occupied land handed back at a peace, mostly) marches to the nearest cell its own nation controls within REPATRIATE_CELLS, or
+ * with none there to its nation's spawn point. Such formations used to
  * stay where the peace found them, out of supply, until attrition had killed them: most of an
  * army that had just won a war.
+ *
+ * The march home crosses any nation (PLAN 3.7h, ADR-169). This order, and no other, is routed
+ * over all ground (`everywhere`), and the formation is marked (`formations.home`): its march does
+ * not end before a third nation's cell. It waits before an enemy's as any march does, and it is
+ * not fed on the way. Any other order takes the mark away, and so does the march's end. A
+ * formation is set on its spawn point only where no land leads home (another landmass): it was
+ * set there whenever the way crossed a second nation at peace with it, an army gone from one
+ * place and standing in another, 80 times in a year of two seeds.
  */
 import { EventKind } from '../../shared/events';
 import { atan2 } from '../core/dmath';
@@ -92,6 +100,11 @@ export function passageOf(world: World, nation: number, shared?: Map<string, Pas
   return pass;
 }
 
+/** The ground of a march home (ADR-169): every holder's. No order of an AI or a player has it. */
+function everywhere(world: World): Passage {
+  return { ok: new Uint8Array(world.nations.highWater + 1).fill(1), holder: world.cells.controller };
+}
+
 /** Where a formation stands in a cell of its path: the middle, or the cell's land point (PLAN 2.9a). */
 function centre(world: World, cell: number): [number, number] {
   return world.cellPoint(cell);
@@ -110,7 +123,7 @@ export function formationPath(world: World, id: number): Int32Array | null {
   if (!rule) return null;
   const nav = navOf(world);
   const from = Math.floor(f.y[id]!) * world.cells.w + Math.floor(f.x[id]!);
-  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, passageOf(world, f.nation[id]!));
+  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, f.home[id] === 1 ? everywhere(world) : passageOf(world, f.nation[id]!));
   if (!route) return null;
   p = Int32Array.from(route.cells);
   f.originCell[id] = from;
@@ -165,6 +178,11 @@ const SNAPS = new WeakMap<object, Map<number, number>>();
  * keeps off the ground of nations outside the formation's wars.
  */
 export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage): boolean {
+  return order(world, id, x, y, pass, 0);
+}
+
+/** `orderMove`, or with `home` 1 the order of a march home, over any ground (ADR-169). */
+function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | 1): boolean {
   const f = world.formations;
   const { w, h } = world.cells;
   const rule = f.has(id) ? world.rules?.templates[f.cols.template[id]!] : undefined;
@@ -185,13 +203,14 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
   const beyond = mid ? was[frac < 0.5 ? at + 1 : at]! : -1;
   const nav = navOf(world);
   const target = snapTarget(world, origin, tx, ty);
-  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, pass ?? passageOf(world, c.nation[id]!));
+  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, home === 1 ? everywhere(world) : (pass ?? passageOf(world, c.nation[id]!)));
   if (!route) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);
     return false;
   }
   noteMove(world, id);
   c.moving[id] = 1;
+  c.home[id] = home;
   c.targetCell[id] = target;
   c.pathStep[id] = 0;
   if (mid) {
@@ -224,9 +243,11 @@ export function repatriationSystem(world: World): void {
     const holder = controller[cell]!;
     if (!foreignTo(world, nation, holder)) return;
     const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS);
-    if (home >= 0 && orderMove(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5)) return;
+    if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, undefined, 1)) return;
     const at = spawnPoint(world, nation);
     if (!at) return;
+    // Further from home than that: to the spawn point on foot, if land leads there.
+    if (comp[Math.floor(at[1]) * w + Math.floor(at[0])] === comp[cell] && order(world, id, at[0], at[1], undefined, 1)) return;
     c.x[id] = at[0];
     c.y[id] = at[1];
   });
@@ -243,6 +264,7 @@ export function movementSystem(world: World): void {
     const rule = world.rules?.templates[c.template[id]!];
     if (!path || !rule) {
       c.moving[id] = 0;
+      c.home[id] = 0;
       return;
     }
     noteMove(world, id);
@@ -270,7 +292,8 @@ export function movementSystem(world: World): void {
         // Not a formation on the retreat (PLAN 3.5a): it goes back over ground the enemy has taken behind it.
         if (world.wars.atWar(nation, holder) && c.retreat[id] === 0) break;
         // Ground that has become a third nation's since the order: the march ends before it.
-        if (holder !== world.cells.controller[a] && foreignTo(world, nation, holder)) {
+        // Not a march home (ADR-169): that one crosses it.
+        if (c.home[id] === 0 && holder !== world.cells.controller[a] && foreignTo(world, nation, holder)) {
           barred = true;
           frac = 0;
           break;
@@ -303,7 +326,10 @@ export function movementSystem(world: World): void {
       c.y[id] = ay;
       c.moving[id] = 0;
       world.paths.delete(id);
-      orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5);
+      // The same order: a march home stays one.
+      const home = c.home[id] === 1 ? 1 : 0;
+      c.home[id] = 0;
+      order(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, undefined, home);
       return;
     }
     if (barred) {
@@ -318,6 +344,7 @@ export function movementSystem(world: World): void {
       c.x[id] = ax;
       c.y[id] = ay;
       c.moving[id] = 0;
+      c.home[id] = 0;
       world.paths.delete(id);
       world.out.emit(world.tick, EventKind.FormationArrived, id, c.nation[id]!, ax, ay);
       return;

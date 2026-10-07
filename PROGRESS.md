@@ -8477,3 +8477,43 @@ No rule changed and nothing on screen changed. One task came out of it.
   formation whose step is shut is the cell's middle (3.7l's question).
 - **Next:** PLAN 3.7h (a formation sent home marches home, ADR-169), then 3.7l, m, i, n,
   g, the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7h: a formation sent home marches home (ADR-169, addendum)
+
+- **The rule** (`movement.ts`, `world.ts`, `operational.ts`, `editor.ts`): the order of a
+  repatriation is routed over any ground and marked (`formations.home`, a byte); the walk
+  does not end a marked march before a third nation's cell. With no own cell within 80
+  cells it goes to the spawn point on foot if that is on its landmass. Set there only
+  where no land leads.
+- **Found by the count, not in the ADR:** the operational AI ordered the marching
+  formation to a front each day (seed 7, formation 897: 23 marches home, none ended; the
+  order came in the middle of a step between two third nations and was barred at once).
+  The AI now leaves a formation on its march home alone, as one on the retreat.
+- **Tests** (`movement.test.ts`, six): the old test "is moved to its spawn point" is the
+  test of the march (through Austria or Switzerland, no hour more than a cell, arrives
+  with fewer men); a player's order refused as before and one taken clears the mark; it
+  waits before a cell turned an enemy's and no cell changes hands, Italy at war with
+  Poland; saved on the way and loaded, the same hash 40 days on; the AI leaves it alone
+  (red without the line in `operational.ts`: taken at hour 5); 55 days of seed 7 with no
+  formation more than 3 cells from the hour before (the old jumps at hours 769 and 1225).
+- **Measured** (a year; seed 99, seed 7): jumps 7 and 33 at HEAD, 0 and 0 now. Marches
+  home begun 150 and 165, arrived 118 and 163 with 70 % and 94 % of their men (median
+  march 302 and 108 hours), died on the way 2 and 0, on the way at the end 30 and 2.
+  Formation-hours out of contact on a third nation's ground, 360 days: 54,960 to 90,238
+  and 20,093 to 39,759; the marches home are 73,733 and 28,996 hours. Other games (the
+  hashes differ): no verdict beyond the jumps. The table is in ADR-169's addendum.
+- **Gotcha:** ADR-169 said a save from before loads with 0. It does not load: a table
+  refuses a save with a column missing, as for every column before.
+- **Gotcha:** the tests of `tests/sweep/` are not in `vitest run <file>`: the pin is read
+  with `npx vitest run --config vitest.sweep.config.ts tests/sweep/baselineHash.test.ts`.
+- **The pin:** `7cfb8b6d` to `83057b85`.
+- **Tick time** (five years of seed 99, `--affinity 0xFFFF`): mean 1.605 ms before, 1.441
+  after; year 1 2.391 and 2.486. Another game, one run each.
+- **By hand:** no e2e spec run: nothing drawn changed.
+- **Not done:** the spawn point across a sea had no instance in either year and has no
+  test; a march of months with no supply (Syria's from the Sudan arrives with 4 % of its
+  men) is left to Phase 7; a player's order in the middle of a step between two third
+  nations is barred at once and sets the formation back to the cell behind (3.7l's ground).
+- **Next:** PLAN 3.7l (a march that ends at ground turned foreign ends where the formation
+  stands), then 3.7m, i, n, g, the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7
+  with `npm run check:full`.

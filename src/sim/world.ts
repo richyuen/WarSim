@@ -191,6 +191,8 @@ export const FORMATION_SCHEMA = {
   engaged: 'u8',
   /** Hours of its retreat left (PLAN 3.5a): out of battles, of the fronts' pressure and of the AI's orders. 0 = none. */
   retreat: 'u8',
+  /** 1 on a march home (PLAN 3.7h, ADR-169): `repatriationSystem`'s order, which crosses any nation's ground. Any other order and its arrival clear it. */
+  home: 'u8',
 } as const;
 
 /** Authoritative unit proxies (SPEC §3.6, PLAN 1.13). */

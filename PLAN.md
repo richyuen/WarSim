@@ -3985,7 +3985,7 @@ quick sweep as a smoke test.
     the brigade's tag is the nearest tag to the middle of its tanks, or has a line to them;
     the pictures of the demo and `docs/evidence/2.10/stop-5-battle.png` taken again and
     looked at; `tags1938` specs as they are.
-  - [ ] 3.7h **A formation is not moved across the map in one tick** (PLAN 3.7c; ADR-149's
+  - [x] 3.7h **A formation is not moved across the map in one tick** (PLAN 3.7c; ADR-149's
     "not counted"). In a year 43 and 37 formations (seed 99, seed 7) stand in one tick more
     than 3 cells from where they stood, by a median of 52 and 35 cells: `repatriationSystem`
     sets a formation with no way home on its nation's spawn point, and since ADR-149 "no
@@ -4030,6 +4030,22 @@ quick sweep as a smoke test.
     stood but one whose home is on another landmass; formation-hours out of contact on a
     third nation's ground in the first 360 days, before and after, beside ADR-149's table,
     and how many of the 80 arrive with how many of their men; the pin moves and is logged.
+    **Done 2026-10-07 (ADR-169, addendum):** `repatriationSystem` orders the march home over
+    any ground (`everywhere`, private to `movement.ts`) and marks it (`formations.home`); the
+    walk does not end a marked march before a third nation's cell; with no own cell within
+    80, to the spawn point on foot when it is on the formation's landmass. An order of a
+    player or a retreat clears the mark. **Not in the ADR, found by the count:** the
+    operational AI took the marching formation for a front every day (seed 7, formation
+    897: 23 marches home begun and none ended); it now leaves a formation on its march home
+    alone, as one on the retreat. Six tests in `movement.test.ts` (the old test of the jump
+    is now the test of the march; the AI's is shown red without its line). Jumps of more
+    than 3 cells in a year: 7 and 33 at HEAD (the games had changed since the diagnosis'
+    43 and 37), 0 and 0 now. Marches home in the year: 150 and 165 begun; 118 and 163
+    arrived, with 70 % and 94 % of their men; 2 and 0 died on the way; 30 and 2 on the way
+    at the year's end. The pin: `7cfb8b6d` to `83057b85`.
+    *Not done:* none was set on a spawn point in either year, so the case of another
+    landmass has no instance in the runs and no test; the formation-hours on a third
+    nation's ground rose (ADR-169's addendum has the table), by less than the marches took.
   - [ ] 3.7i **The puppets of a nation that dies are free at its death** (PLAN 3.7c; seen
     with ADR-148, read in the code, not run). A Kill and a collapse free them
     (`collapseNation`); a death by the loss of the capital (`eliminateNation` out of
