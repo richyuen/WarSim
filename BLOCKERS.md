@@ -91,6 +91,13 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   between them (France and Portugal with Spain at peace) has no front at all until the
   navy of Phase 4. For PLAN 3.5: allot by reach. Not measured: how many wars of a game have
   no front, and how they end (the deadlock of five years, ADR-47).
+- **A division with no way home is moved to its spawn point (PLAN 3.4Rl, ADR-149,
+  2026-10-06).** Repatriation did that where no route existed; it does it now also where the
+  way home crosses a second nation that is in no war with it (an Italian division in central
+  Germany at peace: Austria lies between; `movement.test.ts`). On the page that is an army
+  that is gone from one place and stands in another. Not counted: how many a game moves so.
+  A way to mend it: the nearest cell of its own nation that it can reach (`nearestCellWhere`
+  by the `Passage`), and the spawn point only when there is none.
 
 - Seen 2026-10-06 with PLAN 3.4Rk (ADR-148), read in the code, not run: **the puppets of a
   nation that dies by the loss of its capital are a dead nation's until the month's start.**

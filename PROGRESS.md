@@ -7479,3 +7479,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No e2e:** a part, and nothing drawn changes.
 - **Gate:** green on the second run (code, with the ten-year tests; no e2e for a part).
 - **Next:** PLAN 3.4Rm (the tick is over budget).
+- **Added after the commit (7ac7b63):** a save with no formation on the march (1938 at tick
+  0, an empty `world.paths` section) packed, loaded into a running game and saved again is
+  the same bytes, and the two games have the same hash 48 hours on, with 220 paths each
+  (`.cache/rl/empty.ts`, scratch). The division that is moved to its spawn point for want of
+  a way home is on BLOCKERS' watch list, with a way to mend it. ADR-149's sentence on AoC
+  ("its nations do not cross a third") is PLAN 3.4Rl's own, with no dated observation behind
+  it; no parity row covers it, and none was changed.
