@@ -3312,7 +3312,7 @@ quick sweep as a smoke test.
       changed.
     - *The gate:* `tickedTasks` takes `- [x] N.MR` for a numbered task (ADR-87, amended);
       `e599032`.
-- [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
+- [x] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
   contact holds until one side is destroyed, armour with its infantry gone as any other
   (34 such formations in seed 99's first year, 7,334 hours in contact, 31 gone by its end), and
@@ -3618,12 +3618,12 @@ quick sweep as a smoke test.
     - *Not done:* the search found a parting in this one scene; how many scenes the two
       ways together still leave that 6 px could part was not counted. In the random
       clusters most of what the shorter way leaves is left by the other way too.
-  - [ ] 3.5i **`declutter1938`: after one year, at 8 px per cell, 20 counters where the
+  - [x] 3.5i **`declutter1938`: after one year, at 8 px per cell, 20 counters where the
     zoom before had 21 at the same level of clusters.** A zoom in must not show fewer
     counters at one level. The scene moved; whether the rule of ADR-75 has a hole is what
     this part finds. Ticks 3.5 (the full e2e).
     **The counters done 2026-10-07 (ADR-158): the rule had a hole, a step of the zoom inside a
-    level kept the hold of the old zoom.** Not ticked: the two lines below are owed first.
+    level kept the hold of the old zoom.** The two lines below done the same day.
     - *Found, before anything was changed:* the same zoom, two pictures. Central Europe at
       8 px per cell: 27 counters in a view opened there, 20 stepped to from 6 (21 at 6). The
       page's counters replayed in Node give the same. Lost: a German counter of 23.8k that an
@@ -3650,9 +3650,14 @@ quick sweep as a smoke test.
       more than 2 px from one hour to the next, by `partAlong(…, 'shorter')` and by
       `nudgeApart`. Near the old number: a line in ADR-157. Much more: a part of its own,
       and the fix is a hold on the way (as `STACK_HOLD`), not another rule.
+      **Counted 2026-10-07: near the old number.** 49 boxes by the shorter way, 61 by
+      `nudgeApart` in 29,288 box-hours at 1900 m/px; 34 of the 61 on a change of way, in 10
+      of 48 hours; of boxes whose formation stood, 14 and 30. The line is in ADR-157. No
+      part of its own.
     - *A test's name:* `markerStacks.test.ts`, "boxes far from the chain stand as they
       did" tests boxes outside the group. Boxes inside it and far from the chain do move
       with it. Name it for what it tests.
+      **Done 2026-10-07:** "boxes outside the group stand as they did".
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):
   tanks scored 2. At T2 a panzer division is a grey grid of dots like any other. At T3 its

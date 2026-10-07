@@ -258,7 +258,7 @@ describe('a chain that the shorter way cannot part (PLAN 3.5h)', () => {
     expect(got.far).toBeLessThanOrEqual(NUDGE_MAX_PX + 1e-9);
   });
 
-  it('boxes far from the chain stand as they did: a pair the shorter way parts moves along x alone', () => {
+  it('boxes outside the group stand as they did: a pair the shorter way parts moves along x alone', () => {
     // 815 and 760 of the same front, and the two of the first test of PLAN 2.7s2 beside them.
     const r = nudgeApart([...front, m(1, 7, 1000, 0, 500), m(2, 8, 1016, 0, 300)], W, H);
     expect([r.get(1)![1], r.get(2)![1]]).toEqual([0, 0]);

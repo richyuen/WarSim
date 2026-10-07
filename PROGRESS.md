@@ -7977,3 +7977,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   level is still possible; the landing of a split takes its hold a frame later; a trembling
   zoom.
 - **Next:** the two lines under PLAN 3.5i, then its tick and 3.5's (the full e2e).
+
+## 2026-10-07 — PLAN 3.5i, the two lines owed; 3.5 ticked
+
+- **Counted** (a script in Node, since deleted; the line is in ADR-157): seed 1938 from day
+  14, 48 hours, the leads of the whole world at 1900 m/px with the stacks' hold carried
+  from hour to hour. Boxes whose move changed by more than 2 px in an hour: 49 by the
+  shorter way alone, 61 by `nudgeApart`, in 29,288 box-hours; 34 of the 61 on a change of
+  way. Boxes whose formation stood: 14 and 30. At 1200 m/px: 28 and 43; 2 and 7.
+- **Read as:** near the old number. No hold on the way, no part of its own.
+- **A test's name:** `markerStacks.test.ts`, "boxes outside the group stand as they did".
+- **Not checked:** the script takes a formation where the table has it; whether the view
+  draws every formation there was not compared.
+- **Ticked:** 3.5i and 3.5. The gate with the full e2e: 891 unit, 139 specs in 9.9 min,
+  none failed. No ten-year tests (no sim input changed); the pin did not move.
+- **Not done under 3.5, and written where it waits:** the tags at 150 m/px on each other
+  (PLAN 7.4); a zoom in that shows fewer counters within a level; the landing of a split
+  takes its hold a frame later; the cost of `nudgeApart` in the page.
+- **Next:** PLAN 3.6 (tank visuals).

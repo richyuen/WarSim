@@ -289,6 +289,19 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Consequences:** a group changes its way when an army's step leaves or clears a pair:
   its boxes then ease to the new places over 150 ms, as for any move. How often that
   happens in a running game was not counted.
+  - *Counted 2026-10-07 (PLAN 3.5i; a script in Node, since deleted):* seed 1938 from day
+    14, hour by hour for 48 h, every formation of the world where the table has it, the
+    stacks with their hold from hour to hour, 599 to 630 leads at 1900 m/px (29,288
+    box-hours). Boxes whose move changed by more than 2 px from one hour to the next: 49 by
+    `partAlong(…, 'shorter')`, 61 by `nudgeApart`; 34 of the 61 were on one way in one hour
+    and on the other in the next, in 10 of the 48 hours. Of boxes whose formation had not
+    moved in that hour: 14 and 30. At 1200 m/px (886 to 908 leads): 28 and 43, standing 2
+    and 7. On the lines between at any hour: 11 to 25 boxes of about 600. The largest
+    change 12 px by either way (from one limit to the other).
+  - *Read:* near the old number, a quarter more; no hold on the way. What is new is that
+    a box whose own formation stands moves more often (16 more in two days of the whole
+    world). Each such move is an ease of 150 ms. If it shows as unrest in a picture of a
+    front, the fix is a hold on the way, as `STACK_HOLD`.
 - **Not known:** how many scenes both ways leave that 6 px could part. In the random
   clusters the other way cleared some of what the shorter way left and left most of it;
   whether those can be parted at all was not searched.
