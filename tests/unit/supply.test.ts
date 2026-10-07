@@ -221,8 +221,11 @@ describe('supply v1 (PLAN 1.12)', () => {
       const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
       const w = s.world;
       w.settings.aiEnabled = false;
-      if (together) w.wars.start([nationId('GER'), nationId('ITA')], [nationId('POL')], 0);
-      const id = spawn(w, 'ITA', 10.0, 51.0); // central Germany
+      // In France since PLAN 3.4Rl (ADR-149): from central Germany, where this stood, the way
+      // home lies through Austria or Switzerland, and no march crosses a second nation that is
+      // in no war with it (that division is moved to its spawn point: `movement.test.ts`).
+      if (together) w.wars.start([nationId('FRA'), nationId('ITA')], [nationId('GER')], 0);
+      const id = spawn(w, 'ITA', 4.83, 45.76); // Lyon
       s.step(20);
       return { supply: w.formations.cols.supply[id]!, moving: w.formations.cols.moving[id]! };
     };

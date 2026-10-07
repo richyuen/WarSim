@@ -3226,7 +3226,7 @@ quick sweep as a smoke test.
     - *Tests:* three in `tests/unit/puppets.test.ts`, red before.
     - *Seen, not changed:* the puppets of a nation that dies by the loss of its capital
       are bound until the month's start (BLOCKERS, the watch list).
-  - [ ] 3.4Rl **Armies cross a nation that is in no war and fight on its ground, dry, to
+  - [x] 3.4Rl **Armies cross a nation that is in no war and fight on its ground, dry, to
     the end** (found in 3.4Rf, ADR-143). A route crosses any land (`findRoute` asks the
     ground, not the holder); contact holds whoever meets an enemy, wherever; repatriation
     skips a formation in contact or on the march. So France, at war with Portugal, marches
@@ -3242,6 +3242,20 @@ quick sweep as a smoke test.
     stands and is fed, or the holder is drawn into the war. AT: unit, failing first, for
     the rule chosen; the count of formation-hours on a third nation's ground, in contact
     and out of it, on two seeds, before and after. The pin moves.
+    **Done 2026-10-06 (ADR-149).** No route across a nation that is not in the war: round
+    it, or `MoveRejected`. A march's path is saved (it is found on the holders of its hour).
+    - *Formation-hours on a third nation's ground, 360 days, before → after:* in contact
+      5,859 → 116 (seed 99) and 20,721 → 65 (seed 7); out of contact 544,335 → 40,877 and
+      626,586 → 29,691, nine tenths of what is left on the march (the way home).
+    - *Tests:* five in `tests/unit/movement.test.ts`, four red before; the count by province
+      node in `tests/unit/landCounts.test.ts`. `supply.test.ts`: the division that is sent
+      home stands at Lyon, not in Germany (no way home across Austria; ADR-149).
+    - *The pin:* e0fefce9 → e5df6177.
+    - *A rule that came with the cost:* a route over 500 km that is not found in the
+      corridor of its provinces is refused (the search beyond it: 12 ms, a way 24 times in
+      two years).
+    - *Not done:* the AI allots formations to fronts they cannot reach and asks every day
+      (PLAN 3.5); repatriations to the spawn point not counted.
   - [ ] 3.4Rm **The tick is over budget after 3.4Rf** (ADR-143): seed 99, five years,
     pinned, one run: 5-year mean 1.721 ms (budget 1.5; 1.451 before), year 1 2.591 ms
     (budget 2.4; 2.339 before), year 5 1.905. The reach's own scan is under 0.035 ms a
@@ -3249,7 +3263,12 @@ quick sweep as a smoke test.
     foot in year 1. Measure again (two runs, the machine idle), then a profile of year 1
     by system (`.cache/cpuprof` has the way of PLAN 1.42a) and one cut at the largest
     cost that does not move the pin. After 3.4Rl, which changes how many formations stand
-    in contact. AT: the two figures in budget, or the remainder a line under PLAN 7.1 with
+    in contact. After 3.4Rl (ADR-149; one run, pinned): mean 1.903 and 1.894 ms a tick in two runs (budget 1.5; 1.475 before), year 1 2.585 and 2.577 (budget 2.4; 2.704 before), year 5 1.527 and 1.514 (0.978 in an unpinned run before).
+    974 formations at the end of year 5 (690 before): the armies no longer melt on the way.
+    `findRoute` is 0.41 ms a tick of two years: long routes found slowly (833 at 3.5 ms),
+    long ones refused in their corridor (980 at 2.5 ms), short ones refused after a full
+    search (161 at 3.7 ms); `planNation` itself 13 % of the tick, `passageOf` 3 %.
+    AT: the two figures in budget, or the remainder a line under PLAN 7.1 with
     its numbers; every year's hash the same before and after the cut.
     To look at first: the cells flipped a year (the runner prints them). After 3.4Rf:
     27,134, 17,156, 16,964, 18,315, 36,275; the log has none from before, so run

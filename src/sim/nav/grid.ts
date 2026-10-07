@@ -45,6 +45,8 @@ export interface NavGrid {
    * `stamp` is 2·gen when a cell is seen by search `gen`, 2·gen + 1 once it is closed.
    */
   scratch: { g: Float64Array; came: Int32Array; stamp: Uint32Array; gen: number } | null;
+  /** The last search in a corridor that found no way on closed ground (`findRoute`). */
+  barred: BarredSearch | null;
 }
 
 /** Row scales for a Miller w×h grid (cell height in radians of latitude × R, width × cos φ). */
@@ -71,7 +73,7 @@ export function cellAreaByRow(w: number, h: number): Float64Array {
 export function makeNavGrid(terrain: Uint8Array, w: number, h: number, wrapX: boolean): NavGrid {
   const { kx, ky } = rowScales(w, h);
   const kd = kx.map((x, r) => sqrt(x * x + ky[r]! * ky[r]!));
-  return { w, h, wrapX, terrain, kx, ky, kd, component: labelComponents(terrain, w, h, wrapX), endpointMin: unimodal(kx) && unimodal(ky), scratch: null };
+  return { w, h, wrapX, terrain, kx, ky, kd, component: labelComponents(terrain, w, h, wrapX), endpointMin: unimodal(kx) && unimodal(ky), scratch: null, barred: null };
 }
 
 /** Whether `a` rises to a single maximum and falls after it (non-strict): its range minima lie at the ends. */
@@ -275,6 +277,21 @@ export interface PathResult {
   cost: number;
 }
 
+/**
+ * A search that found no way closed every cell its start reaches, and their stamps say so until
+ * a later search writes over them. A start with that stamp reaches no more than the first did:
+ * the same goal by the same corridor (`from`, its first node) on the same ground (`ok`, the
+ * `Passage` array itself, made for one hour) is refused to it with no search. A front that an
+ * army cannot reach is asked for by each of its formations in turn (PLAN 3.4Rl).
+ */
+export interface BarredSearch {
+  closed: number;
+  from: number;
+  goal: number;
+  mobility: MobilityId;
+  ok: Uint8Array;
+}
+
 /** Restricts a search to the cells whose node (`nodeOf`) is marked in `on` (a province corridor). */
 export interface Corridor {
   nodeOf: Uint32Array;
@@ -282,10 +299,29 @@ export interface Corridor {
 }
 
 /**
- * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search.
- * Returns null when the goal is unreachable.
+ * Whose ground a route may enter (PLAN 3.4Rl, ADR-149): `ok[n]` is 1 for a holder whose cells
+ * are open (index 0, nobody, included). A cell of any other holder is entered only from a cell
+ * of that same holder: who stands on such ground may walk on it and out of it, and nobody
+ * walks in.
  */
-export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor): PathResult | null {
+export interface Passage {
+  ok: Uint8Array;
+  holder: Uint16Array;
+  /**
+   * By node of the province graph, for a start on open ground: whether the node has open
+   * ground, and the group of such nodes it is joined to by neighbours (0 = none). A route runs
+   * inside one group; `findRoute` asks this before any search, and plans a long route over
+   * such nodes.
+   */
+  open?: Uint8Array;
+  group?: Int32Array;
+}
+
+/**
+ * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search,
+ * and `pass` the ground by its holder. Returns null when the goal is unreachable.
+ */
+export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage): PathResult | null {
   const costRow = MOVE_COST[mobility]!;
   const { w, h, wrapX, terrain, kx, ky, kd } = g;
   // The corridor as two typed arrays read in the loop (PLAN 1.42f: a callback per neighbour and
@@ -294,6 +330,11 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
   const on = corridor?.on;
   const passable = (c: number): boolean => Number.isFinite(costRow[terrain[c]!]!) && (on === undefined || on[nodeOf![c]!] === 1);
   if (!passable(start) || !passable(goal) || g.component[start] !== g.component[goal]) return null;
+  const ok = pass?.ok;
+  const holder = pass?.holder;
+  // Closed ground is entered from its own holder's cells only, so a route that ends on it began
+  // on it: no search for a goal on another's.
+  if (ok !== undefined && ok[holder![goal]!] !== 1 && holder![goal] !== holder![start]) return null;
   const hScale = MIN_COST[mobility]!;
   // Typed scratch with generation stamps instead of Maps (review after PLAN 1.25: pathfinding
   // was a quarter of the tick); the search and its tie-breaking are unchanged.
@@ -329,6 +370,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
     const cx = c % w;
     const cy = (c - cx) / w;
     const gc = gs[c]!;
+    const hc = holder === undefined ? 0 : holder[c]!;
     for (let k = 0; k < 8; k++) {
       const dx = DIR_X[k]!;
       const dy = DIR_Y[k]!;
@@ -344,6 +386,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
       if (sn === CLOSED) continue;
       const cost = costRow[terrain[n]!]!;
       if (cost === Infinity || (on !== undefined && on[nodeOf![n]!] !== 1)) continue;
+      if (ok !== undefined && ok[holder![n]!] !== 1 && holder![n] !== hc) continue;
       // No corner cutting: a diagonal step needs both orthogonal neighbours passable.
       if (dx !== 0 && dy !== 0 && (!passable(cy * w + ((cx + dx + w) % w)) || !passable(ny * w + cx))) continue;
       // stepKm, inlined: the row scales of the upper of the two rows.

@@ -342,11 +342,23 @@ class WorldCore implements Stateful {
     const sorted = (m: Map<number, string>): [number, string][] => [...m].sort((a, b) => a[0] - b[0]);
     const flags = [...w.flags].sort((a, b) => a[0] - b[0]).map(([n, px]) => [n, Array.from(px)] as [number, number[]]);
     const names = new TextEncoder().encode(JSON.stringify({ nations: sorted(w.names), cities: sorted(w.cityNames), flags }));
+    // The paths of the formations on the march, by id: id, length, cells (PLAN 3.4Rl: a path is
+    // found on the holders of the hour of its order, so it is state).
+    const marching = [...w.paths].filter(([id]) => w.formations.has(id) && w.formations.cols.moving[id] === 1).sort((a, b) => a[0] - b[0]);
+    const paths = new Int32Array(marching.reduce((n, [, p]) => n + 2 + p.length, 0));
+    let at = 0;
+    for (const [id, p] of marching) {
+      paths[at++] = id;
+      paths[at++] = p.length;
+      paths.set(p, at);
+      at += p.length;
+    }
     return [
       { name: 'world.meta', dtype: 'f64', data: meta },
       { name: 'world.rng', dtype: 'u32', data: w.rng.save() },
       { name: 'world.commandLog', dtype: 'u8', data: log },
       { name: 'world.names', dtype: 'u8', data: names },
+      { name: 'world.paths', dtype: 'i32', data: paths },
     ];
   }
 
@@ -376,8 +388,11 @@ class WorldCore implements Stateful {
     w.cityNames = new Map(Array.isArray(nm) ? [] : nm.cities);
     w.flags = new Map((Array.isArray(nm) ? [] : (nm.flags ?? [])).map(([n, px]) => [n, Uint32Array.from(px)]));
     w.flagsVersion++;
-    // Derived caches describe the previous state: drop them (rebuilt on demand).
+    // Saves from before PLAN 3.4Rl have no paths: each is found again at its formation's next step.
     w.paths.clear();
+    const paths = sections.find((s) => s.name === 'world.paths')?.data as Int32Array | undefined;
+    for (let at = 0; paths && at < paths.length; at += 2 + paths[at + 1]!) w.paths.set(paths[at]!, paths.slice(at + 2, at + 2 + paths[at + 1]!));
+    // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.elementIndex = null;
     w.contacts = null;
     w.deployed = null;
@@ -477,6 +492,8 @@ export class World {
   };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
+  /** Derived (not state): cells by node of the province graph and holder (`heldByNode`). */
+  private held: { graph: ProvinceGraph; count: Map<number, number> } | null = null;
   /** Derived (not state): land tallies, kept by setOwner/setController once built. */
   private land: LandCounts | null = null;
   /** Derived (not state): the frontier set as a byte per cell (valid whenever `frontier` is). */
@@ -561,7 +578,10 @@ export class World {
     return this.cellPoint(cy * w + cx);
   }
 
-  /** Derived caches (not state): formation paths and the navigation graph. */
+  /**
+   * The path of each formation on the march, saved by the core part (PLAN 3.4Rl). One that is
+   * missing is found again (`formationPath`). The navigation graph is a derived cache.
+   */
   paths = new Map<number, Int32Array>();
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
   commandLog: LoggedCommand[] = [];
@@ -596,6 +616,16 @@ export class World {
       const km2 = this.land.rowKm2[Math.floor(i / c.w)]!;
       this.land.cell(c.owner[i]!, c.controller[i]!, -km2);
       this.land.cell(c.owner[i]!, nation, km2);
+    }
+    if (this.held) {
+      const node = this.held.graph.nodeOf[i]!;
+      if (node !== 0) {
+        const from = node * 65536 + c.controller[i]!;
+        const left = this.held.count.get(from)! - 1;
+        if (left === 0) this.held.count.delete(from);
+        else this.held.count.set(from, left);
+        this.held.count.set(node * 65536 + nation, (this.held.count.get(node * 65536 + nation) ?? 0) + 1);
+      }
     }
     this.controlChanges++;
     this.supplyDirtyNations.add(c.controller[i]!);
@@ -639,6 +669,36 @@ export class World {
   /** Forget the land tallies (cells were written without the setters, e.g. by a load). */
   dropLandCounts(): void {
     this.land = null;
+    this.held = null;
+  }
+
+  /**
+   * How many cells of each node of the province graph each holder has: node · 65536 + holder →
+   * cells, no zero entries (PLAN 3.4Rl: which provinces have ground open to a nation's march).
+   * Built by a scan on first use, then kept by `setController`.
+   */
+  heldByNode(): Map<number, number> {
+    const graph = navOf(this).graph;
+    if (this.held?.graph !== graph) {
+      const count = new Map<number, number>();
+      const { controller } = this.cells;
+      const nodeOf = graph.nodeOf;
+      // Cells come in runs of one node and holder: count the run, then add it once.
+      let runKey = -1;
+      let run = 0;
+      for (let i = 0; i <= nodeOf.length; i++) {
+        const key = i < nodeOf.length && nodeOf[i] !== 0 ? nodeOf[i]! * 65536 + controller[i]! : -1;
+        if (key === runKey) {
+          run++;
+          continue;
+        }
+        if (runKey >= 0) count.set(runKey, (count.get(runKey) ?? 0) + run);
+        runKey = key;
+        run = 1;
+      }
+      this.held = { graph, count };
+    }
+    return this.held.count;
   }
 
   /**

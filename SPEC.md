@@ -569,7 +569,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *Deadlock (ADR-47):* a war older than 5 years ends on its score, fight to the death or not.
   - *After peace:* a 2-year truce between the leaders. Idle formations left on land of a nation
     they are not at war with march home (`repatriationSystem`, daily), or are moved to the
-    spawn point when no route exists.
+    spawn point when no route exists (none that keeps off a second such nation's ground,
+    ADR-149).
   - *God commands:* `forcePeace`, `setWarFightToDeath`.
 - **Alliance / union** {id, nameKey, members[], leader, unity 0..100, loyalty per
   member}. Low unity → members leave and the alliance can dissolve.
@@ -793,7 +794,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   M. It is derived, never saved.
 - *Routes:* `findRoute` uses straight cell A* below 500 km. Above that, it runs coarse A* on the
   province graph, then cell A* inside the corridor of route provinces and their neighbours, with a
-  flat fallback. Cell A* is 8-connected with no corner cutting. Its heuristic is the octile walk
+  flat fallback (none for a march: see *No march across a third nation* below). Cell A* is 8-connected with no corner cutting. Its heuristic is the octile walk
   (min(dx, dy) diagonal steps, the rest straight) × min cost, with the km scales of the smaller of
   the two rows' cell sizes (ADR-56; straight km before, which is never larger). That is not a
   strict lower bound (a route may swing poleward of both ends, where cells are narrower) and the
@@ -809,8 +810,18 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   a freed id that another nation's formation has taken is not ordered by it.
   - A target unreachable from the formation snaps to the nearest reachable cell within 3;
     otherwise the order is rejected (`MoveRejected`).
-  - Order state is moving, originCell, targetCell, pathStep and stepFrac. The path is a cache,
-    recomputed from origin and target after a load.
+  - Order state is moving, originCell, targetCell, pathStep and stepFrac, and the path
+    (`world.paths`, saved with the core since PLAN 3.4Rl: it is found on the holders of the
+    hour of the order). A save from before has no paths; each is found again at the next step.
+  - *No march across a third nation* (PLAN 3.4Rl, ADR-149). A formation is routed over the
+    ground of its supply bloc, of a nation it is at war with, of a nation on its side of a
+    war, and over nobody's (`foreignTo`); a `Passage` carries that to the search. A cell of
+    any other holder is entered only from a cell of the same holder (who stands there walks
+    on it and out). With no way round, `MoveRejected`. Before any search the two ends must
+    lie in one group of neighbouring province nodes that have open ground
+    (`World.heldByNode`, cells by node and holder, kept by `setController`); a route over
+    500 km is planned over such nodes and, when it is not found in their corridor, refused.
+    A march whose next cell has become a third nation's ends before it (`MoveRejected`).
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
   (speed × 0.3 march duty × the template's share of its speed on that ground: the least
   `terrainMods.speed` of its manoeuvre elements, PLAN 3.3b, ADR-138; the route is found by the

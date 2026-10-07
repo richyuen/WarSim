@@ -7430,3 +7430,52 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No e2e:** a part, and nothing drawn changes. Tick time not measured: one branch at a
   death.
 - **Next:** PLAN 3.4Rl (armies cross a nation that is in no war and fight on its ground).
+
+## 2026-10-06 — PLAN 3.4Rl: no march across a nation that is not in the war
+
+- **Decided (ADR-149):** the first of the task's three. A route keeps to the ground of the
+  formation's bloc, its enemies, its partners in a war and nobody's; round any other
+  nation's, or `MoveRejected`. Who stands on a third nation's ground walks on it and out.
+  A march ends before a cell that has become a third nation's.
+- **Measured first** (`.cache/rl/third.ts`, scratch; 360 days, every hour): formation-hours
+  on a third nation's ground, in contact 5,859 (seed 99) and 20,721 (seed 7), out of contact
+  544,335 and 626,586: 90 % of all the hours with no supply out of contact.
+- **After:** in contact 116 and 65; out of contact 40,877 and 29,691, 96 % of it on the
+  march (the way home, and orders older than a peace).
+- **The path of a march is state now** (`world.paths`, saved and hashed): it is found on the
+  holders of the hour of the order, and one found again after a load would be another. A
+  test loads a save and drops the paths to show it.
+- **Tests:** four in `tests/unit/movement.test.ts`, red on the old source (the first by the
+  missing `foreignTo`, the other three by their expects). `landCounts.test.ts` compares the
+  kept count of cells by province node and holder with a count of the map.
+- **A test's world changed, not its expects** (the gate's first run failed on it):
+  `supply.test.ts` stood an Italian division in central Germany at peace and expected it on
+  the march home. Austria and Switzerland lie between, so it is moved to its spawn point
+  now. The test stands it at Lyon; a fifth test in `movement.test.ts` has both cases.
+- **The pin:** e0fefce9 → e5df6177.
+- **The cost was the larger part of the work.** The rule alone: 3.567 ms a tick over five
+  years (1.475 before). A front out of reach was searched for by each formation every day
+  until the search had walked all the ground in reach (76,000 cells of Africa). Three cuts:
+  the provinces are asked first (`World.heldByNode`, `nodeGroups`: two ends not joined by
+  provinces with open ground are refused with no search); a long route not found in the
+  corridor of its provinces is refused, with no search beyond (a rule: it found a way 24
+  times in two years, and failed 539 times at 12 ms); the last failed corridor search is
+  remembered for the formation beside it.
+- **Tried and dropped:** a memory of every cell a failed search had reached (numbers per
+  cell, 12 MB): right within one planner's turn, and of no use across days, where the cost
+  was. It cannot be kept across hours: a loaded game has none, and would answer otherwise.
+- **Tick** (seed 99, five years, pinned): mean 1.903 and 1.894 ms a tick in two runs (budget 1.5; 1.475 before), year 1 2.585 and 2.577 (budget 2.4; 2.704 before), year 5 1.527 and 1.514 (0.978 in an unpinned run before).
+  Not the rule's cost alone: 974 formations at the end of year 5, 690 before. Still over
+  budget: PLAN 3.4Rm, with where `findRoute`'s time goes.
+- **Gotcha:** a province that has some open ground is not open from side to side. The
+  province graph can refuse a route, never promise one.
+- **Gotcha:** a Bash-tool grep with `head` cut the one line that was wanted; a five-year run
+  was repeated for it.
+- **Not done:** the AI still allots formations to fronts they cannot reach (9,433 refused
+  orders in seed 99's first year, 1,903 before); a war between two nations with no land way
+  between them is fought by nobody. PLAN 3.5, and BLOCKERS' watch list. Repatriations to the
+  spawn point for want of a way home: not counted. On the page: not run (nothing drawn
+  changes; a refused order of a player's shows as before).
+- **No e2e:** a part, and nothing drawn changes.
+- **Gate:** green on the second run (code, with the ten-year tests; no e2e for a part).
+- **Next:** PLAN 3.4Rm (the tick is over budget).

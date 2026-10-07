@@ -6,7 +6,7 @@
  * province), so it is rebuilt identically after a load and never saved.
  */
 import { Terrain } from '../../shared/terrain';
-import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type PathResult } from './grid';
+import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
 
 export interface ProvinceGraph {
   /** Node per cell (0 = none: water or province-less land). */
@@ -98,7 +98,7 @@ function neighbours4g(g: NavGrid, c: number): number[] {
 }
 
 /** Coarse A* over nodes; returns the node sequence or null. */
-export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, from: number, to: number): number[] | null {
+export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, from: number, to: number, only?: Uint8Array): number[] | null {
   const cost = pg.meanCost[mobility]!;
   if (!Number.isFinite(cost[from]!) || !Number.isFinite(cost[to]!)) return null;
   const h = (a: number): number => boundKm(g, pg.centre[a]!, pg.centre[to]!) * MIN_COST[mobility]!;
@@ -118,7 +118,7 @@ export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId,
     if (done[a]) continue;
     done[a] = 1;
     for (const b of pg.adj[a]!) {
-      if (done[b] || !Number.isFinite(cost[b]!)) continue;
+      if (done[b] || !Number.isFinite(cost[b]!) || (only !== undefined && only[b] !== 1)) continue;
       const t = dist[a]! + boundKm(g, pg.centre[a]!, pg.centre[b]!) * 0.5 * (cost[a]! + cost[b]!);
       if (t < dist[b]!) {
         dist[b] = t;
@@ -137,28 +137,65 @@ export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId,
   return route.reverse();
 }
 
+/**
+ * The groups of nodes joined by neighbours, among the nodes marked in `open` (numbered from 1;
+ * 0 for a node that is not open).
+ */
+export function nodeGroups(pg: ProvinceGraph, open: Uint8Array): Int32Array {
+  const group = new Int32Array(pg.nodeCount);
+  const stack: number[] = [];
+  let next = 0;
+  for (let a = 1; a < pg.nodeCount; a++) {
+    if (open[a] !== 1 || group[a] !== 0) continue;
+    group[a] = ++next;
+    stack.push(a);
+    while (stack.length) {
+      for (const b of pg.adj[stack.pop()!]!) {
+        if (open[b] !== 1 || group[b] !== 0) continue;
+        group[b] = next;
+        stack.push(b);
+      }
+    }
+  }
+  return group;
+}
+
 /** Above this straight-line distance (km) routes are planned on the province graph first. */
 export const COARSE_ABOVE_KM = 500;
 
 /**
  * Land route for a mobility class: direct cell A* for short trips; for long ones, cell A*
  * restricted to the coarse route's provinces and their neighbours, with an unrestricted search
- * as the fallback if the corridor is too tight.
+ * as the fallback if the corridor is too tight. `pass` keeps the route off closed ground. From
+ * a start on open ground the two ends must lie in one group of provinces with open ground
+ * (`Passage.group`), asked first and with no search; a long route is planned over such
+ * provinces, and one that is not found in their corridor is refused: a province with some open
+ * ground need not be open from side to side, and the search beyond the corridor then walked
+ * all the ground the formation could reach (76,000 cells of Africa, every day; it found a way
+ * 24 times in two years of seed 99, PLAN 3.4Rl).
  */
-export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number): PathResult | null {
+export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
   if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return null; // O(1) unreachable
   const a = pg.nodeOf[start]!;
   const b = pg.nodeOf[goal]!;
+  // Who stands on closed ground walks on it and out of it: the provinces are not asked.
+  const open = pass !== undefined && pass.ok[pass.holder[start]!] === 1 ? pass.open : undefined;
+  if (open !== undefined && a !== 0 && b !== 0 && pass!.group![a] !== pass!.group![b]) return null;
   if (a !== 0 && b !== 0 && a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM) {
-    const route = coarseRoute(g, pg, mobility, a, b);
+    const was = g.barred;
+    if (open !== undefined && was && was.goal === goal && was.from === a && was.mobility === mobility && was.ok === pass!.ok && g.scratch!.stamp[start] === was.closed) return null;
+    const route = coarseRoute(g, pg, mobility, a, b, open);
     if (!route) return null;
     const corridor = new Uint8Array(pg.nodeCount);
     for (const node of route) {
       corridor[node] = 1;
       for (const nb of pg.adj[node]!) corridor[nb] = 1;
     }
-    const inCorridor = findPath(g, mobility, start, goal, { nodeOf: pg.nodeOf, on: corridor });
-    if (inCorridor) return inCorridor;
+    const before = g.scratch?.gen;
+    const inCorridor = findPath(g, mobility, start, goal, { nodeOf: pg.nodeOf, on: corridor }, pass);
+    // (A search that was refused at once has no stamps of its own.)
+    if (!inCorridor && open !== undefined && g.scratch && g.scratch.gen !== before) g.barred = { closed: 2 * g.scratch.gen + 1, from: a, goal, mobility, ok: pass!.ok };
+    if (inCorridor || open !== undefined) return inCorridor;
   }
-  return findPath(g, mobility, start, goal);
+  return findPath(g, mobility, start, goal, undefined, pass);
 }

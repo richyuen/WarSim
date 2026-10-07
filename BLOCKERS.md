@@ -84,6 +84,14 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 
 ## Watch list (not blocking)
 
+- **Fronts out of reach (PLAN 3.4Rl, ADR-149, 2026-10-06).** Since no march crosses a nation
+  that is not in the war, the operational AI allots formations to fronts they cannot reach
+  and is refused every day (9,433 refused orders in seed 99's first year, 10,284 in seed 7;
+  1,903 before in seed 99). They stand idle. A war between two nations with no land way
+  between them (France and Portugal with Spain at peace) has no front at all until the
+  navy of Phase 4. For PLAN 3.5: allot by reach. Not measured: how many wars of a game have
+  no front, and how they end (the deadlock of five years, ADR-47).
+
 - Seen 2026-10-06 with PLAN 3.4Rk (ADR-148), read in the code, not run: **the puppets of a
   nation that dies by the loss of its capital are a dead nation's until the month's start.**
   A Kill and a collapse free them (`collapseNation`); `capitalsSystem` does not, and

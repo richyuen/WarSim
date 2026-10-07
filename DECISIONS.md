@@ -167,6 +167,114 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-149 · 2026-10-06 · accepted — No march across a nation that is not in the war; the path of a march is saved (PLAN 3.4Rl)
+
+- **Context:** found in PLAN 3.4Rf (ADR-143). `findRoute` asked the ground and not its
+  holder; contact held whoever met an enemy, wherever; repatriation skips a formation in
+  contact or on the march. France, at war with Portugal, marched through Nationalist Spain.
+  PLAN 3.4Rl asked for a decision first: no route across such a nation, or the crossing
+  stands and is fed, or the holder is drawn into the war.
+- **Measured before the rule** (`.cache/rl/third.ts`, scratch, not in the repo; the first 360
+  days, every hour; "a third nation's ground" is a cell whose holder is not of the
+  formation's supply bloc, not at war with it and not on its side of a war):
+
+  | formation-hours on a third nation's ground | seed 99 | seed 7 |
+  | --- | --- | --- |
+  | in contact | 5,859 (51 formations) | 20,721 (142) |
+  | out of contact | 544,335 (494) | 626,586 (606) |
+  | with no supply, in contact and out | 473,088 | 511,964 |
+  | share of all the hours with no supply, out of contact | 90.4 % | 90.1 % |
+
+  Italy in Bulgaria (61,136 hours, 43 formations), Germany in Turkey and Bulgaria, China in
+  Mongolia (228,478 hours in seed 7), France in Nationalist Spain and the Soviet Union. The
+  figures of contact are lower than PLAN 3.4Rl's (11,704 and 21,617): the games have changed
+  with PLAN 3.4Rj and 3.4Rk.
+- **Decision:** the first of the three. A formation is routed over the ground of its own
+  supply bloc, of a nation it is at war with, of a nation on its side of a war, and over
+  nobody's (`foreignTo`, the test repatriation had). The route goes round any other nation's;
+  with no way round the order is refused (`MoveRejected`), the AI's and a player's alike.
+  - *Why not "the crossing is fed":* an army fed on any ground it walks on has no supply rule
+    left, and the nation it crosses has no say.
+  - *Why not "the holder is drawn in":* every war would pull in the nations between the two,
+    and AoC's nations take land from their neighbours: they do not cross a third.
+  - *On such ground already* (a peace found it there, or the order is older than the peace):
+    a cell of a third nation is entered from a cell of that same holder. So a formation
+    walks on that holder's ground and out of it, which is the way home, and does not step
+    from it onto another third nation's.
+  - *At the walk:* a march whose next cell has become a third nation's since the order ends
+    before it (`MoveRejected`, the formation idle on the last cell it reached). It does not
+    wait there as before an enemy's cell: nothing would turn the cell.
+- **The path of a march is state.** It was a cache, found again from origin and target after
+  a load, which was the same path while a route asked the ground alone. A route found after a
+  load would now be one for the holders of the hour of the load. `world.paths` is saved
+  (`world.paths`, a section of the core: id, length, cells for each formation on the march)
+  and hashed. A save from before has none: each path is found again at the formation's next
+  step, on the holders of then, as after an edit of the terrain or of the looping
+  (`editor.ts`, `gameOptions.ts`, which drop the paths).
+- **The cost, and what was cut** (seed 99, five years, pinned, `npm run sim`; 1.475 ms a tick
+  before, year 1 2.704):
+  - *The rule alone:* 3.567 ms. An order that cannot be met was searched for until the
+    search had walked all the ground the formation can reach: 76,000 cells of Africa for a
+    formation of French West Africa, 205,000 for a Soviet one, each formation, every day
+    (refused orders in the first 360 days: 1,903 before, 15,650 with the rule).
+  - *The provinces first:* `World.heldByNode` counts the cells of each province node by
+    holder (kept by `setController`, a scan after a load; `landCounts.test.ts` compares the
+    two). A `Passage` marks the nodes with open ground and groups them by neighbours
+    (`nodeGroups`); two ends in different groups are refused with no search, and a long
+    route is planned over open nodes. In five years 90,304 long searches ended there, and
+    5,135 went on to fail in the cells.
+  - *No search beyond the corridor:* a province with some open ground need not be open from
+    side to side, so the corridor of a planned route can be barred. The search outside it
+    found a way 24 times in two years and failed 539 times, at 12 ms. With a `Passage`, from
+    open ground, a long route (over 500 km) that is not found in its corridor is refused.
+    **This is a rule and not only a saving:** a way round that leaves the provinces of the
+    planned route and their neighbours is not taken.
+  - *The formation beside it:* the last corridor search that failed is remembered by its
+    stamps (`NavGrid.barred`); the same goal from the same province is refused to a start
+    that search had reached. The same answers (the year hashes were the same with and
+    without it).
+  - *After:* mean 1.903 and 1.894 ms a tick in two runs (budget 1.5; 1.475 before), year 1 2.585 and 2.577 (budget 2.4; 2.704 before), year 5 1.527 and 1.514 (0.978 in an unpinned run before).
+    The game is larger: 974 formations at the end of year 5, 690 before. Of two years'
+    7.05 s in `findRoute` (0.41 ms a tick): long routes found, slow ones (over 1 ms) 833 at
+    3.5 ms; long ones refused in the corridor 980 at 2.5 ms; short ones refused after a
+    full search 161 at 3.7 ms. PLAN 3.4Rm has these.
+- **After** (the same script and days):
+
+  | formation-hours on a third nation's ground | seed 99 | seed 7 |
+  | --- | --- | --- |
+  | in contact | 116 (44 formations) | 65 (61) |
+  | out of contact | 40,877 (92) | 29,691 (83) |
+  | with no supply, in contact and out | 34,859 | 25,256 |
+  | on the march, in contact and out | 39,168 | 28,514 |
+  | orders refused (before: 1,903; not counted) | 9,433 | 10,284 |
+
+  What is left is on the march: the way home after a peace, and orders older than the peace
+  (Afghanistan on Soviet ground in seed 7, 9,597 hours, 5 formations).
+- **Tests:** five in `tests/unit/movement.test.ts`, four of them red on the old source: Aachen to Lille
+  goes by the French border and not through the Netherlands and Belgium; France is refused
+  the march to Porto, and has it with Nationalist Spain in the war on either side; a march
+  ends before a cell that has become Poland's; a march is the same after a load, and another
+  with its path found again. `tests/unit/landCounts.test.ts`: the kept count by node equals
+  a count of the map through war, edits, undo and load.
+- **A test whose world changed, not its expects:** `supply.test.ts`, "otherwise it starves
+  and is sent home", stood an Italian division in central Germany at peace and expected it
+  on the march home. Austria and Switzerland lie between: under the rule there is no way,
+  and repatriation moves it to its spawn point, as it did where no route existed. The test
+  stands the division at Lyon now (France borders Italy), with France the partner of the
+  other case; a fifth test in `movement.test.ts` has both divisions: the one at Lyon marches
+  home over French and Italian ground only, the one in Germany is at its spawn point at once.
+- **The pin:** e0fefce9 → e5df6177.
+- **Not done:**
+  - The operational AI allots formations to a front they cannot reach, and asks again every
+    day (9,433 refusals in seed 99's first year). They stand idle where they starved before.
+    A nation at war with one it has no land way to fights it with nothing. PLAN 3.5.
+  - How many formations repatriation moves to the spawn point for want of a way home that
+    keeps off a second third nation: not counted.
+  - A short route (under 500 km) that does not exist is still searched for over all the
+    ground in reach.
+  - Memory: none added to the route search; the count by node is a Map of some 10,000
+    entries.
+
 ### ADR-148 · 2026-10-06 · accepted — A nation that dies is nobody's puppet: it returns free (PLAN 3.4Rk)
 
 - **Context:** the seventh read's finding 5. `eliminateNation` ended a nation's wars, its

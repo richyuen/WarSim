@@ -19,9 +19,9 @@
  * otherwise they hold the own front cell nearest the centre. Orders already being followed
  * (target within one sector) or already reached are not re-issued.
  */
-import { orderMove } from '../systems/movement';
+import { orderMove, passageOf } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
-import { neighbours4 } from '../nav/grid';
+import { neighbours4, type Passage } from '../nav/grid';
 import type { World } from '../world';
 
 export const STAGGER = 4;
@@ -200,6 +200,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
   }
   // Orders.
+  let pass: Passage | undefined;
   for (const s of list) {
     if (s.formations.length === 0) continue;
     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
@@ -212,7 +213,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, target, w) <= SECTOR_CELLS) continue;
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       if (here === target) continue;
-      orderMove(world, id, tx, ty);
+      orderMove(world, id, tx, ty, (pass ??= passageOf(world, n)));
     }
   }
 }

@@ -7,7 +7,7 @@ import { boundKm, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_COST, octileKm
 import { findRoute } from '../../src/sim/nav/provinceGraph';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { MARCH_DUTY } from '../../src/sim/systems/movement';
+import { foreignTo, MARCH_DUTY } from '../../src/sim/systems/movement';
 import { equipFormation } from '../../src/sim/systems/elements';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -132,7 +132,7 @@ describe('land movement (PLAN 1.11)', () => {
     expect(s.world.formations.cols.moving[pz]).toBe(0); // the panzer division arrived first
   });
 
-  it('a march is deterministic across save/load (paths are rebuilt from origin and target)', () => {
+  it('a march is deterministic across save/load (paths are saved: PLAN 3.4Rl)', () => {
     const run = (split: boolean): number => {
       const s = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
       const id = spawn(s.world, 'GER', INF, 13.4, 52.5);
@@ -311,6 +311,147 @@ describe('route edge cases', () => {
     // At home it stays.
     s.step(48);
     expect(f.moving[id]).toBe(0);
+  });
+});
+
+// PLAN 3.4Rl (ADR-149). A route asked the ground and not its holder: France, at war with
+// Portugal, marched through Nationalist Spain and fought and starved there. In seed 99's first
+// year 550,194 formation-hours were on the ground of a nation outside the formation's wars, nine
+// tenths of all the hours with no supply.
+describe('no march across a nation that is not in the war (PLAN 3.4Rl)', () => {
+  /** A 1938 world at peace, the AI off, with one war. */
+  function world(a: string, d: string): Sim {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    for (const war of [...s.world.wars.list]) s.world.wars.end(war);
+    s.world.wars.start([nationId(a)], [nationId(d)], 0);
+    return s;
+  }
+  /** Steps an hour; whether `kind` was emitted for the formation. */
+  function hour(s: Sim, id: number, kind: number): boolean {
+    let seen = false;
+    s.step(1, (w) => {
+      const ev = w.out.events;
+      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === kind && ev[i + 2] === id) seen = true;
+      ev.length = 0;
+    });
+    return seen;
+  }
+  const order = (s: Sim, id: number, lon: number, lat: number): void => {
+    const [x, y] = cellOf(lon, lat, W, H);
+    s.command({ kind: 'moveFormation', id, x, y });
+  };
+
+  it('the route goes round: Aachen to Lille by the French border, not through the Netherlands and Belgium', () => {
+    const s = world('GER', 'FRA');
+    const w = s.world;
+    const GER = nationId('GER');
+    const through = findRoute(nav.grid, nav.graph, Mobility.foot, cell(6.1, 50.77), cell(3.06, 50.63))!;
+    expect(through.cells.some((c) => foreignTo(w, GER, w.cells.controller[c]!)), 'the premise: the short way crosses a nation that is in no war').toBe(true);
+    const id = spawn(w, 'GER', INF, 6.1, 50.77);
+    order(s, id, 3.06, 50.63);
+    s.step(1);
+    expect(w.formations.cols.moving[id]).toBe(1);
+    const path = [...w.paths.get(id)!];
+    expect(path[path.length - 1]).toBe(cell(3.06, 50.63));
+    expect(path.length).toBeGreaterThan(through.cells.length);
+    expect(path.filter((c) => foreignTo(w, GER, w.cells.controller[c]!))).toEqual([]);
+    // And it is walked: two weeks of it, on German ground and up to the French.
+    const stood = new Set<number>();
+    for (let h = 0; h < 24 * 14; h++) {
+      s.step(1);
+      stood.add(Math.floor(w.formations.cols.y[id]!) * W + Math.floor(w.formations.cols.x[id]!));
+    }
+    expect(stood.size).toBeGreaterThan(5);
+    expect([...stood].filter((c) => foreignTo(w, GER, w.cells.controller[c]!))).toEqual([]);
+  });
+
+  it('no way round: France, at war with Portugal, is refused the march through Spain', () => {
+    const s = world('FRA', 'POR');
+    const w = s.world;
+    expect(findRoute(nav.grid, nav.graph, Mobility.foot, cell(2.35, 48.86), cell(-8.6, 41.15)), 'the premise: there is a way by land').not.toBeNull();
+    const id = spawn(w, 'FRA', INF, 2.35, 48.86);
+    order(s, id, -8.6, 41.15);
+    expect(hour(s, id, EventKind.MoveRejected)).toBe(true);
+    expect(w.formations.cols.moving[id]).toBe(0);
+    // With Spain in the war on either side the way is open.
+    for (const [side, name] of [[0, 'beside France'], [1, 'against France']] as const) {
+      const t = world('FRA', 'POR');
+      t.world.wars.list[0]!.sides[side].push(nationId('NSP'));
+      t.world.wars.changed();
+      const f = spawn(t.world, 'FRA', INF, 2.35, 48.86);
+      order(t, f, -8.6, 41.15);
+      t.step(1);
+      expect(t.world.formations.cols.moving[f], name).toBe(1);
+    }
+  });
+
+  it('a march ends before ground that has become a third nation\'s since the order', () => {
+    const s = world('GER', 'FRA');
+    const w = s.world;
+    const c = w.formations.cols;
+    const id = spawn(w, 'GER', INF, 13.4, 52.5);
+    order(s, id, 10.0, 48.8);
+    s.step(1);
+    const path = [...w.paths.get(id)!];
+    expect(path.length).toBeGreaterThan(12);
+    w.setController(path[6]!, nationId('POL'));
+    let refused = false;
+    const stood = new Set<number>();
+    for (let h = 0; h < 24 * 20 && !refused; h++) {
+      refused = hour(s, id, EventKind.MoveRejected);
+      stood.add(Math.floor(c.y[id]!) * W + Math.floor(c.x[id]!));
+    }
+    expect(refused).toBe(true);
+    expect(c.moving[id]).toBe(0);
+    expect(w.paths.has(id)).toBe(false);
+    expect(Math.floor(c.y[id]!) * W + Math.floor(c.x[id]!)).toBe(path[5]);
+    expect(stood.has(path[6]!)).toBe(false);
+  });
+
+  it('the way home keeps off a second such nation: an Italian division in Germany at peace is moved to its spawn point', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    for (const war of [...w.wars.list]) w.wars.end(war);
+    const c = w.formations.cols;
+    const at = (f: number): number => w.cells.controller[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)]!;
+    const far = spawn(w, 'ITA', INF, 10.0, 51.0); // central Germany: Austria and Switzerland lie between
+    const near = spawn(w, 'ITA', INF, 4.83, 45.76); // Lyon: France borders Italy
+    expect(at(far)).toBe(nationId('GER'));
+    expect(at(near)).toBe(nationId('FRA'));
+    s.step(1); // 00:00: the daily check
+    expect(c.moving[far]).toBe(0);
+    expect(at(far)).toBe(nationId('ITA'));
+    expect(c.moving[near]).toBe(1);
+    const stood = new Set<number>();
+    for (let h = 0; h < 24 * 40 && c.moving[near] === 1; h++) {
+      s.step(1);
+      stood.add(at(near));
+    }
+    expect(c.moving[near]).toBe(0);
+    expect(at(near)).toBe(nationId('ITA'));
+    expect([...stood].sort((a, b) => a - b)).toEqual([nationId('FRA'), nationId('ITA')].sort((a, b) => a - b));
+  });
+
+  it('a march is the march that was ordered after a load: its path is saved, not found again', () => {
+    const s = world('GER', 'FRA');
+    const id = spawn(s.world, 'GER', INF, 13.4, 52.5);
+    order(s, id, 10.0, 48.8);
+    s.step(10);
+    // Ground ahead changes hands: the march that was ordered ends before it; a route found now would go round.
+    s.world.setController(s.world.paths.get(id)![12]!, nationId('POL'));
+    const bytes = s.save();
+    const loaded = new Sim({ scenario: '1938', seed: 9, assets: assets1938(W) });
+    loaded.load(bytes);
+    expect(Buffer.from(loaded.save()).equals(Buffer.from(bytes))).toBe(true);
+    const again = new Sim({ scenario: '1938', seed: 9, assets: assets1938(W) });
+    again.load(bytes);
+    again.world.paths.clear();
+    for (const t of [s, loaded, again]) t.step(24 * 30);
+    expect(s.world.formations.cols.moving[id]).toBe(0);
+    expect(loaded.hash()).toBe(s.hash());
+    expect(again.hash(), 'the premise: with its path found again it is another march').not.toBe(s.hash());
   });
 });
 

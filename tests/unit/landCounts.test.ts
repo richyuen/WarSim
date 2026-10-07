@@ -5,7 +5,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { cellAreaByRow } from '../../src/sim/nav/grid';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import type { World } from '../../src/sim/world';
+import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -19,6 +19,12 @@ const same = (world: World): void => {
   expect(kept.lost).toEqual(scan.lost);
   const sorted = (m: Map<number, number>): [number, number][] => [...m].sort((a, b) => a[0] - b[0]);
   expect(sorted(kept.occupied)).toEqual(sorted(scan.occupied));
+  // The cells by province node and holder (PLAN 3.4Rl: which provinces a march may be planned
+  // over), kept by setController, equal a count of the map.
+  const count = new Map<number, number>();
+  const nodeOf = navOf(world).graph.nodeOf;
+  for (let i = 0; i < nodeOf.length; i++) if (nodeOf[i] !== 0) count.set(nodeOf[i]! * 65536 + world.cells.controller[i]!, (count.get(nodeOf[i]! * 65536 + world.cells.controller[i]!) ?? 0) + 1);
+  expect(sorted(world.heldByNode())).toEqual(sorted(count));
 };
 
 it('a cell counts the whole km² of its row: within half a km² of the true area, never zero', () => {
@@ -45,6 +51,7 @@ it('the tallies are the owned areas of the 1938 start, to 0.1% per nation', () =
 it('kept land tallies equal a scan through war, edits, undo and load', () => {
   const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });
   s.world.landCounts();
+  s.world.heldByNode();
   s.step(24 * 240);
   expect([...s.world.landCounts().occupied.values()].reduce((a, b) => a + b, 0)).toBeGreaterThan(0);
   same(s.world);
