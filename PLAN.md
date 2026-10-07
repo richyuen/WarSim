@@ -3321,6 +3321,39 @@ quick sweep as a smoke test.
   to damage, a formation with little org marches away from the enemy) is a part of this
   task or a task of its own before it; it has none today.
   AT: headless 1938 run: armour share rises for industrial powers; spearhead formations lead offensives (metric).
+  **Split 2026-10-06** (five parts, one rule each; each moves the pin, so each runs by hand
+  the specs that watch a scene at a fixed place and hour, `wrecks1938` first, and names them
+  in PROGRESS):
+  - [ ] 3.5a **The retreat** (SPEC §5.2 step 4). Decided: a part of this task, and its
+    first, since a spearhead that cannot leave a fight cannot be measured. Org is lost to
+    the losses of a battle and is not got back in contact; a formation in contact with
+    little org breaks off, marches to ground of its side out of the enemy's contact, and
+    is out of battles and out of the AI's orders for a time. Not here: the surrender of the
+    encircled (one with nowhere to go holds, as today), and fire on the retreating.
+    AT: unit, failing first (org falls with the losses; the formation leaves contact, is
+    not fired on, is not ordered back that day; one with no ground behind it holds; a save
+    has the state); of the 34 formations of 3.4Re, how many still stand in contact with
+    their infantry gone; the tick before and after.
+  - [ ] 3.5b **Allot by reach** (BLOCKERS watch list, ADR-149; PLAN 3.4Rm). 45,987 of 58,232
+    orders of two years were refused: the operational AI allots formations to sectors they
+    cannot reach and asks every day. A sector that the planner's formations cannot reach
+    by the `Passage` of the day gets none.
+    AT: unit, failing first; the refused orders of seed 99's first year (9,433) and the
+    tick before and after.
+  - [ ] 3.5c **Spearheads.** In a sector that attacks, the armour formations are the ones
+    sent at the enemy's cell, and the rest follow or hold. No per-element scan in the
+    planner: armour by the template (`EconomyTables.templateArmour`, or a column).
+    AT: unit, failing first; the metric of 3.5e on seed 99 before and after.
+  - [ ] 3.5d **The mix.** `pickTemplate` asks for armour only at war, every third order,
+    and never against an enemy with armour (the motorised branch comes first). The share
+    of armour a nation wants rises with its income, in peace too, and the AT answer to an
+    armoured enemy does not shut its own armour out.
+    AT: unit, failing first; headless 1938: the share of armour in the upkeep of the
+    great powers by year, ten years, before and after.
+  - [ ] 3.5e **The metric and the tick.** Defined in SPEC before it is measured: of the
+    sectors that attack, the share where the first formation in contact at the enemy's
+    cell is armour, beside armour's share of the formations sent there. Headless 1938,
+    two seeds, in PROGRESS; the tick of five years of seed 99. Ticks 3.5 (the full e2e).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):
   tanks scored 2. At T2 a panzer division is a grey grid of dots like any other. At T3 its
