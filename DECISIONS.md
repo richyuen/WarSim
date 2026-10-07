@@ -208,9 +208,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **The reader's suspicion, settled by this:** a route of more than 500 km that is not
   found in its corridor is refused (ADR-149), and a cell with no node was in no corridor
   (`on[0]` is 0): a way whose only crossing was such a cell was refused inside one group
-  too. It had an instance after all once the groups were joined: (1831, 319) to
-  (1766, 397), Honshu to Kyushu, 120 cells by the way. The coarse route now runs over the
-  run's node and the corridor holds it (`provinceGraph.test.ts`, the fourth test).
+  too. No instance inside one group was found before the mend (Honshu and Kyushu were two
+  groups: finding 1 itself). With the groups joined, (1831, 319) to (1766, 397), 120 cells
+  by the way, is the case that would have shown it: the coarse route runs over the run's
+  node and the corridor holds it (`provinceGraph.test.ts`, the fourth test, a guard).
 - **What else reads the graph, looked at:**
   - `neighbourMap` (the strategic AI): a new node whose centre has an owner is a
     neighbour-maker like a province. On the 1938 map at the start the same 203 pairs of

@@ -4076,8 +4076,9 @@ quick sweep as a smoke test.
     `tests/unit/provinceGraph.test.ts`, four tests, red before: the Japanese order both
     ways; every walkable cell of 1938 has a node and no landmass falls into two groups, none
     excepted; land that a map import puts between two landmasses joins their provinces
-    (the editor paints land into land only, so no paint makes such a cell); and the
-    suspicion, which had an instance: Honshu to Kyushu over 500 km is found in its corridor.
+    (the editor paints land into land only, so no paint makes such a cell); and a guard
+    against the suspicion (no instance of it was found): Honshu to Kyushu over 500 km is
+    found in its corridor.
     Refused orders in a year: seed 99 1,895 and 877, seed 7 1,761 and 3,502; different games
     by then, so no verdict on the rule. The pin moves, `d3067126` to `7cfb8b6d`.
     Found by the gate: the ids of crossings began at the highest province with land, and 38

@@ -8414,8 +8414,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests, red first** (`tests/unit/provinceGraph.test.ts`, four): the Japanese order of
   finding 1, both ways; no landmass of 1938 in two groups and no walkable cell without a
   node; land of a map import between two landmasses; a route of more than 500 km whose
-  only way is over such a cell (the reader's suspicion: it had an instance, Honshu to
-  Kyushu, once the groups were joined).
+  only way is over such a cell (a guard against the reader's suspicion, of which no
+  instance was found: Honshu to Kyushu, one group now, is found in its corridor).
 - **Gotcha:** the AT says "a land cell painted in the editor". The editor paints land into
   land only; water becomes land by `importLayer`. The test uses that.
 - **Gotcha:** a province with islands is one node on several landmasses (815 landmasses,
@@ -8437,7 +8437,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The random world changed** (its nations spread over the new nodes): the preview's test
   was red, `npm run data -- --previews` made the picture again.
 - **The pin:** `d3067126` to `7cfb8b6d` (`1fbeb7db` before the ids moved).
-- **By hand:** `tests/e2e/title.spec.ts` (7 passed, 17 s) and the new preview looked at: a
+- **By hand:** `tests/e2e/randomWorld.spec.ts` (3 passed, 13 s; run after the commit, on
+  it), `tests/e2e/title.spec.ts` (7 passed, 17 s) and the new preview looked at: a
   world of whole nations, no speck of another colour on the coasts.
 - **Gate:** `npm run check` green (typecheck, lint, unit, the 10-year tests, build, parity;
   no e2e: a part).
