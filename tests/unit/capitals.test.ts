@@ -199,6 +199,63 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     for (const c of lit) expect([w.cells.owner[c], w.cells.controller[c]]).toEqual([LIT, LIT]);
   });
 
+  // PLAN 3.4Rh: the capital rule looks at the owner too, so land given away with no war counts.
+  /** Paints every cell `from` owns for `to` (0 = nobody) with the editor's nation paint. */
+  function paintAway(s: Sim, from: number, to: number): number {
+    const cells: number[] = [];
+    s.world.cells.owner.forEach((o, c) => o === from && cells.push(c));
+    for (const c of cells) s.command({ kind: 'editPaint', layer: 'nation', tool: 'brush', x: (c % W) + 0.5, y: Math.floor(c / W) + 0.5, x2: 0, y2: 0, r: 0, value: to, mask: null });
+    return cells.length;
+  }
+
+  for (const [code, to, what] of [
+    ['LUX', GER, 'for another nation'],
+    ['SWI', nationId('FRA'), 'for another nation'],
+    ['ALB', 0, 'to nobody'],
+  ] as const) {
+    it(`${code} painted away whole ${what} is eliminated within the day`, () => {
+      const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      s.world.settings.aiEnabled = false;
+      const w = s.world;
+      const n = nationId(code);
+      expect(paintAway(s, n, to)).toBeGreaterThan(0);
+      const ev = stepEvents(s, 24);
+      expect(eventsOf(ev, EventKind.NationEliminated)).toEqual([[n, 0, NaN, NaN]]);
+      expect(eventsOf(ev, EventKind.CapitalCaptured)).toEqual([]);
+      expect(w.nations.cols.living[n]).toBe(0);
+      expect(deadLand(w)).toEqual([]);
+      expect(capitalCity(w, n)).toBe(0);
+      w.formations.forEach((id) => expect(w.formations.cols.nation[id]).not.toBe(n));
+    });
+  }
+
+  it('a capital painted for another nation moves, with no capture and no death', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    const w = s.world;
+    const FRA = nationId('FRA');
+    const cc = w.cities.cols;
+    const paris = capitalCity(w, FRA);
+    const fraCells = w.cells.owner.reduce((k, c) => k + (c === FRA ? 1 : 0), 0);
+    s.command({ kind: 'editPaint', layer: 'nation', tool: 'brush', x: cc.x[paris]!, y: cc.y[paris]!, x2: 0, y2: 0, r: 1, value: GER, mask: null });
+    const ev = stepEvents(s);
+    expect(w.cells.owner[cc.cell[paris]!]).toBe(GER);
+    expect(eventsOf(ev, EventKind.CapitalCaptured)).toEqual([]);
+    const moved = eventsOf(ev, EventKind.CapitalMoved);
+    expect(moved.length).toBe(1);
+    expect(moved[0]![0]).toBe(FRA);
+    const next = capitalCity(w, FRA);
+    expect(next).not.toBe(0);
+    expect(next).not.toBe(paris);
+    expect(cc.capitalOf[paris]).toBe(0);
+    expect([w.cells.owner[cc.cell[next]!], w.cells.controller[cc.cell[next]!]]).toEqual([FRA, FRA]);
+    expect([w.nations.cols.capitalX[FRA], w.nations.cols.capitalY[FRA]]).toEqual([cc.x[next], cc.y[next]]);
+    // Nothing else of France went with it (no annexation), and it happens once.
+    expect(w.nations.cols.living[FRA]).toBe(1);
+    expect(w.cells.owner.reduce((k, c) => k + (c === FRA ? 1 : 0), 0)).toBeGreaterThan(fraCells - 10);
+    expect(eventsOf(stepEvents(s, 24), EventKind.CapitalMoved)).toEqual([]);
+  });
+
   it('the winner-takes-all setting is saved', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     s.command({ kind: 'setSetting', key: 'winnerTakesAll', value: true });

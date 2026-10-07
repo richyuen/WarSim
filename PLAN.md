@@ -3146,7 +3146,7 @@ quick sweep as a smoke test.
     - *Tests:* three in `tests/unit/research.test.ts` (red before), one in
       `tests/sweep/researchYears.test.ts` (70 s). The pin stands (a73098dc).
     - *By hand:* `research1938.spec.ts`, `playerActions1938.spec.ts` (chromium).
-  - [ ] 3.4Rh **A nation whose land is painted away lives on with no cell** (finding 2).
+  - [x] 3.4Rh **A nation whose land is painted away lives on with no cell** (finding 2).
     `capitalsSystem` returns early for a nation whose capital city is held by one it is
     not at war with, so it is never seen to have lost it: Luxembourg painted for Germany
     and Switzerland for France with the God brush (ADR-118) were living with 0 cells and
@@ -3156,6 +3156,14 @@ quick sweep as a smoke test.
     whole is eliminated within the day (`NationEliminated`); a capital painted for
     another moves, as one lost in a war does. Decide in DECISIONS whether the paint or
     the capital rule sees to it.
+    **Done 2026-10-06 (ADR-145).** The capital rule, and it asks the owner: a capital city
+    on a cell its nation no longer owns moves (`relocateCapital`), with no capture and no
+    annexation; with no cell left the nation is eliminated. An occupation with no war
+    moves nothing, as before.
+    - *Tests:* four in `tests/unit/capitals.test.ts`, red before: Luxembourg and
+      Switzerland painted for another, Albania to nobody, Paris for Germany. The pin
+      stands (a73098dc).
+    - *Left to 3.4Ri:* an undo after the death gives the land to the dead nation.
   - [ ] 3.4Ri **Undo, redo and an import give land to a dead nation** (finding 3).
     `editPaint` refuses a dead nation (PLAN 2.17); `apply` of `editor.ts` restores a
     stroke's cells whoever owned them, and `importLayer` asks `nations.has`, not

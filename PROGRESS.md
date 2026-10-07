@@ -7307,3 +7307,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** no command sets a budget or picks a tech.
 - **Next:** PLAN 3.4Rh (a nation whose land is painted away lives on with no cell).
 - **Gate:** green (code, with the ten-year tests; no e2e for a part).
+
+## 2026-10-06 — PLAN 3.4Rh: a capital on land its nation no longer owns moves; a nation painted away whole dies
+
+- **The defect:** `capitalsSystem` looked at a capital city only when a nation at war with
+  its nation controlled the cell. A nation whose land was painted away (the editor, the God
+  brush) was never seen to have lost it and lived on with no cell.
+- **Decided (ADR-145):** the capital rule, not the paint, and it asks the owner. Hourly: a
+  capital city held by an enemy at war is captured, as before; else, on a cell the nation
+  does not own, it moves (`relocateCapital`: a city owned and controlled, a field capital,
+  or the nation's end). No `CapitalCaptured`, no annexation by `winnerTakesAll` or the
+  death rule. An occupation with no war moves nothing.
+- **Tests:** four in `tests/unit/capitals.test.ts`, red on the old source: Luxembourg for
+  Germany, Switzerland for France, Albania to nobody (`NationEliminated` within the day, no
+  land, capital or formation left); Paris for Germany (one `CapitalMoved`, a city France
+  owns and controls, no capture, France's other land untouched). The pin stands: a73098dc.
+- **By hand** (chromium): `godUi1938.spec.ts`, `editorDrag1938.spec.ts`: 10 of 10 in 1.3 min.
+- **Not measured:** the reader's year-long runs were not repeated; the unit tests stand for
+  them. How often a game's own cessions move a capital by this rule is not counted (none in
+  seed 99's first year, by the pin).
+- **Gotcha:** the rule runs with the clock, so in a paused game a painted-away nation is
+  still living until the first tick.
+- **Next:** PLAN 3.4Ri (undo, redo and an import give land to a dead nation).

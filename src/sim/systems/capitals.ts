@@ -14,6 +14,11 @@
  *   controlled cell nearest the old capital (a field capital). A field capital is lost by any
  *   change of control and relocates the same way; a nation with no cell left is eliminated.
  *
+ * A capital given away (ADR-145, PLAN 3.4Rh): a capital city on a cell its nation no longer owns
+ * (the editor's paint, the God brush, an import, land ceded) moves the same way, with
+ * `CapitalMoved` alone: no `CapitalCaptured`, and no annexation under either setting. A nation
+ * painted away whole is eliminated by it. Occupation with no war (controller ≠ owner) is not that.
+ *
  * Elimination: `living` = 0, its formations, production orders and research lines are removed, its wars end,
  * the land it occupied goes back to its owners and its land that others occupy becomes theirs
  * (`leaveLand`), `NationEliminated` is emitted.
@@ -28,15 +33,22 @@ import { noteCapitalCaptured } from './war';
 export function capitalsSystem(world: World): void {
   const cc = world.cities.cols;
   const nc = world.nations.cols;
-  const { w, controller } = world.cells;
+  const { w, owner, controller } = world.cells;
   const hasCity = new Uint8Array(world.nations.highWater);
   world.cities.forEach((city) => {
     const n = cc.capitalOf[city]!;
     if (n === 0 || nc.living[n] !== 1) return;
     hasCity[n] = 1;
-    const holder = controller[cc.cell[city]!]!;
-    if (holder === n || holder === 0 || !world.wars.atWar(holder, n)) return;
-    captureCapital(world, n, holder, city);
+    const cell = cc.cell[city]!;
+    const holder = controller[cell]!;
+    if (holder !== n && holder !== 0 && world.wars.atWar(holder, n)) {
+      captureCapital(world, n, holder, city);
+      return;
+    }
+    if (owner[cell] === n) return;
+    // Given away (ADR-145): nobody took it in a war, so no capture and no annexation.
+    cc.capitalOf[city] = 0;
+    relocateCapital(world, n);
   });
   // Field capitals (no city left): lost by any change of control; relocate or eliminate.
   world.nations.forEach((n) => {

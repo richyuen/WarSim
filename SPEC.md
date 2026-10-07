@@ -867,6 +867,12 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     the largest owned and controlled city (`CapitalMoved`); without one it becomes a field capital
     on the nearest held cell. A nation with no land left is eliminated (formations, production
     and wars removed).
+  - Given away (PLAN 3.4Rh, ADR-145): a capital city on a cell its nation no longer owns (the
+    editor's paint, the God brush, an import, land ceded) moves the same way, hourly, with
+    `CapitalMoved` alone: no `CapitalCaptured`, no war score, and no annexation under either
+    setting or the death rule. A nation painted away whole has no cell to move to and is
+    eliminated. Occupation with no war (the controller differs, the owner does not) moves
+    nothing.
   - The dead hold no land (PLAN 2.16Rf, ADR-112; `leaveLand`): when a nation is eliminated, the
     cells it occupied go back to their owners, and the cells of its own that a living nation
     occupies become that nation's (`LandCeded`, one event for each receiver). Its cores stay

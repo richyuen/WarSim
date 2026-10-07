@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-145 · 2026-10-06 · accepted — A capital on land its nation no longer owns moves; the capital rule sees to it, not the paint (PLAN 3.4Rh)
+
+- **Context:** the seventh read's finding 2. `capitalsSystem` looked at a capital city only
+  when a nation at war with its nation controlled the cell. Land given away with no war (the
+  editor's paint, the God brush since ADR-118) was never seen: Luxembourg painted for
+  Germany, Switzerland for France and Albania to nobody lived on with 0 cells, and Paris
+  painted for Germany stayed France's capital. PLAN 3.4Rh asked which of the two sees to it:
+  the paint or the capital rule.
+- **Decision:** the capital rule, and it asks the owner. Hourly, for the capital city of a
+  living nation: held by a nation at war with it, the capture as before; else, on a cell the
+  nation does not own, the city stops being its capital and `relocateCapital` runs (the
+  largest city it owns and controls, else a field capital, else `eliminateNation`).
+- **Why the rule and not the paint:** every way of giving land away passes it (paint, undo,
+  redo, an import, a cession), where a check in `paint` covers one. And it runs with the
+  clock: a stroke and its undo in a paused game kill nobody.
+- **Why the owner and not the controller:** a capital occupied with no war is an
+  occupation, which the tests of PLAN 1.15 keep ("without a war, occupying the capital
+  captures nothing"). The paint sets the owner; an occupation does not.
+- **No capture:** no `CapitalCaptured`, no war score, and no annexation, neither by
+  `winnerTakesAll` nor by the death rule of PLAN 1.20 (no core land held). Nobody took the
+  city in a war, and a brush on Paris that hands all of France to Germany is not what the
+  stroke said. The nation dies only with no cell left to move to.
+- **Rejected:**
+  - *The paint eliminates at once.* It ends a nation in a paused editor on the way to
+    repainting it, and leaves undo, redo and the import to be done again.
+  - *A given capital is a capture by the new owner.* See "No capture".
+- **Tests:** `tests/unit/capitals.test.ts`, four more, red before: Luxembourg and
+  Switzerland painted for another nation and Albania to nobody are eliminated within the
+  day, with no land, capital or formation left; Paris painted for Germany moves France's
+  capital to a city France owns and controls, once, with no capture.
+- **The pin stands** (a73098dc): in seed 99's first year no capital stands on land its
+  nation does not own.
+- **Not decided here:** an undo after the death gives the land back to the dead nation
+  (PLAN 3.4Ri). The old owner's formations on painted land stay until the day's
+  repatriation (ADR-118).
+
 ### ADR-144 · 2026-10-06 · accepted — The research budget is a rule of the economy: every living nation has it, with AI or without (PLAN 3.4Rg)
 
 - **Context:** `nations.research` was written by the economic AI alone (ADR-128), which
