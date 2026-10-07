@@ -3799,9 +3799,40 @@ quick sweep as a smoke test.
         half-tracks and rifles have no small frame, and a motorised division is a rifle
         division's block; the frame's time at T2 with the second sample was not measured;
         the band ends at 8 px for the turrets at 60 m/px, not where a hull first reads.
-    - [ ] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,
-      if the ground has it, both kinds of hull in one view; pictures; PARITY. Ticks 3.6e and
-      3.6 (the full e2e).
+    - [x] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,
+      if the ground has it, both kinds of hull in one view; pictures; PARITY.
+      **Done 2026-10-07 (ADR-166).** One flight from 1500 to 1.5 m/px on a Japanese tank
+      brigade of seed 1938's game on day 37 (found in Node, `tests/helpers/tankBattle.ts`),
+      six stops, four hours stepped on the way; the flight's own code is the zoom demo's
+      (`tests/e2e/flight.ts`, moved out of `zoomDemo1938.spec.ts`). At 100 m/px its 20
+      elements are the small mark; at 60 the 20 that fired have their turrets on their
+      targets, 19 off the hull; at 12 its 54 tanks are a figure each, 51 with the turret off
+      the hull; at 4, 12 flashes at a tank's muzzle, 2 hulls burning and 1 left behind in the
+      viewport, a frame 0.6 ms of script; at 1.5 the tank the camera is on is lost and burns.
+      No layer's share moves by more than 0.096 in a frame, and the page's hash is Node's
+      after every hour. Six pictures (`docs/evidence/3.6/tank-battle-*.png`), looked at.
+      It does not tick 3.6: the demo found 3.6e5.
+      - *Seen and not changed:* at 100 and 60 m/px the brigade's tag stands a tag's height
+        above its tanks, and the tag on the tanks is a Chinese division's ("Light infantry
+        division 431", over 3 and 4 of its 20 elements): a line under PLAN 3.7. At 4 m/px a
+        second burning hull is under the page's war banners. At 1.5 m/px a tank of the
+        element stands against its own burning hull (3.6d: figures drive over a hull).
+      - *Not done:* the frame's time is the script's part, in a browser that draws on the
+        CPU; the brigade is at 54 tanks of 200, two or three to an element, so no picture has
+        a full company; the flight is not filmed in a running game.
+    - [ ] 3.6e5 **A tank lost under fire burns, wherever in the view's hold it is** (found by
+      3.6e4, ADR-166). The view holds every element of a formation that reaches into the box
+      it subscribed to, and gets the shots with an end in that box. A tank lost by a held
+      element whose place is at the box's edge or outside it, fired at from outside the box,
+      comes with no fire record: its hull is drawn left behind, and the player who pans
+      there within 17 s sees a grey hull where the sim had a tank shot. In the demo: 1 of 3
+      tanks lost under fire at 4 m/px, 4 of 5 at 1.5 m/px (all outside the viewport).
+      Either the worker says for each element it sends whether it was fired at since the
+      last snapshot, or it sends the shots at every element it sends. AT: unit (a held
+      element outside the box, fired at from outside it: its hull burns); in
+      `tankBattle1938.spec.ts` every hull of an hour burns where the sim had its element
+      fired at, the viewport no longer asked for; `burning1938.spec.ts` as it is. Ticks 3.6e
+      and 3.6 (the full e2e).
     From 3.6a: say what a division of tanks is at T2 between 300 and 100 m/px, where a
     sprite is 5 px (the critic: "a grey grid of dots like any other"), and whether the 5 px
     of a hull can say "tank" there (its shape, or the element's mark).
@@ -3826,6 +3857,12 @@ quick sweep as a smoke test.
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  From 3.6e4 (ADR-166, `docs/evidence/3.6/tank-battle-2-marks.png`, `tank-battle-3-turrets.png`):
+  where two formations in contact stand on one ground, the tag that lies on a formation's
+  elements can be the other's, and its own stands off above it (a tank brigade under "Light
+  infantry division 431"). ADR-164 and the zoom demo (PLAN 3.5g) saw the same. Decide here
+  whether a tag is tied to its elements (a leader line, or the tag's side by the side of the
+  enemy), and make it a task if so.
 
 ## Phase 4 — Naval
 

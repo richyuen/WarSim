@@ -167,6 +167,79 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-166 · 2026-10-07 · accepted — The tank battle demo: one flight from T1 to 1.5 m/px on a tank brigade of seed 1938's game, four hours stepped on the way (PLAN 3.6e4)
+
+- **Context:** PLAN 3.6's AT is a demo of a battle of armour "found or set up", with
+  turrets off the hull, a flash at a tank and a burning hull. PLAN 3.6e4 added the time of a
+  frame with hulls, both kinds of hull in one view if the ground has it, and what the tags
+  do over the tanks that fight (ADR-164).
+- **Decision:**
+  - **Found, not set up** (`tests/helpers/tankBattle.ts`, in Node; the page's hash is
+    compared after every hour). The first four hours from day 14 of seed 1938's game in
+    which an element of tanks that stands through them loses a tank under fire in the
+    fourth, with at least 10 elements of tanks firing in the view at 60 m/px in the first,
+    3 in the view at 12 in the second, and in the third, in the view at 4 m/px, a tank lost
+    under fire and one lost with nothing firing at its element. It is the Japanese tank
+    brigade 395 west of Shijiazhuang against the Chinese light infantry divisions 431 and
+    419, hours 898 to 901 (day 37): 54 tanks left of 200 in 20 elements.
+  - **Six stops, each thing where it is read:** 1500 m/px (the marker), 100 (the small
+    mark), 60 (turrets; hour 1), 12 (the tanks one by one; hour 2), 4 (flashes and hulls;
+    hour 3), 1.5 (the hull of the tank the camera is on; hour 4). The flight is the zoom
+    demo's (ADR-71 addendum), its code now in `tests/e2e/flight.ts`: eased zooms on the
+    test's clock, a share's step under 0.12 a frame, none back, the battle held to a pixel.
+  - **The hull near is of an hour stepped there.** The first version stepped three hours
+    and flew from 4 to 1.5 m/px to look at the hulls of the third. It passed alone and
+    failed beside `zoomDemo1938`: a hull's life is on the browser's clock at the snapshot's
+    arrival (17.5 s), the flight is on the test's, and on a loaded machine a leg takes 44 s
+    of the browser's clock for 2.2 s of the test's; the snapshot of the new subscription
+    then drops the hulls. In a running game the two clocks are one. So the spec looks at
+    hulls only in frames drawn right after the hour that made them.
+- **Measured** (`tests/e2e/tankBattle1938.spec.ts`, alone, the machine idle):
+  - 100 m/px: 20 elements of tanks, all the small mark, a sprite 5.1 px.
+  - 60 m/px: 20 turrets, all of tanks that fired, all on the line to their targets as the
+    last shot leaves, 19 more than 0.02 rad off the hull.
+  - 12 m/px: 54 figures for 54 tanks; 54 turrets on their targets' lines, 51 off the hull.
+  - 4 m/px: 14 shots of armour in the view's box, 12 with a flash within half a figure of
+    a tank of its shooter and more than 0.3 of a figure from its middle; 5 hulls for 5
+    tanks lost; in the viewport 2 burning and 1 left behind, as the sim has them.
+  - 1.5 m/px: 7 hulls for 7 tanks lost; the one of the element the camera is on burns in
+    the viewport, a second and a half old.
+  - The largest step of a share in a frame: 0.096.
+  - **A frame with hulls, flames on:** 0.58 to 1.03 ms of script (ten `draw` calls at one
+    time, 4 m/px, 4 hulls drawn, 1,818 figures of 51 elements; `individuals1938` has 1.1 ms
+    for 2,726 figures without hulls). The script's part only: the test's browser draws on
+    the CPU (SwiftShader), and what a GPU takes is the bench's to say. Five hulls are not
+    the 2,000 the view may hold: that case is not measured.
+- **Found: a tank lost under fire outside the subscribed box does not burn.** The worker
+  sends every element of a formation that reaches into the box (PLAN 2.7n1) and the shots
+  with an end in the box (PLAN 2.4). ADR-162 takes "fired at" from the shots of the
+  snapshot. An element that is held, stands at the box's edge or outside it and is fired at
+  from outside it comes without its shots: at 4 m/px 1 of the 3 tanks lost under fire is
+  drawn left behind, at 1.5 m/px 4 of 5. All of them are outside the viewport (the box is
+  the viewport and a margin), and a hull lives 17.5 s: a player who pans sees them.
+  `burning1938` did not meet it (its camera is on the middle of the losses at 4 m/px). The
+  demo expects the sim's answer in the viewport and counts the others in its log. PLAN
+  3.6e5 puts it right; 3.6 is not ticked before.
+- **Seen, about the tags (ADR-164's question):** at 100 and 60 m/px none of the brigade's
+  20 elements is under its own tag, and 3 and 4 are under another formation's. The
+  brigade's tag stands above the tag of the Chinese division it fights, and that tag lies
+  on the tanks: read without care, the tanks are "Light infantry division 431". A line
+  under PLAN 3.7.
+- **Looked at** (`docs/evidence/3.6/tank-battle-1-marker.png` to `tank-battle-6-hull.png`):
+  - 1: the front in north China as markers; the brigade's is one of a crowd.
+  - 2 (100 m/px): the brigade is a block of pale slabs between two tags, beside dark
+    blocks of rifles.
+  - 3 (60 m/px): hulls of 8.5 px with tracers and impacts among them; that the turrets are
+    turned cannot be read at this size.
+  - 4 (12 m/px): the tanks one by one over 2 by 4 km, tracers to the Chinese battalions,
+    four hulls burning from this hour.
+  - 5 (4 m/px): tanks with their turrets turned different ways; a hull burning with smoke,
+    a grey hull left behind, a second fire half under the page's war banners.
+  - 6 (1.5 m/px): the burning hull, flame and three puffs of smoke, a tank of its element
+    against it; the turrets of the tanks around it on a target to the south-east.
+- **Consequences:** `zoomDemo1938.spec.ts` imports its flight from `flight.ts`; nothing
+  else of it changed. No view or sim code changed; the pin did not move.
+
 ### ADR-165 · 2026-10-07 · accepted — Where a sprite is 5 px a tank is a solid slab of its nation's colour; from 5.5 to 8 px the shader mixes it with the hull (PLAN 3.6e3b)
 
 - **Context:** ADR-164: at the least size a hull is a dark blob and a division of tanks the

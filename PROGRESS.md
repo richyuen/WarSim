@@ -8281,3 +8281,39 @@ No rule changed and nothing on screen changed. One task came out of it.
   for guns, half-tracks and rifles; the frame's time at T2 not measured; the hulls' crops
   and the marks' crops are not of the same division.
 - **Next:** PLAN 3.6e4 (the demo; ticks 3.6e and 3.6, the full e2e).
+
+## 2026-10-07 — PLAN 3.6e4: the tank battle demo (ADR-166)
+
+- **Done:** `tests/e2e/tankBattle1938.spec.ts`, one flight from 1500 to 1.5 m/px on a
+  Japanese tank brigade of seed 1938's game on day 37, six stops, four hours stepped.
+  `tests/helpers/tankBattle.ts` finds the ground in Node (10 s). `tests/e2e/flight.ts` is the
+  zoom demo's `leg` and `steps`, moved out of `zoomDemo1938.spec.ts` unchanged. Tests and
+  documents only: no view or sim code, the pin did not move.
+- **Measured:** 20 elements the small mark at 100 m/px; 20 turrets on their targets at
+  60 m/px, 19 off the hull; 54 tanks a figure each at 12 m/px, 51 turrets off the hull; at
+  4 m/px 12 flashes at a tank's muzzle, 2 hulls burning and 1 left behind in the viewport;
+  at 1.5 m/px the hull of the tank the camera is on, burning. The largest step of a share
+  0.096. A frame with hulls and flames: 0.58 ms of script alone, 1.03 beside another spec
+  (the test's browser draws on the CPU: this is not the GPU's time).
+- **Found (PLAN 3.6e5, new):** a tank lost under fire by an element at the edge of the
+  subscribed box or outside it is drawn left behind, not burning: the view holds the
+  element and does not get the shots at it. 1 of 3 at 4 m/px, 4 of 5 at 1.5 m/px, all
+  outside the viewport. 3.6e and 3.6 are not ticked: 3.6e5 ticks them.
+- **Tags (ADR-164's question):** at 100 and 60 m/px the tag on the tanks is the enemy
+  division's; the brigade's own stands above it. A line under PLAN 3.7.
+- **Specs by hand** (`--project=chromium`): `tankBattle1938` alone (2.4 min) and beside
+  `zoomDemo1938` (3.6 min), green.
+- **Looked at:** `docs/evidence/3.6/tank-battle-1-marker.png` to `tank-battle-6-hull.png`
+  (ADR-166 says what each shows). At 60 m/px a turned turret cannot be read; from 12 m/px in
+  it can.
+- **Gotcha:** the first version flew from 4 to 1.5 m/px to look at the hulls of the hour
+  before. Alone it passed; beside `zoomDemo1938` the hulls were gone: a hull's life runs on
+  the browser's clock, a flight on the test's, and under load a leg of 2.2 s takes 44 s. A
+  spec on the test's clock may look at hulls, wrecks and fire only right after the hour that
+  made them.
+- **Gotcha:** the first finder put the camera on the middle of the losses, where the
+  defect of 3.6e5 does not show. The second, with the camera on one element, met it at once.
+- **Not done:** the frame's time with many hulls (up to 2,000 are held; 5 here); a
+  brigade at full strength; a film of the flight in a running game.
+- **Next:** PLAN 3.6e5 (a tank lost under fire burns wherever the view holds it; ticks 3.6e
+  and 3.6, the full e2e).
