@@ -3964,6 +3964,23 @@ quick sweep as a smoke test.
     next day. Whether a formation left on foreign ground for good is then worse than one
     moved (it holds no cell and eats supply there) is for the diagnosis to say: if it is,
     say what else.
+    **Diagnosed 2026-10-07** (`.cache/p37/jumps2.ts`, a scratch script: every formation
+    more than 3 cells in a tick from where it stood, a year of seed 99 and of seed 7, with
+    the holders of the hour before). All 80 are `repatriationSystem`'s spawn point, at a
+    day's start, of a formation that stood idle on a third nation's ground; no other writer
+    of a place moved one.
+    - 75 of 80 (39 and 36): an own cell on its landmass within `REPATRIATE_CELLS`, and the
+      order there refused. ADR-149 lets a formation walk out of the holder's ground it
+      stands on, not onto another third nation's: Yugoslav divisions in the Soviet Union
+      (15), Czechoslovak in Yugoslavia, Romania and the Soviet Union (10, 10, 9), Austrian
+      in Romania (10). They are where a war they fought beside another took them, and its
+      peace left them.
+    - 5 of 80 (4 and 1): no own cell within 80 cells (Transjordan's in Nigeria, Syria's in
+      French Equatorial Africa, 145 and 152 cells from home; the Spanish Sahara's in the
+      Belgian Congo). None was on another landmass than its home.
+    - So "the nearest own cell it can reach by its `Passage`" (the mend proposed above)
+      mends none of the 75: by its passage it reaches no own cell at all. The rule that is
+      missing is the way home itself.
     AT: unit (`movement.test.ts`: the Italian division in central Germany at peace marches,
     or stays, and is not moved); a year of seed 99 and of seed 7 has no formation more than
     3 cells in a tick from where it stood, but by a rule the diagnosis names and this task
