@@ -766,6 +766,7 @@ export class SimServer {
       fuel: rules?.templates[template]?.fuel ?? 0,
       engaged: fc.engaged[id] === 1,
       moving: fc.moving[id] === 1,
+      retreat: fc.retreat[id]!,
       x: fc.x[id]!,
       y: fc.y[id]!,
       units: [...units.values()],

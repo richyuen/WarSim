@@ -100,6 +100,8 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'moveFormation':
       // A player's order names its nation: the id may be another nation's formation by now (PLAN 2.16Rk).
       if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return Refusal.NoSuch;
+      // On the retreat it takes no order (PLAN 3.7m, ADR-173): its march is held by no enemy's ground, and it is in no battle.
+      if (world.formations.has(cmd.id) && world.formations.cols.retreat[cmd.id]! > 0) return Refusal.OnRetreat;
       orderMove(world, cmd.id, cmd.x, cmd.y);
       return Refusal.None;
     case 'setSetting':

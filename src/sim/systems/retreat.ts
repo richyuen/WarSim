@@ -18,8 +18,9 @@
  * retreat for RETREAT_HOURS (`formations.retreat`, counted down here): `findBattles` leaves it
  * out, so it does not fire and is not fired on, and the march is not held, by contact or by
  * ground the enemy holds on its way (`movement.ts`); it presses no cell
- * (`territory.ts`); the operational AI gives it no order. Off its battle and on its network it
- * gets its org back (`supply.ts`).
+ * (`territory.ts`); the operational AI gives it no order, and a `moveFormation` command to it is
+ * refused (`tick.ts`, PLAN 3.7m, ADR-173). Off its battle and on its network it gets its org back
+ * (`supply.ts`).
  *
  * A formation with no such cell, or no route to it, holds and fights as before, and tries
  * again when (tick + id) mod RETREAT_RETRY_HOURS = 0: the first try waits for that hour too,

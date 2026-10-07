@@ -443,6 +443,8 @@ export interface FormationDetail {
   fuel: number;
   engaged: boolean;
   moving: boolean;
+  /** Hours of its retreat left (PLAN 3.5a; 0 = none): it takes no order in them (PLAN 3.7m). */
+  retreat: number;
   x: number;
   y: number;
   /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */

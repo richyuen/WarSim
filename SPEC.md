@@ -1060,6 +1060,10 @@ bombardment) participants join through their missions.
     state) it is in no contact and no battle: it does not fire and is not fired on, its march
     is held neither by contact nor by cells the enemy holds, it presses no cell (§5.1), and
     the operational AI gives it no order. On its network it has 0.75 of its org back by then.
+    A `moveFormation` command to it (a player's click, God Mode) is refused for those hours
+    (`Refusal.OnRetreat`; PLAN 3.7m, ADR-173): with its march held by no enemy's ground and
+    no battle to stop it, an order sent a broken division over the enemy's cells and past his
+    formations. The formation panel's status says "On the retreat: no orders for N h".
     `FormationRetreated` is the event (not in the history).
   - *No ground within reach:* it holds and fights, with a quarter of its fire, and tries
     again every 6 hours (when (tick + id) mod 6 = 0; the first try waits for that hour too).
@@ -1077,8 +1081,7 @@ bombardment) participants join through their missions.
     12,511 → 3,235 and 6,973 → 2,720 hours. Cells flipped in each of five years of seed 99:
     25,592, 28,368, 20,856, 17,270, 15,644 → 22,767, 22,016, 15,720, 13,776, 25,834.
   - *Not done:* nothing fires on a formation that retreats; no surrender; nothing of it on
-    the page (a retreat looks like a march); a player is not told and can order the formation
-    while it is out of battles; the 2:1 fight below is the fire's alone (`combatSystem`
+    the map (a retreat looks like a march; the formation panel says it, PLAN 3.7m); the 2:1 fight below is the fire's alone (`combatSystem`
     without the org's system), and what a 2:1 fight is with the retreat was not measured.
 - *Deferred:* entrenchment, experience, night and weather. Of the modifiers of step 2
   below, entrenchment, river crossing, experience, air superiority and night/weather are

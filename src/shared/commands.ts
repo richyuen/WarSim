@@ -218,6 +218,8 @@ export const Refusal = {
   NoCoreLand: 17,
   /** An empty rename of a nation that has no name but the one it would lose (a world without a nation table). */
   NoOtherName: 18,
+  /** An order to a formation on the retreat: it takes none until the retreat is over (PLAN 3.7m, ADR-173). */
+  OnRetreat: 19,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

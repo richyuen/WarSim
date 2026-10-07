@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-173 · 2026-10-07 · accepted — A formation on the retreat takes no order: the command is refused (PLAN 3.7m)
+
+- **Context:** the eighth read, finding 4 (traced there, run here). For the 24 hours of its
+  retreat a formation's march is not held by ground the enemy holds, it is in no battle and
+  takes no cell (ADR-150). ADR-150 kept the operational AI from ordering it, and nothing
+  else: `moveFormation` (a player's click, God Mode) called `orderMove`, which put a new path
+  in the retreat's place and left `formations.retreat` as it was. Run
+  (`tests/unit/retreat.test.ts`): a Soviet division broken by a German one a cell east of
+  it, ordered to a cell four cells behind the German, stood on German ground in no battle
+  in 18 of the 23 hours that followed and walked past him (1.3 cells beyond him when the
+  retreat ended).
+- **The two ways:** refuse the order while the retreat lasts, or let the order end the
+  retreat.
+- **Decision: the order is refused.** `applyCommand` (`tick.ts`) answers a `moveFormation`
+  to a formation with `retreat` > 0 with `Refusal.OnRetreat` (19), before `orderMove`: the
+  state is as before, `CommandRefused` is the event. Not in `orderMove` or `order`: the
+  retreat's own order goes through the first (`retreat.ts`), and the march's order again
+  after a step that is shut (ADR-171) through the second.
+- **Why not end the retreat.** A formation that breaks off is within contact of the enemy
+  it breaks from. With `retreat` at 0 the next hour's `findBattles` has it in contact again,
+  and a formation in contact does not march: the order would not be carried out either, the
+  division would stand where it was (on the enemy's ground, if the retreat had begun over
+  it) with the org that broke it, and try to break off again at its sixth hour. A refusal
+  changes nothing in the game and says why.
+- **What the player sees.** The formation panel's status is "On the retreat: no orders for
+  N h" (`FormationDetail.retreat`, the hours left), before "In contact", "On the march" and
+  "Holding". The words of the refusal ("the formation is on the retreat and takes no order
+  until it is over") are in the God tab's table of refusals, which is shown where the God
+  tab of the selected nation is open, as for every command.
+- **The pin holds** (`347aebb2`): no system and no AI is on the changed path.
+- **Tests:** `tests/unit/retreat.test.ts` (red before, twice: no refusal, and with that
+  assertion out 18 hours on the enemy's ground in no battle; green: refused, the retreat's
+  target kept, no hour on the enemy's ground, and the same order taken once the retreat is
+  over); `tests/unit/formationDetail.test.ts` (the hours in the worker's answer);
+  `tests/e2e/formationPanel1938.spec.ts`, a fourth test (a Polish division at the border
+  against three German ones breaks off after 49 hours: the status and its hours, and an
+  order to a place behind the Germans leaves it going east).
+  `docs/evidence/3.7/formation-panel-retreat.png`.
+- **Not done:** a player who clicks the map with no God tab open reads no words at the
+  click, only the panel's status; the selection's frame and the map do not mark a formation
+  on the retreat; repatriation (`repatriationSystem`) may still order one that stands idle
+  on a third nation's ground with hours of its retreat left (no instance looked for); the
+  walk back of ADR-172 and the march home of ADR-169 take a player's order as before.
+
 ### ADR-172 · 2026-10-07 · accepted — A march barred in the middle of a step walks back to the cell behind it (PLAN 3.7l)
 
 - **Context:** the eighth read, finding 3. A march ends before a cell that has become a third

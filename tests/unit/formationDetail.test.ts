@@ -27,6 +27,11 @@ describe('the worker\'s answer to `formation` (PLAN 2.14b)', () => {
     expect(d).toMatchObject({ id, tick: 30, nation: w.formations.cols.nation[id], strength: w.formations.cols.strength[id], supply: w.formations.cols.supply[id], org: w.formations.cols.org[id], fuel: 0, x: w.formations.cols.x[id], y: w.formations.cols.y[id] });
     expect(d.engaged).toBe(w.formations.cols.engaged[id] === 1);
     expect(d.moving).toBe(w.formations.cols.moving[id] === 1);
+    // The hours of its retreat left (PLAN 3.7m): the panel says that it takes no order in them.
+    expect(d.retreat).toBe(0);
+    w.formations.cols.retreat[id] = 17;
+    expect(ask(server, replies, id)!.retreat).toBe(17);
+    w.formations.cols.retreat[id] = 0;
     // A toy formation has no template and no elements.
     expect(d.full).toBe(0);
     expect(d.units).toEqual([]);

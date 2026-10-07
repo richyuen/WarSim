@@ -8543,3 +8543,33 @@ No rule changed and nothing on screen changed. One task came out of it.
   behind it; the walk back has no supply rule of its own.
 - **Next:** PLAN 3.7m (an order to a formation on the retreat), then 3.7i, n, g, the smoke
   run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7m: a formation on the retreat takes no order (ADR-173)
+
+- **Run first** (`retreat.test.ts`): a Soviet division on the retreat, ordered to a cell
+  behind the German that broke it, stood on German ground in no battle in 18 of the 23
+  hours that followed and walked past him.
+- **The rule** (`tick.ts`, `applyCommand`): a `moveFormation` to a formation with
+  `retreat` > 0 is refused, `Refusal.OnRetreat` (19). Not in `orderMove`: the retreat's own
+  order goes through it.
+- **Why not "the order ends the retreat":** the division is within contact of the enemy it
+  broke from; back in the battle the next hour it does not march either.
+- **The panel:** `FormationDetail.retreat` (the hours left); the status row says "On the
+  retreat: no orders for N h". The refusal's words are in the God tab's table.
+- **Tests:** `retreat.test.ts` (one; red before on the refusal and, with that out, on the 18
+  hours), `formationDetail.test.ts` (the hours), `formationPanel1938.spec.ts` (a fourth
+  test: a Polish division at the border against three German ones breaks off after 49
+  hours; the status, its hours, and an order behind the Germans leaves it going east).
+  `docs/evidence/3.7/formation-panel-retreat.png`, looked at.
+- **Gotcha:** the first scene for the page (a lone panzer division set down deep in Poland)
+  gave no retreat in 240 hours: off its network the German ran dry and the Polish org stood
+  at 0.77. Three infantry divisions on their own ground at the border break it in 49.
+- **The pin holds:** `347aebb2`. No tick time measured: no system is on the changed path.
+- **By hand:** `formationPanel1938`, `godUi1938`, `player1938` (`--project=chromium`): 13 of
+  13 in 1.5 min.
+- **Not done:** a player who clicks the map with the God tab shut reads no words at the
+  click, only the panel's status; nothing on the map marks a retreat; repatriation may
+  still order an idle formation with hours of its retreat left (no instance looked for);
+  PARITY row 2 ("anything of it on the page") waits for 3.7f.
+- **Next:** PLAN 3.7i (the puppets of a nation that dies), then 3.7n, g, the smoke run
+  (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.

@@ -41,7 +41,8 @@ export function FormationPanel({
       <span data-testid={testid}>{value}</span>
     </div>
   );
-  const status: MessageKey = info?.engaged ? 'formation.status.engaged' : info?.moving ? 'formation.status.moving' : 'formation.status.holding';
+  // On the retreat it takes no order (PLAN 3.7m): the status says so, and for how long.
+  const status = info && info.retreat > 0 ? t('formation.status.retreat', { n: info.retreat }) : t(info?.engaged ? 'formation.status.engaged' : info?.moving ? 'formation.status.moving' : 'formation.status.holding');
   return (
     <aside class="nation-panel formation-panel" data-testid="formation-panel" data-formation={info?.id ?? 0}>
       <div class="panel-head">
@@ -74,7 +75,7 @@ export function FormationPanel({
           {row('formation.supply', `${Math.round(info.supply * 100)}%`, 'formation-supply')}
           {row('formation.org', `${Math.round(info.org * 100)}%`, 'formation-org')}
           {row('formation.fuel', info.fuel > 0 ? t('formation.fuelPerHour', { n: fuel(info.fuel) }) : t('formation.fuelNone'), 'formation-fuel')}
-          {row('formation.status', t(status), 'formation-status')}
+          {row('formation.status', status, 'formation-status')}
           <div class="panel-sub">{t('formation.elements')}</div>
           <table class="formation-units" data-testid="formation-units">
             <tbody>

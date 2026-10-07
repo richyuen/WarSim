@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { Refusal } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { operationalAi, STAGGER } from '../../src/sim/ai/operational';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
@@ -176,6 +177,37 @@ describe('the retreat (PLAN 3.5a)', () => {
     };
     expect(plan(0)).toBe(1);
     expect(plan(RETREAT_HOURS)).toBe(0);
+  });
+
+  // PLAN 3.7m (ADR-173): the retreat's march is not held by ground the enemy holds, and the
+  // formation is in no battle. An order sent it forward over the enemy's cells for a day.
+  it('an order to a formation on the retreat is refused: it does not go over the enemy\'s cells', () => {
+    const { s, w, sov } = duel();
+    const f = w.formations.cols;
+    // The German's ground: its own cell and east of it.
+    for (let dy = -1; dy <= 1; dy++) for (let dx = 1; dx <= 6; dx++) w.setController((FIELD_Y + dy) * W + FIELD_X + dx, GER);
+    s.step(1);
+    f.org[sov] = RETREAT_ORG - 0.01;
+    untilRetreat(s, sov);
+    expect(f.retreat[sov]).toBe(RETREAT_HOURS);
+    const target = f.targetCell[sov]!;
+    // Behind the enemy.
+    s.command({ kind: 'moveFormation', id: sov, x: FIELD_X + 5.5, y: FIELD_Y + 0.5, nation: SOV });
+    const ev = runEvents(s, 1);
+    expect(eventKinds(ev, EventKind.CommandRefused).map(([, why]) => why)).toEqual([Refusal.OnRetreat]);
+    expect(f.targetCell[sov]).toBe(target);
+    let onEnemyGround = 0;
+    for (let hour = 1; hour < RETREAT_HOURS; hour++) {
+      s.step(1);
+      if (w.cells.controller[Math.floor(f.y[sov]!) * W + Math.floor(f.x[sov]!)] === GER && f.engaged[sov] === 0) onEnemyGround++;
+    }
+    expect(onEnemyGround).toBe(0);
+    // With the retreat over it takes the order.
+    s.step(1);
+    expect(f.retreat[sov]).toBe(0);
+    s.command({ kind: 'moveFormation', id: sov, x: FIELD_X + 5.5, y: FIELD_Y + 0.5, nation: SOV });
+    expect(eventKinds(runEvents(s, 1), EventKind.CommandRefused)).toEqual([]);
+    expect(f.targetCell[sov]).toBe(FIELD_Y * W + FIELD_X + 5);
   });
 
   it('the retreat is state: a save has it, and the loaded game goes on as the saved one', () => {

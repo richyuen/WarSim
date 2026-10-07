@@ -4152,7 +4152,7 @@ quick sweep as a smoke test.
     99: 5 walks back, 47 hours, the longest hour 0.149 cells. The pin: `83057b85` to
     `347aebb2`.
     *Not done:* a step shut by new water (3.7k) still sets the formation on the cell behind.
-  - [ ] 3.7m **An order to a formation on the retreat does not drive it through the enemy**
+  - [x] 3.7m **An order to a formation on the retreat does not drive it through the enemy**
     (the eighth read, finding 4; traced, not run). `orderMove` leaves `formations.retreat`
     as it is, and the God command `moveFormation` calls it. While `retreat` > 0 the march is
     not held by ground the enemy holds, the formation is in no battle and takes no cell: for
@@ -4162,6 +4162,14 @@ quick sweep as a smoke test.
     the retreat lasts (with a reason the panel can say), or it ends the retreat.
     AT: unit (a division on the retreat ordered to a cell behind the enemy: it does not
     enter a cell the enemy holds while it is in no battle); the panel says why if refused.
+    **Done 2026-10-07 (ADR-173):** run first (18 of 23 hours on the enemy's ground in no
+    battle, and past him). The order is refused while the retreat lasts
+    (`Refusal.OnRetreat`, in `applyCommand`); ending the retreat would have put the division
+    back in contact the next hour, where it does not march either. The formation panel's
+    status: "On the retreat: no orders for N h". `retreat.test.ts`, `formationDetail.test.ts`,
+    a fourth test of `formationPanel1938.spec.ts`. The pin holds, `347aebb2`.
+    *Not done:* no words at a player's click with the God tab shut (the panel's status
+    alone); nothing on the map marks a retreat.
   - [ ] 3.7n **A game loaded into a running one leaves no hull for what happened between**
     (the eighth read, finding 5; traced, not run; view only). `MapView` keeps the elements
     of the snapshot before unless the tick went back (`s.tick < this.lastTick`); a later

@@ -366,6 +366,58 @@ test('the panel of a panzer division off its network: its fuel, its supply and i
   console.log(`the panzer division after ${1 + 23 + 15 + 48} hours off its network: ${tanks(late)} of 340 tanks, ${menOf(late)} of ${menOf(first)} motorised infantry`);
 });
 
+// PLAN 3.7m (ADR-173): a formation on the retreat takes no order, and its panel says so. A
+// Polish division at the border and three German ones on the German cell west of it, at war, no
+// AI: the Polish one breaks off. (Before: the status said "On the march", and an order
+// sent it forward over the enemy's cells.) The hours on the panel are the sim's; an order to a
+// place behind the Germans leaves it on its way back.
+test('the panel of a division on the retreat says that it takes no order, and for how long', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/3.7') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const SITE = border();
+  await step(page, [
+    { kind: 'setSetting', key: 'aiEnabled', value: false },
+    { kind: 'declareWar', attacker: GER, defender: POL },
+    { kind: 'spawnFormation', nation: POL, x: SITE[0] + 0.5, y: SITE[1], strength: 0, template: infantry },
+  ]);
+  const polish = Math.max(...(await page.evaluate(() => window.__warsim!.view!.formationIds())));
+  const detail = (): Promise<{ retreat: number; engaged: boolean; x: number; org: number }> => page.evaluate(async (id) => (await window.__warsim!.sim.formation(id))!, polish);
+  await zoomTo(page, SITE[0] + 0.5, SITE[1], 500, false);
+  const centre = await page.evaluate((id) => {
+    const r = window.__warsim!.view!.markerRects.find((m) => m.id === id || m.members.includes(id))!;
+    return [r.x + r.w / 2, r.y + r.h / 2] as [number, number];
+  }, polish);
+  await page.mouse.click(...centre);
+  await expect(page.getByTestId('formation-panel')).toHaveAttribute('data-formation', String(polish));
+  await expect(page.getByTestId('formation-status')).toHaveText('Holding');
+
+  await step(page, [0, 1, 2].map((): Command => ({ kind: 'spawnFormation', nation: GER, x: SITE[0] - 0.5, y: SITE[1], strength: 0, template: infantry })));
+  let hours = 1;
+  while ((await detail()).retreat === 0 && hours < 240) {
+    await step(page, []);
+    hours++;
+  }
+  const broke = await detail();
+  expect(broke.retreat, `on the retreat within ten days (org ${broke.org})`).toBeGreaterThan(0);
+  expect(broke.engaged).toBe(false);
+  await expect(page.getByTestId('formation-status')).toHaveText(`On the retreat: no orders for ${broke.retreat} h`, { timeout: 15_000 });
+  await page.screenshot({ path: path.join(out, 'formation-panel-retreat.png') });
+
+  // Ordered to a place behind the Germans: it goes on east, and the panel counts the hours down.
+  await step(page, [{ kind: 'moveFormation', id: polish, x: SITE[0] - 4, y: SITE[1], nation: POL }]);
+  await step(page, []);
+  await step(page, []);
+  const on = await detail();
+  expect(on.retreat).toBe(broke.retreat - 3);
+  expect(on.x).toBeGreaterThan(broke.x);
+  await expect(page.getByTestId('formation-status')).toHaveText(`On the retreat: no orders for ${on.retreat} h`, { timeout: 15_000 });
+  console.log(`the Polish division broke off after ${hours} hours (org ${broke.org.toFixed(3)}); x ${broke.x.toFixed(2)} to ${on.x.toFixed(2)} in three hours, the Germans at ${(SITE[0] - 0.5).toFixed(2)}`);
+});
+
 // PLAN 2.16Ri (the sixth read, finding 6): a table gives a freed id to the next row made, and
 // the panel knew its formation by the id alone. The Polish division whose panel is open is
 // removed and Germany raises one in the same hour: it has the Polish one's id. (Before: the
