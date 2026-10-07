@@ -3889,10 +3889,24 @@ quick sweep as a smoke test.
     is checked against the code here before it is anything; those a player can meet become
     tasks 3.7g and on, before 4.1, each with a test that fails first, most severe first; the
     rest go on the watch list.
-  - [ ] 3.7b SPEC re-read for drift: each decision since the last pass (ADR-143 to ADR-167)
+  - [x] 3.7b SPEC re-read for drift: each decision since the last pass (ADR-143 to ADR-167)
     looked for in SPEC (§2.3, §2.4, §6.1, §7, §8) and checked against the code, not against
     its ADR alone. Code that nothing uses since the last pass deleted (a commit of its own,
     gated).
+    Done 2026-10-07. Of the 25 decisions, 21 are cited in SPEC; the four that are not need
+    no line there (ADR-155 mends a loop and makes no rule; ADR-156 and ADR-166 choose a
+    demo's ground; ADR-164 is the question that ADR-165 answers). Read beside the code: §5.2
+    step 4 with `retreat.ts` and `retreat` of `data/combat.json` (seven constants, the
+    quarter of the fire, the org that comes back out of contact); §7 with `operational.ts`
+    and `economic.ts` (twelve constants, the order of the builds); §8 with `turrets.ts`,
+    `hulls.ts`, `elementSprite.ts`, `markerStacks.ts` and `counters.ts` (the times and
+    sizes). They say what the code does. Written in, each from the code:
+    - §2.5: the implemented order had no research, no economic AI, no repatriation, no
+      retreat and no org loss (five of the 22 systems of `sim.ts`).
+    - §2.4: the elements row had no `hit` (ADR-167).
+    - Dead code: none. Of the 64 exports added since `dae7824` every one is used by another
+      source file, inside its own, or by a test (a script over `src/`, `tools/`, `tests/`).
+    - *Not done:* SPEC's measured numbers were not measured again.
   - [ ] 3.7c The watch lists of the phase: the blocks of BLOCKERS dated since the Phase 2
     review, the notes "From 3.6a" to "From 3.6e3" under PLAN 3.6, and the "Seen and not
     changed" and "Not done" lines of 3.5 and 3.6. Each item becomes a task, a line under the

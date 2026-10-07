@@ -193,7 +193,7 @@ Implementation (PLAN 0.13):
 | dirtyTiles | list of 64×64 tiles: `owner u16[]`, `controller u16[]`, `flags u8[]` | changed tiles only |
 | nations | per nation: color, stats row (gold, income, mil size, land, …), flags. As built: a row for every nation, the destroyed ones too, with `living` (a destroyed nation has no capital flag) and `founded` (a nation founded in the game: its flag is made, PLAN 2.15c). The view keeps of the nations what the last snapshot says and nothing else: a world loaded into a running game can have fewer nations (PLAN 2.7q) | 100s × 64 B, when changed |
 | formations | all land formations, fleets, air wings: id, nation, kind, x, y (f64), prevX, prevY, facing, strength, maxStrength, org, state bits | ~4k × 48 B |
-| elements | **only** for formations intersecting the subscribed bbox when tier ≥ T1.5: type, strength, x, y, prevX, prevY, facing, state. As built (`SnapshotElements`): id, formation, nation, the atlas frame of the unit's class, strength, size (the units of the element when whole, since PLAN 2.10b), x, y, prevX, prevY, facing, the formation's flags (moving, engaged) | ≤ 40k × 32 B |
+| elements | **only** for formations intersecting the subscribed bbox when tier ≥ T1.5: type, strength, x, y, prevX, prevY, facing, state. As built (`SnapshotElements`): id, formation, nation, the atlas frame of the unit's class, strength, size (the units of the element when whole, since PLAN 2.10b), x, y, prevX, prevY, facing, the formation's flags (moving, engaged), and `hit`: fired at since the snapshot before, by anything, from anywhere (PLAN 3.6e5, ADR-167; §8) | ≤ 40k × 32 B |
 | events | ring slice since the last ack, filtered by bbox/tier for spatial events (fire, death, explosion), global events always included | bounded ring |
 | derived | label curves, map-mode textures (throttled, optional) | when changed |
 
@@ -236,10 +236,13 @@ proleptic Gregorian, so 1938 = 8760 ticks and 1940 = 8784 (`src/shared/calendar.
 ```
 Implemented order for the 1938 world (`src/sim/sim.ts`, review after PLAN 1.25):
 buff expiry → strategic AI (weekly per nation) → operational AI (6-hourly, daily per nation) →
-production (daily) → economy (monthly) → combat efficiency (monthly) → supply (12-hourly
-network, hourly use) → movement → engagement and combat (incl. Major Battles) → territory →
-capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) → statistics sampling
-(monthly, last, PLAN 1.34b). History events are recorded as they are emitted (PLAN 1.34a). The average tick is
+production (daily) → research (daily) → economic AI (monthly, before the economy charges the
+month) → economy (monthly) → combat efficiency (monthly) → supply (12-hourly network, hourly
+use) → repatriation (daily) → movement → the retreat → engagement and combat (incl. Major
+Battles) → org lost to the hour's losses → territory → capitals → wars (daily) → alliances,
+puppets, revolts, collapse (monthly) → statistics sampling (monthly, last, PLAN 1.34b). (Research,
+the economic AI, repatriation, the retreat and the org loss were missing from this line until
+the review of Phase 3, PLAN 3.7b.) History events are recorded as they are emitted (PLAN 1.34a). The average tick is
 1.0 ms over the first 5 years of seed 99 and 1.9 ms in its war-heavy first year (Node, M; budget
 1.5 ms, PLAN 7.1; measured after PLAN 1.42a). The main costs in that first year are combat
 (~35%), A* for AI orders (~28%), the supply flood over warring blocs (~15%) and territory (~10%).

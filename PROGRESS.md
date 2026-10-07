@@ -8340,3 +8340,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   were not taken again.
 - **Next:** PLAN 3.7 (the Phase 3 review: SPEC drift, PARITY, one `sweep:quick`, the tags'
   question of ADR-164 and ADR-166; then the critic is due).
+
+## 2026-10-07 — PLAN 3.7: the Phase 3 review, split; 3.7b, SPEC re-read for drift
+
+- **Split** in six parts, as PLAN 2.11 was (`d7133bf`): the eighth independent read (3.7a),
+  SPEC and dead code (3.7b), the watch lists (3.7c), the tags' question (3.7d), the smoke run
+  after the sim's tasks (3.7e), PARITY last (3.7f).
+- **3.7a begun:** the reader is at work on the 36 files changed since `dae7824`, with the
+  brief of the seventh read and nothing of what changed or why.
+- **3.7b done:** ADR-143 to ADR-167 looked for in SPEC, and §5.2 step 4, §7 and §8 read
+  beside the code. Two passages had drifted: the implemented tick order of §2.5 (research,
+  the economic AI, repatriation, the retreat and the org loss were not in it) and the
+  elements row of §2.4 (`hit`). No dead code among the 64 exports added in the phase.
+- **Not done:** SPEC's measured numbers were not measured again.
+- **Next:** PLAN 3.7a (the reader's findings, checked here), then 3.7c and 3.7d.
