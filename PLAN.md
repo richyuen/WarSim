@@ -4262,7 +4262,7 @@ quick sweep as a smoke test.
   smoke run are in PROGRESS (3.7e); none failed, nothing is in BLOCKERS for it, no constant
   was tuned. The count of numbered tasks for the next review pass starts again here. Next by
   PROMPT step 2a: the critic.
-- [ ] 3.8 Critic R3-B4 (report of 2026-10-07 on `a6f63ef`): no war inside one realm or one
+- [x] 3.8 Critic R3-B4 (report of 2026-10-07 on `a6f63ef`): no war inside one realm or one
   alliance. What the critic saw, seed 3301: on 6 March 1938 the United Kingdom, leading the
   Anglo-French Entente, declared war on French West Africa, a puppet of France, its ally;
   seven French puppets (French Equatorial Africa, Madagascar, Morocco, Tunisia, Syria,
@@ -4357,7 +4357,13 @@ quick sweep as a smoke test.
       struck from the war by the steps of ADR-179 (it was no longer a leader: an ally of it
       among the attacker's puppets struck it). `tests/unit/puppetDefended.test.ts`, failed
       first. The pin did not move.
-  - [ ] 3.8f Who joins a war on a rebel (the critic: the parent's war, not the alliance's
+  - [x] 3.8f *Done 2026-10-07 (ADR-184):* a war of independence is the two realms'.
+    `declareWar(…, alone)` calls no alliance and no guarantor for the holder's war on its
+    rebels (`spawnRebels`, the area that joins a rebel state) and for a risen puppet's on its
+    overlord. `tests/unit/rebelWars.test.ts` (failed first: 30 attackers on a rebel of France).
+    The pin did not move. The full suite found `zoomDemo1938`'s scene moved by an earlier part:
+    its seed is 1946 (ADR-185). As it was:
+    Who joins a war on a rebel (the critic: the parent's war, not the alliance's
     30 nations). A decision, then the tick of 3.8 with the full gate.
 - [ ] 3.9 Critic R3-B2, the part that is not balance: one event does not hand two thirds of
   the largest nation's land to a rebel province. What the critic saw, seed 6021 in the

@@ -208,7 +208,7 @@ function revolt(world: World, p: number, holder: number): number[] {
   if (rising !== 0) {
     defect(world, area, holder, rising, EventKind.RevoltSpawned);
     for (const q of area) world.provinces.core[q] = rising;
-    if (!world.wars.atWar(holder, rising) && !world.wars.inTruce(holder, rising, world.tick)) declareWar(world, holder, rising);
+    if (!world.wars.atWar(holder, rising) && !world.wars.inTruce(holder, rising, world.tick)) declareWar(world, holder, rising, true);
     return area;
   }
   // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
@@ -404,6 +404,6 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   // A revolt is a war of independence (AoC; PLAN 1.40 tuning): rebels keep their land only by
   // winning it. (Half of the revolts used to start in peace and stayed independent for good: the
   // 50-year sweep counted 300–600 nations.)
-  if (war) declareWar(world, holder, id);
+  if (war) declareWar(world, holder, id, true);
   return id;
 }

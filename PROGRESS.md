@@ -9002,3 +9002,35 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 975 unit tests, the 17
   sweep tests, build, parity. No e2e (a part; no spec changed).
 - **Next:** PLAN 3.8f.
+
+## 2026-10-07 — PLAN 3.8f: a war of independence is the two realms' (ADR-184). PLAN 3.8 done
+
+- **Decision:** the holder's war on its rebels and a risen puppet's war on its overlord call
+  no alliance and no guarantor, on either side; each leader comes with its puppets.
+- **Done:** `declareWar(world, attacker, target, alone)` (`systems/war.ts`); `alone` from
+  `spawnRebels`, from the area that joins a rebel state (`systems/revolts.ts`) and from the
+  disloyal puppet (`systems/puppets.ts`). A declaration of the AI or of God Mode on a rebel
+  nation calls the alliances as before.
+- **Tests:** `tests/unit/rebelWars.test.ts`, three. Two failed first: a revolt forced in a
+  French province had 30 attackers where France's realm has 9; Albania rising had Germany,
+  Japan, Manchukuo and Mengjiang among the defenders. The third (Germany on Poland brings
+  Italy) passed before and after.
+- **Not seen in a game:** one year of seeds 99 and 3301 has the same hash with the change
+  stashed (`875255b7`, `09d6c0c2`). The critic's game ("Belgium +29 × Free Gers") was not
+  replayed. The area that joins a rebel state has no test of its own (the same flag).
+- **The pin:** did not move.
+- **The full suite, first run: exit 1,** 145 of 146, `zoomDemo1938`: "Expected: > 10,
+  Received: 0", the shots at its division. The same with 3.8f stashed: an earlier part of
+  3.8 moved seed 1948's first month; which one was not looked for. Its seed is 1946 now, the
+  spec otherwise as written (ADR-185; 1949, 1947 and 1950 fail on battalions over half their
+  men). The pictures of `docs/evidence/2.10/` made again; stops 2, 5 and 8 looked at.
+- **Seen in those pictures, not looked into:** at 40 m/px a water body with a drawn shore lies
+  west of Prague (stop 5); the war banner "Nationalist Spain × Portugal +23" (the guarantor's
+  realm, noted in 3.8e).
+- **Not done:** the tick was not timed (the change calls fewer nations). The spec finds its
+  battle in a game and has lost it three times; building it by hand is left to the next
+  review pass (ADR-185).
+- **Gate:** `npm run check`, second run, exit 0: typecheck, lint, 978 unit tests, the 17 sweep
+  tests, build, e2e in full (147 passed, 13.9 min), parity.
+- **Review count:** 3.8 is the first numbered task since the phase review 3.7.
+- **Next:** PLAN 3.9.

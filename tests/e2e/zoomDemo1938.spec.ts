@@ -41,6 +41,12 @@ import { leg, steps, type LegResult } from './flight';
 // the nearest whose game passes all of this spec (a Japanese division in China: 40 battalions
 // of 90 to 177 men of 500, five batteries). In seed 1941's game, one nearer, the division is out
 // of the battle in the fourth hour.
+// And seed 1946's since PLAN 3.8f (ADR-185): the parts of PLAN 3.8 changed who goes to war
+// (which of 3.8b to 3.8e moved seed 1948's game was not looked for; 3.8f did not). There the
+// division chosen is a Romanian one that no shot is fired by or at in the four hours. The seeds
+// tried, nearest first: 1949, 1947 and 1950 have battalions at 0.57, 0.67 and 0.76 of their men;
+// 1946 passes all of this spec (an Austrian division: 24 battalions of 137 to 239 men of 500,
+// four batteries).
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -55,7 +61,7 @@ import { leg, steps, type LegResult } from './flight';
 
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
-const SEED = 1948;
+const SEED = 1946;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
 const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;

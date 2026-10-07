@@ -151,7 +151,7 @@ export function puppetSystem(world: World): void {
     }
     if (nc.loyalty[n]! < REVOLT_LOYALTY && nc.autonomy[n]! >= PROTEST_FROM) {
       releasePuppet(world, n, true);
-      declareWar(world, n, o);
+      declareWar(world, n, o, true);
       return;
     }
     const tribute = Math.max(0, TRIBUTE * (1 - nc.autonomy[n]! / 100) * nc.income[n]!);

@@ -569,6 +569,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     guarantors are called too. What refuses a war with the overlord (a war, a truce, a bond)
     refuses the declaration on the puppet. One level: an overlord's own overlord is not asked.
     The puppet named stands as the leaders do: it is never struck as torn.
+  - *A war of independence (PLAN 3.8f, ADR-184):* the holder's declaration on the rebels of a
+    revolt (a new nation, a revived one, the rebel state an area joins) and a risen puppet's on
+    its overlord call no alliance and no guarantor: each leader comes with its puppets only.
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
@@ -626,7 +629,7 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     < 70 ≤ vassal.
   - *Monthly, in this order:*
     1. A puppet above autonomy 90 leaves freely.
-    2. Loyalty < 20 with autonomy ≥ 10 means a revolt and a war of independence.
+    2. Loyalty < 20 with autonomy ≥ 10 means a revolt and a war of independence (the two realms', ADR-184).
     3. Tribute: 25% × (1 − autonomy/100) × gross income goes to the overlord.
     4. Below autonomy 50, integration grows by 4 × (50 − autonomy)/50 a month; at 100 the
        overlord annexes the puppet's land and formations.
@@ -998,7 +1001,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     ADR-103). If the city was the holder's capital, the holder relocates. Its `origin`, which
     names it (§3.4), is the province of its capital's cell (ADR-100, ADR-106). It gets 1–4
     militia divisions, raised where production raises a formation (`spawnPoint`: ADR-104), and
-    50 gold. The holder always declares war on them (PLAN 1.40, ADR-44; it was a 50% chance).
+    50 gold. The holder always declares war on them (PLAN 1.40, ADR-44; it was a 50% chance),
+    with its puppets and without its allies (ADR-184).
     Event `RevoltSpawned`.
   - *Defection and spreading (ADR-47):* a revolt on land whose core nation is alive (and not
     bound to the holder) returns the area to that nation. Otherwise, next to a rebel state it

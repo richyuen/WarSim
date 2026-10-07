@@ -180,8 +180,11 @@ export function leaveBondedWars(world: World, n: number): void {
  * a puppet is one on its overlord (PLAN 3.8e: the puppet used to stand alone): the overlord
  * leads the defenders, the event names it, and the peace is made with it. The puppet's own
  * allies and guarantors are called as before. An overlord's own overlord is not looked at.
+ * `alone`: a war of independence (a holder on its rebels, a puppet that rises on its overlord)
+ * is the two realms', and no alliance or guarantor is called (PLAN 3.8f: an alliance of 30 went
+ * to war with one rebel province).
  */
-export function declareWar(world: World, attacker: number, target: number): War | null {
+export function declareWar(world: World, attacker: number, target: number, alone = false): War | null {
   const nc = world.nations.cols;
   if (whyNotWar(world, attacker, target) !== Refusal.None) {
     world.out.emit(world.tick, EventKind.WarRejected, attacker, target, NaN, NaN);
@@ -205,13 +208,15 @@ export function declareWar(world: World, attacker: number, target: number): War 
   };
   add(ATTACKERS, defender, attacker);
   add(DEFENDERS, attacker, defender);
-  for (const m of allies(defender)) add(DEFENDERS, attacker, m);
-  for (const g of al.guarantorsOf(defender)) add(DEFENDERS, attacker, g);
-  if (target !== defender) {
-    for (const m of allies(target)) add(DEFENDERS, attacker, m);
-    for (const g of al.guarantorsOf(target)) add(DEFENDERS, attacker, g);
+  if (!alone) {
+    for (const m of allies(defender)) add(DEFENDERS, attacker, m);
+    for (const g of al.guarantorsOf(defender)) add(DEFENDERS, attacker, g);
+    if (target !== defender) {
+      for (const m of allies(target)) add(DEFENDERS, attacker, m);
+      for (const g of al.guarantorsOf(target)) add(DEFENDERS, attacker, g);
+    }
+    for (const m of allies(attacker)) add(ATTACKERS, defender, m);
   }
-  for (const m of allies(attacker)) add(ATTACKERS, defender, m);
   // Nobody but the two leaders stands against a nation it has a bond with (PLAN 3.8c): a nation
   // torn between the sides stays out, with its puppets. In three steps, each on what the one
   // before left: who has a bond with the enemy's leader (a guarantor of the defender that is the

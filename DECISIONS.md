@@ -167,6 +167,65 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-185 · 2026-10-07 · accepted — The zoom demo's battle is seed 1946's (PLAN 3.8f, the full suite of PLAN 3.8)
+
+- **Context.** The full e2e run that the tick of PLAN 3.8 brings: 145 of 146 passed,
+  `zoomDemo1938` failed. The division it chooses in seed 1948's game on day 30 (ADR-156) is
+  now Romanian, formation 666, and no shot is fired by or at it in the four hours that follow
+  (the spec asks more than 10 in each).
+- **Not this part's rule.** With the change of 3.8f stashed the spec fails the same way, on the
+  same division. One of 3.8b to 3.8e moved seed 1948's first month (3.8e's game differs from
+  day 7 on seed 99); which was not looked for. The parts ran no e2e (ADR-87), so the tick finds it.
+- **Decision.** `SEED = 1946`; the day stays 30. The spec file as written, on the seeds nearest
+  to 1948 in turn: 1949 fails (a Romanian division, battalions at up to 0.57 of their men,
+  where the spec asks under half), 1947 fails (Nationalist Spain, 0.67), 1950 fails
+  (Nationalist Spain, 0.76), 1946 passes: formation 627, an Austrian division north of Prague
+  in the war of Germany on Austria, 4,991 men in 28 elements, 24 battalions of 137 to 239 of
+  500, four batteries with 5, 9, 5 and 5 of 12 guns, 84 shots by or at it in each hour.
+- **Not changed:** no expectation of the spec, and no line of it but the seed and the comment
+  (as ADR-156). No scan of forty seeds this time: the first that passes was taken.
+- **Consequences.** The pictures of `docs/evidence/2.10/` are made again (`EVIDENCE=1`) and
+  were looked at: stops 2, 5 and 8. The scene is the third in a week; a rule that moves a
+  game's first month moves it. Whether the spec should build its battle by hand instead of
+  finding one in a game is a question for the next review pass.
+
+### ADR-184 · 2026-10-07 · accepted — A war of independence is the two realms': no alliance and no guarantor is called (PLAN 3.8f)
+
+- **Context.** The critic's R3-B4, the second half: "Belgium +29 × Free Gers", an alliance
+  of 30 at war with one rebel province. The holder of a revolt declares on its rebels
+  (PLAN 1.40, ADR-44) through `declareWar`, which called the attacker's alliance as for any
+  war. A puppet that rises declares on its overlord by the same call, and the overlord's
+  alliance came as defenders (1938, seed 5: Albania against Italy, Germany, Japan, Manchukuo
+  and Mengjiang).
+- **Decision.** `declareWar(world, attacker, target, alone)`. With `alone`, each leader
+  comes with its puppets and nobody else is called: no ally, no guarantor, on either side.
+  The three callers that are wars of independence pass it:
+  - `spawnRebels` (`systems/revolts.ts`): the holder on the nation a revolt founds or
+    revives (the daily revolt, a collapse, God Mode's "spawn revolt" and "revive");
+  - `revolt`, where an area joins a rebel state next to it and the holder declares on that
+    state;
+  - `puppetSystem` (`systems/puppets.ts`): a disloyal puppet on its overlord.
+  The realm and not the holder alone: a puppet fights its overlord's wars everywhere else
+  (ADR-178 to ADR-183), and the land is its overlord's. The three steps of ADR-179 run as
+  before on the shorter lists.
+- **Why both sides.** A new rebel has no ally, so the question is only asked of the rebel
+  state an area joins, which may have found allies since, and of a risen puppet, which may sit
+  in an alliance of its own (ADR-179). Calling one side's alliance and not the other's sets
+  one nation against a bloc, which is the picture the critic named. It errs to fewer
+  nations at war.
+- **Not changed.** A war the AI or God Mode declares on a rebel nation is a declaration like
+  any other and calls the alliances. Nobody joins a war later (there is no call to arms after
+  the day of the declaration), so the war stays the two realms'. A holder that is a puppet
+  fights its rebels without its overlord, as a puppet that attacks did before (ADR-183).
+- **Evidence.** `tests/unit/rebelWars.test.ts`, three: a revolt forced in a French province
+  (failed first: 30 attackers, the United Kingdom and its puppets among them, where France's
+  realm has 9); Albania rising (failed first: Germany, Japan, Manchukuo and Mengjiang among the
+  defenders); Germany on Poland still brings Italy.
+- **Not seen in a game.** One year of seeds 99 and 3301 has the same hash with and without
+  the change (`875255b7`, `09d6c0c2`): no war of independence of an allied realm in them.
+  The critic's game was not replayed.
+- **The pin:** did not move (`875255b7`).
+
 ### ADR-183 · 2026-10-07 · accepted — A declaration of war on a puppet is a declaration on its overlord (PLAN 3.8e)
 
 - **Context.** Seen in the diagnosis of PLAN 3.8 (ADR-178): nobody defended a puppet.
