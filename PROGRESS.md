@@ -7732,10 +7732,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **From 3.5b:** `mayReach` and the planner's line that fills `reached` each say that the
   other is the same test.
 - **Gotchas:**
-  - Lithuania's tag is `LIT`; `nationId` of a tag that is not one gives 0 and no error
-    (the first run of the test had a war with nobody).
-  - `declareWar` by command did not begin a war of Germany on Lithuania in the test's
-    world (not looked into: the test begins it with `wars.start`, as the 3.5b test does).
+  - Lithuania's tag is `LIT`; `nationId` of a tag that is not one gives 0 and no error.
+    The test's first run declared war on nation 0 by command: nothing began, and
+    `wars.between` gave null. (*Corrected after the commit:* this entry said that
+    `declareWar` did not begin a war of Germany on Lithuania. It was never tried with the
+    right tag; the test begins its war with `wars.start`, as the 3.5b test does. No defect
+    of the command is known.)
   - A Python script in a Bash heredoc failed once more, on an apostrophe (memory has the
     rule).
 - **Not done:** the rest are not ordered after the armour in the plan that sends it;
@@ -7751,4 +7753,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   ("rich through 1940 and 1941") was read on two days, and France is rich on both. It is
   read on the first day of each month now; no expectation changed, and France is in the
   check of 1944 and passes it. ADR-153 has the argument.
+- **Added after the commit** (`6eca872`): the second gate, on the tree as committed, was
+  green (code, with the ten-year tests: 879 unit, 15 of the sweep stage; e2e left out, a
+  part with no spec changed: the three specs were the run by hand above).
 - **Next:** PLAN 3.5d (the mix).
