@@ -4435,12 +4435,17 @@ quick sweep as a smoke test.
     than 60 cells apart (no formation of the one is ordered to the other), and the
     operational AI's tick of years 1 and 2 of seed 4242 and year 8 of seed 8128 before and
     after, with the orders beyond the range (now 0). Look at a front of 1938 after a year
-    (a picture): the front is still manned.
+    (a picture): the front is still manned, and where a nation has a near front and a far
+    one, the near one is not stacked while the far one starves (if it is: a part of its
+    own, moving formations between theatres in bulk; 3.10c1 stays). The ADR is a correction:
+    the comment on `DEPLOY_RANGE_CELLS` has always said the range is to the sector.
   - [ ] 3.10c2 What is left of the operational AI after 3.10c1, if it is still the tick's
     first system: the steps before the orders are 0.13 to 0.37 ms a tick (the most where a
     planner has up to 881 sectors, seed 8128), and 476 to 3,690 orders a year are refused
     by `orderMove` after the reach test passed them (1 to 12 % of the orders' time, and a
-    formation that is refused is asked again the next day).
+    formation that is refused is asked again the next day). That `findPath` has nothing
+    left to give is read from its comments, not measured: before it is said, count the cells
+    a long search opens and how wide its corridor of provinces is.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
