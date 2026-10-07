@@ -3,7 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { FLAME_MS, HULL_LIFE_MS } from '../../src/render/fx/hulls';
-import { figureCells, figureCount, figureOffsets, gridSide } from '../../src/render/units/individuals';
+import { figureCells, gridSide } from '../../src/render/units/individuals';
 import { turretOf } from '../../src/shared/unitLooks';
 import { armourLosses } from '../helpers/armourLosses';
 
@@ -11,8 +11,9 @@ import { armourLosses } from '../helpers/armourLosses';
 // fired at in that hour and left behind where it had not (a breakdown, attrition). Ground where
 // armour loses tanks is found in Node, once under fire and once without, the camera is put on
 // it at T3, and the hours are stepped one by one: each hour's new hulls are the figures that
-// the view's elements of tanks had before it and have no more, each on its figure's place, and
-// the strengths are the sim's.
+// the view's elements of tanks had before it and have no more, and the strengths are the sim's.
+// A hull's place is read from the frame before the step (PLAN 3.6e2): where the view had drawn
+// the figure that is gone, not the view's expression for it computed a second time.
 
 const FIRST_DAY = 14;
 const LAST_DAY = 120;
@@ -75,6 +76,10 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
     const elements = (): { id: number; strength: number; size: number; frame: number; x: number; y: number; facing: number }[] =>
       Array.from(v.elementId, (id, i) => ({ id, strength: v.elementStrength[i]!, size: v.elementSize[i]!, frame: v.elementFrame(i), x: v.elementX[i]!, y: v.elementY[i]!, facing: v.elementFacing(i) }));
     const before = elements();
+    // The frame before the step: the figures of the snapshot in hand, an element's in their order.
+    // They are built in a frame, and an hour without a loss has drawn none here.
+    v.drawUnitLayers(performance.now());
+    const stood = Array.from({ length: v.individualCount }, (_, j) => ({ id: v.individualOwner[j]!, x: v.individualX[j]!, y: v.individualY[j]! }));
     const had = new Set(v.hulls.hulls);
     await window.__warsim!.sim.step(1);
     await new Promise<void>((done) => {
@@ -95,6 +100,7 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
     const c = document.querySelector('canvas')!;
     return {
       before,
+      stood,
       after: elements(),
       fresh: fresh.map((h) => ({ element: h.element, figure: h.figure, x: h.x, y: h.y, born: h.born, cells: h.cells, frame: h.frame, burns: h.burns })),
       sameBirth: fresh.every((h) => h.born === born),
@@ -108,17 +114,19 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
     };
   }, { tick, flameMs: FLAME_MS, lifeMs: HULL_LIFE_MS });
 
-  /** The hulls an hour must bring: the figures its elements of tanks in both snapshots have lost, where they stood. */
+  /**
+   * The hulls an hour must bring: the figures its elements of tanks in both snapshots have lost,
+   * each where the frame before the step had it. A tank is a figure, and a loss takes the last.
+   */
   const wanted = (got: Awaited<ReturnType<typeof hour>>): Hull[] => {
     const now = new Map(got.after.map((e) => [e.id, e]));
     const out: Hull[] = [];
     for (const e of got.before) {
       const a = now.get(e.id);
       if (!a || turretOf(e.frame) < 0) continue;
-      const side = gridSide(e.frame, figureCount(e.size, e.size));
-      const had = figureCount(e.strength, e.size);
-      const off = figureOffsets(e.id, side, had, e.facing);
-      for (let k = figureCount(a.strength, a.size); k < had; k++) out.push({ element: e.id, figure: k, x: e.x + off[k * 2]!, y: e.y + off[k * 2 + 1]!, born: 0 });
+      const own = got.stood.filter((g) => g.id === e.id);
+      expect(own.length, `figures of ${e.id} in the frame before the step`).toBe(e.strength);
+      for (let k = a.strength; k < own.length; k++) out.push({ element: e.id, figure: k, x: own[k]!.x, y: own[k]!.y, born: 0 });
     }
     return out;
   };

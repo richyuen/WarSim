@@ -3753,9 +3753,13 @@ quick sweep as a smoke test.
       minute of the tick, at every zoom (`FireFx.add`). `fireFx.test.ts` 17 → 18, one
       restated (a cannon's start). `muzzles1938.spec.ts` now expects it: 25 of 25 turrets on
       the line (15 before, the furthest 0.26 rad off). Picture at 1.5 m/px looked at.
-    - [ ] 3.6e2 **The hull's place, read from the frame** (from 3.6d): `burning1938.spec.ts`
+    - [x] 3.6e2 **The hull's place, read from the frame** (from 3.6d): `burning1938.spec.ts`
       expects each hull on the figure that is gone, from `individualX`, `individualY` of the
       frame before the step. No view code.
+      **Done 2026-10-07.** The spec draws a frame before each step, reads the figures, and
+      expects an element of tanks to have as many as its strength and each hull on the last
+      of them, to nine places. `figureOffsets` and `figureCount` are gone from the spec.
+      7 hulls of 7 burning and 20 of 20 left behind, as before.
     - [ ] 3.6e3 **A division of tanks at T2, 300 to 100 m/px** (from 3.6a): a picture first,
       then the answer in DECISIONS. A mark, if one is needed, is a part of its own.
     - [ ] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,

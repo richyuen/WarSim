@@ -8211,3 +8211,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `start - TURN_MS` is not `now` to the last bit (179.9999999999999): the unit
   test compares to nine places, and the spec draws 1 ms after the start.
 - **Next:** PLAN 3.6e2 (the hull's place, read from the frame).
+
+## 2026-10-07 — PLAN 3.6e2: the hull's place, read from the frame
+
+- **Done:** `burning1938.spec.ts` only. Before each step it draws a frame
+  (`drawUnitLayers`: the figures are built in a frame, and an hour without a loss drew none)
+  and reads `individualOwner`, `individualX`, `individualY`. An element of tanks must have
+  as many figures as its strength, and each hull of the hour must be on one of the last of
+  them, to nine places. The spec no longer imports `figureOffsets` or `figureCount`. No
+  view code; the pin did not move.
+- **Spec by hand** (`--project=chromium`): `burning1938`, 2 tests, green, 37 s. The counts
+  are those of 3.6d: 7 hulls for 7 tanks lost under fire, all burning; 20 for 20 on a march,
+  none burning; 240 and 200 element-hours compared with the sim.
+- **Not shown:** that the test fails when a hull is off its figure (the view was not broken
+  to try it). No picture looked at: nothing drawn has changed.
+- **Next:** PLAN 3.6e3 (a division of tanks at T2, 300 to 100 m/px: a picture first).

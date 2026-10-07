@@ -236,6 +236,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - A game loaded into this one at a later tick: the clock has not gone back, and an id
     that has the same formation, frame and size in both worlds with fewer tanks in the new
     one leaves hulls for the difference, once.
+- **The place, checked on its own (PLAN 3.6e2, 2026-10-07):** `burning1938.spec.ts` no
+  longer computes a hull's place with `figureOffsets`. It reads the figures the view had
+  built for the frame before the step (`individualX`, `individualY`, an element's in their
+  order) and expects each hull on the figure that is gone, to nine places. No view code.
 - **Not done:** a hull does not block or hide anything, and figures drive over it; at T2 no
   hull (an element's sprite is 5 px there, a hull would be less than one); the wreck of an
   element's end at T3 is still the T2 mark at 30 px, not a hull.
