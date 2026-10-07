@@ -3777,6 +3777,11 @@ quick sweep as a smoke test.
       none); pictures at 300, 200 and 100 m/px at one device pixel a CSS px, beside those of
       3.6e3, looked at: a tank division told from a rifle division of the same army
       without its tag, or said that it cannot be.
+      Before choosing the band of the handover: 3.6e3 took no picture that was looked at
+      at 60 or 40 m/px at one device pixel (8.5 and 12.7 px), so where a hull first reads
+      there is not known (ADR-159 says "about 40 m/px", unconfirmed). Take those two first.
+      And `turrets1938.spec.ts` counts turrets at 60 m/px: a band that reaches there moves
+      its numbers.
     - [ ] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,
       if the ground has it, both kinds of hull in one view; pictures; PARITY. Ticks 3.6e and
       3.6 (the full e2e).
