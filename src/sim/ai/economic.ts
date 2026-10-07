@@ -24,11 +24,18 @@
  *    order plus RESERVE_MONTHS of income. (Critic B1, 2026-10-03: one order at a time for
  *    everybody meant ~36 divisions a year worldwide; armies never recovered from a war and the
  *    great powers sat on unspent treasuries.) Mix: poor nations
- *    (income < POOR_INCOME) raise cadre divisions; against armour-heavy enemies (≥ ARMOUR_HEAVY of
- *    their elements are tanks) motorised divisions (AT and heavy guns); rich nations at war add a
- *    armoured division every third order, the best of `mix.armour` whose techs they know and
- *    whose price, with the reserve, they have (PLAN 3.1c: the division of 1938 until the medium
- *    tank of 1941 is known, and so on); infantry divisions otherwise. An order the treasury
+ *    (income < POOR_INCOME) raise cadre divisions. A nation with less of its army's upkeep in
+ *    tanks than it wants (`armourWanted`: none up to RICH_INCOME, rising with the income to
+ *    ARMOUR_SHARE_MAX; the army with the orders in training, each order counted as it is
+ *    made) orders an armoured division, in peace as at war: the best of `mix.armour` whose
+ *    techs it knows (PLAN 3.1c: the division of 1938 until the medium tank of 1941 is known,
+ *    and so on). Short of its price with the reserve it saves, and orders nothing more that
+ *    month, while it has an order in training; with none in training it orders the best it
+ *    has the gold for. Its other orders are motorised
+ *    divisions (AT and heavy guns) at war against armour-heavy enemies (≥ ARMOUR_HEAVY of their
+ *    elements are tanks), infantry divisions otherwise. (PLAN 3.5d: before, armour was every
+ *    third order of a rich nation at war and none against an armour-heavy enemy, so the tanks'
+ *    share of a great power's army fell with every year of a game.) An order the treasury
  *    cannot pay for now is replaced by the infantry division if that one can be paid (critic B1,
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  *    So is one whose techs the nation does not know (PLAN 3.1a).
@@ -74,6 +81,22 @@ export const MAX_PARALLEL = 6;
 export const POOR_INCOME = 20;
 export const RICH_INCOME = 200;
 export const ARMOUR_HEAVY = 0.2;
+/**
+ * The most of its army's upkeep a nation wants in tanks (PLAN 3.5d): one armoured division of
+ * 1938 among eight divisions is 0.29 (SPEC §4, the random world's armies), and Britain's and
+ * France's armies of 1938 have 0.32 and 0.31.
+ */
+export const ARMOUR_SHARE_MAX = 0.3;
+/** The income from which a nation wants ARMOUR_SHARE_MAX: the five richest of 1938 have it. */
+export const ARMOUR_FULL_INCOME = 1000;
+
+/**
+ * The share of its army's upkeep that a nation of this monthly income wants in tanks (PLAN
+ * 3.5d): none up to RICH_INCOME, then rising in a line to ARMOUR_SHARE_MAX at ARMOUR_FULL_INCOME.
+ */
+export function armourWanted(income: number): number {
+  return ARMOUR_SHARE_MAX * Math.min(1, Math.max(0, (income - RICH_INCOME) / (ARMOUR_FULL_INCOME - RICH_INCOME)));
+}
 
 export interface BuildMix {
   infantry: number;
@@ -101,19 +124,25 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     const army = new Map<number, number>();
     /** Upkeep the orders in training will add. */
     const training = new Map<number, number>();
+    /** The tanks' part of the army's upkeep, the orders in training with it. */
+    const tanks = new Map<number, number>();
     world.formations.forEach((id) => {
       const n = f.nation[id]!;
       const l = own.get(n) ?? [];
       l.push(id);
       own.set(n, l);
-      army.set(n, (army.get(n) ?? 0) + upkeepOf(world, id));
+      const u = upkeepOf(world, id);
+      army.set(n, (army.get(n) ?? 0) + u);
+      tanks.set(n, (tanks.get(n) ?? 0) + armourOf(id) * u);
     });
     const pending = new Map<number, number>();
     const upkeepOfTemplate = (t: number): number => (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0)) || 0;
     world.production.forEach((id) => {
       const n = world.production.cols.nation[id]!;
+      const t = world.production.cols.template[id]!;
       pending.set(n, (pending.get(n) ?? 0) + 1);
-      training.set(n, (training.get(n) ?? 0) + upkeepOfTemplate(world.production.cols.template[id]!));
+      training.set(n, (training.get(n) ?? 0) + upkeepOfTemplate(t));
+      tanks.set(n, (tanks.get(n) ?? 0) + (tables.templateArmour[t] ?? 0) * upkeepOfTemplate(t));
     });
     const restless = restlessNations(world);
     const acc = monthlyAccounts(world, tables);
@@ -139,6 +168,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           destroyFormation(world, id);
           balance += u;
           army.set(n, (army.get(n) ?? 0) - u);
+          tanks.set(n, (tanks.get(n) ?? 0) - armourOf(id) * u);
           cut++;
         }
         if (cut > 0) world.out.emit(world.tick, EventKind.FormationsDisbanded, n, cut, NaN, NaN);
@@ -154,10 +184,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME));
       // The orders in training count as army already, and against the balance.
       let upkeep = (army.get(n) ?? 0) + (training.get(n) ?? 0);
+      let inTanks = tanks.get(n) ?? 0;
       balance -= training.get(n) ?? 0;
       for (let k = pending.get(n) ?? 0; k < slots; k++) {
         if (upkeep >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * nc.aggression[n]!) / 100)) * income) return;
-        let t = pickTemplate(world, n, income, atWar, mix);
+        let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0);
+        // It saves for its armour: no order more this month.
+        if (t < 0) return;
         let rule = world.rules.templates[t]!;
         const plain = world.rules.templates[mix.infantry];
         if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
@@ -179,6 +212,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         nc.builds[n] = nc.builds[n]! + 1;
         balance -= newUpkeep;
         upkeep += newUpkeep;
+        inTanks += (tables.templateArmour[t] ?? 0) * newUpkeep;
       }
     });
   };
@@ -217,22 +251,29 @@ function restlessNations(world: World): Set<number> {
   return out;
 }
 
-function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix): number {
-  if (income < POOR_INCOME) return mix.cadre;
-  if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;
-  if (atWar && income >= RICH_INCOME && (world.nations.cols.builds[n] ?? 0) % 3 === 2) return bestArmour(world, n, income, mix);
-  return mix.infantry;
-}
-
 /**
- * The first of `mix.armour` (the best first) that `n` knows the techs of and has the gold for,
- * the reserve kept; with the gold for none, the best it knows; knowing none, the last.
+ * The next order of `n`, whose army (the orders in training with it) has `armour` of its upkeep
+ * in tanks; `busy`: it has an order in training. -1: none, it saves for its armour.
+ *
+ * A nation that wants armour orders the best armoured division of `mix.armour` (the best
+ * first) that it knows the techs of. Short of that one's price with the reserve, a busy nation
+ * orders nothing (PLAN 3.5d: an army's upkeep costs the same gold in armour as on foot, and a
+ * treasury that buys the infantry division whenever it has its price never has the price of
+ * an armoured one); one with nothing in training orders the best it has the gold for, and with
+ * the gold for none the best it knows, which the caller replaces by infantry (PLAN 1.42c: the
+ * queue does not stand empty). Knowing none, its order is what it would be with armour enough.
  */
-function bestArmour(world: World, n: number, income: number, mix: BuildMix): number {
-  const templates = world.rules!.templates;
-  const known = mix.armour.filter((t) => templates[t] !== undefined && knowsTechs(world, n, templates[t]!.techs));
-  const gold = world.nations.cols.gold[n]!;
-  return known.find((t) => gold >= templates[t]!.gold + RESERVE_MONTHS * income) ?? known[0] ?? mix.armour[mix.armour.length - 1]!;
+function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix, armour: number, busy: boolean): number {
+  if (income < POOR_INCOME) return mix.cadre;
+  if (armour < armourWanted(income)) {
+    const templates = world.rules!.templates;
+    const known = mix.armour.filter((t) => templates[t] !== undefined && knowsTechs(world, n, templates[t]!.techs));
+    const gold = world.nations.cols.gold[n]!;
+    const pays = (t: number): boolean => gold >= templates[t]!.gold + RESERVE_MONTHS * income;
+    if (known.length > 0) return busy ? (pays(known[0]!) ? known[0]! : -1) : (known.find(pays) ?? known[0]!);
+  }
+  if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;
+  return mix.infantry;
 }
 
 /** Share of tank elements among the elements of n's enemies' formations. */

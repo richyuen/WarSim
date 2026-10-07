@@ -1371,10 +1371,21 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Overseas muster (ADR-47):* a nation whose fronts all lie on other landmasses than its
     capital raises new formations in the theatre (nearest own city to the front), an abstraction
     of sealift until PLAN 4.5.
-  - *Build mix:* cadre divisions if income < 20; motorised divisions against armour-heavy
-    enemies (≥ 20% tanks); an armoured division every third order for rich nations (≥ 200) at war,
-    the best it knows the techs of and has the gold for (MBT, heavy, medium of 1941, the
-    division of 1938; PLAN 3.1c); infantry otherwise.
+  - *Build mix* (PLAN 3.5d, ADR-154): cadre divisions if income < 20. A nation wants a share
+    of its army's upkeep in tanks (`armourWanted`): none up to an income of 200, rising in a
+    line to 0.3 at 1,000 (`ARMOUR_SHARE_MAX`, `ARMOUR_FULL_INCOME`). While its army, with the
+    orders in training and each order as it is made, has less (`EconomyTables.templateArmour`
+    of each template, by strength), its order is the best armoured division it knows the
+    techs of (MBT, heavy, medium of 1941, the division of 1938; PLAN 3.1c), in peace as at
+    war. Short of that one's price with the reserve it *saves*: with an order in training
+    it orders nothing more that month; with none it orders the best it has the gold for,
+    infantry at the least (PLAN 1.42c). Its other orders are motorised divisions at war
+    against armour-heavy enemies (≥ 20% tanks) and infantry otherwise; a nation that knows
+    no armoured division orders as one with armour enough.
+    Measured over ten years (`tools/diag/armourMix.ts`; seed 99, seed 7), the tanks' share
+    of the army's upkeep at the end, before → after: GER 3.9 → 29.5 % and 0 → 28.4 %, ENG
+    7.5 → 28.1 and 5.2 → 25.1, USA 30.7 → 31.2 and 20.9 → 27.6, JAP 0 → 13.8 and 0 → 14.7,
+    SOV 28.0 → 22.3 and 15.1 → 14.8, ITA 0.1 → 1.6 and 0.5 → 21.5, FRA 0 → 0 and 3.7 → 10.9.
 - **Peace**: settlement by war score. Terms are cells/provinces up to score, puppet creation,
   and white peace. Broke or exhausted nations sue for peace.
 - **Anti-hegemon dynamics** (long-run requirement): administrative cost rises

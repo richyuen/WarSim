@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { MAX_PARALLEL, PARALLEL_INCOME, RESERVE_MONTHS, SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
+import { ARMOUR_FULL_INCOME, ARMOUR_SHARE_MAX, armourWanted, economicAi, MAX_PARALLEL, PARALLEL_INCOME, POOR_INCOME, RESERVE_MONTHS, RICH_INCOME, SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
 import { RULES_1938 } from '../../src/sim/scenario1938';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { destroyFormation } from '../../src/sim/systems/elements';
+import { queueFormation } from '../../src/sim/systems/production';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -118,10 +119,9 @@ describe('economic AI (PLAN 1.26)', () => {
       const s = peaceful();
       const w = s.world;
       const nc = w.nations.cols;
-      w.wars.set(GER!, LUX!, true); // a rich nation at war: every third order is a panzer division
+      w.wars.set(GER!, LUX!, true); // a rich nation with no armour: its first order is a panzer division (PLAN 3.5d)
       nc.aiOff[LUX!] = 1;
       for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === GER!) destroyFormation(w, id);
-      nc.builds[GER!] = 2; // the next order is the third
       nc.manpower[GER!] = 1e7;
       nc.gold[GER!] = gold(Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!));
       runEvents(s, 1);
@@ -136,5 +136,98 @@ describe('economic AI (PLAN 1.26)', () => {
     expect(order((income) => infantry + RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
     // Not enough for either: nothing.
     expect(order((income) => RESERVE_MONTHS * income)).toEqual([]);
+  });
+});
+
+// PLAN 3.5d: the share of armour a nation wants in its army's upkeep rises with its income, in
+// peace too, and an armoured enemy does not shut its own armour out.
+describe('the mix (PLAN 3.5d)', () => {
+  const FRA = nationId('FRA');
+  const orders = (w: Sim['world'], n: number): number[] => w.production.ids().filter((id) => w.production.cols.nation[id] === n).map((id) => w.production.cols.template[id]!);
+  const clear = (w: Sim['world'], n: number): void => w.formations.ids().filter((id) => w.formations.cols.nation[id] === n).forEach((id) => destroyFormation(w, id));
+  const rich = (w: Sim['world'], n: number): void => {
+    w.nations.cols.gold[n] = 1e7;
+    w.nations.cols.manpower[n] = 1e7;
+  };
+
+  it('the share wanted is none up to RICH_INCOME, rises with the income and ends at ARMOUR_SHARE_MAX', () => {
+    expect(armourWanted(POOR_INCOME)).toBe(0);
+    expect(armourWanted(RICH_INCOME)).toBe(0);
+    let last = 0;
+    for (let income = RICH_INCOME + 50; income <= ARMOUR_FULL_INCOME; income += 50) {
+      expect(armourWanted(income)).toBeGreaterThan(last);
+      last = armourWanted(income);
+    }
+    expect(last).toBeCloseTo(ARMOUR_SHARE_MAX, 9);
+    expect(armourWanted(10 * ARMOUR_FULL_INCOME)).toBe(ARMOUR_SHARE_MAX);
+  });
+
+  it('a rich nation at peace with no armour orders armour first, and infantry once it has its share', () => {
+    const s = peaceful();
+    const w = s.world;
+    clear(w, GER!);
+    rich(w, GER!);
+    expect(w.wars.list).toHaveLength(0);
+    runEvents(s, 1);
+    const got = orders(w, GER!);
+    expect(got.length).toBeGreaterThan(2);
+    expect(got[0]).toBe(PANZER);
+    // One armoured division is over the share of an army of a few divisions: the rest are infantry.
+    expect(got.slice(1).every((t) => t === BUILD_MIX_1938.infantry)).toBe(true);
+  });
+
+  it('a nation with more armour than it wants orders none, at war too', () => {
+    const s = peaceful();
+    const w = s.world;
+    w.wars.set(GER!, LUX!, true);
+    w.nations.cols.aiOff[LUX!] = 1;
+    clear(w, GER!);
+    for (let k = 0; k < 6; k++) addDivision(w, GER!, 500 + k, 300, PANZER);
+    rich(w, GER!);
+    w.nations.cols.builds[GER!] = 2; // the third order of the rule before
+    runEvents(s, 1);
+    const got = orders(w, GER!);
+    expect(got.length).toBeGreaterThan(0);
+    expect(got.every((t) => t === BUILD_MIX_1938.infantry)).toBe(true);
+  });
+
+  it('short of the price of its armour, a nation with an order in training orders nothing more: it saves', () => {
+    const order = (gold: (income: number) => number): number[] => {
+      const s = peaceful();
+      const w = s.world;
+      const nc = w.nations.cols;
+      w.settings.aiEnabled = true;
+      w.nations.forEach((n) => (nc.aiOff[n] = n === GER! ? 0 : 1));
+      w.wars.set(GER!, LUX!, true);
+      clear(w, GER!);
+      rich(w, GER!);
+      expect(queueFormation(w, GER!, BUILD_MIX_1938.infantry)).not.toBe(0);
+      nc.gold[GER!] = gold(Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!));
+      economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938)(w);
+      return orders(w, GER!);
+    };
+    const price = (t: number): number => RULES_1938.templates[t]!.gold;
+    // The price of two infantry divisions and the reserve, and less than the armoured one's.
+    expect(2 * price(BUILD_MIX_1938.infantry)).toBeLessThan(price(PANZER));
+    expect(order((income) => 2 * price(BUILD_MIX_1938.infantry) + RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
+    // With the armoured division's price it is ordered, and the infantry after it.
+    const got = order((income) => price(PANZER) + price(BUILD_MIX_1938.infantry) + RESERVE_MONTHS * income + 1);
+    expect(got.slice(0, 3)).toEqual([BUILD_MIX_1938.infantry, PANZER, BUILD_MIX_1938.infantry]);
+  });
+
+  it('against an armour-heavy enemy a rich nation orders its armour and motorised divisions', () => {
+    const s = peaceful();
+    const w = s.world;
+    w.wars.set(GER!, FRA, true);
+    w.nations.cols.aiOff[GER!] = 1;
+    clear(w, GER!);
+    clear(w, FRA);
+    for (let k = 0; k < 6; k++) addDivision(w, GER!, 500 + k, 300, PANZER);
+    rich(w, FRA);
+    runEvents(s, 1);
+    const got = orders(w, FRA);
+    expect(got[0]).toBe(PANZER);
+    expect(got).toContain(BUILD_MIX_1938.motorised);
+    expect(got).not.toContain(BUILD_MIX_1938.infantry);
   });
 });

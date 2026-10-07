@@ -167,6 +167,85 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-154 · 2026-10-07 · accepted — The mix: a nation wants a share of its army's upkeep in tanks that rises with its income, in peace too, and saves for the armoured division (PLAN 3.5d)
+
+- **Context:** `pickTemplate` gave armour to a rich nation (income ≥ 200) at war, every
+  third order, and none to one whose enemies were armour-heavy (the motorised branch came
+  first). In ten years of seed 99 the tanks' share of the army's upkeep fell from 22.2 to
+  3.9 % for Germany, 32.1 to 7.5 % for Britain, 30.8 to 0 % for France, 12.5 to 0 % for
+  Japan; in seed 7 Germany had no armour formation left in year 10.
+- **Decision** (`ai/economic.ts`):
+  - *The share wanted* (`armourWanted`) is a function of the monthly income alone: none up
+    to `RICH_INCOME` (200), in a line to `ARMOUR_SHARE_MAX` 0.3 at `ARMOUR_FULL_INCOME`
+    1,000. 0.3: one armoured division of 1938 among eight divisions (the random world's
+    armies, SPEC §4) is 0.29 of their upkeep, and Britain's and France's armies of 1938
+    have 0.32 and 0.31. 1,000: the five richest of 1938 (USA, ENG, GER, SOV, FRA) are over
+    it; Japan (837) wants 0.24 and Italy (654) 0.17. Sixteen nations of 1938 are over 200.
+  - *The loop is on upkeep, not on orders:* the tanks' part of the army's upkeep
+    (`templateArmour` × the upkeep of each formation, the orders in training with it, each
+    order of the month as it is made) over the army's. Losses and disbanding move it, and
+    a nation with six slots does not order six armoured divisions in a month.
+  - *Armour first, the answer to armour after:* an order is armour while the share is
+    short; only the orders that are not armour are motorised against an armour-heavy
+    enemy. `nc.builds` is counted still (a saved column) and read by nothing.
+  - *It saves.* Found by the first measurement: with the share alone the mix moved for
+    the United States only. A tally of 72 months of seed 99: Germany wanted armour in 63
+    and had the price of the cheapest it knew in 22, Britain in 58 and 3, Japan in 72 and
+    0. The fallback of PLAN 1.42c (an order the treasury cannot pay for is replaced by
+    infantry) buys an infantry division whenever the treasury is 1,001 over the reserve,
+    so it is never 3,829 over it. An army's upkeep costs the same gold in armour as on
+    foot (200 months of it), so nothing is lost by waiting but time. The rule: short of
+    the price of the best armoured division it knows, a nation with an order in training
+    orders nothing more that month; with none in training it orders the best it has the
+    gold for, infantry at the least. PLAN 1.42c's concern (slots empty for months of a
+    war) is kept so far: the queue is never empty by this rule.
+  - A nation that knows no armoured division orders as one with armour enough
+    (`bestArmour` returned the division of 1938 for it, which the tech check replaced by
+    infantry: the motorised division would have been shut out by its own want of armour).
+- **Tests:** `economicAi.test.ts`, "the mix" (5, three of them red first: at peace with no
+  army Germany's first order is the armoured division and the rest infantry; with six
+  armoured divisions and no other it orders none, at war on its third order; France
+  against six German armoured divisions orders armour and motorised divisions; and one of
+  the saving, red with the saving taken out: with an order in training and the price of
+  two infantry divisions over the reserve, nothing more is ordered). Two tests
+  set `nc.builds = 2` to make "the third order" (`economicAi.test.ts`, PLAN 1.42c;
+  `armourTemplates.test.ts`): the line is gone, a premise of the rule before, and every
+  expectation stands as it was.
+- **Measured** (`tools/diag/armourMix.ts`, ten years; the tanks' share of the army's
+  upkeep in %, by year 0, 2, 4, 6, 8, 10; before → after):
+  - seed 99, GER: 22.2, 11.9, 19.4, 3.1, 0.3, 3.9 → 22.2, 29.3, 27.6, 27.1, 27.7, 29.5.
+    ENG: 32.1, 16.7, 11.7, 8.2, 9.3, 7.5 → 32.1, 27.0, 29.8, 27.6, 29.8, 28.1.
+    USA: 19.5, 3.2, 30.3, 24.4, 29.7, 30.7 → 19.5, 20.5, 27.9, 28.2, 30.0, 31.2.
+    JAP: 12.5, 0, 0, 0, 0, 0 → 12.5, 19.1, 22.1, 16.9, 14.9, 13.8.
+    SOV: 41.3, 35.0, 34.2, 36.3, 31.4, 28.0 → 41.3, 38.1, 36.9, 33.7, 32.0, 22.3.
+    ITA: 7.6, 8.0, 2.4, 0, 0, 0.1 → 7.6, 5.9, 3.5, 2.2, 1.8, 1.6.
+    FRA: 30.8, 0.4, 0, 0, 0, 0 → 30.8, 28.9, 27.6, 0, 0, 0 (another game: France falls in
+    year 5 here, in year 1 before).
+  - seed 7, GER: 22.2, 12.9, 9.6, 5.2, 0.5, 0 → 22.2, 29.3, 28.6, 30.8, 26.7, 28.4. ENG:
+    32.1, 14.6, 10.3, 8.3, 6.1, 5.2 → 32.1, 29.8, 29.9, 30.4, 26.8, 25.1. USA: 19.5, 33.8,
+    19.8, 23.1, 20.9, 20.9 → 19.5, 24.5, 27.1, 29.0, 29.0, 27.6. JAP: 12.5, 0 to the end →
+    12.5, 0, 15.3, 20.6, 17.1, 14.7. SOV: 41.3, 33.2, 28.9, 26.3, 24.5, 15.1 → 41.3, 33.5,
+    31.5, 21.4, 19.0, 14.8. ITA: 7.6, 7.2, 7.0, 3.1, 0.8, 0.5 → 7.6, 4.1, 3.3, 1.8, 0.4,
+    21.5 (of an army of 55 formations, 106 before: Germany's income is 1,791 there and
+    Italy's 628). FRA: 30.8, 20.5, 22.6, 17.0, 6.2, 3.7 → 30.8, 25.5, 21.7, 25.0, 26.1, 10.9.
+  - Armour formations of Germany in year 10: 10 of 163 → 18 of 118, and 0 of 138 → 14 of
+    99. Fewer formations for the same gold.
+- **Consequences:**
+  - The pin: 6252a656 → d3067126.
+  - The tick, five years of seed 99 (pinned, one run): 1.839 → 1.666 ms (budget 1.5);
+    year 1 2.754 → 2.414 (budget 2.4). Another game, not a faster rule.
+  - *Not done, not measured:*
+    - Italy, the Soviet Union and Japan stay under what they want (Italy 1.6 % of 0.17 in
+      seed 99). In the tally of six years Italy wanted armour in all 72 months and had the
+      price in none: it saves and its treasury does not grow. Whether a nation with no
+      surplus should want less is balance (Phase 7).
+    - Which armoured division is bought: one with nothing in training buys the best it
+      has the gold for, so the division of 1938 is bought after 1941 too. Not counted.
+    - A nation at war that saves raises one infantry division at a time while it has
+      less armour than it wants. What that does to a war that goes badly is not measured.
+    - Armies over the cap of peace (35 % × (0.3 + 0.7 × aggression/100) of income) order
+      nothing in peace, armour or other: the cap is untouched (ADR-58).
+
 ### ADR-153 · 2026-10-07 · accepted — Spearheads: where a sector that attacks has armour, the armour marches on the enemy's cell and the rest hold the front cell (PLAN 3.5c)
 
 - **Context:** a sector with 1.5 times its threat sent every formation it had at one enemy

@@ -134,7 +134,7 @@ describe('armour templates (PLAN 3.1c)', () => {
       w.nations.forEach((n) => (nc.aiOff[n] = n === GER ? 0 : 1));
       for (const f of w.formations.ids()) if (w.formations.cols.nation[f] === GER) destroyFormation(w, f);
       nc.manpower[GER] = 1e7;
-      nc.builds[GER] = 2; // a rich nation at war: its third order is armour
+      // A rich nation with no army: its first order is armour (PLAN 3.5d; before, the third at war).
       w.wars.set(GER, id('LUX'), true);
       for (const t of grant) grantTechs(w, GER, RULES_1938.templates[t]!.techs);
       nc.gold[GER] = gold ? gold(Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER]!)) : 1e7;

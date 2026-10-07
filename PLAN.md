@@ -3461,12 +3461,37 @@ quick sweep as a smoke test.
       the front cell of the days after); infantry already on the march at the enemy's cell
       keeps its order (ADR-53), a quarter of those sent to an armour's attack; no armour
       is moved between sectors to where an attack is.
-  - [ ] 3.5d **The mix.** `pickTemplate` asks for armour only at war, every third order,
+  - [x] 3.5d **The mix.** `pickTemplate` asks for armour only at war, every third order,
     and never against an enemy with armour (the motorised branch comes first). The share
     of armour a nation wants rises with its income, in peace too, and the AT answer to an
     armoured enemy does not shut its own armour out.
     AT: unit, failing first; headless 1938: the share of armour in the upkeep of the
     great powers by year, ten years, before and after.
+    **Done 2026-10-07 (ADR-154).**
+    - *The rule* (`ai/economic.ts`): a nation wants `armourWanted(income)` of its army's
+      upkeep in tanks (none to 200, in a line to 0.3 at 1,000); while its army, with the
+      orders in training, has less, its order is the best armoured division it knows, in
+      peace too; the orders that are not armour are motorised against an armour-heavy
+      enemy. Short of the price it saves: nothing more that month while it has an order in
+      training, the best it has the gold for (infantry at the least) with none.
+    - *The saving was not in the plan.* With the share alone only the United States' mix
+      moved: the fallback of PLAN 1.42c buys infantry whenever the treasury is 1,001 over
+      the reserve, so it is never 3,829 over it (of 72 months Germany wanted armour in 63
+      and could pay in 22, Britain 58 and 3, Japan 72 and 0).
+    - *Tests:* `economicAi.test.ts`, "the mix" (5; three red first, the one of the saving red with the saving taken out). `nc.builds = 2` is
+      gone from two tests (the premise "the third order"), no expectation changed.
+    - *Measured* (`tools/diag/armourMix.ts`, the tanks' share of the army's upkeep in year
+      10, before → after; seed 99, seed 7): GER 3.9 → 29.5 % and 0 → 28.4; ENG 7.5 → 28.1
+      and 5.2 → 25.1; USA 30.7 → 31.2 and 20.9 → 27.6; JAP 0 → 13.8 and 0 → 14.7; SOV 28.0
+      → 22.3 and 15.1 → 14.8; ITA 0.1 → 1.6 and 0.5 → 21.5; FRA 0 → 0 (dead in year 5, in
+      year 1 before) and 3.7 → 10.9. Year by year in ADR-154.
+    - *Tick* (five years of seed 99, pinned, one run): mean 1.839 → 1.666 ms, year 1 2.754
+      → 2.414; another game.
+    - *The pin:* 6252a656 → d3067126.
+    - *Not done:* Italy, the Soviet Union and Japan stay under what they want (they save
+      and their treasuries do not grow); which armoured division is bought is not counted
+      (one with nothing in training buys the best it can pay, the division of 1938 after
+      1941 too); a nation at war that saves raises one infantry division at a time.
   - [ ] 3.5e **The metric and the tick.** Defined in SPEC before it is measured: of the
     sectors that attack, the share where the first formation in contact at the enemy's
     cell is armour, beside armour's share of the formations sent there. Headless 1938,

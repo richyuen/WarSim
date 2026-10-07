@@ -7757,3 +7757,42 @@ No rule changed and nothing on screen changed. One task came out of it.
   green (code, with the ten-year tests: 879 unit, 15 of the sweep stage; e2e left out, a
   part with no spec changed: the three specs were the run by hand above).
 - **Next:** PLAN 3.5d (the mix).
+
+## 2026-10-07 — PLAN 3.5d: the mix (ADR-154)
+
+- **The rule** (`pickTemplate`, `armourWanted`): a nation wants a share of its army's upkeep
+  in tanks, by its income (none to 200, 0.3 from 1,000). While the army with its orders in
+  training has less, the order is the best armoured division it knows, in peace too; the
+  other orders are motorised against an armour-heavy enemy, infantry otherwise.
+- **It saves**, which the plan did not have. The first measurement with the share alone
+  moved the United States and nobody else. A tally by month (six years of seed 99): of the
+  months it wanted armour, Germany had the price of the cheapest it knew in 22 of 63,
+  Britain in 3 of 58, Japan in 0 of 72. The fallback of PLAN 1.42c buys an infantry
+  division whenever there is 1,001 over the reserve. Now: short of the price of the best
+  it knows, a nation with an order in training orders nothing more that month; with none
+  in training it takes the best it can pay, infantry at the least (1.42c's test as it was).
+- **Measured** (`tools/diag/armourMix.ts`, new; ten years, seed 99 and seed 7, before →
+  after, year 10): GER 3.9 → 29.5 % and 0 → 28.4; ENG 7.5 → 28.1 and 5.2 → 25.1; USA 30.7 →
+  31.2 and 20.9 → 27.6; JAP 0 → 13.8 and 0 → 14.7; SOV 28.0 → 22.3 and 15.1 → 14.8; ITA 0.1
+  → 1.6 and 0.5 → 21.5; FRA 0 → 0 and 3.7 → 10.9. Germany's armour formations: 10 of 163 →
+  18 of 118 and 0 of 138 → 14 of 99.
+- **Tick** (five years of seed 99, pinned, one run): mean 1.839 → 1.666 ms (budget 1.5),
+  year 1 2.754 → 2.414 (budget 2.4), year 5 1.756 → 1.951. Another game; cells flipped by
+  year 25,673, 22,092, 12,346, 24,157, 25,528; formations at the end 1,013 → 949.
+- **Tests:** `economicAi.test.ts`, "the mix" (5: three red first against the rule before, the one of the saving red with the saving taken out).
+  Two tests lost the line `nc.builds = 2` (the premise "the third order"); their expects
+  stand. 879 → 884 unit.
+- **The pin:** 6252a656 → d3067126.
+- **Specs by hand** (`--project=chromium`, 1.1 min): `wrecks1938` (day 37: 14 dead, 13 in
+  the subscribed box, 13 in the viewport), `tiers1938`, `individuals1938`: passed, none
+  changed.
+- **Gotchas:**
+  - The tanks' share of the upkeep at the start is higher than the count of armour
+    formations says (SOV 41 %, ENG 32 %, FRA 31 %, GER 22 %): an armoured division costs
+    3.7 infantry divisions a month.
+  - A Python script in a Bash heredoc failed again, on the apostrophes of the ADR's
+    text. Written with the Write tool, it ran.
+- **Not done:** Italy, the Soviet Union and Japan stay under what they want (no surplus
+  to save); which armoured division is bought was not counted; what saving does to a
+  nation that is losing a war was not measured (ADR-154).
+- **Next:** PLAN 3.5e (the metric and the tick; it ticks 3.5, with the full e2e).
