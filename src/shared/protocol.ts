@@ -179,6 +179,12 @@ export interface SnapshotElements {
   facing: Float32Array;
   /** FormationFlag bits of the element's formation. */
   flags: Uint8Array;
+  /**
+   * 1 where the element was fired at since the snapshot before, by anything and from anywhere
+   * (PLAN 3.6e5). The fires of a snapshot are those with an end in the box; an element is sent
+   * with its formation, in the box or not.
+   */
+  hit: Uint8Array;
   /** True when the cap cut the list short. */
   truncated: boolean;
 }

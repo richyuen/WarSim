@@ -8317,3 +8317,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   brigade at full strength; a film of the flight in a running game.
 - **Next:** PLAN 3.6e5 (a tank lost under fire burns wherever the view holds it; ticks 3.6e
   and 3.6, the full e2e).
+
+## 2026-10-07 — PLAN 3.6e5: a tank lost under fire burns wherever the view holds it (ADR-167); 3.6 done
+
+- **Diagnosed first** (a script in Node over the demo's four hours): the inference of
+  ADR-166 holds. Element 10891 stands at y 370.628, the box of the view at 4 m/px ends at
+  370.626; the one shot at it is outside at both ends. Its figure stands off the element's
+  place, inside the box: that is what the demo saw. At 1.5 m/px 4 of 6 elements had no shot
+  with an end in the box. The worker's box is the page's.
+- **Done:** `SnapshotElements.hit`, a byte an element: fired at since the snapshot before, by
+  anything, from anywhere. `SimServer` keeps the targets of every shot while the view draws
+  elements and empties them with the fire queue. `tanksLost` reads the flag; `MapView` no
+  longer builds a set from its fire records. View and protocol: the pin did not move.
+- **Tests:** `serverElements.test.ts` + 3 (an element outside the box fired at from outside
+  it; a snapshot over two hours; a view without elements keeps none). `hullFx.test.ts`
+  restated for the flag. `tankBattle1938.spec.ts` expects the sim's answer of every hull.
+- **Measured:** hulls burning at the demo's stops 4, 5 and 6: 4 of 4, 3 of 5, 6 of 7, as
+  the sim has them (before: 2 of 5 and 2 of 7 at the last two).
+- **Specs by hand** (`--project=chromium`): `tankBattle1938`, `burning1938`, `fire1938`,
+  `muzzles1938`: 6 tests, green, 2.9 min. Then the gate with the full e2e (3.6 is ticked).
+- **Not done:** no picture of a hull that burns after a pan to it; the pictures of 3.6e4
+  were not taken again.
+- **Next:** PLAN 3.7 (the Phase 3 review: SPEC drift, PARITY, one `sweep:quick`, the tags'
+  question of ADR-164 and ADR-166; then the critic is due).

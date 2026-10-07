@@ -25,7 +25,7 @@ function boxOf(cx: number, cy: number, scale: number, vw: number, vh: number): S
   return { bbox: [cx - hw, cy - hh, cx + hw, cy + hh], z: Math.log2(scale), tier, wantsElements: tier >= 1.5 };
 }
 
-function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot; step: (cmds: Command[]) => void } {
+function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot; step: (cmds: Command[]) => void; server: SimServer } {
   let last: Snapshot | null = null;
   let unacked: Snapshot | null = null;
   const server = new SimServer((m: FromWorker) => {
@@ -55,7 +55,7 @@ function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot; step: (
     server.handle({ type: 'step', n: 1, reqId: 1 }, 0);
     drain();
   };
-  return { sim, snapshot, step };
+  return { sim, snapshot, step, server };
 }
 
 describe('elements in snapshots (PLAN 2.7n1)', () => {
@@ -121,6 +121,68 @@ describe('elements in snapshots (PLAN 2.7n1)', () => {
     expect(own(snapshot(boxOf(fx + 0.1, fy, scale, 1280, 720)))).toBe(28); // on its flank
     expect(own(snapshot(boxOf(fx + 0.3, fy, scale, 1280, 720)))).toBe(0); // well clear of it
     expect(own(snapshot(boxOf(fx, fy + 0.3, scale, 1280, 720)))).toBe(0);
+  });
+});
+
+// PLAN 3.6e5 (ADR-167): which of the elements it sends a snapshot says were fired at.
+//
+// A formation is sent whole, a shot only with an end in the box. The view took "fired at" from
+// the shots it got: a tank lost by an element outside the box, to a shot from outside it, was
+// drawn left behind and not burning (the demo of PLAN 3.6e4: 1 of 3 at 4 m/px, 4 of 5 at 1.5).
+describe('the elements fired at in snapshots (PLAN 3.6e5)', () => {
+  const scale = GEO.kmPerCell * 1000; // 1 m/px
+  /** A division of 28 elements, a view on its flank, and the elements of it that the view's box does not hold. */
+  const flank = (): ReturnType<typeof setup> & { sub: Subscription; outside: { id: number; x: number; y: number }[]; fire: (target: { id: number; x: number; y: number }) => void; hit: (s: Snapshot) => number[] } => {
+    const made = setup();
+    const w = made.sim.world;
+    const idx = elementIndex(w);
+    let f = 0;
+    w.formations.forEach((g) => {
+      if (f === 0 && (idx.get(g)?.length ?? 0) === 28) f = g;
+    });
+    const sub = boxOf(w.formations.cols.x[f]! + 0.1, w.formations.cols.y[f]!, scale, 1280, 720);
+    const s = made.snapshot(sub);
+    const [x0, y0, x1, y1] = sub.bbox;
+    const outside: { id: number; x: number; y: number }[] = [];
+    for (let i = 0; i < s.elements.count; i++) {
+      const [x, y] = [s.elements.x[i]!, s.elements.y[i]!];
+      if (s.elements.formation[i] === f && (x < x0 || x > x1 || y < y0 || y > y1)) outside.push({ id: s.elements.id[i]!, x, y });
+    }
+    // A shot from two cells off, as the sim puts it out: [tick, subtick, shooter, target, unit, dmg, x0, y0, x1, y1].
+    const fire = (t: { id: number; x: number; y: number }): void => {
+      w.out.fires.push(w.tick, 7, 1, t.id, 0, 0.25, t.x - 2, t.y, t.x, t.y);
+      made.server['drainEvents'](w);
+    };
+    const hit = (snap: Snapshot): number[] => Array.from(snap.elements.id.subarray(0, snap.elements.count)).filter((_, i) => snap.elements.hit[i] === 1);
+    return { ...made, sub, outside, fire, hit };
+  };
+
+  it('an element outside the box, fired at from outside it, is sent as fired at, its shot not', () => {
+    const { snapshot, sub, outside, fire, hit } = flank();
+    expect(outside.length).toBeGreaterThanOrEqual(2);
+    fire(outside[0]!);
+    const s = snapshot(sub);
+    expect(s.elements.count).toBeGreaterThanOrEqual(28);
+    expect(hit(s)).toEqual([outside[0]!.id]);
+    expect(s.fires.count).toBe(0);
+    // Since the snapshot before, and no longer: the next one has none.
+    expect(hit(snapshot(sub))).toEqual([]);
+  });
+
+  it('a snapshot that spans two hours has the elements fired at in either', () => {
+    const { snapshot, sub, outside, fire, hit } = flank();
+    fire(outside[0]!);
+    fire(outside[1]!);
+    expect(hit(snapshot(sub)).sort((a, b) => a - b)).toEqual([outside[0]!.id, outside[1]!.id].sort((a, b) => a - b));
+  });
+
+  it('a view that draws no elements keeps none', () => {
+    const { snapshot, sub, outside, fire, hit, sim } = flank();
+    const far = boxOf(sim.world.formations.cols.x[1]!, sim.world.formations.cols.y[1]!, 2, 1280, 720);
+    expect(far.wantsElements).toBe(false);
+    snapshot(far);
+    fire(outside[0]!);
+    expect(hit(snapshot(sub))).toEqual([]);
   });
 });
 

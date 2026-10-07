@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-167 · 2026-10-07 · accepted — A snapshot says of each element it sends whether it was fired at; the view no longer takes it from the shots it got (PLAN 3.6e5)
+
+- **Context:** ADR-162 burns the hull of a tank whose element is the target of a fire record
+  of the snapshot. The demo (ADR-166) found hulls of tanks lost under fire that did not burn,
+  and inferred the cause: the element at the edge of the subscribed box or outside it.
+- **Diagnosed first** (in Node, the demo's four hours, each shot at each element of tanks
+  that lost a tank under fire, both ends against the box `viewSubscription` makes):
+  - Hour 3, 4 m/px, box 0.358 × 0.204 cells: element 10891 stands at y 370.628, the box ends
+    at 370.626. One shot at it, from 1677.062, 370.668: both ends outside. The demo had its
+    hull "inside the box by its figure's place": a figure stands off its element's place,
+    and the worker's test is the element's place. The other two elements had 2 and 3 shots
+    with the target's end inside.
+  - Hour 4, 1.5 m/px, box 0.134 × 0.077 cells (a brigade's block is wider): 4 of 6 elements
+    with all their shots (1, 2, 4 and 1) outside at both ends.
+  - So the inference holds, and the worker's box is the page's. Nothing was dropped.
+- **Decision:** `SnapshotElements.hit`, a byte an element: 1 where anything fired at it since
+  the snapshot before, from anywhere. The worker keeps the targets of every shot while the
+  view draws elements (a set, filled where the fires are drained, emptied with the fire queue
+  when a snapshot is built or a game loaded), so it spans the hours a snapshot spans.
+  `tanksLost` reads `after.hit`; the view's set of the targets of its fire records is gone.
+- **Why not the shots at every element sent:** they are tracers with both ends outside the
+  box, more to send and to draw for one bit of what they say, and `serverFires.test.ts`
+  pins "an end in the box". And the flag does not depend on the fire queue's cap: a shot
+  dropped there (`fires.dropped`) no longer costs a hull its fire.
+- **Consequences:** view and protocol only: no sim code, the pin did not move. One byte an
+  element in a snapshot, one set entry a target an hour. A view that draws no elements
+  keeps none.
+- **Measured** (`tests/e2e/tankBattle1938.spec.ts`, which now expects the sim's answer of
+  every hull, the viewport no longer asked for): at 12 m/px 4 hulls, 4 burning; at 4 m/px 5
+  hulls, 3 burning (2 before), 2 of them outside the viewport, 1 burning; at 1.5 m/px 7
+  hulls, 6 burning (2 before), 6 outside the viewport, 5 burning. `burning1938` as it was:
+  7 of 7 and 20 of 20.
+- **Not done:** the pictures were not taken again (what changed is outside the viewport).
+  No picture shows a hull that burns after a pan to it.
+
 ### ADR-166 · 2026-10-07 · accepted — The tank battle demo: one flight from T1 to 1.5 m/px on a tank brigade of seed 1938's game, four hours stepped on the way (PLAN 3.6e4)
 
 - **Context:** PLAN 3.6's AT is a demo of a battle of armour "found or set up", with

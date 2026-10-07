@@ -14,7 +14,6 @@ import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
-import { FIRE_STRIDE, FireField } from '../shared/events';
 import { HullFx } from '../render/fx/hulls';
 import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
@@ -71,6 +70,7 @@ function copyElements(e: SnapshotElements): SnapshotElements {
     prevY: e.prevY.slice(0, n),
     facing: e.facing.slice(0, n),
     flags: e.flags.slice(0, n),
+    hit: e.hit.slice(0, n),
     truncated: e.truncated,
   };
 }
@@ -459,15 +459,9 @@ export class MapView {
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
-    // A tank lost under fire burns: its element is the target of a fire record of this snapshot.
-    let targets: Set<number> | null = null;
-    this.hulls.add(elementsBefore, s.elements, arrived, (id) => {
-      if (!targets) {
-        targets = new Set();
-        for (let i = 0; i < s.fires.count; i++) targets.add(s.fires.data[i * FIRE_STRIDE + FireField.target]!);
-      }
-      return targets.has(id);
-    });
+    // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
+    // records only of the shots with an end in the box (PLAN 3.6e5).
+    this.hulls.add(elementsBefore, s.elements, arrived);
     this.lastTick = s.tick;
     this.snapshots++;
   }

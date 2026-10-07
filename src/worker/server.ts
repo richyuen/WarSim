@@ -89,6 +89,7 @@ const EMPTY_ELEMENTS: SnapshotElements = {
   prevY: new Float64Array(0),
   facing: new Float32Array(0),
   flags: new Uint8Array(0),
+  hit: new Uint8Array(0),
   truncated: false,
 };
 
@@ -112,6 +113,11 @@ export class SimServer {
   /** Unsent fire events of the subscribed bbox, flat FIRE_STRIDE records (PLAN 2.4). */
   private fireQueue: number[] = [];
   private droppedFires = 0;
+  /**
+   * The elements fired at since the last snapshot, wherever they stand (PLAN 3.6e5): the view
+   * holds elements whose shots it does not get (`SnapshotElements.hit`).
+   */
+  private firedAt = new Set<number>();
   /** Positions one tick before the current tick, indexed by formation id. */
   private prevX = new Float64Array(0);
   private prevY = new Float64Array(0);
@@ -446,6 +452,7 @@ export class SimServer {
   private resetStreams(): void {
     this.eventQueue = [];
     this.fireQueue = [];
+    this.firedAt.clear();
     this.sim!.world.out.markAllDirty();
     this.sim!.world.out.events.length = 0;
     this.sim!.world.out.fires.length = 0;
@@ -872,6 +879,9 @@ export class SimServer {
    * Fire events (PLAN 2.4) for a view that draws elements: those with an end inside the
    * subscribed bbox when they happen, the shooter's weapon in place of its unit. Any other view
    * gets none and none are kept, so a strategic zoom pays nothing. Read-only on the sim (I4).
+   *
+   * The target of every shot is kept for such a view, in the box or not (PLAN 3.6e5): a
+   * formation is sent whole, and an element of it outside the box is fired at from outside it.
    */
   private drainFires(world: World): void {
     const fires = world.out.fires;
@@ -879,6 +889,7 @@ export class SimServer {
     if (units && this.wantsElements()) {
       const q = this.fireQueue;
       for (let i = 0; i < fires.length; i += FIRE_STRIDE) {
+        this.firedAt.add(fires[i + FireField.target]!);
         const from = this.inBbox(fires[i + FireField.x0]!, fires[i + FireField.y0]!, world);
         if (!from && !this.inBbox(fires[i + FireField.x1]!, fires[i + FireField.y1]!, world)) continue;
         for (let c = 0; c < FIRE_STRIDE; c++) q.push(c === FireField.weapon ? weaponOf(units[fires[i + c]!]?.cls ?? 'inf') : fires[i + c]!);
@@ -937,6 +948,7 @@ export class SimServer {
     const prevY = this.view(Float64Array, total, buffers);
     const facing = this.view(Float32Array, total, buffers);
     const flags = this.view(Uint8Array, total, buffers);
+    const hit = this.view(Uint8Array, total, buffers);
     const ec = world.elements.cols;
     const units = world.rules?.units ?? [];
     let j = 0;
@@ -980,10 +992,11 @@ export class SimServer {
         prevY[j] = qy;
         facing[j] = fa;
         flags[j] = fl;
+        hit[j] = this.firedAt.has(e) ? 1 : 0;
         j++;
       }
     }
-    return { count: total, id, formation, nation, frame, strength, size, x, y, prevX, prevY, facing, flags, truncated };
+    return { count: total, id, formation, nation, frame, strength, size, x, y, prevX, prevY, facing, flags, hit, truncated };
   }
 
   /** Whether (x, y) is in the subscribed bbox, or within `reach` cells of it. */
@@ -1133,6 +1146,7 @@ export class SimServer {
     const fires = fq.length > 0 ? this.view(Float64Array, fq.length, buffers) : NO_FIRES;
     fires.set(fq);
     this.fireQueue = [];
+    this.firedAt.clear();
 
     const snap: Snapshot = {
       seq: ++this.seq,

@@ -51,6 +51,8 @@ export interface HullElements {
   x: ArrayLike<number>;
   y: ArrayLike<number>;
   facing: ArrayLike<number>;
+  /** 1 where the element was fired at since the snapshot before (`SnapshotElements.hit`). */
+  hit: ArrayLike<number>;
 }
 
 export interface BurningHull {
@@ -74,10 +76,10 @@ export interface BurningHull {
 
 /**
  * The tanks the elements of `after` have lost since `before`: for each element of tanks in
- * both, the figures it had and has no more, where they stood in `before`. `hit` says whether an
- * element was fired at between the two.
+ * both, the figures it had and has no more, where they stood in `before`. `after.hit` says
+ * whether an element was fired at between the two.
  */
-export function tanksLost(before: HullElements, after: HullElements, now: number, hit: (element: number) => boolean): BurningHull[] {
+export function tanksLost(before: HullElements, after: HullElements, now: number): BurningHull[] {
   const out: BurningHull[] = [];
   if (before.count === 0 || after.count === 0) return out;
   const index = new Map<number, number>();
@@ -96,7 +98,7 @@ export function tanksLost(before: HullElements, after: HullElements, now: number
     const side = gridSide(frame, figureCount(size, size));
     const facing = before.facing[i]!;
     const off = figureOffsets(id, side, had, facing);
-    const burns = hit(id);
+    const burns = after.hit[j] === 1;
     for (let k = has; k < had; k++) {
       // A turret is thrown round by what set its tank on fire; a tank left behind has its own in line.
       const [turn] = pair(hash2(hash2(id, k), 0x68756c));
@@ -131,16 +133,15 @@ export class HullFx {
 
   /**
    * Takes the elements of a snapshot that arrived at `now` and those of the snapshot before it
-   * (null: there was none, or the camera was too far out to keep it), and whether an element was
-   * fired at between the two. Returns the hulls it made.
+   * (null: there was none, or the camera was too far out to keep it). Returns the hulls it made.
    */
-  add(before: HullElements | null, after: HullElements, now: number, hit: (element: number) => boolean): number {
+  add(before: HullElements | null, after: HullElements, now: number): number {
     // Hulls that have faded leave here, and only here.
     let kept = 0;
     for (const h of this.hulls) if (now < h.born + HULL_LIFE_MS) this.hulls[kept++] = h;
     this.hulls.length = kept;
     if (!before) return 0;
-    const lost = tanksLost(before, after, now, hit);
+    const lost = tanksLost(before, after, now);
     if (lost.length === 0) return 0;
     this.hulls.push(...lost);
     this.until = now + HULL_LIFE_MS;

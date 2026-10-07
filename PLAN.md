@@ -3658,7 +3658,7 @@ quick sweep as a smoke test.
       did" tests boxes outside the group. Boxes inside it and far from the chain do move
       with it. Name it for what it tests.
       **Done 2026-10-07:** "boxes outside the group stand as they did".
-- [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
+- [x] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):
   tanks scored 2. At T2 a panzer division is a grey grid of dots like any other. At T3 its
   tanks are rows of one white box with a circle and a bar, all pointing east, in the white
@@ -3740,7 +3740,7 @@ quick sweep as a smoke test.
     - *Not done:* the browser has not had both kinds in one view; an element's end at T3 is
       still the T2 wreck mark; figures drive over a hull; nothing at T2; the frame's time
       with hulls was not measured; nothing filmed in a running game.
-  - [ ] 3.6e **The tank battle demo** (`tankBattle1938.spec.ts`): a battle of armour found
+  - [x] 3.6e **The tank battle demo** (`tankBattle1938.spec.ts`): a battle of armour found
     or set up, flown to from T1 to T3; turrets off the hull's facing, a flash at a tank, a
     burning hull; pictures in `docs/evidence/3.6/`, looked at; PARITY. Ticks 3.6 (the full
     e2e).
@@ -3820,7 +3820,7 @@ quick sweep as a smoke test.
       - *Not done:* the frame's time is the script's part, in a browser that draws on the
         CPU; the brigade is at 54 tanks of 200, two or three to an element, so no picture has
         a full company; the flight is not filmed in a running game.
-    - [ ] 3.6e5 **A tank lost under fire burns, wherever in the view's hold it is** (found by
+    - [x] 3.6e5 **A tank lost under fire burns, wherever in the view's hold it is** (found by
       3.6e4, ADR-166). The view holds every element of a formation that reaches into the box
       it subscribed to, and gets the shots with an end in that box. A tank lost by a held
       element whose place is at the box's edge or outside it, fired at from outside the box,
@@ -3839,6 +3839,16 @@ quick sweep as a smoke test.
       `tankBattle1938.spec.ts` every hull of an hour burns where the sim had its element
       fired at, the viewport no longer asked for; `burning1938.spec.ts` as it is. Ticks 3.6e
       and 3.6 (the full e2e).
+      **Done 2026-10-07 (ADR-167).** Diagnosed in Node first: the inference holds. Element
+      10891 stands 0.002 cells outside the box (its figure inside), its one shot outside at
+      both ends; at 1.5 m/px 4 of 6 elements so. The worker's box is the page's. Fix: the
+      snapshot says of each element whether it was fired at (`SnapshotElements.hit`, from
+      the targets of every shot since the snapshot before); `tanksLost` reads it.
+      `serverElements.test.ts` + 3, `hullFx.test.ts` restated (the flag in place of the
+      callback). The demo expects the sim's answer of every hull: 4 of 4, 3 of 5 and 6 of 7
+      burning, as the sim has them (2 and 2 before at the last two stops).
+      - *Not done:* no picture of a hull that burns after a pan to it; the pictures of
+        3.6e4 stand (what changed is outside the viewport).
     From 3.6a: say what a division of tanks is at T2 between 300 and 100 m/px, where a
     sprite is 5 px (the critic: "a grey grid of dots like any other"), and whether the 5 px
     of a hull can say "tank" there (its shape, or the element's mark).

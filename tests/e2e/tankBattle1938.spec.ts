@@ -218,16 +218,12 @@ test('the tank battle: one zoom from a marker to a burning hull, with turrets on
       // The hulls (T3): one for every tank lost by an element the view held and holds, burning where the sim had it fired at.
       const lost = stop.tier < 3 ? [] : fought.before.filter(([id]) => after.has(id)).flatMap(([id]) => Array.from({ length: sim.get(id)![0] - sim.get(id)![1] }, () => id));
       expect(fought.fresh.map((h) => h.element).sort(), `${name}: a hull for each tank lost`).toEqual(lost.sort());
-      // In the viewport, that is. The view holds the whole of a formation that reaches into the
-      // box it subscribed to (the viewport and a margin) and gets the shots with an end in that
-      // box: of a tank lost at the box's edge or outside it the view may not know that it was
-      // fired at, and its hull does not burn. Found here; PLAN 3.6e5 puts it right.
-      const seenHulls = fought.fresh.filter((h) => inView(h.x, h.y, node.anchor, stop.m));
-      for (const h of seenHulls) expect(h.burns, `${name}: the hull of element ${h.element} burns`).toBe(sim.get(h.element)![2]);
-      const beside = fought.fresh.filter((h) => !seenHulls.includes(h));
-      for (const h of beside) if (h.burns) expect(sim.get(h.element)![2], `${name}: the hull of element ${h.element}, outside the viewport, burns`).toBe(true);
-      const cold = beside.filter((h) => !h.burns && sim.get(h.element)![2]);
-      if (beside.length > 0) console.log(`${name}: ${beside.length} hull(s) outside the viewport, ${cold.length} of them of a tank lost under fire and not burning${cold.length > 0 ? ` (element ${cold.map((h) => h.element).join(', ')})` : ''}`);
+      // Every one of them, in the viewport or not: the view holds the whole of a formation that
+      // reaches into the box it subscribed to and gets only the shots with an end in that box,
+      // and the snapshot says of each element whether it was fired at (PLAN 3.6e5).
+      for (const h of fought.fresh) expect(h.burns, `${name}: the hull of element ${h.element} burns`).toBe(sim.get(h.element)![2]);
+      const beside = fought.fresh.filter((h) => !inView(h.x, h.y, node.anchor, stop.m));
+      if (fought.fresh.length > 0) console.log(`${name}: ${fought.fresh.length} hull(s), ${fought.fresh.filter((h) => h.burns).length} burning; outside the viewport ${beside.length}, ${beside.filter((h) => h.burns).length} burning`);
     }
     const seen: Seen = await page.evaluate(look, { mapW: W });
     const own = seen.elements.filter((e) => e.formation === node.formation && HULLS.includes(e.frame));

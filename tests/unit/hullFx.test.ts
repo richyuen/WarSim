@@ -16,6 +16,8 @@ interface El {
   x?: number;
   y?: number;
   facing?: number;
+  /** Fired at since the snapshot before (the default here: yes). */
+  hit?: boolean;
 }
 function section(list: readonly El[]): HullElements {
   return {
@@ -28,11 +30,12 @@ function section(list: readonly El[]): HullElements {
     x: list.map((e) => e.x ?? 100),
     y: list.map((e) => e.y ?? 50),
     facing: list.map((e) => e.facing ?? 0),
+    hit: list.map((e) => (e.hit === false ? 0 : 1)),
   };
 }
 
-const burnt = (before: HullElements, after: HullElements, now: number): ReturnType<typeof tanksLost> => tanksLost(before, after, now, () => true);
-const add = (fx: HullFx, before: HullElements | null, after: HullElements, now: number): number => fx.add(before, after, now, () => true);
+const burnt = (before: HullElements, after: HullElements, now: number): ReturnType<typeof tanksLost> => tanksLost(before, after, now);
+const add = (fx: HullFx, before: HullElements | null, after: HullElements, now: number): number => fx.add(before, after, now);
 
 describe('tanksLost', () => {
   it('a hull for each tank an element has lost: its last figures, where they stood before', () => {
@@ -80,8 +83,10 @@ describe('tanksLost', () => {
 
   it('lost under fire it burns; lost otherwise it was left behind, its turret in line', () => {
     const before = section([{ id: 1, strength: 10 }, { id: 2, strength: 10 }]);
-    const after = section([{ id: 1, strength: 9 }, { id: 2, strength: 8 }]);
-    const lost = tanksLost(before, after, 0, (id) => id === 2);
+    // By the snapshot that brings the loss: what the one before said of an earlier hour does not count.
+    before.hit = [1, 0];
+    const after = section([{ id: 1, strength: 9, hit: false }, { id: 2, strength: 8 }]);
+    const lost = tanksLost(before, after, 0);
     expect(lost.map((h) => [h.element, h.figure, h.burns])).toEqual([[1, 9, false], [2, 8, true], [2, 9, true]]);
     expect(lost[0]!.askew).toBe(0);
     expect(lost[1]!.askew).not.toBe(0);

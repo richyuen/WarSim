@@ -1648,9 +1648,12 @@ moment before its first elements arrive.
   tier's share. A shooter outside the view's box fires from its slot.
   *A tank that is lost leaves its hull* (PLAN 3.6d, ADR-162, `render/fx/hulls.ts`): the view
   compares the elements of a snapshot with those of the snapshot before, and a figure that an
-  element of tanks had and has no more leaves a hull on its place, at the old pose. If a fire
-  record of the snapshot has the element as its target, the hull burns: flame for 6 s of real
-  time, smoke for 9 s more, a fade of 2.5 s. If none has (a breakdown, attrition: PLAN 3.2d),
+  element of tanks had and has no more leaves a hull on its place, at the old pose. If the
+  snapshot says the element was fired at since the one before (`SnapshotElements.hit`: by
+  anything, from anywhere; not the fire records, which are only of the shots with an end in
+  the view's box, while a formation is sent whole: PLAN 3.6e5, ADR-167), the hull burns:
+  flame for 6 s of real time, smoke for 9 s more, a fade of 2.5 s. If not (a breakdown,
+  attrition: PLAN 3.2d),
   the tank was left behind: a grey hull with its gun in line, for as long, without flame or
   smoke. None for an element first seen, and none for one that is gone: the last tank of an
   element ends with it and leaves the element's wreck (PLAN 2.4b). Drawn with the figures'
