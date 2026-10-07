@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-169 · 2026-10-07 · accepted — A formation sent home marches home, across nations at peace with it; it is set on its spawn point only where no land leads there (PLAN 3.7h)
+
+- **Context:** the review of Phase 3 counted what ADR-149 had left "not counted": in a year
+  43 formations (seed 99) and 37 (seed 7) are moved in one tick from a third nation's ground
+  to their nation's spawn point, by a median of 52 and 35 cells and up to 152. All 80 are
+  `repatriationSystem`'s. For 75 an own cell lay within 80 cells on the same landmass and
+  the order there was refused: ADR-149 lets a formation walk out of the ground it stands
+  on, not onto another third nation's. They stand where a war they fought beside another
+  took them (Yugoslav divisions in the Soviet Union, Czechoslovak in Romania), and the
+  peace closed the way they came. The other 5 are further than 80 cells from any own cell
+  (Transjordan's in Nigeria), on their home's landmass.
+- **The mend PLAN 3.7h proposed mends none:** "the nearest own cell it can reach by its
+  `Passage`". By its passage it reaches none.
+- **Three rules that end the jump:**
+  1. *It stays.* No new rule. With no supply it loses 2 % of its men a day
+     (`BASE_ATTRITION_PER_DAY`) and is gone in months: 40 formations a year interned by
+     attrition, on the map all the while as armies that stand in a neutral's land.
+  2. *It is disbanded there* (interned; half its men back, as `DISBAND_MANPOWER`). A new
+     rule and an event; on the page the army is gone at the peace.
+  3. *It marches home.* The order of a repatriation, and no other, is routed over any
+     ground; the walk does not end it at a third nation's cell.
+- **Decision:** the third. `repatriationSystem` orders the formation to the nearest cell of
+  its nation on its landmass within `REPATRIATE_CELLS`, or with none there to its spawn
+  point if that is on its landmass, with a passage that is open everywhere. The formation
+  is marked as going home (`formations.home`, state, a byte): the walk does not end its
+  march at ground that is a third nation's. Any other order takes the mark away, and so
+  does its arrival. The spawn point is set only where no land leads home (another
+  landmass: the sealift that PLAN 4.5 will make a voyage, as ADR-47's muster).
+- **ADR-149's reason against a crossing, answered for this one:** "the nation it crosses
+  has no say", of an army that crosses to fight a war beyond. This one fights nobody: it
+  takes no cell (a cell flips to a nation at war with its holder: `territory.ts`; the
+  task's test holds it to that, also for a nation at war elsewhere), it is in no contact but with an enemy
+  of its own, and it goes only to its own land. It is not fed on the way (ADR-143): the
+  march costs it 2 % of its men a day, where the jump cost nothing. No AI and no player
+  can give this order; an order of theirs from such ground is ADR-149's as before.
+- **Why not the first:** a rule nobody chose (the peace of a war interns the armies of the
+  side's small members), and the 544,335 formation-hours out of contact on a third nation's
+  ground that ADR-149 was written against would come back as armies that stand and die.
+  **Why not the second:** it is the lightest that respects ADR-149 whole, and it removes
+  from the map what the game is watched for. If the count below comes out against the
+  march, the second is the rule to fall back on.
+- **To be measured by the task, beside ADR-149's table:** formation-hours out of contact on
+  a third nation's ground in the first 360 days of seed 99 and seed 7, before and after
+  (they must not grow past what the marches themselves take); how many of the 80 arrive,
+  with how many of their men; how many are still set on the spawn point, and why.
+- **Consequences:** a column of the formations' table (a save from before has none and
+  loads with 0); the pin moves.
+
 ### ADR-168 · 2026-10-07 · accepted — A tag is tied to its elements: it stands on its formation's own side of a contact, and one that stands off has a line to them (PLAN 3.7d)
 
 - **Context:** asked three times in a day. ADR-164 (100 m/px: a neighbour's tag on half of

@@ -3981,10 +3981,20 @@ quick sweep as a smoke test.
     - So "the nearest own cell it can reach by its `Passage`" (the mend proposed above)
       mends none of the 75: by its passage it reaches no own cell at all. The rule that is
       missing is the way home itself.
-    AT: unit (`movement.test.ts`: the Italian division in central Germany at peace marches,
-    or stays, and is not moved); a year of seed 99 and of seed 7 has no formation more than
-    3 cells in a tick from where it stood, but by a rule the diagnosis names and this task
-    keeps; the pin moves and is logged.
+    **Decided 2026-10-07 (ADR-169):** it marches home. The order of a repatriation, and no
+    other, is routed over any ground, and the walk does not end it at a third nation's cell
+    (`formations.home`, a byte of state); with no own cell within reach, to the spawn point
+    if land leads there. Set on the spawn point only from another landmass. Not coded
+    until the reader of 3.7a is back: `movement.ts` is among the files it reads.
+    AT (sharpened by the diagnosis): unit (`movement.test.ts`: the Italian division in
+    central Germany at peace marches home through Austria and arrives; an order of the AI
+    or a player from there is refused as before; a march home that meets a new enemy's cell
+    waits before it; it takes no cell on its way, also when its nation is at war elsewhere;
+    saved in mid-march and loaded it goes on as the game that ran on); a
+    year of seed 99 and of seed 7 has no formation more than 3 cells in a tick from where it
+    stood but one whose home is on another landmass; formation-hours out of contact on a
+    third nation's ground in the first 360 days, before and after, beside ADR-149's table,
+    and how many of the 80 arrive with how many of their men; the pin moves and is logged.
   - [ ] 3.7i **The puppets of a nation that dies are free at its death** (PLAN 3.7c; seen
     with ADR-148, read in the code, not run). A Kill and a collapse free them
     (`collapseNation`); a death by the loss of the capital (`eliminateNation` out of
