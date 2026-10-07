@@ -25,7 +25,7 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
     ww.out.events.length = 0;
     ww.out.fires.length = 0;
   };
-  const until = (year: number): void => s.step((daysFromCivil(year, 1, 1) - w.startDay) * 24 - w.tick, quiet);
+  const until = (year: number, month = 1): void => s.step((daysFromCivil(year, month, 1) - w.startDay) * 24 - w.tick, quiet);
   const richNow = (): number[] => {
     const out: number[] = [];
     w.nations.forEach((n) => {
@@ -34,7 +34,15 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
     return out;
   };
   until(1940);
-  const richIn1940 = richNow();
+  // Rich on the first day of every month of 1940 and 1941.
+  let richThrough = richNow();
+  for (const year of [1940, 1941]) {
+    for (let month = 2; month <= 12; month++) {
+      until(year, month);
+      const now = richNow();
+      richThrough = richThrough.filter((n) => now.includes(n));
+    }
+  }
   // The last hour of 1941.
   until(1942);
   expect(knowing()).toEqual([]);
@@ -44,9 +52,14 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   // peace of February 1941, and 1,087 after; rich for ten months, it has learnt 6 techs, the
   // earliest first, and has 6 of 1939 and 1940 to go before `armor_medium_2`). The check of
   // 1944 below takes every nation that is rich in 1942, Denmark too.
+  // Through the two years, month by month, and not on their first and last day alone (PLAN
+  // 3.5c, ADR-153: in the game since, France is rich in January 1940, between two wars with
+  // Germany, and in 1942; from March 1940 to the peace of May 1941 Germany holds it and its
+  // income is 158, a seventh. It has four techs of 1940 and 1941 to go). France too is in
+  // the check of 1944.
   const medium2 = techMask([RULES_1938.techs.findIndex((t) => t.id === 'armor_medium_2')]);
   const rich = richNow();
-  const richBoth = rich.filter((n) => richIn1940.includes(n));
+  const richBoth = rich.filter((n) => richThrough.includes(n));
   expect(richBoth.length).toBeGreaterThanOrEqual(3);
   for (const n of richBoth) expect(knowsTechs(w, n, medium2), `${TAGS_1938[n - 1]} knows armor_medium_2 in 1942`).toBe(true);
   until(1944);

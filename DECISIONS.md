@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-153 · 2026-10-07 · accepted — Spearheads: where a sector that attacks has armour, the armour marches on the enemy's cell and the rest hold the front cell (PLAN 3.5c)
+
+- **Context:** a sector with 1.5 times its threat sent every formation it had at one enemy
+  cell. Armour came there first more often than not because it is faster, not because it
+  was sent: in seed 99's first year, of the 44 attacks with armour that came to contact,
+  armour was first in 35 (seed 7: 22 of 31), and half of what was sent to them was not
+  armour.
+- **Decision** (`planNation`, where it gives its orders):
+  - *Armour* is a formation whose template has half of its upkeep or more in tanks:
+    `SPEARHEAD_ARMOUR` 0.5 against `EconomyTables.templateArmour`, the table the economic
+    AI disbands by (PLAN 3.1d). The armour templates have 0.66 to 0.93, the Soviet rifle
+    division 0.20, the mechanised division 0.14, the others 0. No element is looked at.
+    The planner gets the table as the economic AI does (`operationalAiOf(tables)` in the
+    list of systems); called with none, no formation is armour.
+  - *The rule:* where a sector that attacks has armour among its formations, the armour is
+    ordered to the enemy's cell and the rest to the sector's front cell, as in a sector
+    that holds. A sector with no armour attacks with all it has: most nations have none.
+  - *"The rest follow"* is not an order of its own. The plan of the next day has the front
+    where the armour took ground, and the front cell with it.
+  - An order within a sector of the one a formation follows is not given (ADR-53, as
+    before): infantry on the march at the enemy's cell when armour joins its sector
+    marches on.
+- **The metric** (SPEC §7, `tools/diag/spearheads.ts`) is defined with this part and not
+  with PLAN 3.5e, which wanted it defined before it is measured: this part's test of
+  acceptance is that measurement. It is read from the run (orders to a cell an enemy
+  holds, and who is first in contact within a sector of it), with no hook in the planner,
+  so that the same tool measured the code before the rule.
+- **Measured** (360 days, before → after; seed 99, seed 7). Attacks armour was sent to
+  that came to contact, armour first in: 35 of 44 → 44 of 46, 22 of 31 → 32 of 34. Armour's
+  share of the formations sent to them: 50.8 → 73.4 %, 50.0 → 79.2 %. Over all attacks
+  that came to contact: 10.2 → 11.2 %, 8.8 → 10.9 %, with armour 7.0 and 8.8 % of all that
+  is sent.
+- **Consequences:**
+  - The tick, five years of seed 99: 2.229 → 1.839 ms (budget 1.5); year 1 3.041 → 2.754.
+    Another game, not a faster rule.
+  - The pin: 158aeb46 → 6252a656.
+  - `deploy.test.ts` (BLOCKERS: its share hangs on one pile-up) passed in this game.
+  - `tests/sweep/researchYears.test.ts` failed in this game and its premise was mended, no
+    expectation. It says that every nation rich through 1940 and 1941 knows a tech of 1941
+    in 1942, and read "through" as rich on 1 January 1940 and on 1 January 1942 (ADR-147).
+    France is rich on both days here (income 1,035 and 1,074) and not between them: Germany
+    holds it from March 1940 to the peace of May 1941, its income is 158, and in 1942 it
+    has four techs of 1940 and 1941 to go (`mechanisation`, `sonar`, `fighters_2`,
+    `armor_medium_2`). The premise is now read on the first day of each of the 24 months.
+    Not changed: at least three such nations, each of them knows `armor_medium_2` in 1942,
+    nobody knows the heavy tank before 1942, and every nation rich in 1942 and in 1944
+    knows it in 1944, France among them. A premise read by income on some days is what
+    this test has: research is paid by the budget of each month, and the sum of two years'
+    budgets would be the premise itself.
+  - Not done: infantry is not ordered after the armour in the plan that sends it; armour
+    is not gathered from other sectors for an attack; nothing of it is on the page (PLAN
+    3.6). Nine attacks in ten take ground with no contact at all, so the metric speaks of
+    the tenth.
+
 ### ADR-152 · 2026-10-07 · accepted — The operational AI allots a formation to the sectors it can reach, class by class (PLAN 3.5b)
 
 - **Context:** since ADR-149 no march crosses a nation that is not in the war. The

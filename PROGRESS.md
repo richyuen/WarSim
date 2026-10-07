@@ -7704,3 +7704,51 @@ No rule changed and nothing on screen changed. One task came out of it.
     asks `snapTarget`, which `orderMove` asks too, but reads the groups itself where the
     landmass is the same: the same test as `mayReach`, written twice. PLAN 3.5c has the
     line to say so in the code.
+
+## 2026-10-07 — PLAN 3.5c: spearheads (ADR-153)
+
+- **The rule** (`planNation`, the orders): a formation with half its upkeep or more in tanks
+  is armour (`SPEARHEAD_ARMOUR` against `templateArmour`; the planner gets the economy's
+  table through `operationalAiOf`, and looks at no element). Where a sector that attacks
+  has armour, the armour is sent at the enemy's cell and the rest to the front cell; a
+  sector with none attacks with all it has.
+- **The metric** is in SPEC §7 with this part (PLAN 3.5e wanted it defined before it is
+  measured, and this part's AT is the measurement): `tools/diag/spearheads.ts` reads the
+  attacks from the run, so the same tool measured the code before the rule.
+- **Measured** (360 days, before → after; seed 99, seed 7): of the attacks armour was sent
+  to that came to contact, armour first in 35 of 44 → 44 of 46 and 22 of 31 → 32 of 34;
+  armour's share of what was sent to them 50.8 → 73.4 % and 50.0 → 79.2 %. Over all
+  attacks: 10.2 → 11.2 % and 8.8 → 10.9 % armour first, armour 7.0 and 8.8 % of the sent.
+- **Tick** (five years of seed 99, pinned, one run): mean 2.229 → 1.839 ms (budget 1.5),
+  year 1 3.041 → 2.754 (budget 2.4), year 5 1.268 → 1.756. Another game; cells flipped by
+  year 31,803, 20,818, 21,778, 23,547, 12,357; formations at the end 1,132 → 1,013.
+- **Tests:** one in `operationalAi.test.ts`, red first (Germany against Lithuania, ten
+  divisions on foot and two armoured, no enemy: no division held). 878 → 879 unit.
+  `deploy.test.ts` (BLOCKERS) passed in this game, untouched.
+- **The pin:** 158aeb46 → 6252a656.
+- **Specs by hand** (`--project=chromium`, 1.1 min): `wrecks1938` (day 37 of this game: 14
+  dead, 13 in the subscribed box, 13 in the viewport), `tiers1938`, `individuals1938`:
+  passed, none changed.
+- **From 3.5b:** `mayReach` and the planner's line that fills `reached` each say that the
+  other is the same test.
+- **Gotchas:**
+  - Lithuania's tag is `LIT`; `nationId` of a tag that is not one gives 0 and no error
+    (the first run of the test had a war with nobody).
+  - `declareWar` by command did not begin a war of Germany on Lithuania in the test's
+    world (not looked into: the test begins it with `wars.start`, as the 3.5b test does).
+  - A Python script in a Bash heredoc failed once more, on an apostrophe (memory has the
+    rule).
+- **Not done:** the rest are not ordered after the armour in the plan that sends it;
+  infantry on the march at the enemy's cell keeps its order (a quarter of what goes to an
+  armour's attack); armour is not gathered from other sectors. One attack in nine comes to
+  contact at all, so the metric speaks of few: 46 and 34 attacks in a year.
+- **The gate failed once**, at the ten-year tests: `researchYears.test.ts`, "FRA knows
+  armor_medium_2 in 1942: expected false to be true". Month by month to 1942: France's
+  income is 1,074 until Germany's war of autumn 1938 (158 by month 13), 1,093 and 1,035
+  about January 1940 (a peace, and the next war begun), 158 from month 29 to month 40,
+  1,074 from the peace of May 1941. Its research budget goes with it (1.77 a day, 0.26
+  when held): 28 techs known in 1942, four of 1940 and 1941 to go. The test's premise
+  ("rich through 1940 and 1941") was read on two days, and France is rich on both. It is
+  read on the first day of each month now; no expectation changed, and France is in the
+  check of 1944 and passes it. ADR-153 has the argument.
+- **Next:** PLAN 3.5d (the mix).

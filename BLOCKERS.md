@@ -105,6 +105,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   next rule that moves the pin may meet it (PLAN 3.5c sends armour first at one cell, the
   rest behind): then it is the deployment of many against one that is to be mended (the
   blocks come up to a block that has gone 1.4 cells from its formation), not the test.
+  2026-10-07 (PLAN 3.5c, ADR-153): the game of the spearheads passed it, untouched. Still
+  open for the next rule that moves the pin.
 - **A division with no way home is moved to its spawn point (PLAN 3.4Rl, ADR-149,
   2026-10-06).** Repatriation did that where no route existed; it does it now also where the
   way home crosses a second nation that is in no war with it (an Italian division in central

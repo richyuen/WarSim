@@ -1329,6 +1329,20 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Orders:* a sector at ≥ 1.5× local superiority attacks the enemy cell next to its centre;
     otherwise it holds its front cell. A formation is not re-ordered if its target is within a
     sector of the current one.
+  - *Spearheads* (PLAN 3.5c, ADR-153): a formation is armour when half of its upkeep or more
+    is in tanks (`SPEARHEAD_ARMOUR` against `EconomyTables.templateArmour`: 0.66 to 0.93 for
+    the armour formations, 0.20 at most for the others; the planner looks at no element).
+    Where a sector that attacks has armour, the armour marches on the enemy's cell and the
+    rest are sent to the front cell, as in a sector that holds. A sector with no armour
+    attacks with all it has. The rest follow by the plans of the days after: the front cell
+    is then where the armour has taken ground.
+  - *The spearhead metric* (PLAN 3.5c and 3.5e; `tools/diag/spearheads.ts`, read from the
+    run with no hook in the planner). An *attack* is the formations of one nation ordered to
+    one cell that an enemy of the nation holds at the hour of the order, from the first such
+    order until the first of them is in contact within a sector (4 cells) of the cell; a later
+    order to that cell opens another attack. The metric is the share of the attacks that came
+    to contact whose first formation in contact is armour, read beside armour's share of
+    the formations sent, over all attacks and over those armour was sent to.
   - *Tick cost* with 10-year AI wars: 2–3 ms (above the 1.5 ms budget) until PLAN 1.42a; since
     then 1.0 ms over 5 years of seed 99 (§2.5).
 - **Economic AI** (daily): a budget split between army, navy, air, industry, research, nukes,

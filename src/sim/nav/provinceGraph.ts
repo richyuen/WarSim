@@ -165,6 +165,9 @@ export function nodeGroups(pg: ProvinceGraph, open: Uint8Array): Int32Array {
  * on open ground, of one group of provinces with open ground (`Passage.group`). False: there is
  * no route. True: there may be one. Who allots formations to places asks this first (the
  * operational AI, PLAN 3.5b).
+ * Written twice: `planNation` (`ai/operational.ts`, where it fills `reached`) reads the landmass
+ * and the two groups itself, per class of formations and not per formation. A change of this
+ * test is a change of that one.
  */
 export function mayReach(g: NavGrid, pg: ProvinceGraph, start: number, goal: number, pass?: Passage): boolean {
   if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return false;

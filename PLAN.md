@@ -3424,7 +3424,7 @@ quick sweep as a smoke test.
       afar, as before; a war with no front (France and Portugal) has none still; the AI's
       476 and 1,082 refused orders; a class is not merged with another that reaches the
       same sectors (tried: BLOCKERS, the deployment test's share).
-  - [ ] 3.5c **Spearheads.** In a sector that attacks, the armour formations are the ones
+  - [x] 3.5c **Spearheads.** In a sector that attacks, the armour formations are the ones
     sent at the enemy's cell, and the rest follow or hold. No per-element scan in the
     planner: armour by the template (`EconomyTables.templateArmour`, or a column).
     From 3.5b: `planNation` reads the reach of a class from the landmass and the two groups
@@ -3432,6 +3432,35 @@ quick sweep as a smoke test.
     `mayReach`'s comment with this part (a change of one is a change of both). And
     BLOCKERS: the share of `deploy.test.ts` falls when many stand about one enemy.
     AT: unit, failing first; the metric of 3.5e on seed 99 before and after.
+    **Done 2026-10-07 (ADR-153).**
+    - *The rule* (`planNation`, the orders): armour is a formation with half its upkeep or
+      more in tanks (`SPEARHEAD_ARMOUR`, by `templateArmour`; `operationalAiOf` hands the
+      planner the table the economic AI has). Where a sector that attacks has armour, it
+      is sent at the enemy's cell and the rest to the front cell; with none, all attack.
+    - *The metric* is defined here and not in 3.5e (SPEC §7), since this part measures by
+      it: `tools/diag/spearheads.ts`. 3.5e measures again, with the tick.
+    - *Tests:* `operationalAi.test.ts`, "spearheads" (Germany against Lithuania, twelve
+      divisions and no enemy: red first, no division held).
+      `tests/sweep/researchYears.test.ts` changed, its premise and no expectation
+      (ADR-153): "rich through 1940 and 1941" is read on the first day of each month, not
+      on the first and the last day. In this game France is rich on both and held by
+      Germany for fourteen months between them (income 158), with four techs of 1940 and
+      1941 to go in 1942.
+    - *Measured* (360 days, before → after; seed 99, seed 7). Of the attacks armour was
+      sent to that came to contact, armour first: 35 of 44 (79.5 %) → 44 of 46 (95.7 %) and
+      22 of 31 (71.0 %) → 32 of 34 (94.1 %); armour's share of the formations sent to them
+      50.8 → 73.4 % and 50.0 → 79.2 %. Of all attacks that came to contact, armour first:
+      10.2 → 11.2 % and 8.8 → 10.9 % (armour is 5.8 → 7.0 % and 11.7 → 8.8 % of all sent).
+      One attack in nine comes to contact at all: 344 of 3,310 → 392 of 3,510.
+    - *Tick* (five years of seed 99, pinned, one run): mean 2.229 → 1.839 ms, year 1 3.041
+      → 2.754; another game (cells flipped by year 31,803, 20,818, 21,778, 23,547, 12,357).
+    - *The pin:* 158aeb46 → 6252a656.
+    - *`mayReach`* and the planner's line each say that the other is the same test.
+      `deploy.test.ts` passed in this game, untouched.
+    - *Not done:* the rest are not sent after the armour in the same plan (they come with
+      the front cell of the days after); infantry already on the march at the enemy's cell
+      keeps its order (ADR-53), a quarter of those sent to an armour's attack; no armour
+      is moved between sectors to where an attack is.
   - [ ] 3.5d **The mix.** `pickTemplate` asks for armour only at war, every third order,
     and never against an enemy with armour (the motorised branch comes first). The share
     of armour a nation wants rises with its income, in peace too, and the AT answer to an

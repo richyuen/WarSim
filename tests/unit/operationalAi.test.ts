@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
 import { passageOf } from '../../src/sim/systems/movement';
@@ -219,5 +219,54 @@ describe('allot by reach (PLAN 3.5b)', () => {
     for (const id of marching) expect(reachOf(f.targetCell[id]!), `formation ${id}`).toBe(stood.get(id));
     expect(new Set(marching.map((id) => stood.get(id))).size).toBeGreaterThanOrEqual(2);
     expect(marching.length).toBeGreaterThan(20);
+  });
+});
+
+describe('spearheads (PLAN 3.5c)', () => {
+  it('where a sector attacks with armour, the armour is sent at the enemy and the rest hold the front', () => {
+    const LTU = nationId('LIT'); // Lithuania
+    const PANZER = TEMPLATES_LAND.findIndex((t) => t.id === 'panzer_div');
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [GER, LTU]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== GER) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[GER] = 0;
+    runEvents(s, 1);
+    w.wars.start([GER], [LTU], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    // Nobody but twelve German divisions in East Prussia, a day's march and more behind the
+    // Lithuanian border: no threat, so every sector of the front attacks. The two armoured
+    // ones stand nearest the border (never the reserve).
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    const [kx, ky] = cellOf(20.5, 54.7, W, H).map(Math.floor) as [number, number];
+    const armour = [0, 1].map((k) => addDivision(w, GER, kx + 1.5, ky + k + 0.5, PANZER));
+    const foot = Array.from({ length: 10 }, (_, k) => addDivision(w, GER, kx - (k % 2) + 0.5, ky - 2 + Math.floor(k / 2) + 0.5));
+    const held = new Uint16Array(w.cells.controller);
+    // To the hour after Germany's next plan.
+    do runEvents(s, 1);
+    while (w.tick % 6 !== 1 || ((w.tick - 1) / 6 + GER) % STAGGER !== 0);
+    const target = (id: number): number => f.targetCell[id]!;
+    const dist = (a: number, b: number): number => Math.max(Math.abs((a % W) - (b % W)), Math.abs(Math.floor(a / W) - Math.floor(b / W)));
+    // The armour marches on Lithuanian ground.
+    for (const id of armour) {
+      expect(f.moving[id], `armour ${id}`).toBe(1);
+      expect(held[target(id)], `armour ${id}`).toBe(LTU);
+    }
+    const marching = foot.filter((id) => f.moving[id] === 1);
+    const holding = marching.filter((id) => held[target(id)] === GER);
+    const attacking = marching.filter((id) => held[target(id)] === LTU);
+    expect(holding.length + attacking.length).toBe(marching.length);
+    // Infantry of the armour's sectors holds the front behind it: a German cell, and within a
+    // sector of the cell an armoured division is sent at.
+    expect(holding.length).toBeGreaterThan(0);
+    for (const id of holding) expect(Math.min(...armour.map((a) => dist(target(a), target(id)))), `division ${id}`).toBeLessThanOrEqual(SECTOR_CELLS);
+    // A sector with no armour attacks with what it has, as before.
+    expect(attacking.length).toBeGreaterThan(0);
   });
 });

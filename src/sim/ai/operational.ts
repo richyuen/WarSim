@@ -22,6 +22,10 @@
  * its formations march on the enemy cell next to the sector's front nearest its centre;
  * otherwise they hold the own front cell nearest the centre. Orders already being followed
  * (target within one sector) or already reached are not re-issued.
+ * Spearheads (PLAN 3.5c, ADR-153): where a sector that attacks has armour (`SPEARHEAD_ARMOUR`,
+ * by the template: no element is looked at), the armour marches on the enemy cell and the rest
+ * hold the front cell; with no armour all of them attack, as above. The rest follow by the
+ * plans of the days after: the front cell is where the armour has taken ground.
  */
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
@@ -36,6 +40,11 @@ export const OFFENSIVE_RATIO = 1.5;
 export const THREAT_UNIT = 10_000;
 /** Formations farther than this from every front sector stay where they are (garrisons). */
 export const DEPLOY_RANGE_CELLS = 60;
+/**
+ * A formation with this share of its upkeep in tanks is armour (`EconomyTables.templateArmour`:
+ * the armour formations of 1938 have 0.66 to 0.93, the others 0.20 at most).
+ */
+export const SPEARHEAD_ARMOUR = 0.5;
 
 interface Sector {
   key: number;
@@ -49,7 +58,13 @@ interface Sector {
   hold: number;
 }
 
-export function operationalAi(world: World): void {
+/** The operational AI with the tanks' share of each template's upkeep (`EconomyTables.templateArmour`). */
+export function operationalAiOf(tables: { templateArmour: readonly number[] }) {
+  return (world: World): void => operationalAi(world, tables.templateArmour);
+}
+
+/** `armour`: the tanks' share of the upkeep by template; none given, no formation is armour. */
+export function operationalAi(world: World, armour: readonly number[] = []): void {
   if (!world.settings.aiEnabled || world.tick % 6 !== 0 || world.wars.list.length === 0) return;
   const step = world.tick / 6;
   const nc = world.nations.cols;
@@ -81,7 +96,7 @@ export function operationalAi(world: World): void {
   }
   // Planners with the same ground open to them (the members of a coalition) share one `Passage`.
   const passages = new Map<string, Passage>();
-  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f, passages);
+  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f, passages, armour);
 }
 
 /** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
@@ -90,7 +105,7 @@ interface Front {
   near: number[];
 }
 
-function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols'], passages: Map<string, Passage>): void {
+function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols'], passages: Map<string, Passage>, armour: readonly number[]): void {
   const wars = world.wars;
   // n's enemies as a mask: the tests below run per frontier cell and per formation.
   const enemyOf = new Uint8Array(world.nations.highWater);
@@ -164,7 +179,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // with open ground (or on closed ground, which they walk out of) reach the same places.
   // Each such class is asked once per sector, for the sector's own front cell, what
   // `orderMove` asks before it searches: the cell the order would go to from that landmass
-  // (`snapTarget`), then `mayReach`, read here from the two groups.
+  // (`snapTarget`), then `mayReach`, read here from the two groups: the same test written a
+  // second time (the landmass is asked once per class and sector), so a change of `mayReach`
+  // is a change of the line that fills `reached` below.
   const pass = passageOf(world, n, passages);
   const nav = navOf(world);
   const land = nav.grid.component;
@@ -301,19 +318,21 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
   }
   // Orders.
+  const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
   for (const s of list) {
     if (s.formations.length === 0) continue;
     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
     const target = attack ? attackCell(world, s, enemy, nb) : s.hold;
     if (target < 0) continue;
-    const tx = (target % w) + 0.5;
-    const ty = Math.floor(target / w) + 0.5;
+    // Spearheads: armour leads the attack, and where it does the rest hold the front.
+    const lead = attack && s.formations.some(isArmour);
     for (const id of s.formations) {
+      const to = lead && !isArmour(id) ? s.hold : target;
       // Already heading there, or to a cell within one sector of it: no new route.
-      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, target, w) <= SECTOR_CELLS) continue;
+      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w) <= SECTOR_CELLS) continue;
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
-      if (here === target) continue;
-      orderMove(world, id, tx, ty, pass);
+      if (here === to) continue;
+      orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);
     }
   }
 }
