@@ -9073,3 +9073,66 @@ No rule changed and nothing on screen changed. One task came out of it.
   sweep tests, build, e2e in full (147 passed, 14.5 min), parity.
 - **Review count:** 3.9 is the second numbered task since the phase review 3.7.
 - **Next:** PLAN 3.10.
+
+## 2026-10-07 — PLAN 3.10a: the tick by system (`npm run sim -- --profile`)
+
+- **Split:** PLAN 3.10 into a (this), b (20 years of one seed), c (the operational AI), d
+  (supply), e (territory, combat), f (the AT's runs and the tick).
+- **Done:** `Sim.profile(now)` wraps each system with a timer and returns the tallies (ms, the
+  longest call, the calls of 1 ms or more and their ms); not state, in no save and no hash.
+  The 22 systems of the 1938 rules have names (`SYSTEM_NAMES_1938`; six are closures). The
+  runner's `profile` option gives `YearMetrics.systems`, and every year has `living` (the
+  nations alive; `nations` counts the dead too). The CLI prints both.
+- **Tests:** `tests/unit/headless.test.ts`, two new: a profiled toy game ends on the hash of a
+  plain one and each year's tallies are its own; the 1938 systems have 22 different names.
+  They passed on the first run (new code, nothing to fail first).
+- **The same game:** a year of seed 99, profiled and plain: `875255b7` both (the pin), 2.526
+  and 2.482 ms a tick.
+- **Checkpoints, of HEAD only (`.cache/ck/`, not committed):** seed 4242 after year 1
+  (`c426efce`), seed 8128 after year 7 (`2a2632f5`). The critic's `c3_seed8128_y7.bin` is of
+  `a6f63ef`, a different game since 3.8e.
+- **The profiles,** pinned to `0xFFFF`, nothing beside them, ms a tick; each run twice from
+  its checkpoint, the second run in brackets where it differs by more than 0.01:
+
+  | system | 4242 y1 | 4242 y2 | 4242 y3 | 8128 y8 | 8128 y9 |
+  |---|---|---|---|---|---|
+  | **tick** | 3.170 | 2.163 (2.203) | 1.495 (1.506) | 2.346 (2.325) | 1.483 (1.476) |
+  | operationalAi | 1.064 | 0.924 | 0.355 | 0.966 | 0.576 |
+  | combat | 1.118 | 0.461 (0.475) | 0.278 | 0.294 | 0.173 |
+  | supply | 0.330 | 0.268 | 0.359 | 0.353 | 0.315 |
+  | territory | 0.272 | 0.220 | 0.264 | 0.391 | 0.203 |
+  | movement | 0.186 | 0.116 | 0.100 | 0.142 | 0.079 |
+  | retreat | 0.075 | 0.036 | 0.025 | 0.024 | 0.013 |
+  | war | 0.035 | 0.025 | 0.026 | 0.038 | 0.021 |
+  | strategicAi | 0.023 | 0.033 | 0.020 | 0.036 | 0.025 |
+  | capitals | 0.026 | 0.032 | 0.018 | 0.024 | 0.026 |
+  | revolts | under 0.01 | 0.013 | 0.019 | 0.034 | 0.025 |
+  | the other 12 | under 0.03 together | | | | |
+  | nations alive, formations | 97, 961 | 97, 804 | 101, 816 | 107, 854 | 111, 785 |
+
+  Year 1 of seed 4242 was run once (it wrote the checkpoint).
+- **Read from them:**
+  - *The operational AI* is 39 to 43 % of the dear years, and it is not spread: 721 to 1,418
+    calls a year of 1 ms or more hold 95 to 99.6 % of its time (0.876 of 0.924 ms; 0.962 of
+    0.966). Its longest call: 451 ms in year 1 of seed 4242, 261 and 267 ms in year 2, 105 ms
+    in year 1 of seed 99, 48 to 70 ms on seed 8128. A frame at Max waits for that call.
+  - *Supply* the same way: 626 to 730 calls a year of 1 ms or more (two a day) hold 81 to
+    87 % of 0.27 to 0.36 ms; the longest 8 to 23 ms.
+  - *Territory* is on every tick: 33 to 57 slow calls a year hold a tenth of it.
+  - *Combat* is the first year's cost (1.12 ms on seed 4242, 0.95 on seed 99, 3,278 to 4,355
+    calls of 1 ms or more) and falls to 0.17 to 0.47 ms after it.
+  - *Once a year or a month, long:* strategicAi 102 and 103 ms, capitals 75 to 85 ms, revolts
+    22 to 51 ms, war 20 to 37 ms. Little in the mean, a stutter in the browser.
+  - Nothing here grows with the count of nations (97 to 111) or of formations: the dear years
+    are the years of large wars (71,344 cells changed hands in year 8 of seed 8128). Twenty
+    years will say more (3.10b).
+- **Not as the critic had it:** year 1 of seed 4242 reads 3.170 ms at HEAD against the
+  critic's 2.421 at `a6f63ef`, and year 1 of seed 99 2.482 against a budget of 2.4. The games
+  differ since 3.8e; which part of 3.8 made the first year dearer was not looked for.
+- **Not done:** no cause looked for, nothing made faster. The profile's own cost was read
+  once (2.526 against 2.482 ms, one run each). Commands applied before the systems are in
+  the tick's time and in no system's. No picture: nothing drawn changed.
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 984 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part, no spec changed).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Next:** PLAN 3.10b.

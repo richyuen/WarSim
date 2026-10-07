@@ -25,6 +25,8 @@ export interface HeadlessOptions {
   load?: Uint8Array;
   /** Called with the final state's save bytes (to write a checkpoint). */
   onSave?: (bytes: Uint8Array) => void;
+  /** Time each system (`YearMetrics.systems`). */
+  profile?: boolean;
 }
 
 export interface NationYear {
@@ -37,17 +39,33 @@ export interface NationYear {
   strength: number;
 }
 
+/** One system's cost over a year (`Sim.profile`). */
+export interface SystemYear {
+  name: string;
+  /** Mean milliseconds a tick. */
+  ms: number;
+  /** The longest call, ms. */
+  max: number;
+  /** Calls of `SLOW_CALL_MS` or more, and their mean milliseconds a tick. */
+  slow: number;
+  slowMs: number;
+}
+
 export interface YearMetrics {
   year: number;
   tick: number;
   hash: number;
   nations: NationYear[];
+  /** Nations alive at year end (`nations` has the dead ones too). */
+  living: number;
   formations: number;
   /** Cells whose controller changed during the year. */
   cellsFlipped: number;
   events: Record<string, number>;
   tickMs: { mean: number; p95: number; max: number };
   wallMs: number;
+  /** With `profile`: every system, in tick order. */
+  systems?: SystemYear[];
 }
 
 export interface HeadlessResult {
@@ -90,11 +108,20 @@ function nationStats(world: World): NationYear[] {
   return out;
 }
 
+function livingNations(world: World): number {
+  let n = 0;
+  world.nations.forEach((id) => {
+    if (world.nations.cols.living[id] === 1) n++;
+  });
+  return n;
+}
+
 export function runHeadless(opts: HeadlessOptions): HeadlessResult {
   const now = opts.now ?? (() => performance.now());
   const sim = new Sim(opts.scenario !== 'toy' ? { scenario: opts.scenario, seed: opts.seed, assets: loadAssets1938(SIZE_1938.w), ...(opts.nations !== undefined ? { options: { nations: opts.nations } } : {}) } : { scenario: opts.scenario, seed: opts.seed });
   if (opts.load) sim.load(opts.load);
   const world = sim.world;
+  const prof = opts.profile ? sim.profile(now) : undefined;
   const firstYear = Math.floor(world.tick / TICKS_PER_YEAR);
   const yearly: YearMetrics[] = [];
   const start = now();
@@ -103,6 +130,7 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
     const y0 = now();
     const before = world.cells.controller.slice();
     const events: Record<string, number> = {};
+    if (prof) for (const a of [prof.ms, prof.max, prof.slow, prof.slowMs]) a.fill(0);
     for (let t = 0; t < TICKS_PER_YEAR; t++) {
       const t0 = now();
       sim.step(1, (w) => {
@@ -127,11 +155,13 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
       tick: world.tick,
       hash: sim.hash(),
       nations: nationStats(world),
+      living: livingNations(world),
       formations: world.formations.count,
       cellsFlipped: flipped,
       events,
       tickMs: { mean: sum / TICKS_PER_YEAR, p95: sorted[Math.floor(0.95 * TICKS_PER_YEAR)]!, max: sorted[TICKS_PER_YEAR - 1]! },
       wallMs: now() - y0,
+      ...(prof ? { systems: prof.names.map((name, i) => ({ name, ms: prof.ms[i]! / TICKS_PER_YEAR, max: prof.max[i]!, slow: prof.slow[i]!, slowMs: prof.slowMs[i]! / TICKS_PER_YEAR })) } : {}),
     };
     yearly.push(m);
     opts.onYear?.(m);

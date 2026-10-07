@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { Sim } from '../../src/sim/sim';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { parseAffinity } from '../../tools/headless/affinity';
+import { loadAssets1938 } from '../../tools/headless/assets';
 import { runHeadless, TICKS_PER_YEAR } from '../../tools/headless/runner';
 
 describe('headless runner (PLAN 0.20)', () => {
@@ -32,6 +34,31 @@ describe('headless runner (PLAN 0.20)', () => {
     plain.step(2 * TICKS_PER_YEAR);
     expect(r.finalHash).toBe(plain.hash());
     expect(r.yearly[1]!.hash).toBe(r.finalHash);
+  });
+
+  it('--profile times every system by name and plays the same game (PLAN 3.10a)', () => {
+    // A clock that moves 1 ms each time it is read: every call of a system takes 1 ms by it.
+    let clock = 0;
+    const r = runHeadless({ scenario: 'toy', seed: 3, years: 2, profile: true, now: () => clock++ });
+    const plain = runHeadless({ scenario: 'toy', seed: 3, years: 2 });
+    expect(r.finalHash).toBe(plain.finalHash);
+    expect(plain.yearly[0]!.systems).toBeUndefined();
+    expect(plain.yearly[0]!.living).toBe(2);
+    for (const m of r.yearly) {
+      expect(m.systems!.map((s) => s.name)).toEqual(['toyMovement', 'toyReinforce', 'toyCount']);
+      // Each year's tallies are its own: 1 ms a tick, every call a slow one.
+      for (const s of m.systems!) expect(s).toEqual({ name: s.name, ms: 1, max: 1, slow: TICKS_PER_YEAR, slowMs: 1 });
+    }
+  });
+
+  it('the systems of the 1938 rules each have a name', () => {
+    const sim = new Sim({ scenario: '1938', seed: 1, assets: loadAssets1938(SIZE_1938.w) });
+    const p = sim.profile(() => 0);
+    sim.step(1);
+    expect(p.names).toHaveLength(22);
+    expect(new Set(p.names).size).toBe(22);
+    expect(p.ms).toHaveLength(22);
+    expect(p.names.every((n) => n.length > 0)).toBe(true);
   });
 
   it('a checkpoint continues the run: year 1 saved, then loaded for year 2, equals two years straight', () => {

@@ -38,7 +38,8 @@ There is no memory between sessions. Read these files:
   `/?scenario=toy`; benches at `/bench.html?b=A|P|R`.
 - `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`: a tick-time
   measurement. `--affinity` pins the run to the performance cores of the machine the budget was
-  set on; unpinned, the same code reads up to 1.65 × slower there.
+  set on; unpinned, the same code reads up to 1.65 × slower there. `--profile` adds each year's tick by
+  system (mean ms, share, longest call, calls of 1 ms or more).
 - `npm run sim -- --scenario toy --seed 7 --years 10`: headless runner (`--save` / `--load` a
   checkpoint).
 - `npm run sim -- --scenario random --nations 60 --seed 7 --years 1`: the random world (ADR-108).

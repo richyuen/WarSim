@@ -4402,6 +4402,22 @@ quick sweep as a smoke test.
   the top speed as a design (15 to 28 s a year at Max in the browser): PLAN 7.1.
   AT: the tick by system of both profiles is in PROGRESS; seeds 99, 4242 and 8128 each run
   five years pinned under 1.5 ms mean, or what is left over is in BLOCKERS with its numbers.
+  - [x] 3.10a *Done 2026-10-07:* the tick by system. `npm run sim -- --profile` (`Sim.profile`,
+    `YearMetrics.systems` and `living`; `tests/unit/headless.test.ts`). Both profiles, twice
+    each from a checkpoint of HEAD, are in PROGRESS: the operational AI is 39 to 43 % of the
+    dear years (0.92 to 0.97 ms of 2.2 to 2.3), nearly all of it in 720 to 1,420 calls of
+    1 ms or more; then supply (0.27 to 0.36 ms, the same way), territory (0.20 to 0.39 ms,
+    spread over every tick), combat (0.17 to 0.47 ms; 1.12 ms in a first year).
+  - [ ] 3.10b One seed alone for 20 years (seed 4242, pinned, `--profile`): the tick by year
+    with the living nations and the formations beside it, and which system grows.
+  - [ ] 3.10c The operational AI: what its dear calls are (which day, which nation, which
+    step; a call of 451 ms in year 1 of seed 4242), and the first cause, with the pin
+    unmoved. Further causes are parts of their own, one a commit.
+  - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
+  - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
+    budget is not met by then.
+  - [ ] 3.10f The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
+    the full gate.
 - [ ] 3.11 Critic R3-B3: zooming to a formation in contact shows its fight. The
   differentiator scored 6 and needs 8; tanks scored 5 and need 8. PLAN 3.7d and 3.7g tied
   the drawn tag to the elements (ADR-168). What the critic saw after them (`critic/c3_m.json`):
