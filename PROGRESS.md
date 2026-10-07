@@ -7828,3 +7828,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   1938 game past its first days, or the full suite.
 - **Not done:** no cause looked for in any of the four; no bisect.
 - **Next:** PLAN 3.5f (the desync).
+- **Added after the commit** (`fe170bb`): the test that did not run is
+  `provinces.perf.spec.ts`, the one test of the `perf` project, which runs only after a
+  green `chromium` project. No result for it on this code. PLAN 3.5f has the commits to
+  bisect by.

@@ -3520,7 +3520,9 @@ quick sweep as a smoke test.
     - *It does not tick 3.5.* The full e2e, run by hand on `2617f3d` (the gate runs parity
       alone for a commit of documents): 134 passed, 4 failed, the four again when run
       alone. The parts 3.5a to 3.5d ran three specs by hand each and none of these four.
-      They are 3.5f to 3.5i below.
+      They are 3.5f to 3.5i below. One test did not run: `provinces.perf.spec.ts`, the one
+      test of the `perf` project, which waits for a green `chromium` project. It has no
+      result on this code; the full e2e that ticks 3.5 must show it run.
   **The AT of 3.5 is measured** (2026-10-07; headless 1938, seed 99 and seed 7): the tanks'
   share of the army's upkeep in year 10 is 29.5 and 28.4 % for Germany (3.9 and 0 before
   3.5d), 28.1 and 25.1 % for Britain, 31.2 and 27.6 % for the United States, 13.8 and 14.7 %
@@ -3537,6 +3539,10 @@ quick sweep as a smoke test.
     looked at: the retreat's hours and org (3.5a, in the save by its test), what the planner
     keeps between days (3.5b's classes and passage), the armour table the planner is handed
     (3.5c: `operationalAiOf`), the saving of 3.5d (an order in training).
+    To bisect: `npx playwright test tests/e2e/workerNodeGrowth1938.spec.ts
+    --project=chromium` (about 40 s) on a checkout of each of `d2549ce` (3.5a1), `8fe6ef0`
+    (3.5b), `6eca872` (3.5c), on a clean tree; `0755501` (3.5a) passed it in the full suite
+    and `2617f3d` (3.5d) fails. The failure's trace is in `test-results/` (not committed).
     AT: unit, failing first, in Node (save, load, step: the hash of the game that went on);
     the spec green as written.
   - [ ] 3.5g **`zoomDemo1938`: the battalions at the last stops are not under half strength**
