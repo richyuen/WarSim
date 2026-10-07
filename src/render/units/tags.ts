@@ -13,6 +13,8 @@
  * elements where a place clear of them is free, and one that stands off its own has a line to
  * them in its nation's colour. Where blocks stand side by side in a contact, the strongest
  * one's tag lay on the others' sprites and nothing said which block a tag was of.
+ * So has one that stands by its elements while another formation's tag is nearer to their
+ * middle (ADR-188, PLAN 3.10c1b).
  *
  * It gives way likewise to what the page has above the map (PLAN 2.14f2): the war banners and
  * the bottom bar. A formation at the bottom edge had its tag under them.
@@ -54,7 +56,7 @@ export interface PlacedTag {
   h: number;
   /** The gap between the tag and the box of its elements, px (0 when it stands on them). */
   gap: number;
-  /** Whether it stands off its elements and has a line to them (ADR-168). */
+  /** Whether it has a line to its elements: it stands off them (ADR-168), or another tag is nearer to their middle (ADR-188). */
   line: boolean;
   /** The middle of its formation's elements in the view, CSS px: where the line ends. */
   tx: number;
@@ -153,6 +155,15 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       if (done) break;
     }
     if (!done) left++;
+  }
+  // A tag by its own block is not always the one a reader takes for the block's (ADR-188):
+  // by a tall block, "below" is further from its middle than a neighbour's tag over its top.
+  // Such a tag has a line too.
+  const far = (t: PlacedTag, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
+  for (const t of placed) {
+    if (t.line) continue;
+    const own = far(t, t.tx, t.ty);
+    if (placed.some((o) => o !== t && far(o, t.tx, t.ty) < own)) t.line = true;
   }
   return { placed, left };
 }

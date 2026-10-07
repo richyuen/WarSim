@@ -145,6 +145,49 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     });
   });
 
+  // PLAN 3.10c1b (ADR-188): a tag by its block, with a neighbour's tag nearer to the block's middle.
+  describe('a tag that is not the nearest to its own elements (PLAN 3.10c1b)', () => {
+    // The tank battle demo at 60 m/px on the game of PLAN 3.10c1 (seed 2, day 22.8): the
+    // brigade's column is 69 px tall, the division east of it is the stronger and has its tag
+    // above, 112 px wide, over the top of the column too. The brigade's stands below, a gap off.
+    const named = (id: number, strength: number, name: string, x0: number, y0: number, x1: number, y1: number): TagInput => ({ ...item(id, strength, x0, y0, x1, y1), name });
+    const brigade = named(395, 873, 'Tank brigade 395', 664.3, 366.4, 706.4, 435);
+    const east = named(410, 4100, 'Light infantry division 410', 720, 368.8, 751.6, 426.8);
+    const south = named(418, 7100, 'Light infantry division 418', 737.4, 426.8, 782.3, 486.6);
+    // The widths the page measured: tags of 77 and 112 px.
+    const wide = (text: string): number => (text === 'Tank brigade 395' ? 71 : text.startsWith('Light') ? 106 : 30);
+    const far = (t: { x: number; y: number; w: number; h: number }, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
+
+    it('the view of the demo: the brigade\'s tag is where it was, a gap below its column, and has a line; the others have none', () => {
+      const { placed, left } = layoutTags([brigade, east, south], wide, 1400, 800);
+      expect(left).toBe(0);
+      const of = (id: number): (typeof placed)[number] => placed.find((t) => t.id === id)!;
+      expect([of(410).x, of(410).y, of(410).w]).toEqual([680, 335, 112]);
+      expect([of(395).x, of(395).y, of(395).w]).toEqual([647, 439, 77]);
+      expect(of(395).gap).toBeCloseTo(TAG_GAP, 5);
+      // The division's tag is nearer to the middle of the column than the brigade's own.
+      const [mx, my] = [of(395).tx, of(395).ty];
+      expect(far(of(410), mx, my)).toBeLessThan(far(of(395), mx, my));
+      expect(placed.filter((t) => t.line).map((t) => t.id)).toEqual([395]);
+    });
+
+    it('every tag is the nearest to the middle of its own elements or has a line to them', () => {
+      for (const list of [[brigade, east, south], [brigade, east], [east, south]]) {
+        const { placed } = layoutTags(list, wide, 1400, 800);
+        for (const t of placed) {
+          const nearest = placed.reduce((a, b) => (far(b, t.tx, t.ty) < far(a, t.tx, t.ty) ? b : a));
+          expect(far(nearest, t.tx, t.ty) >= far(t, t.tx, t.ty) || t.line, `the tag of ${t.id}`).toBe(true);
+        }
+      }
+    });
+
+    it('the brigade alone with the division south of it: above its column, no line', () => {
+      const t = layoutTags([brigade, south], wide, 1400, 800).placed.find((p) => p.id === 395)!;
+      expect(t.y + t.h).toBeLessThanOrEqual(366.4 - TAG_GAP + 1);
+      expect(t.line).toBe(false);
+    });
+  });
+
   // PLAN 2.14f2: the war banners and the bottom bar are in the way as another tag is.
   describe('what the page has above the map', () => {
     // A formation cut by the bottom edge, with something above it: its tag's first free place

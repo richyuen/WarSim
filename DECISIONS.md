@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-188 · 2026-10-07 · accepted — A tag that is not the nearest to its own elements has a line to them (PLAN 3.10c1b)
+
+- **Context.** `tankBattle1938` failed on the game of PLAN 3.10c1 at its stop of 60 m/px:
+  "the brigade's tag is the nearest to its tanks or has a line to them" (ADR-168). The
+  boxes of that view (seed 2, day 22.8; a probe in the spec, taken out again):
+  - Tank brigade 395 (873 men): its elements x 664–706, y 366–435, a column 69 px tall.
+  - Light infantry division 410 (4.1k): x 720–752, y 369–427, east of it.
+  - Light infantry division 418 (7.1k): x 737–782, y 427–487.
+  `layoutTags` places the stronger first. 410 takes "above": a tag of 112 px centred on a
+  block of 32 px, x 680–792, y 335–365, which is over the top of the brigade's column too,
+  1.4 px clear of it. The brigade's own "above" lies on that tag, so it takes "below"
+  (x 647–724, y 439–469), 4 px off its block: no line by ADR-168's rule (a line when the
+  gap is over `TAG_GAP` + 1).
+- **Which it is: the placing, not the measure.** From the middle of the brigade's block
+  (685, 401) its own tag is 38 px away and the division's 36 px (the spec, from the middle
+  of its 20 tanks: 40 and 34). The picture agrees with the spec: the tag that stands over
+  the tanks says "Light infantry division 410". ADR-168's line was for a tag that gave way;
+  it did not see that by a tall block the place "below" is further from the block's middle
+  than a neighbour's tag over its top, with every tag "by its own". The comment in `tags.ts`
+  says "the nearest free one" of the places; the order is above, below, left, right
+  whatever the block's shape.
+- **Decision.** After the placing, a tag has a line to the middle of its elements also when
+  another placed tag is nearer to that middle than it is (from the point to the tag's box,
+  0 inside it: the spec's measure). No tag moves. View only (`tags.ts`).
+- **Why not place it differently.** Trying the places in the order of the block's shape
+  (beside a tall block first) moves the tag of every tall block, and the unit tests and
+  three specs hold "above first". Keeping a tag a gap clear of other formations' elements
+  would send 410's tag beside its block here, but leaves the case in general (a tag clear
+  of a neighbour and still nearer its middle). The line is what ADR-168 has for "nothing
+  says which block this tag is of".
+- **What it does not do.** The division's tag still stands over the tanks, without a line
+  of its own (it is the nearest to its own block): the picture says whose the tanks are by
+  the brigade's line, not by clearing the other tag away
+  (`docs/evidence/3.10/c1b-turrets.png`). Under PLAN 7.4.
+- **Consequences.** A line can come and go as the view moves and another tag comes nearer
+  (the line of ADR-168 does too, with the gap). The existing unit tests hold unchanged (in
+  the three columns of PLAN 3.7g no tag is nearer to another block's middle than that
+  block's own). The pin is unmoved: nothing of the sim changed.
+
 ### ADR-187 · 2026-10-07 · accepted — A front sector takes only the formations within the range of it (PLAN 3.10c1)
 
 - **Context.** PLAN 3.10c: the operational AI's dear calls are its orders to fronts far away.

@@ -9382,3 +9382,46 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0 on the second run: typecheck, lint, 985 unit tests, the 17
   sweep tests, build, parity. No e2e (a part).
 - **Next:** PLAN 3.10c1b (the tag of the tank battle), then 3.10c1a.
+
+## 2026-10-07 · PLAN 3.10c1b: the tag of the tank battle (ADR-188)
+
+- **Which it was: the placing.** `tankBattle1938` at 60 m/px on the game of 3.10c1. A probe
+  in the spec (the boxes of the formations and of the tags, and a picture; taken out again,
+  the spec is unchanged): the brigade's column is 69 px tall (x 664–706, y 366–435); the
+  division east of it (410, the stronger) has its tag above its own block, 112 px wide on a
+  block of 32, so over the top of the column too (x 680–792, y 335–365); the brigade's
+  "above" lies on that tag, and it takes "below", 4 px off its block and without a line.
+  From the block's middle its own tag is 38 px away, the division's 36 (the spec's 40 and
+  34 are from the middle of the tanks: the measure is not what is wrong). In the picture
+  the tag over the tanks was the infantry division's.
+- **The rule (ADR-188):** after the placing, a tag has a line also when another tag is
+  nearer to the middle of its elements than it is. `layoutTags`, 6 lines; no tag moves.
+  Not done: trying the places by the block's shape, or keeping tags a gap clear of other
+  formations' elements (why not is in the ADR).
+- **Unit tests** (`tests/unit/tags.test.ts`, 3 new, 2 of them red first: "expected [] to
+  deeply equal [395]"): the three boxes of this view with the widths the page measured
+  (the two tags stand where the page had them: 680, 335 and 647, 439); every tag is the
+  nearest to its own middle or has a line; the brigade without the division east of it
+  stands above, no line. The 15 older tests pass unchanged.
+- **Specs by hand** (`--project chromium`, 8 tests, 2.9 min): `tankBattle1938` green ("its
+  tag 40 px from it, 4 px off its block, with a line; ... tags with a line: 395"),
+  `markerStacks1938` (4), `tags1938`, `battleView1938` (2).
+- **Looked at** (the six pictures of the run; stops 3 and 4 kept as
+  `docs/evidence/3.10/c1b-turrets.png` and `c1b-tanks.png`):
+  - *Stop 3:* a pale line from "Tank brigade 395" up into the middle of the column. It
+    reads. "Light infantry division 410" still stands over the column's top: under PLAN 7.4.
+  - *Stop 2 (100 m/px):* the brigade's tag left of its block, as before; the lines of 384
+    and 440 as before.
+  - *Stop 4:* the brigade's tag above its block, no line. The tag of 418 lies under the map
+    mode's legend at the bottom right.
+  - *Stops 5 and 6:* tanks, tracers, three and four burning hulls with smoke. The brigade's
+    tag stands at the top edge, half under the title bar. Both under PLAN 7.4 (the tags
+    give way to the banners and the bottom bar only).
+  - The pictures of `docs/evidence/3.6/` are of the battle before 3.10c1 and were left: the
+    ADRs 166 and 168 describe them.
+- **Not done:** the full e2e suite (ADR-87: a part; 3.10f will). No sweep (ADR-58). The tick
+  was not measured: nothing of the sim changed, and the post-pass is over the tags placed
+  (9 at most in these views).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 988 unit tests, build, parity. No sweep tests (no sim input changed) and no e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c1a (formations go to a front that the army is not near).

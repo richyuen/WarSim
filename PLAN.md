@@ -4439,7 +4439,7 @@ quick sweep as a smoke test.
     one, the near one is not stacked while the far one starves (if it is: a part of its
     own, moving formations between theatres in bulk; 3.10c1 stays). The ADR is a correction:
     the comment on `DEPLOY_RANGE_CELLS` has always said the range is to the sector.
-  - [ ] 3.10c1b `tankBattle1938` fails on the game of 3.10c1 (run by hand; the gate of a part
+  - [x] 3.10c1b *Done 2026-10-07 (ADR-188: the placing; a tag has a line also when another tag is nearer to its block's middle):* `tankBattle1938` fails on the game of 3.10c1 (run by hand; the gate of a part
     runs no spec that did not change). Before 3.10c1a, which moves the game again: the case
     is this commit's. The demo's battle is now formation 395 of Japan, seed 2, day 22.8. At
     the stop of 60 m/px ("turrets") its tag is 40 px from the middle of its 20 tanks and
@@ -4814,6 +4814,16 @@ quick sweep as a smoke test.
     `docs/evidence/2.10/stop-5-battle.png`): at 150 m/px the tags of three divisions in one
     battle lie on each other and on the sprites, one name half covered. Whether the tags
     are parted at all at T2 was not looked at.
+  - **A neighbour's tag over a block** (seen 2026-10-07, PLAN 3.10c1b,
+    `docs/evidence/3.10/c1b-turrets.png`, after ADR-188): at 60 m/px the tag of "Light
+    infantry division 410" stands over the column of Tank brigade 395, whose own tag is
+    below it with a line. The line says whose the tanks are; the other tag is still the one
+    above them. A tag a gap clear of other formations' elements was not tried.
+  - **Tags under the page's boxes** (seen 2026-10-07, PLAN 3.10c1b,
+    `docs/evidence/3.10/c1b-tanks.png` and the tank battle demo's stops 5 and 6): the tag of
+    "Light infantry division 418" lies under the map mode's legend at the bottom right, and
+    at the two closest stops the brigade's tag stands at the top edge, half under the title
+    bar. The tags give way to the war banners and the bottom bar only (PLAN 2.14f2).
   - **A tag far from its block at T3** (seen 2026-10-07, PLAN 3.7f,
     `docs/evidence/2.10/stop-7-battalions.png`, after ADR-168): at 12 m/px the tag of
     "Motorised division 47" stands at the view's right edge and its line runs 480 px back
