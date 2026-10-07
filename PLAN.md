@@ -3688,11 +3688,20 @@ quick sweep as a smoke test.
       sprite's walk from its place, which is another in every tick: every walk jumped at a
       tick's end. The phase is now in the sprite's frame field (`marchFraction`), its own
       from tick to tick, and a turret copies its hull's. `turrets.test.ts` 3 → 5.
-  - [ ] 3.6b **The turret turns.** A tank that fires has its turret on its target, turned
+  - [x] 3.6b **The turret turns.** A tank that fires has its turret on its target, turned
     there in a fraction of a second, and back to the hull's facing when it has been silent
     for a while. View state on the render clock, from the fire records (as the tracers): no
     sim state. AT: unit (the angle at a time, the shorter way round, the return); a spec
     (turrets of a division in contact are not all at the hull's facing).
+    **Done 2026-10-07 (ADR-160).** `TurretAims` in `turrets.ts`, from the shots `FireFx`
+    draws; `MapView.turnTurrets` writes the turrets' facings each frame while an aim is live
+    (`ProxyRenderer.uploadRange`). `turrets.test.ts` 5 → 12. `turrets1938.spec.ts` new: 34
+    of 88 turrets in view are of tanks that fired, all 34 off their hulls as the last shot
+    leaves and all 88 back after the silence; at 4 m/px the 10 tanks of an element as the
+    element. Pictures at 60, 4 and 1.5 m/px looked at.
+    - *Not done:* the tanks of an element have one angle, not each its bearing (3.6c may
+      give each its own, where the shot leaves a muzzle); the frame's time with the pass
+      was not measured; a turn was not filmed in a running game.
   - [ ] 3.6c **The shot leaves a barrel.** At T3 a tracer and its flash start at the middle
     of the element's footprint, not at a figure. A tank's shot starts at the muzzle of one of
     its tanks, a gun's at one of its guns, and the cannon's flash is a tongue along the

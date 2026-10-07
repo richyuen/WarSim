@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { marchFraction, PROXY_STRIDE } from '../../src/render/units/ProxyRenderer';
-import { appendTurrets } from '../../src/render/units/turrets';
-import { Frame, turretOf } from '../../src/shared/unitLooks';
+import type { Shot } from '../../src/render/fx/fire';
+import { appendTurrets, HOLD_MS, RETURN_MS, TURN_MS, turnBetween, TurretAims } from '../../src/render/units/turrets';
+import { Frame, turretOf, Weapon } from '../../src/shared/unitLooks';
 
 // PLAN 3.6a: a tank is two sprites, its hull and, after every other instance, its turret at the
 // hull's place. Until then a tank was one frame with the gun drawn on, which nothing could turn.
@@ -69,5 +70,112 @@ describe('marchFraction', () => {
     const tenths = new Array<number>(10).fill(0);
     for (let id = 1; id <= 5000; id++) tenths[Math.floor(((marchFraction(id) - 0.5) / 0.49) * 10)]!++;
     for (const n of tenths) expect(n).toBeGreaterThan(400);
+  });
+});
+
+// PLAN 3.6b: a turret is on its target as its shot leaves, and back on its hull after a silence.
+describe('TurretAims', () => {
+  const shot = (shooter: number, start: number, x1: number, y1: number, weapon: Weapon = Weapon.cannon): Shot => ({ shooter, target: 99, weapon, x0: 10, y0: 10, x1, y1, dx: 0, dy: 0, start });
+  const HULL = 0.3;
+  const NORTH_EAST = Math.atan2(-1, 1);
+
+  it('turns from the hull\'s facing to the target before the shot, stays, and comes back', () => {
+    const aims = new TurretAims();
+    expect(aims.animating(0)).toBe(false);
+    aims.add([shot(7, 1400, 11, 9)], 1000, 0);
+    const t0 = 1400 - TURN_MS;
+    // Not yet turning: the shot is later in the tick. Another element's turrets never turn.
+    expect(aims.angleAt(7, HULL, 1000)).toBe(HULL);
+    expect(aims.angleAt(7, HULL, t0)).toBe(HULL);
+    expect(aims.angleAt(8, HULL, 1400)).toBe(HULL);
+    // Half-way at half the time (the ease is symmetric), on the target when the shot leaves.
+    expect(aims.angleAt(7, HULL, t0 + TURN_MS / 2)).toBeCloseTo((HULL + NORTH_EAST) / 2, 9);
+    expect(aims.angleAt(7, HULL, 1400)).toBe(NORTH_EAST);
+    expect(aims.angleAt(7, HULL, 1400 + HOLD_MS - 1)).toBe(NORTH_EAST);
+    expect(aims.angleAt(7, HULL, 1400 + HOLD_MS + RETURN_MS / 2)).toBeCloseTo((HULL + NORTH_EAST) / 2, 9);
+    expect(aims.angleAt(7, HULL, 1400 + HOLD_MS + RETURN_MS)).toBeCloseTo(HULL, 12);
+    expect(aims.angleAt(7, HULL, 1e9)).toBeCloseTo(HULL, 12);
+    expect(aims.animating(1400 + HOLD_MS + RETURN_MS - 1)).toBe(true);
+    expect(aims.animating(1400 + HOLD_MS + RETURN_MS + 60)).toBe(false);
+  });
+
+  it('a shot at the snapshot\'s arrival: the turn begins then', () => {
+    const aims = new TurretAims();
+    aims.add([shot(7, 1000, 11, 9)], 1000, 0);
+    expect(aims.angleAt(7, HULL, 1000)).toBe(HULL);
+    expect(aims.angleAt(7, HULL, 1000 + TURN_MS)).toBe(NORTH_EAST);
+  });
+
+  it('goes the shorter way round', () => {
+    const aims = new TurretAims();
+    // Hull to the south-west by west (−170°), target to the north-west by west (+170°): 20° over west.
+    const hull = (-170 * Math.PI) / 180;
+    aims.add([shot(7, 1000, 10 - Math.cos((10 * Math.PI) / 180), 10 + Math.sin((10 * Math.PI) / 180))], 1000, 0);
+    for (let t = 1000; t < 1000 + TURN_MS; t += 10) {
+      const a = aims.angleAt(7, hull, t);
+      expect(a).toBeLessThanOrEqual(hull + 1e-12);
+      expect(a).toBeGreaterThanOrEqual(hull - (20 * Math.PI) / 180 - 1e-9);
+    }
+    expect(Math.cos(aims.angleAt(7, hull, 1000 + TURN_MS))).toBeCloseTo(Math.cos((170 * Math.PI) / 180), 9);
+    for (const [a, b] of [[0, 3], [3, -3], [-3, 3], [6, -6], [0.1, 0.1 + 2 * Math.PI]] as const) {
+      expect(Math.abs(turnBetween(a, b, 1) - a)).toBeLessThanOrEqual(Math.PI + 1e-12);
+      expect(Math.cos(turnBetween(a, b, 1))).toBeCloseTo(Math.cos(b), 9);
+      expect(Math.sin(turnBetween(a, b, 1))).toBeCloseTo(Math.sin(b), 9);
+    }
+  });
+
+  it('a second shot turns the turret on from where it is: on its last target, or on its way back', () => {
+    const second = (start: number): TurretAims => {
+      const aims = new TurretAims();
+      aims.add([shot(7, 1000, 11, 9)], 1000, 0);
+      aims.add([shot(7, start, 10, 11)], start - 300, 0);
+      return aims;
+    };
+    const SOUTH = Math.PI / 2;
+    // While it holds.
+    const held = second(1800);
+    expect(held.angleAt(7, HULL, 1800 - TURN_MS)).toBe(NORTH_EAST);
+    expect(held.angleAt(7, HULL, 1800)).toBe(SOUTH);
+    // In the middle of its way back.
+    const start = 1000 + HOLD_MS + RETURN_MS / 2 + TURN_MS;
+    const back = second(start);
+    expect(back.angleAt(7, HULL, start - TURN_MS)).toBeCloseTo((HULL + NORTH_EAST) / 2, 9);
+    expect(back.angleAt(7, HULL, start)).toBe(SOUTH);
+    // No step anywhere: at most a few degrees in 5 ms.
+    for (const aims of [held, back]) {
+      let last = aims.angleAt(7, HULL, 900);
+      for (let t = 905; t < 1000 + 2 * (HOLD_MS + RETURN_MS); t += 5) {
+        const a = aims.angleAt(7, HULL, t);
+        expect(Math.abs(a - last), `at ${t}`).toBeLessThan(0.12);
+        last = a;
+      }
+    }
+  });
+
+  it('stays on its target from one tick\'s shot to the next in a slow game', () => {
+    const aims = new TurretAims();
+    // A tick of 4 s: the next hour's shot comes 4 s after this one.
+    aims.add([shot(7, 1000, 11, 9)], 1000, 4000);
+    expect(aims.angleAt(7, HULL, 1000 + 4500)).toBe(NORTH_EAST);
+    expect(aims.angleAt(7, HULL, 1000 + 6000 + RETURN_MS)).toBeCloseTo(HULL, 12);
+  });
+
+  it('follows a hull that turns, and comes back to where the hull faces then', () => {
+    const aims = new TurretAims();
+    aims.add([shot(7, 1000, 11, 9)], 1000, 0);
+    expect(aims.angleAt(7, 2, 1000 + TURN_MS)).toBe(NORTH_EAST);
+    expect(aims.angleAt(7, 2, 1000 + HOLD_MS + RETURN_MS)).toBeCloseTo(2, 12);
+  });
+
+  it('rifles and guns that fall where they stand turn nothing; aims that are over are dropped', () => {
+    const aims = new TurretAims();
+    aims.add([shot(7, 1000, 11, 9, Weapon.smallArms), shot(8, 1000, 11, 9, Weapon.shell), shot(9, 1000, 10, 10)], 1000, 0);
+    for (const id of [7, 8, 9]) expect(aims.angleAt(id, HULL, 1000 + TURN_MS)).toBe(HULL);
+    expect(aims.animating(1000)).toBe(false);
+    aims.add([shot(7, 1000, 11, 9)], 1000, 0);
+    aims.add([shot(8, 9000, 11, 9)], 9000, 0);
+    // Element 7's aim is gone: asked at a time when it held, the answer is the hull.
+    expect(aims.angleAt(7, HULL, 1200)).toBe(HULL);
+    expect(aims.angleAt(8, HULL, 9000 + TURN_MS)).toBe(NORTH_EAST);
   });
 });

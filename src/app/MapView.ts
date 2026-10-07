@@ -41,7 +41,7 @@ import type { LandMask } from '../shared/landMask';
 import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
-import { appendTurrets } from '../render/units/turrets';
+import { appendTurrets, TurretAims } from '../render/units/turrets';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
@@ -448,7 +448,8 @@ export class MapView {
       this.snapArrival = arrived - this.tickProgress(arrived) * s.tickMs;
       this.tickMs = s.tickMs;
     }
-    this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo);
+    const shots = this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo);
+    if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
     this.lastTick = s.tick;
@@ -593,18 +594,20 @@ export class MapView {
   /** The fire of the elements in view at T2 (PLAN 2.4), and the worker's count of fires it dropped. */
   readonly fire = new FireFx();
   firesDropped = 0;
+  /** Where the turrets of the tanks that fire point (PLAN 3.6b). */
+  readonly turretAims = new TurretAims();
   /** The ends of elements at T2 and the wrecks they leave (PLAN 2.4b). */
   readonly wrecks = new WreckFx();
 
   /**
    * True while a unit layer still animates: a counter split, merge or fold, a handover between
-   * two tiers, a capital flag making way for a counter, a shot on its way, or the burst of an
-   * element's end. (A wreck then lies and smokes for seconds: `frame` keeps drawing for it,
+   * two tiers, a capital flag making way for a counter, a shot on its way, a turret off its
+   * hull's facing, or the burst of an element's end. (A wreck then lies and smokes for seconds: `frame` keeps drawing for it,
    * but it is not a change to wait for.)
    */
   unitsAnimating(now = performance.now()): boolean {
     const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
-    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.wrecks.bursting(now);
+    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now);
   }
 
   /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
@@ -736,6 +739,42 @@ export class MapView {
    */
   elementTurrets = 0;
   elementTurretOwner = new Uint32Array(0);
+  /** The facing turret `k` of the element sprites and of the figures has in the instance data, radians (tests). */
+  elementTurretFacing(k: number): number {
+    return this.elementProxies.data[(this.elementCount + k) * PROXY_STRIDE + 4]!;
+  }
+  individualTurretFacing(k: number): number {
+    return this.individualProxies.data[(this.individualCount + k) * PROXY_STRIDE + 4]!;
+  }
+  /** Whether the last frame turned turrets: the next one puts them back on their hulls. */
+  private turretsTurned = false;
+
+  /**
+   * Turns the turrets of both sprite layers to where they point at `now` (PLAN 3.6b): the
+   * facing of a turret's instance is written again, and the turrets uploaded if any changed.
+   * Nothing is done while no tank in the view has fired for a while.
+   */
+  private turnTurrets(now: number): void {
+    const turning = this.turretAims.animating(now);
+    if (!turning && !this.turretsTurned) return;
+    this.turretsTurned = turning;
+    const layers = [
+      { p: this.elementProxies, first: this.elementCount, n: this.elementTurrets, owner: this.elementTurretOwner, ids: this.elementId },
+      { p: this.individualProxies, first: this.individualCount, n: this.individualTurrets, owner: this.individualTurretOwner, ids: this.individualOwner },
+    ];
+    for (const { p, first, n, owner, ids } of layers) {
+      let changed = false;
+      for (let k = 0; k < n; k++) {
+        const h = owner[k]!;
+        const o = (first + k) * PROXY_STRIDE + 4;
+        const a = Math.fround(this.turretAims.angleAt(ids[h]!, p.data[h * PROXY_STRIDE + 4]!, now));
+        if (p.data[o] === a) continue;
+        p.data[o] = a;
+        changed = true;
+      }
+      if (changed) p.uploadRange(first, n);
+    }
+  }
 
   /** The elements of the last snapshot, kept while the camera is near T3. */
   private elementSection: SnapshotElements | null = null;
@@ -899,6 +938,7 @@ export class MapView {
     const t = this.tickProgress(now);
     const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
     const figures = this.shares.individuals;
+    this.turnTurrets(now);
     if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
     else {
       if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn * (1 - figures));

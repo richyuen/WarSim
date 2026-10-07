@@ -105,8 +105,11 @@ export class FireFx {
   /** When each shooter's shot on screen is over. */
   private readonly busy = new Map<number, number>();
 
-  /** Takes the fire records of a snapshot that arrived at `now` (they are copied). */
-  add(count: number, data: ArrayLike<number>, now: number, tickMs: number, geo: MapGeometry): void {
+  /**
+   * Takes the fire records of a snapshot that arrived at `now` (they are copied). Returns how
+   * many of them are shots now: the last of `shots`.
+   */
+  add(count: number, data: ArrayLike<number>, now: number, tickMs: number, geo: MapGeometry): number {
     // Shots that are over leave here, and only here.
     let kept = 0;
     this.busy.clear();
@@ -117,7 +120,7 @@ export class FireFx {
       this.busy.set(s.shooter, end);
     }
     this.shots.length = kept;
-    if (count === 0) return;
+    if (count === 0) return 0;
     const spread = tickMs > 0 ? Math.min(MAX_SPREAD_MS, Math.max(MIN_SPREAD_MS, tickMs)) : STEP_SPREAD_MS;
     for (let i = 0; i < count; i++) {
       const o = i * FIRE_STRIDE;
@@ -139,6 +142,7 @@ export class FireFx {
       this.from = now;
       this.until = Math.max(this.until, end);
     }
+    return this.shots.length - kept;
   }
 
   /**

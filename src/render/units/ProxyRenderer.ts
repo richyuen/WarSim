@@ -158,6 +158,17 @@ export class ProxyRenderer {
   }
 
   /**
+   * Uploads the places and the misc of instances `first` to `first + n` again, as `data` has them
+   * now (a turret's facing between two snapshots, PLAN 3.6b). They must have been uploaded.
+   */
+  uploadRange(first: number, n: number): void {
+    if (n <= 0 || first + n > this.count) return;
+    const gl = this.gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.instBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, first * STRIDE * 4, this.data, first * STRIDE, n * STRIDE);
+  }
+
+  /**
    * Draws all instances; `wrapOffsets` are world x-shifts (cells) of extra copies for a looping
    * map (see camera.wrapOffsets), so sprites near the seam appear on both sides. A sprite is its
    * size in cells at the zoom, at least `minPx` and at most `maxPx` CSS px (before `sizeMul`).

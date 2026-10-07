@@ -8048,3 +8048,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not checked:** a marching division was not filmed across a tick's end; that the walk goes
   on there follows from the instance data alone (the fraction is the same in every snapshot).
 - **Next:** PLAN 3.6b (the turret turns).
+
+## 2026-10-07 — PLAN 3.6b, the turret turns
+
+- **Done** (ADR-160): `TurretAims` (`render/units/turrets.ts`): an aim for an element whose
+  cannon shot the view draws, the angle of the fire record's line; the turn 180 ms before
+  the shot's start, 1.5 s (or 1.5 ticks) on the target, 0.6 s back to the hull's facing.
+  `FireFx.add` returns how many shots it took. `MapView.turnTurrets` writes the facing of
+  the turrets of both sprite layers each frame while an aim is live, and
+  `ProxyRenderer.uploadRange` uploads them alone. A turret off its hull counts in
+  `unitsAnimating`. View only: the pin did not move.
+- **Tests:** `turrets.test.ts` 5 → 12 (the angle at a time, a shot at arrival, the shorter
+  way round, a second shot while it holds and on its way back with no step, a slow game, a
+  hull that turns, what turns nothing). `turrets1938.spec.ts` new (one test, 9 s).
+- **Specs by hand** (`--project=chromium`): `turrets1938`, `fire1938`, `battleView1938`,
+  `individuals1938`, `elements1938`, `closeZoom1938`, `zoomDemo1938`, `wrecks1938`,
+  `handover1938`, `precision`, `bench-pages`, `toBattle1938`, `figuresFadeOut1938`,
+  `lateFrame1938`, `tiers1938`: 23 tests, green.
+- **Looked at** (the spec's pictures, a paused game at the time the last shot leaves): at
+  1.5 m/px the guns of the element looked at lie some 20 degrees off their hulls' length, and
+  those of the elements beside it at other angles; at 4 m/px a turret is too small to say
+  more than that the guns of a block are not all one way; at 60 m/px nothing of a turret
+  can be told (the tracers show who fires).
+- **Not measured:** the frame's time with the pass; a turn in a running game was not filmed
+  (the angles are read from the instance data at times of the test's choosing).
+- **Learned:** a spec that stops the view's loop (`dispose`) must turn it by hand
+  (`frameAt`) for the view to subscribe at a new zoom: the wait for the T3 section ran out.
+- **Next:** PLAN 3.6c (the shot leaves a barrel).

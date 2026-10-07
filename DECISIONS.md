@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-160 · 2026-10-07 · accepted — A turret is on its target as its shot leaves: view state from the shots drawn, written into the turrets' instances each frame (PLAN 3.6b)
+
+- **Context:** since ADR-159 a turret is an instance of its own, at its hull's facing. The
+  critic: "no turret turns".
+- **Decision:**
+  - `TurretAims` (`render/units/turrets.ts`) holds one aim for an element that has fired a
+    cannon: the angle of the line from its slot to its target's (the two ends of the fire
+    record), and when. It is fed with the shots `FireFx` takes from a snapshot
+    (`FireFx.add` now returns how many), on the render clock. No sim state, no field in the
+    snapshot; a reload starts with every turret on its hull.
+  - The turn begins TURN_MS (180 ms) before the shot starts, or at the snapshot's arrival if
+    that is later, and is eased (`smooth`), the shorter way round. The turret stays on the
+    target for HOLD_MS (1,500 ms) after the shot's start, or 1.5 ticks' wall time if that is
+    longer, and turns back to the hull's facing in RETURN_MS (600 ms).
+  - `angleAt(id, hull, now)` is pure in `now` and is given the hull's facing of the frame:
+    the way back ends where the hull faces then.
+  - The facing is instance data, uploaded once a snapshot. While an aim is live,
+    `MapView.turnTurrets` writes the facing of every turret of both sprite layers again in
+    each frame and uploads the turrets alone (`ProxyRenderer.uploadRange`), and once more in
+    the frame after the last aim is over. Without a live aim a frame does nothing for it.
+  - A turret off its hull is an animation of the view (`unitsAnimating`): a paused view
+    goes on drawing until the turrets are back, and `settle` waits for it (up to 2.2 s after
+    a shot's start in a paused game).
+- **From the shots drawn, not from every fire record.** A shooter shows one shot at a time
+  (ADR-66); at a day a second it fires 24 volleys a second, at whatever target each has. A
+  turret that followed every record would be thrown about 24 times a second. Following the
+  shots drawn, a turret turns when its tracer leaves and no more than once in a shot's life
+  (490 ms for a cannon), which is longer than a turn: a new turn starts from a turret at rest
+  on its last target or on its way back, never from one in mid-turn. The cost: a tank whose
+  record was not drawn (more than MAX_SHOTS on screen) does not turn for it.
+- **1.5 ticks:** in a game of a tick a second and slower, a fixed 1.5 s would bring a turret
+  back between the shots of two hours of one fight.
+- **Guns parallel in an element.** All tanks of an element take the element's angle, at T3
+  too. A bearing from each tank to the target's slot would differ by a few degrees across an
+  element's ground; 3.6c, which lets the shot leave one tank's muzzle, is where that would
+  show, and it may give each tank its own.
+- **Why not in the shader** (two angles and two times an instance): four attributes more for
+  every sprite of every layer, the benches' too, for what a few hundred turrets need while
+  tanks fire.
+- **Measured:** `turrets1938.spec.ts`, an armoured division in contact at 60 m/px two weeks
+  into 1938 (seed 1938): 88 turrets in view, 34 of tanks that fired, all 34 more than 0.02 rad
+  off their hulls as the last shot leaves, and back 2.6 s after the snapshot. At 4 m/px the
+  10 tanks of one element at 0.37 rad, their hulls at 0.73. **Not measured:** the frame's time
+  with the pass (a write of a float for each turret and an upload of 32 bytes for each).
+
 ### ADR-159 · 2026-10-07 · accepted — A tank is two sprites, hull and turret; a hull for each weight, a half-track for mechanised infantry (PLAN 3.6a)
 
 - **Context:** the critic's report of 2026-10-05 (R2-B3, tanks 2 of 10): at T3 a tank is "one
