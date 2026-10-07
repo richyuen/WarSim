@@ -409,6 +409,70 @@ describe('no march across a nation that is not in the war (PLAN 3.4Rl)', () => {
     expect(stood.has(path[6]!)).toBe(false);
   });
 
+  // PLAN 3.7l (ADR-172). The march that ended in the middle of a step was set on the middle of
+  // the cell behind it: 0.76 and 1.25 cells in the hour, in 400 hours of seed 99.
+  /** A German division on the march from Berlin, past the middle of the step from `path[5]` to `path[6]`; `d`: what it walked in the last hour. */
+  function midStep(): { s: Sim; id: number; path: number[]; d: number } {
+    const s = world('GER', 'FRA');
+    const c = s.world.formations.cols;
+    const id = spawn(s.world, 'GER', INF, 13.4, 52.5);
+    order(s, id, 10.0, 48.8);
+    s.step(1);
+    const path = [...s.world.paths.get(id)!];
+    let d = 0;
+    for (let h = 0; h < 24 * 20 && !(c.pathStep[id] === 5 && c.stepFrac[id]! > 0.5); h++) {
+      const [x, y] = [c.x[id]!, c.y[id]!];
+      s.step(1);
+      d = Math.hypot(c.x[id]! - x, c.y[id]! - y);
+    }
+    expect(c.pathStep[id], 'the premise: in the middle of the sixth step').toBe(5);
+    expect(c.stepFrac[id]).toBeGreaterThan(0.5);
+    expect(d, 'the premise: a step of several hours').toBeLessThan(0.45);
+    return { s, id, path, d };
+  }
+  /** Hours until the formation is idle; fails on an hour of more than `d`, or one that takes it further from `to`. */
+  function walkBack(s: Sim, id: number, to: number, d: number): { hours: number; refused: number } {
+    const c = s.world.formations.cols;
+    const [tx, ty] = s.world.cellPoint(to);
+    let refused = 0;
+    let hours = 0;
+    for (; hours < 48 && (hours === 0 || c.moving[id] === 1); hours++) {
+      const [x, y] = [c.x[id]!, c.y[id]!];
+      if (hour(s, id, EventKind.MoveRejected)) refused++;
+      expect(Math.hypot(c.x[id]! - x, c.y[id]! - y), `hour ${hours}: no more than an hour's march`).toBeLessThanOrEqual(d + 1e-9);
+      expect(Math.hypot(c.x[id]! - tx, c.y[id]! - ty), `hour ${hours}: no further into the step`).toBeLessThanOrEqual(Math.hypot(x - tx, y - ty) + 1e-9);
+    }
+    return { hours, refused };
+  }
+
+  it('a march that ends in the middle of a step, the next cell turned a third nation\'s, walks back to the cell behind it', () => {
+    const { s, id, path, d } = midStep();
+    const w = s.world;
+    const c = w.formations.cols;
+    w.setController(path[6]!, nationId('POL'));
+    const { hours, refused } = walkBack(s, id, path[5]!, d);
+    expect(refused, 'the march is refused once, in the hour the ground turned').toBe(1);
+    expect(hours).toBeGreaterThan(1);
+    expect(c.moving[id]).toBe(0);
+    expect(c.home[id]).toBe(0);
+    expect(w.paths.has(id)).toBe(false);
+    expect([c.x[id], c.y[id]]).toEqual(w.cellPoint(path[5]!));
+    expect(foreignTo(w, nationId('GER'), w.cells.controller[path[5]!]!)).toBe(false);
+  });
+
+  it('and so where the cell behind it has turned another third nation\'s in the same hour', () => {
+    const { s, id, path, d } = midStep();
+    const w = s.world;
+    const c = w.formations.cols;
+    w.setController(path[5]!, nationId('SWE'));
+    w.setController(path[6]!, nationId('POL'));
+    expect(foreignTo(w, nationId('GER'), nationId('SWE')), 'the premise: no ground of its own behind it').toBe(true);
+    const { refused } = walkBack(s, id, path[5]!, d);
+    expect(refused).toBe(1);
+    expect(c.moving[id]).toBe(0);
+    expect([c.x[id], c.y[id]]).toEqual(w.cellPoint(path[5]!));
+  });
+
   // PLAN 3.7h (ADR-169). Until then this test was "the way home keeps off a second such nation:
   // an Italian division in Germany at peace is moved to its spawn point": 80 formations a year
   // of two seeds were gone from one place and stood in another.

@@ -8517,3 +8517,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.7l (a march that ends at ground turned foreign ends where the formation
   stands), then 3.7m, i, n, g, the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7
   with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7l: a march barred in the middle of a step walks back (ADR-172)
+
+- **The rule** (`movement.ts`): a march whose next cell has turned a third nation's, with
+  part of the step walked, turns round where it stands: its path is the two cells of the
+  step backwards, its target the cell behind it. `MoveRejected` in that hour,
+  `FormationArrived` when it is back. Marked `formations.home` = 2 (`HOME_BACK`): the walk
+  back is not barred in its turn, and the operational AI leaves it alone.
+- **Not the AT to the letter:** it asked for a formation idle an hour later. `order` sets an
+  idle formation on its cell's point, so a halt at the cell's edge was the same jump, half
+  of it a day later. Said in ADR-172 and in PLAN.
+- **Tests** (`movement.test.ts`, two): red before (0.754 cells in the hour; an hour's march
+  was 0.089); the second (the cell behind turned a third nation's in the same hour) red
+  again with the mark taken out: refused in each of 48 hours.
+- **Gotcha:** Czechoslovakia's ground is not foreign to Germany in the 1938 world
+  (`foreignTo` false): the test's second third nation is Sweden, and the premise is asserted.
+- **Measured** (a year of seed 99, a scratch test, removed): 5 walks back, 47
+  formation-hours, each ended, the longest hour 0.149 cells.
+- **The pin:** `83057b85` to `347aebb2`.
+- **Tick time** (five years of seed 99, `--affinity 0xFFFF`): mean 1.441 ms before, 1.491
+  after; year 1 2.486 and 2.452. Another game, one run each.
+- **By hand:** no e2e spec run: nothing drawn changed.
+- **Not done:** a step shut by new water (ADR-171) still sets the formation on the cell
+  behind it; the walk back has no supply rule of its own.
+- **Next:** PLAN 3.7m (an order to a formation on the retreat), then 3.7i, n, g, the smoke
+  run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.

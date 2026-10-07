@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-172 · 2026-10-07 · accepted — A march barred in the middle of a step walks back to the cell behind it (PLAN 3.7l)
+
+- **Context:** the eighth read, finding 3. A march ends before a cell that has become a third
+  nation's since the order (ADR-149). The walk's `barred` set `frac = 0` and put the formation
+  on the point of the cell behind it, whatever part of the step it had walked: 0.76 and 1.25
+  cells in the hour (two cases in 400 hours of seed 99). In the test's case (a German division
+  0.5 to 0.75 of the way from one cell to the next, the next turned Poland's): 0.754 cells in
+  the hour, where an hour's march was 0.089.
+- **Decision:** a march barred with part of the step walked turns round where it stands. Its
+  path is the step read backwards (the two cells), its target the cell behind it, and it stays
+  on the march; `MoveRejected` is emitted in the hour the ground turned, as before, and
+  `FormationArrived` when it is back. The walk back is marked (`formations.home` = 2,
+  `HOME_BACK`): it is not barred in its turn where the cell behind it has become a third
+  nation's too (without the mark: refused in each of 48 hours, and it did not move). It waits
+  before a cell turned an enemy's as any march. The operational AI leaves it alone on the way,
+  as a march home (it tests `home === 0`); a player's order is taken, in the middle of the
+  step (ADR-151), and ends the walk back. A march barred with none of the step walked ends on
+  its cell as before.
+- **Not the PLAN's AT to the letter.** The AT asked that the formation be idle an hour later.
+  A halt in the middle of a step has no place that lasts: an idle formation's place is its
+  cell's point, and `order` sets it there at its next order. A halt at the cell's edge would
+  have been the same jump in two parts, the second at the AI's order of the next day. The
+  formation is idle when it has walked back (47 hours for the 5 of a year of seed 99).
+- **Measured** (a year of seed 99): 5 walks back, 47 formation-hours, each ended; the longest
+  hour of one 0.149 cells.
+- **The pin:** `83057b85` to `347aebb2`.
+- **Tests:** `tests/unit/movement.test.ts`, two (red before: 0.754 cells in the hour; the
+  second red again without the mark).
+- **Not done:** no test of a player's order to a formation on the walk back, nor of the
+  wait before a cell turned an enemy's (both by the code of any march); the walk back is not
+  fed and not drawn apart from any march; a step that is shut by new water (ADR-171) still
+  sets the formation on the cell behind it.
+
 ### ADR-171 · 2026-10-07 · accepted — A path outlives a change of the ground: the march tests each step, and a path that is missing is found from where the formation stands (PLAN 3.7k)
 
 - **Context:** the eighth read, finding 2. `terrainChanged` (`editor.ts`) and a change of

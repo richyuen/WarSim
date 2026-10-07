@@ -22,7 +22,10 @@
  * nobody's (`foreignTo`); the route goes round any other nation's, and the order is rejected
  * when there is no way round (for a long march: none by the provinces that have such ground). A formation that stands on such ground (a peace found it there)
  * walks on that holder's cells and out of them: the way home. A march whose next cell has
- * become such ground since the order ends before it (`MoveRejected`).
+ * become such ground since the order ends before it (`MoveRejected`): at the cell it stands on,
+ * or, in the middle of the step, by the walk back to the cell behind it (PLAN 3.7l, ADR-172; it
+ * was set on that cell's middle, up to 1.25 cells in the hour). The walk back is a march of one
+ * step, marked `HOME_BACK`; it ends as any march, and any order ends it.
  *
  * A path outlives a change of the ground (PLAN 3.7k, ADR-171): a paint of terrain, a map import
  * and a change of `loopingMap` leave `world.paths` alone. A step that the ground of now does not
@@ -68,6 +71,9 @@ export const DRY_SPEED = 0.25;
 /** A target cell unreachable from the formation snaps to a reachable one within this many cells. */
 export const TARGET_SNAP_CELLS = 3;
 export const REPATRIATE_CELLS = 80;
+/** `formations.home` of a march home (ADR-169), and of the walk back from a step that was barred (ADR-172). */
+export const HOME_MARCH = 1;
+export const HOME_BACK = 2;
 
 /**
  * Whether `holder`'s ground is foreign to `nation`'s formations: a holder that is not of its
@@ -293,9 +299,9 @@ export function movementSystem(world: World): void {
         if (world.wars.atWar(nation, holder) && c.retreat[id] === 0) break;
         // Ground that has become a third nation's since the order: the march ends before it.
         // Not a march home (ADR-169): that one crosses it.
+        // Nor the way back from such a step (PLAN 3.7l).
         if (c.home[id] === 0 && holder !== world.cells.controller[a] && foreignTo(world, nation, holder)) {
           barred = true;
-          frac = 0;
           break;
         }
       }
@@ -330,6 +336,18 @@ export function movementSystem(world: World): void {
       const home = c.home[id] === 1 ? 1 : 0;
       c.home[id] = 0;
       order(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, undefined, home);
+      return;
+    }
+    if (barred && frac > 0) {
+      // In the middle of the step (PLAN 3.7l, ADR-172): it turns round where it stands and
+      // walks back to the cell behind it. That walk is marked, and is not barred in its turn.
+      world.paths.set(id, Int32Array.of(path[i + 1]!, path[i]!));
+      c.originCell[id] = path[i + 1]!;
+      c.targetCell[id] = path[i]!;
+      c.pathStep[id] = 0;
+      c.stepFrac[id] = 1 - frac;
+      c.home[id] = HOME_BACK;
+      world.out.emit(world.tick, EventKind.MoveRejected, id, nation, NaN, NaN);
       return;
     }
     if (barred) {

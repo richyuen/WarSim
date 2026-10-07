@@ -4134,7 +4134,7 @@ quick sweep as a smoke test.
     is an import's: a paint makes none. The pin holds, `7cfb8b6d`.
     *Not done:* no test of a corner cut past new water alone; the tick's 3 % (1.559 to
     1.605 ms, one run each) not told from noise.
-  - [ ] 3.7l **A march that ends at ground turned foreign ends where the formation stands**
+  - [x] 3.7l **A march that ends at ground turned foreign ends where the formation stands**
     (the eighth read, finding 3; run there). The walk's `barred` (`movement.ts`) sets
     `frac = 0` and puts the formation on the middle of the cell behind it, whatever part of
     the step it had walked: 0.76 and 1.25 cells back in the hour (two cases in 400 hours of
@@ -4142,6 +4142,16 @@ quick sweep as a smoke test.
     AT: unit (a formation at 0.53 of a step whose next cell turns a third nation's: an hour
     later it is not further from where it stood than an hour's march, and it is idle on
     ground it may stand on); the pin, moved or not, is said.
+    **Done 2026-10-07 (ADR-172):** it turns round where it stands and walks back to the cell
+    behind it (a march of one step, marked `home` = 2 so that it is not barred in its turn);
+    `MoveRejected` in the hour the ground turned. Not idle an hour later, as the AT had it:
+    idle when it is back (a halt in mid-step would be set on the cell's point by the next
+    order, the same jump a day later). `movement.test.ts`, two tests: red before (0.754
+    cells in the hour against 0.089 of an hour's march); the second, the cell behind it
+    turned a third nation's too, red without the mark (refused 48 times). A year of seed
+    99: 5 walks back, 47 hours, the longest hour 0.149 cells. The pin: `83057b85` to
+    `347aebb2`.
+    *Not done:* a step shut by new water (3.7k) still sets the formation on the cell behind.
   - [ ] 3.7m **An order to a formation on the retreat does not drive it through the enemy**
     (the eighth read, finding 4; traced, not run). `orderMove` leaves `formations.retreat`
     as it is, and the God command `moveFormation` calls it. While `retreat` > 0 the march is
