@@ -7694,3 +7694,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** the 476 and 1,082 orders the AI is still refused; a formation that reaches
   no front stands; the war with no front. The tick was not brought back.
 - **Next:** PLAN 3.5c (spearheads).
+- **Added after the commit** (`8fe6ef0`):
+  - *Gate:* green (code, with the ten-year tests: 878 unit, 15 of the sweep stage; no spec
+    changed, so none in the gate: the three were the run by hand above).
+  - *Wrong in the commit's documents, corrected:* the pile-up of the merged game is ten
+    Chinese divisions (nine of CHI, one of CCP) about one Japanese division, not about a
+    Chinese one. The ids were read, the tags were not.
+  - *Not by construction:* ADR-152 says the planner and the order cannot part. The planner
+    asks `snapTarget`, which `orderMove` asks too, but reads the groups itself where the
+    landmass is the same: the same test as `mayReach`, written twice. PLAN 3.5c has the
+    line to say so in the code.

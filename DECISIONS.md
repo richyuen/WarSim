@@ -202,8 +202,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   ground and the army beside it): tried, for the cost of an allotment per class. It is
   another game (hash f98f48ae), in which `deploy.test.ts` fails: 99 of 111 formations in
   contact on day 60 share a view with their nearest enemy (the test wants more than nine
-  in ten), ten of the twelve others stand about one Chinese division whose block is
-  deployed against an eleventh (`DEPLOY_REACH`, PLAN 2.14c1). The test was not touched and
+  in ten), ten of the twelve others (nine Chinese divisions and one of the Communists)
+  stand about one Japanese division whose block is deployed against an eleventh (`DEPLOY_REACH`, PLAN 2.14c1). The test was not touched and
   the merge was not kept: it was no part of the rule. In the game of the rule as it is the
   share is 100 of 102. That the share hangs on one pile-up is in BLOCKERS.
 - **Measured** (360 days, before → after; seed 99, seed 7): refused orders 11,420 → 1,074

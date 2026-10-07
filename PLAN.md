@@ -3427,6 +3427,10 @@ quick sweep as a smoke test.
   - [ ] 3.5c **Spearheads.** In a sector that attacks, the armour formations are the ones
     sent at the enemy's cell, and the rest follow or hold. No per-element scan in the
     planner: armour by the template (`EconomyTables.templateArmour`, or a column).
+    From 3.5b: `planNation` reads the reach of a class from the landmass and the two groups
+    itself, where the landmass is the same; that is `mayReach`, written twice. Say so in
+    `mayReach`'s comment with this part (a change of one is a change of both). And
+    BLOCKERS: the share of `deploy.test.ts` falls when many stand about one enemy.
     AT: unit, failing first; the metric of 3.5e on seed 99 before and after.
   - [ ] 3.5d **The mix.** `pickTemplate` asks for armour only at war, every third order,
     and never against an enemy with armour (the motorised branch comes first). The share

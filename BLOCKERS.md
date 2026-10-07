@@ -99,8 +99,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   days of Germany against Poland most formations in contact have their enemy's elements in
   one view" wants more than 0.9 of a whole-world game's formations in contact on one day.
   In a game that differs by a detail of the allotment (classes of equal reach merged: tried
-  and not kept, ADR-152) it is 99 of 111: ten divisions about one Chinese division whose
-  block is deployed against an eleventh, each stopped at `DEPLOY_REACH` 1.3 cells from it.
+  and not kept, ADR-152) it is 99 of 111: ten Chinese divisions about one Japanese division
+  whose block is deployed against an eleventh, each stopped at `DEPLOY_REACH` 1.3 cells from it.
   In the game of the rule as committed it is 100 of 102. The test was not changed. The
   next rule that moves the pin may meet it (PLAN 3.5c sends armour first at one cell, the
   rest behind): then it is the deployment of many against one that is to be mended (the
