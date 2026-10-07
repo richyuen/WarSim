@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-144 · 2026-10-06 · accepted — The research budget is a rule of the economy: every living nation has it, with AI or without (PLAN 3.4Rg)
+
+- **Context:** `nations.research` was written by the economic AI alone (ADR-128), which
+  skips a nation whose AI is off and every nation when the AI is off for the world. So a
+  nation taken at tick 0 had no budget and never opened a line (France: 18 techs after two
+  years, 27 under the AI), a nation taken later kept the budget of that month for good, in
+  debt too, and with the gate of PLAN 3.1a a player was shut out of every template behind a
+  tech. PLAN 3.4Rg asked for one of two: the rule for everybody, or a command and a control
+  on the Economy tab.
+- **Decision:** the rule for everybody. `researchBudget` (`systems/research.ts`) is the
+  formula the AI had: RESEARCH_SHARE of the month's income, at most `researchCap`, nothing
+  in debt, nothing while the nation is short with a treasury below RUNWAY_MONTHS of what is
+  short. The economic AI's system calls it monthly for every living nation: for an AI's
+  nation where it did (after the disbanding, before the orders), for a nation without AI
+  as the only step taken.
+- **Why not the control:** it is a second feature (a command, a refusal, a control, its
+  texts, a spec), and the defect is that nothing researched, not that the player could not
+  choose. A budget the player sets needs a default all the same, and this is it. AoC has no
+  research and no played nation (PARITY rows 8 and 37), so there is nothing to match.
+- **Why in the AI's system and not in the economy's:** an AI's nation must get the figure
+  it got, from the balance after its disbanding and before its orders spend gold. Seed 99's
+  pin stands (a73098dc), which is the proof.
+- **A nation without AI** has nothing disbanded for it, so "would disband" is "is short, and
+  the treasury below three months of what is short", as the month finds it. It has a budget
+  again the month after.
+- **Measured** (seed 99, two years, `.cache/rg/count.ts`, scratch): France, Germany and
+  Britain, each played from tick 0 in a game of its own: three lines after a month, budgets
+  of 1.766, 3.580 and 3.965 gold a day (the AI's twins: the same), 18 → 27 techs each (the
+  AI's: 27, 26, 27). France with the AI off for the world: three lines, 18 → 27.
+- **Tests:** `tests/unit/research.test.ts`, three more, red before: a played nation and two
+  with their AI off have the twin's budget and lines after two days; with the world's AI off
+  every nation has a budget and a line and nothing is ordered; a nation without AI in debt
+  has none the next month. `tests/sweep/researchYears.test.ts`, one more (70 s): France
+  played, and France with no AI in the world, know after two years a tech of 1939 that the
+  AI's France knows.
+- **Saves:** no state added. A saved game of a played nation gets its budget at the next
+  month's start.
+- **Consequences:** a world with the AI off is no longer still: every nation with gold pays
+  for techs. A test that runs months of such a world and reads a treasury sees it.
+- **Not done:** no command sets a budget or picks a tech; a player's nation takes its techs
+  in the rule's order (`nextTech`). Suppression has the same gap and has its own command.
+
 ### ADR-143 · 2026-10-06 · accepted — A formation on a cell that is not its side's is fed when a network that feeds it lies within two cells (PLAN 3.4Rf)
 
 - **Context:** PLAN 3.4Re counted, in seed 99's first year, 47 % of the hours that formations

@@ -707,12 +707,17 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Not yet:* tech modifiers (`armorAttack` and the others) are not read.
 
 **Research v1 (PLAN 3.1b, ADR-128; `src/sim/systems/research.ts`).**
-- *The budget:* `nations.research`, gold per day. The economic AI sets it monthly:
+- *The budget:* `nations.research`, gold per day. A rule of the economy, not a choice of the
+  AI (`researchBudget`; PLAN 3.4Rg, ADR-144): it is set monthly, in the economic AI's system,
+  for every living nation, with AI or without (a played nation, one whose AI is off, every
+  nation when the AI is off for the world):
   RESEARCH_SHARE (5%) of the month's income, at most `researchCap` (MAX_LINES lines of the
   dearest tech by the day, 2.44 gold a day); 0 for a nation in debt, and for one short of
   money whose treasury holds less than RUNWAY_MONTHS of what is short (it would disband:
   research is cut before the army). The month's research counts against the balance the build
-  step works with. A nation whose AI is off keeps the budget it had.
+  step works with. For a nation without AI nothing is disbanded first, so it has no budget
+  while it is short with a treasury below RUNWAY_MONTHS of what is short, and has one again
+  the month after that ends.
 - *Lines:* `world.research` (nation, tech, gold paid), saved and hashed; at most MAX_LINES (3) a
   nation. Daily at 00:00, line by line in the order opened: pay min(the tech's gold ÷ its
   days, what is left to pay, what is left of the day's budget) from the treasury. A paid tech
@@ -726,9 +731,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Held back:* the `nuclear` category is nobody's next tech. Who goes for the bomb is decided
   in Phase 6.
 - *A dead nation's* lines are dropped. A founded nation starts with no budget until the
-  economic AI's next month.
-- *Not yet:* `cost.industry` is read by nothing (industry is not a sim input). No command sets a budget or picks a tech: a player's nation
-  researches on the budget the AI last gave it.
+  next month's start.
+- *Not yet:* `cost.industry` is read by nothing (industry is not a sim input). No command sets
+  a budget or picks a tech: a player's nation researches on the rule's budget and takes its
+  techs in the rule's order (ADR-144).
 - *On the page* (PLAN 3.1e, ADR-130): the Economy tab of the nation panel has a Research block:
   the budget per month (the day's budget × 365 ÷ 12, like the income above it) and one row per
   line, in the order the lines were opened: the tech's name (`tech.<id>` of the i18n catalog)

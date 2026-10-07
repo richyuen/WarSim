@@ -7278,3 +7278,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   game: `tests/e2e/zoomDemo1938.spec.ts` (chromium), 1 of 1 passed in 1.3 min. No other
   spec was run: the full suite comes with the last part of PLAN 3.4R. And 3.4Rm has the
   flips of the five years to start from.
+
+## 2026-10-06 — PLAN 3.4Rg: the research budget is a rule for every living nation; a played nation researches
+
+- **The defect:** `nations.research` was written by the economic AI alone, which skips a
+  nation whose AI is off and every nation with the AI off for the world. A nation taken at
+  tick 0 never opened a line.
+- **Decided (ADR-144):** the rule for everybody, not a command and a control.
+  `researchBudget` (`systems/research.ts`) is the AI's formula; the economic AI's system
+  calls it monthly for every living nation, and for a nation without AI it is the only step
+  taken. It stays in that system because an AI's nation must get its figure after the
+  disbanding and before the orders.
+- **Measured** (seed 99, two years, `.cache/rg/count.ts`, scratch): France, Germany and
+  Britain, each played from tick 0 in its own game: three lines after a month, 1.766, 3.580
+  and 3.965 gold a day (the AI's twins: the same), 18 → 27 techs each (the AI's: 27, 26, 27).
+  France with the world's AI off: 18 → 27.
+- **Tests:** three in `tests/unit/research.test.ts`, red on the old source (run against it
+  with the source stashed), one in `tests/sweep/researchYears.test.ts` (70 s, three games of
+  two years). The pin stands: a73098dc.
+- **By hand** (chromium): `research1938.spec.ts`, `playerActions1938.spec.ts`: 2 of 2.
+- **Gotchas:**
+  - `setPlayer` gives the nation played before its AI back: a test that takes three nations
+    in a row has one without AI. `setAi` is the command for the others.
+  - A file of `tests/sweep/` is not found by a bare `npx vitest run <file>`: it wants
+    `--config vitest.sweep.config.ts`.
+  - A world with the AI off is no longer still: every nation with gold pays for techs. No
+    test in the gate read a treasury that it moves.
+- **Not done:** no command sets a budget or picks a tech.
+- **Next:** PLAN 3.4Rh (a nation whose land is painted away lives on with no cell).
+- **Gate:** green (code, with the ten-year tests; no e2e for a part).

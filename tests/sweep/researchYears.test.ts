@@ -42,3 +42,33 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   for (const n of rich) if (nc.living[n] === 1 && nc.income[n]! >= RICH) expect(known, `${TAGS_1938[n - 1]} knows armor_heavy_1 in 1944`).toContain(n);
   expect(known.length).toBeGreaterThanOrEqual(3);
 }, 900_000);
+
+// PLAN 3.4Rg AT (ADR-144): a nation that is played, or lives in a world with no AI, researches
+// as the AI's nations do. Two years: France taken at tick 0, its AI twin, and a world with the
+// AI off from the start.
+it('seed 99: France played from tick 0, and France in a world with no AI, know after two years a tech of 1939 that the AI\'s France knows', () => {
+  const FRA = TAGS_1938.indexOf('FRA') + 1;
+  const make = (): Sim => new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });
+  const quiet = (ww: Sim['world']): void => {
+    ww.out.events.length = 0;
+    ww.out.fires.length = 0;
+  };
+  const twoYears = (s: Sim): number[] => {
+    const start = RULES_1938.techs.flatMap((_, i) => (knowsTechs(s.world, FRA, techMask([i])) ? [i] : []));
+    s.step((daysFromCivil(1940, 1, 1) - s.world.startDay) * 24 - s.world.tick, quiet);
+    return RULES_1938.techs.flatMap((_, i) => (!start.includes(i) && knowsTechs(s.world, FRA, techMask([i])) ? [i] : []));
+  };
+  const ai = twoYears(make());
+  const played = make();
+  played.command({ kind: 'setPlayer', nation: FRA });
+  const mine = twoYears(played);
+  const noAi = make();
+  noAi.world.settings.aiEnabled = false;
+  const alone = twoYears(noAi);
+  const of1939 = (l: number[]): number[] => l.filter((i) => RULES_1938.techs[i]!.year === 1939);
+  expect(of1939(ai).length).toBeGreaterThan(0);
+  for (const [name, l] of [['played', mine], ['no AI', alone]] as const) {
+    expect(l.length, `${name}: techs learned in two years (the AI's France: ${ai.length})`).toBeGreaterThanOrEqual(ai.length - 2);
+    expect(of1939(l).some((i) => of1939(ai).includes(i)), `${name}: a tech of 1939 the AI's France knows`).toBe(true);
+  }
+}, 900_000);

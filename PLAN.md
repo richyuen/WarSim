@@ -3124,7 +3124,7 @@ quick sweep as a smoke test.
     - *The pin:* 80e8050a → a73098dc.
     - *Found:* armies that meet on a third nation's ground (3.4Rl); the tick is over
       budget in the game the rule gives (3.4Rm).
-  - [ ] 3.4Rg **A nation the player controls never gets a research budget** (the seventh
+  - [x] 3.4Rg **A nation the player controls never gets a research budget** (the seventh
     read, finding 1). `nations.research` is written by the economic AI alone, which skips
     a nation whose AI is off and every nation when the AI is off for the world. France,
     Germany or Britain taken at tick 0: budget 0, no line, 18 techs after two years (27
@@ -3137,6 +3137,15 @@ quick sweep as a smoke test.
     opens a line in its first month and knows a tech the AI's twin knows after two
     years; the same with the world's AI off. The pin moves only if the AI's nations
     change.
+    **Done 2026-10-06 (ADR-144).** The rule for everybody: `researchBudget`, called by the
+    economic AI's system for every living nation, alone for one without AI. No command, no
+    control.
+    - *Measured* (seed 99, two years): France, Germany and Britain, each played from tick
+      0: three lines after a month, the AI twin's budget, 18 → 27 techs (the AI's: 27, 26,
+      27); France with the world's AI off: 18 → 27.
+    - *Tests:* three in `tests/unit/research.test.ts` (red before), one in
+      `tests/sweep/researchYears.test.ts` (70 s). The pin stands (a73098dc).
+    - *By hand:* `research1938.spec.ts`, `playerActions1938.spec.ts` (chromium).
   - [ ] 3.4Rh **A nation whose land is painted away lives on with no cell** (finding 2).
     `capitalsSystem` returns early for a nation whose capital city is held by one it is
     not at war with, so it is never seen to have lost it: Luxembourg painted for Germany

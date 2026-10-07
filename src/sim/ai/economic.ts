@@ -37,6 +37,10 @@
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
  *    treasury below RUNWAY_MONTHS of what is short): research is cut before the army is. The
  *    month's research counts against the balance the build step works with.
+ *    This step alone is also taken for a living nation without AI (its own switched off, a
+ *    played one, or the AI off for the world; PLAN 3.4Rg, ADR-144): the budget is a rule of the
+ *    economy (`researchBudget`), and without it such a nation would never open a line. Nothing
+ *    of it is disbanded, so "would have disband" is then "is short" as the month finds it.
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -46,7 +50,7 @@ import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
 import { TRIBUTE } from '../systems/puppets';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { queueFormation } from '../systems/production';
-import { DAYS_PER_MONTH, RESEARCH_SHARE, researchCap } from '../systems/research';
+import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
 import type { World } from '../world';
 
@@ -87,8 +91,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     return full > 0 ? (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0) * f.strength[id]!) / full : 0;
   };
   return function economicAiSystem(world: World): void {
-    if (!world.settings.aiEnabled || !isMonthStart(world.startDay, world.tick)) return;
+    if (!isMonthStart(world.startDay, world.tick)) return;
     const nc = world.nations.cols;
+    if (!world.settings.aiEnabled && !world.rules) return;
     const f = world.formations.cols;
     const armourOf = (id: number): number => tables.templateArmour[f.template[id]!] ?? 0;
     // Per nation: own formations and their upkeep.
@@ -113,10 +118,15 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     const restless = restlessNations(world);
     const acc = monthlyAccounts(world, tables);
     world.nations.forEach((n) => {
-      if (nc.living[n] !== 1 || nc.aiOff[n] === 1) return;
+      if (nc.living[n] !== 1) return;
       // Projected accounts for the month about to be charged (the AI runs before the economy).
       const { income, need } = budgetOf(world, n, acc);
       let { balance } = budgetOf(world, n, acc);
+      // A nation without AI: the research budget alone, which is a rule and not a choice (step 4).
+      if (!world.settings.aiEnabled || nc.aiOff[n] === 1) {
+        if (world.rules) nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
+        return;
+      }
       // 1. Disband while the books do not balance and the treasury cannot carry what is short.
       if (balance < need) {
         const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1).sort((a, b) => armourOf(a) - armourOf(b) || f.strength[a]! - f.strength[b]! || a - b);
@@ -137,8 +147,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       nc.suppression[n] = restless.has(n) && balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
       if (!world.rules) return;
       // 4. Research.
-      const carried = balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance);
-      nc.research[n] = nc.gold[n]! > 0 && carried ? Math.min((RESEARCH_SHARE * income) / DAYS_PER_MONTH, researchCap(world.rules)) : 0;
+      nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
       // 3. Build.
       const atWar = world.wars.list.some((w) => w.sides[0].includes(n) || w.sides[1].includes(n));

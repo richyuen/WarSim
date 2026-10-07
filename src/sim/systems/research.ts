@@ -1,9 +1,9 @@
 /**
  * Research (SPEC §3.7, PLAN 3.1b, ADR-128): how a nation comes to know a tech. Daily at 00:00.
  *
- * A nation has a research budget, gold per day (`nations.research`, set monthly by the economic
- * AI: RESEARCH_SHARE of its income, never more than `researchCap`, nothing while it could not
- * carry its army). It works on up to MAX_LINES techs at once (`world.research`: nation, tech, gold
+ * A nation has a research budget, gold per day (`nations.research`, set monthly for every living
+ * nation by `researchBudget`, in the economic AI's system: RESEARCH_SHARE of its income, never
+ * more than `researchCap`, nothing while it could not carry its army). It works on up to MAX_LINES techs at once (`world.research`: nation, tech, gold
  * paid). Each day, line by line in the order they were opened:
  *
  *   pay = min(the tech's gold ÷ its days, what is left to pay, what is left of the day's budget)
@@ -39,6 +39,18 @@ const PAID = 1e-9;
 /** The most a nation can spend on research in a day: MAX_LINES lines of the dearest tech by the day. */
 export function researchCap(rules: ScenarioRules): number {
   return MAX_LINES * rules.techs.reduce((m, t) => Math.max(m, t.gold / t.days), 0);
+}
+
+/**
+ * The research budget of a nation, gold per day, for the month to come (PLAN 3.4Rg, ADR-144: a
+ * rule of the economy, for every living nation, with AI or without): RESEARCH_SHARE of `income`,
+ * at most `researchCap`; nothing in debt, and nothing while it is short of money (`balance`
+ * below `need`, see `budgetOf` of the economic AI) with a treasury below `runway` months of what
+ * is short.
+ */
+export function researchBudget(rules: ScenarioRules, gold: number, income: number, balance: number, need: number, runway: number): number {
+  const carried = balance >= need || gold >= runway * (need - balance);
+  return gold > 0 && carried ? Math.min((RESEARCH_SHARE * income) / DAYS_PER_MONTH, researchCap(rules)) : 0;
 }
 
 /** The tech `nation` takes up next in `year`, not one of `busy` (indices); -1 when there is none. */

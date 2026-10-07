@@ -166,4 +166,52 @@ describe('research (PLAN 3.1b)', () => {
     expect(nc.research[POR]! * DAYS_PER_MONTH).toBeCloseTo(RESEARCH_SHARE * 53, 0);
     expect(nc.research[LUX]).toBe(0);
   });
+
+  // PLAN 3.4Rg (ADR-144): the budget is a rule of the economy, not a choice of the AI.
+  it('a nation the player has taken at tick 0 has a budget and a line in its first month, as its AI twin has', () => {
+    const twin = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+    const played = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+    // Britain is played; France and Germany have their AI switched off (God Mode).
+    const [ENG, FRA, GER] = [id('ENG'), id('FRA'), id('GER')];
+    played.command({ kind: 'setPlayer', nation: ENG });
+    played.command({ kind: 'setAi', nation: FRA, enabled: false });
+    played.command({ kind: 'setAi', nation: GER, enabled: false });
+    twin.step(49);
+    played.step(49);
+    for (const n of [ENG, FRA, GER]) {
+      const tag = NATIONS_1938[n - 1]!.tag;
+      expect(played.world.nations.cols.aiOff[n], tag).toBe(1);
+      expect(played.world.nations.cols.research[n], tag).toBeGreaterThan(0);
+      expect(played.world.nations.cols.research[n], tag).toBe(twin.world.nations.cols.research[n]);
+      expect(linesOf(played.world, n).length, tag).toBeGreaterThan(0);
+      expect(linesOf(played.world, n), tag).toEqual(linesOf(twin.world, n));
+    }
+  });
+
+  it('with the AI off for the world every living nation still has its budget, and a line', () => {
+    const s = sim1938();
+    const nc = s.world.nations.cols;
+    s.step(49);
+    const [USA, POR, FRA] = [id('USA'), id('POR'), id('FRA')];
+    expect(nc.research[USA]).toBe(researchCap(RULES_1938));
+    expect(nc.research[POR]).toBeGreaterThan(0);
+    expect(nc.research[POR]).toBeLessThan(researchCap(RULES_1938));
+    for (const n of [USA, POR, FRA]) expect(linesOf(s.world, n).length).toBeGreaterThan(0);
+    // The AI itself did nothing: no order, no formation sent home.
+    expect(s.world.production.count).toBe(0);
+  });
+
+  it('a nation without AI that falls into debt has no budget from the next month on', () => {
+    const w = sim1938().world;
+    const nc = w.nations.cols;
+    const [FRA, POR] = [id('FRA'), id('POR')];
+    const system = economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938);
+    system(w);
+    expect(nc.research[FRA]).toBeGreaterThan(0);
+    expect(nc.research[POR]).toBeGreaterThan(0);
+    nc.gold[FRA] = -1;
+    system(w);
+    expect(nc.research[FRA]).toBe(0);
+    expect(nc.research[POR]).toBeGreaterThan(0);
+  });
 });
