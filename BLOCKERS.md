@@ -91,6 +91,10 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   nation's supply bloc, and `whyNotWar` reads the tie. What a player can meet of it in at
   most a month is not known. If it is one, the fix is beside ADR-148's in `eliminateNation`,
   with `PuppetReleased` for each.
+- Seen 2026-10-06 with PLAN 3.4Rk, not run: **a save written before ADR-148 keeps the
+  overlord of a nation that was dead in it.** The tie is cleared at the death, not at a
+  load, so such a nation would still return as a puppet. Whether a save of an older build
+  loads at all was not tried.
 
 - Seen 2026-10-05 with PLAN 2.16Rg, not looked into: **land occupied with no war behind it in
   a game without commands.** 1938, seed 99, tick 2000: 45 cells whose controller is not their
