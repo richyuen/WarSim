@@ -8182,3 +8182,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the ground where a column loses tanks holds no element at the window's start;
   the spec waits for a snapshot at the zoom, not for elements (as `muzzles1938`).
 - **Next:** PLAN 3.6e (the tank battle demo; it ticks 3.6 and runs the full e2e).
+
+## 2026-10-07 — PLAN 3.6d, from the review after its commit
+
+- **Not changed, written down** (three lines under PLAN 3.6e, one in ADR-162): the spec's
+  place of a hull is computed as the view computes it, so it shows agreement and not the
+  place (the check that no tank of the element stands on the hull is the independent part);
+  the frame's time with hulls is unmeasured; a game loaded at a later tick can leave hulls
+  for an id that is the same element with fewer tanks.
+- **Next:** PLAN 3.6e.

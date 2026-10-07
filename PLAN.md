@@ -3752,6 +3752,15 @@ quick sweep as a smoke test.
     line as the flash begins. Either a tank's shot starts no sooner than its turret is on
     (the shots of a tick start TURN_MS later, for armour or for all), or say why not. Before
     the demo's pictures.
+    From 3.6d (ADR-162, review of 2026-10-07):
+    - `burning1938.spec.ts` computes a hull's place with the expression the view uses
+      (`figureOffsets` at the old pose): that proves the same answer twice, not the place.
+      Read where the figures were drawn before the step (`individualX`, `individualY`: an
+      element's figures in their order) and expect the hull on the figure that is gone, as
+      `wrecks1938.spec.ts` does with the sprite.
+    - The time of a frame with hulls is not measured (up to 2,000 held). Take it on the
+      flight over the battle, flames on.
+    - Not in the browser yet: a hull burning and one left behind in one view.
 - [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,

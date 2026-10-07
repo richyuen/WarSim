@@ -204,6 +204,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     under a dropped record is drawn as left behind.
   - A snapshot that spans several ticks (top speed) has the losses and the fire of all of
     them: a tank left behind in one and its element fired at in another burns.
+  - A game loaded into this one at a later tick: the clock has not gone back, and an id
+    that has the same formation, frame and size in both worlds with fewer tanks in the new
+    one leaves hulls for the difference, once.
 - **Not done:** a hull does not block or hide anything, and figures drive over it; at T2 no
   hull (an element's sprite is 5 px there, a hull would be less than one); the wreck of an
   element's end at T3 is still the T2 mark at 30 px, not a hull.
