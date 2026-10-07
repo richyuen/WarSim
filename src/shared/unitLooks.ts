@@ -10,6 +10,8 @@ import type { UnitSymbol } from './protocol';
  * Frames of the unit sprite atlas (`render/units/atlas`), in its order. `tank`, `tankMedium` and
  * `tankHeavy` are hulls (PLAN 3.6a): the turret of each is a frame of its own (`turretOf`),
  * drawn over the hull as a second sprite, so that it can turn. No class has a turret's frame.
+ * `tankSmall` is no class's either: it is what a hull is drawn as where a sprite is too small to
+ * hold one (`smallFrameOf`, PLAN 3.6e3b).
  */
 export const Frame = {
   infantry: 0,
@@ -24,6 +26,7 @@ export const Frame = {
   turretLight: 9,
   turretMedium: 10,
   turretHeavy: 11,
+  tankSmall: 12,
 } as const;
 export type Frame = (typeof Frame)[keyof typeof Frame];
 
@@ -33,6 +36,20 @@ export function turretOf(frame: number): number {
   if (frame === Frame.tankMedium) return Frame.turretMedium;
   if (frame === Frame.tankHeavy) return Frame.turretHeavy;
   return -1;
+}
+
+/** What `smallFrameOf` says of a frame that is not drawn at the least size. */
+export const NOT_DRAWN_SMALL = -1;
+
+/**
+ * What `frame` is drawn as where a sprite is at its least size (PLAN 3.6e3b, ADR-165): a hull of
+ * any weight is the tank's small mark, one solid shape made for 5 px; its turret is not drawn
+ * there (NOT_DRAWN_SMALL); every other frame is itself.
+ */
+export function smallFrameOf(frame: number): number {
+  if (turretOf(frame) >= 0) return Frame.tankSmall;
+  if (frame === Frame.turretLight || frame === Frame.turretMedium || frame === Frame.turretHeavy) return NOT_DRAWN_SMALL;
+  return frame;
 }
 
 /**

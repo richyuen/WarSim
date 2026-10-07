@@ -167,6 +167,65 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-165 · 2026-10-07 · accepted — Where a sprite is 5 px a tank is a solid slab of its nation's colour; from 5.5 to 8 px the shader mixes it with the hull (PLAN 3.6e3b)
+
+- **Context:** ADR-164: at the least size a hull is a dark blob and a division of tanks the
+  block of any division. PLAN 3.6e3b asked first for pictures at 60 and 40 m/px at one device
+  pixel a CSS px, where 3.6e3 had looked at none.
+- **Looked at first** (`docs/evidence/3.6/t2-60m-hull-x6.png`, `t2-40m-hull-x6.png`, six
+  times enlarged, the tags off; HEAD before this change): at 60 m/px (8.5 px) a hull is a
+  dark lozenge beside the guns' wedge: a vehicle, not yet a tank. At 40 m/px (12.7 px) the
+  tracks and the deck can be seen. ADR-159's "about 40 m/px" stands.
+- **Why the blob is dark:** a hull's 5 px are mostly its outlines (5 of 64 atlas px each),
+  its grey tracks and deck, and the transparent black around it that the mip levels average
+  in. The middle of a tank on the canvas at 150 m/px is 0.50 of its tint.
+- **Decision:**
+  - **The mark** (`Frame.tankSmall`, the thirteenth frame, after the turrets: the
+    snapshot's numbers stand, and no class has it): one rounded slab along the facing, 56 ×
+    34 of the frame's 64, all fill with a rim. At 5 px it is about 4 × 3 px of the nation's
+    colour (1.00 of the tint in the middle). One for the three weights: 5 px do not hold a
+    weight. That is a shape, not ADR-164's refused "tint made darker": the tint is the
+    nation's own, and more of it is seen.
+  - **Where** (`smallShare`, `render/units/elementSprite.ts`): by the side of the sprite as
+    drawn, the size setting in it: all mark at 5.5 px and under, all hull at 8 px and over,
+    a smooth step between. At the default setting: the mark from 92.5 m/px outward (the
+    least size, 5 px from 102, and ADR-164's 100 m/px are all mark), the hull from 64 in.
+    At a size setting of 1.6 and more there is no mark; at a half, the mark to 32 m/px.
+  - **How** (`ProxyRenderer`): one draw, as before. The vertex shader has each frame's small
+    one (`smallFrameOf`, a uniform table) and the share; the fragment shader mixes the two
+    frames' texels. A turret's opacity is × (1 − share): not drawn at the least size. The
+    instance data is as it was, so the turrets' count and their turning are untouched.
+  - **No clock.** The tiers' handovers fade over time because a layer is on or off. This is
+    a function of the zoom, continuous in it: nothing to animate and nothing to pop. One
+    mixed sprite, not two layers at complementary opacities, so the sum does not dip.
+- **Why 8 px**, when a hull first reads at about 12: the AT ("at 60 m/px none") and
+  `turrets1938.spec.ts`, which counts 88 whole turrets at 60 m/px (8.48 px). Between 64 and
+  about 45 m/px a tank is the dark lozenge it was.
+- **Measured** (`tests/e2e/smallMark1938.spec.ts`, the ground of ADR-164): at 150 m/px 88
+  tanks of 354 elements have the mark, none of 226 rifles; the middle of a tank is 1.00 of
+  its tint as drawn and 0.50 with the share held at 0; from 110 to 58 m/px in steps of half
+  a metre the share falls from 1 to 0, at most 0.028 a step; at 60 m/px 68 hulls and 68
+  turrets, share 0.
+- **Looked at** (`docs/evidence/3.6/`: `t2-300m-mark-dpr1.png`, `t2-200m-mark-dpr1.png`,
+  `t2-100m-mark-dpr1.png` beside `t2-*-dpr1.png` of ADR-164; `t2-200m-mark-x6.png`,
+  `t2-100m-mark-x6.png` beside `t2-200m-hull-x6.png`, `t2-100m-hull-x6.png`, which are of
+  another armoured division of the same hour):
+  - **300 and 200 m/px:** a tank brigade and an armoured division are pale blocks with the
+    grain of their rows; a rifle and a motorised division are dark blocks. Told apart
+    without the tag.
+  - **100 m/px:** a tank is a pale slab with a dark edge, larger than a rifle battalion's
+    dot and stroke and a gun's wedge.
+  - It says "the solid arm", not "tank": nothing of 5 px says tank.
+- **Not answered:**
+  - A pale nation's mark on pale ground: Germany's grey slabs on Austria's hatched land at
+    100 m/px stand out less than the dark blobs did. The rim was widened from 3 to 7 atlas
+    px for it; the gain is small.
+  - Guns, half-tracks and rifles have no small frame (ADR-164 left it open): a motorised
+    division is a rifle division's block.
+  - The frame's time at T2 was not measured with the second texture sample (taken only
+    where the share is above 0).
+- View only; the pin did not move.
+
 ### ADR-164 · 2026-10-07 · accepted — At T2 from 300 to 100 m/px a division of tanks is a block that its tag names; the 5 px of a hull do not say "tank", and a mark is needed (PLAN 3.6e3)
 
 - **Context:** the critic's report of 2026-10-05 (R2-B3): "at T2 a panzer division is a grey

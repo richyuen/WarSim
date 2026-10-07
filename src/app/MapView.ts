@@ -11,7 +11,7 @@ import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle }
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
-import { spriteAlpha } from '../render/units/elementSprite';
+import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { FIRE_STRIDE, FireField } from '../shared/events';
@@ -32,7 +32,7 @@ const FLAG_MOVE_MS = 150;
 const FLAG_MAX_RISE = 40;
 import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
-import { Frame, shownFrame, turretOf } from '../shared/unitLooks';
+import { Frame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
@@ -93,6 +93,8 @@ const MARKER_CELLS = 0.9;
 const STAND_IN_MAX_PX = 48;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
 const ELEMENT_CELLS = 0.026;
+/** And at least this many CSS px, before the size setting. */
+const ELEMENT_MIN_PX = 5;
 /**
  * Where the camera goes for a battle (`showBattle`, PLAN 2.14e): 20 m/px, the zoom at which two
  * divisions deployed against each other are whole in a view of 1400 × 800 (PLAN 2.14c1). A
@@ -762,6 +764,15 @@ export class MapView {
   individualTurretFacing(k: number): number {
     return this.individualProxies.data[(this.individualCount + k) * PROXY_STRIDE + 4]!;
   }
+  /**
+   * The small frames' share in the element sprites of the last frame that drew them, 0–1
+   * (`smallShare` of `elementPx`), and what element sprite `i` is drawn as at a share of 1
+   * (`Frame`; PLAN 3.6e3b; tests). The turrets are not drawn there.
+   */
+  elementSmall = 0;
+  elementSmallFrame(i: number): number {
+    return smallFrameOf(this.elementFrame(i));
+  }
   /** Whether the last frame turned turrets: the next one puts them back on their hulls. */
   private turretsTurned = false;
 
@@ -977,7 +988,9 @@ export class MapView {
     this.turnTurrets(now);
     if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
     else {
-      if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, 5, offs, this.unitScale, now / 1000, unitsIn * (1 - figures));
+      // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).
+      this.elementSmall = smallShare(this.elementPx);
+      if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, ELEMENT_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * (1 - figures), undefined, this.elementSmall);
       if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures);
     }
   }
@@ -1078,9 +1091,9 @@ export class MapView {
     this.dirty = true;
   }
 
-  /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least 5 px, × the size setting). */
+  /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least ELEMENT_MIN_PX, × the size setting). */
   get elementPx(): number {
-    return Math.max(ELEMENT_CELLS * this.controller.cam.scale, 5) * this.unitScale;
+    return Math.max(ELEMENT_CELLS * this.controller.cam.scale, ELEMENT_MIN_PX) * this.unitScale;
   }
 
   /**

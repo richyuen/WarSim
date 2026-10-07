@@ -2,7 +2,7 @@
  * Procedural unit sprite atlas (our own art, DATA_SOURCES "Unit sprites"): white silhouettes
  * with a dark outline, tinted per nation in the shader. Frames are 64×64 in a strip, in the
  * order of `Frame` (`shared/unitLooks`): infantry, light tank hull, ship, aircraft, gun, infantry
- * prone, medium and heavy tank hull, half-track, and the three turrets.
+ * prone, medium and heavy tank hull, half-track, the three turrets, and the tank's small mark.
  *
  * A tank is two frames (PLAN 3.6a): its hull, and its turret with the gun, whose ring is at the
  * middle of both frames, so that a turret drawn at its hull's place turns about its ring. Greys
@@ -189,6 +189,15 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   frame(Frame.turretLight, (g) => turret(g, 7, 7, GUN_LIGHT, 3, false));
   frame(Frame.turretMedium, (g) => turret(g, 10, 9, GUN_MEDIUM, 4, false));
   frame(Frame.turretHeavy, (g) => turret(g, 14, 12, GUN_HEAVY, 6, true));
+  // A tank where a sprite is 5 px (PLAN 3.6e3b): one slab along the facing, all fill and a thin
+  // rim. A hull's tracks, deck and outlines are most of its 5 px, and it was a dark blob there.
+  frame(Frame.tankSmall, (g) => {
+    g.lineWidth = 7;
+    g.beginPath();
+    g.roundRect(-28, -17, 56, 34, 8);
+    g.stroke();
+    g.fill();
+  });
   return c;
 }
 

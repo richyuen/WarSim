@@ -3767,7 +3767,7 @@ quick sweep as a smoke test.
       102 m/px outward and lies on its neighbours from 118: at 300 and 200 a division of any
       arm is one dark block; at 100 a tank is a blob that is not a rifle and not a tank. The
       tag says "Armoured division", the marks do not. A mark is needed: 3.6e3b. No code.
-    - [ ] 3.6e3b **A tank's mark at the least size** (ADR-164). Where a T2 sprite is at its
+    - [x] 3.6e3b **A tank's mark at the least size** (ADR-164). Where a T2 sprite is at its
       least size (5 px, from about 102 m/px outward) an element of tanks is drawn with a
       frame made for 5 px: one solid shape that no other arm has. The turret is not drawn
       there. The handover to the hull's frame as the sprite grows must not pop (a fade over
@@ -3782,6 +3782,23 @@ quick sweep as a smoke test.
       there is not known (ADR-159 says "about 40 m/px", unconfirmed). Take those two first.
       And `turrets1938.spec.ts` counts turrets at 60 m/px: a band that reaches there moves
       its numbers.
+      **Done 2026-10-07 (ADR-165).** Looked at first, at one device pixel: at 60 m/px
+      (8.5 px) a hull is a dark lozenge, a vehicle and not yet a tank; at 40 (12.7 px) its
+      tracks can be seen. `Frame.tankSmall`, a solid slab, for a hull of any weight where a
+      sprite is drawn 5.5 px or less; mixed with the hull in the shader from 5.5 to 8 px (92
+      to 64 m/px), the turret fading in; by the sprite's size, with no clock.
+      `unitLooks.test.ts` + 2, `elementSprite.test.ts` + 3. `smallMark1938.spec.ts` new: at
+      150 m/px 88 tanks of 354 elements are the mark and none of 226 rifles; the middle of a
+      tank on the canvas is 1.00 of its tint as the mark and 0.50 as a hull; through the
+      band the share's largest step is 0.028 in half a metre a pixel; at 60 m/px 68 hulls,
+      68 turrets, no mark. Pictures at 300, 200 and 100 m/px looked at beside those of
+      3.6e3: a tank formation is a pale block and a pale slab, a rifle division a dark
+      block and a dot with a stroke. Told apart without the tag; "tank" it does not say.
+      - *Not done:* a mark of a pale nation on pale ground has less against the ground than
+        the dark blob had (Germany's grey on Austria's hatched land at 100 m/px); guns,
+        half-tracks and rifles have no small frame, and a motorised division is a rifle
+        division's block; the frame's time at T2 with the second sample was not measured;
+        the band ends at 8 px for the turrets at 60 m/px, not where a hull first reads.
     - [ ] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,
       if the ground has it, both kinds of hull in one view; pictures; PARITY. Ticks 3.6e and
       3.6 (the full e2e).

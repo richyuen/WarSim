@@ -8249,3 +8249,35 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** no spec is kept (nothing drawn has changed); the dpr 3 pictures at 300 and
   200 were looked at and not kept.
 - **Next:** PLAN 3.6e3b (a tank's mark at the least size).
+
+## 2026-10-07 — PLAN 3.6e3b: a tank's mark at the least size (ADR-165)
+
+- **Looked at first** (a scratch spec, deleted before the gate; HEAD, one device pixel): a
+  hull at 60 m/px (8.5 px) is a dark lozenge, at 40 (12.7 px) its tracks show.
+- **Done:** `Frame.tankSmall`, a solid slab, in the atlas; `smallFrameOf` (a hull of any
+  weight the mark, a turret not drawn, the rest themselves); `smallShare` by the sprite's
+  drawn size (1 at 5.5 px and under, 0 at 8 and over: 92.5 to 64 m/px at the default
+  setting); `ProxyRenderer` mixes the two frames in one draw and fades the turret. No
+  instance data changed. View only; the pin did not move.
+- **Tests:** `unitLooks.test.ts` + 2 (one restated: thirteen frames), `elementSprite.test.ts`
+  + 3. `smallMark1938.spec.ts` new: 88 tanks of 354 elements the mark at 150 m/px, none of
+  226 rifles; the middle of a tank on the canvas 1.00 of its tint as the mark, 0.50 as a
+  hull (the share held at 0 in the page); the band's largest step 0.028 in half a metre a
+  pixel; 68 hulls and 68 turrets at 60 m/px.
+- **Specs by hand** (`--project=chromium`): `smallMark1938`, `turrets1938`, `muzzles1938`,
+  `burning1938`, `fire1938`, `elements1938`, `tiers1938`, `handover1938`, `wrecks1938`,
+  `spriteColours1938`, `zoomDemo1938`, `closeZoom1938`, `individuals1938`: 19 tests, green,
+  4.6 min, with a rim of 3 atlas px; `smallMark1938` again with the rim of 7 that is
+  committed. `turrets1938` still counts 88 turrets at 60 m/px.
+- **Looked at** (`docs/evidence/3.6/t2-{300,200,100}m-mark-dpr1.png`, `t2-200m-mark-x6.png`,
+  `t2-100m-mark-x6.png`, beside the hulls' `t2-*-hull-x6.png` and ADR-164's): a tank
+  formation is a pale block at 300 and 200 and pale slabs at 100; rifles are dark blocks and
+  dots. Told apart without the tag. It does not say "tank".
+- **Gotcha:** `EVIDENCE=1` on a run of thirteen spec files rewrote every one's pictures
+  (33 files under `docs/evidence/`): restored from HEAD. Set it for the one spec.
+- **Gotcha:** a Bash heredoc lost the escaped apostrophes of a test's title, and later a
+  whole script (the memory note says so): the script is now a file.
+- **Not done:** a pale nation's mark on pale ground has little against it; no small frame
+  for guns, half-tracks and rifles; the frame's time at T2 not measured; the hulls' crops
+  and the marks' crops are not of the same division.
+- **Next:** PLAN 3.6e4 (the demo; ticks 3.6e and 3.6, the full e2e).

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LOOKS } from '../../src/render/fx/fire';
-import { Frame, frameOf, symbolOf, turretOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
+import { Frame, frameOf, NOT_DRAWN_SMALL, smallFrameOf, symbolOf, turretOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
 import { TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { AIR_CLASSES, LAND_CLASSES, SEA_CLASSES, UNIT_CLASSES } from '../../src/sim/data/schemas';
 
@@ -24,8 +24,9 @@ describe('frameOf', () => {
 
   it('frames are the atlas order, without gaps, and every class has one', () => {
     // Five classes' frames and, since PLAN 2.14c2, the sixth: infantry prone, which no class has of itself (`shownFrame`).
-    // Since PLAN 3.6a twelve: three hulls, a half-track and three turrets.
-    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    // Since PLAN 3.6a twelve: three hulls, a half-track and three turrets. Since PLAN 3.6e3b the
+    // thirteenth, after them all (the snapshot's numbers stand): the tank's small mark.
+    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     for (const cls of UNIT_CLASSES) expect(Object.values(Frame)).toContain(frameOf(cls));
     for (const cls of UNIT_CLASSES) expect(frameOf(cls), cls).not.toBe(Frame.prone);
   });
@@ -36,6 +37,28 @@ describe('frameOf', () => {
     for (const f of Object.values(Frame)) if (f !== Frame.tank && f !== Frame.tankMedium && f !== Frame.tankHeavy) expect(turretOf(f), String(f)).toBe(-1);
     for (const cls of UNIT_CLASSES) expect(turrets, cls).not.toContain(frameOf(cls));
     for (const cls of UNIT_CLASSES) expect(turretOf(frameOf(cls)) >= 0, cls).toBe(cls.startsWith('armor'));
+  });
+});
+
+// PLAN 3.6e3b (ADR-165): where a sprite is 5 px a hull was a dark blob that said neither "tank"
+// nor "rifle" (ADR-164). There a tank of any weight is one mark that no other class has, and its
+// turret is not drawn.
+describe('smallFrameOf', () => {
+  it('a tank of any weight is the small mark, and nothing else is', () => {
+    for (const cls of UNIT_CLASSES) expect(smallFrameOf(frameOf(cls)) === Frame.tankSmall, cls).toBe(cls.startsWith('armor'));
+    for (const cls of UNIT_CLASSES) if (!cls.startsWith('armor')) expect(smallFrameOf(frameOf(cls)), cls).toBe(frameOf(cls));
+    // Infantry in contact and a half-track are themselves: the mark is the tank's alone.
+    expect(smallFrameOf(Frame.prone)).toBe(Frame.prone);
+    expect(smallFrameOf(Frame.halftrack)).toBe(Frame.halftrack);
+  });
+
+  it('a turret is not drawn at the least size; the mark has no turret and no class', () => {
+    for (const f of [Frame.tank, Frame.tankMedium, Frame.tankHeavy]) expect(smallFrameOf(turretOf(f)), String(f)).toBe(NOT_DRAWN_SMALL);
+    // Only the turrets go: every other frame is drawn as something.
+    for (const f of Object.values(Frame)) expect(smallFrameOf(f) === NOT_DRAWN_SMALL, String(f)).toBe(f === Frame.turretLight || f === Frame.turretMedium || f === Frame.turretHeavy);
+    expect(turretOf(Frame.tankSmall)).toBe(-1);
+    expect(smallFrameOf(Frame.tankSmall)).toBe(Frame.tankSmall);
+    for (const cls of UNIT_CLASSES) expect(frameOf(cls), cls).not.toBe(Frame.tankSmall);
   });
 });
 

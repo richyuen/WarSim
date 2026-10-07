@@ -1628,6 +1628,13 @@ moment before its first elements arrive.
   place written after all the others of the layer (`render/units/turrets.ts`), at T2 and T3.
   The turret's ring is the middle of both frames. Mechanised infantry is a half-track, with no
   turret. The snapshot carries the hull's frame alone.
+  *The small mark* (PLAN 3.6e3b, ADR-165): where an element sprite is drawn 5.5 px wide or
+  less (from about 92 m/px outward at the default size setting; the least size is 5 px, from
+  102), a hull of any weight is one frame made for that size, a solid slab along the facing
+  (`Frame.tankSmall`, `smallFrameOf`), and its turret is not drawn. From 5.5 to 8 px (92 to
+  64 m/px) the shader mixes the two frames by `smallShare` of the sprite's size and fades the
+  turret in: a matter of the zoom alone, with no clock. From 8 px in a tank is hull and turret.
+  No other class has a small frame.
   *The turret turns* (PLAN 3.6b, ADR-160): `TurretAims` has an aim for every element whose
   cannon shot the view draws, the angle of the fire record's line. The turret turns there in
   180 ms before the shot starts (a cannon's shot starts 180 ms after its minute of the tick,

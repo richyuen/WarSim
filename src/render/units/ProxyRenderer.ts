@@ -8,6 +8,7 @@
  */
 import * as twgl from 'twgl.js';
 import type { Camera } from '../camera';
+import { smallFrameOf } from '../../shared/unitLooks';
 import { hash2 } from '../hash';
 import { ATLAS_FRAMES } from './atlas';
 
@@ -39,7 +40,11 @@ uniform float uMaxPx;       // maximum sprite size in device px
 uniform float uSizeMul;     // unit-size setting (PLAN 1.39a)
 uniform float uTime;        // seconds, for the walk/drive animation (PLAN 2.3)
 uniform float uAlpha;       // layer opacity (tier fades)
+uniform float uSmall;       // the small frames' share, 0–1 (PLAN 3.6e3b)
+uniform float uSmallOf[${ATLAS_FRAMES}]; // each frame's small one (smallFrameOf)
 out vec2 vUv;
+out vec2 vUvSmall;
+out float vSmall;
 out vec4 vColor;
 void main() {
   vec2 pos = mix(aPrevCur.xy, aPrevCur.zw, uT);
@@ -60,7 +65,13 @@ void main() {
   vec2 px = (pos - uCam) * uScale + corner;
   gl_Position = vec4(px.x / (0.5 * uViewport.x), -px.y / (0.5 * uViewport.y), 0.0, 1.0);
   vUv = vec2((frame + aCorner.x + 0.5) / ${ATLAS_FRAMES.toFixed(1)}, aCorner.y + 0.5);
-  vColor = vec4(aColor.rgb, aColor.a * aMisc.w * uAlpha);
+  // Where sprites are small, a frame goes over into its small one, and one that has none there
+  // (a turret) goes out.
+  float small = uSmallOf[int(frame)];
+  float gone = step(small, -0.5);
+  vSmall = uSmall * step(0.5, abs(small - frame)) * (1.0 - gone);
+  vUvSmall = vec2((max(small, 0.0) + aCorner.x + 0.5) / ${ATLAS_FRAMES.toFixed(1)}, aCorner.y + 0.5);
+  vColor = vec4(aColor.rgb, aColor.a * aMisc.w * uAlpha * (1.0 - gone * uSmall));
 }
 `;
 
@@ -68,15 +79,21 @@ const FS = `#version 300 es
 precision highp float;
 uniform sampler2D uAtlas;
 in vec2 vUv;
+in vec2 vUvSmall;
+in float vSmall;
 in vec4 vColor;
 out vec4 outColor;
 void main() {
   vec4 t = texture(uAtlas, vUv);
+  if (vSmall > 0.0) t = mix(t, texture(uAtlas, vUvSmall), vSmall);
   // White silhouette → tint; dark outline stays dark.
   outColor = vec4(t.rgb * vColor.rgb, t.a * vColor.a);
   if (outColor.a < 0.02) discard;
 }
 `;
+
+/** `smallFrameOf` of every frame of the atlas, for the shader. */
+const SMALL_OF = Array.from({ length: ATLAS_FRAMES }, (_, frame) => smallFrameOf(frame));
 
 /** No upper limit to a sprite's size (a finite number: the shader takes it as a float). */
 const NO_MAX_PX = 1e9;
@@ -172,8 +189,9 @@ export class ProxyRenderer {
    * Draws all instances; `wrapOffsets` are world x-shifts (cells) of extra copies for a looping
    * map (see camera.wrapOffsets), so sprites near the seam appear on both sides. A sprite is its
    * size in cells at the zoom, at least `minPx` and at most `maxPx` CSS px (before `sizeMul`).
+   * `small`: the share of its small frame in each sprite that has one (`smallFrameOf`), 0–1.
    */
-  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1, maxPx = NO_MAX_PX): void {
+  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1, maxPx = NO_MAX_PX, small = 0): void {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
@@ -190,6 +208,8 @@ export class ProxyRenderer {
       uSizeMul: sizeMul,
       uTime: timeS,
       uAlpha: alpha,
+      uSmall: small,
+      uSmallOf: SMALL_OF,
     });
     gl.bindVertexArray(this.vao);
     for (const off of wrapOffsets) {
