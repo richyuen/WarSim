@@ -3056,10 +3056,21 @@ quick sweep as a smoke test.
     - *Left for 3.4Rd to measure before it is touched:* per battle and hour, the side's
       arms and each formation's enemies are found by asking `atWar` of every pair of
       the battle's formations.
-  - [ ] 3.4Rd Tick time, not measured since PLAN 3.1: `npm run sim -- --scenario 1938
+  - [x] 3.4Rd Tick time, not measured since PLAN 3.1: `npm run sim -- --scenario 1938
     --seed 99 --years 5 --affinity 0xFFFF` beside the last figure in PROGRESS and the
     budget. A slower tick is logged with its numbers; one over budget is a task before the
     next that needs a sweep.
+    Done 2026-10-06, the machine idle, one run each (seed 99, pinned).
+    - *As it stood:* 5-year mean 1.466 ms (budget 1.5), year 1 2.370 ms (budget 2.4), p95
+      of year 1 9.15 ms. The last figures in PROGRESS: 1.42 and 2.06 (PLAN 1.42), 2.27 for
+      year 1 since ("0.13 ms left"). In budget, with 0.03 ms left in each.
+    - *Changed:* `combat.ts` found each formation's enemies and its side's arms by asking
+      `atWar` of every pair of a battle's formations. It asks once per nation of the
+      battle now. Every year's hash is the same (80e8050a … a0b9cdba). 1.451 and 2.339
+      ms after: inside what two runs differ by, so no gain is claimed.
+    - *Not done:* what of year 1's rise from 2.06 is whose (the rules of Phase 3, the
+      formations PLAN 3.1c added, or the wars the pin's moves chose). PLAN 7.1 has the
+      budget; a task that needs a sweep before then measures first.
   - [x] 3.4Re The three tank brigades of 3.4b that stood some 11,000 volleys each in contact
     with their infantry gone: which they are, why they stay (no order to leave, no path, a
     rule that holds them), and whether that is a defect (a task here) or the AI's not

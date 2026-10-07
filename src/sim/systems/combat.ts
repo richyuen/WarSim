@@ -175,17 +175,24 @@ export function combatSystem(world: World): void {
       for (const s of idx.get(fid) ?? []) if (ec.strength[s]! > 0) a |= units[ec.unit[s]!]!.arm;
       arms.set(fid, a);
     }
-    // The arms of each formation's side: of the battle's formations its nation is not at war with.
-    const sideArmsOf = new Map<number, number>();
+    // By nation, as a battle has few nations and many formations: its enemies in the battle (in
+    // the battle's order) and the arms of its side, the battle's formations it is not at war with.
+    const sides = new Map<number, { enemies: number[]; hostile: Set<number>; arms: number }>();
     for (const fid of battle) {
+      const n = f.nation[fid]!;
+      if (sides.has(n)) continue;
+      const enemies: number[] = [];
       let a = 0;
-      for (const o of battle) if (!world.wars.atWar(f.nation[fid]!, f.nation[o]!)) a |= arms.get(o)!;
-      sideArmsOf.set(fid, a);
+      for (const o of battle) {
+        if (world.wars.atWar(n, f.nation[o]!)) enemies.push(o);
+        else a |= arms.get(o)!;
+      }
+      sides.set(n, { enemies, hostile: new Set(enemies), arms: a });
     }
+    const sideArmsOf = (fid: number): number => sides.get(f.nation[fid]!)!.arms;
     for (const sf of battle) {
-      const enemies = battle.filter((o) => world.wars.atWar(f.nation[sf]!, f.nation[o]!));
-      const hostile = new Set(enemies);
-      const sideArms = sideArmsOf.get(sf)!;
+      const { enemies, hostile } = sides.get(f.nation[sf]!)!;
+      const sideArms = sideArmsOf(sf);
       // What every volley of the formation has: its supply, its org, its side's three arms.
       const shooterFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1);
       let enemyArms = 0;
@@ -253,11 +260,11 @@ export function combatSystem(world: World): void {
         const buffAtk = ce * Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
         const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
         // Armour on close ground with no infantry of its side in the battle (PLAN 3.4b).
-        const screen = (ut.arm & ARM_ARMOUR) !== 0 && CLOSE[terrain] && (sideArmsOf.get(tf)! & ARM_INFANTRY) === 0 ? UNSCREENED : 1;
+        const screen = (ut.arm & ARM_ARMOUR) !== 0 && CLOSE[terrain] && (sideArmsOf(tf) & ARM_INFANTRY) === 0 ? UNSCREENED : 1;
         // An AT gun under the enemy's artillery (PLAN 3.4c).
         const guns = (us.arm & ARM_AT) !== 0 ? atFire : 1;
         // Armour at what has no armour, on open ground, with no AT gun of the target's side in the battle (PLAN 3.4d).
-        const open = (us.arm & ARM_ARMOUR) !== 0 && ut.armor === 0 && OPEN[terrain] && (sideArmsOf.get(tf)! & ARM_AT) === 0 ? IN_THE_OPEN : 1;
+        const open = (us.arm & ARM_ARMOUR) !== 0 && ut.armor === 0 && OPEN[terrain] && (sideArmsOf(tf) & ARM_AT) === 0 ? IN_THE_OPEN : 1;
         const dmg = (eff(t) * fullness * FIRE_SCALE * atk * shooterFactor * buffAtk * lossMult * screen * guns * open) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);

@@ -7228,3 +7228,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   in the task that adds it.
 - **Next:** 3.4Rd (tick time), then 3.4Rf to 3.4Rk, then PLAN 3.5.
 - **Gate:** documents (parity).
+
+## 2026-10-06 — PLAN 3.4Rd: tick time after PLAN 3.1 to 3.4: in budget by 0.03 ms
+
+- **Measured** (`npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, the
+  machine idle, one run): 5-year mean 1.466 ms (budget 1.5), year 1 2.370 ms (budget 2.4),
+  years 2 to 5: 1.544, 1.296, 1.159, 0.959. Before Phase 3 the log has 2.27 for year 1.
+- **Changed:** a battle's sides are found once per nation in it, not per pair of formations
+  (`combat.ts`). The hashes of the five years are those of before. After: 1.451 and 2.339 ms,
+  which is no more than two runs differ by.
+- **Not done:** the rise of year 1 is not told apart by cause. The budget has 0.03 ms left:
+  the next rule that costs a multiplication a volley measures before and after.
+- **The pass so far:** 3.4Ra to 3.4Re done. Open, before PLAN 3.5: 3.4Rf (armour dry in
+  contact), 3.4Rg to 3.4Rk (the read's five). PLAN 3.4R is ticked with the last of them.
+- **Next:** PLAN 3.4Rf.
+- **Gate:** green (code, with the ten-year tests; no spec changed).
