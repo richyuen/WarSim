@@ -202,6 +202,19 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   of a second the flash is there. Each tank its own bearing would take that away and would
   have every turret of an element at a slightly different angle; `turrets1938.spec.ts`
   states the one angle. Left as it is.
+- **A shot does not wait for its turret** (found in review after the first commit, which
+  gave the 20 degrees above as the whole of it). A turret begins its turn 180 ms before its
+  shot, or when the snapshot arrives if that is later (ADR-160): a shot that starts in the
+  first 180 ms after its snapshot leaves a turret still on its way from the hull's facing.
+  The muzzle is where that turret is, so the flash is at the gun, but the tongue lies along
+  a gun that is not yet on the target, and the tracer's tail turns with it. Of a tick
+  stepped while paused (its shots start over 400 ms) that is the shots of the first 27
+  minutes of the hour; at a tick a second, of the first 11. `muzzles1938.spec.ts`: 15 of 25
+  tanks had their turret within 0.02 rad of the target's line as their shot started, the
+  furthest of the other 10 was 0.26 rad off it (in a scene whose hulls face 0.36 rad from
+  their targets; a hull that faces away would be further). The spec reads the flash and the
+  turret from the same frame, so it holds whatever the angle. Not changed here: the turn's
+  timing is ADR-160's, and a line under PLAN 3.6e has it.
 - **A gun's barrel is its formation's facing.** A field piece has no turret: its tongue lies
   along the piece as drawn, and its shell's arc leaves toward the target. A deployed
   formation faces the enemy, so the two are near each other in a battle; not measured.

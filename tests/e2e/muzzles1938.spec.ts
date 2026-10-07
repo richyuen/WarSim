@@ -59,7 +59,7 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
       // The turrets of the shooter's tanks in this frame.
       const turrets: number[] = [];
       for (let k = 0; k < v.individualTurrets; k++) if (v.individualOwner[v.individualTurretOwner[k]!] === s.shooter) turrets.push(v.individualTurretFacing(k));
-      return { shooter: s.shooter, weapon: s.weapon, start: s.start, x0: s.x0, y0: s.y0, from: s.from, flash: f ? { x: f.x, y: f.y } : null, turrets };
+      return { shooter: s.shooter, weapon: s.weapon, start: s.start, x0: s.x0, y0: s.y0, x1: s.x1, y1: s.y1, from: s.from, flash: f ? { x: f.x, y: f.y } : null, turrets };
     });
     return {
       flashes,
@@ -87,6 +87,9 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
   let unheld = 0;
   let outside = 0;
   let farthest = 0;
+  // Tanks whose turret is on the line to the target as the shot starts, and the furthest off of the others (rad).
+  let onTarget = 0;
+  let worstOff = 0;
   for (const s of got.flashes) {
     // A shot is drawn when an end of it is in the viewport (1400 x 800): the view holds elements beyond it.
     const inView = Math.abs(s.x0 - got.cx) * got.scale < 700 && Math.abs(s.y0 - got.cy) * got.scale < 400;
@@ -125,6 +128,10 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
     if (s.weapon === Weapon.cannon) cannons++;
     if (tank) {
       fromTanks++;
+      const line = Math.atan2(s.y1 - s.y0, s.x1 - s.x0);
+      const offLine = Math.abs(Math.atan2(Math.sin(angle - line), Math.cos(angle - line)));
+      if (offLine < 0.02) onTarget++;
+      worstOff = Math.max(worstOff, offLine);
       // Not at the middle of the hull, and not at the middle of the element's footprint.
       expect(toFigure).toBeGreaterThan(0.3 * side);
       expect(Math.hypot(s.flash!.x - s.x0, s.flash!.y - s.y0) * got.scale).toBeGreaterThan(1);
@@ -146,5 +153,5 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
     v.draw(t);
   }, { x: shown.flash!.x, y: shown.flash!.y, m: NEAR_M_PER_PX, t: shown.start + 30 });
   await page.screenshot({ path: path.join(out, 'muzzle-1.5m.png') });
-  console.log(`muzzles at ${M_PER_PX} m/px: ${got.flashes.length} shots, ${cannons} of cannon; ${fromTanks} at a tank's muzzle, ${fromOthers} at another figure's, ${unheld} of shooters the view does not hold, ${outside} not drawn (outside the viewport); the farthest ${farthest.toFixed(3)} of a figure from its figure; ${got.figures.length} figures`);
+  console.log(`muzzles at ${M_PER_PX} m/px: ${got.flashes.length} shots, ${cannons} of cannon; ${fromTanks} at a tank's muzzle (${onTarget} with the turret on the target's line as the shot starts, the furthest ${worstOff.toFixed(2)} rad off it), ${fromOthers} at another figure's, ${unheld} of shooters the view does not hold, ${outside} not drawn (outside the viewport); the farthest ${farthest.toFixed(3)} of a figure from its figure; ${got.figures.length} figures`);
 });

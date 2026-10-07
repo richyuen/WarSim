@@ -8123,3 +8123,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   hour before: a spec that waits for elements there before the step waits for ever. A shot is
   drawn only when an end of it is in the viewport, and the view holds elements beyond it.
 - **Next:** PLAN 3.6d (tanks burn where they are lost).
+
+## 2026-10-07 — PLAN 3.6c, put right in the record: a shot does not wait for its turret
+
+- **Wrong in `67e87ce`:** ADR-161 gave "up to about 20 degrees for a tenth of a second" as
+  all that lies between a tongue and its tracer. A turret begins its turn 180 ms before its
+  shot or at the snapshot's arrival (ADR-160), so a shot that starts in the first 180 ms
+  leaves a turret still turning. Found in review, by reading; the spec reads the flash and
+  the turret from the same frame and cannot see it, and the pictures are stills.
+- **Done:** `muzzles1938.spec.ts` reports it: 15 of 25 tanks with the turret within 0.02 rad
+  of the target's line as the shot starts, the furthest 0.26 rad off. ADR-161 restated; a
+  line under PLAN 3.6e (the shot waits, or why not). No code of the view changed.
+- **BLOCKERS:** the `precision` timeout of the hand run, with the other specs that ran out
+  once under load.
+- **Next:** PLAN 3.6d (tanks burn where they are lost).

@@ -467,3 +467,8 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
     row, it passed (the tick's end after 913 to 1,049 ms). It runs the toy world, which has no unit
     rules: the rule of that commit is not on its path. The load of the machine in that run is
     not known. The spec was not changed.
+  - `precision`, the bench page (2026-10-07, eleven spec files run by hand for PLAN 3.6c, 17
+    tests in 3.3 min): its wait for `window.__precision` on `/bench.html?b=P` ran out with the
+    test's 90 s, once. Alone it passed (12.7 s), and in a run with `fire1938` and `bench-pages`.
+    It was the last test of the run. The load of the machine in that run is not known. The
+    spec was not changed.

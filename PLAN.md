@@ -3718,8 +3718,9 @@ quick sweep as a smoke test.
     `fireFx.test.ts` 10 → 17, `individuals.test.ts` + 4. `muzzles1938.spec.ts` new: 25 of
     25 cannon flashes of shooters in view at a tank's muzzle to 0.01 px. Pictures at 4 and
     1.5 m/px looked at.
-    - *Not done:* each tank its own bearing (the tongue and the tracer of a tank at the edge
-      of its element differ by up to about 20 degrees for a near target: ADR-161); a gun's
+    - *Not done:* a shot does not wait for its turret (below, under 3.6e); each tank its own
+      bearing (the tongue and the tracer of a tank at the edge of its element differ by up to
+      about 20 degrees for a near target: ADR-161); a gun's
       tongue is along its formation's facing, not measured against its targets; a shooter
       outside the view's box fires from its slot; nothing filmed in a running game.
   - [ ] 3.6d **Tanks burn where they are lost.** A wreck is left only when a whole element
@@ -3733,6 +3734,11 @@ quick sweep as a smoke test.
     From 3.6a: say what a division of tanks is at T2 between 300 and 100 m/px, where a
     sprite is 5 px (the critic: "a grey grid of dots like any other"), and whether the 5 px
     of a hull can say "tank" there (its shape, or the element's mark).
+    From 3.6c (ADR-161): a shot that starts within 180 ms of its snapshot leaves a turret
+    still turning: 10 of 25 tanks in `muzzles1938.spec.ts`, up to 0.26 rad off the target's
+    line as the flash begins. Either a tank's shot starts no sooner than its turret is on
+    (the shots of a tick start TURN_MS later, for armour or for all), or say why not. Before
+    the demo's pictures.
 - [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
