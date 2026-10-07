@@ -555,8 +555,14 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *No war inside a realm (PLAN 3.8b, ADR-178):* nor for a `bond` between the two: allies, two
     puppets of one overlord, or one of them (or its overlord) the ally of the other (or of its
     overlord). The AI's choice of a target and the neighbour a revolt rises with use the same
-    test. Who *joins* a war is not yet held to it (PLAN 3.8c), nor a nation made a puppet while
-    at war (PLAN 3.8d).
+    test. Who *joins* a war is held to it too (PLAN 3.8c, ADR-179): of the nations a
+    declaration calls, those torn between the sides stay out, each with its puppets. First who
+    has a bond with the enemy's leader (a guarantor of the defender that is the attacker's
+    ally), then the puppets with a bond to anyone of the other side (a puppet in another
+    alliance than its overlord; its overlord fights on), then the other nations with one.
+    Within a step they are asked in the order of the call, against those of the other side
+    let stand so far: of two torn by each other alone, the one called first fights. The two
+    leaders always stand. A nation made a puppet while at war is not yet held to it (PLAN 3.8d).
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
@@ -599,7 +605,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     When the leader leaves, the lead passes on.
   - *Union:* at unity ≥ 80, kept until it drops below 70.
   - *Wars:* a declaration brings each leader's alliance and puppets, and the defender's
-    guarantors (not chained further). Allies cannot declare on each other.
+    guarantors (not chained further). Allies cannot declare on each other. A nation with a
+    bond to the other side stays out (§3.5, PLAN 3.8c).
   - *Commands:* create, join and leave alliances; setUnity, setLoyalty.
   - *Alliance map mode:* a palette swap in the bottom bar, persisted. Members take their leader's
     colour; non-aligned nations are grey.

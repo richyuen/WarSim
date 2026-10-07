@@ -4,7 +4,8 @@
  * Declaration (`declareWar`): rejected for dead nations, self, an existing war, a truce, an
  * overlord–puppet pair, allies, two puppets of one overlord, or a nation and the puppet of its
  * ally (`bond`, PLAN 3.8). Each leader brings its puppets and its alliance (PLAN 1.17);
- * the defender also gains its guarantors (each with its puppets). A side fights to the death when any
+ * the defender also gains its guarantors (each with its puppets). Of those, a nation with a bond
+ * to a nation of the other side stays out, with its puppets (PLAN 3.8c). A side fights to the death when any
  * member's nation flag is set (God Mode can change it per war with `setWarFightToDeath`).
  *
  * Daily (00:00), when any war exists, the day's land tallies (`LandCounts`) give the land owned
@@ -122,25 +123,52 @@ export function declareWar(world: World, attacker: number, defender: number): Wa
     return null;
   }
   // Each side: leader + puppets, then its alliance (+ their puppets); defenders also gain their
-  // guarantors. Nobody joins against its own ally, a truce partner, or twice.
+  // guarantors. Nobody joins against a truce partner or twice.
   const al = world.alliances;
   const allies = (n: number): number[] => al.allianceOf(n)?.members.filter((m) => m !== n) ?? [];
   const live = (m: number): boolean => world.nations.has(m) && nc.living[m] === 1;
-  const a: number[] = [];
-  const d: number[] = [];
-  const add = (side: number[], other: number[], enemyLeader: number, m: number): void => {
+  const called: [number[], number[]] = [[], []];
+  const order: number[] = [];
+  const add = (s: number, enemyLeader: number, m: number): void => {
     for (const x of withPuppets(world, m)) {
-      if (!live(x) || side.includes(x) || other.includes(x)) continue;
-      // Nor against an ally on the other side (a puppet may sit in another alliance than its overlord).
-      if (x !== attacker && x !== defender && (al.allied(x, enemyLeader) || other.some((o) => al.allied(x, o)) || world.wars.inTruce(x, enemyLeader, world.tick) || nc.overlord[enemyLeader] === x)) continue;
-      side.push(x);
+      if (!live(x) || called[0].includes(x) || called[1].includes(x)) continue;
+      if (x !== attacker && x !== defender && world.wars.inTruce(x, enemyLeader, world.tick)) continue;
+      called[s]!.push(x);
+      order.push(x);
     }
   };
-  add(a, d, defender, attacker);
-  add(d, a, attacker, defender);
-  for (const m of allies(defender)) add(d, a, attacker, m);
-  for (const g of al.guarantorsOf(defender)) add(d, a, attacker, g);
-  for (const m of allies(attacker)) add(a, d, defender, m);
+  add(ATTACKERS, defender, attacker);
+  add(DEFENDERS, attacker, defender);
+  for (const m of allies(defender)) add(DEFENDERS, attacker, m);
+  for (const g of al.guarantorsOf(defender)) add(DEFENDERS, attacker, g);
+  for (const m of allies(attacker)) add(ATTACKERS, defender, m);
+  // Nobody but the two leaders stands against a nation it has a bond with (PLAN 3.8c): a nation
+  // torn between the sides stays out, with its puppets. In three steps, each on what the one
+  // before left: who has a bond with the enemy's leader (a guarantor of the defender that is the
+  // attacker's ally); then, of the puppets, each that has one with a nation of the other side
+  // (a puppet in another alliance than its overlord does not fight its overlord's side, and does
+  // not keep its overlord out of the war); then the same of the nations that are no puppets.
+  // Within a step the nations are asked in the order of the call, each against those of the
+  // other side that the step has let stand: of two that are torn by each other alone, the one
+  // called first fights.
+  const leader = (x: number): boolean => x === attacker || x === defender;
+  const bound = (x: number, enemies: number[]): boolean => enemies.some((o) => bond(world, x, o) !== Refusal.None);
+  const without = (sides: [number[], number[]], asked: (x: number) => boolean, enemiesOf: (s: number, stand: Set<number>) => number[]): [number[], number[]] => {
+    const out = new Set<number>();
+    const stand = new Set<number>();
+    for (const side of sides) for (const x of side) if (leader(x) || !asked(x)) stand.add(x);
+    for (const x of order) {
+      const s = sides[ATTACKERS].includes(x) ? ATTACKERS : sides[DEFENDERS].includes(x) ? DEFENDERS : -1;
+      if (s < 0 || stand.has(x)) continue;
+      if (bound(x, enemiesOf(1 - s, stand))) out.add(x);
+      else stand.add(x);
+    }
+    const keep = (x: number): boolean => leader(x) || (!out.has(x) && !out.has(nc.overlord[x]!));
+    return [sides[0].filter(keep), sides[1].filter(keep)];
+  };
+  const step1 = without(called, () => true, (s) => [s === ATTACKERS ? attacker : defender]);
+  const step2 = without(step1, (x) => nc.overlord[x] !== 0, (s, stand) => step1[s]!.filter((o) => stand.has(o)));
+  const [a, d] = without(step2, (x) => nc.overlord[x] === 0, (s, stand) => step2[s]!.filter((o) => stand.has(o)));
   // A side fights to the death when its leader does (PLAN 1.40 tuning: any member used to pass it
   // on, so whole alliance blocs fought every later war forever and fronts froze).
   const ftd = (side: number[]): boolean => nc.fightToDeath[side[0]!] === 1;

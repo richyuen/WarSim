@@ -8846,3 +8846,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   measurement, PLAN 3.10 measures again.
 - **Gate:** documents only (parity).
 - **Next:** PLAN 3.8c.
+
+## 2026-10-07 — PLAN 3.8c: who joins a war (ADR-179)
+
+- **Done:** `declareWar` calls who it called before, then strikes the nations torn between the
+  two sides from both lists, each with its puppets, in three steps: a bond with the enemy's
+  leader; puppets with a bond to anyone of the other side; whoever else has one. The leaders
+  always stand. It is `bond`, the test of the declaration itself (ADR-178).
+- **Decided:** a puppet may still sit in another alliance than its overlord (PLAN 3.8d asked).
+- **Tests, each failed first:** `tests/unit/realmWars.test.ts`, the United Kingdom on Poland
+  at the 1938 start (France and its eight puppets were in the war; now none, and Egypt still
+  attacks with its overlord). `tests/sweep/realmWarsDays.test.ts`, new: seed 1 for 130 days
+  (failed on day 126: Yugoslavia of Italy alone against Germany, Italy, Japan, Poland) and
+  seed 3301 for 825 days (failed on day 823: Latvia of Germany against Poland and Germany).
+  41 s for the two with the pin's test.
+- **Two attempts that were wrong:** (1) two steps, puppets first. Egypt was struck from the
+  attackers for its bond with France, which stood on the defenders' list as Poland's
+  guarantor and was struck a step later. Hence step 1. (2) Each step struck both nations of
+  a pair. The gate failed at `tests/unit/war.test.ts`, "puppets allied across the sides stay
+  out" (PLAN 1.17): Austria of Germany, called first, is to fight, and its ally
+  Czechoslovakia of Poland to stay out. The test stands as it was; within a step the
+  nations are now asked in the order of the call, against those let stand so far.
+- **The pin:** did not move (`ed82d7f8`): no torn joiner in the first year of seed 99.
+- **Not done:** the three years of seeds 1, 99 and 3301 with `realmWars` on every tick (PLAN
+  3.8d runs them); the second war of seed 3301 (day 1084, Hungary) is beyond the 825 days
+  tested. The strategic AI still counts a guarantor that would stay out among a target's
+  defenders. No picture: nothing drawn changed, the browser was not opened. The tick was not
+  timed (the three steps run once per declaration).
+- **Gate:** `npm run check`, exit 0 on the second run: typecheck, lint, 967 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part; no spec changed). The first run failed at the
+  unit stage, as said above.
+- **Next:** PLAN 3.8d.

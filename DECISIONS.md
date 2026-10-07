@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-179 · 2026-10-07 · accepted — Who joins a war: nobody with a bond to a nation of the other side; a nation torn between the sides stays out with its puppets (PLAN 3.8c)
+
+- **Context:** ADR-178 left the joiners. `declareWar` kept a nation out of a side when it was
+  the ally of a nation already on the other side or the overlord of the enemy's leader. That
+  asked nothing about realms, and it asked each nation as it came: France, the ally of the
+  United Kingdom and a guarantor of Poland, was kept from Poland's side as the attacker's ally,
+  its eight puppets were not, and France itself then came in with the attackers.
+- **Decision 1.** A declaration first calls who it called before (each leader with its
+  puppets, its alliance with theirs, the defender's guarantors with theirs; nobody in a truce
+  with the enemy's leader, nobody twice: a nation called to both sides is on the defenders'
+  list). Then, in three steps, each on what the one before left, the nations that are torn
+  are struck from both lists, each with its puppets; the two leaders are never struck:
+  1. who has a `bond` (ADR-178) with the enemy's leader. The leader cannot stay out, so such
+     a nation must: France in the war of the United Kingdom on Poland.
+  2. the puppets that have a bond with any nation of the other side. A puppet in another
+     alliance than its overlord does not fight its overlord's side, and it does not keep its
+     overlord out of the war. (The two puppets of the games below, Yugoslavia and Latvia, are
+     struck by step 1 already: their overlords are allies of the enemy's leader. No game
+     read so far needs step 2; without it step 3 would strike the overlord with its puppet.)
+  3. the nations that are no puppets and have a bond with a nation of the other side.
+  Within a step the nations are asked in the order of the call (the attacker's puppets, the
+  defender's, the defender's allies, its guarantors, the attacker's allies), each against
+  those of the other side that the step has let stand. So of two nations torn by each other
+  alone, the one called first fights and the other stays out. That is what
+  `tests/unit/war.test.ts` has asked since PLAN 1.17 ("puppets allied across the sides stay
+  out": Austria of Germany fights, its ally Czechoslovakia of Poland does not); a first
+  version that struck both failed it in the gate. A puppet in step 2 is asked against
+  every nation of the other side that is no puppet, also one that step 3 then strikes: it
+  errs to fewer nations at war, never to a pair with a bond.
+- **Why the same test as the declaration's.** `tests/helpers/realmWars.ts` and `bond` ask the
+  same of a pair. A nation stands only if it has no bond with any nation of the other side
+  that stood before it, and step 1 strikes every joiner with a bond to the enemy's leader;
+  the leaders' own pair is `whyNotWar`'s. So a declaration makes no war inside a realm, whatever the order of the call.
+- **Decision 2 (asked by PLAN 3.8d): a puppet may sit in another alliance than its overlord.**
+  It stays allowed. Forbidding it is a second rule, in `canJoin`, `makePuppet` and the 1938
+  data's own alliances, and this rule makes the case harmless: such a puppet stays out of a
+  war between the two.
+- **Not changed.** The wars the 1938 world starts with are lists in `diplomacy.json`, not
+  calls (`scenario1938.ts`). The strategic AI weighs a target by the strength of its allies
+  and guarantors (`strategic.ts`), not by who would in fact come: a guarantor that would now
+  stay out still counts for the defence. Whether a guarantor of the defender's *ally* is
+  torn: it is not, it is called by nobody. A nation that becomes a puppet or an ally while it
+  is at war is PLAN 3.8d.
+- **Evidence.** `tests/unit/realmWars.test.ts`, "a guarantor that is the ally of the
+  attacker…": failed first with France and its eight puppets in the war. New
+  `tests/sweep/realmWarsDays.test.ts`: seed 1 for 130 days and seed 3301 for 825, `realmWars`
+  empty on every day; failed first on day 126 (Yugoslavia, a puppet of Italy, the one
+  defender against Germany, Italy, Japan, Poland and their puppets) and on day 823 (Latvia
+  against Poland, Germany, Italy, Austria, Hungary, Japan). 41 s for the two with the pin.
+- **The pin:** unchanged (`ed82d7f8`): the first year of seed 99 has no torn joiner.
+
 ### ADR-178 · 2026-10-07 · accepted — No declaration of war inside one realm or between allied realms; two reasons more for a refusal (PLAN 3.8a, 3.8b)
 
 - **Context (the diagnosis, PLAN 3.8a):** the critic's R3-B4. Seed 3301 headless, the events

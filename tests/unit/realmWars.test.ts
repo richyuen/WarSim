@@ -63,6 +63,25 @@ describe('no war inside one realm or one alliance (PLAN 3.8)', () => {
     expect(realmWars(w, tag)).toEqual([]);
   });
 
+  // PLAN 3.8c: France is the ally of the United Kingdom and guarantees Poland. It attacked Poland
+  // with its ally while its puppets defended it.
+  it('a guarantor that is the ally of the attacker stays out of the war, and its puppets with it', () => {
+    const w = world1938(5).world;
+    const POL = nationId('POL');
+    const nc = w.nations.cols;
+    expect(w.alliances.allied(ENG, FRA)).toBe(true);
+    expect(w.alliances.guarantorsOf(POL)).toContain(FRA);
+    expect(whyNotWar(w, ENG, POL)).toBe(Refusal.None);
+    const war = declareWar(w, ENG, POL)!;
+    expect(war).not.toBeNull();
+    const french = [...war.sides[0], ...war.sides[1]].filter((n) => n === FRA || nc.overlord[n] === FRA).map(tag);
+    expect(french).toEqual([]);
+    expect(war.sides[0][0]).toBe(ENG);
+    expect(war.sides[1][0]).toBe(POL);
+    expect(war.sides[0]).toContain(nationId('EGY'));
+    expect(realmWars(w, tag)).toEqual([]);
+  });
+
   it('God Mode is told why', () => {
     const s = world1938(5);
     expect(refused(s, { kind: 'declareWar', attacker: ENG, defender: AOF })).toEqual([Refusal.AlliedRealm]);

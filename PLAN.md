@@ -4292,7 +4292,12 @@ quick sweep as a smoke test.
     `Refusal.AlliedRealm`), and the AI does not choose such a target.
     `tests/unit/realmWars.test.ts`: the 66 days of seed 3301 (failed first: 6 pairs on day
     56), the reasons on the 1938 world as it starts, God Mode's refusal.
-  - [ ] 3.8c Who joins a war: nobody with a bond to a nation of the other side. Two cases
+  - [x] 3.8c *Done 2026-10-07 (ADR-179):* torn nations are struck from a declaration's two
+    lists in three steps (a bond with the enemy's leader; puppets; the rest), each with its
+    puppets. A puppet may still sit in another alliance than its overlord.
+    `tests/unit/realmWars.test.ts` (the United Kingdom on Poland) and
+    `tests/sweep/realmWarsDays.test.ts` (the two games below). The pin did not move.
+    Who joins a war: nobody with a bond to a nation of the other side. Two cases
     measured (ADR-178): a puppet in another alliance than its overlord joins against its
     overlord (seed 1, day 125: Yugoslavia of Italy against Italy); a guarantor that is the
     attacker's ally attacks the nation it guarantees while its puppets defend it (the
@@ -4311,7 +4316,8 @@ quick sweep as a smoke test.
     years with the `PuppetCreated` and `AllianceJoined` events beside it: what is left is
     this part's case, or the part is closed as not found. `canJoin` asks about members
     only, not their puppets: read it then. Whether a puppet may sit in another alliance
-    than its overlord at all (both cases of seed 3301 are such puppets): a decision in 3.8c.
+    than its overlord at all (both cases of seed 3301 are such puppets): a decision in 3.8c
+    (taken, ADR-179: it may).
     AT: `realmWars(world)` is empty on every day of the ten-year games of the sweep stage
     (`tests/helpers/aiSweep.ts`), which is the AT of 3.8.
   - [ ] 3.8e Seen in the diagnosis, not a war inside a realm: nobody defends a puppet. When
