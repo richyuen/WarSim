@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-146 · 2026-10-06 · accepted — The editor's history and an import give a dead nation no cell: its cells go to the holder, else to nobody (PLAN 3.4Ri)
+
+- **Context:** the seventh read's finding 3. `editPaint` refuses a dead nation (PLAN 2.17),
+  but `apply` of `editor.ts` wrote a step's cells back whoever had owned them, and
+  `importLayer` asked `nations.has`, not `living`. A stroke by Paris, Kill France, undo: 29
+  cells of dead France; a redo after a Kill: 29; an import naming dead Austria: 113 (the
+  tests' figures; the reader's were 29, 13 and 500). PLAN 3.4Ri asked what an undone cell of
+  a dead nation becomes: nobody's, or the undo is refused.
+- **Decision:** nobody's, with the rule of a death. In `apply`, for each cell of a nation
+  step, undo and redo alike: a controller that is not living counts as none; an owner that is
+  not living is replaced by that controller (a living nation that held the cell of the dead
+  one keeps it, as `leaveLand` gives it at the death), else by 0; a cell with no controller
+  left is controlled by its owner. `importLayer` reads the id of a dead nation as 0, in the
+  cells it counts and in the step it records.
+- **The step is not rewritten.** The stack is saved state, and `living` is read when the step
+  is applied, so a save and its log replay exactly. A nation that lives again (a revival, the
+  God command) gets its cells from a later redo or undo as the step was made.
+- **Why not refuse the undo:** a stroke covers cells of living and dead nations, and a
+  refusal either blocks the whole history below that step for good or needs a rule for half a
+  step. `tick.ts` already says what holds for the paint: land for a dead nation is land of no
+  living state, and 0 may be painted.
+- **Why in `apply`:** undo, redo, a linked pair of an import and the import's own step all
+  pass it. The check in `importLayer` is there so that its count and its recorded step are
+  true, not for safety.
+- **Not done:** a nation with no cell that an undo should bring back to life. The God command
+  Revive is the way; the history moves cells, it does not found states.
+- **Tests:** `tests/unit/editor.test.ts`, four more, red before (29, 29, 29 and 113 cells): an
+  undo after a Kill (and the redo that follows gives Germany its stroke again), a redo after
+  a Kill, an undone cell that Germany held of France, an import naming dead Austria and its
+  undo.
+- **The pin stands** (a73098dc): no game without commands has a step on the stack.
+
 ### ADR-145 · 2026-10-06 · accepted — A capital on land its nation no longer owns moves; the capital rule sees to it, not the paint (PLAN 3.4Rh)
 
 - **Context:** the seventh read's finding 2. `capitalsSystem` looked at a capital city only

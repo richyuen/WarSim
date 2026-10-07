@@ -1759,6 +1759,10 @@ on screen.
     bucket; radius ≤ 32; mask by terrain or nation), `editUndo` and `editRedo`.
   - The diff stack is world state (`edits.*` sections, ≤ 50 edits and 500 k cells), so a save
     plus a log with undos replays exactly.
+  - A dead nation gets no cell from the history or an import (PLAN 3.4Ri) [ADR-146]: an undo or
+    a redo that would write one writes the living nation the step says held the cell, else
+    nobody; a controller that is dead becomes the owner. The step is kept as it was made.
+    `importLayer` reads a dead nation's id as unowned, as an unknown one.
   - Land cells only: terrain edits are land ↔ land until map import (1.37) can regenerate the
     fine coastline. Terrain edits drop nav and paths; the worker resends `terrainLayer`.
   - UI: the bottom bar's Editor button; map clicks paint; Ctrl+Z / Ctrl+Y.

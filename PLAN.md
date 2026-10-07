@@ -3164,7 +3164,7 @@ quick sweep as a smoke test.
       Switzerland painted for another, Albania to nobody, Paris for Germany. The pin
       stands (a73098dc).
     - *Left to 3.4Ri:* an undo after the death gives the land to the dead nation.
-  - [ ] 3.4Ri **Undo, redo and an import give land to a dead nation** (finding 3).
+  - [x] 3.4Ri **Undo, redo and an import give land to a dead nation** (finding 3).
     `editPaint` refuses a dead nation (PLAN 2.17); `apply` of `editor.ts` restores a
     stroke's cells whoever owned them, and `importLayer` asks `nations.has`, not
     `living`. Run by the reader at tick 9000: a stroke near Paris, Kill France, undo: 29
@@ -3173,6 +3173,14 @@ quick sweep as a smoke test.
     AT: unit, failing first, the three; no cell owned or controlled by a dead nation
     after any of them. Decide what an undone cell of a dead nation becomes (nobody's, or
     the stroke's undo is refused).
+    **Done 2026-10-06 (ADR-146).** Nobody's, with the rule of a death: in `apply`, a dead
+    owner's cell goes to the living nation the step says held it, else to nobody, and a
+    dead controller's to the owner. The step is kept as made. `importLayer` reads a dead
+    nation as unowned.
+    - *Tests:* four in `tests/unit/editor.test.ts`, red before (29, 29, 29 and 113 cells
+      of a dead nation). The pin stands (a73098dc).
+    - *By hand:* `editor1938.spec.ts`, `mapImport1938.spec.ts`, `godUi1938.spec.ts`
+      (chromium).
   - [ ] 3.4Rj **A cell taken from an occupier by a third nation stays occupied with no
     war** (finding 4; older than the lines read). `territory.ts` turns a cell to the
     neighbour at war with its holder, whoever owns it; `makePeace` gives back only what

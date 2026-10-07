@@ -7329,3 +7329,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the rule runs with the clock, so in a paused game a painted-away nation is
   still living until the first tick.
 - **Next:** PLAN 3.4Ri (undo, redo and an import give land to a dead nation).
+
+## 2026-10-06 — PLAN 3.4Ri: the editor's history and an import give a dead nation no cell
+
+- **The defect:** `apply` of `editor.ts` wrote a step's cells back whoever had owned them,
+  and `importLayer` asked `nations.has`, not `living`. In the tests, on the old source: a
+  stroke by Paris, Kill France, undo: 29 cells of dead France; a redo after a Kill: 29; an
+  import naming dead Austria: 113.
+- **Decided (ADR-146):** nobody's, with the rule of a death, in `apply` (undo, redo and the
+  import all pass it): a dead owner's cell goes to the living nation the step says held it,
+  else to nobody; a dead controller's to the owner. The step is not rewritten, so a save and
+  its log replay, and a revived nation gets its cells from a later redo. `importLayer` reads
+  a dead nation as unowned, so its count and its step are true.
+- **Tests:** four in `tests/unit/editor.test.ts`, red on the old source. The pin stands:
+  a73098dc.
+- **By hand** (chromium): `editor1938.spec.ts`, `mapImport1938.spec.ts`,
+  `godUi1938.spec.ts`: 9 of 9 in 1.0 min.
+- **Not done:** an undo does not bring a dead nation back to life (Revive does). Not
+  measured: the reader's three runs at tick 9000 were not repeated; the unit tests at tick 0
+  stand for them.
+- **Next:** PLAN 3.4Rj (a cell taken from an occupier by a third nation stays occupied with
+  no war).
+- **Gate:** green (code, with the ten-year tests; no e2e for a part).

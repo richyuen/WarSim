@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Command } from '../../src/shared/commands';
+import { encodeRuns } from '../../src/shared/mapImport';
 import { Terrain } from '../../src/shared/terrain';
 import { xxhash32View } from '../../src/sim/core/hash';
 import { cellOf } from '../../src/sim/data/terrain';
@@ -209,5 +210,76 @@ describe('brush strokes (PLAN 1.44)', () => {
     const meta = new TextDecoder().decode(sim().world.edits.serialize().find((x) => x.name === 'edits.json')!.data as Uint8Array);
     expect(meta).toBe('{"undo":0,"edits":[]}');
     expect(sim().hash()).toBe(fresh);
+  });
+});
+
+// PLAN 3.4Ri: an undo, a redo and an import write the cells of today's world, and a dead nation
+// holds no land in it (ADR-146).
+describe('the history and an import give no land to a dead nation (PLAN 3.4Ri)', () => {
+  const [FRA, AUT] = ['FRA', 'AUT'].map(nationId) as number[];
+  const [px, py] = cellOf(2.6, 48.6, W, H); // by Paris
+  const at = (value: number, x: number, y: number, r = 3): Command => ({ kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: 0, y2: 0, r, value, mask: null });
+  const disc = (x: number, y: number, r = 3): number[] => brushCells(W, H, x, y, r);
+  /** Cells that `n` owns or controls. */
+  const held = (w: World, n: number): number => {
+    let k = 0;
+    for (let c = 0; c < w.cells.owner.length; c++) if (w.cells.owner[c] === n || w.cells.controller[c] === n) k++;
+    return k;
+  };
+  const kill = (s: Sim, n: number): void => {
+    run(s, { kind: 'collapseNation', nation: n });
+    expect(s.world.nations.cols.living[n]).toBe(0);
+    expect(held(s.world, n)).toBe(0);
+  };
+
+  it('an undo after a Kill leaves the dead nation’s cells to nobody', () => {
+    const s = sim();
+    const cells = disc(px, py);
+    expect(cells.every((c) => s.world.cells.owner[c] === FRA)).toBe(true);
+    run(s, at(GER!, px, py));
+    kill(s, FRA!);
+    run(s, { kind: 'editUndo' });
+    expect(held(s.world, FRA!)).toBe(0);
+    for (const c of cells) expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([0, 0]);
+    // The step is still on the stack as it was painted: a redo gives the cells to Germany again.
+    run(s, { kind: 'editRedo' });
+    for (const c of cells) expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([GER, GER]);
+  });
+
+  it('a redo after a Kill does the same', () => {
+    const s = sim();
+    const cells = disc(wx, wy);
+    run(s, at(FRA!, wx, wy), { kind: 'editUndo' });
+    kill(s, FRA!);
+    run(s, { kind: 'editRedo' });
+    expect(held(s.world, FRA!)).toBe(0);
+    for (const c of cells) expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([0, 0]);
+  });
+
+  it('an undone cell that a living nation held of the dead one is the holder’s, as at a death', () => {
+    const s = sim();
+    const cells = disc(px, py);
+    run(s, { kind: 'paintControl', nation: GER!, x: px, y: py, r: 3 });
+    const occupied = cells.filter((c) => s.world.cells.owner[c] === FRA && s.world.cells.controller[c] === GER);
+    expect(occupied.length).toBeGreaterThan(10);
+    run(s, at(POL!, px, py));
+    kill(s, FRA!);
+    run(s, { kind: 'editUndo' });
+    expect(held(s.world, FRA!)).toBe(0);
+    for (const c of occupied) expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([GER, GER]);
+  });
+
+  it('an import that names a dead nation paints its cells as unowned', () => {
+    const s = sim();
+    kill(s, AUT!);
+    const cells = disc(wx, wy, 6);
+    const values = Uint16Array.from(s.world.cells.owner);
+    for (const c of cells) values[c] = AUT!;
+    run(s, { kind: 'importLayer', layer: 'nation', runs: encodeRuns(values) });
+    expect(held(s.world, AUT!)).toBe(0);
+    for (const c of cells) expect([s.world.cells.owner[c], s.world.cells.controller[c]]).toEqual([0, 0]);
+    run(s, { kind: 'editUndo' });
+    expect(held(s.world, AUT!)).toBe(0);
+    for (const c of cells) expect(s.world.cells.owner[c]).toBe(POL);
   });
 });

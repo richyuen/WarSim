@@ -260,16 +260,26 @@ export function paint(world: World, layer: EditLayer, tool: EditTool, x: number,
  * Applies an edit forward, or backward (`undo`). Backward runs from the last cell to the first:
  * a cell that a stroke lists twice (it changed under the stroke, by the running game) then ends
  * with the value it had before the stroke.
+ *
+ * A step holds the nations of the day it was made, and one of them may have died since (PLAN
+ * 3.4Ri, ADR-146). A dead nation gets no cell: what the step says it owned goes to the living
+ * nation the step says held it, as at a death, else to nobody; what it held goes to the owner.
+ * The step itself stays as it was made: its nation may live again.
  */
 function apply(world: World, e: Edit, undo: boolean): void {
   const terrain = world.cells.terrain;
+  const alive = (v: number): boolean => v !== 0 && world.nations.cols.living[v] === 1;
   const n = e.cells.length;
   for (let k = 0; k < n; k++) {
     const i = undo ? n - 1 - k : k;
     const c = e.cells[i]!;
     if (e.layer === 'nation') {
-      world.setOwner(c, undo ? e.before[i]! : e.after[i]!);
-      world.setController(c, undo ? e.beforeCtl![i]! : e.after[i]!);
+      const k = undo ? e.beforeCtl![i]! : e.after[i]!;
+      const ctl = alive(k) ? k : 0;
+      const o = undo ? e.before[i]! : e.after[i]!;
+      const own = alive(o) ? o : ctl;
+      world.setOwner(c, own);
+      world.setController(c, ctl !== 0 ? ctl : own);
     } else {
       terrain[c] = undo ? e.before[i]! : e.after[i]!;
       markDirty(world, c);
@@ -332,12 +342,13 @@ export function redoEdit(world: World): boolean {
 /**
  * Imports a whole layer (PLAN 1.37a; values per cell from `paletteMap`): terrain may turn water
  * into land and back, and cells that become water lose their owner and controller (a linked
- * edit); nations paint land cells only, unknown ids as unowned. One undo step. Returns the
+ * edit); nations paint land cells only, unknown ids and dead nations as unowned. One undo step. Returns the
  * number of changed cells.
  */
 export function importLayer(world: World, layer: EditLayer, values: Uint16Array): number {
   const { owner, controller, terrain } = world.cells;
   if (values.length !== terrain.length) return 0;
+  const living = (v: number): boolean => v !== 0 && world.nations.has(v) && world.nations.cols.living[v] === 1;
   const cells: number[] = [];
   // City cells keep their land (a city becomes an island, never drowns: review in PLAN 1.41).
   const cityCells = new Set<number>();
@@ -347,12 +358,12 @@ export function importLayer(world: World, layer: EditLayer, values: Uint16Array)
     if (layer === 'terrain') {
       if (v < TERRAIN_IDS.length && terrain[c] !== v && !(cityCells.has(c) && !isLand(v))) cells.push(c);
     } else {
-      const n = v !== 0 && world.nations.has(v) ? v : 0;
+      const n = living(v) ? v : 0;
       if (isLand(terrain[c]!) && (owner[c] !== n || controller[c] !== n)) cells.push(c);
     }
   }
   if (cells.length === 0) return 0;
-  const valueOf = (c: number): number => (layer === 'nation' ? (values[c] !== 0 && world.nations.has(values[c]!) ? values[c]! : 0) : values[c]!);
+  const valueOf = (c: number): number => (layer === 'nation' ? (living(values[c]!) ? values[c]! : 0) : values[c]!);
   const e: Edit = {
     layer,
     cells: Uint32Array.from(cells),
