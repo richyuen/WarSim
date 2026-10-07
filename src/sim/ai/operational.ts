@@ -15,10 +15,12 @@
  * front cell would not be refused before the search. Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
- * sector gets one while formations last). A formation already marching into a sector keeps it,
+ * sector gets one while formations last). The range is to each sector (PLAN 3.10c1, ADR-187): a
+ * sector is allotted no more than the formations of the class within DEPLOY_RANGE_CELLS of it, and
+ * takes only those, so a nation with two fronts far apart mans each from the formations near it. A formation already marching into a sector keeps it,
  * whatever the sector's allotment is today (ADR-53: the allotment moves every day with the threat,
  * and a march of weeks that is re-planned daily never arrives); the others fill what is left of
- * the allotments nearest-first. A sector whose allotted strength ≥ OFFENSIVE_RATIO × its threat attacks:
+ * the allotments nearest-first, and what is then left joins its nearest sector. A sector whose allotted strength ≥ OFFENSIVE_RATIO × its threat attacks:
  * its formations march on the enemy cell next to the sector's front nearest its centre;
  * otherwise they hold the own front cell nearest the centre. Orders already being followed
  * (target within one sector) or already reached are not re-issued.
@@ -38,8 +40,12 @@ export const RESERVE = 0.15;
 export const OFFENSIVE_RATIO = 1.5;
 /** Threat (men) worth one extra formation's share in a sector. */
 export const THREAT_UNIT = 10_000;
-/** Formations farther than this from every front sector stay where they are (garrisons). */
+/**
+ * Formations farther than this from every front sector stay where they are (garrisons), and a
+ * sector takes none from farther than this (PLAN 3.10c1, ADR-187).
+ */
 export const DEPLOY_RANGE_CELLS = 60;
+const RANGE2 = DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS;
 /**
  * A formation with this share of its upkeep in tanks is armour (`EconomyTables.templateArmour`:
  * the armour formations of 1938 have 0.66 to 0.93, the others 0.20 at most).
@@ -259,21 +265,55 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   for (let ci = 0; ci < byClass.length; ci++) {
     const ids = byClass[ci]!;
     if (ids.length === 0) continue;
-    const front = reached[ci]!;
+    // The sectors of the class: those it reaches that have one of its formations within the
+    // range (PLAN 3.10c1, ADR-187), with how many (`pool`).
+    const front: number[] = [];
+    const pool: number[] = [];
+    for (const i of reached[ci]!) {
+      let p = 0;
+      for (const id of ids) if (dist2(id, list[i]!) <= RANGE2) p++;
+      if (p === 0) continue;
+      front.push(i);
+      pool.push(p);
+    }
     has.fill(0);
     place.fill(-1);
     for (let k = 0; k < front.length; k++) place[front[k]!] = k;
-    // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT.
+    // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT. A sector is allotted
+    // no more than its pool: one whose share is more takes its pool, and the others share the
+    // rest by their weights.
     const weights = front.map((i) => 1 + list[i]!.threat / THREAT_UNIT);
-    const total = weights.reduce((a, b) => a + b, 0);
-    const quota = weights.map((wt) => (ids.length * wt) / total);
-    const counts = quota.map((q) => Math.floor(q));
-    let left = ids.length - counts.reduce((a, b) => a + b, 0);
-    const order = quota.map((q, k) => [q - Math.floor(q), k] as const).sort((a, b) => b[0] - a[0] || a[1] - b[1]);
-    for (const [, k] of order) {
-      if (left <= 0) break;
-      counts[k]!++;
-      left--;
+    const counts = front.map(() => 0);
+    const open = new Set(front.map((_, k) => k));
+    let left = ids.length;
+    for (let capped = true; capped && open.size > 0; ) {
+      capped = false;
+      let total = 0;
+      for (const k of open) total += weights[k]!;
+      const share = left / total;
+      for (const k of open) {
+        if (share * weights[k]! <= pool[k]!) continue;
+        counts[k] = pool[k]!;
+        left -= pool[k]!;
+        open.delete(k);
+        capped = true;
+      }
+    }
+    if (open.size > 0) {
+      let total = 0;
+      for (const k of open) total += weights[k]!;
+      const quota = [...open].map((k) => [k, (left * weights[k]!) / total] as const);
+      for (const [k, q] of quota) {
+        counts[k] = Math.floor(q);
+        left -= counts[k]!;
+      }
+      quota.sort((a, b) => b[1] - Math.floor(b[1]) - (a[1] - Math.floor(a[1])) || a[0] - b[0]);
+      for (const [k] of quota) {
+        if (left <= 0) break;
+        if (counts[k]! >= pool[k]!) continue;
+        counts[k]!++;
+        left--;
+      }
     }
     // Every sector gets one while formations last: take from the largest allotments.
     for (let k = 0; k < counts.length; k++) {
@@ -296,7 +336,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       list[i]!.strength += f.strength[id]!;
       has[i]!++;
     }
-    // Then nearest-first, most threatened sectors first.
+    // Then nearest-first, most threatened sectors first, each sector from the formations
+    // within the range of it.
     for (const i of byThreat) {
       if (place[i]! < 0) continue;
       const s = list[i]!;
@@ -305,6 +346,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         let bd = Infinity;
         for (const id of free) {
           const d = dist2(id, s);
+          if (d > RANGE2) continue;
           if (d < bd || (d === bd && id < best)) {
             bd = d;
             best = id;
@@ -315,6 +357,22 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         s.formations.push(best);
         s.strength += f.strength[best]!;
       }
+    }
+    // Those left over (the allotments near them were taken by others, or by marches kept above)
+    // join the nearest sector of the class: it is within the range, or they would not be here.
+    for (const id of free) {
+      let best = -1;
+      let bd = Infinity;
+      for (const i of front) {
+        const d = dist2(id, list[i]!);
+        if (d < bd) {
+          bd = d;
+          best = i;
+        }
+      }
+      if (best < 0) continue;
+      list[best]!.formations.push(id);
+      list[best]!.strength += f.strength[id]!;
     }
   }
   // Orders.

@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-187 · 2026-10-07 · accepted — A front sector takes only the formations within the range of it (PLAN 3.10c1)
+
+- **Context.** PLAN 3.10c: the operational AI's dear calls are its orders to fronts far away.
+  A formation was in a nation's plan when it stood within `DEPLOY_RANGE_CELLS` (60) of *one*
+  front sector, and the allotment was then over all the sectors its class reaches: a sector
+  took the nearest free formation however far that was. A nation with a front in Europe and
+  one in East Asia sent divisions from the one to the other (a path of 979 cells, 23.5 ms to
+  find), and 848 of 2,902 such orders in two years of seed 4242 were replaced within five
+  days by an order to somewhere else. The orders beyond the range were 19 % of the orders
+  and 95 % of their time.
+- **Decision.** The range is to each sector. In `planNation`, for each class of formations:
+  1. *The sectors of the class* are those it reaches that have one of its formations within
+     the range (`pool`: how many). A sector with none is not in the allotment.
+  2. *The allotment* is still by largest remainders over 1 + threat/`THREAT_UNIT`, but a
+     sector is allotted no more than its pool: a sector whose share is more takes its pool,
+     and the others share the rest by their weights (again, until no share is over a pool).
+  3. *The fill* (most threatened sector first, nearest formation first) takes only formations
+     within the range of the sector.
+  4. *What is left over joins its nearest sector.* New: before, the allotments summed to the
+     class and nothing was left. Now a pool can be taken by the sectors around it (pools
+     overlap), and a formation that no allotment took would stand idle beside a front. Its
+     nearest sector is within the range, or it would not be in the plan.
+  Unchanged: a formation with no sector in range stays where it is; a formation marching
+  into a sector keeps it (ADR-53), also one that an order of the old rule sent far; the
+  reserve; the reach test (ADR-152); spearheads (ADR-153).
+- **It is a correction.** The comment on `DEPLOY_RANGE_CELLS` has said since PLAN 1.25
+  "formations farther than this from every front sector stay where they are", and the file's
+  header "within DEPLOY_RANGE_CELLS of a sector". Nothing said that a formation near one
+  front was at the disposal of all of them.
+- **What it takes away.** The leak was the only way a formation crossed from one theatre to
+  another, and the only way the far end of a long front got anybody: "every sector gets
+  one" was over all the sectors, and is now over those with somebody in range. A front
+  that no formation is within 60 cells of gets none, as before; a front whose army is
+  elsewhere is no longer fed by accident. Seed 4242 after a year: the Soviet Union has 162
+  formations and a front of 104 sectors against Iran with 14 of them in range
+  (`docs/evidence/3.10/c1-seed4242-y1-iran.png`). Moving formations between theatres is a
+  rule of its own, to be written as one (PLAN 3.10c1a): one march per formation, not an
+  order a day.
+- **Tests.** `tests/unit/operationalAi.test.ts`, "the range is to the sector": the Soviet
+  Union of 1938 at war with Poland and Japan, five days; every order's target is within the
+  range (and a sector's diagonal and a cell) of where the formation stands, and both fronts
+  are given orders. On the old rule it fails with 25 orders of 67 to 125 cells.
+- **The pin** moved: `875255b7` → `a71ed07e` (seed 99 after one year).
+- **A test whose nation changed** (`tests/sweep/researchYears.test.ts`, the second: ADR-144's
+  "a played nation researches as the AI's do"). It compared France played, France under the
+  AI and France in a world with no AI over two years of seed 99, and asked for a tech of
+  1939 in common. In the game since this rule Germany holds France from the autumn of 1938
+  in both games that have an AI (income 1,074 → 156): each France learns four techs, the
+  same three of 1938 and one of 1939 on the day it is paid for, `naval_aviation` under the
+  AI and `infantry_weapons_2` played. The test's premise is a nation that pays for research
+  through the two years, so its nation is now the United States, at peace in all three
+  games: the same ten techs in each (six of 1939). The assertions are the same lines.
+  Germany would not do: played from tick 0 it is dead in the twentieth month.
+
 ### ADR-186 · 2026-10-07 · accepted — A revolting region is bounded by its land, not only by its provinces (PLAN 3.9)
 
 - **Context.** The critic's R3-B2, the part that is not balance: on seed 6021 the Soviet

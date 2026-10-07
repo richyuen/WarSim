@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
+import { DEPLOY_RANGE_CELLS, SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
@@ -269,4 +269,56 @@ describe('spearheads (PLAN 3.5c)', () => {
     // A sector with no armour attacks with what it has, as before.
     expect(attacking.length).toBeGreaterThan(0);
   });
+});
+
+describe('the range is to the sector (PLAN 3.10c1, ADR-187)', () => {
+  it('a nation with two fronts far apart: no formation of the one is ordered to the other', () => {
+    const SOV = nationId('SOV');
+    const JAP = nationId('JAP');
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [SOV, POL, JAP]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== SOV) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[SOV] = 0;
+    runEvents(s, 1);
+    // A front in Europe and one in East Asia, on one landmass with open ground between them.
+    w.wars.start([SOV], [POL], w.tick).fightToDeath = [true, true];
+    w.wars.start([SOV], [JAP], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    const dist = (x: number, y: number, c: number): number => {
+      let dx = Math.abs(x - ((c % W) + 0.5));
+      if (dx > W / 2) dx = W - dx;
+      return Math.hypot(dx, y - (Math.floor(c / W) + 0.5));
+    };
+    // Every order of five days: how far its target is from where the formation stands. The
+    // range is to the sector's centre, and the cell ordered to is the sector's front cell or
+    // the enemy's next to it: a sector's diagonal and a cell more.
+    const slack = SECTOR_CELLS * Math.SQRT2 + 1;
+    const last = new Map<number, number>();
+    const orders: { id: number; d: number; x: number }[] = [];
+    s.step(24 * 5, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const id of ww.formations.ids()) {
+        if (f.nation[id] !== SOV) continue;
+        const target = f.moving[id] === 1 && f.retreat[id] === 0 && f.home[id] === 0 ? f.targetCell[id]! : -1;
+        if (target >= 0 && target !== last.get(id)) orders.push({ id, d: dist(f.x[id]!, f.y[id]!, target), x: target % W });
+        last.set(id, target);
+      }
+    });
+    expect(orders.length).toBeGreaterThan(20);
+    // Both fronts are given orders: the Polish one (west of 50° E) and the Japanese one (east of 100° E).
+    const [west] = cellOf(50, 50, W, H);
+    const [east] = cellOf(100, 50, W, H);
+    expect(orders.filter((o) => o.x < west).length).toBeGreaterThan(0);
+    expect(orders.filter((o) => o.x > east).length).toBeGreaterThan(0);
+    const far = orders.filter((o) => o.d > DEPLOY_RANGE_CELLS + slack);
+    expect(far.map((o) => `formation ${o.id}: ${o.d.toFixed(0)} cells`)).toEqual([]);
+  }, 180_000);
 });

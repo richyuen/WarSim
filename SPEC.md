@@ -1368,7 +1368,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a
     sector's 3×3 neighbourhood.
   - *Who deploys:* free (not engaged, not on the retreat: §5.2 step 4) formations within 60 cells of the front. The farthest 15%
-    stay in reserve.
+    stay in reserve. The range is to each sector (PLAN 3.10c1, ADR-187): a sector is allotted no
+    more than the formations within 60 cells of it and takes only those; what the allotments
+    leave over joins its nearest sector. A front that no formation is within 60 cells of gets
+    none (PLAN 3.10c1a).
   - *Reach* (PLAN 3.5b, ADR-152): those formations are classes by where they stand (the
     landmass; on it the group of provinces joined by ground open to the nation, §4, or
     closed ground). A class reaches a sector when an order to the sector's front cell would

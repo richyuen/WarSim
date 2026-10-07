@@ -4427,7 +4427,7 @@ quick sweep as a smoke test.
     "the first cause, with the pin unmoved": no change that leaves the orders alone removes
     it (`findPath` is what is left of three passes of tuning), so the fix is 3.10c1 and moves
     the pin. Numbers and the method (a probe put in and taken out) are in PROGRESS.
-  - [ ] 3.10c1 A sector takes the formations within the range of it. The allotment of a
+  - [x] 3.10c1 *Done 2026-10-07 (ADR-187; the front far from the army is 3.10c1a):* A sector takes the formations within the range of it. The allotment of a
     class counts, for each sector, only its formations within `DEPLOY_RANGE_CELLS` of that
     sector, and no order goes to a sector farther than that from the formation; what a
     formation with no sector of its own in range does is unchanged (it stays). An ADR, the
@@ -4439,6 +4439,34 @@ quick sweep as a smoke test.
     one, the near one is not stacked while the far one starves (if it is: a part of its
     own, moving formations between theatres in bulk; 3.10c1 stays). The ADR is a correction:
     the comment on `DEPLOY_RANGE_CELLS` has always said the range is to the sector.
+  - [ ] 3.10c1b `tankBattle1938` fails on the game of 3.10c1 (run by hand; the gate of a part
+    runs no spec that did not change). Before 3.10c1a, which moves the game again: the case
+    is this commit's. The demo's battle is now formation 395 of Japan, seed 2, day 22.8. At
+    the stop of 60 m/px ("turrets") its tag is 40 px from the middle of its 20 tanks and
+    4 px off its block, with no line, and the tag of formation 410 is 34 px from that
+    middle: "the brigade's tag is the nearest to its tanks or has a line to them" (PLAN
+    3.7g, ADR-168) fails. At 100 m/px it holds (19 px, the nearest). Find which it is: the
+    placing of tags (a tag that is not the nearest to its own block's middle gets a line,
+    or the two are placed the other way round), or the measure (the middle of the tanks
+    against the block the tag is tied to). Do not weaken the spec. AT: a unit test of the
+    placing with the boxes of this view, red first; `tankBattle1938` green on this game,
+    its six pictures looked at; `markerStacks1938`, `tags1938`, `battleView1938` by hand.
+  - [ ] 3.10c1a Formations go to a front that the army is not near. Seen in the look of
+    3.10c1: after a year of seed 4242 the Soviet Union has 162 formations and 14 within the
+    range of its front against Iran (104 sectors, 21 with a formation within two sectors);
+    after three years of seed 99 nation 10 has 103 formations and a front of 403 sectors
+    with nobody in range. Before 3.10c1 the rule did this by accident, a division at a time
+    and again the day after (ADR-187). Also the far end of a long front: sectors with
+    nobody within the range get nobody (69 of 167 on one front of seed 8128, 46 before
+    3.10c1). The rule to write: a nation's formations with no sector in range (and a share
+    of those of a front that has more than its threat asks for) are sent, once, towards the
+    nearest sector their class reaches that has too few; the march is kept (ADR-53) and is
+    not planned again while it lasts. Its cost is the point of 3.10: one long `findPath` per
+    formation and theatre, not one a day. An ADR, the pin moved. AT: a unit test (an army
+    300 cells from its only front marches to it, and is given no second order on the way);
+    seed 4242 after a year, the Soviet front against Iran: formations in range and sectors
+    covered, before and after, with a picture; the operational AI's tick of years 1 and 2
+    of seed 4242 and year 8 of seed 8128 beside 3.10c1's numbers.
   - [ ] 3.10c2 What is left of the operational AI after 3.10c1, if it is still the tick's
     first system: the steps before the orders are 0.13 to 0.37 ms a tick (the most where a
     planner has up to 881 sectors, seed 8128), and 476 to 3,690 orders a year are refused
@@ -4446,6 +4474,12 @@ quick sweep as a smoke test.
     formation that is refused is asked again the next day). That `findPath` has nothing
     left to give is read from its comments, not measured: before it is said, count the cells
     a long search opens and how wide its corridor of provinces is.
+    After 3.10c1 (its probe, PROGRESS): the orders are no longer the larger part. The steps
+    before them are 0.13 ms a tick (seed 4242, years 1 and 2), 0.26 (seed 99, years 1 to 3;
+    seed 8128, year 8) and 0.47 (seed 99, year 4): 65 to 82 % of the system, 45 % in that
+    year 4. And year 4 of seed 99 has 19,434 orders within the range at 0.26 ms each
+    (5,011 ms, 0.57 ms a tick), five times what 3.10c measured for an order of under 60
+    cells: start there. The longest call is 84 ms (seed 8128, year 8), not looked into.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

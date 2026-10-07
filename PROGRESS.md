@@ -9293,3 +9293,92 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` on the clean tree before, exit 0; after, documents only: parity.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Next:** PLAN 3.10c1.
+
+## 2026-10-07 — PLAN 3.10c1: a front sector takes only the formations within the range of it (ADR-187)
+
+- **Done:** `planNation` (`src/sim/ai/operational.ts`), for each class of formations: the
+  sectors of the class are those with one of its formations within `DEPLOY_RANGE_CELLS`; a
+  sector is allotted no more than those (its share over that goes to the others by their
+  weights); the fill takes only formations within the range of the sector; what the
+  allotments leave over joins its nearest sector (new: pools overlap, so a formation can be
+  left). A formation with no sector in range stays, as before, and a march is kept (ADR-53).
+  SPEC §7 and the file's header say it.
+- **Test:** `tests/unit/operationalAi.test.ts`, "the range is to the sector": the Soviet
+  Union at war with Poland and Japan for five days. On the old rule it fails ("formation
+  115: 125 cells" and 24 more, 67 to 125 cells); on the new one it passes. The other five
+  tests of the file pass unchanged.
+- **The pin** moved: `875255b7` → `a71ed07e` (DECISIONS ADR-187).
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, ms a tick (before → after;
+  "before" for seeds 4242 and 8128 is 3.10a's, for seed 99 a run of HEAD today):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 4242, year 1 | 3.170 → 2.114 | 1.064 → 0.236 | 451 → 19.2 |
+  | seed 4242, year 2 | 2.163 → 1.380 | 0.924 → 0.170 | 261 → 10.7 |
+  | seed 8128, year 8 | 2.346 → 1.924 | 0.966 → 0.485 | 48 to 70 → 84.2 |
+  | seed 99, years 1 to 5 | 2.102 → 1.949 | 0.675 → 0.526 | 268 → 43.3 |
+
+  Seed 99 by year: 2.533, 2.597, 2.528, 1.271, 1.581 before; 2.165, 1.480, 1.936, 2.303,
+  1.863 after (the operational AI 0.574, 0.755, 1.342, 0.311, 0.393 and 0.269, 0.309,
+  0.544, 1.082, 0.425). Only year 8 of seed 8128 starts from the same state (the checkpoint
+  of the old rule, `.cache/ck/8128-y7.bin`); the others are a game against another game
+  from the first plan on. One run each.
+- **Orders beyond the range: 0** of 35,147 (seed 99, three years), 24,435 (seed 4242, two)
+  and 12,859 (seed 8128, year 8), measured to the sector's centre before the order is
+  given. (A first probe read the distance after `orderMove` and counted 8, 2 and 0 at
+  "60 cells": the order had moved the formation within its cell.) A probe put in and taken
+  out again.
+- **Still over the budget:** seed 99 reads 1.949 ms over five years against 1.5. What the
+  probe says is left of the operational AI is in PLAN 3.10c2: the steps before the orders
+  are now 65 to 82 % of it (0.13 to 0.26 ms a tick), and year 4 of seed 99 is dear by
+  19,434 orders *within* the range at 0.26 ms each (0.57 ms a tick) with 0.47 ms a tick
+  before them. The allotment itself (with the new pools) is 0.012 to 0.026 ms a tick.
+- **Looked at** (`docs/evidence/3.10/c1-seed4242-y1-balkans.png`, `-iran.png`; seed 4242
+  after a year of the new rule, loaded into the page by a scratch spec that was removed):
+  - *The Balkans:* Italy's front against Bulgaria and in Yugoslavia is manned along its
+    length, 20 of 21 sectors with a formation within two sectors.
+  - *Iran:* the Soviet Union is at war with Iran along a border of 104 sectors. Four Soviet
+    markers stand in the Caucasus and one in Baluchistan; the stretch from the Caspian to
+    Afghanistan has none, and the Soviet stacks (× 8, × 10) stand on the Romanian border,
+    where there is no war. 14 of 162 Soviet formations are within the range of that front.
+    This is what the AT asked to be looked for: a front that starves while the army is
+    elsewhere.
+- **By the numbers** (a scratch script on checkpoints: each nation's own front sectors,
+  joined into theatres, and its formations in range, within two sectors, and the sectors
+  with nobody in range):
+  - Seed 4242 after a year, the old rule against the new (two games): Soviet Union 49 of
+    154 formations in range of its long front (78 of 116 sectors covered) against 14 of
+    162 (21 of 104); nation 69, 106 of 140 in range against 13 of 140.
+  - Seed 8128, 90 days from the same year-7 state: nation 69's main front 6 of 95 sectors
+    covered (45 in range, 2 at the front) on the old rule, 21 of 65 (11 and 11) on the new;
+    nation 15's 5 of 60 against 20 of 45; nation 10's eastern front 14 of 166 against 17 of
+    167, but its sectors with nobody in range 46 against 69. Fronts with nobody in range at
+    the start (five of them) have nobody on either rule. The two games part within the 90
+    days (a war of nation 1 ends in one and not in the other).
+  - So: the formations near a front man it better (they are no longer sent away and called
+    back), and a front the army is not near, or the far end of a long one, gets nobody.
+    The old rule fed those by accident. PLAN 3.10c1a is the rule for it; 3.10c1 stays, as
+    its AT says.
+- **The gate's first run failed** at the sweep tests, 1 of 17: `researchYears`, "played: a
+  tech of 1939 the AI's France knows". Not the research: in this game Germany holds France
+  from the autumn of 1938, played or not (an income of 156 of 1,074), and each France learns
+  four techs in two years, one of 1939, not the same one (`naval_aviation`,
+  `infantry_weapons_2`: whichever line was paid for first). The same three games of the
+  United States learn the same ten techs each. The test's nation is now the United States,
+  its assertions unchanged, the reason in the test and in ADR-187. That France falls within
+  a year on seed 99 is balance (ADR-58), logged here once.
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`):
+  `battleView1938`, `fire1938`, `markers1938` pass (5 tests). **`tankBattle1938` fails:** its
+  battle is found in the game, and the one of this game (formation 395 of Japan, seed 2,
+  day 22.8) has at 60 m/px the brigade's tag 40 px from the middle of its tanks, without a
+  line, and another formation's tag 34 px from it ("stop 3, turrets: the brigade's tag is
+  the nearest to its tanks (it is 410's) or has a line to them"). The stops before it pass.
+  A defect of the tags' placing or of the spec's measure that this battle shows, not of the
+  rule: PLAN 3.10c1b, next, before 3.10c1a moves the game again. The spec was not changed.
+  The full suite has not run on this game (ADR-87: a part); 3.10c1b and 3.10f will.
+- **Not done:** no sweep (ADR-58). The longest call of year 8 of seed 8128 (84 ms) was not
+  looked into. `MoveRejected` was not counted again.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0 on the second run: typecheck, lint, 985 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part).
+- **Next:** PLAN 3.10c1b (the tag of the tank battle), then 3.10c1a.
