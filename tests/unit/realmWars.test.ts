@@ -4,7 +4,7 @@ import { EventKind } from '../../src/shared/events';
 import { isDayStart } from '../../src/shared/calendar';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { makePuppet } from '../../src/sim/systems/puppets';
+import { annexNation, makePuppet } from '../../src/sim/systems/puppets';
 import { declareWar, whyNotWar } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
 import { realmWars } from '../helpers/realmWars';
@@ -114,6 +114,40 @@ describe('no war inside one realm or one alliance (PLAN 3.8)', () => {
     expect(controller[inAof]).toBe(AOF);
     expect(controller[inRep]).toBe(REP);
     expect(controller[inGer]).toBe(REP);
+  });
+
+  // PLAN 3.8d2: seed 1, day 300. Poland annexed Hungary and got its puppet Albania, which was at
+  // war with Italy, Germany, Latvia and Japan, the allies of Poland.
+  it('a puppet handed to an annexer leaves its wars against the annexer, its realm and its allies', () => {
+    const w = world1938(5).world;
+    const POR = nationId('POR');
+    const nc = w.nations.cols;
+    const { owner, controller } = w.cells;
+    const first = (n: number): number => owner.findIndex((o, c) => o === n && controller[c] === n);
+    // The United Kingdom fights Italy and its puppet Albania; France, the ally of the United
+    // Kingdom, fights Albania in a war of its own; and so does Portugal, a stranger to both.
+    const direct = w.wars.start([ENG], [ITA, ALB], w.tick);
+    const allied = w.wars.start([FRA], [ALB], w.tick);
+    const other = w.wars.start([POR], [ALB], w.tick);
+    const [inAlb, inFra, inPor] = [first(ALB), first(FRA), first(POR)];
+    w.setController(inAlb, FRA);
+    w.setController(inFra, ALB);
+    w.setController(inPor, ALB);
+    expect(realmWars(w, tag)).toEqual([]);
+    expect(annexNation(w, ENG, ITA)).toBe(true);
+    expect(nc.living[ITA]).toBe(0);
+    expect(nc.overlord[ALB]).toBe(ENG);
+    expect(realmWars(w, tag)).toEqual([]);
+    expect(w.wars.atWar(ALB, ENG)).toBe(false);
+    expect(w.wars.atWar(ALB, FRA)).toBe(false);
+    // The two wars have nobody left on one side; the stranger's war stands.
+    expect(w.wars.list.includes(direct)).toBe(false);
+    expect(w.wars.list.includes(allied)).toBe(false);
+    expect(w.wars.atWar(POR, ALB)).toBe(true);
+    expect(other.sides).toEqual([[POR], [ALB]]);
+    expect(controller[inAlb]).toBe(ALB);
+    expect(controller[inFra]).toBe(FRA);
+    expect(controller[inPor]).toBe(ALB);
   });
 
   it('God Mode is told why', () => {

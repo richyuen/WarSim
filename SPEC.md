@@ -562,7 +562,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     alliance than its overlord; its overlord fights on), then the other nations with one.
     Within a step they are asked in the order of the call, against those of the other side
     let stand so far: of two torn by each other alone, the one called first fights. The two
-    leaders always stand. A nation made a puppet while at war is not yet held to it (PLAN 3.8d).
+    leaders always stand. A nation that gets an overlord while at war leaves the wars against
+    its new realm (ADR-180, ADR-181); one that joins an alliance is not yet held to it (PLAN 3.8d3).
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
@@ -585,7 +586,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     A nation made a puppet leaves, with its own puppets, every other war in which it stands
     against a nation it now has a bond with; the land held between them goes back (ADR-180).
     A losing leader left with less than 8,500 km² is annexed whole instead (PLAN 1.40; 40 cells
-    until ADR-57).
+    until ADR-57). Its puppets become the winner's, and each leaves its wars in the same way
+    (ADR-181).
   - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose
     leader has lost ≥ 75% of its own land to occupiers of any war, loses at ±100 at once, fight
     to the death or not.

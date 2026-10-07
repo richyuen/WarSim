@@ -26,8 +26,10 @@ function firstRealmWar(seed: number, days: number): string[] {
 
 // PLAN 3.8d1: and to day 250. On day 199 the peace of France with Republican Spain made it France's
 // puppet while it fought two other puppets of France in two other wars.
-it('seed 1, 250 days: on no day are two nations of one realm or of allied realms at war', () => {
-  expect(firstRealmWar(1, 250)).toEqual([]);
+// PLAN 3.8d2: and to day 305. On day 300 Poland annexed Hungary and got its puppet Albania, at war
+// with four allies of Poland.
+it('seed 1, 305 days: on no day are two nations of one realm or of allied realms at war', () => {
+  expect(firstRealmWar(1, 305)).toEqual([]);
 }, 300_000);
 
 it('seed 3301, 825 days: on no day are two nations of one realm or of allied realms at war', () => {

@@ -33,7 +33,8 @@
  *   ≥ PUPPET_SCORE: when the annexed land is at least PUPPET_SHARE of the losers' land, the
  *   loser's leader also becomes a puppet of the winner's leader, and leaves the wars it fights
  *   against its new realm and that realm's allies (`leaveBondedWars`, PLAN 3.8d);
- *   a losing leader left with less than SMALL_STATE_KM2 is annexed whole instead.
+ *   a losing leader left with less than SMALL_STATE_KM2 is annexed whole instead, and its puppets,
+ *   now the winner's, leave their wars in the same way (PLAN 3.8d2).
  * Capitulation: a side with share(other→side) ≥ CAPITULATE, or whose leader has lost that share
  * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
  * the spot. (An overrun fight-to-the-death nation used to stay at war for good and kept its
@@ -117,7 +118,8 @@ export function bond(world: World, a: number, b: number): Refusal {
 }
 
 /**
- * `n` has got a bond while at war (PLAN 3.8d: an overlord at a peace). It leaves every war in
+ * `n` has got a bond while at war (PLAN 3.8d: an overlord at a peace, or a new one when its
+ * overlord is annexed). It leaves every war in
  * which a nation of the other side now has a `bond` with it, and its puppets of that side leave
  * with it. Such a war goes on without them, or ends when their side is left empty; nothing is
  * signed and no truce begins (the bond keeps the peace). Between each that left and each nation

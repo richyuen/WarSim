@@ -95,18 +95,24 @@ export function integratePuppet(world: World, subject: number): void {
 
 /**
  * Annexation (PLAN 1.36 editor and God): `annexer` takes `target`'s land, formations and cores;
- * its puppets become the annexer's; the target is eliminated (`NationAnnexed`).
+ * its puppets become the annexer's; the target is eliminated (`NationAnnexed`). A puppet handed
+ * over leaves the wars it fights against the annexer, its realm and its allies (PLAN 3.8d2).
  */
 export function annexNation(world: World, annexer: number, target: number): boolean {
   const nc = world.nations.cols;
   if (annexer === target || !world.nations.has(annexer) || !world.nations.has(target) || nc.living[annexer] !== 1 || nc.living[target] !== 1) return false;
   annexInto(world, annexer, target);
+  const handed: number[] = [];
   world.nations.forEach((p) => {
-    if (nc.overlord[p] === target) nc.overlord[p] = p === annexer ? 0 : annexer;
+    if (nc.overlord[p] !== target) return;
+    nc.overlord[p] = p === annexer ? 0 : annexer;
+    if (p !== annexer) handed.push(p);
   });
   if (nc.overlord[target] !== 0) nc.overlord[target] = 0;
   world.out.emit(world.tick, EventKind.NationAnnexed, target, annexer, NaN, NaN);
   eliminateNation(world, target);
+  // After the target has left its wars: what is left of them is the puppets' own.
+  for (const p of handed) if (nc.living[p] === 1) leaveBondedWars(world, p);
   return true;
 }
 

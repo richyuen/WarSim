@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-181 · 2026-10-07 · accepted — A puppet handed to an annexer leaves the wars it fights against the annexer's realm and allies (PLAN 3.8d2)
+
+- **Context.** The second case of ADR-180. Seed 1, day 300: Poland annexes Hungary at a
+  peace (a losing leader under 8,500 km²), and `annexNation` makes Hungary's puppet Albania
+  a puppet of Poland while Albania defends war 35 against Italy, Germany, Latvia and Japan,
+  the allies of Poland. Nothing looked at the wars of a puppet that changes hands.
+- **Decision.** `annexNation` (`systems/puppets.ts`) calls `leaveBondedWars` (ADR-180) for
+  each puppet it hands over: the puppet, with its own puppets, leaves every war in which a
+  nation of the other side now has a `bond` with it; the land held between those who part
+  goes back; the side's men at the start are scaled to those who stay. No event and no
+  truce, for the reasons of ADR-180. The same rule serves the peace, the editor and God Mode,
+  which all annex through this function.
+- **The order.** After `eliminateNation(target)`: the target has then left its wars
+  (`Wars.endAllOf`), and what is left of a war it shared with its puppet is the puppet's
+  own. So a puppet at war with the annexer itself, beside its old overlord, leaves that war
+  too (`Refusal.Subject`), and the war ends if it was the last of its side.
+- **Not changed.** `integratePuppet` hands nothing over: the puppets of an integrated puppet
+  are freed at its death (ADR-174). `bond` still does not look at an overlord's overlord.
+- **Evidence.** `tests/unit/realmWars.test.ts`, "a puppet handed to an annexer…": the United
+  Kingdom annexes Italy while it fights Italy and Albania, France fights Albania and
+  Portugal fights Albania; failed first with "ENG × ALB: one realm" and "FRA × ALB: allied
+  realms". `tests/sweep/realmWarsDays.test.ts`, seed 1 now to day 305: failed first on day
+  301, war 35, four pairs.
+- **The pin:** unchanged (`ed82d7f8`).
+
 ### ADR-180 · 2026-10-07 · accepted — A nation made a puppet while at war leaves the wars it fights against its new realm (PLAN 3.8d1)
 
 - **Context (the diagnosis of PLAN 3.8d).** `realmWars` on every tick of three years of seeds

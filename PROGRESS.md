@@ -8904,3 +8904,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 968 unit tests, the 17
   sweep tests, build, parity. No e2e (a part; no spec changed).
 - **Next:** PLAN 3.8d2.
+
+## 2026-10-07 — PLAN 3.8d2: a puppet handed to an annexer leaves its wars against its new realm (ADR-181)
+
+- **Done:** `annexNation` (`systems/puppets.ts`) calls `leaveBondedWars` for each puppet it
+  hands to the annexer, after `eliminateNation(target)`: the target has then left its wars,
+  and what is left of them is the puppet's own. The peace, the editor and God Mode all annex
+  through this function.
+- **Tests, each failed first:** `tests/unit/realmWars.test.ts`, three wars built by hand (the
+  United Kingdom annexes Italy while it fights Italy and Albania, France fights Albania,
+  Portugal fights Albania: "ENG × ALB: one realm", "FRA × ALB: allied realms");
+  `tests/sweep/realmWarsDays.test.ts`, seed 1 now to day 305 (day 301, war 35, four pairs).
+- **After the fix,** the probe of 3.8d (`.cache/`, not tracked) on seed 1, `realmWars` on
+  every tick of three years: nothing. Seeds 99 and 3301 were not run again (they had nothing
+  before).
+- **The pin:** did not move (`ed82d7f8`).
+- **Not done:** the ten-year games do not yet assert `realmWars` daily (3.8d3). The puppets of
+  an integrated puppet are not handed over but freed (ADR-174): not looked at. No picture:
+  nothing drawn changed, the browser was not opened. The tick was not timed (the call runs
+  once per puppet handed over at an annexation).
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 969 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part; no spec changed). The gate ran while the probe
+  ran beside it.
+- **Next:** PLAN 3.8d3.

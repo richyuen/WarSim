@@ -4315,7 +4315,10 @@ quick sweep as a smoke test.
       Seed 1, day 199: Republican Spain, France's puppet by a peace, in two wars against
       puppets of France. `tests/unit/realmWars.test.ts`; `tests/sweep/realmWarsDays.test.ts`,
       seed 1 to day 250. The pin did not move.
-    - [ ] 3.8d2 A puppet handed to an annexer (`annexNation`) while it is at war with the
+    - [x] 3.8d2 *Done 2026-10-07 (ADR-181):* `annexNation` ends in `leaveBondedWars` for each
+      puppet handed over, after the target has left its wars. `tests/unit/realmWars.test.ts`
+      (three wars built by hand); `tests/sweep/realmWarsDays.test.ts`, seed 1 to day 305.
+      A puppet handed to an annexer (`annexNation`) while it is at war with the
       annexer's realm or allies. Seed 1, day 300: Poland annexes Hungary; Albania, Hungary's
       puppet, defends war 35 against Italy, Germany, Latvia and Japan, Poland's allies.
       AT: a unit test of that case; seed 1 to day 305 in `realmWarsDays`.
