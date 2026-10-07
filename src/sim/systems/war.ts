@@ -31,7 +31,8 @@
  *   a conquest that was small to begin with, and the map hardly changed at a peace); the losers'
  *   occupations of the winners revert;
  *   ≥ PUPPET_SCORE: when the annexed land is at least PUPPET_SHARE of the losers' land, the
- *   loser's leader also becomes a puppet of the winner's leader;
+ *   loser's leader also becomes a puppet of the winner's leader, and leaves the wars it fights
+ *   against its new realm and that realm's allies (`leaveBondedWars`, PLAN 3.8d);
  *   a losing leader left with less than SMALL_STATE_KM2 is annexed whole instead.
  * Capitulation: a side with share(other→side) ≥ CAPITULATE, or whose leader has lost that share
  * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
@@ -113,6 +114,43 @@ export function bond(world: World, a: number, b: number): Refusal {
   const rb = nc.overlord[b] || b;
   if (ra === rb) return Refusal.SameOverlord;
   return al.allied(ra, rb) || al.allied(a, rb) || al.allied(ra, b) ? Refusal.AlliedRealm : Refusal.None;
+}
+
+/**
+ * `n` has got a bond while at war (PLAN 3.8d: an overlord at a peace). It leaves every war in
+ * which a nation of the other side now has a `bond` with it, and its puppets of that side leave
+ * with it. Such a war goes on without them, or ends when their side is left empty; nothing is
+ * signed and no truce begins (the bond keeps the peace). Between each that left and each nation
+ * it is no longer at war with, the land held goes back to its owner, as at a white peace. The
+ * side's men at the start are scaled to those who stay, so its losses read as before.
+ */
+export function leaveBondedWars(world: World, n: number): void {
+  const realm = withPuppets(world, n);
+  const parted: [number, number][] = [];
+  let men: Map<number, number> | null = null;
+  for (const war of [...world.wars.list]) {
+    const s: number = war.sides[ATTACKERS].includes(n) ? ATTACKERS : war.sides[DEFENDERS].includes(n) ? DEFENDERS : -1;
+    if (s < 0) continue;
+    const enemies = war.sides[1 - s]!;
+    if (!enemies.some((o) => bond(world, n, o) !== Refusal.None)) continue;
+    const leaving = war.sides[s]!.filter((m) => realm.includes(m));
+    men ??= menOf(world);
+    const of = (side: number[]): number => side.reduce((sum, m) => sum + (men!.get(m) ?? 0), 0);
+    const before = of(war.sides[s]!);
+    world.wars.leave(war, leaving);
+    if (before > 0) war.startMen[s] = war.startMen[s]! * (of(war.sides[s]!) / before);
+    for (const m of leaving) for (const o of enemies) parted.push([m, o]);
+  }
+  const free = parted.filter(([m, o]) => !world.wars.atWar(m, o));
+  if (free.length === 0) return;
+  const key = (a: number, b: number): number => a * 65536 + b;
+  const back = new Set<number>();
+  for (const [m, o] of free) back.add(key(m, o)).add(key(o, m));
+  const { owner, controller } = world.cells;
+  for (let c = 0; c < owner.length; c++) {
+    const o = owner[c]!;
+    if (controller[c] !== o && back.has(key(o, controller[c]!))) world.setController(c, o);
+  }
 }
 
 /** Applies a declaration; returns the war or null (with a `WarRejected` event). */

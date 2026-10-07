@@ -132,6 +132,17 @@ export class Wars implements Stateful {
     this.changed();
   }
 
+  /**
+   * Removes `nations` from `war` alone (PLAN 3.8d). The next member leads a side its leader
+   * has left, as in `endAllOf`; a war left with an empty side ends. Truces stay.
+   */
+  leave(war: War, nations: readonly number[]): void {
+    war.sides[0] = war.sides[0].filter((m) => !nations.includes(m));
+    war.sides[1] = war.sides[1].filter((m) => !nations.includes(m));
+    if (war.sides[0].length === 0 || war.sides[1].length === 0) this.list = this.list.filter((w) => w !== war);
+    this.changed();
+  }
+
   /** Nations in at least one war. */
   nations(): Set<number> {
     const s = new Set<number>();

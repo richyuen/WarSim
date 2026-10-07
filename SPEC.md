@@ -582,6 +582,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     annexes all of the losers' land it occupies, and the losers' occupations of the winners
     revert (ADR-51; until then round(|score|% of the occupied land), nearest first). At ≥ 90
     the loser's leader also becomes a puppet when the annexed land is ≥ 30% of the losers' land.
+    A nation made a puppet leaves, with its own puppets, every other war in which it stands
+    against a nation it now has a bond with; the land held between them goes back (ADR-180).
     A losing leader left with less than 8,500 km² is annexed whole instead (PLAN 1.40; 40 cells
     until ADR-57).
   - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose

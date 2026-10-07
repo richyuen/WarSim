@@ -8877,3 +8877,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   sweep tests, build, parity. No e2e (a part; no spec changed). The first run failed at the
   unit stage, as said above.
 - **Next:** PLAN 3.8d.
+
+## 2026-10-07 — PLAN 3.8d1: a nation made a puppet leaves its wars against its new realm (ADR-180)
+
+- **The diagnosis of 3.8d:** a scratch probe (`.cache/`, not tracked) ran `realmWars` on every
+  tick of three years of seeds 1, 99 and 3301. Seeds 99 and 3301: no pair. Seed 1: two.
+  Day 199, France makes Republican Spain its puppet at a peace while it fights French West
+  Africa and French Equatorial Africa in two other wars. Day 300, Poland annexes Hungary and
+  gets its puppet Albania, at war with four of Poland's allies. 3.8d is split in three
+  (the third, `canJoin`, has not been seen in a game).
+- **Done (3.8d1):** `makePuppet` ends in `leaveBondedWars` (`systems/war.ts`). The subject and
+  its puppets leave each war in which the other side has a nation with a bond to it
+  (`Wars.leave`, new); the land held between those who part goes back; the side's men at the
+  start are scaled to those who stay. No event and no truce (ADR-180 says why).
+- **Tests, each failed first:** `tests/unit/realmWars.test.ts`, three wars built by hand (the
+  two pairs "one realm"); `tests/sweep/realmWarsDays.test.ts`, seed 1 to day 250 (day 200,
+  wars 12 and 18).
+- **After the fix,** the probe again: seeds 99 and 3301 nothing, seed 1 the case of day 300
+  alone (PLAN 3.8d2).
+- **The pin:** did not move (`ed82d7f8`).
+- **Not done:** the ten-year games do not yet assert `realmWars` daily (3.8d3). The scaling
+  of the men at the start has no test of its own. A subject's own puppets may later be at
+  war with the upper realm: `bond` does not look at an overlord's overlord. No picture:
+  nothing drawn changed, the browser was not opened. The tick was not timed (the function
+  runs once per puppet made).
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 968 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part; no spec changed).
+- **Next:** PLAN 3.8d2.

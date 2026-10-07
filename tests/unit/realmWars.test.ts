@@ -4,6 +4,7 @@ import { EventKind } from '../../src/shared/events';
 import { isDayStart } from '../../src/shared/calendar';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { makePuppet } from '../../src/sim/systems/puppets';
 import { declareWar, whyNotWar } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
 import { realmWars } from '../helpers/realmWars';
@@ -80,6 +81,39 @@ describe('no war inside one realm or one alliance (PLAN 3.8)', () => {
     expect(war.sides[1][0]).toBe(POL);
     expect(war.sides[0]).toContain(nationId('EGY'));
     expect(realmWars(w, tag)).toEqual([]);
+  });
+
+  // PLAN 3.8d1: seed 1, day 199. Republican Spain was at war with French West Africa and French
+  // Equatorial Africa when the peace of its war with France made it France's puppet: two wars
+  // inside one realm from that hour.
+  it('a nation made a puppet leaves its wars against its new realm, and the land held in them goes back', () => {
+    const w = world1938(5).world;
+    const [REP, POR] = [nationId('REP'), nationId('POR')];
+    const { owner, controller } = w.cells;
+    const first = (n: number): number => owner.findIndex((o, c) => o === n && controller[c] === n);
+    // Portugal leads a war on French West Africa with Republican Spain; Republican Spain leads
+    // one on French Equatorial Africa; and it fights Germany, a stranger to France.
+    const shared = w.wars.start([POR, REP], [AOF], w.tick);
+    const own = w.wars.start([REP], [AEF], w.tick);
+    const other = w.wars.start([GER], [REP], w.tick);
+    const [inAof, inRep, inGer] = [first(AOF), first(REP), first(GER)];
+    w.setController(inAof, REP);
+    w.setController(inRep, AEF);
+    w.setController(inGer, REP);
+    expect(realmWars(w, tag)).toEqual([]);
+    expect(makePuppet(w, FRA, REP, 30)).toBe(true);
+    expect(realmWars(w, tag)).toEqual([]);
+    expect(w.wars.atWar(REP, AOF)).toBe(false);
+    expect(w.wars.atWar(REP, AEF)).toBe(false);
+    // The war of Portugal goes on without it; the war it led alone has ended; the third stands.
+    expect(w.wars.list.includes(shared)).toBe(true);
+    expect(shared.sides).toEqual([[POR], [AOF]]);
+    expect(w.wars.list.includes(own)).toBe(false);
+    expect(w.wars.atWar(GER, REP)).toBe(true);
+    expect(other.sides).toEqual([[GER], [REP]]);
+    expect(controller[inAof]).toBe(AOF);
+    expect(controller[inRep]).toBe(REP);
+    expect(controller[inGer]).toBe(REP);
   });
 
   it('God Mode is told why', () => {

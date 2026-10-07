@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-180 · 2026-10-07 · accepted — A nation made a puppet while at war leaves the wars it fights against its new realm (PLAN 3.8d1)
+
+- **Context (the diagnosis of PLAN 3.8d).** `realmWars` on every tick of three years of seeds
+  1, 99 and 3301, with the events that make a bond beside it (a scratch probe). Seeds 99 and
+  3301: nothing. Seed 1, two cases, two causes:
+  1. Day 199: the peace of France with Republican Spain makes it France's puppet. It is in
+     two other wars against French West Africa and French Equatorial Africa, puppets of
+     France. `makePuppet` did not look at the subject's other wars.
+  2. Day 300: Poland annexes Hungary, and `annexNation` hands Hungary's puppet Albania to
+     Poland while Albania defends a war against Italy, Germany, Latvia and Japan, Poland's
+     allies. That is PLAN 3.8d2.
+  A third, not seen in a game: `canJoin` asks about an alliance's members, not their
+  puppets, nor the joiner's (PLAN 3.8d3).
+- **Decision.** `makePuppet` ends in `leaveBondedWars(world, subject)` (`systems/war.ts`): the
+  subject leaves every war in which a nation of the other side now has a `bond` with it
+  (ADR-178), and its own puppets on that side leave with it, as a torn nation stays out with
+  its puppets (ADR-179). The war goes on for the others; the next member leads a side its
+  leader has left, and a war left with an empty side ends (both as `Wars.endAllOf` does at a
+  death; `Wars.leave` is the same for one war). A puppet cannot refuse the peace that makes
+  it one, so leaving is the only rule there is; it is the subject that leaves, since its bond
+  is the new one.
+- **The land.** Between each nation that left and each it is then at war with in no other
+  war, the land one holds of the other goes back to its owner, as at a white peace: an
+  occupation with no war behind it would stay for good. Land of others is not touched.
+- **The losses.** A side's exhaustion reads its men against its men at the start. The men at
+  the start are scaled by the share of today's men that stays, so the losses of the side read
+  as they did the day before and a side does not sue because a member left.
+- **No event, no truce.** Nothing is signed: `PeaceSigned` names two leaders, and the war may
+  go on. The `PuppetCreated` event of the same tick is what the history has. A war that ends
+  so ends as a war ends at a death, unsaid; telling a watcher is PLAN 3.12. No truce: the bond
+  refuses the war (`whyNotWar`), and a puppet released later is free to fight.
+- **Not changed.** A subject's puppets keep it as their overlord, and `bond` does not look
+  at an overlord's overlord: they leave the subject's wars with it, but nothing refuses a
+  later war between them and the upper realm. Formations standing on the land of a former
+  enemy are not moved (nor are they at a peace).
+- **Evidence.** `tests/unit/realmWars.test.ts`, "a nation made a puppet leaves its wars…":
+  three wars built by hand on the 1938 world; failed first with the two pairs "one realm".
+  `tests/sweep/realmWarsDays.test.ts`, seed 1 now to day 250: failed first on day 200 (wars
+  12 and 18). After the fix the probe's three years: seeds 99 and 3301 nothing, seed 1 the
+  case of day 300 alone.
+- **The pin:** unchanged (`ed82d7f8`).
+
 ### ADR-179 · 2026-10-07 · accepted — Who joins a war: nobody with a bond to a nation of the other side; a nation torn between the sides stays out with its puppets (PLAN 3.8c)
 
 - **Context:** ADR-178 left the joiners. `declareWar` kept a nation out of a side when it was

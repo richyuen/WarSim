@@ -21,7 +21,7 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import type { World } from '../world';
 import { eliminateNation } from './capitals';
-import { declareWar } from './war';
+import { declareWar, leaveBondedWars } from './war';
 
 export const SATELLITE_BELOW = 30;
 export const VASSAL_FROM = 70;
@@ -66,6 +66,8 @@ export function makePuppet(world: World, overlord: number, subject: number, auto
   nc.integration[subject] = 0;
   world.supplyDirty = true;
   world.out.emit(world.tick, EventKind.PuppetCreated, subject, overlord, NaN, NaN);
+  // It does not go on fighting its overlord's realm or allies in another war (PLAN 3.8d).
+  leaveBondedWars(world, subject);
   return true;
 }
 
