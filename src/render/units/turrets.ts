@@ -85,7 +85,8 @@ export class TurretAims {
 
   /**
    * Takes the shots of a snapshot that arrived at `now`, the tick being `tickMs` long (0: none).
-   * A turret begins its turn TURN_MS before its shot starts, or now. A shooter's shots are a
+   * A turret begins its turn TURN_MS before its shot starts, or now: `FireFx` starts a cannon's shot
+   * no sooner than TURN_MS after its snapshot, so the turn is over as the shot leaves. A shooter's shots are a
    * shot's life apart (`FireFx`: one on screen at a time), which is longer than a turn: a new
    * turn begins from a turret at rest on its last target, or on its way back.
    */

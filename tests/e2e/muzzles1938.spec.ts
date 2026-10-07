@@ -130,6 +130,8 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
       fromTanks++;
       const line = Math.atan2(s.y1 - s.y0, s.x1 - s.x0);
       const offLine = Math.abs(Math.atan2(Math.sin(angle - line), Math.cos(angle - line)));
+      // PLAN 3.6e1: the shot has waited for its turret, which is on the line to the target as the flash begins.
+      expect(offLine, `turret of ${s.shooter} off the line to its target as its shot starts, rad`).toBeLessThan(1e-6);
       if (offLine < 0.02) onTarget++;
       worstOff = Math.max(worstOff, offLine);
       // Not at the middle of the hull, and not at the middle of the element's footprint.
@@ -139,6 +141,7 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
   }
   expect(cannons).toBeGreaterThan(3);
   expect(fromTanks).toBeGreaterThan(3);
+  expect(onTarget).toBe(fromTanks);
 
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.6') : info.outputPath();
   mkdirSync(out, { recursive: true });

@@ -3744,6 +3744,23 @@ quick sweep as a smoke test.
     or set up, flown to from T1 to T3; turrets off the hull's facing, a flash at a tank, a
     burning hull; pictures in `docs/evidence/3.6/`, looked at; PARITY. Ticks 3.6 (the full
     e2e).
+    **Split 2026-10-07** (one cause a commit; the lines below this list say what each part
+    answers):
+    - [x] 3.6e1 **A cannon's shot waits for its turret** (from 3.6c). AT: unit; in
+      `muzzles1938.spec.ts` every tank's turret is on the line to its target as its flash
+      begins.
+      **Done 2026-10-07 (ADR-163).** A shot of cannon starts `TURN_MS` (180 ms) after its
+      minute of the tick, at every zoom (`FireFx.add`). `fireFx.test.ts` 17 → 18, one
+      restated (a cannon's start). `muzzles1938.spec.ts` now expects it: 25 of 25 turrets on
+      the line (15 before, the furthest 0.26 rad off). Picture at 1.5 m/px looked at.
+    - [ ] 3.6e2 **The hull's place, read from the frame** (from 3.6d): `burning1938.spec.ts`
+      expects each hull on the figure that is gone, from `individualX`, `individualY` of the
+      frame before the step. No view code.
+    - [ ] 3.6e3 **A division of tanks at T2, 300 to 100 m/px** (from 3.6a): a picture first,
+      then the answer in DECISIONS. A mark, if one is needed, is a part of its own.
+    - [ ] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,
+      if the ground has it, both kinds of hull in one view; pictures; PARITY. Ticks 3.6e and
+      3.6 (the full e2e).
     From 3.6a: say what a division of tanks is at T2 between 300 and 100 m/px, where a
     sprite is 5 px (the critic: "a grey grid of dots like any other"), and whether the 5 px
     of a hull can say "tank" there (its shape, or the element's mark).

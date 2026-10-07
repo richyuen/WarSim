@@ -8191,3 +8191,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   the frame's time with hulls is unmeasured; a game loaded at a later tick can leave hulls
   for an id that is the same element with fewer tanks.
 - **Next:** PLAN 3.6e.
+
+## 2026-10-07 — PLAN 3.6e1: a cannon's shot waits for its turret (ADR-163)
+
+- **PLAN 3.6e split** into four parts: e1 the shot waits, e2 the hull's place read from the
+  frame, e3 a division of tanks at T2, e4 the demo (ticks 3.6).
+- **Done:** `FireFx.add` starts a shot of cannon `TURN_MS` (180 ms) after its minute, at
+  every zoom. A shift, not a floor: the spread of a tick's cannon is as it was. `TurretAims`
+  unchanged. View only; the pin did not move.
+- **Tests:** `fireFx.test.ts` 17 → 18 (the wait at four tick lengths, rifles and shells not
+  later, the turret on the hull as the snapshot arrives and on the line as the shot leaves);
+  one restated (a cannon of minute 30 starts at 1,680 ms, not 1,500). `muzzles1938.spec.ts`
+  expects every tank's turret within 1e-6 rad of the target's line as its flash begins: 25
+  of 25 (15 of 25 before, the furthest 0.26 rad off).
+- **Specs by hand** (`--project=chromium`): `muzzles1938`, `turrets1938`, `fire1938`,
+  `burning1938`: 6 tests, green, 58 s.
+- **Looked at** (the run's `muzzle-1.5m.png`, not kept): two tanks firing, each tongue in
+  line with its gun and the gun off the hull's facing.
+- **Gotcha:** `start - TURN_MS` is not `now` to the last bit (179.9999999999999): the unit
+  test compares to nine places, and the spec draws 1 ms after the start.
+- **Next:** PLAN 3.6e2 (the hull's place, read from the frame).

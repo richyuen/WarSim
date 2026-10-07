@@ -1630,7 +1630,8 @@ moment before its first elements arrive.
   turret. The snapshot carries the hull's frame alone.
   *The turret turns* (PLAN 3.6b, ADR-160): `TurretAims` has an aim for every element whose
   cannon shot the view draws, the angle of the fire record's line. The turret turns there in
-  180 ms before the shot starts, stays for 1.5 s (or 1.5 ticks), and turns back to its hull's
+  180 ms before the shot starts (a cannon's shot starts 180 ms after its minute of the tick,
+  so the turn is over as it leaves: PLAN 3.6e1, ADR-163), stays for 1.5 s (or 1.5 ticks), and turns back to its hull's
   facing in 0.6 s. View state on the render clock; while an aim is live the turrets' facings
   are written and uploaded again each frame. The tanks of an element have one angle.
   *The shot leaves a barrel* (PLAN 3.6c, ADR-161): at T3 a shot starts at the muzzle of one

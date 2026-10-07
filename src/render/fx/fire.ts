@@ -12,6 +12,9 @@
  *   a second; an event whose shooter's shot would still be on screen when it starts is not
  *   drawn (`skipped`). So the fire on screen grows with the elements that fight, not with the
  *   game speed. Within one tick every FireEvent is a shot: an element fires once an hour.
+ * - A cannon's shot starts TURN_MS after its minute (PLAN 3.6e1): its turret turns onto the target
+ *   in that time and is there as the shot leaves. Every cannon, at every zoom: a volley does not
+ *   fire at another time for the camera's sake.
  * - At T3 a shot leaves a barrel (PLAN 3.6c): the muzzle of one of its shooter's figures, where
  *   the snapshot that brought it had the shooter among its elements (`Shot.from`). The way
  *   there from the element's slot goes with the close tier's share, as the figures come in.
@@ -23,6 +26,7 @@ import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, progress } from '../timing';
 import { muzzleOf } from '../units/atlas';
 import { figureCells, type FiringFigure } from '../units/individuals';
+import { TURN_MS } from '../units/turrets';
 
 /** Over how long the shots of one tick start: the tick's wall time, within these. */
 export const MIN_SPREAD_MS = 250;
@@ -178,7 +182,9 @@ export class FireFx {
     for (let i = 0; i < count; i++) {
       const o = i * FIRE_STRIDE;
       const shooter = data[o + FireField.shooter]!;
-      const start = now + (data[o + FireField.subtick]! / 60) * spread;
+      const weapon = data[o + FireField.weapon]! as Weapon;
+      // A cannon waits for its turret's turn (`TurretAims.add` begins it TURN_MS before the shot).
+      const start = now + (data[o + FireField.subtick]! / 60) * spread + (weapon === Weapon.cannon ? TURN_MS : 0);
       if (this.shots.length >= MAX_SHOTS || (this.busy.get(shooter) ?? -Infinity) > start) {
         this.skipped++;
         continue;
@@ -186,7 +192,6 @@ export class FireFx {
       const x0 = data[o + FireField.x0]!;
       let x1 = data[o + FireField.x1]!;
       if (geo.wrapX && Math.abs(x1 - x0) > geo.w / 2) x1 += x1 < x0 ? geo.w : -geo.w;
-      const weapon = data[o + FireField.weapon]! as Weapon;
       // Where it lands: by the volley's shooter and tick.
       const tick = data[o + FireField.tick]!;
       const [jx, jy] = pair(hash2(shooter, tick));

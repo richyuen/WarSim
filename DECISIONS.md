@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-163 · 2026-10-07 · accepted — A cannon's shot waits for its turret: it starts 180 ms after its minute (PLAN 3.6e1)
+
+- **Context:** ADR-161, "a shot does not wait for its turret": a turret turns onto its
+  target in `TURN_MS` (180 ms), from its snapshot's arrival at the earliest, and a shot
+  whose minute put it in the first 180 ms after the snapshot left a gun still turning: 10 of
+  25 tanks in `muzzles1938.spec.ts`, up to 0.26 rad off the line.
+- **Decision:** `FireFx.add` starts a shot of `Weapon.cannon` `TURN_MS` after the time its
+  minute of the hour gives it. `TurretAims.add` is as it was: the turn begins `TURN_MS`
+  before the shot, which is now never before the snapshot.
+  - A shift, not a floor (`max(start, now + TURN_MS)`): a floor would fire the cannon of the
+    first minutes of an hour in one salvo. The spread of a tick's cannon is what it was.
+  - By the weapon, not by the figure: a shot's time must not depend on whether the camera is
+    near enough for the view to hold its shooter's tanks: a tank waits at T2 as at T3. The
+    cannon is the weapon of every class but artillery (shell) and infantry, motorised and
+    mechanised (small arms): today the three weights of armour. A class without a turret
+    that comes to fire it (`weaponOf`'s default) would wait too, for nothing.
+  - Rifles and shells start as before: against them a cannon's flash is 180 ms late. A tick
+    is an hour, and a volley's minute is already spread over 250 to 1,000 ms of wall time.
+  - One shot on screen for a shooter (ADR-66) is unchanged: every shot of a shooter that
+    fires cannon is later by the same time.
+  - View only; the pin does not move.
+- **Restated:** `fireFx.test.ts`, "flash and tracer from the start": its cannon of minute 30
+  started at 1,500 ms and starts at 1,680. The phases it tests are as they were.
+- **Measured:** `muzzles1938.spec.ts` (4 m/px, two weeks into 1938): 25 of 25 tanks with the
+  turret on the line to the target as the flash begins, to 1e-6 rad; the spec now expects
+  it. `turrets1938`, `fire1938`, `burning1938` by hand, green.
+- **Not done:** each tank its own bearing (ADR-161): the tracer of a tank at the edge of its
+  element still leaves up to about 20 degrees off its tongue for a near target.
+
 ### ADR-162 · 2026-10-07 · accepted — A tank that an element loses leaves its hull at T3: burning if the element was fired at, left behind if not (PLAN 3.6d)
 
 - **Context:** a wreck was left only when a whole element was gone (ADR-67). An element of

@@ -5,6 +5,7 @@ import { ANIM_TAIL_MS } from '../../src/render/timing';
 import { FireFx, lifeOf, LOOKS, MAX_SHOTS, MAX_SPREAD_MS, MIN_SPREAD_MS, originOf, phasesOf, SCATTER_CELLS, STEP_SPREAD_MS, type CloseTier } from '../../src/render/fx/fire';
 import { ATLAS_FRAME, muzzleOf } from '../../src/render/units/atlas';
 import { figureCells, firingFigure, type FiringFigure } from '../../src/render/units/individuals';
+import { TURN_MS, TurretAims } from '../../src/render/units/turrets';
 import { Frame } from '../../src/shared/unitLooks';
 
 // PLAN 2.4a: the shots the view makes of a snapshot's FireEvents. The drawing itself is checked
@@ -55,6 +56,30 @@ describe('FireFx.add', () => {
     expect(starts(5000)[1]).toBe(MAX_SPREAD_MS / 2);
     // A tick stepped while paused has no wall time.
     expect(starts(0)[1]).toBe(STEP_SPREAD_MS / 2);
+  });
+
+  // PLAN 3.6e1: a turret turns onto its target in TURN_MS, from the snapshot's arrival at the earliest.
+  it('a shot of cannon starts the turn of a turret after its minute, and its turret is on the target then', () => {
+    for (const tickMs of [0, 1000 / 24, 1000, 5000]) {
+      const fx = new FireFx();
+      const list = [0, 1, 30, 59].flatMap((subtick, i) => [{ shooter: 10 + i, subtick, weapon: Weapon.cannon, x1: 10, y1: 19 }, { shooter: 20 + i, subtick }, { shooter: 30 + i, subtick, weapon: Weapon.shell }]);
+      add(fx, list, 1000, tickMs);
+      const start = (shooter: number): number => fx.shots.find((s) => s.shooter === shooter)!.start;
+      for (let i = 0; i < 4; i++) {
+        // The same spread as the rifles and the guns of its minute, later by the turn.
+        expect(start(10 + i) - start(20 + i)).toBeCloseTo(TURN_MS, 9);
+        expect(start(30 + i)).toBe(start(20 + i));
+      }
+      expect(start(20)).toBe(1000);
+      const aims = new TurretAims();
+      aims.add(fx.shots, 1000, tickMs);
+      const HULL = 0.4;
+      for (let i = 0; i < 4; i++) {
+        // On the hull as the snapshot arrives, on the line to the target (north) as the shot leaves.
+        expect(aims.angleAt(10 + i, HULL, 1000)).toBe(HULL);
+        expect(aims.angleAt(10 + i, HULL, start(10 + i))).toBeCloseTo(-Math.PI / 2, 9);
+      }
+    }
   });
 
   it('unwraps a shot across the seam of a looping map the short way', () => {
@@ -132,14 +157,16 @@ describe('a shot in time', () => {
     add(fx, [{ shooter: 1, weapon: Weapon.cannon, subtick: 30 }], 1000);
     const s = fx.shots[0]!;
     const l = LOOKS[Weapon.cannon];
-    expect(s.start).toBe(1500);
+    // Its minute, and a cannon's wait for its turret (PLAN 3.6e1).
+    const T = 1500 + TURN_MS;
+    expect(s.start).toBe(T);
     const over = { flash: 1, tracer: 1, impact: 1 };
-    expect(phasesOf(s, 1499)).toEqual(over); // not begun
-    expect(phasesOf(s, 1500)).toEqual({ flash: 0, tracer: 0, impact: 1 });
-    expect(phasesOf(s, 1500 + l.flash / 2)).toMatchObject({ flash: 0.5, impact: 1 });
-    expect(phasesOf(s, 1500 + l.flight)).toEqual({ flash: 1, tracer: 1, impact: 0 });
-    expect(phasesOf(s, 1500 + l.flight + l.impact / 2)).toEqual({ flash: 1, tracer: 1, impact: 0.5 });
-    expect(phasesOf(s, 1500 + lifeOf(Weapon.cannon))).toEqual(over);
+    expect(phasesOf(s, T - 1)).toEqual(over); // not begun
+    expect(phasesOf(s, T)).toEqual({ flash: 0, tracer: 0, impact: 1 });
+    expect(phasesOf(s, T + l.flash / 2)).toMatchObject({ flash: 0.5, impact: 1 });
+    expect(phasesOf(s, T + l.flight)).toEqual({ flash: 1, tracer: 1, impact: 0 });
+    expect(phasesOf(s, T + l.flight + l.impact / 2)).toEqual({ flash: 1, tracer: 1, impact: 0.5 });
+    expect(phasesOf(s, T + lifeOf(Weapon.cannon))).toEqual(over);
   });
 
   it('animating lasts to the end of the last shot, whatever the frame clock says before', () => {
