@@ -30,7 +30,7 @@ const FLAG_MOVE_MS = 150;
 const FLAG_MAX_RISE = 40;
 import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
-import { Frame, shownFrame } from '../shared/unitLooks';
+import { Frame, shownFrame, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
@@ -41,6 +41,7 @@ import type { LandMask } from '../shared/landMask';
 import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
+import { appendTurrets } from '../render/units/turrets';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
 
@@ -697,7 +698,10 @@ export class MapView {
     this.elementStrength = e.strength.slice(0, e.count);
     this.elementFlags = e.flags.slice(0, e.count);
     this.elementSize = e.size.slice(0, e.count);
-    p.reserve(e.count);
+    // A tank is its hull and, after all the elements, its turret (PLAN 3.6a).
+    let hulls = 0;
+    for (let i = 0; i < e.count; i++) if (turretOf(e.frame[i]!) >= 0) hulls++;
+    p.reserve(e.count + hulls);
     p.originX = Math.floor(this.geo.w / 2);
     p.originY = Math.floor(this.geo.h / 2);
     for (let i = 0; i < e.count; i++) {
@@ -715,13 +719,22 @@ export class MapView {
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
       p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
     }
-    p.upload(e.count);
+    this.elementTurrets = hulls;
+    this.elementTurretOwner = new Uint32Array(hulls);
+    p.upload(appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner));
     // Near T3 the section is kept, so that the figures can be built in the frame the close tier
     // comes in (`tierShares`); the snapshot's own arrays go back to the worker.
     this.elementsZoom = this.metresPerPx;
     this.elementSection = this.elementsZoom < T3_KEEP_M ? copyElements(e) : null;
     this.individualsBuilt = false;
   }
+
+  /**
+   * The turrets of the last snapshot's element sprites: instances `elementCount` and on of the
+   * element layer, and the sprite each stands on (PLAN 3.6a; tests).
+   */
+  elementTurrets = 0;
+  elementTurretOwner = new Uint32Array(0);
 
   /** The elements of the last snapshot, kept while the camera is near T3. */
   private elementSection: SnapshotElements | null = null;
@@ -734,6 +747,9 @@ export class MapView {
   private individualsBuilt = false;
   /** Figures of the last build, each with its element's id and its place in cells (tests). */
   individualCount = 0;
+  /** The turrets of the figures: instances `individualCount` and on, and the figure each stands on (PLAN 3.6a; tests). */
+  individualTurrets = 0;
+  individualTurretOwner = new Uint32Array(0);
   individualOwner = new Uint32Array(0);
   individualX = new Float64Array(0);
   individualY = new Float64Array(0);
@@ -750,16 +766,22 @@ export class MapView {
   private buildIndividuals(e: SnapshotElements): void {
     const t0 = performance.now();
     let total = 0;
-    for (let i = 0; i < e.count; i++) total += figureCount(e.strength[i]!, e.size[i]!);
+    let hulls = 0;
+    for (let i = 0; i < e.count; i++) {
+      const n = figureCount(e.strength[i]!, e.size[i]!);
+      total += n;
+      if (turretOf(e.frame[i]!) >= 0) hulls += n;
+    }
     // More than the renderer is measured for: the element sprites stay (never at T3 in practice,
     // where a view holds a few formations).
     if (total > MAX_INDIVIDUALS) {
       this.individualCount = 0;
+      this.individualTurrets = 0;
       this.individualsBuilt = true;
       return;
     }
     const p = this.individualProxies;
-    p.reserve(total);
+    p.reserve(total + hulls);
     p.originX = Math.floor(this.controller.cam.cx);
     p.originY = Math.floor(this.controller.cam.cy);
     const owner = new Uint32Array(total);
@@ -797,7 +819,10 @@ export class MapView {
         ys[j] = e.y[i]! + dy;
       }
     }
-    p.upload(total);
+    // Every tank's turret, after all the figures (PLAN 3.6a).
+    this.individualTurrets = hulls;
+    this.individualTurretOwner = new Uint32Array(hulls);
+    p.upload(appendTurrets(p.data, p.colors, total, this.individualTurretOwner));
     this.individualCount = total;
     this.individualOwner = owner;
     this.individualX = xs;

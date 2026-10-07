@@ -167,6 +167,46 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-159 · 2026-10-07 · accepted — A tank is two sprites, hull and turret; a hull for each weight, a half-track for mechanised infantry (PLAN 3.6a)
+
+- **Context:** the critic's report of 2026-10-05 (R2-B3, tanks 2 of 10): at T3 a tank is "one
+  white box with a circle and a bar", the same for a light and a heavy tank and for a
+  battalion of mechanised infantry (64 of them), and "no turret turns". The atlas had one
+  frame, `tank`, with the gun drawn on the hull.
+- **Read first:** an element's facing is its formation's (the last march, or the deployment
+  toward the enemy: `deployOf`), and a formation that has never moved faces 0. "All pointing
+  east" is that, and no fault of the sim. PLAN 3.6 is the view's in every part; the pin does
+  not move.
+- **Decision:**
+  - `Frame` (`shared/unitLooks`) has a hull for each weight of tank (`tank` for `armor_l`,
+    `tankMedium`, `tankHeavy`), a half-track for `mech`, and three turret frames
+    (`turretOf(hull)`). The snapshot still carries one frame an element: its hull's. No field
+    was added to it.
+  - The turret is a second instance of the same instanced renderer, written after all the
+    other instances of its layer (`render/units/turrets.ts`, `appendTurrets`), at T2 after the
+    element sprites and at T3 after the figures: the hull's places, size, opacity and tint,
+    and for now its facing (3.6b turns it). The ring of the turret is at the middle of both
+    frames, so a turret at its hull's place turns about its ring.
+  - `elementCount` and `individualCount` stay the numbers of elements and figures. The
+    turrets are counted beside them (`elementTurrets`, `individualTurrets`, with the instance
+    each stands on).
+  - The shake of a marching vehicle takes its phase from the instance's place, not from its
+    number in the buffer: a turret is another instance and must shake with its hull.
+- **Why not** one frame per weight with the gun on it: nothing could then turn the gun
+  without the hull, which is 3.6b. **Why not** a class in the snapshot: the frame says what
+  the view needs, and the view knows no unit rules (the header of `unitLooks`).
+- **A test restated** (`unitLooks.test.ts`): "armour and `mech` have the frame `tank`" is
+  now a frame for each of the four, and the list of frames is twelve, not six. The old line
+  said what this part removes. Nothing else of the file changed; one test is new.
+- **Cost:** a turret is one instance more for each tank drawn: 340 on 876 figures for a
+  panzer division at 4 m/px, 820 on 3,936 for the armoured divisions and a rifle division
+  at 12. `individuals1938` (no tank added to its view by this): 2,726 figures built in 1.2 ms
+  and drawn in 1.1 ms of CPU a frame.
+- **Not done:** at T2 an element is 5 px across from about 100 m/px outward, and a division
+  of tanks is then a grid of small marks as any other (the critic's first sentence on T2);
+  the sprite is a tank from about 40 m/px inward. The main battle tank (`tank_mbt`) has the
+  hull of its class in the data and no picture of its own.
+
 ### ADR-158 · 2026-10-07 · accepted — The counters' hold is a memory of one zoom; the frame of a step of the zoom folds until the fold stands (PLAN 3.5i)
 
 - **Context:** `declutter1938`, a year into seed 1938: over central Europe 21 counters at 6 px

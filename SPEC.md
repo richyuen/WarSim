@@ -92,7 +92,7 @@ src/worker/        entry.ts, server.ts (scheduler, requests, snapshot builder), 
 src/render/        camera.ts, timing.ts (the animations' clock; TimedSwitch and SwitchBank: what shows at a
                    zoom as states with timed fades), gl/ (gpuTimer), map/ (MapRenderer), labels/,
                    hash.ts (placement noise), units/ (ProxyRenderer, atlas, counters, markers, handover,
-                   individuals, formationDots, tags), fx/ (fire: tracers, flashes, impacts; wrecks: the
+                   individuals, turrets, formationDots, tags), fx/ (fire: tracers, flashes, impacts; wrecks: the
                    ends of elements); later lod/
 src/ui/            TitleScreen, NewGameForm, TopBar, BottomBar (date/pause/speed), the panels (NationPanel with
                    Actions and God tabs, FormationPanel, StatsRanking, StatsChart, HistoryPanel, SettingsPanel, EditorPanel,
@@ -1219,6 +1219,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   no AT gun, in a forest × 1. "AT vs armour": the battery takes over 0.7 of the tanks lost,
   and a division without it under 0.3 of what the whole one takes.
 - Tactical view: tank sprites with turret facing their target, muzzle flash, burning wrecks.
+  *As built so far (PLAN 3.6a):* the hulls and the turrets (§8, "Tanks"); a turret has its
+  hull's facing until PLAN 3.6b.
 
 ### 6.2 Naval
 - Sea zones + lane graph (§3.3). Ports and naval bases are province buildings that
@@ -1621,6 +1623,11 @@ moment before its first elements arrive.
   map would step by 2.4 m). A figure is at least 2.5 px.
 - *Guns* have a frame of their own in the procedural atlas (artillery, anti-tank, anti-air), at
   T2 and T3; they were drawn as infantry.
+- *Tanks* (PLAN 3.6a, ADR-159) are two sprites: a hull frame for each weight (light, medium,
+  heavy) and its turret with the gun as a frame of its own, a second instance at the hull's
+  place written after all the others of the layer (`render/units/turrets.ts`), at T2 and T3.
+  The turret's ring is the middle of both frames. Mechanised infantry is a half-track, with no
+  turret. The snapshot carries the hull's frame alone.
 - *The T2 ↔ T3 change* is a handover like the others (see above), since PLAN 2.7b.
 - *Measured:* 3,345 figures of 89 elements (three divisions at 28 m/px): 0.7 ms to build per
   snapshot, 0.5 ms of CPU to draw a frame.

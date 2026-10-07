@@ -6,9 +6,34 @@
  */
 import type { UnitSymbol } from './protocol';
 
-/** Frames of the unit sprite atlas (`render/units/atlas`), in its order. */
-export const Frame = { infantry: 0, tank: 1, ship: 2, aircraft: 3, gun: 4, prone: 5 } as const;
+/**
+ * Frames of the unit sprite atlas (`render/units/atlas`), in its order. `tank`, `tankMedium` and
+ * `tankHeavy` are hulls (PLAN 3.6a): the turret of each is a frame of its own (`turretOf`),
+ * drawn over the hull as a second sprite, so that it can turn. No class has a turret's frame.
+ */
+export const Frame = {
+  infantry: 0,
+  tank: 1,
+  ship: 2,
+  aircraft: 3,
+  gun: 4,
+  prone: 5,
+  tankMedium: 6,
+  tankHeavy: 7,
+  halftrack: 8,
+  turretLight: 9,
+  turretMedium: 10,
+  turretHeavy: 11,
+} as const;
 export type Frame = (typeof Frame)[keyof typeof Frame];
+
+/** The frame of the turret that stands on the hull of `frame`, or -1 for what has none. */
+export function turretOf(frame: number): number {
+  if (frame === Frame.tank) return Frame.turretLight;
+  if (frame === Frame.tankMedium) return Frame.turretMedium;
+  if (frame === Frame.tankHeavy) return Frame.turretHeavy;
+  return -1;
+}
 
 /**
  * The frame an element is drawn with: its class's (`frameOf`, what the snapshot carries), but
@@ -20,7 +45,11 @@ export function shownFrame(frame: number, inContact: boolean): number {
 }
 
 export function frameOf(cls: string): Frame {
-  if (cls.startsWith('armor') || cls === 'mech') return Frame.tank;
+  if (cls === 'armor_m') return Frame.tankMedium;
+  if (cls === 'armor_h') return Frame.tankHeavy;
+  if (cls.startsWith('armor')) return Frame.tank;
+  // Infantry in half-tracks: a carrier, not a tank (PLAN 3.6a).
+  if (cls === 'mech') return Frame.halftrack;
   if (cls === 'art' || cls === 'at' || cls === 'aa') return Frame.gun;
   if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return Frame.ship;
   if (['fighter', 'bomber_tac', 'bomber_str', 'cas', 'naval_bomber', 'transport_air'].includes(cls)) return Frame.aircraft;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LOOKS } from '../../src/render/fx/fire';
-import { Frame, frameOf, symbolOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
+import { Frame, frameOf, symbolOf, turretOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
 import { TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { AIR_CLASSES, LAND_CLASSES, SEA_CLASSES, UNIT_CLASSES } from '../../src/sim/data/schemas';
 
@@ -11,7 +11,11 @@ import { AIR_CLASSES, LAND_CLASSES, SEA_CLASSES, UNIT_CLASSES } from '../../src/
 describe('frameOf', () => {
   it('men, armour, guns, ships and aircraft each have their sprite', () => {
     for (const cls of ['inf', 'mot']) expect(frameOf(cls), cls).toBe(Frame.infantry);
-    for (const cls of ['armor_l', 'armor_m', 'armor_h', 'mech']) expect(frameOf(cls), cls).toBe(Frame.tank);
+    // PLAN 3.6a: a hull for each weight of tank, and a carrier for mechanised infantry (until then one frame for the four).
+    expect(frameOf('armor_l')).toBe(Frame.tank);
+    expect(frameOf('armor_m')).toBe(Frame.tankMedium);
+    expect(frameOf('armor_h')).toBe(Frame.tankHeavy);
+    expect(frameOf('mech')).toBe(Frame.halftrack);
     // PLAN 2.6: a battery is not twelve soldiers.
     for (const cls of ['art', 'at', 'aa']) expect(frameOf(cls), cls).toBe(Frame.gun);
     for (const cls of SEA_CLASSES) expect(frameOf(cls), cls).toBe(Frame.ship);
@@ -20,9 +24,18 @@ describe('frameOf', () => {
 
   it('frames are the atlas order, without gaps, and every class has one', () => {
     // Five classes' frames and, since PLAN 2.14c2, the sixth: infantry prone, which no class has of itself (`shownFrame`).
-    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5]);
+    // Since PLAN 3.6a twelve: three hulls, a half-track and three turrets.
+    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
     for (const cls of UNIT_CLASSES) expect(Object.values(Frame)).toContain(frameOf(cls));
     for (const cls of UNIT_CLASSES) expect(frameOf(cls), cls).not.toBe(Frame.prone);
+  });
+
+  it('a tank has a turret of its weight; nothing else has one, and no class is a turret', () => {
+    const turrets = [Frame.turretLight, Frame.turretMedium, Frame.turretHeavy];
+    expect([Frame.tank, Frame.tankMedium, Frame.tankHeavy].map(turretOf)).toEqual(turrets);
+    for (const f of Object.values(Frame)) if (f !== Frame.tank && f !== Frame.tankMedium && f !== Frame.tankHeavy) expect(turretOf(f), String(f)).toBe(-1);
+    for (const cls of UNIT_CLASSES) expect(turrets, cls).not.toContain(frameOf(cls));
+    for (const cls of UNIT_CLASSES) expect(turretOf(frameOf(cls)) >= 0, cls).toBe(cls.startsWith('armor'));
   });
 });
 

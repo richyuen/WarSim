@@ -33,7 +33,8 @@ void main() {
   float frame = floor(aMisc.z);
   // Moving (frame + 0.5): infantry sway side to side at a walking cadence, vehicles judder.
   float moving = step(0.25, aMisc.z - frame);
-  float phase = float(gl_InstanceID) * 1.618;
+  // By its place, not its number: a turret is another instance at its hull's place and shakes with it (PLAN 3.6a).
+  float phase = 6.2832 * fract(dot(aPrevCur.zw, vec2(12.9898, 78.233)));
   vec2 local = aCorner;
   if (frame < 0.5) local += moving * vec2(0.0, 0.07 * sin(uTime * 9.0 + phase));
   else local += moving * vec2(0.03 * sin(uTime * 31.0 + phase), 0.0);

@@ -7995,3 +7995,37 @@ No rule changed and nothing on screen changed. One task came out of it.
   (PLAN 7.4); a zoom in that shows fewer counters within a level; the landing of a split
   takes its hold a frame later; the cost of `nudgeApart` in the page.
 - **Next:** PLAN 3.6 (tank visuals).
+
+## 2026-10-07 — PLAN 3.6 split; 3.6a, the tank's picture
+
+- **Read first:** an element's facing is its formation's; a formation that has not moved
+  faces 0. The critic's "all pointing east" is no fault of the sim. PLAN 3.6 is split into
+  3.6a to 3.6e, all the view's; the pin does not move.
+- **Done** (ADR-159): `Frame` has a hull for each weight of tank, a half-track for `mech`
+  and three turrets; `turretOf`. `atlas.ts` draws them (tracks, engine deck, glacis; the
+  turret's ring at the middle of both frames). `turrets.ts`, `appendTurrets`: a turret is a
+  second instance after all the others of its layer, at T2 and T3. The shader's shake of a
+  marching vehicle has its phase from the place, so a turret shakes with its hull.
+- **Tests:** `unitLooks.test.ts` restated in one place (the four classes no longer share a
+  frame) and one new; `turrets.test.ts`, 3 new.
+- **Specs by hand** (`--project=chromium`): `individuals1938`, `elements1938`,
+  `spriteColours1938`, `battleView1938`, `closeZoom1938`, `canvasOpaque1938`, `zoomDemo1938`,
+  `handover1938`, `figuresFadeOut1938`, `lateFrame1938`, `bench-pages`, `precision`,
+  `wrecks1938`, `fire1938`, `tiers1938`: 23 tests, green.
+- **Looked at** (a scratch spec, since deleted; Japan's light, medium, heavy and mechanised
+  divisions beside a Chinese rifle division, western China): at 4 and 1.5 m/px a tank is a
+  hull with tracks and a turret with a gun; the heavy tank's box turret and muzzle brake tell
+  it from the medium beside it; the half-tracks are not tanks. At 50 m/px a tank is a small
+  mark. Japan's tint is near white: the tanks are pale grey there.
+- **Cost:** 340 turrets on 876 figures (a panzer division at 4 m/px), 820 on 3,936 (the
+  divisions at 12). `individuals1938`: 2,726 figures, build 1.2 ms, draw 1.1 ms of CPU a
+  frame (no tank added to that view by this).
+- **Not measured:** the shake of a marching tank was not looked at in a running game (the
+  pictures are of a paused one); a frame's GPU time with the turrets.
+- **Learned:** `io.open(path, newline='')` in Python on this machine reads and writes
+  cp1252: a "×" in new text went out as one byte and the build said "stream did not contain
+  valid UTF-8". `encoding='utf-8'` with it, always.
+- **Not done:** the turret has its hull's facing (3.6b); at T2 from about 100 m/px outward a
+  tank division is a grid of 5 px marks (a line under 3.6e); the main battle tank has no
+  picture of its own.
+- **Next:** PLAN 3.6b (the turret turns).

@@ -3666,6 +3666,45 @@ quick sweep as a smoke test.
   through them. No turret turns, nothing drives, nothing burns. Of fuel, breakdown, tracked
   terrain, combined arms and spearheads (PLAN 3.2 to 3.5) nothing is there to see.
   AT: tank battle demo e2e + screenshots viewed.
+  **Split 2026-10-07** (one cause a commit). Read first: an element's facing is its
+  formation's (the march, or the deployment toward the enemy), so "all pointing east" is a
+  formation that has not moved yet, and nothing of the sim is wrong there. All parts are the
+  view's; the pin does not move.
+  - [x] 3.6a **The tank's picture.** One frame for every tank and for mechanised infantry:
+    a box, a circle and a bar. A hull frame for each weight (light, medium, heavy: `armor_l`,
+    `armor_m`, `armor_h`) with tracks and an engine deck, and its turret as a frame of its
+    own, drawn over the hull as a second sprite at T2 and T3 (at the hull's facing until
+    3.6b). AT: unit (each weight its frames; a turret for every hull and for nothing else, at
+    its hull's place); the specs of the figures and the sprites by hand; pictures looked at.
+    **Done 2026-10-07 (ADR-159).** Three hulls, three turrets and a half-track for `mech`
+    in the atlas; the turret a second instance after all the others of its layer
+    (`turrets.ts`), at the hull's facing. `unitLooks.test.ts` restated where it said the four
+    classes share a frame (ADR-159), one test new; `turrets.test.ts` new (3). 15 spec files
+    by hand, 23 tests, green. Looked at (a scratch spec, since deleted): a light, a medium
+    and a heavy armoured division and a mechanised one at 50, 12, 4 and 1.5 m/px.
+    - *Not done:* at T2 from about 100 m/px outward an element is 5 px and a tank division a
+      grid of small marks as any other: a line under 3.6e, which looks at T2.
+  - [ ] 3.6b **The turret turns.** A tank that fires has its turret on its target, turned
+    there in a fraction of a second, and back to the hull's facing when it has been silent
+    for a while. View state on the render clock, from the fire records (as the tracers): no
+    sim state. AT: unit (the angle at a time, the shorter way round, the return); a spec
+    (turrets of a division in contact are not all at the hull's facing).
+  - [ ] 3.6c **The shot leaves a barrel.** At T3 a tracer and its flash start at the middle
+    of the element's footprint, not at a figure. A tank's shot starts at the muzzle of one of
+    its tanks, a gun's at one of its guns, and the cannon's flash is a tongue along the
+    barrel. AT: unit; a spec (every cannon flash at T3 within a figure's reach of a figure
+    of its shooter).
+  - [ ] 3.6d **Tanks burn where they are lost.** A wreck is left only when a whole element
+    (10 tanks) is gone. A tank that leaves an element's figures between two snapshots leaves
+    a burning hull on its place: flame for a while, smoke after, then gone. Not for an
+    element first seen. AT: unit; a spec (as many burning hulls as tanks lost in the view).
+  - [ ] 3.6e **The tank battle demo** (`tankBattle1938.spec.ts`): a battle of armour found
+    or set up, flown to from T1 to T3; turrets off the hull's facing, a flash at a tank, a
+    burning hull; pictures in `docs/evidence/3.6/`, looked at; PARITY. Ticks 3.6 (the full
+    e2e).
+    From 3.6a: say what a division of tanks is at T2 between 300 and 100 m/px, where a
+    sprite is 5 px (the critic: "a grey grid of dots like any other"), and whether the 5 px
+    of a hull can say "tank" there (its shape, or the element's mark).
 - [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
