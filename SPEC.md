@@ -829,7 +829,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     step itself, on along it or back.
   - Order state is moving, originCell, targetCell, pathStep and stepFrac, and the path
     (`world.paths`, saved with the core since PLAN 3.4Rl: it is found on the holders of the
-    hour of the order). A save from before has no paths; each is found again at the next step.
+    hour of the order). A save from before has no paths; each is found again at the next
+    step, from the cell the formation stands in, and its steps are counted anew.
+  - A path outlives a change of the ground (PLAN 3.7k, ADR-171): a paint of terrain, a map
+    import and a change of `loopingMap` drop the navigation graph and no path. A step that
+    the ground of now does not allow (water, a corner cut past water, the seam of a map
+    with edges) is not taken: the formation is ordered to its target again from the cell
+    behind it, and halts there if no way is left.
   - *No march across a third nation* (PLAN 3.4Rl, ADR-149). A formation is routed over the
     ground of its supply bloc, of a nation it is at war with, of a nation on its side of a
     war, and over nobody's (`foreignTo`); a `Passage` carries that to the search. A cell of

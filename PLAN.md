@@ -4087,7 +4087,7 @@ quick sweep as a smoke test.
     above every province. The random world's preview made again.
     *Not done:* no count of the same orders under both graphs; the random world's change
     (ADR-170) not counted; the graph's build time not measured again.
-  - [ ] 3.7k **A paint of terrain does not move a marching formation** (the eighth read,
+  - [x] 3.7k **A paint of terrain does not move a marching formation** (the eighth read,
     finding 2; run there and again here). `terrainChanged` (`src/sim/editor.ts`) and a
     change of `loopingMap` (`gameOptions.ts`) clear `world.paths`. `formationPath` then
     finds a route again from `originCell` to `targetCell` on the holders of now, while
@@ -4105,6 +4105,19 @@ quick sweep as a smoke test.
     marching formation's way: it goes on from where it stands by a new route, or halts
     where it stands, and is at no tick more than a step from where it was; no place is
     NaN; the same for `loopingMap`); `editor` unit tests as they are.
+    **Done 2026-10-07 (ADR-171):** a change of the ground drops no path. The march tests
+    each step on the ground of now (`stepOpen`, `movement.ts`: water, a corner cut past
+    water, the seam of a map with edges); a step that is shut is not taken, and the
+    formation is ordered to its target again from the cell behind it, or halts there. A
+    path that is missing (an old save) is found from the cell the formation stands in, its
+    steps counted anew. `tests/unit/pathsKept.test.ts`, five tests: the reader's case (90
+    formations moved before, none now, an hour and 48 hours later); the NaN of the
+    suspicion (shown: red before, with the origin set by hand); and three that were green
+    before and are guards: new water across the way (it arrives round it), new water over
+    the target (it halts), the seam with `loopingMap` off (it halts east of it). The water
+    is an import's: a paint makes none. The pin holds, `7cfb8b6d`.
+    *Not done:* no test of a corner cut past new water alone; the tick's 3 % (1.559 to
+    1.605 ms, one run each) not told from noise.
   - [ ] 3.7l **A march that ends at ground turned foreign ends where the formation stands**
     (the eighth read, finding 3; run there). The walk's `barred` (`movement.ts`) sets
     `frac = 0` and puts the formation on the middle of the cell behind it, whatever part of

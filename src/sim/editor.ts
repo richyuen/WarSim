@@ -208,10 +208,13 @@ function markDirty(world: World, c: number): void {
   world.out.dirtyTiles[Math.floor(y / TILE) * world.out.tilesX + Math.floor(x / TILE)] = 1;
 }
 
-/** Terrain changed: everything derived from it is rebuilt on demand. */
+/**
+ * Terrain changed: everything derived from it is rebuilt on demand. Not the paths of the
+ * formations on the march, which are state (PLAN 3.7k): the march finds a step that the new
+ * ground does not allow when it comes to it (`movementSystem`).
+ */
 function terrainChanged(world: World): void {
   world.nav = null;
-  world.paths.clear();
   world.frontier = null;
   world.supplyDirty = true;
   world.terrainVersion++;

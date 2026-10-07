@@ -167,6 +167,62 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-171 · 2026-10-07 · accepted — A path outlives a change of the ground: the march tests each step, and a path that is missing is found from where the formation stands (PLAN 3.7k)
+
+- **Context:** the eighth read, finding 2. `terrainChanged` (`editor.ts`) and a change of
+  `loopingMap` (`gameOptions.ts`) cleared `world.paths`. `formationPath` then found each
+  route again from `originCell` to `targetCell` on the holders of now, and `pathStep` and
+  `stepFrac` went on counting along the path that was gone. Until ADR-149 a path hung on
+  the ground alone and a far paint gave the same path back; since then it is state. Run
+  here: seed 99 at tick 1500, one cell of ice painted to plains at (727, 1), and an hour
+  later 90 formations stand elsewhere than in the game without the paint (the reader
+  counted 85 on the graph before ADR-170).
+- **Two faults, one root:**
+  1. the paths were dropped for a change that touched none of them;
+  2. a path found again was read with the steps of another. Any finding-again has this
+     fault: a save from before PLAN 3.4Rl has no paths either.
+- **Decision:**
+  1. A change of the ground drops the navigation graph and no path. `movementSystem` tests
+     each step before it takes it (`stepOpen`): the far cell is no water for the
+     formation's mobility, a diagonal step cuts no corner past water (`findPath`'s rule),
+     and the step is not over the seam of a map with edges. A step that fails is not
+     taken: the formation stands on the cell behind it (the step's near end, less than a
+     step back), its path is dropped, and it is ordered to its target again by
+     `orderMove`, on the ground and the holders of now. No way: `MoveRejected`, and it is
+     idle there.
+  2. `formationPath`, for a path that is missing, routes from the cell the formation
+     stands in and sets `originCell`, `pathStep` and `stepFrac` to the start of it.
+- **Why at the step and not at the edit:** to test the paths at the edit, the editor would
+  build the graph at once, at every segment of a dragged stroke (it is built on demand, at
+  the next tick that asks). The test at the step is three reads of the terrain for each
+  step a formation takes. And it is the same for an import and for `loopingMap`, with
+  nothing for either to call.
+- **Why the path is kept though a better way may have opened:** a path is the march that
+  was ordered (ADR-149). Ground made easier or harder changes the hours of its steps
+  (`segHours` reads the terrain of now), not its cells.
+- **What a paint can do, looked at:** the editor paints land into land (`paint` refuses
+  water both ways), so no paint makes a step impossible; only an import makes water, and
+  `strandedToLand` has already set every formation that then stands on water on the
+  nearest land, idle. The tests of a barred way use an import (as ADR-170's did).
+- **The reader's suspicion, settled:** a path found again that is shorter than `pathStep`
+  reads a cell that is not there, and `cellPoint(undefined)` is NaN. Shown
+  (`pathsKept.test.ts`, the fourth test: a formation four steps from its end whose path is
+  dropped and whose origin is its own cell stands at NaN the next hour; the origin was
+  set by hand, no run of the game was found that makes one). After 2. the first cell of a
+  path found again is always there.
+- **Left as it is:** the place of a formation whose step is shut is the middle of the cell
+  behind it, as for a march that ends at ground turned foreign (`barred`). PLAN 3.7l asks
+  that one to end where the formation stands; whether this one should too is 3.7l's to
+  say. A formation that goes on by a new route marches again from the next hour: the hour
+  of the re-order is not marched.
+- **Measured:** the pin holds, `7cfb8b6d` (no game without an edit takes a step that is
+  shut, and none finds a path again). Tick time, five years of seed 99 pinned to the
+  performance cores: mean 1.559 ms before, 1.605 after; year 1 2.313 and 2.391 (the same
+  game, one run each: not told from what two runs differ by).
+- **Consequences:** nothing saved changes. A save from before PLAN 3.4Rl, loaded with a
+  formation in mid-step, sets it on the middle of its cell at its next step (it was put
+  on the old step of a new path).
+
 ### ADR-170 · 2026-10-07 · accepted — A walkable cell that no province has is a node of the province graph: the mend is in the graph, not the map (PLAN 3.7j)
 
 - **Context:** the eighth read, finding 1. A `Passage` groups the province nodes with open

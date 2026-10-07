@@ -34,9 +34,9 @@ export function applyGameOptions(world: World, o: GameOptions): void {
   const u = (n: number, salt: number, k = 0): number => hashToUnit(hash32(world.seed, salt, n, k));
   if (o.loopingMap !== undefined && o.loopingMap !== world.settings.loopingMap) {
     world.settings.loopingMap = o.loopingMap;
-    // The scenario build already made the pathing grid (wrapping): rebuild it on demand.
+    // The scenario build already made the pathing grid (wrapping): rebuild it on demand. A
+    // path stays (PLAN 3.7k): a march does not take a step over the seam that is one no more.
     world.nav = null;
-    world.paths.clear();
     world.frontier = null;
     world.supplyDirty = true;
   }

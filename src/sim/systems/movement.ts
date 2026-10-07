@@ -24,6 +24,12 @@
  * walks on that holder's cells and out of them: the way home. A march whose next cell has
  * become such ground since the order ends before it (`MoveRejected`).
  *
+ * A path outlives a change of the ground (PLAN 3.7k, ADR-171): a paint of terrain, a map import
+ * and a change of `loopingMap` leave `world.paths` alone. A step that the ground of now does not
+ * allow (water ahead, a corner cut past new water, the seam of a map that loops no more) is not
+ * taken: the formation is ordered to its target again from the cell behind it, and halts there
+ * if there is no way. A path that is missing is found again from where the formation stands.
+ *
  * Repatriation (daily at 00:00; critic B1, 2026-10-03): an idle formation standing on land held
  * by a nation outside its supply bloc that it is neither at war with nor fighting beside
  * (occupied land handed back at a peace, mostly) marches to the nearest cell its own nation controls within REPATRIATE_CELLS; if
@@ -33,7 +39,7 @@
  */
 import { EventKind } from '../../shared/events';
 import { atan2 } from '../core/dmath';
-import { Mobility, MOVE_COST, stepKm, type MobilityId, type Passage } from '../nav/grid';
+import { Mobility, MOVE_COST, stepKm, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
 import { findRoute, nodeGroups } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
@@ -91,7 +97,11 @@ function centre(world: World, cell: number): [number, number] {
   return world.cellPoint(cell);
 }
 
-/** Path of a moving formation (cached; rebuilt from its origin and target when missing). */
+/**
+ * Path of a moving formation. One that is missing (a save from before PLAN 3.4Rl) is found
+ * again on the holders of now, from the cell the formation stands in: the steps it had counted
+ * were along the path that is gone (PLAN 3.7k), so they begin again with the new one.
+ */
 export function formationPath(world: World, id: number): Int32Array | null {
   let p = world.paths.get(id);
   if (p) return p;
@@ -99,13 +109,31 @@ export function formationPath(world: World, id: number): Int32Array | null {
   const rule = world.rules?.templates[f.template[id]!];
   if (!rule) return null;
   const nav = navOf(world);
-  // No saved path (a save from before PLAN 3.4Rl, or the editor dropped them): found again, on
-  // the holders of now.
-  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, f.originCell[id]!, f.targetCell[id]!, passageOf(world, f.nation[id]!));
+  const from = Math.floor(f.y[id]!) * world.cells.w + Math.floor(f.x[id]!);
+  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, passageOf(world, f.nation[id]!));
   if (!route) return null;
   p = Int32Array.from(route.cells);
+  f.originCell[id] = from;
+  f.pathStep[id] = 0;
+  f.stepFrac[id] = 0;
   world.paths.set(id, p);
   return p;
+}
+
+/**
+ * Whether the step from the cell `a` to its neighbour `b` on a path can be taken on the ground
+ * of now (PLAN 3.7k): `b` is no water, a diagonal step cuts no corner past water (as `findPath`
+ * has it), and the step does not cross the seam of a map with edges.
+ */
+function stepOpen(grid: NavGrid, costRow: Float64Array, a: number, b: number): boolean {
+  const { w, terrain } = grid;
+  const passable = (c: number): boolean => Number.isFinite(costRow[terrain[c]!]!);
+  if (!passable(b)) return false;
+  const ax = a % w;
+  const bx = b % w;
+  if (ax === bx) return true;
+  if (Math.abs(bx - ax) > 1 && !grid.wrapX) return false;
+  return a - ax === b - bx || (passable(a - ax + bx) && passable(b - bx + ax));
 }
 
 /**
@@ -226,9 +254,16 @@ export function movementSystem(world: World): void {
     let budget = 1; // hours this tick
     const nation = c.nation[id]!;
     let barred = false;
+    let shut = false;
     while (budget > 0 && i < path.length - 1) {
       const a = path[i]!;
       const b = path[i + 1]!;
+      // The ground has changed under the path (PLAN 3.7k): this step is not one any more.
+      if (!stepOpen(nav.grid, costRow, a, b)) {
+        shut = true;
+        frac = 0;
+        break;
+      }
       // Enemy-held ground is entered only once it flips (PLAN 1.14): the advance follows the front.
       const holder = world.cells.controller[b]!;
       if (holder !== 0 && holder !== nation) {
@@ -261,6 +296,16 @@ export function movementSystem(world: World): void {
     c.pathStep[id] = i;
     c.stepFrac[id] = frac;
     const [ax, ay] = centre(world, path[i]!);
+    if (shut) {
+      // From the cell behind it, to where it was going, by the ground of now; or it halts there.
+      const to = c.targetCell[id]!;
+      c.x[id] = ax;
+      c.y[id] = ay;
+      c.moving[id] = 0;
+      world.paths.delete(id);
+      orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5);
+      return;
+    }
     if (barred) {
       c.x[id] = ax;
       c.y[id] = ay;

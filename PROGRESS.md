@@ -8446,3 +8446,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   a cell only: not counted. The same orders were not asked of both graphs.
 - **Next:** PLAN 3.7k (a paint of terrain moves marching formations), then 3.7h, l, m, i, n,
   g, the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7k: a paint of terrain does not move a marching formation (ADR-171)
+
+- **The fault, run again:** seed 99 at tick 1500, one cell of ice to plains at (727, 1),
+  more than 100 cells from every formation: an hour later 90 formations stand elsewhere
+  than in the game without the paint. The paths were cleared and each found again from
+  the order's first cell, read with the steps of the path that was gone.
+- **The mend** (`movement.ts`, `editor.ts`, `gameOptions.ts`): no path is dropped for a
+  change of the ground. `movementSystem` tests each step on the ground of now
+  (`stepOpen`); a step that is shut is not taken, and the formation is ordered again from
+  the cell behind it, or halts there. `formationPath` finds a missing path from the cell
+  the formation stands in and counts its steps anew.
+- **Tests** (`tests/unit/pathsKept.test.ts`, five): two red before (the reader's case; a
+  NaN place from a path found again shorter than the steps counted, the origin set by
+  hand), three green before and kept as guards (new water across the way, new water over
+  the target, the seam with `loopingMap` off).
+- **Gotcha:** the AT says "a paint that bars a marching formation's way". No paint does:
+  the editor paints land into land. Water comes by `importLayer`, and the tests use that.
+- **Gotcha:** before the mend new water over the target halted the formation at once
+  (no route, `moving = 0`); now it walks its path as far as the water. Both are "halts
+  where it stands"; the test asks only that it ends idle, dry and short of the target.
+- **The pin:** holds, `7cfb8b6d`.
+- **Tick time** (five years of seed 99, `--affinity 0xFFFF`): mean 1.559 ms before, 1.605
+  after; year 1 2.313 and 2.391. The same game, one run each: not told from noise.
+- **By hand:** no e2e spec run: nothing drawn changed.
+- **Gate:** `npm run check` green (typecheck, lint, unit, the 10-year tests, build, parity;
+  no e2e: a part).
+- **Not done:** a corner cut past new water has no test of its own; the place of a
+  formation whose step is shut is the cell's middle (3.7l's question).
+- **Next:** PLAN 3.7h (a formation sent home marches home, ADR-169), then 3.7l, m, i, n,
+  g, the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
