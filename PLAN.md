@@ -3953,7 +3953,7 @@ quick sweep as a smoke test.
     tasks that change what is drawn. Rows are added to, not replaced.
   Tasks that come out of 3.7a, 3.7c and 3.7d follow as 3.7g and on, the sim's first. 3.7 is
   ticked when they are done.
-  - [ ] 3.7g **A tag stands on its formation's own side of a contact, and one that stands
+  - [x] 3.7g **A tag stands on its formation's own side of a contact, and one that stands
     off has a line to its elements** (ADR-168; view only, `src/render/units/tags.ts`).
     Diagnose first: at the tank battle demo's stops 2 and 3 (100 and 60 m/px) read the boxes
     of formations 395, 431 and 419 as `layoutTags` gets them, and say where each middle is.
@@ -3985,6 +3985,15 @@ quick sweep as a smoke test.
     the brigade's tag is the nearest tag to the middle of its tanks, or has a line to them;
     the pictures of the demo and `docs/evidence/2.10/stop-5-battle.png` taken again and
     looked at; `tags1938` specs as they are.
+    **Done 2026-10-07 (ADR-168, second addendum).** The boxes above are seed 1938's; the
+    demo runs on seed 2 since PLAN 3.7o and was read again: the brigade is the easternmost
+    of five blocks. `layoutTags`: rings of four places (above, below, left, right), first
+    the nearest clear of every other formation's elements, else the nearest free;
+    `PlacedTag.line`, `tx`, `ty` and the line in `drawTags`. Six unit tests; the count of
+    places in two older ones is 4 × `TAG_TRIES`. The demo at stops 2 and 3: the brigade's
+    tag 4 px off its tanks (right of them, above them), the nearest tag to their middle,
+    none of them under another's tag. No tag of the demo needs a line: the line is in
+    `docs/evidence/2.10/stop-5-battle.png`.
   - [x] 3.7h **A formation is not moved across the map in one tick** (PLAN 3.7c; ADR-149's
     "not counted"). In a year 43 and 37 formations (seed 99, seed 7) stand in one tick more
     than 3 cells from where they stood, by a median of 52 and 35 cells: `repatriationSystem`

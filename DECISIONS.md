@@ -631,6 +631,30 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   is at war is needed: the layout has every formation's box. The second part (the line)
   stands. By hand on these boxes: the brigade's tag stands left of its tanks, 419's below
   its block, 431's a step out above with a line.
+- **Addendum 2026-10-07, done (PLAN 3.7g); the ground had moved:** the boxes above are of
+  seed 1938's ground, and PLAN 3.7o put the demo on seed 2 the same day. Read again
+  (`.cache/p37/tagboxes.ts`): the brigade (395, 611 tanks' men) is the easternmost block
+  with four Chinese divisions west and south of it (449, 417, 420, 428). Middles at
+  60 m/px: 715, 371; 591, 232; 664, 371; 641, 429; 637, 485. Before the change 417's and
+  420's tags lay on and beside the tanks and the brigade's stood a step out above. The rule
+  as coded (`layoutTags`): a ring of places is above, below, left, right, in that order,
+  and `TAG_TRIES` rings are tried, each a step further out (20 places where there were 10;
+  a place beside a block that the view has no room for is none). A first pass takes the
+  nearest place clear of the other tags, of the page's boxes and of every other
+  formation's box of elements; with none, a second takes the nearest clear of tags and
+  page as before. A tag more than `TAG_GAP` + 1 px from its box (the px is the rounding of
+  its place) has a line from its middle to the middle of its elements in the view, dark
+  under its nation's colour, drawn under every tag. **On the demo's ground:** at 100 m/px
+  the brigade's tag stands right of its tanks, at 60 above them, 4 px off both times, the
+  nearest tag to their middle (18 and 39 px), no tank under another's tag, and no tag
+  there needs a line. The line is seen in the zoom demo's battle
+  (`docs/evidence/2.10/stop-5-battle.png`: "Motorised division 47", a step out above three
+  blocks on one spot). **The count of places in `tags.test.ts` changed with the rule**
+  (2 × `TAG_TRIES` to 4 × `TAG_TRIES`; the two tests of "more formations than places" hold
+  as many over as before, 3, on a block in the middle of the view). **Cost:** a layout of
+  20 formations 0.04 ms (0.02 before), of 300 all over the view 1.4 ms (0.26).
+  **Not decided:** in a crowd most tags stand off and have lines (15 of 20 on a quarter of
+  the view, random boxes): whether that reads is for PLAN 7.4's line on tags.
 
 ### ADR-167 · 2026-10-07 · accepted — A snapshot says of each element it sends whether it was fired at; the view no longer takes it from the shots it got (PLAN 3.6e5)
 

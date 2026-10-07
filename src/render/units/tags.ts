@@ -6,7 +6,13 @@
  *
  * A tag stands above the part of its formation that is in the view (so a division that fills
  * the screen at T3, or reaches out of it, still has one), and gives way to a stronger
- * formation's tag: below its formation, then further out above and below. One that finds no free place is left out and counted.
+ * formation's tag: below its formation, left of it, right of it, then further out on each
+ * side. One that finds no free place is left out and counted.
+ *
+ * It is tied to its elements (ADR-168, PLAN 3.7g): it does not stand on another formation's
+ * elements where a place clear of them is free, and one that stands off its own has a line to
+ * them in its nation's colour. Where blocks stand side by side in a contact, the strongest
+ * one's tag lay on the others' sprites and nothing said which block a tag was of.
  *
  * It gives way likewise to what the page has above the map (PLAN 2.14f2): the war banners and
  * the bottom bar. A formation at the bottom edge had its tag under them.
@@ -48,6 +54,11 @@ export interface PlacedTag {
   h: number;
   /** The gap between the tag and the box of its elements, px (0 when it stands on them). */
   gap: number;
+  /** Whether it stands off its elements and has a line to them (ADR-168). */
+  line: boolean;
+  /** The middle of its formation's elements in the view, CSS px: where the line ends. */
+  tx: number;
+  ty: number;
   /** Whether the nation's flag was drawn on it (set by `drawTags`). */
   flag: boolean;
 }
@@ -59,8 +70,12 @@ export const TAG_PAD = 3;
 export const TAG_GAP = 4;
 /** How far the frame of the picked formation's tag reaches out of its box, px: less than the gap, so it touches no neighbour. */
 export const TAG_PICKED_REACH = 3;
-/** How many places a tag tries above, then below, before it is left out. */
+/** How many rings of places a tag tries before it is left out: in each, above, below, left and right, a step further out. */
 export const TAG_TRIES = 5;
+/** The places of a ring. */
+export const TAG_SIDES = 4;
+/** A tag further than this from its elements has a line to them: the gap, and a px for the rounding of its place. */
+export const TAG_LINE_FROM = TAG_GAP + 1;
 export const TAG_STRENGTH_FONT = (s: number): string => `700 ${Math.round(10 * s)}px system-ui, sans-serif`;
 export const TAG_NAME_FONT = (s: number): string => `500 ${Math.round(9 * s)}px system-ui, sans-serif`;
 
@@ -79,6 +94,7 @@ const overlap = (a: { x: number; y: number; w: number; h: number }, b: { x: numb
  * Places the tags of `items` in a view of vw × vh px. `measure(text, font)` is the width of a
  * line. The picked formation first, then the stronger ones (the lower id on a tie), so the
  * layout does not depend on the order of the list. No tag stands on one of `avoid`, nor nearer to it than to another tag.
+ * None stands on another formation's elements unless every place of its own is on some (ADR-168).
  * Returns the placed tags and how many found no place.
  */
 export function layoutTags(items: readonly TagInput[], measure: (text: string, font: string) => number, vw: number, vh: number, scale = 1, avoid: readonly TagObstacle[] = []): { placed: PlacedTag[]; left: number } {
@@ -99,24 +115,42 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
     if (vx1 < vx0 || vy1 < vy0) continue;
     const w = Math.ceil(Math.max(TAG_FLAG_W * scale + pad + measure(it.text, TAG_STRENGTH_FONT(scale)), measure(it.name, TAG_NAME_FONT(scale))) + 2 * pad);
     const x = Math.round(Math.min(Math.max((vx0 + vx1) / 2 - w / 2, edge), Math.max(edge, vw - w - edge)));
-    const step = h + TAG_GAP;
+    const stepY = h + TAG_GAP;
+    const stepX = w + TAG_GAP;
     const above = vy0 - TAG_GAP - h;
     const below = vy1 + TAG_GAP;
-    const tries: number[] = [];
-    // Above, then below, then a place further out on each side: the nearest free one. (Two
-    // formations in contact stand front to front, PLAN 2.14c1: one has its tag above its
-    // block and the other below, each by its own.)
-    for (let k = 0; k < TAG_TRIES; k++) tries.push(above - k * step, below + k * step);
-    let done = false;
-    for (const ty of tries) {
+    const beside = (vy0 + vy1) / 2 - h / 2;
+    const maxX = Math.max(edge, vw - w - edge);
+    const maxY = Math.max(edge, vh - h - edge);
+    const tries: { x: number; y: number }[] = [];
+    // Above, then below, then left and right, then a place further out on each side: the
+    // nearest free one. (Two formations in contact stand front to front, PLAN 2.14c1: one has
+    // its tag above its block and the other below, each by its own. Blocks side by side,
+    // ADR-168: the places beside a block are the ones clear of its neighbours.)
+    for (let k = 0; k < TAG_TRIES; k++) {
       // In the view: one that would stand above its top edge stands at it, on its own elements.
-      const y = Math.round(Math.min(Math.max(ty, edge), Math.max(edge, vh - h - edge)));
-      const box = { x, y, w, h };
-      if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
-      const gap = y + h <= vy0 ? vy0 - (y + h) : y >= vy1 ? y - vy1 : 0;
-      placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, flag: false });
-      done = true;
-      break;
+      tries.push({ x, y: Math.round(Math.min(Math.max(above - k * stepY, edge), maxY)) }, { x, y: Math.round(Math.min(Math.max(below + k * stepY, edge), maxY)) });
+      // A place beside the block that the view has no room for is none: held in the view it would be a place above or below again.
+      const y = Math.round(Math.min(Math.max(beside, edge), maxY));
+      const lx = Math.round(vx0 - TAG_GAP - w - k * stepX);
+      const rx = Math.round(vx1 + TAG_GAP + k * stepX);
+      if (lx >= edge) tries.push({ x: lx, y });
+      if (rx <= maxX) tries.push({ x: rx, y });
+    }
+    let done = false;
+    // First a place clear of every other formation's elements; with none, any free place.
+    for (const clear of [true, false]) {
+      for (const at of tries) {
+        const box = { x: at.x, y: at.y, w, h };
+        if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
+        if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
+        // How far the tag's box is from its elements' (0 when it lies on them).
+        const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
+        placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx: (vx0 + vx1) / 2, ty: (vy0 + vy1) / 2, flag: false });
+        done = true;
+        break;
+      }
+      if (done) break;
     }
     if (!done) left++;
   }
@@ -131,6 +165,22 @@ export function drawTags(ctx: CanvasRenderingContext2D, tags: PlacedTag[], alpha
   ctx.save();
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
+  // The lines of the tags that stand off their elements (ADR-168), under every tag: dark
+  // under the nation's colour, so a pale one reads on sand and a dark one on forest.
+  ctx.globalAlpha = alpha;
+  ctx.lineCap = 'round';
+  for (const [width, style] of [[3 * scale, () => 'rgba(14, 17, 22, 0.78)'], [1.25 * scale, hex]] as const) {
+    ctx.lineWidth = width;
+    for (const t of tags) {
+      if (!t.line) continue;
+      ctx.strokeStyle = style(t.nation);
+      ctx.beginPath();
+      ctx.moveTo(t.x + t.w / 2, t.y + t.h / 2);
+      ctx.lineTo(t.tx, t.ty);
+      ctx.stroke();
+    }
+  }
+  ctx.lineCap = 'butt';
   for (const t of tags) {
     ctx.globalAlpha = alpha;
     if (t.picked) {

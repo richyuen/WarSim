@@ -87,7 +87,7 @@ async function zoomTo(page: Page, x: number, y: number, mPerPx: number): Promise
 }
 
 interface Seen {
-  tags: { id: number; nation: number; text: string; name: string; flag: boolean; gap: number; x: number; y: number; w: number; h: number }[];
+  tags: { id: number; nation: number; text: string; name: string; flag: boolean; gap: number; line: boolean; x: number; y: number; w: number; h: number }[];
   left: number;
   opacity: number;
   /** Formations with an element on the screen, and the strength the view has of each. */
@@ -113,7 +113,7 @@ async function look(page: Page): Promise<Seen> {
       if (px >= 0 && px <= vw && py >= 0 && py <= vh) on.add(f);
     }
     return {
-      tags: v.tagRects.map((t) => ({ id: t.id, nation: t.nation, text: t.text, name: t.name, flag: t.flag, gap: t.gap, x: t.x, y: t.y, w: t.w, h: t.h })),
+      tags: v.tagRects.map((t) => ({ id: t.id, nation: t.nation, text: t.text, name: t.name, flag: t.flag, gap: t.gap, line: t.line, x: t.x, y: t.y, w: t.w, h: t.h })),
       left: v.tagsLeft,
       opacity: v.tagOpacity,
       inView: [...on].sort((a, b) => a - b).map((id) => ({ id, nation: forms.get(id)!.nation, strength: forms.get(id)!.strength })),
@@ -139,6 +139,8 @@ function check(seen: Seen, where: string, ours: number[]): void {
     expect(t.name, `${where}: formation ${f.id}'s name`).toMatch(new RegExp(`^\\S.* ${f.id}$`));
     if (ours.includes(f.id)) expect(t.name, `${where}: formation ${f.id}'s name`).toBe(`Infantry division ${f.id}`);
     expect(t.gap, `${where}: formation ${f.id}'s tag, px from its elements`).toBeLessThanOrEqual(NEAR_PX);
+    // By its elements: no line (PLAN 3.7g).
+    expect(t.line, `${where}: formation ${f.id}'s tag has a line`).toBe(false);
     // In the view, whole.
     expect(t.x, where).toBeGreaterThanOrEqual(0);
     expect(t.y, where).toBeGreaterThanOrEqual(0);

@@ -77,8 +77,8 @@ interface Seen {
   px: number;
   small: number;
   markers: { members: number[]; alpha: number; text: string }[];
-  /** The tags of T2 and T3: the formation, its text and its box, CSS px. */
-  tags: { id: number; text: string; x: number; y: number; w: number; h: number }[];
+  /** The tags of T2 and T3: the formation, its text and its box, CSS px; whether it has a line to its elements (PLAN 3.7g). */
+  tags: { id: number; text: string; x: number; y: number; w: number; h: number; gap: number; line: boolean }[];
   tagsLeft: number;
 }
 
@@ -101,7 +101,7 @@ const look = (a: { mapW: number }): Seen => {
     px: v.elementPx,
     small: v.elementSmall,
     markers: v.markerRects.map((r) => ({ members: [...r.members], alpha: r.alpha, text: r.text })),
-    tags: v.tagRects.map((g) => ({ id: g.id, text: g.text, x: g.x, y: g.y, w: g.w, h: g.h })),
+    tags: v.tagRects.map((g) => ({ id: g.id, text: g.text, x: g.x, y: g.y, w: g.w, h: g.h, gap: g.gap, line: g.line })),
     tagsLeft: v.tagsLeft,
   };
 };
@@ -248,6 +248,17 @@ test('the tank battle: one zoom from a marker to a burning hull, with turrets on
       const mine = seen.tags.find((g) => g.id === node.formation);
       console.log(`${name}: ${own.length} elements of tanks of the division (${own.filter(inViewport).length} in the viewport), a sprite ${seen.px.toFixed(1)} px, the small share ${seen.small.toFixed(2)}; its tag ${mine ? `"${mine.text}"` : 'not placed'}; under its own tag ${own.filter((e) => under(e, true)).length}, under another formation's ${own.filter((e) => under(e, false)).length}; ${seen.tags.length} tags, ${seen.tagsLeft} without a place`);
       expect(own.filter(inViewport).length, `${name}: the division's tanks in the viewport`).toBe(own.length);
+      // PLAN 3.7g (ADR-168): the tag is tied to the tanks. No other formation's tag lies on
+      // them, and the brigade's is the nearest tag to their middle or has a line to them.
+      expect(mine, `${name}: the tag of formation ${node.formation}`).toBeDefined();
+      expect(own.filter((e) => under(e, false)).map((e) => e.id), `${name}: tanks of the division under another formation's tag`).toEqual([]);
+      const mx = own.reduce((s, e) => s + e.sx, 0) / own.length;
+      const my = own.reduce((s, e) => s + e.sy, 0) / own.length;
+      // From the tanks' middle to a tag's box (0 inside it).
+      const far = (g: Seen['tags'][number]): number => Math.hypot(Math.max(g.x - mx, mx - (g.x + g.w), 0), Math.max(g.y - my, my - (g.y + g.h), 0));
+      const nearest = seen.tags.reduce((a, b) => (far(b) < far(a) ? b : a));
+      console.log(`${name}: the middle of its tanks ${mx.toFixed(0)}, ${my.toFixed(0)}; its tag ${far(mine!).toFixed(0)} px from it, ${mine!.gap.toFixed(0)} px off its block${mine!.line ? ', with a line' : ''}; the nearest tag is of formation ${nearest.id} (${far(nearest).toFixed(0)} px); tags with a line: ${seen.tags.filter((g) => g.line).map((g) => g.id).join(', ') || 'none'}`);
+      expect(nearest.id === node.formation || mine!.line, `${name}: the brigade's tag is the nearest to its tanks (it is ${nearest.id}'s) or has a line to them`).toBe(true);
     }
     if (stop.name === 'marks') {
       // A sprite of 5.5 px or less (5.1 here): every tank the mark, and nothing else (PLAN 3.6e3b).

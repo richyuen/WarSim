@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { layoutTags, TAG_GAP, TAG_TRIES, type TagInput } from '../../src/render/units/tags';
+import { layoutTags, TAG_GAP, TAG_SIDES, TAG_TRIES, type TagInput } from '../../src/render/units/tags';
 
 // PLAN 2.14a: the tags of T2 and T3. The layout alone (the drawing is in tests/e2e/tags1938.spec.ts).
 
 const measure = (text: string): number => text.length * 6;
 const item = (id: number, strength: number, x0: number, y0: number, x1: number, y1: number): TagInput => ({ id, nation: 1, strength, text: '12.4k', name: `Infantry division ${id}`, engaged: false, x0, y0, x1, y1 });
+/** The places a tag tries: the rings, four sides each (PLAN 3.7g; two sides until then). */
+const PLACES = TAG_SIDES * TAG_TRIES;
 const over = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): boolean => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
 describe('formation tags: the layout (PLAN 2.14a)', () => {
@@ -44,31 +46,103 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
   });
 
   it('more formations on one spot than there are places: the weakest are left out and counted, none overlaps', () => {
-    const many = Array.from({ length: 2 * TAG_TRIES + 3 }, (_, k) => item(k + 1, 9000 - k, 400, 300, 460, 340));
+    // Since PLAN 3.7g a ring of places has four (above, below, left, right), not two: the
+    // block is in the middle of the view, where every one of them has room.
+    const many = Array.from({ length: PLACES + 3 }, (_, k) => item(k + 1, 9000 - k, 670, 380, 730, 420));
     const { placed, left } = layoutTags(many, measure, 1400, 800);
     expect(placed.length + left).toBe(many.length);
     expect(left).toBe(3);
-    expect(placed.map((t) => t.id)).toEqual(Array.from({ length: 2 * TAG_TRIES }, (_, k) => k + 1));
+    expect(placed.map((t) => t.id)).toEqual(Array.from({ length: PLACES }, (_, k) => k + 1));
     for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) expect(over(placed[i]!, placed[j]!), `${i} on ${j}`).toBe(false);
   });
 
   // PLAN 2.14f3: the formation whose panel is open takes its place before the stronger ones.
   it('the picked formation has its tag above its block and is not the one left out, however weak it is', () => {
-    const many = Array.from({ length: 2 * TAG_TRIES + 3 }, (_, k) => item(k + 1, 9000 - k, 400, 300, 460, 340));
+    const many = Array.from({ length: PLACES + 3 }, (_, k) => item(k + 1, 9000 - k, 670, 380, 730, 420));
     const weakest = many.length;
     const picked = many.map((m) => (m.id === weakest ? { ...m, picked: true } : m));
     const { placed, left } = layoutTags(picked, measure, 1400, 800);
     expect(left).toBe(3);
     expect(placed[0]!.id).toBe(weakest);
     expect(placed[0]!.picked).toBe(true);
-    expect(placed[0]!.y + placed[0]!.h).toBe(300 - TAG_GAP);
+    expect(placed[0]!.y + placed[0]!.h).toBe(380 - TAG_GAP);
     expect(placed.filter((t) => t.picked).length).toBe(1);
     // The others as before, one fewer: the weakest of them gave up its place.
-    expect(placed.slice(1).map((t) => t.id)).toEqual(Array.from({ length: 2 * TAG_TRIES - 1 }, (_, k) => k + 1));
+    expect(placed.slice(1).map((t) => t.id)).toEqual(Array.from({ length: PLACES - 1 }, (_, k) => k + 1));
     for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) expect(over(placed[i]!, placed[j]!), `${i} on ${j}`).toBe(false);
     // Unpicked, it is left out, and no tag says it is picked.
     const plain = layoutTags(many, measure, 1400, 800).placed;
     expect(plain.some((t) => t.id === weakest || t.picked)).toBe(false);
+  });
+
+  // PLAN 3.7g (ADR-168): a tag is tied to its elements.
+  describe('a tag and the elements of other formations (PLAN 3.7g)', () => {
+    const box = (i: TagInput): { x: number; y: number; w: number; h: number } => ({ x: i.x0, y: i.y0, w: i.x1 - i.x0, h: i.y1 - i.y0 });
+    const tagOf = (placed: ReturnType<typeof layoutTags>['placed'], id: number): (typeof placed)[number] => placed.find((t) => t.id === id)!;
+    // Three columns side by side, 22 and 25 px apart, as the tank battle demo's ground had
+    // them at 100 m/px (PLAN 3.7g's first diagnosis): the western one is the weakest.
+    const west = item(395, 233, 680, 394, 700, 433);
+    const mid = item(431, 7000, 705, 408, 719, 439);
+    const east = item(419, 6700, 729, 419, 745, 450);
+    const columns = [west, mid, east];
+
+    it('three columns side by side: no tag lies on another formation\'s elements, the western one\'s is left of its block, and one stands off with a line', () => {
+      const { placed, left } = layoutTags(columns, measure, 1400, 800);
+      expect(left).toBe(0);
+      for (const t of placed) for (const f of columns) if (f.id !== t.id) expect(over(t, box(f)), `the tag of ${t.id} on the elements of ${f.id}`).toBe(false);
+      for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) expect(over(placed[i]!, placed[j]!), `${placed[i]!.id} on ${placed[j]!.id}`).toBe(false);
+      const w = tagOf(placed, 395);
+      expect(w.x + w.w).toBe(680 - TAG_GAP);
+      expect(w.gap).toBe(TAG_GAP);
+      expect(w.line).toBe(false);
+      // A tag by its block has no line; one that gave way has one, to the middle of its elements.
+      for (const t of placed) expect(t.line, `the line of ${t.id}, ${t.gap} px off`).toBe(t.gap > TAG_GAP + 1);
+      const off = placed.filter((t) => t.line);
+      expect(off.map((t) => t.id)).toEqual([431]);
+      expect([off[0]!.tx, off[0]!.ty]).toEqual([(705 + 719) / 2, (408 + 439) / 2]);
+    });
+
+    it('the layout does not depend on the order of the list', () => {
+      const one = layoutTags(columns, measure, 1400, 800).placed;
+      for (const list of [[east, mid, west], [mid, west, east], [east, west, mid]]) expect(layoutTags(list, measure, 1400, 800).placed).toEqual(one);
+    });
+
+    it('two blocks one above the other: the upper one\'s tag above, the lower one\'s below, each by its own', () => {
+      const upper = item(1, 5000, 400, 300, 460, 330);
+      const lower = item(2, 9000, 400, 336, 460, 366);
+      const { placed } = layoutTags([upper, lower], measure, 1400, 800);
+      // The stronger is the lower: its first place, above, is on the upper one's elements.
+      expect(tagOf(placed, 2).y).toBe(366 + TAG_GAP);
+      expect(tagOf(placed, 1).y + tagOf(placed, 1).h).toBe(300 - TAG_GAP);
+      for (const t of placed) expect([t.gap, t.line]).toEqual([TAG_GAP, false]);
+    });
+
+    it('a formation alone, and one whose neighbours are out of its tag\'s way, stand as before: above, no line', () => {
+      const far = item(9, 9000, 900, 300, 960, 340);
+      const { placed } = layoutTags([item(7, 5000, 400, 300, 460, 340), far], measure, 1400, 800);
+      for (const t of placed) expect([t.y + t.h, t.gap, t.line]).toEqual([300 - TAG_GAP, TAG_GAP, false]);
+    });
+
+    it('every place on a neighbour\'s elements: it still has a tag, at the first free place', () => {
+      // A neighbour's elements all over the view (a division that fills the screen at T3).
+      const all = item(1, 9000, -50, -50, 1450, 850);
+      const small = item(2, 500, 670, 380, 730, 420);
+      const { placed, left } = layoutTags([all, small], measure, 1400, 800);
+      expect(left).toBe(0);
+      const t = tagOf(placed, 2);
+      expect(t.y + t.h).toBe(380 - TAG_GAP);
+      expect(t.line).toBe(false);
+      expect(over(t, tagOf(placed, 1))).toBe(false);
+    });
+
+    it('a block at the view\'s left edge has no place to its left: its tag is not held in the view onto its own elements', () => {
+      const edge = item(1, 500, 10, 380, 60, 420);
+      const upper = item(2, 9000, 0, 330, 200, 376);
+      const lower = item(3, 8000, 0, 424, 200, 470);
+      const t = tagOf(layoutTags([edge, upper, lower], measure, 1400, 800).placed, 1);
+      expect(t.x).toBe(60 + TAG_GAP);
+      expect(t.gap).toBe(TAG_GAP);
+    });
   });
 
   // PLAN 2.14f2: the war banners and the bottom bar are in the way as another tag is.

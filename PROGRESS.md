@@ -8658,3 +8658,36 @@ No rule changed and nothing on screen changed. One task came out of it.
   no loss without fire beside a fight was not looked into (balance of breakdowns, Phase 7).
 - **Next:** PLAN 3.7g (a tag on its formation's own side of a contact), then the smoke
   run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7g: a tag keeps off other formations' elements, and one that stands off has a line (ADR-168)
+
+- **The ground had moved:** PLAN 3.7g's boxes were seed 1938's; the demo is on seed 2 since
+  3.7o. Read again (`.cache/p37/tagboxes.ts`): the brigade is the easternmost of five
+  blocks, not the westernmost of three. The rule of ADR-168's first addendum fits both.
+- **The rule** (`layoutTags`): rings of four places (above, below, left, right; 5 rings);
+  first the nearest place clear of tags, of the page's boxes and of every other formation's
+  elements, else the nearest free one as before. `gap` is now the distance of two boxes on
+  either axis. A tag more than `TAG_GAP` + 1 px off has `line`, drawn under all tags from
+  its middle to the middle of its elements: dark under the nation's colour.
+- **Tests:** six new in `tags.test.ts` (15 in all). The two tests of "more formations than
+  places" count 4 × `TAG_TRIES` places where they counted 2 ×, on a block in the middle of
+  the view; they still hold 3 over. `tankBattle1938` at stops 2 and 3: no tank under
+  another formation's tag, and the brigade's tag the nearest to its tanks or with a line.
+  `tags1938`: no line on a tag by its block.
+- **Looked at:** `docs/evidence/3.6/tank-battle-2-marks.png` and `-3-turrets.png` (each of
+  the five tags by its own block, none on the tanks; the brigade's right of them at
+  100 m/px, above them at 60); `docs/evidence/2.10/stop-5-battle.png` (three blocks on one
+  spot: tags above, right and below, and the line of "Motorised division 47" down to its
+  block, dark grey on forest, readable at six times).
+- **Cost:** a layout of 20 formations 0.04 ms (0.02), of 300 over the view 1.4 ms (0.26)
+  (`.cache/p37/tagtime.ts`). View only: no tick time measured.
+- **Gotcha:** `EVIDENCE=1` on a run of several specs writes every picture of each again.
+  The ones with no tag in them were put back (`stop-1` to `-4`, `handover-contact-t1`).
+- **By hand** (`--project=chromium`): `tankBattle1938`, `tags1938` (2 of 2, 2.3 min);
+  `zoomDemo1938`, `formationPanel1938`, `battleView1938`, `toBattle1938` (9 of 9, 3.1 min).
+- **Not done:** the line was looked at in one picture, of one nation's colour; a crowd
+  (random boxes, 20 on a quarter of the view) gives 15 tags a line, and no such view of
+  the game was looked at (PLAN 7.4 has the line on tags over each other). PARITY's rows
+  wait for 3.7f.
+- **Next:** the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with
+  `npm run check:full`.
