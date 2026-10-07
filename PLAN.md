@@ -3569,11 +3569,27 @@ quick sweep as a smoke test.
       written to the history or a table (SPEC §2 says none may be); the test looks at the
       history of one game of 78 hours. Whether a peace of a war with an empty side was
       signed in the sweeps of before was not counted.
-  - [ ] 3.5g **`zoomDemo1938`: the battalions at the last stops are not under half strength**
+  - [x] 3.5g **`zoomDemo1938`: the battalions at the last stops are not under half strength**
     (0.758 of its size for the fullest; the spec asks under 0.5). The battle the demo flies
     to is another than the one of 3.5a's game, where the spec passed; which part moved it
     was not looked at. Find what the close pictures should show in this game (the spec chooses its battle),
     keep the expectation, and shoot `docs/evidence/2.10/` again if the stops move.
+    **Done 2026-10-07 (ADR-156): the scene moved, and the demo's game is seed 1948's.**
+    - *Found:* the division is the same Latvian one (formation 634), less worn: 307 to 379
+      of 500 a battalion. Seed 1944 on day 30 has 30 divisions with every battalion under
+      half; 8 are on the retreat, 3 fire and have stood a day, and those have one battery or
+      none. No condition of the spec drops a division it should take. Not bisected: the
+      spec passed on 3.5a's game, which had the retreat, so one of 3.5a1 to 3.5d moved seed
+      1944's month, and which is not known. The retreat makes the scene rare in any game (a
+      division breaks off at a quarter of its men lost in a battle); it did not move this one.
+    - *Done:* `SEED = 1948` (the nearest of 1925 to 1965 on day 30 whose game passes the
+      spec as written; 1941 and 1939 were run and fail, for an hour without shots and a
+      division with no march). No expectation changed. `docs/evidence/2.10/` shot again,
+      stops 1, 5, 7 and 8 looked at: a Japanese division's thin battalions and batteries
+      beside two full Chinese ones.
+    - *Seen, not changed:* at 150 m/px the tags of the three divisions in contact lie on
+      each other and on the sprites (stop 5). Not 3.5h's (markers at 1900 m/px): a line
+      under PLAN 7.4. Whether the tags at T2 are parted at all was not looked at.
   - [ ] 3.5h **`markerStacks1938`: at 1900 m/px three pairs of markers lie more than a
     quarter under each other** (Spain: 745, 754 and 776 of nation 23, 795 of nation 24, 26
     and 27 %). Either the scene moved (more formations on one spot than the parting can
@@ -3795,6 +3811,10 @@ quick sweep as a smoke test.
   AT: side-by-side screenshots vs reference frames logged in PROGRESS.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
+  - **The tags of formations in contact at T2** (seen 2026-10-07, PLAN 3.5g,
+    `docs/evidence/2.10/stop-5-battle.png`): at 150 m/px the tags of three divisions in one
+    battle lie on each other and on the sprites, one name half covered. Whether the tags
+    are parted at all at T2 was not looked at.
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
     - `wrapOffsets` has no margin: a counter, marker, flag or name within its own half-width

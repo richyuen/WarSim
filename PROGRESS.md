@@ -7865,3 +7865,35 @@ No rule changed and nothing on screen changed. One task came out of it.
   failures (3.5g to 3.5i) are as they were, and their games have not been looked at for
   this cause.
 - **Next:** PLAN 3.5g (`zoomDemo1938`).
+
+## 2026-10-07 — PLAN 3.5g: the zoom demo's battle is seed 1948's; the scene moved, nothing was broken
+
+- **Found, before anything was changed** (a scratch script outside the repo: every division
+  of eight battalions or more, by each condition of the spec's choice):
+  - The demo's division is the same Latvian one (634), with 307 to 379 of 500 men a
+    battalion on day 30.
+  - Seed 1944, day 30: 30 of 941 divisions have every battalion under half. 8 are on the
+    retreat, 6 in contact, 3 fire and have stood a day; those three (Spanish Republican)
+    have one battery or none. Days 45, 60 and 90: 63, 74 and 113 worn, none passes.
+  - So men are lost as before, and the spec's filter drops nothing it should take.
+  - What moved the scene is not known: the spec passed on 3.5a's game, which had the
+    retreat, so it was one of 3.5a1 to 3.5d. The retreat makes such a division rare in any
+    game (out of its battle at a quarter of its men); it is not what changed this one.
+- **Done** (ADR-156): `SEED = 1948` in `zoomDemo1938.spec.ts`, and its comment. Seeds 1925
+  to 1965 on days 30, 45 and 60 scanned (45 s, four processes); fourteen have a candidate
+  on day 30. The spec as written on the three nearest: 1941 fails (0 shots in the fourth
+  hour), 1948 passes, 1939 fails (no march). No expectation touched.
+- **The pictures** (`EVIDENCE=1`, `docs/evidence/2.10/`, all eight shot again; stops 1, 5, 7
+  and 8 looked at): a Japanese square division north of the Yangtze, 40 battalions of 90 to
+  177 men and five batteries of 1 to 4 guns, beside two Chinese divisions at full strength.
+  At 12 m/px its lines are plainly thinner than theirs; at 3 m/px single men and the guns.
+- **Specs by hand** (`--project=chromium`): `zoomDemo1938`, twice green on seed 1948 (70 s).
+- **Seen and not changed:** at 150 m/px (stop 5) the tags of the three divisions in contact
+  lie on each other and on the sprites. A line under PLAN 7.4 (not 3.5h's: that is T1).
+- **Learned:** the scan's own filter (every battalion under half) is not the spec's order
+  (the least kept of all candidates): on seed 1939 the spec chose a third division the scan
+  had not named. The spec on the seed is the test; the scan only says where to try.
+- **Not done:** no bisect of which part of 3.5 moved the scene; the six Japanese divisions
+  of seed 1944 that stand out of contact with org at 0 were not looked into; 3.5h and 3.5i
+  are as they were.
+- **Next:** PLAN 3.5h (`markerStacks1938`).

@@ -31,6 +31,15 @@ import { assets1938 } from '../helpers/earth';
 // division (a Latvian one, with a march and in contact) has every battalion under 0.45 and over
 // 90 men and four batteries, with formations on the march in the view at 150 m/px (in seed
 // 1943's game, one nearer, nothing marches there).
+// And seed 1948's since PLAN 3.5g (ADR-156): the parts of PLAN 3.5 after 3.5a changed seed
+// 1944's game (which of them was not looked for). A division that has lost a quarter of its men
+// in a battle breaks off (PLAN 3.5a), so one under half its men that has stood a day and fires
+// is rare in any game. In seed 1944's game on day 30 the Latvian division has 0.61 to 0.76
+// of its battalions' men; of its 30 divisions with every battalion under half, three fire and
+// have stood, and they have one battery or none. Of the seeds 1925 to 1965 on day 30, 1948 is
+// the nearest whose game passes all of this spec (a Japanese division in China: 40 battalions
+// of 90 to 177 men of 500, five batteries). In seed 1941's game, one nearer, the division is out
+// of the battle in the fourth hour.
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -45,7 +54,7 @@ import { assets1938 } from '../helpers/earth';
 
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
-const SEED = 1944;
+const SEED = 1948;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
 const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;

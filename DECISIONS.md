@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-156 · 2026-10-07 · accepted — The zoom demo's battle is seed 1948's (PLAN 3.5g)
+
+- **Context:** `zoomDemo1938` chooses its battle in Node: of the divisions that fire in the
+  last hour of day 30 and have stood a day, the one whose battalions have lost most, and it
+  asks that every battalion of it is under half its men. In seed 1944's game (ADR-142) the
+  division it finds since PLAN 3.5 is the same Latvian one, with 0.61 to 0.76.
+- **Looked at first, whether a mechanism failed** (a scratch script: every division with
+  eight battalions or more, by each of the spec's conditions). Seed 1944, day 30: 941
+  divisions, 103 fire; 30 have every battalion under half. Of those, 8 are on the retreat,
+  6 are in contact, 3 fire and have stood a day: Spanish Republican divisions with one
+  battery or none (the spec asks two). On days 45, 60 and 90 there are 63, 74 and 113 worn
+  divisions and none that passes. So losses are as before and no condition of the spec drops
+  a division it should take. The scene moved; nothing is broken.
+- **What moved it is not known.** The spec passed on 3.5a's game (`0755501`, the full suite),
+  and 3.5a is the retreat: so the retreat alone did not. One of 3.5a1, 3.5b, 3.5c or 3.5d
+  changed seed 1944's first month; not bisected. What the retreat does is make the scene
+  rare in every game: a division that loses 0.255 of its men in one battle breaks off for
+  a day, and a worn one that stands and fires is one that came back.
+- **Decision:** `SEED = 1948`, the day stays 30. Of the seeds 1925 to 1965 on day 30,
+  fourteen have a division that passes the spec's filter with every battalion under half
+  and a march and contact (none of 1942 to 1947). The spec
+  as written, run on the nearest: 1941 fails (a Romanian division, out of the battle in the
+  fourth hour: 0 shots), 1948 passes, 1939 fails (the division chosen has no march). 1948:
+  formation 392, a Japanese square division north of the Yangtze against two Chinese light
+  divisions, 5,705 men in 45 elements, 40 battalions of 90 to 177 of 500, five batteries
+  with 1, 2, 4, 4 and 3 of 12 guns, 75 shots by or at it in each of the four hours.
+- **Not changed:** no expectation of the spec, and no line of it but the seed and the
+  comment. The pin is not concerned (no rule).
+- **Consequences:** the pictures of `docs/evidence/2.10/` are of another battle, in China
+  and not in the Baltic, with a division of 45 elements and not 28. A rule that moves seed
+  1948's first month can move the scene again; the scan takes 45 s for 40 seeds and three
+  days, and the spec 70 s a seed.
+- **Not looked at:** six Japanese divisions of seed 1944's day 30 stand out of contact
+  with org 0.00 to 0.03 and no retreat; whether they are off their network was not asked.
+
 ### ADR-155 · 2026-10-07 · accepted — A war that ended with the peace of another the same day is not judged (PLAN 3.5f)
 
 - **Context:** `workerNodeGrowth1938` had the page's hash apart from Node's two days after a
