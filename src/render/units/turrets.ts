@@ -60,9 +60,13 @@ export function turnBetween(a: number, b: number, p: number): number {
   return a + d * p;
 }
 
-/** A turret that was on `to` until `until`, at `t`: there, or on its way back to the hull's facing. */
+/**
+ * A turret that was on `to` until `until`, at `t`: there, or on its way back to the hull's
+ * facing. Back, it has the hull's own number, not the same direction a turn further on.
+ */
 function held(to: number, until: number, hull: number, t: number): number {
-  return t < until ? to : turnBetween(to, hull, smooth(Math.min(1, (t - until) / RETURN_MS)));
+  if (t < until) return to;
+  return t >= until + RETURN_MS ? hull : turnBetween(to, hull, smooth((t - until) / RETURN_MS));
 }
 
 /**

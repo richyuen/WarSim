@@ -8075,3 +8075,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Learned:** a spec that stops the view's loop (`dispose`) must turn it by hand
   (`frameAt`) for the view to subscribe at a new zoom: the wait for the T3 section ran out.
 - **Next:** PLAN 3.6c (the shot leaves a barrel).
+
+## 2026-10-07 — PLAN 3.6b, put right: a turret that is back has its hull's number
+
+- **Wrong in `b5e800b`:** the way back ended at the target's angle plus the short turn, which
+  is the hull's direction and, when hull and target lie either side of west (±π), not its
+  number: hull −3, target +3, back at 3.28. Drawn the same. But `turrets1938.spec.ts` and
+  `turnTurrets` compare numbers; the spec passed on a scene at 0.73 and 0.37 rad. Found in
+  review, by reading.
+- **Done:** `held` returns the hull's facing itself once the return is over.
+  `turrets.test.ts` 12 → 13. `turrets1938` green again.
+- **Next:** PLAN 3.6c (the shot leaves a barrel).

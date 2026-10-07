@@ -3699,6 +3699,10 @@ quick sweep as a smoke test.
     of 88 turrets in view are of tanks that fired, all 34 off their hulls as the last shot
     leaves and all 88 back after the silence; at 4 m/px the 10 tanks of an element as the
     element. Pictures at 60, 4 and 1.5 m/px looked at.
+    - *Put right the same day:* back on its hull, a turret had the hull's direction but not
+      always its number (hull −3 rad, target +3: back at 3.28). The spec's "back on the
+      hull" compares numbers and passed on a scene far from west. `held` now returns the
+      hull's facing itself; `turrets.test.ts` 12 → 13.
     - *Not done:* the tanks of an element have one angle, not each its bearing (3.6c may
       give each its own, where the shot leaves a muzzle); the frame's time with the pass
       was not measured; a turn was not filmed in a running game.

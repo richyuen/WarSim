@@ -124,6 +124,21 @@ describe('TurretAims', () => {
     }
   });
 
+  it('comes back to the own number of the hull when hull and target lie either side of west', () => {
+    const aims = new TurretAims();
+    // Hull at −3 rad, target at +3: 0.28 rad apart over west, 6 apart as numbers.
+    aims.add([shot(7, 1000, 10 + Math.cos(3), 10 + Math.sin(3))], 1000, 0);
+    const back = 1000 + HOLD_MS;
+    for (let t = back; t < back + RETURN_MS; t += 10) {
+      const a = aims.angleAt(7, -3, t);
+      // Over west: up from 3 through π, never down through 0.
+      expect(a).toBeGreaterThanOrEqual(3 - 1e-9);
+      expect(a).toBeLessThanOrEqual(3 + (2 * Math.PI - 6) + 1e-9);
+    }
+    expect(aims.angleAt(7, -3, back + RETURN_MS)).toBe(-3);
+    expect(aims.angleAt(7, -3, 1e9)).toBe(-3);
+  });
+
   it('a second shot turns the turret on from where it is: on its last target, or on its way back', () => {
     const second = (start: number): TurretAims => {
       const aims = new TurretAims();
