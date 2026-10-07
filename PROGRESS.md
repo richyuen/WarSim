@@ -9209,3 +9209,87 @@ No rule changed and nothing on screen changed. One task came out of it.
   build, parity); after it, documents only: parity.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Next:** PLAN 3.10c.
+
+## 2026-10-07 — PLAN 3.10c: the operational AI's dear calls are orders to fronts far away
+
+- **Asked:** which day, which nation and which step the operational AI's dear calls are, and
+  the first cause.
+- **Method (for 3.10d to repeat):** a probe written into `src/sim/ai/operational.ts` and
+  taken out again (`git checkout`; nothing of it is committed): a time mark after each step
+  of `planNation`, and for every order the formation, the cell it stands in, the target, the
+  ms inside `orderMove`, whether it was followed and the length of its path. Run through
+  `runHeadless` with `profile`, pinned to `0xFFFF`. The hashes of the probed years are those
+  of 3.10b (`c426efce`, `59e76d59`, `82107c9f`; seed 8128 year 8 `cdcf9342`). Then one year
+  under `node --cpu-prof` for the functions' own time. Seed 4242 from 1938; seed 8128 from
+  `.cache/ck/8128-y7.bin` (written at 3.10a; no sim code has changed since).
+- **By step** (ms a tick; "before the orders" is the frontier, the sectors, the scan of the
+  formations, the passage, the reach, the reserve and the allotment together):
+
+  | run | operational AI | in `orderMove` | before the orders | orders | refused |
+  |---|---|---|---|---|---|
+  | 4242, year 1 | 1.065 | 0.819 (77 %) | 0.246 | 14,562 | 476 |
+  | 4242, year 2 | 0.914 | 0.785 (86 %) | 0.129 | 10,686 | 3,690 |
+  | 4242, year 3 | 0.353 | 0.129 (37 %) | 0.224 | 4,681 | 1,061 |
+  | 8128, year 8 | 0.959 | 0.591 (62 %) | 0.368 | 7,369 | 1,391 |
+
+  (Year 3 is of a first run of three years without the orders recorded; years 1 and 2 of
+  that run read 1.072 and 0.909.) No step before the orders is more than 0.09 ms a tick; the
+  passage is 0.04 to 0.06, made 3,800 to 5,100 times a year.
+- **By function** (year 1 of seed 4242, 9,558 ms under `operationalAi`): `findPath` itself
+  7,135 ms (75 %), `planNation` 938, `nodeGroups` 318, `coarseRoute` 222, `passageOf` 181,
+  `frontierOf` 162, `snapTarget` 48.
+- **Which orders** (years 1 and 2 of seed 4242 together, 25,248 orders, 14,052 ms; by the
+  straight distance from the formation to its target in cells):
+
+  | distance | orders | refused | ms |
+  |---|---|---|---|
+  | 0 to 8 | 8,045 | 19 | 42 |
+  | 9 to 30 | 7,334 | 247 | 205 |
+  | 31 to 60 | 4,998 | 1,931 | 454 |
+  | 61 to 120 | 2,839 | 1,483 | 529 |
+  | 121 to 300 | 1,236 | 362 | 1,771 |
+  | over 300 | 796 | 124 | 11,050 |
+
+  The 527 orders of 10 ms or more (paths of 640 to 860 cells in the mean, 979 the longest
+  seen) are 9,815 ms, 70 % of all. Beyond `DEPLOY_RANGE_CELLS` (60): 13 % of the orders and
+  94 % of their time in year 1, 29 % and 96 % in year 2; in year 8 of seed 8128, 39 % and
+  91 % (2,886 orders, 4,697 of 5,180 ms).
+- **Which day, which nation:** the call of 451 ms is the USSR's plan of day 222 of year 1
+  (tick 5340): 135 sectors, 93 formations in range, 60 orders, 450 ms in `orderMove`, the
+  dearest 23 ms. The next: the USA on day 358 of year 2 (260 ms, 40 orders, 173 sectors),
+  Italy and Germany on days 352 and 353 of year 1 and 11, 20 to 22 and 31 of year 2 (120 to
+  244 ms, 12 to 40 orders of up to 25 ms). By nation over the three years: the USSR 5,460 ms,
+  Italy 3,711, Germany 2,948, China 1,438, the USA 778, Japan 708.
+- **The cause is a rule.** A formation is in the plan when it is within 60 cells of *one*
+  sector its class reaches. The allotment is then over all the sectors the class reaches,
+  and a sector takes the nearest free formation, however far that is. A nation with a front
+  in Europe and one in East Asia sends divisions from the one to the other: formation 911
+  from (1082, 274) to (1913, 280), a path of 979 cells, 23.5 ms, and to (1076, 270) the day
+  after. Of 2,902 followed orders beyond 60 cells in years 1 and 2, 848 were replaced within
+  five days by an order to somewhere else (6,136 ms were spent finding their routes); in
+  year 8 of seed 8128, 426 of 1,664.
+- **Not the cause:**
+  - *Refused orders.* 4,166 of the 25,248 are refused by `orderMove` (most of the year's
+    `MoveRejected`: 4,890 in the two years), in 258 ms, 2 % (625 of 5,180 ms in year 8 of
+    seed 8128). The rise of `MoveRejected` that 3.10b saw is not what costs. It is still a
+    gap of the reach test of PLAN 3.5b: 1,931 of the 4,998 orders of 31 to 60 cells are
+    refused.
+  - *The same order twice.* 1,354 orders have the cell and the target of an earlier order of
+    the same plan (705 ms, 5 %) on seed 4242; 4 on seed 8128. A cache of routes inside a
+    plan would leave the pin alone and is not worth its code.
+  - *A formation ordered again.* 10,532 orders are to a formation ordered in the three days
+    before (4,349 ms); 732 of them to the same target.
+- **Not fixed here.** 3.10c was written as "the first cause, with the pin unmoved". The
+  first cause is which formation goes where, so no change that keeps the orders removes it,
+  and `findPath` has had three passes of tuning (the review after 1.25, 1.42f twice).
+  PLAN 3.10c1 has the rule (a sector takes the formations within the range of it), with an
+  ADR and the pin moved. PLAN 3.10c2 has what the probe saw beside it.
+- **What 3.10c1 can give, at most:** the orders beyond the range are 0.77 and 0.76 ms a tick
+  in years 1 and 2 of seed 4242 and 0.54 in year 8 of seed 8128, against an excess over the
+  budget of 0.35 ms (3.10b, twenty years of 4242). Not all of it comes back: the formations
+  will be given other orders.
+- **Not done:** no source changed. No picture: nothing drawn changed. One run of each (the
+  two runs of seed 4242's years 1 and 2 differ by 0.007 ms in the system's time).
+- **Gate:** `npm run check` on the clean tree before, exit 0; after, documents only: parity.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Next:** PLAN 3.10c1.

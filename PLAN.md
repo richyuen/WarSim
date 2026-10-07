@@ -4414,9 +4414,33 @@ quick sweep as a smoke test.
     The swing is the operational AI's (0.21 to 1.82 ms a year, 0.79 in the mean), and it
     follows neither the nations nor the formations nor the cells flipped. `MoveRejected`
     rises (821 in year 1, 10,504 in year 20): a question for 3.10c.
-  - [ ] 3.10c The operational AI: what its dear calls are (which day, which nation, which
-    step; a call of 451 ms in year 1 of seed 4242), and the first cause, with the pin
-    unmoved. Further causes are parts of their own, one a commit.
+  - [x] 3.10c *Done 2026-10-07 (the diagnosis; nothing made faster):* the operational AI's
+    dear calls are its orders. 77 to 86 % of it is inside `orderMove` in the dear years
+    (62 % in year 8 of seed 8128), and 75 % of the system in year 1 of seed 4242 is
+    `findPath`'s own time. The
+    orders that cost are the long ones: those to a cell more than 60 cells away in a straight
+    line (`DEPLOY_RANGE_CELLS`) are 19 % of the orders and 95 % of their time in years 1 and
+    2 of seed 4242, 39 % and 91 % in year 8 of seed 8128. The call of 451 ms is the USSR's
+    plan of day 222 of year 1: 60 orders of 7.5 ms. The cause is a rule, not a slow step: a
+    formation is in the plan when it is within the range of *one* sector, and a sector then
+    takes the nearest free formation of its class however far that is. It was written as
+    "the first cause, with the pin unmoved": no change that leaves the orders alone removes
+    it (`findPath` is what is left of three passes of tuning), so the fix is 3.10c1 and moves
+    the pin. Numbers and the method (a probe put in and taken out) are in PROGRESS.
+  - [ ] 3.10c1 A sector takes the formations within the range of it. The allotment of a
+    class counts, for each sector, only its formations within `DEPLOY_RANGE_CELLS` of that
+    sector, and no order goes to a sector farther than that from the formation; what a
+    formation with no sector of its own in range does is unchanged (it stays). An ADR, the
+    pin moved with the old and new hash. AT: a unit test of a nation with two fronts more
+    than 60 cells apart (no formation of the one is ordered to the other), and the
+    operational AI's tick of years 1 and 2 of seed 4242 and year 8 of seed 8128 before and
+    after, with the orders beyond the range (now 0). Look at a front of 1938 after a year
+    (a picture): the front is still manned.
+  - [ ] 3.10c2 What is left of the operational AI after 3.10c1, if it is still the tick's
+    first system: the steps before the orders are 0.13 to 0.37 ms a tick (the most where a
+    planner has up to 881 sectors, seed 8128), and 476 to 3,690 orders a year are refused
+    by `orderMove` after the reach test passed them (1 to 12 % of the orders' time, and a
+    formation that is refused is asked again the next day).
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
