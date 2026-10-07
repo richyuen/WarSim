@@ -8628,3 +8628,33 @@ No rule changed and nothing on screen changed. One task came out of it.
   on the page); the counters' and the hand-over's state across a load was not looked at.
 - **Next:** PLAN 3.7o (the tank battle demo finds no battle), then 3.7g, the smoke run
   (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7o: the tank battle demo runs on a seed of its own (ADR-176)
+
+- **The commit:** 5509e05 (PLAN 3.7j, the nodes of the province graph). The search's
+  filters, counted at each of the six rule commits since the tick of 3.6
+  (`.cache/p37/tankdiag.ts`, scratch; `git checkout` of each, 9 s a run): 15 grounds at
+  73ac1ea, all in the hour of tick 901; none from 5509e05 on.
+- **What the search lacks:** the last filter only. Seed 1938 today, days 14 to 120: 384
+  tanks lost under fire, 300 standing, 295 with the shooters, 110 with a loss in the third
+  hour's view at 4 m/px, and in all 110 every loss in the view was under fire. None to
+  day 400 either. The world has 1,037 losses without fire in those days, none beside a
+  fight that passes the rest.
+- **Not a defect of the phase:** the same rule finds a ground on seeds 1, 2, 3, 7, 99,
+  1939 and 1940 (days 14 to 150; not on 1941). Seed 2 has 18 views with both kinds.
+- **The change:** `tankBattle(seed, …)`; the spec's `SEED = 2` goes to the helper and into
+  the page's URL. No filter and no assertion touched. The pin holds (`b1bb392b`).
+- **The ground:** Japan's tank brigade 395 by Handan again, day 24.4: 20 elements, 20
+  turrets off their hulls at 60 m/px, 139 tanks a figure each at 12, 11 flashes at muzzles
+  and one hull burning and one left behind in the view at 4, the hull alight at 1.5.
+- **Looked at** (`docs/evidence/3.6/tank-battle-3`, `-5`, `-6`, written again): tracers
+  among the hulls at 60 m/px; at 4 a hull burning with smoke and a dark hull left among
+  the brigade's tanks; at 1.5 the flames and three puffs of smoke, turrets turned.
+- **Gotcha:** the demo's ground is one hour of one seed. Any rule that moves paths can
+  take it. The error names the seed now; the remedy is the count over seeds, 9 s each.
+- **By hand** (`--project=chromium`): `tankBattle1938`, twice (the second for the
+  evidence), 2.2 min each.
+- **Not done:** no other spec was run (no source of the game changed); why seed 1938 has
+  no loss without fire beside a fight was not looked into (balance of breakdowns, Phase 7).
+- **Next:** PLAN 3.7g (a tag on its formation's own side of a contact), then the smoke
+  run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.

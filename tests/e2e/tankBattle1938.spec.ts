@@ -31,6 +31,10 @@ import { leg, steps, type LegResult } from './flight';
 // each thing to the figure; this one tests that they are all there in one battle and one zoom.
 
 const { w: W } = SIZE_1938;
+// The seed is the demo's own. That of the scenario's year had such a ground on day 37 until
+// PLAN 3.7j moved the world's paths; since then no tank of its first 400 days is lost without
+// fire in the view of one lost under fire (PLAN 3.7o). The search's rule is as it was.
+const SEED = 2;
 const FIRST_DAY = 14;
 const LAST_DAY = 120;
 /** Elements of tanks that fire in the view of the first stepped stop. */
@@ -146,7 +150,7 @@ const fight = async (a: { now: number; tick: number; hulls: readonly number[] })
 
 test('the tank battle: one zoom from a marker to a burning hull, with turrets on their targets and a flash at a muzzle on the way', async ({ page }, info) => {
   test.setTimeout(420_000);
-  const node = tankBattle(FIRST_DAY, LAST_DAY, SHOOTERS);
+  const node = tankBattle(SEED, FIRST_DAY, LAST_DAY, SHOOTERS);
   const tag = NATIONS_1938[node.nation - 1]!.tag;
   const [ax, ay] = node.anchor;
   console.log(`the battle: formation ${node.formation} of ${tag} at ${ax.toFixed(2)}, ${ay.toFixed(2)}, day ${(node.start / 24).toFixed(1)}; armour's shots in the four hours: ${node.hours.map((h) => h.shots.length).join(', ')}; in the third, within the view at ${STEPPED[2]} m/px, ${node.burning.length} elements lose a tank under fire and ${node.left.length} without`);
@@ -155,7 +159,7 @@ test('the tank battle: one zoom from a marker to a burning hull, with turrets on
   mkdirSync(out, { recursive: true });
 
   await page.setViewportSize(VIEW);
-  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.goto(`/?scenario=1938&paused=1&seed=${SEED}`);
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null && window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
   expect(await page.evaluate(async (n) => {
     const sim = window.__warsim!.sim;

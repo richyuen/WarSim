@@ -53,15 +53,15 @@ export const inView = (x: number, y: number, p: readonly [number, number], m: nu
 };
 
 /**
- * The first four hours from day `firstDay` on (seed 1938) that make a demo. An element of tanks
+ * The first four hours from day `firstDay` on, of the 1938 world with `seed`, that make a demo. An element of tanks
  * that has stood through them loses a tank under fire in the fourth: the camera is on it. In the
  * first hour at least `shooters` elements of tanks fire in the view of the first stop, in the
  * second at least three in the view of the second; in the third, in the view of the third stop,
  * an element of tanks loses a tank under fire and another loses one that nothing fired at (a
  * breakdown, attrition: PLAN 3.2d).
  */
-export function tankBattle(firstDay: number, lastDay: number, shooters: number): TankBattle {
-  const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+export function tankBattle(seed: number, firstDay: number, lastDay: number, shooters: number): TankBattle {
+  const sim = new Sim({ scenario: '1938', seed, assets: assets1938(SIZE_1938.w) });
   sim.step(24 * firstDay - 1);
   const past: Hour[] = [];
   for (let tick = 24 * firstDay; tick <= 24 * lastDay; tick++) {
@@ -118,5 +118,5 @@ export function tankBattle(firstDay: number, lastDay: number, shooters: number):
       };
     }
   }
-  throw new Error(`no four hours from day ${firstDay} to ${lastDay} in which tanks fire and lose tanks under fire and without on one ground: the demo has no battle`);
+  throw new Error(`no four hours from day ${firstDay} to ${lastDay} of seed ${seed} in which tanks fire and lose tanks under fire and without on one ground: the demo has no battle`);
 }

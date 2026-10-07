@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-176 · 2026-10-07 · accepted — The tank battle demo runs on a seed of its own (PLAN 3.7o)
+
+- **Context:** `tankBattle1938` failed in Node: `tankBattle` (seed 1938, days 14 to 120) found
+  no four hours for the demo. It last ran with the suite at the tick of 3.6.
+- **The commit** (the search's filters counted at each rule commit since 73ac1ea,
+  `.cache/p37/tankdiag.ts`, scratch): 5509e05, PLAN 3.7j (ADR-170, the nodes of the province
+  graph). Before it 15 grounds passed every filter, all in the one hour of tick 901 (day
+  37.5); from it on none, and none to day 400.
+- **What the search lacks:** its last filter only. Days 14 to 120 today: 256,368 shots of
+  armour, 384 tanks lost under fire by an element, 300 of those elements standing through
+  the four hours, 295 with the shooters of the first two hours, 110 with a tank lost in
+  the third hour's view at 4 m/px. In all 110 every tank lost in that view was fired at:
+  none has one lost without fire beside it (1,037 such losses in the world in those days,
+  none of them in such a view). The demo stood on one hour of one seed.
+- **The game has tank battles, and such grounds:** the same search on other seeds, days 14
+  to 150, finds a ground on seven of eight (seeds 1, 2, 3, 7, 99, 1939, 1940: 2 to 21
+  each; 1941 none). Seed 2: 152 views with a loss in the third hour, 126 all under fire,
+  8 all without, 18 with both.
+- **Decision:** the seed is an argument of `tankBattle` and a constant of the spec, which
+  builds the page's URL from it: seed 2, the earliest ground (tick 589, day 24.5). The
+  search's rule and the spec's assertions are as they were. No rule of the sim changed:
+  the pin holds (`b1bb392b`).
+- **Why not a longer search on seed 1938:** 400 days have none, and every day more is a
+  day the page steps before the flight.
+- **Why not a rule that puts losses without fire beside a fight:** whether a seed has such
+  a ground is the luck of its paths (seven of eight have). How often armour breaks down
+  near a battle is balance, which waits for Phase 7 (ADR-58).
+- **Consequence:** the demo can lose its ground again with any change of the rules. The
+  error now names the seed; the remedy is this search over seeds, not a weaker filter.
+- **Evidence:** `docs/evidence/3.6/tank-battle-1-marker.png` to `tank-battle-6-hull.png`
+  written again from the new ground. It is the same brigade (Japan's tank brigade 395, by
+  Handan in north China) thirteen days earlier.
+
 ### ADR-175 · 2026-10-07 · accepted — The view is told of a load; it does not read one off the clock (PLAN 3.7n)
 
 - **Context:** the eighth read, finding 5. `MapView.apply` kept the elements of the snapshot

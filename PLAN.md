@@ -4200,7 +4200,7 @@ quick sweep as a smoke test.
     *Not done:* the page shows the fault of the hulls only: a shot lives less long than a
     load takes, and that ground has no wreck (the four `clear()` have a unit test each).
     `tankBattle1938` does not run: 3.7o.
-  - [ ] 3.7o **The tank battle demo finds no battle** (found 2026-10-07 by the hand run of
+  - [x] 3.7o **The tank battle demo finds no battle** (found 2026-10-07 by the hand run of
     3.7n; not of that change: it fails in Node, before the page is opened). `tankBattle`
     (`tests/helpers/tankBattle.ts`, seed 1938, days 14 to 120) throws "no four hours … in
     which tanks fire and lose tanks under fire and without on one ground". It passed with
@@ -4210,6 +4210,13 @@ quick sweep as a smoke test.
     meets?). If the game still has tank battles, the demo needs a scene the search finds,
     by its own rule and not a weaker one; if it has none, that is a defect of the phase and
     comes first. AT: `tankBattle1938` green, its assertions as they are.
+    *Done 2026-10-07 (ADR-176):* the commit is 5509e05 (3.7j). The search lacks its last
+    filter only: of 110 views at 4 m/px with a tank lost in the third hour, none has one
+    lost without fire (15 grounds before 3.7j, all in one hour; none since, to day 400).
+    The game has tank battles: seven of eight other seeds have a ground by the same rule.
+    The seed is now an argument of `tankBattle` and a constant of the spec (2: day 24.5,
+    the same brigade). No filter and no assertion changed; the evidence pictures written
+    again. *Not done:* nothing keeps the ground through the next change of rules.
 
 ## Phase 4 — Naval
 
