@@ -190,8 +190,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - `elementCount` and `individualCount` stay the numbers of elements and figures. The
     turrets are counted beside them (`elementTurrets`, `individualTurrets`, with the instance
     each stands on).
-  - The shake of a marching vehicle takes its phase from the instance's place, not from its
-    number in the buffer: a turret is another instance and must shake with its hull.
+  - The shake of a marching vehicle must be its hull's for a turret, which is another
+    instance. As first committed (`bb871f4`) the phase came from the instance's place, not
+    from its number in the buffer. **Wrong, and changed the same day:** the place is another
+    in every tick, so the walk of every marching sprite, infantry too, took a new phase at
+    each tick's end (0.2 cells an hour on foot × 78 in the hash: a new number each time).
+    Found by reading, not by a spec: none measures the walk across a tick. Now the phase is
+    in the instance itself: a sprite on the march adds `marchFraction(seed)` to its frame, a
+    half and up to 0.49 more, by the element's id (T2) or the element's id and the figure's
+    number (T3). `appendTurrets` copies the fraction, so a turret has its hull's phase; the
+    readers of "moving" (`> 0.25`) and of the frame (`floor`) read as before.
 - **Why not** one frame per weight with the gun on it: nothing could then turn the gun
   without the hull, which is 3.6b. **Why not** a class in the snapshot: the frame says what
   the view needs, and the view knows no unit rules (the header of `unitLooks`).

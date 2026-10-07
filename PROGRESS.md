@@ -8029,3 +8029,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   tank division is a grid of 5 px marks (a line under 3.6e); the main battle tank has no
   picture of its own.
 - **Next:** PLAN 3.6b (the turret turns).
+
+## 2026-10-07 — PLAN 3.6a, put right: the phase of the walk is the sprite's own
+
+- **Wrong in `bb871f4`:** the shader took the phase of a marching sprite's walk from its
+  place, so that a turret shakes with its hull. The place changes with every tick: every
+  walking figure and every driving vehicle took a new phase at each tick's end, a whole
+  block at once. Read from the formula after the commit; no spec measures the walk across a
+  tick, and the pictures of that commit were of a paused game.
+- **Done:** `marchFraction(seed)` (`ProxyRenderer.ts`): a sprite on the march adds a half and
+  up to 0.49 to its frame, the more being its phase, by the element's id (T2) or the
+  element's id and the figure's number (T3). The shader reads it. `appendTurrets` copies the
+  fraction: a turret has its hull's phase. Bench B the same.
+- **Tests:** `turrets.test.ts` 3 → 5 (the fraction is "moving" to every reader and leaves
+  the frame whole in f32; the same for a sprite whenever asked; spread over the walk).
+- **Specs by hand** (`--project=chromium`): `individuals1938`, `battleView1938`,
+  `zoomDemo1938`, `closeZoom1938`, `elements1938`, `bench-pages`, `precision`: 14, green.
+- **Not checked:** a marching division was not filmed across a tick's end; that the walk goes
+  on there follows from the instance data alone (the fraction is the same in every snapshot).
+- **Next:** PLAN 3.6b (the turret turns).

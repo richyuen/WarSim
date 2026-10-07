@@ -8,13 +8,27 @@
  */
 import * as twgl from 'twgl.js';
 import type { Camera } from '../camera';
+import { hash2 } from '../hash';
 import { ATLAS_FRAMES } from './atlas';
+
+/** The share of a frame's fraction above a half that carries a marching sprite's phase. */
+const MARCH_SPAN = 0.49;
+
+/**
+ * What a sprite on the march adds to its frame in the instance data: a half and up to
+ * MARCH_SPAN more, the more being where it is in its walk or its shake, by `seed` (an element's
+ * id, a figure's number in its element). A sprite's own: the same in every snapshot, so the walk
+ * goes on over a tick's end, and a turret that copies its hull's frame fraction shakes with it.
+ */
+export function marchFraction(seed: number): number {
+  return 0.5 + MARCH_SPAN * (hash2(seed, 0x6d61) / 2 ** 32);
+}
 
 const VS = `#version 300 es
 precision highp float;
 in vec2 aCorner;            // per-vertex quad corner in [-0.5, 0.5]
 in vec4 aPrevCur;           // per-instance prev.xy, cur.xy (cells, relative to origin)
-in vec4 aMisc;              // facing (rad), size (cells), frame, alpha
+in vec4 aMisc;              // facing (rad), size (cells), frame (+ marchFraction on the march), alpha
 in vec4 aColor;             // tint (normalised u8)
 uniform vec2 uCam;          // camera centre relative to origin (cells)
 uniform float uScale;       // device px per cell
@@ -31,10 +45,12 @@ void main() {
   vec2 pos = mix(aPrevCur.xy, aPrevCur.zw, uT);
   float sizePx = min(max(aMisc.y * uScale, uMinPx), uMaxPx) * uSizeMul;
   float frame = floor(aMisc.z);
-  // Moving (frame + 0.5): infantry sway side to side at a walking cadence, vehicles judder.
-  float moving = step(0.25, aMisc.z - frame);
-  // By its place, not its number: a turret is another instance at its hull's place and shakes with it (PLAN 3.6a).
-  float phase = 6.2832 * fract(dot(aPrevCur.zw, vec2(12.9898, 78.233)));
+  // Moving (frame + 0.5 and up): infantry sway side to side at a walking cadence, vehicles judder.
+  // The rest of the fraction is the sprite's phase (marchFraction): its own from tick to tick,
+  // and a turret's is its hull's (PLAN 3.6a).
+  float part = aMisc.z - frame;
+  float moving = step(0.25, part);
+  float phase = 6.2832 * (part - 0.5) / ${MARCH_SPAN.toFixed(2)};
   vec2 local = aCorner;
   if (frame < 0.5) local += moving * vec2(0.0, 0.07 * sin(uTime * 9.0 + phase));
   else local += moving * vec2(0.03 * sin(uTime * 31.0 + phase), 0.0);

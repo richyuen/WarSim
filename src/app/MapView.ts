@@ -40,8 +40,9 @@ import { MapRenderer } from '../render/map/MapRenderer';
 import type { LandMask } from '../shared/landMask';
 import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
-import { PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
+import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets } from '../render/units/turrets';
+import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
 
@@ -714,7 +715,7 @@ export class MapView {
       p.data[o + 5] = ELEMENT_CELLS;
       // The walk is for a formation on the march: one that holds in contact stands (PLAN 2.11e).
       // Infantry in contact is down and firing (PLAN 2.14c2).
-      p.data[o + 6] = shownFrame(e.frame[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0) + (marching(e.flags[i]!) ? 0.5 : 0);
+      p.data[o + 6] = shownFrame(e.frame[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0) + (marching(e.flags[i]!) ? marchFraction(e.id[i]!) : 0);
       // What is left of the element: its share of its size (PLAN 2.11g; an empty one is gone from the sim).
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
       p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
@@ -799,7 +800,7 @@ export class MapView {
       const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
       const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!, inContact && frame === Frame.infantry);
       const x = this.unwrapped(e.x[i]!, e.prevX[i]!);
-      const moving = marching(e.flags[i]!) ? 0.5 : 0;
+      const moving = marching(e.flags[i]!);
       const rgba = this.spriteRgba(e.nation[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
@@ -811,7 +812,7 @@ export class MapView {
         p.data[o + 3] = e.y[i]! + dy - p.originY;
         p.data[o + 4] = e.facing[i]!;
         p.data[o + 5] = size;
-        p.data[o + 6] = shownFrame(frame, inContact) + moving;
+        p.data[o + 6] = shownFrame(frame, inContact) + (moving ? marchFraction(hash2(e.id[i]!, k)) : 0);
         p.data[o + 7] = 1;
         p.colors.set(rgba, j * 4);
         owner[j] = e.id[i]!;

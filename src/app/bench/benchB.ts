@@ -6,7 +6,7 @@ import type { Camera } from '../../render/camera';
 import { GpuTimer } from '../../render/gl/gpuTimer';
 import { MapRenderer } from '../../render/map/MapRenderer';
 import { drawUnitAtlas } from '../../render/units/atlas';
-import { PROXY_STRIDE, ProxyRenderer } from '../../render/units/ProxyRenderer';
+import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../../render/units/ProxyRenderer';
 import type { ProxyBenchCase } from './benchApi';
 import { runFrames } from './benchUtil';
 import { ProxyScene, TACTICAL_VIEW, TICK_HZ } from './proxyScene';
@@ -50,7 +50,7 @@ function uploadScene(s: ProxyScene): void {
     d[o + 3] = s.y[i]! - proxies.originY;
     d[o + 4] = s.heading[i]!;
     d[o + 5] = s.size[i]!;
-    d[o + 6] = s.frame[i]! + 0.5; // moving: the walk/drive animation runs (PLAN 2.3)
+    d[o + 6] = s.frame[i]! + marchFraction(i); // moving: the walk/drive animation runs (PLAN 2.3)
     d[o + 7] = 1;
     const col = s.color[i]!;
     c[i * 4] = (col >> 16) & 255;

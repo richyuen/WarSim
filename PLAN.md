@@ -3684,6 +3684,10 @@ quick sweep as a smoke test.
     and a heavy armoured division and a mechanised one at 50, 12, 4 and 1.5 m/px.
     - *Not done:* at T2 from about 100 m/px outward an element is 5 px and a tank division a
       grid of small marks as any other: a line under 3.6e, which looks at T2.
+    - *Put right the same day* (ADR-159): the first commit took the phase of a marching
+      sprite's walk from its place, which is another in every tick: every walk jumped at a
+      tick's end. The phase is now in the sprite's frame field (`marchFraction`), its own
+      from tick to tick, and a turret copies its hull's. `turrets.test.ts` 3 → 5.
   - [ ] 3.6b **The turret turns.** A tank that fires has its turret on its target, turned
     there in a fraction of a second, and back to the hull's facing when it has been silent
     for a while. View state on the render clock, from the fire records (as the tracers): no
