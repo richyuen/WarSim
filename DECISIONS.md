@@ -167,6 +167,61 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-164 · 2026-10-07 · accepted — At T2 from 300 to 100 m/px a division of tanks is a block that its tag names; the 5 px of a hull do not say "tank", and a mark is needed (PLAN 3.6e3)
+
+- **Context:** the critic's report of 2026-10-05 (R2-B3): "at T2 a panzer division is a grey
+  grid of dots like any other". PLAN 3.6a gave each weight of tank a hull and left open what
+  that is where a sprite is at its least size (ADR-159, *Not done*).
+- **Measured** (a scratch spec, deleted: seed 1938, two weeks in, the ground where the most
+  armour fires, east of Passau; 900 × 560 CSS px, at device pixel ratios 1 and 3):
+
+  | m/px | sprite, px | pitch of a tank element to its nearest neighbour, px (median) | elements in view |
+  |---|---|---|---|
+  | 300 | 5.0 | 2.0 | 558 |
+  | 200 | 5.0 | 2.9 | 462 |
+  | 150 | 5.0 | 3.9 | 438 |
+  | 100 | 5.1 | 5.9 | 302 |
+  | 60 | 8.5 | 9.8 | 252 |
+  | 40 | 12.7 | 14.7 | 128 |
+
+  The sprite is its footprint (0.026 cells, `ELEMENT_CELLS`) and at least 5 px
+  (the draw of `elementProxies` in `MapView`): the least size holds from about 102 m/px outward. The slots of a
+  division are about 590 m apart, so from about 118 m/px outward the sprites of neighbours
+  lie on each other: by 2 px of 5 at 200 m/px, by 3 at 300. The tint is the nation's (two
+  tints among 558 elements: Germany's grey, Austria's white), so within one army nothing but
+  the shape tells the arms apart.
+- **Looked at** (`docs/evidence/3.6/`: `t2-300m-dpr1.png`, `t2-200m-dpr1.png`,
+  `t2-100m-dpr1.png`; `t2-marks-dpr1-x8.png`, the marks of three divisions eight times
+  enlarged, 100 m/px above and 200 below; `t2-100m-marks-dpr3-x3.png`, the same ground at
+  three device pixels a CSS px):
+  - **300 and 200 m/px:** a division is a dark hatched block in the shape of its formation
+    (columns, a line, a square). An armoured, a motorised and a rifle division are the same
+    block. No mark of an element can be read.
+  - **100 m/px, one device pixel a CSS px:** an element is a mark of its own. A rifle
+    battalion reads as a head and a stroke, a gun as a wider one, a tank as a dark blob of
+    5 px with no shape. One can see that the tanks are not the rifles; one cannot see that
+    they are tanks.
+  - **100 m/px, three device pixels:** a hull is a box with a dark rim and reads as a
+    vehicle beside the men and the guns. A screen of one device pixel a CSS px does not
+    show that.
+  - What says "armoured" in these pictures is the division's tag ("Armoured division 41",
+    its strength, its flag). The critic's sentence is still true of the marks.
+  - **Seen besides:** at 100 m/px the tag of a neighbour (Infantry division 627) lies on
+    half of the elements of Armoured division 41. Tags are placed clear of each other, not
+    of the elements of another division. Not looked into.
+- **Decision:** a mark is needed, and it is a part of its own (PLAN 3.6e3b), before the
+  demo. Where a sprite is at its least size, a tank element is drawn with a frame made for
+  that size: one solid shape that 5 px can hold and that no other arm has. Not decided here:
+  the shape, and whether the other arms get such a frame too.
+- **Why not** leave it to the tag: the tag names a division, and the complaint is of what
+  the ground shows. A spearhead (PLAN 3.5) is tank elements ahead of the rifles of the same
+  army, and that is the thing to see at this zoom. **Why not** a larger least size: at
+  200 m/px the sprites already lie on each other. **Why not** the nation's tint made darker
+  for armour: the tint says whose the element is.
+- **Not answered:** the overlap itself from 118 m/px outward (a block, for every arm): the
+  new frame has to be judged in it.
+- No code; the pin did not move.
+
 ### ADR-163 · 2026-10-07 · accepted — A cannon's shot waits for its turret: it starts 180 ms after its minute (PLAN 3.6e1)
 
 - **Context:** ADR-161, "a shot does not wait for its turret": a turret turns onto its

@@ -8226,3 +8226,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not shown:** that the test fails when a hull is off its figure (the view was not broken
   to try it). No picture looked at: nothing drawn has changed.
 - **Next:** PLAN 3.6e3 (a division of tanks at T2, 300 to 100 m/px: a picture first).
+
+## 2026-10-07 — PLAN 3.6e3: a division of tanks at T2, 300 to 100 m/px (ADR-164)
+
+- **Done:** pictures and an answer; no code, the pin did not move. A scratch spec (deleted
+  before the gate) put the camera on the ground of `armourFires` two weeks into seed 1938 and
+  read the sprites at 300, 200, 150, 100, 60 and 40 m/px, at device pixel ratios 3 and 1.
+- **Measured:** a sprite is 5.0 px at 300, 200 and 150 m/px, 5.1 at 100, 8.5 at 60, 12.7 at
+  40. A tank element's nearest neighbour is 2.0, 2.9, 3.9, 5.9, 9.8 and 14.7 px away
+  (median): the sprites lie on each other from about 118 m/px outward. Two tints among 558
+  elements (the nations').
+- **Looked at** (`docs/evidence/3.6/t2-300m-dpr1.png`, `t2-200m-dpr1.png`,
+  `t2-100m-dpr1.png`, `t2-marks-dpr1-x8.png`, `t2-100m-marks-dpr3-x3.png`): at 300 and 200 a
+  division is a dark block, the same for armour, motorised and rifles; at 100 a tank is a
+  dark blob beside the rifles' head and stroke; at three device pixels a hull is a box with
+  a rim. The tag names the division, the marks do not say its arm.
+- **Answer:** a mark is needed. PLAN 3.6e3b is new, before the demo: a frame for 5 px.
+- **Seen besides:** a neighbour's tag over half of the armoured division's elements at
+  100 m/px (a line under 3.6e4).
+- **Gotcha:** the first pictures were at three device pixels and showed hulls one could
+  read. The least size is in CSS px: judge it at one.
+- **Not done:** no spec is kept (nothing drawn has changed); the dpr 3 pictures at 300 and
+  200 were looked at and not kept.
+- **Next:** PLAN 3.6e3b (a tank's mark at the least size).

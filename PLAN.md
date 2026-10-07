@@ -3760,8 +3760,23 @@ quick sweep as a smoke test.
       expects an element of tanks to have as many as its strength and each hull on the last
       of them, to nine places. `figureOffsets` and `figureCount` are gone from the spec.
       7 hulls of 7 burning and 20 of 20 left behind, as before.
-    - [ ] 3.6e3 **A division of tanks at T2, 300 to 100 m/px** (from 3.6a): a picture first,
+    - [x] 3.6e3 **A division of tanks at T2, 300 to 100 m/px** (from 3.6a): a picture first,
       then the answer in DECISIONS. A mark, if one is needed, is a part of its own.
+      **Done 2026-10-07 (ADR-164).** Pictures at 300, 200 and 100 m/px, one device pixel a
+      CSS px, and the marks enlarged (`docs/evidence/3.6/t2-*.png`). A sprite is 5 px from
+      102 m/px outward and lies on its neighbours from 118: at 300 and 200 a division of any
+      arm is one dark block; at 100 a tank is a blob that is not a rifle and not a tank. The
+      tag says "Armoured division", the marks do not. A mark is needed: 3.6e3b. No code.
+    - [ ] 3.6e3b **A tank's mark at the least size** (ADR-164). Where a T2 sprite is at its
+      least size (5 px, from about 102 m/px outward) an element of tanks is drawn with a
+      frame made for 5 px: one solid shape that no other arm has. The turret is not drawn
+      there. The handover to the hull's frame as the sprite grows must not pop (a fade over
+      a band of the zoom, as the tiers' handovers). AT: unit (the frame by the sprite's size
+      and the class; no turret instance at the least size); a spec (at 150 m/px every tank
+      element in the view has the small frame and no rifle element has it; at 60 m/px
+      none); pictures at 300, 200 and 100 m/px at one device pixel a CSS px, beside those of
+      3.6e3, looked at: a tank division told from a rifle division of the same army
+      without its tag, or said that it cannot be.
     - [ ] 3.6e4 **The demo** (`tankBattle1938.spec.ts`), with the frame's time with hulls and,
       if the ground has it, both kinds of hull in one view; pictures; PARITY. Ticks 3.6e and
       3.6 (the full e2e).
@@ -3782,6 +3797,9 @@ quick sweep as a smoke test.
     - The time of a frame with hulls is not measured (up to 2,000 held). Take it on the
       flight over the battle, flames on.
     - Not in the browser yet: a hull burning and one left behind in one view.
+    From 3.6e3 (ADR-164): at 100 m/px the tag of a neighbouring division lay on half of the
+    elements of the armoured division looked at. On the demo's flight, see whether the
+    tanks that fight are under a tag, and say what was seen.
 - [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
