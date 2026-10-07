@@ -8573,3 +8573,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   PARITY row 2 ("anything of it on the page") waits for 3.7f.
 - **Next:** PLAN 3.7i (the puppets of a nation that dies), then 3.7n, g, the smoke run
   (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7i: the puppets of a nation that dies are free at its death (ADR-174)
+
+- **Counted first, on today's game** (`.cache/p37/puppets.ts`, `puppets2.ts`, scratch; ten
+  years): seed 99, 44 deaths, one with a living puppet (Belgium at tick 3016, the Belgian
+  Congo its puppet for 609 hours more); seed 7, 83 deaths, none. PLAN's count (66, 63, 54
+  hours) was of the game before 3.7j to 3.7l.
+- **The 609 hours cost the Congo nothing that was read:** supply and org 1.000, none of its 3
+  formations on the march, 6,240 of 6,241 cells fed, its war with Germany kept, no
+  `WarRejected` or `MoveRejected` with its name. A dead nation's bloc id feeds as another.
+- **The rule all the same** (`eliminateNation`, `capitals.ts`): every living puppet of the
+  nation that dies is released there, `PuppetReleased` before `NationEliminated`. One dies
+  so, and a puppet of a dead nation is a state the scenario schema refuses. A collapse and
+  an annexation end or move the ties before they call it. `puppetSystem` keeps its line for
+  an old save.
+- **Test** (`capitals.test.ts`, one, red before): Brussels taken with winner-takes-all; the
+  Congo free in that tick, its bloc its own, the event, no nation with a dead overlord.
+- **Gotcha:** the test's first writing stepped from tick 0, a month's first hour, where
+  `puppetSystem` freed the Congo in the same tick: it was red on the order of two events
+  only. It now steps two hours first and asserts that the hour is not a month's first.
+- **Gotcha:** `npx vitest run tests/sweep/…` finds no test: the sweep tests need
+  `--config vitest.sweep.config.ts`.
+- **The pin:** `347aebb2` to `b1bb392b`.
+- **By hand:** no e2e spec run: nothing drawn changed. No tick time measured: a death is
+  not in the hourly loop.
+- **Not done:** no test of the death by the last cell or of a holder a revival leaves with
+  nothing (the same function); the case of two puppets of one dead nation has no instance.
+- **Next:** PLAN 3.7n (a game loaded into a running one leaves no hull), then 3.7g, the
+  smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.

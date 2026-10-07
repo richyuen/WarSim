@@ -613,7 +613,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
        the overlord is losing a war (side score ≤ −30).
   - *Peace:* a crushing peace creates a puppet at autonomy 30.
   - *Death:* a nation that dies is nobody's puppet (`eliminateNation`, ADR-148). It returns
-    free, and a revival on its old overlord's land is at war with it as with any holder.
+    free, and a revival on its old overlord's land is at war with it as with any holder. Its
+    own puppets are free in the tick of its death, however it dies (`PuppetReleased`, ADR-174).
   - *Commands:* createPuppet, releasePuppet, setAutonomy, setPuppetLoyalty.
   - *Puppet map mode:* overlords keep their colour, puppets take it lightened 45%, others are
     grey.

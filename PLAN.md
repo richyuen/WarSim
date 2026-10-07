@@ -4046,7 +4046,7 @@ quick sweep as a smoke test.
     *Not done:* none was set on a spawn point in either year, so the case of another
     landmass has no instance in the runs and no test; the formation-hours on a third
     nation's ground rose (ADR-169's addendum has the table), by less than the marches took.
-  - [ ] 3.7i **The puppets of a nation that dies are free at its death** (PLAN 3.7c; seen
+  - [x] 3.7i **The puppets of a nation that dies are free at its death** (PLAN 3.7c; seen
     with ADR-148, read in the code, not run). A Kill and a collapse free them
     (`collapseNation`); a death by the loss of the capital (`eliminateNation` out of
     `capitalsSystem`) does not, and `puppetSystem` frees them at the next month's first
@@ -4061,6 +4061,16 @@ quick sweep as a smoke test.
     nations die, one of them with a living puppet (Belgium at tick 3571, the Belgian Congo
     its puppet for 54 hours more). Seed 7: 63 die, none with a living puppet. Once in twenty
     years of games; what the 54 hours cost the puppet was not looked at.
+    **Done 2026-10-07 (ADR-174):** counted again on the game of today: seed 99, 44 die, one
+    with a living puppet (Belgium at tick 3016, the Congo its puppet for 609 hours more);
+    seed 7, 83 die, none. The 609 hours cost the Congo nothing that was read (supply and
+    org 1.000, 6,240 of 6,241 cells fed, its war kept, no order and no war refused). The
+    rule all the same, since one dies so and the scenario schema refuses the state:
+    `eliminateNation` releases every living puppet of the nation that dies, with
+    `PuppetReleased`, before `NationEliminated`. `capitals.test.ts`, one test, red before.
+    The pin moves, `347aebb2` to `b1bb392b`.
+    *Not done:* no test of the death by the last cell or of a holder a revival leaves with
+    nothing (the same function); no tick time measured.
   The order of work for the tasks above and below, the sim's first and most severe first:
   3.7j, 3.7k, 3.7h, 3.7l, 3.7m, 3.7i; then what is drawn: 3.7n, 3.7g. Then 3.7e and 3.7f.
   - [x] 3.7j **An order between two parts of one landmass is not refused for a land cell

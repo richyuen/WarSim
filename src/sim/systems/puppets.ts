@@ -134,7 +134,7 @@ export function puppetSystem(world: World): void {
     const o = nc.overlord[n]!;
     if (o === 0 || nc.living[n] !== 1) return;
     if (nc.living[o] !== 1) {
-      releasePuppet(world, n); // the overlord is gone
+      releasePuppet(world, n); // the overlord is gone: an old save's (a death frees them, ADR-174)
       return;
     }
     if (nc.autonomy[n]! > FREE_ABOVE) {

@@ -167,6 +167,56 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-174 · 2026-10-07 · accepted — The puppets of a nation that dies are free at its death (PLAN 3.7i)
+
+- **Context:** PLAN 3.7c, seen with ADR-148 and read in the code. A Kill and a collapse free
+  the puppets of the nation (`collapseNation`), and an annexation gives them to the annexer.
+  A death out of `captureCapital` (winner takes all, or no core land left), out of
+  `relocateToField` (the last cell) or of a holder a revival leaves with nothing
+  (`revival.ts`) went to `eliminateNation` with the ties as they were. `puppetSystem` cut
+  them at the next month's first hour. Until then `blocOf` gave the puppet a dead nation's
+  id for its supply bloc and `whyNotWar` read the tie.
+- **Run first** (scratch, `.cache/p37/puppets.ts` and `puppets2.ts`; ten years, 1938):
+  - Seed 99: 44 nations die, one with a living puppet. Belgium dies at tick 3016 (Germany
+    takes Brussels) and the Belgian Congo is its puppet for 609 hours more. Seed 7: 83 die,
+    none with a living puppet. (The count of 2026-10-07 in PLAN, 66 and 63 deaths and 54
+    hours, was of the game before PLAN 3.7j to 3.7l.)
+  - The Congo's 609 hours, every twelfth read: 3 formations with supply 1.000 and org
+    1.000, none on the march; 6,240 of its 6,241 cells fed; its one war (Germany's, that
+    Belgium brought it into) kept; gold 67.8 to 67.4. No `WarRejected` and no
+    `MoveRejected` names it. The dead bloc's id is a label like another: the network of the
+    Congo's own cities is flooded under it. **Nothing differed for the puppet in this
+    instance.**
+  - What could differ, not seen in a run: a formation of the puppet on ground of a second
+    puppet of the dead nation, or the other way, stands as on its own bloc's (`foreignTo`,
+    `movement.ts`); a war between two puppets of the dead nation, or with the nation's
+    revival, has no instance to be refused in.
+- **Decision** (`eliminateNation`, `capitals.ts`): every living nation whose overlord is the
+  one that dies is released (`releasePuppet`: `overlord` and `integration` 0, a full
+  refresh of the supply network, `PuppetReleased`), in id order, before the land is left
+  and before `NationEliminated`. A collapse and an annexation have ended or moved the ties
+  before they call it, so the loop finds none there: the change is the three deaths above.
+- **Why the rule and not a close with the count.** PLAN said to close it if none dies so and
+  nothing differs. One dies so. And the state is one the scenario schema refuses (a puppet
+  of a dead nation): the game should not hold for up to a month what its own data may not.
+- **An event, here.** ADR-148 gave no event for the dead nation's own tie (it was not
+  freed: it died). Its puppet lives and is free: "{a} was freed from {b}", as at a collapse.
+- **`puppetSystem` keeps its line** ("the overlord is gone"): a save or a scenario written
+  before this may hold the state, and it costs a comparison a month.
+- **The pin moves:** `347aebb2` to `b1bb392b`. Belgium's death is in seed 99's first year;
+  the refresh of the supply network at tick 3016 and the Congo's own bloc id from then on
+  are the difference.
+- **Tests:** `tests/unit/capitals.test.ts`, one, red before (the Congo was Belgium's, 27,
+  after the tick): Brussels taken with winner-takes-all in the third hour of a month; in
+  that tick the Congo has no overlord, its bloc is its own, `PuppetReleased` (Congo,
+  Belgium) comes before `NationEliminated`, and no nation has a dead overlord. The first
+  writing of it stepped from tick 0, a month's first hour, where `puppetSystem` freed the
+  Congo in the same tick: green on the old source but for the order of the two events.
+- **Not done:** no tick time measured (a death is not in the hourly loop); no test of the
+  other two deaths (`relocateToField`, the holder a revival leaves with nothing): they call
+  the same function; the wars the freed puppet is in stay as they are, its overlord's war
+  among them.
+
 ### ADR-173 · 2026-10-07 · accepted — A formation on the retreat takes no order: the command is refused (PLAN 3.7m)
 
 - **Context:** the eighth read, finding 4 (traced there, run here). For the 24 hours of its

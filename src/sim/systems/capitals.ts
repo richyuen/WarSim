@@ -27,6 +27,7 @@ import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import type { World } from '../world';
 import { destroyFormation } from './elements';
+import { releasePuppet } from './puppets';
 import { holdsCore, REVIVAL_COOLDOWN } from './revival';
 import { noteCapitalCaptured } from './war';
 
@@ -188,6 +189,12 @@ export function eliminateNation(world: World, n: number): void {
     nc.integration[n] = 0;
     world.supplyDirty = true; // the blocs changed
   }
+  // And its puppets are free at its death (PLAN 3.7i, ADR-174), lowest id first: until the month's
+  // first hour they had a dead nation's supply bloc. A collapse and an annexation have ended or
+  // moved the ties before they come here.
+  world.nations.forEach((p) => {
+    if (nc.overlord[p] === n && nc.living[p] === 1) releasePuppet(world, p);
+  });
   leaveLand(world, n);
   world.out.emit(world.tick, EventKind.NationEliminated, n, 0, NaN, NaN);
 }

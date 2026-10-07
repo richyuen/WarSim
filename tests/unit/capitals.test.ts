@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { eliminateNation } from '../../src/sim/systems/capitals';
+import { blocOf } from '../../src/sim/systems/supply';
 import type { World } from '../../src/sim/world';
 import { deadLand } from '../helpers/deadLand';
 import { assets1938 } from '../helpers/earth';
@@ -121,6 +123,35 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     expect(w.wars.atWar(GER, POL)).toBe(false);
     expect(w.wars.atWar(POL, nationId('SOV'))).toBe(false);
     expect(capitalCity(w, POL)).toBe(0);
+  });
+
+  it('the puppets of a nation that dies with its capital are free in that tick (PLAN 3.7i)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    const nc = w.nations.cols;
+    const BEL = nationId('BEL');
+    const BCO = nationId('BCO');
+    expect(nc.overlord[BCO]).toBe(BEL); // the premise
+    expect(blocOf(w, BCO)).toBe(BEL);
+    // Not in a month's first hour: `puppetSystem` frees the puppets of the dead then.
+    stepEvents(s, 2);
+    expect(isMonthStart(w.startDay, w.tick + 1)).toBe(false);
+    w.wars.set(GER, BEL, true);
+    const brussels = capitalCity(w, BEL);
+    s.command({ kind: 'setSetting', key: 'winnerTakesAll', value: true });
+    s.command({ kind: 'paintControl', nation: GER, x: w.cities.cols.x[brussels]!, y: w.cities.cols.y[brussels]!, r: 1 });
+    const ev = stepEvents(s);
+    expect(eventsOf(ev, EventKind.NationEliminated)).toEqual([[BEL, 0, NaN, NaN]]);
+    expect(nc.living[BCO]).toBe(1);
+    expect(nc.overlord[BCO]).toBe(0);
+    expect(nc.integration[BCO]).toBe(0);
+    expect(blocOf(w, BCO)).toBe(BCO);
+    expect(eventsOf(ev, EventKind.PuppetReleased)).toEqual([[BCO, BEL, NaN, NaN]]);
+    // Freed before the death is told, as a collapse frees them (`collapseNation`).
+    const kinds = ev.filter((_, i) => i % 6 === 1);
+    expect(kinds.indexOf(EventKind.PuppetReleased)).toBeLessThan(kinds.indexOf(EventKind.NationEliminated));
+    // Nobody is a dead nation's puppet.
+    w.nations.forEach((n) => expect(nc.overlord[n] === 0 || nc.living[nc.overlord[n]!] === 1).toBe(true));
   });
 
   it('a nation that loses its last city keeps a field capital, and is eliminated with its last cell', () => {
