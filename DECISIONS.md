@@ -251,6 +251,15 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   formation of another nation whose box lies on its own, both engaged").
 - **Consequences:** the pictures of the tank battle demo and of the zoom demo's battle are
   taken again; `tags.test.ts` gets the two rules; a tag's place can change as a block turns.
+- **Addendum 2026-10-07, the boxes read (PLAN 3.7g's diagnosis, in Node):** the three blocks
+  are columns side by side, the brigade the westernmost (middles at 100 m/px: 690, 414;
+  712, 424; 737, 435). The first part as written would hold there by 10 px of height and
+  has nothing to say of a front that runs north to south. **The first part is restated:** a
+  tag does not stand on another formation's elements where a place clear of them is free,
+  and the places beside its box are tried with those above and below. No knowledge of who
+  is at war is needed: the layout has every formation's box. The second part (the line)
+  stands. By hand on these boxes: the brigade's tag stands left of its tanks, 419's below
+  its block, 431's a step out above with a line.
 
 ### ADR-167 · 2026-10-07 · accepted — A snapshot says of each element it sends whether it was fired at; the view no longer takes it from the shots it got (PLAN 3.6e5)
 
