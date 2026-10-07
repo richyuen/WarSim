@@ -8354,3 +8354,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   elements row of §2.4 (`hit`). No dead code among the 64 exports added in the phase.
 - **Not done:** SPEC's measured numbers were not measured again.
 - **Next:** PLAN 3.7a (the reader's findings, checked here), then 3.7c and 3.7d.
+
+## 2026-10-07 — PLAN 3.7c and 3.7d: the watch lists of Phase 3; a tag is tied to its elements (ADR-168)
+
+- **3.7d:** the pictures of the tank battle demo looked at again (`tank-battle-2-marks.png`,
+  `tank-battle-3-turrets.png`). `layoutTags` places by strength: of three formations on one
+  ground the tank brigade the demo is about is the weakest and its tag the furthest off,
+  with the enemy division's on its tanks. Decided (ADR-168): a tag tries first its
+  formation's own side of a contact, and one that stands off has a line to its elements.
+  The change is PLAN 3.7g.
+- **3.7c:** nine blocks of BLOCKERS and the "not done" lines of PLAN 3.5 and 3.6, some sixty
+  items, each now a task, a line under PLAN 4.6, 7.1, 7.2, 7.4 or 1.42, a carry with its
+  reason, or closed. One block in BLOCKERS says where each went.
+- **Measured for it** (`.cache/p37/jumps.ts`, a scratch script, a year of each): 43
+  formations (seed 99) and 37 (seed 7) stand in one tick more than 3 cells from where they
+  stood, median 52 and 35 cells, up to 152. ADR-149 had left this "not counted". PLAN 3.7h.
+  Which rule moved each was not read: the task diagnoses first.
+- **Tasks before Phase 4 so far:** 3.7g (tags, view), 3.7h (the moved formations, sim), 3.7i
+  (the puppets of a nation that dies by the loss of its capital, sim; read in the code,
+  never run: the task counts first and may close with the count).
+- **The entry under Open** in BLOCKERS that PLAN 2.12a was not committed (2026-10-05) is
+  marked RESOLVED: it went in that day (`62eb6bc`).
+- **Not done:** the reader of 3.7a has not come back; nothing of the code was changed.
+- **Next:** PLAN 3.7a (the reader's findings, checked here), then the sim's tasks, 3.7g,
+  the smoke run (3.7e) and PARITY (3.7f).
+

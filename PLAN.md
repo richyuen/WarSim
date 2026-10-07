@@ -3849,6 +3849,9 @@ quick sweep as a smoke test.
       burning, as the sim has them (2 and 2 before at the last two stops).
       - *Not done:* no picture of a hull that burns after a pan to it; the pictures of
         3.6e4 stand (what changed is outside the viewport).
+    *The four notes below were the work of 3.6e1 to 3.6e4; the review (PLAN 3.7c) reads
+    them as closed, but for the tags (ADR-168, PLAN 3.7g) and the frame's time with many
+    hulls (a line under PLAN 7.1).*
     From 3.6a: say what a division of tanks is at T2 between 300 and 100 m/px, where a
     sprite is 5 px (the critic: "a grey grid of dots like any other"), and whether the 5 px
     of a hull can say "tank" there (its shape, or the element's mark).
@@ -3887,7 +3890,7 @@ quick sweep as a smoke test.
     changed since the seventh (`dae7824`: PLAN 3.4Re to 3.6e5, 2,163 lines added), the new
     lines first. The same brief: defects only, nothing of what changed or why. Each finding
     is checked against the code here before it is anything; those a player can meet become
-    tasks 3.7h and on, before 4.1, each with a test that fails first, most severe first; the
+    tasks 3.7j and on, before 4.1, each with a test that fails first, most severe first; the
     rest go on the watch list.
   - [x] 3.7b SPEC re-read for drift: each decision since the last pass (ADR-143 to ADR-167)
     looked for in SPEC (§2.3, §2.4, §6.1, §7, §8) and checked against the code, not against
@@ -3907,10 +3910,21 @@ quick sweep as a smoke test.
     - Dead code: none. Of the 64 exports added since `dae7824` every one is used by another
       source file, inside its own, or by a test (a script over `src/`, `tools/`, `tests/`).
     - *Not done:* SPEC's measured numbers were not measured again.
-  - [ ] 3.7c The watch lists of the phase: the blocks of BLOCKERS dated since the Phase 2
+  - [x] 3.7c The watch lists of the phase: the blocks of BLOCKERS dated since the Phase 2
     review, the notes "From 3.6a" to "From 3.6e3" under PLAN 3.6, and the "Seen and not
     changed" and "Not done" lines of 3.5 and 3.6. Each item becomes a task, a line under the
     later phase that covers it, a carry with the reason it waits, or is closed.
+    Done 2026-10-07. Nine blocks of BLOCKERS and the notes of PLAN 3.5 and 3.6, some sixty
+    items. Two tasks before Phase 4 (3.7h, 3.7i below); lines under PLAN 4.6, 7.1, 7.2, 7.4
+    and 1.42; the rest carried with a reason or closed, in one block in BLOCKERS that names
+    where everything went. Two were looked at now:
+    - *A division with no way home is moved to its spawn point* (ADR-149, "not counted"):
+      counted. In a year 43 formations (seed 99) and 37 (seed 7) are in one tick more than
+      3 cells from where they stood, by a median of 52 and 35 cells and up to 152
+      (`.cache/p37/jumps.ts`, a scratch script; Czechoslovakia 17 and 13, Austria 11,
+      Yugoslavia 6 and 17). Which rule moved each was not read. PLAN 3.7h.
+    - *The entry "PLAN 2.12a is in the working tree and not committed"* stood under Open
+      since 2026-10-05: it was committed that day (`62eb6bc`). Closed.
   - [x] 3.7d The tags' question (ADR-164, ADR-166, above): decide, in DECISIONS; a task if
     the decision is a change.
     Done 2026-10-07 (ADR-168): a tag is tied to its elements. The pictures looked at again:
@@ -3936,6 +3950,35 @@ quick sweep as a smoke test.
     the brigade's tag is the nearest tag to the middle of its tanks, or has a line to them;
     the pictures of the demo and `docs/evidence/2.10/stop-5-battle.png` taken again and
     looked at; `tags1938` specs as they are.
+  - [ ] 3.7h **A formation is not moved across the map in one tick** (PLAN 3.7c; ADR-149's
+    "not counted"). In a year 43 and 37 formations (seed 99, seed 7) stand in one tick more
+    than 3 cells from where they stood, by a median of 52 and 35 cells: `repatriationSystem`
+    sets a formation with no way home on its nation's spawn point, and since ADR-149 "no
+    way" is also a way across a nation that is in no war with it. On the page an army is
+    gone from one place and stands in another.
+    Diagnose first: which rule moved each of the 43 (repatriation's spawn point, or another
+    writer of `x`, `y`: a muster, a revival, the editor), in whose land it stood and why it
+    had no way.
+    Then, for repatriation: the nearest cell of its own nation that it can reach by its
+    `Passage` (`nearestCellWhere`); with none, it stays where it is and is asked again the
+    next day. Whether a formation left on foreign ground for good is then worse than one
+    moved (it holds no cell and eats supply there) is for the diagnosis to say: if it is,
+    say what else.
+    AT: unit (`movement.test.ts`: the Italian division in central Germany at peace marches,
+    or stays, and is not moved); a year of seed 99 and of seed 7 has no formation more than
+    3 cells in a tick from where it stood, but by a rule the diagnosis names and this task
+    keeps; the pin moves and is logged.
+  - [ ] 3.7i **The puppets of a nation that dies are free at its death** (PLAN 3.7c; seen
+    with ADR-148, read in the code, not run). A Kill and a collapse free them
+    (`collapseNation`); a death by the loss of the capital (`eliminateNation` out of
+    `capitalsSystem`) does not, and `puppetSystem` frees them at the next month's first
+    hour. Until then `blocOf` gives them a dead nation's supply bloc and `whyNotWar` reads
+    the tie.
+    Diagnose first: how many nations with puppets die so in ten years of seed 99 and seed 7,
+    and what the puppet's month looks like (its supply, a war it is refused). If none dies
+    so and nothing differs, close this with the count.
+    AT: unit (an overlord whose capital falls with no other city: its puppet has no
+    overlord in the same tick, with `PuppetReleased`); the pin, moved or not, is said.
 
 ## Phase 4 — Naval
 
@@ -3961,6 +4004,11 @@ quick sweep as a smoke test.
   AT: a scripted invasion lands and takes the coastal cells; it fails without sea control (test).
 - [ ] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
   AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07): a war between two nations with no land
+  way between them has no front (France and Portugal with Spain at peace; ADR-149, ADR-152),
+  and a formation that reaches no front stands where it is. How many wars of a game have no
+  front, and how they end, was never counted: count it here first, then plan the landing
+  for such a war.
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
@@ -4065,6 +4113,15 @@ quick sweep as a smoke test.
   seed 99 over five years is 1.67 ms (budget 1.5), year 1 2.44 (budget 2.4); year 5 is 1.94
   (949 formations, 25,528 cells flipped). No profile was taken of this game: the parts
   above are of 3.5b's.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
+  - The frame with hulls was timed with 5 of them, the script's part, in a browser that
+    draws on the CPU (0.58 ms, PLAN 3.6e4). Up to 2,000 are held: time a frame with many,
+    flames on, on a GPU. The same for the second sample of the small mark at T2 (3.6e3b)
+    and the turrets' pass (3.6b).
+  - What of year 1's rise from 2.06 ms is whose (the rules of Phase 3, the formations of
+    PLAN 3.1c, or the wars the pin's moves chose) was not taken apart (3.4Rm).
+  - The operational AI's own refused orders: 476 and 1,082 in a year (seed 99, seed 7),
+    where the provinces let a route through and the search finds none (3.5b).
   From the critic's report of 2026-10-05 (the pace in R2-B5; its N9 and N19):
   - **The top speed.** At Max the game makes 885 ticks a second at the start and 794 after
     ten years: 33 to 37 days a second, 10 to 12 s a year. AoC's text gives a month in 0.5 s
@@ -4127,9 +4184,33 @@ quick sweep as a smoke test.
     war that moves the front by a border strip (N1); a war takes in half the world ("United
     Kingdom +33 ⚔ Angola", Poland against Xinjiang; N2).
   - What the critic asks of the sweep: a run whose top five are the same for 20 years fails.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07), what the rules of armour left open. None
+  is tuned before the sweeps are back (ADR-58):
+  - The retreat (ADR-150): wars kill a third of the formations they did. Whether they still
+    end was not looked at. Nothing fires on the retreating, the encircled do not surrender,
+    and a formation with no supply retreats from every contact (51 times in a year).
+  - The spearheads (ADR-153): one attack in eleven comes to contact (261 of 2,900 and 226 of
+    2,690 a year), and why the others end was not counted (a new order to another cell, a
+    sector that stops attacking, the cell taken by another). The rest are not sent after
+    the armour in the same plan; infantry on the march at the enemy's cell keeps its order
+    (a quarter of those sent to an armour's attack); no armour moves between sectors.
+  - The mix (ADR-154): Italy, the Soviet Union and Japan stay under the share they want
+    (they save and their treasuries do not grow); a nation with nothing in training buys
+    the best it can pay, the division of 1938 after 1941 too; one at war that saves raises
+    one infantry division at a time.
+  - The allotment (ADR-152): a sector allotted more of a class than stand near it takes
+    them from afar.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
+  - Nothing stops an `undefined` or a NaN out of arithmetic from being written to the
+    history or a table (ADR-155 found one by the page's hash leaving Node's). The soak
+    looks for one in every float section of the state, each day.
+  - Commands the page never sends are applied with numbers that are finite and out of range
+    (the seventh and sixth reads: a strength of -5, a place at 1e9, a member twice, a side 5,
+    a province 1.5, a line of `editPaint` to 1e9 that takes 13 s). Only a worker message or
+    the page's test API can send them. Refuse them where a scenario file or a script could.
 - [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.
   AT: sweep report green.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
@@ -4155,6 +4236,10 @@ quick sweep as a smoke test.
     - figures drawn through a wrap offset are 2,047 cells from the origin of their f32
       offsets, where a step is 2.4 m.
   - **The declutter in a crowd and in flight.**
+    - From the Phase 3 review (PLAN 3.7c): the markers' second way of parting (ADR-157) was
+      found on one scene, and how many scenes the two ways still leave that 6 px could part
+      was not counted. A zoom in can still show fewer counters within a level; the landing
+      of a split takes its hold a frame later; a trembling zoom was not measured (ADR-158).
     - Counters: an eased zoom can end with other counters than a stepped one (62 of 192 cases
       of made-up frame spacings), and at 200 ms a frame at another cluster level; in flight
       some counters turn twice (56 of 7,394 on a wheel notch in); the second frame of a
@@ -4194,6 +4279,27 @@ quick sweep as a smoke test.
     PLAN 2.14, critic R2-B2). A battalion
     at a third of its men is a scatter over its footprint, not a smaller block (ADR-69's
     order of losses). A stack's lead at T1 shows the strongest formation's kind only.
+  - **What T2 and T3 show of armour** (the Phase 3 review, PLAN 3.7c, 2026-10-07; each seen
+    in the pictures of `docs/evidence/3.6/` or noted by its task):
+    - The tanks of an element turn their turrets by one angle, not each on its bearing (the
+      tongue and the tracer of a tank at the edge of its element differ by up to about 20
+      degrees for a near target: ADR-161). A gun's tongue is along its formation's facing.
+      A shooter outside the view's box fires from its slot.
+    - Figures drive over a hull, and a tank can stand against its own burning hull (1.5
+      m/px). An element's end at T3 is still the T2 wreck mark. A lost tank leaves nothing
+      at T2. A hull can burn under the page's war banners.
+    - The small mark of a pale nation on pale ground has less against the ground than the
+      dark blob had (Germany's grey on Austria's hatched land at 100 m/px). Guns, half-tracks
+      and rifles have no small frame: a motorised division is a rifle division's block. The
+      band of the handover ends at 8 px for the turrets, not where a hull first reads.
+    - A retreat is a march like any other on the page (`FormationRetreated` is not drawn
+      and not in the history).
+    - Not in any picture: a full company (the demo's brigade is at 54 tanks of 200, two or
+      three to an element); a hull that burns after a pan to it; a turn of a turret, a
+      muzzle's tongue or a flight filmed in a running game.
+    - The blocks of formations in contact can stand elsewhere for the hour after a load or a
+      command than in the game that ran on (the sixth read: 975 formation-hours in 2,500
+      ticks, 1.4 cells at most; a picture only, the hashes equal).
   - **From the fifth independent read (PLAN 2.11b):**
     - Back from T2 with the camera still zooming (the only way a wheel leaves T2), the T1
       boxes take the rest places of the first frame's zoom and keep them for the morph: up to

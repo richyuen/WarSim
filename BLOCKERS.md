@@ -55,7 +55,9 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   quick sweeps (20 years, seen seeds) show a riser in 6–8 of 10 seeds and a faller in 10 of
   10; no 50-year run has been judged by the criteria of ADR-54.
 
-### PLAN 2.12a is in the working tree and not committed: the gate was stopped for want of memory (2026-10-05, 05:29)
+### RESOLVED 2026-10-05 (`62eb6bc`; marked at the Phase 3 review, PLAN 3.7c) · PLAN 2.12a is in the working tree and not committed: the gate was stopped for want of memory (2026-10-05, 05:29)
+
+- **RESOLVED:** PLAN 2.12a was committed the same day (`62eb6bc`), 2.12b after it (`715eaf3`). The entry is kept for what it says of the machine at its commit limit.
 
 - **What happened:** the full gate for PLAN 2.12a was started at 05:29:06 with the CPU sampler
   beside it. In the unit stage, 41.7 s in, test workers died as they started ("Worker exited
@@ -84,58 +86,70 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 
 ## Watch list (not blocking)
 
-- **Fronts out of reach (PLAN 3.4Rl, ADR-149, 2026-10-06).** Since no march crosses a nation
-  that is not in the war, the operational AI allots formations to fronts they cannot reach
-  and is refused every day (9,433 refused orders in seed 99's first year, 10,284 in seed 7;
-  1,903 before in seed 99). They stand idle. A war between two nations with no land way
-  between them (France and Portugal with Spain at peace) has no front at all until the
-  navy of Phase 4. For PLAN 3.5: allot by reach. Not measured: how many wars of a game have
-  no front, and how they end (the deadlock of five years, ADR-47).
-  **2026-10-07 (PLAN 3.5b, ADR-152):** allotted by reach. Refused orders in the year:
-  11,420 → 1,074 (seed 99), 6,585 → 1,517 (seed 7); the AI's own 476 and 1,082, where the
-  provinces let a route through and the search finds none. Still so: the war with no front;
-  a formation that reaches no front stands where it is.
-- **The share of `deploy.test.ts` hangs on one pile-up (PLAN 3.5b, 2026-10-07).** "After 60
-  days of Germany against Poland most formations in contact have their enemy's elements in
-  one view" wants more than 0.9 of a whole-world game's formations in contact on one day.
-  In a game that differs by a detail of the allotment (classes of equal reach merged: tried
-  and not kept, ADR-152) it is 99 of 111: ten Chinese divisions about one Japanese division
-  whose block is deployed against an eleventh, each stopped at `DEPLOY_REACH` 1.3 cells from it.
-  In the game of the rule as committed it is 100 of 102. The test was not changed. The
-  next rule that moves the pin may meet it (PLAN 3.5c sends armour first at one cell, the
-  rest behind): then it is the deployment of many against one that is to be mended (the
-  blocks come up to a block that has gone 1.4 cells from its formation), not the test.
-  2026-10-07 (PLAN 3.5c, ADR-153): the game of the spearheads passed it, untouched. Still
-  open for the next rule that moves the pin.
-- **A division with no way home is moved to its spawn point (PLAN 3.4Rl, ADR-149,
-  2026-10-06).** Repatriation did that where no route existed; it does it now also where the
-  way home crosses a second nation that is in no war with it (an Italian division in central
-  Germany at peace: Austria lies between; `movement.test.ts`). On the page that is an army
-  that is gone from one place and stands in another. Not counted: how many a game moves so.
-  A way to mend it: the nearest cell of its own nation that it can reach (`nearestCellWhere`
-  by the `Passage`), and the spawn point only when there is none.
-
-- Seen 2026-10-06 with PLAN 3.4Rk (ADR-148), read in the code, not run: **the puppets of a
-  nation that dies by the loss of its capital are a dead nation's until the month's start.**
-  A Kill and a collapse free them (`collapseNation`); `capitalsSystem` does not, and
-  `puppetSystem` does at the next month's first hour. Until then `blocOf` gives them the dead
-  nation's supply bloc, and `whyNotWar` reads the tie. What a player can meet of it in at
-  most a month is not known. If it is one, the fix is beside ADR-148's in `eliminateNation`,
-  with `PuppetReleased` for each.
-- Seen 2026-10-06 with PLAN 3.4Rk, not run: **a save written before ADR-148 keeps the
-  overlord of a nation that was dead in it.** The tie is cleared at the death, not at a
-  load, so such a nation would still return as a puppet. Whether a save of an older build
-  loads at all was not tried.
-
-- Seen 2026-10-05 with PLAN 2.16Rg, not looked into: **land occupied with no war behind it in
-  a game without commands.** 1938, seed 99, tick 2000: 45 cells whose controller is not their
-  owner and is not at war with it (a scratch count over the grid; which nations, and by which
-  peace or death, is not known). Nothing takes such a cell back. A defect if a peace or a
-  death leaves them; to be asked with PLAN 2.17's "a dead nation holds nothing".
-- Seen 2026-10-05 with PLAN 2.16Rg: the toy world's `nations.cols.cells` is the daily count of
-  cells *controlled* (`toyCount`), 0 before the first day, while `World.setOwner` keeps the
-  same column as cells *owned*. Two writers of one column.
-
+- **The watch lists of Phase 3 after its review (PLAN 3.7c, 2026-10-07).** Nine blocks stood
+  here since the Phase 2 review (three of PLAN 3.4Rl and 3.5b, four things seen in passing,
+  the rests of the sixth and seventh reads), and PLAN 3.5 and 3.6 carried some thirty "not
+  done" lines. Every item is now one of four things. What became a task or a line under a
+  later task is in PLAN.md and no longer here: nothing waits on this file staying read.
+  - **Tasks before Phase 4:** PLAN 3.7g (a tag is tied to its elements, ADR-168), 3.7h (a
+    formation is moved across the map in one tick: 43 and 37 in a year), 3.7i (the puppets
+    of a nation that dies by the loss of its capital are a dead nation's for up to a month).
+  - **Lines under later tasks:** PLAN 4.6 (the war with no land front); 7.1 (the frame with
+    many hulls on a GPU; year 1's rise taken apart; the AI's own refused orders); 7.2 (a NaN
+    or an `undefined` written to the state; commands with numbers out of range, the line of
+    `editPaint` to 1e9 among them); 7.4 (what T2 and T3 show of armour, eleven items; the
+    blocks of a contact for the hour after a load; the declutter's four); 1.42 (what the
+    retreat, the spearheads, the mix and the allotment left open for the balance).
+  - **Carried here, each with why it waits:**
+    - *The share of `deploy.test.ts` hangs on one pile-up* (PLAN 3.5b): "after 60 days of
+      Germany against Poland most formations in contact have their enemy's elements in one
+      view" wants more than 0.9 of a whole-world game's formations in contact on one day. It
+      is 100 of 102 in the game as committed and was 99 of 111 in a game that differed by a
+      detail of the allotment (ten Chinese divisions about one Japanese division whose block
+      is deployed against an eleventh, each stopped at `DEPLOY_REACH` 1.3 cells from it). The
+      test was not changed. The next rule that moves the pin may meet it: then it is the
+      deployment of many against one that is to be mended, not the test. (PLAN 3.7h and
+      3.7i move the pin.)
+    - *The Economy tab's balance is income less expenses; research is paid from the treasury
+      besides* (the seventh read's suspicion; France: about 51 a month of 1,074). Not
+      settled: it wants a month's change of gold beside the figure shown. When the panel is
+      next touched.
+    - *A refusal of one command that arrives after a second was sent under the same
+      selection reads as the second's* (ADR-125, "not done"). Needs two commands within one
+      answer's time; when the panel is next touched.
+    - *A revived nation keeps the research budget it died with until the month's start*
+      (the seventh read's suspicion): the economic AI sets it on the first of the month.
+    - *After a command `world.deployed` is filled again by whoever asks* (the sixth read's
+      suspicion): a wreck or an hour's slide could start from the formation's place and not
+      its block. Wants a snapshot test with a command between two hours; not met.
+    - *In a Kill the dying nation emits `CapitalMoved` up to five times*, and for 20 to 33
+      of 102 its `NationEliminated` comes before the last `RevoltSpawned` or `LandCeded`
+      (the sixth read). `CapitalMoved` is not in the history; no state was found lost.
+    - *The random world grows its nations over the graph that wraps at the seam also when
+      `loopingMap` is off* (the option is applied after the build). With the seam's items
+      of PLAN 7.4 when the seam is looked at.
+    - *A save written before ADR-148 keeps the overlord of a nation that was dead in it.*
+      Whether a save of an older build loads at all was not tried; no save has a version.
+      For PLAN 7.2, if saves are to outlive a build.
+  - **Closed, each with its reason:**
+    - *Fronts out of reach* (ADR-149): allotted by reach since PLAN 3.5b (ADR-152); refused
+      orders in a year 11,420 → 1,074 and 6,585 → 1,517. What is left is the war with no
+      front (PLAN 4.6) and the AI's own refusals (PLAN 7.1).
+    - *2,979 `MoveRejected` in two years, which orders not known* (the seventh read): the
+      same; PLAN 3.5b counted them by cause.
+    - *Land occupied with no war behind it in a game without commands* (PLAN 2.16Rg, 45
+      cells at tick 2000): PLAN 3.4Rj (ADR-147), a cell taken by a nation not at war with
+      its owner is the owner's again.
+    - *The toy world's `nations.cols.cells` has two writers, and a formation of strength 0
+      was alive in it at tick 500:* a fixture; no player is offered it.
+    - *The notes "From 3.6a" to "From 3.6e3" under PLAN 3.6:* the work of 3.6e1 to 3.6e5,
+      but for the tags (PLAN 3.7g) and the frame's time with many hulls (PLAN 7.1).
+    - *The tick not measured after PLAN 3.5a1* (two reads of a path per order): PLAN 3.5e
+      measured the phase's code.
+    - *At T2 from 100 m/px outward a tank division is a grid of small marks as any other*
+      (PLAN 3.6a): the small mark of PLAN 3.6e3b (ADR-165).
+    - *Under Open, "PLAN 2.12a is in the working tree and not committed"* (2026-10-05): it
+      was committed that day (`62eb6bc`). Marked RESOLVED and kept.
 - `reference/NOTES.md` (the user's taste notes, highest-priority reference) does not exist
   (checked 2026-10-02). Visual/feel decisions rely on `reference/screens/`, the trailer and
   itch/Steam/devlog text, and are marked lower confidence until notes appear.
@@ -284,49 +298,6 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   before and after passed all 61. Paused pages run no tick, so the A* change under test was not
   involved. Contention does not explain 10×: if it recurs, keep the trace
   (`test-results/…/trace.zip`) and look at the worker boot handshake.
-- **From the seventh read (PLAN 3.4Ra, 2026-10-06), for the review of Phase 3.** None is a
-  task: what a player can meet of the read is PLAN 3.4Rg to 3.4Rk.
-  - *Run by the reader, low: commands the page never sends, applied as given.*
-    `spawnFormation` with a strength of -5 (the column wraps to 4.29 thousand million men,
-    gone in 60 days) or at (1e9, -1e9) (placed at the map's corner); `createAlliance` with
-    one member twice; `setWarFightToDeath` with side 5; `setCore` with province 1.5
-    (`setUnrest` with it reports applied and changes nothing); `grantBuff` on nation 0, on
-    a dead nation or on a formation that is not there; `offerPeace` from nation 0 or a
-    dead nation reports `CommandApplied`. NaN and infinities are refused (ADR-117); a
-    number that is finite and out of range is not looked at.
-  - *Suspicions, not settled:*
-    - The Economy tab's balance is income less expenses; research is paid from the
-      treasury besides (France: about 51 a month of 1,074). Wants a month's change of gold
-      beside the figure shown.
-    - 2,979 `MoveRejected` in two years of seed 99 with no player: which orders of the
-      operational AI are refused, and why, is not known.
-    - A refusal of one command that arrives after a second was sent under the same
-      selection reads as the second's (ADR-125, "not done").
-    - A revived nation keeps the research budget it died with until the month's start.
-- **From the sixth read (PLAN 2.16Ra, 2026-10-05), for the review of Phase 3.** None is a
-  task: what a player can meet of the read is PLAN 2.16Rf to 2.16Ri.
-  - *Run by the reader, low:*
-    - `editPaint` with the tool `line` and a coordinate of 1e9 takes 13 s, with Infinity it
-      does not end (`lineCells`, `src/sim/editor.ts`). Only a worker message or the page's
-      test API can send it: `isCommand` looks at the kind, each handler at its own fields,
-      and this one not at these. The editor's own inputs are guarded.
-    - For the hour after a load, or after any command, the blocks of formations in contact
-      can stand elsewhere than in the game that ran on (seed 99, 2,500 ticks: 975
-      formation-hours, 1.4 cells at most): `findBattles` fills the contacts before combat
-      destroys formations in the tick, and what is asked after a load is worked out from
-      the state after. A picture only; the hashes were equal.
-    - In a Kill the dying nation emits `CapitalMoved` up to five times (89 of 102), and for
-      20 to 33 its `NationEliminated` comes before the last `RevoltSpawned` or `LandCeded`.
-      `CapitalMoved` is not in the history. No state was found lost by it.
-  - *Suspicions, not settled:*
-    - After a command `world.deployed` is filled again by whoever asks (the view's box),
-      and the next hour's `deployedBefore` is that part: a wreck or an hour's slide could
-      start from the formation's place and not its block. Wants a snapshot test with a
-      command between two hours.
-    - The toy world: `nations.cells` is 0 at the start and drifts from the count of owned
-      cells; a formation of strength 0 was alive at tick 500. A fixture.
-    - The random world grows its nations over the graph that wraps at the seam also when
-      `loopingMap` is off (the option is applied after the build).
 - **The watch lists of Phase 2 after its review (PLAN 2.11c, 2026-10-05).** Sixteen lists stood
   here, from four independent reads and twelve tasks, each "for the phase review". Every item of
   theirs is now one of four things. What became a task or a line under a later task is in
