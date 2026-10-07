@@ -7351,3 +7351,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.4Rj (a cell taken from an occupier by a third nation stays occupied with
   no war).
 - **Gate:** green (code, with the ten-year tests; no e2e for a part).
+- **Added after the commit (459e199):** the first form of the rule gave a cell with a living
+  owner and no controller in the step its owner as controller, dead nation or not. No code
+  found writes such a cell, but a step is now written back exactly unless a nation in it is
+  dead: only a dead controller is replaced. Gate: green.

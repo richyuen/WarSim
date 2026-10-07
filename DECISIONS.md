@@ -178,8 +178,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Decision:** nobody's, with the rule of a death. In `apply`, for each cell of a nation
   step, undo and redo alike: a controller that is not living counts as none; an owner that is
   not living is replaced by that controller (a living nation that held the cell of the dead
-  one keeps it, as `leaveLand` gives it at the death), else by 0; a cell with no controller
-  left is controlled by its owner. `importLayer` reads the id of a dead nation as 0, in the
+  one keeps it, as `leaveLand` gives it at the death), else by 0; a cell whose controller
+  was dead is controlled by its owner. A step with no dead nation in it is written back
+  exactly, a cell with an owner and no controller too. `importLayer` reads the id of a dead nation as 0, in the
   cells it counts and in the step it records.
 - **The step is not rewritten.** The stack is saved state, and `living` is read when the step
   is applied, so a save and its log replay exactly. A nation that lives again (a revival, the

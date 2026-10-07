@@ -279,7 +279,8 @@ function apply(world: World, e: Edit, undo: boolean): void {
       const o = undo ? e.before[i]! : e.after[i]!;
       const own = alive(o) ? o : ctl;
       world.setOwner(c, own);
-      world.setController(c, ctl !== 0 ? ctl : own);
+      // A step with no controller on a cell is written back so: only a dead one is replaced.
+      world.setController(c, k === 0 || ctl !== 0 ? ctl : own);
     } else {
       terrain[c] = undo ? e.before[i]! : e.after[i]!;
       markDirty(world, c);
