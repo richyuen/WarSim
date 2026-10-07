@@ -189,6 +189,8 @@ export const FORMATION_SCHEMA = {
   org: 'f64',
   /** 1 while in contact with an enemy (PLAN 1.13): holds position and fights. */
   engaged: 'u8',
+  /** Hours of its retreat left (PLAN 3.5a): out of battles, of the fronts' pressure and of the AI's orders. 0 = none. */
+  retreat: 'u8',
 } as const;
 
 /** Authoritative unit proxies (SPEC §3.6, PLAN 1.13). */
@@ -510,7 +512,19 @@ export class World {
    * command); they come again from the state.
    */
   contacts: Map<number, number> | null = null;
+  /**
+   * What the hour's battles took of each formation that is still there: [formation, its strength
+   * before, after]. Written by `combatSystem`, read by `orgLossSystem` in the same tick (PLAN
+   * 3.5a). Derived, not state.
+   */
+  battleLosses: number[] = [];
   deployed: Map<number, { x: number; y: number; facing: number } | null> | null = null;
+  /**
+   * Where the formations that an order or the march has moved in the tick `movedTick` stood
+   * before it: x, y, facing (`noteMove`, `elementPlaceBefore` in systems/elements.ts). Derived.
+   */
+  movedFrom = new Map<number, [number, number, number]>();
+  movedTick = -1;
   /** The deployments of the hour before (see elementPlaceBefore in systems/elements.ts); null: not known. */
   deployedBefore: Map<number, { x: number; y: number; facing: number } | null> | null = null;
   /** Scenario rules for commands (set by the Sim; not state). */

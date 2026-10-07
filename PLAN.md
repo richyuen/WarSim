@@ -3324,7 +3324,7 @@ quick sweep as a smoke test.
   **Split 2026-10-06** (five parts, one rule each; each moves the pin, so each runs by hand
   the specs that watch a scene at a fixed place and hour, `wrecks1938` first, and names them
   in PROGRESS):
-  - [ ] 3.5a **The retreat** (SPEC §5.2 step 4). Decided: a part of this task, and its
+  - [x] 3.5a **The retreat** (SPEC §5.2 step 4). Decided: a part of this task, and its
     first, since a spearhead that cannot leave a fight cannot be measured. Org is lost to
     the losses of a battle and is not got back in contact; a formation in contact with
     little org breaks off, marches to ground of its side out of the enemy's contact, and
@@ -3334,6 +3334,34 @@ quick sweep as a smoke test.
     not fired on, is not ordered back that day; one with no ground behind it holds; a save
     has the state); of the 34 formations of 3.4Re, how many still stand in contact with
     their infantry gone; the tick before and after.
+    **Done 2026-10-07 (ADR-150).**
+    - *The rule* (`systems/retreat.ts`, `retreat` of `data/combat.json`): org − (1 ÷ 0.3) ×
+      the share of its strength an hour's battle takes, none back in contact; in contact
+      under 0.15 it is ordered to ground of its side out of contact (by the point 3 cells
+      back, else the nearest within 8 cells) and is for 24 hours in no battle, not held by
+      the enemy's cells, pressing none, not ordered by the AI. A try every sixth hour.
+    - *Tests:* `tests/unit/retreat.test.ts` (8, red first; six of them red again with the
+      edits of supply, territory and the AI taken out); `deploy.test.ts` has two enemies
+      on one point. No test changed: the org is lost in a system of its own, so the nine
+      tests that call `combatSystem` alone measure the fire as before.
+    - *Measured* (360 days; seed 99, seed 7): 2,318 and 2,720 retreats; formations
+      destroyed 337 → 105 and 312 → 123; armour with no infantry alive 38 → 13 and 34 → 13
+      formations (3.4Re's 34 was of an older game), in contact 12,511 → 3,235 and 6,973 →
+      2,720 hours. In contact with org under 0.15: 15,731 and 17,151 formation-hours (6 %
+      of those in contact): the wait for the sixth hour, and those with no ground in reach.
+    - *Found beside it, fixed here:* two enemies on one point had no deployment
+      (`deployOf`); the wreck of an element that died in the hour its formation marched
+      into contact lay an hour's march from its sprite (`elementPlaceBefore`, older than
+      the rule). Both in `deploy.test.ts`.
+    - *Specs* (the full suite on the rule: 135 passed, 3 failed): `wrecks1938` watches day
+      35 (was 19); `tiers1938` and `individuals1938` occupy the ground about their battle,
+      so that the division they watch die has nowhere to go. No expect changed.
+    - *Tick* (five years of seed 99, pinned): 1.816 → 1.801 ms; year 1 2.509 → 2.172.
+    - *The pin:* e5df6177 → 7c85fde9.
+    - *Not done* (ADR-150): fire on the retreating; surrender; anything on the page (PLAN
+      3.6 has the pictures of armour, none of a retreat); a formation with no supply
+      retreats from every contact (51 times in a year); whether wars that kill a third of
+      what they did still end (Phase 7).
   - [ ] 3.5b **Allot by reach** (BLOCKERS watch list, ADR-149; PLAN 3.4Rm). 45,987 of 58,232
     orders of two years were refused: the operational AI allots formations to sectors they
     cannot reach and asks every day. A sector that the planner's formations cannot reach

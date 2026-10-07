@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { FIRE_STRIDE, FireField } from '../../src/shared/events';
+import { EventKind, FIRE_STRIDE, FireField } from '../../src/shared/events';
 import { SLOT_SPACING, slotGrid } from '../../src/sim/core/pose';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { cellDist, CONTACT_CELLS, contactsOf, DEPLOY_GAP, DEPLOY_REACH, deployOf, elementIndex, elementPlace, slotCount, slotPlace } from '../../src/sim/systems/elements';
+import { cellDist, CONTACT_CELLS, contactsOf, DEPLOY_GAP, DEPLOY_REACH, deployOf, elementIndex, elementPlace, recomputeStrength, slotCount, slotPlace } from '../../src/sim/systems/elements';
+import { orderMove } from '../../src/sim/systems/movement';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -84,6 +85,66 @@ describe('the blocks of formations in contact are deployed against each other (P
     const pa = places(w, a);
     expect(pa[0]![0]).toBeGreaterThan(pa.at(-1)![0]);
     for (const p of all) expect(w.onLand(p[0], p[1])).toBe(true);
+  });
+
+  it('two divisions on one point stand front to front too: the lower id faces east, the gap between their front rows (PLAN 3.5a)', () => {
+    const { s, a, b, site } = pair();
+    const w = s.world;
+    const fc = w.formations.cols;
+    fc.x[b] = site[0]; // a formation on the retreat is in no contact, and may halt where an enemy stands
+    s.step(2);
+    expect([fc.engaged[a], fc.engaged[b]]).toEqual([1, 1]);
+    const da = deployOf(w, a, 28)!;
+    const db = deployOf(w, b, 28)!;
+    expect(da).not.toBeNull();
+    expect(db).not.toBeNull();
+    const depth = slotGrid(28).rows * SLOT_SPACING;
+    expect(a).toBeLessThan(b);
+    expect(da.facing).toBe(0);
+    expect(Math.abs(db.facing)).toBeCloseTo(Math.PI, 12);
+    expect(db.x - da.x).toBeCloseTo(DEPLOY_GAP + depth, 12);
+    expect([da.y, db.y]).toEqual([site[1], site[1]]);
+  });
+
+  it('an element that dies in the hour its formation marched into contact leaves its event where it stood the hour before (PLAN 3.5a)', () => {
+    const { s, a, b, site } = pair();
+    const w = s.world;
+    const fc = w.formations.cols;
+    const ec = w.elements.cols;
+    // The German division a cell back, worn to a man an element, on the march to the cell beside the Polish one.
+    // (Not the Polish one on the march: the cell before it turns German, and a march waits before the enemy's cell.)
+    fc.x[a] = site[0] - 1;
+    for (const e of elementIndex(w).get(a)!) ec.strength[e] = 1;
+    recomputeStrength(w, a);
+    expect(orderMove(w, a, site[0], site[1])).toBe(true);
+    expect(cellDist(w, fc.x[a]!, fc.y[a]!, fc.x[b]!, fc.y[b]!)).toBeGreaterThan(CONTACT_CELLS);
+    const mine = new Set(elementIndex(w).get(a)!);
+    let deaths = 0;
+    let onTheMarch = 0;
+    for (let hour = 0; hour < 24 * 5 && deaths === 0; hour++) {
+      const list = elementIndex(w).get(a)!;
+      const slots = slotCount(w, a, list.length);
+      const stood = new Map(list.map((e) => [e, elementPlace(w, a, ec.slot[e]!, slots)] as const));
+      const from = fc.x[a]!;
+      const inContact = fc.engaged[a] === 1;
+      s.step(1, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) {
+          if (ev[i + 1] !== EventKind.ElementDestroyed || !mine.has(ev[i + 2]!)) continue;
+          deaths++;
+          if (!inContact && world.formations.has(a) && fc.x[a] !== from) onTheMarch++;
+          const [x, y] = stood.get(ev[i + 2]!)!;
+          expect(ev[i + 4]).toBeCloseTo(x, 9);
+          expect(ev[i + 5]).toBeCloseTo(y, 9);
+        }
+        ev.length = 0;
+        world.out.fires.length = 0;
+      });
+    }
+    expect(deaths).toBeGreaterThan(0);
+    // The case: not in contact the hour before, and moved in the hour of its first losses.
+    expect(onTheMarch).toBeGreaterThan(0);
+    expect(w.formations.has(b)).toBe(true);
   });
 
   it('the shots of an hour are between the deployed blocks: a tracer is a kilometre or three long, not a cell', () => {

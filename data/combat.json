@@ -18,5 +18,14 @@
   "open": {
     "terrain": ["plains", "grassland", "desert"],
     "fire": 1.25
+  },
+  "retreat": {
+    "lossToBreak": 0.3,
+    "below": 0.15,
+    "hours": 24,
+    "cells": 3,
+    "snap": 2,
+    "reach": 8,
+    "retryHours": 6
   }
 }

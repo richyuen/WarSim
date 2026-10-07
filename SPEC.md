@@ -783,8 +783,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   A formation with no manoeuvre element on foot moves at 0.25 + 0.75 × supply of its speed.
 - *Org* (PLAN 3.2c, ADR-135): a formation column, 0 to 1, 1 when made. A formation with no
   manoeuvre element on foot loses 1/32 an hour while its supply is 0; every formation on a
-  network that feeds it gains 1/32 an hour. Its fire is × (0.25 + 0.75 × org). Org lost to
-  damage and the retreat (§5.2 step 4) are not modelled.
+  network that feeds it gains 1/32 an hour while it is not in contact (PLAN 3.5a). Its fire
+  is × (0.25 + 0.75 × org). Org is also lost to the losses of a battle, and a formation with
+  little of it retreats: §5.2 step 4.
 
 **Land movement (PLAN 1.11, ADR-24; `src/sim/nav/`, `src/sim/systems/movement.ts`).**
 - *Grid:* the true km per cell row comes from the Miller geometry. Move cost per [mobility][terrain]
@@ -844,7 +845,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   formation's place.
 
 *Implemented v1 (PLAN 1.14, ADR-27; `src/sim/systems/territory.ts`):*
-- *Pressure:* each formation of a nation at war projects strength/1000 × (0.5 + 0.5 supply) ×
+- *Pressure:* each formation of a nation at war, but one on the retreat (§5.2 step 4), projects strength/1000 × (0.5 + 0.5 supply) ×
   (1 − d/3) into cells within 2 cells.
 - *Frontier:* the frontier set is derived. It is rebuilt by one scan only when invalidated (load,
   a war change, or an outside controller change); flips maintain it locally.
@@ -1022,8 +1023,40 @@ bombardment) participants join through their missions.
   - A 2:1 fight ends in 12.5 days, with the winner losing 0.263 of the loser's strength
     (square law: 0.268).
   - An 80-division battle costs 3.2 ms per tick.
-- *Deferred:* org lost to damage and the retreat (step 4; the org there is, is lost to want
-  of supply: §4), entrenchment, experience, night and weather. Of the modifiers of step 2
+- *Org and the retreat* (step 4; PLAN 3.5a, ADR-150; `systems/retreat.ts`,
+  `retreat` of `data/combat.json`):
+  - *Org:* after the hour's volleys a formation loses (1 ÷ 0.3) × the share of its strength
+    that the hour took: a battle that takes three tenths of it takes all its org. In contact
+    it gets none back (§4).
+  - *The retreat:* a formation in contact with org under 0.15 breaks off. It is ordered to
+    the ground of its side (its nation, its supply bloc, a nation fighting beside it) nearest
+    the point 3 cells from its nearest enemy on its own far side, within 2 cells of that
+    point, on its landmass and out of the contact of every enemy about; with none there, to
+    the nearest such ground within 8 cells of itself. For 24 hours (`formations.retreat`,
+    state) it is in no contact and no battle: it does not fire and is not fired on, its march
+    is held neither by contact nor by cells the enemy holds, it presses no cell (§5.1), and
+    the operational AI gives it no order. On its network it has 0.75 of its org back by then.
+    `FormationRetreated` is the event (not in the history).
+  - *No ground within reach:* it holds and fights, with a quarter of its fire, and tries
+    again every 6 hours (when (tick + id) mod 6 = 0; the first try waits for that hour too).
+    The surrender of the encircled is not modelled.
+  - *Where two enemies stand on one point* (a formation on the retreat is in no contact, and
+    may halt where an enemy stands or be marched over): their blocks stand front to front,
+    the lower id facing east (`deployOf`).
+  - *Measured* (the first 360 days, every hour; seed 99 and seed 7; before → after):
+    retreats 0 → 2,318 and 2,720, by 336 and 367 formations; formations destroyed 337 → 105
+    and 312 → 123; elements destroyed 7,904 → 2,975 and 7,196 → 3,361; formation-hours in
+    contact 384,187 → 249,559 and 339,910 → 265,924, of them with org under 0.15: 2,185 →
+    15,731 and 2,929 → 17,151 (the wait for the sixth hour, and those with no ground within
+    reach: the longest 423 and 537 h); formations at the year's end 798 → 1,026 and 823 →
+    1,010. Armour with no infantry alive: 38 → 13 and 34 → 13 formations, in contact for
+    12,511 → 3,235 and 6,973 → 2,720 hours. Cells flipped in each of five years of seed 99:
+    25,592, 28,368, 20,856, 17,270, 15,644 → 22,767, 22,016, 15,720, 13,776, 25,834.
+  - *Not done:* nothing fires on a formation that retreats; no surrender; nothing of it on
+    the page (a retreat looks like a march); a player is not told and can order the formation
+    while it is out of battles; the 2:1 fight below is the fire's alone (`combatSystem`
+    without the org's system), and what a 2:1 fight is with the retreat was not measured.
+- *Deferred:* entrenchment, experience, night and weather. Of the modifiers of step 2
   below, entrenchment, river crossing, experience, air superiority and night/weather are
   read by nothing yet.
 1. **Target selection** (deterministic): each element scores enemy elements in range
@@ -1277,7 +1310,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Cadence:* each 6 h, a nation at war plans once a day (staggered).
   - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a
     sector's 3×3 neighbourhood.
-  - *Who deploys:* free (not engaged) formations within 60 cells of the front. The farthest 15%
+  - *Who deploys:* free (not engaged, not on the retreat: §5.2 step 4) formations within 60 cells of the front. The farthest 15%
     stay in reserve.
   - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
     sector getting one while formations last. Formations already marching into a sector keep it,

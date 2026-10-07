@@ -15,7 +15,9 @@ import { assets1938 } from '../helpers/earth';
 const { w: W } = SIZE_1938;
 // The hour was 24 * 14 + 8 until PLAN 3.4Rn: with the attackers fed near their network (PLAN
 // 3.4Rf) the same battle, in Spain, has its dead five days later (4 in the viewport then, 41 now).
-const START = 24 * 19;
+// 24 * 19 until PLAN 3.5a: formations retreat before they are destroyed, and the first weeks
+// have few dead (2 in these 16 hours). Day 35, in Spain again: 14, all in the viewport.
+const START = 24 * 35;
 const HOURS = 16;
 const M_PER_PX = 120;
 /** Slots of a block are this far apart (cells): a wreck lies where the sprite stood, not a slot away. */

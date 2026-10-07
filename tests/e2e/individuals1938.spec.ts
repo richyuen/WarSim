@@ -30,7 +30,11 @@ const figuresOf = (units: number, size: number): number => (size <= MAX_FIGURES 
 /** How far from its element's middle a figure can stand: the corner of the footprint (0.024 cells square), and a hair. */
 const FOOTPRINT_REACH = 0.012 * Math.SQRT2 + 1e-9;
 
+// The ground about the site is occupied by Japan (since PLAN 3.5a): a division with ground of
+// its side within reach breaks off when its org is gone, and the Chinese one did, before three
+// of its elements had died. With none it holds, and the battle is fought to its end.
 const SETUP: Command[] = [
+  { kind: 'paintControl', nation: JAP, x: SITE[0], y: SITE[1], r: 14 },
   { kind: 'setAi', nation: JAP, enabled: false },
   { kind: 'setAi', nation: CHI, enabled: false },
   { kind: 'spawnFormation', nation: JAP, x: SITE[0], y: SITE[1], strength: 0, template: template('infantry_div') },

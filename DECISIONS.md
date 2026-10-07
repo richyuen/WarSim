@@ -167,6 +167,101 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-150 · 2026-10-07 · accepted — The retreat: org is lost to the losses of a battle, and a formation in contact with little org breaks off for a day (PLAN 3.5a)
+
+- **Context:** SPEC §5.2 step 4 had no task. Nothing left contact: a formation held until one
+  side was destroyed (PLAN 3.4Re: 34 formations of armour with their infantry gone, 7,334
+  hours in contact), and org was lost only to want of supply (ADR-135). PLAN 3.5 asked
+  whether the retreat is a part of it: it is its first part, since a spearhead that cannot
+  leave a fight is spent in its first one and cannot be measured.
+- **Decision** (`src/sim/systems/retreat.ts`; `retreat` of `data/combat.json`):
+  - *Org with the losses* (`orgLossSystem`, after combat): org − (1 ÷ 0.3) × the share of its
+    strength that the hour's battle took. Three tenths: the loss at which a division is held
+    to be unfit to go on; with the threshold below it breaks off at a quarter.
+  - *No org back in contact* (`supply.ts`). With it, 1/32 an hour came back on the network
+    and a loss of 0.3 % an hour (the loser of a 2:1 fight) took 1/90: nobody's org would
+    ever fall in a battle.
+  - *The retreat* (`retreatSystem`, after movement, before combat): in contact with org
+    under 0.15 (SPEC's figure), to ground of its side out of every near enemy's contact: by
+    the point 3 cells from its nearest enemy (twice the reach of contact), within 2 cells of
+    it; else the nearest within 8 cells of itself. For 24 hours (a column, `retreat`, state)
+    it is in no battle, is held on its march neither by contact nor by the enemy's cells,
+    presses no cell and gets no order from the operational AI. A day: on its network it has
+    0.75 of its org back, so it does not come back to break again in the first hour.
+  - *A try every sixth hour* by (tick + id), the first too: a refused search of a short
+    route costs 3.3 ms (PLAN 3.4Rm), and a battle's formations would all ask in one tick.
+  - *From the state alone:* the enemies are found by a scan of the formations, not from the
+    hour's cached contacts, which a load drops (the critic's R2-B4 was state of that kind).
+- **Why out of battles altogether, with no fire on it:** a formation that is fired on while
+  it walks away at 1.2 km an hour, with a quarter of its fire, is destroyed on the way, and
+  the rule would change nothing. Pursuit fire is a rule of its own (not done).
+- **Why the enemy's cells do not hold it** (found by measuring; not in the first version):
+  3,580 of 3,588 tries that found no ground in 180 days of seed 99 were by formations
+  standing on a cell the enemy held, with none of their side within 2 cells of the point:
+  attackers behind whom the front had gone back. With the search widened to 8 cells and the
+  march let across the enemy's cells, the formation-hours in contact with org under 0.15
+  fell from 32,499 to 15,731 in the year (seed 99), and the retreats rose from 1,163 to
+  2,318.
+- **Where the org is lost:** in a system of its own after `combatSystem`, from what that
+  leaves in `world.battleLosses` (derived, the same tick). In `combatSystem` itself it broke
+  nine tests that call it alone to measure the fire (the square law of a fight to the end,
+  the matrix of PLAN 3.4, the forest of 3.3): they are tests of the fire, and are unchanged.
+- **Found on the way:** two enemies on one point. A formation on the retreat is in no
+  contact, halts at a cell's point where an enemy may stand, and is marched over; a day
+  later the two are in contact at distance 0, and `deployOf` had no direction for their
+  blocks (null: `warBattle.test.ts` failed on it). They stand front to front, the lower id
+  facing east (`deploy.test.ts`). 1,517 formation-hours of it in the year before the march
+  could cross the enemy's cells, 18 after (seed 99; 0 in seed 7).
+- **Found on the way, older than the rule:** the wreck of an element that died in the hour
+  its formation marched into contact lay an hour's march from its sprite (`wrecks1938`:
+  0.075 cells; the unit test: 0.106). `elementPlaceBefore` took a formation that was not
+  deployed the hour before to stand where it stands now, and the march of the hour had moved
+  it. Rare while the first hour of a contact killed nothing; a formation back from a retreat
+  comes with battalions nearly dead. `noteMove` keeps where a formation stood before an
+  order or the march moved it in the tick (`world.movedFrom`, derived), and the event has
+  that place (`deploy.test.ts`, red without it).
+- **Specs whose scene moved** (no expect changed; the full suite on the rule: 135 passed, 3
+  failed, 1 did not run):
+  - `wrecks1938`: the hour is 24 × 35, was 24 × 19. Seed 1938 has 1,612 elements dead in 90
+    days, 3,915 before; by week 0, 0, 2, 0, 22, 47, 30, 89, 287, 197, 535, 152, 251. The 16
+    hours from day 35, in Spain: 14 dead, all in the viewport.
+  - `tiers1938` and `individuals1938` spawn a Chinese division against two Japanese with a
+    buff, on Chinese ground, and watch it die. It broke off before three elements had died.
+    Their setup now occupies the ground for 14 cells about (`paintControl`): with none of
+    its side within reach the division holds, as the rule has it. (The two sides swapped
+    was tried first: the lone division was gone in 7 hours with four battalions under 64
+    men at most, where `individuals1938` asks for six.)
+- **Measured** (the first 360 days, every hour, `.cache/35a/measure.ts`, scratch; before →
+  after):
+
+  | | seed 99 | seed 7 |
+  | --- | --- | --- |
+  | retreats (formations) | 0 → 2,318 (336) | 0 → 2,720 (367) |
+  | most by one formation | 40 | 51 |
+  | formations destroyed | 337 → 105 | 312 → 123 |
+  | elements destroyed | 7,904 → 2,975 | 7,196 → 3,361 |
+  | formation-hours in contact | 384,187 → 249,559 | 339,910 → 265,924 |
+  | of them with org under 0.15 | 2,185 → 15,731 | 2,929 → 17,151 |
+  | longest such stand of one formation | 335 → 423 h | 454 → 537 h |
+  | formations at the year's end | 798 → 1,026 | 823 → 1,010 |
+  | armour with no infantry alive (formations) | 38 → 13 | 34 → 13 |
+  | its hours in contact | 12,511 → 3,235 | 6,973 → 2,720 |
+  | orders refused (`MoveRejected`) | 9,433 → 7,248 | 10,284 → 7,809 |
+
+  Cells flipped in each of five years of seed 99: 25,592, 28,368, 20,856, 17,270, 15,644 →
+  22,767, 22,016, 15,720, 13,776, 25,834: the fronts move as before.
+- **Tick** (five years of seed 99, pinned, one run each): mean 1.816 → 1.801 ms, year 1
+  2.509 → 2.172 (budget 2.4), year 2 1.753 → 2.224, year 5 1.482 → 1.568. A different
+  game: not a gain or a loss of the rule's own.
+- **The pin:** e5df6177 → 7c85fde9. A save from before does not load (a column more).
+- **Not done, and what follows:** war kills a third of the formations it did. Whether wars
+  still end, and how (exhaustion, the score), was not looked at: balance, Phase 7 (ADR-58).
+  A formation with no supply keeps under 0.15 and retreats from every contact (40 and 51
+  times in the year): not looked into. No fire on the retreating; no surrender of those
+  with no ground within reach; nothing on the page; a player is not told and can order a
+  formation that is out of battles; the AI does not pull a formation out before it breaks
+  (PLAN 3.5c).
+
 ### ADR-149 · 2026-10-06 · accepted — No march across a nation that is not in the war; the path of a march is saved (PLAN 3.4Rl)
 
 - **Context:** found in PLAN 3.4Rf (ADR-143). `findRoute` asked the ground and not its

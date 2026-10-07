@@ -7554,3 +7554,55 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **PLAN 3.4R ticked.** The review count starts again at 3.5.
 - **Next:** PLAN 3.5 (the AI uses armour as spearheads; it also asks for fronts it cannot
   reach).
+
+## 2026-10-07 — PLAN 3.5 split; 3.5a: the retreat (ADR-150)
+
+- **Start:** gate green on a clean tree; critic not due (`3d6a2b2`, one run a phase).
+- **The split** (`5ef158b`, documents): 3.5a the retreat, 3.5b allot by reach, 3.5c
+  spearheads, 3.5d the mix, 3.5e the metric and the tick. The retreat is a part of 3.5 and
+  its first: a spearhead that cannot leave a fight cannot be measured.
+- **The rule** (`systems/retreat.ts`, `retreat` of `data/combat.json`): org − (1 ÷ 0.3) × the
+  share of its strength an hour's battle takes; none back in contact. In contact under 0.15
+  a formation is ordered to ground of its side out of contact (by the point 3 cells back,
+  else the nearest within 8 cells) and is for 24 hours in no battle, not held by the
+  enemy's cells, pressing none, not ordered by the AI. A try every sixth hour. A column
+  (`retreat`) and an event (`FormationRetreated`).
+- **Measured** (360 days, seed 99 and seed 7; before → after): retreats 0 → 2,318 and 2,720;
+  formations destroyed 337 → 105 and 312 → 123; elements destroyed 7,904 → 2,975 and 7,196
+  → 3,361; armour with no infantry alive 38 → 13 and 34 → 13 formations, in contact 12,511
+  → 3,235 and 6,973 → 2,720 hours; formations at the year's end 798 → 1,026 and 823 → 1,010.
+  Cells flipped in five years of seed 99: 25,592, 28,368, 20,856, 17,270, 15,644 → 22,767,
+  22,016, 15,720, 13,776, 25,834.
+- **Tick** (five years of seed 99, pinned, one run each): mean 1.816 → 1.801 ms (budget
+  1.5); year 1 2.509 → 2.172 (budget 2.4); year 2 1.753 → 2.224. Another game, not a gain.
+- **The pin:** e5df6177 → 7c85fde9.
+- **Gotchas:**
+  - The first version looked for ground only by the point 3 cells back: 3,580 of 3,588
+    refused tries in 180 days were formations on a cell the enemy held, the front gone back
+    behind them. The search within 8 cells and the march across the enemy's cells halved the
+    hours in contact with no org (32,499 → 15,731 in the year).
+  - The org lost in `combatSystem` itself broke nine tests that call it alone (the square
+    law, the matrix of 3.4, the forest of 3.3). It is a system of its own after combat
+    (`orgLossSystem`, from `world.battleLosses`); no test was changed.
+  - A formation that is in no contact halts where an enemy stands: two enemies on one point
+    had no deployment (`warBattle.test.ts` failed on a null). They stand front to front.
+  - Older than the rule, shown by it: the wreck of an element that died in the hour its
+    formation marched into contact lay an hour's march from its sprite. `noteMove`.
+  - **`node_modules` deleted by a worktree's removal.** For the figures of before, a
+    worktree of HEAD under `.cache/35a/wt` with `node_modules` linked in by `mklink /J`;
+    `git worktree remove --force` went through the link and deleted part of the real one
+    (`.bin`, `@playwright/test`) while the e2e suite ran: "Target crashed" and 100 tests
+    failed at 0 ms. The link removed by `rmdir`, `npm ci` (the lockfile unchanged), the
+    suite run again. No tracked file was touched.
+- **e2e** (the full suite by hand on the rule, 9.5 min): 135 passed, 3 failed, 1 did not
+  run. The three watch dead at a fixed place and hour: `wrecks1938` (day 35, was 19),
+  `tiers1938` and `individuals1938` (the ground about their spawned battle is occupied, so
+  that the division they watch die holds). The three alone after that (`--project=chromium`,
+  1.0 min): passed; the wrecks 14 of 14 in the viewport, 0 cells from their sprites. No
+  expect changed. `docs/evidence/2.4`, `2.5` and `2.6` were not taken again.
+- **Not done** (ADR-150): fire on the retreating; the surrender of those with no ground in
+  reach (they hold: 6 % of the formation-hours in contact are with org under 0.15, the
+  longest stand 423 and 537 h); a formation with no supply retreats from every contact (40
+  and 51 times in the year); nothing of a retreat on the page, and a player is not told;
+  what a 2:1 fight is now; whether wars that kill a third of what they did still end
+  (balance, Phase 7).

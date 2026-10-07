@@ -95,6 +95,8 @@ export const EventKind = {
   CommandRefused: 37,
   /** a = nation, b = tech (index into the scenario's techs): it knows the tech now (global; PLAN 3.1b). */
   TechResearched: 38,
+  /** a = formation id, b = nation, (x, y) = where it broke off: with little org it leaves its battle (PLAN 3.5a). */
+  FormationRetreated: 39,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

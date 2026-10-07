@@ -5,7 +5,8 @@
  * (BUCKET_CELLS ≈ 40–50 km at M). Two formations of nations at war whose centres are within
  * CONTACT_CELLS are in contact; connected contacts form one battle (derived each tick; a
  * persistent battle record with names and major-battle state comes with SPEC §5.4). Formations
- * in contact are `engaged`: they hold position (movement pauses) and fight.
+ * in contact are `engaged`: they hold position (movement pauses) and fight. A formation on the
+ * retreat (`systems/retreat.ts`) is in no contact and no battle.
  *
  * Fire (per battle, per hour): every element picks a target among the elements of hostile
  * formations in its battle, weighted by effectiveness × target health (strength × hpPerUnit: a
@@ -23,6 +24,9 @@
  * All fire in an hour is computed before any loss is applied (simultaneous volleys), so the
  * order of elements cannot bias the result; total fire ∝ surviving strength (Lanchester square).
  * Each volley emits a FireEvent (TickOutputs.fires; not state).
+ *
+ * What the hour took of each formation is left in `world.battleLosses` for the org that goes
+ * with it (`orgLossSystem` of `systems/retreat.ts`, PLAN 3.5a).
  */
 import combatJson from '../../../data/combat.json' with { type: 'json' };
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
@@ -80,7 +84,8 @@ export function findBattles(world: World): number[][] {
   const atWar = world.wars.nations();
   f.forEach((id) => {
     c.engaged[id] = 0;
-    if (!idx.has(id) || !atWar.has(c.nation[id]!)) return;
+    // One on the retreat is in no battle (PLAN 3.5a): it does not fire and is not fired on.
+    if (!idx.has(id) || !atWar.has(c.nation[id]!) || c.retreat[id]! > 0) return;
     fighters.push(id);
     const k = Math.floor(c.y[id]! / BUCKET_CELLS) * bw + Math.floor(c.x[id]! / BUCKET_CELLS);
     let b = buckets.get(k);
@@ -152,6 +157,7 @@ function effectiveness(us: UnitRule, ut: UnitRule): number {
 export const ORG_FIRE = 0.25;
 
 export function combatSystem(world: World): void {
+  world.battleLosses.length = 0;
   const battles = findBattles(world);
   const inMajor = updateMajorBattles(world, battles); // PLAN 1.23: also ends unmatched ones
   if (battles.length === 0) return;
@@ -278,6 +284,11 @@ export function combatSystem(world: World): void {
     }
     // Simultaneous volleys: apply every loss after all fire is computed, in id order.
     for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);
-    for (const fid of battle) settleFormation(world, fid);
+    for (const fid of battle) {
+      const before = f.strength[fid]!;
+      settleFormation(world, fid);
+      // For the org that goes with the losses (`orgLossSystem`, PLAN 3.5a).
+      if (world.formations.has(fid) && f.strength[fid]! < before) world.battleLosses.push(fid, before, f.strength[fid]!);
+    }
   }
 }

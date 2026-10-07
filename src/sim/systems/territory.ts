@@ -122,7 +122,7 @@ export function territorySystem(world: World): void {
   const f = world.formations.cols;
   world.formations.forEach((id) => {
     const nation = f.nation[id]!;
-    if (!fighting.has(nation)) return;
+    if (!fighting.has(nation) || f.retreat[id]! > 0) return; // on the retreat it holds no ground (PLAN 3.5a)
     const base = (f.strength[id]! / 1000) * (0.5 + 0.5 * f.supply[id]!);
     const cx = Math.floor(f.x[id]!);
     const cy = Math.floor(f.y[id]!);

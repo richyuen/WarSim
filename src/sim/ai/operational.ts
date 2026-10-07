@@ -8,7 +8,7 @@
  * grouped into sectors of SECTOR_CELLS × SECTOR_CELLS cells (ascending key). A sector's threat is
  * the enemy strength in its 3 × 3 sector neighbourhood.
  *
- * Free formations (not engaged) within DEPLOY_RANGE_CELLS of a sector are ranked by distance to
+ * Free formations (not engaged, not on the retreat: PLAN 3.5a) within DEPLOY_RANGE_CELLS of a sector are ranked by distance to
  * the nearest one; the farthest RESERVE share stays put as the reserve (farther ones garrison).
  * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
  * sector gets one while formations last). A formation already marching into a sector keeps it,
@@ -53,7 +53,7 @@ export function operationalAi(world: World): void {
   // days): it is skipped before any front is looked at.
   const free = new Uint32Array(world.nations.highWater);
   world.formations.forEach((id) => {
-    if (f.engaged[id] !== 1) free[f.nation[id]!]!++;
+    if (f.engaged[id] !== 1 && f.retreat[id] === 0) free[f.nation[id]!]!++;
   });
   const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0 && free[n]! > 0).sort((a, b) => a - b);
   if (actors.length === 0) return;
@@ -125,7 +125,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   world.formations.forEach((id) => {
     const m = f.nation[id]!;
     if (m === n) {
-      if (f.engaged[id] !== 1) mine.push(id);
+      if (f.engaged[id] !== 1 && f.retreat[id] === 0) mine.push(id);
       return;
     }
     if (!enemy(m)) return;

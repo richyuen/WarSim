@@ -94,6 +94,22 @@ export const CombatFile = z.strictObject({
    * target's side has a unit of `gunsOnGuns.shooter` alive in the battle.
    */
   open: z.strictObject({ terrain: z.array(z.enum(TERRAIN_IDS)).min(1), fire: mult }),
+  /**
+   * PLAN 3.5a: a formation loses all its org to a battle that takes the share `lossToBreak` of
+   * its strength. In contact with org under `below` it breaks off for `hours`: to the ground of
+   * its side nearest the point `cells` away from its nearest enemy, within `snap` cells of it,
+   * or with none there to the ground of its side nearest itself within `reach` cells.
+   * One that finds none tries again every `retryHours`.
+   */
+  retreat: z.strictObject({
+    lossToBreak: z.number().positive().max(1),
+    below: z.number().positive().max(1),
+    hours: z.number().int().positive().max(255),
+    cells: z.number().positive(),
+    snap: z.number().int().nonnegative(),
+    reach: z.number().int().nonnegative(),
+    retryHours: z.number().int().positive(),
+  }),
 });
 
 // ── unit types (data/units/*.json) ───────────────────────────────────────────

@@ -9,7 +9,8 @@
  * cell is step km × terrain move cost for the template's mobility ÷ (speed × MARCH_DUTY × the
  * template's own share of its speed on that ground, PLAN 3.3b).
  * A formation waits before a cell held by a nation it is at war with until the territory system
- * flips it, so armies advance with their front instead of running ahead of it.
+ * flips it, so armies advance with their front instead of running ahead of it; a formation on
+ * the retreat (`systems/retreat.ts`) does not wait.
  * Water is impassable to land formations; crossing cells are walkable (straits). A target cell not
  * reachable from the formation (a coastal speck at map resolution) snaps to the nearest reachable
  * cell within TARGET_SNAP_CELLS; beyond that the order is rejected.
@@ -35,6 +36,7 @@ import { nearestCellWhere } from '../data/ownership';
 import { findRoute, nodeGroups } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { navOf, type World } from '../world';
+import { noteMove } from './elements';
 import { spawnPoint } from './production';
 import { blocOf } from './supply';
 
@@ -122,6 +124,7 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);
     return false;
   }
+  noteMove(world, id);
   c.moving[id] = 1;
   c.originCell[id] = origin;
   c.targetCell[id] = target;
@@ -166,6 +169,7 @@ export function movementSystem(world: World): void {
       c.moving[id] = 0;
       return;
     }
+    noteMove(world, id);
     const costRow = MOVE_COST[rule.mobility]!;
     const fuelled = rule.mobility === Mobility.foot ? 1 : DRY_SPEED + (1 - DRY_SPEED) * c.supply[id]!;
     const kmPerHour = rule.speedKmh * MARCH_DUTY * fuelled * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
@@ -180,7 +184,8 @@ export function movementSystem(world: World): void {
       // Enemy-held ground is entered only once it flips (PLAN 1.14): the advance follows the front.
       const holder = world.cells.controller[b]!;
       if (holder !== 0 && holder !== nation) {
-        if (world.wars.atWar(nation, holder)) break;
+        // Not a formation on the retreat (PLAN 3.5a): it goes back over ground the enemy has taken behind it.
+        if (world.wars.atWar(nation, holder) && c.retreat[id] === 0) break;
         // Ground that has become a third nation's since the order: the march ends before it.
         if (holder !== world.cells.controller[a] && foreignTo(world, nation, holder)) {
           barred = true;

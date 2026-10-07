@@ -23,6 +23,7 @@ import { collapseSystem } from './systems/revival';
 import { statsSystem } from './stats';
 import { applyGameOptions } from './gameOptions';
 import { revoltSystem } from './systems/revolts';
+import { orgLossSystem, retreatSystem } from './systems/retreat';
 import { supplySystem } from './systems/supply';
 import { territorySystem } from './systems/territory';
 import { warSystem } from './systems/war';
@@ -53,7 +54,7 @@ export class Sim {
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
         // engagement and combat (8), territory (9).
         // AI decides first (SPEC §2.5 step 2), on the state left by the previous tick.
-        this.systems = [buffSystem, strategicAi, operationalAi, productionSystem, researchSystem, economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938), economySystem(ECONOMY_TABLES_1938), efficiencySystem, supplySystem, repatriationSystem, movementSystem, combatSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem, revoltSystem, collapseSystem, statsSystem];
+        this.systems = [buffSystem, strategicAi, operationalAi, productionSystem, researchSystem, economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938), economySystem(ECONOMY_TABLES_1938), efficiencySystem, supplySystem, repatriationSystem, movementSystem, retreatSystem, combatSystem, orgLossSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem, revoltSystem, collapseSystem, statsSystem];
         break;
     }
   }

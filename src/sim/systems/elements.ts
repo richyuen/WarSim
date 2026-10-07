@@ -203,6 +203,15 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
           break;
         }
       }
+    } else {
+      // On the very point it goes towards (PLAN 3.5a: a formation on the retreat is in no
+      // contact and may halt where an enemy stands, and the two are in contact a day later).
+      // The lower id faces east and the other west, each half the gap and half its depth back
+      // from the point, where that is land.
+      const ux = f < enemy ? 1 : -1;
+      const back = DEPLOY_GAP / 2 + depth / 2;
+      const x = fx - ux * back;
+      out = { x: !world.landMask || world.onLand(x, fy) ? x : fx, y: fy, facing: atan2(0, ux) };
     }
   }
   cache.set(f, out);
@@ -225,15 +234,31 @@ export function elementPlace(world: World, f: number, slot: number, count: numbe
  * Where element `slot` of formation `f` stood in the hour before this one's contacts were
  * found: where its sprite was last shown. For the event of its end, which comes in the hour
  * the blocks may be deployed anew (a nearer enemy, a first contact): the wreck lies where the
- * element stood, not where its block is going. Where the hour before is not known (a loaded
- * game's first hour, after a command) it is the place of now.
+ * element stood, not where its block is going. A formation that was not in contact then and
+ * has marched in this hour before it met the enemy stood where `noteMove` has it (PLAN 3.5a:
+ * the wreck of an element that died in its first hour of contact lay an hour's march from its
+ * sprite). Where the hour before is not known (a loaded game's first hour, after a command) it
+ * is the place of now.
  */
 export function elementPlaceBefore(world: World, f: number, slot: number, count: number): [number, number] {
   const before = world.deployedBefore;
   if (!before) return elementPlace(world, f, slot, count);
   const c = world.formations.cols;
   const d = before.get(f);
-  return d ? slotPlace(world, d.x, d.y, d.facing, slot, count) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
+  if (d) return slotPlace(world, d.x, d.y, d.facing, slot, count);
+  const m = world.movedTick === world.tick ? world.movedFrom.get(f) : undefined;
+  return m ? slotPlace(world, m[0], m[1], m[2], slot, count) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
+}
+
+/** Before an order or the march moves formation `f` in this tick: where it stands (`elementPlaceBefore`). The first of a tick counts. */
+export function noteMove(world: World, f: number): void {
+  if (world.movedTick !== world.tick) {
+    world.movedFrom.clear();
+    world.movedTick = world.tick;
+  }
+  if (world.movedFrom.has(f)) return;
+  const c = world.formations.cols;
+  world.movedFrom.set(f, [c.x[f]!, c.y[f]!, c.facing[f]!]);
 }
 
 /**
