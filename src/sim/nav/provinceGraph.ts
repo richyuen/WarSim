@@ -160,6 +160,21 @@ export function nodeGroups(pg: ProvinceGraph, open: Uint8Array): Int32Array {
   return group;
 }
 
+/**
+ * What `findRoute` asks before any search: the two cells are of one landmass, and, from a start
+ * on open ground, of one group of provinces with open ground (`Passage.group`). False: there is
+ * no route. True: there may be one. Who allots formations to places asks this first (the
+ * operational AI, PLAN 3.5b).
+ */
+export function mayReach(g: NavGrid, pg: ProvinceGraph, start: number, goal: number, pass?: Passage): boolean {
+  if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return false;
+  // Who stands on closed ground walks on it and out of it: the provinces are not asked.
+  if (pass?.group === undefined || pass.ok[pass.holder[start]!] !== 1) return true;
+  const a = pg.nodeOf[start]!;
+  const b = pg.nodeOf[goal]!;
+  return a === 0 || b === 0 || pass.group[a] === pass.group[b];
+}
+
 /** Above this straight-line distance (km) routes are planned on the province graph first. */
 export const COARSE_ABOVE_KM = 500;
 
@@ -175,12 +190,11 @@ export const COARSE_ABOVE_KM = 500;
  * 24 times in two years of seed 99, PLAN 3.4Rl).
  */
 export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
-  if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return null; // O(1) unreachable
+  if (!mayReach(g, pg, start, goal, pass)) return null; // O(1) unreachable
   const a = pg.nodeOf[start]!;
   const b = pg.nodeOf[goal]!;
   // Who stands on closed ground walks on it and out of it: the provinces are not asked.
   const open = pass !== undefined && pass.ok[pass.holder[start]!] === 1 ? pass.open : undefined;
-  if (open !== undefined && a !== 0 && b !== 0 && pass!.group![a] !== pass!.group![b]) return null;
   if (a !== 0 && b !== 0 && a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM) {
     const was = g.barred;
     if (open !== undefined && was && was.goal === goal && was.from === a && was.mobility === mobility && was.ok === pass!.ok && g.scratch!.stamp[start] === was.closed) return null;

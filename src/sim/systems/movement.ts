@@ -66,17 +66,24 @@ export function foreignTo(world: World, nation: number, holder: number): boolean
 
 /**
  * The ground a nation's formations may be routed over at this hour (`Passage`). Who orders many
- * formations at once makes it once and hands it to each order.
+ * formations at once makes it once and hands it to each order. `shared`: the passages made in
+ * this hour by whoever asks for several nations, by the holders that are open; a nation with
+ * the same ones gets the same object (PLAN 3.5b).
  */
-export function passageOf(world: World, nation: number): Passage {
+export function passageOf(world: World, nation: number, shared?: Map<string, Passage>): Passage {
   const ok = new Uint8Array(world.nations.highWater + 1).fill(1);
   world.nations.forEach((m) => {
     if (foreignTo(world, nation, m)) ok[m] = 0;
   });
+  const key = shared ? ok.join('') : '';
+  const made = shared?.get(key);
+  if (made) return made;
   const graph = navOf(world).graph;
   const open = new Uint8Array(graph.nodeCount);
   for (const key of world.heldByNode().keys()) if (ok[key % 65536] === 1) open[Math.floor(key / 65536)] = 1;
-  return { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open) };
+  const pass = { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open) };
+  shared?.set(key, pass);
+  return pass;
 }
 
 /** Where a formation stands in a cell of its path: the middle, or the cell's land point (PLAN 2.9a). */
@@ -102,6 +109,30 @@ export function formationPath(world: World, id: number): Int32Array | null {
 }
 
 /**
+ * The cell an order from the cell `origin` to the cell (tx, ty) goes to: the target itself, or,
+ * for one on a coastal speck or across a sea with no strait, the nearest cell of the origin's
+ * landmass within TARGET_SNAP_CELLS (-1: none, and the order is refused). With `mayReach` it
+ * is what `orderMove` asks before it searches; the operational AI asks the same before it
+ * allots (PLAN 3.5b).
+ */
+export function snapTarget(world: World, origin: number, tx: number, ty: number): number {
+  const grid = navOf(world).grid;
+  const comp = grid.component;
+  const { w, h } = world.cells;
+  const from = comp[origin]!;
+  const target = ty * w + tx;
+  if (from !== 0 && comp[target] === from) return target;
+  // By landmass and target: the land does not change, and a planner asks again every day.
+  let snaps = SNAPS.get(grid);
+  if (!snaps) SNAPS.set(grid, (snaps = new Map()));
+  const key = from * w * h + target;
+  let to = snaps.get(key);
+  if (to === undefined) snaps.set(key, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, TARGET_SNAP_CELLS)));
+  return to;
+}
+const SNAPS = new WeakMap<object, Map<number, number>>();
+
+/**
  * Applies a move order; returns false (and emits MoveRejected) when no land route exists that
  * keeps off the ground of nations outside the formation's wars.
  */
@@ -125,9 +156,7 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
   const origin = mid ? was[frac < 0.5 ? at : at + 1]! : Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
   const beyond = mid ? was[frac < 0.5 ? at + 1 : at]! : -1;
   const nav = navOf(world);
-  // Targets on coastal specks or across a strait-less sea snap to the nearest reachable cell.
-  const comp = nav.grid.component;
-  const target = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === comp[origin], tx + 0.5, ty + 0.5, w, h, TARGET_SNAP_CELLS);
+  const target = snapTarget(world, origin, tx, ty);
   const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, pass ?? passageOf(world, c.nation[id]!));
   if (!route) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);

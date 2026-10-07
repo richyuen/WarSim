@@ -9,7 +9,11 @@
  * the enemy strength in its 3 × 3 sector neighbourhood.
  *
  * Free formations (not engaged, not on the retreat: PLAN 3.5a) within DEPLOY_RANGE_CELLS of a sector are ranked by distance to
- * the nearest one; the farthest RESERVE share stays put as the reserve (farther ones garrison).
+ * the nearest one they reach; the farthest RESERVE share stays put as the reserve (farther ones garrison).
+ * Reach (PLAN 3.5b, ADR-152): they are classes by where they stand (landmass, and group of
+ * provinces with ground open to the nation), and a class reaches a sector when an order to its
+ * front cell would not be refused before the search. Each class is allotted by itself, to the
+ * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
  * sector gets one while formations last). A formation already marching into a sector keeps it,
  * whatever the sector's allotment is today (ADR-53: the allotment moves every day with the threat,
@@ -19,10 +23,10 @@
  * otherwise they hold the own front cell nearest the centre. Orders already being followed
  * (target within one sector) or already reached are not re-issued.
  */
-import { orderMove, passageOf } from '../systems/movement';
+import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
 import { neighbours4, type Passage } from '../nav/grid';
-import type { World } from '../world';
+import { navOf, type World } from '../world';
 
 export const STAGGER = 4;
 export const SECTOR_CELLS = 4;
@@ -41,6 +45,8 @@ interface Sector {
   threat: number;
   formations: number[];
   strength: number;
+  /** The own front cell nearest the centre. */
+  hold: number;
 }
 
 export function operationalAi(world: World): void {
@@ -73,7 +79,9 @@ export function operationalAi(world: World): void {
     let k = 0;
     for (const q of neighbours4(c, w, h, world.settings.loopingMap, nb)) fr.near[at + k++] = controller[q]!;
   }
-  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f);
+  // Planners with the same ground open to them (the members of a coalition) share one `Passage`.
+  const passages = new Map<string, Passage>();
+  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f, passages);
 }
 
 /** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
@@ -82,7 +90,7 @@ interface Front {
   near: number[];
 }
 
-function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols']): void {
+function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols'], passages: Map<string, Passage>): void {
   const wars = world.wars;
   // n's enemies as a mask: the tests below run per frontier cell and per formation.
   const enemyOf = new Uint8Array(world.nations.highWater);
@@ -102,7 +110,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       const y = (c - x) / w;
       const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
       let s = sectors.get(key);
-      if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0 }));
+      if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1 }));
       s.cells.push(c);
     }
   }
@@ -139,17 +147,82 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const dy = f.y[id]! - s.cy;
     return dx * dx + dy * dy;
   };
-  // Reserve: the farthest RESERVE share of free formations within range stays put.
-  const nearest = new Map<number, number>();
+  // Within range of a sector: the others stay where they are (garrisons). No formation in
+  // range (45 % of the plans in two years of seed 99, PLAN 3.4Rm): nothing below would give an
+  // order, and the ground is not asked for.
+  const near: number[] = [];
+  const nearD: number[] = [];
   for (const id of mine) {
     let d = Infinity;
     for (const s of list) d = Math.min(d, dist2(id, s));
+    if (d > DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS) continue;
+    near.push(id);
+    nearD.push(d);
+  }
+  if (near.length === 0) return;
+  // Reach (PLAN 3.5b): formations that stand on one landmass and in one group of provinces
+  // with open ground (or on closed ground, which they walk out of) reach the same places.
+  // Each such class is asked once per sector, for the sector's own front cell, what
+  // `orderMove` asks before it searches: the cell the order would go to from that landmass
+  // (`snapTarget`), then `mayReach`, read here from the two groups.
+  const pass = passageOf(world, n, passages);
+  const nav = navOf(world);
+  const land = nav.grid.component;
+  const nodeOf = nav.graph.nodeOf;
+  const group = pass.group!;
+  const classIndex = new Map<number, number>();
+  const classCell: number[] = [];
+  const classGroup: number[] = [];
+  const classOf = new Int32Array(world.formations.highWater);
+  for (const id of near) {
+    const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
+    const node = nodeOf[here]!;
+    const g = node !== 0 && pass.ok[pass.holder[here]!] === 1 ? group[node]! : -1;
+    const key = land[here]! * (nav.graph.nodeCount + 1) + g + 1;
+    let ci = classIndex.get(key);
+    if (ci === undefined) {
+      classIndex.set(key, (ci = classCell.length));
+      classCell.push(here);
+      classGroup.push(g);
+    }
+    classOf[id] = ci;
+  }
+  const sn = list.length;
+  // reached[ci]: the sectors class ci reaches, ascending.
+  const reached: number[][] = classCell.map(() => []);
+  for (let i = 0; i < sn; i++) {
+    const s = list[i]!;
+    s.cells.sort((a, b) => a - b); // `holdCell` takes the first of equals
+    const hold = (s.hold = holdCell(s, w));
+    // From another landmass: the cell of it within the snap of an order, once per landmass.
+    let other: Map<number, number> | undefined;
+    for (let ci = 0; ci < classCell.length; ci++) {
+      const from = classCell[ci]!;
+      const g = classGroup[ci]!;
+      let to = hold;
+      if (land[from] !== land[hold] || land[hold] === 0) {
+        const known = (other ??= new Map()).get(land[from]!);
+        to = known ?? snapTarget(world, from, hold % w, Math.floor(hold / w));
+        if (known === undefined) other.set(land[from]!, to);
+      }
+      if (to >= 0 && (g < 0 || nodeOf[to] === 0 || group[nodeOf[to]!] === g)) reached[ci]!.push(i);
+    }
+  }
+  // Reserve: the farthest RESERVE share of free formations within range of a sector they reach
+  // stays put.
+  const nearest = new Map<number, number>();
+  for (let k = 0; k < near.length; k++) {
+    const id = near[k]!;
+    const ci = classOf[id]!;
+    let d = nearD[k]!;
+    if (reached[ci]!.length < sn) {
+      d = Infinity;
+      for (const i of reached[ci]!) d = Math.min(d, dist2(id, list[i]!));
+    }
     if (d <= DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS) nearest.set(id, d);
   }
   const ranked = [...nearest.keys()].sort((a, b) => nearest.get(a)! - nearest.get(b)! || a - b);
   const active = ranked.slice(0, ranked.length - Math.floor(ranked.length * RESERVE));
-  // No formation to send (45 % of the plans in two years of seed 99, PLAN 3.4Rm): nothing below
-  // would give an order, so the threat is not summed and nothing is allotted.
   if (active.length === 0) return;
   // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood.
   for (const s of list) {
@@ -157,59 +230,81 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const sx = s.key - sy * bw;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s.threat += enemyByBucket.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
   }
-  // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT.
-  const weights = list.map((s) => 1 + s.threat / THREAT_UNIT);
-  const total = weights.reduce((a, b) => a + b, 0);
-  const quota = weights.map((wt) => (active.length * wt) / total);
-  const counts = quota.map((q) => Math.floor(q));
-  let left = active.length - counts.reduce((a, b) => a + b, 0);
-  const order = quota.map((q, i) => [q - Math.floor(q), i] as const).sort((a, b) => b[0] - a[0] || a[1] - b[1]);
-  for (const [, i] of order) {
-    if (left <= 0) break;
-    counts[i]!++;
-    left--;
-  }
-  // Every sector gets one while formations last: take from the largest allotments.
-  for (let i = 0; i < list.length; i++) {
-    if (counts[i]! > 0) continue;
-    let j = -1;
-    for (let k = 0; k < counts.length; k++) if (counts[k]! > 1 && (j < 0 || counts[k]! > counts[j]!)) j = k;
-    if (j < 0) break;
-    counts[j]!--;
-    counts[i] = 1;
-  }
-  // Sticky first: a formation already marching into a sector keeps it, also beyond the sector's
-  // allotment of today (ADR-53). It counts towards the allotment, so fewer others are sent.
-  const free = new Set(active);
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
   const index = new Map(list.map((s, i) => [s.key, i] as const));
-  for (const id of active) {
-    if (f.moving[id] !== 1) continue;
-    const i = index.get(sectorOfCell(f.targetCell[id]!));
-    if (i === undefined) continue;
-    free.delete(id);
-    list[i]!.formations.push(id);
-    list[i]!.strength += f.strength[id]!;
-  }
-  // Then nearest-first, most threatened sectors first.
-  const byThreat = list.map((s, i) => [s, i] as const).sort((a, b) => b[0].threat - a[0].threat || a[0].key - b[0].key);
-  for (const [s, i] of byThreat) {
-    for (let k = s.formations.length; k < counts[i]!; k++) {
-      let best = -1;
-      for (const id of free) if (best < 0 || dist2(id, s) < dist2(best, s) || (dist2(id, s) === dist2(best, s) && id < best)) best = id;
-      if (best < 0) break;
-      free.delete(best);
-      s.formations.push(best);
-      s.strength += f.strength[best]!;
+  const byThreat = list.map((_, i) => i).sort((a, b) => list[b]!.threat - list[a]!.threat || list[a]!.key - list[b]!.key);
+  const byClass: number[][] = classCell.map(() => []);
+  for (const id of active) byClass[classOf[id]!]!.push(id);
+  /** Of the class in hand: a sector's place among those it reaches, and how many of the class march into it. */
+  const place = new Int32Array(sn);
+  const has = new Int32Array(sn);
+  // Each class is allotted to the sectors it reaches, and to no other.
+  for (let ci = 0; ci < byClass.length; ci++) {
+    const ids = byClass[ci]!;
+    if (ids.length === 0) continue;
+    const front = reached[ci]!;
+    has.fill(0);
+    place.fill(-1);
+    for (let k = 0; k < front.length; k++) place[front[k]!] = k;
+    // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT.
+    const weights = front.map((i) => 1 + list[i]!.threat / THREAT_UNIT);
+    const total = weights.reduce((a, b) => a + b, 0);
+    const quota = weights.map((wt) => (ids.length * wt) / total);
+    const counts = quota.map((q) => Math.floor(q));
+    let left = ids.length - counts.reduce((a, b) => a + b, 0);
+    const order = quota.map((q, k) => [q - Math.floor(q), k] as const).sort((a, b) => b[0] - a[0] || a[1] - b[1]);
+    for (const [, k] of order) {
+      if (left <= 0) break;
+      counts[k]!++;
+      left--;
+    }
+    // Every sector gets one while formations last: take from the largest allotments.
+    for (let k = 0; k < counts.length; k++) {
+      if (counts[k]! > 0) continue;
+      let j = -1;
+      for (let m = 0; m < counts.length; m++) if (counts[m]! > 1 && (j < 0 || counts[m]! > counts[j]!)) j = m;
+      if (j < 0) break;
+      counts[j]!--;
+      counts[k] = 1;
+    }
+    // Sticky first: a formation already marching into a sector keeps it, also beyond the sector's
+    // allotment of today (ADR-53). It counts towards the allotment, so fewer others are sent.
+    const free = new Set(ids);
+    for (const id of ids) {
+      if (f.moving[id] !== 1) continue;
+      const i = index.get(sectorOfCell(f.targetCell[id]!));
+      if (i === undefined) continue;
+      free.delete(id);
+      list[i]!.formations.push(id);
+      list[i]!.strength += f.strength[id]!;
+      has[i]!++;
+    }
+    // Then nearest-first, most threatened sectors first.
+    for (const i of byThreat) {
+      if (place[i]! < 0) continue;
+      const s = list[i]!;
+      for (let m = has[i]!; m < counts[place[i]!]!; m++) {
+        let best = -1;
+        let bd = Infinity;
+        for (const id of free) {
+          const d = dist2(id, s);
+          if (d < bd || (d === bd && id < best)) {
+            bd = d;
+            best = id;
+          }
+        }
+        if (best < 0) break;
+        free.delete(best);
+        s.formations.push(best);
+        s.strength += f.strength[best]!;
+      }
     }
   }
   // Orders.
-  let pass: Passage | undefined;
   for (const s of list) {
     if (s.formations.length === 0) continue;
-    s.cells.sort((a, b) => a - b); // `holdCell` takes the first of equals
     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
-    const target = attack ? attackCell(world, s, enemy, nb) : holdCell(s, w);
+    const target = attack ? attackCell(world, s, enemy, nb) : s.hold;
     if (target < 0) continue;
     const tx = (target % w) + 0.5;
     const ty = Math.floor(target / w) + 0.5;
@@ -218,7 +313,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, target, w) <= SECTOR_CELLS) continue;
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       if (here === target) continue;
-      orderMove(world, id, tx, ty, (pass ??= passageOf(world, n)));
+      orderMove(world, id, tx, ty, pass);
     }
   }
 }

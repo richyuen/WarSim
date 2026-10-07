@@ -7650,3 +7650,47 @@ No rule changed and nothing on screen changed. One task came out of it.
   with one nation asking 5,108 times. It is what 3.5b is for; not a figure of this rule.
 - **Not done:** the tick (one run of five years is 3.5b's, on both rules).
 - **Next:** PLAN 3.5b, from the stash.
+
+## 2026-10-07 — PLAN 3.5b: the operational AI allots by reach (ADR-152)
+
+- **The rule** (`planNation`): free formations in range are classes by landmass and by
+  group of provinces with open ground (or closed ground); a class reaches a sector when an
+  order to its front cell would not be refused before the search (`snapTarget`,
+  `mayReach`, the latter taken out of `findRoute`). Reserve and allotment are per class,
+  over the sectors it reaches, by the rules of before.
+- **Measured** (360 days, `d2549ce` → the rule; seed 99, seed 7): refused orders 11,420 →
+  1,074 and 6,585 → 1,517 (the AI's: 11,013 → 476, 6,102 → 1,082; a march that ends
+  before ground that has become closed: 357 → 560, 315 → 419). Standing out of contact,
+  nations at war: 3.49 → 2.33 and 3.88 → 3.32 million formation-hours. Cells that changed
+  hands: 36,103 → 51,347 and 45,299 → 45,376.
+- **Tick** (five years of seed 99, pinned, one run each): mean 1.859 → 2.229 ms (budget
+  1.5), year 1 2.461 → 3.041 (budget 2.4), year 5 1.212 → 1.268; cells flipped by year
+  21,770, 21,253, 20,609, 14,575, 12,020 → 30,773, 22,769, 22,565, 25,299, 23,582;
+  formations at the end 1,037 → 1,132. A profile of year 1 (22.7 → 28.7 s): combat 6.2 →
+  8.2 s, `findPath` 5.1 → 3.6, `planNation` without its orders 1.0 → 4.6 (of it old code
+  on more plans: sectors 1.0, enemy scan 0.75, threat and allotment 1.2; the rule's
+  passage and reach 1.2), `passageOf` 0.45 → 0.9. Over budget by more than before; PLAN
+  7.1 has the line. Three cuts that changed no hash: the reach by two integers where the
+  landmass is the same, the snap kept by landmass and target, one passage for planners
+  with the same open holders (2.271 → 2.229 ms).
+- **Tests:** one in `operationalAi.test.ts`, red first (22 refused Italian orders in two
+  days). 877 → 878 unit (the entry before this one says 877 → 880: it was 874 → 877).
+- **The pin:** a100e74b → 158aeb46.
+- **Specs by hand** (`--project=chromium`, 59 s): `wrecks1938` (it found day 37: 18 dead,
+  13 in the subscribed box, 13 in the viewport), `tiers1938`, `individuals1938`: passed,
+  none changed.
+- **Gotchas:**
+  - *My test's first premise was wrong:* Italy reaches Germany by land in this 1938
+    (Austria is German). Which fronts are out of whose reach was not looked up: the test
+    reads the reach from the passage (the Italians stand in more than two reaches) and
+    does not name the places.
+  - *`movement.test.ts` failed on this game* with a defect older than the rule: PLAN
+    3.5a1, the commit before this one.
+  - *Merging classes that reach the same sectors* (for the cost of an allotment per
+    class) is another game, and `deploy.test.ts` fails in it at 99 of 111 (ADR-152,
+    BLOCKERS). Not kept; the test not touched.
+  - A Python script in a Bash heredoc lost its backslashes twice more (memory has the
+    rule: write the script to a file).
+- **Not done:** the 476 and 1,082 orders the AI is still refused; a formation that reaches
+  no front stands; the war with no front. The tick was not brought back.
+- **Next:** PLAN 3.5c (spearheads).

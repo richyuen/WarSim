@@ -1317,6 +1317,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     sector's 3×3 neighbourhood.
   - *Who deploys:* free (not engaged, not on the retreat: §5.2 step 4) formations within 60 cells of the front. The farthest 15%
     stay in reserve.
+  - *Reach* (PLAN 3.5b, ADR-152): those formations are classes by where they stand (the
+    landmass; on it the group of provinces joined by ground open to the nation, §4, or
+    closed ground). A class reaches a sector when an order to the sector's front cell would
+    not be refused before its search. Range and reserve count the sectors a formation
+    reaches; each class is allotted to the sectors it reaches and to no other.
   - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
     sector getting one while formations last. Formations already marching into a sector keep it,
     also beyond the sector's allotment of the day [ADR-53]; the rest fill what is left

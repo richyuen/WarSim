@@ -4,10 +4,12 @@ import { SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
+import { passageOf } from '../../src/sim/systems/movement';
 import { neighbours4 } from '../../src/sim/nav/grid';
-import type { World } from '../../src/sim/world';
+import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { addDivision, nationId, runEvents } from '../helpers/sim1938';
+import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
+import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { destroyFormation } from '../../src/sim/systems/elements';
 
@@ -181,4 +183,41 @@ describe('marches are not countermanded (PLAN 1.42f, ADR-53)', () => {
     expect(marches).toBeGreaterThan(50);
     expect(countermanded).toBe(0);
   }, 180_000);
+});
+
+describe('allot by reach (PLAN 3.5b)', () => {
+  it('fronts with no way between them: each formation is sent to one it can reach, and no order is refused', () => {
+    const ITA = nationId('ITA');
+    const FRA = nationId('FRA');
+    const s = duel();
+    const w = s.world;
+    const f = w.formations.cols;
+    runEvents(s, 1);
+    // Italy fights Poland beside Germany and France alone: fronts in Europe and in Africa, and
+    // an army at home, on its islands and in its colonies, with the sea or a nation at peace
+    // between them.
+    const war = w.wars.between(GER, POL)!.war;
+    war.fightToDeath = [true, true];
+    war.sides[0].push(ITA);
+    w.wars.start([ITA], [FRA], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    w.nations.cols.aiOff[ITA] = 0;
+    w.nations.cols.aggression[ITA] = 0;
+    // Where a formation can go: its landmass, and on it the provinces joined by ground that is
+    // open to Italy (a nation at peace parts one group from the next).
+    const nav = navOf(w);
+    const pass = passageOf(w, ITA);
+    const reachOf = (c: number): string => `${nav.grid.component[c]}:${pass.group![nav.graph.nodeOf[c]!]}`;
+    const italians = w.formations.ids().filter((id) => f.nation[id] === ITA);
+    const stood = new Map(italians.map((id) => [id, reachOf(Math.floor(f.y[id]!) * W + Math.floor(f.x[id]!))] as const));
+    expect(new Set(stood.values()).size).toBeGreaterThan(2);
+    const refused = eventKinds(runEvents(s, 24 * 2), EventKind.MoveRejected).filter(([, nation]) => nation === ITA);
+    expect(refused).toEqual([]);
+    // Whoever marches, marches to a place in its reach; and from more than one of them
+    // somebody does.
+    const marching = italians.filter((id) => w.formations.has(id) && f.moving[id] === 1);
+    for (const id of marching) expect(reachOf(f.targetCell[id]!), `formation ${id}`).toBe(stood.get(id));
+    expect(new Set(marching.map((id) => stood.get(id))).size).toBeGreaterThanOrEqual(2);
+    expect(marching.length).toBeGreaterThan(20);
+  });
 });

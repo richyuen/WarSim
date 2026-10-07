@@ -167,6 +167,63 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-152 · 2026-10-07 · accepted — The operational AI allots a formation to the sectors it can reach, class by class (PLAN 3.5b)
+
+- **Context:** since ADR-149 no march crosses a nation that is not in the war. The
+  operational AI allotted its free formations to front sectors by distance alone, also
+  across a sea or a nation at peace. The order was refused, the formation stood, and the
+  next day's plan asked again: 11,013 of the
+  AI's orders in seed 99's first year (6,102 in seed 7), most of them refused by the
+  provinces at no cost, 1,595 in two years after a search (PLAN 3.4Rm: 3.0 s).
+- **Decision** (`planNation`):
+  - *Classes.* The free formations within range of a sector are put in classes by where
+    they stand: the landmass, and on it the group of provinces joined by ground open to
+    the nation (`Passage.group`); those on closed ground, which they walk out of, are a
+    class of their landmass.
+  - *Reach.* A class reaches a sector when an order from it to the sector's own front cell
+    would not be refused before its search: the cell the order goes to (`snapTarget`: the
+    cell itself, or one of the class's landmass within 3 cells), then what `mayReach` asks
+    (one group, or a start on closed ground). `mayReach` is taken out of `findRoute`,
+    which asks it first: the planner and the order cannot part.
+  - *The reserve* is the farthest 15 % of those in range of a sector they reach; a
+    formation that reaches no sector in range stays where it is.
+  - *The allotment* is made class by class over the sectors the class reaches, by the
+    weights and rules of before (largest remainders over 1 + threat/10,000, one for every
+    sector while formations last, a march into a sector kept, the rest nearest-first).
+    A sector's strength, and so whether it attacks, is of all the classes sent there.
+  - A nation whose formations are one class that reaches every sector is allotted as
+    before, order for order.
+- **Why a test before the search and not the search:** a search is 1.5 to 3.3 ms (PLAN
+  3.4Rm) and a plan has hundreds of pairs of formation and sector; the groups are made
+  once per plan with the passage. What the groups let through and the search then refuses
+  (a province with some open ground that is not open from side to side) is still asked and
+  refused: 476 and 1,082 orders in the year.
+- **Why classes are not merged** when two reach the same sectors (a formation on closed
+  ground and the army beside it): tried, for the cost of an allotment per class. It is
+  another game (hash f98f48ae), in which `deploy.test.ts` fails: 99 of 111 formations in
+  contact on day 60 share a view with their nearest enemy (the test wants more than nine
+  in ten), ten of the twelve others stand about one Chinese division whose block is
+  deployed against an eleventh (`DEPLOY_REACH`, PLAN 2.14c1). The test was not touched and
+  the merge was not kept: it was no part of the rule. In the game of the rule as it is the
+  share is 100 of 102. That the share hangs on one pile-up is in BLOCKERS.
+- **Measured** (360 days, before → after; seed 99, seed 7): refused orders 11,420 → 1,074
+  and 6,585 → 1,517. Formation-hours out of contact and standing, nations at war: 3.49 →
+  2.33 million and 3.88 → 3.32 million. Cells that changed hands: 36,103 → 51,347 and
+  45,299 → 45,376.
+- **Consequences:**
+  - The tick: 1.859 → 2.229 ms over five years of seed 99 (budget 1.5), year 1 2.461 →
+    3.041. The armies that stood march and fight (combat 6.2 → 8.2 s of year 1); the
+    rule's own part is the passage, now made for every plan with a formation in range
+    (0.9 s a year, 0.45 before), less the searches not made (`findPath` 5.1 → 3.6 s).
+    PLAN 7.1 has the line.
+  - `passageOf` takes a map of the hour's passages: planners with the same open holders
+    get one object (the `barred` note of `findRoute` is by that object, and now serves a
+    coalition). `snapTarget` keeps its answers by landmass and target: the land is fixed.
+  - The pin: a100e74b → 158aeb46.
+  - Not done: the war with no front at all (BLOCKERS: France and Portugal with Spain at
+    peace) waits for the navy; a formation that reaches no front stands, and is not
+    brought home or to a port.
+
 ### ADR-151 · 2026-10-07 · accepted — An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1)
 
 - **Context:** a march is a path of cells, the index of the last cell reached and the share

@@ -3387,12 +3387,43 @@ quick sweep as a smoke test.
       one 6-cell square: day 39, 36 dead, 23 in the viewport). No expect changed.
     - *Not done:* the tick was not measured (two reads of a path per order); 3.5b's
       measurement is on both.
-  - [ ] 3.5b **Allot by reach** (BLOCKERS watch list, ADR-149; PLAN 3.4Rm). 45,987 of 58,232
+  - [x] 3.5b **Allot by reach** (BLOCKERS watch list, ADR-149; PLAN 3.4Rm). 45,987 of 58,232
     orders of two years were refused: the operational AI allots formations to sectors they
     cannot reach and asks every day. A sector that the planner's formations cannot reach
     by the `Passage` of the day gets none.
     AT: unit, failing first; the refused orders of seed 99's first year (9,433) and the
     tick before and after.
+    **Done 2026-10-07 (ADR-152).**
+    - *The rule* (`planNation`): the free formations in range are put in classes by where
+      they stand (landmass; group of provinces with ground open to the nation, or closed
+      ground); a class reaches a sector when an order to the sector's front cell would not
+      be refused before its search (`snapTarget`, then what `mayReach` asks). The reserve
+      is of those in range of a sector they reach; each class is allotted, by the weights
+      and rules of before, to the sectors it reaches. One class that reaches every sector
+      is the allotment of before.
+    - *Tests:* `operationalAi.test.ts`, "allot by reach" (Italy against France and, beside
+      Germany, Poland: 22 refused orders in two days before, none now; whoever marches,
+      marches to a place in its reach). `mayReach` is what `findRoute` asks first, taken
+      out of it, so that the two cannot part.
+    - *Measured* (360 days, on `d2549ce` → with the rule; seed 99, seed 7): refused orders
+      11,420 → 1,074 and 6,585 → 1,517; of them the AI's 11,013 → 476 and 6,102 → 1,082
+      (left: the search itself finds no way, in a province that is not open from side to
+      side). Formation-hours of nations at war out of contact and standing: 3.49 → 2.33
+      million and 3.88 → 3.32 million. Cells that changed hands: 36,103 → 51,347 and
+      45,299 → 45,376.
+    - *Tick* (five years of seed 99, pinned, one run each): mean 1.859 → 2.229 ms (budget
+      1.5); year 1 2.461 → 3.041 (budget 2.4). Another game: 124,988 cells flipped in the
+      five years (90,227), combat 6.2 → 8.2 s of year 1, the planner's old parts (the
+      sectors, the enemy scan) 0.9 → 1.7 s. The rule's own: the passage and the reach
+      1.2 s a year (the passage alone was 0.45 s, for the plans that ordered), `findPath`
+      5.1 → 3.6 s. A line under PLAN 7.1.
+    - *The pin:* a100e74b → 158aeb46.
+    - *Specs by hand* (`--project=chromium`, 59 s): `wrecks1938` (day 37 of this game: 18
+      dead, 13 in the viewport), `tiers1938`, `individuals1938` passed; none changed.
+    - *Not done:* a sector allotted more of a class than stand near it takes them from
+      afar, as before; a war with no front (France and Portugal) has none still; the AI's
+      476 and 1,082 refused orders; a class is not merged with another that reaches the
+      same sectors (tried: BLOCKERS, the deployment test's share).
   - [ ] 3.5c **Spearheads.** In a sector that attacks, the armour formations are the ones
     sent at the enemy's cell, and the rest follow or hold. No per-element scan in the
     planner: armour by the template (`EconomyTables.templateArmour`, or a column).
@@ -3535,6 +3566,15 @@ quick sweep as a smoke test.
     1.5 s). Each planner of a coalition builds the sectors of all its partners' fronts.
   - Not the AI: `refreshSupplyNetwork` 12 %, `findBattles` 8 % (half of it one line, the
     lookup of a bucket's neighbours).
+  From PLAN 3.5b (2026-10-07, ADR-152): the tick of seed 99 over five years is 2.23 ms,
+  year 1 3.04 (1.86 and 2.46 before the rule: formations that stood idle march and fight).
+  What year 1 costs, of 28.7 s: `combatSystem` 8.2 s, `planNation` 8.3 s (its orders 3.7,
+  the sectors 1.0, the enemy scan 0.75, the passage and the reach 1.2, the nearest and the
+  threat 0.66, the allotment 0.57), `supplySystem` 4.0, `territorySystem` 2.7. Not cut:
+  - `passageOf` is made for every plan with a formation in range (0.9 s; planners with the
+    same open holders share one). It was made for the plans that ordered.
+  - The sectors and the threat are built for every class's allotment from one list; a
+    nation with formations on many islands has a class for each.
   From the critic's report of 2026-10-05 (the pace in R2-B5; its N9 and N19):
   - **The top speed.** At Max the game makes 885 ticks a second at the start and 794 after
     ten years: 33 to 37 days a second, 10 to 12 s a year. AoC's text gives a month in 0.5 s

@@ -91,6 +91,20 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   between them (France and Portugal with Spain at peace) has no front at all until the
   navy of Phase 4. For PLAN 3.5: allot by reach. Not measured: how many wars of a game have
   no front, and how they end (the deadlock of five years, ADR-47).
+  **2026-10-07 (PLAN 3.5b, ADR-152):** allotted by reach. Refused orders in the year:
+  11,420 → 1,074 (seed 99), 6,585 → 1,517 (seed 7); the AI's own 476 and 1,082, where the
+  provinces let a route through and the search finds none. Still so: the war with no front;
+  a formation that reaches no front stands where it is.
+- **The share of `deploy.test.ts` hangs on one pile-up (PLAN 3.5b, 2026-10-07).** "After 60
+  days of Germany against Poland most formations in contact have their enemy's elements in
+  one view" wants more than 0.9 of a whole-world game's formations in contact on one day.
+  In a game that differs by a detail of the allotment (classes of equal reach merged: tried
+  and not kept, ADR-152) it is 99 of 111: ten divisions about one Chinese division whose
+  block is deployed against an eleventh, each stopped at `DEPLOY_REACH` 1.3 cells from it.
+  In the game of the rule as committed it is 100 of 102. The test was not changed. The
+  next rule that moves the pin may meet it (PLAN 3.5c sends armour first at one cell, the
+  rest behind): then it is the deployment of many against one that is to be mended (the
+  blocks come up to a block that has gone 1.4 cells from its formation), not the test.
 - **A division with no way home is moved to its spawn point (PLAN 3.4Rl, ADR-149,
   2026-10-06).** Repatriation did that where no route existed; it does it now also where the
   way home crosses a second nation that is in no war with it (an Italian division in central
