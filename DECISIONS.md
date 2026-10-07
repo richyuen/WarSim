@@ -167,6 +167,62 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-183 · 2026-10-07 · accepted — A declaration of war on a puppet is a declaration on its overlord (PLAN 3.8e)
+
+- **Context.** Seen in the diagnosis of PLAN 3.8 (ADR-178): nobody defended a puppet.
+  `declareWar` called each leader's puppets, its alliance and the defender's guarantors, and
+  not the defender's overlord. Seed 3301: Iraq on Syria, day 17, and Nationalist Spain on
+  French West Africa, day 54, each defender alone. And the AI read such a target as free
+  land: `strengths` adds a puppet's formations to its overlord's, so a puppet's own strength
+  was 0 and its defence the floor of 1. In the first year of seed 3301, 20 of the 36
+  declarations named a nation that began the game as a puppet (Egypt, Burma, Transjordan,
+  Syria three times, French West Africa three times); of seed 99, 16 of 29. (Counted by
+  the puppets of the start: one that was free by the day is counted too.)
+- **Decision.** PLAN 3.8e left two ways: the overlord joins, or the declaration is on the
+  overlord. The second. With the overlord as a mere member the puppet would lead its side,
+  and the peace reads the leader: it would be signed with the puppet, the puppet's stance
+  would set the side's fight to the death, and a losing puppet could be made the winner's
+  puppet or annexed while its overlord, in the same war, lost nothing. With the overlord as
+  the leader the one mechanism there is (a leader with its puppets) serves.
+  - `declareWar(attacker, target)`: the defender is the target's overlord when it has one.
+    The overlord's puppets, alliance and guarantors are called as for any defender; then the
+    target's own alliance and guarantors, as before (a puppet may sit in another alliance
+    than its overlord, ADR-179). The three steps of ADR-179 then strike who is torn.
+  - `whyNotWar(attacker, target)`: what refuses a war with the target, and then what refuses
+    one with its overlord (already at war, a truce, a bond). So the AI's choice, God Mode and
+    the neighbour a revolt rises with all ask the same.
+  - The `WarDeclared` event names the overlord: the war is its war, and the history and the
+    banner read the leaders. That the attacker named the puppet is not kept.
+  - God Mode: a declaration on a puppet is not refused; it starts the war with the overlord,
+    and the event says so. (A refusal with "declare on its overlord" was the other way; the
+    watcher means the war, and gets it.)
+  - The AI (`ai/strategic.ts`, `defence`): a puppet is read as its realm: the overlord's
+    strength, which holds the puppet's, with 0.4 of the allies and guarantors of both.
+- **Not changed.** A puppet that attacks is not followed by its overlord (the AI's puppets
+  declare no war; a puppet's revolt is against its overlord). An overlord's own overlord is
+  not looked at, here as in `bond`. A puppet made in the middle of a war keeps its wars
+  against nations with no bond to its new realm (ADR-180), and its overlord does not join
+  them: so "a puppet at war has its overlord beside it" is not a law of every day and is not
+  asserted daily. A nation at war with the overlord in a war the puppet is not in may not
+  declare on the puppet (`Refusal.AtWar`).
+- **Measured** (the declarations of one year, the old game run on the stashed change).
+  Seed 3301: 36 before, 19 after, none on a puppet of the start; on day 54 Nationalist Spain
+  declares on Portugal in place of French West Africa. Seed 99: 29 before, 23 after, one on
+  a puppet of the start: the United Kingdom on Ireland, day 57, which was free by then (a
+  declaration on its own puppet is refused).
+  Fewer wars in a year is a matter of balance and waits for Phase 7 (ADR-58). Seen and not
+  touched: Nationalist Spain alone declares on Portugal, which the United Kingdom guarantees
+  with its whole realm (both seeds); that is the AI's reading of a guarantor, not this rule.
+- **Evidence.** `tests/unit/puppetDefended.test.ts`: seed 3301, 60 days, no `WarDeclared`
+  names a puppet whose overlord is not in that war (failed first: "day 17, IRQ -> SYR
+  without FRA", "day 54, NSP -> AOF without FRA"); Iraq on Syria by hand (France leads,
+  Syria and French West Africa defend); God Mode; a truce or a war with France refuses the
+  declaration on Syria. All four failed first.
+- **The pin:** seed 99 after one year, `ed82d7f8` to `875255b7`. The pinned game had Iraq on
+  Syria on day 31 and Nationalist Spain on French West Africa on day 33, each defender
+  alone; the new game has neither, and differs from day 7 (Siam on Burma, a British puppet,
+  is not declared).
+
 ### ADR-182 · 2026-10-07 · accepted — Nobody joins or founds an alliance while its realm is at war with the realm of a member (PLAN 3.8d3)
 
 - **Context.** The third cause named in ADR-180, read in the code and not seen in a game.

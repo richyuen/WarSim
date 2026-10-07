@@ -564,6 +564,10 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     let stand so far: of two torn by each other alone, the one called first fights. The two
     leaders always stand. A nation that gets an overlord while at war leaves the wars against
     its new realm (ADR-180, ADR-181); nobody joins or founds an alliance while it or a puppet of it is at war with a member or a member's puppet (`realmsAtWar`, ADR-182).
+  - *A puppet is defended (PLAN 3.8e, ADR-183):* a declaration on a puppet is one on its
+    overlord, which leads the defenders; the event names it. The puppet's own allies and
+    guarantors are called too. What refuses a war with the overlord (a war, a truce, a bond)
+    refuses the declaration on the puppet. One level: an overlord's own overlord is not asked.
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
@@ -1337,7 +1341,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *War:* a nation needs aggression ≥ 15, must not be a puppet or broke, and may have at most
     2 wars. utility = aggression/100 × (min(3, attack/defence) − 1) + 0.3 if the target is at
     war + 0.3 for claims − exhaustion/100 − 0.4 × wars. Attack = own strength + 0.4 × alliance
-    partners; defence = the target's strength + 0.4 × (partners + guarantors) (ADR-47). It declares on the best target with utility > 0.5, with probability 0.25 ×
+    partners; defence = the target's strength + 0.4 × (partners + guarantors) (ADR-47); a puppet is read as its realm, the overlord's strength with the partners and guarantors of both (ADR-183). It declares on the best target with utility > 0.5, with probability 0.25 ×
     aggression/100.
   - *Stalemate peace:* a war older than 720 days, with |score| < 15 and both sides' exhaustion
     above 40, ends in peace.

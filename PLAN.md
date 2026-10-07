@@ -4345,7 +4345,11 @@ quick sweep as a smoke test.
     (taken, ADR-179: it may).
     AT: `realmWars(world)` is empty on every day of the ten-year games of the sweep stage
     (`tests/helpers/aiSweep.ts`), which is the AT of 3.8.
-  - [ ] 3.8e Seen in the diagnosis, not a war inside a realm: nobody defends a puppet. When
+  - [x] 3.8e *Done 2026-10-07 (ADR-183):* a declaration on a puppet is one on its overlord,
+    which leads the defenders (`declareWar`, `whyNotWar`); the AI reads a puppet as its realm.
+    `tests/unit/puppetDefended.test.ts` (failed first on days 17 and 54 of seed 3301). The pin
+    moved, `ed82d7f8` to `875255b7`. As it was:
+    Seen in the diagnosis, not a war inside a realm: nobody defends a puppet. When
     war is declared on a puppet its overlord does not join (seed 3301: Iraq on Syria, day
     17, and Nationalist Spain on French West Africa, day 54: the defender alone). A
     decision (the overlord joins, or the declaration is on the overlord), with its test.

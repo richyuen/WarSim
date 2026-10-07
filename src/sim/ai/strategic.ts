@@ -134,9 +134,15 @@ export function strategicAi(world: World): void {
     for (const m of al.allianceOf(n)?.members ?? []) if (m !== n) s += ALLY_WEIGHT * str[m]!;
     return s;
   };
+  // A puppet is defended by its overlord (PLAN 3.8e), whose strength holds the puppet's own
+  // (`strengths`): the target is read as its realm, with the allies and guarantors of both.
   const defence = (t: number): number => {
-    let s = withAllies(t);
-    for (const g of al.guarantorsOf(t)) s += ALLY_WEIGHT * str[g]!;
+    const o = nc.overlord[t]!;
+    let s = 0;
+    for (const x of o !== 0 ? [o, t] : [t]) {
+      s += withAllies(x);
+      for (const g of al.guarantorsOf(x)) s += ALLY_WEIGHT * str[g]!;
+    }
     return Math.max(1, s);
   };
   for (const n of actors) {

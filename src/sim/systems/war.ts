@@ -98,8 +98,18 @@ export function realmsAtWar(world: World, a: number, b: number): boolean {
   return withPuppets(world, a).some((x) => rb.some((y) => world.wars.atWar(x, y)));
 }
 
-/** Why `attacker` may not declare war on `defender`; `Refusal.None` when it may (PLAN 2.17a). */
+/**
+ * Why `attacker` may not declare war on `defender`; `Refusal.None` when it may (PLAN 2.17a).
+ * War on a puppet is war on its overlord (PLAN 3.8e), so what refuses the one refuses the other.
+ */
 export function whyNotWar(world: World, attacker: number, defender: number): Refusal {
+  const why = whyNotWarOn(world, attacker, defender);
+  if (why !== Refusal.None) return why;
+  const o = world.nations.cols.overlord[defender]!;
+  return o !== 0 ? whyNotWarOn(world, attacker, o) : Refusal.None;
+}
+
+function whyNotWarOn(world: World, attacker: number, defender: number): Refusal {
   const nc = world.nations.cols;
   if (!world.nations.has(attacker) || !world.nations.has(defender)) return Refusal.NoNation;
   if (attacker === defender) return Refusal.SameNation;
@@ -165,13 +175,19 @@ export function leaveBondedWars(world: World, n: number): void {
   }
 }
 
-/** Applies a declaration; returns the war or null (with a `WarRejected` event). */
-export function declareWar(world: World, attacker: number, defender: number): War | null {
+/**
+ * Applies a declaration; returns the war or null (with a `WarRejected` event). A declaration on
+ * a puppet is one on its overlord (PLAN 3.8e: the puppet used to stand alone): the overlord
+ * leads the defenders, the event names it, and the peace is made with it. The puppet's own
+ * allies and guarantors are called as before. An overlord's own overlord is not looked at.
+ */
+export function declareWar(world: World, attacker: number, target: number): War | null {
   const nc = world.nations.cols;
-  if (whyNotWar(world, attacker, defender) !== Refusal.None) {
-    world.out.emit(world.tick, EventKind.WarRejected, attacker, defender, NaN, NaN);
+  if (whyNotWar(world, attacker, target) !== Refusal.None) {
+    world.out.emit(world.tick, EventKind.WarRejected, attacker, target, NaN, NaN);
     return null;
   }
+  const defender = nc.overlord[target] || target;
   // Each side: leader + puppets, then its alliance (+ their puppets); defenders also gain their
   // guarantors. Nobody joins against a truce partner or twice.
   const al = world.alliances;
@@ -191,6 +207,10 @@ export function declareWar(world: World, attacker: number, defender: number): Wa
   add(DEFENDERS, attacker, defender);
   for (const m of allies(defender)) add(DEFENDERS, attacker, m);
   for (const g of al.guarantorsOf(defender)) add(DEFENDERS, attacker, g);
+  if (target !== defender) {
+    for (const m of allies(target)) add(DEFENDERS, attacker, m);
+    for (const g of al.guarantorsOf(target)) add(DEFENDERS, attacker, g);
+  }
   for (const m of allies(attacker)) add(ATTACKERS, defender, m);
   // Nobody but the two leaders stands against a nation it has a bond with (PLAN 3.8c): a nation
   // torn between the sides stays out, with its puppets. In three steps, each on what the one

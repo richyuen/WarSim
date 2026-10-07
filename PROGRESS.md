@@ -8951,3 +8951,36 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 970 unit tests, the 17
   sweep tests, build, parity. No e2e (a part; no spec changed).
 - **Next:** PLAN 3.8e.
+
+## 2026-10-07 — PLAN 3.8e: a declaration of war on a puppet is one on its overlord (ADR-183)
+
+- **Decision:** of the two ways PLAN 3.8e left, the declaration is on the overlord. As a mere
+  member the overlord would stand in a war its puppet leads, and the peace reads the leader.
+- **Done:** `declareWar(attacker, target)` (`systems/war.ts`): the defender is the target's
+  overlord when it has one; the target's own allies and guarantors are called after the
+  overlord's. `whyNotWar` asks of the overlord too (a war, a truce, a bond with it refuses the
+  declaration on the puppet). The `WarDeclared` event names the overlord. God Mode gets the
+  same war, not a refusal. The AI's `defence` (`ai/strategic.ts`) reads a puppet as its
+  realm: until now a puppet's strength was 0, its formations being counted with its
+  overlord's, so every puppet was the weakest target on the map.
+- **Tests, each failed first:** `tests/unit/puppetDefended.test.ts`, four: seed 3301 to day
+  60 ("day 17, IRQ -> SYR without FRA", "day 54, NSP -> AOF without FRA"); Iraq on Syria by
+  hand; God Mode; a truce or a war with France refuses the declaration on Syria.
+- **Measured,** the declarations of one year, before (the change stashed) and after: seed
+  3301, 36 and 19; seed 99, 29 and 23. Before, 20 and 16 of them named a nation that began as
+  a puppet; after, 0 and 1 (Ireland, free by then). Fewer wars: balance, Phase 7 (ADR-58).
+- **Seen, not touched:** Nationalist Spain, alone, declares on Portugal, which the United
+  Kingdom guarantees with its realm (both seeds, days 54 and 103): how the AI weighs a
+  guarantor (0.4 of its strength, the ratio capped at 3, + 0.3 for a claim).
+- **The pin:** `ed82d7f8` to `875255b7` (the pinned game had Iraq on Syria on day 31 and
+  differs from day 7).
+- **Not done:** a puppet that attacks is not followed by its overlord. An overlord's own
+  overlord is not asked. The AI's new `defence` has no test of its own (the seed test would
+  pass with the redirection alone, were the choice still bad). No picture: nothing drawn
+  changed, the browser was not opened; the banner and the history will name the overlord,
+  not looked at. The tick was not timed (`defence` runs per neighbour of a nation on its
+  weekly turn; `whyNotWar` asks once more for a puppet).
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 974 unit tests, the 17
+  sweep tests (the daily `realmWars` of the ten-year games stayed empty), build, parity. No
+  e2e (a part; no spec changed).
+- **Next:** PLAN 3.8f.
