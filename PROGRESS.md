@@ -7548,3 +7548,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a part that moves the pin moves every scene a spec watches at a fixed hour.
   "Nothing drawn changes" is no reason to skip the specs of such a part; a spec with a
   fixed place and hour says in Node, in seconds, whether its scene still stands.
+- **Gate** (`c5a6cd9`): green, and it said "e2e in full: PLAN 3.4R ticked": 139 passed in
+  10.0 min, none failed, none left out (137, 1 and 1 on `2551b9d`). No ten-year tests: no
+  sim input changed, and no pin moved.
+- **PLAN 3.4R ticked.** The review count starts again at 3.5.
+- **Next:** PLAN 3.5 (the AI uses armour as spearheads; it also asks for fronts it cannot
+  reach).
