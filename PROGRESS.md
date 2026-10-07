@@ -8770,3 +8770,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   rise by this (armour, the zoom and the worker are our additions, unscored).
 - **Next:** the critic (PROMPT step 2a: a phase review is ticked since its report), as the
   next iteration's only task. Then PLAN 4.1.
+
+## 2026-10-07 — The critic's third run, on `a6f63ef` (PROMPT step 2a)
+
+- **Scores:** map 6, diplomacy 5, dynamics 4, God Mode 6, editor and scenarios 6, stats 5,
+  UI 5, performance 5, stability 7; semantic zoom 6 (needs 8), naval 0, tanks 5, aircraft 0,
+  nuclear 0. **6 blocking.** Against the last run: God Mode, editor and UI up 1, stability
+  up 2, zoom up 1, tanks up 3, performance down 1. Of the last report's eight: four fixed
+  (save and load, the order of battle, one scenario, silent God actions), two in part (the
+  close zoom, the frozen world), two stand (no navy; statelets, worse over a long run).
+- **Where they went (ADR-177):** PLAN 3.8 to 3.12, before Phase 4: wars inside one realm
+  or alliance (R3-B4); one event that gives two thirds of the Soviet Union to "Free Herat"
+  (of R3-B2); a tick of 2.27 ms against 1.5 (of R3-B5); a formation in contact whose
+  position is 12.9 km from its elements, no enemy in view, no wreck (R3-B3); no ticker, no
+  sound, a history of 2,395 rows (R3-B6). R3-B1 is Phases 4 to 6, a line under PLAN 4.5.
+  **Deferred by ADR-58, logged here once:** the living nations climb from 97 to 170 in 40
+  years and the world does not come together (of R3-B2): PLAN 1.42. The top speed of 15 to
+  28 s a year as a design: PLAN 7.1. What was not blocking: PLAN 7.4.
+- **Who ran it:** the `critic` agent type, with no hints. 38 minutes, 279,000 tokens, 91
+  tool calls. HEAD did not move; only `critic/` changed; no server was left on port 5299.
+- **Not done:** no finding was checked by me against the game. How the war of seed 3301
+  began, what the event of seed 6021 was, and what the tick costs are the first parts of
+  3.8, 3.9 and 3.10.
+- **Gate:** documents only (parity).
+- **Next:** PLAN 3.8, starting with the critic's case of seed 3301.

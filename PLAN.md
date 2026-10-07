@@ -4262,6 +4262,97 @@ quick sweep as a smoke test.
   smoke run are in PROGRESS (3.7e); none failed, nothing is in BLOCKERS for it, no constant
   was tuned. The count of numbered tasks for the next review pass starts again here. Next by
   PROMPT step 2a: the critic.
+- [ ] 3.8 Critic R3-B4 (report of 2026-10-07 on `a6f63ef`): no war inside one realm or one
+  alliance. What the critic saw, seed 3301: on 6 March 1938 the United Kingdom, leading the
+  Anglo-French Entente, declared war on French West Africa, a puppet of France, its ally;
+  seven French puppets (French Equatorial Africa, Madagascar, Morocco, Tunisia, Syria,
+  Lebanon, Indochina) were at war with French West Africa, which has their overlord; the
+  banner read "United Kingdom +32 × French West Africa". On another seed an alliance of 30
+  was at war with one rebel province: "Belgium +29 × Free Gers". (The critic's files:
+  `critic/c3_l.json`, `friendlyWars` and `historyHead`; they are not tracked, ADR-83.)
+  First: find how the war of seed 3301 began (a declaration, a call to arms, a revolt of
+  French West Africa against France that its allies joined), and which test of the gate says
+  that allies are never at war and why it did not see this. Then, one cause per commit:
+  - a declaration between two nations that share an alliance or an overlord (an overlord and
+    its puppet, two puppets of one overlord, a puppet and its overlord's ally) is refused,
+    for the AI and for God Mode alike, and God Mode says why;
+  - who joins a war on a rebel: the critic asks that it be the parent's war and not the
+    whole alliance's. A decision when the part is taken up.
+  AT: a test that fails first on the case of seed 3301; the ten-year games of the sweep
+  stage assert on every day that no two nations at war share an alliance or an overlord.
+- [ ] 3.9 Critic R3-B2, the part that is not balance: one event does not hand two thirds of
+  the largest nation's land to a rebel province. What the critic saw, seed 6021 in the
+  browser: the Soviet Union has 13.02 % of the land at year 8.1 and 5.54 % at year 9.1, and
+  "Free Herat", founded in between, has 5.97 % with 260 men: the fourth largest nation of
+  that sample, the sixth by the critic's count, and still 4.65 % at year 14 (`critic/c3_a.json`,
+  `years`; `critic/shots/c3a_31_charts_land.png`). First the diagnosis: run seed 6021
+  headless to year 9 (the page's hash equals Node's), find the event (a revolt, a collapse
+  by PLAN 2.15's path, a peace, a breakaway) and how land so far from Herat came to it.
+  The fix is a rule, not a constant (ADR-58 stands for the rate of revolts): the critic
+  names "a rebel's land is capped at its province and its region" and "a revolt returns
+  land to a core owner or a neighbour before it founds a nation".
+  AT: a test that fails first on the event of seed 6021; in the ten-year games of the sweep
+  stage no nation founded by a revolt holds, on the day it is founded, more than a bound
+  that the diagnosis sets.
+- [ ] 3.10 Critic R3-B5, the tick: find what the tick costs since Phase 3, before Phase 4
+  adds to it. What the critic measured, alone and pinned to `0xFFFF`: seed 4242, three
+  years, a mean tick of 2.27 ms (2.42, 2.42, 1.96 by year); seed 8128, years 8 and 9: 2.59
+  and 1.80 ms. The budget is 1.5 ms; the last report had 1.14 ms over 40 years of seed
+  31337. Our own seed 99 reads 1.521 ms over five years (PLAN 3.7e), so the pin's seed is
+  the kind one. The quick sweep of 3.7e took 14.2 min against 4.9, cause not found. Forty
+  years of seed 4242 headless took 19.9 min (other runs beside it).
+  Parts: a profile of a 2.4 ms year of seed 4242 and of year 8 of seed 8128 (a checkpoint
+  each), by system; one seed alone for 20 years with its tick by year and the living
+  nations and formations beside it (the question PLAN 7.1 has from 3.7e; the critic's seed
+  went to 170 nations, so this and 3.9 may share a cause); then what the profile names,
+  one cause per commit. Not here: a coarse path for fronts that no close tier watches, and
+  the top speed as a design (15 to 28 s a year at Max in the browser): PLAN 7.1.
+  AT: the tick by system of both profiles is in PROGRESS; seeds 99, 4242 and 8128 each run
+  five years pinned under 1.5 ms mean, or what is left over is in BLOCKERS with its numbers.
+- [ ] 3.11 Critic R3-B3: zooming to a formation in contact shows its fight. The
+  differentiator scored 6 and needs 8; tanks scored 5 and need 8. PLAN 3.7d and 3.7g tied
+  the drawn tag to the elements (ADR-168). What the critic saw after them (`critic/c3_m.json`):
+  - of six German armour formations, the three in contact (flags 3) have their elements
+    12.8 to 12.9 km from the formation's position, two thirds of a cell (the three not in
+    contact: 0.2 km). The view centred on the position at 6 and at 2 m/px holds 0 elements
+    and 0 figures: a tag over an empty field (`at6`, `at2`;
+    `critic/shots/c3k2_22_armour_live_006m_a.png`, `c3m_10_form40_06m_at_position.png`).
+    The elements at the cell's edge are what PLAN 2.14 built. What still points at the
+    cell's centre: the formation's position, its panel, the click target, the flight there;
+  - "the biggest fight" of day 21 (16 engaged formations within 3 cells) at 40 m/px is one
+    infantry division alone; no enemy in a view of 64 km (`c3m_21_fight_040m_live.png`);
+  - units in contact stand in a lattice, all facing one way; five tank formations share a
+    cell as interleaved diamonds (`c3j_11_tank_paused_0040m.png`, `c3j_12_tank_live_002m_2.png`);
+    no tank fights a tank in any picture;
+  - no wreck in 230 sim hours of that fight: `wrecks` and `shown` stayed 0 with 100 to 230
+    shots in the air (`wreckSamples`). PLAN 3.6's burning wrecks need an element to die
+    whole (the critic's guess, medium confidence);
+  - Soviet tanks are tinted pink, near Poland's own pink (`c3j_12_tank_live_006m_2.png`).
+  Parts, split when taken up: the place a formation is said to be (snapshot, panel, click,
+  camera) is where its elements are; both sides of an engagement come into one T3 view;
+  facing and spacing in contact; losses drawn from strength lost; the tint.
+  AT: an e2e that flies to each engaged formation of a war on a seed the builder has not
+  used and finds its elements and an enemy's in the view at T3; a wreck or a casualty mark
+  is drawn within a day of a fight that costs strength; pictures at T2 and T3, looked at.
+- [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
+  be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
+  `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom
+  left (`reference/screens/steam-screenshot-01.jpg`) and war popups and a war trumpet
+  (text). The history after 14 years of seed 6021 has 2,395 rows: 453 declarations, 450
+  "Land of X went over to Y", 423 peaces, 237 revolts. Rows show an id or say the reverse
+  of what happened: "#43 dissolved", "Denmark left #43", "Turkey broke away from Free
+  Bursa" (`critic/shots/c3a_32_history.png`).
+  Parts: a live ticker of the major events (war, peace, a capital taken, a nation's death
+  or return) whose row flies the camera there; the land that goes over at a peace folded
+  into that peace's row; every row names its alliance and says who left whom; sound (a few
+  cues made in code, a volume and a mute in the settings, PARITY row 79).
+  AT: an e2e in which a war declared by God Mode appears in the ticker and a click on it
+  moves the camera; no history row of a ten-year game matches `#\d+`; unit tests of the
+  rows' wording; a test that a cue is asked for on a declaration of war.
+  **PLAN 3.8 to 3.12 are the critic's third report (ADR-177).** They are numbered tasks and
+  count toward the next review pass. Their order is not the critic's (R3-B4, B2, B5, B3,
+  B6): the three that change the world's state or its cost come before the two whose tests
+  and pictures are of that world. R3-B1 is Phases 4 to 6 (a line under PLAN 4.5).
 
 ## Phase 4 — Naval
 
@@ -4284,6 +4375,12 @@ quick sweep as a smoke test.
   years of seed 31337. A British division ordered to Calais walked to the coast of Kent and
   stood there. The same holds for Japan's home army, for the United States and for every
   colony. All 15 templates that can be built are land formations.
+  From the critic's report of 2026-10-07 (R3-B1, its first blocking issue again; the three
+  differentiators still score 0): on seed 4242, 40 years headless, Canada holds 12.1 % of
+  the cells and the United States 7.7 % in every year from 15 to 40, and Denmark
+  (Greenland) 5.4 to 5.5 % in all 40. The division ordered to Calais stops 3.5 cells short,
+  on the English coast. `data/units/sea.json` and `data/units/air.json` are read by nothing
+  in play. The critic: "sea transport first, as it also unfreezes the maritime powers".
   AT: a scripted invasion lands and takes the coastal cells; it fails without sea control (test).
 - [ ] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
   AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
@@ -4427,6 +4524,14 @@ quick sweep as a smoke test.
   (95 to 171 nations alive, against 96 to 139), or ten processes side by side are (memory,
   the cores), or the machine was busy. A 20-year run of one seed alone, with its tick by
   year, tells the first from the rest.
+  From the critic's report of 2026-10-07 (R3-B5; the tick over its budget is PLAN 3.10):
+  - **The top speed, again.** At Max, alone, at the world view: 15 to 28 s a simulated year
+    (10 to 12 s in the last report). The 14-year script of run 2 took 16 to 61 s a year,
+    with other runs beside it, against 8 to 19 then. Fifty years are about 17 minutes of
+    watching. The critic's fix: a coarse path of the sim for fronts that no close tier
+    watches.
+  - Hitches of 100 to 157 ms at T3 while the sim runs; otherwise 115 to 860 frames a second
+    uncapped at 1920 × 1080 on every tier (an RTX 4070 Ti).
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
@@ -4474,6 +4579,22 @@ quick sweep as a smoke test.
     war that moves the front by a border strip (N1); a war takes in half the world ("United
     Kingdom +33 ⚔ Angola", Poland against Xinjiang; N2).
   - What the critic asks of the sweep: a run whose top five are the same for 20 years fails.
+  From the critic's report of 2026-10-07 (R3-B2, the long run; deferred by ADR-58, not
+  disputed, logged once in PROGRESS; the one event of seed 6021 is PLAN 3.9):
+  - Seed 4242, 40 years headless: 97 nations alive in year 1 and 170 in year 40; 430
+    founded in all. Seed 6021, 14 years in the browser: 97 → 136 alive, 207 ever founded;
+    59 of the 137 alive in 1952 are "Free <province>". The world breaks up and does not
+    come together again; AoC's long runs end in a few empires (pictures).
+  - Better than the last report: on seed 6021 France rises to first by land, the Soviet
+    Union falls from 15.6 % to about 5 %, Germany takes central Europe. The Americas do not
+    move (PLAN 4.5).
+  - Of the same kind and not blocking: Germany against Poland, 90 days of seed 4242:
+    Germany loses 304,000 of 564,000 men, Poland 373,000 of 418,000, and no cell changes
+    owner before the peace (the rule of ADR-51: land is held, then kept at the peace). AoC
+    hands land over as it is taken (text). Whether held land should go over during a war
+    is for this task to decide.
+  - What the critic asks: weak statelets annexed in one war; a sweep whose count of living
+    nations rises for 20 years fails.
   From the Phase 3 review (PLAN 3.7c, 2026-10-07), what the rules of armour left open. None
   is tuned before the sweeps are back (ADR-58):
   - The retreat (ADR-150): wars kill a third of the formations they did. Whether they still
@@ -4663,6 +4784,22 @@ quick sweep as a smoke test.
   - Against AoC's God panel: the World AI settings (one checkbox stands for about fifteen),
     a nation spawned with a size, cities made and removed in the game, gold, CE, colour and
     unity edited from the God tab, donations (PARITY has the rows).
+  From the critic's report of 2026-10-07, not blocking and in no task above:
+  - At 400 m/px the order line of every formation is drawn for an observer: dozens of
+    dashed yellow lines across the view. The critic: only for what is selected.
+  - Occupied land at the close tiers is washed in the occupier's colour: French-held
+    Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
+    of thin stripes of other nations' colours.
+  - War banners are drawn over the bottom rows of the History panel. The date label wraps
+    when "· Paused" does not fit, and the bar jumps.
+  - Still there from the last report: Escape closes no panel, no hotkeys for the map modes,
+    no tooltip on hover, the layout at 390 × 844 (panels on each other).
+  - A Kill leaves successors in greys that are nearly one colour. The random world names
+    nations after provinces ("Seine-Maritime") and paints half of them purple or magenta;
+    after three years one of them owns western and central Europe (that part: PLAN 1.42).
+  - Against AoC's God panel: Annex, Recolor, Fight to the Death, Donate (Nuke: Phase 6).
+  - The critic did not test a player building an armoured division (a step of its own
+    script failed on a selector).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

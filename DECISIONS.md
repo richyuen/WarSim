@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-177 · 2026-10-07 · accepted — The critic's third run: where its six findings went, and in what order (PROMPT step 2a)
+
+- **Context:** PLAN 3.7 was ticked, so the critic was due (ADR-59). This session has the
+  `critic` agent type, with its guard, which the run of ADR-83 lacked. It was spawned with
+  `CRITIC_PROMPT.md` and the commit, and no word about what to look at. After the run HEAD
+  was still `a6f63ef`, `git status` showed the two report files changed and new files under
+  `critic/` only, and nothing listened on port 5299. 38 minutes, 279,000 tokens, 91 tool
+  calls. The two report files are committed as written; `critic/c3_*`, the scripts and the
+  shots stay untracked, so each PLAN task carries its numbers in its own text (ADR-83).
+- **Decision 1: where the six went.** The test is PROMPT step 2b's: a count, a share or a
+  rate of the long run is balance and waits (ADR-58); a mechanism that plainly does not
+  work is a task now.
+  - R3-B1, no naval, air or nuclear: Phases 4 to 6. A line under PLAN 4.5. **The phases
+    keep their order**, as in ADR-83; naval is the next phase now in any case.
+  - R3-B4, wars inside a realm or an alliance: a mechanism. PLAN 3.8.
+  - R3-B2 is two things, as R2-B6 was. That the count of living nations climbs (97 to 170
+    in 40 years) and the world does not come together is balance: PLAN 1.42, logged once
+    in PROGRESS, not disputed. That one event takes the Soviet Union from 13.0 % to 5.5 %
+    of the land and makes a rebel province with 260 men one of the largest nations is not
+    a rate: PLAN 3.9, diagnosis first. Its fix is a rule about what a revolt may take, not
+    a constant of how often revolts happen.
+  - R3-B5 is two things. The top speed as a design (a coarse path for what is not watched)
+    stays under PLAN 7.1, where ADR-83 put it. The tick is another matter than it was
+    then: 1.14 ms in the last report, 2.27 ms now on the critic's seed, against a budget of
+    1.5, and the sweep of PLAN 3.7e took three times Phase 2's with the cause not found.
+    Phase 4 adds to the tick. PLAN 3.10: profile first, then what the profile names.
+  - R3-B3, the close zoom: a differentiator at 6 of 8. PLAN 3.11. Not disputed: PLAN 3.7g
+    moved the drawn tag, and the critic's snapshots at a formation's position hold no
+    element. The wrecks that never show are PLAN 3.6's claim failing in play, so they are
+    in 3.11 and not a line under 7.4.
+  - R3-B6, nothing tells a watcher: PLAN 3.12, as R2-B8 became 2.17. The rows that show
+    an id or say the reverse are defects and are parts of it. Sound is a part of it too:
+    the last report had it as not blocking (N18, under 7.4), this one blocks on it.
+- **Decision 2: the order** is 3.8, 3.9, 3.10 (the world's state and its cost), then 3.11
+  and 3.12 (tests and pictures of that world), not the critic's order of severity. The
+  same reason as ADR-83.
+- **Decision 3: what was not blocking** is under PLAN 7.4, but for two lines under 1.42:
+  no land changes owner during a war (ADR-51's rule, to be judged with the balance), and
+  the random world that one nation overruns in three years.
+- **Consequences:** five numbered tasks before Phase 4. They count toward the next review
+  pass. The critic runs next after PLAN 4.8 (ADR-59), unless the user asks.
+
 ### ADR-176 · 2026-10-07 · accepted — The tank battle demo runs on a seed of its own (PLAN 3.7o)
 
 - **Context:** `tankBattle1938` failed in Node: `tankBattle` (seed 1938, days 14 to 120) found

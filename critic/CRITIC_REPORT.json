@@ -1,123 +1,92 @@
 {
-  "commit": "3d6a2b22a1a66a35920582b6b8f95f20bec2b8c1",
+  "commit": "a6f63ef7e4f04a1b929a5364ef2260435901b0f7",
   "scores": {
     "mapVisuals": 6,
     "diplomacyWarDepth": 5,
     "emergentDynamics": 4,
-    "godMode": 5,
-    "editorScenarios": 5,
+    "godMode": 6,
+    "editorScenarios": 6,
     "statsHistory": 5,
-    "uiUxPolish": 4,
-    "performance": 6,
-    "stability": 5,
-    "semanticZoom": 5,
+    "uiUxPolish": 5,
+    "performance": 5,
+    "stability": 7,
+    "semanticZoom": 6,
     "naval": 0,
-    "tanks": 2,
+    "tanks": 5,
     "aircraft": 0,
     "aiNukes": 0
   },
   "blocking": [
     {
-      "id": "R2-B1",
-      "title": "Naval, air and nuclear systems do not exist; without sea transport the maritime powers never fight (United Kingdom: 3.39 M men on the same 17,000 cells for 20 years)",
+      "id": "R3-B1",
+      "title": "Naval, air and nuclear systems do not exist; armies cannot cross water, and the Americas stand still for 25 years (Canada 12.1 %, United States 7.7 % of cells in every year from 15 to 40 on seed 4242)",
       "evidence": [
-        "critic/c2_j.json",
-        "critic/shots/c2j_22_uk_after_30_days.png",
-        "critic/shots/c2j_23_channel_300m.png",
-        "critic/c2_headless_seed31337_40y.json"
+        "critic/c3_j.json",
+        "critic/shots/c3j_22_uk_after_30_days.png",
+        "critic/shots/c3j_23_channel_300m.png",
+        "critic/c3_seed4242_40y.json"
       ],
-      "fix": "Phases 4, 5 and 6. Sea transport first: it also unblocks the long-run dynamics (R2-B5)."
+      "fix": "Phases 4, 5 and 6; sea transport first, as it also unfreezes the maritime powers."
     },
     {
-      "id": "R2-B2",
-      "title": "The close zoom shows a diagram, not a battle: no flag, strength or name at T2/T3, both sides the same grey and white, no unit panel, the enemy outside any T3 view, figures in a grid under fire, ground coloured by nation",
+      "id": "R3-B2",
+      "title": "The world shatters into rebel statelets and never consolidates: 59 of 137 living nations are \"Free <province>\" after 14 years, \"Free Herat\" is the sixth largest country, 430 nations are created in 40 years and the living count climbs from 97 to 170",
       "evidence": [
-        "critic/shots/c2x_crop_t2_both_sides_grey.png",
-        "critic/shots/c2b_10_ladder_00020m.png",
-        "critic/shots/c2e_live_fire_020m_l0_1.png",
-        "critic/shots/c2e_live_fire_008m_l0_2.png",
-        "critic/shots/c2x_crop_t3_figures.png",
-        "critic/shots/c2b_40_ground_berlin_0020m.png",
-        "critic/shots/c2b_31_closest_zoom.png",
-        "critic/c2_b.json",
-        "critic/c2_g.json"
+        "critic/c3_a.json",
+        "critic/shots/c3a_20_after_world.png",
+        "critic/shots/c3a_21_after_europe_4000m.png",
+        "critic/shots/c3a_31_charts_land.png",
+        "critic/c3_seed4242_40y.json"
       ],
-      "fix": "Flag, strength and name on a formation at T2 and T3, and a formation panel on click. Draw engaged elements at the cell edge they fight across so both sides fit one T3 view. Posture and facing for figures in contact. Terrain-coloured ground with the nation as a border tint. A jump-to-battle from the war banner."
+      "fix": "A revolt returns land to a core owner or a neighbour before it founds a nation; cap a rebel at its province and region; let a weak statelet be annexed in one war; fail a sweep whose living count rises for 20 years."
     },
     {
-      "id": "R2-B3",
-      "title": "228 of 1,054 formations, all 34 Soviet armour formations among them, are disbanded in the first tick of every 1938 game; the tanks that remain have no tank behaviour and no picture beyond an icon",
+      "id": "R3-B3",
+      "title": "The close zoom still does not show a battle: an engaged formation's tag and position are 12.9 km (two thirds of a cell) from its elements, so zooming to it shows an empty field; the largest fight is one division alone in view; units stand in a lattice; no wreck was drawn in 230 sim hours",
       "evidence": [
-        "critic/c2_k2.json",
-        "critic/c2_k.json",
-        "critic/c2_e.json",
-        "critic/shots/c2x_crop_t3_tank_1m.png",
-        "critic/shots/c2x_crop_t3_tanks_in_contact.png"
+        "critic/c3_m.json",
+        "critic/shots/c3k2_22_armour_live_006m_a.png",
+        "critic/shots/c3m_10_form40_06m_at_position.png",
+        "critic/shots/c3m_21_fight_040m_live.png",
+        "critic/shots/c3j_11_tank_paused_0040m.png",
+        "critic/shots/c3j_12_tank_live_002m_2.png"
       ],
-      "fix": "Give the 1938 nations budgets that carry their historical armies, or keep the economic AI from disbanding below a floor and in the first months; log a disbanding in the history. Then Phase 3 (fuel, terrain, combined arms, spearheads, turret and wreck visuals)."
+      "fix": "Keep engaged elements at the cell edge, and move the tag, the click target and the camera target to where the elements are; place both sides of an engagement inside one T3 view; break the lattice and turn hulls when engaged; draw losses from strength lost, not only from a dead element."
     },
     {
-      "id": "R2-B4",
-      "title": "A loaded game does not go on as the game that was saved (seed 2718: Node --save/--load at year 10 and the browser's Continue both play out differently); the worker's state hash also leaves Node's in year 9",
+      "id": "R3-B4",
+      "title": "Wars inside one realm and one alliance: the United Kingdom and seven French puppets are at war with French West Africa, a puppet of France, their ally; 30 nations go to war with one rebel province",
       "evidence": [
-        "critic/c2_saveload_node.log",
-        "critic/c2_seed2718_11y.json",
-        "critic/c2_seed2718_loaded_plus1.json",
-        "critic/c2_f.json",
-        "critic/c2_g.json",
-        "critic/c2_i_node.log",
-        "critic/c2_i_node.json",
-        "critic/c2_i_page.json",
-        "critic/c2_h.json"
+        "critic/c3_l.json",
+        "critic/shots/c3k_10_front_day60_2500m.png",
+        "critic/shots/c3c_19b_god_revive.png"
       ],
-      "fix": "Test checkpoints on unseen seeds at every year-end of a 15-year run (save, load into a fresh sim, run a year, compare hash and outcome), in Node and in a real browser worker. Then find the sim-steering state that is not in world.parts() and the hashed state that differs between engines."
+      "fix": "Refuse a declaration between nations that share an overlord or an alliance (AI and God alike); scope a war on a rebel to its parent nation."
     },
     {
-      "id": "R2-B5",
-      "title": "Outside Europe the world does not change for decades (top five by land identical from year 8 to year 40 on seed 31337), and the fastest speed is 10-12 s per year",
+      "id": "R3-B5",
+      "title": "Max speed is 15 to 28 seconds a simulated year alone (the run 2 script: 16 to 61 s now against 8 to 19 then), and the mean tick is 2.27 ms against a budget of 1.5 ms (seed 4242, pinned, alone)",
       "evidence": [
-        "critic/c2_headless_seed31337_40y.json",
-        "critic/c2_headless.log",
-        "critic/c2_a.json",
-        "critic/shots/c2a_31_charts_default.png",
-        "critic/shots/c2a_20_after_world.png",
-        "critic/c2_p.json"
+        "critic/c3_q.json",
+        "critic/shots/c3q_00_running_max_world.png",
+        "critic/c3_a.json",
+        "critic/c3_perf_node.log",
+        "critic/c3_perf_node_late.log",
+        "critic/c3_headless40.log"
       ],
-      "fix": "Sea transport; wars that end in annexation instead of standing occupation; a top speed several times faster when no close tier is watched; a sweep criterion that fails a run whose top five do not change in 20 years."
+      "fix": "A coarse sim path for fronts no close tier is watching; profile the years that cost 2.4 ms a tick and more."
     },
     {
-      "id": "R2-B6",
-      "title": "Statelet spam: God Kill turns one nation into 36 'Free X' nations and 43 wars; after 14 years 25 of 109 nations are 'Free <province>' with blank flags; 32% of the history is 'broke away'",
+      "id": "R3-B6",
+      "title": "A watcher is told nothing as it happens: no sound, no event ticker, no popup; the history is a panel of 2,395 rows after 14 years",
       "evidence": [
-        "critic/c2_c.json",
-        "critic/shots/c2c_17_after_kill_3000m.png",
-        "critic/shots/c2x_crop_kill_war_banners.png",
-        "critic/shots/c2x_crop_rebel_flags_1952.png",
-        "critic/c2_a.json",
-        "critic/shots/c2a_32_history.png"
+        "critic/c3_q.json",
+        "critic/shots/c3q_00_running_max_world.png",
+        "critic/shots/c3a_32_history.png",
+        "critic/c3_a.json"
       ],
-      "fix": "A collapse hands land to neighbours, claimants and a few regional successors, not one nation per province. Generated flags and regional names for spawned nations. Log land returned to a living nation as a return, not a revolt."
-    },
-    {
-      "id": "R2-B7",
-      "title": "One scenario, one map, no random world",
-      "evidence": [
-        "critic/shots/c2a_00_title.png",
-        "critic/c2_a.json"
-      ],
-      "fix": "At least a second start year and a random-nations start on the earth map, listed on the title screen."
-    },
-    {
-      "id": "R2-B8",
-      "title": "God Mode actions that fail silently or do something else: Ally with a nation allied elsewhere, Revive after a Kill, the Territory brush adds no cells, a killed nation's name and land stay on the map",
-      "evidence": [
-        "critic/c2_c.json",
-        "critic/shots/c2c_14_god_brush_drag.png",
-        "critic/shots/c2x_crop_dead_gaul_still_on_map.png",
-        "critic/shots/c2c_19b_god_revive.png"
-      ],
-      "fix": "Every refused command says why in the panel. The God brush paints owner and controller as the editor's does. A dead nation controls and labels nothing."
+      "fix": "A ticker of major events (war, peace, capital, death) whose rows fly the camera there; basic sound; fold land handovers into one row per peace."
     }
   ],
-  "timestamp": "2026-10-05T08:45:35Z"
+  "timestamp": "2026-10-07T18:27:23.452Z"
 }
