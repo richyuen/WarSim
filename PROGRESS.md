@@ -9136,3 +9136,76 @@ No rule changed and nothing on screen changed. One task came out of it.
   sweep tests, build, parity. No e2e (a part, no spec changed).
 - **Review count:** unchanged (3.10 is not ticked).
 - **Next:** PLAN 3.10b.
+
+## 2026-10-07 — PLAN 3.10b: twenty years of seed 4242, the tick by year
+
+- **Done:** one run, from 1938, alone and pinned:
+  `npm run sim -- --scenario 1938 --seed 4242 --years 20 --affinity 0xFFFF --profile`
+  (324.2 s; final hash `218d11ec`). No code changed. Year 1 ends on `c426efce` and year 3
+  on `82107c9f`, the hashes of 3.10a's checkpoint runs, and their ticks read the same
+  (3.173, 2.139, 1.482 ms here; 3.170, 2.163, 1.495 there).
+- **The tick by year,** ms a tick:
+
+  | year | tick | p95 | longest | operationalAi | combat | supply | territory | movement | the other 17 | alive | formations | cells flipped |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | 1 | 3.173 | 10.07 | 467 | 1.074 | 1.112 | 0.333 | 0.273 | 0.186 | 0.191 | 97 | 961 | 20,386 |
+  | 2 | 2.139 | 5.49 | 260 | 0.918 | 0.465 | 0.268 | 0.222 | 0.117 | 0.147 | 97 | 804 | 9,923 |
+  | 3 | 1.482 | 6.75 | 104 | 0.352 | 0.276 | 0.358 | 0.262 | 0.101 | 0.131 | 101 | 816 | 20,261 |
+  | 4 | 1.115 | 4.66 | 59 | 0.213 | 0.242 | 0.252 | 0.204 | 0.064 | 0.138 | 108 | 850 | 16,746 |
+  | 5 | 1.931 | 6.46 | 191 | 0.892 | 0.322 | 0.294 | 0.230 | 0.063 | 0.127 | 107 | 858 | 14,269 |
+  | 6 | 1.499 | 4.96 | 203 | 0.444 | 0.328 | 0.246 | 0.243 | 0.091 | 0.146 | 116 | 867 | 13,941 |
+  | 7 | 1.926 | 6.50 | 77 | 0.587 | 0.419 | 0.318 | 0.328 | 0.118 | 0.154 | 121 | 800 | 14,468 |
+  | 8 | 1.968 | 7.48 | 378 | 0.599 | 0.339 | 0.339 | 0.390 | 0.128 | 0.172 | 111 | 769 | 62,385 |
+  | 9 | 1.797 | 8.04 | 107 | 0.807 | 0.188 | 0.331 | 0.233 | 0.111 | 0.125 | 109 | 782 | 20,906 |
+  | 10 | 1.701 | 5.21 | 209 | 0.966 | 0.133 | 0.261 | 0.149 | 0.068 | 0.122 | 112 | 848 | 13,193 |
+  | 11 | 1.354 | 5.21 | 140 | 0.583 | 0.182 | 0.267 | 0.144 | 0.051 | 0.124 | 115 | 908 | 18,910 |
+  | 12 | 2.851 | 8.56 | 200 | 1.824 | 0.213 | 0.340 | 0.228 | 0.102 | 0.143 | 119 | 946 | 23,837 |
+  | 13 | 1.109 | 4.11 | 186 | 0.412 | 0.136 | 0.228 | 0.134 | 0.039 | 0.159 | 116 | 997 | 19,058 |
+  | 14 | 1.784 | 8.76 | 55 | 0.756 | 0.257 | 0.334 | 0.233 | 0.085 | 0.117 | 118 | 1,034 | 14,889 |
+  | 15 | 2.128 | 8.69 | 372 | 0.988 | 0.268 | 0.354 | 0.277 | 0.107 | 0.130 | 119 | 1,040 | 19,167 |
+  | 16 | 1.869 | 7.25 | 72 | 0.760 | 0.239 | 0.361 | 0.257 | 0.104 | 0.146 | 122 | 1,074 | 17,853 |
+  | 17 | 1.564 | 6.55 | 47 | 0.615 | 0.226 | 0.299 | 0.228 | 0.077 | 0.117 | 128 | 1,077 | 9,880 |
+  | 18 | 1.816 | 6.73 | 331 | 0.803 | 0.272 | 0.251 | 0.273 | 0.103 | 0.114 | 128 | 1,087 | 10,788 |
+  | 19 | 2.158 | 4.88 | 79 | 1.506 | 0.209 | 0.109 | 0.161 | 0.052 | 0.119 | 127 | 1,131 | 4,720 |
+  | 20 | 1.568 | 7.12 | 83 | 0.688 | 0.241 | 0.240 | 0.218 | 0.066 | 0.113 | 130 | 1,188 | 9,253 |
+
+  Means: years 1 to 5 1.968 ms, 6 to 10 1.778, 11 to 15 1.845, 16 to 20 1.795; all twenty
+  1.847. The budget is 1.5 ms: five of the twenty years are under it.
+- **Read from it:**
+  - *Nothing grows.* The nations go from 97 to 130 and the formations from 961 to 1,188, and
+    the five-year means do not rise (1.78 to 1.97, the first the dearest). Pearson r of the
+    year's tick against the nations alive −0.20, the formations +0.05, the cells flipped
+    +0.12 (twenty points, one seed: no more than "no trend seen"). The critic's worry of 170
+    nations is not met here: this seed has 130 after twenty years.
+  - *The operational AI is the tick's swing.* It is 0.21 to 1.82 ms a year (19 to 70 % of
+    the tick; 0.79 ms in the mean, 43 %), and every year over 1.9 ms has it at
+    0.59 ms or more. Without it the tick is 0.65 to 1.37 ms in years 2 to 20 and 2.10 in
+    year 1. It follows nothing counted here (r against the nations +0.14, the formations
+    +0.27, the cells flipped −0.12): year 12 (1.82 ms) and year 13 (0.41 ms) have 119 and 116
+    nations and 946 and 997 formations. Its slow calls (517 to 1,460 a year) hold 71 % of it or
+    more (all of it in year 9); the longest 29 to 458 ms.
+  - *One count does rise:* `MoveRejected`, 821 in year 1, 591 to 4,963 in years 2 to 16,
+    then 6,763, 2,854, 7,853 and 10,504. The operational AI gives the orders that are
+    rejected. Whether they cost its time is 3.10c's to find: the two dearest years of it (12
+    and 19) have 3,856 and 7,853, and year 20 has the most and 0.69 ms.
+  - *Combat* is year 1 (1.11 ms, 4,384 slow calls) and year 2 (0.47), then 0.13 to 0.42:
+    it falls with the years (r −0.53), as the fights of 1938 end (4,091 retreats in year 1,
+    46 to 1,391 after year 3).
+  - *Supply* is flat, 0.23 to 0.36 ms, in 625 to 730 slow calls a year (two a day), but for
+    year 19: 286 slow calls and 0.109 ms. Not looked into (3.10d).
+  - *Territory* 0.13 to 0.39 ms, the dearest in the year of 62,385 cells flipped (year 8,
+    0.390); r against the cells flipped +0.59.
+  - *Once a year or a month:* capitals 75 to 81 ms in 6 of the 20 years, revolts 11 to
+    38 ms, war 11 to 33 ms, strategicAi 14 ms at most here (3.10a had 102 ms on seed 8128).
+  - The tick's time outside the 22 systems (commands, the timer) is 0.002 to 0.003 ms.
+- **So for the parts to come:** the budget on this seed is the operational AI's to give:
+  0.79 ms of it against an excess of 0.35 ms over twenty years (0.47 over the first five,
+  where combat's first year is another 0.6 ms of year 1). Supply, territory and combat
+  together are 0.48 to 1.07 ms after year 2 and do not grow.
+- **Checkpoint, of HEAD only:** `.cache/ck/4242-y20.bin` (`218d11ec`, not committed).
+- **Not done:** one run, not two (3.10a's pairs differed by 0.04 ms at most). One seed.
+  No cause looked for, nothing made faster. No picture: nothing drawn changed.
+- **Gate:** `npm run check` before the run on the clean tree, exit 0 (typecheck, lint, unit,
+  build, parity); after it, documents only: parity.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Next:** PLAN 3.10c.

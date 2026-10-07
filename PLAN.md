@@ -4408,8 +4408,12 @@ quick sweep as a smoke test.
     dear years (0.92 to 0.97 ms of 2.2 to 2.3), nearly all of it in 720 to 1,420 calls of
     1 ms or more; then supply (0.27 to 0.36 ms, the same way), territory (0.20 to 0.39 ms,
     spread over every tick), combat (0.17 to 0.47 ms; 1.12 ms in a first year).
-  - [ ] 3.10b One seed alone for 20 years (seed 4242, pinned, `--profile`): the tick by year
-    with the living nations and the formations beside it, and which system grows.
+  - [x] 3.10b *Done 2026-10-07:* seed 4242 alone for 20 years, pinned, `--profile`; the
+    table by year is in PROGRESS. Nothing grows: 97 to 130 nations and 961 to 1,188
+    formations, and the five-year means are 1.97, 1.78, 1.85 and 1.80 ms (1.847 over all).
+    The swing is the operational AI's (0.21 to 1.82 ms a year, 0.79 in the mean), and it
+    follows neither the nations nor the formations nor the cells flipped. `MoveRejected`
+    rises (821 in year 1, 10,504 in year 20): a question for 3.10c.
   - [ ] 3.10c The operational AI: what its dear calls are (which day, which nation, which
     step; a call of 451 ms in year 1 of seed 4242), and the first cause, with the pin
     unmoved. Further causes are parts of their own, one a commit.
