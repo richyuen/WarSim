@@ -8743,3 +8743,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** documents only (parity).
 - **Next:** PLAN 3.7f (PARITY, the rows of the phase with their evidence), then the tick of
   3.7 with `npm run check:full`, then the critic.
+
+## 2026-10-07 — PLAN 3.7f and the tick of 3.7: PARITY has the rows of Phase 3; the phase review is done
+
+- **PARITY, ten rows, added to and not replaced** (a script that appends an evidence path
+  and a dated note; the word diff takes nothing away but ten commas' worth): Table 1 rows 9
+  (3.7i), 25 (3.7j, 3.7k), 37 (3.7m), 40 (3.7k), 65 (3.7n); Table 2 rows 1 (the tags, the
+  march home), 2 (the retreat on the page, owed since 3.7m), 4 (what Phase 3 built, what
+  its review mended, what is left), 7 (PLAN 3.2's fuel, org and breakdowns: they stood in
+  the armour row alone, and the supply row still said "missing: consumption") and 9 (the
+  eighth read's save and load, the test of `formations.home`). `npm run parity`: 46.3 %,
+  no status changed.
+- **No run with `EVIDENCE=1`** (2.11h had one): 3.7g and 3.7o wrote the pictures of what
+  they changed, and nothing drawn has changed since.
+- **Looked at:** the twelve pictures that 3.7g committed unseen (`2.10/stop-7`, `stop-8`;
+  nine of `2.14/`; `3.6/tank-battle-4-tanks.png`) and `3.6/tank-battle-1-marker.png`. Every
+  tag is by its own block or has a line to it, and none lies on another formation's
+  elements. So the 18 of 3.7g and the six of the tank demo are each seen as last written.
+- **Seen and not changed:** at stop 7 of the zoom demo (12 m/px) the tag of "Motorised
+  division 47" is at the view's right edge with a line of 480 px back across the fight; a
+  line under PLAN 7.4. Which blocks of that picture are the division's was not read.
+- **PLAN 3.7 ticked.** Gate: `npm run check:full`, exit 0: 963 unit tests in 121 files, the
+  15 sweep tests, 147 of 147 e2e in 13.7 min, parity. No spec failed and none was run again.
+- **Not done:** the `t2-*` pictures of `docs/evidence/3.6/` and those of `3.1/` and `3.2/`
+  were not looked at again; no row was checked against AoC anew; the status of no row can
+  rise by this (armour, the zoom and the worker are our additions, unscored).
+- **Next:** the critic (PROMPT step 2a: a phase review is ticked since its report), as the
+  next iteration's only task. Then PLAN 4.1.

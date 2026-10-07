@@ -3872,7 +3872,7 @@ quick sweep as a smoke test.
     From 3.6e3 (ADR-164): at 100 m/px the tag of a neighbouring division lay on half of the
     elements of the armoured division looked at. On the demo's flight, see whether the
     tanks that fight are under a tag, and say what was seen.
-- [ ] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+- [x] 3.7 Phase 3 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
@@ -3955,8 +3955,30 @@ quick sweep as a smoke test.
     alive 95 to 171, a war in every year. Nothing in BLOCKERS, no constant touched.
     *Not done:* the run took 14.2 min against Phase 2's 4.9, and why was not found (a line
     under PLAN 7.1).
-  - [ ] 3.7f PARITY, last (as 2.11h): the rows of the phase with their evidence, after the
+  - [x] 3.7f PARITY, last (as 2.11h): the rows of the phase with their evidence, after the
     tasks that change what is drawn. Rows are added to, not replaced.
+    Done 2026-10-07. Ten rows have a dated note and their evidence, added behind what stood
+    (a script that appends; the diff takes nothing away): Table 1 rows 9 (3.7i), 25 (3.7j,
+    3.7k), 37 (3.7m), 40 (3.7k), 65 (3.7n); Table 2 rows 1 (the tags, the march home, the
+    pictures), 2 (the retreat on the page, owed since 3.7m), 4 (what the phase built, what
+    its review mended, what is left), 7 (PLAN 3.2's fuel, org and breakdowns, which stood in
+    row 4 alone) and 9 (the eighth read's save and load). `npm run parity`: 46.3 %, as
+    before; no status changed (every row is partial for want of a dated look at AoC's own
+    behaviour beside ours, and armour has none in AoC to look at).
+    - *No run with `EVIDENCE=1`,* unlike 2.11h: 3.7g was the last change to what is drawn
+      and wrote the pictures of its specs again; 3.7o those of the tank demo.
+    - *Looked at, the twelve that 3.7g committed unseen:* `2.10/stop-7-battalions.png`,
+      `stop-8-men.png`; `2.14/battle-20m.png`, `contact-5m.png`, `to-battle.png`,
+      `formation-panel-t2.png`, `-t3.png`, `handover-contact-96ms.png`, `-352ms.png`,
+      `rest-5m.png`, `tags-t3-12m-polish.png`; `3.6/tank-battle-4-tanks.png`. And
+      `3.6/tank-battle-1-marker.png` (written again by 3.7o, not looked at then). Every tag
+      is by its own block or has a line to it; no tag lies on another's elements.
+    - *Seen and not changed:* at stop 7 a tag stands 480 px from its block (a line under
+      PLAN 7.4); in `contact-5m.png` a tag at the view's top lies under the language bar
+      (PLAN 7.4 has it since 2.14f6).
+    - *Not done:* the `t2-*` pictures of `docs/evidence/3.6/` and the two of `3.1/` and
+      `3.2/` were not looked at again (nothing since has written them); no AoC behaviour
+      was looked at anew.
   Tasks that come out of 3.7a, 3.7c and 3.7d follow as 3.7g and on, the sim's first. 3.7 is
   ticked when they are done.
   - [x] 3.7g **A tag stands on its formation's own side of a contact, and one that stands
@@ -4232,6 +4254,14 @@ quick sweep as a smoke test.
     The seed is now an argument of `tankBattle` and a constant of the spec (2: day 24.5,
     the same brigade). No filter and no assertion changed; the evidence pictures written
     again. *Not done:* nothing keeps the ground through the next change of rules.
+  **PLAN 3.7 done 2026-10-07.** The review took 22 commits: its split, five parts of review (an
+  independent read, SPEC, the watch lists, the tags' question, the smoke sweep), nine fixes
+  that came out of them (3.7g to 3.7o: six of the sim, three of what is drawn or shown) with
+  their diagnoses, and PARITY. The question in the task's head, whether a tag is tied to its
+  elements, is answered by 3.7d (ADR-168: it is) and built by 3.7g. The five limits of the
+  smoke run are in PROGRESS (3.7e); none failed, nothing is in BLOCKERS for it, no constant
+  was tuned. The count of numbered tasks for the next review pass starts again here. Next by
+  PROMPT step 2a: the critic.
 
 ## Phase 4 — Naval
 
@@ -4481,6 +4511,12 @@ quick sweep as a smoke test.
     `docs/evidence/2.10/stop-5-battle.png`): at 150 m/px the tags of three divisions in one
     battle lie on each other and on the sprites, one name half covered. Whether the tags
     are parted at all at T2 was not looked at.
+  - **A tag far from its block at T3** (seen 2026-10-07, PLAN 3.7f,
+    `docs/evidence/2.10/stop-7-battalions.png`, after ADR-168): at 12 m/px the tag of
+    "Motorised division 47" stands at the view's right edge and its line runs 480 px back
+    across the fight to the middle of its elements, with open ground much nearer its block.
+    Which of the blocks in the picture are that division's was not read; a division whose
+    elements span the view has its box's side far from their middle.
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
     - `wrapOffsets` has no margin: a counter, marker, flag or name within its own half-width
