@@ -4280,6 +4280,37 @@ quick sweep as a smoke test.
     whole alliance's. A decision when the part is taken up.
   AT: a test that fails first on the case of seed 3301; the ten-year games of the sweep
   stage assert on every day that no two nations at war share an alliance or an overlord.
+  **Split 2026-10-07** (one cause per commit; the diagnosis found four):
+  - [x] 3.8a The diagnosis (ADR-178). The war of seed 3301 was a declaration of the AI, day
+    64: `whyNotWar` asked of the two nations named whether one is the other's puppet or its
+    ally, and French West Africa is neither to the United Kingdom. France's seven other
+    puppets came as the puppets of an ally of the attacker. The gate's test
+    (`tests/helpers/aiSweep.ts`) asks once a year whether two members of one alliance are
+    at war: a puppet is a member of none.
+  - [x] 3.8b A declaration between two nations with a bond is refused, for the AI, God Mode
+    and the rules alike (`bond` in `systems/war.ts`; `Refusal.SameOverlord`,
+    `Refusal.AlliedRealm`), and the AI does not choose such a target.
+    `tests/unit/realmWars.test.ts`: the 66 days of seed 3301 (failed first: 6 pairs on day
+    56), the reasons on the 1938 world as it starts, God Mode's refusal.
+  - [ ] 3.8c Who joins a war: nobody with a bond to a nation of the other side. Two cases
+    measured (ADR-178): a puppet in another alliance than its overlord joins against its
+    overlord (seed 1, day 125: Yugoslavia of Italy against Italy); a guarantor that is the
+    attacker's ally attacks the nation it guarantees while its puppets defend it (the
+    1938 start, United Kingdom on Poland: a test of it is written, see PROGRESS). A
+    decision: a nation torn between the two sides stays out with its puppets.
+    AT: that test; seed 1 to day 130 with `realmWars` empty on every day.
+  - [ ] 3.8d A nation that gets an overlord or an alliance while at war: its wars against
+    its new realm end for it (seed 99, day 822: Latvia of Germany in the war of Poland on
+    Estonia), and `canJoin` asks about the puppets too. Whether a puppet may sit in another
+    alliance than its overlord at all: a decision here.
+    AT: `realmWars(world)` is empty on every day of the ten-year games of the sweep stage
+    (`tests/helpers/aiSweep.ts`), which is the AT of 3.8.
+  - [ ] 3.8e Seen in the diagnosis, not a war inside a realm: nobody defends a puppet. When
+    war is declared on a puppet its overlord does not join (seed 3301: Iraq on Syria, day
+    17, and Nationalist Spain on French West Africa, day 54: the defender alone). A
+    decision (the overlord joins, or the declaration is on the overlord), with its test.
+  - [ ] 3.8f Who joins a war on a rebel (the critic: the parent's war, not the alliance's
+    30 nations). A decision, then the tick of 3.8 with the full gate.
 - [ ] 3.9 Critic R3-B2, the part that is not balance: one event does not hand two thirds of
   the largest nation's land to a rebel province. What the critic saw, seed 6021 in the
   browser: the Soviet Union has 13.02 % of the land at year 8.1 and 5.54 % at year 9.1, and

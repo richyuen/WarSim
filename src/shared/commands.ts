@@ -220,6 +220,10 @@ export const Refusal = {
   NoOtherName: 18,
   /** An order to a formation on the retreat: it takes none until the retreat is over (PLAN 3.7m, ADR-173). */
   OnRetreat: 19,
+  /** Both are puppets of one overlord (PLAN 3.8). */
+  SameOverlord: 20,
+  /** One, or its overlord, is the ally of the other or of its overlord (PLAN 3.8). */
+  AlliedRealm: 21,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

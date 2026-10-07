@@ -24,9 +24,10 @@
  * God Mode can switch the AI off globally (setting `aiEnabled`) or per nation (`setAi`).
  */
 import { isDayStart, isMonthStart } from '../../shared/calendar';
+import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
-import { makePeace, declareWar } from '../systems/war';
+import { makePeace, declareWar, whyNotWar } from '../systems/war';
 import { canJoin, noWarAmong } from '../systems/alliances';
 import { navOf, type World } from '../world';
 
@@ -147,8 +148,8 @@ export function strategicAi(world: World): void {
       let best = 0;
       let bestU = DECLARE_AT;
       for (const t of neighbours) {
-        if (nc.living[t] !== 1 || world.wars.atWar(n, t) || al.allied(n, t) || world.wars.inTruce(n, t, world.tick)) continue;
-        if (nc.overlord[t] === n || nc.overlord[n] === t) continue;
+        // Whom it may declare on (PLAN 3.8: not a puppet of its ally either, which it used to pick).
+        if (whyNotWar(world, n, t) !== Refusal.None) continue;
         const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars;
         if (u > bestU) {
           bestU = u;

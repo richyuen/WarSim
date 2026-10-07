@@ -2,7 +2,8 @@
  * Wars v1 (SPEC §3.5, §7 Peace; PLAN 1.16): declaration, war score, exhaustion, peace.
  *
  * Declaration (`declareWar`): rejected for dead nations, self, an existing war, a truce, an
- * overlord–puppet pair or allies. Each leader brings its puppets and its alliance (PLAN 1.17);
+ * overlord–puppet pair, allies, two puppets of one overlord, or a nation and the puppet of its
+ * ally (`bond`, PLAN 3.8). Each leader brings its puppets and its alliance (PLAN 1.17);
  * the defender also gains its guarantors (each with its puppets). A side fights to the death when any
  * member's nation flag is set (God Mode can change it per war with `setWarFightToDeath`).
  *
@@ -92,8 +93,25 @@ export function whyNotWar(world: World, attacker: number, defender: number): Ref
   if (nc.living[attacker] !== 1 || nc.living[defender] !== 1) return Refusal.DeadNation;
   if (world.wars.atWar(attacker, defender)) return Refusal.AtWar;
   if (world.wars.inTruce(attacker, defender, world.tick)) return Refusal.Truce;
-  if (nc.overlord[attacker] === defender || nc.overlord[defender] === attacker) return Refusal.Subject;
-  return world.alliances.allied(attacker, defender) ? Refusal.Allied : Refusal.None;
+  return bond(world, attacker, defender);
+}
+
+/**
+ * What ties a and b so that they do not go to war (PLAN 3.8, the critic's R3-B4), or
+ * `Refusal.None`: one is the other's puppet, they are allies, both are puppets of one overlord,
+ * or one of them or its overlord is the ally of the other or of its overlord. (Until then only
+ * the first two: the United Kingdom declared war on a puppet of its ally France, and France's
+ * other puppets came with it.) An overlord's own overlord is not looked at.
+ */
+export function bond(world: World, a: number, b: number): Refusal {
+  const nc = world.nations.cols;
+  const al = world.alliances;
+  if (nc.overlord[a] === b || nc.overlord[b] === a) return Refusal.Subject;
+  if (al.allied(a, b)) return Refusal.Allied;
+  const ra = nc.overlord[a] || a;
+  const rb = nc.overlord[b] || b;
+  if (ra === rb) return Refusal.SameOverlord;
+  return al.allied(ra, rb) || al.allied(a, rb) || al.allied(ra, b) ? Refusal.AlliedRealm : Refusal.None;
 }
 
 /** Applies a declaration; returns the war or null (with a `WarRejected` event). */

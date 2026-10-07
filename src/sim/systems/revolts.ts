@@ -41,6 +41,7 @@
  * pieces over the years.
  */
 import { isMonthStart } from '../../shared/calendar';
+import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { nearestCellWhere } from '../data/ownership';
@@ -49,7 +50,7 @@ import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
 import { spawnPoint } from './production';
-import { declareWar } from './war';
+import { bond, declareWar } from './war';
 
 export const NON_CORE = 4;
 export const OCCUPIED = 6;
@@ -226,7 +227,8 @@ function risingNeighbour(world: World, area: number[], holder: number): number {
       const c = g.centre[q] ?? -1;
       const n = c >= 0 ? world.cells.owner[c]! : 0;
       if (n === 0 || n === holder || nc.living[n] !== 1 || nc.origin[n] === 0) continue;
-      if (nc.overlord[n] !== 0 || nc.overlord[holder] === n || world.alliances.allied(n, holder)) continue;
+      // Not one the holder may not fight for the land (`bond`, PLAN 3.8): the rising is a war.
+      if (nc.overlord[n] !== 0 || bond(world, n, holder) !== Refusal.None) continue;
       if (best === 0 || n < best) best = n;
     }
   }

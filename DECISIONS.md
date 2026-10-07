@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-178 · 2026-10-07 · accepted — No declaration of war inside one realm or between allied realms; two reasons more for a refusal (PLAN 3.8a, 3.8b)
+
+- **Context (the diagnosis, PLAN 3.8a):** the critic's R3-B4. Seed 3301 headless, the events
+  read tick by tick. Day 54: Nationalist Spain declares war on French West Africa, a puppet of
+  France; the defenders are French West Africa alone. Day 64 (6 March 1938): the United
+  Kingdom, which leads the alliance France is in, declares war on French West Africa. The AI
+  chose it as it chooses any neighbour: weak, and at war already (`OPPORTUNITY`).
+  `whyNotWar` asked two things of the two nations named, whether one is the other's puppet
+  and whether they share an alliance. French West Africa is in no alliance, and its overlord
+  is not the United Kingdom, so the declaration stood. `declareWar` then brought the
+  attacker's allies with their puppets: France itself was kept out (the enemy's overlord),
+  its seven other puppets were not (nothing asked whether a joiner and the enemy have one
+  overlord). The attackers were 33 nations. The same on day 55: Germany on Austria, a puppet
+  of its ally Italy since the peace of day 29.
+- **Why the gate did not see it:** `tests/helpers/aiSweep.ts` asks, at the end of each of ten
+  years, whether two *members of one alliance* are at war. The United Kingdom and France were
+  not; a puppet is a member of nothing.
+- **Decision 1.** `bond(world, a, b)` in `src/sim/systems/war.ts` is what ties two nations so
+  that they do not go to war: one is the other's puppet (`Refusal.Subject`), they are allies
+  (`Refusal.Allied`), both are puppets of one overlord (`Refusal.SameOverlord`, new), or one of
+  them or its overlord is the ally of the other or of its overlord (`Refusal.AlliedRealm`,
+  new). `whyNotWar` ends in it, so the AI, God Mode and every rule that declares a war are
+  refused alike, and God Mode's line says which ("both are puppets of one overlord.", "one of
+  them, or its overlord, is the ally of the other or of its overlord.").
+- **Decision 2.** The strategic AI asks `whyNotWar` of each neighbour instead of its own four
+  tests. They were the same tests until now; with a fifth in one place only, the AI would pick
+  a target it is refused and spend its day's draw on a `WarRejected` event.
+- **Decision 3.** A revolt that rises with a neighbour (`risingNeighbour`) takes no neighbour
+  the holder has a bond with: that rising is a war of the holder on the neighbour, and a war
+  refused would leave the land handed over in peace.
+- **Not decided here.** One step up only: the overlord of an overlord is not looked at
+  (`makePuppet` does not forbid such a chain; none is in the 1938 data).
+- **What is left (measured after the change, three years each, no commands):** seed 99: no
+  pair with a bond at war. Seed 3301: 13 pairs in 2 wars. Seed 1: 68 pairs in 12 wars. None
+  is a declaration between the two leaders. They are (a) nations that *join* a war: a puppet
+  that sits in another alliance than its overlord comes in against its overlord (Yugoslavia,
+  a puppet of Italy and a member of the Balkan Entente, against Italy); the puppets of a
+  guarantor that is the attacker's ally come in for the defender, and the guarantor itself
+  for the attackers (United Kingdom on Poland at the start: France attacks the nation it
+  guarantees, and its puppets defend it); (b) a nation made a puppet at a peace while it
+  stands in another war against its new realm (Latvia, a puppet of Germany, in the war of
+  Poland on Estonia). PLAN 3.8c and 3.8d. Also seen and not a war inside a realm: nobody
+  defends a puppet. Its overlord does not join when the puppet is the one war is declared on
+  (French West Africa and Syria stood alone). PLAN 3.8e.
+- **The pin:** seed 99 after one year, `b1bb392b` to `ed82d7f8`. The pinned game had the critic's war itself: on day 57 the United Kingdom declared war on French West Africa (33 attackers, as on seed 3301). It now declares war on Iraq that day, and every later day differs (the old game: Iraq on Transjordan on day 94, France on the Spanish Republic on day 100). Read from the declarations of both games, the old one run on the stashed change.
+
 ### ADR-177 · 2026-10-07 · accepted — The critic's third run: where its six findings went, and in what order (PROMPT step 2a)
 
 - **Context:** PLAN 3.7 was ticked, so the critic was due (ADR-59). This session has the

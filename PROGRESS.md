@@ -8794,3 +8794,38 @@ No rule changed and nothing on screen changed. One task came out of it.
   3.8, 3.9 and 3.10.
 - **Gate:** documents only (parity).
 - **Next:** PLAN 3.8, starting with the critic's case of seed 3301.
+
+## 2026-10-07 — PLAN 3.8a, 3.8b: how the war inside the French realm began, and the declaration is refused
+
+- **Diagnosis (3.8a, ADR-178):** seed 3301 headless, every `WarDeclared` with both sides
+  printed. Day 64: `ENG -> AOF`, attackers 33 (the United Kingdom, its 19 puppets, France's
+  seven other puppets, Belgium, Luxembourg, Switzerland, the Netherlands and two of their
+  puppets), defenders `AOF` alone. It is a declaration of the AI, not a call to arms and not
+  a revolt: French West Africa was at war already (Nationalist Spain, day 54) and weak, and
+  `whyNotWar` looked at the two nations named only. Day 55: `GER -> AUT`, Austria a puppet of
+  Germany's ally Italy.
+- **Why no test saw it:** the yearly check of `aiSweep` is about members of one alliance.
+- **3.8b:** `bond` in `systems/war.ts`; `whyNotWar` ends in it; the AI's target loop and
+  `risingNeighbour` use it; `Refusal.SameOverlord` (20) and `Refusal.AlliedRealm` (21) with
+  their lines in `en.json`. `tests/helpers/realmWars.ts` lists the pairs at war that have a
+  bond; `tests/unit/realmWars.test.ts` has three tests. All three failed before the change
+  (seed 3301: 6 pairs on day 56) and pass after it.
+- **Measured after it, three years, no commands** (`realmWars` on every tick): seed 99: 0
+  pairs. Seed 3301: 13 pairs in 2 wars. Seed 1: 68 pairs in 12 wars. None from a declaration
+  between the leaders: joiners and nations made puppets in a war. So R3-B4 is not closed by
+  this commit, and the daily assertion in the ten-year games is not yet in: it would fail.
+- **PLAN 3.8 split** into 3.8a to 3.8f. A test for 3.8c is written and not committed (it
+  fails: France is in the war of the United Kingdom on Poland): a 1938 world of seed 5,
+  `declareWar(w, ENG, POL)`, then no nation of France's realm on either side and
+  `realmWars(w)` empty.
+- **Found on the way, not fixed:** nobody defends a puppet (PLAN 3.8e).
+- **The pin:** seed 99 after one year, `b1bb392b` to `ed82d7f8`. The pinned game had the critic's war itself: on day 57 the United Kingdom declared war on French West Africa (33 attackers, as on seed 3301). It now declares war on Iraq that day, and every later day differs (the old game: Iraq on Transjordan on day 94, France on the Spanish Republic on day 100). Read from the declarations of both games, the old one run on the stashed change.
+- **Not done:** no picture, nothing drawn changed but one line of God Mode's refusal text,
+  which no e2e reads; the browser was not opened. The tick was not timed (`bond` runs once
+  per neighbour per actor per week, where four tests ran before).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 966 unit tests in 122 files, the 15
+  sweep tests, build, parity. No e2e (a part; no spec changed). The specs that declare a war
+  by command declare Germany on Poland or Brazil on Mexico, which have no bond; the specs
+  that watch a seed's own game (the demos) were not run, and their games differ from the
+  day of the first declaration that is now refused. The full suite comes with the tick of 3.8.
+- **Next:** PLAN 3.8c.

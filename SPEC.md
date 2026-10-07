@@ -552,6 +552,11 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *Records:* war records are saved as JSON. `atWar` is a derived pair set.
   - *Declaration* (`declareWar`): each leader brings its puppets. It is rejected for self, dead
     nations, an existing war, a truce, or an overlord–puppet pair.
+  - *No war inside a realm (PLAN 3.8b, ADR-178):* nor for a `bond` between the two: allies, two
+    puppets of one overlord, or one of them (or its overlord) the ally of the other (or of its
+    overlord). The AI's choice of a target and the neighbour a revolt rises with use the same
+    test. Who *joins* a war is not yet held to it (PLAN 3.8c), nor a nation made a puppet while
+    at war (PLAN 3.8d).
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against
