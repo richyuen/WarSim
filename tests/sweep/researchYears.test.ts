@@ -26,17 +26,29 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
     ww.out.fires.length = 0;
   };
   const until = (year: number): void => s.step((daysFromCivil(year, 1, 1) - w.startDay) * 24 - w.tick, quiet);
+  const richNow = (): number[] => {
+    const out: number[] = [];
+    w.nations.forEach((n) => {
+      if (nc.living[n] === 1 && nc.income[n]! >= RICH) out.push(n);
+    });
+    return out;
+  };
+  until(1940);
+  const richIn1940 = richNow();
   // The last hour of 1941.
   until(1942);
   expect(knowing()).toEqual([]);
-  // Research went on meanwhile: every rich nation knows a tech of 1941.
+  // Research went on meanwhile: every nation that was rich through 1940 and 1941 knows a tech
+  // of 1941. The two years are the premise this check always had (PLAN 3.4Rj, ADR-147: in the
+  // game since, Denmark's income in peace is 157 until it takes 1,096 cells of Germany at the
+  // peace of February 1941, and 1,087 after; rich for ten months, it has learnt 6 techs, the
+  // earliest first, and has 6 of 1939 and 1940 to go before `armor_medium_2`). The check of
+  // 1944 below takes every nation that is rich in 1942, Denmark too.
   const medium2 = techMask([RULES_1938.techs.findIndex((t) => t.id === 'armor_medium_2')]);
-  const rich: number[] = [];
-  w.nations.forEach((n) => {
-    if (nc.living[n] === 1 && nc.income[n]! >= RICH) rich.push(n);
-  });
-  expect(rich.length).toBeGreaterThanOrEqual(3);
-  for (const n of rich) expect(knowsTechs(w, n, medium2), `${TAGS_1938[n - 1]} knows armor_medium_2 in 1942`).toBe(true);
+  const rich = richNow();
+  const richBoth = rich.filter((n) => richIn1940.includes(n));
+  expect(richBoth.length).toBeGreaterThanOrEqual(3);
+  for (const n of richBoth) expect(knowsTechs(w, n, medium2), `${TAGS_1938[n - 1]} knows armor_medium_2 in 1942`).toBe(true);
   until(1944);
   const known = knowing();
   for (const n of rich) if (nc.living[n] === 1 && nc.income[n]! >= RICH) expect(known, `${TAGS_1938[n - 1]} knows armor_heavy_1 in 1944`).toContain(n);

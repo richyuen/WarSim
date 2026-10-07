@@ -7355,3 +7355,47 @@ No rule changed and nothing on screen changed. One task came out of it.
   owner and no controller in the step its owner as controller, dead nation or not. No code
   found writes such a cell, but a step is now written back exactly unless a nation in it is
   dead: only a dead controller is replaced. Gate: green.
+
+## 2026-10-06 — PLAN 3.4Rj: a cell taken by a nation that is not at war with its owner is the owner's again
+
+- **The defect:** `territorySystem` gave a flipped cell to the neighbour that took it, whoever
+  owned it, and `makePeace` returns only what the two sides own. A cell taken from its
+  occupier by a third nation was held with no war and no way back.
+- **Measured first** (`.cache/rj/occ.ts`, scratch; seeds 99 and 7, 720 days, every hour): 640
+  and 478 cells came to be held so, every one at a flip with the owner at war with the old
+  holder, none at a peace or a death; at most 312 and 440 standing. The taker shared a side
+  with the owner in 572 and 52 (226 and 2 of them overlord and puppet), and fought a war of
+  its own in 68 and 426 (Mongolia in China 267, Turkey in Syria 144).
+- **Decided (ADR-147):** at the flip, and for every owner that lives and is not at war with
+  the taker, the puppet of the taker too. After: 0 at every hour of both seeds.
+- **Tests:** four in `tests/unit/territory.test.ts` (three red on the old source), and
+  `tests/sweep/heldYears.test.ts`: two seeds, two years, every month's start, 68 s, red on
+  the old source. The pin: a73098dc → af99d608.
+- **A test's world changed, not its expects:** `block` of `territory.test.ts` set the
+  controllers of its German and Polish halves and left the owner of 1938 (the Soviet Union).
+  Under the rule both gave what they took back to it. `block` sets the owners too.
+- **Tick** (seed 99, five years, pinned, one run): mean 1.475 ms (1.721 after 3.4Rf, budget
+  1.5), year 1 2.704 ms (2.591, budget 2.4); flipped a year 24,576, 15,626, 18,912, 18,548,
+  18,265 (27,134, 17,156, 16,964, 18,315, 36,275). Another game from the first months on:
+  not the rule's own cost. Year 1 is still over budget: PLAN 3.4Rm.
+- **A second test whose game changed** (the gate's first run failed on it):
+  `tests/sweep/researchYears.test.ts`, "DEN knows armor_medium_2 in 1942". Traced
+  (`.cache/rj/den.ts`, scratch): Denmark has an income of 157, one line and 17 to 19 techs
+  until Germany attacks it in October 1940; with Belgium at its side its four formations
+  hold 1,019 German cells in three months, the peace of February 1941 gives it 1,096, and
+  its income is 1,087: three lines, 6 techs in ten months, the earliest first, 6 of 1939 and
+  1940 ahead of `armor_medium_2`. The research rule works as written; the check supposed
+  that a nation rich in 1942 had been rich before. It asks that now (rich at the start of
+  1940 and of 1942, three such nations at least). The check of 1944 (PLAN 3.1b's AT) is
+  unchanged, with Denmark in it, and passes. No expect was dropped.
+  Not the rule's doing as far as looked: no Danish cell was another nation's at any month's
+  start of that war. Why Germany lost that front was not looked into (balance, ADR-58).
+- **Gotcha:** a test that reads "the rich" at one date reads whoever a war made rich the
+  month before.
+- **Not measured:** how often a front stops because the land ahead was freed for a stranger;
+  how often a freed cell with no army of its owner flips back.
+- **Not done:** `annexInto` could hand the annexer what the annexed nation occupied of a
+  third; no run made such a cell.
+- **No e2e:** a part, and nothing drawn changes.
+- **Next:** PLAN 3.4Rk (a puppet that dies returns as its overlord's puppet).
+- **Gate:** green on the second run (code, with the ten-year tests; no e2e for a part).

@@ -167,6 +167,68 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-147 · 2026-10-06 · accepted — A cell taken by a nation that is not at war with its owner is the owner's again (PLAN 3.4Rj)
+
+- **Context:** the seventh read's finding 4, older than the lines it read. `territorySystem`
+  turns a frontier cell to the neighbour at war with its holder, whoever owns it, and
+  `makePeace` gives back only what the two sides own. A cell that a third nation took from
+  its occupier stayed that nation's to hold, with no war against the owner and no rule to end
+  it. PLAN 3.4Rj asked when it goes back: at the flip, or at the next peace of either.
+- **Measured first** (`.cache/rj/occ.ts`, scratch; seeds 99 and 7, 720 days, every hour; a
+  cell with an owner and another controller who are not at war, by the write that made it
+  so): 640 and 478 cells came to be so, every one at a flip of `territorySystem`, in every
+  one the owner at war with the holder the cell was taken from. None at a peace, an
+  annexation, a death or a revolt. The taker was on the owner's side of a war in 572 and 52
+  (of them 226 and 2 an overlord and its puppet: the Soviet Union in Sinkiang, France in
+  Morocco and West Africa), and in a war of its own in 68 and 426 (Mongolia on China's land
+  267, Turkey on Syria's 144). Standing at a 30th day: 0 to 297 and 2 to 440, at most 312 and
+  440.
+- **Decision:** at the flip. A cell that flips to a nation is controlled by its owner
+  instead when the owner is a living nation other than the taker and the two are not at war:
+  partner, puppet or stranger. The taker's pressure decides the flip as before; only who
+  gets the cell changes. Nobody's land and the land of the taker's enemies are the taker's.
+- **Why at the flip, not at a peace:** every such cell is born at a flip, so one line there
+  keeps the state from ever existing; a rule at the peace would leave it for the months of
+  the war and need a second rule for a war that ends by a death.
+- **Why the puppet too:** PLAN 3.4Rj let the pair of overlord and puppet stand. But no peace
+  returns such a cell either (both are on one side), and `warSystem` counts land lost to
+  whoever holds it: a puppet most of whose land its overlord had freed would capitulate on
+  the first day of a war it leads.
+- **What it costs, not tuned:** a nation that frees a stranger's land cannot go on through
+  it. The connectivity rule wants a neighbouring cell the attacker controls, and the freed
+  cell is the owner's; the taker's armies do not count in its defence unless the two share a
+  side (`Wars.sameSide`). Where they do, the front is the partner's and the armies of both
+  press it (ADR-50).
+- **Measured after:** 0 such cells at every hour of the 720 days of both seeds. Seed 99, five
+  years, pinned, one run: cells flipped a year 24,576, 15,626, 18,912, 18,548, 18,265 (before:
+  27,134, 17,156, 16,964, 18,315, 36,275); mean tick 1.475 ms (1.721), year 1 2.704 ms
+  (2.591). It is another game from the first months on, so the figures are not the rule's
+  cost: PLAN 3.4Rm measures.
+- **The pin:** a73098dc → af99d608.
+- **Not done:** `annexInto` passes what the annexed nation occupied of a third to the annexer
+  after the war has ended; no run made such a cell, and the test of two years would show one.
+  A test world that hands land to a controller with no war (`setController` alone) keeps it
+  until a flip: `block` of `tests/unit/territory.test.ts` sets its owners now.
+- **Tests:** `tests/unit/territory.test.ts`, four more, three red before (a partner's land,
+  the land of a nation in a war of its own, a puppet's; the fourth holds the enemy's own land
+  and nobody's as the taker's); `tests/sweep/heldYears.test.ts`, two seeds, two years, red
+  before at the second and the first month's start.
+- **A test whose game changed:** `tests/sweep/researchYears.test.ts` asked on 1942-01-01 that
+  every nation with an income of 1,000 knows `armor_medium_2` (a tech of 1941). That is not
+  PLAN 3.1b's AT (nobody knows the heavy tank before 1942; the rich know it by 1944), and it
+  held because every nation rich in 1942 had been rich since 1938. In the game since,
+  Denmark (income 157, one line, 17 to 19 techs in three years) is attacked by Germany in
+  October 1940 with Belgium at its side, holds 1,019 German cells within three months with
+  its four formations, keeps 1,096 at the peace of February 1941 and has an income of 1,087
+  from then: three lines, 6 techs in ten months, the earliest first, 6 of 1939 and 1940
+  still ahead of `armor_medium_2`. The research rule does what it says. The check now names
+  its premise: rich at the start of 1940 and of 1942. It still wants three such nations, and
+  the check of 1944 is as it was, Denmark in it (it passes).
+- **Looked at, not found:** whether Denmark's gain is the rule's doing (allies freeing its
+  land, then advancing from it in its name). At no month's start of that war did another
+  nation hold a Danish cell. Why Germany's front there was open was not looked into
+  (balance, ADR-58).
+
 ### ADR-146 · 2026-10-06 · accepted — The editor's history and an import give a dead nation no cell: its cells go to the holder, else to nobody (PLAN 3.4Ri)
 
 - **Context:** the seventh read's finding 3. `editPaint` refuses a dead nation (PLAN 2.17),

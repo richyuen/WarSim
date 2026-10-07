@@ -24,7 +24,11 @@ const BW = 40; // block: x in [X0, X0+BW), y in [Y0, Y0+BH); GER west of X0+20, 
 const BH = 12;
 const SPLIT = X0 + 20;
 
-/** A sim with no formations and a GER|POL test block on plains, the two at war. */
+/**
+ * A sim with no formations and a GER|POL test block on plains, the two at war. The block is
+ * theirs to own too (PLAN 3.4Rj): it lies in the Soviet Union of 1938, and a cell that one of
+ * them takes of a nation it is not at war with goes back to that nation.
+ */
 function block(seed = 1): Sim {
   const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
   s.world.settings.aiEnabled = false; // isolate the mechanism from the AI (PLAN 1.24–1.25)
@@ -33,6 +37,7 @@ function block(seed = 1): Sim {
   for (let y = Y0; y < Y0 + BH; y++) {
     for (let x = X0; x < X0 + BW; x++) {
       w.cells.terrain[y * W + x] = Terrain.Plains;
+      w.setOwner(y * W + x, x < SPLIT ? GER : POL);
       w.setController(y * W + x, x < SPLIT ? GER : POL);
     }
   }
@@ -238,5 +243,86 @@ describe('partners on a front (PLAN 1.42b)', () => {
     };
     expect(lost(false)).toBeGreaterThan(0);
     expect(lost(true)).toBe(0);
+  });
+});
+
+// PLAN 3.4Rj (ADR-147): a cell taken by a nation that is not at war with its owner is the
+// owner's again. Before, it was the taker's to hold with no war: no peace gave it back.
+describe('a cell taken from its occupier by a third nation (PLAN 3.4Rj)', () => {
+  const ITA = nationId('ITA');
+  const STRIP = 3; // columns east of SPLIT that are Italy's land, held by Poland
+
+  /** `block` with a strip of `owner`'s land that Poland holds, and no war yet. */
+  function held(owner: number): Sim {
+    const s = block(6);
+    const w = s.world;
+    for (let y = Y0; y < Y0 + BH; y++) for (let x = SPLIT; x < SPLIT + STRIP; x++) w.setOwner(y * W + x, owner);
+    w.wars.set(GER, POL, false);
+    return s;
+  }
+  /** Cells of the block by who controls them, and those held by a nation not at war with their owner. */
+  const tally = (w: World): { ger: number; ita: number; noWar: number } => {
+    const t = { ger: 0, ita: 0, noWar: 0 };
+    const { owner, controller } = w.cells;
+    for (let y = Y0; y < Y0 + BH; y++) {
+      for (let x = X0; x < X0 + BW; x++) {
+        const c = y * W + x;
+        if (controller[c] === GER) t.ger++;
+        if (controller[c] === ITA) t.ita++;
+        if (owner[c] !== 0 && owner[c] !== controller[c] && !w.wars.atWar(owner[c]!, controller[c]!)) t.noWar++;
+      }
+    }
+    return t;
+  };
+  const push = (s: Sim): void => {
+    for (const y of [Y0 + 3, Y0 + 8]) spawn(s.world, GER, SPLIT - 1, y);
+    s.step(HOLD_TICKS + 2);
+  };
+
+  it('a partner’s land goes back to the partner', () => {
+    const s = held(ITA);
+    s.world.wars.start([GER, ITA], [POL], 0);
+    const before = tally(s.world);
+    push(s);
+    const after = tally(s.world);
+    expect(after.ita).toBeGreaterThan(before.ita);
+    expect(after.ger).toBe(before.ger);
+    expect(after.noWar).toBe(0);
+  });
+
+  it('so does the land of a nation that fights the occupier in a war of its own', () => {
+    const s = held(ITA);
+    s.world.wars.start([GER], [POL], 0);
+    s.world.wars.start([ITA], [POL], 0);
+    const before = tally(s.world);
+    push(s);
+    const after = tally(s.world);
+    expect(after.ita).toBeGreaterThan(before.ita);
+    expect(after.ger).toBe(before.ger);
+    expect(after.noWar).toBe(0);
+  });
+
+  it('and a puppet’s land that its overlord takes', () => {
+    const s = held(ITA);
+    s.world.nations.cols.overlord[ITA] = GER;
+    s.world.wars.start([GER, ITA], [POL], 0);
+    const before = tally(s.world);
+    push(s);
+    const after = tally(s.world);
+    expect(after.ita).toBeGreaterThan(before.ita);
+    expect(after.ger).toBe(before.ger);
+    expect(after.noWar).toBe(0);
+  });
+
+  it('the enemy’s own land and nobody’s are the taker’s, as before', () => {
+    for (const owner of [POL, 0]) {
+      const s = held(owner);
+      s.world.wars.start([GER], [POL], 0);
+      const before = tally(s.world);
+      push(s);
+      const after = tally(s.world);
+      expect(after.ger, `owner ${owner}`).toBeGreaterThan(before.ger);
+      expect(after.noWar).toBe(0);
+    }
   });
 });

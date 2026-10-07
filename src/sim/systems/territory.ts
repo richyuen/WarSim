@@ -23,6 +23,11 @@
  *
  * Decisions use start-of-tick control and are applied together, so the order of the frontier
  * cannot matter and a front advances at most one cell per HOLD_TICKS: a wave.
+ *
+ * Liberation (PLAN 3.4Rj, ADR-147): a cell taken by a nation that is not at war with its owner
+ * is the owner's again, partner, puppet or stranger. Nothing but a war holds another's land:
+ * before, such a cell stayed the taker's, and no peace gave it back (`makePeace` returns what
+ * the two sides own).
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { neighbours4 } from '../nav/grid';
@@ -181,10 +186,14 @@ export function territorySystem(world: World): void {
       flipping.delete(c);
     }
   }
+  const { owner } = world.cells;
+  const living = world.nations.cols.living;
   for (const [c, n] of flips) {
     flip[c] = 0;
     flipping.delete(c);
-    world.setController(c, n, true);
+    const o = owner[c]!;
+    const freed = o !== 0 && o !== n && living[o] === 1 && !world.wars.atWar(n, o);
+    world.setController(c, freed ? o : n, true);
   }
   // Local frontier upkeep around flipped cells.
   for (const [c] of flips) {

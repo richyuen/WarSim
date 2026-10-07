@@ -847,6 +847,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   that holds the neighbouring cell. A formation on a partner's supply network is in supply, and
   repatriation leaves it there while the shared war lasts. The operational AI counts a partner's
   front cells against a common enemy as its own front (within its deploy range).
+- *Liberation* (PLAN 3.4Rj, ADR-147): a cell that flips to a nation not at war with its owner
+  is controlled by that owner, if it lives: a partner's land, a puppet's or a stranger's goes
+  back to it at the flip. So no land is held without a war, and a nation that frees a
+  stranger's land does not advance through it (the next cell wants a neighbour it controls).
+  Nobody's land and an enemy's are the taker's.
 - *Not yet modelled:* org and terrain-dependent radius, garrison from spending, unrest.
 
 - **Pressure field.** Each land formation projects control pressure into cells within

@@ -3181,7 +3181,7 @@ quick sweep as a smoke test.
       of a dead nation). The pin stands (a73098dc).
     - *By hand:* `editor1938.spec.ts`, `mapImport1938.spec.ts`, `godUi1938.spec.ts`
       (chromium).
-  - [ ] 3.4Rj **A cell taken from an occupier by a third nation stays occupied with no
+  - [x] 3.4Rj **A cell taken from an occupier by a third nation stays occupied with no
     war** (finding 4; older than the lines read). `territory.ts` turns a cell to the
     neighbour at war with its holder, whoever owns it; `makePeace` gives back only what
     the two sides own. So a Polish cell that Lithuania held and Germany took, Germany
@@ -3192,6 +3192,23 @@ quick sweep as a smoke test.
     controller are not at war and not overlord and puppet goes back to its owner (at the
     flip, or at the next peace of either: decided on what the run shows); a count over
     two years of two seeds that is 0 at every month's start. The pin moves.
+    **Done 2026-10-06 (ADR-147).** At the flip: a cell that flips to a nation not at war
+    with its living owner is the owner's again, partner, puppet (the AT let that pair stand;
+    no peace returns it either, and a puppet would capitulate on land its overlord freed)
+    or stranger.
+    - *Measured first* (`.cache/rj/occ.ts`, scratch; 720 days, every hour): 640 cells in
+      seed 99 and 478 in seed 7 came to be held with no war, all at a flip, none at a
+      peace; at most 312 and 440 standing. After: 0 at every hour of both.
+    - *Tests:* four in `tests/unit/territory.test.ts` (three red before), and
+      `tests/sweep/heldYears.test.ts` (two seeds, two years, 68 s; red before).
+    - *The pin:* a73098dc → af99d608.
+    - *For 3.4Rm* (seed 99, five years, pinned, one run): flipped 24,576, 15,626, 18,912,
+      18,548, 18,265; mean tick 1.475 ms, year 1 2.704 ms.
+    - *Not tuned:* a nation that frees a stranger's land cannot advance through it.
+    - *A test whose game changed:* `researchYears.test.ts` asked a tech of 1941 of every
+      nation rich on 1942-01-01. Denmark is rich from February 1941 in the game since (157
+      → 1,087 with 1,096 cells of Germany). The check names its premise now: rich in 1940
+      and in 1942. The check of 1944, PLAN 3.1b's AT, is unchanged and holds Denmark too.
   - [ ] 3.4Rk **A puppet that dies returns as its overlord's puppet** (finding 5).
     `eliminateNation` leaves `overlord` and the autonomy; only an annexation clears
     them. Albania killed at tick 2500 and revived at 20020 is Italy's puppet again; 35 of
