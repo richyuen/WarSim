@@ -3887,7 +3887,7 @@ quick sweep as a smoke test.
     changed since the seventh (`dae7824`: PLAN 3.4Re to 3.6e5, 2,163 lines added), the new
     lines first. The same brief: defects only, nothing of what changed or why. Each finding
     is checked against the code here before it is anything; those a player can meet become
-    tasks 3.7g and on, before 4.1, each with a test that fails first, most severe first; the
+    tasks 3.7h and on, before 4.1, each with a test that fails first, most severe first; the
     rest go on the watch list.
   - [x] 3.7b SPEC re-read for drift: each decision since the last pass (ADR-143 to ADR-167)
     looked for in SPEC (§2.3, §2.4, §6.1, §7, §8) and checked against the code, not against
@@ -3911,13 +3911,31 @@ quick sweep as a smoke test.
     review, the notes "From 3.6a" to "From 3.6e3" under PLAN 3.6, and the "Seen and not
     changed" and "Not done" lines of 3.5 and 3.6. Each item becomes a task, a line under the
     later phase that covers it, a carry with the reason it waits, or is closed.
-  - [ ] 3.7d The tags' question (ADR-164, ADR-166, above): decide, in DECISIONS; a task if
+  - [x] 3.7d The tags' question (ADR-164, ADR-166, above): decide, in DECISIONS; a task if
     the decision is a change.
+    Done 2026-10-07 (ADR-168): a tag is tied to its elements. The pictures looked at again:
+    `layoutTags` places by strength, so of three formations on one ground the weakest, the
+    tank brigade the demo is about, has its tag furthest off. The change is PLAN 3.7g.
   - [ ] 3.7e The smoke run: one `npm run sweep:quick`, after the sim's tasks out of 3.7a
     (PLAN 2.11a ran first and had to be run again as 2.11n). Its five limits in PROGRESS; a
     limit that fails in BLOCKERS, or a task if a defect of this phase's feature caused it.
   - [ ] 3.7f PARITY, last (as 2.11h): the rows of the phase with their evidence, after the
     tasks that change what is drawn. Rows are added to, not replaced.
+  Tasks that come out of 3.7a, 3.7c and 3.7d follow as 3.7g and on, the sim's first. 3.7 is
+  ticked when they are done.
+  - [ ] 3.7g **A tag stands on its formation's own side of a contact, and one that stands
+    off has a line to its elements** (ADR-168; view only, `src/render/units/tags.ts`).
+    Diagnose first: at the tank battle demo's stops 2 and 3 (100 and 60 m/px) read the boxes
+    of formations 395, 431 and 419 as `layoutTags` gets them, and say where each middle is.
+    Then: a formation whose box lies on the box of an enemy's tries first the side of its
+    own middle; a tag further than `TAG_GAP` from its box has a line in its nation's colour
+    to the middle of its elements in the view.
+    AT: unit (`tags.test.ts`: two boxes front to front, the weaker above: its tag above, the
+    stronger's below; a third on the same ground has a line; a formation alone as before; the
+    layout does not depend on the list's order); `tankBattle1938.spec.ts` at stops 2 and 3:
+    the brigade's tag is the nearest tag to the middle of its tanks, or has a line to them;
+    the pictures of the demo and `docs/evidence/2.10/stop-5-battle.png` taken again and
+    looked at; `tags1938` specs as they are.
 
 ## Phase 4 — Naval
 

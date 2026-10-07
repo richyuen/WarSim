@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-168 · 2026-10-07 · accepted — A tag is tied to its elements: it stands on its formation's own side of a contact, and one that stands off has a line to them (PLAN 3.7d)
+
+- **Context:** asked three times in a day. ADR-164 (100 m/px: a neighbour's tag on half of
+  an armoured division's elements), the zoom demo (PLAN 3.5g, a line under PLAN 7.4: three
+  tags on each other and on the sprites) and the tank battle demo (ADR-166,
+  `docs/evidence/3.6/tank-battle-2-marks.png` and `tank-battle-3-turrets.png`): "Tank
+  brigade 395" stands a tag's height above its tanks, and the tag that lies on them is
+  "Light infantry division 431", the enemy's.
+- **What the pictures show, looked at again for this:** three formations on one ground, two
+  blocks front to front. `layoutTags` places by strength: the strongest (431, 7.0k) takes
+  "above", the next (419, 6.7k) "below", the brigade (233 tanks) the next place out above.
+  Each tag is clear of the other tags, and each is "above its own box": the boxes lie on
+  each other. Nothing says which of the three the tanks are. In the phase's own demo the
+  one formation the picture is about is the one whose tag is furthest from it.
+- **Decision**, two parts, both in `tags.ts` (view only):
+  1. *Its own side.* A formation whose elements' box lies on the box of a formation it is
+     at war with tries first the side of its own middle: above if its box's middle is above
+     the middle of those boxes, below if under. Then the other places as now. Strength
+     decides between two that want one place, as now.
+  2. *A line.* A tag that stands further from its box than `TAG_GAP` (it gave way) has a
+     thin line in its nation's colour from the tag to the middle of its formation's elements
+     in the view.
+- **Why both:** the first makes two tags of a contact stand as the blocks do, each by its
+  own; it does nothing for the third formation on the ground, which the line is for. The
+  line alone would leave the enemy's tag on the tanks.
+- **Why not leave it to PLAN 7.4** (where the zoom demo's line is): the phase's demo is of a
+  tank battle, and its pictures name the tanks with an infantry division of the other side.
+  That is what a player reads at T2. The line under PLAN 7.4 (tags on each other and on the
+  sprites) stays: this does not part a tag from the sprites of its own formation.
+- **Not decided here, for the task to see first:** where the three boxes are at the demo's
+  stops 2 and 3 (the task reads them before it writes the rule: if the brigade's middle is
+  not above the division's, the first part is the wrong rule and the task says so); whether
+  the view knows who is at war with whom (the tag has `engaged` and `nation`; if not, "a
+  formation of another nation whose box lies on its own, both engaged").
+- **Consequences:** the pictures of the tank battle demo and of the zoom demo's battle are
+  taken again; `tags.test.ts` gets the two rules; a tag's place can change as a block turns.
+
 ### ADR-167 · 2026-10-07 · accepted — A snapshot says of each element it sends whether it was fired at; the view no longer takes it from the shots it got (PLAN 3.6e5)
 
 - **Context:** ADR-162 burns the hull of a tank whose element is the target of a fire record
