@@ -3879,6 +3879,31 @@ quick sweep as a smoke test.
   infantry division 431"). ADR-164 and the zoom demo (PLAN 3.5g) saw the same. Decide here
   whether a tag is tied to its elements (a leader line, or the tag's side by the side of the
   enemy), and make it a task if so.
+  Split 2026-10-07, as PLAN 2.11 was: the review is several causes. It is a review pass
+  (PROMPT step 9): the count of numbered tasks starts again with it. No part is a numbered
+  task: the gate runs the specs a part changes (ADR-87). The tick of 3.7 itself is gated with
+  `npm run check:full`; then the critic runs (PROMPT step 2a).
+  - [ ] 3.7a The independent read (ADR-74), the eighth: the 36 files of `src/` and `tools/`
+    changed since the seventh (`dae7824`: PLAN 3.4Re to 3.6e5, 2,163 lines added), the new
+    lines first. The same brief: defects only, nothing of what changed or why. Each finding
+    is checked against the code here before it is anything; those a player can meet become
+    tasks 3.7g and on, before 4.1, each with a test that fails first, most severe first; the
+    rest go on the watch list.
+  - [ ] 3.7b SPEC re-read for drift: each decision since the last pass (ADR-143 to ADR-167)
+    looked for in SPEC (§2.3, §2.4, §6.1, §7, §8) and checked against the code, not against
+    its ADR alone. Code that nothing uses since the last pass deleted (a commit of its own,
+    gated).
+  - [ ] 3.7c The watch lists of the phase: the blocks of BLOCKERS dated since the Phase 2
+    review, the notes "From 3.6a" to "From 3.6e3" under PLAN 3.6, and the "Seen and not
+    changed" and "Not done" lines of 3.5 and 3.6. Each item becomes a task, a line under the
+    later phase that covers it, a carry with the reason it waits, or is closed.
+  - [ ] 3.7d The tags' question (ADR-164, ADR-166, above): decide, in DECISIONS; a task if
+    the decision is a change.
+  - [ ] 3.7e The smoke run: one `npm run sweep:quick`, after the sim's tasks out of 3.7a
+    (PLAN 2.11a ran first and had to be run again as 2.11n). Its five limits in PROGRESS; a
+    limit that fails in BLOCKERS, or a task if a defect of this phase's feature caused it.
+  - [ ] 3.7f PARITY, last (as 2.11h): the rows of the phase with their evidence, after the
+    tasks that change what is drawn. Rows are added to, not replaced.
 
 ## Phase 4 — Naval
 
