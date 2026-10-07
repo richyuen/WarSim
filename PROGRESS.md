@@ -8691,3 +8691,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   wait for 3.7f.
 - **Next:** the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with
   `npm run check:full`.
+- **Added after the commit (bf9e3a6):**
+  - *Looked at, corrected:* the commit carries 18 pictures written again by `EVIDENCE=1`.
+    Six were looked at: the three named above and `docs/evidence/2.14/tags-t3-12m-german.png`
+    (two tags above their blocks, no line), `2.14/to-battle-front.png` (five tags, each by
+    its block; "Cavalry brigade 577" a step out above with a line in Poland's colour down
+    into its block) and `2.10/stop-6-division.png` ("Motorised division 47" left of the
+    fight with a line into it). The other twelve went in as written, not looked at.
+  - *`tags1938`'s two numbers:* `NEAR_PX` is 8 and a line starts at 5 px. A tag of a first
+    ring stands 4 px off, give or take half a px of rounding, and the next ring is a tag's
+    height further: no tag is between 5 and 8 px off, so the two tests do not disagree.
+  - *The push:* `git push` of bf9e3a6 was rejected by GitHub four times in 35 minutes
+    ("remote: Internal Server Error", request EE7D:1B57B1:1045C6A:1539DED:6AC67A12; the
+    fetch works, githubstatus.com green, the trace shows HTTP 200 and no reason).
