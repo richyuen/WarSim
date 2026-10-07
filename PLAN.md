@@ -3356,7 +3356,8 @@ quick sweep as a smoke test.
     - *Specs* (the full suite on the rule: 135 passed, 3 failed): `wrecks1938` watches day
       35 (was 19); `tiers1938` and `individuals1938` occupy the ground about their battle,
       so that the division they watch die has nowhere to go. No expect changed.
-    - *Tick* (five years of seed 99, pinned): 1.816 → 1.801 ms; year 1 2.509 → 2.172.
+    - *Tick* (five years of seed 99, pinned, on `0755501`): 1.816 → 1.825 ms; year 1 2.509
+      → 2.203.
     - *The pin:* e5df6177 → 7c85fde9.
     - *Not done* (ADR-150): fire on the retreating; surrender; anything on the page (PLAN
       3.6 has the pictures of armour, none of a retreat); a formation with no supply

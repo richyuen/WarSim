@@ -7606,3 +7606,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   and 51 times in the year); nothing of a retreat on the page, and a player is not told;
   what a 2:1 fight is now; whether wars that kill a third of what they did still end
   (balance, Phase 7).
+- **Gate** (`0755501`): green (code, with the ten-year tests: 874 unit, 15 of the sweep
+  stage; the three changed specs, 1.0 min). The full e2e suite of the part was the run by
+  hand above, on the tree before `noteMove` and before the three specs' changes; PLAN 3.5e
+  runs it in full.
+- **Added after the commit:**
+  - *The tick on the committed tree* (the figures above are from before `noteMove`): mean
+    1.825 ms, year 1 2.203, year 2 2.253, year 5 1.585; the five yearly hashes the same as
+    in the run before it (7c85fde9, 31282125, ea68d71b, 13208d31, e952a3e8). The commit's
+    message has 1.801.
+  - *The two specs' division holds by the rule, not by the hour:* in Node, with the ground
+    occupied, no Chinese cell within 9 cells of it at any hour, org under 0.15 for 21 of
+    its 25 hours (8 of 10 against the panzer division), no hour on the retreat.
+  - SPEC §2.5 step 8 has the order: the retreat, the engagement, the fire, the org.
+  - "1 did not run" of the full suite was not named.
+- **Next:** PLAN 3.5b (allot by reach).

@@ -250,9 +250,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 
   Cells flipped in each of five years of seed 99: 25,592, 28,368, 20,856, 17,270, 15,644 →
   22,767, 22,016, 15,720, 13,776, 25,834: the fronts move as before.
-- **Tick** (five years of seed 99, pinned, one run each): mean 1.816 → 1.801 ms, year 1
-  2.509 → 2.172 (budget 2.4), year 2 1.753 → 2.224, year 5 1.482 → 1.568. A different
-  game: not a gain or a loss of the rule's own.
+- **Tick** (five years of seed 99, pinned, one run each; the committed tree `0755501`): mean
+  1.816 → 1.825 ms, year 1 2.509 → 2.203 (budget 2.4), year 2 1.753 → 2.253, year 5 1.482 →
+  1.585. A different game: not a gain or a loss of the rule's own. (Before `noteMove`:
+  1.801, 2.172, 2.224, 1.568; the five hashes the same.)
 - **The pin:** e5df6177 → 7c85fde9. A save from before does not load (a column more).
 - **Not done, and what follows:** war kills a third of the formations it did. Whether wars
   still end, and how (exhaustion, the score), was not looked at: balance, Phase 7 (ADR-58).

@@ -225,7 +225,9 @@ proleptic Gregorian, so 1938 = 8760 ticks and 1940 = 8784 (`src/shared/calendar.
  5. air: mission scheduling, sorties, air combat, bombing
  6. naval: movement, detection, fleet battles, blockade/convoy/raid
  7. land movement (formations along paths; slotted element poses implied)
- 8. engagement detection (spatial hash) → battles; element combat; retreats
+ 8. the retreat (formations with little org break off; before the engagement, so that one
+    on the retreat is in no battle); engagement detection (spatial hash) → battles; element
+    combat; org lost to the hour's losses
  9. territory control: pressure → cell flips (frontier set only); city/capital capture
 10. diplomacy (daily): war score, peace, alliances/unity, puppets/autonomy
     revolts / collapse / revival (daily)
