@@ -1520,7 +1520,10 @@ folded in; nothing is dropped, so the shown counters still add up to every forma
 strength. A change is a fade in place over 250 ms; a folded counter comes out only once it
 clears its neighbour by 6 px more. That hold is a memory of the layer at rest: a split or merge
 on its way is folded without it and leaves none, so the counters land as a view opened at that
-zoom shows them, whatever frames were drawn on the way (PLAN 2.7l, ADR-75). The result depends
+zoom shows them, whatever frames were drawn on the way (PLAN 2.7l, ADR-75). It is a memory of
+one zoom too: the first frame at another zoom is folded without it, and folds on with the hold
+of each fold until the fold stands, so a step of the zoom inside a level also ends as a view
+opened there, in the frame of the step (PLAN 3.5i, ADR-158). The result depends
 on the zoom, not on where the camera is. Strengths from a million on read "1.54M".
 
 *Tier handovers (PLAN 1.45a and 2.7b, `src/render/units/handover.ts`, ADR-64, ADR-71):* at each

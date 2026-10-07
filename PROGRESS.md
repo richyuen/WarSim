@@ -7938,3 +7938,42 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **After the commit** (a read of the change): a group's change of way moves all its boxes
   at once, and no test moves the formations under it. Two lines under PLAN 3.5i: count it
   in a running game before 3.5 is ticked, and a test's name that says more than it tests.
+
+## 2026-10-07 — PLAN 3.5i, the counters: a step of the zoom inside a level kept the hold of the old zoom
+
+- **Found, before anything was changed** (a scratch spec that wrote the page's counters, the
+  layer's hold and the character widths to a file, since deleted; `foldOverlaps` on them in
+  Node, a script since deleted):
+  - Central Europe a year into seed 1938, level 3: 21 counters at 6 px per cell, 20 at 8
+    stepped to from 6, 27 at 8 in a view opened there. Node gives the same three numbers.
+  - Opened fresh the count never falls from 6 to 10 px per cell (21 … 31). With the hold
+    of 6 it falls at 7.5.
+  - The counter lost is Germany's 23.8k. An Italian counter came out of its own nation's
+    fold, took it, and both went into a third. No single held counter is the cause.
+- **Done** (ADR-158, `counters.ts`): `holdScale`; the first frame at another zoom folds
+  free, then on with the hold of each fold until it stands (`STEP_ROUNDS`).
+- **Tests, red first:** `counters.test.ts`, 20 → 22 (both red on the old code; the check of
+  "every turn in the frame of the step" red without the rounds).
+- **Specs by hand** (`--project=chromium`): `declutter1938` (3), `flagsClear1938`,
+  `countersRest1938`, `counters1938`, `handover1938`, `fades1938`, `tiers1938`,
+  `labelFades1938`, `lateFrame1938`: green, `flagsClear1938` after its restatement.
+- **`flagsClear1938` restated:** 22 frames, not 20, for the flags to rest after 3 → 3.4 px
+  per cell. Five counters come out at that step now; a flag makes way at half a fold, moves
+  150 ms, and the tail is 50: 325 ms, 20 frames are 320. ADR-158 has the frames.
+- **The pictures** (`EVIDENCE=1`, `docs/evidence/1.45/`, all nine shot again;
+  `flags-clear-6px.png` looked at): 71 counters where there were 64, none on another, and
+  Bucharest's flag left out under three Romanian counters (the 40 px rule).
+- **Cost** (the page, 30 frames of an eased zoom, two runs each, ms a frame): 6.6 → 7.3,
+  4.9 → 5.3, 4.6 → 5.4, 3.2 → 4.0; the worst frame 13.4 → 13.8. Counters that turn twice
+  on the way: 5 → 9, 17 → 19, 21 → 23, 0 → 2.
+- **Learned:**
+  - `python` on this machine writes CRLF unless the file is opened with `newline=''`.
+  - A view opened at a zoom is not at the level of a view stepped to it (the band of the
+    level held): a test that compares the two keeps the step inside ± half a level.
+  - A counter that begins to fade in is not in the frame's list (opacity 0): "what turned
+    in this frame" is read a fade later.
+- **Not done:** the two lines owed under 3.5i (the count of marker groups that change their
+  way, a test's name), so 3.5 is not ticked; a zoom in that shows fewer counters within a
+  level is still possible; the landing of a split takes its hold a frame later; a trembling
+  zoom.
+- **Next:** the two lines under PLAN 3.5i, then its tick and 3.5's (the full e2e).

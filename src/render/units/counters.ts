@@ -124,6 +124,8 @@ export const FOLD_MS = 250;
 export const FOLD_GAP_PX = 2;
 /** A folded counter comes out again only once it clears its neighbour by this much more (no flicker at the edge). */
 export const FOLD_HOLD_PX = 6;
+/** The frame of a step of the zoom folds at most this many times more, each time with the hold of the fold before. */
+const STEP_ROUNDS = 4;
 /** Px between a counter's strength and its "+n". */
 const BADGE_GAP = 4;
 /** A counter with a new key within this many px of one of its nation takes over that one's fold state. */
@@ -228,8 +230,16 @@ export class CounterLayer {
    * they stand, as in a view opened at that zoom. Kept through the flight, the hold recorded
    * which counters had touched which on the way, and that depends on the frames drawn: the same
    * step of the camera ended with other counters shown when its frames were further apart.
+   *
+   * And of one zoom (PLAN 3.5i, ADR-158): the first frame at another zoom is folded without it.
+   * The hold is there for armies that move, and a step of the zoom moves none. Kept through a
+   * step inside a level's band, it held counters that had room at the new zoom, and a counter
+   * that came out could take a shown neighbour with it: fewer counters after a zoom in, and
+   * not those of a view opened there.
    */
   private hold = new Set<string>();
+  /** The zoom (px per cell) of the frame that left `hold`. */
+  private holdScale: number | null = null;
   /** When the latest fold or unfold began. */
   private foldStart = -Infinity;
   /** Counters drawn last frame (tests). */
@@ -256,7 +266,8 @@ export class CounterLayer {
     boxOf: (total: number, others: number) => [number, number],
     flying = false,
   ): { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] {
-    if (flying) this.hold.clear();
+    const stepped = !flying && scale !== this.holdScale;
+    if (flying || stepped) this.hold.clear();
     const near = (a: { x: number; y: number }, b: { x: number; y: number }): boolean => Math.abs(a.x - b.x) * scale <= INHERIT_PX && Math.abs(a.y - b.y) * scale <= INHERIT_PX;
     // At the end of a split or merge a cluster and its children swap in the same place, under
     // new keys. A counter with a new key takes over the state of the counter of its nation that
@@ -273,11 +284,15 @@ export class CounterLayer {
       if (this.hold.has(heir.key)) this.hold.add(it.key);
     }
     for (const key of this.folds.keys()) if (!at.has(key)) this.folds.delete(key);
-    const result = foldOverlaps(
-      items.map((it) => ({ key: it.key, nation: it.c.nation, x: it.x * scale, y: it.y * scale, strength: it.c.strength })),
-      boxOf,
-      (key) => this.hold.has(key),
-    );
+    const boxes = items.map((it) => ({ key: it.key, nation: it.c.nation, x: it.x * scale, y: it.y * scale, strength: it.c.strength }));
+    let result = foldOverlaps(boxes, boxOf, (key) => this.hold.has(key));
+    // The frame of a step of the zoom is folded as the frames after it would be, one by one, each
+    // with the hold of the one before, until the fold stands: every counter that turns, turns now.
+    for (let round = 0; stepped && round < STEP_ROUNDS; round++) {
+      const before = result;
+      result = foldOverlaps(boxes, boxOf, (key) => before.get(key)!.into !== null);
+      if (boxes.every((b) => result.get(b.key)!.into === before.get(b.key)!.into)) break;
+    }
     const hold = new Set<string>();
     const out: { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] = [];
     const seen: typeof this.last = [];
@@ -308,6 +323,7 @@ export class CounterLayer {
     }
     this.last = seen;
     this.hold = hold;
+    this.holdScale = scale;
     this.foldStart = latest;
     return out;
   }

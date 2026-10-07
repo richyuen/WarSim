@@ -3622,6 +3622,25 @@ quick sweep as a smoke test.
     zoom before had 21 at the same level of clusters.** A zoom in must not show fewer
     counters at one level. The scene moved; whether the rule of ADR-75 has a hole is what
     this part finds. Ticks 3.5 (the full e2e).
+    **The counters done 2026-10-07 (ADR-158): the rule had a hole, a step of the zoom inside a
+    level kept the hold of the old zoom.** Not ticked: the two lines below are owed first.
+    - *Found, before anything was changed:* the same zoom, two pictures. Central Europe at
+      8 px per cell: 27 counters in a view opened there, 20 stepped to from 6 (21 at 6). The
+      page's counters replayed in Node give the same. Lost: a German counter of 23.8k that an
+      Italian one, out of its own nation's fold at 8, took with it into a third; the hold
+      kept 127 others folded, so nothing came out to make up for it.
+    - *Fix* (`counters.ts`): the hold is a memory of one zoom. The first frame at another
+      zoom is folded without it and folds on with the hold of each fold until the fold
+      stands: a view opened there, in the frame of the step.
+    - *Tests, red first:* `counters.test.ts`, two new (a step inside a level ends as a view
+      opened there, with every turn in the frame of the step, on 400 formations at three
+      levels; a pair at 6 and 8 px per cell, and the hold of the new zoom from there).
+      `declutter1938` green as written (21 → 27). `flagsClear1938` restated, 20 → 22 frames
+      for the flags to rest after a step that now brings counters out (ADR-158 says why it
+      is not weaker). `docs/evidence/1.45/` shot again.
+    - *Not done:* a zoom in can still show fewer counters within a level (the German counter
+      is folded at 8 in the opened view too); the landing of a split still takes its hold a
+      frame later; a trembling zoom was not measured.
     Before the tick, from 3.5h (ADR-157; neither reopens it):
     - *Count how often a group changes its way in a running game.* A group of markers (31
       of Spain's 51 leads) goes from the shorter way to the lines between and back when one

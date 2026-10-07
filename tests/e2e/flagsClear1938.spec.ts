@@ -110,7 +110,12 @@ test('capital flags keep clear of the T0 counters', async ({ page }, info) => {
     v.controller.set({ cx, cy, scale: 3.4 });
     const steps: number[] = [];
     let last = new Map(v.flagRects.map((f) => [f.id, f.y]));
-    for (let i = 0; i < 20; i++) {
+    // 22 frames, 352 ms. It was 20, when a step in inside a level brought no counter out (the
+    // hold of 3 px per cell kept them folded) and the flags moved from the first frame for the
+    // zoom alone. Now five counters come out here (PLAN 3.5i, ADR-158), and a flag makes way for
+    // a counter once it is half visible: half a fold (125 ms), the flag's move (150) and the
+    // tail (50) are 325 ms, the rest frame the 22nd.
+    for (let i = 0; i < 22; i++) {
       v.draw((now += 16));
       // The largest step of any flag in this frame, beyond what the zoom itself moves it.
       const cur = new Map(v.flagRects.map((f) => [f.id, f.y]));

@@ -287,11 +287,13 @@ describe('the counters at rest after a step of the camera (PLAN 2.7l)', () => {
    * Draws frames `dt` ms apart from `t0` at the zoom of `lv` levels, as the view does: until two
    * frames in a row leave nothing animating. Returns the counters then shown and the time.
    */
-  const rest = (L: CounterLayer, lv: number, t0: number, dt: number): { keys: string[]; end: number } => {
+  const rest = (L: CounterLayer, lv: number, t0: number, dt: number): { keys: string[]; end: number } => restAt(L, scaleAt(lv), t0, dt);
+  /** The same at `scale` px per cell. */
+  const restAt = (L: CounterLayer, scale: number, t0: number, dt: number): { keys: string[]; end: number } => {
     let shown: { key: string; alpha: number }[] = [];
     let t = t0;
     for (let quiet = 0; quiet < 2; t += dt) {
-      shown = L.declutter(SRC, scaleAt(lv), t, true, boxOf);
+      shown = L.declutter(SRC, scale, t, true, boxOf);
       quiet = L.animating(t) ? 0 : quiet + 1;
     }
     expect(shown.every((d) => d.alpha === 1)).toBe(true);
@@ -321,6 +323,36 @@ describe('the counters at rest after a step of the camera (PLAN 2.7l)', () => {
   // hold of its flight: one zoom, two pictures.
   it('are those of a view opened at that zoom', () => {
     for (const [from, to] of [[8, 5], [7, 6], [5, 7]] as const) expect(stepped(from, to, 16), `${from} → ${to}`).toEqual(rest(new CounterLayer(), to, 0, 16).keys);
+  });
+
+  // PLAN 3.5i (ADR-158): the hold is a memory of one zoom. A step of the zoom inside a level's
+  // band kept it: a counter that had room at the new zoom stayed folded, and a view stepped to
+  // 8 px per cell showed 20 counters over central Europe where a view opened there shows 27
+  // (and the 6 px before it 21: `declutter1938`).
+  it('are those of a view opened at that zoom after a step inside a level too', () => {
+    for (const lv of [5, 6, 7]) {
+      let fewer = 0;
+      for (const [from, to] of [[1, 1.3], [1, 1.4], [0.75, 1.35], [1.4, 0.8], [1.2, 1]] as const) {
+        const [a, b] = [scaleAt(lv) * from, scaleAt(lv) * to];
+        const L = new CounterLayer();
+        const before = restAt(L, a, 0, 16);
+        expect(L.level, `${a} px per cell`).toBe(lv);
+        // The frame of the step turns every counter that turns: no second wave a frame later,
+        // when the hold of the first has widened a folded counter's reach.
+        // So the next frame, a fade later, has the counters of rest in full.
+        L.declutter(SRC, b, before.end + 1000, true, boxOf);
+        const second = L.declutter(SRC, b, before.end + 1000 + FOLD_MS, true, boxOf).filter((d) => !d.folded && d.alpha === 1).map((d) => d.key).sort();
+        const after = restAt(L, b, before.end + 1000 + FOLD_MS + 16, 16);
+        expect(second, `level ${lv}, ${a} → ${b} px per cell, a fade after the step`).toEqual(after.keys);
+        expect(L.level, `${b} px per cell`).toBe(lv);
+        const opened = new CounterLayer();
+        expect(after.keys, `level ${lv}, ${a} → ${b} px per cell`).toEqual(restAt(opened, b, 0, 16).keys);
+        expect(opened.level).toBe(lv);
+        if (to > from && after.keys.length < before.keys.length) fewer++;
+      }
+      // On this map no step in shows fewer counters. (The rule does not promise it: see ADR-158.)
+      expect(fewer, `level ${lv}`).toBe(0);
+    }
   });
 
   const cluster = (nation: number, strength: number): Cluster => ({ nation, gx: 0, gy: 0, x: 0, y: 0, strength, count: 1 });
@@ -366,6 +398,23 @@ describe('the counters at rest after a step of the camera (PLAN 2.7l)', () => {
     const fresh = new CounterLayer();
     fresh.fold(pair(TOUCH + 3), 1, 0, boxOf);
     expect(fresh.fold(pair(TOUCH + 3), 1, FOLD_MS, boxOf).map((d) => d.key).sort()).toEqual(['a', 'b']);
+  });
+
+  it('a step of the zoom is folded without the hold, and the hold is that of the new zoom from there', () => {
+    const L = new CounterLayer();
+    /** Whether b, `cells` from a, is shown at `scale` px per cell once its fade has run. */
+    const bAt = (cells: number, scale: number, t: number): boolean => {
+      L.fold(pair(cells), scale, t, boxOf);
+      return L.fold(pair(cells), scale, t + FOLD_MS, boxOf).some((d) => d.key === 'b' && !d.folded && d.alpha === 1);
+    };
+    const cells = (TOUCH + 3) / 8; // at 8 px per cell b clears a by the gap, not by the hold distance
+    expect(bAt(cells, 6, 0)).toBe(false); // at 6 px per cell it is inside a, and held
+    // The zoom steps in. Nothing moved: b has room there, as in a view opened at 8 px per cell.
+    expect(bAt(cells, 8, 1000)).toBe(true);
+    // At that zoom the armies move: b comes close, and goes back to where it stood. Held.
+    expect(bAt(30 / 8, 8, 2000)).toBe(false);
+    expect(bAt(cells, 8, 3000)).toBe(false);
+    expect(bAt((TOUCH + FOLD_HOLD_PX) / 8, 8, 4000)).toBe(true);
   });
 
   it('and leaves none: a counter that was folded on the way lands free', () => {

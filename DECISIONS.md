@@ -167,6 +167,84 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-158 · 2026-10-07 · accepted — The counters' hold is a memory of one zoom; the frame of a step of the zoom folds until the fold stands (PLAN 3.5i)
+
+- **Context:** `declutter1938`, a year into seed 1938: over central Europe 21 counters at 6 px
+  per cell and 20 at 8, at the same level of clusters (3). The spec asks that a zoom in shows
+  no fewer counters within a level. PLAN asked whether the scene had moved or the rule of
+  ADR-75 has a hole.
+- **Found** (a scratch spec that wrote the page's counters, hold and character widths to a
+  file; `foldOverlaps` on them in Node gives the page's 21 and 20):
+  - A view opened at 8 px per cell has 27 there. Stepped to from 6 it has 20. One zoom, two
+    pictures: what ADR-75 removed for a step across levels was left for a step inside one.
+    ADR-75 clears the hold in a split or merge on its way; a step inside a level's band has
+    no flight, and the hold of the old zoom went on.
+  - Opened fresh, 6 to 10 px per cell: 21, 23, 24, 24, 24, 25, 25, 27, 27, 28, 31 (at 6,
+    6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 9, 10). With the hold of 6: 21 up to 7.25, 20 at
+    7.5 to 8, 24 at 9, 29 at 10.
+  - The counter lost: Germany's `1:3:141:38` (23.8k), shown at 6. At 6 Italy's `15:3:141:38`
+    (46.8k) is inside Italy's `15:3:142:38` from the first pass (a nation's own). At 8 it
+    clears that one by the hold distance (56.8 px between the centres, 52 needed) and is its
+    own lead; the German counter stands 14 px from it and is folded with it into
+    `15:3:142:38` in the second pass (166.9k +1 → 190.7k +1). Nothing else came out to make
+    up for it: the hold of 6 px per cell kept 127 folded.
+  - Not the cause: a held counter that changes its lead (Italy's `15:3:140:37`, 11.7k, went
+    from an Italian counter to Poland's `4:3:141:37`). Taking the hold from any one of the 127
+    leaves the German counter folded.
+- **Decision** (`counters.ts`):
+  - The hold is a memory of one zoom (`holdScale`). The first frame at another zoom is
+    folded without it, as a view opened there. The hold is there for armies that move, and a
+    step of the zoom moves none.
+  - That frame folds on, each time with the hold of the fold before, until the fold stands
+    (`STEP_ROUNDS`, at most 4 more). These are the folds the next frames would have made one
+    by one: the same rest, reached in the frame of the step. Without it a second and a third
+    wave of fades began one and two frames later (3 → 3.4 px per cell at the start: counters
+    still turned in the first and the second frame after the step).
+- **What it does not promise:** that a zoom in never shows fewer counters within a level. The
+  German counter is folded at 8 px per cell in the view opened there too. A counter that
+  comes out of its nation's fold can take a neighbour of another nation and be folded with
+  it. On this scene and on the 400 formations of the unit test every step in shows as many
+  or more; the spec's expectation stands as written and is what will say if a scene does not.
+- **The pictures** (`declutter1938`, counters in view and over central Europe; before → now):
+  - the start: 65, 2 · 58, 6 · 61, 17 → 65, 19 (3 px per cell) · 104, 56 · 87, 58 → 91, 61
+    (8 px). The 3 px stop is reached from 1.5 inside level 5, the 8 px stop from 6 inside
+    level 3; the other stops are landings and did not change.
+  - after one year, central Europe at 6 and 8 px: 21 and 20 → 21 and 27.
+  - `flagsClear1938`: 3 px per cell as before (79 counters, 39 of 41 flags, Vienna's and
+    Prague's left out). 6 px per cell, reached from 3 inside level 4: 64 → 71 counters, 22 of
+    22 → 21 of 22 flags: Bucharest's is left out, with three Romanian counters in the column
+    above it (the 40 px rule of ADR-65's addendum; the spec checks the rule for each capital).
+  - `docs/evidence/1.45/` shot again; `flags-clear-6px.png` looked at: no counter on another,
+    every number reads, Bucharest without its flag under 133.9k, 62.3k and 87.2k.
+- **`flagsClear1938` restated: 22 frames for the flags to come to rest after 3 → 3.4 px per
+  cell, not 20.**
+  - *What it measured:* the flags ease to their places after a step of the zoom and then
+    stand. With the hold kept through the step no counter came out; the last frame in which
+    something moved was the 18th, and 20 had one to spare.
+  - *Now:* five counters come out at that step. A flag makes way for a counter once it is
+    half visible (`drawFlags`: "one fading in is in the way"): half a fold (125 ms, frame 8),
+    the flag's move (150) and the tail (50) are 325 ms. Frame by frame: the flags last moved
+    at 128 ms after the step, the view at rest in frame 21. 20 frames are 320 ms.
+  - *Why this is not a test made weaker to pass:* the 20 was the frames this step took in
+    the code of its day, not a limit set for the flags; no counter came out then, and a flag
+    did not wait for one. The spec's other limits stand: no flag steps
+    more than 8 px in a frame, and the view comes to rest. The step out (3.4 → 3) took 21
+    frames in the code before as well; the spec does not make it.
+- **Cost** (the page, a year into seed 1938, 30 frames of a zoom eased inside or across a
+  level, two runs each; ms a frame, before → now):
+  - 1.5 → 2.6 px per cell: 6.6 → 7.3 (worst 11.6 → 13.1); 3 → 5.2: 4.9 → 5.3; 6 → 10.5:
+    4.6 → 5.4 (worst 13.4 → 13.8); 5.2 → 3: 3.2 → 4.0. At rest after: the same.
+  - Counters that turned twice or more on the way: 5 → 9, 17 → 19, 21 → 23, 0 → 2.
+  - One fold in Node: 0.15 ms (179 clusters, level 6) to 1.4 ms (534, level 2); the hold
+    stands after one or two folds more at every level and zoom tried (15).
+- **Not done:**
+  - The landing of a split or merge still folds free and takes its hold a frame later
+    (ADR-75's cost, "the frame after a merge lands, a few counters turn"). The same rounds
+    would end it; not this part.
+  - A held counter still takes the nearest box in its wider reach, not the lead it had.
+  - A zoom that trembles (a pinch) folds free at every frame: a counter at the edge can fade
+    in and out. Not measured.
+
 ### ADR-157 · 2026-10-07 · accepted — A group of markers the shorter way cannot part is parted along the lines between them (PLAN 3.5h)
 
 - **Context:** `markerStacks1938`, the second test (no T1 marker more than a quarter under
