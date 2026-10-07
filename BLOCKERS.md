@@ -84,6 +84,14 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 
 ## Watch list (not blocking)
 
+- Seen 2026-10-06 with PLAN 3.4Rk (ADR-148), read in the code, not run: **the puppets of a
+  nation that dies by the loss of its capital are a dead nation's until the month's start.**
+  A Kill and a collapse free them (`collapseNation`); `capitalsSystem` does not, and
+  `puppetSystem` does at the next month's first hour. Until then `blocOf` gives them the dead
+  nation's supply bloc, and `whyNotWar` reads the tie. What a player can meet of it in at
+  most a month is not known. If it is one, the fix is beside ADR-148's in `eliminateNation`,
+  with `PuppetReleased` for each.
+
 - Seen 2026-10-05 with PLAN 2.16Rg, not looked into: **land occupied with no war behind it in
   a game without commands.** 1938, seed 99, tick 2000: 45 cells whose controller is not their
   owner and is not at war with it (a scratch count over the grid; which nations, and by which

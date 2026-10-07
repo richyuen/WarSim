@@ -7400,3 +7400,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.4Rk (a puppet that dies returns as its overlord's puppet).
 - **Gate:** green on the second run (code, with the ten-year tests; no e2e for a part).
 - **Added after the commit (8a18f5a):** PARITY row 13 has a dated note of the rule. Checked for ADR-147's reason for the puppet: `LandCounts.lost` counts every cell of a nation that another controls, its overlord's too (`landCounts.ts`), so the sentence stands. The check of 1942 in `researchYears.test.ts` now reads fewer nations than before (those rich in 1940 too); the check of 1944 reads the same set as before.
+
+## 2026-10-06 — PLAN 3.4Rk: a nation that dies is nobody's puppet
+
+- **The defect** (the seventh read, finding 5): `eliminateNation` ended wars, the alliance,
+  formations and the capital and left `nations.overlord`; `puppetSystem` skips the dead, so
+  nothing ended the tie while the nation was dead.
+- **Run first, as the three tests, red** (1938, seed 99): a Kill of each of the 40 puppets of
+  1938 left 40 dead nations with an overlord. Albania killed, Italy killed, Albania revived
+  in mid-month: Italy's puppet, in dead Italy's supply bloc (the read's suspicion holds).
+  Albania dead on Italian land and revived by a revolt: Italy's puppet, the war of
+  independence refused (`WarRejected`), its provinces kept in peace.
+- **Decided (ADR-148):** free. The death clears `overlord` and `integration`. No event: a
+  death is not a release. Autonomy and loyalty stay (read of a puppet only).
+- **Tests:** three in `tests/unit/puppets.test.ts`.
+- **The pin:** af99d608 → e0fefce9, and the game is the same one. Four puppets die in the
+  year (Mengjiang, Manchukuo, Republican Spain, Lebanon), none returns. With and without the
+  change (`.cache/rk/pin.ts`, scratch): the same owner and controller of every cell, 753
+  formations, 7 wars, the same sum of gold. The gate's first run failed on the pin alone.
+- **Gotcha:** the pin hashes the columns of dead nations too. A change of what a death
+  leaves behind moves it with no change of the game; a count of the land, the formations
+  and the gold beside it tells which.
+- **Seen, not changed:** the puppets of a nation that dies by the loss of its capital are a
+  dead nation's until the month's start (a Kill and a collapse free theirs). BLOCKERS, the
+  watch list.
+- **Not run:** a puppet killed and revived on the page. Read, not run: the snapshot's nation
+  rows gave a dead nation no overlord already (`server.ts`, the map modes read those); the
+  panel's detail read the column as it stood (`panel-overlord`).
+- **No e2e:** a part, and nothing drawn changes. Tick time not measured: one branch at a
+  death.
+- **Next:** PLAN 3.4Rl (armies cross a nation that is in no war and fight on its ground).

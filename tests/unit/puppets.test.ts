@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { eliminateNation } from '../../src/sim/systems/capitals';
 import { FREE_ABOVE, INTEGRATION_RATE, puppetTier, TRIBUTE } from '../../src/sim/systems/puppets';
+import { blocOf } from '../../src/sim/systems/supply';
+import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 
@@ -131,5 +134,69 @@ describe('puppets (PLAN 1.18)', () => {
     const ev = run(s, toMonth(3));
     expect(kinds(ev, EventKind.PuppetRevolt)).toEqual([]);
     for (const [p] of kinds(ev, EventKind.PuppetReleased)) expect(NATIONS_1938[p! - 1]!.overlord!.autonomy).toBeGreaterThanOrEqual(FREE_ABOVE);
+  });
+});
+
+// PLAN 3.4Rk (the seventh read, finding 5): `eliminateNation` left `overlord`, so a puppet that
+// died was its overlord's again when it returned, and the war of independence of a revival on
+// the overlord's land was refused (`Refusal.Subject`). The tie ends with the nation (ADR-148).
+describe('a puppet that dies (PLAN 3.4Rk)', () => {
+  /** Every dead nation that has an overlord. */
+  const boundDead = (w: World): number[] => w.nations.ids().filter((n) => w.nations.cols.living[n] !== 1 && w.nations.cols.overlord[n] !== 0);
+
+  it('by a Kill: it has no overlord from its death on, and returns free, in a supply bloc of its own', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    const nc = (): World['nations']['cols'] => w.nations.cols;
+    expect(nc().overlord[ALB]).toBe(ITA);
+    s.command({ kind: 'collapseNation', nation: ALB });
+    const ev = run(s, 1);
+    expect(nc().living[ALB]).toBe(0);
+    expect(nc().overlord[ALB], 'the overlord of dead Albania').toBe(0);
+    expect(kinds(ev, EventKind.PuppetReleased), 'a death is not a release').toEqual([]);
+    // The overlord dies too: the returning nation is in no dead nation's bloc.
+    s.command({ kind: 'collapseNation', nation: ITA });
+    run(s, 1);
+    expect(nc().living[ITA]).toBe(0);
+    w.tick = nc().revivalAt[ALB]! + 24 * 3; // in mid-month: the monthly pass has not seen it
+    s.command({ kind: 'reviveNation', nation: ALB });
+    expect(kinds(run(s, 1), EventKind.NationRevived).map(([n]) => n)).toEqual([ALB]);
+    expect([nc().living[ALB], nc().overlord[ALB], blocOf(w, ALB)]).toEqual([1, 0, ALB]);
+    expect(boundDead(w)).toEqual([]);
+  });
+
+  it('by a revolt’s revival on its old overlord’s land: it returns free and at war with it', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    const nc = (): World['nations']['cols'] => w.nations.cols;
+    const centre = navOf(w).graph.centre;
+    const home = w.provinces.provincesOf(ALB).filter((p) => w.cells.owner[centre[p] ?? -1] === ALB);
+    expect(home.length).toBeGreaterThan(0);
+    // Dies with Italy holding its land (a lost war, shortened as in `revival.test.ts`).
+    w.cells.owner.forEach((o, c) => {
+      if (o !== ALB) return;
+      w.setOwner(c, ITA);
+      w.setController(c, ITA);
+    });
+    eliminateNation(w, ALB);
+    expect(nc().overlord[ALB], 'the overlord of dead Albania').toBe(0);
+    w.tick = nc().revivalAt[ALB]! + 24 * 3;
+    s.command({ kind: 'spawnRevolt', province: home[0]! });
+    const ev = run(s, 1);
+    expect(kinds(ev, EventKind.NationRevived).map(([n]) => n)).toEqual([ALB]);
+    expect(kinds(ev, EventKind.WarRejected), 'the war of independence, refused').toEqual([]);
+    expect([nc().living[ALB], nc().overlord[ALB], blocOf(w, ALB)]).toEqual([1, 0, ALB]);
+    expect(w.wars.atWar(ITA, ALB), 'at war with the nation it rose against').toBe(true);
+  });
+
+  it('no dead nation has an overlord after a Kill of every puppet of 1938', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    const puppets = w.nations.ids().filter((n) => w.nations.cols.living[n] === 1 && w.nations.cols.overlord[n] !== 0);
+    expect(puppets.length).toBeGreaterThan(20);
+    for (const n of puppets) s.command({ kind: 'collapseNation', nation: n });
+    run(s, 1);
+    expect(puppets.filter((n) => w.nations.cols.living[n] === 1), 'puppets that lived through their Kill').toEqual([]);
+    expect(boundDead(w)).toEqual([]);
   });
 });

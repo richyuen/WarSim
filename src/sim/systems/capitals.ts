@@ -181,6 +181,13 @@ export function eliminateNation(world: World, n: number): void {
   });
   world.wars.endAllOf(n);
   world.alliances.removeNation(n);
+  // Nor is it anybody's puppet (PLAN 3.4Rk, ADR-148): it would return as one, and the war of a
+  // revival on its overlord's land was refused. Its autonomy and loyalty are read of a puppet only.
+  if (nc.overlord[n] !== 0) {
+    nc.overlord[n] = 0;
+    nc.integration[n] = 0;
+    world.supplyDirty = true; // the blocs changed
+  }
   leaveLand(world, n);
   world.out.emit(world.tick, EventKind.NationEliminated, n, 0, NaN, NaN);
 }

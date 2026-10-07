@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-148 · 2026-10-06 · accepted — A nation that dies is nobody's puppet: it returns free (PLAN 3.4Rk)
+
+- **Context:** the seventh read's finding 5. `eliminateNation` ended a nation's wars, its
+  alliance, its formations and its capital, and left `nations.overlord`. Only an annexation
+  and an integration cleared it, and `puppetSystem` skips the dead, so the tie could not end
+  while the nation was dead. PLAN 3.4Rk asked for a decision first: a revival comes back
+  free, or the tie outlives the death.
+- **Run here first** (the three tests below, red on the old source; 1938, seed 99):
+  - A Kill of each of the 40 puppets of 1938 at tick 0 left 40 dead nations with an overlord.
+  - Albania killed, Italy killed, Albania revived in mid-month: Italy's puppet, and
+    `blocOf` gave it dead Italy's supply bloc. The read's suspicion holds.
+  - Albania dead with Italy holding its land, a revolt in an Albanian province after the
+    cooldown: Albania returned as Italy's puppet, and the war of independence that
+    `spawnRebels` declares was refused (`WarRejected`: `Refusal.Subject`, an overlord and
+    its puppet). It took its provinces from Italy and kept them in peace.
+- **Decision** (`eliminateNation`): the death clears `overlord` and `integration`, and asks
+  for a full refresh of the supply network (the blocs changed). A nation that returns is
+  free, by a revolt, a collapse of the holder or God Mode's Revive alike.
+- **Why free:**
+  - *A revival is a revolt against the holder.* After a death the holder of a puppet's land
+    is most often its overlord (`leaveLand` gives what was occupied to the occupier, and a
+    puppet falls with its overlord's war). With the tie kept, the one war a revival is for
+    is the one that cannot be declared.
+  - *A death ends every other tie already:* wars, the alliance, guarantees. And the scenario
+    schema refuses a dead nation with an overlord ("dead nations have no puppet relations"):
+    the game made a state that its own data may not hold.
+  - *The overlord may be dead, or another nation's puppet, by then.* The schema refuses a
+    puppet of a puppet as well; the kept tie could make one.
+- **No event.** `PuppetReleased` reads "{a} was freed from {b}" in the history; a nation that
+  died was not freed. `NationEliminated` is the event. An annexation clears the tie without
+  one too.
+- **Autonomy and loyalty are left as they were:** they are read of a puppet only (the panel,
+  the monthly pass, the tribute), and `makePuppet` writes both.
+- **Seen, not changed (one cause a commit):** the other end of the tie. A Kill and a
+  collapse free the puppets of the nation that ends; a death by the loss of the capital
+  (`capitalsSystem`) does not, and its puppets are a dead nation's until the month's start
+  (`puppetSystem` frees them then). In BLOCKERS, the watch list.
+- **Tests** (`tests/unit/puppets.test.ts`, three, red before): by a Kill, with the overlord
+  killed too and the Revive in mid-month (no overlord from the death on, a bloc of its own);
+  by a revolt's revival on the old overlord's land (free, no `WarRejected`, at war with
+  Italy); no dead nation with an overlord after a Kill of every puppet.
+- **The pin:** af99d608 → e0fefce9, by what the state records and not by the game. Four
+  puppets die in seed 99's first year (Mengjiang of Japan at tick 3593, Manchukuo of the
+  Soviet Union at 5699, Republican Spain of Nationalist Spain at 6203, Lebanon of France at
+  6432) and none returns in it. Run with and without the change (`.cache/rk/pin.ts`,
+  scratch): the same owner and controller of every cell, 753 formations, 7 wars and the
+  same sum of gold to the last digit; with the columns of the dead put back, the same hash
+  in both. The full refresh of the network that the death asks for changes nothing either
+  (the same hash without that line), as PLAN 2.11j holds; it is kept because the blocs
+  changed.
+
 ### ADR-147 · 2026-10-06 · accepted — A cell taken by a nation that is not at war with its owner is the owner's again (PLAN 3.4Rj)
 
 - **Context:** the seventh read's finding 4, older than the lines it read. `territorySystem`

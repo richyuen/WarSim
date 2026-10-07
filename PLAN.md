@@ -3209,7 +3209,7 @@ quick sweep as a smoke test.
       nation rich on 1942-01-01. Denmark is rich from February 1941 in the game since (157
       → 1,087 with 1,096 cells of Germany). The check names its premise now: rich in 1940
       and in 1942. The check of 1944, PLAN 3.1b's AT, is unchanged and holds Denmark too.
-  - [ ] 3.4Rk **A puppet that dies returns as its overlord's puppet** (finding 5).
+  - [x] 3.4Rk **A puppet that dies returns as its overlord's puppet** (finding 5).
     `eliminateNation` leaves `overlord` and the autonomy; only an annexation clears
     them. Albania killed at tick 2500 and revived at 20020 is Italy's puppet again; 35 of
     96 Kills at tick 9000 left a dead nation with an overlord. A nation revived with a
@@ -3217,6 +3217,15 @@ quick sweep as a smoke test.
     the read, to be run here). A decision first, in DECISIONS: a revival is a revolt
     against its holder and comes back free, or the tie outlives the death. AT: unit,
     failing first, for the rule chosen, by a Kill and by a revolt's revival.
+    **Done 2026-10-06 (ADR-148).** Free: `eliminateNation` clears the overlord and the
+    integration. No event (a death is not a release).
+    - *Run first, red:* a Kill of each of the 40 puppets of 1938 left 40 dead nations with
+      an overlord; Albania revived after Italy's death had dead Italy's supply bloc (the
+      suspicion holds); Albania revived by a revolt on Italian land was Italy's puppet
+      and its war of independence was refused (`WarRejected`).
+    - *Tests:* three in `tests/unit/puppets.test.ts`, red before.
+    - *Seen, not changed:* the puppets of a nation that dies by the loss of its capital
+      are bound until the month's start (BLOCKERS, the watch list).
   - [ ] 3.4Rl **Armies cross a nation that is in no war and fight on its ground, dry, to
     the end** (found in 3.4Rf, ADR-143). A route crosses any land (`findRoute` asks the
     ground, not the holder); contact holds whoever meets an enemy, wherever; repatriation

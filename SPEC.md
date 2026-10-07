@@ -599,6 +599,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     5. Autonomy drifts up 0.25, and loyalty relaxes toward 40 + 0.6 × autonomy, or 25 lower while
        the overlord is losing a war (side score ≤ −30).
   - *Peace:* a crushing peace creates a puppet at autonomy 30.
+  - *Death:* a nation that dies is nobody's puppet (`eliminateNation`, ADR-148). It returns
+    free, and a revival on its old overlord's land is at war with it as with any holder.
   - *Commands:* createPuppet, releasePuppet, setAutonomy, setPuppetLoyalty.
   - *Puppet map mode:* overlords keep their colour, puppets take it lightened 45%, others are
     grey.
