@@ -7935,3 +7935,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** the cost in the page; how often a group changes its way in a running game;
   whether what both ways leave elsewhere could be parted within 6 px; 3.5i is as it was.
 - **Next:** PLAN 3.5i (`declutter1938`), which ticks 3.5 and runs the full e2e.
+- **After the commit** (a read of the change): a group's change of way moves all its boxes
+  at once, and no test moves the formations under it. Two lines under PLAN 3.5i: count it
+  in a running game before 3.5 is ticked, and a test's name that says more than it tests.

@@ -3622,6 +3622,18 @@ quick sweep as a smoke test.
     zoom before had 21 at the same level of clusters.** A zoom in must not show fewer
     counters at one level. The scene moved; whether the rule of ADR-75 has a hole is what
     this part finds. Ticks 3.5 (the full e2e).
+    Before the tick, from 3.5h (ADR-157; neither reopens it):
+    - *Count how often a group changes its way in a running game.* A group of markers (31
+      of Spain's 51 leads) goes from the shorter way to the lines between and back when one
+      pair crosses the line, and every box of it can then ease up to 6 px. No test sees it:
+      the tests of rest hold the formations still. In Node, seed 1938 from day 14, hour by
+      hour for 48 h, the leads by `stackMarkers` at 1900 m/px: boxes whose move changes by
+      more than 2 px from one hour to the next, by `partAlong(…, 'shorter')` and by
+      `nudgeApart`. Near the old number: a line in ADR-157. Much more: a part of its own,
+      and the fix is a hold on the way (as `STACK_HOLD`), not another rule.
+    - *A test's name:* `markerStacks.test.ts`, "boxes far from the chain stand as they
+      did" tests boxes outside the group. Boxes inside it and far from the chain do move
+      with it. Name it for what it tests.
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):
   tanks scored 2. At T2 a panzer division is a grey grid of dots like any other. At T3 its
