@@ -7274,3 +7274,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the script's "unfed" column is the old rule's (the cell under the formation);
   after the rule only "dry" and "noOrg" say what the formation has.
 - **Next:** PLAN 3.4Rg (a played nation never researches).
+- **Added after the commit (71c5cd0):** run by hand for 3.4Rf, since the rule changes every
+  game: `tests/e2e/zoomDemo1938.spec.ts` (chromium), 1 of 1 passed in 1.3 min. No other
+  spec was run: the full suite comes with the last part of PLAN 3.4R. And 3.4Rm has the
+  flips of the five years to start from.

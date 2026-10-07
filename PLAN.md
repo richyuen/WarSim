@@ -3200,6 +3200,11 @@ quick sweep as a smoke test.
     cost that does not move the pin. After 3.4Rl, which changes how many formations stand
     in contact. AT: the two figures in budget, or the remainder a line under PLAN 7.1 with
     its numbers; every year's hash the same before and after the cut.
+    To look at first: the cells flipped a year (the runner prints them). After 3.4Rf:
+    27,134, 17,156, 16,964, 18,315, 36,275; the log has none from before, so run
+    `b497086` in a worktree beside it. An attacker on the cell it presses had half its
+    pressure with supply 0 and has all of it now: more flips, more frontier, more partial
+    refreshes of the network may be the cost, not the hours in contact.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
   contact holds until one side is destroyed, armour with its infantry gone as any other
