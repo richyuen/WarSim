@@ -14,7 +14,9 @@
  *
  * A revolt takes the province (mode 'province') or, in mode 'region', also the neighbouring
  * provinces with the same holder and core whose unrest ≥ REGION_JOIN (breadth-first, up to
- * REGION_MAX provinces). A new rebel nation receives the area's land (owner and controller),
+ * REGION_MAX provinces and REGION_KM2 of the holder's land: a neighbour that would take the area
+ * past that land stays; the province that revolts goes whole, whatever its size. PLAN 3.9: eight
+ * provinces of Siberia are a twentieth of the world's land). A new rebel nation receives the area's land (owner and controller),
  * becomes its core, gets its largest city as capital (without a city: its own cell nearest the
  * middle of the area, PLAN 2.15e), MILITIA_PER_CELLS militia divisions
  * (1..MILITIA_MAX), raised where production raises a formation (`spawnPoint`), and START_GOLD; the former holder declares war
@@ -76,6 +78,8 @@ export const SUPPRESS_P = 0.7;
 export const SUPPRESSION_COST = 0.15;
 export const REGION_JOIN = 40;
 export const REGION_MAX = 8;
+/** The most land (km², the holder's) of a revolting region of more than one province (ADR-186). */
+export const REGION_KM2 = 1_000_000;
 export const AFTER_REVOLT = 10;
 export const MILITIA_PER_CELLS = 40;
 export const MILITIA_MAX = 4;
@@ -291,15 +295,31 @@ function revoltArea(world: World, p: number, holder: number): number[] {
   const { owner } = world.cells;
   const area = [p];
   const seen = new Set([p]);
+  const km2 = heldKm2(world, holder);
+  let land = km2[p]!;
   for (let i = 0; i < area.length && area.length < REGION_MAX; i++) {
     for (const q of g.adj[area[i]!] ?? []) {
       if (seen.has(q) || q >= pv.count || area.length >= REGION_MAX) continue;
       seen.add(q);
       const c = g.centre[q] ?? -1;
-      if (c >= 0 && owner[c] === holder && pv.core[q] === pv.core[p] && pv.unrest[q]! >= REGION_JOIN) area.push(q);
+      if (c < 0 || owner[c] !== holder || pv.core[q] !== pv.core[p] || pv.unrest[q]! < REGION_JOIN || land + km2[q]! > REGION_KM2) continue;
+      land += km2[q]!;
+      area.push(q);
     }
   }
   return area;
+}
+
+/** The land `holder` owns in each province, km² (as `LandCounts` counts a cell: ADR-57). */
+function heldKm2(world: World, holder: number): Float64Array {
+  const { owner, province, w, h } = world.cells;
+  const rowKm2 = world.landCounts().rowKm2;
+  const km2 = new Float64Array(world.provinces.count);
+  for (let y = 0, c = 0; y < h; y++) {
+    const a = rowKm2[y]!;
+    for (let x = 0; x < w; x++, c++) if (owner[c] === holder) km2[province[c]!]! += a;
+  }
+  return km2;
 }
 
 /**

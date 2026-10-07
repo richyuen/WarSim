@@ -245,7 +245,7 @@ export const ScenarioSettings = z.strictObject({
   combatEfficiency: z.enum(COMBAT_EFFICIENCY_MODES),
   winnerTakesAll: z.boolean(),
   loopingMap: z.boolean(),
-  /** Revolts take one province, or a restless region of up to 8 (PLAN 1.19; PLAN 1.40 tuning). */
+  /** Revolts take one province, or a restless region of up to 8 and of 1,000,000 km² (PLAN 1.19; PLAN 1.40 tuning; PLAN 3.9). */
   revoltMode: z.enum(['province', 'region']),
   nukesEnabled: z.boolean(),
   aiEnabled: z.boolean(),

@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-186 · 2026-10-07 · accepted — A revolting region is bounded by its land, not only by its provinces (PLAN 3.9)
+
+- **Context.** The critic's R3-B2, the part that is not balance: on seed 6021 the Soviet
+  Union has 13.02 % of the land at year 8.1 and 5.54 % at year 9.1, and "Free Herat" has
+  5.97 %. Seed 6021 at HEAD no longer plays that game (PLAN 3.8e moved it: no nation gains
+  or loses 0.8 % of the land in a day at the Soviet Union's cost in ten years, final hash
+  `85644d9a`), so the event was looked for at the critic's commit `a6f63ef`, in a worktree,
+  with a scratch script that prints every day on which a nation's share moves by 0.8 points.
+- **What it was.** Two revolts, not one event:
+  - day 3043: Soviet Union −4.52 → 8.36 %, nation 163 ("Free Seoul": Liaoning and northern
+    Korea, 978 cells, 0.18 %) +4.49 → 4.67 %. One `RevoltSpawned`: Sakha (33,139 cells),
+    Chukotka, Khabarovsk, Magadan, Zabaykalsky, Amur, Primorsky and the Jewish oblast;
+  - day 3135: Soviet Union −3.31 → 5.62 %, nation 112 ("Free Herat", by then 2.66 % in 48
+    provinces: Xinjiang, Kazakhstan, Tyumen, Omsk) +3.31 → 5.97 %. One `RevoltSpawned`:
+    Krasnoyarsk (26,964 cells), Yamalo-Nenets, Khanty-Mansi, Komi, Tomsk, Perm, Kirov, Mari El.
+  Both are a region revolt (`revoltMode` 'region', the 1938 setting) of exactly `REGION_MAX`
+  = 8 provinces, all Soviet core under the strain of overextension, which then joined the
+  rebel state next to it (`risingNeighbour`). The region was bounded by its number of
+  provinces and by nothing else, and eight provinces of Siberia are a twentieth of the world.
+- **Decision.** `REGION_KM2 = 1,000,000`: a neighbour joins a revolting region only while the
+  holder's land in the area stays at or under that (`revoltArea`, `heldKm2`; km² as
+  `LandCounts` counts them, ADR-57). A neighbour that does not fit is passed over and the
+  search goes on (a smaller one may fit). The province that revolts goes whole, whatever its
+  size: Sakha alone is 3.1 million km², and a province is the unit of every revolt rule.
+- **Why an absolute bound and not a share of the holder's land.** A share shrinks the regions
+  of small holders (a nation of eight provinces would lose them one at a time), which this
+  finding is not about, and leaves a large holder's region large. The mean province is
+  about 29,000 km², eight of them 230,000: the bound is four times an ordinary region and
+  touches only the regions of provinces the size of countries. A million km² is 0.75 % of
+  the world's land, the size of Egypt.
+- **It bounds every use of the area:** the founding of a nation, the return of a dead one
+  (`reviveNation`), the area that joins a rebel state, and land that goes back to its core
+  owner (`defect`). The last was not asked for; one bound for the one function is the
+  simpler rule, and land that goes back in pieces still goes back.
+- **Not decided here.** A rebel state still grows by the revolts that join it, one bounded
+  area at a time and without end: "Free Herat" had 2.66 % of the world before day 3135. And
+  an area joins rebels of another people (Soviet core land, a Korean state). Whether rebels
+  take in only risings against the holder they fight, or stop at a size, changes how many
+  states a long game has: the balance of ADR-58, logged under PLAN 1.42.
+- **Tests.** `tests/unit/revoltRegion.test.ts`, four on the 1938 world with every Soviet
+  province at unrest 100. Three failed first: a revolt at Amur founded a nation of 5,909,204
+  km²; a revolt at Khabarovsk next to a rebel Primorsky gave that state 6,285,801 km²; a
+  revolt at Sakha took eight provinces. The fourth (a French region is its eight
+  départements) passed before and after. `tests/helpers/revoltLand.ts` in the ten-year games
+  of the sweep stage: with the bound switched off, seed 2 fails at tick 30,649 ("nation 119:
+  1,423,362 km² in 3 provinces by 1 revolts"); seeds 1 and 3 pass either way.
+- **The pin** did not move (`875255b7`): no region of seed 99's first year reaches the bound.
+
 ### ADR-185 · 2026-10-07 · accepted — The zoom demo's battle is seed 1946's (PLAN 3.8f, the full suite of PLAN 3.8)
 
 - **Context.** The full e2e run that the tick of PLAN 3.8 brings: 145 of 146 passed,

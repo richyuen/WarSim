@@ -995,7 +995,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     (1 − 0.7 × suppression), drawn by hash.
   - *Suppression:* costs 15% × level of gross income.
   - *Revolt area:* one province, or (`revoltMode` 'region') adjacent provinces of the same holder
-    and core with unrest ≥ 40, up to 8.
+    and core with unrest ≥ 40, up to 8 provinces and 1,000,000 km² of the holder's land
+    (`REGION_KM2`, PLAN 3.9, ADR-186): a neighbour that would take the area past that land
+    stays. The province that revolts goes whole, whatever its size.
   - *Rebels:* a new nation takes the land and becomes its core. Its capital is the area's
     largest city; without a city, its own cell nearest the middle of the area (PLAN 2.15e1,
     ADR-103). If the city was the holder's capital, the holder relocates. Its `origin`, which

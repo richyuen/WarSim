@@ -10,6 +10,7 @@ import { Sim } from '../../src/sim/sim';
 import { deadLand } from './deadLand';
 import { assets1938, earthAdmin1 } from './earth';
 import { realmWars } from './realmWars';
+import { revoltLand } from './revoltLand';
 import { strayNaN } from './stateNumbers';
 
 /**
@@ -18,6 +19,9 @@ import { strayNaN } from './stateNumbers';
  *
  * PLAN 3.8 AT (the critic's R3-B4): on every day of those years no two nations at war share an
  * alliance or an overlord, nor are they of allied realms (`realmWars`).
+ *
+ * PLAN 3.9 AT (the critic's R3-B2): no revolt of a month's first hour hands a nation more land
+ * than a region may hold (`revoltLand`).
  *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
@@ -32,6 +36,10 @@ export function aiSweep(seed: number): void {
   // The game as it is saved at the end of year 9 (PLAN 2.12): loaded below, it must end year 10
   // as this game does.
   let saved: Uint8Array | null = null;
+  // The owners as the last tick ended, kept around each month's first hour (PLAN 3.9).
+  let owners: Uint16Array | null = null;
+  let ownersAt = -1;
+  let revoltsSeen = 0;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
     const year: Record<string, number> = {};
@@ -41,6 +49,15 @@ export function aiSweep(seed: number): void {
         const k = names[ev[i + 1]!]!;
         counts[k] = (counts[k] ?? 0) + 1;
         year[k] = (year[k] ?? 0) + 1;
+      }
+      // PLAN 3.9: what the month's revolts handed over, against the owners of the tick before.
+      if (owners && ownersAt === w.tick - 1 && ev.some((k, i) => i % 6 === 1 && k === EventKind.RevoltSpawned)) {
+        revoltsSeen++;
+        expect(revoltLand(w, owners, ev, tag), `seed ${seed}, tick ${w.tick}: a revolt's land`).toEqual([]);
+      }
+      if (isMonthStart(w.startDay, w.tick) || isMonthStart(w.startDay, w.tick + 1)) {
+        owners = w.cells.owner.slice();
+        ownersAt = w.tick;
       }
       ev.length = 0;
       w.out.fires.length = 0;
@@ -81,6 +98,7 @@ export function aiSweep(seed: number): void {
     expect(colours, `seed ${seed}, nation ${id}: its colour on its flag`).toContain(nc.color[id]!);
   }
   expect(founded, `seed ${seed}: nations founded in ten years`).toBeGreaterThan(0);
+  expect(revoltsSeen, `seed ${seed}: months whose revolts were measured`).toBeGreaterThan(0);
   console.log(`seed ${seed}: ${founded} nations founded in ten years, each with a name and a flag`);
   const wars = counts['WarDeclared'] ?? 0;
   const peace = counts['PeaceSigned'] ?? 0;

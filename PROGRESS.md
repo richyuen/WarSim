@@ -9034,3 +9034,42 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests, build, e2e in full (147 passed, 13.9 min), parity.
 - **Review count:** 3.8 is the first numbered task since the phase review 3.7.
 - **Next:** PLAN 3.9.
+
+## 2026-10-07 — PLAN 3.9: a revolting region is bounded by its land (ADR-186)
+
+- **Diagnosis.** Seed 6021 at HEAD does not play the critic's game any more (3.8e moved it):
+  ten years, final hash `85644d9a`, and the Soviet Union loses no 0.8 % of the land in a day.
+  So the event was looked for at the critic's commit `a6f63ef` in a worktree (removed since),
+  with a scratch script (`.cache/diag39.ts`, not kept) that prints the days on which a
+  nation's share of the land moves by 0.8 points.
+- **Found:** not one event but two revolts. Day 3043: Soviet Union −4.52 → 8.36 %, "Free
+  Seoul" (978 cells) +4.49 → 4.67 %: Sakha, Chukotka, Khabarovsk, Magadan, Zabaykalsky, Amur,
+  Primorsky, the Jewish oblast. Day 3135: Soviet Union −3.31 → 5.62 %, "Free Herat" +3.31 →
+  5.97 %: Krasnoyarsk, Yamalo-Nenets, Khanty-Mansi, Komi, Tomsk, Perm, Kirov, Mari El. Each a
+  region revolt of exactly eight provinces (`REGION_MAX`), Soviet core under overextension,
+  that joined the rebel state next to it. A region had no bound but its number of provinces.
+- **Done:** `REGION_KM2 = 1,000,000` in `revoltArea` (`systems/revolts.ts`), on the holder's
+  km² in each province (`heldKm2`, one pass over the cells for each region revolt). The
+  province that revolts goes whole. SPEC §4, the schema's comment, PARITY row 17.
+- **Tests, failed first:** `tests/unit/revoltRegion.test.ts`: Amur founded a nation of
+  5,909,204 km²; Khabarovsk beside a rebel Primorsky gave that state 6,285,801 km²; Sakha
+  took eight provinces. A fourth, a French region of eight départements, passed before and
+  after. `tests/helpers/revoltLand.ts`, called by `aiSweep` on each month's first hour: with
+  the bound switched off by hand, seed 2 failed at tick 30,649 (1,423,362 km² in 3 provinces
+  by one revolt); seeds 1 and 3 passed either way.
+- **The pin:** did not move (`875255b7`).
+- **Seen on the way, not this task:** the critic's "FRA 8.93 %" of year 8.1 is one day too
+  (day 2739, +6.4 to +6.7 %): France integrates French West Africa, Equatorial Africa,
+  Madagascar and Indochina in one month, and the United Kingdom, Belgium and the Netherlands
+  their puppets on the same day. Coming together, not breaking up; whether every overlord
+  should integrate on one day was not looked into.
+- **Not done:** the game of seed 6021 was not replayed with the bound (HEAD's game has no
+  such day; `a6f63ef` with the bound was not run). A rebel state still grows by the revolts
+  that join it, and joins risings of another people: a line under PLAN 1.42 (ADR-58). The
+  tick was not timed (the new pass over the cells runs once for each region revolt, beside
+  the pass that hands the cells over). No picture: nothing drawn changed, the browser was
+  not opened.
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 982 unit tests, the 17
+  sweep tests, build, e2e in full (147 passed, 14.5 min), parity.
+- **Review count:** 3.9 is the second numbered task since the phase review 3.7.
+- **Next:** PLAN 3.10.

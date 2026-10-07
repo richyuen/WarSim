@@ -4365,7 +4365,15 @@ quick sweep as a smoke test.
     its seed is 1946 (ADR-185). As it was:
     Who joins a war on a rebel (the critic: the parent's war, not the alliance's
     30 nations). A decision, then the tick of 3.8 with the full gate.
-- [ ] 3.9 Critic R3-B2, the part that is not balance: one event does not hand two thirds of
+- [x] 3.9 *Done 2026-10-07 (ADR-186):* a revolting region is at most `REGION_KM2` =
+  1,000,000 km² of the holder's land, the province that revolts excepted (`revoltArea`).
+  The event was two region revolts of eight Siberian provinces each (days 3043 and 3135 of
+  seed 6021 at `a6f63ef`: 4.5 % and 3.3 % of the world's land), each joining the rebel state
+  next to it. `tests/unit/revoltRegion.test.ts` (three of four failed first);
+  `tests/helpers/revoltLand.ts` in the ten-year games (seed 2 fails with the bound off). The
+  pin did not move. The bound of the AT: 1,000,000 km² for each revolt, or one province.
+  As it was:
+  Critic R3-B2, the part that is not balance: one event does not hand two thirds of
   the largest nation's land to a rebel province. What the critic saw, seed 6021 in the
   browser: the Soviet Union has 13.02 % of the land at year 8.1 and 5.54 % at year 9.1, and
   "Free Herat", founded in between, has 5.97 % with 260 men: the fourth largest nation of
@@ -4678,6 +4686,12 @@ quick sweep as a smoke test.
     owner before the peace (the rule of ADR-51: land is held, then kept at the peace). AoC
     hands land over as it is taken (text). Whether held land should go over during a war
     is for this task to decide.
+  - Left by PLAN 3.9 (ADR-186): a rebel state grows without end by the revolts that join it
+    (`risingNeighbour`), each now at most a million km²: "Free Herat" of seed 6021 had 2.66 %
+    of the world in 48 provinces of three former holders before the revolt that made it
+    5.97 %. An area also joins rebels of another people (Soviet core land, a Korean state).
+    To decide here: rebels take in only risings against the holder they are at war with, or
+    stop at a size.
   - What the critic asks: weak statelets annexed in one war; a sweep whose count of living
     nations rises for 20 years fails.
   From the Phase 3 review (PLAN 3.7c, 2026-10-07), what the rules of armour left open. None
