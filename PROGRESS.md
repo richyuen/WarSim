@@ -7399,3 +7399,4 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No e2e:** a part, and nothing drawn changes.
 - **Next:** PLAN 3.4Rk (a puppet that dies returns as its overlord's puppet).
 - **Gate:** green on the second run (code, with the ten-year tests; no e2e for a part).
+- **Added after the commit (8a18f5a):** PARITY row 13 has a dated note of the rule. Checked for ADR-147's reason for the puppet: `LandCounts.lost` counts every cell of a nation that another controls, its overlord's too (`landCounts.ts`), so the sentence stands. The check of 1942 in `researchYears.test.ts` now reads fewer nations than before (those rich in 1940 too); the check of 1944 reads the same set as before.
