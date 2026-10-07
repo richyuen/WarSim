@@ -761,6 +761,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Formations* (hourly): on their own bloc's network, supply rises by 1/8 per hour towards 1;
   off it, it falls by 1/8 towards 0. At 0 a formation loses (2% + terrain `supplyAttrition`) of its
   strength per day, applied hourly. An encircled division is dry within 8–14 h.
+- *Reach* (PLAN 3.4Rf, ADR-143): a formation on a cell that is not its side's (an enemy's, a
+  third nation's, nobody's) is fed as on its network when a cell of a network that feeds it
+  lies within `SUPPLY_REACH` = 2 cells (Chebyshev, the distance of the pressure below): the
+  cell under an attacker is the enemy's until it turns. On its own side's ground with no
+  network (a pocket) nothing reaches it. Measured over the first year of seeds 99 and 7: a
+  formation on engines in contact has no supply for 12 % of its hours (47 % and 41 % before
+  the rule), one on foot for 12 % and 10 % (22 % and 27 %).
 - *Fuel* (PLAN 3.2b, ADR-134): a template's fuel is Σ `fuelPerHour` × count of its elements (0 on
   foot, 38 for the panzer division of 1938). Off the network a formation on the march loses
   fuel/320 an hour more: that panzer division is dry in 4.1 h. On the network nothing changes.

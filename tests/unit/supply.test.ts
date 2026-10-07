@@ -3,10 +3,11 @@ import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { blocOf, refreshSupplyNetwork } from '../../src/sim/systems/supply';
+import { SUPPLY_REACH, blocOf, refreshSupplyNetwork } from '../../src/sim/systems/supply';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
-import { nationId } from '../helpers/sim1938';
+import { PZ } from '../helpers/pocket';
+import { addDivision, nationId } from '../helpers/sim1938';
 
 // PLAN 1.12 supply v1. AT: an encircled formation's supply → 0 within a day and it attrits.
 
@@ -136,6 +137,50 @@ describe('supply v1 (PLAN 1.12)', () => {
     const after1 = f.strength[cut]!;
     s.step(24 * 5);
     expect(f.strength[cut]!).toBeLessThan(after1 * 0.92);
+  });
+
+  it('a formation on ground that is not its side’s is fed within SUPPLY_REACH cells of its network (PLAN 3.4Rf)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    w.wars.start([nationId('GER')], [nationId('SOV')], 0);
+    // Seven cells square of German-held ground in the Soviet north: the Soviet network begins at 4.
+    const centre = quietCell(w, 'SOV', 45.0, 62.0, 7);
+    encircle(w, centre, 'GER', 0, 3);
+    w.supplyDirty = true;
+    const [beside, two, three, deep] = [3, 2, 1, 0].map((dx) => spawnAt(w, 'SOV', centre + dx)) as [number, number, number, number];
+    const pz = addDivision(w, nationId('SOV'), (centre % W) + 2.5, Math.floor(centre / W) + 0.5, PZ);
+    const pzDeep = addDivision(w, nationId('SOV'), (centre % W) + 0.5, Math.floor(centre / W) + 0.5, PZ);
+    s.step(12); // dry in 8 h off the network; no cell turns before its 16th hour
+    const f = w.formations.cols;
+    for (const dx of [0, 1, 2, 3]) expect(w.cells.controller[centre + dx]).toBe(nationId('GER'));
+    expect(f.supply[beside]).toBe(1);
+    expect(f.supply[two]).toBe(1);
+    expect(f.strength[two]).toBe(10_000);
+    expect(f.supply[three]).toBe(0);
+    expect(f.supply[deep]).toBe(0);
+    expect(f.strength[deep]!).toBeLessThan(10_000);
+    // What moves on engines keeps its order there, and loses it where the network is out of reach.
+    expect(f.supply[pz]).toBe(1);
+    expect(f.org[pz]).toBe(1);
+    expect(f.supply[pzDeep]).toBe(0);
+    expect(f.org[pzDeep]!).toBeLessThan(1);
+    expect(SUPPLY_REACH).toBe(2);
+  });
+
+  it('a pocket is not fed across the ring, however thin: its own ground with no network is dry (PLAN 3.4Rf)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const pocket = quietCell(w, 'SOV', 45.0, 62.0, 5);
+    encircle(w, pocket, 'GER', 2, 2); // one cell of ring: the Soviet network is two cells from the pocket's edge
+    w.supplyDirty = true;
+    const edge = spawnAt(w, 'SOV', pocket + 1);
+    s.step(12);
+    expect(w.cells.controller[pocket + 1]).toBe(nationId('SOV'));
+    expect(w.cells.supply[pocket + 1]).toBe(0);
+    expect(w.cells.supply[pocket + 3]).toBe(nationId('SOV'));
+    expect(w.formations.cols.supply[edge]).toBe(0);
   });
 
   it('supply is restored when the pocket is relieved', () => {

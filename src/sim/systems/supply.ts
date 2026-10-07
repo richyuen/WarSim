@@ -17,7 +17,8 @@
  *
  * Formations (hourly): a formation on a cell of its own bloc's network, or of the network of a
  * bloc fighting on its side of a war (PLAN 1.42b: allies feed each other's armies while they
- * fight together), gains SUPPLY_RATE per hour
+ * fight together), or on a cell that is not its side's with such a network within SUPPLY_REACH
+ * cells (PLAN 3.4Rf), gains SUPPLY_RATE per hour
  * towards 1; otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
  * template's fuel besides (PLAN 3.2b). At 0 it attrits: (BASE_ATTRITION_PER_DAY +
  * terrain supplyAttrition) of its strength per day, applied hourly; and one that moves on
@@ -54,6 +55,13 @@ export const ORG_RATE = 1 / 32;
  * supply. Its men go at that attrition alone.
  */
 export const BREAKDOWN_PER_DAY = 0.1;
+/**
+ * How far from its network a formation is still fed, in cells (Chebyshev, as the pressure of
+ * `territory.ts` reaches: PRESSURE_RADIUS), when the cell it stands on is not its side's (PLAN
+ * 3.4Rf, ADR-143). The cell under an attacker is the enemy's until the territory rule turns it.
+ * On ground of its own side with no network, a pocket, nothing reaches it.
+ */
+export const SUPPLY_REACH = 2;
 const TERRAIN_ATTRITION = terrainJson.terrain.map((t) => t.supplyAttrition);
 
 /** Supply bloc of a nation: its overlord's id, or its own when it has none. */
@@ -205,12 +213,40 @@ export function supplySystem(world: World): void {
   if (world.tick % SUPPLY_REFRESH_HOURS === 0 && (world.supplyDirty || world.supplyDirtyNations.size > 0 || world.supplyDirtyBlocs.size > 0)) refreshSupplyNetwork(world);
   const f = world.formations;
   const c = f.cols;
-  const { w, supply, terrain } = world.cells;
+  const { w, h, supply, terrain, controller } = world.cells;
+  let nation = 0;
+  let bloc = 0;
+  /** Whether the network `net` feeds the formation at hand. */
+  const feeds = (net: number): boolean => net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, nation));
   f.forEach((id) => {
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
-    const net = supply[cell]!;
-    const bloc = blocOf(world, c.nation[id]!);
-    const inSupply = net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, c.nation[id]!));
+    nation = c.nation[id]!;
+    bloc = blocOf(world, nation);
+    let inSupply = feeds(supply[cell]!);
+    if (!inSupply) {
+      const ctl = controller[cell]!;
+      const ctlBloc = ctl === 0 ? 0 : blocOf(world, ctl);
+      const own = ctl !== 0 && (ctlBloc === bloc || world.wars.sameSide(ctl, nation) || world.wars.sameSide(ctlBloc, bloc));
+      if (!own) {
+        const cx = cell % w;
+        const cy = (cell - cx) / w;
+        // The networks about a formation are few: the last one asked about answers for most cells.
+        let last = 0;
+        for (let dy = -SUPPLY_REACH; dy <= SUPPLY_REACH && !inSupply; dy++) {
+          const y = cy + dy;
+          if (y < 0 || y >= h) continue;
+          for (let dx = -SUPPLY_REACH; dx <= SUPPLY_REACH; dx++) {
+            const net = supply[y * w + ((cx + dx + w) % w)]!;
+            if (net === last) continue;
+            last = net;
+            if (feeds(net)) {
+              inSupply = true;
+              break;
+            }
+          }
+        }
+      }
+    }
     const s = c.supply[id]!;
     const rule = world.rules?.templates[c.template[id]!];
     const burn = c.moving[id] === 1 && c.engaged[id] !== 1 ? MARCH_BURN * (rule?.fuel ?? 0) : 0;

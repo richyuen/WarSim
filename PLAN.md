@@ -3096,7 +3096,7 @@ quick sweep as a smoke test.
       hours, on foot 62 %. So for close to half of armour's fighting the rules of PLAN
       3.2c and 3.2d are on: its fire × 0.25 (and × 0.5 for the supply), a tenth of its
       vehicles a day.
-  - [ ] 3.4Rf **Armour in contact is without supply for 47 % of its hours** (found in
+  - [x] 3.4Rf **Armour in contact is without supply for 47 % of its hours** (found in
     3.4Re). A formation is fed on a cell of its bloc's network or of a nation at war on
     its side, and the cell under an attacker is the enemy's until the territory rule
     turns it. On foot that costs half the fire and 2 % a day; on engines, since PLAN
@@ -3110,6 +3110,20 @@ quick sweep as a smoke test.
     unit, failing first, for the rule chosen; the share of dry hours in contact on
     engines beside that on foot, before and after, in PROGRESS. The pin moves if a rule
     does.
+    Done 2026-10-06 (ADR-143; `.cache/rf/dry.ts`, scratch; seeds 99 and 7, 360 days).
+    - *By cause, the dry hours in contact on engines:* an enemy's cell 55.3 % and 65.4 %
+      (88 % and 79 % of the hours not fed there within two cells of a cell that feeds); a
+      third nation's cell 44.1 % and 32.0 %; nobody's 0; the 12 hours 0.6 % and 0.4 %; a
+      pocket 0.0 % and 2.1 %.
+    - *The rule:* a formation on a cell that is not its side's is fed when a network that
+      feeds it lies within two cells (`SUPPLY_REACH`). A pocket's own ground is not
+      reached.
+    - *Dry in contact, before → after:* on engines 47.3 % → 12.4 % (seed 99) and 41.2 % →
+      12.2 % (seed 7); on foot 22.1 % → 11.7 % and 27.3 % → 10.3 %. With no org, on
+      engines: 44.3 % → 11.2 % and 38.0 % → 10.5 %.
+    - *The pin:* 80e8050a → a73098dc.
+    - *Found:* armies that meet on a third nation's ground (3.4Rl); the tick is over
+      budget in the game the rule gives (3.4Rm).
   - [ ] 3.4Rg **A nation the player controls never gets a research budget** (the seventh
     read, finding 1). `nations.research` is written by the economic AI alone, which skips
     a nation whose AI is off and every nation when the AI is off for the world. France,
@@ -3161,6 +3175,31 @@ quick sweep as a smoke test.
     the read, to be run here). A decision first, in DECISIONS: a revival is a revolt
     against its holder and comes back free, or the tie outlives the death. AT: unit,
     failing first, for the rule chosen, by a Kill and by a revolt's revival.
+  - [ ] 3.4Rl **Armies cross a nation that is in no war and fight on its ground, dry, to
+    the end** (found in 3.4Rf, ADR-143). A route crosses any land (`findRoute` asks the
+    ground, not the holder); contact holds whoever meets an enemy, wherever; repatriation
+    skips a formation in contact or on the march. So France, at war with Portugal, marches
+    through Nationalist Spain, meets Portugal's and Republican Spain's armies there, and
+    stands for 600 hours with no supply: 84 formations and 11,704 formation-hours in
+    contact on such ground in seed 99's first year, 103 and 21,617 in seed 7 (China and
+    Japan in Mongolia, 1,833 hours; the Soviet Union and Czechoslovakia in Poland). Out of
+    contact it is 93 to 95 % of all the hours not fed (11 % of the hours on foot, 21 % on
+    engines): Italy, Germany and Poland in Turkey and Egypt, China in Mongolia (293,973
+    hours in seed 7). A player meets it as an army that melts on the way to its war. A
+    decision first, in DECISIONS: no route across a nation that is not in the war (the
+    order is refused or goes round; AoC's nations do not cross neutrals), or the crossing
+    stands and is fed, or the holder is drawn into the war. AT: unit, failing first, for
+    the rule chosen; the count of formation-hours on a third nation's ground, in contact
+    and out of it, on two seeds, before and after. The pin moves.
+  - [ ] 3.4Rm **The tick is over budget after 3.4Rf** (ADR-143): seed 99, five years,
+    pinned, one run: 5-year mean 1.721 ms (budget 1.5; 1.451 before), year 1 2.591 ms
+    (budget 2.4; 2.339 before), year 5 1.905. The reach's own scan is under 0.035 ms a
+    tick; the game has 15 % more formation-hours in contact on engines and 37 % more on
+    foot in year 1. Measure again (two runs, the machine idle), then a profile of year 1
+    by system (`.cache/cpuprof` has the way of PLAN 1.42a) and one cut at the largest
+    cost that does not move the pin. After 3.4Rl, which changes how many formations stand
+    in contact. AT: the two figures in budget, or the remainder a line under PLAN 7.1 with
+    its numbers; every year's hash the same before and after the cut.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
   contact holds until one side is destroyed, armour with its infantry gone as any other

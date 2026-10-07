@@ -167,6 +167,113 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-143 · 2026-10-06 · accepted — A formation on a cell that is not its side's is fed when a network that feeds it lies within two cells (PLAN 3.4Rf)
+
+- **Context:** PLAN 3.4Re counted, in seed 99's first year, 47 % of the hours that formations
+  on engines were in contact as hours with no supply, and 44 % with no org. A formation was
+  fed on a cell of a network that feeds it and nowhere else (Supply v1, ADR-25), and the
+  cell under an attacker is the enemy's until the territory rule turns it (16 hours of
+  pressure, ADR-27). Since PLAN 3.2 that costs what moves on engines its org (three quarters
+  of its fire) and a tenth of its vehicles a day. The task: measure by cause first, then one
+  rule.
+- **Measured before the rule** (`.cache/rf/dry.ts` and `.cache/rf/other.ts`, scratch, not
+  in the repo; the first 360 days, every hour, seeds 99 and 7; "dry" is supply 0):
+
+  | in contact | seed 99 | seed 7 |
+  | --- | --- | --- |
+  | on engines: formation-hours, formations | 29,324, 72 | 25,240, 68 |
+  | on engines: dry, no org | 47.3 %, 44.3 % | 41.2 %, 38.0 % |
+  | on foot: formation-hours | 276,105 | 285,881 |
+  | on foot: dry | 22.1 % | 27.3 % |
+
+  The dry hours on engines, by the cell the formation stood on:
+
+  | cause | seed 99 | seed 7 |
+  | --- | --- | --- |
+  | an enemy's cell | 55.3 % (32 formations) | 65.4 % (35) |
+  | a third nation's cell (neither side's, not at war with it) | 44.1 % (10) | 32.0 % (11) |
+  | nobody's cell | 0 | 0 |
+  | its own side's cell, fed again at the next refresh (the 12 hours) | 0.6 % | 0.4 % |
+  | its own side's cell, cut off (a pocket) | 0.0 % | 2.1 % |
+
+  - *Two of the task's four causes are none:* nobody's cell, and the 12 hours between two
+    refreshes of the network.
+  - *The enemy's cell,* by the cells (Chebyshev) to the nearest cell that feeds, hours not
+    fed on engines: 2,847 / 4,081 / 627 / 289 at 1 / 2 / 3 / 4 and more (seed 99), 2,627 /
+    2,897 / 596 / 858 (seed 7). Within two cells: 88 % and 79 %. On foot: 68 % and 59 %.
+    These are not encircled formations: they stand in the reach of their own pressure
+    (`PRESSURE_RADIUS`, 2 cells) and of contact (1.5 cells) from their own ground.
+  - *A third nation's cell* is another matter (below): armies that meet on the march across
+    a nation that is in no war with either. France's alone in seed 99 (6,125 of its 6,343
+    hours on engines, ten formations at one place in Nationalist Spain, 596 to 629 hours
+    each). All of it four cells and more from a network.
+  - *By nation, on engines, dry in contact:* France 96.6 % and 100 % (Spain), Japan 82.8 %
+    and 86.1 %, the Soviet Union 36.0 % and 33.1 %, Germany 9.5 % and 9.8 %.
+- **Decision:** the first of the task's three. A formation whose cell is not its side's (an
+  enemy's, a third nation's, nobody's) is fed when a cell of a network that feeds it lies
+  within `SUPPLY_REACH` = 2 cells (Chebyshev, across the map's seam), by the same test as
+  the cell under it: its bloc's network, or that of a bloc on its side of a war. On a cell
+  of its own side with no network it is not: that is the pocket, and its rule stands.
+  - *Why not "the org is lost only to what encircles":* it would leave the supply rule as
+    it is for what walks (half its fire, 2 % a day, half its pressure on the cell it is
+    there to turn) and mend only what PLAN 3.2 added. The cause is the cell under the
+    attacker, and it is every formation's.
+  - *Why not "the rules stand":* a division one cell past its own network was dry in 8
+    hours. 36 % of the hours not fed on an enemy's cell were at one cell.
+  - *Two cells:* what a formation presses on (`PRESSURE_RADIUS`, the same distance) it is
+    fed from. One cell would feed 36 % and 38 % of those hours; three, 96 % and 88 %, and
+    would reach across any ring that the territory rule can draw.
+  - *Not across a ring:* the reach is for ground that is not the formation's side's. A
+    formation on its own ground in a pocket one cell of ring from its network stays dry
+    (the second test). One that stands on the ring itself, within two cells of the network
+    outside, is fed: it is through.
+  - *A third nation's ground* within two cells of the formation's network feeds as an
+    enemy's does: the test is of the network, not of the holder.
+- **After** (the same scripts and days; the games differ from the first day of a war on):
+
+  | in contact | seed 99 | seed 7 |
+  | --- | --- | --- |
+  | on engines: formation-hours | 33,756 | 29,320 |
+  | on engines: dry, no org | 12.4 %, 11.2 % | 12.2 %, 10.5 % |
+  | on foot: formation-hours | 378,289 | 319,434 |
+  | on foot: dry | 11.7 % | 10.3 % |
+
+  - Expected from the first table before the run: about 24 % on engines in seed 99 with
+    France's Spanish hours left as they were, about 10 % on foot. France did not meet
+    Portugal in Spain in this game of seed 99 (0 hours on a third nation's cell on engines);
+    in seed 7 that cause is 32.2 % of what is left (Germany 775 hours, Italy 281).
+  - What is left on engines in seed 99: an enemy's cell three cells and more out (65.4 %)
+    and pockets (33.8 %, the Soviet Union's 1,412 hours).
+  - By nation, on engines: the Soviet Union 11.9 % and 7.4 %, Japan 42.1 % and 30.6 %,
+    Germany 4.6 % and 16.9 %, France 0.0 % and 0.3 %.
+- **Tests:** `tests/unit/supply.test.ts`, two, the first red before the rule (a Soviet
+  division one cell into seven cells square of German-held ground had supply 0 after 12
+  hours): fed at one and two cells from the network, dry at three and four; a panzer
+  division keeps its org at two and loses it at four; a pocket behind one cell of ring is
+  dry. The pockets of `supply.test.ts`, `fuel.test.ts`, `org.test.ts` and
+  `breakdown.test.ts` pass as they were.
+- **The pin moved:** 80e8050a → a73098dc (seed 99, one year).
+- **Tick time** (seed 99, five years, pinned, one run, the machine idle): 5-year mean 1.721
+  ms (1.451 before, budget 1.5), year 1 2.591 ms (2.339, budget 2.4); years 2 to 5: 1.422,
+  1.402, 1.287, 1.905. Over budget. The rule's own cost is not it: a replica of the
+  system's loop, timed alone over year 1, takes 0.035 ms a tick with the test of the
+  formation's own cell that was there before (877 formations, 100 scans of 25 cells, 14
+  fed by the reach). The game is another: 15 % more formation-hours in contact on engines
+  and 37 % more on foot in year 1, since fewer formations starve in it. **PLAN 3.4Rm.**
+- **Saves:** no state added.
+- **Not done:**
+  - *Armies that meet on a third nation's ground* fight there, dry, until one is gone:
+    84 formations and 11,704 hours in seed 99, 103 and 21,617 in seed 7 (France against
+    Portugal and Republican Spain in Nationalist Spain; China against Japan in Mongolia,
+    1,833 hours; the Soviet Union against Czechoslovakia in Poland). All were on the march:
+    a route crosses any land, contact holds whoever meets, and repatriation skips what is
+    in contact or moving. **PLAN 3.4Rl.**
+  - *Out of contact,* 11 % of the hours on foot and 21 % on engines were not fed, 93 to 95
+    % of them on a third nation's cell four cells and more from a network (Italy, Germany
+    and Poland in Turkey and Egypt; China in Mongolia, 293,973 hours in seed 7). The same
+    cause, under 3.4Rl.
+  - Nothing of the reach on the page: the supply map mode is not built (SPEC §9).
+
 ### ADR-142 · 2026-10-06 · accepted — The open: armour's fire at a target with no armour on plains, grassland or desert whose side has no AT gun alive in the battle is × 1.25; the matrix (PLAN 3.4d)
 
 - **Context:** the fourth rule of the table of ADR-139 (SPEC §6.1): "armour is strong vs

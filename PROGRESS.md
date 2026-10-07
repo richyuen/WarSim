@@ -7243,3 +7243,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   contact), 3.4Rg to 3.4Rk (the read's five). PLAN 3.4R is ticked with the last of them.
 - **Next:** PLAN 3.4Rf.
 - **Gate:** green (code, with the ten-year tests; no spec changed).
+
+## 2026-10-06 — PLAN 3.4Rf: a formation on a cell that is not its side's is fed within two cells of its network; armour dry in contact 47 % → 12 %
+
+- **Measured first** (`.cache/rf/dry.ts`, `.cache/rf/other.ts`, scratch, not in the repo;
+  seeds 99 and 7, 360 days, every hour). Dry hours in contact on engines, by cause: an
+  enemy's cell 55.3 % and 65.4 %; a third nation's cell 44.1 % and 32.0 %; nobody's cell 0;
+  the 12 hours between refreshes 0.6 % and 0.4 %; a pocket 0.0 % and 2.1 %. On an enemy's
+  cell 88 % and 79 % of the hours not fed were within two cells of a cell that feeds.
+- **The rule** (ADR-143, `SUPPLY_REACH` = 2 in `supply.ts`): on a cell that is not its
+  side's, a formation is fed when a network that feeds it lies within two cells. On its own
+  side's ground with no network (a pocket) it is not.
+- **Dry in contact, before → after:**
+  - on engines: 47.3 % → 12.4 % (seed 99), 41.2 % → 12.2 % (seed 7);
+  - on foot: 22.1 % → 11.7 %, 27.3 % → 10.3 %;
+  - with no org, on engines: 44.3 % → 11.2 %, 38.0 % → 10.5 %.
+  The games differ from the first war on: in seed 99 France no longer meets Portugal in
+  Spain, which was 44 % of the dry hours. That is the game's doing, not the rule's.
+- **Tests:** `supply.test.ts`, two more (one red before the rule: supply 0 at one cell from
+  the network). The pockets of the supply, fuel, org and breakdown tests pass unchanged.
+- **The pin moved:** 80e8050a → a73098dc (ADR-143).
+- **Tick time: over budget.** Seed 99, five years, pinned, one run: mean 1.721 ms (1.451
+  before, budget 1.5), year 1 2.591 (2.339, budget 2.4), years 2 to 5: 1.422, 1.402, 1.287,
+  1.905. The scan is not the cost (a replica of the loop: 0.035 ms a tick, 100 scans); the
+  game has more formations in contact (on engines 33,756 formation-hours for 29,324, on
+  foot 378,289 for 276,105). **PLAN 3.4Rm**, after 3.4Rl.
+- **Found, a task (3.4Rl):** armies cross nations that are in no war and fight on their
+  ground with no supply: 84 formations and 11,704 hours in contact in seed 99, 103 and
+  21,617 in seed 7; out of contact it is 93 to 95 % of all hours not fed.
+- **Gotcha:** the script's "unfed" column is the old rule's (the cell under the formation);
+  after the rule only "dry" and "noOrg" say what the formation has.
+- **Next:** PLAN 3.4Rg (a played nation never researches).
