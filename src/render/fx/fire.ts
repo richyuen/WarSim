@@ -161,6 +161,13 @@ export class FireFx {
   /** When each shooter's shot on screen is over. */
   private readonly busy = new Map<number, number>();
 
+  /** Another game is shown from here on (a load): the shots of the one before are not its own. */
+  clear(): void {
+    this.shots.length = 0;
+    this.busy.clear();
+    this.until = -Infinity;
+  }
+
   /**
    * Takes the fire records of a snapshot that arrived at `now` (they are copied). Returns how
    * many of them are shots now: the last of `shots`. `figure` gives the figure of a shooter

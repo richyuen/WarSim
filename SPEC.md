@@ -1677,6 +1677,9 @@ moment before its first elements arrive.
   element ends with it and leaves the element's wreck (PLAN 2.4b). Drawn with the figures'
   share, at a figure's size; at T2 a loss is the sprite's opacity, as for every element. At
   most 2,000 are held. View state on the render clock: a reload starts with none.
+  A game loaded into a running one (PLAN 3.7n, ADR-175) takes the hulls, the wrecks, the shots
+  and the turrets' aims of the game before with it, and its first snapshot makes no hull: the
+  view is told of the load (`SimClient.onLoad`), it does not read it off the clock.
 - *The T2 ↔ T3 change* is a handover like the others (see above), since PLAN 2.7b.
 - *Measured:* 3,345 figures of 89 elements (three divisions at 28 m/px): 0.7 ms to build per
   snapshot, 0.5 ms of CPU to draw a frame.

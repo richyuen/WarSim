@@ -118,6 +118,13 @@ export class WreckFx {
     if (this.wrecks.length > MAX_WRECKS) this.wrecks.splice(0, this.wrecks.length - MAX_WRECKS);
   }
 
+  /** Another game is shown from here on (a load): the wrecks of the one before are not its own. */
+  clear(): void {
+    this.wrecks.length = 0;
+    this.last = -Infinity;
+    this.until = -Infinity;
+  }
+
   /**
    * Whether a wreck is still to be drawn at `now` (its smoke moves, and it fades at the end).
    * No lower bound on `now`, as for the fire: a frame's clock can be earlier than the arrival of

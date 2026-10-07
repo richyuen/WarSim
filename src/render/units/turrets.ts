@@ -83,6 +83,12 @@ export class TurretAims {
   /** When the last turret is back at its hull's facing. */
   until = -Infinity;
 
+  /** Another game is shown from here on (a load): every turret is on its hull's line. */
+  clear(): void {
+    this.aims.clear();
+    this.until = -Infinity;
+  }
+
   /**
    * Takes the shots of a snapshot that arrived at `now`, the tick being `tickMs` long (0: none).
    * A turret begins its turn TURN_MS before its shot starts, or now: `FireFx` starts a cannon's shot

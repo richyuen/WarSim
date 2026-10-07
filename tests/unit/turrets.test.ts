@@ -194,3 +194,16 @@ describe('TurretAims', () => {
     expect(aims.angleAt(8, HULL, 9000 + TURN_MS)).toBe(NORTH_EAST);
   });
 });
+
+describe('TurretAims.clear', () => {
+  it('PLAN 3.7n (a game loaded into this one): every turret is on its hull\'s line', () => {
+    const aims = new TurretAims();
+    const shot: Shot = { shooter: 7, target: 99, weapon: Weapon.cannon, x0: 10, y0: 10, x1: 11, y1: 9, dx: 0, dy: 0, start: 1000 + TURN_MS, from: null };
+    aims.add([shot], 1000, 0);
+    expect(aims.angleAt(7, 0.3, 1000 + TURN_MS)).toBe(Math.atan2(-1, 1));
+    expect(aims.animating(1000 + TURN_MS)).toBe(true);
+    aims.clear();
+    expect(aims.angleAt(7, 0.3, 1000 + TURN_MS)).toBe(0.3);
+    expect(aims.animating(1000 + TURN_MS)).toBe(false);
+  });
+});

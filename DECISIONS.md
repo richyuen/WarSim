@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-175 · 2026-10-07 · accepted — The view is told of a load; it does not read one off the clock (PLAN 3.7n)
+
+- **Context:** the eighth read, finding 5. `MapView.apply` kept the elements of the snapshot
+  before for the tanks lost since (`HullFx`, PLAN 3.6d) unless the tick had gone back. A
+  later save of the same game passed that test, and `tanksLost` took its elements for the
+  same ones (id, frame, formation and size agree): every tank lost between the two states
+  was a hull at once. A load to an earlier tick left the hulls, wrecks and shots of the
+  state that was gone on the map for as long as they last (17.5 s a hull).
+- **Run first** (`tests/e2e/loadedEffects1938.spec.ts`, the ground of `burning1938`, a save
+  at the start and one at the end of twelve hours): 7 hulls still drawn after the load back
+  to the start; 14 after the load on to the end (the 7 kept and 7 made at once).
+- **Decision:** `MapView` subscribes to `SimClient.onLoad`, as the HUD and the player's
+  selection do. On a load it clears the hulls, the wrecks, the shots and the turrets' aims,
+  and the next snapshot is compared with no elements before it. The test on the tick is
+  gone.
+- **Why the order holds:** the worker posts its reply to `load` before the snapshot the
+  load forces (`handleInner`: the case replies, `maybeSend` follows), and a snapshot of the
+  game before was posted before the load was handled. `SimClient.load` runs its listeners
+  in the continuation of the reply, a microtask, before the next message is taken.
+  Snapshots are applied when they arrive, not at the frame.
+- **Why not a number of the world in the snapshot:** it would say the same and need a field
+  in the protocol; the listener is there and two parts of the page use it.
+- **Not covered:** `init` into a running worker (`startSim` also resets the streams) fires
+  no `onLoad`. The page makes a new game by a new page, so no instance exists.
+- **Tests:** the spec above (both loads, a load with shots in the air, and the twelve hours
+  run again after a load give the same 7 hulls and the same hash); a `clear()` test in
+  `hullFx`, `wreckFx`, `fireFx` and `turrets`. The page proves the hulls only: without the
+  change the shots were gone too (a shot lives less long than a load takes) and the ground
+  has no wreck.
+- **The pin holds:** `b1bb392b`. View only.
+
 ### ADR-174 · 2026-10-07 · accepted — The puppets of a nation that dies are free at its death (PLAN 3.7i)
 
 - **Context:** PLAN 3.7c, seen with ADR-148 and read in the code. A Kill and a collapse free

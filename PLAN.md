@@ -4180,7 +4180,7 @@ quick sweep as a smoke test.
     a fourth test of `formationPanel1938.spec.ts`. The pin holds, `347aebb2`.
     *Not done:* no words at a player's click with the God tab shut (the panel's status
     alone); nothing on the map marks a retreat.
-  - [ ] 3.7n **A game loaded into a running one leaves no hull for what happened between**
+  - [x] 3.7n **A game loaded into a running one leaves no hull for what happened between**
     (the eighth read, finding 5; traced, not run; view only). `MapView` keeps the elements
     of the snapshot before unless the tick went back (`s.tick < this.lastTick`); a later
     save of the same game passes, `tanksLost` takes an element for the same by id, frame,
@@ -4191,6 +4191,25 @@ quick sweep as a smoke test.
     later and earlier: no hull that the game it shows did not make in the hour before, and
     none, no wreck and no shot left of the game before); `burning1938` and
     `tankBattle1938` as they are.
+    *Done 2026-10-07 (ADR-175):* the view hears of the load (`SimClient.onLoad`, as the HUD
+    and the player do) and no longer reads it off the clock: `MapView.worldLoaded` clears
+    the hulls, the wrecks, the shots and the turrets' aims (`clear()` on each), and the
+    first snapshot of the loaded game is compared with nothing. Run first
+    (`loadedEffects1938.spec.ts`, red before): 7 hulls of the hours that were gone after a
+    load to the window's start, 14 after the load on to its end. `burning1938` as it is.
+    *Not done:* the page shows the fault of the hulls only: a shot lives less long than a
+    load takes, and that ground has no wreck (the four `clear()` have a unit test each).
+    `tankBattle1938` does not run: 3.7o.
+  - [ ] 3.7o **The tank battle demo finds no battle** (found 2026-10-07 by the hand run of
+    3.7n; not of that change: it fails in Node, before the page is opened). `tankBattle`
+    (`tests/helpers/tankBattle.ts`, seed 1938, days 14 to 120) throws "no four hours … in
+    which tanks fire and lose tanks under fire and without on one ground". It passed with
+    the full suite at the tick of 3.6 (73ac1ea); the rules of 3.7h to 3.7m have changed the
+    world since, and none of those parts ran this spec. First find the commit and what the
+    search lacks now (no loss without fire near one under fire? armour that no longer
+    meets?). If the game still has tank battles, the demo needs a scene the search finds,
+    by its own rule and not a weaker one; if it has none, that is a defect of the phase and
+    comes first. AT: `tankBattle1938` green, its assertions as they are.
 
 ## Phase 4 — Naval
 

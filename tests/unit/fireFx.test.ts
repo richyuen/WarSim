@@ -276,3 +276,18 @@ describe('where a shot starts', () => {
     expect(firingFigure(1, 100, Frame.tank, 10, 10, 0, true)).toEqual(a);
   });
 });
+
+describe('FireFx.clear', () => {
+  it('PLAN 3.7n (a game loaded into this one): no shot, and a shooter whose shot was on screen fires at once', () => {
+    const fx = new FireFx();
+    add(fx, [{ shooter: 1 }, { shooter: 2 }], 1000);
+    expect(fx.animating(1001)).toBe(true);
+    fx.clear();
+    expect(fx.shots).toEqual([]);
+    expect(fx.animating(1001)).toBe(false);
+    // The loaded game's shooter 1 is not held back by the shot of the game before.
+    add(fx, [{ shooter: 1, tick: 101 }], 1002);
+    expect(fx.shots.map((s) => [s.shooter, s.start])).toEqual([[1, 1002]]);
+    expect(fx.skipped).toBe(0);
+  });
+});

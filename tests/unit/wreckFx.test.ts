@@ -98,3 +98,18 @@ describe('a wreck in time', () => {
     expect(fx.animating(1000 + WRECK_LIFE_MS + ANIM_TAIL_MS)).toBe(false);
   });
 });
+
+describe('WreckFx.clear', () => {
+  it('PLAN 3.7n (a game loaded into this one): no wreck, no burst, and the next death is a wreck as before', () => {
+    const fx = new WreckFx();
+    add(fx, [died(1), died(2)], 1000);
+    expect(fx.bursting(1001)).toBe(true);
+    fx.clear();
+    expect(fx.wrecks).toEqual([]);
+    expect(fx.bursting(1001)).toBe(false);
+    expect(fx.animating(1001)).toBe(false);
+    add(fx, [died(3)], 2000);
+    expect(fx.wrecks.map((w) => w.id)).toEqual([3]);
+    expect(fx.bursting(2001)).toBe(true);
+  });
+});

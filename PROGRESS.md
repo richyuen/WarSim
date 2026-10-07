@@ -8602,3 +8602,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   nothing (the same function); the case of two puppets of one dead nation has no instance.
 - **Next:** PLAN 3.7n (a game loaded into a running one leaves no hull), then 3.7g, the
   smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
+## 2026-10-07 — PLAN 3.7n: the view is told of a load (ADR-175)
+
+- **Run first** (`loadedEffects1938.spec.ts`, new; the ground of `burning1938`, day 20.5,
+  twelve hours, a save at their start and one at their end): after the load back to the
+  start 7 hulls of the hours that were gone, drawn; after the load on to the end 14.
+- **The rule** (`MapView.worldLoaded`, on `SimClient.onLoad`): the hulls, the wrecks, the
+  shots and the turrets' aims are cleared, and the loaded game's first snapshot is compared
+  with no elements before it. The test `s.tick >= lastTick` is gone. `clear()` on `HullFx`,
+  `WreckFx`, `FireFx`, `TurretAims`.
+- **Tests:** the spec (three loads; the twelve hours again after a load: the same 7 hulls,
+  the same hash); one unit test of each `clear()`.
+- **Gotcha:** the page cannot show the fault of the shots: 182 were in the air at a load and
+  none after it without the change either (a shot is over before the load's reply). No
+  wreck on that ground. Those two clears stand on their unit tests and on the reading.
+- **Found: `tankBattle1938` fails, and not by this change.** `tankBattle` (Node, before the
+  page) finds no four hours of a tank battle from day 14 to 120 any more. The spec last ran
+  with the suite at the tick of 3.6; 3.7h to 3.7m changed rules and ran other specs.
+  PLAN 3.7o, first.
+- **The pin holds:** `b1bb392b`. No tick time measured: view only.
+- **By hand** (`--project=chromium`): `loadedEffects1938`, `loadedWorld1938`, `burning1938`,
+  `wrecks1938`, `autosave1938`, `fire1938`: 8 of 8 in 1.5 min; `tankBattle1938` red as said.
+- **Not done:** a new game by `init` into a running worker fires no `onLoad` (no such path
+  on the page); the counters' and the hand-over's state across a load was not looked at.
+- **Next:** PLAN 3.7o (the tank battle demo finds no battle), then 3.7g, the smoke run
+  (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.

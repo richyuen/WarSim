@@ -161,4 +161,15 @@ describe('HullFx', () => {
     expect(fx.hulls.some((h) => h.element === 9000)).toBe(false);
     expect(fx.hulls[MAX_HULLS - 1]).toMatchObject({ element: n, figure: 9 });
   });
+
+  it('cleared (PLAN 3.7n: a game loaded into this one): no hull, nothing to draw, and the next losses are hulls as before', () => {
+    const fx = new HullFx();
+    add(fx, section([{ id: 1, strength: 10 }]), section([{ id: 1, strength: 7 }]), 1000);
+    expect(fx.hulls).toHaveLength(3);
+    fx.clear();
+    expect(fx.hulls).toEqual([]);
+    expect(fx.animating(1001)).toBe(false);
+    expect(add(fx, section([{ id: 1, strength: 7 }]), section([{ id: 1, strength: 6 }]), 2000)).toBe(1);
+    expect(fx.animating(2001)).toBe(true);
+  });
 });

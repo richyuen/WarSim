@@ -188,6 +188,8 @@ export class MapView {
   /** Frames rendered (test API / stats). */
   frames = 0;
   lastTick = -1;
+  /** A game was loaded and no snapshot of it has come yet (`worldLoaded`). */
+  private loaded = false;
   /** Snapshots applied (tests: one of a tick already in hand does not move `lastTick`). */
   snapshots = 0;
 
@@ -210,6 +212,7 @@ export class MapView {
     this.individualProxies = new ProxyRenderer(gl, atlas);
     this.controller = new CameraController(canvas, geo, { cx: geo.w / 2, cy: geo.h / 2, scale: 0 });
     sim.onSnapshotReceived((s) => this.apply(s));
+    sim.onLoad(() => this.worldLoaded());
     this.controlGrid = new Uint16Array(geo.w * geo.h);
     // A paint tool takes the primary button (PLAN 1.44): the press starts a stroke that follows
     // the pointer from cell to cell until the release, and the camera leaves that button alone.
@@ -437,8 +440,9 @@ export class MapView {
     }
     p.upload(f.count);
     // The elements of the snapshot before, for the tanks lost since (PLAN 3.6d). Not across a
-    // clock that went back: a game loaded into this one.
-    const elementsBefore = s.tick >= this.lastTick ? this.elementSection : null;
+    // load: the snapshot before is of another game, whichever way the clock went (PLAN 3.7n).
+    const elementsBefore = this.loaded ? null : this.elementSection;
+    this.loaded = false;
     this.uploadElements(s.elements);
     this.dirty = true;
     const arrived = performance.now();
@@ -464,6 +468,23 @@ export class MapView {
     this.hulls.add(elementsBefore, s.elements, arrived);
     this.lastTick = s.tick;
     this.snapshots++;
+  }
+
+  /**
+   * A game was loaded into this one (`SimClient.onLoad`; PLAN 3.7n). The worker's reply to the
+   * load comes before the first snapshot of the loaded game, and after the last of the game
+   * before. What the view drew of that game's fighting is gone with it: its hulls, wrecks and
+   * shots, and the turrets turned to them. The loaded game's first snapshot makes no hull: the
+   * elements in hand are not its own of an hour before. The tick does not tell a load: a later
+   * save of the same game has the same elements by id, formation and size.
+   */
+  private worldLoaded(): void {
+    this.loaded = true;
+    this.hulls.clear();
+    this.wrecks.clear();
+    this.fire.clear();
+    this.turretAims.clear();
+    this.dirty = true;
   }
 
   /**

@@ -149,6 +149,12 @@ export class HullFx {
     return lost.length;
   }
 
+  /** Another game is shown from here on (a load): the hulls of the one before are not its own. */
+  clear(): void {
+    this.hulls.length = 0;
+    this.until = -Infinity;
+  }
+
   /** Whether a hull is still to be drawn at `now`. No lower bound on `now`, as for the wrecks. */
   animating(now: number): boolean {
     return this.hulls.length > 0 && now < this.until + ANIM_TAIL_MS;
