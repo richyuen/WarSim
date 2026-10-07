@@ -3827,6 +3827,12 @@ quick sweep as a smoke test.
       comes with no fire record: its hull is drawn left behind, and the player who pans
       there within 17 s sees a grey hull where the sim had a tank shot. In the demo: 1 of 3
       tanks lost under fire at 4 m/px, 4 of 5 at 1.5 m/px (all outside the viewport).
+      Diagnose first: "at the box's edge or outside it" is inferred, not seen. In the demo
+      the hull of element 10891 (4 m/px, hour 3) lay inside the page's `subscription.bbox` by
+      its figure's place and the view got no shot at or by the element, with nothing dropped
+      or skipped. Check the shot's `x1, y1` against the worker's `inBbox`: the element's
+      place may be outside where its figure is inside, or the worker's box may not be the
+      page's.
       Either the worker says for each element it sends whether it was fired at since the
       last snapshot, or it sends the shots at every element it sends. AT: unit (a held
       element outside the box, fired at from outside it: its hull burns); in
