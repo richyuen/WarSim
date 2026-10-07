@@ -109,7 +109,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   if (sectors.size === 0) return;
   const list = [...sectors.values()].sort((a, b) => a.key - b.key);
   for (const s of list) {
-    s.cells.sort((a, b) => a - b);
+    // Sums of half-integers: the same in any order of the cells (they are sorted where their
+    // order is read, below).
     let sx = 0;
     let sy = 0;
     for (const c of s.cells) {
@@ -119,7 +120,6 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     s.cx = sx / s.cells.length;
     s.cy = sy / s.cells.length;
   }
-  // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood.
   const enemyByBucket = new Map<number, number>();
   const mine: number[] = [];
   world.formations.forEach((id) => {
@@ -132,11 +132,6 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
     enemyByBucket.set(k, (enemyByBucket.get(k) ?? 0) + f.strength[id]!);
   });
-  for (const s of list) {
-    const sy = Math.floor(s.key / bw);
-    const sx = s.key - sy * bw;
-    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s.threat += enemyByBucket.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
-  }
   if (mine.length === 0) return;
   const dist2 = (id: number, s: Sector): number => {
     let dx = Math.abs(f.x[id]! - s.cx);
@@ -153,6 +148,15 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   }
   const ranked = [...nearest.keys()].sort((a, b) => nearest.get(a)! - nearest.get(b)! || a - b);
   const active = ranked.slice(0, ranked.length - Math.floor(ranked.length * RESERVE));
+  // No formation to send (45 % of the plans in two years of seed 99, PLAN 3.4Rm): nothing below
+  // would give an order, so the threat is not summed and nothing is allotted.
+  if (active.length === 0) return;
+  // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood.
+  for (const s of list) {
+    const sy = Math.floor(s.key / bw);
+    const sx = s.key - sy * bw;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s.threat += enemyByBucket.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
+  }
   // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT.
   const weights = list.map((s) => 1 + s.threat / THREAT_UNIT);
   const total = weights.reduce((a, b) => a + b, 0);
@@ -203,6 +207,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   let pass: Passage | undefined;
   for (const s of list) {
     if (s.formations.length === 0) continue;
+    s.cells.sort((a, b) => a - b); // `holdCell` takes the first of equals
     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
     const target = attack ? attackCell(world, s, enemy, nb) : holdCell(s, w);
     if (target < 0) continue;

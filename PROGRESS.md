@@ -7486,3 +7486,33 @@ No rule changed and nothing on screen changed. One task came out of it.
   a way home is on BLOCKERS' watch list, with a way to mend it. ADR-149's sentence on AoC
   ("its nations do not cross a third") is PLAN 3.4Rl's own, with no dated observation behind
   it; no parity row covers it, and none was changed.
+
+## 2026-10-06 — PLAN 3.4Rm: the plans with nothing to send end early; the review pass 3.4R is done
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Profile** (two years of seed 99; `node --cpu-prof` on an esbuild bundle of
+  `tools/headless/cli.ts`, `.cache/rm/`): the operational AI 41 % of the tick (routes 20 %,
+  `planNation` itself 13 %, `passageOf` 3 %), combat 20 %, supply 15 %, territory 10 %. PLAN's
+  guess (more flips, more refreshes of the network) is not it, and `b497086` was not run.
+- **Counted** (counters in the source for one run, then taken out): 32,891 plans; 14,722 with
+  no formation within reach of a front, 21,958 with no order; 1,228 frontier cells and 300
+  sectors a plan; 58,232 orders, 12,245 accepted. Routes: long found 4,604 at 0.82 ms, long
+  refused 1,283 at 1.53 ms, short refused 312 at 3.29 ms, 38,978 refused by the provinces at
+  no cost, `passageOf` 10,993 at 0.085 ms.
+- **The cut** (`operational.ts`): a plan with no formation to send returns before the threat
+  is summed; a sector's cells are sorted only when it has formations to order (`holdCell`
+  takes the first of equals; the centre is a sum of half-integers, the same in any order).
+- **Tick** (five years, pinned, two runs): mean 1.809 and 1.806 ms (1.903 and 1.894 before),
+  year 1 2.493 and 2.488 (2.585 and 2.577), year 5 1.464 and 1.444 (1.527 and 1.514). The
+  five yearly hashes are the same as before in both runs.
+- **Still over budget** (1.5 and 2.4): the remainder is a line under PLAN 7.1 with the
+  numbers above. No second cut here: what is left in the routes is the search itself, or the
+  AI asking for fronts it cannot reach, which is a rule (PLAN 3.5).
+- **Gotcha:** the bundle runs year 1 at 2.29 ms and tsx at 2.58: a profile's times are not
+  the runner's.
+- **PLAN 3.4R ticked:** 3.4Rm was its last part. The review count starts again at 3.5.
+
+- **Gate:** green (code, with the ten-year tests). No e2e: the gate does not count the tick
+  of 3.4R as a numbered task, and nothing drawn changes.
+- **Next:** PLAN 3.5 (the AI uses armour as spearheads; it also asks for fronts it cannot
+  reach).

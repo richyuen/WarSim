@@ -2988,7 +2988,7 @@ quick sweep as a smoke test.
       3.5); no share is asked in any of the four.
   **PLAN 3.4 done 2026-10-06.** It is the fifth numbered task since the review pass 2.16R
   (2.17, 3.1 to 3.4): the review pass of PROMPT step 9 is due, and comes before 3.5.
-- [ ] 3.4R Review pass (PROMPT step 9) over PLAN 2.17 and 3.1 to 3.4: refactor debt, dead
+- [x] 3.4R Review pass (PROMPT step 9) over PLAN 2.17 and 3.1 to 3.4: refactor debt, dead
   code, SPEC re-read for drift (tech and research, fuel, org and breakdown, terrain by unit
   type, the four rules of combined arms), missing tests. It belongs to the tasks it follows
   (ADR-74) and starts the count again.
@@ -3256,7 +3256,7 @@ quick sweep as a smoke test.
       two years).
     - *Not done:* the AI allots formations to fronts they cannot reach and asks every day
       (PLAN 3.5); repatriations to the spawn point not counted.
-  - [ ] 3.4Rm **The tick is over budget after 3.4Rf** (ADR-143): seed 99, five years,
+  - [x] 3.4Rm **The tick is over budget after 3.4Rf** (ADR-143): seed 99, five years,
     pinned, one run: 5-year mean 1.721 ms (budget 1.5; 1.451 before), year 1 2.591 ms
     (budget 2.4; 2.339 before), year 5 1.905. The reach's own scan is under 0.035 ms a
     tick; the game has 15 % more formation-hours in contact on engines and 37 % more on
@@ -3275,6 +3275,20 @@ quick sweep as a smoke test.
     `b497086` in a worktree beside it. An attacker on the cell it presses had half its
     pressure with supply 0 and has all of it now: more flips, more frontier, more partial
     refreshes of the network may be the cost, not the hours in contact.
+    **Done 2026-10-06, by the second half of the AT: one cut, the remainder under PLAN 7.1.**
+    - *The profile* (two years of seed 99, `node --cpu-prof` on an esbuild bundle): the
+      operational AI 41 % of the tick (the routes of its orders 20 %, `planNation` itself
+      13 %, `passageOf` 3 %), combat 20 %, supply 15 %, territory 10 %. So not the flips and
+      not the refreshes of the network: `b497086` was not run beside it.
+    - *The cut:* 14,722 of 32,891 plans in the two years had no formation in reach of a
+      front, and 21,958 gave no order. Such a plan summed the threat of 300 sectors and
+      sorted the cells of each. A plan with no formation to send ends before the threat,
+      and a sector's cells are sorted when it has formations to order.
+    - *Tick* (five years, pinned, two runs): mean 1.809 and 1.806 ms (1.903 and 1.894
+      before; budget 1.5), year 1 2.493 and 2.488 (2.585 and 2.577; budget 2.4), year 5
+      1.464 and 1.444 (1.527 and 1.514). Both figures still over budget.
+    - *Hashes:* the five years' are the same in both runs as before (e5df6177, c65aeeb8,
+      f2af9539, 6df1fb39, f67c5cb0).
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
   contact holds until one side is destroyed, armour with its infantry gone as any other
@@ -3397,6 +3411,21 @@ quick sweep as a smoke test.
     one of them held is not its own afterwards, also when a lower bloc refreshed with it took
     the lane, where the first result was right. How often a refresh goes full was not
     counted; the tick rose by 0.036 ms.
+  From PLAN 3.4Rm (2026-10-06): the tick of seed 99 over five years is 1.81 ms (budget
+  1.5), year 1 2.49 (budget 2.4). What two years cost, of 39 s, and what was not cut:
+  - Long routes found: 4,604 at 0.82 ms, 3.8 s. The search fills its corridor; the heap's
+    two sift lines are 4.9 % of the tick. A faster heap must keep the order of (key,
+    sequence), or routes change with the ties.
+  - Orders refused after a search: 1,283 long ones at 1.5 ms and 312 short ones at 3.3 ms,
+    3.0 s. 45,987 of 58,232 orders were refused (38,978 by the provinces, at no cost): the
+    AI allots formations to fronts they cannot reach and asks every day (PLAN 3.5). An AI
+    that does not ask is a rule, and moves the pin.
+  - `passageOf`: 10,993 at 0.085 ms, 0.9 s, once for each plan that orders.
+  - `planNation` before its orders: 5.6 s before the cut of 3.4Rm (the frontier's cells by
+    sector 1.4 s, 1,228 cells and 300 sectors a plan; the threat 1.5 s; the allotment
+    1.5 s). Each planner of a coalition builds the sectors of all its partners' fronts.
+  - Not the AI: `refreshSupplyNetwork` 12 %, `findBattles` 8 % (half of it one line, the
+    lookup of a bucket's neighbours).
   From the critic's report of 2026-10-05 (the pace in R2-B5; its N9 and N19):
   - **The top speed.** At Max the game makes 885 ticks a second at the start and 794 after
     ten years: 33 to 37 days a second, 10 to 12 s a year. AoC's text gives a month in 0.5 s
