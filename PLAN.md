@@ -4298,11 +4298,20 @@ quick sweep as a smoke test.
     attacker's ally attacks the nation it guarantees while its puppets defend it (the
     1938 start, United Kingdom on Poland: a test of it is written, see PROGRESS). A
     decision: a nation torn between the two sides stays out with its puppets.
-    AT: that test; seed 1 to day 130 with `realmWars` empty on every day.
-  - [ ] 3.8d A nation that gets an overlord or an alliance while at war: its wars against
-    its new realm end for it (seed 99, day 822: Latvia of Germany in the war of Poland on
-    Estonia), and `canJoin` asks about the puppets too. Whether a puppet may sit in another
-    alliance than its overlord at all: a decision here.
+    AT: that test; seed 1 to day 130 and seed 3301 to day 825 with `realmWars` empty on
+    every day (seed 3301, day 822, `POL -> EST`: attackers POL, GER, ITA, AUT, HUN, JAP;
+    defenders EST, LAT, LIT, Latvia a puppet of Germany; day 1084, `GER` on a founded
+    nation: Hungary, a puppet of Italy since day 634, among the defenders against Italy).
+  - [ ] 3.8d A nation that gets an overlord or an alliance while at war: whether that gives
+    pairs at war with a bond is **not yet seen** (corrected 2026-10-07: the case first named
+    here, Latvia of Germany in the war of Poland on Estonia, is seed 3301 and not seed 99,
+    and it is a case of 3.8c: Latvia joined the defenders with its allies Estonia and
+    Lithuania on the day the war was declared, day 822, 753 days after it became Germany's
+    puppet). After 3.8c, run `realmWars` on every tick of seeds 1, 99 and 3301 for three
+    years with the `PuppetCreated` and `AllianceJoined` events beside it: what is left is
+    this part's case, or the part is closed as not found. `canJoin` asks about members
+    only, not their puppets: read it then. Whether a puppet may sit in another alliance
+    than its overlord at all (both cases of seed 3301 are such puppets): a decision in 3.8c.
     AT: `realmWars(world)` is empty on every day of the ten-year games of the sweep stage
     (`tests/helpers/aiSweep.ts`), which is the AT of 3.8.
   - [ ] 3.8e Seen in the diagnosis, not a war inside a realm: nobody defends a puppet. When

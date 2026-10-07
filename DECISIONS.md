@@ -206,9 +206,13 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   a puppet of Italy and a member of the Balkan Entente, against Italy); the puppets of a
   guarantor that is the attacker's ally come in for the defender, and the guarantor itself
   for the attackers (United Kingdom on Poland at the start: France attacks the nation it
-  guarantees, and its puppets defend it); (b) a nation made a puppet at a peace while it
-  stands in another war against its new realm (Latvia, a puppet of Germany, in the war of
-  Poland on Estonia). PLAN 3.8c and 3.8d. Also seen and not a war inside a realm: nobody
+  guarantees, and its puppets defend it). Both wars of seed 3301 are of the first kind,
+  read from the declaration's own tick: day 822, Latvia (Germany's puppet since day 69, an
+  ally of Estonia) among the defenders against Germany; day 1084, Hungary (Italy's puppet
+  since day 634) among the defenders against Italy. The 12 wars of seed 1 were not read one
+  by one. (b) A nation made a puppet while it stands in a war against its new realm: not
+  seen; as first written here it named the Latvian case, which is (a). PLAN 3.8c, and 3.8d
+  to look for (b). Also seen and not a war inside a realm: nobody
   defends a puppet. Its overlord does not join when the puppet is the one war is declared on
   (French West Africa and Syria stood alone). PLAN 3.8e.
 - **The pin:** seed 99 after one year, `b1bb392b` to `ed82d7f8`. The pinned game had the critic's war itself: on day 57 the United Kingdom declared war on French West Africa (33 attackers, as on seed 3301). It now declares war on Iraq that day, and every later day differs (the old game: Iraq on Transjordan on day 94, France on the Spanish Republic on day 100). Read from the declarations of both games, the old one run on the stashed change.

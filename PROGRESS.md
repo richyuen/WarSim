@@ -8829,3 +8829,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   that watch a seed's own game (the demos) were not run, and their games differ from the
   day of the first declaration that is now refused. The full suite comes with the tick of 3.8.
 - **Next:** PLAN 3.8c.
+
+## 2026-10-07 — PLAN 3.8: a correction of what 3.8b's commit says is left
+
+- **Wrong in `9bc375c`:** PLAN 3.8d and ADR-178 named "Latvia of Germany in the war of
+  Poland on Estonia" as a nation made a puppet while at war, and PLAN gave it to seed 99.
+  It is seed 3301 (seed 99 had no pair in three years), and it is a joiner: the pairs appear
+  on the tick of the declaration (19,729, day 822), with Latvia among the defenders as the
+  ally of Estonia, 753 days after `PuppetCreated LAT GER` (day 69). The second war of seed
+  3301 (day 1084) is the same with Hungary and Italy. Read from a second run that prints
+  `PuppetCreated` and `PeaceSigned` beside the declarations.
+- **So:** both are PLAN 3.8c. No case of a puppet made in a war it stands in has been seen;
+  3.8d now says so and says how to look. The 12 wars of seed 1 were not read one by one.
+- **Deleted by mistake:** `.cache/perf.log` (ignored, not tracked; a `rm .cache/p*.log`
+  meant for this session's probe logs). Its content was not read before. If it was a tick
+  measurement, PLAN 3.10 measures again.
+- **Gate:** documents only (parity).
+- **Next:** PLAN 3.8c.
