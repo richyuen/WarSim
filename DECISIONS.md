@@ -167,6 +167,81 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-170 · 2026-10-07 · accepted — A walkable cell that no province has is a node of the province graph: the mend is in the graph, not the map (PLAN 3.7j)
+
+- **Context:** the eighth read, finding 1. A `Passage` groups the province nodes with open
+  ground by their neighbours, and `mayReach` refuses two ends in different groups with no
+  search. Nodes were neighbours only through cells that had a node, and a walkable cell of
+  province 0 had none: 2,726 cells of the 1938 map (2,708 of them owned and held: the
+  coast's cells that the admin-1 polygons do not cover, which take their neighbours'
+  owner). Five of its landmasses fell into more than one group with every holder open;
+  south-west Japan (7 provinces, 120 cells) was cut from the rest of Japan by one forest
+  cell, (1768, 396).
+- **Two places to mend it:**
+  1. *The map:* the pipeline gives every walkable cell a province. It mends the 1938 map
+     and nothing else: a map import makes land of water and leaves `cells.province` as it
+     was, so new land is of province 0 whatever the pipeline did. (A paint cannot: the
+     editor paints land into land only. PLAN 3.7j's "a land cell painted in the editor" is
+     tested as land of an import.) And it is a choice of province for 2,726 cells that
+     the data does not make.
+  2. *The graph:* a cell with no node joins the nodes about it.
+- **Decision:** the graph. `buildProvinceGraph`, after the crossings, makes a node of every
+  connected run (4-way) of walkable cells that have none, as it does of a run of crossing
+  cells: `component !== 0`, so whatever the landmasses count as land has a node. On the 1938
+  map 2,310 nodes of 1 to 9 cells (4,588 nodes before, 6,936 now: see the ids below).
+  `cells.province` stays what the data says.
+- **And the ids of the nodes that are no province begin above every province** (found by
+  the gate, not foreseen): the crossings were numbered from the highest province *with a
+  land cell* (4,558) on, and the 1938 map has 38 provinces above it with no land cell at
+  this size (`provinces.count` is 4,597). So 29 crossings had the ids of provinces, 4,559
+  to 4,587; nothing showed, a crossing's centre being nobody's. The new runs took the ids
+  on from there, their centres have owners, and `forceRevolt(4594)` founded a nation of no
+  cells on one (`rebelCapitals.test.ts`, `nationNames.test.ts`: three tests red). The
+  highest province is now read from every cell, land or not: no crossing and no run has
+  the id of a province, and `q >= provinces.count` is "not a province" as its readers
+  (`revoltArea`) meant it.
+- **Why a node and not only an edge** (the nodes about a run made neighbours of each
+  other): a node has holders. `heldByNode` counts its cells, so the run is open ground or
+  closed by who holds it, and the groups are exact where an edge would join two provinces
+  over a cell nobody may enter. And a corridor of a long route holds the run as it holds a
+  crossing.
+- **The reader's suspicion, settled by this:** a route of more than 500 km that is not
+  found in its corridor is refused (ADR-149), and a cell with no node was in no corridor
+  (`on[0]` is 0): a way whose only crossing was such a cell was refused inside one group
+  too. It had an instance after all once the groups were joined: (1831, 319) to
+  (1766, 397), Honshu to Kyushu, 120 cells by the way. The coarse route now runs over the
+  run's node and the corridor holds it (`provinceGraph.test.ts`, the fourth test).
+- **What else reads the graph, looked at:**
+  - `neighbourMap` (the strategic AI): a new node whose centre has an owner is a
+    neighbour-maker like a province. On the 1938 map at the start the same 203 pairs of
+    neighbours before and after.
+  - `randomWorld`: a nation's reach now spreads over the new nodes as over the crossings,
+    so the parts of a landmass that only such a cell joins are reached by road and not by
+    "the capital nearest". A random world of a given seed may differ from the one before
+    in those parts. Not counted; the title screen's picture of the random world differs
+    and was made again (`npm run data -- --previews`, as `scenarioPreview.test.ts` asks).
+  - `mayReach`'s `a === 0 || b === 0` and the same in `operational.ts` are now for water
+    only. Left as they are.
+  - A formation that stood on a cell with no node had no group and was held to reach
+    everything (`operational.ts`), and its orders were then refused by the search: 29 of
+    the 1,895 refused orders in a year of seed 99, of 4 formations. None now.
+- **Measured:** the reader's `groups.ts`: 5 landmasses in more than one group and 6 pairs
+  with a way that `findRoute` refuses, before; 0 and 0 after, of 815 landmasses with a
+  node. Orders refused in a year (`MoveRejected`): seed 99 1,895 before and 877 after;
+  seed 7 1,761 before and 3,502 after. The two games part early and are different games
+  by the year's end: the counts say nothing of the rule (one falls and one doubles), and
+  no count of the same orders under both graphs was made. Tick time, five years of seed
+  99 pinned to the performance cores: mean 1.672 ms before, 1.559 ms after (a different
+  game; no slower).
+- **The pin moves:** `d3067126` to `7cfb8b6d` (seed 99 after one year; `1fbeb7db` with the
+  runs alone, before the ids were moved above the provinces). A rule of reach
+  changed: Japan's formations reach Kyushu, long routes take corridors over the new nodes,
+  and a formation on such a cell has a group.
+- **Consequences:** nothing saved changes (the graph is derived, never saved). A node id
+  above the provinces' is a crossing's or such a run's: who reads a node as a province
+  (`revival.ts`, `revolts.ts`, `randomWorld.ts`) reads `centre[p]` for a province id, as
+  before.
+
 ### ADR-169 · 2026-10-07 · accepted — A formation sent home marches home, across nations at peace with it; it is set on its spawn point only where no land leads there (PLAN 3.7h)
 
 - **Context:** the review of Phase 3 counted what ADR-149 had left "not counted": in a year

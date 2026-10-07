@@ -4047,7 +4047,7 @@ quick sweep as a smoke test.
     years of games; what the 54 hours cost the puppet was not looked at.
   The order of work for the tasks above and below, the sim's first and most severe first:
   3.7j, 3.7k, 3.7h, 3.7l, 3.7m, 3.7i; then what is drawn: 3.7n, 3.7g. Then 3.7e and 3.7f.
-  - [ ] 3.7j **An order between two parts of one landmass is not refused for a land cell
+  - [x] 3.7j **An order between two parts of one landmass is not refused for a land cell
     that has no province** (the eighth read, finding 1; run there and again here). A
     `Passage` groups the province nodes with open ground by their neighbours
     (`nodeGroups`, `src/sim/nav/provinceGraph.ts`), and `mayReach` refuses two ends in
@@ -4071,6 +4071,21 @@ quick sweep as a smoke test.
     with why it may; a land cell painted in the editor between two provinces joins them);
     the count of refused orders in a year of seed 99 before and after; the pin, moved or
     not, is said.
+    **Done 2026-10-07 (ADR-170):** the graph. Every connected run of walkable cells with no
+    node is a node, as a run of crossing cells is (2,310 on the 1938 map; 6,936 nodes).
+    `tests/unit/provinceGraph.test.ts`, four tests, red before: the Japanese order both
+    ways; every walkable cell of 1938 has a node and no landmass falls into two groups, none
+    excepted; land that a map import puts between two landmasses joins their provinces
+    (the editor paints land into land only, so no paint makes such a cell); and the
+    suspicion, which had an instance: Honshu to Kyushu over 500 km is found in its corridor.
+    Refused orders in a year: seed 99 1,895 and 877, seed 7 1,761 and 3,502; different games
+    by then, so no verdict on the rule. The pin moves, `d3067126` to `7cfb8b6d`.
+    Found by the gate: the ids of crossings began at the highest province with land, and 38
+    provinces of 1938 have none, so 29 crossings had provinces' ids; a run with such an id
+    was revolted as a province (three tests of the forced revolts red). The ids now begin
+    above every province. The random world's preview made again.
+    *Not done:* no count of the same orders under both graphs; the random world's change
+    (ADR-170) not counted; the graph's build time not measured again.
   - [ ] 3.7k **A paint of terrain does not move a marching formation** (the eighth read,
     finding 2; run there and again here). `terrainChanged` (`src/sim/editor.ts`) and a
     change of `loopingMap` (`gameOptions.ts`) clear `world.paths`. `formationPath` then

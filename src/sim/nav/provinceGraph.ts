@@ -1,7 +1,7 @@
 /**
  * Coarse navigation graph (PLAN 1.11, SPEC §4): nodes are admin-1 provinces plus one virtual node
- * per connected group of crossing cells (straits), edges join nodes whose cells touch (4-way,
- * wrapping). Long routes are planned on this graph first; cell A* then runs inside the corridor
+ * per connected group of crossing cells (straits) and one per connected run of walkable land that
+ * no province has, edges join nodes whose cells touch (4-way, wrapping). Long routes are planned on this graph first; cell A* then runs inside the corridor
  * of provinces on the coarse route and their neighbours. Derived from static layers (terrain,
  * province), so it is rebuilt identically after a load and never saved.
  */
@@ -9,7 +9,7 @@ import { Terrain } from '../../shared/terrain';
 import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
 
 export interface ProvinceGraph {
-  /** Node per cell (0 = none: water or province-less land). */
+  /** Node per cell (0 = none: water). Every walkable cell has one. */
   nodeOf: Uint32Array;
   nodeCount: number;
   /** Representative (centroid-nearest) cell per node. */
@@ -23,12 +23,14 @@ export interface ProvinceGraph {
 export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceGraph {
   const n = g.w * g.h;
   const nodeOf = new Uint32Array(n);
+  // The highest province of any cell, land or not: a province all of whose cells are water has
+  // no cell here and is a node all the same, so that no crossing and no run below takes the id
+  // of a province (PLAN 3.7j: `forceRevolt` and the revival read a node below
+  // `provinces.count` as a province, and 4594 was both).
   let maxProv = 0;
   for (let c = 0; c < n; c++) {
-    if (g.terrain[c]! >= Terrain.Plains && province[c]! > 0) {
-      nodeOf[c] = province[c]!;
-      if (province[c]! > maxProv) maxProv = province[c]!;
-    }
+    if (province[c]! > maxProv) maxProv = province[c]!;
+    if (g.terrain[c]! >= Terrain.Plains && province[c]! > 0) nodeOf[c] = province[c]!;
   }
   // Crossing components become nodes maxProv+1, maxProv+2, ... (flood fill in index order).
   let next = maxProv + 1;
@@ -41,6 +43,24 @@ export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceG
       const k = stack.pop()!;
       for (const m of neighbours4g(g, k)) {
         if (g.terrain[m] === Terrain.Crossing && nodeOf[m] === 0) {
+          nodeOf[m] = id;
+          stack.push(m);
+        }
+      }
+    }
+  }
+  // Walkable land that no province has (2,726 cells of the 1938 map; land of a map import) is a
+  // node by connected run as well, after the crossings: a cell with no node joined nothing, and
+  // two parts of one landmass that only such a cell joins were two groups (PLAN 3.7j, ADR-170).
+  for (let c = 0; c < n; c++) {
+    if (g.component[c] === 0 || nodeOf[c] !== 0) continue;
+    const id = next++;
+    const stack = [c];
+    nodeOf[c] = id;
+    while (stack.length) {
+      const k = stack.pop()!;
+      for (const m of neighbours4g(g, k)) {
+        if (g.component[m] !== 0 && nodeOf[m] === 0) {
           nodeOf[m] = id;
           stack.push(m);
         }

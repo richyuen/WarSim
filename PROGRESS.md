@@ -8405,3 +8405,43 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.7j (the first of eight tasks: 3.7j, k, h, l, m, i, then n and g), then
   the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
 
+## 2026-10-07 — PLAN 3.7j: a walkable cell that no province has is a node of the province graph (ADR-170)
+
+- **The mend is in the graph** (`buildProvinceGraph`): after the crossings, every connected
+  run of walkable cells with no node is a node. 2,310 of them on the 1938 map, of 1 to 9
+  cells; 6,936 nodes where 4,588 were. Not the map: an import makes land of province 0
+  whatever the pipeline does.
+- **Tests, red first** (`tests/unit/provinceGraph.test.ts`, four): the Japanese order of
+  finding 1, both ways; no landmass of 1938 in two groups and no walkable cell without a
+  node; land of a map import between two landmasses; a route of more than 500 km whose
+  only way is over such a cell (the reader's suspicion: it had an instance, Honshu to
+  Kyushu, once the groups were joined).
+- **Gotcha:** the AT says "a land cell painted in the editor". The editor paints land into
+  land only; water becomes land by `importLayer`. The test uses that.
+- **Gotcha:** a province with islands is one node on several landmasses (815 landmasses,
+  201 groups with all open). "A group is of one landmass" was never so; `mayReach` asks the
+  landmass first.
+- **Measured:** the reader's `groups.ts` 5 split landmasses and 6 refused pairs, now 0 and
+  0. Refused orders in a year: seed 99 1,895 before, 877 after; seed 7 1,761 and 3,502. The
+  games part, so these are two games each and no verdict. 29 of seed 99's 1,895 were of
+  formations that stood on a cell with no node; none now. The strategic AI's neighbours at
+  the start: the same 203 pairs.
+- **Tick time** (five years of seed 99, `--affinity 0xFFFF`): mean 1.672 ms before, 1.559
+  after; year 1 2.453 and 2.313. No slower.
+- **Gotcha, found by the gate:** `provinces.count` is 4,597 and the highest province with
+  a land cell is 4,558: 38 provinces of the 1938 map are all water at this size. The graph
+  numbered crossings from 4,559, so 29 crossings had provinces' ids, unseen (a crossing's
+  centre is nobody's). The new runs' centres have owners: `forceRevolt(4594)` founded a
+  nation of no cells, three tests of the forced revolts red. Node ids that are no
+  province's now begin above the highest province of any cell.
+- **The random world changed** (its nations spread over the new nodes): the preview's test
+  was red, `npm run data -- --previews` made the picture again.
+- **The pin:** `d3067126` to `7cfb8b6d` (`1fbeb7db` before the ids moved).
+- **By hand:** `tests/e2e/title.spec.ts` (7 passed, 17 s) and the new preview looked at: a
+  world of whole nations, no speck of another colour on the coasts.
+- **Gate:** `npm run check` green (typecheck, lint, unit, the 10-year tests, build, parity;
+  no e2e: a part).
+- **Not done:** the random world of a seed may differ where a landmass was joined by such
+  a cell only: not counted. The same orders were not asked of both graphs.
+- **Next:** PLAN 3.7k (a paint of terrain moves marching formations), then 3.7h, l, m, i, n,
+  g, the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.

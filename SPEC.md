@@ -801,8 +801,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Grid:* the true km per cell row comes from the Miller geometry. Move cost per [mobility][terrain]
   comes from `terrain.json` (water = ∞; crossings walkable).
 - *Components:* 4-connected land components make unreachable targets an O(1) reject.
-- *Province graph:* admin-1 provinces plus one virtual node per crossing group, built in 80 ms at
-  M. It is derived, never saved.
+- *Province graph:* admin-1 provinces plus one virtual node per crossing group and one per
+  connected run of walkable land that no province has (2,310 on the 1938 map, of 1 to 9 cells:
+  PLAN 3.7j, ADR-170), so every walkable cell has a node; the ids of both kinds begin above the
+  highest province of any cell. Built in 80 ms at M (measured before
+  ADR-170, not again). It is derived, never saved.
 - *Routes:* `findRoute` uses straight cell A* below 500 km. Above that, it runs coarse A* on the
   province graph, then cell A* inside the corridor of route provinces and their neighbours, with a
   flat fallback (none for a march: see *No march across a third nation* below). Cell A* is 8-connected with no corner cutting. Its heuristic is the octile walk
