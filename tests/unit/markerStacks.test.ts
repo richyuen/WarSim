@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MarkerStacks, NUDGE_MAX_PX, NUDGE_MS, nudgeApart, shareUnder, STACK_HOLD, STACK_UNDER, stackMarkers, type StackItem } from '../../src/render/units/markerStacks';
+import { MarkerStacks, NUDGE_MAX_PX, NUDGE_MS, nudgeApart, partAlong, shareUnder, STACK_HOLD, STACK_UNDER, stackMarkers, type StackItem } from '../../src/render/units/markerStacks';
 import { FADE_MS } from '../../src/render/timing';
 
 // PLAN 2.7s1: markers of one nation that stand on each other are one marker. On Spain's front
@@ -222,6 +222,84 @@ describe('markers of two nations move apart (PLAN 2.7s2)', () => {
 // cycle; the targets changed in every frame, and the layer said for ever that it animated: a
 // paused view at T1 drew every frame. Found in 29 of 324 samples of a 1938 game, none of them at
 // a tick a spec looked at.
+// PLAN 3.5h: a chain of boxes that the shorter way cannot part and another way can. Spain's
+// front after two weeks (1938, seed 1938) at 1900 m/px: 776, 795, 754, 745 and 782 stand in a
+// line that falls from left to right, each on the next. Along the shorter way every pair of
+// them moved along x, the ends came to the 6 px a box may move, and three pairs were left 26 to
+// 27 % under each other. Each pair apart along the line between the two is within the limit.
+describe('a chain that the shorter way cannot part (PLAN 3.5h)', () => {
+  // The leads within reach of each other there, in px from the corner of their bounds: [id, nation, x, y].
+  const SPAIN: [number, number, number, number][] = [
+    [813, 24, 133.9, 0], [753, 23, 104.5, 11.8], [811, 24, 181.5, 14.1], [815, 24, 154.5, 30.9], [760, 23, 144.2, 41.7], [744, 23, 150.3, 67.9], [799, 24, 178.7, 68.5], [742, 23, 72.1, 68.9],
+    [762, 23, 129.5, 72.1], [775, 23, 19.9, 83], [767, 23, 61.8, 92.1], [747, 23, 123.6, 92.7], [791, 24, 154.5, 98.8], [781, 24, 175.1, 99.7], [785, 24, 91.9, 102.2], [779, 23, 31.2, 102.7],
+    [792, 24, 68.5, 103], [786, 24, 135.7, 104.8], [812, 24, 157.8, 120.3], [788, 24, 72.1, 124.9], [749, 23, 60.9, 134.8], [783, 24, 83.3, 143.2], [745, 23, 51.5, 158], [803, 24, 144.2, 160.5],
+    [777, 23, 0, 161.7], [794, 24, 92, 164.8], [754, 23, 30.9, 167.9], [782, 24, 61.8, 170.5], [795, 24, 17.7, 178], [776, 23, 10.3, 186], [804, 24, 30.9, 216.3],
+  ];
+  const front = SPAIN.map(([id, nation, x, y]) => m(id, nation, x, y, 100));
+  /** The pairs left more than a quarter under each other, and how far the furthest box stands from its formation. */
+  const parted = (items: readonly StackItem[], r: Map<number, [number, number]>): { left: string[]; over: number; far: number } => {
+    const left: string[] = [];
+    let over = 0;
+    for (let i = 0; i < items.length; i++)
+      for (let j = i + 1; j < items.length; j++) {
+        const [a, b] = [items[i]!, items[j]!];
+        const s = shareUnder({ x: a.x + r.get(a.id)![0], y: a.y + r.get(a.id)![1] }, { x: b.x + r.get(b.id)![0], y: b.y + r.get(b.id)![1] }, W, H);
+        if (s > STACK_UNDER) {
+          left.push(`${a.id} and ${b.id}: ${(s * 100).toFixed(1)}%`);
+          over += s - STACK_UNDER;
+        }
+      }
+    return { left, over, far: Math.max(...[...r.values()].map(([dx, dy]) => Math.hypot(dx, dy))) };
+  };
+
+  it("Spain's front at 1900 m/px: no pair is left more than a quarter under each other, no box further than the limit", () => {
+    const got = parted(front, nudgeApart(front, W, H));
+    expect(got.left).toEqual([]);
+    expect(got.far).toBeLessThanOrEqual(NUDGE_MAX_PX + 1e-9);
+  });
+
+  it('boxes far from the chain stand as they did: a pair the shorter way parts moves along x alone', () => {
+    // 815 and 760 of the same front, and the two of the first test of PLAN 2.7s2 beside them.
+    const r = nudgeApart([...front, m(1, 7, 1000, 0, 500), m(2, 8, 1016, 0, 300)], W, H);
+    expect([r.get(1)![1], r.get(2)![1]]).toEqual([0, 0]);
+    expect(r.get(1)![0]).toBeLessThan(0);
+    const alone = nudgeApart([m(815, 24, 154.5, 30.9, 100), m(760, 23, 144.2, 41.7, 100)], W, H);
+    expect(alone.get(815)![1]).toBe(0);
+    expect(alone.get(815)![0]).toBeGreaterThan(0);
+  });
+
+  it('3,000 random clusters: the other way is taken only where it leaves less on each other', () => {
+    const shorter = (items: readonly StackItem[]): Map<number, [number, number]> => partAlong(items, W, H, 'shorter');
+    let s = 3518;
+    const rnd = (): number => ((s = (s * 1664525 + 1013904223) >>> 0), s / 2 ** 32);
+    const worse: string[] = [];
+    let same = 0;
+    let better = 0;
+    let cleared = 0;
+    for (let k = 0; k < 3000; k++) {
+      const n = 2 + Math.floor(rnd() * 7);
+      const items = Array.from({ length: n }, (_, i) => m(i + 1, 1 + Math.floor(rnd() * 3), rnd() * 70, rnd() * 60, 100));
+      const was = shorter(items);
+      const now = nudgeApart(items, W, H);
+      const [a, b] = [parted(items, was), parted(items, now)];
+      expect(b.far).toBeLessThanOrEqual(NUDGE_MAX_PX + 1e-9);
+      if (b.over > a.over) worse.push(`cluster ${k}: ${a.over.toFixed(4)} → ${b.over.toFixed(4)}`);
+      // What the shorter way parts stands as it did.
+      if (a.left.length === 0) {
+        expect(now, `cluster ${k}`).toEqual(was);
+        same++;
+      } else if (b.over < a.over) {
+        better++;
+        if (b.left.length === 0) cleared++;
+      }
+    }
+    expect(worse.slice(0, 3)).toEqual([]);
+    expect(same).toBeGreaterThan(1000);
+    expect(better).toBeGreaterThan(100);
+    expect(cleared).toBeGreaterThan(30);
+  });
+});
+
 describe('the moves come to rest (PLAN 2.7v)', () => {
   /** Frames 16 ms apart with the same markers, as the view draws them: how many until two in a row leave nothing animating (0: never, in `max`). */
   const framesToRest = (items: readonly StackItem[], max = 400): number => {

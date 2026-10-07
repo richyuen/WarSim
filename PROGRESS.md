@@ -7897,3 +7897,41 @@ No rule changed and nothing on screen changed. One task came out of it.
   of seed 1944 that stand out of contact with org at 0 were not looked into; 3.5h and 3.5i
   are as they were.
 - **Next:** PLAN 3.5h (`markerStacks1938`).
+
+## 2026-10-07 — PLAN 3.5h: a chain of markers the shorter way could not part; it is parted along the lines between them
+
+- **Found, before anything was changed** (a scratch spec that wrote the page's leads to a
+  file, since deleted; scripts outside the repo):
+  - `nudgeApart` in Node on the 51 leads of Spain at 1900 m/px gives the spec's three pairs
+    (26.7, 26.2, 26.4 %).
+  - A search over moves of at most 6 px a box parts them all (worst pair 24.8 %), at 1900
+    and at 1800 m/px. So it was the rule, not a scene too crowded for 6 px.
+  - At 1800 m/px the rule left one pair as well (25.6 %); the spec stops at 1900.
+  - The five boxes fall in a line across the screen; each pair's shorter way was along x,
+    and the ends of the chain came to the limit.
+- **Done** (ADR-157, `markerStacks.ts`): `partAlong` (the loop that was, with the way as an
+  argument) and `nudgeApart` over it: a group within reach of each other with a pair left
+  is parted along the lines between the centres instead, if less is left so.
+- **Tried and dropped:** more rounds (two pairs left), the half a box at its limit cannot
+  take to the other (one), the axis that has room (two).
+- **Tests, red first:** `markerStacks.test.ts`, three new (the group of 31 in Spain; boxes
+  far from it as before; 3,000 random clusters: none with more left, those the shorter way
+  parts unchanged). 886 → 889 unit.
+- **Specs by hand** (`--project=chromium`): `markerStacks1938` four of four (1900 and 1800
+  m/px: 0 pairs, 13 boxes off their formations, the furthest 6.0 px), `markers1938`,
+  `cityNames1938`, `handover1938`, `fades1938`: 10 green.
+- **The pictures** (`EVIDENCE=1`, `docs/evidence/2.7/`, the four of the spec shot again;
+  the one at 1900 m/px looked at): Spain's front, the boxes of the two sides beside each
+  other from Burgos to the coast; the crowd east of Madrid is dense and every number of
+  it that I looked for can be read.
+- **Cost:** 2.2 → 3.1 ms for 1,000 leads on a field more crowded than any front, in Node.
+  Not measured in the page.
+- **Learned:**
+  - My first copy of the old rule in the test went through the pairs in another order and
+    gave other moves in the 15th digit and beyond. The old loop is now a function the
+    test calls.
+  - The spec's boxes are not on whole px (`markerRects` has them before the rounding of
+    the drawing), so the replay needs no rounding.
+- **Not done:** the cost in the page; how often a group changes its way in a running game;
+  whether what both ways leave elsewhere could be parted within 6 px; 3.5i is as it was.
+- **Next:** PLAN 3.5i (`declutter1938`), which ticks 3.5 and runs the full e2e.

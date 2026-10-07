@@ -103,19 +103,8 @@ export const NUDGE_MS = 150;
 /** Boxes are moved until neither is under the other by more than this (a little under the quarter, for room). */
 const NUDGE_TO = 0.24;
 
-/**
- * How far each of the shown markers `items` (boxes `w` × `h` at their centres) stands from its
- * formation so that none is more than STACK_UNDER under another: [dx, dy] by id, in px.
- * - A pair that is too much on each other moves apart by half each, along the axis that needs
- *   the shorter move; no box further than NUDGE_MAX_PX from its formation.
- * - Every box starts on its formation, in every call: the same markers give the same moves.
- *   (It started from the moves of the frame before, so that a box kept its move while it
- *   served. Three markers crowded beyond what the limit can part then never came to rest: fed
- *   its own result, the passes below went round a cycle, and the view drew for ever. PLAN 2.7v.)
- *   Where the limit leaves boxes on each other, they are left so.
- */
-export function nudgeApart(items: readonly StackItem[], w: number, h: number): Map<number, [number, number]> {
-  const out = new Map<number, [number, number]>();
+/** The markers that a move of at most NUDGE_MAX_PX each could bring onto each one of `items`, by id. */
+function withinReach(items: readonly StackItem[], w: number, h: number): Map<number, StackItem[]> {
   // By the cell of a grid of boxes, where the formations stand: a box moved by at most
   // NUDGE_MAX_PX can only meet one from its own cell or a neighbouring one.
   const cells = new Map<number, StackItem[]>();
@@ -127,17 +116,31 @@ export function nudgeApart(items: readonly StackItem[], w: number, h: number): M
   }
   const reach = w + 2 * NUDGE_MAX_PX;
   const span = Math.ceil(reach / w);
-  const neighbours = (it: StackItem): StackItem[] => {
-    const near: StackItem[] = [];
-    for (let dx = -span; dx <= span; dx++)
-      for (let dy = -span; dy <= span; dy++) for (const o of cells.get(cellOf(it.x + dx * w, it.y + dy * h)) ?? []) if (o.id !== it.id && Math.abs(o.x - it.x) < reach && Math.abs(o.y - it.y) < h + 2 * NUDGE_MAX_PX) near.push(o);
-    return near;
-  };
   const near = new Map<number, StackItem[]>();
   for (const it of items) {
-    near.set(it.id, neighbours(it));
-    out.set(it.id, [0, 0]);
+    const list: StackItem[] = [];
+    for (let dx = -span; dx <= span; dx++)
+      for (let dy = -span; dy <= span; dy++) for (const o of cells.get(cellOf(it.x + dx * w, it.y + dy * h)) ?? []) if (o.id !== it.id && Math.abs(o.x - it.x) < reach && Math.abs(o.y - it.y) < h + 2 * NUDGE_MAX_PX) list.push(o);
+    near.set(it.id, list);
   }
+  return near;
+}
+
+/**
+ * The way a pair that is too much on each other moves apart.
+ * - `shorter`: along x or along y, whichever needs the shorter move.
+ * - `between`: along the line between the two centres.
+ */
+export type PartingWay = 'shorter' | 'between';
+
+/**
+ * The moves of `items` by one way: every pair that is more than STACK_UNDER on each other moves
+ * apart by half each, to NUDGE_TO; no box further than NUDGE_MAX_PX from its formation. Every
+ * box starts on its formation. `near`: `withinReach` of these items or of more.
+ */
+export function partAlong(items: readonly StackItem[], w: number, h: number, way: PartingWay, near: ReadonlyMap<number, readonly StackItem[]> = withinReach(items, w, h)): Map<number, [number, number]> {
+  const out = new Map<number, [number, number]>();
+  for (const it of items) out.set(it.id, [0, 0]);
   const at = (it: StackItem): { x: number; y: number } => {
     const o = out.get(it.id)!;
     return { x: it.x + o[0], y: it.y + o[1] };
@@ -160,23 +163,92 @@ export function nudgeApart(items: readonly StackItem[], w: number, h: number): M
         const ox = w - Math.abs(pa.x - pb.x);
         const oy = h - Math.abs(pa.y - pb.y);
         const area = NUDGE_TO * w * h;
-        const needX = ox - area / oy;
-        const needY = oy - area / ox;
         const [oa, ob] = [out.get(a.id)!, out.get(b.id)!];
-        if (needX <= needY) {
-          const s = pa.x < pb.x || (pa.x === pb.x && a.id < b.id) ? -1 : 1;
-          oa[0] += (s * needX) / 2;
-          ob[0] -= (s * needX) / 2;
+        const sx = pa.x < pb.x || (pa.x === pb.x && a.id < b.id) ? -1 : 1;
+        const sy = pa.y < pb.y || (pa.y === pb.y && a.id < b.id) ? -1 : 1;
+        if (way === 'shorter') {
+          const needX = ox - area / oy;
+          const needY = oy - area / ox;
+          if (needX <= needY) {
+            oa[0] += (sx * needX) / 2;
+            ob[0] -= (sx * needX) / 2;
+          } else {
+            oa[1] += (sy * needY) / 2;
+            ob[1] -= (sy * needY) / 2;
+          }
         } else {
-          const s = pa.y < pb.y || (pa.y === pb.y && a.id < b.id) ? -1 : 1;
-          oa[1] += (s * needY) / 2;
-          ob[1] -= (s * needY) / 2;
+          // The step t along the unit vector (ux, uy) between the centres (two on one spot:
+          // along x) that leaves `area` under: (ox − t ux)(oy − t uy) = area, the lesser root.
+          const len = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+          const ux = len > 0 ? Math.abs(pa.x - pb.x) / len : 1;
+          const uy = len > 0 ? Math.abs(pa.y - pb.y) / len : 0;
+          const qa = ux * uy;
+          const qb = ox * uy + oy * ux;
+          const qc = ox * oy - area;
+          const t = qa < 1e-9 ? qc / qb : (qb - Math.sqrt(qb * qb - 4 * qa * qc)) / (2 * qa);
+          oa[0] += (sx * t * ux) / 2;
+          ob[0] -= (sx * t * ux) / 2;
+          oa[1] += (sy * t * uy) / 2;
+          ob[1] -= (sy * t * uy) / 2;
         }
         clamp(oa);
         clamp(ob);
       }
     }
     if (!any) break;
+  }
+  return out;
+}
+
+/**
+ * How far each of the shown markers `items` (boxes `w` × `h` at their centres) stands from its
+ * formation so that none is more than STACK_UNDER under another: [dx, dy] by id, in px.
+ * - A pair that is too much on each other moves apart by half each, along the axis that needs
+ *   the shorter move; no box further than NUDGE_MAX_PX from its formation.
+ * - Every box starts on its formation, in every call: the same markers give the same moves.
+ *   (It started from the moves of the frame before, so that a box kept its move while it
+ *   served. Three markers crowded beyond what the limit can part then never came to rest: fed
+ *   its own result, the passes below went round a cycle, and the view drew for ever. PLAN 2.7v.)
+ *   Where the limit leaves boxes on each other, they are left so.
+ * - Where the shorter way leaves boxes on each other, the group of markers within reach of
+ *   each other that they are in is parted along the lines between the centres instead, if
+ *   that leaves less on each other (PLAN 3.5h). A chain of boxes that falls across the screen
+ *   moved along x alone, pair by pair, until its ends stood at the limit with pairs in its
+ *   middle still on each other; along the lines between them each box uses its 6 px both ways.
+ *   The groups the shorter way parts stand as before.
+ */
+export function nudgeApart(items: readonly StackItem[], w: number, h: number): Map<number, [number, number]> {
+  const near = withinReach(items, w, h);
+  const out = partAlong(items, w, h, 'shorter', near);
+  /** By how much the pairs among `group` are over the quarter, summed, with the moves `moves`. */
+  const over = (group: readonly StackItem[], moves: Map<number, [number, number]>): number => {
+    let sum = 0;
+    for (const a of group) {
+      const oa = moves.get(a.id)!;
+      for (const b of near.get(a.id)!) {
+        if (b.id < a.id) continue;
+        const ob = moves.get(b.id)!;
+        sum += Math.max(0, shareUnder({ x: a.x + oa[0], y: a.y + oa[1] }, { x: b.x + ob[0], y: b.y + ob[1] }, w, h) - STACK_UNDER);
+      }
+    }
+    return sum;
+  };
+  const seen = new Set<number>();
+  for (const first of items) {
+    if (seen.has(first.id) || over([first], out) === 0) continue;
+    // The group: every marker within reach of one in it. No move outside it can touch it.
+    const group = [first];
+    seen.add(first.id);
+    for (let i = 0; i < group.length; i++)
+      for (const o of near.get(group[i]!.id)!)
+        if (!seen.has(o.id)) {
+          seen.add(o.id);
+          group.push(o);
+        }
+    // By id: the same markers give the same moves, however the group was found.
+    group.sort((a, b) => a.id - b.id);
+    const other = partAlong(group, w, h, 'between', near);
+    if (over(group, other) < over(group, out)) for (const it of group) out.set(it.id, other.get(it.id)!);
   }
   return out;
 }

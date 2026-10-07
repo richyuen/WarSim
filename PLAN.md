@@ -3590,11 +3590,34 @@ quick sweep as a smoke test.
     - *Seen, not changed:* at 150 m/px the tags of the three divisions in contact lie on
       each other and on the sprites (stop 5). Not 3.5h's (markers at 1900 m/px): a line
       under PLAN 7.4. Whether the tags at T2 are parted at all was not looked at.
-  - [ ] 3.5h **`markerStacks1938`: at 1900 m/px three pairs of markers lie more than a
+  - [x] 3.5h **`markerStacks1938`: at 1900 m/px three pairs of markers lie more than a
     quarter under each other** (Spain: 745, 754 and 776 of nation 23, 795 of nation 24, 26
     and 27 %). Either the scene moved (more formations on one spot than the parting can
     part within 6 px) or the parting has a case it does not handle (a chain of three). Say
     which before anything is changed; no expectation is loosened.
+    **Done 2026-10-07 (ADR-157): the parting had a case it did not handle, a chain of five.**
+    - *Found, before anything was changed:* the page's 51 leads at 1900 m/px, replayed in
+      Node, give the spec's three pairs (26.7, 26.2 and 26.4 %). A search over moves of at
+      most 6 px a box (400 starts, descent) parts all of them, the worst pair 24.8 % under;
+      so 6 px is enough here. At 1800 m/px the rule left one pair too (745 and 754, 25.6 %),
+      which the spec never came to: it stops at the first zoom that fails.
+    - *Cause:* 776, 795, 754, 745 and 782 stand in a line that falls across the screen,
+      each on the next. Every pair of them moved along x (the shorter way for each), 776
+      came to its 6 px and 754 to 5.5, and the pairs in the middle were left. Not the
+      number of rounds (32 and 200 leave two pairs) and not the half a box at its limit
+      cannot take (handing it to the other leaves one).
+    - *Fix* (`markerStacks.ts`): where the shorter way leaves boxes on each other, the group
+      of markers within reach of each other is parted along the lines between the centres
+      instead, if that leaves less on each other. Groups the shorter way parts stand as
+      they did.
+    - *Tests, red first:* `markerStacks.test.ts`, "a chain that the shorter way cannot
+      part": the 31 leads of that group in Spain (received the three pairs); 3,000 random
+      clusters, none with more left than the shorter way leaves, those it parts unchanged.
+      25 → 28. The spec green as written, four of four; `docs/evidence/2.7/` shot again and
+      the picture at 1900 m/px looked at.
+    - *Not done:* the search found a parting in this one scene; how many scenes the two
+      ways together still leave that 6 px could part was not counted. In the random
+      clusters most of what the shorter way leaves is left by the other way too.
   - [ ] 3.5i **`declutter1938`: after one year, at 8 px per cell, 20 counters where the
     zoom before had 21 at the same level of clusters.** A zoom in must not show fewer
     counters at one level. The scene moved; whether the rule of ADR-75 has a hole is what

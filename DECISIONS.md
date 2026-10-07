@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-157 · 2026-10-07 · accepted — A group of markers the shorter way cannot part is parted along the lines between them (PLAN 3.5h)
+
+- **Context:** `markerStacks1938`, the second test (no T1 marker more than a quarter under
+  another, no box further than 6 px from its formation), failed at 1900 m/px on Spain's
+  front after two weeks since PLAN 3.5: 745 and 754 at 27 %, 754 and 795 at 26 %, 795 and
+  776 at 26 %. PLAN asked which it was before anything changed: a scene the 6 px cannot
+  part, or a case the parting does not handle.
+- **Found** (a scratch spec that wrote the page's 51 leads to a file, and scripts in Node):
+  - `nudgeApart` on those leads gives the spec's pairs: 26.7, 26.2 and 26.4 %.
+  - A search over moves of at most 6 px (400 random starts, each 4,000 steps of descent on
+    what is over the quarter) leaves no pair over it at 1900 m/px and none at 1800: the
+    worst 24.8 %. The scene can be parted.
+  - At 1800 m/px `nudgeApart` left 745 and 754 at 25.6 %. The spec stops at 1900.
+  - The five boxes 776, 795, 754, 745 and 782 stand in a line from the lower left to the
+    upper right, 8 to 13 px apart in y. For each pair the shorter move is along x: every
+    move of the chain was along x, 776 stood at −6.00 and 754 at +5.45, and nothing was
+    left to give.
+- **Tried on the scene and on 3,000 random clusters of 2 to 8** (pairs left at 1900 m/px;
+  clusters of the 3,000 with a pair left):
+  - as it was, 8 rounds: 3; 1,420
+  - 32 rounds: 2; 1,391 (200 rounds: the same two)
+  - what a box at its limit cannot take goes to the other, 32 rounds: 1; 1,392
+  - the axis with room left for the move, 32 rounds: 2; 1,398
+  - along the line between the centres, 8 rounds: 0; 1,261
+- **Decision:** both ways, the old one first. `partAlong(items, way)` is the loop that was
+  `nudgeApart`, with the way a pair moves as its argument: `shorter` (along x or y) or
+  `between` (along the line between the two centres, by the step that leaves 24 % under).
+  `nudgeApart` parts all by the shorter way; a group of markers within reach of each other
+  (26 + 12 px by 29 + 12 px) in which a pair is left is parted again by the other way, from
+  the formations, and takes those moves if the sum of what is over the quarter is less.
+- **Why not the line between the centres for all:** it leaves fewer pairs, but it would move
+  every parted box of every scene (the pictures, the city names placed against the boxes),
+  and it was not shown never to leave more than the shorter way. This way no group has
+  more left than before, by the rule itself, and the test counts it.
+- **Not changed:** no expectation of the spec; `NUDGE_MAX_PX`, the quarter, the 8 rounds.
+  Where the boxes stand is still a function of where the formations stand (PLAN 2.7v): the
+  tests of rest pass as written.
+- **Cost:** a group with a pair left is parted twice. On fields more crowded than any
+  front (every lead in a cluster of up to 8 on 60 px): 2.2 → 3.1 ms for 1,000 leads and
+  6.7 → 10.3 ms for 3,000, in Node. Not measured in the page: the 1938 world has 1,054
+  formations and fewer leads.
+- **Consequences:** a group changes its way when an army's step leaves or clears a pair:
+  its boxes then ease to the new places over 150 ms, as for any move. How often that
+  happens in a running game was not counted.
+- **Not known:** how many scenes both ways leave that 6 px could part. In the random
+  clusters the other way cleared some of what the shorter way left and left most of it;
+  whether those can be parted at all was not searched.
+
 ### ADR-156 · 2026-10-07 · accepted — The zoom demo's battle is seed 1948's (PLAN 3.5g)
 
 - **Context:** `zoomDemo1938` chooses its battle in Node: of the divisions that fire in the
