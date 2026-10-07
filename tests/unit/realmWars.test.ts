@@ -4,6 +4,7 @@ import { EventKind } from '../../src/shared/events';
 import { isDayStart } from '../../src/shared/calendar';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { canJoin, noWarAmong } from '../../src/sim/systems/alliances';
 import { annexNation, makePuppet } from '../../src/sim/systems/puppets';
 import { declareWar, whyNotWar } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
@@ -148,6 +149,54 @@ describe('no war inside one realm or one alliance (PLAN 3.8)', () => {
     expect(controller[inAlb]).toBe(ALB);
     expect(controller[inFra]).toBe(FRA);
     expect(controller[inPor]).toBe(ALB);
+  });
+
+  // PLAN 3.8d3: an alliance ties its members' puppets too (`bond`). The rules asked only whether
+  // the nations named were at war with each other.
+  it('nobody joins or founds an alliance while its realm is at war with the realm of a member', () => {
+    const [POR, SWI, SWE] = ['POR', 'SWI', 'SWE'].map(nationId) as [number, number, number];
+    const rejected = (s: Sim, cmd: Command): number => {
+      s.command(cmd);
+      return runEvents(s, 1).filter((e) => e[1] === EventKind.AllianceRejected).length;
+    };
+    const free = (w: Sim['world']): void => {
+      for (const n of [POR, SWI, SWE]) expect(w.alliances.allianceOf(n) === undefined && w.nations.cols.overlord[n] === 0, tag(n)).toBe(true);
+    };
+    // The joiner is at war with a member's puppet: Portugal with French West Africa.
+    let s = world1938(5);
+    let w = s.world;
+    free(w);
+    const entente = w.alliances.allianceOf(FRA)!;
+    w.wars.start([POR], [AOF], w.tick);
+    expect(canJoin(w, POR, entente)).toBe(false);
+    expect(canJoin(w, SWI, entente)).toBe(true);
+    expect(refused(s, { kind: 'joinAlliance', nation: POR, alliance: entente.id })).toEqual([Refusal.AtWar]);
+    expect(rejected(s, { kind: 'proposeAlliance', from: FRA, to: POR })).toBe(1);
+    expect(w.alliances.allianceOf(POR)).toBeUndefined();
+    expect(realmWars(w, tag)).toEqual([]);
+    // A puppet of the joiner is at war with a member: Switzerland, of Portugal, with France.
+    s = world1938(5);
+    w = s.world;
+    w.wars.start([SWI], [FRA], w.tick);
+    expect(makePuppet(w, POR, SWI, 30)).toBe(true);
+    expect(w.wars.atWar(SWI, FRA)).toBe(true);
+    expect(canJoin(w, POR, w.alliances.allianceOf(FRA)!)).toBe(false);
+    expect(refused(s, { kind: 'joinAlliance', nation: POR, alliance: w.alliances.allianceOf(FRA)!.id })).toEqual([Refusal.AtWar]);
+    expect(rejected(s, { kind: 'proposeAlliance', from: ENG, to: POR })).toBe(1);
+    expect(w.alliances.allianceOf(POR)).toBeUndefined();
+    expect(realmWars(w, tag)).toEqual([]);
+    // Founders: Sweden is at war with Switzerland, a puppet of Portugal.
+    s = world1938(5);
+    w = s.world;
+    expect(makePuppet(w, POR, SWI, 30)).toBe(true);
+    w.wars.start([SWE], [SWI], w.tick);
+    expect(noWarAmong(w, [POR, SWE])).toBe(false);
+    expect(noWarAmong(w, [POR, nationId('NOR')])).toBe(true);
+    expect(refused(s, { kind: 'createAlliance', leader: POR, members: [SWE], nameKey: 'alliance.defensive' })).toEqual([Refusal.AtWar]);
+    expect(rejected(s, { kind: 'proposeAlliance', from: POR, to: SWE })).toBe(1);
+    expect(rejected(s, { kind: 'proposeAlliance', from: SWE, to: POR })).toBe(1);
+    expect(w.alliances.allied(POR, SWE)).toBe(false);
+    expect(realmWars(w, tag)).toEqual([]);
   });
 
   it('God Mode is told why', () => {

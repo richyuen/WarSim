@@ -1,19 +1,23 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { expect } from 'vitest';
-import { isMonthStart } from '../../src/shared/calendar';
+import { isDayStart, isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
 import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../../src/shared/flagPixels';
 import { foundedName, provinceLabel } from '../../src/shared/nationNames';
-import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { NATIONS_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { deadLand } from './deadLand';
 import { assets1938, earthAdmin1 } from './earth';
+import { realmWars } from './realmWars';
 import { strayNaN } from './stateNumbers';
 
 /**
  * PLAN 1.24 AT: a 10-year 1938 run on `seed` has ≥ 3 wars, ≥ 1 peace, ≥ 1 alliance change; and,
  * at every year end, no two members of one alliance are at war.
+ *
+ * PLAN 3.8 AT (the critic's R3-B4): on every day of those years no two nations at war share an
+ * alliance or an overlord, nor are they of allied realms (`realmWars`).
  *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
@@ -24,6 +28,7 @@ export function aiSweep(seed: number): void {
   const names = Object.fromEntries(Object.entries(EventKind).map(([k, v]) => [v, k]));
   const yearly: Record<string, number>[] = [];
   const t0 = performance.now();
+  const tag = (n: number): string => TAGS_1938[n - 1] ?? `nation ${n}`;
   // The game as it is saved at the end of year 9 (PLAN 2.12): loaded below, it must end year 10
   // as this game does.
   let saved: Uint8Array | null = null;
@@ -39,6 +44,8 @@ export function aiSweep(seed: number): void {
       }
       ev.length = 0;
       w.out.fires.length = 0;
+      // PLAN 3.8: on every day no two nations of one realm or of allied realms are at war.
+      if (isDayStart(w.tick)) expect(realmWars(w, tag), `seed ${seed}, day ${w.tick / 24}: wars inside a realm or an alliance`).toEqual([]);
       // PLAN 2.16Rf: at every month's end no cell has a dead nation as its owner or its controller.
       if (isMonthStart(w.startDay, w.tick)) expect(deadLand(w), `seed ${seed}, tick ${w.tick}: land of the dead`).toEqual([]);
     });

@@ -4307,7 +4307,7 @@ quick sweep as a smoke test.
     every day (seed 3301, day 822, `POL -> EST`: attackers POL, GER, ITA, AUT, HUN, JAP;
     defenders EST, LAT, LIT, Latvia a puppet of Germany; day 1084, `GER` on a founded
     nation: Hungary, a puppet of Italy since day 634, among the defenders against Italy).
-  - [ ] 3.8d **Split 2026-10-07** (the probe found two causes in seed 1, and `canJoin` is a
+  - [x] 3.8d **Split 2026-10-07** (the probe found two causes in seed 1, and `canJoin` is a
     third; ADR-180). Its text as it was follows the parts.
     - [x] 3.8d1 *Done 2026-10-07 (ADR-180):* a nation made a puppet leaves, with its puppets,
       the wars in which it stands against a nation it now has a bond with
@@ -4322,7 +4322,12 @@ quick sweep as a smoke test.
       annexer's realm or allies. Seed 1, day 300: Poland annexes Hungary; Albania, Hungary's
       puppet, defends war 35 against Italy, Germany, Latvia and Japan, Poland's allies.
       AT: a unit test of that case; seed 1 to day 305 in `realmWarsDays`.
-    - [ ] 3.8d3 Joining or founding an alliance (`canJoin`, `noWarAmong`, `proposeAlliance`,
+    - [x] 3.8d3 *Done 2026-10-07 (ADR-182):* `noWarAmong`, `canJoin`, `proposeAlliance` and the
+      AI's pact against a threat ask `realmsAtWar` (each nation with its puppets).
+      `tests/unit/realmWars.test.ts` (failed first); `tests/helpers/aiSweep.ts` asserts
+      `realmWars` empty on every day of the ten-year games of seeds 1, 2 and 3: they found
+      nothing. The pin did not move. As it was:
+      Joining or founding an alliance (`canJoin`, `noWarAmong`, `proposeAlliance`,
       the AI's `al.create`): refused when the joiner or a puppet of it is at war with a
       member or a member's puppet. Not seen in a game: a unit test on a world built by hand.
       Then the AT of 3.8d: `realmWars(world)` empty on every day of the ten-year games of

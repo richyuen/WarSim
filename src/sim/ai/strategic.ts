@@ -166,7 +166,7 @@ export function strategicAi(world: World): void {
         const join = options.sort((a, b) => b!.members.reduce((s, m) => s + str[m]!, 0) - a!.members.reduce((s, m) => s + str[m]!, 0) || a!.id - b!.id)[0];
         if (join && al.join(n, join)) world.out.emit(world.tick, EventKind.AllianceJoined, n, join.id, NaN, NaN);
         else {
-          const partner = [...(nb.get(threat) ?? [])].sort((a, b) => a - b).find((m) => m !== n && nc.living[m] === 1 && !al.allianceOf(m) && nc.overlord[m] === 0 && !world.wars.atWar(n, m));
+          const partner = [...(nb.get(threat) ?? [])].sort((a, b) => a - b).find((m) => m !== n && nc.living[m] === 1 && !al.allianceOf(m) && nc.overlord[m] === 0 && noWarAmong(world, [n, m]));
           const a = partner !== undefined ? al.create(n, [partner], 'alliance.defensive', 40) : null;
           if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
         }

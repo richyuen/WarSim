@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-182 · 2026-10-07 · accepted — Nobody joins or founds an alliance while its realm is at war with the realm of a member (PLAN 3.8d3)
+
+- **Context.** The third cause named in ADR-180, read in the code and not seen in a game.
+  An alliance ties each member and its puppets to each other member and its puppets
+  (`bond`: `Allied`, `AlliedRealm`). `canJoin` and `noWarAmong` asked only whether the
+  nations named were at war with each other; the found-a-pact branch of `proposeAlliance`
+  and the AI's pact against a threat (`ai/strategic.ts`) each had a bare `atWar` of their
+  own. So Portugal, at war with French West Africa, could join the alliance France is in.
+- **Decision.** `realmsAtWar(world, a, b)` (`systems/war.ts`): whether a or a puppet of it
+  is at war with b or a puppet of it. `noWarAmong` and `canJoin` ask it for each pair, and
+  the two bare checks now go through `noWarAmong`. The refusal stays `Refusal.AtWar` for
+  God Mode's `createAlliance` and `joinAlliance`, and `AllianceRejected` for an offer.
+  Refused, not joined with the wars ended as in ADR-180: an alliance is a choice of the
+  joiner, which can make peace first; an overlord is not.
+- **Not changed.** A joiner that is itself a puppet (ADR-179 allows it): its overlord's
+  wars are not looked at, as `bond` does not tie the overlord to the alliance through it.
+  An overlord's own overlord is not looked at.
+- **Evidence.** `tests/unit/realmWars.test.ts`, "nobody joins or founds an alliance…":
+  the joiner at war with a member's puppet, a puppet of the joiner at war with a member,
+  two founders of whom one fights the other's puppet; by `canJoin`, `noWarAmong`, the
+  commands `joinAlliance`, `createAlliance` and `proposeAlliance` both ways. It failed
+  first at `canJoin`. The AI's pact against a threat has no test of its own.
+  The AT of PLAN 3.8: `tests/helpers/aiSweep.ts` asserts `realmWars` empty on every day of
+  the ten-year games of seeds 1, 2 and 3. It passed on its first run, with this rule in:
+  whether it would have failed without the rule was not run.
+- **The pin:** unchanged (`ed82d7f8`).
+
 ### ADR-181 · 2026-10-07 · accepted — A puppet handed to an annexer leaves the wars it fights against the annexer's realm and allies (PLAN 3.8d2)
 
 - **Context.** The second case of ADR-180. Seed 1, day 300: Poland annexes Hungary at a

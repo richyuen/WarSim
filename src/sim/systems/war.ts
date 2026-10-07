@@ -88,6 +88,16 @@ function withPuppets(world: World, leader: number): number[] {
   return out;
 }
 
+/**
+ * Whether a nation of a's realm (a and its puppets) is at war with one of b's. An alliance of
+ * a and b would tie each of the one to each of the other (`bond`), so they do not ally then
+ * (PLAN 3.8d3).
+ */
+export function realmsAtWar(world: World, a: number, b: number): boolean {
+  const rb = withPuppets(world, b);
+  return withPuppets(world, a).some((x) => rb.some((y) => world.wars.atWar(x, y)));
+}
+
 /** Why `attacker` may not declare war on `defender`; `Refusal.None` when it may (PLAN 2.17a). */
 export function whyNotWar(world: World, attacker: number, defender: number): Refusal {
   const nc = world.nations.cols;

@@ -563,7 +563,7 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     Within a step they are asked in the order of the call, against those of the other side
     let stand so far: of two torn by each other alone, the one called first fights. The two
     leaders always stand. A nation that gets an overlord while at war leaves the wars against
-    its new realm (ADR-180, ADR-181); one that joins an alliance is not yet held to it (PLAN 3.8d3).
+    its new realm (ADR-180, ADR-181); nobody joins or founds an alliance while it or a puppet of it is at war with a member or a member's puppet (`realmsAtWar`, ADR-182).
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against

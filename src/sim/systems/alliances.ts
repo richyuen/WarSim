@@ -11,6 +11,7 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import type { Alliance } from '../alliances';
 import type { World } from '../world';
+import { realmsAtWar } from './war';
 
 export const SHARED_WAR_UNITY = 3;
 export const MEMBER_UNITY = 0.25;
@@ -46,21 +47,25 @@ export function allianceSystem(world: World): void {
 /** Removes `n` from its alliance with events (also the command path). */
 /**
  * Player alliance proposal (PLAN 1.33b): `to` accepts when it is in no alliance, is no puppet and
- * is not at war with `from`. It then joins `from`'s alliance, or both found a defensive pact.
+ * is not at war with `from` (nor is the realm of one with the realm of the other). It then joins `from`'s alliance, or both found a defensive pact.
  * Otherwise `AllianceRejected`.
  */
 /**
  * Whether nations `ids` may share an alliance: no two of them at war (review in PLAN 1.34a: the
- * AI joined the alliance of a neighbour it was fighting, so allies were at war with each other).
+ * AI joined the alliance of a neighbour it was fighting, so allies were at war with each other),
+ * and no puppet of one with another or its puppet (PLAN 3.8d3).
  */
 export function noWarAmong(world: World, ids: readonly number[]): boolean {
-  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) if (world.wars.atWar(ids[i]!, ids[j]!)) return false;
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) if (realmsAtWar(world, ids[i]!, ids[j]!)) return false;
   return true;
 }
 
-/** Whether `n` may join alliance `a`: in none yet and at war with none of its members. */
+/**
+ * Whether `n` may join alliance `a`: in none yet, and neither it nor a puppet of it at war with
+ * a member or a member's puppet.
+ */
 export function canJoin(world: World, n: number, a: Alliance): boolean {
-  return world.alliances.allianceOf(n) === undefined && !a.members.some((m) => world.wars.atWar(n, m));
+  return world.alliances.allianceOf(n) === undefined && !a.members.some((m) => realmsAtWar(world, n, m));
 }
 
 export function proposeAlliance(world: World, from: number, to: number): boolean {
@@ -74,7 +79,7 @@ export function proposeAlliance(world: World, from: number, to: number): boolean
     nc.living[to] === 1 &&
     al.allianceOf(to) === undefined &&
     nc.overlord[to] === 0 &&
-    !world.wars.atWar(from, to);
+    noWarAmong(world, [from, to]);
   const own = ok ? al.allianceOf(from) : undefined;
   const joined = !ok ? null : own ? (canJoin(world, to, own) && al.join(to, own) ? own : null) : al.create(from, [to], 'alliance.defensive', 50);
   if (!joined) {

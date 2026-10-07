@@ -8927,3 +8927,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   sweep tests, build, parity. No e2e (a part; no spec changed). The gate ran while the probe
   ran beside it.
 - **Next:** PLAN 3.8d3.
+
+## 2026-10-07 — PLAN 3.8d3: nobody joins or founds an alliance while its realm fights a member's (ADR-182); 3.8d closed
+
+- **Done:** `realmsAtWar` (`systems/war.ts`): a or a puppet of it at war with b or a puppet
+  of it. `noWarAmong` and `canJoin` ask it; `proposeAlliance`'s found-a-pact branch and the
+  AI's pact against a threat (`ai/strategic.ts`) had a bare `atWar` each and now go through
+  `noWarAmong`. God Mode's `createAlliance` and `joinAlliance` and the coalition inherit it.
+- **Test, failed first:** `tests/unit/realmWars.test.ts`, "nobody joins or founds an
+  alliance…" (at `canJoin`: Portugal, at war with French West Africa, could join France's
+  alliance).
+- **The AT of 3.8:** `tests/helpers/aiSweep.ts` asserts `realmWars` empty on every day of
+  the ten-year games (seeds 1, 2, 3). It passed on its first run: no new case of 3.8d.
+  It was not run without the rule, so it is not known whether the rule is what keeps it
+  empty. The yearly test of allies at war stays.
+- **The pin:** did not move (`ed82d7f8`).
+- **Time:** the sweep stage alone, 413 s with the daily `realmWars` (its time before was
+  not measured in this iteration).
+- **Not done:** the AI's pact against a threat has no test of its own. A joiner that is a
+  puppet: its overlord's wars are not looked at (`bond` does not tie them). No picture:
+  nothing drawn changed, the browser was not opened. The tick was not timed (the check
+  runs when an alliance is asked for).
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 970 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part; no spec changed).
+- **Next:** PLAN 3.8e.
