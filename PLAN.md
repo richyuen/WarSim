@@ -3530,7 +3530,7 @@ quick sweep as a smoke test.
   31. Not risen: the Soviet Union (22.3 and 14.8 % for 28.0 and 15.1), Italy on seed 99
   (1.6 %), France on seed 99 (dead in year 5). 3.5 is ticked by the last of the parts below,
   with the full e2e green.
-  - [ ] 3.5f **A continued game does not go as the saved one** (`workerNodeGrowth1938`, the
+  - [x] 3.5f **A continued game does not go as the saved one** (`workerNodeGrowth1938`, the
     full e2e of 3.5e, 2026-10-07). Two days after the page loads a save of a game with
     nations founded since the start, the worker's hash is 1248060285 and Node's 1796785913.
     A desync or a save that lacks a part of the state: the first of the four, and a defect,
@@ -3545,6 +3545,30 @@ quick sweep as a smoke test.
     and `2617f3d` (3.5d) fails. The failure's trace is in `test-results/` (not committed).
     AT: unit, failing first, in Node (save, load, step: the hash of the game that went on);
     the spec green as written.
+    **Done 2026-10-07 (ADR-155). It was not the save, and not a part of 3.5.**
+    - *Found:* in Node the continued game is the saved one (the same process and a fresh
+      one: hash 1796785913 both). The page leaves Node at tick 73 without any save, in the
+      game with the revolts and not in the game without. At tick 73 the page's save and
+      Node's state are the same number for number and differ in eight bytes: one NaN of
+      `history.rows`, the winner of a `PeaceSigned` row of tick 72.
+    - *Cause:* `warSystem` judges the wars of the day's start. The peace of one annexed
+      nation 51, the one member of a side of a later war; `Wars.endAllOf` took that war
+      from the records, and the loop judged it still and made a peace of it (by which of its
+      tests was not looked at); `makePeace` signed for `W[0]`, which is `undefined`. A `Float64Array` takes
+      `undefined` as a NaN, with other bits in Chromium than in Node. In the code since
+      PLAN 1.40 (`35197e2`, the annexation of a small loser at a peace); `8fe6ef0` (3.5b) is where this game
+      first came to it (the bisect: `d2549ce` passes, `8fe6ef0` and `6eca872` fail).
+    - *Fix* (`systems/war.ts`): a war that is no longer in the records is not judged. Gone
+      with it: the peace event and history row signed by nobody, and a truce of nobody
+      with the war's other leader.
+    - *Tests, red first:* `war.test.ts` (Germany's peace annexes Finland while the Soviet
+      Union is at war with it: one peace, not two) and `continuedGrowth1938.test.ts` (the
+      spec's game in Node: continued as saved, and every number of the history a number;
+      it named row 201, tick 72, field 2). The spec green as written. The pin did not move.
+    - *Not done:* nothing stops another `undefined` or NaN out of arithmetic from being
+      written to the history or a table (SPEC §2 says none may be); the test looks at the
+      history of one game of 78 hours. Whether a peace of a war with an empty side was
+      signed in the sweeps of before was not counted.
   - [ ] 3.5g **`zoomDemo1938`: the battalions at the last stops are not under half strength**
     (0.758 of its size for the fullest; the spec asks under 0.5). The battle the demo flies
     to is another than the one of 3.5a's game, where the spec passed; which part moved it

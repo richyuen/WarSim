@@ -365,6 +365,35 @@ describe('wars and peace (PLAN 1.16)', () => {
     for (const c of bra.left) expect(bra.w.cells.owner[c]).toBe(BRA);
   }, 60_000);
 
+  // PLAN 3.5f: the peace of one war annexed Finland, the one member of a side of a later war of
+  // the same day. That war was gone from the records, and the day's loop, which goes by the list
+  // of the day's start, made a peace of it: signed by nobody, a truce with nobody, and in the
+  // history a row whose winner is `undefined`, a NaN with the bits of whoever converts it
+  // (Chromium's are not Node's: the worker's state hash left Node's there).
+  it('a war that ended with the peace of another the same day is not judged: no peace signed by nobody', () => {
+    const s = duel(GER, FIN);
+    const w = s.world;
+    w.alliances.leave(SOV);
+    w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== SOV && g.target !== SOV);
+    w.nations.forEach((n) => {
+      if (w.nations.cols.overlord[n] === SOV) w.nations.cols.overlord[n] = 0;
+    });
+    s.command({ kind: 'declareWar', attacker: SOV, defender: FIN });
+    s.step(24);
+    // Germany's war is judged before the Soviet one.
+    expect(w.wars.list.filter((x) => x.sides[1].includes(FIN)).map((x) => x.sides)).toEqual([[[GER], [FIN]], [[SOV], [FIN]]]);
+    // Finland around Helsinki, a part of it German, broke: it sues, and is annexed whole.
+    const kept = shrinkToCapital(w, FIN, 60);
+    for (const c of kept.slice(48)) w.setController(c, GER);
+    w.nations.cols.gold[FIN] = -1e9;
+    const rows = w.history.rows.length;
+    expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, FIN]]);
+    expect(w.nations.cols.living[FIN]).toBe(0);
+    expect(w.wars.list.filter((x) => x.sides.some((side) => side.length === 0 || side.includes(FIN)))).toEqual([]);
+    expect(w.wars.truces.filter((t) => t.b === FIN).map((t) => [t.a, t.b])).toEqual([[GER, FIN]]);
+    expect(w.history.rows.slice(rows).filter((v) => v === undefined)).toEqual([]);
+  }, 60_000);
+
   it('capitulation: an overrun side loses at once, even when it fights to the death', () => {
     const s = atWar();
     s.step(1);

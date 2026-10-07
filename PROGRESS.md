@@ -7832,3 +7832,36 @@ No rule changed and nothing on screen changed. One task came out of it.
   `provinces.perf.spec.ts`, the one test of the `perf` project, which runs only after a
   green `chromium` project. No result for it on this code. PLAN 3.5f has the commits to
   bisect by.
+
+## 2026-10-07 — PLAN 3.5f: the page left Node at a peace signed by nobody, not at a save
+
+- **Found, in this order:**
+  - The spec's game in Node, saved and loaded: the continued game is the saved one (in
+    one process and in a fresh one, hash 1796785913 both). So not a state the save lacks.
+  - The spec on `d2549ce` (3.5a1) passes; on `8fe6ef0` (3.5b) and `6eca872` (3.5c) it fails.
+  - A probe spec, hour by hour: the continued page leaves Node at tick 73, with the
+    revolts after the load and without them; a page that never saved leaves at tick 73
+    too; a page with no revolts goes as Node for 200 hours.
+  - The page's save of tick 73 against Node's state, byte by byte: eight bytes of
+    `history.rows`, the number 1082 (row 180, the winner of a `PeaceSigned` of tick 72),
+    NaN on both sides. In Node the row reads `72 14 undefined 110`.
+- **Cause and fix** (ADR-155, `systems/war.ts`, three lines): the war system judged a war
+  that the peace of an earlier war of the same day had ended (its side's one member, nation
+  51, annexed). It is skipped now. 3.5b did not make the defect; it made the game that met it.
+- **Tests, red first:** `war.test.ts`, "no peace signed by nobody" (received `[[1, 9], [10,
+  undefined]]`); `continuedGrowth1938.test.ts` (received "row 201 (tick 72, kind 14), field
+  2: undefined"). 884 → 886 unit. The pin stands (`baselineHash` passed before the gate).
+- **Specs by hand** (`--project=chromium`): `workerNodeGrowth1938`, green as written.
+- **Learned:**
+  - PLAN's title for this part ("a continued game does not go as the saved one") named
+    the place the spec stood when it failed, and its four suspects were all of 3.5. One
+    Node test of four seconds ruled the save out; the byte diff of the two states named
+    the number.
+  - Two states that are equal number for number can have two hashes: compare bytes.
+  - The spec compares the worker to Node for 30 hours before its save and 48 after. The
+    desync was at hour 73 of a game with 130 nations and had nothing to do with the load.
+- **Not done:** no guard against the next `undefined` in the history or a table; how often
+  a peace was signed for an empty side in a long game was not counted; the other three
+  failures (3.5g to 3.5i) are as they were, and their games have not been looked at for
+  this cause.
+- **Next:** PLAN 3.5g (`zoomDemo1938`).

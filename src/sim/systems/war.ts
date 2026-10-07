@@ -170,6 +170,9 @@ export function warSystem(world: World): void {
   const nc = world.nations.cols;
   const sideMen = (side: number[]): number => side.reduce((s, n) => s + (men.get(n) ?? 0), 0);
   for (const war of [...world.wars.list]) {
+    // A peace earlier in the day may have ended this one: its terms annexed the last member of a
+    // side (`Wars.endAllOf`). It has no leader to sue or to sign (PLAN 3.5f).
+    if (!world.wars.list.includes(war)) continue;
     const [A, D] = war.sides;
     const oAD = occShare(land, A, D);
     const oDA = occShare(land, D, A);

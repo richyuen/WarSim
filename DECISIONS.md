@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-155 · 2026-10-07 · accepted — A war that ended with the peace of another the same day is not judged (PLAN 3.5f)
+
+- **Context:** `workerNodeGrowth1938` had the page's hash apart from Node's two days after a
+  continued game began. Not the save: the page left Node at tick 73 with no save at all. One
+  number of the state differed, by its bits: the winner of a `PeaceSigned` row of the history
+  was `undefined`, which a `Float64Array` takes as a NaN, and Chromium's NaN there is not
+  Node's. `warSystem` goes through the wars as they were at the day's start; the terms of one
+  peace annexed the last member of a side of a later war, `Wars.endAllOf` removed that war,
+  and the loop made a peace of it all the same, signed for `W[0]` of a side with no members.
+- **Decision** (`systems/war.ts`): the day's loop skips a war that is no longer in
+  `world.wars.list`. Nothing else: no check in `emit`, no NaN made canonical in the save.
+- **Why not the wider guard:** a canonical NaN in the hash would hide the next `undefined`
+  from the one spec that found this one. A check in `emit` is on every event of every tick.
+- **Consequences:** no peace event, history row or truce for a war that ended with its last
+  member. A rule's defect, not a rule: the pin (seed 99, one year) did not move, so that game
+  has no such war. Games that had one go on otherwise from there: the truce held no one (no
+  nation is `undefined`), but the row is in the hash.
+- **Not measured:** how often it happened in a long game.
+
 ### ADR-154 · 2026-10-07 · accepted — The mix: a nation wants a share of its army's upkeep in tanks that rises with its income, in peace too, and saves for the armoured division (PLAN 3.5d)
 
 - **Context:** `pickTemplate` gave armour to a rich nation (income ≥ 200) at war, every

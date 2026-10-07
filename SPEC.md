@@ -283,7 +283,9 @@ it is spent on.
   old arrays and write nowhere, at a size nobody chose and at another one after a load.
   `tests/unit/tableGrowth.test.ts` runs a game whose tables move at every create beside the
   same game without (`Table.volatile`). And no number of the state is a NaN out of
-  arithmetic: its bits are in the hash and need not be the same in two engines.
+  arithmetic: its bits are in the hash and need not be the same in two engines. Nor an
+  `undefined` where a number is kept: a typed array takes it as a NaN, with bits of the engine's
+  own (PLAN 3.5f: a peace signed by nobody, in the history).
 - **Invariant tests** (must always pass): (I1) same seed + commands → same hash
   at N ticks; (I2) save → load → continue == uninterrupted, bit-identical bytes;
   (I3) Node run == worker run; (I4) random viewport/subscription churn leaves the hash
