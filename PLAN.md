@@ -3492,10 +3492,67 @@ quick sweep as a smoke test.
       and their treasuries do not grow); which armoured division is bought is not counted
       (one with nothing in training buys the best it can pay, the division of 1938 after
       1941 too); a nation at war that saves raises one infantry division at a time.
-  - [ ] 3.5e **The metric and the tick.** Defined in SPEC before it is measured: of the
+  - [x] 3.5e **The metric and the tick.** Defined in SPEC before it is measured: of the
     sectors that attack, the share where the first formation in contact at the enemy's
     cell is armour, beside armour's share of the formations sent there. Headless 1938,
     two seeds, in PROGRESS; the tick of five years of seed 99. Ticks 3.5 (the full e2e).
+    **Done 2026-10-07** (no code: a measurement on `2617f3d`, the code of 3.5d).
+    - *The metric* is SPEC §7's, written with 3.5c, and it counts attacks (a nation's
+      formations ordered to one enemy cell), not sectors as the line above says: the run is
+      read with no hook in the planner, and a sector is the planner's. `spearheads.ts` was
+      read against the SPEC's text line by line and says the same.
+    - *Measured* (360 days; seed 99, seed 7; 3.5c's figures → now, the mix of 3.5d
+      between them). Of the attacks armour was sent to that came to contact, armour first:
+      44 of 46 (95.7 %) → 40 of 40 (100 %) and 32 of 34 (94.1 %) → 30 of 31 (96.8 %);
+      armour's share of the formations sent to them 73.4 → 71.6 % and 79.2 → 81.6 %. Of all
+      attacks that came to contact, armour first: 11.2 → 15.3 % (40 of 261) and 10.9 →
+      13.3 % (30 of 226), where armour is 7.0 → 7.4 % and 8.8 → 8.4 % of all sent.
+    - *Tick* (five years of seed 99, pinned, one run): mean 1.674 ms (budget 1.5), year 1
+      2.437 (budget 2.4); by year 2.437, 1.469, 1.137, 1.386, 1.941. 3.5d read 1.666 and
+      2.414 on the same code: the two runs are 0.5 and 1 % apart. Over both budgets: a line
+      under PLAN 7.1.
+    - *Not done:* one attack in eleven comes to contact (261 of 2,900 and 226 of 2,690; one
+      in nine with 3.5c), and of those armour was sent to, 40 of 263 and 31 of 191: the
+      metric speaks of 40 and 31 attacks a year. Why the others end without contact was
+      not counted (a new order to another cell, a sector that stops attacking, the enemy's
+      cell taken by another). The armour's share by year was not run again (3.5d has it on
+      this code).
+    - *It does not tick 3.5.* The full e2e, run by hand on `2617f3d` (the gate runs parity
+      alone for a commit of documents): 134 passed, 4 failed, the four again when run
+      alone. The parts 3.5a to 3.5d ran three specs by hand each and none of these four.
+      They are 3.5f to 3.5i below.
+  **The AT of 3.5 is measured** (2026-10-07; headless 1938, seed 99 and seed 7): the tanks'
+  share of the army's upkeep in year 10 is 29.5 and 28.4 % for Germany (3.9 and 0 before
+  3.5d), 28.1 and 25.1 % for Britain, 31.2 and 27.6 % for the United States, 13.8 and 14.7 %
+  for Japan; where armour is sent to an attack it is first in contact in 40 of 40 and 30 of
+  31. Not risen: the Soviet Union (22.3 and 14.8 % for 28.0 and 15.1), Italy on seed 99
+  (1.6 %), France on seed 99 (dead in year 5). 3.5 is ticked by the last of the parts below,
+  with the full e2e green.
+  - [ ] 3.5f **A continued game does not go as the saved one** (`workerNodeGrowth1938`, the
+    full e2e of 3.5e, 2026-10-07). Two days after the page loads a save of a game with
+    nations founded since the start, the worker's hash is 1248060285 and Node's 1796785913.
+    A desync or a save that lacks a part of the state: the first of the four, and a defect,
+    not a scene that moved. Which of 3.5a to 3.5d began it is not known (bisect by the
+    spec: `d2549ce` is before 3.5b; 3.5a's commit ran the full suite). Suspects, none
+    looked at: the retreat's hours and org (3.5a, in the save by its test), what the planner
+    keeps between days (3.5b's classes and passage), the armour table the planner is handed
+    (3.5c: `operationalAiOf`), the saving of 3.5d (an order in training).
+    AT: unit, failing first, in Node (save, load, step: the hash of the game that went on);
+    the spec green as written.
+  - [ ] 3.5g **`zoomDemo1938`: the battalions at the last stops are not under half strength**
+    (0.758 of its size for the fullest; the spec asks under 0.5). The battle the demo flies
+    to is another than the one of 3.5a's game, where the spec passed; which part moved it
+    was not looked at. Find what the close pictures should show in this game (the spec chooses its battle),
+    keep the expectation, and shoot `docs/evidence/2.10/` again if the stops move.
+  - [ ] 3.5h **`markerStacks1938`: at 1900 m/px three pairs of markers lie more than a
+    quarter under each other** (Spain: 745, 754 and 776 of nation 23, 795 of nation 24, 26
+    and 27 %). Either the scene moved (more formations on one spot than the parting can
+    part within 6 px) or the parting has a case it does not handle (a chain of three). Say
+    which before anything is changed; no expectation is loosened.
+  - [ ] 3.5i **`declutter1938`: after one year, at 8 px per cell, 20 counters where the
+    zoom before had 21 at the same level of clusters.** A zoom in must not show fewer
+    counters at one level. The scene moved; whether the rule of ADR-75 has a hole is what
+    this part finds. Ticks 3.5 (the full e2e).
 - [ ] 3.6 Tank visuals: sprites, turret facing, muzzle flash, burning wrecks at T2/T3.
   From the critic's report of 2026-10-05 (R2-B3, the second part; the first is PLAN 2.13):
   tanks scored 2. At T2 a panzer division is a grey grid of dots like any other. At T3 its
@@ -3633,6 +3690,10 @@ quick sweep as a smoke test.
     same open holders share one). It was made for the plans that ordered.
   - The sectors and the threat are built for every class's allotment from one list; a
     nation with formations on many islands has a class for each.
+  From PLAN 3.5e (2026-10-07): with the spearheads and the mix (3.5c, 3.5d) the tick of
+  seed 99 over five years is 1.67 ms (budget 1.5), year 1 2.44 (budget 2.4); year 5 is 1.94
+  (949 formations, 25,528 cells flipped). No profile was taken of this game: the parts
+  above are of 3.5b's.
   From the critic's report of 2026-10-05 (the pace in R2-B5; its N9 and N19):
   - **The top speed.** At Max the game makes 885 ticks a second at the start and 794 after
     ten years: 33 to 37 days a second, 10 to 12 s a year. AoC's text gives a month in 0.5 s

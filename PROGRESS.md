@@ -7796,3 +7796,35 @@ No rule changed and nothing on screen changed. One task came out of it.
   to save); which armoured division is bought was not counted; what saving does to a
   nation that is losing a war was not measured (ADR-154).
 - **Next:** PLAN 3.5e (the metric and the tick; it ticks 3.5, with the full e2e).
+
+## 2026-10-07 — PLAN 3.5e: the metric and the tick; the full e2e has four failures
+
+- **No code.** A measurement on `2617f3d` (the code of 3.5d), and the full e2e that the
+  tick of 3.5 owes.
+- **The metric** (`tools/diag/spearheads.ts`, 360 days; seed 99, seed 7; 3.5c → now). Of the
+  attacks armour was sent to that came to contact, armour first: 44 of 46 → 40 of 40 and 32
+  of 34 → 30 of 31; armour's share of the formations sent to them 73.4 → 71.6 % and 79.2 →
+  81.6 %. Of all attacks that came to contact: 11.2 → 15.3 % (40 of 261) and 10.9 → 13.3 %
+  (30 of 226); armour is 7.4 and 8.4 % of all sent. Attacks: 2,900 and 2,690, one in eleven
+  to contact.
+- **The tool against SPEC §7:** the same, read line by line. PLAN's line for 3.5e said
+  "sectors that attack"; the SPEC's unit is the attack, and stands.
+- **Tick** (five years of seed 99, pinned, one run): mean 1.674 ms (budget 1.5); by year
+  2.437 (budget 2.4), 1.469, 1.137, 1.386, 1.941. 3.5d's run of the same code: 1.666 and
+  2.414. A line under PLAN 7.1; SPEC §2.5 says the tick is over budget.
+- **The full e2e** (`npm run e2e` by hand: the gate runs parity alone for documents; 8.8
+  min): 134 passed, 4 failed, 1 did not run. The four alone (`--project=chromium`): the
+  same four, the same figures. So 3.5 is not ticked; each is a part now:
+  - 3.5f `workerNodeGrowth1938`: a continued game two days on has hash 1248060285 in the
+    worker, 1796785913 in Node. A defect; first.
+  - 3.5g `zoomDemo1938`: the fullest battalion of the close stops at 0.758 (under 0.5 asked).
+  - 3.5h `markerStacks1938`: at 1900 m/px three pairs more than a quarter under each other
+    (26, 27 %).
+  - 3.5i `declutter1938`: after one year at 8 px per cell 20 counters after 21 at one level.
+- **Learned:** three specs by hand a part (`wrecks1938`, `tiers1938`, `individuals1938`)
+  was the list of 3.5a's failures, carried through four parts that each made another
+  game. 3.5a ran the full suite; 3.5a1 to 3.5d did not, and four specs broke unseen, one of
+  them a desync. A part that moves the pin should run by hand every spec that plays the
+  1938 game past its first days, or the full suite.
+- **Not done:** no cause looked for in any of the four; no bisect.
+- **Next:** PLAN 3.5f (the desync).

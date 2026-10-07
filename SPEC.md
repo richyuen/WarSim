@@ -243,6 +243,9 @@ capitals → wars (daily) → alliances, puppets, revolts, collapse (monthly) �
 1.0 ms over the first 5 years of seed 99 and 1.9 ms in its war-heavy first year (Node, M; budget
 1.5 ms, PLAN 7.1; measured after PLAN 1.42a). The main costs in that first year are combat
 (~35%), A* for AI orders (~28%), the supply flood over warring blocs (~15%) and territory (~10%).
+Since the rules of Phase 3 the tick is over both budgets: 1.67 ms over the five years and 2.44 ms
+in the first (PLAN 3.5e, 2026-10-07; the budget of the first year is 2.4 ms); PLAN 7.1 has what
+it is spent on.
 
 **Save files and autosave (PLAN 1.27).**
 - *Format:* a save is the sim's section bytes (all of `World.parts()`, the command log included),
