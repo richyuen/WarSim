@@ -7516,3 +7516,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   of 3.4R as a numbered task, and nothing drawn changes.
 - **Next:** PLAN 3.5 (the AI uses armour as spearheads; it also asks for fronts it cannot
   reach).
+- **Added after the commit (2551b9d):** the full e2e suite, run by hand (9.9 min): 137
+  passed, 1 failed, 1 did not run. `wrecks1938.spec.ts`, "T2: every element that dies leaves
+  a wreck": 4 wrecks in the viewport, more than 5 expected; alone it fails the same way. Not
+  this commit's (no hash changed): 3.4Rf, 3.4Rk and 3.4Rl changed rules with no e2e, and the
+  gate does not take the tick of 3.4R for a numbered task. **3.4R is unticked again**, and
+  PLAN 3.4Rn has the spec and the gate. The "No e2e" lines of those three parts were wrong
+  to say nothing drawn changes: a rule that moves the pin moves the scenes the specs watch.
+- **Next:** PLAN 3.4Rn, before 3.5.
+
