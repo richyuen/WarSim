@@ -568,6 +568,7 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     overlord, which leads the defenders; the event names it. The puppet's own allies and
     guarantors are called too. What refuses a war with the overlord (a war, a truce, a bond)
     refuses the declaration on the puppet. One level: an overlord's own overlord is not asked.
+    The puppet named stands as the leaders do: it is never struck as torn.
   - *Daily score:* 200 × (occ(attackers→defenders) − occ(defenders→attackers)) ± 25 per capital
     capture (at most ± 50 per war), clamped to ±100. occ(X→Y) = Y's land held by X ÷ min(Y's
     land, 2 × X's land), at most 1: the score is relative to the smaller party, so a war against

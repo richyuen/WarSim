@@ -4353,6 +4353,10 @@ quick sweep as a smoke test.
     war is declared on a puppet its overlord does not join (seed 3301: Iraq on Syria, day
     17, and Nationalist Spain on French West Africa, day 54: the defender alone). A
     decision (the overlord joins, or the declaration is on the overlord), with its test.
+    - [x] 3.8e1 *Done 2026-10-07 (ADR-183, addendum):* the puppet a declaration names is not
+      struck from the war by the steps of ADR-179 (it was no longer a leader: an ally of it
+      among the attacker's puppets struck it). `tests/unit/puppetDefended.test.ts`, failed
+      first. The pin did not move.
   - [ ] 3.8f Who joins a war on a rebel (the critic: the parent's war, not the alliance's
     30 nations). A decision, then the tick of 3.8 with the full gate.
 - [ ] 3.9 Critic R3-B2, the part that is not balance: one event does not hand two thirds of

@@ -3,6 +3,7 @@ import { Refusal } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { makePuppet } from '../../src/sim/systems/puppets';
 import { TRUCE_TICKS, declareWar, whyNotWar } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -69,5 +70,20 @@ describe('a puppet is defended (PLAN 3.8e)', () => {
     // The overlord itself and a puppet against its overlord: as before.
     expect(whyNotWar(w, FRA, SYR)).toBe(Refusal.Subject);
     expect(whyNotWar(w, SYR, FRA)).toBe(Refusal.Subject);
+  });
+
+  it('the puppet named is in the war: an ally of it on the other side stays out, not it', () => {
+    const w = world1938(5).world;
+    // Iran becomes Turkey's puppet and the ally of Syria (a puppet may sit in an alliance of
+    // its own, ADR-179). Turkey has no bond with Syria, and declares on it.
+    w.alliances.leave(IRN);
+    expect(makePuppet(w, TUR, IRN, 50)).toBe(true);
+    expect(w.alliances.create(IRN, [SYR], 'alliance.defensive', 50)).not.toBeNull();
+    expect(whyNotWar(w, TUR, SYR)).toBe(Refusal.None);
+    const war = declareWar(w, TUR, SYR)!;
+    expect(war.sides[1][0]).toBe(FRA);
+    expect(war.sides[1]).toContain(SYR);
+    expect(war.sides[0]).not.toContain(IRN);
+    expect(war.sides[1]).not.toContain(IRN);
   });
 });

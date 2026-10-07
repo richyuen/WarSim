@@ -8984,3 +8984,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   sweep tests (the daily `realmWars` of the ten-year games stayed empty), build, parity. No
   e2e (a part; no spec changed).
 - **Next:** PLAN 3.8f.
+
+## 2026-10-07 — PLAN 3.8e1: the puppet a declaration names is not struck from its own war (ADR-183, addendum)
+
+- **Found** by reading the commit of 3.8e again, not in a game: the nation named used to lead
+  its side, and a leader is never struck as torn (ADR-179). Named and no longer the leader,
+  a puppet was asked in step 2 like any other.
+- **Test, failed first:** `tests/unit/puppetDefended.test.ts`, "the puppet named is in the
+  war…": Iran made Turkey's puppet and the ally of Syria, Turkey declares on Syria: France
+  led the defenders without Syria.
+- **Done:** `declareWar`'s `leader` is true of the named target too. Iran stays out.
+- **By hand,** for the full e2e run that the tick of 3.8 will bring: the two specs that play
+  seed 99 past its first week, whose game 3.8e changed (`markerStacks1938`, day 90;
+  `toBattle1938`, day 70), `--project=chromium`: 6 of 6 passed.
+- **The pin:** did not move (`875255b7`).
+- **Not done:** as in 3.8e. No picture; the tick was not timed.
+- **Gate:** `npm run check`, exit 0 on the first run: typecheck, lint, 975 unit tests, the 17
+  sweep tests, build, parity. No e2e (a part; no spec changed).
+- **Next:** PLAN 3.8f.

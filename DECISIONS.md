@@ -218,6 +218,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   without FRA", "day 54, NSP -> AOF without FRA"); Iraq on Syria by hand (France leads,
   Syria and French West Africa defend); God Mode; a truce or a war with France refuses the
   declaration on Syria. All four failed first.
+- **Addendum, the same day (PLAN 3.8e1): the puppet named is never struck.** Until this
+  change the nation a declaration named led its side, and the three steps of ADR-179 never
+  strike a leader. As a puppet in its overlord's war it was asked in step 2 like any other:
+  Syria, the ally of a puppet of Turkey, was struck from the war Turkey declared on it, and
+  France led a war its cause was not in. The nation named now stands as the two leaders do;
+  the nation torn against it stays out. No pair with a bond comes of it: a joiner is asked
+  against all who stand, the named puppet among them, and `whyNotWar` has already asked of
+  the attacker and the named puppet. `tests/unit/puppetDefended.test.ts`, "the puppet named
+  is in the war…" (failed first: Syria not among the defenders). Not seen in a game. The
+  pin did not move (`875255b7`).
 - **The pin:** seed 99 after one year, `ed82d7f8` to `875255b7`. The pinned game had Iraq on
   Syria on day 31 and Nationalist Spain on French West Africa on day 33, each defender
   alone; the new game has neither, and differs from day 7 (Siam on Burma, a British puppet,

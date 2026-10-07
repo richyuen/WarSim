@@ -221,7 +221,8 @@ export function declareWar(world: World, attacker: number, target: number): War 
   // Within a step the nations are asked in the order of the call, each against those of the
   // other side that the step has let stand: of two that are torn by each other alone, the one
   // called first fights.
-  const leader = (x: number): boolean => x === attacker || x === defender;
+  // The puppet a declaration names stands as the leaders do: the war is about it (PLAN 3.8e1).
+  const leader = (x: number): boolean => x === attacker || x === defender || x === target;
   const bound = (x: number, enemies: number[]): boolean => enemies.some((o) => bond(world, x, o) !== Refusal.None);
   const without = (sides: [number[], number[]], asked: (x: number) => boolean, enemiesOf: (s: number, stand: Set<number>) => number[]): [number[], number[]] => {
     const out = new Set<number>();
