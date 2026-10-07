@@ -3363,6 +3363,30 @@ quick sweep as a smoke test.
       3.6 has the pictures of armour, none of a retreat); a formation with no supply
       retreats from every contact (51 times in a year); whether wars that kill a third of
       what they did still end (Phase 7).
+  - [x] 3.5a1 **An order to a formation in the middle of a step leaves it where it stands**
+    (found with 3.5b, 2026-10-07; ADR-151). `orderMove` began every route at the point of
+    the cell the formation stood in and put the formation there: half a step back or
+    forward, on the page a jump. `movement.test.ts` (seed 99, 60 days, no formation on the
+    march more than a cell from where it was an hour before) passed by the game it watched:
+    with 3.5b's other game a retreat on the coast of Shandong moved a division 1.03 cells
+    in the hour (the land points of the two cells lie 2.06 apart).
+    AT: unit, failing first; how many such orders a year and how far they moved.
+    **Done 2026-10-07.**
+    - *The rule:* the route begins at the nearer end of the step; if it goes by the other
+      end the formation walks on along the step, else back to the nearer end and on from
+      there. Its place in the hour of the order is the same.
+    - *Tests:* `movement.test.ts`, "an order to a formation on the march" (3: onward, back,
+      aside; red first at 0.32, 0.52 and 0.36 cells in the hour of the order).
+    - *Measured* (360 days of seed 99, before → after): 6,577 → 6,817 orders to a formation
+      in the middle of a step; moved by more than 0.3 cells in that hour 3,365 → 7; the
+      widest 0.94 → 0.40 cells.
+    - *The pin:* 7c85fde9 → a100e74b.
+    - *Specs by hand* (`--project=chromium`): `tiers1938` and `individuals1938` passed as
+      they were. `wrecks1938` had no dead on day 35 of this game: it now looks for its day
+      (the first from day 14 with more than 10 dead in 16 hours, more than 8 of them in
+      one 6-cell square: day 39, 36 dead, 23 in the viewport). No expect changed.
+    - *Not done:* the tick was not measured (two reads of a path per order); 3.5b's
+      measurement is on both.
   - [ ] 3.5b **Allot by reach** (BLOCKERS watch list, ADR-149; PLAN 3.4Rm). 45,987 of 58,232
     orders of two years were refused: the operational AI allots formations to sectors they
     cannot reach and asks every day. A sector that the planner's formations cannot reach

@@ -590,3 +590,46 @@ describe('a march between two neighbouring cells is not a crossing of the seam (
     expect(jumps.length, jumps.slice(0, 5).join('; ')).toBe(0);
   }, 120_000);
 });
+
+// PLAN 3.5a1. An order began at the point of the cell the formation stood in: one given in the
+// middle of a step put the formation back there, half a step away, and over a cell where the
+// two cells' land points lie far apart (a retreat on the coast of Shandong, seed 99, hour 581:
+// 1.03 cells in the hour).
+describe('an order to a formation on the march (PLAN 3.5a1)', () => {
+  const acrossX = (a: number, b: number): number => Math.min(Math.abs(a - b), W - Math.abs(a - b));
+  for (const [name, lon, lat] of [['onward', 8.0, 52.4], ['back', 13.4, 52.5], ['aside', 11.6, 49.5]] as const) {
+    it(`leaves it where it stands, and it marches from there: ${name}`, () => {
+      const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      const c = w.formations.cols;
+      const id = spawn(w, 'GER', INF, 13.4, 52.5);
+      const [x0, y0] = cellOf(10.0, 52.4, W, H);
+      s.command({ kind: 'moveFormation', id, x: x0, y: y0 });
+      // To the middle of a step that is not its first.
+      let hours = 0;
+      while (hours++ < 24 * 10 && !(c.pathStep[id]! >= 2 && c.stepFrac[id]! > 0.4 && c.stepFrac[id]! < 0.6)) s.step(1);
+      expect(c.moving[id]).toBe(1);
+      expect(c.stepFrac[id]).toBeGreaterThan(0.4);
+      const was = [c.x[id]!, c.y[id]!] as const;
+      const [x1, y1] = cellOf(lon, lat, W, H);
+      const goal = Math.floor(y1) * W + Math.floor(x1);
+      s.command({ kind: 'moveFormation', id, x: x1, y: y1 });
+      s.step(1);
+      expect(c.targetCell[id]).toBe(goal);
+      // The hour of the order: an hour's march, not the way back to a cell's point.
+      expect(Math.hypot(acrossX(c.x[id]!, was[0]), c.y[id]! - was[1])).toBeLessThan(0.3);
+      // And every hour after it, to the place ordered.
+      let widest = 0;
+      let at = [c.x[id]!, c.y[id]!] as const;
+      for (let h = 0; h < 24 * 30 && c.moving[id] === 1; h++) {
+        s.step(1);
+        widest = Math.max(widest, Math.hypot(acrossX(c.x[id]!, at[0]), c.y[id]! - at[1]));
+        at = [c.x[id]!, c.y[id]!];
+      }
+      expect(widest).toBeLessThan(0.3);
+      expect(c.moving[id]).toBe(0);
+      expect(Math.floor(c.y[id]!) * W + Math.floor(c.x[id]!)).toBe(goal);
+    });
+  }
+});

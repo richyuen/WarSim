@@ -813,6 +813,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   a freed id that another nation's formation has taken is not ordered by it.
   - A target unreachable from the formation snaps to the nearest reachable cell within 3;
     otherwise the order is rejected (`MoveRejected`).
+  - An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1,
+    ADR-151): the route begins at the nearer of the step's two cells, and the path with the
+    step itself, on along it or back.
   - Order state is moving, originCell, targetCell, pathStep and stepFrac, and the path
     (`world.paths`, saved with the core since PLAN 3.4Rl: it is found on the holders of the
     hour of the order). A save from before has no paths; each is found again at the next step.

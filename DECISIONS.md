@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-151 · 2026-10-07 · accepted — An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1)
+
+- **Context:** a march is a path of cells, the index of the last cell reached and the share
+  of the step to the next (`pathStep`, `stepFrac`); the place is read from them. `orderMove`
+  began every route at the point of the cell the formation stood in, with the share at 0,
+  and put the formation on that point. A formation ordered in the middle of a step (the
+  operational AI's new target, a player's click, since ADR-150 a retreat out of contact)
+  was moved there in that hour: half a step, and more than a cell where the land points of
+  two neighbouring cells lie far apart (ADR-79: up to 1.9). In 360 days of seed 99, 3,365
+  of 6,577 such orders moved the formation by more than 0.3 cells, the widest 0.94.
+  Found by `movement.test.ts` (no formation on the march more than a cell from where it was
+  an hour before) on the game PLAN 3.5b makes: 1.03 cells, a retreat in Shandong, hour 581.
+- **Decision** (`orderMove`): for a formation on the march with a share of a step behind it,
+  the route begins at the nearer of the step's two cells. If its second cell is the step's
+  other end, the path is the route and the formation goes on along the step; else the
+  other end is put before the route, and the formation walks back to the nearer end and on
+  from there. The share is read from the path's first cell, so the place is the same.
+  `originCell` is the path's first cell.
+- **Why not a place of its own** (a march that begins anywhere, with two more columns):
+  the state of a march stays a path and a share, and every reader of it (the view's
+  tiers, the wrecks, the save) is left as it is. The cost is a walk of at most half a step
+  that a march from the very place would not make.
+- **Consequences:** a path that is found again from `originCell` (a save from before PLAN
+  3.4Rl, which has no paths) may begin with another step, and the formation is then moved
+  once. The pin: 7c85fde9 → a100e74b. `wrecks1938` looks for the day it watches (PLAN
+  3.5a1): the fixed day had no dead in this game, as day 19 had none after ADR-150.
+
 ### ADR-150 · 2026-10-07 · accepted — The retreat: org is lost to the losses of a battle, and a formation in contact with little org breaks off for a day (PLAN 3.5a)
 
 - **Context:** SPEC §5.2 step 4 had no task. Nothing left contact: a formation held until one

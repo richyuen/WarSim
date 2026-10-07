@@ -14,6 +14,8 @@
  * Water is impassable to land formations; crossing cells are walkable (straits). A target cell not
  * reachable from the formation (a coastal speck at map resolution) snaps to the nearest reachable
  * cell within TARGET_SNAP_CELLS; beyond that the order is rejected.
+ * An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1): its
+ * path begins with that step, on along it or back to the nearer of its two cells.
  *
  * No march across a nation that is not in the war (PLAN 3.4Rl, ADR-149). A formation enters the
  * ground of its own bloc, of a nation it is at war with, of one that fights beside it, and
@@ -114,7 +116,14 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
     return false;
   }
   const c = f.cols;
-  const origin = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+  // In the middle of a step (PLAN 3.5a1) the route begins at the step's nearer end, and the
+  // formation walks there from where it stands; `beyond` is the step's other end.
+  const was = c.moving[id] === 1 && c.stepFrac[id]! > 0 ? world.paths.get(id) : undefined;
+  const at = c.pathStep[id]!;
+  const frac = c.stepFrac[id]!;
+  const mid = was !== undefined && at < was.length - 1;
+  const origin = mid ? was[frac < 0.5 ? at : at + 1]! : Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+  const beyond = mid ? was[frac < 0.5 ? at + 1 : at]! : -1;
   const nav = navOf(world);
   // Targets on coastal specks or across a strait-less sea snap to the nearest reachable cell.
   const comp = nav.grid.component;
@@ -126,9 +135,19 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
   }
   noteMove(world, id);
   c.moving[id] = 1;
-  c.originCell[id] = origin;
   c.targetCell[id] = target;
   c.pathStep[id] = 0;
+  if (mid) {
+    // The same step, read from the first cell of the new path: on along it if the route goes
+    // by the other end, else back to the nearer end and on from there. Its place is the same.
+    const onward = route.cells[1] === beyond;
+    const cells = onward ? route.cells : [beyond, ...route.cells];
+    c.originCell[id] = cells[0]!;
+    c.stepFrac[id] = onward === frac < 0.5 ? frac : 1 - frac;
+    world.paths.set(id, Int32Array.from(cells));
+    return true;
+  }
+  c.originCell[id] = origin;
   c.stepFrac[id] = 0;
   world.paths.set(id, Int32Array.from(route.cells));
   [c.x[id], c.y[id]] = centre(world, origin);

@@ -17,7 +17,11 @@ const { w: W } = SIZE_1938;
 // 3.4Rf) the same battle, in Spain, has its dead five days later (4 in the viewport then, 41 now).
 // 24 * 19 until PLAN 3.5a: formations retreat before they are destroyed, and the first weeks
 // have few dead (2 in these 16 hours). Day 35, in Spain again: 14, all in the viewport.
-const START = 24 * 35;
+// Since PLAN 3.5a1 the day is looked for, not written here: every change of a rule moved the
+// battle (day 35 had none after that one). It is the first day from FIRST_DAY on whose first
+// HOURS hours have more than 10 dead, more than 8 of them in one 6-cell square.
+const FIRST_DAY = 14;
+const LAST_DAY = 120;
 const HOURS = 16;
 const M_PER_PX = 120;
 /** Slots of a block are this far apart (cells): a wreck lies where the sprite stood, not a slot away. */
@@ -32,39 +36,52 @@ type Box = readonly [number, number, number, number];
 const inBox = (d: Death, [x0, y0, x1, y1]: Box): boolean => d.x >= x0 && d.x <= x1 && d.y >= y0 && d.y <= y1;
 const ids = (list: readonly Death[]): number[] => list.map((d) => d.id).sort((a, b) => a - b);
 
-/** The elements that die in each of the HOURS after START, and the hashes around them. */
-function nodeDeaths(): { hours: Death[][]; before: number; after: number } {
+/** The first day with a battle to watch: its hour, the elements that die in each of its first HOURS hours, and the hashes around them. */
+function nodeDeaths(): { start: number; hours: Death[][]; before: number; after: number } {
   const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
-  sim.step(START);
-  const before = sim.hash();
-  const hours: Death[][] = [];
-  for (let h = 0; h < HOURS; h++) {
-    const dead: Death[] = [];
-    sim.step(1, (w) => {
-      const ev = w.out.events;
-      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.ElementDestroyed) dead.push({ id: ev[i + 2]!, x: ev[i + 4]!, y: ev[i + 5]! });
-      w.out.events.length = 0;
-      w.out.fires.length = 0;
-    });
-    hours.push(dead);
+  sim.step(24 * FIRST_DAY);
+  for (let day = FIRST_DAY; day <= LAST_DAY; day++) {
+    const before = sim.hash();
+    const hours: Death[][] = [];
+    for (let h = 0; h < 24; h++) {
+      const dead: Death[] = [];
+      const after = h === HOURS ? sim.hash() : 0;
+      if (h === HOURS) {
+        const all = hours.flat();
+        if (all.length > 10 && densest(all).length > 8) return { start: 24 * day, hours, before, after };
+      }
+      sim.step(1, (w) => {
+        const ev = w.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.ElementDestroyed) dead.push({ id: ev[i + 2]!, x: ev[i + 4]!, y: ev[i + 5]! });
+        w.out.events.length = 0;
+        w.out.fires.length = 0;
+      });
+      if (h < HOURS) hours.push(dead);
+    }
   }
-  return { hours, before, after: sim.hash() };
+  throw new Error(`no day from ${FIRST_DAY} to ${LAST_DAY} with a battle to watch`);
 }
 
-/** Centre of the 6-cell square where the most elements die. */
-function busiest(deaths: readonly Death[]): [number, number] {
+/** The deaths of the 6-cell square where the most elements die. */
+function densest(deaths: readonly Death[]): Death[] {
   const squares = new Map<string, Death[]>();
   for (const d of deaths) {
     const k = `${Math.floor(d.x / 6)},${Math.floor(d.y / 6)}`;
     squares.set(k, [...(squares.get(k) ?? []), d]);
   }
-  const top = [...squares.values()].sort((a, b) => b.length - a.length)[0]!;
+  return [...squares.values()].sort((a, b) => b.length - a.length)[0]!;
+}
+
+/** Centre of the 6-cell square where the most elements die. */
+function busiest(deaths: readonly Death[]): [number, number] {
+  const top = densest(deaths);
   return [top.reduce((s, d) => s + d.x, 0) / top.length, top.reduce((s, d) => s + d.y, 0) / top.length];
 }
 
 test('T2: every element that dies leaves a wreck where its sprite stood, and its sprite is gone', async ({ page }, info) => {
   test.setTimeout(240_000);
   const node = nodeDeaths();
+  const START = node.start;
   const all = node.hours.flat();
   expect(all.length).toBeGreaterThan(10);
   expect(new Set(ids(all)).size).toBe(all.length);
@@ -78,7 +95,7 @@ test('T2: every element that dies leaves a wreck where its sprite stood, and its
     await sim.step(n);
     return sim.hash();
   }, START)).toEqual({ tick: START, hash: node.before });
-  // Deaths at the world view leave no wrecks in the view: 19 days of war passed.
+  // Deaths at the world view leave no wrecks in the view: weeks of war passed.
   expect(await page.evaluate(() => window.__warsim!.view!.wrecks.wrecks.length)).toBe(0);
 
   await page.evaluate(({ cx, cy, m }) => {
@@ -159,7 +176,7 @@ test('T2: every element that dies leaves a wreck where its sprite stood, and its
   const wantedAll = all.filter((d) => inBox(d, frame.sub));
   expect(seen).toBe(wantedAll.length);
   expect(inView).toBeGreaterThan(5);
-  console.log(`wrecks: ${all.length} elements died in ${HOURS} h, ${seen} in the subscribed box, ${inView} in the viewport; farthest wreck from its sprite ${farthest.toExponential(2)} cells`);
+  console.log(`wrecks: day ${START / 24}: ${all.length} elements died in ${HOURS} h, ${seen} in the subscribed box, ${inView} in the viewport; farthest wreck from its sprite ${farthest.toExponential(2)} cells`);
   expect(await page.evaluate(() => window.__warsim!.sim.hash())).toEqual({ tick: START + HOURS, hash: node.after });
   const left = await page.evaluate(() => Array.from(window.__warsim!.view!.elementId));
   for (const d of wantedAll) expect(left).not.toContain(d.id);

@@ -7621,3 +7621,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   - SPEC §2.5 step 8 has the order: the retreat, the engagement, the fire, the org.
   - "1 did not run" of the full suite was not named.
 - **Next:** PLAN 3.5b (allot by reach).
+
+## 2026-10-07 — PLAN 3.5a1: an order to a formation in the middle of a step leaves it where it stands (ADR-151)
+
+- **How it was found:** PLAN 3.5b (allot by reach) was written and its test green when
+  `movement.test.ts` failed on the game it makes: "hour 581: formation 392 from 1704.79,
+  407.79 to 1704.06, 407.06: 1.0 cells". A Japanese division in contact in the middle of a
+  step, ordered to retreat (ADR-150): `orderMove` put it on the point of its cell, which
+  lies in the cell's corner there. Not of 3.5b: every order to a marching formation did
+  it, and seed 99's first 60 days had none over a cell until now. 3.5b was stashed and
+  this done first (one cause per commit).
+- **The rule** (`orderMove`): the route begins at the nearer end of the step; the path is
+  the route if it goes by the other end, else the other end and then the route. The share
+  of the step is read from the path's first cell: the place is the same.
+- **Measured** (360 days of seed 99, before → after): orders to a formation in the middle
+  of a step 6,577 → 6,817; moved by more than 0.3 cells in the hour 3,365 → 7; the widest
+  0.94 → 0.40 cells.
+- **Tests:** three in `movement.test.ts` (onward, back, aside), red first (0.32, 0.52, 0.36
+  cells in the hour of the order), then every hour to the arrival under 0.3. 877 → 880 unit.
+- **The pin:** 7c85fde9 → a100e74b.
+- **Specs by hand** (`--project=chromium`): `tiers1938`, `individuals1938` passed unchanged.
+  `wrecks1938` failed: no element died in its 16 hours of day 35 (the second time a rule
+  moved its battle: day 19 → 35 with 3.5a). It now looks for its day in Node: the first
+  from day 14 with more than 10 dead in the 16 hours, more than 8 of them in one 6-cell
+  square. Day 39: 36 dead, 23 in the subscribed box, 23 in the viewport, 0 cells from their
+  sprites (31 s). No expect changed; the two that were (`> 10` dead, `> 5` in view) stand.
+- **Gotcha:** a year of this game has 11,420 refused orders (7,248 before): another game,
+  with one nation asking 5,108 times. It is what 3.5b is for; not a figure of this rule.
+- **Not done:** the tick (one run of five years is 3.5b's, on both rules).
+- **Next:** PLAN 3.5b, from the stash.
