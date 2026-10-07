@@ -12,12 +12,17 @@
  *   a second; an event whose shooter's shot would still be on screen when it starts is not
  *   drawn (`skipped`). So the fire on screen grows with the elements that fight, not with the
  *   game speed. Within one tick every FireEvent is a shot: an element fires once an hour.
+ * - At T3 a shot leaves a barrel (PLAN 3.6c): the muzzle of one of its shooter's figures, where
+ *   the snapshot that brought it had the shooter among its elements (`Shot.from`). The way
+ *   there from the element's slot goes with the close tier's share, as the figures come in.
  */
 import { FIRE_STRIDE, FireField } from '../../shared/events';
-import { Weapon } from '../../shared/unitLooks';
+import { turretOf, Weapon } from '../../shared/unitLooks';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, progress } from '../timing';
+import { muzzleOf } from '../units/atlas';
+import { figureCells, type FiringFigure } from '../units/individuals';
 
 /** Over how long the shots of one tick start: the tick's wall time, within these. */
 export const MIN_SPREAD_MS = 250;
@@ -43,6 +48,8 @@ interface Look {
   color: string;
   /** Radii in CSS px: the muzzle flash, the impact's burst and its smoke at the end. */
   flashR: number;
+  /** At a barrel the flash is a tongue along it: this many of its radii long (0: a disc there too). */
+  tongue: number;
   burstR: number;
   smokeR: number;
   /** Height of the trajectory's arc as a share of the distance (indirect fire). */
@@ -51,9 +58,9 @@ interface Look {
 }
 
 export const LOOKS: Readonly<Record<Weapon, Look>> = {
-  [Weapon.smallArms]: { flight: 150, flash: 60, impact: 160, streak: 0.35, streakPx: 22, width: 1, color: '#fff2a8', flashR: 1.6, burstR: 0, smokeR: 2.2, arc: 0, smoke: '226, 214, 186' },
-  [Weapon.cannon]: { flight: 190, flash: 100, impact: 300, streak: 0.25, streakPx: 30, width: 1.6, color: '#ffc061', flashR: 2.8, burstR: 2.2, smokeR: 4.5, arc: 0, smoke: '84, 76, 68' },
-  [Weapon.shell]: { flight: 420, flash: 120, impact: 460, streak: 0.14, streakPx: 18, width: 1.8, color: '#ffab4d', flashR: 3.2, burstR: 3.4, smokeR: 7.5, arc: 0.14, smoke: '64, 58, 52' },
+  [Weapon.smallArms]: { flight: 150, flash: 60, impact: 160, streak: 0.35, streakPx: 22, width: 1, color: '#fff2a8', flashR: 1.6, tongue: 0, burstR: 0, smokeR: 2.2, arc: 0, smoke: '226, 214, 186' },
+  [Weapon.cannon]: { flight: 190, flash: 100, impact: 300, streak: 0.25, streakPx: 30, width: 1.6, color: '#ffc061', flashR: 2.8, tongue: 3.2, burstR: 2.2, smokeR: 4.5, arc: 0, smoke: '84, 76, 68' },
+  [Weapon.shell]: { flight: 420, flash: 120, impact: 460, streak: 0.14, streakPx: 18, width: 1.8, color: '#ffab4d', flashR: 3.2, tongue: 3.6, burstR: 3.4, smokeR: 7.5, arc: 0.14, smoke: '64, 58, 52' },
 };
 const WEAPONS: readonly Weapon[] = [Weapon.smallArms, Weapon.cannon, Weapon.shell];
 /** Opacity of an impact's smoke over its four quarters. */
@@ -77,6 +84,50 @@ export interface Shot {
   dy: number;
   /** ms on the render clock. */
   start: number;
+  /** The figure of the shooter it leaves at T3, or null: the shooter was not among the view's elements. */
+  from: FiringFigure | null;
+}
+
+/** The close tier in a frame (PLAN 3.6c): what `draw` needs to put a shot at a figure's muzzle. */
+export interface CloseTier {
+  /** The figures' share of the unit layer, 0–1 (the handover from the element sprites). */
+  share: number;
+  /** A figure is at least this many CSS px (before the unit-size setting). */
+  minPx: number;
+  /** Where the turret of a tank of element `shooter` points at `now`, its hull facing `hull` (radians). */
+  turret(shooter: number, hull: number, now: number): number;
+}
+
+/**
+ * Where a shot starts in a frame: cells, the barrel's direction (radians), how far it is a
+ * barrel's (0–1), and the side of the figure it leaves as it is drawn (cells; 0 without one).
+ */
+export interface Origin {
+  x: number;
+  y: number;
+  angle: number;
+  atBarrel: number;
+  side: number;
+}
+/** At a barrel a gun's flash is at least this share of its figure's side in radius: it grows with the figure. */
+export const FLASH_OF_FIGURE = 0.09;
+
+/**
+ * Where a shot starts at `now`. With the figures all in (`close.share` 1) it is the muzzle of
+ * the shot's figure as the sprite renderer draws it: `scale` CSS px a cell, the unit-size
+ * setting `size`. Without a figure, or without the close tier, it is the element's slot and
+ * the line to the target.
+ */
+export function originOf(s: Shot, now: number, scale: number, size: number, close?: CloseTier): Origin {
+  const f = s.from;
+  if (!f || !close || close.share <= 0) return { x: s.x0, y: s.y0, angle: Math.atan2(s.y1 - s.y0, s.x1 - s.x0), atBarrel: 0, side: 0 };
+  const angle = turretOf(f.frame) >= 0 ? close.turret(s.shooter, f.facing, now) : f.facing;
+  const [mx, my] = muzzleOf(f.frame);
+  // The side of the figure's sprite in cells: the shader's rule.
+  const side = (Math.max(figureCells(f.side) * scale, close.minPx) * size) / scale;
+  const c = Math.cos(angle);
+  const sn = Math.sin(angle);
+  return { x: s.x0 + close.share * (f.dx + (c * mx - sn * my) * side), y: s.y0 + close.share * (f.dy + (sn * mx + c * my) * side), angle, atBarrel: close.share, side };
 }
 
 /** How long a shot is on screen. */
@@ -95,8 +146,9 @@ export class FireFx {
   shots: Shot[] = [];
   /** FireEvents so far that were not drawn: their shooter's shot was still on screen, or MAX_SHOTS were. */
   skipped = 0;
-  /** What the last `draw` put on screen (tests): the shots whose tracer is in flight. */
+  /** What the last `draw` put on screen (tests): the shots whose tracer is in flight, and where each flash is (cells). */
   tracers: Shot[] = [];
+  flashAt: { shot: Shot; x: number; y: number }[] = [];
   flashes = 0;
   impacts = 0;
   /** Render-clock span of the shots held: from the last snapshot that brought any to the last end. */
@@ -107,9 +159,10 @@ export class FireFx {
 
   /**
    * Takes the fire records of a snapshot that arrived at `now` (they are copied). Returns how
-   * many of them are shots now: the last of `shots`.
+   * many of them are shots now: the last of `shots`. `figure` gives the figure of a shooter
+   * that its volley of a tick leaves, where the snapshot has the shooter's element.
    */
-  add(count: number, data: ArrayLike<number>, now: number, tickMs: number, geo: MapGeometry): number {
+  add(count: number, data: ArrayLike<number>, now: number, tickMs: number, geo: MapGeometry, figure?: (shooter: number, tick: number) => FiringFigure | null): number {
     // Shots that are over leave here, and only here.
     let kept = 0;
     this.busy.clear();
@@ -135,8 +188,9 @@ export class FireFx {
       if (geo.wrapX && Math.abs(x1 - x0) > geo.w / 2) x1 += x1 < x0 ? geo.w : -geo.w;
       const weapon = data[o + FireField.weapon]! as Weapon;
       // Where it lands: by the volley's shooter and tick.
-      const [jx, jy] = pair(hash2(shooter, data[o + FireField.tick]!));
-      this.shots.push({ shooter, target: data[o + FireField.target]!, weapon, x0, y0: data[o + FireField.y0]!, x1, y1: data[o + FireField.y1]!, dx: jx * SCATTER_CELLS, dy: jy * SCATTER_CELLS, start });
+      const tick = data[o + FireField.tick]!;
+      const [jx, jy] = pair(hash2(shooter, tick));
+      this.shots.push({ shooter, target: data[o + FireField.target]!, weapon, x0, y0: data[o + FireField.y0]!, x1, y1: data[o + FireField.y1]!, dx: jx * SCATTER_CELLS, dy: jy * SCATTER_CELLS, start, from: figure?.(shooter, tick) ?? null });
       const end = start + lifeOf(weapon);
       this.busy.set(shooter, end);
       this.from = now;
@@ -157,16 +211,18 @@ export class FireFx {
   /**
    * Draws the shots at `now` (already in the CSS-px transform of `ctx`), `alpha` being the
    * opacity of the element layer and `size` the unit-size setting. Pure: the same `now` draws
-   * the same frame.
+   * the same frame. With `close`, a shot leaves a figure's muzzle (`originOf`).
    */
-  draw(ctx: CanvasRenderingContext2D, cam: Camera, geo: MapGeometry, vw: number, vh: number, now: number, alpha: number, size = 1): void {
+  draw(ctx: CanvasRenderingContext2D, cam: Camera, geo: MapGeometry, vw: number, vh: number, now: number, alpha: number, size = 1, close?: CloseTier): void {
     this.tracers.length = 0;
+    this.flashAt.length = 0;
     this.flashes = 0;
     this.impacts = 0;
     if (alpha <= 0.01 || this.shots.length === 0 || now >= this.until) return;
     const offs = wrapOffsets(cam, geo, vw);
     const tracer = WEAPONS.map(() => new Path2D());
     const flash = WEAPONS.map(() => new Path2D());
+    const tongue = new Path2D();
     const burst = WEAPONS.map(() => new Path2D());
     const smoke = WEAPONS.map(() => SMOKE_ALPHA.map(() => new Path2D()));
     const disc = (p: Path2D, x: number, y: number, r: number): void => {
@@ -178,15 +234,29 @@ export class FireFx {
       const { flash: fl, tracer: tr, impact: im } = phasesOf(s, now);
       if (fl >= 1 && tr >= 1 && im >= 1) continue;
       let flying = false;
+      let flashed = false;
+      const from = originOf(s, now, cam.scale, size, close);
       for (const off of offs) {
-        const [ax, ay] = worldToScreen(cam, s.x0 + off, s.y0, vw, vh);
+        const [ax, ay] = worldToScreen(cam, from.x + off, from.y, vw, vh);
         const [bx, by] = worldToScreen(cam, s.x1 + s.dx + off, s.y1 + s.dy, vw, vh);
         const len = Math.hypot(bx - ax, by - ay);
         const lift = l.arc * len;
         if (Math.max(ax, bx) < -CULL_PX || Math.min(ax, bx) > vw + CULL_PX || Math.max(ay, by) < -CULL_PX || Math.min(ay, by) - lift > vh + CULL_PX) continue;
         if (fl < 1) {
-          disc(flash[s.weapon]!, ax, ay, l.flashR * size * (1 - 0.6 * fl));
+          const r0 = l.flashR * size;
+          if (l.tongue > 0 && from.atBarrel > 0) {
+            // At a barrel a gun's flash is a tongue along it, its tail at the muzzle (PLAN 3.6c).
+            const r = (r0 + from.atBarrel * Math.max(0, FLASH_OF_FIGURE * from.side * cam.scale - r0)) * (1 - 0.6 * fl);
+            const long = r * (1 + (l.tongue - 1) * from.atBarrel);
+            const c = Math.cos(from.angle);
+            const sn = Math.sin(from.angle);
+            const mx = ax + c * (long - r);
+            const my = ay + sn * (long - r);
+            tongue.moveTo(mx + c * long, my + sn * long);
+            tongue.ellipse(mx, my, long, r * (1 - 0.3 * from.atBarrel), from.angle, 0, TAU);
+          } else disc(flash[s.weapon]!, ax, ay, r0 * (1 - 0.6 * fl));
           this.flashes++;
+          flashed = true;
         }
         if (tr < 1) {
           // The streak: from a little behind the head to the head, along the (arced) path.
@@ -205,6 +275,7 @@ export class FireFx {
         }
       }
       if (flying) this.tracers.push(s);
+      if (flashed) this.flashAt.push({ shot: s, x: from.x, y: from.y });
     }
     ctx.save();
     ctx.lineCap = 'round';
@@ -230,6 +301,11 @@ export class FireFx {
       ctx.fillStyle = '#fffbe6';
       ctx.fill(flash[w]!);
     }
+    // The tongues: a flame's edge around the bright core, so that it reads on a pale hull.
+    ctx.strokeStyle = 'rgba(255, 138, 30, 0.9)';
+    ctx.lineWidth = 1.6 * size;
+    ctx.stroke(tongue);
+    ctx.fill(tongue);
     ctx.restore();
   }
 }

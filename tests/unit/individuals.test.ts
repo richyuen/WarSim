@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hash2, pair } from '../../src/render/hash';
 import { Frame, shownFrame } from '../../src/shared/unitLooks';
-import { figureCells, figureCount, figureOffsets, FOOTPRINT_CELLS, gridSide, LINE_DEPTH, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
+import { figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, LINE_DEPTH, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
 
 // PLAN 2.6 and 2.10b: an element as its individuals at T3 (ADR-69, ADR-80). How many, and where
 // each stands. The drawing and the sim's strengths are checked in the browser
@@ -174,5 +174,43 @@ describe('where they stand', () => {
       expect(south[k]![0]).toBeCloseTo(-y, 12);
       expect(south[k]![1]).toBeCloseTo(x, 12);
     });
+  });
+});
+
+// PLAN 3.6c: the figure a volley leaves.
+describe('the figure that fires', () => {
+  it('is one of the figures the element has, where that figure stands', () => {
+    // Ten tanks, seven left: a 4 x 4 grid of the whole element.
+    const places = points(figureOffsets(42, 4, 7, 0.8));
+    for (let tick = 0; tick < 200; tick++) {
+      const f = firingFigure(42, tick, Frame.tankMedium, 7, 10, 0.8, true)!;
+      expect(places.some(([x, y]) => x === f.dx && y === f.dy), `tick ${tick}`).toBe(true);
+      expect(f).toMatchObject({ frame: Frame.tankMedium, side: 4, facing: 0.8 });
+    }
+  });
+
+  it('is the same for the same volley, and every figure has its turn', () => {
+    const seen = new Set<string>();
+    for (let tick = 0; tick < 400; tick++) {
+      const f = firingFigure(42, tick, Frame.tank, 10, 10, 0, false)!;
+      expect(firingFigure(42, tick, Frame.tank, 10, 10, 0, false)).toEqual(f);
+      seen.add(`${f.dx},${f.dy}`);
+    }
+    expect(seen.size).toBe(10);
+    // Another element's volley of the same hour leaves another place in its grid.
+    const same = Array.from({ length: 100 }, (_, tick) => [firingFigure(42, tick, Frame.gun, 12, 12, 0, false)!, firingFigure(43, tick, Frame.gun, 12, 12, 0, false)!] as const);
+    expect(same.filter(([a, b]) => a.dx === b.dx && a.dy === b.dy).length).toBeLessThan(5);
+  });
+
+  it('infantry in contact fires from its line, lying down', () => {
+    const line = points(figureOffsets(7, 8, figureCount(300, 500), 0, true));
+    const f = firingFigure(7, 55, Frame.infantry, 300, 500, 0, true)!;
+    expect(f.frame).toBe(Frame.prone);
+    expect(line.some(([x, y]) => x === f.dx && y === f.dy)).toBe(true);
+    expect(firingFigure(7, 55, Frame.infantry, 300, 500, 0, false)!.frame).toBe(Frame.infantry);
+  });
+
+  it('an element without a figure has none', () => {
+    expect(firingFigure(7, 55, Frame.tank, 0.4, 10, 0, true)).toBeNull();
   });
 });

@@ -3706,11 +3706,22 @@ quick sweep as a smoke test.
     - *Not done:* the tanks of an element have one angle, not each its bearing (3.6c may
       give each its own, where the shot leaves a muzzle); the frame's time with the pass
       was not measured; a turn was not filmed in a running game.
-  - [ ] 3.6c **The shot leaves a barrel.** At T3 a tracer and its flash start at the middle
+  - [x] 3.6c **The shot leaves a barrel.** At T3 a tracer and its flash start at the middle
     of the element's footprint, not at a figure. A tank's shot starts at the muzzle of one of
     its tanks, a gun's at one of its guns, and the cannon's flash is a tongue along the
     barrel. AT: unit; a spec (every cannon flash at T3 within a figure's reach of a figure
     of its shooter).
+    **Done 2026-10-07 (ADR-161).** A shot has a figure of its shooter (`firingFigure`, by the
+    element and the tick) and starts at that figure's muzzle as drawn (`originOf`,
+    `muzzleOf`), a tank's along its turret of the frame; from the slot to the muzzle with the
+    close tier's share. A rifle too, from the man's rifle. The tongue grows with the figure.
+    `fireFx.test.ts` 10 → 17, `individuals.test.ts` + 4. `muzzles1938.spec.ts` new: 25 of
+    25 cannon flashes of shooters in view at a tank's muzzle to 0.01 px. Pictures at 4 and
+    1.5 m/px looked at.
+    - *Not done:* each tank its own bearing (the tongue and the tracer of a tank at the edge
+      of its element differ by up to about 20 degrees for a near target: ADR-161); a gun's
+      tongue is along its formation's facing, not measured against its targets; a shooter
+      outside the view's box fires from its slot; nothing filmed in a running game.
   - [ ] 3.6d **Tanks burn where they are lost.** A wreck is left only when a whole element
     (10 tanks) is gone. A tank that leaves an element's figures between two snapshots leaves
     a burning hull on its place: flame for a while, smoke after, then gone. Not for an

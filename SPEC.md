@@ -1219,8 +1219,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   no AT gun, in a forest × 1. "AT vs armour": the battery takes over 0.7 of the tanks lost,
   and a division without it under 0.3 of what the whole one takes.
 - Tactical view: tank sprites with turret facing their target, muzzle flash, burning wrecks.
-  *As built so far (PLAN 3.6a, 3.6b):* the hulls and the turrets, and a turret that turns
-  to its target as its shot leaves (§8, "Tanks").
+  *As built so far (PLAN 3.6a to 3.6c):* the hulls and the turrets, a turret that turns
+  to its target as its shot leaves, and the shot from its muzzle (§8, "Tanks").
 
 ### 6.2 Naval
 - Sea zones + lane graph (§3.3). Ports and naval bases are province buildings that
@@ -1633,6 +1633,11 @@ moment before its first elements arrive.
   180 ms before the shot starts, stays for 1.5 s (or 1.5 ticks), and turns back to its hull's
   facing in 0.6 s. View state on the render clock; while an aim is live the turrets' facings
   are written and uploaded again each frame. The tanks of an element have one angle.
+  *The shot leaves a barrel* (PLAN 3.6c, ADR-161): at T3 a shot starts at the muzzle of one
+  of its shooter's figures (`firingFigure`: by the element and the tick; `originOf`), a
+  tank's along its turret of the frame, a gun's and a rifle's along the figure's facing, and
+  a cannon's flash is a tongue along the barrel. From the slot to the muzzle with the close
+  tier's share. A shooter outside the view's box fires from its slot.
 - *The T2 ↔ T3 change* is a handover like the others (see above), since PLAN 2.7b.
 - *Measured:* 3,345 figures of 89 elements (three divisions at 28 m/px): 0.7 ms to build per
   snapshot, 0.5 ms of CPU to draw a frame.

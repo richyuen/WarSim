@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { FIRE_STRIDE } from '../../src/shared/events';
 import { Weapon } from '../../src/shared/unitLooks';
 import { ANIM_TAIL_MS } from '../../src/render/timing';
-import { FireFx, lifeOf, LOOKS, MAX_SHOTS, MAX_SPREAD_MS, MIN_SPREAD_MS, phasesOf, SCATTER_CELLS, STEP_SPREAD_MS } from '../../src/render/fx/fire';
+import { FireFx, lifeOf, LOOKS, MAX_SHOTS, MAX_SPREAD_MS, MIN_SPREAD_MS, originOf, phasesOf, SCATTER_CELLS, STEP_SPREAD_MS, type CloseTier } from '../../src/render/fx/fire';
+import { ATLAS_FRAME, muzzleOf } from '../../src/render/units/atlas';
+import { figureCells, firingFigure, type FiringFigure } from '../../src/render/units/individuals';
+import { Frame } from '../../src/shared/unitLooks';
 
 // PLAN 2.4a: the shots the view makes of a snapshot's FireEvents. The drawing itself is checked
 // in the browser (tests/e2e/fire1938.spec.ts); here the rules of what becomes a shot and when.
@@ -150,5 +153,99 @@ describe('a shot in time', () => {
     expect(fx.animating(end - 1)).toBe(true);
     expect(fx.animating(end + ANIM_TAIL_MS - 1)).toBe(true);
     expect(fx.animating(end + ANIM_TAIL_MS)).toBe(false);
+  });
+});
+
+// PLAN 3.6c: at T3 a shot leaves the muzzle of one of its shooter's figures.
+describe('where a shot starts', () => {
+  const FIGURE: FiringFigure = { dx: 0.004, dy: -0.006, frame: Frame.tankMedium, side: 4, facing: 0.5 };
+  const figures = (shooter: number): FiringFigure | null => (shooter === 1 ? FIGURE : null);
+  const shot = (shooter = 1, weapon: Weapon = Weapon.cannon) => {
+    const fx = new FireFx();
+    fx.add(1, records([{ shooter, weapon, x0: 10, y0: 20, x1: 10, y1: 19 }]), 0, 0, GEO, figures);
+    return fx.shots[0]!;
+  };
+  /** The turret is a quarter turn right of the hull. */
+  const close = (share: number, minPx = 2.5): CloseTier => ({ share, minPx, turret: (_id, hull) => hull + Math.PI / 2 });
+  /** 4,000 px a cell: a figure of a 4 x 4 grid is 22 px. */
+  const SCALE = 4000;
+
+  it('a shot takes the figure of its shooter from the snapshot that brought it, or none', () => {
+    const asked: [number, number][] = [];
+    const fx = new FireFx();
+    fx.add(2, records([{ shooter: 1, tick: 77 }, { shooter: 2, tick: 77 }]), 0, 0, GEO, (shooter, tick) => {
+      asked.push([shooter, tick]);
+      return figures(shooter);
+    });
+    expect(asked).toEqual([[1, 77], [2, 77]]);
+    expect(fx.shots.map((s) => s.from)).toEqual([FIGURE, null]);
+    // A view that holds no elements for figures.
+    const far = new FireFx();
+    add(far, [{ shooter: 1 }], 0);
+    expect(far.shots[0]!.from).toBeNull();
+  });
+
+  it('without the close tier, or without a figure, it is the slot and the line to the target', () => {
+    const slot = { x: 10, y: 20, angle: -Math.PI / 2, atBarrel: 0, side: 0 };
+    expect(originOf(shot(), 0, SCALE, 1)).toEqual(slot);
+    expect(originOf(shot(), 0, SCALE, 1, close(0))).toEqual(slot);
+    expect(originOf(shot(2), 0, SCALE, 1, close(1))).toEqual(slot);
+  });
+
+  it('a tank fires from the muzzle of its turret, where the turret points now', () => {
+    const o = originOf(shot(), 123, SCALE, 1, close(1));
+    const side = figureCells(4);
+    const reach = (29 / ATLAS_FRAME) * side;
+    expect(muzzleOf(Frame.tankMedium)).toEqual([29 / ATLAS_FRAME, 0]);
+    // The turret's angle, not the hull's.
+    expect(o.angle).toBe(0.5 + Math.PI / 2);
+    expect(o.x).toBeCloseTo(10 + 0.004 + Math.cos(o.angle) * reach, 12);
+    expect(o.y).toBeCloseTo(20 - 0.006 + Math.sin(o.angle) * reach, 12);
+    expect(o.atBarrel).toBe(1);
+    expect(o.side).toBe(side);
+    // The same at any time while the turret stands.
+    expect(originOf(shot(), 456, SCALE, 1, close(1))).toEqual(o);
+  });
+
+  it('a gun and a rifle fire along their own facing, the rifle from the man\'s right hand', () => {
+    const at = (frame: number): { along: number; right: number } => {
+      const s = { ...shot(), from: { ...FIGURE, frame, side: 8 } };
+      const o = originOf(s, 0, SCALE, 1, close(1));
+      expect(o.angle).toBe(0.5);
+      const dx = o.x - 10 - 0.004;
+      const dy = o.y - 20 + 0.006;
+      return { along: (dx * Math.cos(0.5) + dy * Math.sin(0.5)) / figureCells(8), right: (-dx * Math.sin(0.5) + dy * Math.cos(0.5)) / figureCells(8) };
+    };
+    expect(at(Frame.gun).along).toBeCloseTo(30 / 64, 9);
+    expect(at(Frame.gun).right).toBeCloseTo(0, 9);
+    expect(at(Frame.infantry).right).toBeCloseTo(10 / 64, 9);
+    expect(at(Frame.prone).along).toBeCloseTo(30 / 64, 9);
+    // What has no barrel drawn fires from its middle.
+    expect(at(Frame.halftrack).along).toBeCloseTo(0, 9);
+    expect(at(Frame.halftrack).right).toBeCloseTo(0, 9);
+  });
+
+  it('the barrel is as long as the sprite is drawn: at its least size, and with the unit-size setting', () => {
+    const reach = (scale: number, size: number): number => {
+      const o = originOf(shot(), 0, scale, size, close(1));
+      return Math.hypot(o.x - 10.004, o.y - 19.994) * scale;
+    };
+    expect(reach(SCALE, 1)).toBeCloseTo((29 / 64) * figureCells(4) * SCALE, 6);
+    expect(reach(SCALE, 1.5)).toBeCloseTo((29 / 64) * figureCells(4) * SCALE * 1.5, 6);
+    // 300 px a cell: the figure would be 1.7 px and is drawn at 2.5.
+    expect(reach(300, 1)).toBeCloseTo((29 / 64) * 2.5, 6);
+  });
+
+  it('goes from the slot to the muzzle with the share of the figures', () => {
+    const full = originOf(shot(), 0, SCALE, 1, close(1));
+    const half = originOf(shot(), 0, SCALE, 1, close(0.5));
+    expect(half.x).toBeCloseTo((10 + full.x) / 2, 12);
+    expect(half.y).toBeCloseTo((20 + full.y) / 2, 12);
+    expect(half.atBarrel).toBe(0.5);
+  });
+
+  it('the figure of a volley is the same in every frame and after a reload', () => {
+    const a = firingFigure(1, 100, Frame.tank, 10, 10, 0, true);
+    expect(firingFigure(1, 100, Frame.tank, 10, 10, 0, true)).toEqual(a);
   });
 });

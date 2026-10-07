@@ -8086,3 +8086,40 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Done:** `held` returns the hull's facing itself once the return is over.
   `turrets.test.ts` 12 → 13. `turrets1938` green again.
 - **Next:** PLAN 3.6c (the shot leaves a barrel).
+
+## 2026-10-07 — PLAN 3.6c, the shot leaves a barrel
+
+- **Done** (ADR-161): a shot has a figure of its shooter (`firingFigure`,
+  `render/units/individuals.ts`: by the element's id and the record's tick), taken when the
+  shot is made from the element section kept near T3. `originOf` (`render/fx/fire.ts`) puts
+  its start at that figure's muzzle as the sprite is drawn (`muzzleOf`, `atlas.ts`): a
+  tank's along its turret of the frame, a gun's and a rifle's along the figure's facing. From
+  the slot to the muzzle with the close tier's share; at T2 as before. A cannon's and a
+  howitzer's flash at a barrel is a tongue along it with a flame's edge, and grows with the
+  figure. View only: the pin did not move.
+- **Tests:** `fireFx.test.ts` 10 → 17, `individuals.test.ts` + 4 (the figure of a volley).
+  `muzzles1938.spec.ts` new (one test, 17 s): 55 shots at 4 m/px, 25 of cannon, all at a
+  tank's muzzle to 0.01 px; 7 at a rifle's or a gun's; 20 of shooters the view does not hold,
+  at their slots; 3 outside the viewport. `tests/helpers/armourFire.ts`: where armour fires,
+  out of `turrets1938.spec.ts`, for both specs.
+- **Restated:** `fire1938.spec.ts` compares a shot with its fire record "what the view adds
+  aside"; the figure is one more thing the view adds, and the spec now says it is none at
+  T2. `turrets.test.ts`: its shots have no figure (the type).
+- **Specs by hand** (`--project=chromium`): `muzzles1938`, `fire1938`, `turrets1938`,
+  `closeZoom1938`, `individuals1938`, `battleView1938`, `zoomDemo1938`, `wrecks1938`,
+  `handover1938`, `precision`, `bench-pages`: 17 tests, green. In the first run of them
+  together `precision` waited 90 s for the bench page and ran out; alone and in a second run
+  with `fire1938` and `bench-pages` it passed (13 s). The load of the machine in the first
+  run is not known.
+- **Looked at** (the spec's pictures, a paused game 30 ms into a tank's shot): at 1.5 m/px a
+  white tongue with an orange edge at the end of the gun of one tank of the element, along
+  the gun; at 4 m/px five tanks of the division with a tongue each, and the tracers of
+  shooters outside the view's box from the right. The first pictures had a tongue of 9 px on
+  a tank of 45 px, a dot: hence its growth with the figure.
+- **Measured:** the fire layer at T2, ×5, about 300 shots held (`fire1938.spec.ts`): 0.73
+  and 0.78 ms a frame with the change, 0.79 and 0.79 on the commit before (1.02 in the run
+  of eleven spec files together). **Not measured:** the layer at T3.
+- **Learned:** the ground where armour fires two weeks into seed 1938 holds no element an
+  hour before: a spec that waits for elements there before the step waits for ever. A shot is
+  drawn only when an end of it is in the viewport, and the view holds elements beyond it.
+- **Next:** PLAN 3.6d (tanks burn where they are lost).

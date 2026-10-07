@@ -18,7 +18,7 @@
  * every frame and after a reload. Nothing here is sim state.
  */
 import { hash2, pair } from '../hash';
-import { Frame } from '../../shared/unitLooks';
+import { Frame, shownFrame } from '../../shared/unitLooks';
 
 /** m/px up to which T3 is the unit layer (`tierOf`); the handover from the T2 sprites is at this zoom. */
 export const T3_MAX_M = 30;
@@ -101,4 +101,29 @@ export function figureOffsets(element: number, side: number, count: number, faci
     out.push(fx * along - fy * across, fy * along + fx * across);
   }
   return out;
+}
+
+/** The figure of an element that a shot leaves (PLAN 3.6c). */
+export interface FiringFigure {
+  /** Where it stands, cells from the element's slot pose. */
+  dx: number;
+  dy: number;
+  /** The frame it is drawn with, the sub-slots per side of its grid, and its facing (radians). */
+  frame: number;
+  side: number;
+  facing: number;
+}
+
+/**
+ * Which figure of `element` fires its volley of `tick`, and where it stands: one of those the
+ * element has now, by the element and the tick, so the same in every frame and after a reload,
+ * and another for the next volley. Null for an element without a figure.
+ */
+export function firingFigure(element: number, tick: number, frame: number, strength: number, size: number, facing: number, inContact: boolean): FiringFigure | null {
+  const n = figureCount(strength, size);
+  if (n === 0) return null;
+  const side = gridSide(frame, figureCount(size, size));
+  const off = figureOffsets(element, side, n, facing, inContact && frame === Frame.infantry);
+  const k = hash2(hash2(element, tick), 0x6d7a) % n;
+  return { dx: off[k * 2]!, dy: off[k * 2 + 1]!, frame: shownFrame(frame, inContact), side, facing };
 }

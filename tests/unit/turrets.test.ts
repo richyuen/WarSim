@@ -75,7 +75,7 @@ describe('marchFraction', () => {
 
 // PLAN 3.6b: a turret is on its target as its shot leaves, and back on its hull after a silence.
 describe('TurretAims', () => {
-  const shot = (shooter: number, start: number, x1: number, y1: number, weapon: Weapon = Weapon.cannon): Shot => ({ shooter, target: 99, weapon, x0: 10, y0: 10, x1, y1, dx: 0, dy: 0, start });
+  const shot = (shooter: number, start: number, x1: number, y1: number, weapon: Weapon = Weapon.cannon): Shot => ({ shooter, target: 99, weapon, x0: 10, y0: 10, x1, y1, dx: 0, dy: 0, start, from: null });
   const HULL = 0.3;
   const NORTH_EAST = Math.atan2(-1, 1);
 

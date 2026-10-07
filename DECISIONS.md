@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-161 · 2026-10-07 · accepted — At T3 a shot leaves the muzzle of one of its shooter's figures (PLAN 3.6c)
+
+- **Context:** a fire record has the shooter's slot and the target's. At T3 an element is
+  its figures on a ground of 0.024 cells (470 m), and its tracer and flash began at the
+  middle of that ground: between the tanks, not at one.
+- **Decision:**
+  - A shot has a figure (`Shot.from`, `firingFigure` in `render/units/individuals.ts`): one
+    of those its shooter has in the snapshot that brought the record, by a hash of the
+    element's id and the record's tick. The same in every frame and after a reload, another
+    for the next volley. Taken once, when the shot is made (`FireFx.add`), from the element
+    section the view keeps near T3 (under 60 m/px).
+  - `originOf` (`render/fx/fire.ts`) is where the shot starts in a frame: the figure's place
+    and, from it, the muzzle of its frame (`muzzleOf` in `atlas.ts`, from the numbers the
+    frames are drawn with) at the sprite's size as the shader has it (its least size and the
+    unit-size setting too). A tank's muzzle is along its turret's angle of that frame
+    (`TurretAims.angleAt`); a gun's and a rifle's along the figure's facing. A carrier, a
+    ship and an aircraft have no barrel drawn and fire from their middle.
+  - The way from the slot to the muzzle goes with the close tier's share: at T2 a shot
+    starts at the slot as before, and through the handover it moves with the figures' fade.
+  - A cannon's and a howitzer's flash at a barrel is a tongue along it, its tail at the
+    muzzle, 3.2 and 3.6 radii long, with a flame's edge; its radius is at least 0.09 of the
+    figure's side, so that it grows with the tank (at 1.5 m/px a disc of 2.8 px was a dot at
+    the end of a gun 20 px long). Rifles keep their disc.
+  - View only: no sim state, no field in the snapshot; the pin does not move.
+- **A shooter the view does not hold** has no figure: fire is sent for a target in the
+  view's box too, and its shooter may stand outside it. Its shot starts at its slot, as at
+  T2. So does a shot made while the camera was further out than 60 m/px, for the half second
+  it lives.
+- **Not decided for: each tank its own bearing.** The tanks of an element keep the element's
+  one angle (ADR-160). The tracer goes from the muzzle to the target's slot, the tongue lies
+  along the turret: for a target in the next slot (0.03 cells) and a tank at the edge of its
+  ground (0.012 cells off the middle) the two differ by up to about 20 degrees for the tenth
+  of a second the flash is there. Each tank its own bearing would take that away and would
+  have every turret of an element at a slightly different angle; `turrets1938.spec.ts`
+  states the one angle. Left as it is.
+- **A gun's barrel is its formation's facing.** A field piece has no turret: its tongue lies
+  along the piece as drawn, and its shell's arc leaves toward the target. A deployed
+  formation faces the enemy, so the two are near each other in a battle; not measured.
+- **The figure's place is the snapshot's.** A figure of a marching element is drawn between
+  its last place and this one during the tick; the shot starts where the sim had the shooter
+  when it fired (as before this ADR). Elements in contact stand.
+- **Measured:** `muzzles1938.spec.ts`, 4 m/px on armour two weeks into 1938 (seed 1938): 55
+  shots, 25 of cannon, all 25 at the muzzle of a tank of their shooter to 0.01 px and more
+  than 0.3 of a hull from its middle; 7 at a rifle's or a gun's; 20 of shooters the view does
+  not hold, at their slots; 3 outside the viewport, not drawn. The fire layer at T2
+  (`fire1938.spec.ts`, 300 shots held at ×5): 0.73 and 0.78 ms a frame, 0.79 before.
+
 ### ADR-160 · 2026-10-07 · accepted — A turret is on its target as its shot leaves: view state from the shots drawn, written into the turrets' instances each frame (PLAN 3.6b)
 
 - **Context:** since ADR-159 a turret is an instance of its own, at its hull's facing. The

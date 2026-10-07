@@ -135,9 +135,11 @@ test('T2 fire: one tracer for every FireEvent in the window, with its flash and 
   expect(ids(got.shots)).toEqual(ids(wanted));
   const byShooter = new Map(wanted.map((f) => [f.shooter, f]));
   for (const s of got.shots) {
-    // What the view adds (when it starts, how it looks, where around the target it lands) aside.
-    const { start: _start, weapon: _weapon, dx, dy, ...ends } = s;
+    // What the view adds (when it starts, how it looks, where around the target it lands, the
+    // figure it leaves at T3: none at this zoom) aside.
+    const { start: _start, weapon: _weapon, dx, dy, from, ...ends } = s;
     expect(ends).toEqual(byShooter.get(s.shooter));
+    expect(from).toBeNull();
     expect(Math.hypot(dx, dy)).toBeLessThan(0.03); // within the target's slot
   }
 

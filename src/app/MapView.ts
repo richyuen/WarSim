@@ -12,7 +12,7 @@ import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
 import { spriteAlpha } from '../render/units/elementSprite';
-import { figureCells, figureCount, figureOffsets, gridSide, T3_MAX_M } from '../render/units/individuals';
+import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
@@ -448,7 +448,7 @@ export class MapView {
       this.snapArrival = arrived - this.tickProgress(arrived) * s.tickMs;
       this.tickMs = s.tickMs;
     }
-    const shots = this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo);
+    const shots = this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo, this.figureOfShooter());
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
@@ -778,6 +778,26 @@ export class MapView {
 
   /** The elements of the last snapshot, kept while the camera is near T3. */
   private elementSection: SnapshotElements | null = null;
+
+  /**
+   * The figure a shooter's volley leaves (PLAN 3.6c), for the shots of the snapshot in hand:
+   * of the elements kept near T3. None while the camera is further out, and for a shooter the
+   * view does not hold (fire is sent for a target in view too).
+   */
+  private figureOfShooter(): ((shooter: number, tick: number) => FiringFigure | null) | undefined {
+    const e = this.elementSection;
+    if (!e) return undefined;
+    let index: Map<number, number> | null = null;
+    return (shooter, tick) => {
+      if (!index) {
+        index = new Map();
+        for (let i = 0; i < e.count; i++) index.set(e.id[i]!, i);
+      }
+      const i = index.get(shooter);
+      if (i === undefined) return null;
+      return firingFigure(shooter, tick, e.frame[i]!, e.strength[i]!, e.size[i]!, e.facing[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0);
+    };
+  }
   /** m/px of the camera when the last element section arrived (tests). */
   elementsZoom = Infinity;
 
@@ -1056,7 +1076,9 @@ export class MapView {
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
-    this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale);
+    // At T3 a shot leaves the muzzle of a figure, where the turret of this frame has it (PLAN 3.6c).
+    const close = { share: this.individualCount > 0 ? this.shares.individuals : 0, minPx: FIGURE_MIN_PX, turret: (id: number, hull: number, t: number) => this.turretAims.angleAt(id, hull, t) };
+    this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale, close);
   }
 
   /** T1 operational markers (PLAN 2.1) and T0 counters (PLAN 2.2) on the overlay. */

@@ -13,6 +13,32 @@ import { Frame } from '../../shared/unitLooks';
 export const ATLAS_FRAME = 64;
 export const ATLAS_FRAMES = Object.keys(Frame).length;
 
+/** How far the gun of each turret reaches from its ring, atlas px. */
+const GUN_LIGHT = 26;
+const GUN_MEDIUM = 29;
+const GUN_HEAVY = 28;
+
+/**
+ * Where a frame's shot leaves it (PLAN 3.6c): atlas px from the middle of the frame, x along
+ * its facing and y to its right. A hull's is its turret's muzzle, along the turret. Frames
+ * without a barrel drawn (a carrier, a ship, an aircraft) fire from their middle.
+ */
+const MUZZLE: Readonly<Partial<Record<Frame, readonly [number, number]>>> = {
+  [Frame.infantry]: [28, 10],
+  [Frame.prone]: [30, 4.5],
+  [Frame.gun]: [30, 0],
+  [Frame.tank]: [GUN_LIGHT, 0],
+  [Frame.tankMedium]: [GUN_MEDIUM, 0],
+  [Frame.tankHeavy]: [GUN_HEAVY, 0],
+};
+const NO_MUZZLE: readonly [number, number] = [0, 0];
+
+/** The muzzle of `frame` as shares of the sprite's side: along its facing (a hull: its turret's), and to the right. */
+export function muzzleOf(frame: number): readonly [number, number] {
+  const [x, y] = MUZZLE[frame as Frame] ?? NO_MUZZLE;
+  return [x / ATLAS_FRAME, y / ATLAS_FRAME];
+}
+
 export function drawUnitAtlas(): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = ATLAS_FRAME * ATLAS_FRAMES;
@@ -160,9 +186,9 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   });
   // Turrets, the gun toward +x: a small round one with a thin gun, a larger one, and the heavy
   // tank's box with a thick gun and a muzzle brake.
-  frame(Frame.turretLight, (g) => turret(g, 7, 7, 26, 3, false));
-  frame(Frame.turretMedium, (g) => turret(g, 10, 9, 29, 4, false));
-  frame(Frame.turretHeavy, (g) => turret(g, 14, 12, 28, 6, true));
+  frame(Frame.turretLight, (g) => turret(g, 7, 7, GUN_LIGHT, 3, false));
+  frame(Frame.turretMedium, (g) => turret(g, 10, 9, GUN_MEDIUM, 4, false));
+  frame(Frame.turretHeavy, (g) => turret(g, 14, 12, GUN_HEAVY, 6, true));
   return c;
 }
 
