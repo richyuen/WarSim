@@ -8706,3 +8706,40 @@ No rule changed and nothing on screen changed. One task came out of it.
     fetch works, githubstatus.com green, the trace shows HTTP 200 and no reason).
   - *The push, later:* it went through on the next try, three minutes on; bf9e3a6 and
     5fac49e are on `origin/main`. Nothing was changed for it.
+
+## 2026-10-07 — PLAN 3.7e: the smoke sweep of Phase 3: the five limits hold on ten seeds; the run took three times as long
+
+- **One `npm run sweep:quick`** on `667ce67`: seeds 1 to 10, 20 years, ten processes. It ran
+  after the sim's tasks of this review (3.7h to 3.7m are all in that commit), so it is not
+  run again as 2.11a was. Every run finished, exit 0. Nothing is tuned for it (ADR-58).
+- **The five limits, every seed, beside Phase 2's last run** (2.11n; the report is in the
+  run's output, not kept):
+
+  | Limit | This run | Phase 2 (2.11n) | The limit |
+  |---|---|---|---|
+  | Land that changed controller in the last 5 years | 16.9 to 29.6% | 7.7 to 16.5% | at least 1.0% |
+  | The largest nation's land at the end | 10.0 to 19.3% | 13.9 to 16.8% | under 35% |
+  | The largest nation's income at the end | 27.3 to 30.7% | 28.1 to 30.0% | under 40% |
+  | Nations alive, least to most | 95 to 171 | 96 to 139 | passes on every seed |
+  | Years with a war | 100% | 100% | passes on every seed |
+
+- **Reported, not judged at 20 years:** a riser on 10 of 10 seeds (7 before), a faller on 10
+  of 10. Germany is the riser on four seeds (to 8.4 times its land on seed 2), China on two.
+- **For Phase 7, not for now (balance):** within 20 years a realm of the ten largest is gone
+  or nearly on seven seeds (Belgium's on three, Italy's on two, China's and Saudi Arabia's
+  on one each); the British realm keeps 19 to 35 % on three. 124 to 165 nations are alive
+  in year 20 (the least of any year is 95 to 100).
+- **Wall time: 14.2 min** (8.4 to 14.2 min a seed), against 4.9 min at 2.11n and 4.3 at
+  2.11a. Measured after it, the machine idle (1 % load): five years of seed 99 alone, pinned,
+  one run: mean tick 1.521 ms (1.466 at 3.4Rd, 1.67 at 3.5e; budget 1.5), year 1 2.479
+  (budget 2.4), years 2 to 5: 1.468, 1.275, 1.130, 1.254; year 1's hash is the pin's,
+  `b1bb392b`. At that tick 20 years are 4.4 min, so the tick of the first five years
+  does not account for the sweep's time.
+- **Not done:** why the sweep took three times as long was not found. Not told apart: years
+  6 to 20 slower than the first five, ten processes side by side slower than one, or the
+  machine busy during the run (its load then was not read). A line under PLAN 7.1 says how
+  to tell. The tick is over both budgets by 0.02 and 0.08 ms on this one run; SPEC §2.5
+  already says so (since 3.5e) and PLAN 7.1 has it.
+- **Gate:** documents only (parity).
+- **Next:** PLAN 3.7f (PARITY, the rows of the phase with their evidence), then the tick of
+  3.7 with `npm run check:full`, then the critic.

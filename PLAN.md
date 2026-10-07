@@ -3946,9 +3946,15 @@ quick sweep as a smoke test.
     Done 2026-10-07 (ADR-168): a tag is tied to its elements. The pictures looked at again:
     `layoutTags` places by strength, so of three formations on one ground the weakest, the
     tank brigade the demo is about, has its tag furthest off. The change is PLAN 3.7g.
-  - [ ] 3.7e The smoke run: one `npm run sweep:quick`, after the sim's tasks out of 3.7a
+  - [x] 3.7e The smoke run: one `npm run sweep:quick`, after the sim's tasks out of 3.7a
     (PLAN 2.11a ran first and had to be run again as 2.11n). Its five limits in PROGRESS; a
     limit that fails in BLOCKERS, or a task if a defect of this phase's feature caused it.
+    Done 2026-10-07, on `667ce67` (3.7h to 3.7m are in it). Every seed finished; the five
+    limits pass on 10 of 10: land that changed controller in the last 5 years 16.9 to
+    29.6 %, the largest nation's land 10.0 to 19.3 %, its income 27.3 to 30.7 %, nations
+    alive 95 to 171, a war in every year. Nothing in BLOCKERS, no constant touched.
+    *Not done:* the run took 14.2 min against Phase 2's 4.9, and why was not found (a line
+    under PLAN 7.1).
   - [ ] 3.7f PARITY, last (as 2.11h): the rows of the phase with their evidence, after the
     tasks that change what is drawn. Rows are added to, not replaced.
   Tasks that come out of 3.7a, 3.7c and 3.7d follow as 3.7g and on, the sim's first. 3.7 is
@@ -4384,6 +4390,13 @@ quick sweep as a smoke test.
   - Headless, 40 years of seed 31337: a mean tick of 1.14 ms, p95 up to 8.6 ms.
   - T0 unthrottled at 1920 × 1080 on an RTX 4070 Ti: 116 to 144 fps (a draw of 4.4 to 5.7
     ms). No weak GPU has been measured.
+  From the Phase 3 review (PLAN 3.7e, 2026-10-07): the quick sweep (10 seeds × 20 years, ten
+  processes) took 14.2 min where Phase 2's took 4.9 (8.4 to 14.2 min a seed). Five years of
+  seed 99 alone, pinned, the same hour: 1.521 ms a tick (1.466 at PLAN 3.4Rd), which is 4.4
+  min for 20 years. Not looked into: whether years 6 to 20 are slower than the first five
+  (95 to 171 nations alive, against 96 to 139), or ten processes side by side are (memory,
+  the cores), or the machine was busy. A 20-year run of one seed alone, with its tick by
+  year, tells the first from the rest.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
