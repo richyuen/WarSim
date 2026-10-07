@@ -252,7 +252,9 @@ on simulation runs (DECISIONS ADR-48).
 - The e2e suite runs in full when a numbered task is ticked, not for its parts (added
   2026-10-05, ADR-87, the user's decision; it is 7 to 9 of a gate's 13 minutes).
   `npm run check` sees to it: a commit that ticks `- [x] 2.14` runs every spec, a commit of
-  the part 2.14a runs the spec files it changed, or none. So: a part that touches what is
+  the part 2.14a runs the spec files it changed, or none. The tick of a review pass
+  (`- [x] 3.4R`, step 9) runs every spec as a numbered task's does; its parts (3.4Ra) are
+  parts (added 2026-10-06, PLAN 3.4Rn). So: a part that touches what is
   drawn runs the specs of that feature by hand before its commit and names them in
   PROGRESS.md; the last part of a task expects the full suite, and whatever it finds broken
   by an earlier part is fixed there. A phase review and the DONE CONDITION use

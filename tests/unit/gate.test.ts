@@ -66,6 +66,13 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     const whole = part.replace('- [ ] 2.14 ', '- [x] 2.14 ');
     expect(planE2e(code, whole, head)).toMatchObject({ mode: 'full' });
     expect(planE2e(['PLAN.md', 'src/sim/tick.ts'], whole, head).why).toContain('2.14');
+    // A review pass (PROMPT step 9) is ticked like a numbered task; its parts are parts (PLAN 3.4Rn).
+    const review = ['- [x] 3.4 A task', '- [ ] 3.4R Review pass', '  - [x] 3.4Ra its part', '- [ ] 3.4Rn A part at the margin'].join('\n');
+    expect(tickedTasks(review)).toEqual(['3.4']);
+    expect(planE2e(code, review.replace('- [ ] 3.4Rn', '- [x] 3.4Rn'), review)).toMatchObject({ mode: 'none' });
+    const passed = review.replace('- [ ] 3.4R ', '- [x] 3.4R ');
+    expect(tickedTasks(passed)).toEqual(['3.4', '3.4R']);
+    expect(planE2e(code, passed, review)).toMatchObject({ mode: 'full', why: 'PLAN 3.4R ticked' });
     // What every spec stands on, or an unknown change: everything.
     expect(planE2e([...code, 'tests/e2e/settle.ts'], head, head)).toMatchObject({ mode: 'full' });
     expect(planE2e([...code, 'playwright.config.ts'], head, head)).toMatchObject({ mode: 'full' });

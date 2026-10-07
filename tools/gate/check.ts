@@ -6,8 +6,9 @@
  *   no sim input changed                                             → everything but the 10-year sweep tests
  *   otherwise                                                        → everything
  *
- * And of the e2e stage (ADR-87): all of it when the change ticks a numbered task of PLAN.md;
- * for a part of a task (2.14a) only the spec files that changed, or none (`planE2e`).
+ * And of the e2e stage (ADR-87): all of it when the change ticks a numbered task of PLAN.md or
+ * the review pass after one (3.4R); for a part of either (2.14a, 3.4Ra) only the spec files that
+ * changed, or none (`planE2e`).
  *
  * Nothing but `npm run parity` reads the documents, and nothing but a sim input can change what
  * the sweep tests prove. `critic/` is the critic's own output and is ignored. The gate runs
@@ -49,9 +50,12 @@ export function planGate(files: readonly string[] | null, gated = false): Stage[
   return ALL_STAGES.filter((s) => s !== 'test:sweep' || sim);
 }
 
-/** The ids of the numbered tasks ticked in a PLAN.md text (`- [x] 2.13 …`): not the parts a task is split into (`2.13a`). */
+/**
+ * The ids of the numbered tasks ticked in a PLAN.md text (`- [x] 2.13 …`) and of the review passes
+ * (`- [x] 3.4R …`, PROMPT step 9): not the parts either is split into (`2.13a`, `3.4Ra`).
+ */
 export function tickedTasks(plan: string): string[] {
-  return [...plan.matchAll(/^- \[x\] (\d+\.\d+)(?=\s)/gm)].map((m) => m[1]!);
+  return [...plan.matchAll(/^- \[x\] (\d+\.\d+R?)(?=\s)/gm)].map((m) => m[1]!);
 }
 
 export interface E2ePlan {
@@ -63,7 +67,8 @@ export interface E2ePlan {
 
 /**
  * How much of the e2e stage a gate with code in it runs (ADR-87, the user's decision): all of it
- * when the change ticks a numbered task of PLAN.md (a part such as 2.14a does not), when git
+ * when the change ticks a numbered task of PLAN.md or a review pass (3.4R; a part such as 2.14a
+ * or 3.4Ra does not), when git
  * cannot tell what changed, or when something every spec stands on changed (a helper under
  * tests/e2e, the Playwright config). Otherwise only the spec files that changed: a new or an
  * edited spec is never committed unrun. `planAtHead`: PLAN.md as of HEAD, null when unknown.

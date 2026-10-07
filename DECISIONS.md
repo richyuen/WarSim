@@ -2826,6 +2826,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   asks a part that touches what is drawn to run that feature's specs by hand.
 - **PROMPT.md's "all must pass before any commit"** now reads, for the e2e suite, "before a
   numbered task is ticked". CLAUDE.md and PROMPT.md say so.
+- **Amended 2026-10-06 (PLAN 3.4Rn): the tick of a review pass counts.** The gate read
+  `- [x] 3.4R` as a part (`tickedTasks` wanted a blank after the number), so the review
+  pass 3.4R was ticked on `2551b9d` with no e2e, after three of its parts (3.4Rf, 3.4Rk,
+  3.4Rl) had changed rules and moved the pin. The suite run by hand then found
+  `wrecks1938.spec.ts` red. Now a line `- [x] N.MR` runs every spec, and its parts
+  (`N.MRa`) stay parts. Of the two ways PLAN 3.4Rn names (the gate, or a line that says
+  the suite is run by hand), the gate: it does not depend on the line being read. The
+  cost is one suite (about ten minutes) per review pass.
 
 ### ADR-86 · 2026-10-05 · accepted — A treasury is spent before an army is sent home; the treasury of the start carries the army of the start for a year (PLAN 2.13, the critic's R2-B3)
 

@@ -26,7 +26,7 @@ There is no memory between sessions. Read these files:
   - Code: typecheck, lint, unit, build, parity, plus the 10-year sweep tests when a sim
     input changed.
   - e2e (7 to 9 minutes): in full only when the change ticks a numbered PLAN task (2.14, not
-    its part 2.14a) (ADR-87). For a part, only the spec files that changed, or none. While
+    its part 2.14a) or the review pass after one (3.4R, not its part 3.4Ra) (ADR-87). For a part, only the spec files that changed, or none. While
     working on a part, run the specs of what you touch by hand (`npx playwright test <file>`). They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
 - `npm run check:full`: every stage, whatever changed.
