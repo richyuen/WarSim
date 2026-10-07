@@ -7525,3 +7525,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   to say nothing drawn changes: a rule that moves the pin moves the scenes the specs watch.
 - **Next:** PLAN 3.4Rn, before 3.5.
 
+## 2026-10-06 — PLAN 3.4Rn: the wreck spec's battle has its dead five days later; the gate counts a review pass; 3.4R is done
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Which rule** (`.cache/rn/deaths.ts`, scratch: the spec's own 16 hours in Node, run at
+  each commit on a detached HEAD): 3.4Rf (`71c5cd0`). The two busiest squares, both in
+  Spain: 29 and 23 dead before it, 4 and 3 at it, the same at 3.4Rk (`7e03c04`) and 3.4Rl
+  (`7ac7b63`).
+- **A scene that moved, not a defect** (`.cache/rn/scan.ts`, 90 days of seed 1938): 3,915
+  dead elements, 3,953 before 3.4Rf; by week 0, 66, 394, 558, 461, 466, 419, 823, 194, 173,
+  258, 103 for 0, 71, 445, 489, 572, 524, 672, 434, 260, 180, 193, 46. As many die, later:
+  an attacker that is fed does not waste away in its second week. What the dead of the old
+  window died of was not looked into.
+- **The spec:** `START` 344 to 456 (day 19), the same place in Spain (1017.9, 355.5). Alone
+  (`--project=chromium`, 26.7 s): 68 elements died in 16 h, 41 in the subscribed box, 41 in
+  the viewport (more than 5 wanted; 4 at the old hour), the farthest wreck 0 cells from its
+  sprite. No expect changed. `docs/evidence/2.4` was not taken again: its pictures are of
+  the old hour.
+- **The gate** (`e599032`, its own commit): `tickedTasks` read `- [x] 3.4R` as a part. Now
+  the tick of a review pass runs every spec; `3.4Ra` stays a part (`gate.test.ts`). ADR-87
+  amended, CLAUDE.md and PROMPT.md say so.
+- **Gotcha:** a part that moves the pin moves every scene a spec watches at a fixed hour.
+  "Nothing drawn changes" is no reason to skip the specs of such a part; a spec with a
+  fixed place and hour says in Node, in seconds, whether its scene still stands.

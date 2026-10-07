@@ -13,7 +13,9 @@ import { assets1938 } from '../helpers/earth';
 // sprites from the view, hour by hour. The pinned hash is the sweep stage's.
 
 const { w: W } = SIZE_1938;
-const START = 24 * 14 + 8;
+// The hour was 24 * 14 + 8 until PLAN 3.4Rn: with the attackers fed near their network (PLAN
+// 3.4Rf) the same battle, in Spain, has its dead five days later (4 in the viewport then, 41 now).
+const START = 24 * 19;
 const HOURS = 16;
 const M_PER_PX = 120;
 /** Slots of a block are this far apart (cells): a wreck lies where the sprite stood, not a slot away. */
@@ -74,7 +76,7 @@ test('T2: every element that dies leaves a wreck where its sprite stood, and its
     await sim.step(n);
     return sim.hash();
   }, START)).toEqual({ tick: START, hash: node.before });
-  // Deaths at the world view leave no wrecks in the view: 2 weeks of war passed.
+  // Deaths at the world view leave no wrecks in the view: 19 days of war passed.
   expect(await page.evaluate(() => window.__warsim!.view!.wrecks.wrecks.length)).toBe(0);
 
   await page.evaluate(({ cx, cy, m }) => {

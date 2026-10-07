@@ -2988,7 +2988,7 @@ quick sweep as a smoke test.
       3.5); no share is asked in any of the four.
   **PLAN 3.4 done 2026-10-06.** It is the fifth numbered task since the review pass 2.16R
   (2.17, 3.1 to 3.4): the review pass of PROMPT step 9 is due, and comes before 3.5.
-- [ ] 3.4R Review pass (PROMPT step 9) over PLAN 2.17 and 3.1 to 3.4: refactor debt, dead
+- [x] 3.4R Review pass (PROMPT step 9) over PLAN 2.17 and 3.1 to 3.4: refactor debt, dead
   code, SPEC re-read for drift (tech and research, fuel, org and breakdown, terrain by unit
   type, the four rules of combined arms), missing tests. It belongs to the tasks it follows
   (ADR-74) and starts the count again.
@@ -3289,7 +3289,7 @@ quick sweep as a smoke test.
       1.464 and 1.444 (1.527 and 1.514). Both figures still over budget.
     - *Hashes:* the five years' are the same in both runs as before (e5df6177, c65aeeb8,
       f2af9539, 6df1fb39, f67c5cb0).
-  - [ ] 3.4Rn **`wrecks1938.spec.ts` fails** (found 2026-10-06 by the full e2e suite on
+  - [x] 3.4Rn **`wrecks1938.spec.ts` fails** (found 2026-10-06 by the full e2e suite on
     `2551b9d`, run by hand: 137 passed, 1 failed, 1 did not run; alone it fails too). "T2:
     every element that dies leaves a wreck where its sprite stood": 4 wrecks in the viewport,
     more than 5 expected (line 157). The suite had not run in full since PLAN 3.4 was
@@ -3300,6 +3300,18 @@ quick sweep as a smoke test.
     hour that show the same thing, with no weaker expect. And the gate: the tick of a
     review pass (`3.4R`) runs the full suite, or PLAN says it is run by hand.
     AT: the full suite green on the final tree; 3.4R ticked with it.
+    **Done 2026-10-06.**
+    - *Which rule:* 3.4Rf (`71c5cd0`, the attackers fed within two cells of their network).
+      The spec's 16 hours in Node at each commit: the two busiest squares, both in Spain,
+      had 29 and 23 dead before it, 4 and 3 at it, and the same at 3.4Rk and 3.4Rl.
+    - *Not a defect:* seed 1938 has 3,915 dead elements in 90 days, 3,953 before the rule;
+      by week 0, 66, 394, 558, 461, 466, 419, 823 for 0, 71, 445, 489, 572, 524, 672, 434.
+      The battle is fought at the same place and has its dead later.
+    - *The spec:* the start is hour 456 (day 19), was 344. The same place (1017.9, 355.5),
+      68 dead in the 16 hours, 41 in the subscribed box and in the viewport. No expect
+      changed.
+    - *The gate:* `tickedTasks` takes `- [x] N.MR` for a numbered task (ADR-87, amended);
+      `e599032`.
 - [ ] 3.5 AI uses armour as spearheads; the economic AI adapts the mix.
   From the review pass 3.4R (3.4Re, 2026-10-06): nothing leaves contact. A formation in
   contact holds until one side is destroyed, armour with its infantry gone as any other
