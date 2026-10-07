@@ -3886,12 +3886,28 @@ quick sweep as a smoke test.
   (PROMPT step 9): the count of numbered tasks starts again with it. No part is a numbered
   task: the gate runs the specs a part changes (ADR-87). The tick of 3.7 itself is gated with
   `npm run check:full`; then the critic runs (PROMPT step 2a).
-  - [ ] 3.7a The independent read (ADR-74), the eighth: the 36 files of `src/` and `tools/`
+  - [x] 3.7a The independent read (ADR-74), the eighth: the 36 files of `src/` and `tools/`
     changed since the seventh (`dae7824`: PLAN 3.4Re to 3.6e5, 2,163 lines added), the new
     lines first. The same brief: defects only, nothing of what changed or why. Each finding
     is checked against the code here before it is anything; those a player can meet become
     tasks 3.7j and on, before 4.1, each with a test that fails first, most severe first; the
     rest go on the watch list.
+    Done 2026-10-07 (ADR-74, addendum: the eighth read). Five findings, three run by the
+    reader in Node (`.cache/read8/`, scratch, not kept in the repo), two traced; three
+    suspicions; 266,000 tokens, 17 minutes. Checked here: findings 1 and 2 run again with
+    the reader's scripts and they print what it reported; 4 and 5 read against the lines
+    it names and hold as far as reading shows; 3 is run again as the failing test of its
+    task. Save and load held wherever it tried (a load every 173 ticks over 150 days, 57
+    loads through wartime with the bytes compared, a random world), and seven invariants
+    held every tick of 3,600.
+    - Tasks, most severe first: 3.7j (an order between two parts of one landmass is refused
+      where a land cell with no province joins them: south-west Japan is cut from Japan),
+      3.7k (a paint of terrain anywhere moves marching formations), 3.7l (a march ended at
+      ground turned foreign puts the formation back a cell), 3.7m (an order to a formation
+      on the retreat drives it through the enemy unfought), 3.7n (a later save of the same
+      game loaded at T3 leaves a hull for every tank lost between).
+    - The rest (three suspicions): two go with the tasks that touch their lines (3.7j,
+      3.7k), one to BLOCKERS.
   - [x] 3.7b SPEC re-read for drift: each decision since the last pass (ADR-143 to ADR-167)
     looked for in SPEC (§2.3, §2.4, §6.1, §7, §8) and checked against the code, not against
     its ADR alone. Code that nothing uses since the last pass deleted (a commit of its own,
@@ -4025,6 +4041,83 @@ quick sweep as a smoke test.
     so and nothing differs, close this with the count.
     AT: unit (an overlord whose capital falls with no other city: its puppet has no
     overlord in the same tick, with `PuppetReleased`); the pin, moved or not, is said.
+    **Counted 2026-10-07** (`.cache/p37/puppets.ts`, scratch; ten years of seed 99): 66
+    nations die, one of them with a living puppet (Belgium at tick 3571, the Belgian Congo
+    its puppet for 54 hours more). Seed 7: 63 die, none with a living puppet. Once in twenty
+    years of games; what the 54 hours cost the puppet was not looked at.
+  The order of work for the tasks above and below, the sim's first and most severe first:
+  3.7j, 3.7k, 3.7h, 3.7l, 3.7m, 3.7i; then what is drawn: 3.7n, 3.7g. Then 3.7e and 3.7f.
+  - [ ] 3.7j **An order between two parts of one landmass is not refused for a land cell
+    that has no province** (the eighth read, finding 1; run there and again here). A
+    `Passage` groups the province nodes with open ground by their neighbours
+    (`nodeGroups`, `src/sim/nav/provinceGraph.ts`), and `mayReach` refuses two ends in
+    different groups with no search. Nodes are neighbours through cells that have a node; a
+    walkable cell of province 0 joins nothing. The 1938 map has 2,726 such cells, and 5 of
+    its 789 landmasses fall into more than one group with every holder open: south-west
+    Japan (7 provinces, 120 cells) from the rest of Japan, 2 cells of Ceylon, three skerries
+    of Finland's, specks off East Africa and New Zealand. A Japanese division at (1769,
+    395) is refused an order to (1766, 397), 3.6 cells away over Japan's own ground, by a
+    way of 6 cells of which one, (1768, 396), is forest with no province; the other way
+    too. The operational AI asks the same test (`operational.ts`, `reached`) and holds the
+    far part for out of reach. The random world has the same map.
+    Also to settle here (the reader's suspicion): from open ground a route of more than 500
+    km that is not found in its corridor is refused (ADR-149); a way whose only crossing is
+    a cell with no node would be refused inside one group too. No instance was found.
+    Decide where it is mended: the map (every walkable cell has a province: the data
+    pipeline, and what an import or a paint of land then needs) or the graph (a cell with
+    no node joins the nodes about it). Say which in DECISIONS.
+    AT: unit (the Japanese order above is taken, both ways; on the 1938 map with every
+    holder open no landmass falls into more than one group, or each that does is named
+    with why it may; a land cell painted in the editor between two provinces joins them);
+    the count of refused orders in a year of seed 99 before and after; the pin, moved or
+    not, is said.
+  - [ ] 3.7k **A paint of terrain does not move a marching formation** (the eighth read,
+    finding 2; run there and again here). `terrainChanged` (`src/sim/editor.ts`) and a
+    change of `loopingMap` (`gameOptions.ts`) clear `world.paths`. `formationPath` then
+    finds a route again from `originCell` to `targetCell` on the holders of now, while
+    `pathStep` and `stepFrac` still count along the path that is gone (and an order taken
+    in mid-step had put the step's far end before its route). Seed 99 at tick 1500, 487
+    formations on the march: one cell painted from ice to plains at (727, 1), 363 cells
+    from the nearest formation, and a tick later 85 formations stand elsewhere than in the
+    game without the paint, by up to 11.7 cells; 5 marches ended. Until ADR-149 a path
+    hung on the ground alone, and a far paint gave the same path back.
+    Also to settle here (the reader's suspicion): a path found again that is shorter than
+    `pathStep` reads a cell that is not there, and `cellPoint` of it is NaN. None in the
+    run; a long march, a paint and a much shorter new route would show it.
+    AT: unit (the reader's case: a paint far from every formation leaves every formation
+    where the game without it has it, a tick and 48 ticks later; a paint that bars a
+    marching formation's way: it goes on from where it stands by a new route, or halts
+    where it stands, and is at no tick more than a step from where it was; no place is
+    NaN; the same for `loopingMap`); `editor` unit tests as they are.
+  - [ ] 3.7l **A march that ends at ground turned foreign ends where the formation stands**
+    (the eighth read, finding 3; run there). The walk's `barred` (`movement.ts`) sets
+    `frac = 0` and puts the formation on the middle of the cell behind it, whatever part of
+    the step it had walked: 0.76 and 1.25 cells back in the hour (two cases in 400 hours of
+    war, seed 99 from tick 1500). After 3.7h (the same lines: a march home is not barred).
+    AT: unit (a formation at 0.53 of a step whose next cell turns a third nation's: an hour
+    later it is not further from where it stood than an hour's march, and it is idle on
+    ground it may stand on); the pin, moved or not, is said.
+  - [ ] 3.7m **An order to a formation on the retreat does not drive it through the enemy**
+    (the eighth read, finding 4; traced, not run). `orderMove` leaves `formations.retreat`
+    as it is, and the God command `moveFormation` calls it. While `retreat` > 0 the march is
+    not held by ground the enemy holds, the formation is in no battle and takes no cell: for
+    up to 24 hours a broken division can be sent forward over the enemy's cells and past
+    his formations. ADR-150 says only that the AI gives it no order.
+    Run it first (the failing test). Then decide in DECISIONS: the order is refused while
+    the retreat lasts (with a reason the panel can say), or it ends the retreat.
+    AT: unit (a division on the retreat ordered to a cell behind the enemy: it does not
+    enter a cell the enemy holds while it is in no battle); the panel says why if refused.
+  - [ ] 3.7n **A game loaded into a running one leaves no hull for what happened between**
+    (the eighth read, finding 5; traced, not run; view only). `MapView` keeps the elements
+    of the snapshot before unless the tick went back (`s.tick < this.lastTick`); a later
+    save of the same game passes, `tanksLost` takes an element for the same by id, frame,
+    formation and size, and every tank lost between the two states is a hull at once,
+    burning or grey by the first snapshot's `hit`. A load to an earlier tick has the other
+    fault: the hulls, wrecks and shots of the state that is gone stay for up to 17.5 s.
+    AT: unit or e2e, failing first (a view at T3 that is given a snapshot of a loaded game,
+    later and earlier: no hull that the game it shows did not make in the hour before, and
+    none, no wreck and no shot left of the game before); `burning1938` and
+    `tankBattle1938` as they are.
 
 ## Phase 4 — Naval
 

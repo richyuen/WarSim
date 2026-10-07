@@ -5035,6 +5035,44 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     count of how often, which no part of PLAN 3.2 made.
   - **The seven reads together:** forty-one findings, twenty-nine of them tasks.
 
+- **Addendum 2026-10-07, the eighth read (the review of Phase 3, PLAN 3.7a).** The same
+  brief, on the 36 files of `src/` and `tools/` changed since the seventh read (`dae7824`,
+  2,163 lines) and `data/combat.json`, the new lines first; Node only; nothing of what
+  changed or why, and PLAN, PROGRESS, DECISIONS, BLOCKERS and the git log's messages not
+  to be read. Told as known: the commands the page never sends, the AI's refused orders,
+  the war with no front, the tag on another formation's elements, the figure over a hull.
+  - **Five findings, three run by the reader, two traced; three suspicions.** 266,000
+    tokens, 17 minutes. Checked here: 1 and 2 run again with the reader's scripts, which
+    print what it reported; 4 and 5 read against the lines named; 3 is the failing test
+    of its task.
+    1. An order between two parts of one landmass is refused where a walkable cell with no
+       province joins them (`nodeGroups`, `mayReach`): south-west Japan, 120 cells, is cut
+       from Japan for the player and for the AI; four smaller splits.
+    2. A paint of terrain anywhere, or a change of the looping, clears the saved paths; the
+       path found again is another, and `pathStep` counts along the old one: 85 of 487
+       marching formations moved by up to 11.7 cells by one cell painted 363 cells away.
+    3. A march ended at ground turned foreign puts the formation back on the cell behind
+       it, up to 1.25 cells in the hour.
+    4. An order to a formation on the retreat sends it through the enemy unfought for up
+       to 24 hours (traced).
+    5. A later save of the same game loaded at T3 leaves a hull for every tank lost
+       between; an earlier one leaves the old game's hulls and shots (traced).
+  - **Tasks before Phase 4:** PLAN 3.7j (1), 3.7k (2), 3.7l (3), 3.7m (4), 3.7n (5).
+  - **Where the findings were.** 1, 2 and 3 are all of ADR-149 (no march across a third
+    nation), the one decision of the phase that changed what a route is: it made the
+    provinces a test before the search, the path a thing of the hour and state, and the
+    walk able to end a march. Each was gated with tests of the case it was written for
+    (a third nation between two others); the reader asked what else the same lines now
+    answer (a cell with no province, a cache dropped for another reason, a formation in
+    mid-step). 4 is where the retreat of ADR-150 met an order that is not the AI's. 5 is
+    the hulls' memory of the snapshot before, with a guard for a clock that went back and
+    none for one that jumped on.
+  - **What it did not see, found here by counting:** the 80 formations a year set on their
+    spawn point (PLAN 3.7h). Its invariants met two of them ("the two 29-cell jumps were
+    repatriation") and took them for the rule, which they are. As after the seventh read:
+    a rule that works as written is not a defect to a reader; it wants a count.
+  - **The eight reads together:** forty-six findings, thirty-four of them tasks.
+
 - **Addendum 2026-10-04: the review pass is counted by numbered tasks (the user's decision).**
   - *What the user said,* when a pass was proposed after PLAN 2.8c2: "Let's clarify the
     5-iteration rule for review pass to proper numbered iterations (e.g., 2.7, etc.) instead of

@@ -86,6 +86,15 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
 
 ## Watch list (not blocking)
 
+- **From the eighth read (PLAN 3.7a, 2026-10-07), for the review of Phase 4.** What a player
+  can meet of the read is PLAN 3.7j to 3.7n; two of its three suspicions go with the tasks
+  that touch their lines (a route of more than 500 km over a cell with no province: 3.7j; a
+  NaN place where a path found again is shorter than `pathStep`: 3.7k). The third:
+  - *Suspicion, not settled:* `deployOf` (`elements.ts`, older than the lines read) caches
+    a deployment worked out at `chain = 4` and serves it to a call at the root. A block's
+    place may then hang on which formation was asked first, and the worker asks by the
+    camera's box. Pictures and the places of events only. Comparing `deployOf` over all
+    engaged formations in two orders of asking would settle it.
 - **The watch lists of Phase 3 after its review (PLAN 3.7c, 2026-10-07).** Nine blocks stood
   here since the Phase 2 review (three of PLAN 3.4Rl and 3.5b, four things seen in passing,
   the rests of the sixth and seventh reads), and PLAN 3.5 and 3.6 carried some thirty "not

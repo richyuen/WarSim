@@ -8379,3 +8379,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.7a (the reader's findings, checked here), then the sim's tasks, 3.7g,
   the smoke run (3.7e) and PARITY (3.7f).
 
+## 2026-10-07 — PLAN 3.7a: the eighth independent read; 3.7g and 3.7h diagnosed and decided
+
+- **The read** (ADR-74, addendum): five findings, three run by the reader, three suspicions;
+  266,000 tokens, 17 minutes. Findings 1 and 2 run again here with its scripts
+  (`.cache/read8/kyushu.ts`, `groups.ts`, `caches.ts 99 1500 600`): the same output. Five
+  tasks before Phase 4: 3.7j (south-west Japan cut from Japan by a land cell with no
+  province), 3.7k (a paint of terrain moves 85 marching formations), 3.7l, 3.7m, 3.7n.
+- **What it found correct:** save and load (a load every 173 ticks over 150 days; 57 loads
+  through wartime with the bytes compared; a random world of 60 nations); `NavGrid.barred`
+  off against on, the same hashes over 600 ticks; seven invariants every tick of 3,600; the
+  counters' fold on a zoom step over 20,000 layouts; `server.ts`'s `hit`; the turrets, the
+  small frames, the muzzles, the marker stacks and the hulls' timing, read.
+- **3.7h diagnosed and decided (ADR-169):** all 80 formations moved in a tick (a year of
+  seed 99 and of seed 7) are repatriation's spawn point; 75 had an own cell within reach
+  and no permitted way there. They march home, across nations at peace with them. Not
+  coded yet.
+- **3.7g diagnosed (ADR-168, addendum):** the demo's three blocks stand side by side, not
+  one above the other. The rule is restated: a tag keeps off the elements of other
+  formations and tries the places beside its box too.
+- **3.7i counted:** in ten years of seed 99, 66 nations die and one has a living puppet
+  (Belgium; the Belgian Congo its puppet for 54 hours more); in seed 7's, 63 and none.
+- **Not done:** no source was changed in this iteration; findings 4 and 5 are traced, not
+  run; the three "From the Phase 3 review" tasks of the sim move the pin and none is coded.
+- **Next:** PLAN 3.7j (the first of eight tasks: 3.7j, k, h, l, m, i, then n and g), then
+  the smoke run (3.7e), PARITY (3.7f) and the tick of 3.7 with `npm run check:full`.
+
