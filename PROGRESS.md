@@ -10529,3 +10529,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check` (documents only: parity).
 - **Next:** PLAN 3.10d1.
+- **Added after the commit (documents only):** PLAN 3.10d1 as first written had three
+  traps, found on a second read of `supply.ts`, and now says: the test at a lost cell is
+  of 4-connection (the flood's), not 8; a cell that changes blocs is the loss first and
+  then the gain, and the flood from a gained cell keeps PLAN 2.11j's tests; a bloc's
+  spans are kept true or the bloc is flooded, since a bloc without spans is never cleared.
+  Its AT has the hashes of this entry's three runs (`5c31d145`, `114f9c7f`, `c9c0d546`).
+  `npm run check`: parity.

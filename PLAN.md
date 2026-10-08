@@ -4827,18 +4827,31 @@ quick sweep as a smoke test.
     (today only their nations are kept), and for each a test that is local. A cell the
     bloc gained beside its network joins it, and the bloc's dry cells beside that one
     with it (a flood from the cell: a pocket relieved). A cell the bloc lost, when it was
-    in the network: if the network cells about it still hang together without it (the
-    ring of eight about it, the wrap in mind), nothing else changes; if not, or if it is
-    a source (a city), or a crossing lane is in it, the bloc is flooded as today. The
-    spans a bloc remembers (`World.supplySpans`) must stay true or be given up for that
-    bloc. First count, with the probe of 3.10d put back, how many of the changed cells
+    in the network: if the network cells among its four neighbours still hang together
+    without it, 4-connected as the flood is, by way of the network cells of the eight
+    about it (the wrap in mind), nothing else changes; if not, or if it is
+    a source (a city), or a crossing lane is in it, the bloc is flooded as today. (Joined
+    in the ring is joined in the network; not joined in the ring may still be joined by
+    a long way round, and that case goes to the flood, the safe side. A test of
+    8-connection would move the pin.) The cells are taken one at a time, each against
+    the layer as the ones before it left it. A cell that goes from one bloc to another is
+    the one's loss first, its mark cleared, and then the other's gain: `open` refuses a
+    marked cell. The flood from a gained cell goes through `open` as the bloc's flood
+    does, with the tests of PLAN 2.11j that ask for a full refresh (it can come to a lane
+    that a higher bloc holds). The spans a bloc remembers (`World.supplySpans`) are kept
+    true by the mending (a span split at a loss, a span added or lengthened at a gain),
+    or the bloc is flooded as today; there is no third way: a bloc with no spans is not
+    cleared at its next refresh (`clear` zeroes only the spans it finds) and would keep
+    its old network. First count, with the probe of 3.10d put back, how many of the changed cells
     the local test settles, and what the flood of a bloc costs when it is still needed
     (a part, 3.10d1a, if the count is not plainly enough). AT: a unit test, red first on
     the cells a refresh visits (a front that moves by a few cells on a made map: fewer
     than a stated share of the bloc's cells are touched); a test of many random changes
     (cells taken and given back, a city taken, a pocket cut off and relieved, the date
     line, a lane) where the mended network is the full one's to the cell after each; the
-    tests of PLAN 1.42a and 2.11j green unchanged; the pin unmoved; supply's ms a tick of
+    tests of PLAN 1.42a and 2.11j green unchanged; the pin unmoved, and seed 99 after
+    five years on `5c31d145` (3,594 refreshes; 4242 after three on `114f9c7f`, 8128
+    after nine on `c9c0d546`); supply's ms a tick of
     seed 99 (five years), 4242 (three) and 8128 (nine) beside 3.10d's.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
