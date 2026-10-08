@@ -100,8 +100,9 @@ export function passageOf(world: World, nation: number, shared?: Map<string, Pas
   if (made) return made;
   const graph = navOf(world).graph;
   const open = new Uint8Array(graph.nodeCount);
-  for (const key of world.heldByNode().keys()) if (ok[key % 65536] === 1) open[Math.floor(key / 65536)] = 1;
-  const pass = { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open) };
+  const shut = new Uint8Array(graph.nodeCount);
+  for (const key of world.heldByNode().keys()) (ok[key % 65536] === 1 ? open : shut)[Math.floor(key / 65536)] = 1;
+  const pass = { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open), shut };
   shared?.set(key, pass);
   return pass;
 }

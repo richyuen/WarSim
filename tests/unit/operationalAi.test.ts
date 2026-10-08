@@ -499,3 +499,83 @@ describe('to spare (PLAN 3.10c1d, ADR-191)', () => {
     expect(thirtyDays(40).marching).toBeGreaterThan(0);
   }, 180_000);
 });
+
+describe('a pocket of open ground (PLAN 3.10c2b, ADR-192)', () => {
+  it('divisions walled off from the nearest front by a third nation are ordered to the front they reach, and no order is refused', () => {
+    const [USA, MEX, CAN] = ['USA', 'MEX', 'CAN'].map(nationId) as [number, number, number];
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [USA, MEX]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== USA) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[USA] = 0;
+    runEvents(s, 1);
+    w.wars.start([USA], [MEX], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    const nav = navOf(w);
+    const land = nav.grid.component;
+    const nb: number[] = [];
+    const isFront = (c: number): boolean => w.cells.controller[c] === USA && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === MEX);
+    const front = [...frontierOf(w)].filter(isFront).sort((a, b) => (a % W) - (b % W) || a - b);
+    // A front cell in the middle of the front, and two boxes whose edges Canada holds (two cells
+    // thick; it is at peace with both, so its ground is closed to the Americans): a small one
+    // around that cell, and a large one around it that reaches 26 cells to the west.
+    const a = front[Math.floor(front.length / 2)]!;
+    const ax = a % W;
+    const ay = Math.floor(a / W);
+    const small = [ax - 6, ay - 5, ax + 6, ay + 6] as const;
+    const large = [ax - 26, ay - 14, ax + 8, ay + 8] as const;
+    const within = (c: number, [x0, y0, x1, y1]: readonly [number, number, number, number], inset: number): boolean => {
+      const x = c % W;
+      const y = Math.floor(c / W);
+      return x >= x0 + inset && x <= x1 - inset && y >= y0 + inset && y <= y1 - inset;
+    };
+    for (const box of [small, large]) {
+      for (let y = box[1]; y <= box[3]; y++) {
+        for (let x = box[0]; x <= box[2]; x++) {
+          const c = y * W + x;
+          if (land[c] !== 0 && !within(c, box, 2)) w.setController(c, CAN);
+        }
+      }
+    }
+    // Where the six divisions stand: between the two, eight cells north of the small box's front.
+    const inPocket = (c: number): boolean => within(c, large, 2) && !within(c, small, 0);
+    const ids = Array.from({ length: 6 }, (_, k) => addDivision(w, USA, ax - 1 + (k % 3) + 0.5, ay - 9 + Math.floor(k / 3) + 0.5));
+    for (const id of ids) {
+      const here = Math.floor(f.y[id]!) * W + Math.floor(f.x[id]!);
+      expect(w.cells.controller[here], `division ${id}`).toBe(USA);
+      expect(inPocket(here), `division ${id}`).toBe(true);
+    }
+    // There is front in the small box (the nearest), in the large one beside it, and beyond both.
+    const nearFront = front.filter((c) => isFront(c) && within(c, small, 2));
+    const pocketFront = front.filter((c) => isFront(c) && inPocket(c));
+    expect(nearFront.length).toBeGreaterThan(0);
+    expect(pocketFront.length).toBeGreaterThan(0);
+    expect(front.filter((c) => isFront(c) && !within(c, large, 0)).length).toBeGreaterThan(0);
+    const dist = (id: number, c: number): number => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5));
+    for (const id of ids) expect(Math.min(...nearFront.map((c) => dist(id, c))), `division ${id}`).toBeLessThan(Math.min(...pocketFront.map((c) => dist(id, c))));
+    // The provinces do not tell the three apart: by them the divisions reach the small box.
+    const pass = passageOf(w, USA);
+    const groupOf = (c: number): number => pass.group![nav.graph.nodeOf[c]!]!;
+    const stand = Math.floor(f.y[ids[0]!]!) * W + Math.floor(f.x[ids[0]!]!);
+    expect(groupOf(stand)).toBeGreaterThan(0);
+    expect(nearFront.some((c) => groupOf(c) === groupOf(stand))).toBe(true);
+    // To the hour after the Americans' next plan.
+    const events: number[][] = [];
+    do events.push(...runEvents(s, 1));
+    while (w.tick % 6 !== 1 || ((w.tick - 1) / 6 + USA) % STAGGER !== 0);
+    expect(eventKinds(events, EventKind.MoveRejected).filter(([, nation]) => nation === USA)).toEqual([]);
+    // Every division marches, to the front in its pocket (the front cell or the Mexican one next
+    // to it).
+    for (const id of ids) {
+      expect(f.moving[id], `division ${id}`).toBe(1);
+      expect(inPocket(f.targetCell[id]!), `division ${id} to ${f.targetCell[id]! % W},${Math.floor(f.targetCell[id]! / W)}`).toBe(true);
+    }
+  });
+});

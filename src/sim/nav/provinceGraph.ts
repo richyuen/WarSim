@@ -6,7 +6,7 @@
  * province), so it is rebuilt identically after a load and never saved.
  */
 import { Terrain } from '../../shared/terrain';
-import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
+import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, POCKET_CELLS, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
 
 export interface ProvinceGraph {
   /** Node per cell (0 = none: water). Every walkable cell has one. */
@@ -14,6 +14,8 @@ export interface ProvinceGraph {
   nodeCount: number;
   /** Representative (centroid-nearest) cell per node. */
   centre: Int32Array;
+  /** Cells per node. */
+  cells: Int32Array;
   /** Mean move cost of the node's cells per mobility. */
   meanCost: readonly Float64Array[];
   /** Sorted neighbour lists. */
@@ -110,7 +112,7 @@ export function buildProvinceGraph(g: NavGrid, province: Uint16Array): ProvinceG
   }
   const meanCost = costSum.map((s) => s.map((v, i) => (cnt[i]! > 0 ? v / cnt[i]! : Infinity)));
   const adj = adjSets.map((s) => [...s].sort((p, q) => p - q));
-  return { nodeOf, nodeCount, centre, meanCost, adj };
+  return { nodeOf, nodeCount, centre, cells: Int32Array.from(cnt), meanCost, adj };
 }
 
 function neighbours4g(g: NavGrid, c: number): number[] {
@@ -181,13 +183,52 @@ export function nodeGroups(pg: ProvinceGraph, open: Uint8Array): Int32Array {
 }
 
 /**
+ * Whether a node lies in wide open ground (PLAN 3.10c2b, ADR-192): it has no closed ground, and
+ * with the nodes of no closed ground it is joined to by neighbours it has more than
+ * POCKET_CELLS cells. Who stands in such a node stands in no pocket (`pocketOf`), and the cells
+ * are not walked to find that out: most formations of most nations stand in one. The nodes are
+ * walked from this one until they have that many cells, and the answer is kept for all of them.
+ */
+export function wideNode(pg: ProvinceGraph, pass: Passage, node: number): boolean {
+  const { open, shut } = pass;
+  if (!open || !shut) return false;
+  const memo = (pass.wide ??= new Uint8Array(pg.nodeCount));
+  if (memo[node] !== 0) return memo[node] === 1;
+  const clear = (a: number): boolean => open[a] === 1 && shut[a] !== 1;
+  if (!clear(node)) {
+    memo[node] = 2;
+    return false;
+  }
+  // In hand: marked 3.
+  const walked = [node];
+  memo[node] = 3;
+  let cells = 0;
+  let wide = false;
+  for (let at = 0; at < walked.length && !wide; at++) {
+    const a = walked[at]!;
+    cells += pg.cells[a]!;
+    if (cells > POCKET_CELLS) wide = true;
+    for (const b of pg.adj[a]!) {
+      if (memo[b] === 1) wide = true;
+      if (memo[b] !== 0 || !clear(b)) continue;
+      memo[b] = 3;
+      walked.push(b);
+    }
+  }
+  for (const a of walked) memo[a] = wide ? 1 : 2;
+  return wide;
+}
+
+/**
  * What `findRoute` asks before any search: the two cells are of one landmass, and, from a start
  * on open ground, of one group of provinces with open ground (`Passage.group`). False: there is
  * no route. True: there may be one. Who allots formations to places asks this first (the
  * operational AI, PLAN 3.5b).
  * Written twice: `planNation` (`ai/operational.ts`, where it fills `reached`) reads the landmass
  * and the two groups itself, per class of formations and not per formation. A change of this
- * test is a change of that one.
+ * test is a change of that one. It asks one thing more, which this test does not (PLAN 3.10c2b,
+ * ADR-192): of formations in a pocket of open ground, whether the goal is in the pocket
+ * (`pocketOf`). Here that is left to the search, which walks the pocket and finds no way.
  */
 export function mayReach(g: NavGrid, pg: ProvinceGraph, start: number, goal: number, pass?: Passage): boolean {
   if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return false;

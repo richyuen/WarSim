@@ -9767,3 +9767,72 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check`, exit 0: parity (documents only).
 - **Next:** PLAN 3.10c2b.
+
+## 2026-10-07 — PLAN 3.10c2b1: formations in a pocket of open ground (ADR-192)
+
+- **The look PLAN asked for first** (`.cache/c2b/y4.bin`, a checkpoint of HEAD's year 4 of
+  seed 99; a probe put in and taken out, two hooks in `movement.ts`; `.cache/c2b/day.png`,
+  not committed). Day 1,467, 40 refused orders of nation 10, which is the Soviet Union
+  (nation ids begin at 1: the probe's first print named the nation before it). 37 of its
+  formations stand on a patch of Soviet ground at cells 1186 to 1199 by 416 to 428, all
+  around it ground of nations at peace with it, and are allotted to the Soviet front
+  against the Sudan (nation 34) 40 to 56 cells south; two at 1567,492 to a front against
+  the Raj. A sector they do reach: none (the patch has no front). Year 5: 13,379 of 13,403
+  refusals have no way by the cells; the formation's open ground is 4,096 cells or fewer
+  in 13,365 (median 100, the largest pocket 2,634; the next size is 209,261).
+- **The two candidates, counted.** The cells' landmasses for a whole passage: 12.2 ms a
+  fill (204,000 cells), 5,950 passages a year, 8.3 ms a tick. Not that. A remembered
+  refusal: no time, but saved state. Chosen: a third, the first candidate bounded (ADR-192).
+- **Done:** `pocketOf` and `inPocket` (`src/sim/nav/grid.ts`): the cells a route comes to
+  from a cell over open ground, walked up to `POCKET_CELLS` (4,096), marked once a passage
+  in a scratch of the grid. `planNation`: a formation in a pocket is of the pocket's class,
+  and the class reaches a sector when the sector's front cell is in the pocket. `wideNode`
+  (`nav/provinceGraph.ts`) and `Passage.shut`: a formation in a province with no closed
+  ground among such provinces of more than 4,096 cells is not walked, and a walk ends
+  where it meets one. `ProvinceGraph.cells`. `mayReach` is as it was (its comment says what
+  the planner asks besides). SPEC §7, ADR-192, PLAN 3.10c2b split in three, the pin
+  `38fcbd68` → `ae5e192d`.
+- **The unit test** (`operationalAi.test.ts`, "a pocket of open ground"): the United States
+  against Mexico, two boxes of Canadian ground, six divisions between them. Red on HEAD (six
+  orders refused), green now.
+- **Before and after** (five years of seed 99, one probe on both; another game from year 1):
+
+  | | orders | refused | the formation in a pocket | a way by the cells | the sector in a pocket | both in wide ground |
+  |---|---|---|---|---|---|---|
+  | HEAD | 82,822 | 21,203 | 19,728 | 990 | 353 | 0 |
+  | this | 68,736 | 11,412 | 10 | 8,164 | 2,337 | 854 |
+
+  Nation 10: 18,110 refused on 790 days (63, 203, 186, 338 in years 2 to 5), 58 formations
+  100 times or more → 7,463 on 1,072 days (152, 294, 341, 285), 4 formations. **Its days
+  with a refusal are more, not fewer:** in the game after its refusals are of the two
+  other kinds (5,620 with a way by the cells that the corridor does not hold, 1,456 to a
+  sector in a pocket). PLAN 3.10c2b2 and 3.10c2b3. PLAN's AT for 3.10c2b ("nation 10's
+  refused allotments before and after") is met for the kind this part answers and not for
+  the nation.
+- **The cost of the walk** (two years of seed 99, counters put in and taken out): the walk
+  alone 28,642 walks, 2,187 ms, 0.125 ms a tick; with a table of wide provinces made once a
+  passage 0.037 for the walks and 0.063 for the table (0.09 ms a passage); with `wideNode`
+  asked a node at a time 0.037; with the walk ending at a wide province 10,196 walks, 219
+  ms, 0.0125 ms a tick. The same hashes in all four.
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c1d2 → this (ms a
+  tick; one run each; other games from the first year on):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 4242, year 1 | 2.218 → 1.837 | 0.414 → 0.314 | 88.0 → 86.4 |
+  | seed 4242, year 2 | 1.903 → 1.430 | 0.417 → 0.395 | 46.9 → 124.3 |
+  | seed 99, years 1 to 5 | 1.710 → 1.818 | 0.397 → 0.482 | 87.3 → 90.1 |
+
+  Seed 99 by year: 2.207, 1.725, 1.879, 1.731, 1.549 (the operational AI 0.415, 0.325,
+  0.664, 0.448, 0.557). Seed 99 is over the budget of 1.5 ms by 0.3 (0.2 before): the
+  game's, where nation 10 now has orders refused in a corridor on 1,072 days; the walk
+  is 0.0125 of it. Year 8 of seed 8128 was not run (its checkpoint is of older rules).
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`):
+  `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass (6 tests, 2.4 min).
+- **Not done:** no picture in the repo (the look's is in `.cache`). 4,096 is set by one
+  game. The 124 ms call of seed 4242's year 2 was not looked into (3.10c2d). No sweep
+  (ADR-58). The full e2e suite has not run on this game (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 993 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c2b2 (the sector in a pocket), then 3.10c2b3.

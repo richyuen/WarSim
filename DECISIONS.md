@@ -167,6 +167,86 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-192 · 2026-10-07 · accepted — Formations in a pocket of open ground are allotted to the front in the pocket (PLAN 3.10c2b1)
+
+- **Context.** PLAN 3.10c2a: 21,078 of 76,738 orders of the operational AI in five years of
+  seed 99 are refused after the reach test (ADR-152) passed them, and 93 % of those that
+  searched have no way over open ground. The reach test asks the provinces: two neighbours
+  with some open ground each are one group, whether or not their open cells meet. A
+  formation so allotted counts in its sector and is offered no other, day after day.
+- **What the look found** (a checkpoint of year 4, the first day of year 5 with 40 refused
+  orders of nation 10, the Soviet Union; `.cache/c2b/day.png`, not committed). 37 Soviet
+  formations stand on a patch of Soviet ground (cells 1186 to 1199 by 416 to 428), with
+  ground of nations at peace with it (closed) all around, and are allotted to the
+  Soviet front against the Sudan 40 to 56 cells to the south; two more at
+  1567,492, to a front against the Raj 40 cells away. Year 5 of that game: 13,379
+  of 13,403 refusals have no way by the cells, and in 13,365 of them the formation's own
+  open ground is 4,096 cells or fewer (the median 100). In five years (the same probe):
+  19,728 of 21,203.
+- **Decision.** In `planNation`, where the classes of formations are made: a formation on
+  open ground is asked for its pocket (`pocketOf`, nav/grid.ts), the cells a route comes
+  to from its cell over ground open in the nation's `Passage`, by `findPath`'s own steps
+  (eight neighbours, no corner cut by the terrain), when they are no more than
+  `POCKET_CELLS` (4,096). The formations of one pocket are one class, and the class
+  reaches a sector when the sector's front cell (or the cell an order to it snaps to) is
+  in the pocket. Ground that is wider is not walked to its end: its formations are
+  classes by landmass and group of provinces, as before.
+- **Why not the cells' landmasses for all** (PLAN's first candidate: "a passage's
+  landmasses of open cells, made once a passage and day"). Counted: a labelled fill of
+  the open cells is 12.2 ms a passage (204,000 cells; 26.5 ms the longest) and a year has
+  5,950 passages: 8.3 ms a tick, against a tick of 1.2 to 2.3 ms. A passage is of one
+  hour and one set of open holders, and the holders of the cells change every hour: it
+  cannot be kept for a day without being saved or being wrong after a load.
+- **Why not a remembered refusal** (PLAN's second candidate). It costs no time, but it is
+  state (a formation's sector and day: the save format, the round trip, the hash), it has
+  to be forgotten when the ground changes, and on its first day the formation is still
+  allotted and refused. It answers every kind of refusal, though, and this rule answers
+  one: see "What is left".
+- **Why 4,096.** The pockets of the look: 100 cells the median, 2,634 the largest that
+  was asked from often; the next size of open ground in that game is 209,261. A number
+  set by one game.
+- **The cost, and what keeps it down.** With the walk alone: 28,642 walks in two years of
+  seed 99, 26,204 of them of wide ground (2,100 cells each), 0.125 ms a tick. So two
+  things that change no answer (the same hashes): (1) `wideNode` (nav/provinceGraph.ts):
+  a formation in a province with no closed ground, joined by neighbours to such provinces
+  of more than 4,096 cells together, is in no pocket and is not walked (the provinces are
+  walked until they have that many cells; the answer is kept on the `Passage`);
+  `Passage.shut`, the nodes with closed ground, is read in the loop that fills `open`.
+  (2) A walk ends at the first cell of such a province, or of ground an earlier walk of
+  the passage found wide. Then: 10,196 walks, 376 cells each, 0.0125 ms a tick. (A table
+  of the wide groups for every node, made once a passage, cost 0.09 ms a passage, as much
+  as the passage itself: dropped.) `wideNode` takes a province for joined in itself and
+  to its neighbours where both are open, which a province in two parts is not: it then
+  says "wide" of a pocket, and the pocket is judged as before this ADR.
+- **`mayReach` is not changed.** Its comment said the planner's test is the same test
+  written twice. The planner now asks one thing more. An order (a player's, the AI's) is
+  still refused by its search in the corridor, which in a pocket walks the pocket (0.05
+  ms).
+- **What it did** (five years of seed 99, the same probe before and after; another game
+  from the first year on):
+
+  | | orders | refused | the formation in a pocket | a way by the cells (or from closed ground) | no way, the sector in a pocket | no way, both in wide ground |
+  |---|---|---|---|---|---|---|
+  | before | 82,822 | 21,203 | 19,728 | 990 | 353 | 0 |
+  | after | 68,736 | 11,412 | 10 | 8,164 | 2,337 | 854 |
+
+  (132 of the refusals before and 47 after were not sorted: the order's target is on
+  another landmass.) Nation 10: 18,110 refused on 790 days before, 58 of its formations
+  100 times or more; after, 7,463 on 1,072 days, 4 formations. Its refusals after are of
+  the other kinds (5,620 with a way by the cells, 1,456 to a sector in a pocket, 364 in
+  wide ground): in the game after it fights elsewhere.
+- **What is left** (PLAN 3.10c2b2, 3.10c2b3). The sector in a pocket and the formation
+  not: the walk is from the formation, and one from every sector is a walk a sector. A
+  way by the cells that the corridor does not hold (ADR-189's price), asked again every
+  day: in the game after, formations at cell 1165,234 are sent 38 to 50 cells south, day
+  after day. Both in wide ground with closed ground between: nothing here asks it.
+- **Tests.** `tests/unit/operationalAi.test.ts`, "a pocket of open ground": the United
+  States against Mexico, two boxes whose edges Canada holds (at peace: closed), a small
+  one around a front cell and a large one around it; six divisions between the two, the
+  small box's front the nearest. Red before (six orders refused), green after: none
+  refused, all six on the march to the front in their own pocket. The pin `38fcbd68` →
+  `ae5e192d`.
+
 ### ADR-191 · 2026-10-07 · accepted — A front sector that nobody is in range of takes a formation the front can spare (PLAN 3.10c1d)
 
 - **Context.** ADR-190 sends only formations that are far from every sector they reach. A

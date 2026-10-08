@@ -1398,6 +1398,16 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     closed ground). A class reaches a sector when an order to the sector's front cell would
     not be refused before its search. Range and reserve count the sectors a formation
     reaches; each class is allotted to the sectors it reaches and to no other.
+  - *Pockets* (PLAN 3.10c2b1, ADR-192): the provinces are kinder than the cells (two
+    neighbours with open ground each are one group, whether or not their open cells meet).
+    So formations that stand in a pocket of open ground are a class of their own, which
+    reaches the sectors whose front cell lies in the pocket and no other. A pocket: the cells
+    a route comes to from the formation's cell over ground open to the nation, when they are
+    no more than `POCKET_CELLS` (4,096). It is walked once a passage (`pocketOf`,
+    nav/grid.ts). Wider ground is not walked to its end and is judged by the provinces, as
+    before; a formation in a province with no closed ground that is joined to such
+    provinces of more than 4,096 cells is not walked at all (`wideNode`). An order's own
+    test (`mayReach`) does not ask this: the order's search finds it.
   - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
     sector getting one while formations last. Formations already marching into a sector keep it,
     also beyond the sector's allotment of the day [ADR-53]; the rest fill what is left

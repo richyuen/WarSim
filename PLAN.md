@@ -4559,6 +4559,34 @@ quick sweep as a smoke test.
       a second sector it reaches: it is ordered to the second and not counted in the first);
       nation 10's refused allotments in five years of seed 99 before and after; the tick
       beside 3.10c1d2's.
+      Split 2026-10-07 after the look (one cause per commit): the refusals are of three
+      kinds, and the rule answers the first.
+      - [x] 3.10c2b1 *Done 2026-10-07 (ADR-192):* the formation stands in a pocket of open
+        ground. The look (a checkpoint of year 4, a picture, PROGRESS): 37 formations of
+        nation 10 (the Soviet Union) on a patch of its own ground with closed ground all
+        around, allotted to a front 40 to 56 cells away; 13,365 of year 5's 13,403 refusals
+        come from open ground of 4,096 cells or fewer. PLAN's first candidate costs 8.3 ms a
+        tick (a fill of the open cells, 12 ms a passage), so: the cells are walked from the
+        formation, 4,096 at most (`pocketOf`), and a class in a pocket reaches the sectors
+        whose front cell is in it. The unit test, red first. Five years of seed 99, the
+        refusals of a formation in a pocket: 19,728 of 21,203 before, 10 of 11,412 after
+        (another game). The walk: 0.0125 ms a tick.
+      - [ ] 3.10c2b2 The sector's front cell is in a pocket and the formation is not (353
+        refusals in five years of seed 99 before 3.10c2b1, 2,337 in the game after; nation
+        10 has 1,456). The walk of 3.10c2b1 is from the formation. First count the sectors
+        such an order goes to and what a walk from each sector's front cell costs (a planner
+        has up to 881 sectors); a walk only from the sectors a formation is allotted to
+        would be after the allotment. AT: a unit test, red first (the test of 3.10c2b1 with
+        the outer box left out); the count before and after.
+      - [ ] 3.10c2b3 A way by the cells that the corridor does not hold (ADR-189's price),
+        asked again every day: 990 refusals in five years of seed 99 before 3.10c2b1, 8,164
+        in the game after (nation 10: 5,620, e.g. formations at cell 1165,234 sent 38 to 50
+        cells south on every day of weeks). And 854 with no way and both ends in wide ground.
+        First look at one such day (where the way goes, how long it is). Then PLAN's second
+        candidate, a refusal that is remembered (a formation's sector and day, saved) so
+        that the allotment of the next days leaves the pair out, or a sector's reach by a
+        search from one formation of a class. An ADR, the pin moved. AT: a unit test, red
+        first; nation 10's refusals and its days with one, before and after.
     - [ ] 3.10c2c The steps before the orders (0.13 to 0.47 ms a tick: the frontier, the
       sectors, the scan, the passage, the reach, the reserve, the allotment), by step, on the
       game of HEAD: seed 99 years 1 to 5, seed 4242 years 1 and 2, year 8 of seed 8128. Then

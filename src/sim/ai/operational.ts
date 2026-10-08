@@ -12,7 +12,11 @@
  * the nearest one they reach; the farthest RESERVE share stays put as the reserve (farther ones garrison).
  * Reach (PLAN 3.5b, ADR-152): they are classes by where they stand (landmass, and group of
  * provinces with ground open to the nation), and a class reaches a sector when an order to its
- * front cell would not be refused before the search. Each class is allotted by itself, to the
+ * front cell would not be refused before the search. Those that stand in a pocket of open ground
+ * (PLAN 3.10c2b, ADR-192: no more than `POCKET_CELLS` cells that a route comes to, with closed
+ * ground or water around them) are a class of their own, and it reaches the sectors whose front
+ * cell is in the pocket: the provinces of a pocket are joined to others that the cells are not.
+ * Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
  * sector gets one while formations last). The range is to each sector (PLAN 3.10c1, ADR-187): a
@@ -43,7 +47,8 @@
  */
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
-import { neighbours4, type Passage } from '../nav/grid';
+import { inPocket, neighbours4, pocketOf, type Passage } from '../nav/grid';
+import { wideNode } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 4;
@@ -230,27 +235,35 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // `orderMove` asks before it searches: the cell the order would go to from that landmass
   // (`snapTarget`), then `mayReach`, read here from the two groups: the same test written a
   // second time (the landmass is asked once per class and sector), so a change of `mayReach`
-  // is a change of the line that fills `reached` below.
+  // is a change of the line that fills `reached` below. Then the cells, where they are few
+  // (PLAN 3.10c2b, ADR-192): a class in a pocket of open ground reaches the cells of the pocket
+  // and no other, which `mayReach` does not ask and the order's search would find.
   const pass = passageOf(world, n, passages);
   const nav = navOf(world);
   const land = nav.grid.component;
   const nodeOf = nav.graph.nodeOf;
   const group = pass.group!;
+  const wideCell = (c: number): boolean => wideNode(nav.graph, pass, nodeOf[c]!);
   const classIndex = new Map<number, number>();
   const classCell: number[] = [];
   const classGroup: number[] = [];
+  /** The pocket of open ground the class stands in (0: none). */
+  const classPocket: number[] = [];
   const classOf = new Int32Array(world.formations.highWater);
   for (const ids of [near, out]) {
     for (const id of ids) {
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       const node = nodeOf[here]!;
       const g = node !== 0 && pass.ok[pass.holder[here]!] === 1 ? group[node]! : -1;
-      const key = land[here]! * (nav.graph.nodeCount + 1) + g + 1;
+      const pocket = g < 0 || wideNode(nav.graph, pass, node) ? 0 : pocketOf(nav.grid, pass, here, wideCell);
+      // A pocket is of one landmass and one group.
+      const key = pocket > 0 ? -pocket : land[here]! * (nav.graph.nodeCount + 1) + g + 1;
       let ci = classIndex.get(key);
       if (ci === undefined) {
         classIndex.set(key, (ci = classCell.length));
         classCell.push(here);
         classGroup.push(g);
+        classPocket.push(pocket);
       }
       classOf[id] = ci;
     }
@@ -273,7 +286,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         to = known ?? snapTarget(world, from, hold % w, Math.floor(hold / w));
         if (known === undefined) other.set(land[from]!, to);
       }
-      if (to >= 0 && (g < 0 || nodeOf[to] === 0 || group[nodeOf[to]!] === g)) reached[ci]!.push(i);
+      if (to < 0 || (g >= 0 && nodeOf[to] !== 0 && group[nodeOf[to]!] !== g)) continue;
+      if (classPocket[ci]! > 0 && !inPocket(nav.grid, pass, to, classPocket[ci]!)) continue;
+      reached[ci]!.push(i);
     }
   }
   // Reserve: the farthest RESERVE share of free formations within range of a sector they reach
