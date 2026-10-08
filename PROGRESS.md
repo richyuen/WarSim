@@ -11179,3 +11179,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11d.
+
+## 2026-10-08 — PLAN 3.11c4, after it: a figure of ADR-204
+
+- ADR-204 said three hashes for each end of each shot. The sim draws two (forward or back,
+  and to the side); the third, the facing, is drawn by the worker for a view of elements.
+  ADR-204 says two now.
+- **Gate:** `npm run check` (documents: parity).

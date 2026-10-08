@@ -214,7 +214,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Not state.** No rule reads an element's place: the pin holds, and two years of seed 99
   end on the same hash (4c72477e).
 - **Cost.** Mean tick over two years of seed 99, pinned, two runs each in one session:
-  1.9756 and 1.9662 ms (1.9395 and 1.9248 on the commit before): 2% slower, three hashes
+  1.9756 and 1.9662 ms (1.9395 and 1.9248 on the commit before): 2% slower, two hashes
   for each end of each shot.
 - **Deviation from AoC:** none; AoC has no blocks of elements.
 
