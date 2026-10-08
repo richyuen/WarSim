@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-197 · 2026-10-08 · accepted — The zoom demo's battle is seed 1944's (PLAN 3.10f2, the full suite of PLAN 3.10)
+
+- **Context.** The full e2e run that the tick of PLAN 3.10 brings: 142 of 147 passed, and
+  `zoomDemo1938` is one of the two that fail alone as well. The division it chooses in seed
+  1946's game on day 30 (ADR-185) is now Japanese, formation 391, in China: 40 battalions of
+  67 to 142 of 500 men, three batteries, 134 to 147 shots by or at it in each hour. It is in
+  contact and has no march, and the spec asks for one with both ("stop 5, battle: the
+  division has a march and is in contact"), to show that a division in contact is not drawn
+  walking.
+- **Not looked for:** which part of 3.10 moved seed 1946's first month. Its parts changed
+  which formations a front sector takes (ADR-187 to ADR-192), the ways over open ground
+  (ADR-189, ADR-193 to ADR-195) and the supply network's refresh (ADR-196, meant to change
+  nothing); the pin of seed 99 moved with most of them. The parts ran no e2e but the specs
+  they touched (ADR-87), so the tick finds it.
+- **Decision.** `SEED = 1944`; the day stays 30. The spec file as written, on the seeds
+  nearest to 1946 in turn: 1947 fails (Nationalist Spain, battalions at up to 0.67 of their
+  men, where the spec asks under half), 1945 fails (a Romanian division, 0.54), 1948 fails
+  (a Japanese one, 0.59), 1944 passes: formation 593, a Czechoslovak infantry division east
+  of Plzeň against German divisions, 4,960 men in 28 elements, 24 battalions of 153 to 243
+  of 500, four batteries with 5, 5, 5 and 3 of 12 guns, 56 shots by or at it in each hour.
+- **Not changed:** no expectation of the spec, and no line of it but the seed and the comment
+  (as ADR-156 and ADR-185). The first seed that passes was taken.
+- **Consequences.** The pictures of `docs/evidence/2.10/` are made again (`EVIDENCE=1`) and
+  were looked at: stops 2, 5 and 8. The scene is the fourth since PLAN 3.4d. ADR-185 left
+  the question whether the spec should build its battle by hand to the next review pass;
+  it is still open, and the review pass after 3.12 has it.
+
 ### ADR-196 · 2026-10-08 · accepted — A refresh of the supply network mends it at the changed cells; a bloc's spans may cover more than its network (PLAN 3.10d1b)
 
 - **Context.** A partial refresh cleared and flooded every bloc that had a cell change:

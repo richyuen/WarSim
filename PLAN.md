@@ -4922,7 +4922,10 @@ quick sweep as a smoke test.
       `armourLosses` now takes the first 12 hours that end with a loss of the kind on the
       ground it names, starting at any hour (they started on a grid of 12).
       AT: both tests of `burning1938` and `loadedEffects1938`, which shares the helper.
-    - [ ] 3.10f2 `zoomDemo1938`: the division of seed 1946 that the demo closes in on has no
+    - [x] 3.10f2 *Done 2026-10-08 (ADR-197):* seed 1944, the first of 1947, 1945, 1948 and
+      1944 that passes: a Czechoslovak division east of Plzeň, 24 battalions of 153 to 243
+      of 500 men, four batteries. The pictures shot again; stops 2, 5 and 8 looked at.
+      The task as it was set: `zoomDemo1938`: the division of seed 1946 that the demo closes in on has no
       march since 3.10's parts ("stop 5, battle: the division has a march and is in
       contact"). Another seed, nearest first, as ADR-142, ADR-156 and ADR-185 did; the
       pictures of `docs/evidence/2.10` shot again and looked at.

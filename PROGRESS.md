@@ -10718,3 +10718,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.10f2, then the documents of 3.10f and the full gate again.
+
+## 2026-10-08 — PLAN 3.10f2: the zoom demo's battle is seed 1944's (ADR-197)
+
+- **The cause:** the second spec the full gate of 3.10 fails alone. In today's game of
+  seed 1946 the division `zoomDemo1938` chooses on day 30 is a Japanese one in China
+  (formation 391: 40 battalions of 67 to 142 of 500 men, three batteries) that is in
+  contact and has no march; the spec asks for one with both. Which part of 3.10 moved the
+  game was not looked for.
+- **Done:** `SEED = 1944` and the comment, nothing else in the spec (as ADR-142, ADR-156
+  and ADR-185). The spec as written on the seeds nearest 1946: 1947, 1945 and 1948 fail on
+  battalions at 0.67, 0.54 and 0.59 of their men (under half is asked); 1944 passes:
+  formation 593, a Czechoslovak infantry division east of Plzeň against German divisions,
+  4,960 men in 28 elements, 24 battalions of 153 to 243 of 500, batteries with 5, 5, 5 and
+  3 of 12 guns, 56 shots by or at it in each of the four hours.
+- **The pictures** (`EVIDENCE=1`, `docs/evidence/2.10/`, all eight shot again; stops 2, 5
+  and 8 looked at): the theatre has Europe a month in with the counters on the fronts;
+  at 150 m/px the division's block stands between its marker and a German division's,
+  three more German blocks in the view; at 3 m/px two lines of thinned battalions with
+  the batteries behind and two tracers.
+- **Specs run by hand:** `zoomDemo1938` (passes, 2.3 min with the pictures).
+- **Open still:** whether the demo should build its battle by hand (ADR-185's question;
+  this is the fourth seed since PLAN 3.4d): for the review pass after 3.12.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check` (with the spec changed: it runs it).
+- **Next:** the documents of 3.10f, and the full gate again for the tick of 3.10.

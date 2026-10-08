@@ -47,6 +47,13 @@ import { leg, steps, type LegResult } from './flight';
 // tried, nearest first: 1949, 1947 and 1950 have battalions at 0.57, 0.67 and 0.76 of their men;
 // 1946 passes all of this spec (an Austrian division: 24 battalions of 137 to 239 men of 500,
 // four batteries).
+// And seed 1944's since PLAN 3.10f2 (ADR-197): the parts of PLAN 3.10 changed how the fronts
+// are manned and the ways formations take (which of them moved seed 1946's game was not looked
+// for). There the division chosen is a Japanese one in China that is in contact and has no
+// march (40 battalions of 67 to 142 men, three batteries), and this spec asks for one with a
+// march, to show that a division in contact does not walk. The seeds tried, nearest first:
+// 1947, 1945 and 1948 have battalions at 0.67, 0.54 and 0.59 of their men; 1944 passes all of
+// this spec (a Czechoslovak division: 24 battalions of 153 to 243 men of 500, four batteries).
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -61,7 +68,7 @@ import { leg, steps, type LegResult } from './flight';
 
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
-const SEED = 1946;
+const SEED = 1944;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
 const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;
