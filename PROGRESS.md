@@ -10442,3 +10442,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` (code and a sim input: typecheck, lint, unit, build, parity,
   the 10-year tests with the new pin).
 - **Next:** PLAN 3.10d (supply's dear calls).
+- **Added after the commit (documents only):** PLAN 3.10c2 is ticked too. It is a heading
+  for its parts and has no AT of its own; every part is ticked, and what its parts left
+  undone is listed under it for 3.10f. `npm run check`: parity. The next unchecked task
+  is then 3.10d, as the line above says.

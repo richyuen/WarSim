@@ -4502,7 +4502,13 @@ quick sweep as a smoke test.
     red: a front on which every division marches still sends); France's table of 3.10c1d
     before and after; the tick beside 3.10c1d's; ADR-191 amended, the pin moved. If the
     table does not move with marching formations included, it is the world's: BLOCKERS.
-  - [ ] 3.10c2 What is left of the operational AI after 3.10c1, if it is still the tick's
+  - [x] 3.10c2 *Done 2026-10-08 (its parts 3.10c2a to 3.10c2d1, all ticked; it has no AT of
+    its own).* After them, five years of seed 99: the operational AI is 0.296 ms a tick
+    (0.561 at 3.10c2b3b) and no longer the tick's first system (combat in years 1 and 2, supply in 3 to 5), its longest call
+    31.6 ms (405, then 138 to 148). Not done, for 3.10f's leftover: the passage made again
+    each plan and the smaller steps before the orders (3.10c2c1's list), one search for a
+    group of marches (3.10c2d1), seed 8128's year 8 not run again.
+    The task as it was set: what is left of the operational AI after 3.10c1, if it is still the tick's
     first system: the steps before the orders are 0.13 to 0.37 ms a tick (the most where a
     planner has up to 881 sectors, seed 8128), and 476 to 3,690 orders a year are refused
     by `orderMove` after the reach test passed them (1 to 12 % of the orders' time, and a
