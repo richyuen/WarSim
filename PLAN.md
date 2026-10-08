@@ -4910,6 +4910,23 @@ quick sweep as a smoke test.
     budget is not met by then.
   - [ ] 3.10f The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
     the full gate.
+    The full gate of 2026-10-08 (`ff7dc77`): 142 of 147 specs pass. Two fail alone as well,
+    by the games that 3.10's parts changed (3.10f1, 3.10f2); two waited 60 s for the page
+    in the full suite and pass alone in 2 and 21 s (`editorDrag1938` line 183, `godMode1938`
+    line 106): a part of their own if the next full gate has them again.
+    - [x] 3.10f1 *Done 2026-10-08:* `burning1938`, the tank lost without fire: the window
+      the helper chose (12 hours from day 25.5 of seed 1938) had its 16 losses in its first
+      two hours, and a hull stands 17.5 s of the render clock, so none was held when the
+      window's pictures are taken ("a hull of the kind still held at the end of the
+      window": null). Nothing drawn is wrong: 16 hulls for 16 tanks, each where it stood.
+      `armourLosses` now takes the first 12 hours that end with a loss of the kind on the
+      ground it names, starting at any hour (they started on a grid of 12).
+      AT: both tests of `burning1938` and `loadedEffects1938`, which shares the helper.
+    - [ ] 3.10f2 `zoomDemo1938`: the division of seed 1946 that the demo closes in on has no
+      march since 3.10's parts ("stop 5, battle: the division has a march and is in
+      contact"). Another seed, nearest first, as ADR-142, ADR-156 and ADR-185 did; the
+      pictures of `docs/evidence/2.10` shot again and looked at.
+      AT: the spec passes; an ADR with the seeds tried.
 - [ ] 3.11 Critic R3-B3: zooming to a formation in contact shows its fight. The
   differentiator scored 6 and needs 8; tanks scored 5 and need 8. PLAN 3.7d and 3.7g tied
   the drawn tag to the elements (ADR-168). What the critic saw after them (`critic/c3_m.json`):

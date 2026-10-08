@@ -10690,3 +10690,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check` (documents only: parity).
 - **Next:** PLAN 3.10f.
+
+## 2026-10-08 — PLAN 3.10f1: the burning spec's window ends with a loss (a spec's helper)
+
+- **Why:** the full gate for the tick of 3.10 (`npm run check:full` on `ff7dc77`): 142 of
+  147 specs passed, 4 failed, 1 did not run. Run alone, two of the four pass
+  (`editorDrag1938` line 183 in 21 s, `godMode1938` line 106 in 2 s: both had waited 60 s
+  for the page in the full suite) and two fail: this one, and `zoomDemo1938` (PLAN 3.10f2).
+- **The cause:** `burning1938`, "a tank lost without fire is left where it stood": every
+  assertion on the hulls held (16 hulls for 16 tanks lost, each where its figure stood,
+  none burning), then "a hull of the kind still held at the end of the window" was null.
+  The window `armourLosses` chose in today's game of seed 1938 is 12 hours from day 25.5,
+  and its losses without fire are 12 in the first hour and 4 in the second (the world's;
+  none after). A hull stands 17.5 s of the render clock (`HULL_LIFE_MS`) and the ten hours
+  after took longer, so the view rightly held none when the pictures are taken. Under fire
+  the window (day 20.5) had losses up to its eleventh hour, and passed. Which part of 3.10
+  moved the game of seed 1938 was not looked for.
+- **Done:** `tests/helpers/armourLosses.ts` takes the first window of 12 hours that ends
+  with an hour in which the ground it names has a loss of the kind asked for. A window
+  starts at any hour (a grid of 12 before), so the last 12 hours are kept with the hash
+  before each. Nothing in `src/` changed, and no assertion of a spec.
+- **The windows now:** without fire, 12 hours from day 25.04 at (1666.25, 370.51): 16
+  hulls, 12 in the viewport, all in the last two hours. Under fire, from day 20.4 at
+  (1011.14, 355.96): 7 hulls, 7 burning, 3 of them in the last hour.
+- **Specs run by hand:** `burning1938` (2 pass) and `loadedEffects1938` (1 pass; it shares
+  the helper). No picture: nothing drawn changed; `docs/evidence/3.6` not shot again.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.10f2, then the documents of 3.10f and the full gate again.
