@@ -30,6 +30,7 @@ function section(list: readonly El[]): HullElements {
     x: list.map((e) => e.x ?? 100),
     y: list.map((e) => e.y ?? 50),
     facing: list.map((e) => e.facing ?? 0),
+    flags: list.map(() => 0),
     hit: list.map((e) => (e.hit === false ? 0 : 1)),
   };
 }

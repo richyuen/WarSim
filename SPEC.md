@@ -1791,6 +1791,15 @@ moment before its first elements arrive.
   element ends with it and leaves the element's wreck (PLAN 2.4b). Drawn with the figures'
   share, at a figure's size; at T2 a loss is the sprite's opacity, as for every element. At
   most 2,000 are held. View state on the render clock: a reload starts with none.
+  *What else is lost lies there too* (PLAN 3.11d, ADR-205, `fallenLost` in the same file): a
+  figure that an element of infantry, of guns or of half-tracks had and has no more leaves a
+  mark where it was drawn, by the same comparison of two snapshots. The fallen: a man down on
+  a dark stain, lying his own way; only for a loss in an hour in which the element was fired
+  at (men lost to attrition or desertion are gone, not fallen). A gun and a half-track:
+  broken and smoking if fired at, grey and left behind if not. A figure of a battalion is 8
+  men, and a battalion in contact loses about 15 men a day: two in three show a loss within
+  a day. The marks have the hulls' time and share and go at a load; at most 1,200 are held,
+  each a stamp of its kind's picture (5.7 ms a frame for all 1,200). None at T2.
   A game loaded into a running one (PLAN 3.7n, ADR-175) takes the hulls, the wrecks, the shots
   and the turrets' aims of the game before with it, and its first snapshot makes no hull: the
   view is told of the load (`SimClient.onLoad`), it does not read it off the clock.

@@ -11186,3 +11186,50 @@ No rule changed and nothing on screen changed. One task came out of it.
   and to the side); the third, the facing, is drawn by the worker for a view of elements.
   ADR-204 says two now.
 - **Gate:** `npm run check` (documents: parity).
+
+## 2026-10-08 — PLAN 3.11d: what a battalion, a battery and a half-track company lose lies where its figure stood (ADR-205)
+
+- **Measured first** (headless, a scratch script, the elements of formations in contact
+  over one day). Seed 4242 from day 21: 2,223 elements, one died whole; 1,532 battalions
+  lost 15.4 men each, 987 of them a figure or more (3,019 figures); 183 batteries lost 81
+  guns; 392 elements of light tanks lost 11 tanks. Seed 1212 from day 6: 611 elements, none
+  died; 508 battalions lost 14.3 men each, 329 a figure or more. So the figures are enough:
+  no count of men is carried in the view.
+- **Done:** `fallenLost` (`src/render/fx/hulls.ts`): from two snapshots, a mark for each
+  figure an element of infantry, guns or half-tracks has no more, where it was drawn. The
+  fallen only for a loss under fire; a gun and a half-track broken and smoking, or left
+  behind. Held by `HullFx` in a list of its own (`fallen`, `fallenShown`) with the hulls'
+  time, share and end at a load. `HullElements` has the formation's flags (a battalion in
+  contact lies in its firing line). Nothing of the sim, the worker or the snapshot changes.
+- **The critic's sample** (`wreckSamples`) read `view.wrecks` alone, which is the ends of
+  elements: the hulls of PLAN 3.6d were never in it, and these marks are not either. They
+  are at `window.__warsim.view.hulls.fallen` and `.fallenShown`.
+- **Tests:** `tests/unit/fallenFx.test.ts`, 8 tests; with the three kinds switched off 5
+  fail ("a battalion under fire: a mark for each figure it has no more", "a battalion
+  fired at on the march", "a gun and a half-track", "holds the marks of a snapshot beside
+  its hulls", "a load takes them away"). `tests/unit/hullFx.test.ts`: its helper gives the
+  new field, nothing else changed.
+- **Spec** `tests/e2e/fallen1938.spec.ts` (new): seed 4242, 24 hours from day 21 at 6 m/px
+  on Polish division 550: 194 figures lost by elements the view held; 187 of the fallen and
+  7 guns marked, each on the place the frame before had the figure; 95 of the marks in the
+  view, the first in hour 1; 40 drawn at the day's end; no figure of men was lost in an
+  hour without fire. Its first run failed on the spec's own reading: the view uploads
+  infantry in contact with the prone frame, and the spec took only the standing one for
+  men ("mark 66:50 of hour 1 is of a figure lost"). The spec was changed, not the rule.
+- **Specs run by hand** (ADR-87: a part), 7 files, 11 tests, all passed: `fallen1938`,
+  `burning1938`, `tankBattle1938`, `loadedEffects1938`, `wrecks1938`, `closeZoom1938`,
+  `fire1938`.
+- **Pictures** (`docs/evidence/3.11/`), looked at: `d-the-fallen-2m.png`: one man down on a
+  dark stain among German riflemen, plain to see; the stain lies over the legs of a living
+  figure beside it (the overlay is over the sprites). `d-the-fallen-6m.png`: the marks of
+  one hour, two dark specks to be found in the block. `d-the-fallen-after-a-day-6m.png`:
+  about a dozen dark marks among the Polish battalions and a few among the Germans at the
+  top. At 6 m/px a mark is small (a figure is 9 px): it is seen, it does not shout.
+- **Performance:** a frame of the unit layers with marks, measured by a scratch spec at
+  6 m/px (1,584 figures): 3,000 marks as paths 41.8 ms; as stamps 14.0 ms; the cap was set
+  to 1,200: 5.7 ms, 6.4 with a tenth of them guns that smoke. With one mark 0.1 ms. The tick
+  is not touched.
+- **Not done:** no mark at T2 (ADR-205). No sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11e.

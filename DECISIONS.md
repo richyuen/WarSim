@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-205 · 2026-10-08 · accepted — What a battalion, a battery and a half-track company lose lies where its figure stood (PLAN 3.11d, critic R3-B3)
+
+- **Context.** The critic: "No wreck was ever drawn. In 230 sim hours of the largest fight
+  `wrecks` and `shown` stayed 0" (`critic/c3_m.json`, `wreckSamples`), and its guess that an
+  element must die whole to leave one. So it was: `WreckFx` draws the end of an element
+  (PLAN 2.4b), and `HullFx` a tank that an element has no more (PLAN 3.6d). A battalion that
+  lost a figure lost it and nothing lay there.
+- **Measured first** (headless, the elements of the formations in contact, one day; the
+  critic's two games). Seed 4242 from day 21: of 2,223 elements one died whole. 1,532
+  battalions lost 15.4 men each on average, 987 of them at least a figure (3,019 figures);
+  183 batteries lost 81 guns; 392 elements of light tanks lost 11 tanks. Seed 1212 from day
+  6: 508 battalions, 14.3 men each, 329 at least a figure (911 figures); none died. A
+  figure of a battalion is 8 men (`figureCount`: 64 of 500), so two battalions in three show
+  a loss within a day by their figures alone.
+- **Decision.** From the figures, as the hulls are: no count of men carried in the view.
+  `fallenLost` compares the elements of a snapshot with those of the one before; a figure
+  that an element of infantry, of guns or of half-tracks had and has no more leaves a mark
+  where it was drawn (infantry in contact: in its firing line). The fallen: a man down on a
+  dark stain, each lying his own way. A gun and a half-track: broken and smoking if the
+  element was fired at in that hour (`SnapshotElements.hit`), grey and left behind if not,
+  as a tank. Men lost in an hour with no fire on their element (attrition, desertion) leave
+  no mark: they are gone, not fallen. In `HullFx`, beside the hulls and with their time
+  (17.5 s on the render clock), their end at a load and their share (the figures'): a list
+  of its own (`fallen`, `fallenShown`), so that what the specs of the hulls count is still
+  tanks.
+- **Not at T2.** A loss at T2 is the sprite's opacity, and an element's end its wreck, as
+  before. A mark is a figure's (53 m: 1.8 px at T2's nearest), and there is no figure there
+  for it to take the place of.
+- **No rule changes.** Nothing in the sim, no event, no field of the snapshot: the pin holds.
+- **Drawn as stamps.** As paths in one fill, 3,000 marks cost a frame 42 ms. Each is now a
+  picture of its kind, made once at four sizes and drawn turned: 14 ms for 3,000. Held:
+  1,200 at most (`MAX_FALLEN`), 5.7 ms (6.4 with a tenth of them smoking guns), the oldest
+  go. A view at 6 m/px on one division had 95 marks in a day, four an hour.
+- **Tests.** `tests/unit/fallenFx.test.ts` (which figures, where, of what kind, for how
+  long, the load, the cap), red with the three kinds switched off (five of eight).
+  `tests/e2e/fallen1938.spec.ts`: seed 4242, day 22 at 6 m/px on Polish division 550: 194
+  figures lost by the elements the view held, 187 of the fallen and 7 guns marked, each on
+  the place the frame before the hour had its figure, the first in hour 1; 40 drawn at the
+  day's end.
+- **Seen in the pictures** (`docs/evidence/3.11/d-the-fallen-6m.png`, `-2m.png`,
+  `d-the-fallen-after-a-day-6m.png`). At 2 m/px a man down on his stain, plain. At 6 m/px a
+  dark mark the size of a figure (9 px); an hour's are three or four in the view, a dozen
+  or more lie there while the game runs. The overlay is over the sprites: a mark is drawn
+  over a living figure that stands on it (one in the picture at 2 m/px). Not mended: the
+  hulls are so too.
+
 ### ADR-204 · 2026-10-08 · accepted — An element of a deployed block stands off its slot and is turned off its block's facing, by its id (PLAN 3.11c4, critic R3-B3)
 
 - **Context.** The critic's pictures of a tank fight at 2 and 6 m/px

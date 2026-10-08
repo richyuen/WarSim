@@ -5101,8 +5101,21 @@ quick sweep as a smoke test.
       AT: a unit test (no three of a deployed block's front row on one line, the shots
       still leave from where the elements stand, a block at rest as before), red first;
       the critic's pictures at 2 and 6 m/px shot again and looked at.
-  - [ ] 3.11d Losses drawn from strength lost: a wreck or a casualty mark within a day of a
+  - [x] 3.11d *Done 2026-10-08 (ADR-205):* a figure that an element of infantry, of guns or
+    of half-tracks has no more leaves a mark where it stood at T3 (`fallenLost`, in
+    `HullFx` beside the tanks' hulls): the fallen for a loss under fire, a gun and a
+    half-track broken or left behind. Measured first: on the critic's two games one element
+    of 2,834 in contact died whole in a day, and two battalions in three lost a figure (8
+    men) or more. Seed 4242, day 22, 6 m/px on Polish division 550: 194 figures lost, 187
+    of the fallen and 7 guns marked, the first in hour 1. No rule of the sim changes. None
+    at T2 (ADR-205 says why).
+    The task as it was set: Losses drawn from strength lost: a wreck or a casualty mark within a day of a
     fight that costs strength, not only when an element dies whole.
+    AT (written when taken up): a unit test of the marks from two snapshots (a battalion, a
+    battery, a half-track company; none for a tank, for men lost with no fire on them, or
+    for less than a figure), red first; an e2e on the critic's game (seed 4242, from day
+    21) that watches a day at T3 and finds every mark on the place of a figure lost, the
+    first within the day; pictures at 6 and 2 m/px, looked at.
   - [ ] 3.11e The tint: Soviet tanks are not Poland's pink.
   - [ ] 3.11f The task's AT on a seed the builder has not used, the pictures at T2 and T3,
     and the tick of 3.11 with the full gate.

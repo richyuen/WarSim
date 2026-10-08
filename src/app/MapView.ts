@@ -484,7 +484,8 @@ export class MapView {
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
     // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
-    // records only of the shots with an end in the box (PLAN 3.6e5).
+    // records only of the shots with an end in the box (PLAN 3.6e5). What a battalion, a battery
+    // and a half-track company lose lies there too (PLAN 3.11d).
     this.hulls.add(elementsBefore, s.elements, arrived);
     this.lastTick = s.tick;
     this.snapshots++;
@@ -655,7 +656,7 @@ export class MapView {
   readonly turretAims = new TurretAims();
   /** The ends of elements at T2 and the wrecks they leave (PLAN 2.4b). */
   readonly wrecks = new WreckFx();
-  /** The tanks lost between two snapshots, where they stood: burning, or left behind (PLAN 3.6d). */
+  /** The tanks lost between two snapshots, where they stood: burning, or left behind (PLAN 3.6d); and the fallen, the guns and the half-tracks (PLAN 3.11d). */
   readonly hulls = new HullFx();
 
   /**
@@ -1147,7 +1148,7 @@ export class MapView {
 
   /**
    * Over the element sprites (PLAN 2.4): the wrecks of the elements that died, the hulls of the
-   * tanks lost at T3 (PLAN 3.6d), then tracers, muzzle flashes and impacts.
+   * tanks lost at T3 (PLAN 3.6d) and the marks of what else was lost (PLAN 3.11d), then tracers, muzzle flashes and impacts.
    */
   private drawFx(cam: Camera, now: number): void {
     const ctx = this.overlay.getContext('2d')!;
@@ -1156,7 +1157,7 @@ export class MapView {
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
     // At T3 a shot leaves the muzzle of a figure, where the turret of this frame has it (PLAN 3.6c).
     const figures = this.individualCount > 0 ? this.shares.individuals : 0;
-    // A burning hull is a figure's: it is there with the figures.
+    // A burning hull and a mark of the fallen are a figure's: they are there with the figures.
     this.hulls.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity * figures, FIGURE_MIN_PX, this.unitScale);
     const close = { share: figures, minPx: FIGURE_MIN_PX, turret: (id: number, hull: number, t: number) => this.turretAims.angleAt(id, hull, t) };
     this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale, close);
