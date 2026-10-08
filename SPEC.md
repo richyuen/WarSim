@@ -1371,8 +1371,17 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Who deploys:* free (not engaged, not on the retreat: §5.2 step 4) formations within 60 cells of the front. The farthest 15%
     stay in reserve. The range is to each sector (PLAN 3.10c1, ADR-187): a sector is allotted no
     more than the formations within 60 cells of it and takes only those; what the allotments
-    leave over joins its nearest sector. A front that no formation is within 60 cells of gets
-    none (PLAN 3.10c1a).
+    leave over joins its nearest sector.
+  - *Marches from afar* (PLAN 3.10c1a, ADR-190): a sector of the nation's own front (not an
+    ally's) that has nobody takes one formation from beyond the range. Nobody: no formation
+    of the nation stands in the sector or in one next to it, the allotment gave it none and
+    none is on the march into it. The formation: free, standing still, on the sector's
+    landmass, more than 60 cells from every sector it reaches; the nearest first. It is
+    ordered to the sector's front cell and not planned again before the march ends or
+    comes within the range (then it is a march into a sector, kept as below). A formation
+    is looked at for this on one day in eight (`MARCH_DAYS`, by its id). A front all of
+    whose formations stand within the range of another part of it still gets nobody at its
+    far end (PLAN 3.10c1d).
   - *Reach* (PLAN 3.5b, ADR-152): those formations are classes by where they stand (the
     landmass; on it the group of provinces joined by ground open to the nation, §4, or
     closed ground). A class reaches a sector when an order to the sector's front cell would

@@ -28,6 +28,11 @@
  * by the template: no element is looked at), the armour marches on the enemy cell and the rest
  * hold the front cell; with no armour all of them attack, as above. The rest follow by the
  * plans of the days after: the front cell is where the armour has taken ground.
+ * Marches from afar (PLAN 3.10c1a, ADR-190): a sector of the planner's own front that has nobody
+ * (no formation of it stands in the sector or next to it, the allotment gave it none, none is on
+ * the march into it) takes the nearest formation on its landmass that is far from every sector it
+ * reaches and stands still: one a sector, to the sector's front cell, on the formation's day in
+ * MARCH_DAYS. The march is not planned again before it ends or comes within the range.
  */
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
@@ -41,11 +46,18 @@ export const OFFENSIVE_RATIO = 1.5;
 /** Threat (men) worth one extra formation's share in a sector. */
 export const THREAT_UNIT = 10_000;
 /**
- * Formations farther than this from every front sector stay where they are (garrisons), and a
- * sector takes none from farther than this (PLAN 3.10c1, ADR-187).
+ * Formations farther than this from every front sector stay where they are (garrisons) unless a
+ * sector that has nobody takes one (PLAN 3.10c1a, ADR-190), and a sector's allotment takes none
+ * from farther than this (PLAN 3.10c1, ADR-187).
  */
 export const DEPLOY_RANGE_CELLS = 60;
 const RANGE2 = DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS;
+/**
+ * A formation that is far from every front sector it reaches is looked at on one day in this
+ * many (PLAN 3.10c1a, ADR-190): a nation's far army sets out over these days and not in one
+ * tick, and a formation whose order was refused is asked again after them, not the day after.
+ */
+export const MARCH_DAYS = 8;
 /**
  * A formation with this share of its upkeep in tanks is armour (`EconomyTables.templateArmour`:
  * the armour formations of 1938 have 0.66 to 0.93, the others 0.20 at most).
@@ -62,6 +74,8 @@ interface Sector {
   strength: number;
   /** The own front cell nearest the centre. */
   hold: number;
+  /** One of its front cells is the planner's own (the others are its partners'). */
+  own: boolean;
 }
 
 /** The operational AI with the tanks' share of each template's upkeep (`EconomyTables.templateArmour`). */
@@ -131,8 +145,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       const y = (c - x) / w;
       const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
       let s = sectors.get(key);
-      if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1 }));
+      if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1, own: false }));
       s.cells.push(c);
+      if (holder === n) s.own = true;
     }
   }
   if (sectors.size === 0) return;
@@ -150,10 +165,13 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     s.cy = sy / s.cells.length;
   }
   const enemyByBucket = new Map<number, number>();
+  /** The sector buckets in which a formation of n stands, free or not. */
+  const stands = new Set<number>();
   const mine: number[] = [];
   world.formations.forEach((id) => {
     const m = f.nation[id]!;
     if (m === n) {
+      stands.add(Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS));
       if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
       return;
     }
@@ -168,19 +186,27 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const dy = f.y[id]! - s.cy;
     return dx * dx + dy * dy;
   };
-  // Within range of a sector: the others stay where they are (garrisons). No formation in
-  // range (45 % of the plans in two years of seed 99, PLAN 3.4Rm): nothing below would give an
-  // order, and the ground is not asked for.
+  // Within range of a sector: the others are garrisons, and those of them that stand still may,
+  // on their day in `MARCH_DAYS`, be sent to a front of n's own that has nobody (`out`; PLAN 3.10c1a, ADR-190). Neither the
+  // one nor the other (45 % of the plans in two years of seed 99 had no formation in range,
+  // PLAN 3.4Rm): nothing below would give an order, and the ground is not asked for.
+  const ownFront = list.some((s) => s.own);
+  const day = Math.floor(world.tick / 24);
+  const idle = (id: number): boolean => f.moving[id] !== 1 && (day + id) % MARCH_DAYS === 0;
   const near: number[] = [];
   const nearD: number[] = [];
+  const out: number[] = [];
   for (const id of mine) {
     let d = Infinity;
     for (const s of list) d = Math.min(d, dist2(id, s));
-    if (d > DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS) continue;
+    if (d > RANGE2) {
+      if (ownFront && idle(id)) out.push(id);
+      continue;
+    }
     near.push(id);
     nearD.push(d);
   }
-  if (near.length === 0) return;
+  if (near.length === 0 && out.length === 0) return;
   // Reach (PLAN 3.5b): formations that stand on one landmass and in one group of provinces
   // with open ground (or on closed ground, which they walk out of) reach the same places.
   // Each such class is asked once per sector, for the sector's own front cell, what
@@ -197,18 +223,20 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const classCell: number[] = [];
   const classGroup: number[] = [];
   const classOf = new Int32Array(world.formations.highWater);
-  for (const id of near) {
-    const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
-    const node = nodeOf[here]!;
-    const g = node !== 0 && pass.ok[pass.holder[here]!] === 1 ? group[node]! : -1;
-    const key = land[here]! * (nav.graph.nodeCount + 1) + g + 1;
-    let ci = classIndex.get(key);
-    if (ci === undefined) {
-      classIndex.set(key, (ci = classCell.length));
-      classCell.push(here);
-      classGroup.push(g);
+  for (const ids of [near, out]) {
+    for (const id of ids) {
+      const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
+      const node = nodeOf[here]!;
+      const g = node !== 0 && pass.ok[pass.holder[here]!] === 1 ? group[node]! : -1;
+      const key = land[here]! * (nav.graph.nodeCount + 1) + g + 1;
+      let ci = classIndex.get(key);
+      if (ci === undefined) {
+        classIndex.set(key, (ci = classCell.length));
+        classCell.push(here);
+        classGroup.push(g);
+      }
+      classOf[id] = ci;
     }
-    classOf[id] = ci;
   }
   const sn = list.length;
   // reached[ci]: the sectors class ci reaches, ascending.
@@ -242,11 +270,13 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       d = Infinity;
       for (const i of reached[ci]!) d = Math.min(d, dist2(id, list[i]!));
     }
-    if (d <= DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS) nearest.set(id, d);
+    if (d <= RANGE2) nearest.set(id, d);
   }
   const ranked = [...nearest.keys()].sort((a, b) => nearest.get(a)! - nearest.get(b)! || a - b);
   const active = ranked.slice(0, ranked.length - Math.floor(ranked.length * RESERVE));
-  if (active.length === 0) return;
+  // Far from every sector they reach, standing still, and theirs the day (ascending).
+  const far = ownFront ? [...near.filter((id) => !nearest.has(id) && idle(id)), ...out].sort((a, b) => a - b) : [];
+  if (active.length === 0 && far.length === 0) return;
   // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood.
   for (const s of list) {
     const sy = Math.floor(s.key / bw);
@@ -373,6 +403,66 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (best < 0) continue;
       list[best]!.formations.push(id);
       list[best]!.strength += f.strength[id]!;
+    }
+  }
+  // Marches from afar (PLAN 3.10c1a, ADR-190): a front sector of n's own that has nobody takes
+  // the nearest formation on its landmass that is far from every sector it reaches and stands still. Nobody: no
+  // formation of n stands in the sector or next to it, the allotment above gave it none, and
+  // none is on the march into it. One formation a sector and one order a sector and plan, also
+  // when the order is refused. The march is not planned again while it lasts: a formation on
+  // the march is not in `far`, and within the range of the sector it is kept as any march is.
+  if (far.length > 0) {
+    const empty = new Uint8Array(sn);
+    let empties = 0;
+    for (let i = 0; i < sn; i++) {
+      const s = list[i]!;
+      if (!s.own || s.formations.length > 0) continue;
+      const sy = Math.floor(s.key / bw);
+      const sx = s.key - sy * bw;
+      let stood = false;
+      for (let dy = -1; dy <= 1 && !stood; dy++) for (let dx = -1; dx <= 1 && !stood; dx++) stood = stands.has((sy + dy) * bw + ((sx + dx + bw) % bw));
+      if (stood) continue;
+      empty[i] = 1;
+      empties++;
+    }
+    if (empties > 0) {
+      for (const id of mine) {
+        if (f.moving[id] !== 1) continue;
+        const i = index.get(sectorOfCell(f.targetCell[id]!));
+        if (i === undefined || empty[i] === 0) continue;
+        empty[i] = 0;
+        empties--;
+      }
+    }
+    /** The nearest empty sector the formation's class reaches, and its distance (squared). */
+    const emptyFor = (id: number): [number, number] => {
+      let best = -1;
+      let bd = Infinity;
+      const ci = classOf[id]!;
+      for (const i of reached[ci]!) {
+        // Not to the shore across the water from it (where an order to another landmass ends).
+        if (empty[i] === 0 || land[list[i]!.hold] !== land[classCell[ci]!]) continue;
+        const d = dist2(id, list[i]!);
+        if (d < bd) {
+          bd = d;
+          best = i;
+        }
+      }
+      return [best, bd];
+    };
+    if (empties > 0) {
+      const wants = far.map((id) => [id, ...emptyFor(id)] as [number, number, number]).filter((q) => q[1] >= 0);
+      wants.sort((a, b) => a[2] - b[2] || a[0] - b[0]);
+      for (const [id, first] of wants) {
+        if (empties === 0) break;
+        // Its sector was taken by a nearer formation: the nearest that is still empty.
+        const i = empty[first] === 1 ? first : emptyFor(id)[0];
+        if (i < 0) continue;
+        empty[i] = 0;
+        empties--;
+        const to = list[i]!.hold;
+        orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);
+      }
     }
   }
   // Orders.

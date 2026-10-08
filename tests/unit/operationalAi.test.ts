@@ -301,15 +301,32 @@ describe('the range is to the sector (PLAN 3.10c1, ADR-187)', () => {
     // the enemy's next to it: a sector's diagonal and a cell more.
     const slack = SECTOR_CELLS * Math.SQRT2 + 1;
     const last = new Map<number, number>();
-    const orders: { id: number; d: number; x: number }[] = [];
+    const orders: { id: number; d: number; x: number; front: number }[] = [];
+    // How far a place is from the nearest Soviet front cell (asked for the long orders only).
+    const nb: number[] = [];
+    const toFront = (x: number, y: number): number => {
+      let best = Infinity;
+      for (const c of frontierOf(w)) {
+        if (w.cells.controller[c] !== SOV || !neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === POL || w.cells.controller[k] === JAP)) continue;
+        best = Math.min(best, dist(x, y, c));
+      }
+      return best;
+    };
+    const stood = new Map<number, [number, number]>();
     s.step(24 * 5, (ww) => {
       ww.out.events.length = 0;
       ww.out.fires.length = 0;
       for (const id of ww.formations.ids()) {
         if (f.nation[id] !== SOV) continue;
         const target = f.moving[id] === 1 && f.retreat[id] === 0 && f.home[id] === 0 ? f.targetCell[id]! : -1;
-        if (target >= 0 && target !== last.get(id)) orders.push({ id, d: dist(f.x[id]!, f.y[id]!, target), x: target % W });
+        if (target >= 0 && target !== last.get(id)) {
+          const d = dist(f.x[id]!, f.y[id]!, target);
+          // Where it stood the hour before the order (an order moves a formation within its cell).
+          const [x, y] = stood.get(id) ?? [f.x[id]!, f.y[id]!];
+          orders.push({ id, d, x: target % W, front: d > DEPLOY_RANGE_CELLS + slack ? toFront(x, y) : 0 });
+        }
         last.set(id, target);
+        stood.set(id, [f.x[id]!, f.y[id]!]);
       }
     });
     expect(orders.length).toBeGreaterThan(20);
@@ -318,7 +335,64 @@ describe('the range is to the sector (PLAN 3.10c1, ADR-187)', () => {
     const [east] = cellOf(100, 50, W, H);
     expect(orders.filter((o) => o.x < west).length).toBeGreaterThan(0);
     expect(orders.filter((o) => o.x > east).length).toBeGreaterThan(0);
+    // An order beyond the range goes only to a formation that stood far from both fronts (PLAN
+    // 3.10c1a, ADR-190: restated; before it there was no such order), and to none a second time.
     const far = orders.filter((o) => o.d > DEPLOY_RANGE_CELLS + slack);
-    expect(far.map((o) => `formation ${o.id}: ${o.d.toFixed(0)} cells`)).toEqual([]);
+    expect(far.filter((o) => o.front <= DEPLOY_RANGE_CELLS - slack).map((o) => `formation ${o.id}: ${o.d.toFixed(0)} cells, ${o.front.toFixed(0)} from a front`)).toEqual([]);
+    expect(new Set(far.map((o) => o.id)).size).toBe(far.length);
+  }, 180_000);
+});
+
+describe('marches from afar (PLAN 3.10c1a, ADR-190)', () => {
+  it('an army far from its only front marches to it, and is given no second order on the way', () => {
+    const SOV = nationId('SOV');
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [SOV, POL]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== SOV) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[SOV] = 0;
+    runEvents(s, 1);
+    w.wars.start([SOV], [POL], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    // Nobody but six Soviet divisions at Chita, east of Lake Baikal: the front is in Poland.
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    const [mx, my] = cellOf(113.5, 52.0, W, H).map(Math.floor) as [number, number];
+    const ids = Array.from({ length: 6 }, (_, k) => addDivision(w, SOV, mx + (k % 3) + 0.5, my + Math.floor(k / 3) + 0.5));
+    const nb: number[] = [];
+    const isFront = (c: number): boolean => w.cells.controller[c] === SOV && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === POL);
+    const front = [...frontierOf(w)].filter(isFront);
+    expect(front.length).toBeGreaterThan(0);
+    const toFront = (id: number): number => Math.min(...front.map((c) => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5))));
+    const d0 = ids.map(toFront);
+    expect(Math.min(...d0)).toBeGreaterThan(2 * DEPLOY_RANGE_CELLS);
+    // Twenty days: the orders each is given (a target it did not have the hour before).
+    const last = new Map<number, number>();
+    const orders = new Map<number, number[]>(ids.map((id) => [id, []]));
+    s.step(24 * 20, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const id of ids) {
+        const target = f.moving[id] === 1 ? f.targetCell[id]! : -1;
+        if (target >= 0 && target !== last.get(id)) orders.get(id)!.push(target);
+        last.set(id, target);
+      }
+    });
+    for (const id of ids) {
+      // One order, to a cell of the front as it was, and the division is on its way there.
+      expect(orders.get(id)!.length, `division ${id}`).toBe(1);
+      expect(front, `division ${id}`).toContain(orders.get(id)![0]);
+      expect(f.moving[id], `division ${id}`).toBe(1);
+      expect(toFront(id), `division ${id}`).toBeLessThan(d0[ids.indexOf(id)]! - 10);
+    }
+    // Each to a sector of its own.
+    const bw = Math.ceil(W / SECTOR_CELLS);
+    const sectorOf = (c: number): number => Math.floor(Math.floor(c / W) / SECTOR_CELLS) * bw + Math.floor((c % W) / SECTOR_CELLS);
+    expect(new Set(ids.map((id) => sectorOf(orders.get(id)![0]!))).size).toBe(ids.length);
   }, 180_000);
 });

@@ -4457,7 +4457,7 @@ quick sweep as a smoke test.
     route from open ground to the provinces of the coarse route and their neighbours, as it
     does a long one. AT: a unit test, red first (a place walled off inside its province);
     the tick of seeds 4242, 8128 and 99 before and after; the pin moved.
-  - [ ] 3.10c1a Formations go to a front that the army is not near. Seen in the look of
+  - [x] 3.10c1a *Done 2026-10-07 (ADR-190: a sector of a nation's own front that has nobody takes one formation from beyond the range, on the formation's day in eight; the half in brackets below, who is to spare at a manned front, is 3.10c1d):* Formations go to a front that the army is not near. Seen in the look of
     3.10c1: after a year of seed 4242 the Soviet Union has 162 formations and 14 within the
     range of its front against Iran (104 sectors, 21 with a formation within two sectors);
     after three years of seed 99 nation 10 has 103 formations and a front of 403 sectors
@@ -4473,6 +4473,17 @@ quick sweep as a smoke test.
     seed 4242 after a year, the Soviet front against Iran: formations in range and sectors
     covered, before and after, with a picture; the operational AI's tick of years 1 and 2
     of seed 4242 and year 8 of seed 8128 beside 3.10c1's numbers.
+  - [ ] 3.10c1d The far end of a front whose army is all at the other end. 3.10c1a sends
+    only formations that are far from every sector; a nation with all of its formations
+    within the range of some sector sends none. Seed 4242 after a year of 3.10c1a: France
+    against Italy, 39 sectors, 31 with nobody within the range, 42 of 44 formations within
+    the range of the other eight. The rule to write: who is to spare (the reserve of
+    ADR-37, or what an allotment leaves over: `planNation` lets those join their nearest
+    sector), sent as 3.10c1a sends, one a sector that has nobody, the march kept. Beware a
+    front that is emptied to fill another and filled again. An ADR, the pin moved. AT: a
+    unit test (twelve divisions at one end of a front of 30 sectors: the far end is manned
+    within a month and the near end is not left); that front of seed 4242 before and
+    after; the operational AI's tick beside 3.10c1a's.
   - [ ] 3.10c2 What is left of the operational AI after 3.10c1, if it is still the tick's
     first system: the steps before the orders are 0.13 to 0.37 ms a tick (the most where a
     planner has up to 881 sectors, seed 8128), and 476 to 3,690 orders a year are refused
@@ -4486,6 +4497,12 @@ quick sweep as a smoke test.
     year 4. And year 4 of seed 99 has 19,434 orders within the range at 0.26 ms each
     (5,011 ms, 0.57 ms a tick), five times what 3.10c measured for an order of under 60
     cells: start there. The longest call is 84 ms (seed 8128, year 8), not looked into.
+    After 3.10c1c and 3.10c1a (their probes, PROGRESS): the dear refused orders are gone
+    (year 8 of seed 8128: 2,337 of 13,124 orders refused in 90 ms, none over 3 ms), and
+    year 4 of seed 99 is 0.19 to 0.25 ms. What is left to ask: the refused are still asked
+    again the day after (and a far formation every eighth day: nation 10's 23 times a
+    year), the steps before the orders, and the longest call (87 ms: a nation's far
+    formations of one day, 2 ms an order).
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

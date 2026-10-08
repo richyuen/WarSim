@@ -167,6 +167,64 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-190 · 2026-10-07 · accepted — A front sector that has nobody takes a formation from afar, one march each (PLAN 3.10c1a)
+
+- **Context.** ADR-187 made the range be to each sector and so took away the only way a
+  formation went from one theatre to another (by accident, a division at a time, and
+  again the day after). Seed 4242 after a year: the Soviet Union at war with Iran along 89
+  sectors, 14 of its 164 formations within the range of them.
+- **Decision.** In `planNation`, after the allotment:
+  1. *A sector that has nobody:* one of the planner's own front (a cell of it is the
+     planner's; not a sector of an ally's front only), in which and next to which (its
+     3 × 3 sectors) no formation of the planner stands, free or not; to which the
+     allotment gave none; and into which none is on the march.
+  2. *A formation from afar:* free (not engaged, not on the retreat, not on the march
+     home), standing still, more than `DEPLOY_RANGE_CELLS` from every sector its class
+     reaches, and its day: (day + id) mod `MARCH_DAYS` (8) = 0.
+  3. Each such formation names the nearest sector with nobody that its class reaches and
+     whose front cell is on its landmass. Nearest pair first, one formation a sector; a
+     formation whose sector was taken names the nearest that is left. The order is to the
+     sector's front cell. A sector is tried once a plan, also when the order is refused.
+  4. *The march is kept.* A formation on the march is not in (2). Within the range of its
+     sector it is a march into a sector (ADR-53), and its order is not given again while
+     the target is within a sector of the old one.
+- **Why "has nobody" and not "has too few for its threat".** PLAN 3.10c1a asked for "the
+  nearest sector that has too few". A count against the threat needs the formations that
+  are near each sector, and the pools of sectors overlap (ADR-187); "nobody stands there,
+  nobody is coming" is read off without them, and it bounds the marches: one a sector.
+  A long front draws many (52 Soviet formations were on the march to the Iranian front
+  ten days after the rule began), a short one few, and the rest of the army stays where
+  it is, as a garrison.
+- **Why eight days.** Without them, the first cut: every far formation of a nation was
+  ordered in one tick (a call of 344 ms in year 1 of seed 4242; the rule before had 19 ms),
+  and a formation whose order was refused was asked again every day (2,549 of 2,755 far
+  orders in year 8 of seed 8128 were refused, one formation 193 times). With them: a call
+  of 87 ms, and 270 refused of 381. No state is needed for it: the day and the id.
+- **Not across the water.** A sector on another landmass gets an order to the shore
+  nearest it (`snapTarget`). In the first test (Moscow, a front on Sakhalin and at the
+  Korean border) four of six divisions were sent 520 cells to one cell of the mainland
+  shore opposite Sakhalin. Phase 4 has the ships.
+- **Not to an ally's front.** The header has said since PLAN 1.42b that an ally's front is
+  a nation's own "within DEPLOY_RANGE_CELLS of its formations". An army that crosses a
+  continent to a war that is not at its own border is a decision of another kind (PLAN
+  7.2, if it is wanted).
+- **What it does not do** (PLAN 3.10c1d): a nation all of whose formations are within the
+  range of *some* sector sends nobody. Seed 4242 after a year of this rule: France against
+  Italy, 39 sectors, 31 with nobody within the range, 42 of 44 French formations within
+  the range of the other eight. PLAN 3.10c1a had this as "a share of those of a front
+  that has more than its threat asks for": it is a second rule (who is to spare), and
+  this one was measured without it.
+- **Tests.** `tests/unit/operationalAi.test.ts`:
+  - "marches from afar": six Soviet divisions at Chita, the only war with Poland. In
+    twenty days each is given one order, to a cell of the front, each to a sector of its
+    own, and is 10 cells nearer. Red on the rule before ("expected +0 to be 1").
+  - "the range is to the sector" (ADR-187) is restated, not weakened: it asked that no
+    order go beyond the range. Now: an order beyond the range goes only to a formation
+    that stood more than the range from every front cell, and to none a second time. On
+    the rule before ADR-187 it still fails, with the same 25 orders ("formation 91: 72
+    cells, 35 from a front").
+- **The pin** moved: `5643bf80` → `9d84cd85` (seed 99 after one year).
+
 ### ADR-189 · 2026-10-07 · accepted — A short route over open ground is held to the provinces (PLAN 3.10c1c)
 
 - **Context.** Found while measuring PLAN 3.10c1a (formations sent to a far front): the

@@ -9476,3 +9476,88 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 989 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part).
 - **Next:** PLAN 3.10c1a, on this search.
+
+## 2026-10-07 · PLAN 3.10c1a: a front sector that has nobody takes a formation from afar (ADR-190)
+
+- **Done:** `planNation`, after the allotment: a sector of the planner's own front in and
+  next to which none of its formations stands, to which the allotment gave none and into
+  which none marches, takes the nearest free formation on its landmass that stands still
+  more than 60 cells from every sector it reaches. One a sector, to its front cell; a
+  formation is looked at on one day in eight (`MARCH_DAYS`). On the march it is not planned
+  again. The plan no longer ends where no formation is in range, if there is such a
+  formation and a front of the nation's own. SPEC §7 and the file's header say it.
+- **Two things the first cut showed,** both in ADR-190:
+  - *The shore opposite an island.* The first test had the army at Moscow and the front
+    with Japan: four of six divisions were ordered 520 cells to one mainland cell opposite
+    Sakhalin. A march from afar goes only to a sector on the formation's landmass.
+  - *All at once, and again every day.* Year 1 of seed 4242 had a call of 344 ms (19 ms
+    before), and in year 8 of seed 8128 2,549 of 2,755 far orders were refused, one
+    formation 193 times. Hence the eight days.
+  The third was PLAN 3.10c1c, committed before this.
+- **Tests** (`tests/unit/operationalAi.test.ts`, 7): "marches from afar", new, red on the
+  rule before ("division 1054: expected +0 to be 1"). "The range is to the sector" went
+  red as it stood (four formations ordered 105 to 111 cells: the far ones of the Soviet
+  Union) and is restated: an order beyond the range goes only to a formation that stood
+  more than the range from every front cell, and to none twice. The restated test fails
+  on the rule before ADR-187 with the 25 orders it failed with then.
+- **The pin** moved: `5643bf80` → `9d84cd85`.
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c1c → this (ms a tick;
+  one run each):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 8128, year 8 (the same state) | 1.676 → 1.992 | 0.363 → 0.477 | 33.9 → 32.6 |
+  | seed 4242, year 1 | 2.148 → 2.260 | 0.265 → 0.414 | 23.4 → 86.9 |
+  | seed 4242, year 2 | 0.822 → 2.233 | 0.119 → 0.418 | 18.1 → 41.5 |
+  | seed 99, years 1 to 5 | 1.481 → 1.598 | 0.290 → 0.301 | 18.4 → 87.0 |
+
+  Seed 99 by year: 2.250, 1.660, 1.613, 0.959, 1.507 (the operational AI 0.370, 0.225,
+  0.275, 0.189, 0.445). The rule costs: 0.11 ms a tick of the operational AI on the one
+  run from the same state, and a longest call of 87 ms where a nation's far formations of
+  one day set out. Year 2 of seed 4242 is another game (34,479 cells flipped against
+  15,041), and the 0.32 ms of year 8 of seed 8128 that are not the operational AI's were
+  not looked into. Seed 99 is over the budget of 1.5 ms again by 0.1.
+- **The far orders** (a probe, put in and taken out), a year each:
+  - seed 4242, year 1: 394 orders to 311 formations, 810 ms (2.05 ms each, 0.092 ms a
+    tick), 170 cells in the mean; 56 refused (6 ms); no formation more than 5 times.
+  - seed 8128, year 8: 381 orders to 123 formations, 274 ms (0.031 ms a tick); 270
+    refused (102 ms); nation 10 has 237 of them, one formation 23 times: asked every
+    eighth day for a way the provinces promise and the cells do not give.
+  - Ordinary orders on the search of 3.10c1c, counted here: 13,124 in year 8 of seed 8128,
+    2,337 refused in 90 ms, none over 3 ms (570 before 3.10c1c); 16,931 in year 1 of
+    seed 4242, 628 refused in 33 ms.
+- **The Soviet front against Iran,** seed 4242, from the state after a year of 3.10c1c (a
+  scratch script, `.cache`; 89 sectors, 35 with a formation within two sectors, 14 of 164
+  Soviet formations within the range):
+
+  | | sectors | with a formation within two | formations in range | on the march from beyond |
+  |---|---|---|---|---|
+  | this rule, day 10 | 88 | 41 | 14 | 52 |
+  | day 20 | 72 | 28 | 19 | 45 |
+  | day 35 | 66 | 22 | 23 | 38 |
+  | the rule before, day 60 | 78 | 23 | 14 | 0 |
+
+  On day 60 of this rule the two no longer have a border (the war is still on). The
+  marches are long: 38 of the 52 were still more than 60 cells off after 35 days, and the
+  share of sectors with a formation near does not rise in that time (47, 39, 33 %; the
+  front shrinks as the formations that are there take ground). China against Tibet in the
+  same run, day 60: 27 of 140 in range and 22 on the march, against 13 and 0.
+- **Looked at** (`docs/evidence/3.10/c1a-seed4242-iran-before.png`, `-day35.png`; the
+  checkpoints loaded into the page by a scratch spec that was removed): before, nine Soviet
+  markers between Lake Van and Tehran and two east of the Caspian, nothing north of the
+  Caucasus. Day 35: markers of 5.2k, 5.4k and 1.8k on the way down from the north-west, the
+  ones at the front further into Iran (the hatched ground reaches south of Tehran), 16.7k
+  and 1.3k at the eastern end. The stretch east of the Caspian has no marker in either: who
+  comes from the north-east had not arrived.
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`, 6 tests,
+  2.9 min): `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass. The tank
+  battle's stop of 60 m/px in this game: the brigade's tag 37 px from its tanks, the
+  nearest, no line.
+- **Not done:** who is to spare at a manned front (PLAN 3.10c1d, with the French front
+  against Italy as its case: 31 of 39 sectors with nobody in range). An ally's front and
+  a front across the water get no march (ADR-190). `MoveRejected` was not counted as an
+  event. No sweep (ADR-58). The full e2e suite has not run on this game (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 990 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c1d (the far end of a front whose army is all at the other end), then 3.10c2.
