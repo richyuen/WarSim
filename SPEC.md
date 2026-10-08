@@ -1379,9 +1379,15 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     landmass, more than 60 cells from every sector it reaches; the nearest first. It is
     ordered to the sector's front cell and not planned again before the march ends or
     comes within the range (then it is a march into a sector, kept as below). A formation
-    is looked at for this on one day in eight (`MARCH_DAYS`, by its id). A front all of
-    whose formations stand within the range of another part of it still gets nobody at its
-    far end (PLAN 3.10c1d).
+    is looked at for this on one day in eight (`MARCH_DAYS`, by its id).
+  - *To spare* (PLAN 3.10c1d, ADR-191): such a sector that no formation of the nation is
+    within 60 cells of also takes one of the formations near the front. On the nation's day
+    in eight, of the free formations within the range of a sector that stand still, the
+    farthest from the front, as many as the reserve's share (one at least), may go: each to
+    the nearest such sector within 180 cells (`SPARE_RANGES` × the range) on its landmass,
+    one a sector. No more go than the front can spare: the formations near it, less the
+    share of them that the other sectors weigh among all (1 + threat/10,000 each, as in the
+    allotment). A formation on the march is not taken, so a march this rule gave is kept.
   - *Reach* (PLAN 3.5b, ADR-152): those formations are classes by where they stand (the
     landmass; on it the group of provinces joined by ground open to the nation, §4, or
     closed ground). A class reaches a sector when an order to the sector's front cell would

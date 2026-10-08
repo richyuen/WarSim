@@ -396,3 +396,77 @@ describe('marches from afar (PLAN 3.10c1a, ADR-190)', () => {
     expect(new Set(ids.map((id) => sectorOf(orders.get(id)![0]!))).size).toBe(ids.length);
   }, 180_000);
 });
+
+describe('to spare (PLAN 3.10c1d, ADR-191)', () => {
+  it('an army at one end of a long front sends what it can spare to the far end, and the near end is not left', () => {
+    const [USA, MEX] = ['USA', 'MEX'].map(nationId) as [number, number];
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [USA, MEX]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== USA) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[USA] = 0;
+    runEvents(s, 1);
+    w.wars.start([USA], [MEX], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    const nb: number[] = [];
+    const isFront = (c: number): boolean => w.cells.controller[c] === USA && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === MEX);
+    const front = [...frontierOf(w)].filter(isFront).sort((a, b) => (a % W) - (b % W) || a - b);
+    const bw = Math.ceil(W / SECTOR_CELLS);
+    const sectorOf = (c: number): number => Math.floor(Math.floor(c / W) / SECTOR_CELLS) * bw + Math.floor((c % W) / SECTOR_CELLS);
+    // The front, from the Pacific to the Gulf: more than 30 sectors.
+    expect(new Set(front.map(sectorOf)).size).toBeGreaterThan(30);
+    // Nobody but twelve American divisions on the twelve front cells nearest the Pacific.
+    const ids = front.slice(0, 12).map((c) => addDivision(w, USA, (c % W) + 0.5, Math.floor(c / W) + 0.5));
+    // Opposite them, six cells into Mexico, as many Mexican divisions (their AI is off): the near
+    // end is threatened and holds, and the front stays where it is.
+    const foe = front.slice(0, 12).flatMap((c) => {
+      const to = c + 6 * W;
+      return w.cells.controller[to] === MEX ? [addDivision(w, MEX, (to % W) + 0.5, Math.floor(to / W) + 0.5)] : [];
+    });
+    expect(foe.length).toBeGreaterThan(6);
+    const dist = (x: number, y: number, c: number): number => Math.hypot(x - ((c % W) + 0.5), y - (Math.floor(c / W) + 0.5));
+    const fromArmy = (c: number): number => Math.min(...ids.map((id) => dist(f.x[id]!, f.y[id]!, c)));
+    // The far end: the front cells that no division is within the range of (a sector's diagonal
+    // more: the range is to the sector's centre).
+    const slack = SECTOR_CELLS * Math.SQRT2 + 1;
+    const farEnd = front.filter((c) => fromArmy(c) > DEPLOY_RANGE_CELLS + slack);
+    const nearEnd = front.filter((c) => fromArmy(c) <= DEPLOY_RANGE_CELLS - slack);
+    expect(new Set(farEnd.map(sectorOf)).size).toBeGreaterThan(8);
+    // Thirty days: the orders to a cell beyond the range (a target a division did not have the
+    // hour before), with how far it was and whether the cell was of the front that hour.
+    const last = new Map<number, number>();
+    const sent = new Map<number, { target: number; d: number; front: boolean }[]>();
+    s.step(24 * 30, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const id of ids) {
+        const target = f.moving[id] === 1 ? f.targetCell[id]! : -1;
+        const d = target < 0 ? 0 : dist(f.x[id]!, f.y[id]!, target);
+        if (target !== last.get(id) && d > DEPLOY_RANGE_CELLS + slack) sent.set(id, [...(sent.get(id) ?? []), { target, d, front: isFront(target) }]);
+        last.set(id, target);
+      }
+    });
+    // Divisions are on the march to the far end: each given one such order, to a cell of the
+    // front and a sector of its own, and is 10 cells nearer it.
+    expect(sent.size).toBeGreaterThanOrEqual(2);
+    for (const [id, orders] of sent) {
+      expect(orders.length, `division ${id}`).toBe(1);
+      expect(orders[0]!.front, `division ${id}`).toBe(true);
+      expect(f.targetCell[id], `division ${id}`).toBe(orders[0]!.target);
+      expect(dist(f.x[id]!, f.y[id]!, orders[0]!.target), `division ${id}`).toBeLessThan(orders[0]!.d - 10);
+    }
+    expect(new Set([...sent.values()].map((o) => sectorOf(o[0]!.target))).size).toBe(sent.size);
+    // The near end is not left: more than half of the army was not sent, and stands within the
+    // range of the near end.
+    const stayed = ids.filter((id) => !sent.has(id));
+    expect(stayed.length).toBeGreaterThan(ids.length / 2);
+    for (const id of stayed) expect(Math.min(...nearEnd.map((c) => dist(f.x[id]!, f.y[id]!, c))), `division ${id}`).toBeLessThanOrEqual(DEPLOY_RANGE_CELLS);
+  }, 180_000);
+});

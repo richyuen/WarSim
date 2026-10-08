@@ -9561,3 +9561,81 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 990 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c1d (the far end of a front whose army is all at the other end), then 3.10c2.
+
+## 2026-10-07 · PLAN 3.10c1d: a front sector that nobody is in range of takes a formation the front can spare (ADR-191)
+
+- **Done:** in `planNation` (`src/sim/ai/operational.ts`), with the sectors of 3.10c1a that
+  have nobody: on the nation's day in eight, of the free formations near the front that
+  stand still, the farthest first and as many as the reserve's share, each goes to the
+  nearest such sector that no formation of the nation is within the range of, within three
+  times the range, while the front has more than its share by the allotment's weights.
+  `SPARE_RANGES`. SPEC §7, ADR-191, the pin `9d84cd85` → `d790e601`.
+- **It does little for the case it was written for.** France against Italy in seed 4242 is
+  an army being destroyed, and almost none of it stands still (the state after a year of
+  3.10c1a, `.cache/ck/4242-y1-c1a.bin`, a scratch script):
+
+  | | sectors | nobody within the range | French formations | on the march |
+  |---|---|---|---|---|
+  | day 0 | 39 | 31 | 44 | 39 (13 engaged) |
+  | the rule before, day 20 | 37 | 33 | 21 | |
+  | this rule, day 10 | 38 | 31 | 37 | 34 |
+  | day 20 | 36 | 33 | 17 | 16 |
+  | day 35 | 33 | 33 | 3 | 3 |
+
+  On its first day France has 21 formations in the ranking, 2 of them standing still, and
+  one is sent (formation 238, 139 cells). The far end is not one front with the near one:
+  eight sectors in the Algerian Sahara, and 31 in four groups 91 to 138 cells to the south.
+  The front is not manned by this rule, and no other rule would man it from this army.
+- **Where it does act:** year 2 of seed 4242 from that state, 15 such orders (nations 82
+  and 23 five each, Italy 4, France 1), 62 to 175 cells, 88 in the middle. Five years of
+  seed 99: 102 orders, 6 refused.
+- **Three cuts before this one,** all on the unit test: (1) the reserve on the formation's
+  day in eight, standing still: no order in 30 days (the reserve of twelve is one
+  formation, another every day, and on the march); (2) the reserve on the nation's day,
+  on the march or not: division 1054 was sent to the far end on days 14 and 22, each time
+  to another sector, as soon as it came within 60 cells of the first; (3) "a march into a
+  sector that has nobody else in range is kept": the same, because the sector next to it
+  had the division sent before it. A formation that was sent cannot be told from the
+  others without state, so the rule takes only what stands still. Also found there: a
+  formation of an allotment that is sent was given its sector's order in the same plan
+  (one order of three counted); it is taken out of the sector.
+- **The unit test** ("to spare"): the United States against Mexico (43 sectors from the
+  Pacific to the Gulf), twelve divisions on the twelve front cells nearest the Pacific, ten
+  Mexican ones six cells opposite, their AI off (without them the Americans take ground
+  and the front is another one each week). Sent on days 6, 14 and 22 (the third to a
+  sector 65 cells off, inside the test's slack); the first is 35 cells nearer after 24
+  days, the second 23 after 16. Red on the rule before. PLAN asked "the far end is manned
+  within a month": at 1.5 cells a day nobody arrives in a month, and the test asserts the
+  march, not the arrival.
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c1a → this (ms a
+  tick; one run each):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 8128, year 8 (the same state) | 1.992 → 1.940 | 0.477 → 0.475 | 32.6 → 33.9 |
+  | seed 4242, year 1 | 2.260 → 2.289 | 0.414 → 0.413 | 86.9 → 87.8 |
+  | seed 4242, year 2 | 2.233 → 2.148 | 0.418 → 0.469 | 41.5 → 55.7 |
+  | seed 99, years 1 to 5 | 1.598 → 1.696 | 0.301 → 0.428 | 87.0 → 140.4 |
+
+  Seed 99 by year: 2.230, 1.846, 1.691, 1.324, 1.391 (the operational AI 0.432, 0.441,
+  0.468, 0.415, 0.383). The rule before, run again today the same way: 1.495 (2.125,
+  1.537, 1.483, 0.896, 1.433; the operational AI 0.285), so 0.1 ms of the 1.598 logged
+  for it was the run.
+- **The rise of seed 99 is not this rule's own work** (a probe, put in and taken out):
+  choosing who is to spare 17 ms and their 102 orders 99 ms in five years, 0.003 ms a
+  tick. It is the far orders of 3.10c1a in another game: 4,473 in 5,869 ms against 3,982
+  in 2,112 ms, and 2,997 of them refused, in 2,883 ms (Italy 1,228 ms in year 2, nation
+  10 1,408 ms in year 4). Orders to formations this rule had sent before: 177, 317 ms.
+  Written into PLAN 3.10c2. Seed 99 is over the budget of 1.5 ms by 0.2.
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`, 6
+  tests, 2.5 min): `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass.
+- **Not done:** no picture (France's front shows nothing new, and the test's world is not
+  a game). The cap of three ranges has no test of its own (ADR-187's test of two theatres
+  passes unchanged; in its five days no formation is to spare beyond the range). A
+  formation that is sent and stops on the way (its order refused later, its sector gone)
+  is planned as any other. No sweep (ADR-58). The full e2e suite has not run on this game
+  (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 991 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c2 (what is left of the operational AI; the refused far orders first).

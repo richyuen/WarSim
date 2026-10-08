@@ -33,6 +33,11 @@
  * the march into it) takes the nearest formation on its landmass that is far from every sector it
  * reaches and stands still: one a sector, to the sector's front cell, on the formation's day in
  * MARCH_DAYS. The march is not planned again before it ends or comes within the range.
+ * To spare (PLAN 3.10c1d, ADR-191): such a sector that no formation of the planner is within the
+ * range of also takes one of the formations near the front that stand still (the farthest from
+ * it, as many as the reserve's share, on the nation's day in MARCH_DAYS), from within SPARE_RANGES
+ * times the range, while the formations near the front are more than the share of them that the
+ * other sectors weigh among all (the weights of the allotment).
  */
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
@@ -58,6 +63,12 @@ const RANGE2 = DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS;
  * tick, and a formation whose order was refused is asked again after them, not the day after.
  */
 export const MARCH_DAYS = 8;
+/**
+ * A formation to spare goes to a sector that has nobody up to this many times
+ * DEPLOY_RANGE_CELLS away (PLAN 3.10c1d, ADR-191): the far end of its front, not another theatre.
+ */
+export const SPARE_RANGES = 3;
+const SPARE2 = SPARE_RANGES * SPARE_RANGES * RANGE2;
 /**
  * A formation with this share of its upkeep in tanks is armour (`EconomyTables.templateArmour`:
  * the armour formations of 1938 have 0.66 to 0.93, the others 0.20 at most).
@@ -168,9 +179,12 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   /** The sector buckets in which a formation of n stands, free or not. */
   const stands = new Set<number>();
   const mine: number[] = [];
+  /** n's formations, free or not. */
+  const all: number[] = [];
   world.formations.forEach((id) => {
     const m = f.nation[id]!;
     if (m === n) {
+      all.push(id);
       stands.add(Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS));
       if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
       return;
@@ -285,6 +299,15 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   }
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
   const index = new Map(list.map((s, i) => [s.key, i] as const));
+  // To spare (PLAN 3.10c1d, ADR-191): on the nation's day in `MARCH_DAYS`, of the formations
+  // near the front that stand still, the farthest from it, as many as the reserve's share. (The
+  // reserve itself is another formation from day to day and mostly one with a march to end: on
+  // the march it cannot be told from a formation this rule sent, which is to be left alone.)
+  const spare: number[] = [];
+  if (ownFront && (day + n) % MARCH_DAYS === 0) {
+    const most = Math.max(1, ranked.length - active.length);
+    for (let k = ranked.length - 1; k >= 0 && spare.length < most; k--) if (f.moving[ranked[k]!] !== 1) spare.push(ranked[k]!);
+  }
   const byThreat = list.map((_, i) => i).sort((a, b) => list[b]!.threat - list[a]!.threat || list[a]!.key - list[b]!.key);
   const byClass: number[][] = classCell.map(() => []);
   for (const id of active) byClass[classOf[id]!]!.push(id);
@@ -411,7 +434,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // none is on the march into it. One formation a sector and one order a sector and plan, also
   // when the order is refused. The march is not planned again while it lasts: a formation on
   // the march is not in `far`, and within the range of the sector it is kept as any march is.
-  if (far.length > 0) {
+  if (far.length > 0 || spare.length > 0) {
     const empty = new Uint8Array(sn);
     let empties = 0;
     for (let i = 0; i < sn; i++) {
@@ -434,16 +457,25 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         empties--;
       }
     }
-    /** The nearest empty sector the formation's class reaches, and its distance (squared). */
-    const emptyFor = (id: number): [number, number] => {
+    /** Of a sector: 1 = no formation of n is within the range of it, 2 = one is (0: not asked yet). */
+    const alone = new Uint8Array(sn);
+    const isAlone = (i: number): boolean => {
+      if (alone[i] === 0) alone[i] = all.some((id) => dist2(id, list[i]!) <= RANGE2) ? 2 : 1;
+      return alone[i] === 1;
+    };
+    /**
+     * The nearest empty sector the formation's class reaches, and its distance (squared). For one
+     * to spare (`lone`): of those that nobody is within the range of, within the spare's range.
+     */
+    const emptyFor = (id: number, lone: boolean): [number, number] => {
       let best = -1;
-      let bd = Infinity;
+      let bd = lone ? SPARE2 : Infinity;
       const ci = classOf[id]!;
       for (const i of reached[ci]!) {
         // Not to the shore across the water from it (where an order to another landmass ends).
         if (empty[i] === 0 || land[list[i]!.hold] !== land[classCell[ci]!]) continue;
         const d = dist2(id, list[i]!);
-        if (d < bd) {
+        if (d < bd && (!lone || isAlone(i))) {
           bd = d;
           best = i;
         }
@@ -451,17 +483,46 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       return [best, bd];
     };
     if (empties > 0) {
-      const wants = far.map((id) => [id, ...emptyFor(id)] as [number, number, number]).filter((q) => q[1] >= 0);
+      const wants = far.map((id) => [id, ...emptyFor(id, false), 0] as [number, number, number, number]).filter((q) => q[1] >= 0);
+      if (spare.length > 0) {
+        // What the front can spare: the formations near it less the share of them that the
+        // sectors within the range of somebody weigh among all its sectors.
+        let manned = 0;
+        let open = 0;
+        for (let i = 0; i < sn; i++) {
+          const weight = 1 + list[i]!.threat / THREAT_UNIT;
+          if (empty[i] === 1 && isAlone(i)) open += weight;
+          else manned += weight;
+        }
+        let give = ranked.length - Math.ceil((ranked.length * manned) / (manned + open));
+        for (const id of spare) {
+          if (give <= 0) break;
+          const [i, d] = emptyFor(id, true);
+          if (i < 0) continue;
+          wants.push([id, i, d, 1]);
+          give--;
+        }
+      }
       wants.sort((a, b) => a[2] - b[2] || a[0] - b[0]);
-      for (const [id, first] of wants) {
+      for (const [id, first, , lone] of wants) {
         if (empties === 0) break;
         // Its sector was taken by a nearer formation: the nearest that is still empty.
-        const i = empty[first] === 1 ? first : emptyFor(id)[0];
+        const i = empty[first] === 1 ? first : emptyFor(id, lone === 1)[0];
         if (i < 0) continue;
         empty[i] = 0;
         empties--;
         const to = list[i]!.hold;
         orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);
+        // One to spare leaves the sector the allotment gave it: no order of that sector below.
+        if (lone === 1) {
+          for (const s of list) {
+            const at = s.formations.indexOf(id);
+            if (at < 0) continue;
+            s.formations.splice(at, 1);
+            s.strength -= f.strength[id]!;
+            break;
+          }
+        }
       }
     }
   }

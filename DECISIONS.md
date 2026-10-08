@@ -167,6 +167,65 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-191 · 2026-10-07 · accepted — A front sector that nobody is in range of takes a formation the front can spare (PLAN 3.10c1d)
+
+- **Context.** ADR-190 sends only formations that are far from every sector they reach. A
+  nation all of whose formations are within the range of some sector sent none to a part
+  of its front that is beyond the range of all of them (PLAN 3.10c1d: France against
+  Italy in seed 4242, 31 of 39 sectors).
+- **Decision.** In `planNation`, in the step of ADR-190 and with its sectors that have
+  nobody:
+  1. *When:* on the nation's day, (day + nation) mod `MARCH_DAYS` = 0.
+  2. *Who:* of the free formations within the range of a sector they reach (the ranking
+     the reserve is cut from), those that stand still, the farthest from the front first,
+     as many as the reserve's share of that ranking (one at least).
+  3. *How many:* no more than the front can spare. With N the formations of that ranking,
+     and the sectors weighed as in the allotment (1 + threat/`THREAT_UNIT`): N less the
+     share of N that the sectors weigh which are not (empty and beyond the range of every
+     formation of the nation), rounded up.
+  4. *Where:* the nearest sector that has nobody (ADR-190's test), that no formation of
+     the nation, free or not, is within the range of, that its class reaches on its
+     landmass, within `SPARE_RANGES` (3) times the range. One a sector, in one list with
+     ADR-190's formations, nearest pair first.
+  5. The formation is taken out of the sector the allotment gave it for that plan. Its
+     march is kept as ADR-190's is.
+- **Why not the reserve itself** (PLAN 3.10c1d named "the reserve of ADR-37, or what an
+  allotment leaves over"). Tried first. The reserve is the farthest 15 % of a ranking
+  made anew every day; in the test (twelve divisions) it is one formation, another one
+  from day to day, and nearly always one with a march to end (39 of France's 44 were on
+  the march). Taken on the march it cannot be told from a formation this rule sent three
+  weeks ago, which has come within the range of its sector: the first cut ordered the
+  same division to the far end three times. So: only formations that stand still, and of
+  the reserve only its number. What an allotment leaves over is nothing where the pools
+  of the manned sectors overlap (France: 42 formations in the pool of each of 8 sectors).
+- **Why the nation's day and not the formation's** (ADR-190 has the formation's). The
+  formation that is to spare is another one every day; its own day in eight would seldom
+  be a day it is to spare (no order in 30 days of the test).
+- **Why a share and not a floor** ("beware a front that is emptied to fill another and
+  filled again"). A sector that is threatened weighs more, so a front that fights keeps
+  more: in the test the ten Mexican divisions opposite the near end make 2, 1 and 1 of
+  twelve to spare on days 6, 14 and 22; with nobody opposite it is 4. A sector that a
+  formation marches into has somebody, so the count falls as they are sent.
+- **Why three times the range.** The far end of a front, not another theatre: ADR-187's
+  test ("no formation of the one front is ordered to the other", Poland and Manchuria)
+  stays as it is. France's far end is 91 to 138 cells from its army. A number set by
+  that one case.
+- **What it does to the case it was written for: little.** France in seed 4242 is an
+  army being destroyed (44 formations, 21 twenty days later on the rule before, 17 on
+  this one), with 2 of 21 ranked formations standing still on its first day: one is sent
+  (139 cells). Year 2 of that seed from the same state: 15 such orders by four nations,
+  62 to 175 cells. Five years of seed 99: 102, 6 refused.
+- **Tests.** `tests/unit/operationalAi.test.ts`, "to spare": the United States against
+  Mexico, nobody but twelve American divisions on the twelve front cells nearest the
+  Pacific and ten Mexican ones six cells opposite. In thirty days at least two divisions
+  are given an order of more than the range, each one such order, to a cell of the front
+  and a sector of its own, and each is 10 cells nearer it; more than half the army is
+  given none and stands within the range of the near end. Red on the rule before
+  ("expected 0 to be greater than or equal to 2"). PLAN's "the far end is manned within
+  a month" is not what it asserts: a division marches 1.5 cells a day (35 cells in the 24
+  days the first one had), and the far end is 60 to 110 cells off.
+- **The pin** moved: `9d84cd85` → `d790e601` (seed 99 after one year).
+
 ### ADR-190 · 2026-10-07 · accepted — A front sector that has nobody takes a formation from afar, one march each (PLAN 3.10c1a)
 
 - **Context.** ADR-187 made the range be to each sector and so took away the only way a

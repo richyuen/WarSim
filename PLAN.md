@@ -4473,7 +4473,7 @@ quick sweep as a smoke test.
     seed 4242 after a year, the Soviet front against Iran: formations in range and sectors
     covered, before and after, with a picture; the operational AI's tick of years 1 and 2
     of seed 4242 and year 8 of seed 8128 beside 3.10c1's numbers.
-  - [ ] 3.10c1d The far end of a front whose army is all at the other end. 3.10c1a sends
+  - [x] 3.10c1d *Done 2026-10-07 (ADR-191: of the formations near the front that stand still, not the reserve itself; France's front is not manned by it, PROGRESS):* The far end of a front whose army is all at the other end. 3.10c1a sends
     only formations that are far from every sector; a nation with all of its formations
     within the range of some sector sends none. Seed 4242 after a year of 3.10c1a: France
     against Italy, 39 sectors, 31 with nobody within the range, 42 of 44 formations within
@@ -4503,6 +4503,10 @@ quick sweep as a smoke test.
     again the day after (and a far formation every eighth day: nation 10's 23 times a
     year), the steps before the orders, and the longest call (87 ms: a nation's far
     formations of one day, 2 ms an order).
+    After 3.10c1d (its probe, PROGRESS): in five years of seed 99 the far orders of 3.10c1a
+    are 4,473 in 5,869 ms (0.134 ms a tick; 3,982 in 2,112 ms in the game before), and
+    2,997 of them are refused, in 2,883 ms: Italy's in year 2 (1,228 ms), nation 10's in
+    year 4 (1,408 ms). A refused far order is the first thing to look at here.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
