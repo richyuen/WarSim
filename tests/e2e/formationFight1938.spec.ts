@@ -187,6 +187,23 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
   await page.evaluate(() => window.__warsim!.view!.draw());
   await page.screenshot({ path: path.join(out, 'b-furthest-at-its-fight.png') });
 
+  // A small view (700 by 500) has a battle at T2, 40 m/px: the two blocks 20 km apart do not
+  // fit it, and the view goes further out for them.
+  await page.setViewportSize({ width: 700, height: 500 });
+  await goTo(furthest.id, 6);
+  await toFight(furthest.id);
+  const smallOwn = await count(furthest.id);
+  const smallFoe = await count(furthest.enemy);
+  const smallM = await page.evaluate(() => window.__warsim!.view!.metresPerPx);
+  console.log(`in a view of 700 by 500: ${smallM.toFixed(1)} m/px, ${smallOwn.on} of ${smallOwn.all} and ${smallFoe.on} of ${smallFoe.all} on the screen`);
+  expect(smallM).toBeGreaterThan(40.5);
+  expect(smallM).toBeLessThan(250);
+  expect(smallOwn.all).toBeGreaterThan(0);
+  expect(smallFoe.all).toBeGreaterThan(0);
+  expect(smallOwn.on, 'its elements on the small screen').toBe(smallOwn.all);
+  expect(smallFoe.on, 'the elements of the enemy on the small screen').toBe(smallFoe.all);
+  await page.setViewportSize(VIEW);
+
   // The pictures: the German or Polish formation furthest from the enemy it faces, at 6 m/px on its block (no
   // enemy), its panel with the button, and where the button takes the view.
   const rear = seen.reduce((a, b) => (b.km > a.km ? b : a));

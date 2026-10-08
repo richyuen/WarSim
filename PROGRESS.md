@@ -10921,3 +10921,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11c: facing and spacing in contact.
+
+## 2026-10-08 — PLAN 3.11b, after it: a small view holds both blocks too
+
+- **What a second look at `86e55bb` found:** in a view too small for the battle's zoom to
+  be under 28 m/px (narrower than 1,000 px or lower than 500) the way to a formation's
+  fight took no account of how far apart the two blocks stand: the limit of 28 was applied
+  as the battle's own, larger, zoom. Such a view now goes as far out as holds the two, up
+  to T2's 250. ADR-199's last line said what was meant, not what was done; it now says both.
+- **Test:** `formationFight1938` goes on to a view of 700 by 500 for the furthest formation
+  (20.0 km from its enemy): 53.7 m/px, 28 of 28 and 28 of 28 elements on the screen. Not run red: by the
+  formula of `86e55bb` that view stays at its battle zoom of 40 m/px, which the test refuses.
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11c, as above.

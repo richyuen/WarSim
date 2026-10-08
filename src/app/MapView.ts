@@ -982,13 +982,14 @@ export class MapView {
    * With `span` (PLAN 3.11b: a formation's fight, the two blocks' middles that far apart in
    * cells, east-west and north-south, about (x, y)) the view holds both: further out than
    * BATTLE_VIEW_M where they stand more than a battle's view apart, and at T3 still where the
-   * view is large enough for the battle's own zoom to be.
+   * view is large enough for the battle's own zoom to be. A smaller view, which has the battle
+   * at T2 already, goes as far out as holds the two.
    */
   showBattle(x: number, y: number, span?: readonly [number, number]): void {
     const el = this.canvas;
     const base = Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, el.clientWidth), (BATTLE_VIEW_KM * 500) / Math.max(1, el.clientHeight));
     const both = span ? Math.max(((span[0] * this.geo.kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, el.clientWidth), ((span[1] * this.geo.kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, el.clientHeight * FIGHT_VIEW_CLEAR)) : 0;
-    const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(base, Math.min(both, Math.max(base, FIGHT_VIEW_MAX_M))));
+    const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(base, Math.min(both, base <= FIGHT_VIEW_MAX_M ? FIGHT_VIEW_MAX_M : BATTLE_VIEW_MAX_M)));
     this.controller.flyTo({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
     this.dirty = true;
   }

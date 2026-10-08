@@ -214,8 +214,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   28.0 m/px, all 28 elements of each on the screen.
 - **Consequences.** The pin holds: nothing of the sim changes, and asking leaves the hash
   as it was (`tests/unit/formationFight.test.ts`). The answer to `formation` is JSON: the
-  snapshot's buffers are as they were. A view smaller than 1400 × 800 goes further out than
-  28 m/px, as the banner's flight does, up to T2's 250.
+  snapshot's buffers are as they were. A view too small for the battle's zoom to be under
+  28 m/px (narrower than 1,000 px or lower than 500) has its battles at T2, as the banner's
+  flight has them, and goes as far out as holds the two blocks, up to T2's 250. (As first
+  committed, `86e55bb`, such a view took no account of the span: the two blocks 20 km apart
+  were not both in a view of 700 by 500. Mended in the commit after it.)
 
 ### ADR-198 · 2026-10-08 · accepted — A formation has two places in the snapshot: the rules' for its T1 marker, its block's for everything close (PLAN 3.11a, critic R3-B3)
 
