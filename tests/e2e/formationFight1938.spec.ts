@@ -107,12 +107,16 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
     }, id);
     await expect(page.getByTestId('formation-panel')).toHaveAttribute('data-formation', String(id), { timeout: 20_000 });
     await expect(page.getByTestId('formation-status')).toHaveText('In contact');
+    // Where the camera is before the press: the flight can be over before the wait for it
+    // begins (a long frame ends it in one step; the press takes its time to come back), and is
+    // then known by where it ended.
+    const from = await page.evaluate(() => ({ ...window.__warsim!.view!.controller.cam }));
     await page.getByTestId('formation-fight').click();
-    await page.evaluate(async () => {
+    await page.evaluate(async (from) => {
       const v = window.__warsim!.view!;
       const c = v.controller;
       const asked = performance.now();
-      while (!c.animating) {
+      while (!c.animating && c.cam.cx === from.cx && c.cam.cy === from.cy && c.cam.scale === from.scale) {
         if (performance.now() - asked > 20_000) throw new Error('no flight began');
         await new Promise((done) => setTimeout(done, 1));
       }
@@ -121,7 +125,7 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
       while (Math.abs(v.elementsZoom / v.metresPerPx - 1) >= 0.01 && performance.now() - t0 < 5000) await new Promise((d) => setTimeout(d, 30));
       await new Promise((d) => setTimeout(d, 400));
       v.draw(performance.now());
-    });
+    }, from);
   };
 
   const seen: Seen[] = [];

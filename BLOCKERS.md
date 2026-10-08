@@ -495,6 +495,10 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     PLAN 3.11c3b, 17 tests in 1.6 min): "no flight began", its wait of 20 s for the camera to
     start after the press of "To its fight", at one of 31 formations, once. Alone it passed
     (2.2 min). The load of the machine in that run is not known. The spec was not changed.
+    2026-10-08 (the gate of PLAN 3.11's tick): the same in `fightSeen1938`, which has the
+    same wait, in the suite and twice of two runs of two files. The wait looked for
+    `controller.animating` alone and missed a flight over before it began. Both specs now
+    read the camera before the press and take a camera elsewhere for a flight begun.
   - `precision`, the bench page (2026-10-07, eleven spec files run by hand for PLAN 3.6c, 17
     tests in 3.3 min): its wait for `window.__precision` on `/bench.html?b=P` ran out with the
     test's 90 s, once. Alone it passed (12.7 s), and in a run with `fire1938` and `bench-pages`.

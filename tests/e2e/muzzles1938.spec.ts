@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { CULL_PX, LOOKS } from '../../src/render/fx/fire';
 import { muzzleOf } from '../../src/render/units/atlas';
 import { figureCells } from '../../src/render/units/individuals';
 import { turretOf, Weapon } from '../../src/shared/unitLooks';
@@ -59,7 +60,7 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
       // The turrets of the shooter's tanks in this frame.
       const turrets: number[] = [];
       for (let k = 0; k < v.individualTurrets; k++) if (v.individualOwner[v.individualTurretOwner[k]!] === s.shooter) turrets.push(v.individualTurretFacing(k));
-      return { shooter: s.shooter, weapon: s.weapon, start: s.start, x0: s.x0, y0: s.y0, x1: s.x1, y1: s.y1, from: s.from, flash: f ? { x: f.x, y: f.y } : null, turrets };
+      return { shooter: s.shooter, weapon: s.weapon, start: s.start, x0: s.x0, y0: s.y0, x1: s.x1, y1: s.y1, dx: s.dx, dy: s.dy, from: s.from, flash: f ? { x: f.x, y: f.y } : null, turrets };
     });
     return {
       flashes,
@@ -90,15 +91,35 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
   // Tanks whose turret is on the line to the target as the shot starts, and the furthest off of the others (rad).
   let onTarget = 0;
   let worstOff = 0;
+  // Shots with no flash whose element's own place is in the viewport: its figure is not.
+  let edge = 0;
   for (const s of got.flashes) {
     // A shot is drawn when an end of it is in the viewport (1400 x 800): the view holds elements beyond it.
     const inView = Math.abs(s.x0 - got.cx) * got.scale < 700 && Math.abs(s.y0 - got.cy) * got.scale < 400;
+    const figures = figuresOf.get(s.shooter);
     if (!s.flash) {
-      expect(inView, `the flash of ${s.shooter}, in the viewport`).toBe(false);
+      if (!figures || !s.from) expect(inView, `the flash of ${s.shooter}, in the viewport`).toBe(false);
+      else {
+        // It leaves a figure, and a figure stands in its element's footprint, not at its middle:
+        // an element at the view's edge has figures beyond it. No flash: from its figure's
+        // muzzle (`originOf`) the shot is off the screen from end to end, as the layer has it
+        // (`FireFx.draw`).
+        const f = s.from;
+        const side = figureCells(f.side);
+        const [mx, my] = muzzleOf(f.frame);
+        if (turretOf(f.frame) >= 0) expect(s.turrets.length, `turrets of ${s.shooter} in the view`).toBeGreaterThan(0);
+        const angle = turretOf(f.frame) >= 0 ? s.turrets[0]! : f.facing;
+        const px = (x: number, y: number): [number, number] => [(x - got.cx) * got.scale + 700, (y - got.cy) * got.scale + 400];
+        const [ax, ay] = px(s.x0 + f.dx + (Math.cos(angle) * mx - Math.sin(angle) * my) * side, s.y0 + f.dy + (Math.sin(angle) * mx + Math.cos(angle) * my) * side);
+        const [bx, by] = px(s.x1 + s.dx, s.y1 + s.dy);
+        const lift = LOOKS[s.weapon].arc * Math.hypot(bx - ax, by - ay);
+        const off = Math.max(ax, bx) < -CULL_PX || Math.min(ax, bx) > 1400 + CULL_PX || Math.max(ay, by) < -CULL_PX || Math.min(ay, by) - lift > 800 + CULL_PX;
+        expect(off, `no flash of ${s.shooter}: the shot of its figure is off the screen (from ${ax.toFixed(1)}, ${ay.toFixed(1)} to ${bx.toFixed(1)}, ${by.toFixed(1)} px)`).toBe(true);
+        if (inView) edge++;
+      }
       outside++;
       continue;
     }
-    const figures = figuresOf.get(s.shooter);
     if (!figures) {
       // A shooter the view does not hold (its target is in view): the shot starts where the sim has it.
       expect(s.from, `figure of ${s.shooter}, not held`).toBeNull();
@@ -156,5 +177,5 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
     v.draw(t);
   }, { x: shown.flash!.x, y: shown.flash!.y, m: NEAR_M_PER_PX, t: shown.start + 30 });
   await page.screenshot({ path: path.join(out, 'muzzle-1.5m.png') });
-  console.log(`muzzles at ${M_PER_PX} m/px: ${got.flashes.length} shots, ${cannons} of cannon; ${fromTanks} at a tank's muzzle (${onTarget} with the turret on the target's line as the shot starts, the furthest ${worstOff.toFixed(2)} rad off it), ${fromOthers} at another figure's, ${unheld} of shooters the view does not hold, ${outside} not drawn (outside the viewport); the farthest ${farthest.toFixed(3)} of a figure from its figure; ${got.figures.length} figures`);
+  console.log(`muzzles at ${M_PER_PX} m/px: ${got.flashes.length} shots, ${cannons} of cannon; ${fromTanks} at a tank's muzzle (${onTarget} with the turret on the target's line as the shot starts, the furthest ${worstOff.toFixed(2)} rad off it), ${fromOthers} at another figure's, ${unheld} of shooters the view does not hold, ${outside} not drawn (outside the viewport, ${edge} of them of an element whose own place is in it); the farthest ${farthest.toFixed(3)} of a figure from its figure; ${got.figures.length} figures`);
 });

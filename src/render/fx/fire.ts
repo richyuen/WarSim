@@ -38,7 +38,7 @@ export const MAX_SHOTS = 3000;
 /** Shots land around their target: up to this far from its slot, in cells (slots are 0.03 apart). */
 export const SCATTER_CELLS = 0.012;
 /** A shot is drawn when it comes within this many CSS px of the viewport. */
-const CULL_PX = 12;
+export const CULL_PX = 12;
 
 interface Look {
   /** ms: the tracer's flight, the muzzle flash, the impact after the flight. */

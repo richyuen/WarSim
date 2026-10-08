@@ -11333,3 +11333,90 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check` (documents: parity).
 - **Next:** PLAN 3.11f3.
+
+## 2026-10-08 — PLAN 3.11f3 and the tick of 3.11: the task's AT on seed 5381, two wars
+
+- **Done:** `tests/e2e/fightSeen1938.spec.ts` (new, two tests, 4.0 min together). Seed 5381:
+  looked for in `tests/`, `tools/`, `src/`, the critic's reports and the records before it
+  was taken; in none. Day 21.
+  - Japan, Manchukuo and Mengjiang on China, the war of the scenario's start: 20 formations
+    in contact of 3 nations, none armour; 5 with none of their enemy's elements on the
+    screen at 6 m/px on their own block; after the panel's way to the fight 20.0 to 22.8
+    m/px, the blocks 3.3 to 7.3 km apart, every element of both on the screen.
+  - Germany on Poland by God Mode (the critic's war, for the armour): 41 formations, 6 of
+    them armour; 16 with no enemy at 6 m/px; 20.0 to 27.4 m/px, 2.7 to 9.7 km apart, every
+    element of both on the screen.
+  - A day at 6 m/px on the fight whose blocks stand nearest (of an armour formation's in
+    the second war): formation 379 on 445, 1,021 of strength lost by the elements in the
+    view, 114 marks, 86 in the view, the first in hour 1, no hull; tank brigade 49 on
+    cavalry brigade 573, 321 lost, 39 marks, 4 of them hulls, 12 in the view, the first in
+    hour 1. Every mark in the view was drawn while it lay.
+  - It passed on its first run alone: nothing of the game was changed for it. The first
+    version had the first war alone; the second was added for the armour, which that war
+    has none of.
+  - **The gate of the tick failed twice before it passed.**
+    - First run (begun 09:08, by the session that wrote the lines above; it ended with
+      that session): `gate: FAILED at test`, 108 errors "Worker exited unexpectedly with
+      exit code 3221225794 during starting state" (0xC0000142), 23 test files run of 131,
+      their 216 tests green. No test failed. Not seen again: the next run had 131 files,
+      1,028 tests, green.
+    - Second run: `gate: FAILED at e2e`, 2 failed, 1 did not run, 152 passed in 18.4 min
+      (the suite takes about 10: the load of the machine is not known). Both failed again
+      in a run of their two files alone.
+      - `fightSeen1938`, the war on China: "no flight began", the wait of 20 s for
+        `controller.animating` after the press of "To its fight". It is the failure
+        BLOCKERS has of `formationFight1938` (once, 2026-10-08). The camera is not looked at
+        by that wait: a flight (250 to 1,600 ms; `CameraController.update` takes a frame's
+        whole time, so one long frame ends it) that is over before the wait begins is never
+        seen. Which of the two it was, a long frame or the time the press takes to come
+        back, was not measured. Both specs now read the camera before the press and take a
+        camera elsewhere for a flight begun. What they ask of the view after it is as it
+        was.
+      - `muzzles1938`: "the flash of 1158, in the viewport". The spec took a shot for in
+        the view by its element's own place. Element 1158 stands 0.4 px inside the top
+        edge (255, −399.6 px from the middle); its figure is 0.009 cells (44 px) above
+        that and its target 341 px above the edge: the layer culls the shot (12 px,
+        `CULL_PX`), rightly. The spec now works out the muzzle of the shot's figure as
+        `originOf` does and asks that the shot be off the screen from end to end, as
+        `FireFx.draw` has it. It finds two such shots of the hour's 57 (the first stopped
+        the test before the second was reached). Since when this game has an element on
+        that edge is not known: the suite last ran in full at the tick of 3.10 (ADR-87),
+        and parts of 3.11 have moved where a deployed element stands (ADR-200 to ADR-204).
+      - Changed: `tests/e2e/fightSeen1938.spec.ts`, `formationFight1938.spec.ts`,
+        `muzzles1938.spec.ts`; `src/render/fx/fire.ts` exports `CULL_PX`. No rule, nothing
+        drawn.
+      - The three specs alone after it, 4 tests in 5.0 min, green, with the figures above;
+        `muzzles1938`: "57 shots, 26 of cannon; 26 at a tank's muzzle ..., 5 not drawn
+        (outside the viewport, 2 of them of an element whose own place is in it)".
+- **Pictures** (`docs/evidence/3.11/`, eight, all looked at):
+  - `f3-china-a-fight-t2-80m.png`: one Japanese division among three Chinese, each block a
+    small patch; four tags, each by its block but the one of division 445, which stands
+    right of the Japanese block with a line back across it. Not good: PLAN 7.4 has the
+    tags of a crowded view at T2.
+  - `f3-china-a-fight-t3-20m.png`: the Japanese block (white) and three Chinese (ochre),
+    front to front, all four whole in the view, the battalions to be told apart.
+  - `f3-china-a-fight-and-its-marks-6m.png`: riflemen lying in their ranks on both sides,
+    guns behind, shots between; the marks are few dark spots among the figures and are not
+    what the eye finds first.
+  - `f3-china-a-fight-and-its-marks-2m.png`: Japanese riflemen, one of the fallen on a
+    dark patch in the middle.
+  - `f3-poland-a-fight-t2-80m.png`: the tank brigade's grey block between a cavalry
+    brigade and two divisions; ten tags, six with lines, two of the lines down to the
+    war banners. The same fault as above.
+  - `f3-poland-a-fight-t3-20m.png`: the tanks, the cavalry and two divisions in one view.
+  - `f3-poland-a-fight-and-its-marks-6m.png`: grey German tanks over rose Polish horsemen
+    and riflemen: a fight of tanks to be read as one. The tag of division 568 at the left
+    edge with a line under the war banners (PLAN 7.4, "tags under the page's boxes").
+  - `f3-poland-a-fight-and-its-marks-2m.png`: one mark, a dark patch with what was lost on
+    it, on open ground beside the tanks; most of the picture is bare. No two tanks in one
+    another in this one.
+- **PLAN 3.11 ticked.** What it leaves, each said where: tanks of neighbouring elements in
+  one another (PLAN 7.4, ADR-204's addition); no mark at T2 (ADR-205); tags far off their
+  blocks with long lines at T2 (PLAN 7.4); which of two layouts a pair's tags have hangs on
+  a fraction of a px (ADR-207).
+- **Performance:** not measured: a spec and records.
+- **Not done:** no sweep (ADR-58). The pin is unmoved.
+- **Review count:** 3.11 is the fourth numbered task since the phase review 3.7.
+- **Gate:** `npm run check` (a numbered task ticked: the whole e2e suite), three runs: the
+  two above, and a third on the specs as they now are, on whose green this commit is made.
+- **Next:** PLAN 3.12.

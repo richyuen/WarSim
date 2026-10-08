@@ -4936,7 +4936,9 @@ quick sweep as a smoke test.
       contact"). Another seed, nearest first, as ADR-142, ADR-156 and ADR-185 did; the
       pictures of `docs/evidence/2.10` shot again and looked at.
       AT: the spec passes; an ADR with the seeds tried.
-- [ ] 3.11 Critic R3-B3: zooming to a formation in contact shows its fight. The
+- [x] 3.11 *Done 2026-10-08 (its parts 3.11a to 3.11f, ADR-198 to ADR-207; the AT on seed
+  5381 in `fightSeen1938`. Left, said where: the tanks of two elements drawn in one another,
+  PLAN 7.4; no mark at T2, ADR-205).* Critic R3-B3: zooming to a formation in contact shows its fight. The
   differentiator scored 6 and needs 8; tanks scored 5 and need 8. PLAN 3.7d and 3.7g tied
   the drawn tag to the elements (ADR-168). What the critic saw after them (`critic/c3_m.json`):
   - of six German armour formations, the three in contact (flags 3) have their elements
@@ -5128,7 +5130,7 @@ quick sweep as a smoke test.
     as `tags1938` asks), red first; an e2e on the critic's game (seed 1212, day 6) that
     reads the tints of the Soviet and the Polish elements in one view; the critic's
     picture at 6 m/px shot again and one at T2, looked at.
-  - [ ] 3.11f The task's AT on a seed the builder has not used, the pictures at T2 and T3,
+  - [x] 3.11f *Done 2026-10-08 (its parts 3.11f1 to 3.11f3).* The task's AT on a seed the builder has not used, the pictures at T2 and T3,
     and the tick of 3.11 with the full gate.
     Also here (left by 3.11c4): tanks of neighbouring elements of a deployed block drawn one
     over the other at T3 (three pairs of about 110 in `c4-within-a-block-2m.png`): looked
@@ -5160,7 +5162,26 @@ quick sweep as a smoke test.
       and ADR-204's is 180; the cures are a scatter of a tenth of the spacing (the lattice
       again), smaller tanks (every picture of one, and the specs that measure one), or a second place for a figure
       (the shots, the hulls and the marks have one). A line under PLAN 7.4.
-    - [ ] 3.11f3 The AT on a seed not used, the pictures, the tick of 3.11.
+    - [x] 3.11f3 *Done 2026-10-08:* `tests/e2e/fightSeen1938.spec.ts`, seed 5381 (in no
+      test, tool, record or report of the critic until now), day 21, two wars, each a test.
+      Japan and its puppets on China (at war from the scenario's start, nobody's
+      declaration): 20 formations in contact of 3 nations, none armour; 5 have no enemy
+      element on the screen at 6 m/px on their own block; the panel's way to the fight
+      brings every element of both blocks into a view of 20.0 to 22.8 m/px. Germany on
+      Poland by God Mode: 41 formations, 6 of them armour, 16 with no enemy at 6 m/px; 20.0
+      to 27.4 m/px, every element of both on the screen. A day at 6 m/px on one fight of
+      each: 1,021 of strength lost and 114 marks, 86 in the view, the first in hour 1
+      (Japanese division 379 on Chinese 445); 321 lost and 39 marks, 4 of them hulls, 12 in
+      the view, the first in hour 1 (German tank brigade 49 on Polish cavalry brigade 573).
+      Green on its first run alone: no rule changed for it. Eight pictures, looked at
+      (`docs/evidence/3.11/f3-china-*`, `f3-poland-*`).
+      The gate of the tick (the whole e2e suite) then failed two tests, each by its spec:
+      the first of these ("no flight began": a flight over before the wait for it began;
+      this spec and `formationFight1938` now know it by where the camera went) and
+      `muzzles1938` (a shot with no flash of an element 0.4 px inside the view's top edge,
+      its figure and its target above it; the spec now reads the cull from the figure's
+      muzzle, as `FireFx.draw` does). No rule and nothing drawn changed: `CULL_PX` is
+      exported.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
   `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom
