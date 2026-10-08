@@ -11279,3 +11279,38 @@ No rule changed and nothing on screen changed. One task came out of it.
   hand; the ADR says so now. No other copy of the old mix is in `src/render` (looked for
   after the commit: the hulls and wrecks do not take a nation's tint).
 - **Gate:** `npm run check` (documents: parity).
+
+## 2026-10-08 — PLAN 3.11f1: a tag leaves a place by its block that reads as another block's (ADR-207)
+
+- **Found:** `tags1938`, "formation 1055's tag has a line", is green on `52dc9d6` (3.11c3b)
+  and red on `2d35870` (3.11c4), run on both. A probe in the spec (taken out): before, the
+  elements of both blocks y 386.3 to 413.7 and both tags 20.0 px from the German block's
+  middle, a tie, and ADR-188 asks for nearer; after, the German block's y 385.9 to 414.7,
+  its own tag 21.3 px and the Polish one 19.7.
+- **Done:** `layoutTags` tries first the places by the block that are clear of other
+  elements and not nearer to another block's middle than that block's own placed tag; then
+  as before. The Polish tag stands right of its block; no line on either.
+- **Tests:** `tests/unit/tags.test.ts`, 2 new: "two blocks side by side: the second tag does
+  not take the place below, it stands beside its block, and neither has a line" (red first:
+  x 642 for 724); "with no other place clear of the first block, the tag stands below as
+  before, and the first has its line" (green before the change: it holds what stays). A
+  first try without "by the block" failed ADR-168's "three columns side by side" (a tag two
+  places out) and that second test; the rule was narrowed, the tests were not touched.
+- **A spec's measure changed, not its assertion:** `formationPanel1938`, "T2, the German
+  picked: the frame's pixels around the tag of 1056, which is not picked": 39 for 0. All 39
+  lay in x 718 to 737, y 379 to 381: the bottom edge of the picked German tag's frame,
+  within the 6 px the spec looks around the Polish tag, which now stands beside its block 6
+  px under the German tag's corner. `picked` in the view was the German alone. `frame()`
+  no longer counts pixels within the frame's reach of another tag's box.
+- **Specs run by hand** (ADR-87: a part), 7 files, 16 tests, all passed: `tags1938` (to its
+  end: tints 99 apart), `formationPanel1938`, `battleView1938`, `tankBattle1938`,
+  `toBattle1938`, `stackBlocks1938`, `markerStacks1938`.
+- **Picture** (`docs/evidence/3.11/f1-tag-beside-its-block-150m.png`), looked at: the German
+  tag, picked and framed, above the pair; the Polish tag right of the Polish block, its top
+  3 px under the frame's corner. Whose is whose can be read without the flags.
+- **Not solved:** which layout a pair has hangs on a fraction of a px (ADR-207).
+- **Performance:** not measured: one more pass over at most four places a tag.
+- **Not done:** no sweep (ADR-58). The pin is unmoved (view only).
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11f2.

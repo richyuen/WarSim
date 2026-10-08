@@ -188,6 +188,39 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     });
   });
 
+  // PLAN 3.11f: `tags1938` at 150 m/px after PLAN 3.11c4. Two divisions in contact stand side by
+  // side, each block 18 px wide and 33 tall. The western one's tag is above; the eastern one's
+  // "below" is under both blocks, and was as near to the western block's middle as that block's
+  // own tag (20 px each) until the elements stood off their slots: then 1.6 px nearer.
+  describe('a place that is nearer to another block than that block\'s own tag (PLAN 3.11f)', () => {
+    const west = item(1055, 12447, 679.9, 383.4, 698, 417.2);
+    const east = item(1056, 12445, 701.7, 383.3, 719.6, 415.8);
+    const far = (t: { x: number; y: number; w: number; h: number }, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
+
+    it('two blocks side by side: the second tag does not take the place below, it stands beside its block, and neither has a line', () => {
+      const { placed, left } = layoutTags([west, east], measure, 1400, 800);
+      expect(left).toBe(0);
+      const [w, e] = [placed.find((t) => t.id === 1055)!, placed.find((t) => t.id === 1056)!];
+      expect(w.y + w.h).toBe(Math.round(383.4 - TAG_GAP - w.h) + w.h);
+      expect(e.x).toBe(Math.round(719.6 + TAG_GAP));
+      for (const t of placed) {
+        expect(t.gap, `the gap of ${t.id}`).toBeLessThanOrEqual(TAG_GAP + 1);
+        expect(t.line, `the line of ${t.id}`).toBe(false);
+        for (const o of placed) if (o !== t) expect(far(o, t.tx, t.ty), `the tag of ${o.id} from the middle of ${t.id}`).toBeGreaterThan(far(t, t.tx, t.ty));
+      }
+      expect(layoutTags([east, west], measure, 1400, 800).placed).toEqual(placed);
+    });
+
+    it('with no other place clear of the first block, the tag stands below as before, and the first has its line', () => {
+      // A third block east of the second: the place beside it is on that block's elements.
+      const third = item(900, 300, 723, 383, 741, 416);
+      const { placed } = layoutTags([west, east, third], measure, 1400, 800);
+      const e = placed.find((t) => t.id === 1056)!;
+      expect(e.y).toBe(Math.round(415.8 + TAG_GAP));
+      expect(placed.find((t) => t.id === 1055)!.line).toBe(true);
+    });
+  });
+
   // PLAN 2.14f2: the war banners and the bottom bar are in the way as another tag is.
   describe('what the page has above the map', () => {
     // A formation cut by the bottom edge, with something above it: its tag's first free place

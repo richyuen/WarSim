@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-207 · 2026-10-08 · accepted — A tag does not take a place by its block that is nearer to another block than that block's own tag (PLAN 3.11f1)
+
+- **Context.** `tags1938` failed since PLAN 3.11c4: "T2, 150 m/px: formation 1055's tag has
+  a line". Run on the commits: green on `52dc9d6` (3.11c3b), red on `2d35870` (3.11c4). The
+  view: a German and a Polish division in contact, side by side, each block 13 px wide and
+  28 tall at 150 m/px; the German tag above (94 px wide, over both blocks), the Polish one
+  below (under both). Until 3.11c4 the two blocks had one height and from the middle of the
+  German block both tags stood 20.0 px: ADR-188's "another tag is nearer" asks for less
+  than, so no line. With the elements off their slots (ADR-204: 180 m at most, 1.2 px here)
+  the German block's box is 0.4 px taller at its top and 1.0 at its foot: its own tag at
+  21.3 px and the Polish one at 19.7. The line is right by ADR-188's rule; the view had
+  passed on a tie.
+- **What the tie hid.** In that view each tag is as near to the other block as to its own,
+  and nothing but the flag says whose it is. That is ADR-188's case, and there the tag that
+  stood over the brigade's column was placed before the brigade's: the later tag could not
+  help it. Here the later tag (the Polish one) takes the place that reads as the German
+  block's, with a place of its own free: right of its block.
+- **Decision.** `layoutTags` has a pass before its two: a place by the block (the first on
+  each side: above, below, left, right), clear of other formations' elements, and not nearer
+  to the middle of another block than that block's own tag, placed before it (ADR-188's
+  measure, from the point to the box). With none, the two passes as before: the nearest
+  place clear of the elements, then any free place; ADR-188's line stays for those. View
+  only (`tags.ts`).
+- **This changes ADR-188's "why not place it differently"** in one point: a tag now does
+  leave a place by its block that reads as another block's. The order of the places and
+  "above first" stay; no tag placed before moves; a tag goes no further out for it (a first
+  try without that limit sent the middle one of ADR-168's three columns two places out and
+  failed that test). ADR-188's own view is as it was (the division's tag is placed first).
+- **Not solved.** Which of the two layouts a pair has still hangs on a fraction of a px
+  (under 20.0 px the Polish tag goes beside, at 20.0 or over it stays below): with the
+  Polish division picked it is placed first and the German tag stands below. Neither has a
+  line in either. Seen in `formationPanel1938`.
+- **A spec's measure.** `formationPanel1938` counts pixels of the picked frame's colour
+  within 6 px of a tag that is not picked and asks for none. The German tag above and the
+  Polish one beside stand 6 px apart at a corner, and the picked German tag's frame (3 px
+  out of its box) was counted as the Polish tag's: 39 px, all in x 718 to 737, y 379 to 381,
+  inside the German tag's frame; the view's `picked` was the German. The count now leaves
+  out pixels within the frame's reach of another tag's box. The assertion is as it was.
+- **Consequences.** In a view of two blocks side by side the second tag may stand beside
+  its block where it stood below (`docs/evidence/3.11/f1-tag-beside-its-block-150m.png`).
+  The pin is unmoved: nothing of the sim changed.
+
 ### ADR-206 · 2026-10-08 · accepted — A sprite's tint is its nation's colour, a dark one made lighter with its hue and saturation kept (PLAN 3.11e, critic R3-B3)
 
 - **Context.** The critic: "Soviet tanks are tinted pink, near Poland's own pink"

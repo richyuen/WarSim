@@ -14,7 +14,9 @@
  * them in its nation's colour. Where blocks stand side by side in a contact, the strongest
  * one's tag lay on the others' sprites and nothing said which block a tag was of.
  * So has one that stands by its elements while another formation's tag is nearer to their
- * middle (ADR-188, PLAN 3.10c1b).
+ * middle (ADR-188, PLAN 3.10c1b). A tag does not take such a place itself where another by
+ * its block is free: one nearer to the middle of another block than that block's own tag,
+ * placed before it (ADR-207, PLAN 3.11f1).
  *
  * It gives way likewise to what the page has above the map (PLAN 2.14f2): the war banners and
  * the bottom bar. A formation at the bottom edge had its tag under them.
@@ -92,6 +94,9 @@ export interface TagObstacle {
 const overlap = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): boolean =>
   a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
+/** From a point to a box, px: 0 inside it. */
+const far = (t: { x: number; y: number; w: number; h: number }, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
+
 /**
  * Places the tags of `items` in a view of vw × vh px. `measure(text, font)` is the width of a
  * line. The picked formation first, then the stronger ones (the lower id on a tie), so the
@@ -125,6 +130,8 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
     const maxX = Math.max(edge, vw - w - edge);
     const maxY = Math.max(edge, vh - h - edge);
     const tries: { x: number; y: number }[] = [];
+    /** How many of them are by the block: the first place on each side. */
+    let byBlock = 0;
     // Above, then below, then left and right, then a place further out on each side: the
     // nearest free one. (Two formations in contact stand front to front, PLAN 2.14c1: one has
     // its tag above its block and the other below, each by its own. Blocks side by side,
@@ -138,14 +145,20 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       const rx = Math.round(vx1 + TAG_GAP + k * stepX);
       if (lx >= edge) tries.push({ x: lx, y });
       if (rx <= maxX) tries.push({ x: rx, y });
+      if (k === 0) byBlock = tries.length;
     }
     let done = false;
-    // First a place clear of every other formation's elements; with none, any free place.
-    for (const clear of [true, false]) {
-      for (const at of tries) {
+    // First a place by the block, clear of every other formation's elements, that is not
+    // nearer to the middle of another block than that block's own tag, placed before it (PLAN
+    // 3.11f: a reader would take it for that block's); then the nearest place clear of the
+    // elements; with none, any free place.
+    for (const pass of [0, 1, 2]) {
+      const clear = pass < 2;
+      for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
         const box = { x: at.x, y: at.y, w, h };
         if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
         if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
+        if (pass === 0 && placed.some((p) => far(box, p.tx, p.ty) < far(p, p.tx, p.ty))) continue;
         // How far the tag's box is from its elements' (0 when it lies on them).
         const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
         placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx: (vx0 + vx1) / 2, ty: (vy0 + vy1) / 2, flag: false });
@@ -159,7 +172,6 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
   // A tag by its own block is not always the one a reader takes for the block's (ADR-188):
   // by a tall block, "below" is further from its middle than a neighbour's tag over its top.
   // Such a tag has a line too.
-  const far = (t: PlacedTag, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
   for (const t of placed) {
     if (t.line) continue;
     const own = far(t, t.tx, t.ty);

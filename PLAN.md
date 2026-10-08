@@ -5139,6 +5139,19 @@ quick sweep as a smoke test.
     part moved the tag off its elements is not known: to be found over the commits of
     3.11 before the full gate. The spec stops there, so its line on
     the tints of Germany and Poland did not run; the unit test has them 99 apart.
+    Split 2026-10-08, one cause a part:
+    - [x] 3.11f1 *Done 2026-10-08 (ADR-207):* `tags1938` again. Green on `52dc9d6`
+      (3.11c3b), red on `2d35870` (3.11c4): the elements off their slots made the German
+      block's box 1.4 px taller, and the Polish tag below the pair, 20.0 px from the German
+      block's middle as the German tag was, came to 19.7 against 21.3 (ADR-188's line). A
+      tag now leaves a place by its block that is nearer to another block's middle than
+      that block's own tag, for another by its block: the Polish tag stands right of its
+      block. The spec to its end: Germany (107, 107, 107), Poland (201, 76, 99), 99 apart.
+      `formationPanel1938`'s count of the frame's pixels by a tag that is not picked leaves
+      out those of the picked tag's own frame (39 px of it lay within 6 px of the tag
+      beside).
+    - [ ] 3.11f2 The tanks drawn one over the other (above).
+    - [ ] 3.11f3 The AT on a seed not used, the pictures, the tick of 3.11.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
   `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom

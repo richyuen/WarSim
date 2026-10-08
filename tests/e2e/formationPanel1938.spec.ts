@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { PICKED_EDGE } from '../../src/render/units/markers';
+import { TAG_PICKED_REACH } from '../../src/render/units/tags';
 import type { Command } from '../../src/shared/commands';
 import { ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -128,10 +129,11 @@ const num = (v: number): string => Math.round(v).toLocaleString('en-US');
  * The frame of the picked formation around what is drawn of formation `id`: how many pixels of
  * the overlay within 6 px of its marker or tag have the frame's colour (within 40 of it in RGB),
  * and the length of the box's edge in the same pixels. Null where it has no marker or tag.
+ * Pixels within the frame's reach of another tag's box are that tag's and are not counted.
  */
 async function frame(page: Page, id: number, what: 'tag' | 'marker'): Promise<{ lit: number; edge: number } | null> {
   await settle(page);
-  return page.evaluate(({ id, what, colour }) => {
+  return page.evaluate(({ id, what, colour, reach }) => {
     const v = window.__warsim!.view!;
     const r = what === 'tag' ? v.tagRects.find((t) => t.id === id) : v.markerRects.find((m) => m.id === id || m.members.includes(id));
     if (!r) return null;
@@ -143,10 +145,17 @@ async function frame(page: Page, id: number, what: 'tag' | 'marker'): Promise<{ 
     const h = Math.min(c.height - y0, Math.ceil((r.h + 12) * k));
     const px = c.getContext('2d')!.getImageData(x0, y0, w, h).data;
     const rgb = [parseInt(colour.slice(1, 3), 16), parseInt(colour.slice(3, 5), 16), parseInt(colour.slice(5, 7), 16)];
+    // Not the frame of another tag: two tags can stand 6 px apart (one above its block and one
+    // beside the next block, PLAN 3.11f), and the frame reaches `TAG_PICKED_REACH` out of its box.
+    const others = what === 'tag' ? v.tagRects.filter((t) => t.id !== id).map((t) => [(t.x - reach - 1) * k, (t.y - reach - 1) * k, (t.x + t.w + reach + 1) * k, (t.y + t.h + reach + 1) * k] as const) : [];
     let lit = 0;
-    for (let i = 0; i < px.length; i += 4) if (px[i + 3]! > 128 && Math.hypot(px[i]! - rgb[0]!, px[i + 1]! - rgb[1]!, px[i + 2]! - rgb[2]!) < 40) lit++;
+    for (let i = 0; i < px.length; i += 4) {
+      if (px[i + 3]! <= 128 || Math.hypot(px[i]! - rgb[0]!, px[i + 1]! - rgb[1]!, px[i + 2]! - rgb[2]!) >= 40) continue;
+      const [x, y] = [x0 + ((i / 4) % w), y0 + Math.floor(i / 4 / w)];
+      if (!others.some((o) => x >= o[0] && x < o[2] && y >= o[1] && y < o[3])) lit++;
+    }
     return { lit, edge: Math.round(2 * (r.w + r.h) * k) };
-  }, { id, what, colour: PICKED_EDGE });
+  }, { id, what, colour: PICKED_EDGE, reach: TAG_PICKED_REACH });
 }
 
 test('a click on a formation opens its panel at T1, T2 and T3, with the sim\'s numbers; a click on ground closes it', async ({ page }, info) => {
