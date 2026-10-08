@@ -10536,3 +10536,81 @@ No rule changed and nothing on screen changed. One task came out of it.
   spans are kept true or the bloc is flooded, since a bloc without spans is never cleared.
   Its AT has the hashes of this entry's three runs (`5c31d145`, `114f9c7f`, `c9c0d546`).
   `npm run check`: parity.
+
+## 2026-10-08 — PLAN 3.10d1a: the ring test settles most of the changed cells (the count)
+
+- **Asked** (3.10d1, "first count"): how many of the changed cells the local test settles,
+  and how much of the flooding is left when a bloc is still flooded for the rest.
+- **Method** (3.10d's: a probe put in and taken out, nothing of it committed;
+  `.cache/d1/hook.py` writes four calls into `src/sim/systems/supply.ts`,
+  `.cache/d1/probe.ts` runs and reports). Before each partial refresh the mending is done
+  on a copy of the layer, from the cells whose controller or owner differs from the last
+  refresh's: all the losses first (the mark cleared; a lane in the cell or the eight about
+  it, a city whose being a source changed, or a ring that does not hold gives the bloc
+  up), then the gains (a flood from a changed cell with no mark beside its bloc's
+  network). The blocs given up are the ones the mending would still flood, and their cost
+  is taken to be the ms of their flood in the real refresh that follows. After the real
+  refresh the copy is held against the layer, cell by cell, but for those blocs. From
+  1938, pinned to `0xFFFF`, one seed after another. With the probe in, the runs end on
+  the hashes of 3.10d (`5c31d145`, `114f9c7f`, `c9c0d546`): the same games.
+- **The rule is sound on these runs:** no cell of the copy differs from the layer, in
+  3,548, 2,096 and 6,482 partial refreshes that stood.
+- **The count:**
+
+  | | 99, five years | 4242, three | 8128, nine |
+  |---|---|---|---|
+  | changed cells | 294,488 | 137,323 | 633,353 |
+  | a refresh: median, 90th, 99th percentile, most | 39, 89, 779, 15,482 | 38, 86, 268, 16,686 | 55, 106, 694, 37,612 |
+  | losses | 199,038 | 102,938 | 413,461 |
+  | of them: the ring holds | 169,215 | 86,922 | 353,326 |
+  | one neighbour in the network or none | 22,531 | 12,463 | 46,069 |
+  | the ring does not hold | 4,543 | 2,348 | 9,921 |
+  | a source | 2,701 | 1,188 | 4,118 |
+  | a lane in it or beside it | 48 | 17 | 27 |
+  | gains that flood | 79,865 | 46,668 | 189,614 |
+  | cells of a gain's flood: median, 90th, 99th, most | 1, 4, 6, 5,436 | 1, 4, 6, 5,105 | 1, 4, 6, 49,817 |
+  | changed and not beside the network (nothing to do) | 9,939 | 4,028 | 21,746 |
+  | gained sources: beside the network, apart from it | 205, 111 | 139, 38 | 486, 283 |
+- **What is left to flood** (the partial refreshes that stood; ms of the floods, and ms a tick):
+
+  | | 99 | 4242 | 8128 |
+  |---|---|---|---|
+  | today | 10,112, 0.231 | 5,105, 0.194 | 17,518, 0.222 |
+  | the task as written | 1,940, 0.044 | 945, 0.036 | 5,149, 0.065 |
+  | a gained source a seed of its own | 1,635, 0.037 | 767, 0.029 | 4,484, 0.057 |
+  | refreshes with no bloc to flood, as written | 1,044 of 3,548 | 647 of 2,096 | 1,472 of 6,482 |
+  | bloc-refreshes still flooded, by the first cause: ring, city, lane | 2,113, 2,537, 12 | 1,292, 1,314, 1 | 4,855, 4,554, 5 |
+  | the Soviet network: floods today, still flooded | 3,081, 444 | 1,739, 315 | 5,894, 1,935 |
+
+  The cells the gains write are 215,000, 112,000 and 566,000 in the whole run, beside
+  the 250,000 or so of one partial refresh today. What the mending itself costs was not
+  timed (the probe's copy is not the code).
+- **Decided:** 3.10d1b is the task as written: the ring, and a bloc flooded for a city, a
+  lane or a ring that does not hold. Seed 8128 keeps the most (0.065 ms a tick, the
+  Soviet network two thirds of it): a long war on the Soviet front cuts and takes cities
+  often.
+- **Not taken, and why:**
+  - A gained source as a seed of its own (only the bloc that loses a source is flooded):
+    0.007 to 0.008 ms a tick. Sound, small; left for 3.10f if the budget asks.
+  - A bounded search (4-connected, 4,096 cells) where the ring fails or a source is lost:
+    0.015 ms a tick left of 0.205 in year 1 of seed 99, against 0.036. As the probe wrote
+    it, it was wrong in 3 refreshes of 701 (15 cells): after a cut it cleared the small
+    side and took the other to have a source, and that side's only source was a city
+    lost later in the same list. The ring-only rule has no such step. Not for 3.10d1b.
+- **A correction to 3.10d:** it said no partial refresh is done again in full. 16, 3 and
+  12 are, in these same runs. Its probe took the inner call for a full refresh of its
+  own and put it under whoever had last asked for one, so its "full" counts (46, 30, 59)
+  are 30, 27 and 47 asked for and 16, 3 and 12 done again; the split by who asked is
+  off by those. In 9, 2 and 6 of them the mending's own flood comes to a lane that a
+  higher bloc holds; the other 7, 1 and 6 it would not need (which of the two tests
+  asked for them was not looked into). The conclusion of 3.10d stands: the cost is the
+  partial refresh.
+- **Seen beside it, for 3.10d1b:** the advice taken before the count (losses before
+  gains, so `open` does not ask for a full refresh at a front that moved two cells deep;
+  spans that may cover more than the network, with a `clear` that zeroes only the bloc's
+  own marks) is in the task's text.
+- **Not done:** no source changed, nothing made faster. One run of each seed. No picture:
+  nothing drawn changed; specs run by hand: none. No sweep (ADR-58).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check` (documents only: parity).
+- **Next:** PLAN 3.10d1b.

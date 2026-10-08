@@ -4813,7 +4813,8 @@ quick sweep as a smoke test.
     (the hourly pass over the formations is 0.04 to 0.08). Not a full refresh (2 to 18 a
     year, asked by `makePuppet`, `eliminateNation` and `releasePuppet`, 7.5 ms each in the
     median: 0.002 to 0.023 ms a tick) and not a partial one done again in full (none in
-    17 years of three seeds). It is the partial refresh as it is meant to run: it floods
+    17 years of three seeds; *corrected by 3.10d1a:* 16, 3 and 12, which the probe had
+    counted among the full ones). It is the partial refresh as it is meant to run: it floods
     every cell of each bloc that had a cell change, a median of 247,000 to 277,000 cells
     of the 617,000 (4 to 10 blocs), 2.8 to 3.2 ms, for a median of 37 to 54 cells that
     changed hands and 40 to 59 marks that the refresh changed: 4,400 to 6,500 cells
@@ -4853,6 +4854,41 @@ quick sweep as a smoke test.
     five years on `5c31d145` (3,594 refreshes; 4242 after three on `114f9c7f`, 8128
     after nine on `c9c0d546`); supply's ms a tick of
     seed 99 (five years), 4242 (three) and 8128 (nine) beside 3.10d's.
+    - [x] 3.10d1a *Done 2026-10-08 (the count; nothing made faster):* the rule as it is
+      written above is enough, and it is sound on 17 years of play. The mending was done
+      on a copy of the layer before each of the 12,126 partial refreshes that stood, and
+      the copy held against the layer after it: no cell differs, but for the blocs the
+      rule gives up. Of 1,065,000 changed cells 715,000 are losses: 84 to 86 % of them
+      pass the ring test, 11 to 12 % have one neighbour in the network or none, 2.3 to 2.4 %
+      fail it, 1.0 to 1.4 % are sources, 92 in all have a lane in the ring. A gain floods
+      1 cell in the median and 6 at the 99th percentile. The floods that are left are
+      0.044 ms a tick of 0.231 on seed 99, 0.036 of 0.194 on 4242 and 0.065 of 0.222 on
+      8128: 19, 19 and 29 %. The Soviet network is still flooded in 14, 18 and 33 % of
+      the refreshes that flood it today. Not taken: a gained source as a seed of its own
+      (0.007 to 0.008 ms a tick less), and a bounded search where the ring fails or a source is lost
+      (0.015 left of 0.205 in year 1 of seed 99, but as the probe wrote it, it kept
+      pockets with no source: a bloc was thought to have a source that was itself lost
+      later in the same refresh). A correction to 3.10d: partial refreshes are done
+      again in full, 16, 3 and 12 times in these runs; its probe counted them as full
+      ones. Numbers and the method are in PROGRESS.
+    - [ ] 3.10d1b The mending, as the task above and the count have it. `setController`
+      and `setOwner` keep the cells that changed (a set; the nations and blocs are kept
+      as they are, the tests read them), and the old bloc of a cell is the layer's mark
+      at the refresh. All the losses first, then all the gains: after the losses a
+      changed cell's mark is 0 or its bloc's, so `open` asks for a full refresh only for
+      what PLAN 2.11j means. A loss: the mark cleared; then the bloc is flooded whole if
+      the cell or one of the eight about it is a lane, if the cell is a city whose being
+      a source changed (the bloc it was a source of, the bloc it is one of, the mark's),
+      or if the ring does not hold. No search. A gain: a flood from each changed cell
+      with no mark and a 4-neighbour of its bloc's mark, through `open`. A bloc that a
+      test or the user marks with no changed cell of its own is flooded as today. The
+      blocs with work are taken in ascending order, as today. Spans (an ADR, since the
+      task said there is no third way): they cover the network and may cover more; a
+      loss leaves them, a gain adds its own, `clear` zeroes only the cells that still
+      bear the bloc's mark, and a bloc whose spans have grown to twice those of its last
+      flood is flooded. The lanes a gain takes join the bloc's. One scanline loop for
+      both. AT: the task's, with a counter of the cells a refresh writes for the test
+      that is red first.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
   - [ ] 3.10f The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
