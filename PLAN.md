@@ -4668,7 +4668,19 @@ quick sweep as a smoke test.
       0.368 and 0.326: the steps before the orders are 0.24, 0.40, 0.76, 0.26 and 0.23 ms a
       tick. Year 3 is the one to open first. The tick of those years is 1.893 ms, and
       3.10c2b3b's AT asked for under 1.833.
-    - [ ] 3.10c2c1 `joinWide` is made only when its answer is read. The reach test asks
+    - [x] 3.10c2c1 *Done 2026-10-08 (no ADR: no rule changed, the pin is unmoved):* the reach
+      test leaves a class and a sector in two wide grounds unasked (`unasked`), and the three
+      readers ask (`reaches`): the reserve for the sectors within the range, the allotment
+      for those with a formation of the class within the range, `emptyFor` for an empty
+      sector of the landmass that would be the nearest. The unit test (a front in other wide
+      ground beyond the range of every division: no walk; `joinWalks` counts them), red
+      first. Five years of seed 99, the same game (the five hashes of 3.10c2c): the walks
+      564, 1,027, 1,566, 472, 347 → 14, 128, 372, 91, 107; the reach step with what its
+      readers now walk 0.04, 0.11, 0.38, 0.07, 0.05 → 0.020, 0.052, 0.094, 0.025, 0.029 ms a
+      tick; the tick 1.890 → 1.810 ms (1.839 with the marks in), under 3.10c2b2's 1.833; the
+      operational AI 0.561 → 0.479. A walk is 1.0 ms in year 3 (0.044 ms a tick): what is
+      left of it is for 3.10f's leftover.
+      The task as it was set: `joinWide` is made only when its answer is read. The reach test asks
       every class for every sector of the front, and the first sector in another wide ground
       has the cells walked (`wideJoined`). What reads the answer: the reserve and the
       allotment, for the sectors within `DEPLOY_RANGE_CELLS` of a formation of the class;

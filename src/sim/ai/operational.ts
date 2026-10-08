@@ -287,6 +287,14 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const sn = list.length;
   // reached[ci]: the sectors class ci reaches, ascending.
   const reached: number[][] = classCell.map(() => []);
+  // unasked[ci]: of those, the sectors in another wide ground than the class's, with that ground:
+  // whether the cells join the two is asked where it is read (`reaches`; PLAN 3.10c2c1: the
+  // first to ask has the cells walked, and three plans in four read none of them).
+  const unasked: (Map<number, number> | undefined)[] = classCell.map(() => undefined);
+  const reaches = (ci: number, i: number): boolean => {
+    const ground = unasked[ci]?.get(i);
+    return ground === undefined || wideJoined(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
+  };
   for (let i = 0; i < sn; i++) {
     const s = list[i]!;
     s.cells.sort((a, b) => a - b); // `holdCell` takes the first of equals
@@ -322,7 +330,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         if (ground > 0 || mine > 0) continue;
         // Two wide grounds: the cells join them or the class does not reach the sector (PLAN
         // 3.10c2b3a, ADR-193). Ground that came to no wide ground may be joined to any.
-        if (ground < 0 && mine < 0 && !wideJoined(nav.grid, nav.graph, pass, -mine, -ground)) continue;
+        if (ground < 0 && mine < 0) (unasked[ci] ??= new Map()).set(i, ground);
       }
       reached[ci]!.push(i);
     }
@@ -334,9 +342,13 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const id = near[k]!;
     const ci = classOf[id]!;
     let d = nearD[k]!;
-    if (reached[ci]!.length < sn) {
+    if (reached[ci]!.length < sn || unasked[ci]) {
+      // A sector beyond the range is not asked for: it does not put the formation within it.
       d = Infinity;
-      for (const i of reached[ci]!) d = Math.min(d, dist2(id, list[i]!));
+      for (const i of reached[ci]!) {
+        const di = dist2(id, list[i]!);
+        if (di < d && (di > RANGE2 || reaches(ci, i))) d = di;
+      }
     }
     if (d <= RANGE2) nearest.set(id, d);
   }
@@ -416,7 +428,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     for (const i of reached[ci]!) {
       let p = 0;
       for (const id of ids) if (dist2(id, list[i]!) <= RANGE2) p++;
-      if (p === 0) continue;
+      if (p === 0 || !reaches(ci, i)) continue;
       front.push(i);
       pool.push(p);
     }
@@ -553,7 +565,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         // Not to the shore across the water from it (where an order to another landmass ends).
         if (empty[i] === 0 || land[list[i]!.hold] !== land[classCell[ci]!]) continue;
         const d = dist2(id, list[i]!);
-        if (d < bd && (!lone || isAlone(i))) {
+        if (d < bd && (!lone || isAlone(i)) && reaches(ci, i)) {
           bd = d;
           best = i;
         }

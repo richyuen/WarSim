@@ -10159,3 +10159,49 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check`, documents only: parity.
 - **Next:** PLAN 3.10c2c1 (`joinWide` made only when its answer is read; the pin must not move).
+
+## 2026-10-08 — PLAN 3.10c2c1: the join of two wide grounds is asked where it is read
+
+- **Done:** in `planNation` the reach test no longer calls `wideJoined` for a class and a
+  sector in two wide grounds. The sector goes into the class's list with its ground
+  (`unasked`), and `reaches(ci, i)` asks when a reader comes to it: the reserve's loop (a
+  sector beyond the range is not asked for, and a list with unasked sectors does not take
+  the short cut to `nearD`), the allotment's `front` (after `pool`: only a sector with a
+  formation of the class within the range), and `emptyFor` (last of its tests: empty, the
+  class's landmass, nearer than the best so far, alone if it must be). No rule changed, no
+  ADR. `joinWalks(grid)` (`provinceGraph.ts`) counts the walks for the test.
+- **The unit test** (`operationalAi.test.ts`, "a front in other wide ground that is beyond
+  the range of every division is not asked for"): 3.10c2b3a's wall with no gap, six
+  divisions 68 cells north of it at a patch of Mexican ground, on a day that is not the
+  nation's day to spare. Red on HEAD (one walk). Now none, and the divisions march on the
+  patch. Its first form passed on HEAD: it counted the plan after the patch was taken.
+- **The same game:** the pin unmoved, and five years of seed 99 end their years at
+  `e771cf6a`, `517e4b5f`, `ac16756b`, `9d801a4e`, `69e41f49` in both runs below.
+- **Before and after** (seed 99, pinned to `0xFFFF`, `--profile`, nothing beside it; the
+  first row of "this" from a run with two marks, taken out again: one round the reach loop,
+  one round `joinWide`):
+
+  | | year 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | walks, 3.10c2c | 564 | 1,027 | 1,566 | 472 | 347 |
+  | walks, this | 14 | 128 | 372 | 91 | 107 |
+  | reach, 3.10c2c (ms a tick) | 0.04 | 0.11 | 0.38 | 0.07 | 0.05 |
+  | reach loop, this | 0.018 | 0.043 | 0.050 | 0.015 | 0.017 |
+  | the walks, this | 0.002 | 0.009 | 0.044 | 0.010 | 0.012 |
+  | operational AI, 3.10c2b3b | 0.467 | 0.641 | 1.004 | 0.368 | 0.326 |
+  | operational AI, this | 0.448 | 0.593 | 0.726 | 0.323 | 0.304 |
+  | tick, 3.10c2b3b | 2.293 | 2.220 | 2.312 | 1.397 | 1.242 |
+  | tick, this | 2.279 | 2.172 | 2.040 | 1.343 | 1.219 |
+
+  The tick of the five years: 1.890 → 1.810 ms (1.839 in the run with the marks). Under
+  3.10c2b2's 1.833, which 3.10c2b3b's AT asked for; the budget is 1.5. The walks are fewer
+  than 3.10c2c's upper bound (79, 379, 410, 220, 126), as a bound should be.
+- **Not done:** the walk itself (1.0 ms in year 3 by these marks) and
+  whether it can be kept across days over its own cells (the caveat in PLAN) were not
+  opened: 0.044 ms a tick at the most. Seeds 4242 and 8128 were not run (8128 had the step
+  in years 3, 5 and 6). The longest call is unchanged (138.5 ms in year 2: 3.10c2d). No
+  picture: no rule changed. No sweep (ADR-58).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 998 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; nothing drawn and no rule changed).
+- **Next:** PLAN 3.10c2d (the longest call: a nation's far formations of one day).

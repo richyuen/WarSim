@@ -263,6 +263,11 @@ export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: numb
   return joined[a] === joined[b];
 }
 
+/** How many times the cells of a grid were walked for `wideJoined` (the tests count them). */
+export function joinWalks(g: NavGrid): number {
+  return JOIN_SCRATCH.get(g)?.gen ?? 0;
+}
+
 /**
  * By node with no closed ground: a number that two such nodes share when a route over open
  * ground comes from the one to the other (0 for every other node). The groups of such nodes

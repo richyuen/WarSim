@@ -1,12 +1,12 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { DEPLOY_RANGE_CELLS, SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
+import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
 import { passageOf } from '../../src/sim/systems/movement';
 import { neighbours4 } from '../../src/sim/nav/grid';
-import { wideNode } from '../../src/sim/nav/provinceGraph';
+import { joinWalks, wideNode } from '../../src/sim/nav/provinceGraph';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -737,5 +737,31 @@ describe('two wide grounds (PLAN 3.10c2b3a, ADR-193)', () => {
       expect(f.moving[id], `division ${id}`).toBe(1);
       expect(Math.floor(f.targetCell[id]! / W), `division ${id}`).toBeGreaterThan(wall + 1);
     }
+  });
+
+  it('a front in other wide ground that is beyond the range of every division is not asked for: the cells are not walked (PLAN 3.10c2c1)', () => {
+    const { s, w, ids, USA, wall } = walled(0);
+    const f = w.formations.cols;
+    const MEX = nationId('MEX');
+    const nav = navOf(w);
+    // To a day that is not the nation's day to spare, when the empty sectors of the far front
+    // are asked for.
+    const x0 = Math.floor(f.x[ids[0]!]!);
+    for (const id of ids) destroyFormation(w, id);
+    do plan(s, USA);
+    while ((Math.floor((w.tick - 1 + 6 * STAGGER) / 24) + USA) % MARCH_DAYS === 0);
+    // Divisions north of the wall, out of the range of the front, at a patch of Mexican ground: a
+    // second front, in their own wide ground.
+    const y0 = wall - DEPLOY_RANGE_CELLS - 8;
+    for (let y = y0 - 4; y <= y0 + 4; y++) for (let x = x0 - 2; x <= x0 + 4; x++) expect(w.cells.controller[y * W + x], `${x},${y}`).toBe(USA);
+    for (let y = y0 - 1; y <= y0; y++) for (let x = x0; x <= x0 + 2; x++) w.setController(y * W + x, MEX);
+    const north = Array.from({ length: 6 }, (_, k) => addDivision(w, USA, x0 + (k % 3) + 0.5, y0 + 2 + Math.floor(k / 3) + 0.5));
+    expect(wideNode(nav.graph, passageOf(w, USA), nav.graph.nodeOf[(y0 + 2) * W + x0]!)).toBeTruthy();
+    const before = joinWalks(nav.grid);
+    expect(plan(s, USA)).toEqual([]);
+    expect((Math.floor((w.tick - 1) / 24) + USA) % MARCH_DAYS).not.toBe(0);
+    // The plan was one: the divisions march on the patch.
+    for (const id of north) expect(f.moving[id], `division ${id}`).toBe(1);
+    expect(joinWalks(nav.grid) - before).toBe(0);
   });
 });
