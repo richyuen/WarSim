@@ -4529,6 +4529,43 @@ quick sweep as a smoke test.
     to spare and 202 of them refused (6 of 102 before): a formation off its march is refused
     more often than one that stands, and is asked again on the nation's next day. The far
     orders in that game: 3,004. The cost of neither was measured apart.
+    Split 2026-10-07 into the four questions it had gathered (one cause per commit):
+    - [x] 3.10c2a *Done 2026-10-07 (the diagnosis; nothing changed):* why an order is refused
+      after the reach test passed it, and what that costs. Five years of seed 99, a probe put
+      in and taken out (PROGRESS): 21,078 of 76,738 orders are refused, in 907 ms, 0.021 ms a
+      tick (all the orders: 5,603 ms, 0.128 ms a tick). So the refused orders are not the
+      tick's. All but 8 are refused inside `findRoute`'s corridor of provinces, or by its
+      memory of such a search (7,495 to 8,945). Of 13,576 that searched, 12,665 (93 %) have
+      no way over open ground at all, 911 (7 %) have one outside the corridor (ADR-189's
+      price). It is not the class of the reach test (the guess before the count): in every
+      row the formation's cell, the order's origin and the class's cell are open and of the
+      target's group. The group is too kind: two provinces with open ground each are joined
+      there, though the cells are not. What it does to the game is 3.10c2b.
+    - [ ] 3.10c2b A formation is not allotted, day after day, to a sector the cells give no
+      way to. Seed 99: nation 10 has a refused allotment on 640 days of five years (338 of
+      the fifth year's 365), 30 formations on the median day and up to 46, 56 formations on
+      100 days or more; three stood allotted to one cell for 267 days. Nation 74's two
+      formations for 465 and 266 days. They count in their sector's allotment, so the sector
+      reads as manned, and they are offered nothing else. Also the far and the spare orders:
+      356 of 943 refused pairs of formation and sector are asked again (712 orders), 57 of
+      125 of the spare. First look at one such day of nation 10 (a checkpoint of year 4; a
+      picture): what ground is closed between them and the sector, and whether a sector they
+      do reach is nearer than `DEPLOY_RANGE_CELLS`. Then the rule; two candidates, cost
+      counted before either is chosen: the reach test by the cells' open ground and not the
+      provinces' (a passage's landmasses of open cells, made once a passage and day), or a
+      refusal that is remembered (a formation's sector and day, saved) so that the allotment
+      of the next days leaves that pair out. An ADR, the pin moved. AT: a unit test, red
+      first (a division walled off from its nearest sector by a third nation's ground, with
+      a second sector it reaches: it is ordered to the second and not counted in the first);
+      nation 10's refused allotments in five years of seed 99 before and after; the tick
+      beside 3.10c1d2's.
+    - [ ] 3.10c2c The steps before the orders (0.13 to 0.47 ms a tick: the frontier, the
+      sectors, the scan, the passage, the reach, the reserve, the allotment), by step, on the
+      game of HEAD: seed 99 years 1 to 5, seed 4242 years 1 and 2, year 8 of seed 8128. Then
+      the dearest step, if it is one.
+    - [ ] 3.10c2d The longest call (84 to 87 ms: a nation's far formations of one day, 2 ms
+      an order) and whether `findPath` has anything left: count the cells a long search opens
+      and how wide its corridor of provinces is, before it is said.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

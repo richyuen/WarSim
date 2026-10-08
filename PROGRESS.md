@@ -9714,3 +9714,56 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 992 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c2 (what is left of the operational AI: the refused orders first).
+
+## 2026-10-07 — PLAN 3.10c2a: why an order is refused after the reach test passed it
+
+- **Asked:** PLAN 3.10c2's first question: the refused orders (202 of 436 to spare, 2,997 far
+  ones in the game before), which were said to be asked again every day. What refuses them,
+  and what that costs. PLAN 3.10c2 was split into its four questions first (3.10c2a to d).
+- **Method:** a probe put in and taken out (`git checkout -- src`; nothing of it is
+  committed), as 3.10c's: every `orderMove` of `planNation` (the allotment's, the far ones of
+  ADR-190, those to spare of ADR-191) with its ms, the formation's cell, the order's origin
+  (`order` begins a route at a step's end when the formation is in the middle of one), whether
+  each is open ground, their groups of provinces and the target's, and which line of `order`
+  or `findRoute` said no. Seed 99, five years from 1938, pinned to `0xFFFF`. A second run
+  asked of each refusal in the corridor (once a province, target, mobility and day) whether
+  `findPath` finds a way with no corridor, and with no passage. Both runs: the hashes of
+  HEAD (year 1 `38fcbd68`, the pin; year 5 `63914757`).
+- **The cost** (first run, 43,800 ticks):
+
+  | orders of | given and refused | ms | refused | their ms |
+  |---|---|---|---|---|
+  | the allotment | 73,298 | 2,901 | 19,221 | 551 |
+  | far (ADR-190) | 3,004 | 2,477 | 1,655 | 335 |
+  | to spare (ADR-191) | 436 | 225 | 202 | 21 |
+  | all | 76,738 | 5,603 | 21,078 | 907 |
+
+  All the orders are 0.128 ms a tick, the refused ones 0.021: a third and a twentieth of the
+  operational AI's 0.397 ms in this game (3.10c1d2's table). **The refused orders are not the
+  tick's.** The far orders that are followed are the dearest: 1,349 in 2,142 ms, 1.6 ms each.
+- **Who refuses.** 7 at `snapTarget` (another landmass), 1 from closed ground, all others in
+  `findRoute`'s corridor: 12,124 by a search in it that found nothing (0.05 ms each for the
+  allotment's, 0.2 ms for a far one) and 8,945 by its memory of that search (`g.barred`, no
+  cost). None by `mayReach`. In every row the formation's cell, the origin and the cell of
+  its class are open and of the target's group of provinces, also for the 235 orders given
+  in the middle of a step. So the guess this part began with (a marching formation whose
+  class is read from another's cell, or from closed ground) is wrong.
+- **Whether there was a way** (second run; its extra searches displaced the memory, so 13,576
+  searched): 12,665 (93 %) have none over open ground, though one over any ground; 911 (7 %)
+  have one that leaves the corridor (allotment 782, far 120, spare 9; the median way of the
+  allotment's is 50 cells for 48 in a straight line, of the spare's 506 for 102). The first
+  is the group's kindness: provinces with some open ground each are one group when they are
+  neighbours, whether or not their open cells meet. The second is what ADR-189 gave up.
+- **What it does to the game** (not the tick): nation 10 has a refused allotment on 640 days
+  of the five years (62, 82, 158 and 338 in years 2 to 5), 30 formations on the median day,
+  46 at most, 56 of its formations on 100 days or more; formations 77, 93 and 160 were
+  allotted to cell 963762 on 267 days. Nation 74: two formations, 465 and 266 days. Nation
+  15: 87 days, 2 on the median. A formation so allotted counts in its sector and is offered
+  no other. Of the far orders 356 of 943 refused pairs of formation and sector are asked
+  again (712 orders), of the spare 57 of 125 (77). PLAN 3.10c2b.
+- **Not done:** nothing was changed, so no test, no picture, no tick table. Which ground is
+  closed around nation 10's formations was not looked at (3.10c2b begins there). The second
+  run's 9 ms a refusal are the probe's.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: parity (documents only).
+- **Next:** PLAN 3.10c2b.
