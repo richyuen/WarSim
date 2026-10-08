@@ -145,7 +145,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     let tx = c.x[enemy]!;
     let ty = c.y[enemy]!;
     let short = -1;
-    let line = 0;
+    let side = 0;
     if (contacts.get(enemy) !== f) {
       // Its nearest enemy has a nearer one of its own and is deployed against that. This one
       // comes up to where that enemy's block stands, as near as a formation it faced would
@@ -159,8 +159,10 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         others.push([g, sqrt(gx * gx + gy * gy)]);
       }
       others.sort((p, q) => p[1] - q[1] || p[0] - q[0]);
-      line = Math.max(0, others.findIndex((o) => o[0] === f));
-      const enemySlots = slotCount(world, enemy, elementIndex(world).get(enemy)?.length ?? 0);
+      // The lines before this one, nearest that enemy first.
+      const ahead = others.slice(0, Math.max(0, others.findIndex((o) => o[0] === f))).map((o) => o[0]);
+      const idx = elementIndex(world);
+      const enemySlots = slotCount(world, enemy, idx.get(enemy)?.length ?? 0);
       const theirs = chain < 4 ? deployOf(world, enemy, enemySlots, chain + 1) : null;
       if (theirs) {
         tx = theirs.x;
@@ -170,9 +172,34 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         const ax = wrapDx(world, tx, fx);
         const ay = fy - ty;
         const al = sqrt(ax * ax + ay * ay);
-        if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) line++;
+        if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) ahead.unshift(contacts.get(enemy)!);
       }
-      short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + depth / 2;
+      // On the way to a block: as many lines as have room before its own place, one behind
+      // another, each by the depth of those before it (PLAN 3.11c1: a tank brigade behind a
+      // tank corps stood in the corps' rear rows). A line with no room begins a file abreast
+      // of those, right and left by turns, the widest block's width and the gap out (ten
+      // divisions on one cell against one enemy are three lines of three or four, not ten
+      // blocks in one, nor a column of thirty km).
+      const dx = wrapDx(world, fx, tx);
+      const dy = ty - fy;
+      const room = sqrt(dx * dx + dy * dy) - (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 - DEPLOY_GAP;
+      let file = 0;
+      let taken = 0;
+      let widest = slotGrid(count).cols;
+      for (const [g] of others) widest = Math.max(widest, slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0)).cols);
+      for (const g of [...ahead, f]) {
+        const grid = g === f ? slotGrid(count) : slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0));
+        // The one that enemy faces is a line of the stack too.
+        widest = Math.max(widest, grid.cols);
+        const deep = grid.rows * SLOT_SPACING;
+        if (taken > 0 && taken + deep / 2 > room) {
+          file++;
+          taken = 0;
+        }
+        if (g !== f) taken += deep + DEPLOY_GAP;
+      }
+      short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + taken + depth / 2;
+      side = Math.min(DEPLOY_ABREAST, Math.ceil(file / 2) * (widest * SLOT_SPACING + DEPLOY_GAP)) * (file % 2 === 1 ? 1 : -1);
     }
     const dx = wrapDx(world, fx, tx);
     const dy = ty - fy;
@@ -181,18 +208,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
       let shift = Math.min(DEPLOY_REACH, Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2));
-      let side = 0;
-      if (short >= 0) {
-        // On the way to a block: as many lines as have room before its own place, one behind
-        // another. A line with no room stands abreast of those, right and left by turns, a
-        // block's width and the gap out (ten divisions on one cell against one enemy are
-        // three lines of three or four, not ten blocks in one, nor a column of thirty km).
-        const step = depth + DEPLOY_GAP;
-        const rows = Math.max(1, Math.floor((d - short) / step) + 1);
-        const file = Math.floor(line / rows);
-        side = Math.min(DEPLOY_ABREAST, Math.ceil(file / 2) * (slotGrid(count).cols * SLOT_SPACING + DEPLOY_GAP)) * (file % 2 === 1 ? 1 : -1);
-        shift = Math.min(sqrt(DEPLOY_REACH * DEPLOY_REACH - side * side), Math.max(0, d - short - (line % rows) * step));
-      }
+      if (short >= 0) shift = Math.min(sqrt(DEPLOY_REACH * DEPLOY_REACH - side * side), Math.max(0, d - short));
       const ux = dx / d;
       const uy = dy / d;
       out = { x: fx, y: fy, facing: atan2(dy, dx) };

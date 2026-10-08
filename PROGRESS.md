@@ -10934,3 +10934,45 @@ No rule changed and nothing on screen changed. One task came out of it.
   formula of `86e55bb` that view stays at its battle zoom of 40 m/px, which the test refuses.
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11c, as above.
+
+## 2026-10-08 — PLAN 3.11c1: blocks of unequal size that go to one enemy do not stand in one another (ADR-200)
+
+- **3.11c split by cause, after a count** (a probe in `.cache/`, not kept: every block in
+  contact as a rectangle, pairs whose rectangles meet). Seed 1212 (the Soviet Union on
+  Poland, day 6, the critic's picture): 5 pairs. Seed 4242 (Germany on Poland, day 21): 22.
+  Seed 99 (day 60): 8. Four kinds: blocks of unequal size in one stack (this part); a block
+  that comes to an enemy's block from its flank or rear and stands in it (3.11c2, most of
+  what is left); the column six lines deep (3.11c3); the lattice within a block (3.11c4).
+- **Cause of this one:** a line stood `line` times its own depth behind the first, a file
+  its own width beside it. All of `deploy.test.ts` uses infantry divisions (8 by 4 slots).
+  A tank corps is 11 by 5, a tank brigade 7 by 4, a cavalry brigade 4 by 2.
+- **Done:** in `deployOf`, the lines before a formation are walked in order, each taking
+  its own depth and the gap; a file is the widest block of the stack and the gap out.
+  Blocks of one size stand where they stood.
+- **Tests:** `tests/unit/deployUnequal.test.ts`, red first ("tank_corps 0 and tank_brigade
+  1: expected false to be true"). `tests/e2e/stackBlocks1938.spec.ts` (new, 14 s), red on
+  the rule before (the source stashed: formations 181 and 202, 0.0149 cells between their
+  nearest elements), then 1.54 km between the nearest two Soviet blocks. Its first limit,
+  the gap and a slot (0.08 cells), failed at 0.0787: the stack's formations stand up to
+  0.03 cells from each other, their lines to the Pole differ by two degrees and a corner
+  comes nearer. The limit is the gap (0.05); the rule was not changed for it.
+- **After it:** 0, 18 and 7 pairs in one another on the three games.
+- **Pictures** (`docs/evidence/3.11/`, looked at): `c1-stack-of-armour-40m.png`, the
+  critic's view: two corps and four brigades, six blocks apart from one another, the two
+  Polish divisions across the gap from corps 181; `c1-stack-of-armour-12m.png` and
+  `-4m.png`. Seen and not changed: every block still a lattice facing one way (3.11c4);
+  at 12 m/px the tags of the corps stand at the view's left with a line to their blocks
+  (ADR-168).
+- **Gotcha:** `sed` with `\1` on a template string in the probe wrote `${n${...}}`: the
+  memory about template strings holds for sed too.
+- **Performance:** `deployOf` on the way to a block now asks the slot grid of each line
+  before it (a square root each). `npm run sim -- --scenario 1938 --seed 99 --years 2
+  --affinity 0xFFFF`: mean tick 1.8332 ms before, 1.8403 after (one run each), the same
+  hashes (4c72477e after two years).
+- **Specs run by hand** (ADR-87: 3.11c1 is a part), 16 tests, all pass: `stackBlocks1938`,
+  `formationFight1938`, `formationPlace1938`, `battleView1938`, `toBattle1938`, `fire1938`,
+  `markerStacks1938`, `closeZoom1938`.
+- **Not done:** no sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11c2: a block that comes up to an enemy's block from its flank or rear.

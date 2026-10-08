@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-200 · 2026-10-08 · accepted — A line of a stack stands behind the depths of the lines before it, and a file the widest block beside the others (PLAN 3.11c1, critic R3-B3; amends ADR-133)
+
+- **Context.** The critic's third point of R3-B3: "five tank formations share one cell as
+  interleaved diamonds" (`critic/shots/c3j_11_tank_paused_0040m.png`, seed 1212, the Soviet
+  Union on Poland). PLAN 3.11c is split by cause, and the first thing done was a count.
+- **The count** (headless, a probe not kept: every block of a formation in contact as a
+  rectangle of its columns and rows of slots, turned to its facing; two blocks are "in one
+  another" when the rectangles meet). Pairs in one another:
+  - seed 1212, the Soviet Union on Poland, day 6: 5 of 45 blocks' pairs, all of one side and
+    one enemy: tank corps 181 and 182 with tank brigades 199, 202, 203 and 204, and Polish
+    infantry division 562 with cavalry brigade 577 (their middles 0.4 km apart);
+  - seed 4242, Germany on Poland, day 21 (151 blocks): 22, of them 4 of this kind;
+  - seed 99, Germany on Poland, day 60 (114 blocks): 8, of them 1 of this kind.
+- **Cause.** `deployOf` set a line of a stack `line` times its own depth and the gap behind
+  the first, and a file its own width and the gap beside it (ADR-89, ADR-133). Every test
+  of it used infantry divisions, 8 by 4 slots each. A tank corps is 11 by 5 (0.33 by 0.15
+  cells), a tank brigade 7 by 4 (0.21 by 0.12), a cavalry brigade 4 by 2: the brigade a
+  line behind the corps stood 0.17 cells behind its middle where 0.185 were needed, and
+  the brigade abreast 0.26 beside it where 0.32 were needed.
+- **Decision.** For a formation on the way to an enemy's block, the lines before it are
+  walked in their order (the one that enemy faces first, where this one comes from its
+  side; then by distance from that enemy, then id, as before): each takes its own depth
+  and the gap, and one whose middle would stand behind the formation's place begins a new
+  file. The formation stands behind what the lines of its file have taken. A file stands
+  the widest block of all that go to that enemy, and the gap, beside the one before it.
+- **What does not change.** Blocks of one size: the walk gives the line and the file that
+  `floor(line / rows)` gave. A pair of each other's nearest. `DEPLOY_REACH` and
+  `DEPLOY_ABREAST` bind as they did. The seven tests of `deploy.test.ts` pass unchanged.
+- **Not state.** No rule reads where a block stands; the pin holds (the gate's test of it).
+  The fire events and the wrecks take their places from the same function as before.
+- **Measured.** Pairs in one another after it: 0 (seed 1212), 18 (seed 4242), 7 (seed 99).
+  `tests/unit/deployUnequal.test.ts`: two tank corps, four tank brigades, a cavalry brigade
+  and two infantry divisions on one cell against one division, every block a gap clear of
+  every other and of the enemy's; red on the rule before ("tank_corps 0 and tank_brigade
+  1"). `tests/e2e/stackBlocks1938.spec.ts`, the critic's game: 11 formations and 311
+  elements in the view at 40 m/px; the two Soviet blocks nearest each other (182 and 199)
+  have 1.54 km between their nearest elements (on the rule before: 181 and 202, 0.29 km,
+  less than the 0.59 km between two slots of one block).
+- **Left, each a part of PLAN 3.11c.** A block that comes to an enemy's block from its
+  flank or its rear stops a block's depth from its middle and stands in it, and in the
+  block of the one that enemy faces (14 of the 18 pairs on seed 4242); two that come to
+  one block from bearings 47 degrees apart (2 pairs); the column six lines deep; the
+  lattice and the one facing within a block.
+- **Each formation walks with its own distance.** Formations of one stack agree on the
+  files. Two that go to one block from places far apart may not: a matter of 3.11c2.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-199 · 2026-10-08 · accepted — A formation's panel leads to its fight; no rule of `deployOf` changes for it (PLAN 3.11b, critic R3-B3)
 
 - **Context.** The critic's second point of R3-B3: "the biggest fight" of day 21 on seed

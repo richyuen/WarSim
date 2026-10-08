@@ -5010,6 +5010,41 @@ quick sweep as a smoke test.
     (`docs/evidence/3.11/b-furthest-at-its-fight.png`): seven Italian divisions on one
     French one stand as a column of six lines, 20 km deep, each line a block behind the
     last and all facing the same way.
+    Split 2026-10-08, one cause a part, after a count of the blocks that stand in one
+    another (rectangles of the blocks, headless; ADR-200): 5 pairs on seed 1212 (the Soviet
+    Union on Poland, day 6: the critic's picture), 22 on seed 4242 (Germany on Poland, day
+    21), 8 on seed 99 (day 60).
+    - [x] 3.11c1 *Done 2026-10-08 (ADR-200):* blocks of unequal size that go to one enemy's
+      block. A line stood one block of its own behind the line before it and a file one
+      width of its own beside it: a tank brigade (7 by 4 elements) in the rear rows and the
+      flank of a tank corps (11 by 5). A line now stands behind the depths of the lines
+      before it, and a file the widest block of the stack beside the others. Blocks of one
+      size stand where they stood. Pairs in one another after it: 0, 18 and 7.
+      AT: a unit test of a stack of corps, brigades and divisions on one cell (each block a
+      gap clear of every other), red first; an e2e on the critic's game (seed 1212, day 6)
+      that finds no element of one Soviet block within a kilometre of another's, red on
+      the rule before; the critic's picture shot again and looked at.
+    - [ ] 3.11c2 A block that comes up to an enemy's block from its flank or its rear. It
+      stops a block's depth and the gap from that block's middle, and the block is twice
+      as wide as deep: it stands in the enemy's block (every pair of enemies in one
+      another, 9 on seed 4242: their middles 0.155 to 0.185 cells apart) and in the block
+      of the one that enemy faces (5 pairs). Also here: two that come to one block from
+      bearings 47° apart and stand on each other (formations 222, 237 and 238 on 310, seed
+      4242).
+      AT: a unit test of a division that comes to a block from 90° and from behind, red
+      first; the count of pairs on the three games above, none left or each one named.
+    - [ ] 3.11c3 The column on one enemy: seven divisions on one stand six lines deep, 20
+      km (`b-furthest-at-its-fight.png`); the fourth to sixth lines have no enemy in the
+      battle's view (ADR-199). Fewer lines before the files abreast begin.
+      AT: a unit test of seven divisions a cell and a half from one enemy, red first;
+      `formationFight1938` again (its zooms will move; both sides stay on the screen).
+    - [ ] 3.11c4 Within a block in contact: the elements do not stand on the points of a
+      lattice, and do not all face one way. A place and a facing off the slot's by the
+      element's id, the same in the snapshot, the fire events and the wrecks
+      (`slotPlace`), for a deployed block only.
+      AT: a unit test (no three of a deployed block's front row on one line, the shots
+      still leave from where the elements stand, a block at rest as before), red first;
+      the critic's pictures at 2 and 6 m/px shot again and looked at.
   - [ ] 3.11d Losses drawn from strength lost: a wreck or a casualty mark within a day of a
     fight that costs strength, not only when an element dies whole.
   - [ ] 3.11e The tint: Soviet tanks are not Poland's pink.
