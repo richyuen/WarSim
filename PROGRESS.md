@@ -9974,3 +9974,70 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 996 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c2b3b (the corridor: where the coarse route and the way part).
+
+## 2026-10-08 — PLAN 3.10c2b3b: the coarse route goes round a province with closed ground (ADR-194)
+
+- **Step 2:** `npm run check` on a clean tree: nothing to run, green. Critic: not due.
+- **Where the route and the way part** (PLAN's first; `.cache/c2b3b/probe.ts`, the hook of
+  3.10c2b3a in `movement.ts` put in and taken out; five years of seed 99 from the first day,
+  the checkpoint of 3.10c2b3a being of older rules; the probe's searches on a grid of its
+  own, so that the game's memory of a refused search is left alone: hash `12e51389` as
+  before). Of the 4,878 refusals with a way in wide ground, 3,611 are orders of over 60
+  cells. The coarse route: 18.4 provinces, 32 % with closed ground. The first province of
+  the route that the corridor's search does not come to: a mixed one after a mixed one
+  3,866, a clear one after a mixed one 808, a mixed one after a clear one 202. One province
+  before the break 2,666 times (node 1363, about 1337,374), then 379, 364, 351; 42 in all.
+  The way: 271 cells, 101 outside the corridor in 11.9 provinces, 2.2 % of them mixed.
+- **The candidates counted** (ADR-194 has the table): two rings 1,693, three 4,374 (38.8 s),
+  no corridor all (47.5 s), clear provinces only 2,355, a price of × 2, 4, 8, 16, 32, 64:
+  2,240, 4,154, 4,502, 4,628, 4,691, 4,691 (15.9 to 23.8 s: the searches that find a long
+  march). On the given at × 8: 3,302 of 49,136 take another coarse route, 7 find no way,
+  1,228 → 1,532 ms, the way 1.039 times as dear at the 90th percentile and 2.27 at the most.
+  The refusals with no way pay 254 → 384 ms. The coarse routes of all 55,943 orders: 1,435
+  ms in five years, 0.033 ms a tick.
+- **Done:** `SHUT_PRICE` = 8 and `coarseRoute`'s `dear` (`nav/provinceGraph.ts`), given
+  `Passage.shut` by `findRoute` where it plans over the provinces with open ground. SPEC §7,
+  ADR-194, PLAN (3.10c2b3b, 3.10c2b3 and 3.10c2b ticked; notes at 3.10c2c and 3.10c2d), the
+  pin `10e1cac4` → `e771cf6a`.
+- **The unit test** (`provinceGraph.test.ts`, "goes round a province with closed ground"): a
+  wall of 43 Polish cells across the provinces of a 60-cell route east of Moscow and their
+  neighbours. Red on HEAD (null). Now a way of 61 cells, dearer than the straight one, in
+  one search of 1,375 cells. (Its first form asked for more cells than the straight way:
+  the way round is 61 cells too, by diagonals. It asks for the dearer cost.)
+- **Before and after** (five years of seed 99, the probe of 3.10c2b3a; another game from
+  year 1 on, hash `69e41f49`):
+
+  | | orders | refused | ms given | ms refused | a way, wide ground | a way, one pocket | no way |
+  |---|---|---|---|---|---|---|---|
+  | HEAD | 61,918 | 6,816 | 5,434 | 12,874 | 4,878 (12,571 ms) | 1,390 (43 ms) | 539 |
+  | this | 57,752 | 768 | 7,186 | 925 | 721 (923 ms) | 5 | 10 |
+
+  The Soviet Union: 4,975 refusals on 711 days → 566 on 123. The orders' time: 0.418 →
+  0.185 ms a tick. The refusals inside one pocket (1,390, 20 pairs asked 84 times) are gone
+  with it; why was not looked at (× 8 found 338 of them in the count).
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c2b3a → this (ms a
+  tick; other games from the first year on):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 4242, year 1 | 1.956 → 1.947 | 0.315 → 0.428 | 86.7 → 103.4 |
+  | seed 4242, year 2 | 1.527 → 1.680 | 0.436 → 0.365 | 99.3 → 54.8 |
+  | seed 99, years 1 to 5 | 2.116 → 1.893 (1.897 in a second run) | 0.865 → 0.561 | 92.3 → 138.0 |
+
+  Seed 99 by year: 2.293, 2.220, 2.312, 1.397, 1.242 (the operational AI 0.467, 0.641,
+  1.004, 0.368, 0.326). **PLAN's AT asked for under 3.10c2b2's 1.833 ms: not met, by 0.06.**
+  The orders by year (the hook again): 0.224, 0.243, 0.246, 0.109, 0.093 ms a tick, 605 of
+  the 768 refusals in year 3. So the steps before the orders are 0.24 to 0.76 ms a tick,
+  the most in year 3: PLAN 3.10c2c, noted there. Seed 4242's second year is slower by 0.15
+  ms with a faster operational AI: another game, not looked at by system.
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`):
+  `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass (6 tests, 2.6 min).
+- **Not done:** no picture in the repo. The 721 refusals left were looked at on one day only
+  (ways of 411 to 531 cells for 119 to 225 straight), and the 187 that no price finds not at
+  all. The price was read off the count and not tried in the game against × 4 or × 16. The
+  call of 138 ms was not opened (3.10c2d). No sweep (ADR-58). The full e2e suite has not run
+  on this game (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 997 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c2c (the steps before the orders, by step; year 3 of seed 99 first).

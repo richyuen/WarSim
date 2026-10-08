@@ -4541,7 +4541,7 @@ quick sweep as a smoke test.
       row the formation's cell, the order's origin and the class's cell are open and of the
       target's group. The group is too kind: two provinces with open ground each are joined
       there, though the cells are not. What it does to the game is 3.10c2b.
-    - [ ] 3.10c2b A formation is not allotted, day after day, to a sector the cells give no
+    - [x] 3.10c2b *Done 2026-10-08 with its last part, 3.10c2b3b.* A formation is not allotted, day after day, to a sector the cells give no
       way to. Seed 99: nation 10 has a refused allotment on 640 days of five years (338 of
       the fifth year's 365), 30 formations on the median day and up to 46, 56 formations on
       100 days or more; three stood allotted to one cell for 267 days. Nation 74's two
@@ -4585,7 +4585,7 @@ quick sweep as a smoke test.
         has up to 881 sectors); a walk only from the sectors a formation is allotted to
         would be after the allotment. AT: a unit test, red first (the test of 3.10c2b1 with
         the outer box left out); the count before and after.
-      - [ ] 3.10c2b3 A way by the cells that the corridor does not hold (ADR-189's price),
+      - [x] 3.10c2b3 *Done 2026-10-08 with its two parts.* A way by the cells that the corridor does not hold (ADR-189's price),
         asked again every day: 990 refusals in five years of seed 99 before 3.10c2b1, 8,164
         in the game after (nation 10: 5,620, e.g. formations at cell 1165,234 sent 38 to 50
         cells south on every day of weeks). And 854 with no way and both ends in wide ground.
@@ -4615,7 +4615,21 @@ quick sweep as a smoke test.
           of seed 99: 2,580 such refusals → 490, the Soviet Union's 1,854 → none. **The AT's
           other half is not met: the Soviet Union's refusals are 2,357 on 351 days → 4,975
           on 711, and the tick of seed 99 is 1.833 → 2.116 ms,** by the kind below.
-        - [ ] 3.10c2b3b A way by the cells that the corridor of provinces does not hold
+        - [x] 3.10c2b3b *Done 2026-10-08 (ADR-194):* the coarse route takes a province that
+          has closed ground at eight times its cost (`SHUT_PRICE`, `coarseRoute`). Where
+          they part (a probe, PROGRESS): in 4,674 of 4,876 the corridor's search stops in a
+          province with closed ground (one province 2,666 times), and 98 % of the provinces
+          the way takes outside the corridor have none. Counted before the choice: × 8
+          finds 4,502 of the 4,878, the search with no corridor all of them at twice the
+          time, a corridor three rings wide 4,374 at 1.7 times; of 49,136 given orders
+          3,302 take another route and 7 find none. The unit test, red first. Five years of
+          seed 99 (another game): the refusals of this kind 4,878 in 12,571 ms → 721 in 923
+          ms, all refusals 6,816 → 768, the Soviet Union's days with one 711 → 123, the
+          orders' time 0.418 → 0.185 ms a tick. **The AT's last clause is not met: the tick
+          of seed 99 is 2.116 → 1.893 ms (1.897 in a second run), not under 3.10c2b2's
+          1.833.** The operational AI is 0.865 → 0.561 ms (0.548 then); what is over is not
+          the orders (3.10c2c, the note there).
+          The task as it was set: a way by the cells that the corridor of provinces does not hold
           (ADR-189's price). After 3.10c2b3a (its probe, another game): 4,878 refusals in
           wide ground in five years of seed 99, 12,571 ms (0.29 ms a tick; 3,583 and 424 ms
           in the game before), 3,656 of them the Soviet Union's, and 1,390 inside one pocket
@@ -4637,6 +4651,11 @@ quick sweep as a smoke test.
       sectors, the scan, the passage, the reach, the reserve, the allotment), by step, on the
       game of HEAD: seed 99 years 1 to 5, seed 4242 years 1 and 2, year 8 of seed 8128. Then
       the dearest step, if it is one.
+      After 3.10c2b3b (its counts, PROGRESS): in five years of seed 99 the orders are 0.224,
+      0.243, 0.246, 0.109 and 0.093 ms a tick and the operational AI 0.467, 0.641, 1.004,
+      0.368 and 0.326: the steps before the orders are 0.24, 0.40, 0.76, 0.26 and 0.23 ms a
+      tick. Year 3 is the one to open first. The tick of those years is 1.893 ms, and
+      3.10c2b3b's AT asked for under 1.833.
     - [ ] 3.10c2d The longest call (84 to 87 ms: a nation's far formations of one day, 2 ms
       an order) and whether `findPath` has anything left: count the cells a long search opens
       and how wide its corridor of provinces is, before it is said.
@@ -4647,6 +4666,9 @@ quick sweep as a smoke test.
       cells away in wide ground that no open cell joins to theirs; the memory of a refused
       search (`g.barred`) holds one goal. With ADR-193 they are not given: the longest call
       of five years of seed 99 is 92 ms. What is left here is the 85 to 99 ms call.
+      After 3.10c2b3b: the far orders that were refused are given (ADR-194), and a nation's
+      far formations of one day now cost more: one call of 138 ms in year 2 of seed 99 (the
+      Soviet Union, tick 14,844; 116 ms a day later), 103 ms in year 1 of seed 4242.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

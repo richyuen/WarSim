@@ -167,6 +167,82 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-194 · 2026-10-08 · accepted — The coarse route takes a province with closed ground at eight times its cost (PLAN 3.10c2b3b)
+
+- **Context.** ADR-189 holds every route over open ground to the corridor of its coarse
+  route (the route's provinces and their neighbours) and refuses one that is not found
+  there. Its price, "a way that leaves the corridor", was not counted then. After ADR-193
+  it was the larger part of the refused orders: 4,878 of 6,816 in five years of seed 99,
+  12,571 ms (0.29 ms a tick), 3,656 of them the Soviet Union's, on 711 days of 1,825; 3,611
+  of them marches of over 60 cells (ADR-190), asked again on the formation's next day in
+  eight.
+- **Where the route and the way part** (a probe put in and taken out, one hook in
+  `movement.ts`; the same five years). The coarse route of such an order has 18.4 provinces,
+  32 % of them with closed ground as well as open ("mixed"). The search in the corridor was
+  run again and the first province of the route it does not come to was noted: in 4,674 of
+  4,876 the province before it is mixed (3,866 times the one not come to is mixed too), in
+  202 a mixed province after a clear one. One province stops 2,666 of them (node 1363, about
+  cell 1337,374), 42 provinces all of them. The way by the cells has 271 cells, 101 of them
+  outside the corridor, in 11.9 provinces, and 97.8 % of those provinces have no closed
+  ground. So: the plan over the provinces goes through a province that is not open from side
+  to side, and the way goes round it through open country.
+- **The candidates, counted on those 4,878 orders** (each searched again on a grid of the
+  probe's own, so the game was the same in every row):
+
+  | | found | ms |
+  |---|---|---|
+  | the corridor two rings wide | 1,693 | 23,582 |
+  | three rings wide | 4,374 | 38,798 |
+  | the search with no corridor (PLAN's second candidate, without a bound) | 4,878 | 47,529 |
+  | the coarse route over provinces with no closed ground only (and the two ends') | 2,355 (no route: 2,341) | 10,828 |
+  | a mixed province at × 2 | 2,240 | 15,858 |
+  | × 4 | 4,154 | 21,791 |
+  | × 8 | 4,502 | 23,130 |
+  | × 16 | 4,628 | 23,696 |
+  | × 32, × 64 | 4,691 | 23,722, 23,754 |
+
+  (The ms are mostly those of a search that finds a march of 150 to 450 cells: 5 ms.)
+  And what a price does to the 49,136 orders that were given: at × 8, 3,302 take another
+  coarse route, 7 of them find no way in its corridor, their searches take 1,228 → 1,532
+  ms, and the way costs the same at the median, 1.039 times at the 90th percentile, 2.27 at
+  the most (234 over 1.1 times). At × 16: 3,554, 8, 2.52. Clear provinces only loses 775
+  given orders.
+- **Decision.** `coarseRoute` takes a set of dear nodes; a step between two nodes costs the
+  distance times the mean of their costs, and a dear node's cost is `SHUT_PRICE` (8) times
+  its own. `findRoute` gives it the passage's nodes with closed ground (`Passage.shut`)
+  whenever it plans over the provinces with open ground (a start on open ground under a
+  passage). The corridor, the search in it and the refusal are ADR-189's.
+- **Why 8.** Of the doublings it is the last that gains a tenth (4,154 → 4,502; × 16 gains
+  126, × 32 another 63, and the 187 left are found by no price). It was read off the table
+  above and not tried in the game against others. A balance it is not: it says how far
+  round a route goes before it tries a province that may be walled.
+- **Why not the second search.** It finds them all at twice the time, and an order that has
+  no way then walks all the ground the formation reaches (ADR-189's 30 ms); a bound on its
+  cells is a second constant and a second kind of refusal.
+- **What it takes away.** A route through a mixed province where the way round is longer
+  than eight times across and the corridor of the route round does not hold the way
+  through: 7 of 49,136. And a march goes round a province with a neutral's enclave in it
+  where the straight way was open: 234 of 49,136 by more than a tenth.
+- **After** (five years of seed 99, the probe of 3.10c2b3a on both; another game from the
+  first year on):
+
+  | | orders | refused | ms of the given | ms of the refused | a way, in wide ground | a way, inside one pocket | no way |
+  |---|---|---|---|---|---|---|---|
+  | HEAD | 61,918 | 6,816 | 5,434 | 12,874 | 4,878 (12,571 ms) | 1,390 (43 ms) | 539 |
+  | this | 57,752 | 768 | 7,186 | 925 | 721 (923 ms) | 5 | 10 |
+
+  The Soviet Union: 4,975 refusals on 711 days → 566 on 123. The 721 left: 528 pairs of a
+  formation and a sector, the median once, 18 times the most; on the day looked at (764)
+  fourteen Soviet formations 119 to 225 cells from sectors whose way by the cells is 411 to
+  531 cells. Not followed.
+- **Test.** `tests/unit/provinceGraph.test.ts`, "the coarse route goes round a province with
+  closed ground": east of Moscow, 60 cells along a row of Soviet ground; every Soviet cell
+  in the column half way that lies in a province of the plain coarse route or a neighbour
+  of one is made Poland's (43 cells). Red on HEAD ("the way round the wall: expected null
+  not to be null"). Now: a way over Soviet cells only, dearer than the straight one, found
+  in one search that sees 1,375 cells (the test asks for under 3,000).
+- **The pin** moved: `10e1cac4` → `e771cf6a` (seed 99 after one year).
+
 ### ADR-193 · 2026-10-07 · accepted — Wide grounds are told apart, and the cells say whether two are joined (PLAN 3.10c2b3a)
 
 - **Context.** ADR-192 walks open ground of 4,096 cells or fewer (a pocket) and takes all

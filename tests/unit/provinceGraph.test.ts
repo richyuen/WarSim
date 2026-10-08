@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { encodeRuns } from '../../src/shared/mapImport';
 import { Terrain } from '../../src/shared/terrain';
 import { Mobility, type Passage } from '../../src/sim/nav/grid';
-import { findRoute, mayReach, nodeGroups } from '../../src/sim/nav/provinceGraph';
+import { coarseRoute, findRoute, mayReach, nodeGroups } from '../../src/sim/nav/provinceGraph';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -139,5 +139,52 @@ describe('a short route over open ground is held to the provinces (PLAN 3.10c1c)
     world.wars.start([GER], [POL], world.tick);
     world.wars.changed();
     expect(findRoute(grid, graph, Mobility.foot, start, goal, passageOf(world, GER))?.cells.length).toBe(13);
+  });
+});
+
+// PLAN 3.10c2b3b (ADR-194): the coarse route is planned over the provinces with open ground, and
+// one of them need not be open from side to side. Where the way by the cells goes round such a
+// province by provinces that are not its neighbours, the corridor did not hold it and the order
+// was refused (4,878 times in five years of seed 99, 2,666 of them at one province).
+describe('the coarse route goes round a province with closed ground (PLAN 3.10c2b3b)', () => {
+  it('a wall across the provinces of the straight way and their neighbours: the route goes round it', () => {
+    const world = world1938();
+    const [SOV, POL] = [nationId('SOV'), nationId('POL')];
+    const { grid, graph } = navOf(world);
+    // East of Moscow, 60 cells along one row of Soviet ground.
+    const [mx, my] = cellOf(40, 56, W, SIZE_1938.h).map(Math.floor) as [number, number];
+    const [start, goal] = [at(mx, my), at(mx + 60, my)];
+    expect([world.cells.controller[start], world.cells.controller[goal]]).toEqual([SOV, SOV]);
+    const straight = findRoute(grid, graph, Mobility.foot, start, goal, passageOf(world, SOV))!;
+    expect(straight.cells.length).toBe(61);
+    // The provinces of that route and their neighbours, as the provinces alone plan it: every cell
+    // of theirs in the column half way is Poland's (at peace with the Soviet Union: closed).
+    const plain = coarseRoute(grid, graph, Mobility.foot, graph.nodeOf[start]!, graph.nodeOf[goal]!, passageOf(world, SOV).open)!;
+    const about = new Set<number>();
+    for (const a of plain) for (const b of [a, ...graph.adj[a]!]) about.add(b);
+    let wall = 0;
+    for (let y = 0; y < SIZE_1938.h; y++) {
+      const c = at(mx + 30, y);
+      if (!about.has(graph.nodeOf[c]!) || world.cells.controller[c] !== SOV) continue;
+      world.setController(c, POL);
+      wall++;
+    }
+    expect(wall).toBeGreaterThan(10);
+    const pass = passageOf(world, SOV);
+    // The premise: every province of the plain route still has open ground, and the cells have a way.
+    expect(plain.every((a) => pass.open![a] === 1)).toBe(true);
+    expect(plain.some((a) => pass.shut![a] === 1)).toBe(true);
+    expect(mayReach(grid, graph, start, goal, pass)).toBe(true);
+    const before = grid.scratch!.gen;
+    const route = findRoute(grid, graph, Mobility.foot, start, goal, pass);
+    expect(route, 'the way round the wall').not.toBeNull();
+    expect(route!.cells.every((c) => world.cells.controller[c] === SOV)).toBe(true);
+    expect(route!.cost).toBeGreaterThan(straight.cost);
+    // Found in one search, in a corridor of provinces: not by a walk of the Soviet Union's ground.
+    expect(grid.scratch!.gen).toBe(before + 1);
+    const stamp = grid.scratch!.stamp;
+    let seen = 0;
+    for (let c = 0; c < stamp.length; c++) if (stamp[c]! >= 2 * (before + 1)) seen++;
+    expect(seen).toBeLessThan(3000);
   });
 });

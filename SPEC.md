@@ -871,7 +871,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     lie in one group of neighbouring province nodes that have open ground
     (`World.heldByNode`, cells by node and holder, kept by `setController`); a route, of
     any length since PLAN 3.10c1c (ADR-189; before it one over 500 km), is planned over such
-    nodes and, when it is not found in their corridor, refused.
+    nodes and, when it is not found in their corridor, refused. In that plan a node that has
+    closed ground too costs `SHUT_PRICE` (8) times its own cost (PLAN 3.10c2b3b, ADR-194):
+    it need not be open from side to side, and the way by the cells went round it through
+    provinces that the corridor did not hold.
     A march whose next cell has become a third nation's ends before it (`MoveRejected`).
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
   (speed × 0.3 march duty × the template's share of its speed on that ground: the least

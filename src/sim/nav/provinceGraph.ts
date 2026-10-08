@@ -119,9 +119,20 @@ function neighbours4g(g: NavGrid, c: number): number[] {
   return neighbours4(c, g.w, g.h, g.wrapX, []);
 }
 
-/** Coarse A* over nodes; returns the node sequence or null. */
-export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, from: number, to: number, only?: Uint8Array): number[] | null {
+/**
+ * What a node with closed ground costs the coarse route, times its own cost (PLAN 3.10c2b3b,
+ * ADR-194): such a province need not be open from side to side, and the route goes round it
+ * where that is less than eight times as far.
+ */
+export const SHUT_PRICE = 8;
+
+/**
+ * Coarse A* over nodes; returns the node sequence or null. `only`: the nodes it may take (the
+ * first is not asked). `dear`: the nodes that cost SHUT_PRICE times their own.
+ */
+export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, from: number, to: number, only?: Uint8Array, dear?: Uint8Array): number[] | null {
   const cost = pg.meanCost[mobility]!;
+  const price = (a: number): number => (dear !== undefined && dear[a] === 1 ? SHUT_PRICE * cost[a]! : cost[a]!);
   if (!Number.isFinite(cost[from]!) || !Number.isFinite(cost[to]!)) return null;
   const h = (a: number): number => boundKm(g, pg.centre[a]!, pg.centre[to]!) * MIN_COST[mobility]!;
   const dist = new Float64Array(pg.nodeCount).fill(Infinity);
@@ -141,7 +152,7 @@ export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId,
     done[a] = 1;
     for (const b of pg.adj[a]!) {
       if (done[b] || !Number.isFinite(cost[b]!) || (only !== undefined && only[b] !== 1)) continue;
-      const t = dist[a]! + boundKm(g, pg.centre[a]!, pg.centre[b]!) * 0.5 * (cost[a]! + cost[b]!);
+      const t = dist[a]! + boundKm(g, pg.centre[a]!, pg.centre[b]!) * 0.5 * (price(a) + price(b));
       if (t < dist[b]!) {
         dist[b] = t;
         came[b] = a;
@@ -361,7 +372,10 @@ export const COARSE_ABOVE_KM = 500;
  * ADR-189), is planned over such provinces, and one that is not found in their corridor is
  * refused: a province with some open ground need not be open from side to side, and the search
  * beyond the corridor then walked all the ground the formation could reach (76,000 cells of
- * Africa, every day; it found a way 24 times in two years of seed 99, PLAN 3.4Rl).
+ * Africa, every day; it found a way 24 times in two years of seed 99, PLAN 3.4Rl). For the same
+ * reason the plan over the provinces takes one that has closed ground too at SHUT_PRICE times
+ * its cost (PLAN 3.10c2b3b, ADR-194): the way by the cells went round such a province through
+ * provinces that were no neighbours of the route's, and the corridor did not hold it.
  */
 export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
   if (!mayReach(g, pg, start, goal, pass)) return null; // O(1) unreachable
@@ -375,7 +389,7 @@ export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, s
   if (a !== 0 && b !== 0 && (open !== undefined || (a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM))) {
     const was = g.barred;
     if (open !== undefined && was && was.goal === goal && was.from === a && was.mobility === mobility && was.ok === pass!.ok && g.scratch!.stamp[start] === was.closed) return null;
-    const route = a === b ? [a] : coarseRoute(g, pg, mobility, a, b, open);
+    const route = a === b ? [a] : coarseRoute(g, pg, mobility, a, b, open, open !== undefined ? pass!.shut : undefined);
     if (!route) return null;
     const corridor = new Uint8Array(pg.nodeCount);
     for (const node of route) {
