@@ -4647,7 +4647,19 @@ quick sweep as a smoke test.
           it opens. An ADR, the pin moved. AT: a unit test, red first; the refusals of this
           kind and their ms, the Soviet Union's days with a refusal, and the tick of seed 99
           beside 3.10c2b3a's (it must come back under 3.10c2b2's 1.833 ms).
-    - [ ] 3.10c2c The steps before the orders (0.13 to 0.47 ms a tick: the frontier, the
+    - [x] 3.10c2c *Done 2026-10-08 (the diagnosis; nothing changed; the dearest step is
+      3.10c2c1):* the steps before the orders by step (a probe put in and taken out; the
+      tables are in PROGRESS). Seed 99, years 1 to 5: 0.29, 0.45, 0.77, 0.26 and 0.24 ms a
+      tick. In its dear years one step is the cost, the reach test: 0.13 ms in year 2 and
+      0.40 in year 3, and 0.33 of that 0.40 is `joinWide` (ADR-193's walk of the open cells
+      of the provinces with closed ground, once a passage when asked): 1,566 times that year
+      at 1.9 ms, not the 0.94 ms it took when it was written. Four allies with 1 to 10 free
+      formations (France, French West Africa, French Equatorial Africa, Lebanon) pay 2.1 to
+      2.5 ms a plan, every day, for a front of up to 368 sectors. Seed 8128 has it in years
+      3, 5 and 6 (0.15, 0.10 and 0.10 ms a tick). Seed 4242, years 1 and 2 (0.22 and 0.25
+      ms): no step is the cost; the passage is the largest (0.05 to 0.06). Year 8 of seed
+      8128 on HEAD is a quiet year (a tick of 0.67 ms, 0.10 before the orders).
+      The task as it was set: the steps before the orders (0.13 to 0.47 ms a tick: the frontier, the
       sectors, the scan, the passage, the reach, the reserve, the allotment), by step, on the
       game of HEAD: seed 99 years 1 to 5, seed 4242 years 1 and 2, year 8 of seed 8128. Then
       the dearest step, if it is one.
@@ -4656,6 +4668,31 @@ quick sweep as a smoke test.
       0.368 and 0.326: the steps before the orders are 0.24, 0.40, 0.76, 0.26 and 0.23 ms a
       tick. Year 3 is the one to open first. The tick of those years is 1.893 ms, and
       3.10c2b3b's AT asked for under 1.833.
+    - [ ] 3.10c2c1 `joinWide` is made only when its answer is read. The reach test asks
+      every class for every sector of the front, and the first sector in another wide ground
+      has the cells walked (`wideJoined`). What reads the answer: the reserve and the
+      allotment, for the sectors within `DEPLOY_RANGE_CELLS` of a formation of the class;
+      the marches from afar and the spare, for the empty sectors (`emptyFor`), on the days
+      there is a formation to send. Counted on five years of seed 99 (PROGRESS): of the
+      1,566 walks of year 3 at most 410 are in a plan that has a far or a spare formation or
+      asks for a sector within the range of its class (79 of 564, 379 of 1,027, 410 of
+      1,566, 220 of 472, 126 of 347 by year; a join within the range alone: 0, 61, 248, 104,
+      107). So: the reach of a class and a sector in two wide grounds is left open until it
+      is read, and the game is the same (the pin does not move: if it does, the change is
+      wrong). Not the candidates: keeping the walk from one day to the next (a cell had
+      changed hands before every one of the 3,976 walks; the open cells were the same as at
+      the passage's last walk in 151 of year 3's 1,566), or the members of a coalition
+      planning on one tick (`STAGGER`: a rule). If it is still dear after this: the walk
+      itself (1.9 ms in year 3 against 0.4 in year 1). AT: the pin unmoved; a unit test of
+      the count of walks (a plan whose formations are all within the range of sectors in
+      their own wide ground walks nothing; `Passage.joined` stays unset), red first; the
+      reach step and the tick of seed 99, years 1 to 5, beside 3.10c2c's (0.04, 0.11, 0.38,
+      0.07, 0.05 ms a tick with no marks inside the step; a tick of 1.890).
+      What else the table of 3.10c2c shows, none of it a cause by itself (ms a tick, seed
+      99): the passage 0.05 to 0.09 (0.15 ms a plan: made again each call, by `ok.join` and
+      `nodeGroups`), the sectors 0.04 to 0.09, the frontier 0.03 to 0.07, the classes 0.02
+      to 0.04, the reserve 0.01 to 0.05, the scan 0.02 to 0.03. For 3.10f's leftover, not
+      for a part each.
     - [ ] 3.10c2d The longest call (84 to 87 ms: a nation's far formations of one day, 2 ms
       an order) and whether `findPath` has anything left: count the cells a long search opens
       and how wide its corridor of provinces is, before it is said.

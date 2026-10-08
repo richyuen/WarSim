@@ -10041,3 +10041,121 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 997 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c2c (the steps before the orders, by step; year 3 of seed 99 first).
+
+## 2026-10-08 — PLAN 3.10c2c: the steps before the orders, by step: the reach test's `joinWide` (a diagnosis)
+
+- **Asked:** what the operational AI costs before it gives an order, step by step, on the
+  game of HEAD; and the dearest step, if it is one.
+- **Method** (3.10c's): time marks written into `planNation` and `operationalAi` and taken
+  out again (`git checkout -- src`; nothing of it is committed; `.cache/c2c/hook.py`,
+  `hook2.py`, `hook3.py`, `probe.ts`, not tracked). Run through `Sim.profile`, pinned to
+  `0xFFFF`, nothing beside it, from 1938. The games are HEAD's: seed 99 ends its years at
+  `e771cf6a` (the pin), `517e4b5f`, `ac16756b`, `9d801a4e`, `69e41f49` (3.10c2b3b's) in all
+  three probed runs. Seed 4242: `b116b865`, `bb9279d6`. Seed 8128, eight years:
+  `3e98da31`, `7462eb19`, `e58ad6ec`, `f765c21d`, `364a97e7`, `3c907008`, `36914e81`,
+  `665b9175`. `.cache/ck/8128-y7.bin` is of 3.10a's rules and was not loaded; the run wrote
+  `.cache/ck/8128-y7-c2c.bin` (HEAD's rules, for 3.10d).
+- **Seed 99 by step** (ms a tick; "actors" is the count of free formations by nation, the
+  "classes" are the formations' ground, the "far" step is what the marches from afar and
+  the spare cost without their orders, "orders loop" the last loop without `orderMove`):
+
+  | | year 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | the tick | 2.296 | 2.217 | 2.313 | 1.386 | 1.239 |
+  | the operational AI | 0.474 | 0.647 | 1.012 | 0.370 | 0.331 |
+  | plans | 16,474 | 15,158 | 17,268 | 17,160 | 18,310 |
+  | actors | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 |
+  | frontier | 0.037 | 0.035 | 0.066 | 0.028 | 0.028 |
+  | sectors | 0.045 | 0.087 | 0.094 | 0.038 | 0.045 |
+  | scan | 0.032 | 0.030 | 0.034 | 0.020 | 0.021 |
+  | passage | 0.055 | 0.073 | 0.086 | 0.049 | 0.048 |
+  | classes | 0.030 | 0.041 | 0.040 | 0.029 | 0.018 |
+  | **reach** | 0.042 | 0.108 | **0.378** | 0.069 | 0.053 |
+  | reserve | 0.026 | 0.048 | 0.045 | 0.017 | 0.014 |
+  | allotment | 0.016 | 0.017 | 0.021 | 0.010 | 0.009 |
+  | far | 0.002 | 0.003 | 0.004 | 0.002 | 0.001 |
+  | orders loop | 0.003 | 0.003 | 0.004 | 0.002 | 0.002 |
+  | before the orders | 0.290 | 0.446 | 0.774 | 0.264 | 0.240 |
+  | `orderMove` | 0.183 | 0.200 | 0.237 | 0.105 | 0.090 |
+
+  The mean tick is 1.890 ms (1.893 at 3.10c2b3b). The steps come to the profile's figure
+  for the system within 0.002 ms.
+- **The reach step, opened** (a second run with marks inside it; they cost: the step reads
+  0.051, 0.133, 0.398, 0.075, 0.059 with them):
+
+  | ms a tick | year 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | the ground of the sector's cell (`pocketOf`, `wideNode`) | 0.005 | 0.015 | 0.022 | 0.007 | 0.008 |
+  | `wideJoined` | 0.026 | 0.069 | **0.330** | 0.055 | 0.037 |
+  | `snapTarget` (a sector on another landmass) | 0.004 | 0.013 | 0.011 | 0.004 | 0.003 |
+
+  `wideJoined` is `joinWide`, ADR-193's walk of the open cells of the provinces with closed
+  ground, made once a passage when it is first asked, and a passage lives one call:
+
+  | | year 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | walks | 564 | 1,027 | 1,566 | 472 | 347 |
+  | ms each | 0.41 | 0.59 | 1.88 | 1.03 | 0.95 |
+  | passages (distinct holders open) | 7 | 12 | 17 | 20 | 9 |
+
+  ADR-193 measured 0.94 ms and 0.092 ms a tick, on a fifth year. In year 3 it is twice as
+  dear a walk and four times as many.
+- **Who pays, year 3:** French Equatorial Africa (45), France (19), French West Africa (44)
+  and Lebanon (50): 365, 365, 365 and 243 plans at 2.54, 2.49, 2.44 and 2.11 ms before
+  the orders, 0.37 ms a tick together, with 1, 10, 2 and 1 free formations at the most and
+  a front of up to 368 sectors (their coalition's). The dearest plans of the year are
+  theirs: 3.8 to 5.6 ms, 3.0 to 3.4 of it the walk, 209 to 304 sectors asked for their
+  ground and 45 to 111 of them in another wide ground than the class's. They plan on
+  different ticks (`STAGGER`), so the one `Passage` a coalition shares in a call is made
+  four times a day.
+- **What a fix could save** (a third run, counters only; its times are not used):
+
+  | of the walks | year 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | all | 564 | 1,027 | 1,566 | 472 | 347 |
+  | in a plan with a far or spare formation, or a join asked within the range of the class | 79 | 379 | 410 | 220 | 126 |
+  | … a join asked within the range of the class | 0 | 61 | 248 | 104 | 107 |
+  | no cell changed hands since the passage's last walk | 0 | 0 | 0 | 0 | 0 |
+  | the open cells the same as at the passage's last walk | 247 | 619 | 151 | 147 | 137 |
+
+  The second row is an upper bound on the walks whose answer something reads (a far
+  formation asks only for empty sectors of its landmass): at least 74 % of year 3's are
+  read by nothing. Keeping the walk across days does not answer: a cell changes hands
+  between any two, and the cells that matter are the same in 10 % of year 3's. So PLAN
+  3.10c2c1: the join is asked when it is read. If every unread walk goes (the most it can
+  save), the reach step is about 0.13 ms in year 3 and the tick of the five years about
+  1.82 for 1.890: at the edge of 3.10c2b3b's 1.833, and far from the budget's 1.5.
+- **Seed 4242** (ms a tick; years 1 and 2; a tick of 1.964 and 1.688, the system 0.439 and
+  0.372): frontier 0.030, 0.028; sectors 0.026, 0.043; scan 0.026, 0.021; passage 0.046,
+  0.064; classes 0.037, 0.030; reach 0.016, 0.029; reserve 0.016, 0.017; allotment 0.014,
+  0.010; far and the orders loop 0.004, 0.004; before the orders 0.216, 0.248; `orderMove`
+  0.221, 0.124. No step is the cost. The dearest nation pays 0.015 ms a tick.
+- **Seed 8128** (eight years from 1938; the marks of the second run inside the reach):
+
+  | ms a tick | year 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+  |---|---|---|---|---|---|---|---|---|
+  | the tick | 2.485 | 1.161 | 1.353 | 0.977 | 1.704 | 1.498 | 0.907 | 0.665 |
+  | the operational AI | 0.529 | 0.257 | 0.429 | 0.203 | 0.630 | 0.454 | 0.199 | 0.130 |
+  | before the orders | 0.337 | 0.123 | 0.348 | 0.155 | 0.532 | 0.351 | 0.145 | 0.102 |
+  | reach | 0.033 | 0.016 | 0.175 | 0.014 | 0.165 | 0.126 | 0.007 | 0.011 |
+  | … `wideJoined` | 0.000 | 0.007 | 0.153 | 0.000 | 0.098 | 0.095 | 0.000 | 0.007 |
+  | … `snapTarget` | 0.009 | 0.001 | 0.002 | 0.002 | 0.018 | 0.006 | 0.001 | 0.000 |
+  | passage | 0.067 | 0.022 | 0.045 | 0.042 | 0.062 | 0.054 | 0.044 | 0.029 |
+  | sectors | 0.060 | 0.016 | 0.030 | 0.020 | 0.089 | 0.035 | 0.020 | 0.009 |
+  | frontier | 0.042 | 0.022 | 0.018 | 0.011 | 0.059 | 0.032 | 0.015 | 0.009 |
+  | classes | 0.052 | 0.017 | 0.039 | 0.037 | 0.055 | 0.052 | 0.027 | 0.030 |
+  | `orderMove` | 0.190 | 0.133 | 0.080 | 0.048 | 0.097 | 0.102 | 0.053 | 0.028 |
+
+  The same step in years 3, 5 and 6. Year 8, the year PLAN named, is a quiet one on HEAD
+  (the critic's 1.80 ms was of other rules). In years 5 and 6 the payer is Britain (1.6 ms
+  a plan, up to 839 sectors, six classes): its dearest plans have 5 to 9 far formations
+  (so 3.10c2c1 may leave those walks), 2.6 to 2.9 ms of walk and 0.6 to 1.0 ms in 3,647 to
+  4,177 calls of `snapTarget`. Its walks were not counted as seed 99's were.
+- **Not done:** nothing is faster. The walk itself was not opened (why 1.88 ms in year 3
+  against 0.41 in year 1: the cells of mixed provinces were not counted by year). The
+  passage (0.15 ms a plan, 0.05 to 0.09 ms a tick, the largest step where the reach is
+  not) was not opened. Seed 8128's walks have no count of who reads them. No picture: no
+  rule changed. No sweep (ADR-58).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, documents only: parity.
+- **Next:** PLAN 3.10c2c1 (`joinWide` made only when its answer is read; the pin must not move).
