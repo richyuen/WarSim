@@ -10446,3 +10446,86 @@ No rule changed and nothing on screen changed. One task came out of it.
   for its parts and has no AT of its own; every part is ticked, and what its parts left
   undone is listed under it for 3.10f. `npm run check`: parity. The next unchecked task
   is then 3.10d, as the line above says.
+
+## 2026-10-08 — PLAN 3.10d: supply's dear calls are the partial refresh, flooding whole blocs
+
+- **Asked:** what supply's 630 to 730 calls a year of 1 ms or more are, and the first cause.
+- **Method** (3.10c's: a probe put in and taken out, nothing of it committed;
+  `.cache/d/hook.py` writes it into `src/sim/systems/supply.ts`, `.cache/d/probe.ts` runs
+  and reports). Timers about the refresh and the hourly pass; for each refresh whether it
+  was full on entry and who had asked (a setter on `world.supplyDirty` that reads the
+  caller from the stack), the blocs cleared and flooded, the cells and ms of each bloc's
+  flood, and whether a partial one was done again in full and by which test. After each
+  refresh, outside the timers, the cells that changed hands since the last one and the
+  marks of the layer that the refresh changed. From 1938, pinned to `0xFFFF`, one seed
+  after another, nothing beside them. With the probe in, seed 99 ends year 1 on `8f937408`
+  (the pin) and year 5 on `5c31d145` (3.10c2d1b's): the same game.
+- **By part,** ms a tick (seed 99 by year; then the range of the years of the two others):
+
+  | | 99 y1 | y2 | y3 | y4 | y5 | 4242, y1 to y3 | 8128, y1 to y9 |
+  |---|---|---|---|---|---|---|---|
+  | supply | 0.318 | 0.420 | 0.316 | 0.288 | 0.271 | 0.258 to 0.302 | 0.273 to 0.373 |
+  | the hourly pass | 0.059 | 0.062 | 0.040 | 0.040 | 0.048 | 0.038 to 0.060 | 0.038 to 0.077 |
+  | the refresh | 0.259 | 0.357 | 0.276 | 0.248 | 0.223 | 0.197 to 0.262 | 0.234 to 0.315 |
+  | of it: partial | 0.236 | 0.351 | 0.270 | 0.241 | 0.216 | 0.184 to 0.253 | 0.228 to 0.306 |
+  | of it: full | 0.023 | 0.006 | 0.006 | 0.007 | 0.007 | 0.007 to 0.013 | 0.002 to 0.018 |
+  | refreshes: partial, full | 701, 18 | 723, 7 | 723, 7 | 698, 7 | 703, 7 | 656 to 723, 7 to 12 | 713 to 728, 2 to 15 |
+  | calls of 1 ms or more | 592 | 730 | 704 | 675 | 704 | 586 to 716 | 680 to 731 |
+  | a partial: blocs flooded | 8.7 | 7.1 | 7.0 | 4.6 | 4.2 | 5.7 to 7.7 | 5.9 to 10.0 |
+  | a partial: cells flooded | 241,964 | 364,309 | 279,699 | 265,398 | 235,668 | 191,502 to 288,746 | 209,037 to 310,786 |
+
+  The clearing before the flood (the dirty sets, the old spans) is 0.007 to 0.015 ms of it.
+- **The dear calls are the refresh.** Of 11,704 calls of 1 ms or more in the 17 years, two
+  had more time in the hourly pass than in the refresh. A refresh runs on 667 to 730 of
+  the 730 half-days of a year: something has nearly always changed.
+- **Not a full refresh.** 46 in five years of seed 99, 30 in three of 4242, 59 in nine of
+  8128: `makePuppet` 28, 23 and 35; `eliminateNation` 11, 4 and 19; `releasePuppet` 6, 2
+  and 4; the first tick 1. A full flood is 7.4 to 7.5 ms in the median (12 to 13 at the
+  90th percentile, 20 to 21 the first tick's, 16 to 19 the longest after it), 52 to 77
+  blocs and 576,000 to 617,000 cells. In the mean it is little; it is supply's longest call.
+- **Not a partial refresh done again in full** (PLAN 2.11j's two tests: a refreshed bloc's
+  own cell or lane in another's network, a lane it held and lost): none in the 17 years.
+- **It is the partial refresh as it is meant to run.** One that stood, by seed:
+
+  | | 99 | 4242 | 8128 |
+  |---|---|---|---|
+  | cells flooded: median, 90th percentile, most | 277,339, 404,071, 437,294 | 247,358, 397,426, 440,420 | 248,701, 333,574, 461,278 |
+  | ms: median, 90th percentile, most | 3.17, 4.73, 7.51 | 2.81, 4.78, 5.88 | 3.14, 4.14, 7.50 |
+  | cells that changed hands since the last: median, 90th, most, mean | 38, 87, 5,658, 60 | 37, 85, 5,209, 53 | 54, 103, 37,612, 82 |
+  | of them in a network: median, mean | 34, 55 | 35, 49 | 43, 70 |
+  | marks the refresh changed: median, 90th, most, mean | 42, 97, 5,756, 64 | 40, 100, 5,212, 59 | 59, 127, 51,245, 115 |
+  | cells flooded for each mark changed: median, mean | 6,457, 11,812 | 5,970, 11,433 | 4,360, 5,678 |
+
+  A bloc with one changed cell is cleared and flooded whole (the rule of the review after
+  PLAN 1.25). The flood itself is about 10 ns a cell.
+- **Which blocs** (all floods of the run: ms, floods, ms a flood, cells a flood):
+
+  | bloc | 99, five years | 4242, three | 8128, nine |
+  |---|---|---|---|
+  | 10, the Soviet Union | 6,351, 3,143, 2.02, 205,111 | 3,317, 1,771, 1.87, 189,601 | 10,997, 5,964, 1.84, 181,146 |
+  | 20, Britain | 2,033, 2,275, 0.89, 73,297 | 439, 251, 1.75, 146,199 | 2,027, 2,375, 0.85, 68,128 |
+  | 19, France | 588, 1,511, 0.39, 35,658 | 429, 989, 0.43, 38,007 | 1,354, 2,887, 0.47, 40,718 |
+  | 69, China | 395, 1,508, 0.26, 25,103 | 293, 1,171, 0.25, 23,760 | 1,575, 4,069, 0.39, 34,081 |
+  | all blocs | 10,808 | 5,596 | 18,642 |
+
+  The Soviet network is 59 % of the flood time in each seed, and it is flooded in 87, 83
+  and 91 % of the refreshes: a front of its own is always moving somewhere.
+- **The cause is the unit of the refresh,** the bloc, not a slow step: 40 to 60 marks
+  change and a quarter of a million cells are written again. Not fixed here. PLAN 3.10d1
+  has it: the network mended at the cells that changed where a local test is sure, the
+  bloc flooded as today where it is not; the network stays the same to the cell, so the
+  pin stays.
+- **What 3.10d1 can give, at most:** the partial refreshes, 0.22 to 0.35 ms a tick on seed
+  99 (0.263 over the five years, of a tick of 1.495), 0.18 to 0.25 on 4242, 0.23 to 0.31
+  on 8128. Not all of it: a lost cell that may cut the network still floods its bloc, and
+  how many do is not counted yet (3.10d1 counts first).
+- **Seen beside it, not done:** a full refresh for a puppet made or freed or a nation
+  ended could be one of the blocs it concerns (0.002 to 0.023 ms a tick, and supply's
+  longest call); for 3.10f's leftover. The hourly pass (0.04 to 0.08 ms) was not looked
+  into.
+- **Not done:** no source changed, nothing made faster. One run of each seed. No picture:
+  nothing drawn changed; specs run by hand: none. No sweep (ADR-58). The checkpoints in
+  `.cache/ck/` are of older rules and were not loaded.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check` (documents only: parity).
+- **Next:** PLAN 3.10d1.

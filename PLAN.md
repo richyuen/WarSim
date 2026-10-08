@@ -4807,7 +4807,39 @@ quick sweep as a smoke test.
         to the cell); the cells closed and the ms of the orders of over 120 cells beside
         3.10c2d1a's HEAD (10,540 and 49,078 a search; 0.101 ms a tick), the longest call
         beside 148 ms, and the tick of seed 99, five years.
-  - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
+  - [x] 3.10d *Done 2026-10-08 (the diagnosis; nothing made faster):* Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
+    They are the refresh of the network, twice a day: 586 to 731 calls a year of 1 ms or
+    more, all but two of them the refresh, 0.20 to 0.36 ms a tick of supply's 0.26 to 0.42
+    (the hourly pass over the formations is 0.04 to 0.08). Not a full refresh (2 to 18 a
+    year, asked by `makePuppet`, `eliminateNation` and `releasePuppet`, 7.5 ms each in the
+    median: 0.002 to 0.023 ms a tick) and not a partial one done again in full (none in
+    17 years of three seeds). It is the partial refresh as it is meant to run: it floods
+    every cell of each bloc that had a cell change, a median of 247,000 to 277,000 cells
+    of the 617,000 (4 to 10 blocs), 2.8 to 3.2 ms, for a median of 37 to 54 cells that
+    changed hands and 40 to 59 marks that the refresh changed: 4,400 to 6,500 cells
+    flooded for each mark. The Soviet Union's network alone (181,000 to 205,000 cells,
+    1.8 to 2.0 ms a flood, in 83 to 91 % of the refreshes) is 59 % of all the flood time
+    in each of the three seeds. The fix is 3.10d1. Numbers and the method are in PROGRESS.
+  - [ ] 3.10d1 A refresh mends a bloc's network at the cells that changed, where that is
+    sure, and floods the bloc again where it is not. The network stays what it is today,
+    to the cell (a function of the cities, the control and the blocs: PLAN 2.11j), so the
+    pin does not move. What it needs: the cells that changed hands since the last refresh
+    (today only their nations are kept), and for each a test that is local. A cell the
+    bloc gained beside its network joins it, and the bloc's dry cells beside that one
+    with it (a flood from the cell: a pocket relieved). A cell the bloc lost, when it was
+    in the network: if the network cells about it still hang together without it (the
+    ring of eight about it, the wrap in mind), nothing else changes; if not, or if it is
+    a source (a city), or a crossing lane is in it, the bloc is flooded as today. The
+    spans a bloc remembers (`World.supplySpans`) must stay true or be given up for that
+    bloc. First count, with the probe of 3.10d put back, how many of the changed cells
+    the local test settles, and what the flood of a bloc costs when it is still needed
+    (a part, 3.10d1a, if the count is not plainly enough). AT: a unit test, red first on
+    the cells a refresh visits (a front that moves by a few cells on a made map: fewer
+    than a stated share of the bloc's cells are touched); a test of many random changes
+    (cells taken and given back, a city taken, a pocket cut off and relieved, the date
+    line, a lane) where the mended network is the full one's to the cell after each; the
+    tests of PLAN 1.42a and 2.11j green unchanged; the pin unmoved; supply's ms a tick of
+    seed 99 (five years), 4242 (three) and 8128 (nine) beside 3.10d's.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
   - [ ] 3.10f The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
