@@ -167,6 +167,74 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-203 · 2026-10-08 · accepted — The blocks of an hour have one order, and a block stops short of every enemy's block before it in that order (PLAN 3.11c3b, critic R3-B3; amends ADR-201)
+
+- **Context.** The pairs of blocks in one another that ADR-201 and ADR-202 left: German
+  division 17 in Polish division 560's block (seed 99, Germany on Poland, day 60) and
+  Mengjiang's formation 961 in Chinese division 403's (seed 4242, day 21). In each the one
+  comes to an enemy's block and the other is of that enemy's side and goes elsewhere: a
+  comer knew the block it comes to, the one that block faces and the lines of its own stack
+  before it, and no other. PLAN 3.11c3b asked first whether the blocks of the other side can
+  be asked for in one order, so that the answer does not hang on who is asked first.
+- **There is such an order.** Each formation in contact has a turn (`turnsOf`): 0 for two
+  that are each other's nearest; for one on the way to an enemy's block, that enemy's turn
+  and one more for itself and for each formation that goes to the same enemy and is nearer
+  it (then the lower id: the lines of ADR-89). Equal turns go by id. Every block `deployOf`
+  asked for until now is before the asker in it: its enemy (a lower turn), the one that
+  enemy faces (no higher than the enemy's), a line before it (the same enemy, nearer). The
+  chain of nearest enemies ends in a pair (ADR-201), so every formation has a turn. It is
+  worked out from the hour's contacts and kept with them (a `WeakMap` on the contacts'
+  map: a new hour's contacts have none).
+- **Decision.** A formation on the way to an enemy's block also knows the blocks of every
+  formation in contact that is at war with its nation, is before it in the order, and whose
+  place is within twice `DEPLOY_REACH` and half a cell of its own (each block goes
+  `DEPLOY_REACH` from its place at most). They join the blocks in its way of ADR-201: it
+  stops the gap short of one that reaches into its file before its place, or takes the next
+  file out. The earlier of two never knows of the later, and the later yields.
+- **`chain` is gone.** `deployOf` did not ask for the enemy's block at the fifth step of a
+  chain of asks, and kept the answer it then gave: the one thing in it that could hang on
+  who asked first. A block now asks only for blocks before it in the order, so the asks end
+  without a limit. Against a ring of nearest enemies (which the lower id on a tie rules
+  out) a formation whose block is being worked out answers "no block" to an ask.
+  On the three games no chain is longer than 2 (0, 1 and 2 steps from a pair: 24, 21 and 0
+  formations of seed 1212; 78, 66 and 7 of seed 4242; 58, 53 and 3 of seed 99), so the
+  limit of four did not bind there. Asked in reverse order of id and the deepest first,
+  every block of the three games stood where it stood asked by id, before this change and
+  after it. `deployAll` still asks by id; the order of asking decides nothing.
+- **Measured** (`.cache/probe311c3b.ts`, not kept: not in the repo; the rectangles of
+  ADR-200). Pairs in one another: 0 (seed 1212), 0 (seed 4242, 1 before), 0 (seed 99, 1
+  before). Five blocks moved, no other:
+  - seed 99: 560, 4.2 km (from the block it goes to, 298's: 6.7 km before, 10.9 now);
+  - seed 4242: 961, 2.9 km (3.5 to 6.5 km from 408's block), and 962, which goes to 408
+    too, 2.9 km (5.7 to 8.6);
+  - seed 1212: Soviet tank brigades 202 and 203, 0.18 km each (8.1 to 8.2 and 10.0 to 10.1
+    km from 561's block). They stood in no block before; which block they now stop short
+    of was not looked into.
+  Blocks on the way to a block that stand more than 8 km / 14 km from it: 8 / 2 of 21 (the
+  same), 25 / 4 of 73 (24 / 4), 26 / 4 of 56 (25 / 4). The furthest: 15.2, 18.1 and 23.3 km,
+  the same.
+- **The price.** The one that yields stands further from the block it goes to (560: 10.9
+  km, more than the 8 km of ADR-202's view). The rule is ADR-201's sufficient one: the near
+  side of a block across the whole of the file, not the nearest place that is clear.
+- **Not covered.** A block of its own side, or of a nation it is not at war with, that
+  goes elsewhere (no such pair on the three games); two pairs of each other's nearest
+  (turn 0), which know no other block (none seen either).
+- **Tests.** `tests/unit/deployFlank.test.ts`, two more. Two German divisions come to a
+  Pole's block from its flank, one behind the other, and a second Pole comes to the first
+  of them from its flank, where the second stands. Run with the second German made before
+  the second Pole and after it, so that each in turn is the later in the order: every block
+  a gap clear of every other. Red on the rule before ("the second line and the other Pole:
+  expected -0.045 to be greater than 0.05"). The second test forgets the hour's blocks and
+  asks for them in three other orders: the same blocks. It was green on the rule before
+  (five formations, no chain of five): it guards the order, it did not find a fault.
+  `deploy.test.ts`, `deployUnequal.test.ts` and `deploySnapshot.test.ts` pass unchanged.
+- **Not state.** No rule reads where a block stands: the pin holds, and two years of seed 99
+  end on the same hash (4c72477e).
+- **Cost.** Mean tick over two years of seed 99, pinned: 1.9095 and 1.9278 ms (1.9588 and
+  1.9445 after ADR-202). No slower by this measure; a pass over the hour's contacts for
+  each comer was added, and the turns are worked out once an hour.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-202 · 2026-10-08 · accepted — A file on the way to an enemy's block holds two lines (PLAN 3.11c3a, critic R3-B3; amends ADR-133 and ADR-200)
 
 - **Context.** Seen in PLAN 3.11b and counted in ADR-199: seven Italian divisions on one

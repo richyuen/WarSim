@@ -162,3 +162,77 @@ describe('seven divisions on one enemy are files abreast, not a column (PLAN 3.1
     }
   });
 });
+
+// PLAN 3.11c3b (critic R3-B3): a block that comes to an enemy's block knew that block, the one
+// it faces and the lines of its own stack, not a block of the enemy's side that goes elsewhere.
+// German division 17 stood in Polish division 560's block, which faced another German (seed 99,
+// day 60), and Mengjiang's formation 961 in Chinese division 403's (seed 4242, day 21). The
+// blocks of an hour now have one order (`turnsOf` in systems/elements.ts), and a block stops
+// short of every enemy's block before it in that order, whatever that block goes to.
+describe("a block does not stand in a block of its enemy's side that goes elsewhere (PLAN 3.11c3b)", () => {
+  /**
+   * The pair at the border, and two German divisions north of the Pole's block that come to
+   * its flank, one behind the other. A second Pole east of those two has the nearer of them
+   * for its nearest enemy and comes to that one's block from its flank: where the second
+   * German line stands. The second Pole and the second German are made in the order asked for,
+   * so that each in turn is the later of the two in the blocks' order (equal turns go by id).
+   */
+  function stacks(poleFirst: boolean): { w: World; ids: number[]; names: string[] } {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const site = border(w);
+    const faced = addDivision(w, GER, site[0], site[1]);
+    const pole = addDivision(w, POL, site[0] + 1, site[1]);
+    const bx = site[0] + 0.5 + DEPLOY_GAP / 2 + (slotGrid(slotCount(w, pole, 0)).rows * SLOT_SPACING) / 2;
+    const first = addDivision(w, GER, bx + 0.25, site[1] - 1.05);
+    const german = (): number => addDivision(w, GER, bx + 0.25, site[1] - 1.2);
+    const polish = (): number => addDivision(w, POL, bx + 1.5, site[1] - 0.95);
+    let second: number;
+    let other: number;
+    if (poleFirst) {
+      other = polish();
+      second = german();
+    } else {
+      second = german();
+      other = polish();
+    }
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    s.step(2);
+    const contacts = contactsOf(w);
+    expect(contacts.get(pole)).toBe(faced);
+    expect(contacts.get(faced)).toBe(pole);
+    expect(contacts.get(first), 'the first German line goes to the Pole').toBe(pole);
+    expect(contacts.get(second), 'the second German line goes to the Pole').toBe(pole);
+    expect(contacts.get(other), 'the other Pole goes to the first German line').toBe(first);
+    expect(poleFirst ? other < second : second < other, 'made in the order asked for').toBe(true);
+    return { w, ids: [faced, pole, first, second, other], names: ['the faced', 'the enemy', 'the first line', 'the second line', 'the other Pole'] };
+  }
+
+  it('whichever of the two is the later in the order: every block a gap clear of every other', () => {
+    for (const poleFirst of [false, true]) {
+      const { w, ids, names } = stacks(poleFirst);
+      expectClear(w, ids, names.map((n) => `${n} (the other Pole made ${poleFirst ? 'first' : 'last'})`));
+      // None behind its own place, none further from it than a block goes.
+      const place = w.formations.cols;
+      for (const f of ids) expect(Math.hypot(block(w, f).x - place.x[f]!, block(w, f).y - place.y[f]!)).toBeLessThanOrEqual(DEPLOY_REACH + 1e-9);
+    }
+  });
+
+  it('the same blocks whichever formation is asked for first', () => {
+    for (const poleFirst of [false, true]) {
+      const { w, ids } = stacks(poleFirst);
+      const asked = ids.map((f) => block(w, f));
+      const orders = [[...ids].reverse(), [ids[4]!, ids[3]!, ids[0]!, ids[2]!, ids[1]!], [ids[3]!, ids[4]!, ids[2]!, ids[1]!, ids[0]!]];
+      for (const order of orders) {
+        // The hour's blocks forgotten, its contacts kept: worked out again in this order.
+        w.deployed = new Map();
+        for (const f of order) block(w, f);
+        for (const [i, f] of ids.entries()) {
+          const b = block(w, f);
+          expect([b.x, b.y, b.facing], `formation ${i} asked in the order ${order.map((g) => ids.indexOf(g)).join(' ')}`).toEqual([asked[i]!.x, asked[i]!.y, asked[i]!.facing]);
+        }
+      }
+    }
+  });
+});

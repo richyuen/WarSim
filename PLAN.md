@@ -5065,7 +5065,18 @@ quick sweep as a smoke test.
         One new pair in one another, of the kind of 3.11c3b: Chinese division 403 and
         Mengjiang's formation 961, seed 4242 (403 goes to formation 381 and 961 to
         another Chinese formation, 408; why 961 now stands there was not looked into).
-      - [ ] 3.11c3b A block that comes to an enemy's block and stands in a block of that
+      - [x] 3.11c3b *Done 2026-10-08 (ADR-203):* there is one order: a formation's turn
+        (0 for two that are each other's nearest; for one on the way to a block, that
+        enemy's turn and one more for itself and each nearer formation that goes to it),
+        then its id. A block on the way to an enemy's block stops short of the block of
+        every formation at war with its nation that is before it in that order, whatever
+        that block goes to. `chain` is gone: a block asks only for blocks before it. Pairs
+        in one another: 0, 0 and 0 on the three games (0, 1 and 1 before); five blocks
+        moved, the one that yields 2.9 to 4.2 km further from the block it goes to
+        (560 of seed 99: 10.9 km from it). Asked in reverse and the deepest first, the
+        same blocks, as before the change too: no chain on the three games is longer
+        than 2.
+        The task as it was set: A block that comes to an enemy's block and stands in a block of that
         enemy's side which goes elsewhere: formations 17 and 560 (seed 99, Germany on
         Poland, day 60) and 403 and 961 (seed 4242, day 21; their formations 1.59 cells
         apart, so not in contact with each other). First: whether the blocks of the other

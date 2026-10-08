@@ -11106,3 +11106,40 @@ No rule changed and nothing on screen changed. One task came out of it.
   `DEPLOY_REACH`; the limit is a measure of that game (18.1 km), as the `> 14` beside it
   is, not a bound of the rule. Not changed here (a document commit).
 - **Gate:** `npm run check` (documents: parity).
+
+## 2026-10-08 — PLAN 3.11c3b: the blocks of an hour have one order, and a block stops short of every enemy's block before it (ADR-203)
+
+- **The question first** (the part's own): is there one order over both stacks? Yes: a
+  formation's turn (`turnsOf`: 0 for two that are each other's nearest; on the way to a
+  block, that enemy's turn and one more for itself and each nearer formation that goes to
+  it), then its id. Every block `deployOf` asked for was already before the asker in it.
+- **Done:** a formation on the way to an enemy's block also has in its way the blocks of
+  the formations at war with its nation that are before it in the order and near enough to
+  reach where it can (places within 3.5 cells). `chain` and its limit of four are gone.
+- **Counted** (`.cache/probe311c3b.ts`, not kept: it is not in the repo). Pairs in one
+  another on the three games: 0, 0, 0 (0, 1, 1 before). Five blocks moved: 560 (seed 99,
+  4.2 km), 961 and 962 (seed 4242, 2.9 km), Soviet 202 and 203 (seed 1212, 0.18 km; why
+  those two was not looked into). More than 8 km from the block they go to: 8, 25 and 26
+  (8, 24, 25 before). Chains of nearest enemies: none longer than 2 on the three games.
+  Asked in reverse and the deepest first: the same blocks, before the change and after.
+- **Tests:** two more in `tests/unit/deployFlank.test.ts`. The first red on the rule before
+  ("expected -0.045… to be greater than 0.049…"); the second (the same blocks in three
+  other orders of asking) was green before too. The places of the first came from a search
+  over a grid of places on the rule before (18 of them left two blocks in one another).
+- **Performance:** `npm run sim -- --scenario 1938 --seed 99 --years 2 --affinity 0xFFFF`:
+  mean tick 1.9095 and 1.9278 ms (1.9588 and 1.9445 after 3.11c3a). The same hashes
+  (4c72477e after two years).
+- **Specs run by hand** (ADR-87: a part), 17 tests: `formationFight1938`, `stackBlocks1938`,
+  `formationPlace1938`, `battleView1938`, `toBattle1938`, `fire1938`, `markerStacks1938`,
+  `closeZoom1938`. 16 passed; `formationFight1938` failed once, "no flight began" (its
+  wait of 20 s for the camera to start after a press of "To its fight", at one of the 31
+  formations; which one is not in the output). Alone it passed (2.2 min) with the numbers
+  of 3.11c3a: 31 in contact, 5 with no enemy at 6 m/px, 20.0 to 22.3 m/px. No German or
+  Polish block of that game moved with this change. The cause is not known: in
+  BLOCKERS.md with the specs that fail under load.
+- **Pictures:** none shot again: none of the five blocks that moved is among those the
+  four pictures of `docs/evidence/3.11/` were taken of.
+- **Not done:** no sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11c4.

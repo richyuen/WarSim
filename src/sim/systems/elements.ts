@@ -113,6 +113,56 @@ export function contactsOf(world: World): Map<number, number> {
   return world.contacts;
 }
 
+/** More than the furthest a block's corner lies from its middle, cells (a tank corps of 11 by 5 slots: 0.18). */
+const BLOCK_REACH = 0.5;
+
+const turns = new WeakMap<Map<number, number>, Map<number, number>>();
+
+/**
+ * The one order the blocks of an hour are worked out in (PLAN 3.11c3b), for each formation in
+ * contact its turn: 0 for two that are each other's nearest, and for one on the way to an
+ * enemy's block that enemy's turn and one more for itself and for each formation that goes to
+ * the same enemy and is nearer it (then the lower id: the lines of ADR-89). Equal turns go by
+ * id. A block asks only for blocks before it in this order, whatever side they are of, so
+ * where it stands does not hang on which block was asked for first. Derived from the hour's
+ * contacts and kept with them.
+ */
+function turnsOf(world: World, contacts: Map<number, number>): Map<number, number> {
+  const held = turns.get(contacts);
+  if (held) return held;
+  const c = world.formations.cols;
+  // Those on the way to each enemy's block, nearest it first.
+  const comers = new Map<number, [number, number][]>();
+  for (const [g, e] of contacts) {
+    if (contacts.get(e) === g || !world.formations.has(g) || !world.formations.has(e)) continue;
+    const gx = wrapDx(world, c.x[e]!, c.x[g]!);
+    const gy = c.y[g]! - c.y[e]!;
+    let list = comers.get(e);
+    if (!list) comers.set(e, (list = []));
+    list.push([g, sqrt(gx * gx + gy * gy)]);
+  }
+  const out = new Map<number, number>();
+  const place = (e: number, from: number): void => {
+    const list = comers.get(e);
+    if (!list) return;
+    list.sort((p, q) => p[1] - q[1] || p[0] - q[0]);
+    for (const [k, [g]] of list.entries()) {
+      if (out.has(g)) continue;
+      out.set(g, from + k + 1);
+      place(g, from + k + 1);
+    }
+  };
+  for (const [g, e] of contacts) {
+    if (contacts.get(e) !== g && world.formations.has(e)) continue;
+    out.set(g, 0);
+  }
+  for (const g of [...out.keys()]) place(g, 0);
+  // None is left but in a ring of nearest enemies, which a tie's lower id rules out.
+  for (const g of contacts.keys()) if (!out.has(g)) out.set(g, 0);
+  turns.set(contacts, out);
+  return out;
+}
+
 /**
  * Where the block of formation `f` (of `count` slots) is deployed, or null when it is not in
  * contact (PLAN 2.14c1). A formation holds its place while it fights, and two that fight stand
@@ -128,6 +178,8 @@ export function contactsOf(world: World): Map<number, number> {
  * `DEPLOY_REACH` from its formation at most and stops there, short of the block it was going to
  * (without the limit one stood 80 km, four cells, from the formation the rules know). A line
  * with no room before its formation's place stands abreast of the lines that have (ADR-133).
+ * It stops short of every enemy's block in its way that is before it in the hour's one order
+ * (`turnsOf`), whatever that block goes to (PLAN 3.11c3b).
  *
  * Not state, as an element's place is not (`slotPlace`): worked out from the formations'
  * places and `engaged` flags. The formation's part in the rules and its T1 marker stay where
@@ -136,13 +188,16 @@ export function contactsOf(world: World): Map<number, number> {
  * worker/server.ts). A block does not go into the sea: on the fine mask's water it stands
  * as far forward as there is land (across a strait the two sides stay on their shores).
  */
-export function deployOf(world: World, f: number, count: number, chain = 0): Deployment | null {
+export function deployOf(world: World, f: number, count: number): Deployment | null {
   const c = world.formations.cols;
   if (c.engaged[f] !== 1) return null;
   const cache = (world.deployed ??= new Map<number, Deployment | null>());
   const held = cache.get(f);
   if (held !== undefined) return held;
   const contacts = contactsOf(world);
+  // Every block it asks for is before it in one order (`turnsOf`), so none asks for this one.
+  // Were one to (a ring of nearest enemies, which the lower id on a tie rules out), it has no block.
+  cache.set(f, null);
   const enemy = contacts.get(f);
   let out: Deployment | null = null;
   if (enemy !== undefined && world.formations.has(enemy)) {
@@ -176,7 +231,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
       const ahead = others.slice(0, Math.max(0, others.findIndex((o) => o[0] === f))).map((o) => o[0]);
       const idx = elementIndex(world);
       const enemySlots = slotCount(world, enemy, idx.get(enemy)?.length ?? 0);
-      const theirs = chain < 4 ? deployOf(world, enemy, enemySlots, chain + 1) : null;
+      const theirs = deployOf(world, enemy, enemySlots);
       if (theirs) {
         tx = theirs.x;
         ty = theirs.y;
@@ -184,7 +239,23 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         const faced = contacts.get(enemy)!;
         for (const g of [faced, ...ahead]) {
           const slots = slotCount(world, g, idx.get(g)?.length ?? 0);
-          const at = world.formations.has(g) ? deployOf(world, g, slots, chain + 1) : null;
+          const at = world.formations.has(g) ? deployOf(world, g, slots) : null;
+          if (at) stand.push([at, slots]);
+        }
+        // And the blocks of its enemies that go elsewhere and are before it in the order
+        // (PLAN 3.11c3b: a German division came to a Polish block and stood in a line of that
+        // block's stack which faced another German). Those that can reach where it can: a
+        // block goes `DEPLOY_REACH` from its formation's place at most.
+        const turns = turnsOf(world, contacts);
+        const mine = turns.get(f)!;
+        const known = new Set<number>([enemy, faced, ...ahead]);
+        for (const h of contacts.keys()) {
+          if (h === f || known.has(h) || !world.formations.has(h) || !world.wars.atWar(c.nation[f]!, c.nation[h]!)) continue;
+          const its = turns.get(h)!;
+          if (its > mine || (its === mine && h > f)) continue;
+          if (cellDist(world, fx, fy, c.x[h]!, c.y[h]!) > 2 * DEPLOY_REACH + BLOCK_REACH) continue;
+          const slots = slotCount(world, h, idx.get(h)?.length ?? 0);
+          const at = deployOf(world, h, slots);
           if (at) stand.push([at, slots]);
         }
         // From much the same side as the one that enemy faces (within 60°): a line further

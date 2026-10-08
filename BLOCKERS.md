@@ -491,6 +491,10 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     row, it passed (the tick's end after 913 to 1,049 ms). It runs the toy world, which has no unit
     rules: the rule of that commit is not on its path. The load of the machine in that run is
     not known. The spec was not changed.
+  - `formationFight1938`, the way to the fight (2026-10-08, eight spec files run by hand for
+    PLAN 3.11c3b, 17 tests in 1.6 min): "no flight began", its wait of 20 s for the camera to
+    start after the press of "To its fight", at one of 31 formations, once. Alone it passed
+    (2.2 min). The load of the machine in that run is not known. The spec was not changed.
   - `precision`, the bench page (2026-10-07, eleven spec files run by hand for PLAN 3.6c, 17
     tests in 3.3 min): its wait for `window.__precision` on `/bench.html?b=P` ran out with the
     test's 90 s, once. Alone it passed (12.7 s), and in a run with `fire1938` and `bench-pages`.
