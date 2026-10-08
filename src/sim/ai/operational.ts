@@ -16,6 +16,8 @@
  * (PLAN 3.10c2b, ADR-192: no more than `POCKET_CELLS` cells that a route comes to, with closed
  * ground or water around them) are a class of their own, and it reaches the sectors whose front
  * cell is in the pocket: the provinces of a pocket are joined to others that the cells are not.
+ * And a sector whose front cell is in a pocket is reached by the class of that pocket alone (PLAN
+ * 3.10c2b2).
  * Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
@@ -47,7 +49,7 @@
  */
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
-import { inPocket, neighbours4, pocketOf, type Passage } from '../nav/grid';
+import { neighbours4, pocketOf, type Passage } from '../nav/grid';
 import { wideNode } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
@@ -237,7 +239,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // second time (the landmass is asked once per class and sector), so a change of `mayReach`
   // is a change of the line that fills `reached` below. Then the cells, where they are few
   // (PLAN 3.10c2b, ADR-192): a class in a pocket of open ground reaches the cells of the pocket
-  // and no other, which `mayReach` does not ask and the order's search would find.
+  // and no other, and a class that is not in it does not reach them (PLAN 3.10c2b2), which
+  // `mayReach` does not ask and the order's search would find.
   const pass = passageOf(world, n, passages);
   const nav = navOf(world);
   const land = nav.grid.component;
@@ -277,6 +280,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const hold = (s.hold = holdCell(s, w));
     // From another landmass: the cell of it within the snap of an order, once per landmass.
     let other: Map<number, number> | undefined;
+    // The cell last asked for its pocket, and the answer.
+    let asked = -1;
+    let pocket = 0;
     for (let ci = 0; ci < classCell.length; ci++) {
       const from = classCell[ci]!;
       const g = classGroup[ci]!;
@@ -287,7 +293,19 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         if (known === undefined) other.set(land[from]!, to);
       }
       if (to < 0 || (g >= 0 && nodeOf[to] !== 0 && group[nodeOf[to]!] !== g)) continue;
-      if (classPocket[ci]! > 0 && !inPocket(nav.grid, pass, to, classPocket[ci]!)) continue;
+      // The pocket of the order's cell is the class's, or neither is in one (PLAN 3.10c2b2:
+      // the cells are walked from the sector's cell too, once a cell). A class on closed ground
+      // walks out of it, into a pocket too: it is not asked.
+      if (g < 0) {
+        reached[ci]!.push(i);
+        continue;
+      }
+      if (to !== asked) {
+        asked = to;
+        const node = nodeOf[to]!;
+        pocket = node === 0 || wideNode(nav.graph, pass, node) ? 0 : pocketOf(nav.grid, pass, to, wideCell);
+      }
+      if (pocket !== classPocket[ci]!) continue;
       reached[ci]!.push(i);
     }
   }

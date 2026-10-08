@@ -227,7 +227,7 @@ export function wideNode(pg: ProvinceGraph, pass: Passage, node: number): boolea
  * Written twice: `planNation` (`ai/operational.ts`, where it fills `reached`) reads the landmass
  * and the two groups itself, per class of formations and not per formation. A change of this
  * test is a change of that one. It asks one thing more, which this test does not (PLAN 3.10c2b,
- * ADR-192): of formations in a pocket of open ground, whether the goal is in the pocket
+ * ADR-192): whether the start and the goal are in one pocket of open ground or in none
  * (`pocketOf`). Here that is left to the search, which walks the pocket and finds no way.
  */
 export function mayReach(g: NavGrid, pg: ProvinceGraph, start: number, goal: number, pass?: Passage): boolean {

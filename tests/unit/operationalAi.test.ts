@@ -578,4 +578,78 @@ describe('a pocket of open ground (PLAN 3.10c2b, ADR-192)', () => {
       expect(inPocket(f.targetCell[id]!), `division ${id} to ${f.targetCell[id]! % W},${Math.floor(f.targetCell[id]! / W)}`).toBe(true);
     }
   });
+
+  it('divisions in wide ground are not ordered to a front in a pocket that a third nation walls off (PLAN 3.10c2b2)', () => {
+    const [USA, MEX, CAN] = ['USA', 'MEX', 'CAN'].map(nationId) as [number, number, number];
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [USA, MEX]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== USA) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[USA] = 0;
+    runEvents(s, 1);
+    w.wars.start([USA], [MEX], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    const nav = navOf(w);
+    const land = nav.grid.component;
+    const nb: number[] = [];
+    const isFront = (c: number): boolean => w.cells.controller[c] === USA && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === MEX);
+    const front = [...frontierOf(w)].filter(isFront).sort((a, b) => (a % W) - (b % W) || a - b);
+    // The test above with the outer box left out: the small box around a front cell in the
+    // middle of the front, its edges Canada's, and the divisions north of it in the open.
+    const a = front[Math.floor(front.length / 2)]!;
+    const ax = a % W;
+    const ay = Math.floor(a / W);
+    const small = [ax - 6, ay - 5, ax + 6, ay + 6] as const;
+    const within = (c: number, [x0, y0, x1, y1]: readonly [number, number, number, number], inset: number): boolean => {
+      const x = c % W;
+      const y = Math.floor(c / W);
+      return x >= x0 + inset && x <= x1 - inset && y >= y0 + inset && y <= y1 - inset;
+    };
+    for (let y = small[1]; y <= small[3]; y++) {
+      for (let x = small[0]; x <= small[2]; x++) {
+        const c = y * W + x;
+        if (land[c] !== 0 && !within(c, small, 2)) w.setController(c, CAN);
+      }
+    }
+    const ids = Array.from({ length: 6 }, (_, k) => addDivision(w, USA, ax - 1 + (k % 3) + 0.5, ay - 9 + Math.floor(k / 3) + 0.5));
+    for (const id of ids) {
+      const here = Math.floor(f.y[id]!) * W + Math.floor(f.x[id]!);
+      expect(w.cells.controller[here], `division ${id}`).toBe(USA);
+      expect(within(here, small, 0), `division ${id}`).toBe(false);
+    }
+    // Mexican divisions on the box's front: its sectors are the most threatened, and the
+    // allotment's first.
+    const foe = neighbours4(a, W, H, true, nb).find((k) => w.cells.controller[k] === MEX)!;
+    for (let k = 0; k < 4; k++) addDivision(w, MEX, (foe % W) + 0.5, Math.floor(foe / W) + 0.5);
+    // There is front in the box (the nearest) and outside it.
+    const nearFront = front.filter((c) => isFront(c) && within(c, small, 2));
+    const openFront = front.filter((c) => isFront(c) && !within(c, small, 0));
+    expect(nearFront.length).toBeGreaterThan(0);
+    expect(openFront.length).toBeGreaterThan(0);
+    const dist = (id: number, c: number): number => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5));
+    for (const id of ids) expect(Math.min(...nearFront.map((c) => dist(id, c))), `division ${id}`).toBeLessThan(Math.min(...openFront.map((c) => dist(id, c))));
+    // The provinces do not tell the two apart: by them the divisions reach the box.
+    const pass = passageOf(w, USA);
+    const groupOf = (c: number): number => pass.group![nav.graph.nodeOf[c]!]!;
+    const stand = Math.floor(f.y[ids[0]!]!) * W + Math.floor(f.x[ids[0]!]!);
+    expect(groupOf(stand)).toBeGreaterThan(0);
+    expect(nearFront.some((c) => groupOf(c) === groupOf(stand))).toBe(true);
+    // To the hour after the Americans' next plan.
+    const events: number[][] = [];
+    do events.push(...runEvents(s, 1));
+    while (w.tick % 6 !== 1 || ((w.tick - 1) / 6 + USA) % STAGGER !== 0);
+    expect(eventKinds(events, EventKind.MoveRejected).filter(([, nation]) => nation === USA)).toEqual([]);
+    // Every division marches, to the front outside the box.
+    for (const id of ids) {
+      expect(f.moving[id], `division ${id}`).toBe(1);
+      expect(within(f.targetCell[id]!, small, 0), `division ${id} to ${f.targetCell[id]! % W},${Math.floor(f.targetCell[id]! / W)}`).toBe(false);
+    }
+  });
 });

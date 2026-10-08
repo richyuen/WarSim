@@ -4571,7 +4571,14 @@ quick sweep as a smoke test.
         whose front cell is in it. The unit test, red first. Five years of seed 99, the
         refusals of a formation in a pocket: 19,728 of 21,203 before, 10 of 11,412 after
         (another game). The walk: 0.0125 ms a tick.
-      - [ ] 3.10c2b2 The sector's front cell is in a pocket and the formation is not (353
+      - [x] 3.10c2b2 *Done 2026-10-07 (ADR-192 amended):* the cell an order to the sector
+        goes to is asked for its pocket as a formation's is, once a cell, and a class on
+        open ground reaches the sector when the pocket is its own or neither is in one.
+        The count first: 2,337 such refusals in five years of seed 99 go to 141 sectors of
+        five nations on 348 days, into pockets of 35 to 1,861 cells; the walks cost 0.016
+        ms a tick. After (another game): none, and 6,280 refusals of 11,412. The unit test
+        needed Mexican divisions on the box's front to be red (the allotment is by threat).
+        The task as it was set: the sector's front cell is in a pocket and the formation is not (353
         refusals in five years of seed 99 before 3.10c2b1, 2,337 in the game after; nation
         10 has 1,456). The walk of 3.10c2b1 is from the formation. First count the sectors
         such an order goes to and what a walk from each sector's front cell costs (a planner
@@ -4582,6 +4589,11 @@ quick sweep as a smoke test.
         asked again every day: 990 refusals in five years of seed 99 before 3.10c2b1, 8,164
         in the game after (nation 10: 5,620, e.g. formations at cell 1165,234 sent 38 to 50
         cells south on every day of weeks). And 854 with no way and both ends in wide ground.
+        After 3.10c2b2 (its probe, another game): 3,583 with a way by the cells, 2,580 with
+        none and both ends in wide ground (all in year 5; nation 10 has 1,854 of them and
+        487 of the first kind), 77 inside one pocket, 10 from a pocket to wide ground (a
+        province in two parts reads as wide). The second kind is now the larger for nation
+        10: look at one such day first.
         First look at one such day (where the way goes, how long it is). Then PLAN's second
         candidate, a refusal that is remembered (a formation's sector and day, saved) so
         that the allotment of the next days leaves the pair out, or a sector's reach by a
@@ -4594,6 +4606,8 @@ quick sweep as a smoke test.
     - [ ] 3.10c2d The longest call (84 to 87 ms: a nation's far formations of one day, 2 ms
       an order) and whether `findPath` has anything left: count the cells a long search opens
       and how wide its corridor of provinces is, before it is said.
+      After 3.10c2b2: one call of 405 ms in year 5 of seed 99 (the year of the 2,580
+      refusals in wide ground; not the reach loop, whose longest is 1.0 ms). Not looked into.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

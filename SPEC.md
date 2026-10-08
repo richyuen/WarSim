@@ -1406,8 +1406,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     no more than `POCKET_CELLS` (4,096). It is walked once a passage (`pocketOf`,
     nav/grid.ts). Wider ground is not walked to its end and is judged by the provinces, as
     before; a formation in a province with no closed ground that is joined to such
-    provinces of more than 4,096 cells is not walked at all (`wideNode`). An order's own
-    test (`mayReach`) does not ask this: the order's search finds it.
+    provinces of more than 4,096 cells is not walked at all (`wideNode`). And the other way
+    (PLAN 3.10c2b2): a sector whose front cell lies in a pocket is reached by the class of
+    that pocket and by no other on open ground; the cells are walked from the sector's cell
+    as from a formation's, once a cell and passage. A class on closed ground is not asked
+    (it walks out of it, into a pocket too). An order's own test (`mayReach`) does not ask
+    this: the order's search finds it.
   - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
     sector getting one while formations last. Formations already marching into a sector keep it,
     also beyond the sector's allotment of the day [ADR-53]; the rest fill what is left

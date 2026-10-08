@@ -9836,3 +9836,65 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 993 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c2b2 (the sector in a pocket), then 3.10c2b3.
+
+## 2026-10-07 — PLAN 3.10c2b2: a sector in a pocket of open ground (ADR-192 amended)
+
+- **Step 2:** `npm run check` on a clean tree: nothing to run, green. Critic: not due.
+- **The count PLAN asked for first** (five years of seed 99 on HEAD, the probe of 3.10c2a
+  with a tally by sector; two hooks in `movement.ts`, put in and taken out): 2,337 orders
+  refused with the formation in wide ground and the order's cell in a pocket (the same
+  number as 3.10c2b1's table), 1,196 of them attacks on the enemy's cell beside the front
+  cell. They go to 141 sectors of five nations (nation 10: 1,456; nation 1: 822) on 348
+  days, 1,718 sectors and days. The pockets: 35 to 1,861 cells, the median 1,250.
+- **Done:** `planNation`, the loop that fills `reached`: the cell an order to the sector
+  goes to is asked for its pocket (`wideNode`, then `pocketOf`), once a cell; a class on
+  open ground reaches the sector when that pocket is its own or neither is in one. A class
+  on closed ground is not asked. `inPocket` (nav/grid.ts) has no caller left and is
+  deleted. SPEC §7, ADR-192 amended, PLAN 3.10c2b3 and 3.10c2d with the new numbers, the
+  pin `ae5e192d` → `2724cb90`.
+- **The unit test** (`operationalAi.test.ts`, "divisions in wide ground are not ordered to
+  a front in a pocket"): the test of 3.10c2b1 with the outer box left out. **It passed on
+  HEAD as PLAN set it:** six divisions and some thirty sectors, and the allotment gave the
+  box's sectors none. With four Mexican divisions on the box's front (the allotment is by
+  threat) it is red on HEAD (four orders refused) and green now.
+- **Before and after** (five years of seed 99, one probe on both; another game from year 1):
+
+  | | orders | refused | the sector in a pocket | a way by the cells | both in wide ground | inside one pocket | from closed ground | from a pocket to wide ground |
+  |---|---|---|---|---|---|---|---|---|
+  | HEAD | 68,736 | 11,412 | 2,337 | 8,082 | 854 | 66 | 16 | 10 |
+  | this | 66,197 | 6,280 | 0 | 3,583 | 2,580 | 77 | 18 | 10 |
+
+  Nation 10: 7,463 refused on 1,072 days (0, 152, 294, 341, 285 by year), 4 formations 100
+  times or more → 2,357 on 351 days (0, 128, 9, 3, 211), none. **Both in wide ground is
+  three times what it was,** all of it in year 5 of the game after (nation 10: 1,854): open
+  ground of more than 4,096 cells that the cells do not join, which nothing here asks.
+  PLAN 3.10c2b3.
+- **The cost** (counters put in and taken out; the same hash with them): 6,330,140 sector
+  cells asked in five years, 416,037 of them not in a wide province (walked, or read from an
+  earlier walk), 94,530 in a pocket: 715 ms, 0.016 ms a tick with the clock's own cost. The
+  first count, with the clock around every ask, read 0.026: most of it the clock. The whole
+  loop that fills `reached`: 0.021, 0.032, 0.050, 0.075, 0.062 ms a tick in years 1 to 5,
+  its longest call 1.0 ms (385 sectors, 4 classes).
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c2b1 → this (ms a
+  tick; one run each; other games from the first year on):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 4242, year 1 | 1.837 → 1.938 | 0.314 → 0.305 | 86.4 → 84.6 |
+  | seed 4242, year 2 | 1.430 → 1.469 | 0.395 → 0.408 | 124.3 → 99.1 |
+  | seed 99, years 1 to 5 | 1.818 → 1.833 | 0.482 → 0.548 | 90.1 → 405.0 |
+
+  Seed 99 by year: 2.320, 1.824, 1.791, 1.622, 1.607 (the operational AI 0.454, 0.454,
+  0.520, 0.551, 0.764). **Seed 99 is still over the budget of 1.5 ms, and year 5's
+  operational AI is dearer than before (0.557 → 0.764) with one call of 405 ms.** That
+  call is not the reach loop (1.0 ms at most); it is in the year of the 2,580 refusals in
+  wide ground. What it is was not looked into (PLAN 3.10c2d).
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`):
+  `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass (6 tests, 2.5 min).
+- **Not done:** no picture. A class on closed ground is still sent to a sector in a pocket
+  (18 refusals from closed ground, of every kind). No sweep (ADR-58). The full e2e suite
+  has not run on this game (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 994 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c2b3 (first a day of nation 10's refusals in wide ground).

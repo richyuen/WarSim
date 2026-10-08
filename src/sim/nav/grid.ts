@@ -391,12 +391,6 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
   return pocket;
 }
 
-/** Whether a cell lies in a pocket that `pocketOf` has found on this passage. */
-export function inPocket(g: NavGrid, pass: Passage, cell: number, pocket: number): boolean {
-  const p = g.pockets;
-  return p !== null && p.pass === pass && p.stamp[cell] === p.gen && p.id[cell] === pocket;
-}
-
 /**
  * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search,
  * and `pass` the ground by its holder. Returns null when the goal is unreachable.

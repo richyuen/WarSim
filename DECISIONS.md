@@ -246,6 +246,36 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   small box's front the nearest. Red before (six orders refused), green after: none
   refused, all six on the march to the front in their own pocket. The pin `38fcbd68` →
   `ae5e192d`.
+- **Amended 2026-10-07 (PLAN 3.10c2b2): the sector's cell is asked for its pocket too.**
+  *The count PLAN asked for first* (five years of seed 99, the game of 3.10c2b1, the probe
+  of 3.10c2a with a tally by sector): 2,337 orders refused with the formation in wide
+  ground and the order's cell in a pocket, 1,196 of them attacks (the enemy's cell next to
+  the front cell: the same pocket); 141 sectors of five nations (the Soviet Union 1,456,
+  nation 1 822), on 348 days, 1,718 sectors and days; the pockets have 35 to 1,861 cells
+  (the median 1,250), so `POCKET_CELLS` holds them. *The rule:* in the loop that fills
+  `reached`, the cell an order to the sector would go to is asked for its pocket as a
+  formation's cell is (`wideNode`, then `pocketOf`), once a cell, and a class on open
+  ground reaches the sector when that pocket is its own, or when neither is in one. It
+  takes the place of the test of 3.10c2b1 (`inPocket`, deleted), which it holds. A class
+  on closed ground is not asked: it walks on closed ground and out of it, and may come
+  out into the pocket. *Why not only the sectors a formation is allotted to* (PLAN's
+  other way): that is after the allotment, which would have to be made again. *The cost:*
+  6,330,140 sector cells asked in five years of seed 99, 416,037 of them walked or read
+  from an earlier walk (the others are in wide provinces), 94,530 in a pocket: 715 ms,
+  0.016 ms a tick, the clock's own cost in it. The whole loop that fills `reached` (the
+  front cell, the snap, the groups, the pockets) is 0.021 to 0.075 ms a tick by year, and
+  its longest call 1.0 ms (a planner of 385 sectors). *What it did* (the same probe;
+  another game from the first year on): orders 68,736 → 66,197, refused 11,412 → 6,280,
+  the sector in a pocket 2,337 → 0. The Soviet Union: 7,463 refused on 1,072 days → 2,357
+  on 351 (0, 128, 9, 3, 211 by year), 4 formations refused 100 times or more → none. *What
+  is left* in the game after (PLAN 3.10c2b3): 3,583 with a way by the cells that the
+  corridor does not hold, 2,580 with none and both ends in wide ground (854 before; all
+  of them in year 5, the Soviet Union 1,854), 77 inside one pocket, 18 from closed
+  ground, 10 from a pocket to wide ground (a province in two parts, which `wideNode`
+  takes for wide). *The test:* "divisions in wide ground are not ordered to a front in a
+  pocket", the test above with the outer box left out and four Mexican divisions on the
+  box's front, so that its sectors are the allotment's first. Red before (four orders
+  refused), green after. The pin `ae5e192d` → `2724cb90`.
 
 ### ADR-191 · 2026-10-07 · accepted — A front sector that nobody is in range of takes a formation the front can spare (PLAN 3.10c1d)
 
