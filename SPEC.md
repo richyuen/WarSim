@@ -1382,12 +1382,17 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     is looked at for this on one day in eight (`MARCH_DAYS`, by its id).
   - *To spare* (PLAN 3.10c1d, ADR-191): such a sector that no formation of the nation is
     within 60 cells of also takes one of the formations near the front. On the nation's day
-    in eight, of the free formations within the range of a sector that stand still, the
-    farthest from the front, as many as the reserve's share (one at least), may go: each to
+    in eight, of the free formations within the range of a sector that are not on an errand
+    (below), the farthest from the front, as many as the reserve's share (one at least), may
+    go: each to
     the nearest such sector within 180 cells (`SPARE_RANGES` × the range) on its landmass,
     one a sector. No more go than the front can spare: the formations near it, less the
     share of them that the other sectors weigh among all (1 + threat/10,000 each, as in the
-    allotment). A formation on the march is not taken, so a march this rule gave is kept.
+    allotment). On an errand (PLAN 3.10c1d2) is a formation on the march to a cell more than
+    60 cells from it (no allotment orders that far), or into a sector that would have nobody
+    without it: no other formation of the nation stands in it or next to it, and none other
+    marches into it. So a march this rule gave is kept, and a formation that marches to its
+    sector's cell as the others of a front that fights do is to spare as one that stands.
   - *Reach* (PLAN 3.5b, ADR-152): those formations are classes by where they stand (the
     landmass; on it the group of provinces joined by ground open to the nation, §4, or
     closed ground). A class reaches a sector when an order to the sector's front cell would

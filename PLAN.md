@@ -4484,7 +4484,7 @@ quick sweep as a smoke test.
     unit test (twelve divisions at one end of a front of 30 sectors: the far end is manned
     within a month and the near end is not left); that front of seed 4242 before and
     after; the operational AI's tick beside 3.10c1a's.
-  - [ ] 3.10c1d2 Who is to spare on a front that fights. 3.10c1d takes only formations that
+  - [x] 3.10c1d2 *Done 2026-10-07 (ADR-191 amended: to spare are those not on an errand; France's table did not move, BLOCKERS "France's far end"):* Who is to spare on a front that fights. 3.10c1d takes only formations that
     stand still, and on a front that fights nearly none does: the allotment orders every
     formation to its sector's cell every day (France, seed 4242: 39 of 44 on the march, 2
     of 21 ranked standing still, one sent; 31 sectors with nobody before and after, though
@@ -4525,6 +4525,10 @@ quick sweep as a smoke test.
     are 4,473 in 5,869 ms (0.134 ms a tick; 3,982 in 2,112 ms in the game before), and
     2,997 of them are refused, in 2,883 ms: Italy's in year 2 (1,228 ms), nation 10's in
     year 4 (1,408 ms). A refused far order is the first thing to look at here.
+    After 3.10c1d2 (its probe, PROGRESS): in five years of seed 99, 436 orders to formations
+    to spare and 202 of them refused (6 of 102 before): a formation off its march is refused
+    more often than one that stands, and is asked again on the nation's next day. The far
+    orders in that game: 3,004. The cost of neither was measured apart.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

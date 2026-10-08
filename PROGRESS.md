@@ -9641,3 +9641,76 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 991 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c1d2 (who is to spare on a front that fights), then 3.10c2.
+
+## 2026-10-07 · PLAN 3.10c1d2: who is to spare on a front that fights (ADR-191 amended)
+
+- **Done:** in `planNation` (`src/sim/ai/operational.ts`), to spare are the ranked formations
+  that are not on an errand, on the march or not (before: those that stood still). On an
+  errand: on the march to a cell beyond the range, or into a sector that would have nobody
+  without it (no other formation of the nation stands in it or next to it, none other
+  marches into it). `stands` counts the formations by bucket, `marchers` those that march
+  into a sector; the test of ADR-190 for a sector that has nobody reads both. SPEC §7,
+  ADR-191's amendment, the pin `d790e601` → `38fcbd68`.
+- **The count PLAN asked for first** (`.cache/ck/4242-y1-c1a.bin`: the state of 3.10c1a's
+  game, read by today's code), France (nation 19) on day 365: 44 formations, 21 ranked,
+  19 on the march, none of them on an errand by the two conditions of PLAN, 4 with a target
+  whose sector is gone. So the rule was written.
+- **France's table did not move** (BLOCKERS, "France's far end", with the table by day):
+  three candidates in place of two on day 365, one sent as before (formation 213, 121
+  cells, off its march; before, 238, which stood). 31 own sectors with nobody within the
+  range, 32, 33, 34 on its next days, the same numbers under either rule. France has 12
+  formations four weeks later. Which limit held the other two candidates back was not
+  looked at.
+- **Where it does act** (a probe, put in and taken out; the two rules side by side, each
+  its own game from the first order on):
+
+  | | orders to spare | given | to a formation on the march | sent again within 40 days |
+  |---|---|---|---|---|
+  | seed 4242, year 2, 3.10c1d | 15 | 12 | 0 | 0 |
+  | the same, this rule | 26 | 24 | 16 | 0 |
+  | seed 99, years 1 to 5, 3.10c1d | 102 | 96 | 0 | 0 |
+  | the same, this rule | 436 | 234 | 203 | 11 |
+
+  Nation 10 has 238 of the 436 and nation 15 110. 202 are refused (6 before): PLAN 3.10c2.
+- **A second condition, not in PLAN** (a march beyond the range is an errand). With PLAN's
+  rule alone, seed 99 had 238 orders, 139 given, and 19 of those to a formation sent less
+  than 40 days before with 61 to 156 cells to go: nation 69 sent seven on days 3 and 11 and
+  again on days 19 and 27, nation 10 one division six times in 224 days. The cause was not
+  traced order by order: a march to the far end loses PLAN's errand as soon as another
+  formation stands next to its sector or its sector is gone. With the second condition 11
+  of 234 are left, 9 of them nation 15's in its fifth year, 16 to 40 days apart at 114 to
+  174 cells. Why those marches ended was not looked into.
+- **The unit tests** ("to spare", two now, one body): the case of 3.10c1d, and the same army
+  40 cells north of the front, so that all twelve march to the near end for the first
+  weeks. There, sent on days 6 (1052, standing), 14 and 22 (1043 and 1044, on the march,
+  with 12 of 12 on the march both days). Red on the rule before (one sent, `sent.size` ≥ 2).
+  Two changes to the measure, for both cases: a far order is now also one into a sector of
+  the far end as it was at the start, whatever its length (the rule sends formations that
+  have marched east since, at 63 to 66 cells: under the old measure of "more than 66.7
+  cells" the case of 3.10c1d counted one of its three); and "10 cells nearer" is a cell a
+  day for an order of the last ten days (the third order of that case is 7.5 days old and
+  9.97 cells nearer). An order the old measure caught is still caught, and still held to 10.
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c1d → this (ms a
+  tick; one run each):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 8128, year 8 (the same state) | 1.940 → 1.802 | 0.475 → 0.453 | 33.9 → 34.9 |
+  | seed 4242, year 1 | 2.289 → 2.218 | 0.413 → 0.414 | 87.8 → 88.0 |
+  | seed 4242, year 2 | 2.148 → 1.903 | 0.469 → 0.417 | 55.7 → 46.9 |
+  | seed 99, years 1 to 5 | 1.696 → 1.710 | 0.428 → 0.397 | 140.4 → 87.3 |
+
+  Seed 99 by year: 2.312, 1.547, 1.644, 1.223, 1.821 (the operational AI 0.434, 0.380,
+  0.400, 0.245, 0.525). Other games from the first order on: the differences are the
+  games', not the rule's cost, which was not measured apart. Seed 99 is over the budget of
+  1.5 ms by 0.2, as before.
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`, 6
+  tests, 2.6 min): `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass.
+- **Not done:** no picture (France's front shows nothing new). The second condition has no
+  test of its own (the unit tests pass without it; it rests on the counts above). The
+  refused orders (202 of 436) are not explained. No sweep (ADR-58). The full e2e suite has
+  not run on this game (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 992 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c2 (what is left of the operational AI: the refused orders first).

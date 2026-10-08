@@ -210,6 +210,25 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   test ("no formation of the one front is ordered to the other", Poland and Manchuria)
   stays as it is. France's far end is 91 to 138 cells from its army. A number set by
   that one case.
+- **Amended 2026-10-07 (PLAN 3.10c1d2): who, point 2.** Not "those that stand still" but
+  "those that are not on an errand". On a front that fights nearly none stands still (the
+  allotment orders every formation to its sector's cell every day: France, seed 4242,
+  day 365: 19 of 21 ranked on the march), so the rule seldom had anybody to send. A
+  formation is on an errand when it is on the march and either
+  (a) its target cell is more than `DEPLOY_RANGE_CELLS` from it (no allotment orders that
+  far: such a march is ADR-190's or this rule's), or
+  (b) its target sector would have nobody without it by ADR-190's own test: no other
+  formation of the nation stands in it or next to it, and none other marches into it.
+  A march to a sector that is gone (the front moved) and is within the range is no
+  errand. The rest of the decision is unchanged.
+  *Why (a), which PLAN did not ask for.* With (b) alone, five years of seed 99 had 19 of
+  139 orders that were given go to a formation sent less than 40 days before (61 to 156
+  cells to go: it could not have arrived), one division six times. With (a), 11 of 234,
+  the nearest two 16 days apart; the rule before had none in 96. What is left are marches
+  that ended on the way (a sector gone, a battle): not looked into one by one.
+  *What it did not do.* France's front (the case this ADR was written for) is as it was:
+  see BLOCKERS, "France's far end".
+  The pin `d790e601` → `38fcbd68`.
 - **What it does to the case it was written for: little.** France in seed 4242 is an
   army being destroyed (44 formations, 21 twenty days later on the rule before, 17 on
   this one), with 2 of 21 ranked formations standing still on its first day: one is sent

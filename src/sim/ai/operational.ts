@@ -34,8 +34,10 @@
  * reaches and stands still: one a sector, to the sector's front cell, on the formation's day in
  * MARCH_DAYS. The march is not planned again before it ends or comes within the range.
  * To spare (PLAN 3.10c1d, ADR-191): such a sector that no formation of the planner is within the
- * range of also takes one of the formations near the front that stand still (the farthest from
- * it, as many as the reserve's share, on the nation's day in MARCH_DAYS), from within SPARE_RANGES
+ * range of also takes one of the formations near the front that are not on an errand (PLAN
+ * 3.10c1d2: on the march to a cell beyond the range, or into a sector that would have nobody
+ * without them): the farthest from it, as many as the reserve's share, on the nation's day in
+ * MARCH_DAYS, from within SPARE_RANGES
  * times the range, while the formations near the front are more than the share of them that the
  * other sectors weigh among all (the weights of the allotment).
  */
@@ -176,8 +178,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     s.cy = sy / s.cells.length;
   }
   const enemyByBucket = new Map<number, number>();
-  /** The sector buckets in which a formation of n stands, free or not. */
-  const stands = new Set<number>();
+  /** By sector bucket, how many formations of n stand in it, free or not. */
+  const stands = new Map<number, number>();
   const mine: number[] = [];
   /** n's formations, free or not. */
   const all: number[] = [];
@@ -185,7 +187,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const m = f.nation[id]!;
     if (m === n) {
       all.push(id);
-      stands.add(Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS));
+      const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
+      stands.set(k, (stands.get(k) ?? 0) + 1);
       if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
       return;
     }
@@ -299,14 +302,51 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   }
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
   const index = new Map(list.map((s, i) => [s.key, i] as const));
+  /** By sector, how many free formations of n march into it. */
+  const marchers = new Int32Array(sn);
+  for (const id of mine) {
+    if (f.moving[id] !== 1) continue;
+    const i = index.get(sectorOfCell(f.targetCell[id]!));
+    if (i !== undefined) marchers[i]!++;
+  }
+  /** How many formations of n stand in the sector or next to it. */
+  const stoodAt = (s: Sector): number => {
+    const sy = Math.floor(s.key / bw);
+    const sx = s.key - sy * bw;
+    let c = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) c += stands.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
+    return c;
+  };
+  // On an errand (PLAN 3.10c1d2, ADR-191's amendment): on the march to a cell beyond the range
+  // (no allotment orders that far: it was sent to a sector that had nobody), or into a sector
+  // that would have nobody without it (no other formation of n stands in it or next to it, none
+  // other marches into it). A formation that this rule sent is on one until it is there, or
+  // until another has come to its sector.
+  const onErrand = (id: number): boolean => {
+    if (f.moving[id] !== 1) return false;
+    const to = f.targetCell[id]!;
+    let tx = Math.abs(f.x[id]! - ((to % w) + 0.5));
+    if (tx > w / 2) tx = w - tx;
+    const ty = f.y[id]! - (Math.floor(to / w) + 0.5);
+    if (tx * tx + ty * ty > RANGE2) return true;
+    const i = index.get(sectorOfCell(to));
+    if (i === undefined || marchers[i]! > 1) return false;
+    const s = list[i]!;
+    const by = Math.floor(f.y[id]! / SECTOR_CELLS);
+    const bx = Math.floor(f.x[id]! / SECTOR_CELLS);
+    const sy = Math.floor(s.key / bw);
+    let dx = Math.abs(bx - (s.key - sy * bw));
+    if (dx > bw / 2) dx = bw - dx;
+    return stoodAt(s) - (dx <= 1 && Math.abs(by - sy) <= 1 ? 1 : 0) === 0;
+  };
   // To spare (PLAN 3.10c1d, ADR-191): on the nation's day in `MARCH_DAYS`, of the formations
-  // near the front that stand still, the farthest from it, as many as the reserve's share. (The
-  // reserve itself is another formation from day to day and mostly one with a march to end: on
-  // the march it cannot be told from a formation this rule sent, which is to be left alone.)
+  // near the front that are not on an errand, on the march or not (PLAN 3.10c1d2: on a front that
+  // fights nearly all of them march, every day, to their sector's cell), the farthest from it, as
+  // many as the reserve's share.
   const spare: number[] = [];
   if (ownFront && (day + n) % MARCH_DAYS === 0) {
     const most = Math.max(1, ranked.length - active.length);
-    for (let k = ranked.length - 1; k >= 0 && spare.length < most; k--) if (f.moving[ranked[k]!] !== 1) spare.push(ranked[k]!);
+    for (let k = ranked.length - 1; k >= 0 && spare.length < most; k--) if (!onErrand(ranked[k]!)) spare.push(ranked[k]!);
   }
   const byThreat = list.map((_, i) => i).sort((a, b) => list[b]!.threat - list[a]!.threat || list[a]!.key - list[b]!.key);
   const byClass: number[][] = classCell.map(() => []);
@@ -440,22 +480,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     for (let i = 0; i < sn; i++) {
       const s = list[i]!;
       if (!s.own || s.formations.length > 0) continue;
-      const sy = Math.floor(s.key / bw);
-      const sx = s.key - sy * bw;
-      let stood = false;
-      for (let dy = -1; dy <= 1 && !stood; dy++) for (let dx = -1; dx <= 1 && !stood; dx++) stood = stands.has((sy + dy) * bw + ((sx + dx + bw) % bw));
-      if (stood) continue;
+      if (marchers[i]! > 0 || stoodAt(s) > 0) continue;
       empty[i] = 1;
       empties++;
-    }
-    if (empties > 0) {
-      for (const id of mine) {
-        if (f.moving[id] !== 1) continue;
-        const i = index.get(sectorOfCell(f.targetCell[id]!));
-        if (i === undefined || empty[i] === 0) continue;
-        empty[i] = 0;
-        empties--;
-      }
     }
     /** Of a sector: 1 = no formation of n is within the range of it, 2 = one is (0: not asked yet). */
     const alone = new Uint8Array(sn);

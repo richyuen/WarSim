@@ -84,6 +84,35 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   compresses, and is slow in every stage alike. The sampler has not recorded memory; it
   should.
 
+### PLAN 3.10c1d2: France's far end is not manned by the rules of 3.10c1a, 3.10c1d and 3.10c1d2 (2026-10-07)
+The case PLAN 3.10c1d was written for: seed 4242 after a year (`.cache/ck/4242-y1-c1a.bin`,
+the state of 3.10c1a's game read by today's code), France (nation 19) against Italy. Of its
+87 own front sectors, 31 have no French formation within 60 cells.
+
+| France, on its day in eight | day 365 | 373 | 381 | 389 | 397 | 405 |
+|---|---|---|---|---|---|---|
+| formations (3.10c1d → 3.10c1d2) | 44 → 44 | 39 → 39 | 28 → 25 | 13 → 12 | 4 → 10 | 2 → 6 |
+| ranked near the front | 21 → 21 | 11 → 13 | 9 → 8 | 6 → 3 | 2 → 7 | 1 → 4 |
+| of them on the march | 19 → 19 | 11 → 11 | 9 → 8 | 4 → 3 | 2 → 7 | 1 → 4 |
+| to spare (candidates) | 2 → 3 | 0 → 1 | 0 → 1 | 1 → 1 | 0 → 1 | 0 → 1 |
+| sent to the far end | 1 → 1 | 0 → 0 | 0 → 0 | 0 → 0 | 0 → 0 | 0 → 0 |
+| own sectors with nobody within the range | 31 → 31 | 32 → 32 | 33 → 33 | 34 → 34 | 33 → 33 | 33 → 33 |
+
+- **Tried:** (1) 3.10c1a: formations far from every sector (France has two); (2) 3.10c1d:
+  those near the front that stand still (2 of 21, one sent, formation 238, 139 cells);
+  (3) 3.10c1d2: those not on an errand, on the march or not (19 of the 19 on the march
+  were not on one; 3 candidates, one sent, formation 213, 121 cells, off its march).
+- **Why the table does not move:** no longer for want of somebody to send: there are
+  candidates on every one of its days. One of three is sent on day 365 and none after;
+  which of ADR-191's limits held the others back (the share of point 3, the three ranges,
+  an order refused) was not looked at. And after that day France has no army: 44
+  formations, 12 four weeks later. It is losing the war it has, with 21 formations near 87
+  sectors of its own.
+- **Not tried:** a floor for a sector that has nobody whatever the threat elsewhere (ADR-191
+  chose the share over it: "a front that is emptied to fill another"); what a far sector is
+  worth (31 sectors in the Sahara that nobody attacks). Both are balance, and wait for
+  Phase 7 (ADR-58).
+
 ## Watch list (not blocking)
 
 - **From the eighth read (PLAN 3.7a, 2026-10-07), for the review of Phase 4.** What a player
