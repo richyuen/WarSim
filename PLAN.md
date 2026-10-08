@@ -5150,7 +5150,16 @@ quick sweep as a smoke test.
       `formationPanel1938`'s count of the frame's pixels by a tag that is not picked leaves
       out those of the picked tag's own frame (39 px of it lay within 6 px of the tag
       beside).
-    - [ ] 3.11f2 The tanks drawn one over the other (above).
+    - [x] 3.11f2 *Done 2026-10-08: measured and not mended (ADR-204, its addition).* Seed
+      5381, Germany on Poland, day 21, the six armour formations in contact, the figures at
+      6 m/px: of 1,346 tanks, 45 pairs of tanks of different elements stand nearer than 0.7
+      of a figure's side (77 m, where two hulls are in one another) and 26 nearer than a
+      half: about one tank in fifteen is in such a pair. More than the "three pairs of about
+      110" of one picture. Not mended: the figures of an element take 480 m of a slot of
+      600, so any scatter over 60 m brings the grounds of two neighbours into one another,
+      and ADR-204's is 180; the cures are a scatter of a tenth of the spacing (the lattice
+      again), smaller tanks (every picture of one, and the specs that measure one), or a second place for a figure
+      (the shots, the hulls and the marks have one). A line under PLAN 7.4.
     - [ ] 3.11f3 The AT on a seed not used, the pictures, the tick of 3.11.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
@@ -5467,6 +5476,10 @@ quick sweep as a smoke test.
   AT: side-by-side screenshots vs reference frames logged in PROGRESS.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
+  - **Tanks of two elements of a deployed block drawn in one another** (measured
+    2026-10-08, PLAN 3.11f2, ADR-204's addition): about one tank in fifteen at T3 (45 pairs
+    under 0.7 of a figure's side among 1,346 tanks, seed 5381, Germany on Poland, day 21).
+    The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
   - **The tags of formations in contact at T2** (seen 2026-10-07, PLAN 3.5g,
     `docs/evidence/2.10/stop-5-battle.png`): at 150 m/px the tags of three divisions in one
     battle lie on each other and on the sprites, one name half covered. Whether the tags

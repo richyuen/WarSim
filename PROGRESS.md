@@ -11314,3 +11314,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11f2.
+
+## 2026-10-08 — PLAN 3.11f2: the tanks drawn in one another, measured and left (ADR-204's addition)
+
+- **Measured** (a probe spec, taken out; seed 5381, Germany on Poland by God Mode, day 21,
+  the six armour formations in contact, each at 6 m/px): 1,346 tank figures; 45 pairs of
+  tanks of different elements nearer than 0.7 of a figure's side, 26 nearer than a half. By
+  formation: 40: 4 and 2 of 300 tanks; 42: 9 and 4 of 300; 43: 6 and 3 of 150; 49: 4 and 3
+  of 200; 581: 13 and 9 of 196; 582: 9 and 5 of 200.
+- **Not mended.** The room an element's figures leave in a slot is 60 m each way and the
+  scatter of ADR-204 is 180. The four cures and what each costs are in ADR-204's addition.
+  A line under PLAN 7.4.
+- **Also from the probe** (the placing of ADR-207 against the one before it, in the same
+  views: six fights at 150, 80, 40 and 20 m/px, 24 views): the tags differ in three, in
+  each by one tag that stands beside its block where it stood below or above; one line
+  fewer in one of them (formation 556 at 40 m/px), none more.
+- **Not done:** no sweep (ADR-58). No code changed.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check` (documents: parity).
+- **Next:** PLAN 3.11f3.

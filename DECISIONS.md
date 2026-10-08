@@ -319,6 +319,25 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   slots (`FOOTPRINT_CELLS`), so two neighbours 360 m nearer each other have their grounds in
   one another. In `docs/evidence/3.11/c4-within-a-block-2m.png` three pairs of tanks of
   about 110 are drawn one over the other. Not mended here; it is in PLAN 3.11f.
+- **Added 2026-10-08 (PLAN 3.11f2): measured, and not mended.** Seed 5381, Germany on
+  Poland by God Mode, day 21: the six armour formations in contact, each at 6 m/px, the
+  figures as the view draws them (a probe, taken out). Of 1,346 tanks, 45 pairs of tanks of
+  different elements stand nearer than 0.7 of a figure's side (77 m of 110: two hulls in one
+  another) and 26 nearer than a half; by formation 4 to 13 pairs of 150 to 300 tanks. About
+  one tank in fifteen is in such a pair, where one picture had three pairs of about 110.
+  Why it is left:
+  - a slot is 600 m and an element's figures take 480, so the grounds of two neighbours
+    keep apart only while each stands at most 60 m off its slot: a scatter of 0.1, which is
+    the lattice again (above: under 0.3 it is seen at 40 m/px). No draw for two neighbours
+    that knows nothing of the other does better: how near they come is the width of the
+    range they draw from;
+  - an element turned 0.3 rad reaches 60 m further with its corners, so a rule between
+    neighbours would need the turn bounded too;
+  - smaller tanks (a hull is 110 m long on the ground, of a sub-slot of 120) change every
+    picture of a tank and the specs that measure one;
+  - moving a figure off another in the view gives it a second place: the muzzle flash, the
+    hull and the mark of a figure are worked from the one it has (`figureOffsets`).
+  It is under PLAN 7.4 with the figures.
 - **A test's limit changed with the rule.** `battleView1938` asked that every element of
   the two divisions face east or west to five places. That was the rule this part changes.
   It now asks that each is within `DEPLOY_TURN` of its block's facing, that the mean of a
