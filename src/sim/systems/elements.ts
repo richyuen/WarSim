@@ -46,6 +46,14 @@ export const DEPLOY_GAP = 0.05;
 export const DEPLOY_REACH = CONTACT_CELLS;
 /** The furthest a block stands to the side of its formation's line to the enemy, cells (ADR-133). */
 export const DEPLOY_ABREAST = 1;
+/**
+ * The most lines of one file on the way to an enemy's block, the one that enemy faces among
+ * them (PLAN 3.11c3a). The second line's middle is two depths and two gaps (6.7 km for
+ * divisions) from that block's middle, and the block's far side 7.8 km: within the 8 km from
+ * the middle of the battle's view (20 m/px, 16 km high) to its edge, whichever way the fight
+ * lies. A third line is 10 km off.
+ */
+export const DEPLOY_LINES = 2;
 
 /** Where the block of a formation in contact stands, and what it faces (`deployOf`). */
 export interface Deployment {
@@ -186,16 +194,18 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         const al = sqrt(ax * ax + ay * ay);
         if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) ahead.unshift(contacts.get(enemy)!);
       }
-      // On the way to a block: as many lines as have room before its own place, one behind
-      // another, each by the depth of those before it (PLAN 3.11c1: a tank brigade behind a
+      // On the way to a block: as many lines as have room before its own place, `DEPLOY_LINES`
+      // at most (PLAN 3.11c3a: seven divisions on one enemy stood six lines deep, 20 km), one
+      // behind another, each by the depth of those before it (PLAN 3.11c1: a tank brigade behind a
       // tank corps stood in the corps' rear rows). A line with no room begins a file abreast
       // of those, right and left by turns, the widest block's width and the gap out (ten
-      // divisions on one cell against one enemy are three lines of three or four, not ten
-      // blocks in one, nor a column of thirty km).
+      // divisions on one cell against one enemy are two lines of five, not ten blocks in one,
+      // nor a column of thirty km).
       const dx = wrapDx(world, fx, tx);
       const dy = ty - fy;
       const room = sqrt(dx * dx + dy * dy) - (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 - DEPLOY_GAP;
       let taken = 0;
+      let lines = 0;
       let widest = slotGrid(count).cols;
       for (const [g] of others) widest = Math.max(widest, slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0)).cols);
       for (const g of [...ahead, f]) {
@@ -203,10 +213,12 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         // The one that enemy faces is a line of the stack too.
         widest = Math.max(widest, grid.cols);
         const deep = grid.rows * SLOT_SPACING;
-        if (taken > 0 && taken + deep / 2 > room) {
+        if (taken > 0 && (lines >= DEPLOY_LINES || taken + deep / 2 > room)) {
           file++;
           taken = 0;
+          lines = 0;
         }
+        lines++;
         if (g !== f) taken += deep + DEPLOY_GAP;
       }
       short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + taken + depth / 2;

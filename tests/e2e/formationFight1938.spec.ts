@@ -154,29 +154,51 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
   }
 
   // The formation in contact that stands furthest from the enemy it faces, of any nation on
-  // the map: a cell off, the last of a column of lines. The view goes further out than the
-  // battle's 20 m/px for it, and no further than T3.
-  const furthest = await page.evaluate(async () => {
+  // the map, and the one furthest north or south of it (the view is 16 km high at the battle's
+  // 20 m/px and 28 wide). Until PLAN 3.11c3a the furthest was the last of a column of six
+  // lines, 20.4 km off along its line, and the view went out to 28 m/px for it. A file now
+  // holds two lines: the furthest is the second line of a file two files to the side (18.1
+  // km: 14.2 along its line and 11.4 across), and the battle's view holds both blocks.
+  const { furthest, tallest } = await page.evaluate(async () => {
     const { sim, view } = window.__warsim!;
-    let best = { id: 0, enemy: 0, km: 0 };
+    const km = (view!.metresPerPx * view!.controller.cam.scale) / 1000;
+    let furthest = { id: 0, enemy: 0, km: 0 };
+    let tallest = { id: 0, enemy: 0, km: 0 };
     for (const n of window.__warsim!.hud.stats.value!.nations) {
       for (const id of view!.formationsOf(n.id)) {
         const d = await sim.formation(id);
         if (!d?.fight) continue;
-        const km = (Math.hypot(...d.fight.span) * view!.metresPerPx * view!.controller.cam.scale) / 1000;
-        if (km > best.km) best = { id, enemy: d.fight.enemy, km };
+        if (Math.hypot(...d.fight.span) * km > furthest.km) furthest = { id, enemy: d.fight.enemy, km: Math.hypot(...d.fight.span) * km };
+        if (d.fight.span[1] * km > tallest.km) tallest = { id, enemy: d.fight.enemy, km: d.fight.span[1] * km };
       }
     }
-    return best;
+    return { furthest, tallest };
   });
   expect(furthest.km, 'km from the furthest block to the block it faces').toBeGreaterThan(14);
+  // No block a column's length from the block it faces: 29.4 km is as far as a block goes (`DEPLOY_REACH`), and the column's last stood 20.4.
+  expect(furthest.km, 'km from the furthest block to the block it faces').toBeLessThan(20);
+  // The one furthest north or south: the view goes further out than the battle's 20 m/px for it, and no further than T3.
+  expect(tallest.km, 'km north or south from a block to the block it faces').toBeGreaterThan(8);
+  await goTo(tallest.id, 6);
+  await toFight(tallest.id);
+  const tallOwn = await count(tallest.id);
+  const tallFoe = await count(tallest.enemy);
+  const tallAt = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, figures: window.__warsim!.view!.individualCount }));
+  console.log(`the furthest north or south: formation ${tallest.id}, ${tallest.km.toFixed(1)} km from the block of ${tallest.enemy}; the view at ${tallAt.m.toFixed(1)} m/px, ${tallOwn.on} of its ${tallOwn.all} elements and ${tallFoe.on} of the enemy's ${tallFoe.all} on the screen`);
+  expect(tallAt.m).toBeGreaterThan(20.5);
+  expect(tallAt.m).toBeLessThanOrEqual(30);
+  expect(tallAt.figures).toBeGreaterThan(0);
+  expect(tallOwn.all).toBeGreaterThan(0);
+  expect(tallFoe.all).toBeGreaterThan(0);
+  expect(tallOwn.on, 'its elements on the screen').toBe(tallOwn.all);
+  expect(tallFoe.on, 'the elements of the enemy on the screen').toBe(tallFoe.all);
   await goTo(furthest.id, 6);
   await toFight(furthest.id);
   const farOwn = await count(furthest.id);
   const farFoe = await count(furthest.enemy);
   const farAt = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, figures: window.__warsim!.view!.individualCount }));
   console.log(`the furthest: formation ${furthest.id}, ${furthest.km.toFixed(1)} km from the block of ${furthest.enemy}; the view at ${farAt.m.toFixed(1)} m/px, ${farOwn.on} of its ${farOwn.all} elements and ${farFoe.on} of the enemy's ${farFoe.all} on the screen`);
-  expect(farAt.m).toBeGreaterThan(20.5);
+  expect(farAt.m).toBeGreaterThanOrEqual(19.99);
   expect(farAt.m).toBeLessThanOrEqual(30);
   expect(farAt.figures).toBeGreaterThan(0);
   expect(farOwn.all).toBeGreaterThan(0);
@@ -187,13 +209,14 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
   await page.evaluate(() => window.__warsim!.view!.draw());
   await page.screenshot({ path: path.join(out, 'b-furthest-at-its-fight.png') });
 
-  // A small view (700 by 500) has a battle at T2, 40 m/px: the two blocks 20 km apart do not
-  // fit it, and the view goes further out for them.
+  // A small view (700 by 500) has a battle at T2, 40 m/px, 20 km high: the two blocks 13 km
+  // north and south of each other do not fit it, and the view goes further out for them.
+  // (The furthest two, 18 km apart and mostly east and west, do: 40.0 m/px.)
   await page.setViewportSize({ width: 700, height: 500 });
-  await goTo(furthest.id, 6);
-  await toFight(furthest.id);
-  const smallOwn = await count(furthest.id);
-  const smallFoe = await count(furthest.enemy);
+  await goTo(tallest.id, 6);
+  await toFight(tallest.id);
+  const smallOwn = await count(tallest.id);
+  const smallFoe = await count(tallest.enemy);
   const smallM = await page.evaluate(() => window.__warsim!.view!.metresPerPx);
   console.log(`in a view of 700 by 500: ${smallM.toFixed(1)} m/px, ${smallOwn.on} of ${smallOwn.all} and ${smallFoe.on} of ${smallFoe.all} on the screen`);
   expect(smallM).toBeGreaterThan(40.5);

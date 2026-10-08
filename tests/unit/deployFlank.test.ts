@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SLOT_SPACING, slotGrid } from '../../src/sim/core/pose';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { contactsOf, DEPLOY_GAP, deployOf, slotCount } from '../../src/sim/systems/elements';
+import { contactsOf, DEPLOY_GAP, DEPLOY_LINES, DEPLOY_REACH, deployOf, slotCount } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -121,5 +121,44 @@ describe('a block that comes up to an enemy block from its flank or its rear sta
   it('two that come from bearings 45° apart do not stand on each other', () => {
     const { w, faced, pole, came } = game([[0, 1], [45, 1], [45, 1]]);
     expectClear(w, [faced, pole, ...came], ['the faced', 'the enemy', 'the comer from 0°', 'the first from 45°', 'the second from 45°']);
+  });
+});
+
+// PLAN 3.11c3a (critic R3-B3): seven divisions that came to one enemy's block from the side its
+// own foe stands on stood behind that foe in one file, six lines deep and 20 km
+// (`docs/evidence/3.11/b-furthest-at-its-fight.png`); the fourth to sixth had no enemy in the
+// battle's view. A file now holds `DEPLOY_LINES` lines, the faced one among them.
+describe('seven divisions on one enemy are files abreast, not a column (PLAN 3.11c3a)', () => {
+  /** Half of the battle's view at 20 m/px, 1400 by 800 px, in cells (a cell is 19.57 km): its short side. */
+  const HALF_VIEW = (800 * 20) / 19_570 / 2;
+
+  it("a cell and a half from it: no file deeper than the limit, none on another, each with the enemy's block in a view on its own", () => {
+    // 0.45 cells west of the division at the border, 1.45 from the Pole: `game` takes the distance from the Pole's block.
+    const far = 0.45 + 0.5 + DEPLOY_GAP / 2 + (slotGrid(28).rows * SLOT_SPACING) / 2;
+    const { w, faced, pole, came } = game(Array.from({ length: 7 }, () => [0, far] as [number, number]));
+    const names = ['the faced', 'the enemy', ...came.map((_, i) => `comer ${i + 1}`)];
+    expectClear(w, [faced, pole, ...came], names);
+    const theirs = block(w, pole);
+    const ids = [faced, ...came];
+    const own = ids.map((f) => block(w, f));
+    // The files, by where a block stands across the line (north to south here).
+    const files = new Map<number, number>();
+    for (const b of own) files.set(Math.round(b.y * 1000), (files.get(Math.round(b.y * 1000)) ?? 0) + 1);
+    expect(files.size).toBe(Math.ceil(own.length / DEPLOY_LINES));
+    expect(Math.max(...files.values()), 'lines in the deepest file').toBeLessThanOrEqual(DEPLOY_LINES);
+    const place = w.formations.cols;
+    for (const [i, b] of own.entries()) {
+      const what = names[i === 0 ? 0 : i + 1]!;
+      const f = ids[i]!;
+      expect(Math.cos(b.facing), `${what} faces east`).toBeCloseTo(1, 9);
+      // No deeper than the limit's lines of blocks before the enemy's.
+      expect(theirs.x - b.x, `${what}: from the enemy's block`).toBeLessThan(theirs.depth / 2 + DEPLOY_LINES * (b.depth + DEPLOY_GAP) + 1e-9);
+      // The enemy's block, to its far side, in the battle's view on this one's own block, were the fight to lie along the view's short side.
+      expect(theirs.x + theirs.depth / 2 - b.x, `${what}: to the far side of the enemy's block`).toBeLessThan(HALF_VIEW);
+      // Not behind its own place, nor further from it than a block goes.
+      expect(b.x, `${what}: not behind its place`).toBeGreaterThanOrEqual(place.x[f]! - 1e-9);
+      expect(Math.hypot(b.x - place.x[f]!, b.y - place.y[f]!), `${what}: from its place`).toBeLessThanOrEqual(DEPLOY_REACH + 1e-9);
+      expect(w.onLand(b.x, b.y), `${what}: on land`).toBe(true);
+    }
   });
 });

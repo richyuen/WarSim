@@ -167,6 +167,71 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-202 · 2026-10-08 · accepted — A file on the way to an enemy's block holds two lines (PLAN 3.11c3a, critic R3-B3; amends ADR-133 and ADR-200)
+
+- **Context.** Seen in PLAN 3.11b and counted in ADR-199: seven Italian divisions on one
+  French division stand as a column of six lines behind the one it faces, 20 km deep, and
+  the fourth to sixth have no enemy in the battle's view. Of the 54 formations in contact
+  with no enemy at 6 m/px on their block (seed 4242, day 21), 50 were such rear lines.
+  PLAN 3.11c3 is split by cause; this is the column. The other (a block that stands in a
+  block of the enemy's side which goes elsewhere) is 3.11c3b.
+- **Cause.** A file took lines for as long as there was room before the formation's place
+  (ADR-133): up to a cell and a half, eight lines of divisions.
+- **Decision.** A file holds `DEPLOY_LINES` = 2 lines, the one that enemy faces among them
+  where the comer comes from its side (ADR-89's 60°). The next line begins a file abreast,
+  as a line with no room does. Nothing else of the walk of ADR-200 changes.
+- **Why two.** The battle's view is 28 by 16 km (1400 by 800 px at 20 m/px), and a fight
+  lies any way: 8 km from the view's middle to its nearer edge. With divisions (a block
+  2.3 km deep, the gap 1 km) the middle of line k is 3.3 k km from the middle of the
+  enemy's block, and that block's far side 1.2 km more: 4.5 km for the first line, 7.8 for
+  the second, 11.2 for the third. Two lines have the whole of the enemy's block in the
+  view on their own block; a third does not have its middle.
+- **Checked against one and three** (the probe of this part, headless: every block on the
+  way to an enemy's block, how far its middle stands from that block's; seeds 1212, 4242
+  and 99 as in ADR-200). Further than 8 km / than 14 km:
+  - no limit (before): 12 / 2 of 21, 37 / 7 of 73, 34 / 12 of 56;
+  - three lines: 12 / 0, 34 / 3, 32 / 9;
+  - **two lines: 8 / 2, 24 / 4, 25 / 4;**
+  - one line: 10 / 4, 32 / 10, 30 / 10 (and 3 pairs in one another on seed 4242).
+  One line trades the depth for width: 18 and 21 blocks more than 8 km to the side.
+- **What it does not do.** With two lines 11 (seed 4242) and 13 (seed 99) blocks still
+  stand more than 8 km off along their line (34 and 32 before): a block at `DEPLOY_REACH`
+  from its place (305 and 282 of seed 99, 29.4 km from their places), and one stopped
+  short of a block of another bearing in its file (ADR-201). And 3 and 8 now stand more
+  than 8 km to the side (0 and 1 before): the fourth file of seven that go to one block
+  is 11.4 km out. The furthest block of seed 4242 is 18.1 km from the block it faces
+  (20.4 before), of seed 99 23.3 km (the same block, at the reach).
+- **One new pair in one another** on seed 4242 (0 before): Chinese division 403, which goes
+  to formation 381, and Mengjiang's formation 961, which goes to another Chinese formation
+  (408) from 71° and now stands in 403's block; which file it took and why was not looked
+  into. The formations are 1.59 cells apart: not in contact with each other. It is the kind ADR-201 left (17
+  and 560 of seed 99, still there): a block of the enemy's side that goes elsewhere is
+  not among those in a comer's way. PLAN 3.11c3b. Seed 1212: 0 pairs, as before.
+- **Tests.** `tests/unit/deployFlank.test.ts`, a fifth: seven divisions 1.45 cells from one
+  enemy and its foe at the border. Four files, no file of more than two, every block a gap
+  clear of every other, the far side of the enemy's block within half the view's short
+  side of each, none behind its place. Red with the limit's condition taken out of
+  `deployOf` ("expected 2 to be 4": two files, the first six lines deep).
+  `deploy.test.ts` (9, the ten divisions on one cell among them: now five files of two),
+  `deployUnequal.test.ts` and `deploySnapshot.test.ts` pass unchanged.
+- **`tests/e2e/formationFight1938.spec.ts`, two limits that measured the column.** It took
+  the formation furthest from the block it faces (20.4 km, the column's last, north and
+  south) and asked that the view go further out than the battle's 20 m/px for it
+  (`> 20.5`), and in a view of 700 by 500 further than 40 (`> 40.5`). The furthest is now
+  18.1 km off (14.2 along its line, 11.4 across), mostly east and west, and both blocks
+  fit the view at 20.0 and at 40.0: both limits failed. What they tested, that the view
+  goes out where the two do not fit, is now asked of the formation furthest north or south
+  of the block it faces (656 on 179, 13.3 km: 28.0 m/px, and 55.1 in the small view), with
+  the limits as they were. Of the furthest by distance it asks what it asked but the zoom
+  (T3, both blocks whole on the screen), and now also that it is less than 20 km off.
+  Not weaker: every limit that was there is there, on the formation it now applies to.
+- **Not state.** No rule reads where a block stands: the pin holds, and two years of seed 99
+  end on the same hash (4c72477e).
+- **Cost.** Mean tick over two years of seed 99, pinned: 1.9588 and 1.9445 ms (1.87 to
+  1.93 after ADR-201, four runs): 1 to 4% over, on two runs; the code added is a counter.
+  Not looked into.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-201 · 2026-10-08 · accepted — A block stops the gap short of each block in its way, whatever side it comes to (PLAN 3.11c2, critic R3-B3; amends ADR-89, ADR-133 and ADR-200)
 
 - **Context.** What ADR-200 left of the blocks that stand in one another: 18 pairs on seed

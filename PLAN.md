@@ -5052,6 +5052,30 @@ quick sweep as a smoke test.
       Also here (left by 3.11c2): a block that comes to an enemy's block and stands in a
       line of that enemy's own stack behind it (formations 17 and 560, seed 99, Germany
       on Poland, day 60), the one pair left of the count.
+      Split 2026-10-08, one cause a part:
+      - [x] 3.11c3a *Done 2026-10-08 (ADR-202):* a file on the way to an enemy's block
+        holds two lines (`DEPLOY_LINES`), the one that enemy faces among them; the next
+        line begins a file abreast. Blocks on the way to a block that stand more than 8 km
+        from it: 8 of 21 (seed 1212; 12 before), 24 of 73 (seed 4242; 37), 25 of 56 (seed
+        99; 34). The seven divisions that go to French division 225 stand in files of two
+        lines (the picture; the files were not counted).
+        Not all of it: 11 and 13 blocks are still more than 8 km off along their line
+        (the reach from their place, a block of another bearing in their file), and 3 and
+        8 are now more than 8 km off to the side (0 and 1 before).
+        One new pair in one another, of the kind of 3.11c3b: Chinese division 403 and
+        Mengjiang's formation 961, seed 4242 (403 goes to formation 381 and 961 to
+        another Chinese formation, 408; why 961 now stands there was not looked into).
+      - [ ] 3.11c3b A block that comes to an enemy's block and stands in a block of that
+        enemy's side which goes elsewhere: formations 17 and 560 (seed 99, Germany on
+        Poland, day 60) and 403 and 961 (seed 4242, day 21; their formations 1.59 cells
+        apart, so not in contact with each other). First: whether the blocks of the other
+        side can be asked for in one order over both stacks, so that the answer does not
+        hang on which block is asked first (`world.deployed` keeps the first answer;
+        `chain` is the only guard). If no such order: said in DECISIONS, the pairs named,
+        and nothing shipped.
+        AT: a unit test of a division that comes to a block with a line of that block's
+        side in its way, red first; the count of pairs on the three games, none left or
+        each one named; the same answer whichever formation is asked first.
     - [ ] 3.11c4 Within a block in contact: the elements do not stand on the points of a
       lattice, and do not all face one way. A place and a facing off the slot's by the
       element's id, the same in the snapshot, the fire events and the wrecks

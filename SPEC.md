@@ -909,7 +909,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   of each block in its way (that enemy's, the block of the one it faces, those of the
   formations nearer that enemy that go to it), whatever side of that block it comes to, and
   takes the next file out when its own has no room before its formation's place (PLAN
-  3.11c2, ADR-201). Derived from the formations' places
+  3.11c2, ADR-201); a file holds two lines at most (`DEPLOY_LINES`), the one that enemy
+  faces among them, so that the second line still has that enemy's block in the battle's
+  view on its own (PLAN 3.11c3a, ADR-202). Derived from the formations' places
   and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
   rule does. So a view at 20 m/px holds both sides of a fight (97% of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the

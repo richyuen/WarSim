@@ -11046,3 +11046,47 @@ No rule changed and nothing on screen changed. One task came out of it.
   the block its enemy faces can stand from that enemy. Looser, and said here as that: the
   test was a commit old and passed before and after. Its lower limits are unchanged.
 - **Gate:** `npm run check` (the changed spec).
+
+## 2026-10-08 — PLAN 3.11c3a: a file on the way to an enemy's block holds two lines (ADR-202)
+
+- **Split first.** PLAN 3.11c3 had two causes: the column, and the pair left by 3.11c2 (a
+  block in a block of the enemy's side that goes elsewhere). 3.11c3a and 3.11c3b.
+- **Done:** `DEPLOY_LINES` = 2 in `deployOf`'s walk of the lines: a file that has two lines
+  begins the next abreast, as one with no room does. Two, from the battle's view (8 km
+  from its middle to its nearer edge; the second line has the far side of the enemy's block
+  7.8 km off, a third line its middle 10 km off): the arithmetic is in ADR-202.
+- **Counted, with one and three lines beside it** (`.cache/probe311c3.ts`, not kept: it is
+  not in the repo). Blocks on the way to a block more than 8 km from it: 8 of 21, 24 of 73
+  and 25 of 56 on the three games (12, 37 and 34 before; three lines 12, 34, 32; one line
+  10, 32, 30).
+- **What it did not do:** 11 and 13 blocks are still more than 8 km off along their line
+  (seeds 4242 and 99), and 3 and 8 now more than 8 km to the side. The furthest block of
+  seed 4242 is 18.1 km from the block it faces (20.4 before).
+- **One new pair in one another**, seed 4242: Chinese 403 and Mengjiang's 961 (0 pairs
+  before on that game). With 17 and 560 of seed 99, still there: PLAN 3.11c3b. Its AT now
+  asks first whether the other side's blocks can be asked for in one order.
+- **Tests:** a fifth in `tests/unit/deployFlank.test.ts`, red with the limit's condition
+  taken out ("expected 2 to be 4"). The first try of it had the seven 1.87 cells from the
+  Pole, out of contact (`game` takes the distance from the Pole's block, not its place).
+- **`formationFight1938.spec.ts`:** `> 20.5` and `> 40.5` failed (20.0 and 40.0): the
+  furthest block is no longer north and south of its enemy, and the two fit. Both limits
+  now stand on the formation furthest north or south of the block it faces (656 on 179,
+  13.3 km: 28.0 and 55.1 m/px). The furthest by distance keeps the rest and gains `< 20`
+  km. The German and Polish formations: 31 in contact, 5 with no enemy at 6 m/px on their
+  block, the views 20.0 to 22.3 m/px.
+- **Pictures** (`docs/evidence/3.11/`, the four of `b-…` shot again):
+  `b-furthest-at-its-fight.png` looked at: the Italian divisions in pairs of lines, the
+  pairs abreast, French 229 at the left; all still face one way (3.11c4).
+  `b-rear-line-at-its-fight.png` looked at: Polish 546 and 550 and tank brigade 582 with
+  German 3 and 4, each block apart. `b-panel-to-its-fight.png` and
+  `b-rear-line-at-its-block-6m.png` were shot again and not looked at.
+- **Performance:** `npm run sim -- --scenario 1938 --seed 99 --years 2 --affinity 0xFFFF`:
+  mean tick 1.9588 and 1.9445 ms (1.8687 to 1.9259 after 3.11c2). 1 to 4% over on two
+  runs, for a counter; not looked into. The same hashes (4c72477e after two years).
+- **Specs run by hand** (ADR-87: a part), 17 tests, all pass: `formationFight1938`,
+  `stackBlocks1938`, `formationPlace1938`, `battleView1938`, `toBattle1938`, `fire1938`,
+  `markerStacks1938`, `closeZoom1938`.
+- **Not done:** no sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11c3b.
