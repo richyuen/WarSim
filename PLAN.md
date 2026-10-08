@@ -4900,7 +4900,13 @@ quick sweep as a smoke test.
       flood is flooded. The lanes a gain takes join the bloc's. One scanline loop for
       both. AT: the task's, with a counter of the cells a refresh writes for the test
       that is red first.
-  - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
+  - [x] 3.10e *Done 2026-10-08 (not needed: the budget is met; no source changed):* five
+    years from 1938, pinned, one seed after another, on `00c2e68`: 1.278 ms on seed 99,
+    1.326 on 4242, and 1.440, 1.444 and 1.434 on 8128 (three runs, the same game each
+    time: `83d4d2a3`). Territory is now 0.14 to 0.27 ms a tick in these fifteen years, not
+    the 0.20 to 0.39 of 3.10a. Not taken, and in BLOCKERS with 3.10f: the first year (1.67
+    to 2.24 ms, combat 0.70 to 1.00 of it), and seed 8128 beyond its fifth year.
+    The task as it was set: Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
   - [ ] 3.10f The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
     the full gate.

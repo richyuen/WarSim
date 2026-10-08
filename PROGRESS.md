@@ -10661,3 +10661,32 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.10e (territory and combat in a first year, if the budget is not met),
   then 3.10f.
+
+## 2026-10-08 — PLAN 3.10e: not needed, the budget is met (no source changed)
+
+- **Done:** the question the task hangs on was measured: is the tick of five years under
+  1.5 ms on the three seeds of 3.10's AT? It is. 3.10e is ticked as not needed.
+- **Measured** (`00c2e68`, from 1938, pinned to `0xFFFF`, one seed after another,
+  `--profile`; the tick's mean in ms by year):
+
+  | seed | y1 | y2 | y3 | y4 | y5 | five years | ends on |
+  |---|---|---|---|---|---|---|---|
+  | 99 | 1.982 | 1.685 | 0.992 | 0.815 | 0.916 | 1.278 | `5c31d145` |
+  | 4242 | 1.671 | 1.304 | 1.086 | 1.474 | 1.093 | 1.326 | `0beb62f5` |
+  | 8128 | 2.236 | 1.096 | 1.485 | 1.219 | 1.163 | 1.440 (1.444, 1.434) | `83d4d2a3` |
+
+  Seed 8128 is the near one, so it ran three times: the same game, and 0.010 ms between
+  the runs. Seeds 99 and 4242 ran once.
+- **By system, the fifteen years:** combat 0.90, 0.70 and 1.00 ms in the three first years
+  (2,787, 1,419 and 3,781 calls of 1 ms or more), 0.21 to 0.50 after; the operational AI
+  0.20 to 0.48; territory 0.14 to 0.27 (3.10a had 0.20 to 0.39 in its dear years); movement
+  0.07 to 0.17; supply 0.07 to 0.18.
+- **Seen beside it, for 3.10f:** one call of the operational AI of 361.7 ms in year 4 of
+  seed 4242 (the next longest in these runs is 43.3). 3.10c1 took away the plan of 451 ms;
+  which call this is was not looked at.
+- **Not done:** nothing made faster. The first year is over 1.5 ms on all three seeds,
+  which is what the task named; the AT is the mean of five years. No picture: nothing
+  drawn changed; specs run by hand: none. No sweep (ADR-58).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check` (documents only: parity).
+- **Next:** PLAN 3.10f.
