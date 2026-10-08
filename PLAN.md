@@ -4743,7 +4743,7 @@ quick sweep as a smoke test.
       After 3.10c2b3b: the far orders that were refused are given (ADR-194), and a nation's
       far formations of one day now cost more: one call of 138 ms in year 2 of seed 99 (the
       Soviet Union, tick 14,844; 116 ms a day later), 103 ms in year 1 of seed 4242.
-    - [ ] 3.10c2d1 The long search closes fewer cells. It is worth at most 0.10 ms of the
+    - [x] 3.10c2d1 *Done 2026-10-08 (3.10c2d1a and b; ADR-195).* The long search closes fewer cells. It is worth at most 0.10 ms of the
       mean tick (the orders of over 120 cells) and it is the tick's longest call (143 ms):
       if 3.10d and 3.10e come first and meet the budget, this is for the hitch alone. Each
       candidate changes the ways, so it is a rule: counted first on the probe's own grid
@@ -4774,7 +4774,20 @@ quick sweep as a smoke test.
         second search for 216 of the 1,225 and for every refused order (× 1.26). No
         candidate loses a way. A search that finds no way costs the same at any weight.
         One search for a group was not searched again (3.10c2d's count stands).
-      - [ ] 3.10c2d1b The bound of `findPath` is scaled up for a long order (3.10c2d1a: not
+      - [x] 3.10c2d1b *Done 2026-10-08 (ADR-195):* `findPath` takes its bound × 1.5 between
+        two ends over 120 cells apart and × 2 over 300 (`boundWeight`; the larger of dx and
+        dy, the measure the count used). In five years of seed 99 a search of over 300
+        cells closes 9,626 cells (47,362 unscaled, the same orders) and one of 121 to 300
+        cells 3,468 (9,682); the ways cost × 1.09 and × 1.03 in the mean, × 1.24 at the
+        most; no order loses its way. The orders of over 120 cells are 0.017 ms a tick
+        (0.101), the longest plan 31.6 ms (148), the tick 1.495 ms (1.810: another game
+        from the first changed way on, and the searches are 0.08 of the difference). Seed
+        4242, two years: 6,583 and 2,006 cells, 0.017 ms a tick, the longest plan 20.5 ms
+        (112). The pin moved (`e771cf6a` to `8f937408`). Not done: one search for a group
+        of marches (3.10c2d1's third candidate, not counted), and the orders of 120 cells
+        and less. The longest call of the tick is now `capitals` (72 to 76 ms, twice in
+        five years; known since 3.10a) and `revolts` (52 ms): for 3.10f's leftover.
+        The task as it was set: the bound of `findPath` is scaled up for a long order (3.10c2d1a: not
         the narrow corridor). To choose, with the reason in an ADR: the weight (× 1.5
         halves the longest plan, × 2 leaves 33 ms of 148 with ways a tenth dearer over
         300 cells; one weight, or more over 300 cells than over 120) and where it starts

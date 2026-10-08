@@ -411,11 +411,32 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
   return pocket;
 }
 
+/** A search between two cells further apart than this (the larger of dx and dy) is a long one. */
+export const LONG_SEARCH_CELLS = 120;
+/** And further apart than this, a far one. */
+export const FAR_SEARCH_CELLS = 300;
+export const LONG_SEARCH_WEIGHT = 1.5;
+export const FAR_SEARCH_WEIGHT = 2;
+
+/**
+ * What `findPath` multiplies its bound by, from how far apart the two ends are in cells (PLAN
+ * 3.10c2d1b, ADR-195). 1 is the cheapest way. Above it the search runs at the goal and closes
+ * fewer cells, and the way it finds costs at most that many times the cheapest way there is in
+ * the ground searched (the corridor, if there is one): on the map 1.04 times in the mean over
+ * 120 cells and 1.10 over 300, 1.24 at the most (PLAN 3.10c2d1a). A search between two ends
+ * 530 to 595 cells apart closed 57,000 to 85,500 cells unscaled, 12 to 17 ms each.
+ */
+export function boundWeight(cells: number): number {
+  return cells > FAR_SEARCH_CELLS ? FAR_SEARCH_WEIGHT : cells > LONG_SEARCH_CELLS ? LONG_SEARCH_WEIGHT : 1;
+}
+
 /**
  * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search,
- * and `pass` the ground by its holder. Returns null when the goal is unreachable.
+ * and `pass` the ground by its holder. Returns null when the goal is unreachable. The bound is
+ * scaled by `boundWeight` of the distance between the two ends, or by `weight` when one is given
+ * (the tests ask for 1, the cheapest way).
  */
-export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage): PathResult | null {
+export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage, weight?: number): PathResult | null {
   const costRow = MOVE_COST[mobility]!;
   const { w, h, wrapX, terrain, kx, ky, kd } = g;
   // The corridor as two typed arrays read in the loop (PLAN 1.42f: a callback per neighbour and
@@ -429,7 +450,13 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
   // Closed ground is entered from its own holder's cells only, so a route that ends on it began
   // on it: no search for a goal on another's.
   if (ok !== undefined && ok[holder![goal]!] !== 1 && holder![goal] !== holder![start]) return null;
-  const hScale = MIN_COST[mobility]!;
+  // The bound, scaled for a long search: the way is then at most the weight times the cheapest
+  // in the ground searched, as far as the bound is a lower one (a closed cell is not opened
+  // again; the octile walk is no strict lower bound where a way swings poleward, ADR-56).
+  let far = Math.abs((start % w) - (goal % w));
+  if (wrapX && far > w / 2) far = w - far;
+  far = Math.max(far, Math.abs(Math.floor(start / w) - Math.floor(goal / w)));
+  const hScale = MIN_COST[mobility]! * (weight ?? boundWeight(far));
   // Typed scratch with generation stamps instead of Maps (review after PLAN 1.25: pathfinding
   // was a quarter of the tick); the search and its tie-breaking are unchanged.
   const n0 = w * h;

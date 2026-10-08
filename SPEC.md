@@ -840,6 +840,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   the two rows' cell sizes (ADR-56; straight km before, which is never larger). That is not a
   strict lower bound (a route may swing poleward of both ends, where cells are narrower) and the
   search closes a cell when it first pops it, so a route can be longer than the cheapest one.
+  Between two ends over 120 cells apart (the larger of dx and dy) the heuristic is taken × 1.5,
+  and over 300 cells × 2 (`boundWeight`; PLAN 3.10c2d1b, ADR-195): the search runs at the goal
+  and closes a fifth to a third of the cells, and the way costs at most that many times the
+  cheapest in its corridor (on the map × 1.03 and × 1.09 to 1.13 in the mean, × 1.24 at the
+  most). A far march of 530 to 595 cells was 12 to 17 ms a search, and ten of them a day's plan.
   Measured 2026-10-03 against Dijkstra on 30 random grids of 16–64 rows, where rows differ far
   more than on the map: 21,042 of 84,575 routes dearer, by up to 15.1% (straight km: 22,037, up
   to 15.2%). On the 1938 map the octile bound made 221 of year 1's 5,868 routes cheaper and none

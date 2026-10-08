@@ -167,6 +167,64 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-195 · 2026-10-08 · accepted — The bound of the cell search is scaled up for a long search (PLAN 3.10c2d1b)
+
+- **Context.** The longest call of the tick was a nation's far marches of one day: the
+  Soviet Union's plan of tick 14,844 in seed 99, 143 to 148 ms, ten searches of 12 to 17 ms
+  between ends 530 to 595 cells apart, each closing 57,000 to 85,500 cells for a way of
+  570 to 620 (PLAN 3.10c2d). `findPath` has nothing left per cell; its bound is a fifth to
+  a third short of the way's cost, and over 600 cells such a search fills its corridor.
+  PLAN 3.10c2d1a counted the candidates on the game's own orders: the bound scaled up is
+  better than a narrower corridor (it saves more, searches once, loses no way, and the way
+  has a limit).
+- **Decision.** `findPath` multiplies its bound by `boundWeight` of the distance between its
+  two ends in cells (the larger of dx and dy, across the seam where the map wraps): 1 up to
+  120 cells, 1.5 over 120 (`LONG_SEARCH_WEIGHT`), 2 over 300 (`FAR_SEARCH_WEIGHT`). It is in
+  `findPath`, so every search has it: `findRoute`'s in a corridor and its search with none,
+  for the operational AI, a barred march and a player's order alike.
+- **Why that distance.** It is known before the search (the way's length is not), and it is
+  the measure 3.10c2d and 3.10c2d1a put their orders into bands by: the rule starts where
+  the count did.
+- **Why two weights.** The count has the two bands apart. Over 300 cells, × 1.5 leaves the
+  longest plan at 81 ms (seed 99) and 59 (seed 4242); × 2 leaves 33 and 25. That call is
+  what this is for (on the mean tick it is 0.04 to 0.09 ms at any weight). Its price over
+  300 cells: ways 1.10 times the cheapest in the mean, 1.24 at the most, and as long in
+  cells (the scaled bound takes dearer ground, not a longer way). From 121 to 300 cells the
+  searches are short already (1.97 ms each): × 1.5 takes 1.43 ms of that for ways × 1.037
+  in the mean (the most 1.165), and × 2 would take 0.28 ms more for ways × 1.071 (the most
+  1.239). So the dearer ways are bought only where the hitch is.
+- **Why not below 120 cells.** Not counted (the orders of 31 to 120 cells are 1,977 ms in
+  five years of seed 99; none is long by itself).
+- **What the weight promises.** A way at most the weight times the cheapest in the ground
+  searched (the corridor, where there is one), as far as the bound is a lower one: a closed
+  cell is not opened again, and the octile walk is no strict lower bound where a way swings
+  poleward of both ends (ADR-56). A search that finds no way costs what it did (it closes
+  all it reaches at any weight).
+- **In cells, not km.** The thresholds were counted on the 1938 map (2,048 cells wide). On
+  a larger map 120 cells are fewer km; the cost of a search goes with its cells, so the
+  rule follows the cost.
+- **Measured** (five years of seed 99 and two of seed 4242, a probe put in and taken out;
+  each order of the operational AI between ends over 120 cells apart searched again
+  unscaled on a copy of the grid; it is another game than HEAD's from the first changed
+  way on, so the orders are not the same ones):
+
+  | | seed 99, 121 to 300 | over 300 | seed 4242, 121 to 300 | over 300 |
+  |---|---|---|---|---|
+  | given orders | 778 | 92 | 309 | 125 |
+  | cells closed a search (unscaled, the same orders) | 3,468 (9,682) | 9,626 (47,362) | 2,006 (9,144) | 6,583 (65,133) |
+  | the way's cost over the unscaled: mean, 90th percentile, most | 1.034, 1.065, 1.141 | 1.091, 1.171, 1.236 | 1.035, 1.060, 1.134 | 1.132, 1.176, 1.230 |
+
+  No order got another answer than unscaled (a way or none). The orders of over 120 cells
+  are 0.017 ms a tick in both seeds (0.101 and 0.106). The longest plan is 31.6 ms (seed 99;
+  148) and 20.5 (seed 4242; 112); one plan of 30 ms or more in five years (26).
+- **The pin.** `e771cf6a` to `8f937408` (seed 99 after one year): formations on a far march
+  take another way and arrive at another hour.
+- **Test.** `tests/unit/movement.test.ts`, red first (9,670 cells closed for a limit of
+  4,835): on a made map of 512 by 256 cells in patches, a search over 200 cells closes
+  fewer than half the cells of the unscaled one and one over 420 fewer than a third, the
+  ways cost no more than 1.5 and 2 times the best, and searches over 60 and 120 cells are
+  the unscaled ones to the cell and to the count of closed cells.
+
 ### ADR-194 · 2026-10-08 · accepted — The coarse route takes a province with closed ground at eight times its cost (PLAN 3.10c2b3b)
 
 - **Context.** ADR-189 holds every route over open ground to the corridor of its coarse

@@ -10374,3 +10374,71 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, documents only: parity.
 - **Next:** PLAN 3.10c2d1b (the bound scaled up for a long order: the weight, where it
   starts, an ADR and the pin).
+
+## 2026-10-08 — PLAN 3.10c2d1b: the bound of the cell search is scaled up for a long search (ADR-195)
+
+- **Step 2:** `npm run check` on the tree of 3.10c2d1a: green (nothing changed). Critic: not due.
+- **The rule** (`src/sim/nav/grid.ts`): `findPath` multiplies its bound by `boundWeight` of
+  the distance between its two ends in cells (the larger of dx and dy, across the seam):
+  1 up to 120 cells, 1.5 over 120, 2 over 300. That distance is what 3.10c2d1a's probe put
+  its orders into bands by (`dist` in `.cache/c2d1/probe.ts`), so the rule starts where the
+  count did. It is inside `findPath`: every caller of `findRoute` has it, and the search
+  with no corridor. `findPath` takes a weight as a last argument, for the test (1 is the
+  search of before).
+- **Why two weights** (ADR-195): over 300 cells × 1.5 left the longest plan at 81 ms and
+  × 2 at 33; from 121 to 300 the searches are 2 ms each and × 2 buys 0.28 ms more for ways
+  twice as much dearer.
+- **Test** (`tests/unit/movement.test.ts`, one, red first: "200 cells: closed, of 9670:
+  expected 9670 to be less than 4835"): a made map of 512 by 256 cells in patches of 8.
+  Over 200 cells the rule's search is the one at × 1.5, closes 200 cells of 9,670 and its
+  way costs × 1.078; over 420 it is the one at × 2, closes 8,076 of 28,162, × 1.026; over
+  60 and 120 cells it is the unscaled search to the cell and to the count of closed cells.
+  The share for the far search was first written as a quarter, before any run; the made
+  map gives 0.29, and the test says a third.
+- **Measured** (`.cache/c2d1b/hook.py` and `probe.ts`, put in and taken out: 3.10c2d1a's
+  counters; each order of the operational AI between ends over 120 cells apart is searched
+  again unscaled on a copy of the grid). The two seeds ran side by side, not pinned to
+  cores: the counts are exact, the ms loose. It is another game than HEAD's from the first
+  changed way on (`8f937408` after one year for `e771cf6a`; `5c31d145` after five), so the
+  orders are not the same ones: 870 given and 37 refused in five years of seed 99 (1,225
+  and 417 at HEAD).
+
+  | | seed 99: 121 to 300 cells | over 300 | seed 4242: 121 to 300 | over 300 |
+  |---|---|---|---|---|
+  | given orders | 778 | 92 | 309 | 125 |
+  | cells closed a search | 3,468 | 9,626 | 2,006 | 6,583 |
+  | the same orders unscaled | 9,682 | 47,362 | 9,144 | 65,133 |
+  | at HEAD (its own orders) | 10,540 | 49,078 | | 78,706 |
+  | ms a search (unscaled; at HEAD) | 0.64 (1.74; 1.97) | 1.97 (9.22; 9.64) | 0.39 (1.73) | 1.46 (13.1; 16.4) |
+  | the way's cost over the unscaled: mean, 90th percentile, most | 1.034, 1.065, 1.141 | 1.091, 1.171, 1.236 | 1.035, 1.060, 1.134 | 1.132, 1.176, 1.230 |
+  | the way in cells | 229 | 466 | 201 | 494 |
+
+  - No order got another answer than unscaled (a way or none), in either seed.
+  - The 37 refused orders (seed 99, all of 121 to 300 cells) close 8,452 cells scaled and
+    unscaled, 1.6 ms each: a search with no way costs what it did.
+  - The orders of over 120 cells, ms a tick: 0.021, 0.027, 0.009, 0.007, 0.020 by year,
+    0.017 over the five (0.101 at HEAD); seed 4242: 0.017 (0.106).
+  - The longest plan: 31.6 ms (tick 6,204, nation 10, 13 far orders; 148 at HEAD), the
+    only one of 30 ms or more (26 at HEAD). Seed 4242: 20.5 ms (112), none (21).
+- **The tick** (`npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF
+  --profile`, the probe out): 2.176, 1.949, 1.219, 1.030, 1.099 ms by year, 1.495 over the
+  five (1.810 at 3.10c2c1). The operational AI: 0.352, 0.435, 0.256, 0.206, 0.232 (0.296;
+  0.479: 0.448, 0.593, 0.726, 0.323, 0.304), its longest call 31.6 ms.
+  - Do not read the 0.32 ms as the rule's: the searches are 0.08 of it. The rest is another
+    game (other wars from year 1 on; the tick was 2.279, 2.172, 2.040, 1.343, 1.219 by year at HEAD).
+    One seed, one run.
+  - The longest call of the tick is no longer the operational AI's: `capitals` 75.6 and
+    72.4 ms (known since 3.10a: 75 to 85 ms), `revolts` 52.1, `economicAi` 40.0. Not looked
+    into here; noted under the task for 3.10f.
+- **Not done:** one search for a group of marches (3.10c2d1's third candidate: a rule of
+  the operational AI, not counted beside a search). The orders of 120 cells and less.
+  What the dearer ways do to a war was not looked at (a far march arrives later by up to a
+  quarter of its time at the worst). Seed 8128 was not run. No picture: nothing drawn
+  changed, and no spec draws a route's choice; specs run by hand: none. No sweep (ADR-58).
+- **3.10c2d1** has both its parts ticked and stays open as a line: its AT is met by this
+  part (the unit test, the cells and ms beside 3.10c2d's, the longest call, the tick).
+  Ticked with this commit.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check` (code and a sim input: typecheck, lint, unit, build, parity,
+  the 10-year tests with the new pin).
+- **Next:** PLAN 3.10d (supply's dear calls).

@@ -3,7 +3,7 @@ import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
 import { slotGrid, slotPose } from '../../src/sim/core/pose';
 import { cellOf } from '../../src/sim/data/terrain';
-import { boundKm, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_COST, octileKm, stepKm, type MobilityId } from '../../src/sim/nav/grid';
+import { boundKm, boundWeight, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_COST, octileKm, stepKm, type MobilityId } from '../../src/sim/nav/grid';
 import { findRoute } from '../../src/sim/nav/provinceGraph';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -250,6 +250,40 @@ describe('route edge cases', () => {
         if (want) routes++;
       }
       expect(routes).toBeGreaterThan(1);
+    }
+  });
+
+  it('a long search has its bound scaled up, and a short one is the same to the cell (PLAN 3.10c2d1b, ADR-195)', () => {
+    expect([1, 120, 121, 300, 301, 2000].map(boundWeight)).toEqual([1, 1, 1.5, 1.5, 2, 2]);
+    // Ground in patches of 8 by 8 cells, a third of them dearer than the cheapest: the bound is
+    // short of the way's cost, as on the map, and an unscaled search fills an ellipse.
+    const GW = 512;
+    const GH = 256;
+    let seed = 4242;
+    const rand = (): number => (seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 2 ** 32;
+    const kinds = [Terrain.Plains, Terrain.Plains, Terrain.Plains, Terrain.Plains, Terrain.Forest, Terrain.Mountains];
+    const patch = Uint8Array.from({ length: (GW / 8) * (GH / 8) }, () => kinds[Math.floor(rand() * kinds.length)]!);
+    const terrain = Uint8Array.from({ length: GW * GH }, (_, c) => patch[Math.floor(Math.floor(c / GW) / 8) * (GW / 8) + Math.floor((c % GW) / 8)]!);
+    const g = makeNavGrid(terrain, GW, GH, false);
+    const at = (x: number): number => (GH / 2) * GW + x;
+    const run = (cells: number, weight?: number): { cells: number[]; cost: number; closed: number } => {
+      const way = findPath(g, Mobility.foot, at(40), at(40 + cells), undefined, undefined, weight)!;
+      const mark = 2 * g.scratch!.gen + 1;
+      let closed = 0;
+      for (const s of g.scratch!.stamp) if (s === mark) closed++;
+      return { ...way, closed };
+    };
+    // Short: the search of before, to the cell and to the count of closed cells.
+    for (const cells of [60, 120]) expect(run(cells), `${cells} cells`).toEqual(run(cells, 1));
+    // Over 120 cells and over 300: the rule's weight, fewer cells closed by the stated share, and
+    // a way that costs no more than the weight times the best.
+    for (const [cells, weight, share] of [[200, 1.5, 1 / 2], [420, 2, 1 / 3]] as const) {
+      const best = run(cells, 1);
+      const got = run(cells);
+      expect(got, `${cells} cells`).toEqual(run(cells, weight));
+      expect(got.closed, `${cells} cells: closed, of ${best.closed}`).toBeLessThan(best.closed * share);
+      expect(got.cost).toBeGreaterThanOrEqual(best.cost);
+      expect(got.cost, `${cells} cells: cost, of ${best.cost}`).toBeLessThanOrEqual(best.cost * weight);
     }
   });
 
