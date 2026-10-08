@@ -4975,7 +4975,7 @@ quick sweep as a smoke test.
     The task as it was set: The place a formation is said to be is where its block stands. The worker's
     formation section and its answer to `formation` (the panel) say the block's place
     (`deployOf`) for a formation in contact, with the hour's move as the elements have it,
-    from one helper for both sections. The view takes its click and its camera
+    from one helper for both sections. The view takes its marker, its click and its camera
     from that. Nothing of the sim changes: the pin holds.
     AT: a unit test of the snapshot (the place is the block's and the middle of the
     elements; the hour a contact begins and the hour it ends; the panel agrees), red first;

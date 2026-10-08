@@ -206,7 +206,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
      of such a sprite and the click on it are at the block's place; `formationAt` (the
      player's click on a formation of the player's own) and the selection ring are at the
      place the formation is drawn at in the tier shown (the marker's at T1, the block's
-     from T2 on); `formationPos` is the block's place at every zoom, since what asks for
+     from T2 on, and between the two by the elements' share while T1 hands over to T2); `formationPos` is the block's place at every zoom, since what asks for
      it wants to go there.
 - **One array, not four.** The snapshot's typed arrays are pooled buffers, one each, and
   `server.test.ts` holds the buffers of the one snapshot in flight to a count: 16. Four

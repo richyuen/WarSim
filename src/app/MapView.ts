@@ -1359,9 +1359,15 @@ export class MapView {
     return i < 0 ? null : [this.blockX[i]!, this.blockY[i]!];
   }
 
-  /** Where formation `i` of the last snapshot is drawn at this zoom: its T1 marker's place, or its block's where the elements are shown. */
+  /**
+   * Where formation `i` of the last snapshot is drawn at this zoom: its T1 marker's place, or
+   * its block's where the elements are shown, and on the way from the one to the other with
+   * the handover between the two (a selection ring does not jump).
+   */
   private drawnAt(i: number): [number, number] {
-    return this.shares.elements > 0.5 ? [this.blockX[i]!, this.blockY[i]!] : [this.formX[i]!, this.formY[i]!];
+    const k = this.shares.elements;
+    const fx = this.formX[i]!;
+    return [fx + (this.unwrapped(this.blockX[i]!, fx) - fx) * k, this.formY[i]! + (this.blockY[i]! - this.formY[i]!) * k];
   }
 
   /** Formations of `nation` in the last snapshot. */

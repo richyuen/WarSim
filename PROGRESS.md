@@ -10860,3 +10860,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11b: first the count, through `warBattle` and the panel, of formations in
   contact with no enemy element in a T3 view of their block.
+
+## 2026-10-08 — PLAN 3.11a, after it: the ring does not jump, and the task's text as it was set
+
+- **Two things a second look at `a25ac0b` found.** (1) The selection ring and the player's
+  click (`drawnAt`) changed from the marker's place to the block's at the middle of the
+  T1 ↔ T2 handover: for a formation in contact a jump of up to 43 px in one frame, where
+  before 3.11a they never moved. They now go from the one place to the other by the
+  elements' share of the handover. No spec has a ring on a formation in contact across the
+  handover, and none was added: seen in the code, not in a picture. (2) The line "The task
+  as it was set" of 3.11a in PLAN had lost "its marker"; it is as it was set again.
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11b, as above. `warBattle`'s own pair on seed 4242, day 21, at 20 m/px
+  first: if both blocks are in that view, what the critic saw is the lack of a way from a
+  formation to its fight, and no rule of `deployOf` changes.
