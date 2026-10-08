@@ -124,9 +124,16 @@ test('two formations in contact are both in one view at 20 m/px, and face each o
   expect(seen.polish.all).toBeGreaterThan(20);
   expect(seen.german.on, 'German elements on the screen').toBe(seen.german.all);
   expect(seen.polish.on, 'Polish elements on the screen').toBe(seen.polish.all);
-  // Facing each other: the Germans east (0), the Poles west (π).
-  for (const f of seen.german.facing) expect(Math.cos(f)).toBeCloseTo(1, 5);
-  for (const f of seen.polish.facing) expect(Math.cos(f)).toBeCloseTo(-1, 5);
+  // Facing each other: the Germans east (0), the Poles west (π). Until PLAN 3.11c4 every element
+  // was at its block's facing to five places; each is now turned off it by its id, 0.3 rad at
+  // most (`DEPLOY_TURN`, ADR-204), and not all one way: the block as a whole still faces its enemy.
+  const TURN = 0.3;
+  for (const [facing, east] of [[seen.german.facing, 1], [seen.polish.facing, -1]] as const) {
+    for (const f of facing) expect(Math.cos(f) * east).toBeGreaterThan(Math.cos(TURN) - 1e-6);
+    const mean = Math.atan2(facing.reduce((s, f) => s + Math.sin(f), 0) * east, facing.reduce((s, f) => s + Math.cos(f), 0) * east);
+    expect(Math.abs(mean), 'how far the mean facing of a block is off its line to the enemy, rad').toBeLessThan(TURN / 3);
+    expect(Math.max(...facing.map((f) => Math.sin(f))) - Math.min(...facing.map((f) => Math.sin(f))), 'between the two elements of a block turned furthest apart').toBeGreaterThan(Math.sin(TURN));
+  }
   // Front to front: every German element west of every Polish one, the front rows about a kilometre apart (50 px at 20 m/px), no more than two.
   const gap = Math.min(...seen.polish.xs) - Math.max(...seen.german.xs);
   expect(gap, 'px between the front rows').toBeGreaterThan(30);

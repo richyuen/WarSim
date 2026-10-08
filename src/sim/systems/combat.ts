@@ -276,8 +276,8 @@ export function combatSystem(world: World): void {
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const sl = idx.get(sf)!;
         const tl = idx.get(tf)!;
-        const [x0, y0] = elementPlace(world, sf, ec.slot[s]!, slotCount(world, sf, sl.length));
-        const [x1, y1] = elementPlace(world, tf, ec.slot[t]!, slotCount(world, tf, tl.length));
+        const [x0, y0] = elementPlace(world, sf, ec.slot[s]!, slotCount(world, sf, sl.length), s);
+        const [x1, y1] = elementPlace(world, tf, ec.slot[t]!, slotCount(world, tf, tl.length), t);
         const subtick = hash32(world.seed, world.tick, s, 0x5b7) % 60;
         fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, x0, y0, x1, y1);
       }

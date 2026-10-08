@@ -30,7 +30,7 @@ function border(w: World): [number, number] {
 function places(w: World, f: number): [number, number][] {
   const list = elementIndex(w).get(f) ?? [];
   const slots = slotCount(w, f, list.length);
-  return list.map((e) => elementPlace(w, f, w.elements.cols.slot[e]!, slots));
+  return list.map((e) => elementPlace(w, f, w.elements.cols.slot[e]!, slots, e));
 }
 
 const mean = (ps: [number, number][]): [number, number] => [ps.reduce((s, p) => s + p[0], 0) / ps.length, ps.reduce((s, p) => s + p[1], 0) / ps.length];
@@ -124,7 +124,7 @@ describe('the blocks of formations in contact are deployed against each other (P
     for (let hour = 0; hour < 24 * 5 && deaths === 0; hour++) {
       const list = elementIndex(w).get(a)!;
       const slots = slotCount(w, a, list.length);
-      const stood = new Map(list.map((e) => [e, elementPlace(w, a, ec.slot[e]!, slots)] as const));
+      const stood = new Map(list.map((e) => [e, elementPlace(w, a, ec.slot[e]!, slots, e)] as const));
       const from = fc.x[a]!;
       const inContact = fc.engaged[a] === 1;
       s.step(1, (world) => {
@@ -197,7 +197,7 @@ describe('the blocks of formations in contact are deployed against each other (P
       const list = elementIndex(w).get(f);
       if (!list) return;
       const slots = slotCount(w, f, list.length);
-      expect(elementPlace(w, f, w.elements.cols.slot[list[0]!]!, slots)).toEqual(slotPlace(w, fc.x[f]!, fc.y[f]!, fc.facing[f]!, w.elements.cols.slot[list[0]!]!, slots));
+      expect(elementPlace(w, f, w.elements.cols.slot[list[0]!]!, slots, list[0]!)).toEqual(slotPlace(w, fc.x[f]!, fc.y[f]!, fc.facing[f]!, w.elements.cols.slot[list[0]!]!, slots));
       checked++;
     });
     expect(checked).toBe(50);

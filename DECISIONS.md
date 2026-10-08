@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-204 · 2026-10-08 · accepted — An element of a deployed block stands off its slot and is turned off its block's facing, by its id (PLAN 3.11c4, critic R3-B3)
+
+- **Context.** The critic's pictures of a tank fight at 2 and 6 m/px
+  (`critic/shots/c3j_12_tank_live_002m_2.png`, `c3j_12_tank_live_006m_2.png`): the elements
+  of a block in contact stand on the points of a lattice, 600 m apart, and all face the way
+  their block does. ADR-200 to ADR-203 put the blocks where they do not stand in one
+  another; this is within one block.
+- **Decision.** For a deployed block only, `slotPlace` takes the element in the slot. It
+  stands off the slot by two draws from its id (`hash32` of the id and a salt; not of the
+  hour, the seed or the slot): up to `DEPLOY_SCATTER` (0.3) of the slot spacing forward or
+  back, and as much to either side, in the block's own frame (`slotPose` adds them before
+  it turns the block), and before the walk to land, so an element whose place would be in
+  the sea draws in as a slot does. `elementFacing` turns it off the block's facing by a
+  third draw, `DEPLOY_TURN` (0.3 rad, 17°) at most. A block at rest stands on its slots and
+  faces one way, as before.
+- **One place.** `elementPlace` (the fire events) and `elementPlaceBefore` (the wrecks)
+  take the element and pass it on where the block is or was deployed; the worker's element
+  section does the same for the place of now and of the hour before (`blockPose` says
+  whether each is a deployment). An element whose block was deployed in both hours does
+  not move. Its facing is in the snapshot alone: no event carries one.
+- **Why 0.3.** Under a half, so an element stays in its own slot's square: the block keeps
+  its rectangle (the gaps between blocks of ADR-200 to ADR-203 are between rectangles), and
+  no two elements change places. `stackBlocks1938`: the two Soviet blocks nearest each other
+  have their nearest elements 1.24 km apart (the gap is 0.98). Less than 0.3 leaves the
+  lattice to be seen: at 40 m/px a slot is 15 px.
+- **What it costs in the picture.** An element's figures take 480 m of the 600 between
+  slots (`FOOTPRINT_CELLS`), so two neighbours 360 m nearer each other have their grounds in
+  one another. In `docs/evidence/3.11/c4-within-a-block-2m.png` three pairs of tanks of
+  about 110 are drawn one over the other. Not mended here; it is in PLAN 3.11f.
+- **A test's limit changed with the rule.** `battleView1938` asked that every element of
+  the two divisions face east or west to five places. That was the rule this part changes.
+  It now asks that each is within `DEPLOY_TURN` of its block's facing, that the mean of a
+  block is within a third of that, and that a block's elements are not all at one facing.
+- **Tests.** `tests/unit/deployScatter.test.ts`: each element within its slot; no three of
+  the front row on one line, and the middle of three neighbours 0.05 of a spacing off the
+  line of the other two on average; every shot of twelve hours leaves from its shooter's
+  place and ends at its target's; the worker sends the same place, a facing within the
+  turn, and nothing moves in the next hour; a block at rest on its slots at one facing.
+  Red with the scatter and the turn set to nothing ("slots 0, 1 and 2 of the front row:
+  expected 0 to be greater than 0.000001"; "turned furthest apart: expected 0 to be greater
+  than 0"). The first limit written for the front row (every three 2 m off a line) failed
+  on the rule itself: slots 3 to 5 of one division are 0.9 m off one by chance. The places
+  are a draw, so that limit said more than the rule gives; it is now 2 cm for every three
+  and the average above for what is seen.
+- **Not state.** No rule reads an element's place: the pin holds, and two years of seed 99
+  end on the same hash (4c72477e).
+- **Cost.** Mean tick over two years of seed 99, pinned, two runs each in one session:
+  1.9756 and 1.9662 ms (1.9395 and 1.9248 on the commit before): 2% slower, three hashes
+  for each end of each shot.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-203 · 2026-10-08 · accepted — The blocks of an hour have one order, and a block stops short of every enemy's block before it in that order (PLAN 3.11c3b, critic R3-B3; amends ADR-201)
 
 - **Context.** The pairs of blocks in one another that ADR-201 and ADR-202 left: German

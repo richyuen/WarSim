@@ -8,6 +8,7 @@
  */
 import { EventKind } from '../../shared/events';
 import { atan2, cos, sin, sqrt } from '../core/dmath';
+import { hash32 } from '../core/hash';
 import { SLOT_SPACING, slotGrid, slotPose } from '../core/pose';
 import type { World } from '../world';
 
@@ -22,9 +23,15 @@ import type { World } from '../world';
  * events and the event of an element's end all ask here, so they have one place for it.
  * Where the formation's own place is on the mask's water (on the march across a bay, on a
  * crossing, on land painted in the editor) the slot is left as it is.
+ *
+ * `element`, for a deployed block only (PLAN 3.11c4): the element in the slot, which stands off
+ * it by its id (`DEPLOY_SCATTER`), on land as the slot would. A block at rest stands on its slots.
  */
-export function slotPlace(world: World, fx: number, fy: number, facing: number, slot: number, count: number): [number, number] {
-  const p = slotPose(fx, fy, facing, slot, count, SLOT_SPACING);
+export function slotPlace(world: World, fx: number, fy: number, facing: number, slot: number, count: number, element?: number): [number, number] {
+  const p =
+    element === undefined
+      ? slotPose(fx, fy, facing, slot, count, SLOT_SPACING)
+      : slotPose(fx, fy, facing, slot, count, SLOT_SPACING, shareOf(element, 1) * DEPLOY_SCATTER * SLOT_SPACING, shareOf(element, 2) * DEPLOY_SCATTER * SLOT_SPACING);
   if (!world.landMask || world.onLand(p[0], p[1]) || !world.onLand(fx, fy)) return p;
   // In eighths of the way: the block's far corner is 0.134 cells out, a mask pixel is 0.125 wide.
   for (let k = 1; k < 8; k++) {
@@ -33,6 +40,29 @@ export function slotPlace(world: World, fx: number, fy: number, facing: number, 
     if (world.onLand(x, y)) return [x, y];
   }
   return [fx, fy];
+}
+
+/**
+ * How far off its slot an element of a deployed block stands at most, forward or back and to
+ * either side, in slot spacings (PLAN 3.11c4: 180 m of the 600 between slots). Under a half: the
+ * block keeps its rectangle, so the gaps between blocks hold, and no two elements change places.
+ */
+export const DEPLOY_SCATTER = 0.3;
+/** How far off its block's facing an element of a deployed block is turned at most, radians (17°). */
+export const DEPLOY_TURN = 0.3;
+
+/** A share of -1 to 1 for element `element`, by its id alone: the same every hour, in every game. */
+function shareOf(element: number, salt: number): number {
+  return (hash32(0x3b11c4, element, salt) >>> 0) / 0x80000000 - 1;
+}
+
+/**
+ * What element `element` of a block that faces `facing` faces. In a deployed block it is turned
+ * off its block's facing by its id, `DEPLOY_TURN` at most (PLAN 3.11c4: the elements of a block
+ * in contact all faced one way); in a block at rest it faces as the block does.
+ */
+export function elementFacing(facing: number, deployed: boolean, element: number): number {
+  return deployed ? facing + shareOf(element, 3) * DEPLOY_TURN : facing;
 }
 
 /** Enemy formations within this many cells of each other are in contact (`findBattles`). */
@@ -373,12 +403,13 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
  * Where element `slot` of formation `f` stands: in its block at the formation's place, or, for
  * a formation in contact, in its block deployed against the enemy (`deployOf`), on land either
  * way (`slotPlace`). The one place of an element for the snapshot, the fire events and the
- * event of its end.
+ * event of its end. `element` is the element in the slot: in a deployed block it stands off its
+ * slot by its id (PLAN 3.11c4).
  */
-export function elementPlace(world: World, f: number, slot: number, count: number): [number, number] {
+export function elementPlace(world: World, f: number, slot: number, count: number, element: number): [number, number] {
   const c = world.formations.cols;
   const d = deployOf(world, f, count);
-  return d ? slotPlace(world, d.x, d.y, d.facing, slot, count) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
+  return d ? slotPlace(world, d.x, d.y, d.facing, slot, count, element) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
 }
 
 /**
@@ -391,12 +422,12 @@ export function elementPlace(world: World, f: number, slot: number, count: numbe
  * sprite). Where the hour before is not known (a loaded game's first hour, after a command) it
  * is the place of now.
  */
-export function elementPlaceBefore(world: World, f: number, slot: number, count: number): [number, number] {
+export function elementPlaceBefore(world: World, f: number, slot: number, count: number, element: number): [number, number] {
   const before = world.deployedBefore;
-  if (!before) return elementPlace(world, f, slot, count);
+  if (!before) return elementPlace(world, f, slot, count, element);
   const c = world.formations.cols;
   const d = before.get(f);
-  if (d) return slotPlace(world, d.x, d.y, d.facing, slot, count);
+  if (d) return slotPlace(world, d.x, d.y, d.facing, slot, count, element);
   const m = world.movedTick === world.tick ? world.movedFrom.get(f) : undefined;
   return m ? slotPlace(world, m[0], m[1], m[2], slot, count) : slotPlace(world, c.x[f]!, c.y[f]!, c.facing[f]!, slot, count);
 }
@@ -551,7 +582,7 @@ function settleElements(world: World, fid: number, list: number[]): void {
     if (e.cols.strength[id]! > 0) return true;
     // Its end is an event, not state (PLAN 2.4b): at the slot it stood in. Elements that go
     // with a disbanded or removed formation have none.
-    const [x, y] = elementPlaceBefore(world, fid, e.cols.slot[id]!, slots);
+    const [x, y] = elementPlaceBefore(world, fid, e.cols.slot[id]!, slots, id);
     world.out.emit(world.tick, EventKind.ElementDestroyed, id, e.cols.unit[id]!, x, y);
     e.remove(id);
     return false;

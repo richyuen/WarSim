@@ -29,13 +29,17 @@ export function blockReach(count: number, spacing: number): number {
   return sqrt(across * across + along * along) + spacing / 2;
 }
 
-/** World position (cells) of `slot` in a formation of `count` elements spaced `spacing` cells. */
-export function slotPose(cx: number, cy: number, facing: number, slot: number, count: number, spacing: number): [number, number] {
+/**
+ * World position (cells) of `slot` in a formation of `count` elements spaced `spacing` cells;
+ * `offAlong` and `offAcross` cells off the slot, forward and to the right (an element of a
+ * deployed block, PLAN 3.11c4).
+ */
+export function slotPose(cx: number, cy: number, facing: number, slot: number, count: number, spacing: number, offAlong = 0, offAcross = 0): [number, number] {
   const { cols, rows } = slotGrid(count);
   const r = Math.floor(slot / cols);
   const k = slot - r * cols;
-  const across = (k - (cols - 1) / 2) * spacing;
-  const along = ((rows - 1) / 2 - r) * spacing; // front row ahead of the centre
+  const across = (k - (cols - 1) / 2) * spacing + offAcross;
+  const along = ((rows - 1) / 2 - r) * spacing + offAlong; // front row ahead of the centre
   const fx = cos(facing);
   const fy = sin(facing);
   // Forward (fx, fy); right-hand side (-fy, fx).

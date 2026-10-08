@@ -52,7 +52,7 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { contactsOf, deployOf, elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
+import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -873,7 +873,7 @@ export class SimServer {
    * sim keeps the deployments of the hour before (`deployedBefore`); where it has none (a
    * load, a command) nothing moves.
    */
-  private blockPose(world: World, f: number): { x: number; y: number; facing: number; prevX: number; prevY: number; prevFacing: number } {
+  private blockPose(world: World, f: number): { x: number; y: number; facing: number; prevX: number; prevY: number; prevFacing: number; deployed: boolean; prevDeployed: boolean } {
     const c = world.formations.cols;
     const fx = c.x[f]!;
     const fy = c.y[f]!;
@@ -883,9 +883,11 @@ export class SimServer {
     const x = at ? at.x : fx;
     const y = at ? at.y : fy;
     const facing = at ? at.facing : c.facing[f]!;
-    if (before && !born) return { x, y, facing, prevX: before.x, prevY: before.y, prevFacing: before.facing };
+    // Whether the block is deployed, now and an hour ago: its elements then stand off their slots (PLAN 3.11c4).
+    const deployed = at !== null;
+    if (before && !born) return { x, y, facing, prevX: before.x, prevY: before.y, prevFacing: before.facing, deployed, prevDeployed: true };
     // A formation created during the last tick has no place of a tick ago: the one of now.
-    return { x, y, facing, prevX: born ? x : this.prevX[f]!, prevY: born ? y : this.prevY[f]!, prevFacing: facing };
+    return { x, y, facing, prevX: born ? x : this.prevX[f]!, prevY: born ? y : this.prevY[f]!, prevFacing: facing, deployed, prevDeployed: born && deployed };
   }
 
   private drainEvents(world: World): void {
@@ -1000,11 +1002,12 @@ export class SimServer {
       // The block as the template made it: an element keeps its slot when others die (PLAN 2.7a).
       const slots = slotCount(world, f, list.length);
       // Where the block stands now and where it stood an hour ago (`blockPose`).
-      const { x: bx, y: by, facing: fa, prevX: qcx, prevY: qcy, prevFacing: qfa } = this.blockPose(world, f);
+      const { x: bx, y: by, facing: fa, prevX: qcx, prevY: qcy, prevFacing: qfa, deployed, prevDeployed } = this.blockPose(world, f);
       for (const e of list) {
         const slot = ec.slot[e]!;
-        const [cx, cy] = slotPlace(world, bx, by, fa, slot, slots);
-        const [qx, qy] = slotPlace(world, qcx, qcy, qfa, slot, slots);
+        // In a deployed block an element stands off its slot and is turned off the block's facing, by its id (PLAN 3.11c4).
+        const [cx, cy] = slotPlace(world, bx, by, fa, slot, slots, deployed ? e : undefined);
+        const [qx, qy] = slotPlace(world, qcx, qcy, qfa, slot, slots, prevDeployed ? e : undefined);
         id[j] = e;
         formation[j] = f;
         nation[j] = ft.cols.nation[f]!;
@@ -1015,7 +1018,7 @@ export class SimServer {
         y[j] = cy;
         prevX[j] = qx;
         prevY[j] = qy;
-        facing[j] = fa;
+        facing[j] = elementFacing(fa, deployed, e);
         flags[j] = fl;
         hit[j] = this.firedAt.has(e) ? 1 : 0;
         j++;

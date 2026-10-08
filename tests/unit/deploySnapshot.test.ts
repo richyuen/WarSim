@@ -74,7 +74,7 @@ describe('the worker sends a deployed block where it stands, and where it stood 
       const slot = w.elements.cols.slot[e]!;
       const [x, y, px, py] = first.get(e)!;
       // Now: deployed, forward of the formation. An hour ago: in the block at the formation's place.
-      expect([x, y]).toEqual(elementPlace(w, ger, slot, slots));
+      expect([x, y]).toEqual(elementPlace(w, ger, slot, slots, e));
       const home = slotPlace(w, fc.x[ger]!, fc.y[ger]!, fc.facing[ger]!, slot, slots);
       expect(Math.hypot(px - home[0], py - home[1]), `element ${e}: its place of an hour ago, from its slot at the formation`).toBeLessThan(0.02);
       if (Math.hypot(x - px, y - py) > 0.1) moved++;

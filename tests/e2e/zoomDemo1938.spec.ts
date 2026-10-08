@@ -151,7 +151,7 @@ function nodeBattle(): Battle {
     const count = w.rules!.templates[fc.template[formation]!]!.elements.reduce((s, x) => s + x.count, 0);
     return (elementIndex(w).get(formation) ?? []).map((e) => {
       // Where the sim has the element: the division is in contact, and its block is deployed against the enemy (PLAN 2.14c1).
-      const [x, y] = elementPlace(w, formation, ec.slot[e]!, count);
+      const [x, y] = elementPlace(w, formation, ec.slot[e]!, count, e);
       return { id: e, strength: ec.strength[e]!, size: size(e), x, y };
     });
   };

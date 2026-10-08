@@ -916,7 +916,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   pair and the lines before them, then by id), and a block on its way stops short of every
   block of a nation it is at war with that is before it in that order, whatever that block
   goes to, so that where a block stands does not hang on which was asked for first (PLAN
-  3.11c3b, ADR-203). Derived from the formations' places
+  3.11c3b, ADR-203). Within a deployed block an element stands off its slot by its id, 0.3
+  of the slot spacing at most (`DEPLOY_SCATTER`: 180 m of 600) forward or back and to either
+  side, and is turned off its block's facing by 0.3 rad at most (`DEPLOY_TURN`), the same
+  every hour: a block in contact is not a lattice of elements at one facing; a block at rest
+  stands on its slots and faces one way (PLAN 3.11c4, ADR-204). Derived from the formations' places
   and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
   rule does. So a view at 20 m/px holds both sides of a fight (96%, 110 of 114, of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the

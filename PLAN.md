@@ -5005,7 +5005,7 @@ quick sweep as a smoke test.
     4242, day 21) that opens the panel of each German formation in contact, presses the
     panel's way to its fight and finds its elements and an enemy's on the screen at T3;
     pictures, looked at.
-  - [ ] 3.11c Facing and spacing in contact: no lattice all facing one way, and formations
+  - [x] 3.11c *Done 2026-10-08 (its parts 3.11c1 to 3.11c4, ADR-200 to ADR-204).* Facing and spacing in contact: no lattice all facing one way, and formations
     that share a cell do not stand as interleaved diamonds. Seen in 3.11b
     (`docs/evidence/3.11/b-furthest-at-its-fight.png`): seven Italian divisions on one
     French one stand as a column of six lines, 20 km deep, each line a block behind the
@@ -5044,7 +5044,7 @@ quick sweep as a smoke test.
       4242).
       AT: a unit test of a division that comes to a block from 90° and from behind, red
       first; the count of pairs on the three games above, none left or each one named.
-    - [ ] 3.11c3 The column on one enemy: seven divisions on one stand six lines deep, 20
+    - [x] 3.11c3 *Done 2026-10-08 (its parts 3.11c3a and 3.11c3b).* The column on one enemy: seven divisions on one stand six lines deep, 20
       km (`b-furthest-at-its-fight.png`); the fourth to sixth lines have no enemy in the
       battle's view (ADR-199). Fewer lines before the files abreast begin.
       AT: a unit test of seven divisions a cell and a half from one enemy, red first;
@@ -5087,7 +5087,14 @@ quick sweep as a smoke test.
         AT: a unit test of a division that comes to a block with a line of that block's
         side in its way, red first; the count of pairs on the three games, none left or
         each one named; the same answer whichever formation is asked first.
-    - [ ] 3.11c4 Within a block in contact: the elements do not stand on the points of a
+    - [x] 3.11c4 *Done 2026-10-08 (ADR-204):* an element of a deployed block stands off its
+      slot by its id, 0.3 of the slot spacing at most each way (180 m of 600), and is turned
+      off its block's facing by 0.3 rad at most; `slotPlace` takes the element for a
+      deployed block, so the snapshot (now and the hour before), the fire events and the
+      wrecks have one place. A block at rest stands on its slots. The pin holds.
+      Seen and not mended (for the pictures of 3.11f): at 2 m/px three pairs of tanks of
+      neighbouring elements are drawn one over the other, of about 110 in the picture.
+      The task as it was set: Within a block in contact: the elements do not stand on the points of a
       lattice, and do not all face one way. A place and a facing off the slot's by the
       element's id, the same in the snapshot, the fire events and the wrecks
       (`slotPlace`), for a deployed block only.
@@ -5099,6 +5106,9 @@ quick sweep as a smoke test.
   - [ ] 3.11e The tint: Soviet tanks are not Poland's pink.
   - [ ] 3.11f The task's AT on a seed the builder has not used, the pictures at T2 and T3,
     and the tick of 3.11 with the full gate.
+    Also here (left by 3.11c4): tanks of neighbouring elements of a deployed block drawn one
+    over the other at T3 (three pairs of about 110 in `c4-within-a-block-2m.png`): looked
+    at again in the pictures, and mended or said why not.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
   `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom

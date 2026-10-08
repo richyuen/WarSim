@@ -256,7 +256,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
           expect(list.length, `elements of formation ${f}`).toBeGreaterThan(0);
           const slots = slotCount(w, f, list.length);
           for (const e of list) {
-            const p = elementPlace(w, f, w.elements.cols.slot[e]!, slots);
+            const p = elementPlace(w, f, w.elements.cols.slot[e]!, slots, e);
             let dx = Math.abs(p[0] - b.x);
             if (dx > W / 2) dx = W - dx;
             if (dx >= HALF.w || Math.abs(p[1] - b.y) >= HALF.h) whole = false;

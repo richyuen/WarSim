@@ -23,7 +23,11 @@ import { Frame, shownFrame } from '../../shared/unitLooks';
 /** m/px up to which T3 is the unit layer (`tierOf`); the handover from the T2 sprites is at this zoom. */
 export const T3_MAX_M = 30;
 export const MAX_FIGURES = 64;
-/** Side of an element's footprint, cells. Slots are 0.03 apart (`sim/core/pose`), so elements stay apart. */
+/**
+ * Side of an element's footprint, cells. Slots are 0.03 apart (`sim/core/pose`), so the elements
+ * of a block at rest stay apart. In a deployed block an element stands up to 0.009 off its slot
+ * (`DEPLOY_SCATTER`, PLAN 3.11c4), and the footprints of two neighbours may reach into each other.
+ */
 export const FOOTPRINT_CELLS = 0.024;
 /** How far a figure stands from the centre of its sub-slot, as a share of the sub-slot's side. */
 const JITTER = 0.18;

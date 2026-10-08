@@ -11143,3 +11143,39 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11c4.
+
+## 2026-10-08 — PLAN 3.11c4: an element of a deployed block stands off its slot and is turned off its block's facing (ADR-204)
+
+- **Done:** `slotPlace` takes the element for a deployed block: up to 0.3 of the slot
+  spacing (180 m) forward or back and to either side, by its id. `elementFacing` turns it
+  up to 0.3 rad off its block's facing. The fire events, the wrecks and the worker's
+  element section (now and the hour before) pass the element; a block at rest is as it was.
+- **Tests:** `tests/unit/deployScatter.test.ts`, two tests, red with the scatter and the
+  turn set to nothing. The limit first written for the front row (every three 2 m off a
+  line) failed on the rule: three slots 0.9 m off a line by chance. Changed before any
+  commit to 2 cm for every three and an average for neighbours (ADR-204 says why).
+- **A limit of a committed test changed:** `battleView1938` asked for every element at its
+  block's facing to five places, which is the rule this part changes. It asks now for each
+  within 0.3 rad, the block's mean within 0.1, and not all at one facing. In ADR-204.
+- **Specs run by hand** (ADR-87: a part), 13 files, 25 tests: `formationFight1938`,
+  `formationPlace1938`, `battleView1938`, `toBattle1938`, `fire1938`, `markerStacks1938`,
+  `closeZoom1938`, `burning1938`, `tankBattle1938`, `turrets1938`, `zoomDemo1938`,
+  `stackBlocks1938`, `loadedEffects1938`. The first run of twelve: 21 passed and
+  `battleView1938` "face each other" failed (the limit above); after the change it and
+  `loadedEffects1938` passed.
+- **Pictures** (`docs/evidence/3.11/`, by `stackBlocks1938`), looked at:
+  `c4-within-a-block-6m.png` and `c4-within-a-block-2m.png` (Soviet tank corps 181 on
+  seed 1212, day 6, the critic's game and zooms): no lattice, the hulls turned variously.
+  At 2 m/px three pairs of tanks of neighbouring elements lie one over the other, of about
+  110: not mended, a line in PLAN 3.11f. The three `c1` pictures and the two `c2` pictures
+  were shot again by the same run and looked at: the blocks apart, scattered within; a
+  rifle division at rest in the corner of `c1-stack-of-armour-40m.png` still on its
+  slots; in `c2-from-the-flank-8m.png` the companies of the infantry in contact lie turned
+  variously, their rows still to be told apart.
+- **Performance:** `npm run sim -- --scenario 1938 --seed 99 --years 2 --affinity 0xFFFF`,
+  two runs each in one session: mean tick 1.9756 and 1.9662 ms (1.9395 and 1.9248 on the
+  commit before), 2% slower. The same hash (4c72477e after two years).
+- **Not done:** no sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11d.

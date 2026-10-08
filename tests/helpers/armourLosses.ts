@@ -96,6 +96,6 @@ function tanks(w: World, into: Map<number, number>, places: Map<number, [number,
     if (!units[c.unit[id]!]!.cls.startsWith('armor')) return;
     into.set(id, c.strength[id]!);
     const f = c.formation[id]!;
-    places.set(id, elementPlace(w, f, c.slot[id]!, slotCount(w, f, idx.get(f)!.length)));
+    places.set(id, elementPlace(w, f, c.slot[id]!, slotCount(w, f, idx.get(f)!.length), id));
   });
 }

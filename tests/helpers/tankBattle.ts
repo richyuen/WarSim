@@ -79,7 +79,7 @@ export function tankBattle(seed: number, firstDay: number, lastDay: number, shoo
       w.elements.forEach((id) => {
         if (!units[c.unit[id]!]!.cls.startsWith('armor')) return;
         const f = c.formation[id]!;
-        const [x, y] = elementPlace(w, f, c.slot[id]!, slotCount(w, f, idx.get(f)!.length));
+        const [x, y] = elementPlace(w, f, c.slot[id]!, slotCount(w, f, idx.get(f)!.length), id);
         hour.tanks.set(id, { n: c.strength[id]!, f, x, y });
       });
       w.out.fires.length = 0;

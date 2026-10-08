@@ -107,6 +107,28 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
   await page.screenshot({ path: path.join(out, 'c1-stack-of-armour-12m.png') });
   await goTo(4);
   await page.screenshot({ path: path.join(out, 'c1-stack-of-armour-4m.png') });
+
+  // PLAN 3.11c4: within a block in contact the elements stood on the points of a lattice and
+  // all faced one way (`critic/shots/c3j_12_tank_live_006m_2.png`, `c3j_12_tank_live_002m_2.png`).
+  // Each is now turned off its block's facing by its id: of the stack's middle formation, the
+  // hulls in the view at the critic's two zooms are not at one facing.
+  for (const m of [6, 2]) {
+    await goTo(m);
+    const hulls = await page.evaluate((id) => {
+      const v = window.__warsim!.view!;
+      const out: number[] = [];
+      for (let i = 0; i < v.elementCount; i++) if (v.elementFormation[i] === id) out.push(v.elementFacing(i));
+      return out;
+    }, centre.id);
+    expect(hulls.length, `elements of formation ${centre.id} in the section at ${m} m/px`).toBeGreaterThan(20);
+    const spread = Math.max(...hulls) - Math.min(...hulls);
+    console.log(`at ${m} m/px: ${hulls.length} elements of formation ${centre.id}, ${new Set(hulls).size} facings over ${spread.toFixed(2)} rad`);
+    expect(new Set(hulls).size, `facings of the elements of formation ${centre.id} at ${m} m/px`).toBeGreaterThan(hulls.length / 2);
+    // No further apart than twice the most an element is turned (`DEPLOY_TURN`, 0.3 rad): the block still faces its enemy.
+    expect(spread).toBeGreaterThan(0.3);
+    expect(spread).toBeLessThanOrEqual(0.6 + 1e-6);
+    await page.screenshot({ path: path.join(out, `c4-within-a-block-${m}m.png`) });
+  }
 });
 
 // PLAN 3.11c2: the critic's other game (seed 4242, Germany against Poland by God Mode) on day 21.
