@@ -180,8 +180,12 @@ test('a block that comes to an enemy block from its flank stands in neither it n
     // In one another, two blocks have elements less than a slot apart; a gap apart, the gap at least.
     expect(p.least, `formations ${p.a} and ${p.b}`).toBeGreaterThan(GAP);
   }
-  // The comer has come up to the block: no further from it than the gap and three slots (a corner to a side).
-  expect(least.find((p) => p.a === COMER && p.b === POLE)!.least).toBeLessThan(GAP + 3 * SPACING);
+  // The comer has come up to the block. It stops the gap short of the nearest block in its way,
+  // and that may be the block the Pole faces, which stands the gap from the Pole's and reaches
+  // no further along the comer's line than its own diagonal (8 by 4 slots): two gaps and a
+  // diagonal at most between the comer and the Pole. Not a count of slots: where an element
+  // stands within its block is not what is asked here.
+  expect(least.find((p) => p.a === COMER && p.b === POLE)!.least).toBeLessThan(2 * GAP + Math.hypot(8 * SPACING, 4 * SPACING));
 
   await page.screenshot({ path: path.join(out, 'c2-from-the-flank-20m.png') });
   await goTo(8);

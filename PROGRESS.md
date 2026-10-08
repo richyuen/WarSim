@@ -11029,3 +11029,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11c3: the column on one enemy.
+
+## 2026-10-08 — PLAN 3.11c2, after it: two corrections of its record and a limit of its test
+
+- "Every pair of enemies in one another comes from 62° to 120°" is wrong by one: divisions
+  17 and 560 of seed 99 are enemies, and 17 comes from 126°. It is the pair that is left.
+  ADR-201 has the count by kind, and it is right there.
+- `c1-stack-of-armour-12m.png` was committed as shot again and not looked at. Looked at now:
+  the blocks of tank corps 181 and 182 apart from each other, the Polish divisions 561 and
+  562 across the gap at the lower left, the tags at the view's edge with their lines
+  (ADR-168). Nothing to change.
+- **The test's upper limit** in `stackBlocks1938.spec.ts` ("the comer has come up to the
+  block") was the gap and three slots, 2.74 km, set after the measured 2.69 km: 2% of room,
+  and a count of slots, which PLAN 3.11c4 moves the elements off. It is now what the rule
+  gives: two gaps and a block's diagonal (0.37 cells, 7.2 km), the most a comer stopped by
+  the block its enemy faces can stand from that enemy. Looser, and said here as that: the
+  test was a commit old and passed before and after. Its lower limits are unchanged.
+- **Gate:** `npm run check` (the changed spec).
