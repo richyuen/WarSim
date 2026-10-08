@@ -322,22 +322,32 @@ export interface Passage {
   group?: Int32Array;
   /** By node: whether it has closed ground. */
   shut?: Uint8Array;
-  /** By node, what `wideNode` (nav/provinceGraph.ts) has answered: 1 yes, 2 no, 0 not asked. */
-  wide?: Uint8Array;
+  /**
+   * By node, what `wideNode` (nav/provinceGraph.ts) has answered: the number of the node's wide
+   * ground, -1 for a node in none, 0 not asked.
+   */
+  wide?: Int32Array;
+  /** By node of a wide ground, the wide grounds the cells join it to (`wideJoined`), once asked. */
+  joined?: Int32Array;
 }
 
 /** The most cells of open ground that are a pocket (`pocketOf`). */
 export const POCKET_CELLS = 4096;
+/** `pocketOf`'s mark of a cell of the walk in hand (no pocket and no wide ground has the number). */
+const IN_HAND = -0x7fffffff;
 
 /**
  * The pocket a cell of open ground lies in (PLAN 3.10c2b, ADR-192): when the cells a route may
  * come to from it (`findPath`'s steps, over ground open in `pass`; by the terrain a formation on
  * foot enters) are no more than POCKET_CELLS, the pocket's number (that of the cell it was
- * first asked for, and 1). 0: wider ground, which is not walked to its end, or a cell of closed ground. A pocket
+ * first asked for, and 1). Below 0: wider ground whose cells come to a wide ground (PLAN
+ * 3.10c2b3a, ADR-193), minus that ground's number. 0: wider ground that was not walked to its
+ * end and came to none, or a cell of closed ground. A pocket
  * is walked once a passage: every cell of it is marked, and so are the cells walked of wider
- * ground. `wide`: cells known to lie in wider ground (`wideNode`), where the walk ends.
+ * ground. `wide`: by cell, the number of the wide ground it is known to lie in (`wideNode`; 0:
+ * none), where the walk ends.
  */
-export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell: number) => boolean): number {
+export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell: number) => number): number {
   const { w, h, wrapX, component } = g;
   const { ok, holder } = pass;
   if (component[start] === 0 || ok[holder[start]!] !== 1) return 0;
@@ -352,11 +362,13 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
   }
   const { id, stamp, gen } = p;
   if (stamp[start] === gen) return id[start]!;
-  // In hand: marked with -1. Ground that an earlier walk found wide is wide from here too.
+  // In hand: marked. Ground that an earlier walk found wider is wider from here too, and comes
+  // to the wide ground that walk came to.
   const walked = [start];
   stamp[start] = gen;
-  id[start] = -1;
+  id[start] = IN_HAND;
   let far = false;
+  let ground = 0;
   for (let at = 0; at < walked.length && !far; at++) {
     const c = walked[at]!;
     const cx = c % w;
@@ -376,17 +388,25 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
       // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells.
       if (dx !== 0 && dy !== 0 && (component[cy * w + nx] === 0 || component[ny * w + cx] === 0)) continue;
       if (stamp[n] === gen) {
-        if (id[n] === 0) far = true;
+        const was = id[n]!;
+        if (was <= 0 && was !== IN_HAND) {
+          far = true;
+          if (ground === 0) ground = was;
+        }
         continue;
       }
       stamp[n] = gen;
-      id[n] = -1;
+      id[n] = IN_HAND;
       walked.push(n);
-      if (wide !== undefined && wide(n)) far = true;
+      const met = wide === undefined ? 0 : wide(n);
+      if (met !== 0) {
+        far = true;
+        if (ground === 0) ground = -met;
+      }
     }
     if (walked.length > POCKET_CELLS) far = true;
   }
-  const pocket = far ? 0 : start + 1;
+  const pocket = far ? ground : start + 1;
   for (const c of walked) id[c] = pocket;
   return pocket;
 }

@@ -17,7 +17,10 @@
  * ground or water around them) are a class of their own, and it reaches the sectors whose front
  * cell is in the pocket: the provinces of a pocket are joined to others that the cells are not.
  * And a sector whose front cell is in a pocket is reached by the class of that pocket alone (PLAN
- * 3.10c2b2).
+ * 3.10c2b2). Wide ground is not one either (PLAN 3.10c2b3a, ADR-193): those that stand in a wide
+ * ground, or on open ground whose cells come to one, are a class by that ground, and it reaches
+ * a sector whose front cell is in another wide ground, or comes to another, only when the cells
+ * join the two (`wideJoined`).
  * Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
@@ -50,7 +53,7 @@
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
 import { neighbours4, pocketOf, type Passage } from '../nav/grid';
-import { wideNode } from '../nav/provinceGraph';
+import { wideJoined, wideNode } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 4;
@@ -239,34 +242,44 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // second time (the landmass is asked once per class and sector), so a change of `mayReach`
   // is a change of the line that fills `reached` below. Then the cells, where they are few
   // (PLAN 3.10c2b, ADR-192): a class in a pocket of open ground reaches the cells of the pocket
-  // and no other, and a class that is not in it does not reach them (PLAN 3.10c2b2), which
-  // `mayReach` does not ask and the order's search would find.
+  // and no other, and a class that is not in it does not reach them (PLAN 3.10c2b2); and a class
+  // in one wide ground does not reach the cells of another that no open cells join it to (PLAN
+  // 3.10c2b3a, ADR-193). `mayReach` asks neither, and the order's search would find both.
   const pass = passageOf(world, n, passages);
   const nav = navOf(world);
   const land = nav.grid.component;
   const nodeOf = nav.graph.nodeOf;
   const group = pass.group!;
-  const wideCell = (c: number): boolean => wideNode(nav.graph, pass, nodeOf[c]!);
+  const wideCell = (c: number): number => wideNode(nav.graph, pass, nodeOf[c]!);
+  /**
+   * The ground a cell of open ground lies in: a pocket (its number), a wide ground or ground
+   * whose cells come to one (minus the wide ground's number), or 0 for ground too wide to walk
+   * that came to none.
+   */
+  const groundOf = (c: number): number => {
+    const wide = wideCell(c);
+    return wide !== 0 ? -wide : pocketOf(nav.grid, pass, c, wideCell);
+  };
   const classIndex = new Map<number, number>();
   const classCell: number[] = [];
   const classGroup: number[] = [];
-  /** The pocket of open ground the class stands in (0: none). */
-  const classPocket: number[] = [];
+  /** The ground the class stands in (`groundOf`; 0 on closed ground too). */
+  const classGround: number[] = [];
   const classOf = new Int32Array(world.formations.highWater);
   for (const ids of [near, out]) {
     for (const id of ids) {
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       const node = nodeOf[here]!;
       const g = node !== 0 && pass.ok[pass.holder[here]!] === 1 ? group[node]! : -1;
-      const pocket = g < 0 || wideNode(nav.graph, pass, node) ? 0 : pocketOf(nav.grid, pass, here, wideCell);
-      // A pocket is of one landmass and one group.
-      const key = pocket > 0 ? -pocket : land[here]! * (nav.graph.nodeCount + 1) + g + 1;
+      const ground = g < 0 ? 0 : groundOf(here);
+      // A pocket is of one landmass and one group, and so is a wide ground (its number is a node's).
+      const key = ground > 0 ? -ground : (land[here]! * (nav.graph.nodeCount + 1) + g + 1) * (nav.graph.nodeCount + 1) - ground;
       let ci = classIndex.get(key);
       if (ci === undefined) {
         classIndex.set(key, (ci = classCell.length));
         classCell.push(here);
         classGroup.push(g);
-        classPocket.push(pocket);
+        classGround.push(ground);
       }
       classOf[id] = ci;
     }
@@ -280,9 +293,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const hold = (s.hold = holdCell(s, w));
     // From another landmass: the cell of it within the snap of an order, once per landmass.
     let other: Map<number, number> | undefined;
-    // The cell last asked for its pocket, and the answer.
+    // The cell last asked for its ground, and the answer.
     let asked = -1;
-    let pocket = 0;
+    let ground = 0;
     for (let ci = 0; ci < classCell.length; ci++) {
       const from = classCell[ci]!;
       const g = classGroup[ci]!;
@@ -302,10 +315,15 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       }
       if (to !== asked) {
         asked = to;
-        const node = nodeOf[to]!;
-        pocket = node === 0 || wideNode(nav.graph, pass, node) ? 0 : pocketOf(nav.grid, pass, to, wideCell);
+        ground = nodeOf[to] === 0 ? 0 : groundOf(to);
       }
-      if (pocket !== classPocket[ci]!) continue;
+      const mine = classGround[ci]!;
+      if (ground !== mine) {
+        if (ground > 0 || mine > 0) continue;
+        // Two wide grounds: the cells join them or the class does not reach the sector (PLAN
+        // 3.10c2b3a, ADR-193). Ground that came to no wide ground may be joined to any.
+        if (ground < 0 && mine < 0 && !wideJoined(nav.grid, nav.graph, pass, -mine, -ground)) continue;
+      }
       reached[ci]!.push(i);
     }
   }

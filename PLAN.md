@@ -4599,6 +4599,40 @@ quick sweep as a smoke test.
         that the allotment of the next days leaves the pair out, or a sector's reach by a
         search from one formation of a class. An ADR, the pin moved. AT: a unit test, red
         first; nation 10's refusals and its days with one, before and after.
+        Split 2026-10-07 after the look (one cause per commit): the two kinds have two
+        causes. No way by the cells is the planner's reach test (3.10c2b3a); a way that the
+        corridor does not hold is `findRoute`'s (3.10c2b3b).
+        - [x] 3.10c2b3a *Done 2026-10-07 (ADR-193):* no way by the cells and both ends in
+          wide ground. The look (a checkpoint of year 4, a picture, PROGRESS): Soviet
+          formations 21 to 53 cells from a front in the Arabian peninsula, 6,824 cells of an
+          enemy's ground with 8 cells of a neutral's between: ADR-192's pocket, larger than
+          4,096, and its provinces read as wide. Neither of PLAN's candidates: a wide ground
+          has a number (`wideNode`), a walk says which one it came to (`pocketOf`), and a
+          class in one reaches a sector in another only when the cells join the two
+          (`wideJoined`: the open cells of the provinces with closed ground, walked once a
+          passage when asked; 0.94 ms, 0.092 ms a tick). Checked against a fill of all open
+          cells: 157,098 pairs, none differ. The unit tests, the first red first. Five years
+          of seed 99: 2,580 such refusals → 490, the Soviet Union's 1,854 → none. **The AT's
+          other half is not met: the Soviet Union's refusals are 2,357 on 351 days → 4,975
+          on 711, and the tick of seed 99 is 1.833 → 2.116 ms,** by the kind below.
+        - [ ] 3.10c2b3b A way by the cells that the corridor of provinces does not hold
+          (ADR-189's price). After 3.10c2b3a (its probe, another game): 4,878 refusals in
+          wide ground in five years of seed 99, 12,571 ms (0.29 ms a tick; 3,583 and 424 ms
+          in the game before), 3,656 of them the Soviet Union's, and 1,390 inside one pocket
+          (20 pairs of a formation and a sector, 84 times the median). One day was looked at
+          (day 1,058, `.cache/c2b3/after-way.png`): 14 formations sent from afar (ADR-190)
+          146 to 441 cells, each to another sector; the way by the cells is 176 to 449 cells
+          and 103 to 247 of them lie outside the corridor, in 11 to 29 provinces; the
+          refusal takes 0.2 to 6.7 ms and is asked again on the formation's next day in
+          eight. The coarse route is planned over provinces with some open ground, which
+          need not be open from side to side. First: where the coarse route and the way
+          part (which provinces the route takes that the way goes around). Candidates,
+          counted before either is chosen: the coarse route over the provinces with no
+          closed ground first, and those with closed ground at a price; or the second
+          search that ADR-189 took away, for a far order only and with a bound on the cells
+          it opens. An ADR, the pin moved. AT: a unit test, red first; the refusals of this
+          kind and their ms, the Soviet Union's days with a refusal, and the tick of seed 99
+          beside 3.10c2b3a's (it must come back under 3.10c2b2's 1.833 ms).
     - [ ] 3.10c2c The steps before the orders (0.13 to 0.47 ms a tick: the frontier, the
       sectors, the scan, the passage, the reach, the reserve, the allotment), by step, on the
       game of HEAD: seed 99 years 1 to 5, seed 4242 years 1 and 2, year 8 of seed 8128. Then
@@ -4608,6 +4642,11 @@ quick sweep as a smoke test.
       and how wide its corridor of provinces is, before it is said.
       After 3.10c2b2: one call of 405 ms in year 5 of seed 99 (the year of the 2,580
       refusals in wide ground; not the reach loop, whose longest is 1.0 ms). Not looked into.
+      After 3.10c2b3a (its look): that call is twelve far orders of the Soviet Union (ADR-190),
+      refused after a search of 32 to 34 ms each, from 1453,521 to twelve sectors 178 to 254
+      cells away in wide ground that no open cell joins to theirs; the memory of a refused
+      search (`g.barred`) holds one goal. With ADR-193 they are not given: the longest call
+      of five years of seed 99 is 92 ms. What is left here is the 85 to 99 ms call.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

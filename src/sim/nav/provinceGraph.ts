@@ -183,40 +183,149 @@ export function nodeGroups(pg: ProvinceGraph, open: Uint8Array): Int32Array {
 }
 
 /**
- * Whether a node lies in wide open ground (PLAN 3.10c2b, ADR-192): it has no closed ground, and
- * with the nodes of no closed ground it is joined to by neighbours it has more than
- * POCKET_CELLS cells. Who stands in such a node stands in no pocket (`pocketOf`), and the cells
+ * The wide ground a node lies in (PLAN 3.10c2b, ADR-192), or 0 for a node in none: the node has
+ * no closed ground, and with the nodes of no closed ground it is joined to by neighbours it has
+ * more than POCKET_CELLS cells. Those nodes are one wide ground, and its number is that of the
+ * node it was first asked for (PLAN 3.10c2b3a, ADR-193: there is more than one, and the cells of
+ * two need not meet). Who stands in such a node stands in no pocket (`pocketOf`), and the cells
  * are not walked to find that out: most formations of most nations stand in one. The nodes are
- * walked from this one until they have that many cells, and the answer is kept for all of them.
+ * walked from this one, and the answer is kept for all of them.
  */
-export function wideNode(pg: ProvinceGraph, pass: Passage, node: number): boolean {
+export function wideNode(pg: ProvinceGraph, pass: Passage, node: number): number {
   const { open, shut } = pass;
-  if (!open || !shut) return false;
-  const memo = (pass.wide ??= new Uint8Array(pg.nodeCount));
-  if (memo[node] !== 0) return memo[node] === 1;
+  if (!open || !shut) return 0;
+  const memo = (pass.wide ??= new Int32Array(pg.nodeCount));
+  if (memo[node] !== 0) return Math.max(0, memo[node]!);
   const clear = (a: number): boolean => open[a] === 1 && shut[a] !== 1;
   if (!clear(node)) {
-    memo[node] = 2;
-    return false;
+    memo[node] = -1;
+    return 0;
   }
-  // In hand: marked 3.
+  // In hand: marked -2.
   const walked = [node];
-  memo[node] = 3;
+  memo[node] = -2;
   let cells = 0;
-  let wide = false;
-  for (let at = 0; at < walked.length && !wide; at++) {
+  for (let at = 0; at < walked.length; at++) {
     const a = walked[at]!;
     cells += pg.cells[a]!;
-    if (cells > POCKET_CELLS) wide = true;
     for (const b of pg.adj[a]!) {
-      if (memo[b] === 1) wide = true;
       if (memo[b] !== 0 || !clear(b)) continue;
-      memo[b] = 3;
+      memo[b] = -2;
       walked.push(b);
     }
   }
-  for (const a of walked) memo[a] = wide ? 1 : 2;
-  return wide;
+  const ground = cells > POCKET_CELLS ? node : -1;
+  for (const a of walked) memo[a] = ground;
+  return Math.max(0, ground);
+}
+
+/** The cells of each node, ascending: those of node `a` are `list[start[a]]` to `list[start[a + 1] - 1]`. */
+function cellsByNode(pg: ProvinceGraph): { start: Int32Array; list: Int32Array } {
+  let made = CELLS_BY_NODE.get(pg);
+  if (!made) {
+    const { nodeOf, nodeCount } = pg;
+    const start = new Int32Array(nodeCount + 1);
+    for (let c = 0; c < nodeOf.length; c++) if (nodeOf[c] !== 0) start[nodeOf[c]! + 1]!++;
+    for (let a = 0; a < nodeCount; a++) start[a + 1]! += start[a]!;
+    const list = new Int32Array(start[nodeCount]!);
+    const at = start.slice();
+    for (let c = 0; c < nodeOf.length; c++) if (nodeOf[c] !== 0) list[at[nodeOf[c]!]!++] = c;
+    CELLS_BY_NODE.set(pg, (made = { start, list }));
+  }
+  return made;
+}
+const CELLS_BY_NODE = new WeakMap<ProvinceGraph, { start: Int32Array; list: Int32Array }>();
+/** By grid, the cells `joinWide` has walked: `stamp[c]` is `gen` for those of the walk in hand. */
+const JOIN_SCRATCH = new WeakMap<NavGrid, { stamp: Uint32Array; gen: number; stack: number[] }>();
+const STEP_X = [1, -1, 0, 0, 1, 1, -1, -1];
+const STEP_Y = [0, 0, 1, -1, 1, -1, 1, -1];
+
+/**
+ * Whether the cells join two wide grounds (`wideNode`'s numbers) on a passage (PLAN 3.10c2b3a,
+ * ADR-193): a route over open ground comes from the one to the other. Two wide grounds are apart
+ * by the nodes, so what joins them is open ground of nodes that have closed ground too. Worked
+ * out once a passage, when it is first asked, and kept (`Passage.joined`).
+ */
+export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: number, b: number): boolean {
+  if (a === b) return true;
+  const joined = (pass.joined ??= joinWide(g, pg, pass));
+  return joined[a] === joined[b];
+}
+
+/**
+ * By node with no closed ground: a number that two such nodes share when a route over open
+ * ground comes from the one to the other (0 for every other node). The groups of such nodes
+ * (`nodeGroups`: the cells of neighbours meet) are joined where a run of open cells in the
+ * nodes that have closed ground touches two of them. Only those cells are walked (`findPath`'s
+ * steps, as `pocketOf` walks them): 30,000 of the 1938 map's 204,000 in a fifth year, 18,000 of
+ * them open.
+ */
+function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
+  const open = pass.open!;
+  const shut = pass.shut!;
+  const { nodeOf, nodeCount } = pg;
+  const clear = new Uint8Array(nodeCount);
+  for (let a = 1; a < nodeCount; a++) if (open[a] === 1 && shut[a] !== 1) clear[a] = 1;
+  const group = nodeGroups(pg, clear);
+  // Union-find over the groups (by their numbers) and, after them, the runs of open cells.
+  const parent: number[] = [0];
+  for (let a = 1; a < nodeCount; a++) while (parent.length <= group[a]!) parent.push(parent.length);
+  const find = (x: number): number => {
+    while (parent[x] !== x) x = parent[x] = parent[parent[x]!]!;
+    return x;
+  };
+  const { w, h, wrapX, component } = g;
+  const { ok, holder } = pass;
+  let sc = JOIN_SCRATCH.get(g);
+  if (!sc || sc.stamp.length !== w * h) JOIN_SCRATCH.set(g, (sc = { stamp: new Uint32Array(w * h), gen: 0, stack: [] }));
+  if (++sc.gen === 0xffffffff) {
+    sc.stamp.fill(0);
+    sc.gen = 1;
+  }
+  const { stamp, gen, stack } = sc;
+  const { start, list } = cellsByNode(pg);
+  for (let a = 1; a < nodeCount; a++) {
+    if (open[a] !== 1 || shut[a] !== 1) continue;
+    for (let i = start[a]!; i < start[a + 1]!; i++) {
+      const first = list[i]!;
+      if (stamp[first] === gen || component[first] === 0 || ok[holder[first]!] !== 1) continue;
+      const run = parent.length;
+      parent.push(run);
+      stamp[first] = gen;
+      stack.push(first);
+      while (stack.length > 0) {
+        const c = stack.pop()!;
+        const cx = c % w;
+        const cy = (c - cx) / w;
+        for (let k = 0; k < 8; k++) {
+          const dx = STEP_X[k]!;
+          const dy = STEP_Y[k]!;
+          const ny = cy + dy;
+          if (ny < 0 || ny >= h) continue;
+          let nx = cx + dx;
+          if (nx < 0 || nx >= w) {
+            if (!wrapX) continue;
+            nx = (nx + w) % w;
+          }
+          const n = ny * w + nx;
+          if (component[n] === 0 || ok[holder[n]!] !== 1) continue;
+          // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells.
+          if (dx !== 0 && dy !== 0 && (component[cy * w + nx] === 0 || component[ny * w + cx] === 0)) continue;
+          const met = group[nodeOf[n]!]!;
+          if (met !== 0) {
+            parent[find(run)] = find(met);
+            continue;
+          }
+          if (stamp[n] === gen) continue;
+          stamp[n] = gen;
+          stack.push(n);
+        }
+      }
+    }
+  }
+  const joined = new Int32Array(nodeCount);
+  for (let a = 1; a < nodeCount; a++) if (group[a] !== 0) joined[a] = find(group[a]!);
+  return joined;
 }
 
 /**
@@ -226,9 +335,10 @@ export function wideNode(pg: ProvinceGraph, pass: Passage, node: number): boolea
  * operational AI, PLAN 3.5b).
  * Written twice: `planNation` (`ai/operational.ts`, where it fills `reached`) reads the landmass
  * and the two groups itself, per class of formations and not per formation. A change of this
- * test is a change of that one. It asks one thing more, which this test does not (PLAN 3.10c2b,
- * ADR-192): whether the start and the goal are in one pocket of open ground or in none
- * (`pocketOf`). Here that is left to the search, which walks the pocket and finds no way.
+ * test is a change of that one. It asks two things more, which this test does not: whether the
+ * start and the goal are in one pocket of open ground or in none (`pocketOf`; PLAN 3.10c2b,
+ * ADR-192), and whether two wide grounds are joined (`wideJoined`; PLAN 3.10c2b3a, ADR-193).
+ * Here that is left to the search, which finds no way.
  */
 export function mayReach(g: NavGrid, pg: ProvinceGraph, start: number, goal: number, pass?: Passage): boolean {
   if (g.component[start] === 0 || g.component[start] !== g.component[goal]) return false;

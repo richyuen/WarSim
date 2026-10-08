@@ -6,6 +6,7 @@ import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
 import { passageOf } from '../../src/sim/systems/movement';
 import { neighbours4 } from '../../src/sim/nav/grid';
+import { wideNode } from '../../src/sim/nav/provinceGraph';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -650,6 +651,91 @@ describe('a pocket of open ground (PLAN 3.10c2b, ADR-192)', () => {
     for (const id of ids) {
       expect(f.moving[id], `division ${id}`).toBe(1);
       expect(within(f.targetCell[id]!, small, 0), `division ${id} to ${f.targetCell[id]! % W},${Math.floor(f.targetCell[id]! / W)}`).toBe(false);
+    }
+  });
+});
+
+describe('two wide grounds (PLAN 3.10c2b3a, ADR-193)', () => {
+  /**
+   * The United States against Mexico, and a wall of Canadian ground two cells thick across the
+   * United States twelve cells north of the middle of the front (Canada is at peace with both, so
+   * its ground is closed to the Americans), with `gap` cells of it left open. Six American
+   * divisions stand three cells north of the wall. Neither side of it is a pocket.
+   */
+  function walled(gap: number): { s: Sim; w: World; ids: number[]; USA: number; wall: number } {
+    const [USA, MEX, CAN] = ['USA', 'MEX', 'CAN'].map(nationId) as [number, number, number];
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [USA, MEX]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== USA) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[USA] = 0;
+    runEvents(s, 1);
+    w.wars.start([USA], [MEX], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    const nav = navOf(w);
+    const nb: number[] = [];
+    const isFront = (c: number): boolean => w.cells.controller[c] === USA && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === MEX);
+    const front = [...frontierOf(w)].filter(isFront).sort((a, b) => (a % W) - (b % W) || a - b);
+    const a = front[Math.floor(front.length / 2)]!;
+    const ax = a % W;
+    const ay = Math.floor(a / W);
+    const wall = ay - 12;
+    // All of the front is south of the wall.
+    for (const c of front) expect(Math.floor(c / W)).toBeGreaterThan(wall + 1);
+    for (let y = wall; y <= wall + 1; y++) {
+      for (let x = 0; x < W; x++) {
+        const c = y * W + x;
+        if (w.cells.controller[c] === USA && !(x >= ax && x < ax + gap)) w.setController(c, CAN);
+      }
+    }
+    const ids = Array.from({ length: 6 }, (_, k) => addDivision(w, USA, ax - 1 + (k % 3) + 0.5, wall - 4 + Math.floor(k / 3) + 0.5));
+    const stand = Math.floor(f.y[ids[0]!]!) * W + Math.floor(f.x[ids[0]!]!);
+    for (const id of ids) expect(w.cells.controller[Math.floor(f.y[id]!) * W + Math.floor(f.x[id]!)], `division ${id}`).toBe(USA);
+    // The front is within the range of the divisions, and by the provinces they reach it: the
+    // wall runs through provinces that have American ground on both sides of it.
+    const dist = (id: number, c: number): number => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5));
+    for (const id of ids) expect(dist(id, a), `division ${id}`).toBeLessThan(DEPLOY_RANGE_CELLS / 2);
+    const pass = passageOf(w, USA);
+    const node = (c: number): number => nav.graph.nodeOf[c]!;
+    expect(pass.group![node(stand)]).toBeGreaterThan(0);
+    expect(pass.group![node(a)]).toBe(pass.group![node(stand)]);
+    // Wide ground on both sides: the provinces of Mexico south of the front, all of them open,
+    // and those of the United States north of the wall that the wall does not touch.
+    const foe = neighbours4(a, W, H, true, nb).find((k) => w.cells.controller[k] === MEX)!;
+    expect(wideNode(nav.graph, pass, node(foe))).toBeTruthy();
+    expect(wideNode(nav.graph, pass, node((wall - 30) * W + ax))).toBeTruthy();
+    return { s, w, ids, USA, wall };
+  }
+  /** To the hour after the Americans' next plan: the orders refused in it. */
+  function plan(s: Sim, USA: number): number[][] {
+    const w = s.world;
+    const events: number[][] = [];
+    do events.push(...runEvents(s, 1));
+    while (w.tick % 6 !== 1 || ((w.tick - 1) / 6 + USA) % STAGGER !== 0);
+    return eventKinds(events, EventKind.MoveRejected).filter(([, nation]) => nation === USA);
+  }
+
+  it('divisions in wide ground are not ordered to a front in other wide ground that a third nation walls off', () => {
+    const { s, w, ids, USA } = walled(0);
+    expect(plan(s, USA)).toEqual([]);
+    // They reach no front: none marches.
+    for (const id of ids) expect(w.formations.cols.moving[id], `division ${id}`).toBe(0);
+  });
+
+  it('they are ordered to it when the wall has a gap, though only provinces with closed ground join the two', () => {
+    const { s, w, ids, USA, wall } = walled(4);
+    expect(plan(s, USA)).toEqual([]);
+    const f = w.formations.cols;
+    for (const id of ids) {
+      expect(f.moving[id], `division ${id}`).toBe(1);
+      expect(Math.floor(f.targetCell[id]! / W), `division ${id}`).toBeGreaterThan(wall + 1);
     }
   });
 });

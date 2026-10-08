@@ -9898,3 +9898,79 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 994 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c2b3 (first a day of nation 10's refusals in wide ground).
+
+## 2026-10-07 — PLAN 3.10c2b3a: two wide grounds (ADR-193)
+
+- **Step 2:** `npm run check` on a clean tree: nothing to run, green. Critic: not due.
+- **The look PLAN asked for first** (`.cache/c2b3/y4.bin`, a checkpoint of HEAD's year 4 of
+  seed 99: the one of 3.10c2b1 is of older rules; a probe put in and taken out, one hook in
+  `movement.ts`; `.cache/c2b3/head-apart.png`, not committed). Day 1,779, 21 refused orders
+  of the Soviet Union, all with no way by the cells. 17 formations 21 to 53 cells from an
+  enemy's cell at the head of the Persian Gulf (1302,436), 4 at 1526,439 sent 218 to 275
+  cells to that front. Their open ground: 199,184 cells. The front's: 6,824, the Arabian
+  peninsula, an enemy's from side to side; 8 cells of a neutral lie between. A pocket
+  larger than 4,096 cells whose provinces `wideNode` reads as wide.
+- **The 405 ms call of 3.10c2d** is of this kind: tick 42,372, twelve far orders of the
+  Soviet Union from 1453,521 to twelve sectors 178 to 254 cells away, each refused after
+  32 to 34 ms. Year 5's refused orders cost 3,051 ms, 0.35 ms a tick (3.10c2a's 0.021 was
+  the mean of five years of another game): this part is the tick's too.
+- **PLAN split first:** 3.10c2b3a (no way by the cells: the reach test) and 3.10c2b3b (a
+  way that the corridor does not hold: `findRoute`).
+- **The counts before the rule** (year 5 from the checkpoint; hooks put in and taken out).
+  By where the order's cell is: 1,903 of the 2,580 in a province with closed ground, 311
+  with both ends in wide provinces, so "two wide provinces of two groups are apart" would
+  answer an eighth. The cells' own map (groups of provinces with no closed ground, joined
+  by the open cells of the provinces that have some): 0.095 + 0.83 ms a plan, 0.59 ms a
+  tick for every plan; against a fill of all open cells, 157,098 pairs of a class and a
+  sector, none differ. Kept from plan to plan it would be made again in 2,584 of 4,647
+  passages (a cell changed between an open and a closed holder).
+- **Done:** `wideNode` gives the number of a node's wide ground (it walks the whole group of
+  provinces). `pocketOf` gives minus the number of the wide ground a walk came to.
+  `wideJoined` and `joinWide` (`nav/provinceGraph.ts`): the map above, made once a passage
+  when two wide grounds are first asked for (`Passage.joined`). `planNation`: classes by
+  the ground (`groundOf`), and a class reaches a sector in another wide ground only when
+  the two are joined. SPEC §7, ADR-193, PLAN 3.10c2b3 split and 3.10c2d, the pin
+  `2724cb90` → `10e1cac4`.
+- **The unit tests** (`operationalAi.test.ts`, "two wide grounds"): the United States
+  against Mexico, a wall of Canadian ground across the United States, six divisions north
+  of it. Red on HEAD (six orders refused), green now (none ordered). With a gap of four
+  cells in the wall all six are ordered, on HEAD and now.
+- **Before and after** (five years of seed 99, one probe on both; another game from year 1):
+
+  | | orders | refused | their ms | no way, both in wide ground | a way by the cells, in wide ground | a way, inside one pocket | others |
+  |---|---|---|---|---|---|---|---|
+  | HEAD | 66,197 | 6,280 | 3,499 | 2,580 (2,471 ms) | 3,583 (424 ms) | 77 | 40 |
+  | this | 61,918 | 6,816 | 12,874 | 490 (252 ms) | 4,878 (12,571 ms) | 1,390 (43 ms) | 58 |
+
+  The Soviet Union: 1,854 of this kind → none. **Its refusals of all kinds are more: 2,357
+  on 351 days → 4,975 on 711** (3,656 with a way by the cells in wide ground, 1,319 inside
+  a pocket). The day looked at (1,058, `.cache/c2b3/after-way.png`): 14 formations sent
+  from afar 146 to 441 cells, ways of 176 to 449 cells with 103 to 247 cells outside the
+  corridor. PLAN 3.10c2b3b. PLAN's AT ("nation 10's refusals and its days with one") is met
+  for the kind and not for the nation.
+- **The cost of the walk** (counters put in and taken out): `wideJoined` asked 500,671 times
+  in five years (apart 144,679 times), the cells walked for 4,295 passages, 4,027 ms, 0.94
+  ms each, 7.8 the longest, 0.092 ms a tick.
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, 3.10c2b2 → this (ms a
+  tick; one run each; other games from the first year on):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 4242, year 1 | 1.938 → 1.956 | 0.305 → 0.315 | 84.6 → 86.7 |
+  | seed 4242, year 2 | 1.469 → 1.527 | 0.408 → 0.436 | 99.1 → 99.3 |
+  | seed 99, years 1 to 5 | 1.833 → 2.116 | 0.548 → 0.865 | 405.0 → 92.3 |
+
+  Seed 99 by year: 2.346, 1.628, 2.114, 2.473, 2.017 (the operational AI 0.491, 0.509,
+  0.921, 1.432, 0.972). **The tick is slower, 0.28 ms on seed 99, and 0.6 over the budget
+  of 1.5 ms:** 0.21 of it the refused far orders of the game after (3.10c2b3b, the next
+  part), 0.09 the walk.
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`):
+  `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass (6 tests, 2.5 min).
+- **Not done:** no picture in the repo (the looks' are in `.cache`). The 490 refusals left
+  with no way were not looked at. `wideNode`'s longer walk was not timed apart. Whether the
+  Soviet formations sent from afar are those that stood allotted to Arabia before is a
+  guess. No sweep (ADR-58). The full e2e suite has not run on this game (a part; 3.10f).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 996 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part; the four specs above by hand).
+- **Next:** PLAN 3.10c2b3b (the corridor: where the coarse route and the way part).

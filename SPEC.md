@@ -1412,6 +1412,15 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     as from a formation's, once a cell and passage. A class on closed ground is not asked
     (it walks out of it, into a pocket too). An order's own test (`mayReach`) does not ask
     this: the order's search finds it.
+  - *Wide grounds* (PLAN 3.10c2b3a, ADR-193): wide ground is not one. The provinces with no
+    closed ground that neighbours join, when they have more than 4,096 cells, are a wide
+    ground with a number (`wideNode`), and a walk that ends at a cell of one says which
+    (`pocketOf`). Formations are classes by the wide ground they stand in or come to, and a
+    class reaches a sector whose front cell is in another wide ground, or comes to another,
+    only when the cells join the two (`wideJoined`, nav/provinceGraph.ts): the open cells of
+    the provinces that have closed ground are walked, once a passage and only when two wide
+    grounds are asked for, and two wide grounds that a run of such cells touches are joined.
+    Ground that was walked 4,096 cells and came to no wide ground is taken to reach any.
   - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
     sector getting one while formations last. Formations already marching into a sector keep it,
     also beyond the sector's allotment of the day [ADR-53]; the rest fill what is left

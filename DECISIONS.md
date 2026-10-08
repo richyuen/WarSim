@@ -167,6 +167,98 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-193 · 2026-10-07 · accepted — Wide grounds are told apart, and the cells say whether two are joined (PLAN 3.10c2b3a)
+
+- **Context.** ADR-192 walks open ground of 4,096 cells or fewer (a pocket) and takes all
+  wider ground for one: a class in wide ground reaches every sector whose cell is in wide
+  ground. After it, five years of seed 99 have 2,580 orders refused with no way by the
+  cells and both ends in ground of more than 4,096 cells, all in year 5, 1,854 of them
+  the Soviet Union's.
+- **What the look found** (`.cache/c2b3/y4.bin`, a checkpoint of HEAD's year 4;
+  `.cache/c2b3/head-apart.png`, not committed). Day 1,779, 21 refused orders of the Soviet
+  Union. 17 formations stand 21 to 53 cells from an enemy's cell at the head of the Persian
+  Gulf (1302,436) and are sent to it; 4 at 1526,439 are sent 218 to 275 cells to four
+  sectors of that front (ADR-190). Their open ground has 199,184 cells. The front's has
+  6,824: the Arabian peninsula, all of it an enemy's, so every province of it is open from
+  side to side and `wideNode` says wide. Between the two lie some 8 cells of a nation at
+  peace with the Soviet Union (a way over any ground is 37 cells for 21 in a straight
+  line). So it is the pocket of ADR-192 again, larger than the number.
+- **Not a larger number.** The year's refusals of this kind by where the order's cell is
+  (a probe; "wide province": `wideNode`): in a province with closed ground 1,903 (735 of
+  them to a cell more than 60 cells away, 1,981 ms), in a wide province 677, and only 311 with both ends in wide
+  provinces. The front's cell is mostly in a province that the closed ground runs
+  through; its walk ends at the first cell of a wide province and says "not a pocket",
+  whichever wide ground that is.
+- **Decision.** (1) A wide ground has a number: `wideNode` walks all the provinces with no
+  closed ground that neighbours join to the one asked, and gives them, when they have more
+  than `POCKET_CELLS` cells together, the number of that node. (2) `pocketOf` says which
+  wide ground a walk came to: below 0, minus its number; 0 only for a walk that took
+  4,097 cells and met none. (3) In `planNation` formations are classes by that ground too
+  (the pocket, the wide ground, or none known), and in the loop that fills `reached` a
+  class and a sector's cell whose grounds are two wide grounds are asked `wideJoined`:
+  whether the cells join them. One side a pocket and the other not: not reached, as
+  before. One side unknown: reached, as before. (4) `wideJoined` (nav/provinceGraph.ts)
+  works out, once a passage and when first asked, which provinces with no closed ground
+  are joined by the cells: their groups by neighbours (`nodeGroups`), and a union of two
+  groups wherever one run of open cells in the provinces that have closed ground touches
+  both. Only the cells of those provinces are walked (by `findPath`'s steps, as
+  `pocketOf`), from a list of the cells by node made once a graph.
+- **That it is the cells' own answer.** A probe made the same map for every plan of that
+  year 5 and a labelled fill of all open cells for every tenth: 157,098 pairs of a class
+  and a sector, none differ. Of 1,573,747 pairs that the reach test of ADR-192 passed,
+  114,219 are apart by the cells.
+- **Why not the map for every plan** (it would take the place of `pocketOf` and of
+  `wideNode`). 5,556 plans in that year; the groups are 0.095 ms a plan and the walk 0.83
+  ms (29,633 cells of provinces with closed ground, 18,157 of them open; 5.4 ms the
+  longest): 0.59 ms a tick. **Why it is not kept from one plan to the next:** between two
+  passages with the same open holders a cell changed between an open and a closed holder
+  in 2,584 of 4,647, so it would be made again more than half the time, and it needs a
+  record of every cell that changes hands to know.
+- **Why not "two wide grounds are apart"** (no walk). In five years of seed 99 `wideJoined`
+  is asked 500,671 times and says "joined" 355,992 times: a front is often reached through
+  a province that a neutral holds part of.
+- **Why not a remembered refusal** (PLAN's candidate, and ADR-192's "why not"): state, to
+  be forgotten when the ground changes, and the first day is still refused. The far
+  orders are the dear ones here, and each far formation is refused once for every empty
+  sector of the walled ground before a memory of pairs quiets it. **Why not a search from
+  one formation of a class:** that is the search that costs 2 to 34 ms today, for every
+  sector of the class and not only those it is allotted.
+- **The cost.** Five years of seed 99: the cells walked for 4,295 passages, 4,027 ms, 0.94
+  ms each (7.8 the longest), 0.092 ms a tick. `wideNode` now walks a whole group of
+  provinces and not only its first 4,096 cells: not measured apart.
+- **What it did** (five years of seed 99, one probe before and after; another game from the
+  first year on):
+
+  | | orders | refused | their ms | no way, both in wide ground | a way by the cells, in wide ground | a way, inside one pocket | others |
+  |---|---|---|---|---|---|---|---|
+  | before | 66,197 | 6,280 | 3,499 | 2,580 (2,471 ms) | 3,583 (424 ms) | 77 | 40 |
+  | after | 61,918 | 6,816 | 12,874 | 490 (252 ms) | 4,878 (12,571 ms) | 1,390 (43 ms) | 58 |
+
+  The Soviet Union: 1,854 of the kind this answers → none. **But its refusals are more,
+  2,357 on 351 days → 4,975 on 711, and the refused orders cost 0.080 → 0.294 ms a tick:**
+  in the game after it has more formations that are far from every sector they reach (by a
+  guess that was not counted: those that no longer stand allotted to a front they cannot
+  reach), and they are sent from afar (ADR-190) to sectors 146 to 441 cells away that have a way by the cells, 103 to 247 cells of it outside the
+  corridor of provinces. The corridor refuses them after 0.2 to 6.7 ms, every eighth day.
+  That is ADR-189's price, PLAN 3.10c2b3b. The 490 left with no way (87 pairs of a
+  formation and a sector, 35 days of nations other than the Soviet Union) were not looked
+  at: a walk that met no wide ground, or an attack on an enemy's cell that is not of the
+  front cell's ground.
+- **The tick** (pinned to `0xFFFF`, `--profile`, one run each): seed 99, years 1 to 5,
+  1.833 → 2.116 ms (the operational AI 0.548 → 0.865, its longest call 405 → 92 ms); seed
+  4242, year 1, 1.938 → 1.956, year 2, 1.469 → 1.527. Slower, and seed 99 is 0.6 over the
+  budget: the refused far orders above (0.21 ms a tick more) and the walk (0.09).
+- **What it does not do.** A province with no closed ground that is in two parts reads as
+  joined in itself (ADR-192's note; the 157,098 pairs had none). Two classes in two wide
+  grounds that the cells join are allotted each by itself, though they reach the same
+  sectors. `mayReach` is not changed: an order is still refused by its search.
+- **Tests.** `tests/unit/operationalAi.test.ts`, "two wide grounds": the United States
+  against Mexico and a wall of Canadian ground across the United States twelve cells north
+  of the front, six divisions north of it. Red before (six orders refused), green after:
+  none is ordered. With four cells of the wall left open (the two grounds joined only
+  through provinces that the wall runs through) all six are ordered to the front, before
+  and after. The pin `2724cb90` → `10e1cac4`.
+
 ### ADR-192 · 2026-10-07 · accepted — Formations in a pocket of open ground are allotted to the front in the pocket (PLAN 3.10c2b1)
 
 - **Context.** PLAN 3.10c2a: 21,078 of 76,738 orders of the operational AI in five years of
