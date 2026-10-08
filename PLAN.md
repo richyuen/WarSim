@@ -4451,6 +4451,12 @@ quick sweep as a smoke test.
     against the block the tag is tied to). Do not weaken the spec. AT: a unit test of the
     placing with the boxes of this view, red first; `tankBattle1938` green on this game,
     its six pictures looked at; `markerStacks1938`, `tags1938`, `battleView1938` by hand.
+  - [x] 3.10c1c *Done 2026-10-07 (ADR-189; found while measuring 3.10c1a, whose game had fifteen times as many):* an order of under 500 km that the cells give no way for cost a search
+    of all the ground the formation can reach, 27 to 33 ms, and was given again the day
+    after (39 in year 8 of seed 8128 on the game of 3.10c1b). `findRoute` holds a short
+    route from open ground to the provinces of the coarse route and their neighbours, as it
+    does a long one. AT: a unit test, red first (a place walled off inside its province);
+    the tick of seeds 4242, 8128 and 99 before and after; the pin moved.
   - [ ] 3.10c1a Formations go to a front that the army is not near. Seen in the look of
     3.10c1: after a year of seed 4242 the Soviet Union has 162 formations and 14 within the
     range of its front against Iran (104 sectors, 21 with a formation within two sectors);

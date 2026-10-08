@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-189 · 2026-10-07 · accepted — A short route over open ground is held to the provinces (PLAN 3.10c1c)
+
+- **Context.** Found while measuring PLAN 3.10c1a (formations sent to a far front): the
+  operational AI's tick rose from 0.49 to 1.30 ms in year 8 of seed 8128 and to 5.58 ms in
+  year 2 of seed 99, with one call of 1,004 ms. A probe (put in and taken out): the far
+  orders were 0.03 to 0.12 ms a tick of that. The rest was ordinary orders that `orderMove`
+  refused after a search of 27 to 33 ms each: 570 of them in that year of seed 8128 (15.6 s
+  of the 16.1 s all 11,891 orders took), 1,478 in three years of seed 99 (45.1 s). The
+  game of HEAD has them too, 39 in year 8 of seed 8128 from the same state: nation 15's
+  formation 204 at cell (1157, 292), ordered to (1132, 311), refused on six days running.
+- **Cause.** The reach test (`mayReach`, and its twin in `planNation`) is by province: both
+  ends in one group of provinces that have open ground. A province with some open ground
+  need not be open from side to side, so the test passes where the cells give no way. For
+  a route over 500 km `findRoute` then searches only the provinces of the coarse route and
+  their neighbours and refuses (PLAN 3.4Rl, ADR-149). Under 500 km it went straight to the
+  cell search with no corridor, and that search ends only when it has walked all the open
+  ground the formation can reach.
+- **Decision.** From a start on open ground under a `Passage`, a route of any length is
+  planned over the provinces with open ground and searched in their corridor (the route's
+  provinces and their neighbours; two ends in one province: it and its neighbours). Not
+  found there, it is refused, and the memory of the last refused search (`NavGrid.barred`)
+  holds for it as for a long one. Without a `Passage`, or from closed ground, nothing
+  changes.
+- **What it takes away.** A short way that leaves the corridor: round a bay or a closed
+  nation through provinces that are not neighbours of the coarse route's. The coarse route
+  is itself over provinces with open ground, so the case is a province that is open but
+  not from side to side, twice over. Not counted.
+- **Why not make the reach test exact.** That is the groups by cell: a flood of the open
+  ground per `Passage`, and a passage is made anew in every hour somebody plans. Not
+  measured; this change is three lines and uses what the long routes have.
+- **Still so:** a formation whose order is refused is asked again the next day (PLAN
+  3.10c2). The refusal is now cheap.
+- **Test.** `tests/unit/provinceGraph.test.ts`, "a place walled off inside its province": a
+  ring of Polish ground round a German cell near Berlin, an order from 12 cells away. The
+  search sees 1,070 cells (2,354 before: all of Germany's open ground; the test asks for
+  under 1,500) and the same order again sees none.
+- **The pin** moved: `a71ed07e` → `5643bf80` (seed 99 after one year): routes of under
+  500 km are searched in a corridor, and one that left it is now another.
+
 ### ADR-188 · 2026-10-07 · accepted — A tag that is not the nearest to its own elements has a line to them (PLAN 3.10c1b)
 
 - **Context.** `tankBattle1938` failed on the game of PLAN 3.10c1 at its stop of 60 m/px:

@@ -9425,3 +9425,54 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 988 unit tests, build, parity. No sweep tests (no sim input changed) and no e2e (a part; the four specs above by hand).
 - **Next:** PLAN 3.10c1a (formations go to a front that the army is not near).
+
+## 2026-10-07 · PLAN 3.10c1c: a short route over open ground is held to the provinces (ADR-189)
+
+- **How it was found.** A first cut of PLAN 3.10c1a (a front sector with nobody takes a
+  formation that is far from every front; not committed, it follows) made the operational
+  AI dearer, not cheaper: year 8 of seed 8128 0.49 → 1.30 ms a tick with a call of 456 ms,
+  year 2 of seed 99 5.58 ms with a call of 1,004 ms. A probe on the orders (put in and
+  taken out):
+  - the far orders themselves: 0.03 to 0.12 ms a tick;
+  - ordinary orders refused after a search of 3 ms or more: 570 in year 8 of seed 8128,
+    15.6 s of the 16.1 s that all 11,891 orders took; 1,478 in three years of seed 99,
+    45.1 s of 47.3 s. Those looked at (the 348 of an earlier run of that year): all of
+    under 66 cells, same landmass, same group of provinces at both ends, a start on open
+    ground.
+  - The game of HEAD has them: 39 in year 8 of seed 8128 from the same state (all its
+    refused orders took 0.86 s of the year). Nation 15's formation 204 at (1157, 292),
+    ordered to (1132, 311): 29.5 to 32.8 ms on each of six days running.
+- **Cause and fix** (`findRoute`, three lines): under 500 km the search had no corridor, so
+  a way the provinces promise and the cells do not give was looked for over all the ground
+  the formation can reach. A short route from open ground is now held to the coarse
+  route's provinces and their neighbours, as a long one has been since PLAN 3.4Rl.
+- **Test:** `tests/unit/provinceGraph.test.ts`, the walled-off place: red on the old search
+  ("expected 2354 to be less than 1500"), 1,070 cells on the new, 0 for the same order
+  again. The other 988 unit tests pass unchanged (989).
+- **The pin** moved: `a71ed07e` → `5643bf80`.
+- **The tick,** pinned to `0xFFFF`, `--profile`, nothing beside it, the rule of 3.10c1b before
+  → with this change (ms a tick; one run each):
+
+  | | tick | operationalAi | its longest call (ms) |
+  |---|---|---|---|
+  | seed 8128, year 8 (the same state) | 1.847 → 1.676 | 0.470 → 0.363 | 83.5 → 33.9 |
+  | seed 4242, year 1 | 2.114 → 2.148 | 0.236 → 0.265 | 19.2 → 23.4 |
+  | seed 4242, year 2 | 1.380 → 0.822 | 0.170 → 0.119 | 10.7 → 18.1 |
+  | seed 99, years 1 to 5 | 1.949 → 1.481 | 0.526 → 0.290 | 43.3 → 18.4 |
+
+  Seed 99 by year: 2.120, 1.763, 1.522, 1.177, 0.821 (the operational AI 0.299, 0.340,
+  0.426, 0.252, 0.136). Seed 4242 over two years: 1.485. "Before" for seeds 4242 and 99 is
+  3.10c1's table, for seed 8128 a run of today. Only seed 8128 starts from the same state;
+  the others are another game from the first route that changed. The dear year 4 of seed
+  99 that PLAN 3.10c2 was to start with (19,434 orders at 0.26 ms) is 0.252 ms in this
+  game: whether those were refused orders was not looked at.
+- **Not done:** the refused orders were not counted again on the new search. How many short
+  routes left the corridor before (and are now another route or refused) was not counted.
+  No sweep (ADR-58).
+- **Specs by hand** (nothing drawn changed, but the game did; `--project chromium`, 6 tests,
+  2.6 min): `tankBattle1938`, `battleView1938`, `markers1938`, `fire1938` pass. The tank
+  battle is the one of 3.10c1b (formation 395, its tag with a line at 60 m/px).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, exit 0: typecheck, lint, 989 unit tests, the 17 sweep tests, build,
+  parity. No e2e (a part).
+- **Next:** PLAN 3.10c1a, on this search.

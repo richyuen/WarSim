@@ -833,7 +833,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   PLAN 3.7j, ADR-170), so every walkable cell has a node; the ids of both kinds begin above the
   highest province of any cell. Built in 80 ms at M (measured before
   ADR-170, not again). It is derived, never saved.
-- *Routes:* `findRoute` uses straight cell A* below 500 km. Above that, it runs coarse A* on the
+- *Routes:* `findRoute` uses straight cell A* below 500 km (not from open ground under a `Passage`: there every route is as one above 500 km, PLAN 3.10c1c, ADR-189). Above that, it runs coarse A* on the
   province graph, then cell A* inside the corridor of route provinces and their neighbours, with a
   flat fallback (none for a march: see *No march across a third nation* below). Cell A* is 8-connected with no corner cutting. Its heuristic is the octile walk
   (min(dx, dy) diagonal steps, the rest straight) × min cost, with the km scales of the smaller of
@@ -869,8 +869,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     any other holder is entered only from a cell of the same holder (who stands there walks
     on it and out). With no way round, `MoveRejected`. Before any search the two ends must
     lie in one group of neighbouring province nodes that have open ground
-    (`World.heldByNode`, cells by node and holder, kept by `setController`); a route over
-    500 km is planned over such nodes and, when it is not found in their corridor, refused.
+    (`World.heldByNode`, cells by node and holder, kept by `setController`); a route, of
+    any length since PLAN 3.10c1c (ADR-189; before it one over 500 km), is planned over such
+    nodes and, when it is not found in their corridor, refused.
     A march whose next cell has become a third nation's ends before it (`MoveRejected`).
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
   (speed × 0.3 march duty × the template's share of its speed on that ground: the least

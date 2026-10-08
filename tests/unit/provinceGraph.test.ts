@@ -3,6 +3,7 @@ import { encodeRuns } from '../../src/shared/mapImport';
 import { Terrain } from '../../src/shared/terrain';
 import { Mobility, type Passage } from '../../src/sim/nav/grid';
 import { findRoute, mayReach, nodeGroups } from '../../src/sim/nav/provinceGraph';
+import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { orderMove, passageOf } from '../../src/sim/systems/movement';
@@ -102,5 +103,41 @@ describe('a land cell with no province joins the provinces about it (PLAN 3.7j)'
     expect(grid.component[from]).toBe(grid.component[to]);
     expect(findRoute(grid, graph, Mobility.foot, from, to, allOpen(world))).not.toBeNull();
     expect(findRoute(grid, graph, Mobility.foot, from, to, passageOf(world, nationId('JAP')))).not.toBeNull();
+  });
+});
+
+// PLAN 3.10c1c (ADR-189): the groups say where a route may be, by province. Where the cells
+// give none, a short search walked all the ground the formation could reach (30 ms an order,
+// and the operational AI asked again the day after).
+describe('a short route over open ground is held to the provinces (PLAN 3.10c1c)', () => {
+  it('a place walled off inside its province is refused after a search of the provinces about it', () => {
+    const world = world1938();
+    const [GER, POL] = [nationId('GER'), nationId('POL')];
+    const { grid, graph } = navOf(world);
+    // A ring of Polish ground (at peace with Germany: closed) around a German cell near Berlin.
+    const [gx, gy] = cellOf(13.4, 52.5, W, SIZE_1938.h).map(Math.floor) as [number, number];
+    const goal = at(gx, gy);
+    const start = at(gx - 12, gy);
+    for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === 3) world.setController(at(gx + dx, gy + dy), POL);
+    expect([world.cells.controller[start], world.cells.controller[goal]]).toEqual([GER, GER]);
+    const pass = passageOf(world, GER);
+    expect(mayReach(grid, graph, start, goal, pass), 'the premise: the provinces say there may be a way').toBe(true);
+    const seen = (): number => {
+      const before = grid.scratch?.gen ?? 0;
+      expect(findRoute(grid, graph, Mobility.foot, start, goal, pass)).toBeNull();
+      const stamp = grid.scratch!.stamp;
+      let n = 0;
+      for (let c = 0; c < stamp.length; c++) if (stamp[c]! >= 2 * (before + 1)) n++;
+      return n;
+    };
+    expect(seen()).toBeLessThan(1500);
+    // The same order again, from the same ground: no search.
+    expect(seen()).toBe(0);
+    // The way out of the ring is as before: found, from closed ground or from open.
+    expect(findRoute(grid, graph, Mobility.foot, at(gx - 6, gy), start, pass)).not.toBeNull();
+    // And with the ring open (Poland in the war), the way in.
+    world.wars.start([GER], [POL], world.tick);
+    world.wars.changed();
+    expect(findRoute(grid, graph, Mobility.foot, start, goal, passageOf(world, GER))?.cells.length).toBe(13);
   });
 });

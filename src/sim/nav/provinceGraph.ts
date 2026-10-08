@@ -206,11 +206,11 @@ export const COARSE_ABOVE_KM = 500;
  * restricted to the coarse route's provinces and their neighbours, with an unrestricted search
  * as the fallback if the corridor is too tight. `pass` keeps the route off closed ground. From
  * a start on open ground the two ends must lie in one group of provinces with open ground
- * (`Passage.group`), asked first and with no search; a long route is planned over such
- * provinces, and one that is not found in their corridor is refused: a province with some open
- * ground need not be open from side to side, and the search beyond the corridor then walked
- * all the ground the formation could reach (76,000 cells of Africa, every day; it found a way
- * 24 times in two years of seed 99, PLAN 3.4Rl).
+ * (`Passage.group`), asked first and with no search; the route, long or short (PLAN 3.10c1c,
+ * ADR-189), is planned over such provinces, and one that is not found in their corridor is
+ * refused: a province with some open ground need not be open from side to side, and the search
+ * beyond the corridor then walked all the ground the formation could reach (76,000 cells of
+ * Africa, every day; it found a way 24 times in two years of seed 99, PLAN 3.4Rl).
  */
 export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
   if (!mayReach(g, pg, start, goal, pass)) return null; // O(1) unreachable
@@ -218,10 +218,13 @@ export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, s
   const b = pg.nodeOf[goal]!;
   // Who stands on closed ground walks on it and out of it: the provinces are not asked.
   const open = pass !== undefined && pass.ok[pass.holder[start]!] === 1 ? pass.open : undefined;
-  if (a !== 0 && b !== 0 && a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM) {
+  // Over open ground a short route is held to the provinces too (two ends in one province: to
+  // it and its neighbours): the search for a way that the cells do not give walked all the
+  // formation could reach, 30 ms an order.
+  if (a !== 0 && b !== 0 && (open !== undefined || (a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM))) {
     const was = g.barred;
     if (open !== undefined && was && was.goal === goal && was.from === a && was.mobility === mobility && was.ok === pass!.ok && g.scratch!.stamp[start] === was.closed) return null;
-    const route = coarseRoute(g, pg, mobility, a, b, open);
+    const route = a === b ? [a] : coarseRoute(g, pg, mobility, a, b, open);
     if (!route) return null;
     const corridor = new Uint8Array(pg.nodeCount);
     for (const node of route) {
