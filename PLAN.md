@@ -4688,6 +4688,15 @@ quick sweep as a smoke test.
       their own wide ground walks nothing; `Passage.joined` stays unset), red first; the
       reach step and the tick of seed 99, years 1 to 5, beside 3.10c2c's (0.04, 0.11, 0.38,
       0.07, 0.05 ms a tick with no marks inside the step; a tick of 1.890).
+      Where the answer is read (the three places to ask at): the reserve's loop (its
+      short cut `reached[ci].length < sn` takes `nearD` when the class reaches every sector:
+      a list that holds sectors not yet asked must not read as full, or the pin moves), the
+      allotment's `front` and `pool` (only the sectors with a formation of the class within
+      the range), and `emptyFor` (only the empty sectors of the class's landmass).
+      A caveat on the count of 3.10c2c: "the open cells the same" compared the open cells of
+      every province, and `joinWide` walks only those of the provinces with closed ground,
+      so 151 of 1,566 is the least a kept walk would be used again, not the rate. Before
+      keeping the walk is ruled out for good, count it over those cells alone.
       What else the table of 3.10c2c shows, none of it a cause by itself (ms a tick, seed
       99): the passage 0.05 to 0.09 (0.15 ms a plan: made again each call, by `ok.join` and
       `nodeGroups`), the sectors 0.04 to 0.09, the frontier 0.03 to 0.07, the classes 0.02
