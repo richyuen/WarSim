@@ -43,6 +43,7 @@ import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/m
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
+import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
@@ -1557,10 +1558,8 @@ export class MapView {
 
   /**
    * Tint of an element sprite or a figure: the nation's sprite colour (`nationColor`), as its
-   * stand-in sprite has it. Until PLAN 2.14a it was lifted a second time, 45% toward white: every
-   * nation's tint then lay between 178 and 255 a channel, Germany's elements and Poland's were
-   * two near-whites, and a close view did not say whose a battalion was. The dark outline of the
-   * atlas, not the lift, is what sets a sprite off against its nation's fill.
+   * stand-in sprite has it. The dark outline of the atlas, not a lift toward white (PLAN 2.14a,
+   * PLAN 3.11e), is what sets a sprite off against the ground.
    */
   private spriteRgba(id: number): [number, number, number, number] {
     const col = this.nationColor(id);
@@ -1574,13 +1573,11 @@ export class MapView {
 
   /**
    * The colour of a nation's sprites: its own colour in every map mode, as its T1 markers and T0
-   * counters have it (the map's palette carries the mode's colours: PLAN 2.7i), lightened so that
-   * they read against the fill.
+   * counters have it (the map's palette carries the mode's colours: PLAN 2.7i), a dark one made
+   * lighter (`spriteTint`).
    */
   private nationColor(id: number): number {
-    const own = this.ownColor.get(id) ?? 0x888888;
-    const lift = (v: number): number => Math.min(255, Math.round(v * 0.55 + 115));
-    return (lift((own >> 16) & 255) << 16) | (lift((own >> 8) & 255) << 8) | lift(own & 255);
+    return spriteTint(this.ownColor.get(id) ?? 0x888888);
   }
 
   /** Matches the backing store to the CSS size; returns true when it changed. */

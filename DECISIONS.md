@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-206 · 2026-10-08 · accepted — A sprite's tint is its nation's colour, a dark one made lighter with its hue and saturation kept (PLAN 3.11e, critic R3-B3)
+
+- **Context.** The critic: "Soviet tanks are tinted pink, near Poland's own pink"
+  (`critic/shots/c3j_12_tank_live_006m_2.png`). ADR-88's tint was the nation's colour mixed
+  45% toward white (`v × 0.55 + 115`), "to read against the nation's fill". Every tint then
+  lay between 115 and 255 a channel, and a dark saturated colour lost its saturation: the
+  Soviet Union's (143, 29, 29), saturation 0.66, came out (194, 131, 131), 0.34; Poland's
+  (201, 76, 99) came out (226, 157, 169). 56 apart in RGB, which `tags1938` (50 for
+  Germany and Poland) would have let pass: two pale reds. And the reason is gone since PLAN
+  2.14d: the ground of T2 and T3 is the terrain's, with the fill as a cast on it.
+- **Decision.** `spriteTint` (`src/render/units/tint.ts`), for the stand-in sprite, the
+  elements and the figures: the nation's own colour; one whose lightness (HSL) is under
+  0.42 (`SPRITE_LIGHT`) is made lighter up to it, every channel times one factor, which
+  keeps hue and saturation. 88 of the 103 nations of 1938 keep their colour. The Soviet
+  Union: (178, 36, 36); Poland: its own; 78 apart, and the Soviet red the darker of the two
+  by 0.12 of lightness. Germany: (107, 107, 107) (166 before); Germany and Poland 99 apart
+  (61 before).
+- **Why 0.42 and not more.** The Soviet Union and Poland are two reds on the map too
+  (hues 0° and 349°): what tells them is that one is dark. At a lightness of a half the
+  Soviet red is (212, 43, 43) and 66 from Poland's with nothing in lightness between them;
+  at 0.6 both are lifted and stand 38 apart, less than before.
+- **Alternatives rejected.** Other shares of the mix toward white (the same mechanism: the
+  pale band moves); a tint by which nations are in the view (a unit's colour would change as
+  the camera moves: ADR-74's finding).
+- **Consequences.** A dark nation's sprites are darker than they were, and a light nation's
+  less pale. Seen: at 2 and 6 m/px Soviet tanks are red and Polish riflemen rose, on any
+  ground of the picture; at 80 m/px (T2) the same. At 20 m/px both are small and dim on the
+  Soviet cast, as the critic's picture at 25 m/px had them before. German riflemen (grey
+  107) on the German cast are dark figures on a lighter ground where they were light ones;
+  on woods they will be dim. The tracks and decks of the atlas take the tint darker still
+  (a Soviet tank's tracks are a dark red at 2 m/px): looked at, left. No state, no pin.
+- **Amends** ADR-88 (the colour).
+
 ### ADR-205 · 2026-10-08 · accepted — What a battalion, a battery and a half-track company lose lies where its figure stood (PLAN 3.11d, critic R3-B3)
 
 - **Context.** The critic: "No wreck was ever drawn. In 230 sim hours of the largest fight

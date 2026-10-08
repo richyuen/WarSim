@@ -5116,12 +5116,28 @@ quick sweep as a smoke test.
     for less than a figure), red first; an e2e on the critic's game (seed 4242, from day
     21) that watches a day at T3 and finds every mark on the place of a figure lost, the
     first within the day; pictures at 6 and 2 m/px, looked at.
-  - [ ] 3.11e The tint: Soviet tanks are not Poland's pink.
+  - [x] 3.11e *Done 2026-10-08 (ADR-206):* a sprite's tint is its nation's colour, and a
+    dark one is made lighter up to a lightness of 0.42 with its hue and saturation kept
+    (`spriteTint`); it was every colour mixed 45% toward white. Seed 1212, day 6, the
+    fight of Soviet tank corps 181: Soviet elements (178, 36, 36), Polish (201, 76, 99),
+    78 apart in RGB (56 before), saturation 0.66 (0.34 before).
+    The task as it was set: The tint: Soviet tanks are not Poland's pink.
+    AT (written when taken up): a unit test of the tint from a nation's colour (the Soviet
+    Union's keeps its hue and its saturation; a nation light enough keeps its colour; the
+    Soviet Union's and Poland's further apart than before; Germany's and Poland's as far
+    as `tags1938` asks), red first; an e2e on the critic's game (seed 1212, day 6) that
+    reads the tints of the Soviet and the Polish elements in one view; the critic's
+    picture at 6 m/px shot again and one at T2, looked at.
   - [ ] 3.11f The task's AT on a seed the builder has not used, the pictures at T2 and T3,
     and the tick of 3.11 with the full gate.
     Also here (left by 3.11c4): tanks of neighbouring elements of a deployed block drawn one
     over the other at T3 (three pairs of about 110 in `c4-within-a-block-2m.png`): looked
     at again in the pictures, and mended or said why not.
+    Also here (found 2026-10-08 with 3.11e, red on the commit before it too, so of an
+    earlier part of 3.11): `tags1938`, "at T2 and T3 every formation in the view has its
+    flag, strength and name by it": "T2, 150 m/px: formation 1055's tag has a line". Which
+    part moved the tag off its elements is not known. The spec stops there, so its line on
+    the tints of Germany and Poland did not run; the unit test has them 99 apart.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
   `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom

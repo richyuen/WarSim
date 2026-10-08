@@ -11233,3 +11233,42 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11e.
+
+## 2026-10-08 — PLAN 3.11e: a sprite's tint is its nation's colour, a dark one lighter with its hue kept (ADR-206)
+
+- **The cause:** `nationColor` mixed every colour 45% toward white (`v × 0.55 + 115`). The
+  Soviet Union's (143, 29, 29) came out (194, 131, 131), saturation 0.34 of 0.66; Poland's
+  (201, 76, 99) came out (226, 157, 169). 56 apart in RGB: two pale reds.
+- **Done:** `spriteTint` (`src/render/units/tint.ts`), used by the stand-in sprites, the
+  elements and the figures: the nation's colour; under a lightness of 0.42 every channel
+  times one factor up to it. 88 of 103 nations keep their colour. Soviet (178, 36, 36),
+  Poland its own, 78 apart; Germany (107, 107, 107), 99 from Poland (61 before). Nothing of
+  the sim, the worker or the snapshot changes.
+- **Tests:** `tests/unit/tint.test.ts`, 4 tests, all 4 red on the mix ("the Soviet Union's
+  keeps its hue and its saturation": 0.34; "a nation light enough keeps its colour";
+  "no nation's tint is darker than the least a sprite needs, and none is changed but in
+  lightness"; "the Soviet Union's and Poland's are further apart than they were": 56).
+- **Spec** `tests/e2e/tint1938.spec.ts` (new): seed 1212, day 6, the fight of Soviet tank
+  corps 181 at 20 m/px: 187 Soviet elements of one tint (178, 36, 36), 64 Polish of one
+  (201, 76, 99); saturation 0.66 and 0.54, lightness 0.42 and 0.54.
+- **Specs run by hand** (ADR-87: a part), 10 files, 13 tests: 12 passed (`tint1938`,
+  `spriteColours1938`, `smallMark1938`, `closeZoom1938`, `tankBattle1938`,
+  `loadedEffects1938`, `fallen1938`, `stackBlocks1938`, `handover1938`, and the first test of
+  `tags1938`). One failed: `tags1938`, "at T2 and T3 every formation in the view has its
+  flag, strength and name by it": "T2, 150 m/px: formation 1055's tag has a line". It fails
+  the same on the commit before (run with this change stashed): an earlier part of 3.11
+  broke it and no part ran it. Not mended here (one cause a commit); written under PLAN
+  3.11f. The spec stops before its line on the tints of Germany and Poland.
+- **Pictures** (`docs/evidence/3.11/`), looked at: `e-the-tint-2m.png`: red tanks with dark
+  red tracks, rose riflemen; nobody would take one for the other. `e-the-tint-6m.png`: the
+  critic's view again: red tanks, rose battalions. `e-the-tint-t2-80m.png`: red blocks by
+  the tags, the Poles a paler patch. `e-the-tint-20m.png`: both sides small and dim on the
+  Soviet cast, the tanks dark red on red-brown; the critic's picture at 25 m/px was as dim
+  with the pale tint. Not better there. German riflemen in `fallen1938`'s picture at 6 m/px
+  (grey 107, was 166): dark figures on the lighter German cast, to be read, not bright.
+- **Performance:** not measured: one multiplication a nation's colour in place of another.
+- **Not done:** no sweep (ADR-58). The pin is unmoved. Older pictures in `docs/evidence/`
+  show the pale tints.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11f.
