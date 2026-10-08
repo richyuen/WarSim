@@ -145,7 +145,12 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     let tx = c.x[enemy]!;
     let ty = c.y[enemy]!;
     let short = -1;
-    let side = 0;
+    // Its file of the stack (0: on its line to the block; then right and left by turns), and how far apart files stand.
+    let file = 0;
+    let apart = 0;
+    // The blocks it comes up to: that enemy's, the block of the one that enemy faces, and those
+    // of the lines before it (PLAN 3.11c2).
+    const stand: [Deployment, number][] = [];
     if (contacts.get(enemy) !== f) {
       // Its nearest enemy has a nearer one of its own and is deployed against that. This one
       // comes up to where that enemy's block stands, as near as a formation it faced would
@@ -167,6 +172,13 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
       if (theirs) {
         tx = theirs.x;
         ty = theirs.y;
+        stand.push([theirs, enemySlots]);
+        const faced = contacts.get(enemy)!;
+        for (const g of [faced, ...ahead]) {
+          const slots = slotCount(world, g, idx.get(g)?.length ?? 0);
+          const at = world.formations.has(g) ? deployOf(world, g, slots, chain + 1) : null;
+          if (at) stand.push([at, slots]);
+        }
         // From much the same side as the one that enemy faces (within 60°): a line further
         // back, behind it. From another side it stands as near as that one does.
         const ax = wrapDx(world, tx, fx);
@@ -183,7 +195,6 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
       const dx = wrapDx(world, fx, tx);
       const dy = ty - fy;
       const room = sqrt(dx * dx + dy * dy) - (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 - DEPLOY_GAP;
-      let file = 0;
       let taken = 0;
       let widest = slotGrid(count).cols;
       for (const [g] of others) widest = Math.max(widest, slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0)).cols);
@@ -199,7 +210,7 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
         if (g !== f) taken += deep + DEPLOY_GAP;
       }
       short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + taken + depth / 2;
-      side = Math.min(DEPLOY_ABREAST, Math.ceil(file / 2) * (widest * SLOT_SPACING + DEPLOY_GAP)) * (file % 2 === 1 ? 1 : -1);
+      apart = widest * SLOT_SPACING + DEPLOY_GAP;
     }
     const dx = wrapDx(world, fx, tx);
     const dy = ty - fy;
@@ -207,10 +218,49 @@ export function deployOf(world: World, f: number, count: number, chain = 0): Dep
     if (d > 1e-9) {
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
-      let shift = Math.min(DEPLOY_REACH, Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2));
-      if (short >= 0) shift = Math.min(sqrt(DEPLOY_REACH * DEPLOY_REACH - side * side), Math.max(0, d - short));
       const ux = dx / d;
       const uy = dy / d;
+      const sideOf = (k: number): number => Math.min(DEPLOY_ABREAST, Math.ceil(k / 2) * apart) * (k % 2 === 1 ? 1 : -1);
+      // How far forward a file is free: the gap short of each block that stands in its way,
+      // whatever side of that block it comes to. A block is twice as wide as deep, and one that
+      // came to a flank stood in it (PLAN 3.11c2). In its way: across the file's width and the
+      // gap, before the formation's place.
+      const half = (slotGrid(count).cols * SLOT_SPACING) / 2 + DEPLOY_GAP - 1e-9;
+      // Of each such block: where its near side is along this one's line, and its middle and its reach across it.
+      const inWay: [number, number, number][] = [];
+      for (const [b, slots] of stand) {
+        const grid = slotGrid(slots);
+        const bx = wrapDx(world, fx, b.x);
+        const by = b.y - fy;
+        if (bx * ux + by * uy <= 0) continue;
+        // Its depth and its width, turned to this one's line.
+        const bc = cos(b.facing);
+        const bs = sin(b.facing);
+        const turnedAlong = Math.abs(bc * ux + bs * uy);
+        const turnedAcross = Math.abs(bs * ux - bc * uy);
+        const along = ((turnedAlong * grid.rows + turnedAcross * grid.cols) * SLOT_SPACING) / 2;
+        const across = ((turnedAcross * grid.rows + turnedAlong * grid.cols) * SLOT_SPACING) / 2;
+        inWay.push([bx * ux + by * uy - along, by * ux - bx * uy, across + half]);
+      }
+      const free = (at: number): number => {
+        let least = Infinity;
+        for (const [near, middle, reach] of inWay) if (Math.abs(middle - at) < reach) least = Math.min(least, near - DEPLOY_GAP - depth / 2);
+        return least;
+      };
+      // A file with no room before the formation's place (a block of another bearing stands in
+      // it): the next file out that has room, as a line with no room does (ADR-133).
+      let side = sideOf(file);
+      let room = free(side);
+      for (let k = file + 1; room < -1e-9 && Math.ceil(k / 2) * apart <= DEPLOY_ABREAST; k++) {
+        const there = free(sideOf(k));
+        if (there < -1e-9) continue;
+        side = sideOf(k);
+        room = there;
+      }
+      // Each other's nearest: to the middle between the two, less half the gap and half its depth.
+      // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
+      let shift = Math.min(DEPLOY_REACH, Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2));
+      if (short >= 0) shift = Math.min(sqrt(DEPLOY_REACH * DEPLOY_REACH - side * side), Math.max(0, d - short), Math.max(0, room));
       out = { x: fx, y: fy, facing: atan2(dy, dx) };
       // As far forward as the block's middle has land under it, in eighths of the way.
       for (let k = 8; k >= (side === 0 ? 1 : 0); k--) {

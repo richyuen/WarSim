@@ -5024,7 +5024,18 @@ quick sweep as a smoke test.
       gap clear of every other), red first; an e2e on the critic's game (seed 1212, day 6)
       that finds no element of one Soviet block within a kilometre of another's, red on
       the rule before; the critic's picture shot again and looked at.
-    - [ ] 3.11c2 A block that comes up to an enemy's block from its flank or its rear. It
+    - [x] 3.11c2 *Done 2026-10-08 (ADR-201):* a block on the way to an enemy's block stops
+      the gap short of each block in its way, by that block's reach along its own line (its
+      depth and its width, turned): the enemy's, the block of the one that enemy faces, and
+      those of the formations that go to that enemy and are nearer it. A file with no room
+      before the formation's place gives way to the next file out that has room. Pairs in
+      one another after it: 0 (seed 1212), 0 (seed 4242, 18 before), 1 (seed 99, 7 before).
+      The one left, named: German division 17 comes to Polish division 549's block from
+      126° (behind its flank) and stands in the block of division 560, a line of 549's own
+      stack behind it, which goes to another German (298): a block of the enemy's stack is
+      not among those in its way. It goes with the lines of a stack, PLAN 3.11c3.
+      From behind (180°) a block was clear already: its test passed on the rule before.
+      The task as it was set: A block that comes up to an enemy's block from its flank or its rear. It
       stops a block's depth and the gap from that block's middle, and the block is twice
       as wide as deep: it stands in the enemy's block (every pair of enemies in one
       another, 9 on seed 4242: their middles 0.155 to 0.185 cells apart) and in the block
@@ -5038,6 +5049,9 @@ quick sweep as a smoke test.
       battle's view (ADR-199). Fewer lines before the files abreast begin.
       AT: a unit test of seven divisions a cell and a half from one enemy, red first;
       `formationFight1938` again (its zooms will move; both sides stay on the screen).
+      Also here (left by 3.11c2): a block that comes to an enemy's block and stands in a
+      line of that enemy's own stack behind it (formations 17 and 560, seed 99, Germany
+      on Poland, day 60), the one pair left of the count.
     - [ ] 3.11c4 Within a block in contact: the elements do not stand on the points of a
       lattice, and do not all face one way. A place and a facing off the slot's by the
       element's id, the same in the snapshot, the fire events and the wrecks

@@ -905,7 +905,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   to the right and left by turns (ADR-133); a line stands behind the lines before it by their
   depths, and a file beside the others by the widest block of the stack, so that a tank
   brigade (7 by 4 elements) and a tank corps (11 by 5) of one stack do not stand in one
-  another (PLAN 3.11c1, ADR-200). Derived from the formations' places
+  another (PLAN 3.11c1, ADR-200); a block on the way to an enemy's block stops the gap short
+  of each block in its way (that enemy's, the block of the one it faces, those of the
+  formations nearer that enemy that go to it), whatever side of that block it comes to, and
+  takes the next file out when its own has no room before its formation's place (PLAN
+  3.11c2, ADR-201). Derived from the formations' places
   and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
   rule does. So a view at 20 m/px holds both sides of a fight (97% of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the

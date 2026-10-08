@@ -10988,3 +10988,44 @@ No rule changed and nothing on screen changed. One task came out of it.
   says: one corps' tanks in their rows, its motorised infantry behind, the Polish division
   across the gap at the left. Nothing to change in it for this part.
 - **Gate:** `npm run check` (documents: parity).
+
+## 2026-10-08 — PLAN 3.11c2: a block stops the gap short of each block in its way (ADR-201)
+
+- **The count first.** The probe of 3.11c1 was still in `.cache/` (the entry above said it
+  was not kept; it is not in the repo). With the bearing a block comes from: every pair of
+  enemies in one another comes from 62° to 120° off the way the enemy's block faces.
+- **Cause:** a comer stopped a depth, the gap and half its own depth from the middle of the
+  block it came to, from whatever side; a block is twice as wide as deep.
+- **Done:** in `deployOf`, the blocks a comer comes up to (the enemy's, the one that enemy
+  faces, those of the formations nearer that enemy that go to it) are each turned to the
+  comer's line; one that reaches into its file is in its way, and it stops the gap short
+  of that one's near side. A file with no room before the formation's place: the next file
+  out that has room.
+- **First try, and what it broke:** without the next file, two lines of one file both
+  stood at its head (shift 0): 1 and 3 new pairs with their middles on each other. The
+  count found them; no test did. `deployFlank.test.ts` has no case of it: the unit tests
+  cover a comer from four bearings and three comers, not a stack of seven beside a block.
+- **Tests:** `tests/unit/deployFlank.test.ts` (4), red first in three; from behind was
+  clear on the rule before, as the plan's "or its rear" was not. A second test in
+  `tests/e2e/stackBlocks1938.spec.ts` (seed 4242, day 21, German division 4 on Polish 550
+  from 72°), red on the rule before (the source stashed: "formations 3 and 4", 0.011 cells),
+  then 1.97 and 2.69 km.
+- **After it:** 0, 0 and 1 pairs in one another on the three games (0, 18 and 7 before). The
+  one left is named in PLAN 3.11c2 and goes with 3.11c3.
+- **Pictures** (`docs/evidence/3.11/`): `c2-from-the-flank-20m.png` and `-8m.png`, looked
+  at: division 4 in three ranks west of the Pole's block, facing it, clear of it and of
+  division 3's block north of it; further off than the gap (ADR-201 says why).
+  `c1-stack-of-armour-40m.png` shot again and looked at: the six Soviet blocks apart as
+  before, 199 and 200 now the nearest two (1.57 km; 182 and 199 at 1.54 before).
+  `c1-stack-of-armour-12m.png` was shot again and not looked at; `-4m.png` came out the same.
+- **Performance:** `npm run sim -- --scenario 1938 --seed 99 --years 2 --affinity 0xFFFF`:
+  mean tick 1.8398 ms before (one run), 1.8813, 1.9073, 1.9259 and 1.8687 after (the last
+  two with each block in the way worked out once, not once a file). 2 to 5% slower. The
+  same hashes (4c72477e after two years).
+- **Specs run by hand** (ADR-87: 3.11c2 is a part), 17 tests, all pass: `stackBlocks1938`,
+  `formationFight1938`, `formationPlace1938`, `battleView1938`, `toBattle1938`, `fire1938`,
+  `markerStacks1938`, `closeZoom1938`.
+- **Not done:** no sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11c3: the column on one enemy.

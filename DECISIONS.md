@@ -167,6 +167,72 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-201 · 2026-10-08 · accepted — A block stops the gap short of each block in its way, whatever side it comes to (PLAN 3.11c2, critic R3-B3; amends ADR-89, ADR-133 and ADR-200)
+
+- **Context.** What ADR-200 left of the blocks that stand in one another: 18 pairs on seed
+  4242 (Germany on Poland, day 21, 151 blocks) and 7 on seed 99 (day 60, 114 blocks), none on
+  seed 1212. The probe of ADR-200 was run again with, for each block on the way to an
+  enemy's block, the bearing it comes from off the way that block faces.
+- **The count before, by kind** (seed 4242 / seed 99):
+  - in the enemy's block it comes to: 10 / 3. Every one comes from 63° to 120° off: the flank;
+  - in the block of the one that enemy faces: 6 / 3, from 62° to 88°;
+  - two that go to one enemy from bearings 46° apart (222 on 237 and 238): 2 / 0;
+  - a block of another stack: 0 / 1 (17 and 560, below).
+  ADR-200 had 14 of the 18 in the first two kinds and 2 in the third; counted pair by pair
+  they are 16 and 2.
+- **Cause.** A block on the way to an enemy's block stopped that block's depth, the gap and
+  half its own depth from the block's middle (ADR-89), from whatever side. A division's
+  block is 0.24 cells wide and 0.12 deep: from the flank its near side is 0.12 from its
+  middle, not 0.06, and the comer stood 0.06 into it. The one that enemy faces was counted
+  as a line before the comer only within 60° of the block's facing, and then on the comer's
+  own line, where it does not stand. Formations that go to one enemy from places apart
+  each counted the others as lines on its own line (ADR-200's last point but one).
+- **Decision.** A formation on the way to an enemy's block knows the blocks it comes up
+  to: that enemy's, the block of the one that enemy faces, and those of the formations
+  that go to that enemy and stand before it in the order of ADR-89 (nearer that enemy, then
+  the lower id). Of each: how far it reaches along the comer's line and across it (its
+  depth and its width, turned to that line). One that reaches into the comer's file (the
+  comer's width and the gap) and has its middle before the comer's place is in its way,
+  and the comer stops the gap short of its near side. The lines and files of ADR-133 and
+  ADR-200 are worked out as before and give the place where nothing else is in the way.
+- **A file with no room.** Where a block in the way leaves the comer's file no room before
+  the formation's place, the comer takes the next file out that has room (right and left
+  by turns, to `DEPLOY_ABREAST`), as a line with no room does (ADR-133). Without this, on
+  the first try, two lines of one file both stood at the head of it: 1 and 3 new pairs with
+  their middles on each other (seed 4242: 298 and 300; seed 99: 550, 551 and 559). Where no
+  file has room it stands as before, at its place in its file.
+- **The order is sound.** A block asks only for blocks worked out without it: its enemy's
+  and the one that faces (further along the chain of nearest enemies, which ends in a pair
+  and has no ring of three: of three at equal distances two prefer the lowest id), and
+  formations before it in one order. Where the chain is longer than four (`chain`) the
+  enemy's block is not known and nothing is asked, as before.
+- **What does not change.** A pair of each other's nearest. A stack on one place that goes
+  to one enemy: the block before a line is in its way by exactly what the walk of ADR-200
+  gave it. `deploy.test.ts` (9), `deployUnequal.test.ts` and `deploySnapshot.test.ts` pass
+  unchanged. From behind (180°) a comer stood clear already.
+- **Not state.** No rule reads where a block stands: the pin holds (the gate's test), and
+  two years of seed 99 end on the same hash (4c72477e).
+- **Measured.** Pairs in one another after it: 0 (seed 1212), 0 (seed 4242), 1 (seed 99).
+  `tests/unit/deployFlank.test.ts`: a division that comes to a block from 90°, from 65° and
+  115°, from 180°, and three from 0° and 45°; every two blocks the gap apart on one of
+  their own axes. Red on the rule before in three of the four (from 90°: 0.01 cells in the
+  block of the one faced; from 65°: 0.07 in it; 45° apart: 0.033 apart where 0.05 is asked);
+  the fourth, from behind, was green before. `tests/e2e/stackBlocks1938.spec.ts`, a second
+  test on seed 4242, day 21: German division 4 comes to Polish division 550 from 72°. On
+  the rule before 0.22 km lay between its nearest element and division 3's and 0.24 km
+  between its and the Pole's (a slot is 0.59 km); now 1.97 and 2.69 km.
+- **Seen in the picture and left.** Division 4 stands 2.7 km from the Pole's block, not the
+  gap's one: the block of division 3, which the Pole faces, reaches into its file by a
+  corner, and it stops short of that. The rule is a sufficient one (the near side of a
+  block across the whole of the file), not the nearest place that is clear.
+- **Left.** One pair on seed 99: German division 17 comes to Polish division 549's block
+  from 126° and stands in the block of division 560, a line of 549's own stack that goes
+  to another German (298). The lines of the enemy's stack are not among the blocks in a
+  comer's way; asking for them needs one order over both stacks. With PLAN 3.11c3.
+- **Cost.** Mean tick over two years of seed 99, pinned: 1.84 ms before (1.8398 here,
+  1.8403 in the record of 3.11c1), 1.87 to 1.93 after (four runs), 2 to 5%.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-200 · 2026-10-08 · accepted — A line of a stack stands behind the depths of the lines before it, and a file the widest block beside the others (PLAN 3.11c1, critic R3-B3; amends ADR-133)
 
 - **Context.** The critic's third point of R3-B3: "five tank formations share one cell as
