@@ -913,7 +913,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   faces among them, so that the second line still has that enemy's block in the battle's
   view on its own (PLAN 3.11c3a, ADR-202). Derived from the formations' places
   and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
-  rule does. So a view at 20 m/px holds both sides of a fight (97% of the formations in
+  rule does. So a view at 20 m/px holds both sides of a fight (96%, 110 of 114, of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the
   formation's place.
   *Two places in the snapshot (PLAN 3.11a, ADR-198):* a formation's `x`, `y` is its place in

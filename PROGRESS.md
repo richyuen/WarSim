@@ -11090,3 +11090,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11c3b.
+
+## 2026-10-08 — PLAN 3.11c3a, after it: two pictures looked at, and a figure of SPEC
+
+- `b-panel-to-its-fight.png` and `b-rear-line-at-its-block-6m.png` were committed as shot
+  again and not looked at. Looked at now: the panel of Polish division 546 with "To its
+  fight" beside "In contact"; the view at 6 m/px on its block, its three ranks of infantry
+  and its guns behind them, no enemy in it (which is what the picture is of). Nothing to
+  change.
+- SPEC §"deployed blocks" said 97% of the formations in contact share a view at 20 m/px
+  with their nearest enemy after 60 days of a war. `deploy.test.ts` on this commit: 110 of
+  114, 96% (its limit is 90%). SPEC says that now. What it was on the commit before was
+  not measured, so whether the two lines moved it is not known.
+- The comment of the new limit in `formationFight1938.spec.ts` (`furthest.km < 20`) names
+  `DEPLOY_REACH`; the limit is a measure of that game (18.1 km), as the `> 14` beside it
+  is, not a bound of the rule. Not changed here (a document commit).
+- **Gate:** `npm run check` (documents: parity).
