@@ -9585,7 +9585,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   On its first day France has 21 formations in the ranking, 2 of them standing still, and
   one is sent (formation 238, 139 cells). The far end is not one front with the near one:
   eight sectors in the Algerian Sahara, and 31 in four groups 91 to 138 cells to the south.
-  The front is not manned by this rule, and no other rule would man it from this army.
+  The front is not manned by this rule. Whether another rule would man it from this army
+  is not shown: 42 formations stood within the range of 8 sectors, and the rule passes
+  over all that march (PLAN 3.10c1d2, added after the commit of 3.10c1d).
 - **Where it does act:** year 2 of seed 4242 from that state, 15 such orders (nations 82
   and 23 five each, Italy 4, France 1), 62 to 175 cells, 88 in the middle. Five years of
   seed 99: 102 orders, 6 refused.
@@ -9638,4 +9640,4 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 991 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; the four specs above by hand).
-- **Next:** PLAN 3.10c2 (what is left of the operational AI; the refused far orders first).
+- **Next:** PLAN 3.10c1d2 (who is to spare on a front that fights), then 3.10c2.

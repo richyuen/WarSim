@@ -213,7 +213,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **What it does to the case it was written for: little.** France in seed 4242 is an
   army being destroyed (44 formations, 21 twenty days later on the rule before, 17 on
   this one), with 2 of 21 ranked formations standing still on its first day: one is sent
-  (139 cells). Year 2 of that seed from the same state: 15 such orders by four nations,
+  (139 cells). That is this rule's filter as much as France's state: the allotment orders
+  every formation to its sector's cell every day, so on a front that fights few stand
+  still (PLAN 3.10c1d2). Year 2 of that seed from the same state: 15 such orders by four nations,
   62 to 175 cells. Five years of seed 99: 102, 6 refused.
 - **Tests.** `tests/unit/operationalAi.test.ts`, "to spare": the United States against
   Mexico, nobody but twelve American divisions on the twelve front cells nearest the

@@ -4484,6 +4484,24 @@ quick sweep as a smoke test.
     unit test (twelve divisions at one end of a front of 30 sectors: the far end is manned
     within a month and the near end is not left); that front of seed 4242 before and
     after; the operational AI's tick beside 3.10c1a's.
+  - [ ] 3.10c1d2 Who is to spare on a front that fights. 3.10c1d takes only formations that
+    stand still, and on a front that fights nearly none does: the allotment orders every
+    formation to its sector's cell every day (France, seed 4242: 39 of 44 on the march, 2
+    of 21 ranked standing still, one sent; 31 sectors with nobody before and after, though
+    42 formations stood within the range of 8 sectors). So the AT of 3.10c1d (that front
+    before and after) showed nothing, and ADR-191's "no other rule would man it from this
+    army" was not shown. The third cut of 3.10c1d failed by its radius, not its idea: it
+    kept a march whose sector had nobody else *within the range* (60 cells), and the
+    division sent before it was 12 cells off. The rule to try: a formation is on an errand
+    when its target sector would have nobody without it by ADR-190's own test (no other
+    formation of the nation stands in it or next to it, none other marches into it); to
+    spare are the ranked formations not on an errand, on the march or not, the farthest
+    first, as many as the reserve's share, the rest of ADR-191 unchanged. First count, on
+    `.cache/ck/4242-y1-c1a.bin`, France's formations that march and are not on an errand.
+    AT: the unit test "to spare" (each division sent once; it passes today, so add what is
+    red: a front on which every division marches still sends); France's table of 3.10c1d
+    before and after; the tick beside 3.10c1d's; ADR-191 amended, the pin moved. If the
+    table does not move with marching formations included, it is the world's: BLOCKERS.
   - [ ] 3.10c2 What is left of the operational AI after 3.10c1, if it is still the tick's
     first system: the steps before the orders are 0.13 to 0.37 ms a tick (the most where a
     planner has up to 881 sectors, seed 8128), and 476 to 3,690 orders a year are refused
