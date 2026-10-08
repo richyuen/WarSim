@@ -10283,3 +10283,94 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check`, documents only: parity.
 - **Next:** PLAN 3.10c2d1 (the candidates counted on the probe's own grid, then one).
+
+## 2026-10-08 — PLAN 3.10c2d1a: the candidates for a long search, counted (a diagnosis)
+
+- **Step 2:** `npm run check` on the tree of 3.10c2d: green (nothing changed). Critic: not due.
+- **Split:** 3.10c2d1 is two parts: the count (this, 3.10c2d1a) and the rule (3.10c2d1b).
+- **How** (`.cache/c2d1/hook.py` and `probe.ts`, put in and taken out): 3.10c2d's counters,
+  and a weight on `findPath`'s bound read from a global. Every order of the operational AI
+  of over 120 cells that searched is searched again, eleven times, with the corridor, the
+  passage and the mobility of the game's own search, on a copy of the grid with its own
+  scratch (`findRoute`'s memory of a refusal reads the game's stamps). Five years of seed 99
+  (1,642 such orders: 1,225 given, 417 refused) and two of seed 4242 (389: 387 and 2). The
+  same game: `69e41f49` and `bb9279d6`, as in 3.10c2d, and `e771cf6a` (the pin) after one
+  year. The search made again as HEAD's gave the game's answer every time (the same cost
+  and the same count of closed cells, 0 of 2,031 otherwise). The times are of one run each,
+  not pinned to cores; the counts of cells are exact.
+- **The candidates.** "Narrow": the corridor of the route's provinces alone (17.5 for a
+  corridor of 79.0 in the mean), and HEAD's corridor when that gives no way (both searches
+  counted). "× w": the bound times w, in HEAD's corridor. Seed 99, the given orders (closed
+  cells and ms a search; the way's cost over HEAD's: mean, 90th percentile, most):
+
+  | candidate | 121 to 300 cells (1,033): closed | ms | cost | over 300 (192): closed | ms | cost | second searches |
+  |---|---|---|---|---|---|---|---|
+  | HEAD | 10,540 | 1.97 | 1 | 49,078 | 9.64 | 1 | |
+  | × 1.1 | 8,747 | 1.71 | 1.003, 1.007, 1.019 | 44,085 | 9.03 | 1.005, 1.016, 1.022 | |
+  | × 1.2 | 6,914 | 1.37 | 1.010, 1.022, 1.054 | 38,325 | 7.96 | 1.012, 1.032, 1.046 | |
+  | × 1.3 | 5,163 | 1.01 | 1.019, 1.038, 1.098 | 31,939 | 6.60 | 1.021, 1.058, 1.090 | |
+  | × 1.5 | 2,876 | 0.54 | 1.037, 1.067, 1.165 | 21,332 | 4.55 | 1.050, 1.119, 1.141 | |
+  | × 2 | 1,424 | 0.26 | 1.071, 1.128, 1.239 | 7,723 | 1.65 | 1.101, 1.187, 1.242 | |
+  | narrow | 6,791 | 1.18 | 1.059, 1.161, 2.802 | 30,595 | 5.43 | 1.046, 1.115, 1.179 | 133 and 83 |
+  | narrow, × 1.3 | 4,268 | 0.79 | 1.076, 1.171, 2.802 | 25,853 | 4.98 | 1.060, 1.145, 1.214 | 133 and 83 |
+
+  Seed 4242, over 300 cells (82; HEAD 78,706 closed, 16.4 ms): × 1.3: 39,256, 8.75 ms, cost
+  1.034, 1.056, 1.076; × 1.5: 23,683, 5.31, 1.078, 1.110, 1.130; × 2: 9,209, 2.02, 1.152,
+  1.190, 1.230; narrow: 38,575, 7.60, 1.082, 1.125, 1.200 (14 second searches). 121 to 300
+  (305; 8,788, 1.66 ms): × 1.5: 1,797, 0.36, 1.034, 1.061, 1.097; × 2: 633, 0.12, 1.067,
+  1.109, 1.184; narrow: 5,460, 0.99, 1.050, 1.109, 1.400.
+  - No candidate loses a way: a scaled bound finds one wherever HEAD does, and the narrow
+    corridor falls back on HEAD's.
+  - The ways are as long in cells (209 and 450 at every weight; 217 and 462 narrow): the
+    scaled bound takes dearer ground, not a longer way.
+- **The refused orders** (417 in seed 99, 415 of them of 121 to 300 cells; 6,757 cells
+  closed and 1.30 ms each): a scaled bound changes nothing (a search with no way closes all
+  it reaches at any weight). The narrow corridor searches twice: 8,710 cells, 1.63 ms,
+  × 1.26.
+- **On the tick and the longest call** (all orders of over 120 cells, given and refused; ms
+  a tick; the plan's time is the game's less the search made again as HEAD's, plus the
+  candidate's):
+
+  | candidate | seed 99: y1 | y2 | y3 | y4 | y5 | all | saved | longest plan (ms) | plans of 30 ms or more | seed 4242: all | saved | longest | of 30 ms |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | HEAD | 0.092 | 0.122 | 0.157 | 0.076 | 0.059 | 0.101 | | 148.3 | 26 | 0.106 | | 111.6 | 21 |
+  | × 1.1 | 0.080 | 0.110 | 0.149 | 0.071 | 0.053 | 0.093 | 0.008 | 148.1 | 27 | 0.094 | 0.011 | 118.4 | 21 |
+  | × 1.2 | 0.064 | 0.095 | 0.130 | 0.066 | 0.045 | 0.080 | 0.021 | 136.8 | 22 | 0.078 | 0.028 | 105.9 | 16 |
+  | × 1.3 | 0.050 | 0.075 | 0.108 | 0.058 | 0.035 | 0.065 | 0.036 | 115.2 | 16 | 0.055 | 0.050 | 88.2 | 7 |
+  | × 1.5 | 0.027 | 0.053 | 0.085 | 0.040 | 0.021 | 0.045 | 0.056 | 80.6 | 10 | 0.031 | 0.075 | 59.1 | 2 |
+  | × 2 | 0.012 | 0.020 | 0.068 | 0.015 | 0.013 | 0.026 | 0.075 | 32.7 | 1 | 0.011 | 0.094 | 25.2 | 0 |
+  | narrow | 0.038 | 0.065 | 0.117 | 0.073 | 0.043 | 0.067 | 0.034 | 91.5 | 13 | 0.053 | 0.053 | 72.3 | 8 |
+  | narrow, × 1.3 | 0.031 | 0.050 | 0.102 | 0.062 | 0.035 | 0.056 | 0.045 | 87.8 | 11 | 0.039 | 0.067 | 63.9 | 6 |
+
+  The longest plan is the Soviet Union's of tick 14,844 (seed 99) and 4,476 (seed 4242) under
+  every candidate but × 2 (tick 18,372, 14 far orders; in seed 4242 nation 69, three). What
+  is left of year 3 at × 2 (0.068, 596 ms) was not split: the refused orders are 544 ms
+  of the five years at any weight, and the given ones 587 ms at × 2.
+- **Read:**
+  - The scaled bound is the better of the two kinds. × 1.5 saves more than the narrow
+    corridor in both seeds (0.056 and 0.075 ms a tick against 0.034 and 0.053), its ways are
+    no dearer in the mean (1.037 and 1.050 against 1.059 and 1.046) and far less at the
+    worst (1.165 against 2.802: a way through the route's provinces alone that goes all the
+    way round), it searches once, and the refused orders cost what they cost now. With the
+    scaled bound the way is at most w times the cheapest in the corridor; the narrow
+    corridor has no such limit.
+  - The narrow corridor on top of a scaled bound adds little (× 1.3: 0.036 to 0.045) and
+    brings its worst case with it.
+  - The weight the task named (× 1.1 to 1.3) does not end the hitch: at × 1.3 the longest
+    plan is 115 ms. × 1.5 halves it (81 and 59 ms), × 2 leaves 33 and 25 ms, with ways a
+    tenth dearer over 300 cells (the most 1.24).
+  - On the mean tick it is small at any weight (0.04 to 0.09 ms of 1.81; the budget is 1.5),
+    as 3.10c2d said. It is for the hitch.
+  - One search for a group of marches was not searched again here (it is a rule of the
+    operational AI, not of the search): 3.10c2d's count stands (1,225 orders in 656 groups,
+    569 searches fewer at the most).
+- **Not done:** nothing is faster and no rule is chosen in the code (PLAN 3.10c2d1b). Not
+  counted: the orders of 120 cells and less under a scaled bound (1,977 ms in the orders of 31 to 120
+  cells, 3.10c2d's table), orders that are not the operational AI's
+  (`findRoute` is also called for a march that is barred and for a player's order), and
+  what the dearer ways do to the game after them (each candidate was searched beside HEAD's
+  game, not played). Seed 8128 was not run. No picture: no rule changed. No sweep (ADR-58).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, documents only: parity.
+- **Next:** PLAN 3.10c2d1b (the bound scaled up for a long order: the weight, where it
+  starts, an ADR and the pin).

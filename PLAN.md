@@ -4759,6 +4759,35 @@ quick sweep as a smoke test.
       (the cells a search of over 300 cells closes, on a made map); the cells closed and
       the ms of the orders of over 120 cells beside 3.10c2d's (9,456 and 48,725 a search;
       4,467 ms in five years), the longest call beside 143 ms, and the tick of seed 99.
+      - [x] 3.10c2d1a *Done 2026-10-08 (the count; nothing changed):* every order of the
+        operational AI of over 120 cells that searched, searched again beside the game's
+        own search on a copy of the grid (five years of seed 99: 1,225 given and 417
+        refused; two of seed 4242; the same game, and the search made again as HEAD's gave
+        the game's answer every time; the tables are in PROGRESS). The bound scaled up is
+        the better kind. At × 1.5 a search of over 300 cells closes 21,332 cells for
+        49,078 (4.5 ms for 9.6), the orders of over 120 cells cost 0.045 ms a tick for
+        0.101, the longest plan is 81 ms for 148, and the ways cost 1.04 to 1.05 times
+        HEAD's in the mean, 1.17 at the most. At × 2: 7,723 cells, 0.026 ms a tick, 33 ms,
+        ways × 1.07 to 1.10, the most 1.24. At × 1.3, the most the task named: 31,939
+        cells, 0.065 ms a tick, 115 ms. The corridor of the route's provinces alone: 30,595
+        cells, 0.067 ms a tick, 92 ms, ways × 1.05 in the mean and × 2.80 at the worst, a
+        second search for 216 of the 1,225 and for every refused order (× 1.26). No
+        candidate loses a way. A search that finds no way costs the same at any weight.
+        One search for a group was not searched again (3.10c2d's count stands).
+      - [ ] 3.10c2d1b The bound of `findPath` is scaled up for a long order (3.10c2d1a: not
+        the narrow corridor). To choose, with the reason in an ADR: the weight (× 1.5
+        halves the longest plan, × 2 leaves 33 ms of 148 with ways a tenth dearer over
+        300 cells; one weight, or more over 300 cells than over 120) and where it starts
+        (over 120 cells was counted; below it the orders of 31 to 120 cells are 1,977 ms
+        in five years and were not). A way is then at most the weight times the
+        cheapest in its corridor: say so where the bound is made. Every caller of
+        `findRoute` gets it (a barred march, a player's order), not the operational AI
+        alone. The pin moved. AT: a unit test, red first (on a made map a search of over
+        300 cells closes fewer cells than the same search unscaled, by a stated share, and
+        its way costs no more than the weight times the best; a short search is the same
+        to the cell); the cells closed and the ms of the orders of over 120 cells beside
+        3.10c2d1a's HEAD (10,540 and 49,078 a search; 0.101 ms a tick), the longest call
+        beside 148 ms, and the tick of seed 99, five years.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
