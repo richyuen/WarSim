@@ -4714,9 +4714,25 @@ quick sweep as a smoke test.
       `nodeGroups`), the sectors 0.04 to 0.09, the frontier 0.03 to 0.07, the classes 0.02
       to 0.04, the reserve 0.01 to 0.05, the scan 0.02 to 0.03. For 3.10f's leftover, not
       for a part each.
-    - [ ] 3.10c2d The longest call (84 to 87 ms: a nation's far formations of one day, 2 ms
-      an order) and whether `findPath` has anything left: count the cells a long search opens
-      and how wide its corridor of provinces is, before it is said.
+    - [x] 3.10c2d *Done 2026-10-08 (the diagnosis; nothing changed; what could be is
+      3.10c2d1):* the game's own searches counted (a probe put in and taken out, the same
+      game; the tables are in PROGRESS). The longest call of five years of seed 99 is the
+      Soviet Union's plan of tick 14,844: 143 ms, ten marches from afar of 530 to 595 cells
+      (west of Moscow to the Far East), 11.6 to 16.9 ms each, all of it in `findPath`. Each
+      closes 57,000 to 85,500 cells for a way of 570 to 620, in a corridor of 63 to 186
+      provinces (a route of 12 to 24) and 112,500 to 128,600 cells. Seed 4242 has the same
+      march (106 ms, nine orders). Over all orders of more than 60 cells: 58 cells closed
+      for one of the way, 46 % of the corridor closed. `findPath` has nothing left per cell
+      (166 to 189 ns at every length) and nothing in its ties (0.4 to 0.8 % of the closed
+      cells lie within a thousandth of the way's cost; half have an f of 0.9 of it or
+      less): the bound is a fifth to a third short (the ground dearer than the cheapest,
+      × 1.13 to 1.16; the way longer than the bound's km, × 1.09 to 1.20), and over 600
+      cells such a search fills its corridor. On the mean tick it is little: the orders of
+      over 120 cells are 0.10 ms a tick in both seeds, the plans of 30 ms or more 0.004 to
+      0.082.
+      The task as it was set: the longest call (84 to 87 ms: a nation's far formations of
+      one day, 2 ms an order) and whether `findPath` has anything left: count the cells a
+      long search opens and how wide its corridor of provinces is, before it is said.
       After 3.10c2b2: one call of 405 ms in year 5 of seed 99 (the year of the 2,580
       refusals in wide ground; not the reach loop, whose longest is 1.0 ms). Not looked into.
       After 3.10c2b3a (its look): that call is twelve far orders of the Soviet Union (ADR-190),
@@ -4727,6 +4743,22 @@ quick sweep as a smoke test.
       After 3.10c2b3b: the far orders that were refused are given (ADR-194), and a nation's
       far formations of one day now cost more: one call of 138 ms in year 2 of seed 99 (the
       Soviet Union, tick 14,844; 116 ms a day later), 103 ms in year 1 of seed 4242.
+    - [ ] 3.10c2d1 The long search closes fewer cells. It is worth at most 0.10 ms of the
+      mean tick (the orders of over 120 cells) and it is the tick's longest call (143 ms):
+      if 3.10d and 3.10e come first and meet the budget, this is for the hitch alone. Each
+      candidate changes the ways, so it is a rule: counted first on the probe's own grid
+      over the given orders of over 120 cells of five years of seed 99 (cells closed, ms,
+      the way's cost beside HEAD's, the orders that find no way), as 3.10c2b3b counted its
+      price. The candidates: the corridor of the route's provinces alone, and with their
+      neighbours only when that finds no way (a route of 12 provinces has a corridor of 182
+      now); the bound scaled up for an order of over 120 cells (× 1.1 to 1.3: the way may
+      be dearer by as much; half the closed cells have an f of 0.9 of the cost or less);
+      one search for the marches of one plan whose two ends are near each other (1,225
+      orders in 656 groups), the others joining its way. Not a candidate: the order of
+      equal keys, or the loop (3.10c2d). An ADR, the pin moved. AT: a unit test, red first
+      (the cells a search of over 300 cells closes, on a made map); the cells closed and
+      the ms of the orders of over 120 cells beside 3.10c2d's (9,456 and 48,725 a search;
+      4,467 ms in five years), the longest call beside 143 ms, and the tick of seed 99.
   - [ ] 3.10d Supply's dear calls (630 to 730 a year, 0.22 to 0.31 ms a tick), the same way.
   - [ ] 3.10e Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.

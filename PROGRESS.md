@@ -10205,3 +10205,81 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, exit 0: typecheck, lint, 998 unit tests, the 17 sweep tests, build,
   parity. No e2e (a part; nothing drawn and no rule changed).
 - **Next:** PLAN 3.10c2d (the longest call: a nation's far formations of one day).
+
+## 2026-10-08 — PLAN 3.10c2d: the longest call, and what a long search opens (a diagnosis)
+
+- **Step 2:** `npm run check` on the tree of 3.10c2c1: green. Critic: not due.
+- **How** (`.cache/c2d/hook.py` and `probe.ts`, put in and taken out): counters in
+  `findPath`'s loop (cells closed, cells seen, pushes, the heap's peak, the f of every cell
+  as it is closed), the times of `findRoute`'s steps, the place in `planNation` that gave
+  the order, and each plan's time. It is the game's own searches that are counted, not
+  searches made again. Five years of seed 99 and two of seed 4242 from the first day (the
+  checkpoints in `.cache/ck` are of older rules). The same game: seed 99 ends at `69e41f49`
+  in both runs.
+- **The longest call** is the Soviet Union's plan of tick 14,844 (year 2, day 253 of seed
+  99): 142.9 ms, 142.5 of it in ten orders from afar, 141.0 of that in `findPath`. Ten
+  divisions at eight cells round (1200, 265), west of Moscow, to ten sectors round (1775,
+  315) in the Far East: 529 to 595 cells in a straight line, ways of 568 to 623 cells, 11.6
+  to 16.9 ms each. Every one closes 57,000 to 85,500 cells, of the 112,500 to 128,600 of
+  its corridor (63 to 186 provinces for a route of 12 to 24). The day after (tick 14,868):
+  eight more, 117.3 ms. In seed 4242 it is the same nation and the same march: tick 4,476
+  of year 1, 106.1 ms, nine orders of 12 to 13 ms. The ten longest plans of each seed are
+  all the Soviet Union's, 3 to 11 orders from afar in each.
+- **What a search opens,** by the straight distance of the order (seed 99, five years, the
+  operational AI's 50,245 orders; means of the orders that searched):
+
+  | cells | orders | refused | ms | ms each | cells closed | way (cells) | route (provinces) | corridor (provinces) | corridor (cells) | cost ÷ bound |
+  |---|---|---|---|---|---|---|---|---|---|---|
+  | 0 to 8 | 24,588 | 35 | 238 | 0.010 | 10 | 5 | 1.5 | 15.0 | 7,118 | 1.34 |
+  | 9 to 30 | 14,995 | 17 | 654 | 0.044 | 158 | 19 | 3.2 | 19.2 | 6,442 | 1.30 |
+  | 31 to 60 | 8,211 | 107 | 1,364 | 0.166 | 847 | 47 | 6.5 | 31.2 | 8,623 | 1.28 |
+  | 61 to 120 | 809 | 180 | 613 | 0.758 | 3,967 | 135 | 16.2 | 68.5 | 11,455 | 1.66 |
+  | 121 to 300 | 1,448 | 415 | 2,655 | 1.833 | 9,456 | 209 | 17.2 | 74.2 | 21,496 | 1.45 |
+  | over 300 | 194 | 2 | 1,812 | 9.339 | 48,725 | 450 | 20.1 | 115.3 | 76,654 | 1.50 |
+
+  Seed 4242, two years: over 300 cells 82 orders, 1,330 ms, 16.2 ms each, 78,706 cells
+  closed for a way of 553, a corridor of 102 provinces and 117,421 cells; 121 to 300 cells
+  307 orders, 517 ms.
+  - A closed cell costs the same at every length: 166 to 189 ns from 9 cells up (175 to 204
+    in seed 4242). The loop has nothing left per cell; the count of cells is the cost.
+  - The given orders of over 60 cells (1,854): 58 cells closed for each cell of the way
+    (median 40, 90th percentile 82, the most 186), and 46 % of the corridor's cells closed
+    (median 43 %, 90th percentile 80 %). Seed 4242: 75 for one, 50 %.
+  - The time is the search: of 7,336 ms of orders, 6,522 in `findPath`, 739 in the coarse
+    route (0.017 ms a tick; 334 ms of it for the orders of up to 30 cells), 53 in building
+    the corridor, 6 in `snapTarget`. (The times are of the run before the f of the closed cells
+    was kept; with it the orders read 3 % slower.)
+- **Why so many: the bound, not the ties.** Of the cells a long search closes, half have an
+  f of 0.9 of the way's cost or less, and 0.4 to 0.8 % lie within a thousandth of it: the
+  order of equal keys in the heap opens next to nothing. (Over 300 cells, seed 99: up to
+  0.9: 53.6 %, to 0.95: 25.0 %, to 0.98: 13.0 %, to 0.99: 4.2 %, to 0.999: 3.8 %, above:
+  0.4 %.) The way costs 1.27 to 1.50 times the bound at its start in the mean, of two parts of about
+  the same size: the ground is dearer than the cheapest ground the bound is made of (the
+  way's cost over its km at the least cost: median 1.13 to 1.16, 90th percentile 1.20 to
+  1.29), and the way is longer than the bound's km (the smaller row scale of the two ends,
+  and the way round: median 1.09 to 1.20, 90th percentile 1.21 to 1.64). With a bound a
+  fifth short over 600 cells the search fills what its corridor lets it, and the corridor
+  of a route through Siberia's large provinces with all their neighbours is 110,000 to
+  130,000 cells.
+- **What it costs the mean tick:** little. The orders of over 120 cells are 4,467 ms in
+  five years of seed 99, 0.102 ms a tick (1,847 ms in two years of seed 4242: 0.105). By
+  year, seed 99: the orders of over 60 cells 0.100, 0.149, 0.185, 0.081, 0.065 ms a tick;
+  the plans of 30 ms or more 8, 6, 6, 1 and 3 a year, 0.062, 0.058, 0.029, 0.004, 0.013 ms
+  a tick (seed 4242: 13 and 8, 0.082 and 0.042). The tick is 1.810 ms and the budget 1.5:
+  a search of half the cells gives 0.05 ms. The long call is a hitch (79 ticks' worth in
+  one), not the mean.
+- **Counted for the part after** (PLAN 3.10c2d1; nothing chosen):
+  - by place: the marches from afar are 2,262 orders and 4,776 ms (2.1 ms each), the spare
+    253 and 328 ms, the sectors' own orders 47,730 and 2,231 ms (0.047 each);
+  - together: the 1,225 given orders of over 120 cells (3,981 ms) are 656 groups of one plan
+    whose two ends are both within 60 cells of the group's first: 569 searches fewer if a
+    group made one. Seed 4242: 387 orders in 227 groups;
+  - replaced: 27 of 1,854 given far orders were followed within five days by an order to
+    somewhere else (36 ms). ADR-190 ended that (848 of 2,902 at PLAN 3.10c).
+- **Not done:** nothing is faster, and no candidate was tried (a narrower corridor, a
+  bound scaled up, one search for a group: each changes the ways, so each is a rule with
+  an ADR and a new pin). The refused far orders of year 3 (543) were not opened. Seed 8128
+  was not run. No picture: no rule changed. No sweep (ADR-58).
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`, documents only: parity.
+- **Next:** PLAN 3.10c2d1 (the candidates counted on the probe's own grid, then one).
