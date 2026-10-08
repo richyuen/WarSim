@@ -167,6 +167,77 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-196 · 2026-10-08 · accepted — A refresh of the supply network mends it at the changed cells; a bloc's spans may cover more than its network (PLAN 3.10d1b)
+
+- **Context.** A partial refresh cleared and flooded every bloc that had a cell change:
+  247,000 to 277,000 cells in the median for the 37 to 54 that changed hands in twelve
+  hours, 0.20 to 0.36 ms a tick (PLAN 3.10d). PLAN 3.10d1a did the mending on a copy of
+  the layer before each of 12,126 refreshes of three seeds and found no cell apart.
+- **Decision.** `World.setController` and `setOwner` keep each changed cell with what it
+  was at its first change since the last refresh (`World.supplyChanged`: controller ×
+  65536 + owner). A partial refresh takes all the losses first, then the gains.
+  - A loss (the cell bears the mark of a bloc that no longer holds it): the mark is
+    cleared. If the bloc's cells among the four neighbours are joined by way of its cells
+    among the eight about the cell, nothing else changes.
+  - A gain (a changed cell with no mark and a 4-neighbour of its bloc's mark): the bloc's
+    flood goes on from it, through the same `open` as the flood from the sources, so the
+    two tests of PLAN 2.11j that ask for a full refresh stand as they were.
+  - A bloc is cleared and flooded from its sources, as before, when a ring does not hold;
+    when the cell or one of the eight is a crossing lane; when a changed cell is a city
+    whose being a source changed (the bloc it was a source of, the bloc it is one of, the
+    bloc of its mark); when its spans have grown to twice those of its last whole flood;
+    and when it is marked with no changed cell of its own.
+- **Why the ring is enough.** Two cells that follow one another in the ring of eight are
+  4-neighbours. If all the network cells beside the lost cell are in one run of the ring,
+  any way through the lost cell can go round by the ring: every cell that reached a source
+  still does (the lost cell is no source: that case floods). Not joined in the ring may
+  still be joined a longer way round; it is answered no, the safe side. 8-connection in
+  the test would be another network than the flood's, and would move the pin.
+- **Why what the cell was is kept, and not a set of cells alone** (the task said a set).
+  Two things need it. Whether a city was a source cannot be read from the mark (a city
+  that an occupier held is in the occupier's network and is no source). And a bloc that
+  loses a dry cell (a pocket taken apart) has no mark on it: with a set alone it would be
+  a bloc "marked with no changed cell of its own" and be flooded whole for every cell of
+  the pocket. The bloc a city was a source of is the mark it bears at the refresh: a
+  source is always in its bloc's network, and a bloc cannot change without a full refresh.
+- **Spans** (PLAN 3.10d1 said there is no third way: kept true or the bloc flooded). The
+  third way: every cell of a bloc's network is in one of its spans, and a span may hold
+  cells that are no longer in it. A loss leaves the spans alone; a gain adds its own
+  (`n` grows, `base` is what the last whole flood left); the clearing of a bloc zeroes
+  only the cells of its spans that still bear its mark, not the whole span (another bloc's
+  gain may have marked a cell in it since). A bloc with more than twice the spans of its
+  last whole flood is flooded at its next refresh, so the list is bounded. Splitting a
+  span at each loss would keep them exact for a search in the list at every loss; nothing
+  reads the spans but the clearing.
+- **What it does not do.** A gained source floods its bloc (a seed of its own: 0.007 to
+  0.008 ms a tick, PLAN 3.10d1a); a ring that does not hold is not searched further
+  (3.10d1a's bounded search kept pockets with no source). A nation that held a cell
+  between two changes within the twelve hours has no changed cell of its own unless
+  another names it, and is flooded whole: safe, and not counted.
+- **Not needed by any test.** The lane in the ring: with that line out every test passes.
+  By the argument above a lane cell is a network cell like another, and a lane taken by a
+  lower bloc is `open`'s to catch. It is kept as the task has it (92 losses in 17 years).
+- **Measured** (from 1938, pinned to `0xFFFF`, one seed after another; supply's ms a tick
+  by year, HEAD before in brackets from PLAN 3.10d):
+
+  | | seed 99, five years | 4242, three | 8128, nine |
+  |---|---|---|---|
+  | supply, ms a tick | 0.075 to 0.181 (0.271 to 0.420) | 0.096 to 0.122 (0.258 to 0.302) | 0.103 to 0.191 (0.273 to 0.373) |
+  | calls of 1 ms or more a year | 61 to 350 (592 to 730) | 126 to 249 (586 to 716) | 185 to 560 (680 to 731) |
+  | the tick, mean | 1.289 (1.495) | 1.360 | 1.616 |
+
+  The runs end on `5c31d145`, `114f9c7f` and `c9c0d546`, the hashes of 3.10d: the same
+  games.
+- **The pin.** Not moved (`8f937408`).
+- **Test.** `tests/unit/supply.test.ts`, red first (40,000 cells written for a limit of
+  200): on a made map a front that moves five cells writes ten cells, and two when one is
+  given back; a pocket is cut off by a whole flood and relieved by a flood of its 26 cells;
+  and after each of 2,158 refreshes of random changes (cells, cells given back, a city, a
+  ring, the date line, a lane, a line, a peace; an island, two lanes, a puppet) the layer
+  is the rule's to the cell, 601 of them with no bloc flooded from its sources. Four
+  faults put in by hand fail it (the ring always holding, a city never flooding, one seed
+  for a bloc's gains, the clearing of whole spans).
+
 ### ADR-195 · 2026-10-08 · accepted — The bound of the cell search is scaled up for a long search (PLAN 3.10c2d1b)
 
 - **Context.** The longest call of the tick was a nation's far marches of one day: the

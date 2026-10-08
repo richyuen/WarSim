@@ -10614,3 +10614,50 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check` (documents only: parity).
 - **Next:** PLAN 3.10d1b.
+
+## 2026-10-08 — PLAN 3.10d1b: a partial refresh of the supply network mends it (ADR-196)
+
+- **Done:** `World.supplyChanged` keeps each cell that changed hands with what it was;
+  `refreshSupplyNetwork` takes the losses first (the mark cleared; the bloc flooded whole
+  when the ring of eight does not hold, has a lane in it, or the cell is a city whose being
+  a source changed), then the gains (a flood from a changed cell beside its bloc's
+  network, through the same `open` and the same scanline loop). Spans cover the network
+  and may cover more; the clearing zeroes only the bloc's own marks. 3.10d1 is ticked with
+  it.
+- **Measured** (from 1938, pinned to `0xFFFF`, one seed after another, `--profile`; one
+  run each; before in brackets, from 3.10d):
+
+  | | 99 y1 | y2 | y3 | y4 | y5 | 4242, y1 to y3 | 8128, y1 to y9 |
+  |---|---|---|---|---|---|---|---|
+  | supply, ms a tick | 0.128 (0.318) | 0.181 (0.420) | 0.098 (0.316) | 0.075 (0.288) | 0.092 (0.271) | 0.096 to 0.122 (0.258 to 0.302) | 0.103 to 0.191 (0.273 to 0.373) |
+  | calls of 1 ms or more | 153 (592) | 350 (730) | 250 (704) | 61 (675) | 111 (704) | 126 to 249 (586 to 716) | 185 to 560 (680 to 731) |
+  | the longest call, ms | 20.9 | 8.1 | 8.7 | 10.8 | 12.3 | 7.4 to 21.1 | 7.6 to 21.2 |
+
+  The tick: 1.289 ms in five years of seed 99 (1.495 at 3.10c2d1b), 1.360 in three of
+  4242, 1.616 in nine of 8128. The longest call was a full refresh at 3.10d (7.5 ms in the
+  median, 20 to 21 the first tick's); which call it is now was not looked at.
+- **The same games:** `5c31d145` (99, five years; `8f937408` after one, the pin),
+  `114f9c7f` (4242, three), `c9c0d546` (8128, nine).
+- **Beside 3.10d1a's forecast:** it left 0.044, 0.036 and 0.065 ms a tick of floods. Supply
+  less the hourly pass of 3.10d (0.04 to 0.08) is about that and a little more; the parts
+  were not timed again, so what the mending itself costs and which cause floods the blocs
+  still flooded are not known from these runs. Seed 8128's years 7 and 8 (0.19) are the
+  long Soviet war the count named.
+- **Other than the task:** a map of the changed cells with what they were, not a set
+  (ADR-196 says why: a city that was a source, and a bloc that loses a dry cell).
+- **The tests:** red first with the counter alone in the old refresh (40,000 cells written
+  for a limit of 200; the random test's networks agreed with the old refresh). Six faults
+  put in by hand: four fail the tests (the ring always holding: step 12; a city never
+  flooding: step 1; one seed for a bloc's gains: step 80; whole spans cleared: step 43).
+  Two do not, and no network is wrong without them: the lane in the ring (kept as the
+  task has it) and the whole flood of a bloc marked with no changed cell (now asserted in
+  the pocket test).
+- **A gotcha:** the first random test let the world go dry (a fifth of the land fed: taken
+  cities are no sources), so few refreshes had a network to mend. It now makes owners of
+  occupiers half the time and has a "peace"; two fifths of the land is fed in the mean.
+- **Not done:** no picture: nothing drawn changed; specs run by hand: none. No sweep
+  (ADR-58). The probe of 3.10d was not put back.
+- **Review count:** unchanged (3.10 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.10e (territory and combat in a first year, if the budget is not met),
+  then 3.10f.

@@ -804,6 +804,12 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   Since PLAN 1.42a the flood fills row spans (a scanline fill: same network, about twice as fast)
   and remembers each bloc's spans (`World.supplySpans`, derived), so a partial refresh clears a
   bloc without scanning the grid. A full refresh takes 6 ms at M.
+  Since PLAN 3.10d1b (ADR-196) a partial refresh mends: the cells that changed hands are kept
+  (`World.supplyChanged`, derived), a lost cell's mark is cleared, and a gained cell beside its
+  bloc's network is flooded from. A bloc is cleared and flooded whole only when the bloc's cells
+  about a lost cell are not joined in the ring of eight, when a lane is in that ring, when a
+  city's being a source changed, or when it is marked with no changed cell. The network is the
+  same to the cell. A bloc's spans cover its network and may cover more.
 - *Formations* (hourly): on their own bloc's network, supply rises by 1/8 per hour towards 1;
   off it, it falls by 1/8 towards 0. At 0 a formation loses (2% + terrain `supplyAttrition`) of its
   strength per day, applied hourly. An encircled division is dry within 8–14 h.

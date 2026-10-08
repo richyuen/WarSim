@@ -13,7 +13,8 @@
  * The flood fills row spans (a scanline fill: the network is a connected region, so the order
  * it is filled in cannot change it), and each bloc's spans are remembered
  * (`World.supplySpans`, derived), so a partial refresh clears a bloc's network without scanning
- * the grid (PLAN 1.42a).
+ * the grid (PLAN 1.42a). A partial refresh mends the network at the cells that changed hands and
+ * floods a bloc whole only where that is not sure (PLAN 3.10d1b, ADR-196).
  *
  * Formations (hourly): a formation on a cell of its own bloc's network, or of the network of a
  * bloc fighting on its side of a war (PLAN 1.42b: allies feed each other's armies while they
@@ -73,17 +74,93 @@ export function blocOf(world: World, nation: number): number {
 
 const seeds: number[] = [];
 let spanScratch = new Int32Array(1 << 16);
+const ring = new Int32Array(8);
+
+/**
+ * Derived, for the tests and the measurements: what the last call of `refreshSupplyNetwork` did.
+ * `written` counts the cells it filled, the cells of the spans it cleared and the marks the
+ * mending took away; `flooded` the blocs flooded from their sources, `mended` the ones flooded
+ * from changed cells alone; `full` is 1 when every bloc was refreshed (the call's own doing, or
+ * what a partial refresh ended in).
+ */
+export const refreshStats = { written: 0, flooded: 0, mended: 0, full: 0 };
+
+/**
+ * Whether the network of bloc `m` hangs together as before without cell `c`, whose mark has
+ * just been cleared (PLAN 3.10d1b). It does when the network cells among the four neighbours of
+ * `c` are joined by way of the network cells of the eight about it: two of the eight that follow
+ * one another are 4-neighbours, so what is joined in the ring is joined in the network. Not
+ * joined in the ring may still be joined a longer way round: that is answered no, and the bloc is
+ * flooded. So is a crossing lane in the cell or the eight (the lanes are where the blocs meet).
+ */
+function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, c: number, m: number): boolean {
+  if (terrain[c] === Terrain.Crossing) return false;
+  const x = c % w;
+  const row = c - x;
+  const xl = x > 0 ? x - 1 : w - 1;
+  const xr = x < w - 1 ? x + 1 : 0;
+  const up = row > 0 ? row - w : -1;
+  const dn = row < w * (h - 1) ? row + w : -1;
+  ring[0] = up < 0 ? -1 : up + x;
+  ring[1] = up < 0 ? -1 : up + xr;
+  ring[2] = row + xr;
+  ring[3] = dn < 0 ? -1 : dn + xr;
+  ring[4] = dn < 0 ? -1 : dn + x;
+  ring[5] = dn < 0 ? -1 : dn + xl;
+  ring[6] = row + xl;
+  ring[7] = up < 0 ? -1 : up + xl;
+  // A place in the ring that is not the network's, to count the runs from.
+  let gap = -1;
+  for (let i = 0; i < 8; i++) {
+    const n = ring[i]!;
+    if (n < 0) gap = i;
+    else if (terrain[n] === Terrain.Crossing) return false;
+    else if (supply[n] !== m) gap = i;
+  }
+  if (gap < 0) return true;
+  // The runs of network cells that hold a 4-neighbour (an even place): more than one is a cut.
+  let runs = 0;
+  let inRun = false;
+  let counted = false;
+  for (let i = 1; i <= 8; i++) {
+    const k = (gap + i) & 7;
+    const n = ring[k]!;
+    if (n >= 0 && supply[n] === m) {
+      if (!inRun) {
+        inRun = true;
+        counted = false;
+      }
+      if ((k & 1) === 0 && !counted) {
+        counted = true;
+        if (++runs > 1) return false;
+      }
+    } else inRun = false;
+  }
+  return true;
+}
 
 /**
  * Recomputes `cells.supply` from the current cities and control: everything after a full-dirty
- * change, else only the blocs whose cells changed (their cells are cleared and reflooded; other
- * blocs keep their networks).
+ * change, else only at the blocs whose cells changed (other blocs keep their networks).
+ *
+ * A partial refresh mends (PLAN 3.10d1b, ADR-196): it takes the cells that changed hands since
+ * the last refresh (`World.supplyChanged`), all the losses first and then the gains.
+ * - A loss is a changed cell that bears the mark of a bloc that no longer holds it. The mark is
+ *   cleared, and nothing else changes when the ring about the cell holds (`ringHolds`).
+ * - A gain is a changed cell with no mark beside its bloc's network: the bloc's flood goes on
+ *   from it, into its dry cells beyond as well (a pocket relieved).
+ * - A bloc is cleared and flooded whole from its sources, as every refreshed bloc was until
+ *   then, when a ring does not hold or has a lane in it, when a changed cell is a city that is
+ *   no longer a source of the bloc it was one of (the bloc it was a source of, the bloc it is
+ *   one of, and the bloc of its mark), when its spans have grown to twice those of its last
+ *   whole flood, and when it is marked (`supplyDirtyNations`, `supplyDirtyBlocs`) and no
+ *   changed cell is its own.
  *
  * A refresh of some blocs gives the network a full one gives (PLAN 2.11j). The blocs meet only
  * at the crossing lanes, which go to the lowest bloc that reaches them, and at cells that have
  * changed hands. So a partial refresh is done again in full when
- * - a lane that a refreshed bloc held is not its own afterwards (another bloc, not refreshed,
- *   may reach it now), or
+ * - a lane that a bloc flooded whole held is not its own afterwards (another bloc, not
+ *   refreshed, may reach it now), or
  * - a refreshed bloc's flood comes to a cell that is its own to take and lies in another
  *   network: a lane held by a higher bloc, or a cell it controls.
  * Until then a released lane stayed unclaimed and a lower bloc did not take a lane from a
@@ -91,41 +168,110 @@ let spanScratch = new Int32Array(1 << 16);
  * that was saved.
  */
 export function refreshSupplyNetwork(world: World): void {
+  refreshStats.written = refreshStats.flooded = refreshStats.mended = refreshStats.full = 0;
+  refresh(world);
+}
+
+function refresh(world: World): void {
   const { w, h, controller, owner, terrain, supply } = world.cells;
   const blocOfNation = new Uint16Array(world.nations.highWater + 1);
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
   const full = world.supplyDirty;
+  /** Partial: the blocs that are cleared and flooded whole. */
   const only = new Uint8Array(world.nations.highWater + 1);
   const reached = world.supplySpans;
-  /** Partial: the lanes each refreshed bloc held before. */
+  const changed = world.supplyChanged;
+  const cc = world.cities.cols;
+  /** Partial: the lanes each bloc flooded whole held before. */
   const held: [number, number[]][] = [];
+  /** Partial: per mended bloc, its changed cells with no mark. */
+  const gains = new Map<number, number[]>();
   if (full) {
     supply.fill(0);
     reached.clear();
+    refreshStats.written += supply.length;
+    refreshStats.full = 1;
   } else {
-    const clear = (b: number): void => {
-      if (b === 0 || only[b] === 1) return;
-      only[b] = 1;
-      const old = reached.get(b);
-      if (old) {
-        for (let i = 0; i < old.n; i += 2) supply.fill(0, old.spans[i]!, old.spans[i + 1]!);
-        if (old.lanes.length > 0) held.push([b, old.lanes]);
-      }
-      reached.delete(b);
+    const whole = (b: number): void => {
+      if (b !== 0 && b < only.length) only[b] = 1;
     };
-    for (const n of world.supplyDirtyNations) clear(n === 0 ? 0 : blocOfNation[n] || n);
-    // And the blocs in whose networks the changed cells lay: a nation's bloc today is not
-    // always the one that flooded its cells (a puppet since annexed).
-    for (const b of world.supplyDirtyBlocs) if (b < only.length) clear(b);
+    const blocNow = (n: number): number => (n === 0 ? 0 : blocOfNation[n] || n);
+    // The blocs with a changed cell of their own: what held or owned it, what does, its mark.
+    const own = new Uint8Array(only.length);
+    for (const [c, was] of changed) {
+      own[blocNow(was >>> 16)] = 1;
+      own[blocNow(was & 0xffff)] = 1;
+      own[blocNow(controller[c]!)] = 1;
+      own[blocNow(owner[c]!)] = 1;
+      own[supply[c]!] = 1;
+    }
+    // Marked with no changed cell (a test, the user; a cell that changed twice names the nation
+    // between), and the blocs in whose networks the changed cells lay: a nation's bloc today is
+    // not always the one that flooded its cells (a puppet since annexed).
+    for (const n of world.supplyDirtyNations) if (own[blocNow(n)] !== 1) whole(blocNow(n));
+    for (const b of world.supplyDirtyBlocs) if (own[b] !== 1) whole(b);
+    for (const [b, kept] of reached) if (own[b] === 1 && kept.n > 2 * kept.base) whole(b);
+    // A city that changed hands: a source made or lost.
+    world.cities.forEach((id) => {
+      const cell = cc.cell[id]!;
+      const was = changed.get(cell);
+      if (was === undefined) return;
+      const mark = supply[cell]!;
+      const holder = was >>> 16;
+      const wasOf = holder !== 0 && (was & 0xffff) === holder ? mark || blocNow(holder) : 0;
+      const ctl = controller[cell]!;
+      const isOf = ctl !== 0 && owner[cell] === ctl ? blocOfNation[ctl]! : 0;
+      if (wasOf === isOf) return;
+      whole(wasOf);
+      whole(isOf);
+      whole(mark);
+    });
+    // The losses, each against the layer as the ones before it left it.
+    let cleared = 0;
+    for (const c of changed.keys()) {
+      const m = supply[c]!;
+      if (m === 0) continue;
+      const ctl = controller[c]!;
+      if (ctl !== 0 && blocOfNation[ctl] === m) continue;
+      supply[c] = 0;
+      cleared++;
+      if (m < only.length && only[m] !== 1 && !ringHolds(supply, terrain, w, h, c, m)) only[m] = 1;
+    }
+    // The blocs flooded whole are cleared, all of them before any flood. A span may hold cells
+    // that have left the network since it was filled, and some of them bear another mark by now.
+    for (let b = 1; b < only.length; b++) {
+      if (only[b] !== 1) continue;
+      const old = reached.get(b);
+      if (!old) continue;
+      const spans = old.spans;
+      for (let i = 0; i < old.n; i += 2) {
+        const end = spans[i + 1]!;
+        for (let k = spans[i]!; k < end; k++) if (supply[k] === b) supply[k] = 0;
+        cleared += end - spans[i]!;
+      }
+      if (old.lanes.length > 0) held.push([b, old.lanes]);
+      reached.delete(b);
+    }
+    refreshStats.written += cleared;
+    // The gains: after the losses a changed cell bears no mark or its own bloc's.
+    for (const c of changed.keys()) {
+      const ctl = controller[c]!;
+      if (ctl === 0 || supply[c] !== 0) continue;
+      const b = blocOfNation[ctl]!;
+      if (b === 0 || only[b] === 1) continue;
+      const list = gains.get(b);
+      if (list) list.push(c);
+      else gains.set(b, [c]);
+    }
   }
   world.supplyDirty = false;
   world.supplyDirtyNations.clear();
   world.supplyDirtyBlocs.clear();
+  changed.clear();
   /** Partial: this refresh met what only a full one settles. */
   let again = false;
   // Sources per bloc: cities owned and controlled by a member.
   const sources = new Map<number, number[]>();
-  const cc = world.cities.cols;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
     const ctl = controller[cell]!;
@@ -136,7 +282,8 @@ export function refreshSupplyNetwork(world: World): void {
     if (!list) sources.set(b, (list = []));
     list.push(cell);
   });
-  const blocs = [...sources.keys()].sort((a, b) => a - b);
+  // The blocs with work, in ascending order: flooded whole (they have sources) or mended.
+  const blocs = [...sources.keys(), ...gains.keys()].sort((a, b) => a - b);
   for (const b of blocs) {
     // Whether the flood of bloc b may enter cell n: not yet in a network, and held by the bloc or
     // an unclaimed crossing lane.
@@ -159,7 +306,21 @@ export function refreshSupplyNetwork(world: World): void {
     let spans = spanScratch;
     let n = 0;
     seeds.length = 0;
-    for (const s of sources.get(b)!) seeds.push(s);
+    const mend = gains.get(b);
+    if (mend) {
+      // From the changed cells beside the network: the others are reached from these, or not at all.
+      for (const c of mend) {
+        const x = c % w;
+        const beside =
+          supply[x > 0 ? c - 1 : c + w - 1] === b || supply[x < w - 1 ? c + 1 : c - w + 1] === b || (c >= w && supply[c - w] === b) || (c < w * (h - 1) && supply[c + w] === b);
+        if (beside) seeds.push(c);
+      }
+      if (seeds.length === 0) continue;
+      refreshStats.mended++;
+    } else {
+      for (const s of sources.get(b)!) seeds.push(s);
+      refreshStats.flooded++;
+    }
     while (seeds.length > 0) {
       const s = seeds.pop()!;
       if (supply[s] !== 0) continue; // filled since it was pushed
@@ -170,6 +331,7 @@ export function refreshSupplyNetwork(world: World): void {
       let r = s + 1;
       while (r < rowEnd && open(r)) r++;
       supply.fill(b, l, r);
+      refreshStats.written += r - l;
       if (n === spans.length) {
         spans = new Int32Array(n * 2);
         spans.set(spanScratch);
@@ -192,11 +354,23 @@ export function refreshSupplyNetwork(world: World): void {
         }
       }
     }
-    // Remember the network for the next partial refresh (the buffer is reused when it fits).
     let kept = reached.get(b);
-    if (!kept || kept.spans.length < n) reached.set(b, (kept = { spans: new Int32Array(n + (n >> 2)), n: 0, lanes }));
+    if (mend && kept) {
+      // The mending adds its spans and its lanes to the bloc's.
+      if (kept.spans.length < kept.n + n) {
+        const grown = new Int32Array(kept.n + n + ((kept.n + n) >> 2));
+        grown.set(kept.spans.subarray(0, kept.n));
+        kept.spans = grown;
+      }
+      kept.spans.set(spans.subarray(0, n), kept.n);
+      kept.n += n;
+      if (lanes.length > 0) kept.lanes = [...new Set([...kept.lanes, ...lanes])];
+      continue;
+    }
+    // Remember the network for the next partial refresh (the buffer is reused when it fits).
+    if (!kept || kept.spans.length < n) reached.set(b, (kept = { spans: new Int32Array(n + (n >> 2)), n: 0, base: 0, lanes }));
     kept.spans.set(spans.subarray(0, n));
-    kept.n = n;
+    kept.n = kept.base = n;
     // (A lane is asked about from each side it is reached from: once in the list is enough.)
     kept.lanes = lanes.length > 1 ? [...new Set(lanes)] : lanes;
   }
@@ -206,7 +380,7 @@ export function refreshSupplyNetwork(world: World): void {
   }
   if (again) {
     world.supplyDirty = true;
-    refreshSupplyNetwork(world);
+    refresh(world);
   }
 }
 

@@ -474,11 +474,20 @@ export class World {
    */
   supplyDirtyBlocs = new Set<number>();
   /**
-   * Derived (not state): per supply bloc, the row spans its last flood filled, as [start, end)
-   * cell pairs (the first `n` entries of `spans`), and the crossing lanes among them. Valid
-   * from a full refresh on; a full refresh rebuilds it.
+   * Derived (not state): the cells whose controller or owner changed since the last refresh, each
+   * with what it was then (controller × 65536 + owner). A partial refresh mends the network at
+   * these cells (PLAN 3.10d1b); what a cell was says whether a city was a source, and which
+   * blocs have a changed cell of their own.
    */
-  supplySpans = new Map<number, { spans: Int32Array; n: number; lanes: number[] }>();
+  supplyChanged = new Map<number, number>();
+  /**
+   * Derived (not state): per supply bloc, the row spans its floods filled, as [start, end)
+   * cell pairs (the first `n` entries of `spans`; `base` of them from its last flood of the
+   * whole bloc, the rest from the mending since), and the crossing lanes among them. Every cell
+   * of the bloc's network is in a span; a span may hold cells that are no longer in it
+   * (ADR-196). Valid from a full refresh on; a full refresh rebuilds it.
+   */
+  supplySpans = new Map<number, { spans: Int32Array; n: number; base: number; lanes: number[] }>();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
@@ -647,6 +656,7 @@ export class World {
     this.supplyDirtyNations.add(c.controller[i]!);
     this.supplyDirtyNations.add(nation);
     if (c.supply[i] !== 0) this.supplyDirtyBlocs.add(c.supply[i]!);
+    if (!this.supplyChanged.has(i)) this.supplyChanged.set(i, c.controller[i]! * 65536 + c.owner[i]!);
     c.controller[i] = nation;
     if (!keepFrontier) this.frontier = null;
     const x = i % c.w;
@@ -661,6 +671,7 @@ export class World {
     this.supplyDirtyNations.add(c.owner[i]!);
     this.supplyDirtyNations.add(nation);
     if (c.supply[i] !== 0) this.supplyDirtyBlocs.add(c.supply[i]!);
+    if (!this.supplyChanged.has(i)) this.supplyChanged.set(i, c.controller[i]! * 65536 + c.owner[i]!);
     // Owned-cell counts follow every ownership change (review in PLAN 1.32: they were set once
     // at scenario creation and went stale, so panel and ranking land never moved).
     const nc = this.nations.cols;

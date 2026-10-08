@@ -4821,7 +4821,8 @@ quick sweep as a smoke test.
     flooded for each mark. The Soviet Union's network alone (181,000 to 205,000 cells,
     1.8 to 2.0 ms a flood, in 83 to 91 % of the refreshes) is 59 % of all the flood time
     in each of the three seeds. The fix is 3.10d1. Numbers and the method are in PROGRESS.
-  - [ ] 3.10d1 A refresh mends a bloc's network at the cells that changed, where that is
+  - [x] 3.10d1 *Done 2026-10-08 with its parts (3.10d1a the count, 3.10d1b the mending,
+    ADR-196).* A refresh mends a bloc's network at the cells that changed, where that is
     sure, and floods the bloc again where it is not. The network stays what it is today,
     to the cell (a function of the cities, the control and the blocs: PLAN 2.11j), so the
     pin does not move. What it needs: the cells that changed hands since the last refresh
@@ -4871,7 +4872,17 @@ quick sweep as a smoke test.
       later in the same refresh). A correction to 3.10d: partial refreshes are done
       again in full, 16, 3 and 12 times in these runs; its probe counted them as full
       ones. Numbers and the method are in PROGRESS.
-    - [ ] 3.10d1b The mending, as the task above and the count have it. `setController`
+    - [x] 3.10d1b *Done 2026-10-08 (ADR-196):* a partial refresh mends. Supply is 0.075 to
+      0.181 ms a tick in five years of seed 99 (0.271 to 0.420), 0.096 to 0.122 in three of
+      4242 (0.258 to 0.302) and 0.103 to 0.191 in nine of 8128 (0.273 to 0.373); its calls
+      of 1 ms or more are 61 to 560 a year (586 to 731); the tick of seed 99 is 1.289 ms
+      (1.495). The runs end on `5c31d145`, `114f9c7f` and `c9c0d546`, and the pin stands.
+      Other than the task: the changed cells are kept with what they were (a map, not a
+      set: a city's having been a source, and a bloc that lost a dry cell, need it). Not
+      done: what flooded the blocs still flooded was not counted again (3.10d1a's forecast
+      was 0.044, 0.036 and 0.065 ms a tick of floods left), nor what the mending itself
+      costs. The lane in the ring is needed by no test (ADR-196).
+      The task as it was set: The mending, as the task above and the count have it. `setController`
       and `setOwner` keep the cells that changed (a set; the nations and blocs are kept
       as they are, the tests read them), and the old bloc of a cell is the layer's mark
       at the refresh. All the losses first, then all the gains: after the losses a

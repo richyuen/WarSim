@@ -3,8 +3,8 @@ import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { SUPPLY_REACH, blocOf, refreshSupplyNetwork } from '../../src/sim/systems/supply';
-import type { World } from '../../src/sim/world';
+import { SUPPLY_REACH, blocOf, refreshStats, refreshSupplyNetwork } from '../../src/sim/systems/supply';
+import { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { PZ } from '../helpers/pocket';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -373,5 +373,273 @@ describe('a partial refresh gives what a full one gives (PLAN 2.11j)', () => {
     expect(cells.filter((c) => w.cells.supply[c] === GRE)).toEqual([]);
     expect(cells.filter((c) => w.cells.supply[c] === blocOf(w, YUG)).length).toBeGreaterThan(20);
     expect(differs(w.cells.supply, referenceNetwork(w, w.cells.supply))).toBe(0);
+  });
+});
+
+// PLAN 3.10d1b. A partial refresh flooded every cell of each bloc that had a cell change: a
+// quarter of a million cells for the forty or so that change hands in twelve hours of 1938
+// (PLAN 3.10d). It mends the network at the changed cells now, and floods a bloc whole only
+// where the mending is not sure.
+describe('a partial refresh mends the network at the cells that changed (PLAN 3.10d1b)', () => {
+  /**
+   * A made map: `stripes` nations side by side from west to east, the last one meeting the first
+   * at the date line, `cities` cities each. The last nation is a puppet of the first when `puppet`.
+   */
+  function made(w: number, h: number, stripes: number, cities: number, puppet: boolean): World {
+    const world = new World(1, w, h);
+    world.cells.terrain.fill(Terrain.Plains);
+    for (let n = 1; n <= stripes; n++) {
+      const id = world.nations.create();
+      world.nations.cols.living[id] = 1;
+    }
+    if (puppet) world.nations.cols.overlord[stripes] = 1;
+    const width = w / stripes;
+    for (let i = 0; i < w * h; i++) world.cells.owner[i] = world.cells.controller[i] = 1 + Math.floor((i % w) / width);
+    for (let n = 1; n <= stripes; n++) {
+      for (let k = 0; k < cities; k++) {
+        const x = Math.floor((n - 1) * width + ((k * 7 + 3) % width));
+        const y = Math.floor(((k * 2 + 1) * h) / (cities * 2));
+        world.cities.cols.cell[world.cities.create()] = y * w + x;
+      }
+    }
+    return world;
+  }
+
+  /** The network by the rule, cell by cell: the lowest bloc first, from its sources. */
+  function byRule(world: World): Uint16Array {
+    const { w, h, controller, owner, terrain } = world.cells;
+    const out = new Uint16Array(w * h);
+    const sources = new Map<number, number[]>();
+    world.cities.forEach((id) => {
+      const cell = world.cities.cols.cell[id]!;
+      const ctl = controller[cell]!;
+      if (ctl === 0 || owner[cell] !== ctl) return;
+      const b = blocOf(world, ctl);
+      sources.set(b, [...(sources.get(b) ?? []), cell]);
+    });
+    for (const b of [...sources.keys()].sort((p, q) => p - q)) {
+      const queue = sources.get(b)!.filter((s) => out[s] === 0);
+      for (const s of queue) out[s] = b;
+      for (let head = 0; head < queue.length; head++) {
+        const c = queue[head]!;
+        const x = c % w;
+        const y = (c - x) / w;
+        for (const n of [y > 0 ? c - w : -1, y < h - 1 ? c + w : -1, x > 0 ? c - 1 : c + w - 1, x < w - 1 ? c + 1 : c - w + 1]) {
+          if (n < 0 || out[n] !== 0) continue;
+          const ctl = controller[n]!;
+          if (ctl !== 0 ? blocOf(world, ctl) !== b : terrain[n] !== Terrain.Crossing) continue;
+          out[n] = b;
+          queue.push(n);
+        }
+      }
+    }
+    return out;
+  }
+  const apart = (a: Uint16Array, b: Uint16Array): number => {
+    let n = 0;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) n++;
+    return n;
+  };
+
+  it('a front that moves by a few cells writes under a hundredth of the cells of the two blocs', () => {
+    const [w, h] = [200, 100];
+    const world = made(w, h, 2, 4, false);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply.filter((b) => b === 1).length).toBe((w * h) / 2);
+    // The second nation takes five cells of the first at the front, and one of them back.
+    for (let y = 40; y < 45; y++) world.setController(y * w + 99, 2);
+    refreshSupplyNetwork(world);
+    const first = refreshStats.written;
+    expect(refreshStats.full).toBe(0);
+    world.setController(42 * w + 99, 1);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[41 * w + 99]).toBe(2);
+    expect(world.cells.supply[42 * w + 99]).toBe(1);
+    expect(refreshStats.full).toBe(0);
+    // Ten cells the first time (five marks taken, five given) and two the second, of 20,000.
+    expect(first).toBeLessThan((w * h) / 100);
+    expect(first).toBe(10);
+    expect(refreshStats.written).toBe(2);
+  });
+
+  it('a pocket is cut off by a flood of the whole bloc and relieved by a flood from the cell that relieves it', () => {
+    const [w, h] = [200, 100];
+    const world = made(w, h, 2, 4, false);
+    refreshSupplyNetwork(world);
+    const cities = new Set<number>();
+    world.cities.forEach((id) => void cities.add(world.cities.cols.cell[id]!));
+    // A ring of the second nation's about 5 × 5 cells of the first, with no city in it.
+    const [cx, cy] = [50, 50];
+    const ringCells: number[] = [];
+    for (let dy = -3; dy <= 3; dy++) {
+      for (let dx = -3; dx <= 3; dx++) {
+        expect(cities.has((cy + dy) * w + cx + dx)).toBe(false);
+        if (Math.max(Math.abs(dx), Math.abs(dy)) === 3) ringCells.push((cy + dy) * w + cx + dx);
+      }
+    }
+    for (const c of ringCells) world.setController(c, 2);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[cy * w + cx]).toBe(0);
+    expect(refreshStats.flooded).toBe(1); // the first nation's: the ring about the last cell did not hold
+    // One cell of the ring is given back: the pocket's 25 cells and that one, and no bloc whole.
+    world.setController(cy * w + cx + 3, 1);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[cy * w + cx]).toBe(1);
+    expect([refreshStats.flooded, refreshStats.mended, refreshStats.full]).toEqual([0, 1, 0]);
+    expect(refreshStats.written).toBe(26);
+    // A bloc that is marked with no changed cell of its own is flooded from its sources, as it was.
+    world.supplyDirtyNations.add(2);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect([refreshStats.flooded, refreshStats.mended, refreshStats.full]).toEqual([1, 0, 0]);
+    expect(refreshStats.written).toBe(w * h);
+  });
+
+  it('after each of many random changes the mended network is the rule’s, to the cell', () => {
+    const [w, h] = [144, 72];
+    const world = made(w, h, 6, 6, true);
+    const { controller, owner, terrain } = world.cells;
+    // Sea: a band through the second and third nations with an island of the second in it, a
+    // lane from the island to the second's shore and one to the third's; and a strait at the
+    // date line with a lane across it.
+    const sea = (x0: number, x1: number, y0: number, y1: number): void => {
+      for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x1; x++) {
+          const c = y * w + ((x + w) % w);
+          terrain[c] = Terrain.Water;
+          controller[c] = owner[c] = 0;
+        }
+      }
+    };
+    sea(18, 52, 18, 30);
+    for (let y = 22; y <= 26; y++) for (let x = 26; x <= 30; x++) controller[y * w + x] = owner[y * w + x] = 2;
+    world.cities.cols.cell[world.cities.create()] = 24 * w + 28;
+    for (let y = 18; y <= 21; y++) terrain[y * w + 28] = Terrain.Crossing;
+    for (let x = 31; x <= 52; x++) terrain[24 * w + x] = Terrain.Crossing;
+    sea(-2, 1, 10, 40);
+    for (let x = -2; x <= 1; x++) terrain[20 * w + ((x + w) % w)] = Terrain.Crossing;
+    const cityCells: number[] = [];
+    world.cities.forEach((id) => void cityCells.push(world.cities.cols.cell[id]!));
+    const lanes: number[] = [];
+    for (let c = 0; c < w * h; c++) if (terrain[c] === Terrain.Crossing) lanes.push(c);
+    world.supplyDirty = true;
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+
+    let seed = 12345;
+    const rnd = (n: number): number => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return Math.floor((seed / 4294967296) * n);
+    };
+    /** What a change took, to give back: the cells with who held and owned them. */
+    const taken: [number, number, number][][] = [];
+    const take = (cells: number[], nation: number, own: boolean): void => {
+      const was: [number, number, number][] = [];
+      for (const c of cells) {
+        if (controller[c] === 0) continue; // sea
+        was.push([c, controller[c]!, owner[c]!]);
+        world.setController(c, nation);
+        if (own) world.setOwner(c, nation);
+      }
+      taken.push(was);
+    };
+    const blob = (cx: number, cy: number, r: number): number[] => {
+      const cells: number[] = [];
+      for (let dy = -r; dy <= r; dy++) {
+        for (let dx = -r; dx <= r; dx++) {
+          const y = cy + dy;
+          if (y >= 0 && y < h) cells.push(y * w + ((cx + dx + 2 * w) % w));
+        }
+      }
+      return cells;
+    };
+    const kinds = new Map<string, number>();
+    const stats = { partial: 0, full: 0, flooded: 0, mended: 0, alone: 0, cut: 0, relieved: 0, fed: 0 };
+    const wrong: string[] = [];
+    for (let step = 0; step < 2500 && wrong.length === 0; step++) {
+      const nation = 1 + rnd(6);
+      const k = rnd(100);
+      let kind: string;
+      if (k < 30) {
+        kind = 'cells';
+        take(blob(rnd(w), rnd(h), rnd(3)), nation, rnd(2) === 0);
+      } else if (k < 50 && taken.length > 0) {
+        kind = 'given back';
+        for (const [c, ctl, own] of taken.splice(rnd(taken.length), 1)[0]!) {
+          world.setController(c, ctl);
+          world.setOwner(c, own);
+        }
+      } else if (k < 62) {
+        kind = 'a city';
+        const c = cityCells[rnd(cityCells.length)]!;
+        take(blob(c % w, Math.floor(c / w), rnd(2)), nation, rnd(2) === 0);
+      } else if (k < 76) {
+        kind = 'a ring';
+        const [cx, cy, r] = [rnd(w), 4 + rnd(h - 8), 2 + rnd(3)];
+        const cells: number[] = [];
+        for (let dy = -r; dy <= r; dy++) {
+          for (let dx = -r; dx <= r; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === r) cells.push((cy + dy) * w + ((cx + dx + w) % w));
+        }
+        take(cells, nation, false);
+      } else if (k < 86) {
+        kind = 'the date line';
+        take(blob(rnd(2) === 0 ? rnd(3) : w - 1 - rnd(3), rnd(h), 1 + rnd(2)), nation, rnd(2) === 0);
+      } else if (k < 94) {
+        kind = 'a lane';
+        const c = lanes[rnd(lanes.length)]!;
+        take(blob(c % w, Math.floor(c / w), 1 + rnd(2)), nation, rnd(2) === 0);
+      } else if (k < 97) {
+        kind = 'a line';
+        const [x0, y, len] = [rnd(w), rnd(h), 5 + rnd(30)];
+        take(Array.from({ length: len }, (_, i) => y * w + ((x0 + i) % w)), nation, false);
+      } else {
+        kind = 'a peace';
+        for (let c = 0; c < w * h; c++) if (controller[c] === nation && owner[c] !== nation) world.setOwner(c, nation);
+      }
+      kinds.set(kind, (kinds.get(kind) ?? 0) + 1);
+      if (world.supplyChanged.size === 0) continue;
+      expect(world.supplyDirty).toBe(false);
+      const before = new Uint16Array(world.cells.supply);
+      const changed = new Set(world.supplyChanged.keys());
+      refreshSupplyNetwork(world);
+      const rule = byRule(world);
+      const n = apart(world.cells.supply, rule);
+      if (n > 0) wrong.push(`step ${step} (${kind}): ${n} cells are not the rule's`);
+      stats.partial++;
+      stats.full += refreshStats.full;
+      if (refreshStats.full === 0) {
+        stats.flooded += refreshStats.flooded;
+        stats.mended += refreshStats.mended;
+        // The network changed and no bloc was flooded from its sources.
+        if (refreshStats.flooded === 0 && apart(before, rule) > 0) stats.alone++;
+      }
+      // Land that went dry though it did not change hands (a pocket cut off), and the reverse.
+      let [cut, relieved] = [0, 0];
+      for (let c = 0; c < w * h; c++) {
+        if (changed.has(c) || controller[c] === 0) continue;
+        if (before[c] !== 0 && rule[c] === 0) cut++;
+        if (before[c] === 0 && rule[c] !== 0) relieved++;
+      }
+      stats.fed += rule.filter((b) => b !== 0).length / (w * h);
+      if (cut > 0) stats.cut++;
+      if (relieved > 0) stats.relieved++;
+    }
+    expect(wrong).toEqual([]);
+    // Every kind of change was made, land stayed fed, and the mending did its share: 601 of
+    // 2,158 refreshes changed the network with no bloc flooded from its sources.
+    for (const kind of ['cells', 'given back', 'a city', 'a ring', 'the date line', 'a lane', 'a line', 'a peace']) expect(kinds.get(kind) ?? 0, kind).toBeGreaterThan(40);
+    expect(stats.partial).toBeGreaterThan(2000);
+    expect(stats.fed / stats.partial).toBeGreaterThan(0.3);
+    expect(stats.full).toBeGreaterThan(5);
+    expect(stats.full).toBeLessThan(stats.partial / 10);
+    expect(stats.alone).toBeGreaterThan(400);
+    expect(stats.mended).toBeGreaterThan(300);
+    expect(stats.flooded).toBeGreaterThan(500);
+    expect(stats.cut).toBeGreaterThan(200);
+    expect(stats.relieved).toBeGreaterThan(150);
   });
 });
