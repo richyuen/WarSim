@@ -194,7 +194,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   the widest block of all that go to that enemy, and the gap, beside the one before it.
 - **What does not change.** Blocks of one size: the walk gives the line and the file that
   `floor(line / rows)` gave. A pair of each other's nearest. `DEPLOY_REACH` and
-  `DEPLOY_ABREAST` bind as they did. The seven tests of `deploy.test.ts` pass unchanged.
+  `DEPLOY_ABREAST` bind as they did. The nine tests of `deploy.test.ts` pass unchanged.
 - **Not state.** No rule reads where a block stands; the pin holds (the gate's test of it).
   The fire events and the wrecks take their places from the same function as before.
 - **Measured.** Pairs in one another after it: 0 (seed 1212), 18 (seed 4242), 7 (seed 99).

@@ -10976,3 +10976,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11c2: a block that comes up to an enemy's block from its flank or rear.
+
+## 2026-10-08 — PLAN 3.11c1, after it: two corrections of its record
+
+- ADR-200 said "the seven tests of `deploy.test.ts`": there are nine (seven was ADR-133's
+  count). Corrected there.
+- The gotcha above is misread. `sed` did as asked: the pattern matched a call inside a
+  `${...}` and the replacement put a second `${...}` in its place. The lesson is to match the
+  whole `${...}`, not that sed loses template syntax.
+- `c1-stack-of-armour-4m.png` was looked at after the commit, not before it as the entry
+  says: one corps' tanks in their rows, its motorised infantry behind, the Polish division
+  across the gap at the left. Nothing to change in it for this part.
+- **Gate:** `npm run check` (documents: parity).
