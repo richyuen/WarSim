@@ -115,6 +115,21 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 
 ## Watch list (not blocking)
 
+- **The tick after PLAN 3.10 (critic R3-B5, 2026-10-08, `00c2e68`).** The AT holds: five
+  years from 1938, pinned to `0xFFFF`, are 1.278 ms on seed 99, 1.326 on 4242 and 1.440 on
+  8128 (three runs: 1.434 to 1.444), against 1.5. What is left over is a line under PLAN
+  7.1 and no longer waits on this file:
+  - *The first year* is over the budget on every seed: 1.98, 1.67 and 2.24 ms. Combat is
+    0.90, 0.70 and 1.00 ms of it (PLAN 3.10e was not needed for the AT and was not done).
+  - *Seed 8128 beyond its fifth year,* which is what the critic measured: 1.51, 2.06, 2.26,
+    1.59 and 1.05 ms in years 6 to 10, 1.557 over ten. In years 7 to 9 the operational AI
+    is 0.79 to 1.02 ms a tick (0.26 to 0.48 in the first five) and territory 0.30 to 0.51.
+    3.10c found the long orders and 3.10c1 took them away; what the AI's time is in these
+    years now was not looked at.
+  - *One call of 361.7 ms* in the operational AI, year 4 of seed 4242. Not looked at.
+  - *Not looked at:* why the quick sweep of 3.7e took 14.2 min against 4.9, and the 19.9 min
+    of 40 years of seed 4242 (both in the task's text).
+
 - **From the eighth read (PLAN 3.7a, 2026-10-07), for the review of Phase 4.** What a player
   can meet of the read is PLAN 3.7j to 3.7n; two of its three suspicions go with the tasks
   that touch their lines (a route of more than 500 km over a cell with no province: 3.7j; a

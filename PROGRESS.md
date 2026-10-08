@@ -10743,3 +10743,52 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.10 is not ticked).
 - **Gate:** `npm run check` (with the spec changed: it runs it).
 - **Next:** the documents of 3.10f, and the full gate again for the tick of 3.10.
+
+## 2026-10-08 — PLAN 3.10f: the AT's runs, the leftover in BLOCKERS, and 3.10 ticked
+
+- **Done:** 3.10 (critic R3-B5) is ticked. Its AT holds: the tick by system of both
+  profiles is in PROGRESS (3.10a), and seeds 99, 4242 and 8128 run five years pinned at
+  1.278, 1.326 and 1.440 ms against 1.5 (3.10e's runs, `00c2e68`; no source changed since).
+  What is over the budget still is on the watch list of BLOCKERS and a line under PLAN
+  7.1. PARITY row 80 has the numbers.
+- **Measured, beside the AT** (`00c2e68`, seed 8128 from 1938 for ten years, alone, pinned
+  to `0xFFFF`, `--profile`; one run):
+
+  | year | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | ten years |
+  |---|---|---|---|---|---|---|---|---|---|---|---|
+  | tick, ms | 2.202 | 1.083 | 1.450 | 1.214 | 1.151 | 1.512 | 2.058 | 2.258 | 1.588 | 1.050 | 1.557 |
+  | nations | 97 | 102 | 107 | 109 | 114 | 120 | 122 | 112 | 112 | 115 | |
+  | cells that change hands | 31,742 | 23,130 | 31,150 | 28,116 | 41,046 | 41,673 | 53,540 | 77,033 | 64,911 | 51,173 | |
+
+  Years 7, 8 and 9 are the critic's dear years (it read 2.59 and 1.80 for 8 and 9, before
+  3.10's parts). The operational AI is 0.92, 1.02 and 0.79 ms a tick of them, 45 to 50 %,
+  and every one of its 1,460 calls a year takes 1 ms or more (its longest 13 to 21 ms, so
+  it is many middling plans, not a few long ones); territory 0.40, 0.51 and 0.30; combat
+  0.16 to 0.30. Ends on `39576738` (`83d4d2a3` after five, as 3.10e).
+- **What 3.10 did to the tick, in all:** seed 99, five years: 1.521 ms (3.7e) to 1.278.
+  Seed 4242, three years: 2.27 (the critic) to 1.360 (3.10d1b). Seed 8128, years 8 and 9:
+  2.59 and 1.80 to 2.26 and 1.59.
+- **Left over, with its numbers in BLOCKERS and under PLAN 7.1:** the first year (1.98,
+  1.67 and 2.24 ms on the three seeds, combat 0.70 to 1.00 of it); seed 8128's long war
+  above; one call of the operational AI of 361.7 ms (year 4 of seed 4242); and the two
+  times of the task's text that no part looked at (the quick sweep of 3.7e at 14.2 min
+  against 4.9, and 40 years of seed 4242 at 19.9 min). The smaller things the parts left
+  "for 3.10f's leftover" stay where they are written, in the text of 3.10c2, 3.10c2c and
+  3.10c2d1 in PLAN: the passage made again each plan (0.05 to 0.09 ms a tick), one search
+  for a group of marches, the long calls of `capitals` (70 to 75 ms, one to five a
+  year) and `revolts` (26 to 69 ms the longest of a year, monthly).
+- **A gotcha:** this entry was written in a second session; the first had edited PLAN,
+  BLOCKERS and PARITY, started `npm run check:full` and was cleared. A ten-year run
+  started beside that gate read 4.49 ms for the first year (2.20 alone): a tick time
+  measured while anything else runs is worth nothing. Its hashes agreed year by year
+  with the run above, which is the one logged.
+- **Not done:** nothing made faster in this part. No picture: nothing drawn changed. No
+  sweep (ADR-58).
+- **Review count:** 3.10 is the third numbered task since the phase review 3.7.
+- **Gate:** `npm run check:full` (3.10 is a numbered task: every spec): 1,002 unit tests,
+  17 of the sweep stage, 147 of 147 specs in 13.6 min, parity 46.3 %. It ran in a third
+  session: the second was cleared with its gate running, and that gate died in the unit
+  stage (102 vitest workers "exited unexpectedly with exit code 3221225794", which is a
+  process that lost its console, not a failing test). A gate left by a cleared session
+  is run again, not waited for.
+- **Next:** PLAN 3.11.

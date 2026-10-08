@@ -4387,7 +4387,8 @@ quick sweep as a smoke test.
   AT: a test that fails first on the event of seed 6021; in the ten-year games of the sweep
   stage no nation founded by a revolt holds, on the day it is founded, more than a bound
   that the diagnosis sets.
-- [ ] 3.10 Critic R3-B5, the tick: find what the tick costs since Phase 3, before Phase 4
+- [x] 3.10 *Done 2026-10-08 (the AT of five years holds; the critic's years 8 and 9 of seed
+  8128 are still over 1.5 ms: BLOCKERS, PLAN 7.1):* Critic R3-B5, the tick: find what the tick costs since Phase 3, before Phase 4
   adds to it. What the critic measured, alone and pinned to `0xFFFF`: seed 4242, three
   years, a mean tick of 2.27 ms (2.42, 2.42, 1.96 by year); seed 8128, years 8 and 9: 2.59
   and 1.80 ms. The budget is 1.5 ms; the last report had 1.14 ms over 40 years of seed
@@ -4908,7 +4909,12 @@ quick sweep as a smoke test.
     to 2.24 ms, combat 0.70 to 1.00 of it), and seed 8128 beyond its fifth year.
     The task as it was set: Territory (0.20 to 0.39 ms on every tick) and combat in a first year, if the
     budget is not met by then.
-  - [ ] 3.10f The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
+  - [x] 3.10f *Done 2026-10-08:* the three runs are 3.10e's (1.278, 1.326 and 1.440 ms; the
+    profiles of the AT are 3.10a's, in PROGRESS). Ten years of seed 8128 beside them: 1.557
+    ms, with years 7 to 9 at 2.06, 2.26 and 1.59. What is left over is on the watch list of
+    BLOCKERS and under PLAN 7.1: the first year, seed 8128's long war, a call of 361.7 ms,
+    and the two times of the task's text that no part looked at. 3.10 is ticked with it.
+    The task as it was set: The AT's three runs, BLOCKERS for what is left over, and the tick of 3.10 with
     the full gate.
     The full gate of 2026-10-08 (`ff7dc77`): 142 of 147 specs pass. Two fail alone as well,
     by the games that 3.10's parts changed (3.10f1, 3.10f2); two waited 60 s for the page
@@ -5153,6 +5159,21 @@ quick sweep as a smoke test.
     watches.
   - Hitches of 100 to 157 ms at T3 while the sim runs; otherwise 115 to 860 frames a second
     uncapped at 1920 × 1080 on every tier (an RTX 4070 Ti).
+  - From PLAN 3.10 (2026-10-08, `00c2e68`; pinned, `--profile`), what its AT of five years
+    did not ask for:
+    - The first year: 1.98, 1.67 and 2.24 ms on seeds 99, 4242 and 8128, combat 0.90, 0.70
+      and 1.00 of it in 2,787, 1,419 and 3,781 calls of 1 ms or more (0.21 to 0.50 in the
+      years after).
+    - A long war: seed 8128's years 7, 8 and 9 are 2.06, 2.26 and 1.59 ms (ten years:
+      1.557). The operational AI is 0.92, 1.02 and 0.79 of it and every one of its 1,460
+      calls a year takes 1 ms or more; territory is 0.40, 0.51 and 0.30 (0.14 to 0.27 in
+      the first five years); 53,540 to 77,033 cells change hands a year. The critic read
+      2.59 and 1.80 for years 8 and 9.
+    - One call of the operational AI of 361.7 ms, year 4 of seed 4242 (the next longest of
+      25 years: 43.3). Not looked at.
+    - Not looked at in 3.10: the quick sweep of 3.7e (14.2 min against 4.9) and 40 years of
+      seed 4242 headless (19.9 min, other runs beside it). Twenty years of 4242 were 1.847
+      ms at 3.10b and were not run again.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
