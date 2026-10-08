@@ -190,6 +190,7 @@ export function App({
             hud.selectFormation(0);
             hud.onSelectNation(id);
           }}
+          onFight={() => hud.toFight()}
           onClose={() => hud.selectFormation(0)}
         />
       ) : nation ? (

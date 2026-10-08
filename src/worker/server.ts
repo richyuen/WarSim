@@ -52,7 +52,7 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { deployOf, elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
+import { contactsOf, deployOf, elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -757,6 +757,17 @@ export class SimServer {
     // Where its block stands, as the snapshot has it (PLAN 3.11a).
     const pose = this.blockPose(world, id);
     const place = { x: pose.x, y: pose.y };
+    // Where it fights: half way to the block of the enemy it faces (PLAN 3.11b).
+    const enemy = fc.engaged[id] === 1 ? contactsOf(world).get(id) : undefined;
+    let fight: FormationDetail['fight'] = null;
+    if (enemy !== undefined && world.formations.has(enemy)) {
+      const theirs = this.blockPose(world, enemy);
+      const w = world.cells.w;
+      let dx = theirs.x - pose.x;
+      if (dx > w / 2) dx -= w;
+      else if (dx < -w / 2) dx += w;
+      fight = { x: (((pose.x + dx / 2) % w) + w) % w, y: (pose.y + theirs.y) / 2, enemy, span: [Math.abs(dx), Math.abs(theirs.y - pose.y)] };
+    }
     return {
       id,
       generation: world.formations.generation[id]!,
@@ -772,6 +783,7 @@ export class SimServer {
       moving: fc.moving[id] === 1,
       retreat: fc.retreat[id]!,
       ...place,
+      fight,
       units: [...units.values()],
     };
   }

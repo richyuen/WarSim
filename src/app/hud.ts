@@ -52,7 +52,7 @@ export class Hud {
   /** Selects a nation from the UI (panel chips); main wires it to the map view. */
   onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
   /** Brings a place into view at a zoom that shows a battle (PLAN 2.14e); main wires it to the map view. */
-  onShowBattle: (x: number, y: number) => void = () => {};
+  onShowBattle: (x: number, y: number, span?: readonly [number, number]) => void = () => {};
 
   /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
   toBattle(war: number): void {
@@ -64,6 +64,12 @@ export class Hud {
       .catch(() => {
         /* the worker is gone or busy with a load: the camera stays */
       });
+  }
+
+  /** To the fight of the formation whose panel is open (PLAN 3.11b): its block and the block of the enemy it faces, both in the view. Out of contact the camera stays. */
+  toFight(): void {
+    const f = this.formationInfo.value?.fight;
+    if (f) this.onShowBattle(f.x, f.y, f.span);
   }
 
   /** The formation whose panel is open (0 = none; PLAN 2.14b), set by map clicks, and what the sim says of it. */

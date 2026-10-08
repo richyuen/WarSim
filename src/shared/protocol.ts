@@ -461,6 +461,14 @@ export interface FormationDetail {
   /** Where its block stands: as `SnapshotFormations.block` has it. */
   x: number;
   y: number;
+  /**
+   * Where it fights (PLAN 3.11b), null out of contact: the middle between its block and the
+   * block of `enemy`, the nearest enemy formation it is in contact with and the one its block
+   * faces (`contactsOf`), in cells; and how far apart the two blocks' middles stand, east-west
+   * and north-south, in cells. A block a line or more behind its own side's front stands up to
+   * a cell from that enemy's: the panel's way to the fight shows both (`MapView.showBattle`).
+   */
+  fight: { x: number; y: number; enemy: number; span: [number, number] } | null;
   /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */
   units: { nameKey: string; cls: string; elements: number; strength: number; size: number }[];
 }

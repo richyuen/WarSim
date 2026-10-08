@@ -4981,14 +4981,35 @@ quick sweep as a smoke test.
     elements; the hour a contact begins and the hour it ends; the panel agrees), red first;
     an e2e on the critic's game (seed 4242, day 21) that centres the view on each German
     formation in contact at 6 and at 2 m/px and finds its elements; pictures, looked at.
-  - [ ] 3.11b Both sides of an engagement come into one T3 view. First, through the game's
+  - [x] 3.11b *Done 2026-10-08 (ADR-199):* no rule of `deployOf` changes. Seed 4242, day
+    21, the whole map: of 151 formations in contact, 54 have no enemy element in a view of
+    6 m/px (8.4 by 4.8 km) on their block, 5 at the battle view's 20 m/px, none at T3's
+    limit of 30. Of the 54, 50 stand a line or more behind their own side's front on the
+    way to one enemy's block, 2 abreast of it, and 2 are of a pair front to front, north
+    and south of each other, the blocks' middles 3.0 and 3.6 km apart in a view 4.8 km high; none
+    is held by `DEPLOY_REACH` and none by water. Each of the five banners' battles has both
+    its formations' elements in the 20 m/px view of either block. What was missing is the
+    way: the answer to `formation` has `fight` (the middle between its block and the block
+    of the enemy it faces, and how far apart they stand), and the panel of a formation in
+    contact has "To its fight" beside its status: the camera flies there, at the battle's
+    20 m/px, or further out, to 28 at most, where the two stand too far apart for it.
+    The task as it was set: Both sides of an engagement come into one T3 view. First, through the game's
     own way (`warBattle`, a formation's panel), how many formations in contact have no
     enemy element within a T3 view of their block on the critic's seed, and why (a block
     stopped by `DEPLOY_REACH`, by water, a line abreast); the critic's "biggest fight"
     was its own count of neighbours, not the banner's battle. Then the way to a
     formation's fight from its panel.
+    AT: a unit test of the answer to `formation`, red first (the fight's place is the
+    middle between its block and the block of the enemy it faces, with how far apart the
+    two stand; none for a formation not in contact); an e2e on the critic's game (seed
+    4242, day 21) that opens the panel of each German formation in contact, presses the
+    panel's way to its fight and finds its elements and an enemy's on the screen at T3;
+    pictures, looked at.
   - [ ] 3.11c Facing and spacing in contact: no lattice all facing one way, and formations
-    that share a cell do not stand as interleaved diamonds.
+    that share a cell do not stand as interleaved diamonds. Seen in 3.11b
+    (`docs/evidence/3.11/b-furthest-at-its-fight.png`): seven Italian divisions on one
+    French one stand as a column of six lines, 20 km deep, each line a block behind the
+    last and all facing the same way.
   - [ ] 3.11d Losses drawn from strength lost: a wreck or a casualty mark within a day of a
     fight that costs strength, not only when an element dies whole.
   - [ ] 3.11e The tint: Soviet tanks are not Poland's pink.

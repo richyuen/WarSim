@@ -10874,3 +10874,50 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 3.11b, as above. `warBattle`'s own pair on seed 4242, day 21, at 20 m/px
   first: if both blocks are in that view, what the critic saw is the lack of a way from a
   formation to its fight, and no rule of `deployOf` changes.
+
+## 2026-10-08 — PLAN 3.11b: the count of formations with no enemy in view, and a way from a formation's panel to its fight (ADR-199)
+
+- **The count first, headless** (a probe in `.cache/`, not kept: `deployOf`, `contactsOf`,
+  `largestBattle` on seed 4242, Germany on Poland, day 21; 14 nations have formations in
+  contact by then). 151 in contact, 78 in pairs of each other's nearest. No enemy element
+  in a view of 1400 × 800 on the block: 54 at 6 m/px (11 armour), 5 at 20 m/px (2 armour),
+  0 at 30 m/px.
+- **Why:** 50 of the 54 are a line or more behind their side's front (3.3 km a line, to 20
+  km), 2 abreast of one, 2 a pair north and south of each other, 3.0 and 3.6 km between the blocks'
+  middles in a view 4.8 km high. None held by `DEPLOY_REACH`, none by water (the probe ran
+  `deployOf`'s steps again for each and compared how far the block went). Each banner's
+  pair sees the other at 20 m/px. So no rule changed, as the note after 3.11a expected.
+- **Done:** `FormationDetail.fight` (the middle between its block and the block of the
+  enemy it faces, the enemy, the span), `Hud.toFight`, `MapView.showBattle(x, y, span)`,
+  and the button "To its fight" beside the panel's status.
+- **Tests:** `tests/unit/formationFight.test.ts`, red first ("expected undefined to be
+  null"): two Germans and a Pole, the second German behind the first; none at peace; in
+  contact each one's fight is half way to the block of its contact, the rear one's a line
+  further off; the hash as it was. `tests/e2e/formationFight1938.spec.ts` (new, 2 min): 31
+  German and Polish formations in contact, the button pressed for each from a view of
+  6 m/px on its block: 20.0 to 27.9 m/px after, every element of both on the screen. The
+  furthest on the map (Italian 301, 20.0 km from French 225): 28.0 m/px, 28 of 28 and 28
+  of 28.
+- **Changed after the first picture:** the rear division's block stood under the war
+  banners at the view's lower edge, "on the screen" by the test's count. The fit now uses
+  seven tenths of the view's height.
+- **Gotcha:** an apostrophe in a string of a script written through a Bash heredoc lost its
+  backslash and broke the spec's syntax; the typecheck said so, Playwright said only
+  "webServer was not able to start".
+- **Pictures** (`docs/evidence/3.11/`, all looked at): `b-rear-line-at-its-block-6m.png`,
+  Polish division 546 alone with its guns, a tank brigade's tag at the top edge;
+  `b-panel-to-its-fight.png`, the button; `b-rear-line-at-its-fight.png`, 546 at the
+  bottom, the tank brigade before it, the two German divisions and the Polish 550 beyond
+  the border; `b-furthest-at-its-fight.png`, six Italian divisions in a column behind one
+  another on French 225. Seen and not changed: that column (noted under 3.11c), and every
+  block's figures face one way.
+- **Specs run by hand** (ADR-87: 3.11b is a part), 11 tests, all pass:
+  `formationFight1938`, `formationPanel1938`, `formationPlace1938`, `toBattle1938`,
+  `battleView1938`, `i18n`.
+- **Performance:** no system of the tick changed. The answer to `formation` reads the
+  hour's cached deployments.
+- **Not done:** a way from the fight back to where the camera was. No sweep (ADR-58). The
+  pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11c: facing and spacing in contact.

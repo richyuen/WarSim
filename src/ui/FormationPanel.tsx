@@ -11,7 +11,8 @@ const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
  * The formation panel (PLAN 2.14b): what a click on a formation opens, at any zoom that shows
  * formations. Its name and kind, whose it is, its men against a whole one's, its supply and its
  * org, the fuel it burns on the march (PLAN 3.2d: it has no fuel level of its own, the supply is
- * what it burns), whether it is in contact or on the march, and its elements by unit type. The
+ * what it burns), whether it is in contact or on the march, the way to where it fights (PLAN
+ * 3.11b: a block behind its side's front has no enemy in a close view), and its elements by unit type. The
  * numbers are the sim's
  * (`FormationDetail`), asked for again as the game goes on. It stands where the nation panel
  * stands; the nation's chip leads back to that one.
@@ -23,6 +24,7 @@ export function FormationPanel({
   nation,
   flagUrl,
   onNation,
+  onFight,
   onClose,
 }: {
   /** Null while the first answer is on its way. */
@@ -33,6 +35,8 @@ export function FormationPanel({
   nation: { id: number; name: string; color: number } | null;
   flagUrl: string | null;
   onNation: (id: number) => void;
+  /** To where it fights (PLAN 3.11b): the button stands by the status of a formation in contact. */
+  onFight: () => void;
   onClose: () => void;
 }) {
   const row = (label: MessageKey, value: string, testid: string) => (
@@ -75,7 +79,17 @@ export function FormationPanel({
           {row('formation.supply', `${Math.round(info.supply * 100)}%`, 'formation-supply')}
           {row('formation.org', `${Math.round(info.org * 100)}%`, 'formation-org')}
           {row('formation.fuel', info.fuel > 0 ? t('formation.fuelPerHour', { n: fuel(info.fuel) }) : t('formation.fuelNone'), 'formation-fuel')}
-          {row('formation.status', status, 'formation-status')}
+          <div class="panel-row">
+            <span>{t('formation.status')}</span>
+            <span>
+              <span data-testid="formation-status">{status}</span>
+              {info.fight ? (
+                <button class="nation-chip formation-fight" data-testid="formation-fight" title={t('formation.toFight.title')} onClick={onFight}>
+                  {'⚔'} {t('formation.toFight')}
+                </button>
+              ) : null}
+            </span>
+          </div>
           <div class="panel-sub">{t('formation.elements')}</div>
           <table class="formation-units" data-testid="formation-units">
             <tbody>

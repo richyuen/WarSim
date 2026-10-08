@@ -104,6 +104,18 @@ const ELEMENT_MIN_PX = 5;
 const BATTLE_VIEW_M = 20;
 const BATTLE_VIEW_KM = 28;
 const BATTLE_VIEW_MAX_M = 250;
+/**
+ * A formation's fight (PLAN 3.11b): its block and the block of the enemy it faces, which stand
+ * up to a cell apart for a formation a line or more behind its side's front. The view holds
+ * both blocks' middles with this much ground around the two, the half of a block and its tag
+ * on each side, in the FIGHT_VIEW_CLEAR of the view's height that the bars at its top and its
+ * bottom leave free (the war banners stood on a block at the view's lower edge), at up to
+ * FIGHT_VIEW_MAX_M a pixel: under T3's limit, so that figures are what is drawn (in a view of
+ * 1400 × 800; a smaller one goes on as `showBattle` does).
+ */
+const FIGHT_PAD_KM = 6;
+const FIGHT_VIEW_CLEAR = 0.7;
+const FIGHT_VIEW_MAX_M = 28;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
 const FIGURE_MIN_PX = 2.5;
 /** Below this many m/px the last element section is kept for building the figures (twice T3's limit: a wheel step away). */
@@ -966,10 +978,17 @@ export class MapView {
    * BATTLE_VIEW_M per pixel, where the blocks of two divisions front to front are whole in the
    * view with their tags (PLAN 2.14c1). A small view shows the same ground at more metres a
    * pixel (BATTLE_VIEW_KM across and half of it down), but stays where elements are drawn.
+   *
+   * With `span` (PLAN 3.11b: a formation's fight, the two blocks' middles that far apart in
+   * cells, east-west and north-south, about (x, y)) the view holds both: further out than
+   * BATTLE_VIEW_M where they stand more than a battle's view apart, and at T3 still where the
+   * view is large enough for the battle's own zoom to be.
    */
-  showBattle(x: number, y: number): void {
+  showBattle(x: number, y: number, span?: readonly [number, number]): void {
     const el = this.canvas;
-    const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, el.clientWidth), (BATTLE_VIEW_KM * 500) / Math.max(1, el.clientHeight)));
+    const base = Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, el.clientWidth), (BATTLE_VIEW_KM * 500) / Math.max(1, el.clientHeight));
+    const both = span ? Math.max(((span[0] * this.geo.kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, el.clientWidth), ((span[1] * this.geo.kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, el.clientHeight * FIGHT_VIEW_CLEAR)) : 0;
+    const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(base, Math.min(both, Math.max(base, FIGHT_VIEW_MAX_M))));
     this.controller.flyTo({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
     this.dirty = true;
   }

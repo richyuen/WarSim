@@ -167,6 +167,56 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-199 · 2026-10-08 · accepted — A formation's panel leads to its fight; no rule of `deployOf` changes for it (PLAN 3.11b, critic R3-B3)
+
+- **Context.** The critic's second point of R3-B3: "the biggest fight" of day 21 on seed
+  4242, 16 engaged formations within 3 cells by its own count, at 40 m/px was "one infantry
+  division alone; no enemy in a view of 64 km". PLAN 3.11b asked first for a count through
+  the game's own means, and why.
+- **The count** (`deployOf`, `contactsOf` and `largestBattle` on the headless game of that
+  seed, Germany on Poland by God Mode, day 21; the whole map, 14 nations' formations). 151
+  formations are in contact, 78 of them in pairs of each other's nearest enemy. With the
+  view of 1400 × 800 on a formation's block, those with no enemy element in it:
+  - at 6 m/px (8.4 by 4.8 km): 54, 11 of them armour;
+  - at 20 m/px (28 by 16 km, the battle view's zoom): 5, 2 of them armour;
+  - at 30 m/px (42 by 24 km, T3's limit): none.
+- **Why.** Of the 54: 50 are a line or more behind their own side's front. Their nearest
+  enemy faces a nearer formation, they come up to that enemy's block from the side its own
+  foe stands on, and `deployOf` puts them one block's depth and the gap (3.3 km) behind the
+  line before them: 6.7, 10, 13.3, 16.6 and 20 km from that enemy's block. 2 stand abreast
+  of such a line. 2 are of a pair front to front whose blocks' middles are 3.0 and 3.6 km apart
+  north and south, in a view 4.8 km high. None is stopped by `DEPLOY_REACH`, and none by
+  water: every block went as far as the rule sent it. The five at 20 m/px are the fourth
+  to sixth lines of columns on one enemy (seven Italian divisions on one French one).
+- **The banner's battle.** For each of the five wars with a battle, `largestBattle`'s pair
+  have the other's elements in the 20 m/px view of either block (15 to 127 elements). What
+  the critic counted was neighbours of a formation's place in the rules, before PLAN 3.11a,
+  and a formation of a rear line among them.
+- **Decision.** No rule of `deployOf` changes: a division in reserve behind its side's
+  line with no enemy within four kilometres is what a line behind is. What was missing is a
+  way from a formation to where it fights. `FormationDetail.fight`: for a formation in
+  contact, the middle between its block and the block of the enemy it faces (`contactsOf`,
+  the one its block faces), that enemy's id, and how far apart the two blocks' middles
+  stand, east-west and north-south. The panel has a button beside "In contact", "To its
+  fight", and the camera flies there as it does from a war's banner (`showBattle`, now with
+  the span): at the battle's 20 m/px where the two blocks and 6 km around them fit the
+  view's width and seven tenths of its height (the bars at the top and the war banners at
+  the bottom stood on a block at the view's edge in the first picture), further out where
+  they do not, to 28 m/px at most, under T3's 30.
+- **Not chosen: lines abreast, not in column.** It would bring every formation in contact
+  within a close view of an enemy, and it is a rule of where elements stand and fire from.
+  The depth of a column on one enemy is a matter of spacing in contact: PLAN 3.11c.
+- **Measured.** `tests/e2e/formationFight1938.spec.ts`: 31 German and Polish formations in
+  contact, 5 of them armour; 5 with none of their enemy's elements on the screen at 6 m/px
+  on their own block (6.7 to 10 km from it). After the button: 20.0 to 27.9 m/px, every
+  element of the formation and of its enemy on the screen, figures drawn. The furthest on
+  the map, Italian infantry division 301, 20.0 km from the block of French division 225:
+  28.0 m/px, all 28 elements of each on the screen.
+- **Consequences.** The pin holds: nothing of the sim changes, and asking leaves the hash
+  as it was (`tests/unit/formationFight.test.ts`). The answer to `formation` is JSON: the
+  snapshot's buffers are as they were. A view smaller than 1400 × 800 goes further out than
+  28 m/px, as the banner's flight does, up to T2's 250.
+
 ### ADR-198 · 2026-10-08 · accepted — A formation has two places in the snapshot: the rules' for its T1 marker, its block's for everything close (PLAN 3.11a, critic R3-B3)
 
 - **Context.** A formation in contact holds its place in the rules, and its elements are
