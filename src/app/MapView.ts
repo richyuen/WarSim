@@ -17,7 +17,7 @@ import { FireFx } from '../render/fx/fire';
 import { HullFx } from '../render/fx/hulls';
 import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
-import { FormationFlag, marching, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
+import { BLOCK_STRIDE, FormationFlag, marching, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 import { viewSubscription } from './subscription';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
@@ -403,6 +403,12 @@ export class MapView {
     this.formNation = f.nation.slice(0, f.count);
     this.formX = f.x.slice(0, f.count);
     this.formY = f.y.slice(0, f.count);
+    this.blockX = new Float64Array(f.count);
+    this.blockY = new Float64Array(f.count);
+    for (let i = 0; i < f.count; i++) {
+      this.blockX[i] = f.block[i * BLOCK_STRIDE]!;
+      this.blockY[i] = f.block[i * BLOCK_STRIDE + 1]!;
+    }
     this.formStrength = f.strength.slice(0, f.count);
     this.formTemplate = f.template.slice(0, f.count);
     this.formFlags = f.flags.slice(0, f.count);
@@ -423,11 +429,13 @@ export class MapView {
     p.originY = Math.floor(this.geo.h / 2);
     for (let i = 0; i < f.count; i++) {
       const o = i * PROXY_STRIDE;
-      p.data[o] = f.prevX[i]! - p.originX;
-      p.data[o + 1] = f.prevY[i]! - p.originY;
+      // The stand-in sprites of T2 and T3 (`drawSprites`): where the block stands.
+      const b = i * BLOCK_STRIDE;
+      p.data[o] = f.block[b + 2]! - p.originX;
+      p.data[o + 1] = f.block[b + 3]! - p.originY;
       // Unwrap across the seam so interpolation never sweeps the whole map.
-      p.data[o + 2] = this.unwrapped(f.x[i]!, f.prevX[i]!) - p.originX;
-      p.data[o + 3] = f.y[i]! - p.originY;
+      p.data[o + 2] = this.unwrapped(f.block[b]!, f.block[b + 2]!) - p.originX;
+      p.data[o + 3] = f.block[b + 1]! - p.originY;
       p.data[o + 4] = f.facing[i]!;
       p.data[o + 5] = MARKER_CELLS;
       p.data[o + 6] = 0;
@@ -597,6 +605,12 @@ export class MapView {
   private formNation = new Uint16Array(0);
   private formX = new Float64Array(0);
   private formY = new Float64Array(0);
+  /**
+   * Where each formation's block stands (PLAN 3.11a): its elements' middle, which for one in
+   * contact is up to `DEPLOY_REACH` from `formX`, `formY`, the place of its T1 marker.
+   */
+  private blockX = new Float64Array(0);
+  private blockY = new Float64Array(0);
   private formStrength = new Uint32Array(0);
   private formTemplate = new Uint16Array(0);
   private formFlags = new Uint8Array(0);
@@ -1237,7 +1251,7 @@ export class MapView {
       const r = Math.min(STAND_IN_MAX_PX * this.unitScale, Math.max(8, MARKER_CELLS * cam.scale)) / 2;
       for (let i = 0; i < this.formIds.length; i++) {
         for (let k = 0; k < offs.length; k++) {
-          const [px, py] = worldToScreen(cam, this.formX[i]! + offs[k]!, this.formY[i]!, vw, vh);
+          const [px, py] = worldToScreen(cam, this.blockX[i]! + offs[k]!, this.blockY[i]!, vw, vh);
           if (px < -r || px > vw + r || py < -r || py > vh + r) continue;
           grow(this.formIds[i]! * copies + k, px, py, r);
         }
@@ -1312,7 +1326,7 @@ export class MapView {
     let bestD = 14;
     for (let i = 0; i < this.formIds.length; i++) {
       for (const off of offs) {
-        const [px, py] = worldToScreen(cam, this.formX[i]! + off, this.formY[i]!, vw, vh);
+        const [px, py] = worldToScreen(cam, this.blockX[i]! + off, this.blockY[i]!, vw, vh);
         const d = Math.hypot(px - sx, py - sy);
         if (d < bestD) {
           bestD = d;
@@ -1336,10 +1350,18 @@ export class MapView {
     return Array.from(this.formIds);
   }
 
-  /** Position of formation `id` from the last snapshot, or null. */
+  /**
+   * Where formation `id` is, from the last snapshot, or null: where its block stands (PLAN
+   * 3.11a), which is where a view that goes there finds its elements.
+   */
   formationPos(id: number): [number, number] | null {
     const i = this.formIds.indexOf(id);
-    return i < 0 ? null : [this.formX[i]!, this.formY[i]!];
+    return i < 0 ? null : [this.blockX[i]!, this.blockY[i]!];
+  }
+
+  /** Where formation `i` of the last snapshot is drawn at this zoom: its T1 marker's place, or its block's where the elements are shown. */
+  private drawnAt(i: number): [number, number] {
+    return this.shares.elements > 0.5 ? [this.blockX[i]!, this.blockY[i]!] : [this.formX[i]!, this.formY[i]!];
   }
 
   /** Formations of `nation` in the last snapshot. */
@@ -1358,8 +1380,9 @@ export class MapView {
     let bestD = radius;
     for (let i = 0; i < this.formIds.length; i++) {
       if (this.formNation[i] !== nation) continue;
+      const [fx, fy] = this.drawnAt(i);
       for (const off of wrapOffsets(cam, this.geo, w)) {
-        const [px, py] = worldToScreen(cam, this.formX[i]! + off, this.formY[i]!, w, h);
+        const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
         const d = Math.hypot(px - sx, py - sy);
         if (d < bestD) {
           bestD = d;
@@ -1472,8 +1495,9 @@ export class MapView {
     ctx.shadowBlur = 3;
     for (let i = 0; i < this.formIds.length; i++) {
       if (!this.selectedFormations.has(this.formIds[i]!)) continue;
+      const [fx, fy] = this.drawnAt(i);
       for (const off of wrapOffsets(cam, this.geo, w)) {
-        const [px, py] = worldToScreen(cam, this.formX[i]! + off, this.formY[i]!, w, h);
+        const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
         if (px < -20 || py < -20 || px > w + 20 || py > h + 20) continue;
         ctx.beginPath();
         ctx.arc(px, py, 9, 0, Math.PI * 2);

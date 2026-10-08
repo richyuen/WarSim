@@ -22,6 +22,7 @@ import { HISTORY_STRIDE } from '../sim/history';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import {
+  BLOCK_STRIDE,
   FormationFlag,
   MAX_SNAPSHOT_ELEMENTS,
   type SnapshotElements,
@@ -753,6 +754,9 @@ export class SimServer {
       row.strength += ec.strength[e]!;
       row.size += rules?.units[u]?.size ?? 0;
     }
+    // Where its block stands, as the snapshot has it (PLAN 3.11a).
+    const pose = this.blockPose(world, id);
+    const place = { x: pose.x, y: pose.y };
     return {
       id,
       generation: world.formations.generation[id]!,
@@ -767,8 +771,7 @@ export class SimServer {
       engaged: fc.engaged[id] === 1,
       moving: fc.moving[id] === 1,
       retreat: fc.retreat[id]!,
-      x: fc.x[id]!,
-      y: fc.y[id]!,
+      ...place,
       units: [...units.values()],
     };
   }
@@ -845,6 +848,32 @@ export class SimServer {
    */
   private born(world: World, id: number): boolean {
     return id >= this.prevAlive.length || this.prevAlive[id] !== 1 || this.prevGeneration[id] !== world.formations.generation[id];
+  }
+
+  /**
+   * Where the block of formation `f` stands now and where it stood an hour ago, and what it
+   * faced (PLAN 2.14c1, 3.11a): the one place of a formation's block for everything the view
+   * is sent, the formation section and the panel as well as the elements. A formation in contact holds its place
+   * in the rules, and its block is deployed against the enemy (`deployOf`), up to
+   * `DEPLOY_REACH` from there: in the hour the contact begins the block goes from the
+   * formation's place to the line, when the enemy it faces changes it goes to the new line,
+   * and when the contact ends it comes back: each in the one hour's move the view draws. The
+   * sim keeps the deployments of the hour before (`deployedBefore`); where it has none (a
+   * load, a command) nothing moves.
+   */
+  private blockPose(world: World, f: number): { x: number; y: number; facing: number; prevX: number; prevY: number; prevFacing: number } {
+    const c = world.formations.cols;
+    const fx = c.x[f]!;
+    const fy = c.y[f]!;
+    const born = this.born(world, f);
+    const at = c.engaged[f] === 1 ? deployOf(world, f, slotCount(world, f, elementIndex(world).get(f)?.length ?? 0)) : null;
+    const before = world.deployedBefore ? (world.deployedBefore.get(f) ?? null) : at;
+    const x = at ? at.x : fx;
+    const y = at ? at.y : fy;
+    const facing = at ? at.facing : c.facing[f]!;
+    if (before && !born) return { x, y, facing, prevX: before.x, prevY: before.y, prevFacing: before.facing };
+    // A formation created during the last tick has no place of a tick ago: the one of now.
+    return { x, y, facing, prevX: born ? x : this.prevX[f]!, prevY: born ? y : this.prevY[f]!, prevFacing: facing };
   }
 
   private drainEvents(world: World): void {
@@ -955,28 +984,11 @@ export class SimServer {
     let j = 0;
     for (const f of picked) {
       const list = idx!.get(f)!;
-      const fx = ft.cols.x[f]!;
-      const fy = ft.cols.y[f]!;
-      const born = this.born(world, f);
-      const px = born ? fx : this.prevX[f]!;
-      const py = born ? fy : this.prevY[f]!;
       const fl = (ft.cols.moving[f] === 1 ? FormationFlag.moving : 0) | (ft.cols.engaged[f] === 1 ? FormationFlag.engaged : 0);
       // The block as the template made it: an element keeps its slot when others die (PLAN 2.7a).
       const slots = slotCount(world, f, list.length);
-      // Where the block stands now and where it stood an hour ago (PLAN 2.14c1). A formation
-      // in contact holds its place, and its block is deployed against the enemy: in the hour
-      // the contact begins the elements go from the formation's place to the line, when the
-      // enemy it faces changes they go to the new line, and when the contact ends they come
-      // back: each in the one hour's move the view draws. The sim keeps the deployments of the
-      // hour before (`deployedBefore`); where it has none (a load, a command) nothing moves.
-      const at = deployOf(world, f, slots);
-      const before = world.deployedBefore ? (world.deployedBefore.get(f) ?? null) : at;
-      const fa = at ? at.facing : ft.cols.facing[f]!;
-      const bx = at ? at.x : fx;
-      const by = at ? at.y : fy;
-      const qcx = before && !born ? before.x : at && born ? bx : px;
-      const qcy = before && !born ? before.y : at && born ? by : py;
-      const qfa = before && !born ? before.facing : fa;
+      // Where the block stands now and where it stood an hour ago (`blockPose`).
+      const { x: bx, y: by, facing: fa, prevX: qcx, prevY: qcy, prevFacing: qfa } = this.blockPose(world, f);
       for (const e of list) {
         const slot = ec.slot[e]!;
         const [cx, cy] = slotPlace(world, bx, by, fa, slot, slots);
@@ -1098,6 +1110,7 @@ export class SimServer {
     const fy = this.view(Float64Array, fc, buffers);
     const fpx = this.view(Float64Array, fc, buffers);
     const fpy = this.view(Float64Array, fc, buffers);
+    const fblock = this.view(Float64Array, fc * BLOCK_STRIDE, buffers);
     const ffacing = this.view(Float32Array, fc, buffers);
     const fstr = this.view(Uint32Array, fc, buffers);
     const ftpl = this.view(Uint16Array, fc, buffers);
@@ -1113,7 +1126,14 @@ export class SimServer {
       const born = this.born(world, id);
       fpx[j] = born ? fx[j]! : this.prevX[id]!;
       fpy[j] = born ? fy[j]! : this.prevY[id]!;
-      ffacing[j] = ft.cols.facing[id]!;
+      // Where its block stands (PLAN 3.11a): the close tiers, the click and the camera find
+      // the formation where its elements are drawn, also when they are deployed against an enemy.
+      const pose = this.blockPose(world, id);
+      fblock[j * BLOCK_STRIDE] = pose.x;
+      fblock[j * BLOCK_STRIDE + 1] = pose.y;
+      fblock[j * BLOCK_STRIDE + 2] = pose.prevX;
+      fblock[j * BLOCK_STRIDE + 3] = pose.prevY;
+      ffacing[j] = pose.facing;
       fstr[j] = ft.cols.strength[id]!;
       ftpl[j] = ft.cols.template[id]!;
       const moving = ft.cols.moving[id] === 1;
@@ -1158,7 +1178,7 @@ export class SimServer {
       tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
       nations: { count: n, data: nations },
       wars,
-      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget },
+      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget },
       majors,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },

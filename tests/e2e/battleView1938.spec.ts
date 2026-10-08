@@ -105,11 +105,19 @@ test('two formations in contact are both in one view at 20 m/px, and face each o
       }
       return s;
     };
-    return { m: v.metresPerPx, german: side(german), polish: side(polish), places: [v.formationPos(german)!, v.formationPos(polish)!], tags: v.tagRects.filter((t) => t.id === german || t.id === polish).length };
+    return { m: v.metresPerPx, cam: { cx: cam.cx, scale: cam.scale }, width: window.innerWidth, german: side(german), polish: side(polish), places: [v.formationPos(german)!, v.formationPos(polish)!], tags: v.tagRects.filter((t) => t.id === german || t.id === polish).length };
   }, { german, polish });
 
-  // The formations are a cell apart, as the sim has them: at this zoom, 980 px, each off or at the edge of what the blocks take.
-  expect(seen.places[1]![0] - seen.places[0]![0]).toBeCloseTo(1, 6);
+  // The formations are said to be where their blocks stand (PLAN 3.11a), not a cell apart as the
+  // rules have them (980 px at this zoom, each off or at the edge of what the blocks take): each
+  // place is among its own elements, the German's west of the Pole's.
+  const px = (x: number): number => (x - seen.cam.cx) * seen.cam.scale + seen.width / 2;
+  expect(px(seen.places[0]![0]), 'the place of the German formation').toBeGreaterThan(Math.min(...seen.german.xs));
+  expect(px(seen.places[0]![0]), 'the place of the German formation').toBeLessThan(Math.max(...seen.german.xs));
+  expect(px(seen.places[1]![0]), 'the place of the Polish formation').toBeGreaterThan(Math.min(...seen.polish.xs));
+  expect(px(seen.places[1]![0]), 'the place of the Polish formation').toBeLessThan(Math.max(...seen.polish.xs));
+  expect(seen.places[1]![0] - seen.places[0]![0]).toBeGreaterThan(0.05);
+  expect(seen.places[1]![0] - seen.places[0]![0]).toBeLessThan(0.4);
   // Both sides are in the one view, whole.
   expect(seen.german.engaged && seen.polish.engaged).toBe(true);
   expect(seen.german.all).toBeGreaterThan(20);

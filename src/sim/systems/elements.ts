@@ -122,8 +122,10 @@ export function contactsOf(world: World): Map<number, number> {
  * with no room before its formation's place stands abreast of the lines that have (ADR-133).
  *
  * Not state, as an element's place is not (`slotPlace`): worked out from the formations'
- * places and `engaged` flags. The formation itself, its marker and its part in the rules stay
- * where the sim has it. A block does not go into the sea: on the fine mask's water it stands
+ * places and `engaged` flags. The formation's part in the rules and its T1 marker stay where
+ * the sim has it; where the view has the formation at the close tiers, for a click, for the
+ * camera and in its panel is where the block stands (PLAN 3.11a, `blockPose` in
+ * worker/server.ts). A block does not go into the sea: on the fine mask's water it stands
  * as far forward as there is land (across a strait the two sides stay on their shores).
  */
 export function deployOf(world: World, f: number, count: number, chain = 0): Deployment | null {

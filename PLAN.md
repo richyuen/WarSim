@@ -4961,6 +4961,39 @@ quick sweep as a smoke test.
   AT: an e2e that flies to each engaged formation of a war on a seed the builder has not
   used and finds its elements and an enemy's in the view at T3; a wreck or a casualty mark
   is drawn within a day of a fight that costs strength; pictures at T2 and T3, looked at.
+  Split 2026-10-08, one cause a part:
+  - [x] 3.11a *Done 2026-10-08 (ADR-198):* the formation section has the block's place
+    beside the place in the rules (`block`, from `blockPose`, which the element section
+    uses too), and the answer to `formation` says it. The view has the formation there at
+    T2 and T3 (the stand-in sprite and its tag, the click, the ring), for `formationPos`
+    and so for a camera that goes to it. The T1 marker stays at the place in the rules: on
+    the block, the markers of the two sides of a line stand on each other (11 pairs more
+    than a quarter covered at 1,900 m/px in `markerStacks1938`, which that first try
+    failed with three more specs). Seed 4242, day 21: 17 German formations in contact,
+    three of them armour, each at most 0.26 km from the middle of its elements (the
+    critic: 12.8).
+    The task as it was set: The place a formation is said to be is where its block stands. The worker's
+    formation section and its answer to `formation` (the panel) say the block's place
+    (`deployOf`) for a formation in contact, with the hour's move as the elements have it,
+    from one helper for both sections. The view takes its click and its camera
+    from that. Nothing of the sim changes: the pin holds.
+    AT: a unit test of the snapshot (the place is the block's and the middle of the
+    elements; the hour a contact begins and the hour it ends; the panel agrees), red first;
+    an e2e on the critic's game (seed 4242, day 21) that centres the view on each German
+    formation in contact at 6 and at 2 m/px and finds its elements; pictures, looked at.
+  - [ ] 3.11b Both sides of an engagement come into one T3 view. First, through the game's
+    own way (`warBattle`, a formation's panel), how many formations in contact have no
+    enemy element within a T3 view of their block on the critic's seed, and why (a block
+    stopped by `DEPLOY_REACH`, by water, a line abreast); the critic's "biggest fight"
+    was its own count of neighbours, not the banner's battle. Then the way to a
+    formation's fight from its panel.
+  - [ ] 3.11c Facing and spacing in contact: no lattice all facing one way, and formations
+    that share a cell do not stand as interleaved diamonds.
+  - [ ] 3.11d Losses drawn from strength lost: a wreck or a casualty mark within a day of a
+    fight that costs strength, not only when an element dies whole.
+  - [ ] 3.11e The tint: Soviet tanks are not Poland's pink.
+  - [ ] 3.11f The task's AT on a seed the builder has not used, the pictures at T2 and T3,
+    and the tick of 3.11 with the full gate.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
   `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom

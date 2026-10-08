@@ -907,6 +907,14 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   rule does. So a view at 20 m/px holds both sides of a fight (97% of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the
   formation's place.
+  *Two places in the snapshot (PLAN 3.11a, ADR-198):* a formation's `x`, `y` is its place in
+  the rules, where its T1 marker stands and what the T0 counters count by. `block` is where
+  its block stands, now and a tick before (`blockPose` in `worker/server.ts`, the one helper
+  of the formation section, the element section and the panel's `FormationDetail.x`, `y`):
+  the middle of its elements. The view has the formation there at T2 and T3 (the stand-in
+  sprite and its tag, the click, the selection ring) and for `formationPos`, so a camera
+  that goes to a formation finds its elements. The marker does not go there: the blocks of
+  two sides stand a kilometre apart, and their markers would cover each other.
 
 *Implemented v1 (PLAN 1.14, ADR-27; `src/sim/systems/territory.ts`):*
 - *Pressure:* each formation of a nation at war, but one on the retreat (§5.2 step 4), projects strength/1000 × (0.5 + 0.5 supply) ×

@@ -144,7 +144,8 @@ describe('SimServer', () => {
     expect(pool.pooled + pool.outstanding).toBe(pool.allocated);
     expect(pool.allocated - allocatedAt1k).toBeLessThanOrEqual(4);
     expect(pool.allocated).toBeLessThan(64);
-    expect(main.server.pool.outstanding).toBeLessThanOrEqual(16);
+    // The buffers of the one snapshot in flight: 17 since PLAN 3.11a (16 and the formations' block places).
+    expect(main.server.pool.outstanding).toBeLessThanOrEqual(17);
   });
 
   // PLAN 1.36: a paused God/editor command applied while a snapshot is in flight owes the UI a

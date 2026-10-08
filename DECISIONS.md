@@ -167,6 +167,66 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-198 · 2026-10-08 · accepted — A formation has two places in the snapshot: the rules' for its T1 marker, its block's for everything close (PLAN 3.11a, critic R3-B3)
+
+- **Context.** A formation in contact holds its place in the rules, and its elements are
+  deployed against the enemy, up to `DEPLOY_REACH` (1.5 cells) from there (ADR-89, ADR-98).
+  The formation section of the snapshot and the panel's `FormationDetail` said the place in
+  the rules. The critic centred the view on that place at 6 and at 2 m/px for the three
+  German armour formations in contact on day 21 of seed 4242 and found none of their
+  elements and no figure, 12.8 km from there (`critic/c3_m.json`, `centroidOffKm`, `at6`,
+  `at2`). What the view drew at that place with no element in the view: the stand-in sprite
+  and the formation's tag, over an empty field.
+- **Tried first: the block's place for everything.** The section's `x`, `y` and their place
+  of a tick ago became the block's, so the T1 marker went to the line too. Of 26 spec files
+  run by hand four tests failed, and they say what is wrong with it:
+  - `markerStacks1938`, "markers of two nations that stand on each other move apart by a
+    few px": 11 pairs more than a quarter on each other at 1,900 m/px (0 expected), and 7
+    pairs back from T2. The blocks of two sides stand a kilometre apart front to front,
+    their middles some 3 km: under 2 px at that zoom, for boxes of 26 px that the stacks
+    move 6 px at most. To part them the boxes would have to stand as far off as the places
+    in the rules are.
+  - `battleView1938`, the T1 → T2 handover of a pair in contact (the block 24 to 30 px
+    east of its box: 4.8), and `formationPanel1938` at T1 (114 px of the picked marker's frame
+    around the marker that is not picked).
+  "Who faces whom is what this tier shows" (PLAN 2.7s1): the places in the rules, a cell
+  or more apart, are what keeps the T1 markers of a front apart.
+- **Decision.** Two places.
+  1. `SnapshotFormations.x`, `y`, `prevX`, `prevY`: the place in the rules, as before. The
+     T1 markers, their stacks and the T0 counters use it.
+  2. `SnapshotFormations.block` (`BLOCK_STRIDE` = 4 numbers a formation: x, y, and x, y a
+     tick before): where the block stands. `facing` is the block's (the enemy's side, for
+     one in contact). `FormationDetail.x`, `y` is the block's place.
+  3. One helper, `blockPose` in `worker/server.ts`, gives the block's place, its place of a
+     tick ago and its facing to the formation section, the element section and the panel.
+     It is the element section's code of PLAN 2.14c1, moved: the hour a contact begins the
+     block comes from the formation's place, the hour it ends it goes back, and where the
+     hour before is not known (a load, a command) nothing moves.
+  4. The view: the stand-in sprites of T2 and T3 (drawn when no elements arrived), the tag
+     of such a sprite and the click on it are at the block's place; `formationAt` (the
+     player's click on a formation of the player's own) and the selection ring are at the
+     place the formation is drawn at in the tier shown (the marker's at T1, the block's
+     from T2 on); `formationPos` is the block's place at every zoom, since what asks for
+     it wants to go there.
+- **One array, not four.** The snapshot's typed arrays are pooled buffers, one each, and
+  `server.test.ts` holds the buffers of the one snapshot in flight to a count: 16. Four
+  arrays made it 20. The place is one array of four numbers a formation, and the count in
+  the test is 17. Its other three expectations (every buffer accounted for, no allocation
+  after warm-up, under 64 in all) are unchanged.
+- **A spec's expectation changed.** `battleView1938` read `formationPos` of the two
+  divisions and expected them "a cell apart, as the sim has them". `formationPos` is now
+  the block's place, so the spec expects each place among its own formation's elements on
+  the screen, and the two 0.05 to 0.4 cells apart. That the rules do not move a formation
+  in contact is in the unit tests (`deploySnapshot.test.ts`, both tests).
+- **Not done here.** A formation's T1 marker and its elements are still up to 43 px apart
+  where T1 hands over to T2 (ADR-92 has the bar go with the box for that). Whether both
+  sides of a fight are in one T3 view is PLAN 3.11b; this part only puts the formation's
+  own elements where the formation is said to be.
+- **Consequences.** View and protocol only: no rule reads a block's place, and the pin of
+  seed 99 is unmoved. A snapshot is 32 bytes a formation longer (about 34 KB at 1,054
+  formations). `deployOf` is asked once more a formation in contact a snapshot and answers
+  from the hour's cache.
+
 ### ADR-197 · 2026-10-08 · accepted — The zoom demo's battle is seed 1944's (PLAN 3.10f2, the full suite of PLAN 3.10)
 
 - **Context.** The full e2e run that the tick of PLAN 3.10 brings: 142 of 147 passed, and

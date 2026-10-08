@@ -10792,3 +10792,71 @@ No rule changed and nothing on screen changed. One task came out of it.
   process that lost its console, not a failing test). A gate left by a cleared session
   is run again, not waited for.
 - **Next:** PLAN 3.11.
+
+## 2026-10-08 — PLAN 3.11a: a formation in contact is said to be where its block stands
+
+- **Step 2:** `npm run check` on the clean tree of `a2b15e5`: green. `npm run critic:due`: not
+  due.
+- **3.11 split** in PLAN into six parts, one cause each (a: the place; b: both sides in one
+  T3 view; c: facing and spacing in contact; d: losses drawn from strength lost; e: the tint;
+  f: the task's AT and the tick).
+- **Done (3.11a, ADR-198):** the snapshot's formation section has a second place,
+  `block` (x, y, and x, y a tick before), beside the place in the rules: where the block
+  stands, which for a formation in contact is deployed against the enemy. One helper in
+  the worker (`blockPose`) gives it to the formation section, the element section (whose
+  code it was) and the panel's `FormationDetail`. In the view the stand-in sprite of T2 and
+  T3, its tag and its click, the selection ring and the player's click from T2 on, and
+  `formationPos` are at the block's place. The T1 marker stays where it was.
+- **What was wrong (the critic's R3-B3, first point):** the view centred on the reported
+  place of a formation in contact held none of its elements: they stood 12.8 km from it. At
+  that place, with no element in the view, the stand-in sprite and the tag were drawn: "a
+  tag over an empty field".
+- **Measured** (`formationPlace1938`, the critic's game: seed 4242, Germany against Poland
+  by God Mode, day 21, a view of 1,400 by 800): 17 German formations in contact, 3 of them
+  armour. From the place each is said to be at to the middle of its elements: 0.26 km at
+  most. With the view centred on that place: 24 to 44 of its elements on the screen at
+  6 m/px and figures drawn, 7 to 12 elements at 2 m/px (the critic: 0 and 0). The panel's
+  place equals the view's for all 17.
+- **A first try that failed, and what it taught:** the block's place for the T1 marker
+  too. Four tests of 41 failed: on a line the markers of the two sides then stand under
+  2 px apart at 1,900 m/px and cover each other (`markerStacks1938`: 11 pairs more than a
+  quarter covered, 0 expected), and the T1 → T2 handover of a pair in contact and the
+  picked frame at T1 with them. The places in the rules, a cell or more apart, are what
+  keeps a front's markers apart. So two places (ADR-198).
+- **Tests:** `tests/unit/deploySnapshot.test.ts`, a second test, red first ("expected
+  [1125.5, 250.5] to deeply equal [1126.149…, 250.5]" on HEAD's worker): the block's place
+  is `deployOf`'s and the middle of the elements for both sides, more than 0.2 cells
+  forward of the place in the rules; the marker's place is the rules'; the panel agrees;
+  the hour the contact begins the block comes from the formation's place, the next hour it
+  stands, the hour the contact ends (one side gives way) it goes back, and then it
+  stands. `tests/e2e/formationPlace1938.spec.ts` (new) as above.
+- **Two expectations changed, both in ADR-198:** `battleView1938` expected `formationPos`
+  of the pair "a cell apart, as the sim has them"; it now expects each place among its own
+  elements and the two 0.05 to 0.4 cells apart. `server.test.ts` counts the buffers of the
+  snapshot in flight: 16, now 17 (the place is one array, not four, to keep it to one).
+- **Gotchas:** (1) a command clears the hour before (`deployedBefore`), so a contact that a
+  God Mode peace ends has no move back to show: the test ends its contact by the fight
+  itself. (2) The first form of that test ordered the Pole four cells off, and the German
+  was in contact still six days later. Why was not looked into.
+- **Pictures** (`docs/evidence/3.11/`, both looked at): `a-armour-at-its-place-6m.png`,
+  Armoured division 40 (3.7k) fills the view at 6 m/px, tanks in front, infantry and guns
+  behind, the Polish division 544 coming into the top edge; `a-armour-at-its-place-20m.png`,
+  the two blocks front to front. Seen and not changed: at 6 m/px the division's tag stands
+  at the view's left edge with a line of 520 px across its own block (the tags' placing,
+  under PLAN 7.4 already), and every tank faces one way (3.11c).
+- **Specs run by hand** (ADR-87: 3.11a is a part), 43 tests of 28 files, all pass in 8.1 min
+  and 51 s: `formationPlace1938`, `battleView1938`, `player1938`, `playerActions1938`,
+  `coastElements1938`, `coastPicture1938`, `settings1938`, `formationPanel1938`,
+  `tags1938`, `tiers1938`, `toBattle1938`, `markers1938`, `markerStacks1938`,
+  `zoomDemo1938`, `individuals1938`, `tankBattle1938`, `declutter1938`, `morphNations1938`,
+  `handover1938`, `elements1938`, `fire1938`, `wrecks1938`, `burning1938`, `muzzles1938`,
+  `turrets1938`, `loadedEffects1938`, `counters1938`, `smallMark1938`.
+- **Performance:** not measured as a tick time: no system of the tick changed. A snapshot is
+  32 bytes a formation longer, and `deployOf` answers from the hour's cache.
+  `tests/unit/snapshot-perf.test.ts` passes.
+- **Not done:** the T1 marker of a formation in contact and its elements are still up to
+  43 px apart at the T1 → T2 handover (ADR-92). No sweep (ADR-58). The pin is unmoved.
+- **Review count:** unchanged (3.11 is not ticked).
+- **Gate:** `npm run check`.
+- **Next:** PLAN 3.11b: first the count, through `warBattle` and the panel, of formations in
+  contact with no enemy element in a T3 view of their block.

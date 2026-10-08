@@ -138,15 +138,28 @@ export interface SnapshotTiles {
   controller: Uint16Array;
 }
 
+/** Numbers a formation in `SnapshotFormations.block`: x, y, and x, y a tick before. */
+export const BLOCK_STRIDE = 4;
+
 export interface SnapshotFormations {
   count: number;
   id: Uint32Array;
   nation: Uint16Array;
+  /** Its place in the rules: where its T1 marker stands, and what the T0 counters count by. */
   x: Float64Array;
   y: Float64Array;
   /** Position one tick before `Snapshot.tick` (for interpolation). */
   prevX: Float64Array;
   prevY: Float64Array;
+  /**
+   * Where its block stands (PLAN 3.11a, ADR-198), `BLOCK_STRIDE` numbers a formation: x, y,
+   * and x, y a tick before. Its place in the rules, or, for one in contact, where it is
+   * deployed against the enemy (`deployOf`, up to `DEPLOY_REACH` from that place). The middle
+   * of its elements: where the close tiers, the click and the camera have the formation.
+   * (One array and not four: a snapshot's buffers are pooled one by one.)
+   */
+  block: Float64Array;
+  /** What the block faces: the enemy, for one in contact. */
   facing: Float32Array;
   strength: Uint32Array;
   /** Template index (symbol and full strength via `mapLayers.templates`; PLAN 2.1). */
@@ -445,6 +458,7 @@ export interface FormationDetail {
   moving: boolean;
   /** Hours of its retreat left (PLAN 3.5a; 0 = none): it takes no order in them (PLAN 3.7m). */
   retreat: number;
+  /** Where its block stands: as `SnapshotFormations.block` has it. */
   x: number;
   y: number;
   /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */
