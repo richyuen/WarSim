@@ -187,7 +187,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Why 0.42 and not more.** The Soviet Union and Poland are two reds on the map too
   (hues 0° and 349°): what tells them is that one is dark. At a lightness of a half the
   Soviet red is (212, 43, 43) and 66 from Poland's with nothing in lightness between them;
-  at 0.6 both are lifted and stand 38 apart, less than before.
+  at 0.6 both are lifted and, with the saturation kept by HSL (above a half one factor a
+  channel no longer keeps it), stand (221, 85, 85) and (208, 98, 118), 38 apart, less than
+  before. The last two figures are worked by hand, not by the script of the others.
 - **Alternatives rejected.** Other shares of the mix toward white (the same mechanism: the
   pale band moves); a tint by which nations are in the view (a unit's colour would change as
   the camera moves: ADR-74's finding).

@@ -5136,7 +5136,8 @@ quick sweep as a smoke test.
     Also here (found 2026-10-08 with 3.11e, red on the commit before it too, so of an
     earlier part of 3.11): `tags1938`, "at T2 and T3 every formation in the view has its
     flag, strength and name by it": "T2, 150 m/px: formation 1055's tag has a line". Which
-    part moved the tag off its elements is not known. The spec stops there, so its line on
+    part moved the tag off its elements is not known: to be found over the commits of
+    3.11 before the full gate. The spec stops there, so its line on
     the tints of Germany and Poland did not run; the unit test has them 99 apart.
 - [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,

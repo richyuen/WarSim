@@ -11272,3 +11272,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Review count:** unchanged (3.11 is not ticked).
 - **Gate:** `npm run check`.
 - **Next:** PLAN 3.11f.
+
+## 2026-10-08 — PLAN 3.11e, after it: a figure of ADR-206 said how it was got
+
+- ADR-206's "38 apart at a lightness of 0.6" is by HSL with the saturation kept, worked by
+  hand; the ADR says so now. No other copy of the old mix is in `src/render` (looked for
+  after the commit: the hulls and wrecks do not take a nation's tint).
+- **Gate:** `npm run check` (documents: parity).
