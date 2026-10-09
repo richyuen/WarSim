@@ -5730,10 +5730,16 @@ quick sweep as a smoke test.
     day's `warSystem` runs after the strategic AI's declaration and ends at ±100 a war one
     of whose leaders has 75% of its land under occupiers of any war (`overrun`): the new
     enemy wins a war of no hours, takes what it holds of the loser (nothing) or annexes a
-    loser under 8,500 km², and a truce of two years begins. Trace both first (which leader
-    was overrun, by whom, what the peace handed over). Then decide in DECISIONS: an overrun
-    nation declares no war and none is declared on it (`whyNotWar` or the AI), the
-    capitulation asks only the war's own occupiers on its first day, or it stays with the
+    loser under 8,500 km², and a truce of two years begins. A second cause the same
+    system has, read too: a leader that is broke (`gold < 0` or `bankrupt`) sues on the
+    day the war is first judged, at score 0 the attackers have the tie, and a white peace
+    and the truce follow. The first case needs a score under 0 (the defender wins): the
+    attacker overrun. The second fits either (the defender overrun, or broke). Trace both
+    first (of each leader at the tick: its land under occupiers and whose, its gold and
+    `bankrupt`; what the peace handed over). Then decide in DECISIONS, for each cause that
+    is found: an overrun nation declares no war and none is declared on it (`whyNotWar` or
+    the AI), the capitulation asks only the war's own occupiers on its first day, the AI
+    declares no war on a broke nation and a broke one declares none, or it stays with the
     reason. The pin may move.
     AT: a unit test that fails first; in ten years of the sweep seeds no war is declared
     and gone in one hour (`aiSweep` counts them: 0, 2 and 0 today).

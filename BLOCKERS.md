@@ -515,7 +515,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     3.12Rm); vitest also could not end six of its workers in time. Alone it passed (the
     file in 31 s); in the gate's second run it passed (the unit stage 277 s, the ten-year
     stage 275 s where it took 160 s). The commit adds one comparison to a war's end. No
-    node process of an earlier run was left. The load of the machine in those runs is not
+    node process of an earlier run was left, and after the gate no Chromium, esbuild or
+    Vite of the specs run by hand before it (20 `msedge.exe` and 33 `msedgewebview2.exe`
+    were running, the user's own, not counted before the gate). The load of the machine in those runs is not
     known. The test was not changed. Not looked into: why both stages took about twice
     their time of the gate before (the three ten-year tests alone, with the commit's check,
     took 140 s twice in that hour).

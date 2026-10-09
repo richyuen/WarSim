@@ -12358,3 +12358,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   In BLOCKERS' list; the test was not changed.
 - **Gate:** `npm run check` green on the second run (`.cache/gate-rn2.log`).
 - **Next:** PLAN 3.12Ro (the walk back of a formation on the retreat).
+- **Its record, added after the commit:** PARITY row 62 (the ticker has the row too); PLAN
+  3.12Rr names a second cause that would end a war on the day it is declared (a broke
+  leader sues at score 0: a white peace, the attackers the winners), to be traced with the
+  first; BLOCKERS' entry on the slow gate says what was running after it. The History
+  panel's type filter is made of the kinds its rows have: it offers "War ended" where a
+  game has one (read, not run).
