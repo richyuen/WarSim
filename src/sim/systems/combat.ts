@@ -170,6 +170,14 @@ export function combatSystem(world: World): void {
   const w = world.cells.w;
   const cellOf = (fid: number): number => Math.floor(f.y[fid]!) * w + Math.floor(f.x[fid]!);
   const fires = world.out.fires;
+  // Where each element stands this hour, worked out once: an element is shot at by many, and
+  // its place holds for the hour (the blocks are set, and no formation moves in here).
+  const places = new Map<number, [number, number]>();
+  const placeOf = (fid: number, el: number): [number, number] => {
+    let p = places.get(el);
+    if (!p) places.set(el, (p = elementPlace(world, fid, ec.slot[el]!, slotCount(world, fid, idx.get(fid)!.length), el)));
+    return p;
+  };
 
   for (const battle of battles) {
     const pending = new Map<number, number>();
@@ -274,10 +282,8 @@ export function combatSystem(world: World): void {
         const dmg = (eff(t) * fullness * FIRE_SCALE * atk * shooterFactor * buffAtk * lossMult * screen * guns * open) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
-        const sl = idx.get(sf)!;
-        const tl = idx.get(tf)!;
-        const [x0, y0] = elementPlace(world, sf, ec.slot[s]!, slotCount(world, sf, sl.length), s);
-        const [x1, y1] = elementPlace(world, tf, ec.slot[t]!, slotCount(world, tf, tl.length), t);
+        const [x0, y0] = placeOf(sf, s);
+        const [x1, y1] = placeOf(tf, t);
         const subtick = hash32(world.seed, world.tick, s, 0x5b7) % 60;
         fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, x0, y0, x1, y1);
       }

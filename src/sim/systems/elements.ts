@@ -51,9 +51,20 @@ export const DEPLOY_SCATTER = 0.3;
 /** How far off its block's facing an element of a deployed block is turned at most, radians (17°). */
 export const DEPLOY_TURN = 0.3;
 
-/** A share of -1 to 1 for element `element`, by its id alone: the same every hour, in every game. */
+/** The shares worked out so far, four to an element id (NaN: not yet). An id's alone, so no game's own. */
+let shares = new Float64Array(0);
+
+/** A share of -1 to 1 for element `element`, by its id alone: the same every hour, in every game. `salt`: 1 to 3. */
 function shareOf(element: number, salt: number): number {
-  return (hash32(0x3b11c4, element, salt) >>> 0) / 0x80000000 - 1;
+  const at = element * 4 + salt;
+  if (at >= shares.length) {
+    const grown = new Float64Array(Math.max(1024, at * 2)).fill(NaN);
+    grown.set(shares);
+    shares = grown;
+  }
+  const held = shares[at]!;
+  if (held === held) return held;
+  return (shares[at] = (hash32(0x3b11c4, element, salt) >>> 0) / 0x80000000 - 1);
 }
 
 /**

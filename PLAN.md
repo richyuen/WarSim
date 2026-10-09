@@ -5379,7 +5379,11 @@ quick sweep as a smoke test.
     The task as it was set: Tick time, not measured since PLAN 3.10e: `npm run sim --
     --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF` beside that figure and the
     budget. Over budget is a task before 4.1; under it is a line here.
-  - [ ] 3.12Rd1 **The tick has no room on seed 8128** (3.12Rd: 1.498, 1.527 and 1.487 ms in
+  - [x] 3.12Rd1 *Done 2026-10-09 (3.12Rd1a, 3.12Rd1b): seed 8128 at 1.435, 1.469 and 1.440
+    ms in three runs of five years (1.498, 1.527, 1.487), seed 99 at 1.297 (1.341), seed
+    4242 at 1.343 (1.398); the hashes as they were.* What 3.11c had added is taken back
+    (3.10e: 1.440, 1.278, 1.326); the room under 1.5 on seed 8128 is 0.03 to 0.065 ms.
+    The task as it was set: **The tick has no room on seed 8128** (3.12Rd: 1.498, 1.527 and 1.487 ms in
     three runs of five years against 1.5, where 3.10e had 1.440; Phase 4 adds to it). All
     three seeds are 0.06 to 0.07 ms over 3.10e, and combat in a first year is 0.14 to 0.23
     ms over (1.23 ms a tick on seed 8128, 4,745 calls of 1 ms or more). What is known: the
@@ -5412,9 +5416,13 @@ quick sweep as a smoke test.
       tick, the tick 2.43-2.50 to 2.40; hash `b1a1f4e3` as before; every shot and every
       block of 4,000 hours of seed 8128 and 3,000 of seed 99 bit for bit (a scratch
       harness, `.cache/firehash.ts`).
-    - [ ] 3.12Rd1b **Where an element stands is worked out for every shot at it**, and its
-      two shares off its slot (3.11c4, two hashes) for every one of those: a share is its
-      id's alone, and a place holds for the hour. Then the three runs of the AT.
+    - [x] 3.12Rd1b *Done 2026-10-09.* **Where an element stands was worked out for every
+      shot at it**, and its two shares off its slot (3.11c4, two hashes) for every one of
+      those. `combatSystem` keeps the hour's places by element; `shareOf` keeps a share by
+      id (it is the id's alone, in every game). Year 1 of seed 8128: combat 1.18 to 1.105
+      (the places) to 1.055-1.073 ms a tick (the shares); shots and blocks bit for bit.
+      Not taken: the volleys' tables and damage and the pairing of `findBattles` (0.55 and
+      0.18 ms a tick in that year, older than 3.11c): PLAN 7.1 with the first year.
   - [ ] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
     `/^Free state d+$/`: the `\d` gets its backslash back. `Free state ${id}` is what
     `nationNames.ts` gives a nation with no province: if the three seeds then fail, that is

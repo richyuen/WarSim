@@ -11807,3 +11807,43 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green (typecheck, lint, test, test:sweep, build, parity; e2e
   left out: a part).
 - **Next:** PLAN 3.12Rd1b (an element's place once an hour, its shares once).
+
+## 2026-10-09 — PLAN 3.12Rd1b and 3.12Rd1's tick: an element's place once an hour; seed 8128 under the budget in three runs
+
+- **Done (3.12Rd1b):** `combatSystem` keeps where each element stands for the hour
+  (`placeOf`, a map of the call): the place of the one that shoots and of the one shot at
+  came from `elementPlace` twice a shot, and an element is shot at by many. Nothing moves
+  inside the call and the hour's blocks are set before it, so the place is the same.
+  `shareOf` (3.11c4) keeps what it gave an element id (a typed array in the module: a
+  share is the id's alone, the same in every game, so it is no game's state).
+- **Verified:** `.cache/firehash.ts` as at 3.12Rd1a: `7c42d60b2a653940` (seed 8128, 4,000
+  hours) and `de352376fa75a77e` (seed 99, 3,000 hours), as before both parts. The five
+  years end on `34618be8`, `251656a1` and `21cd2137`, the hashes the task names. The pin
+  holds (the gate).
+- **Measured** (five years from 1938, pinned to `0xFFFF`, `--profile`, one run after
+  another; the tick's mean in ms; 3.12Rd's figure in brackets, the first run's years):
+
+  | seed | y1 | y2 | y3 | y4 | y5 | five years |
+  |---|---|---|---|---|---|---|
+  | 8128 | 2.264 (2.451) | 1.086 (1.123) | 1.455 (1.490) | 1.217 (1.265) | 1.152 (1.162) | 1.435, 1.469, 1.440 (1.498, 1.527, 1.487) |
+  | 99 | 2.041 (2.176) | 1.708 (1.768) | 0.996 (1.008) | 0.819 (0.823) | 0.920 (0.929) | 1.297 (1.341, 1.343) |
+  | 4242 | 1.712 (1.828) | 1.323 (1.368) | 1.089 (1.123) | 1.490 (1.537) | 1.101 (1.133) | 1.343 (1.398) |
+
+  Combat in the first year: 1.055, 1.073 and 1.060 ms on seed 8128 (1.23), 0.963 on seed
+  99 (1.10), 0.740 on seed 4242 (0.84); 4,071 to 4,154 calls of 1 ms or more on seed 8128
+  (4,745). By part, year 1 of seed 8128, one run each but the last: 1.23 at 3.12Rd, 1.180
+  after 3.12Rd1a, 1.105 with the hour's places, 1.070 and 1.055 with the shares kept.
+- **The verdict:** the AT holds: seed 8128 under 1.5 in each of three runs, 0.03 to 0.065
+  ms under. The three seeds are where 3.10e had them (1.440, 1.278, 1.326) within 0.02 ms,
+  and the three runs are 0.034 apart, so the room is no more than a run's spread and Phase
+  4 will ask for it again.
+- **Not taken:** the volleys' tables and damage (about 0.55 ms a tick in year 1 of seed
+  8128) and the pairing of `findBattles` (0.18): older than 3.11c, PLAN 7.1 with the
+  first year. The year's 263,708 target tables were not looked into.
+- **Specs run by hand** (the blocks and the shots are what they look at; `--project
+  chromium`): `formationFight1938`, `fightSeen1938`, `fire1938` (5 tests, 4.9 min) and
+  `stackBlocks1938`: green. No picture: the numbers drawn are bit for bit the same.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (typecheck, lint, test, test:sweep, build, parity; e2e
+  left out: a part).
+- **Next:** PLAN 3.12Re (the `\d` of `tests/helpers/aiSweep.ts`).
