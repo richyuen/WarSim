@@ -55,12 +55,14 @@ export interface HistoryRow {
   /**
    * What the row is of, where its kind has more than one sentence (PLAN 3.12b; absent: the
    * kind's own). A `RevoltSpawned` is 'revived' when its a is a dead nation that returned in that
-   * hour, and 'joined' when a was a nation of rebels already and the land rose to it.
+   * hour, and 'joined' when a was a nation of rebels already and the land rose to it. A
+   * `LandCeded` is 'left' when its b died in that hour (PLAN 3.12b2); its own sentence is of
+   * land that rose and went back to its core nation.
    */
   as?: HistoryAs;
 }
 
-export type HistoryAs = 'revived' | 'joined';
+export type HistoryAs = 'revived' | 'joined' | 'left';
 
 export interface HistoryFilter {
   /** Event kind (null = all). */

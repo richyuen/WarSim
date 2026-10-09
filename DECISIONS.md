@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-210 · 2026-10-08 · accepted — Land that goes over: two sentences, and one row an hour for two nations (PLAN 3.12b2, critic R3-B6)
+
+- **Context.** The critic's third report: 450 of 2,395 history rows after 14 years read
+  "Land of X went over to Y". PLAN 3.12 had "the land that goes over at a peace folded into
+  that peace's row". ADR-209 measured that no `LandCeded` follows a peace of its two nations
+  (0 of 337 on seed 6021, 0 of 252 on seed 1): a peace moves the owner of land with no
+  event. `LandCeded` (a = who has the land now, b = who held it) is emitted in four places:
+  1. `defect`, a region that rose and went back to its core nation: b lives.
+  2. `collapseNation`, the stray cells of a nation that falls apart, to the holder of their
+     province: after its `NationCollapsed`.
+  3. `leaveToNeighbour`, a Kill that found no heir.
+  4. `leaveLand` in `eliminateNation`, what a living nation occupied of the dead: before
+     its `NationEliminated`.
+- **Decision.** In `src/worker/historyRows.ts`, from the log alone, as ADR-209 did:
+  - a `LandCeded` whose b has a `NationEliminated`, `NationCollapsed` or `NationAnnexed` in
+    the same hour is `as: 'left'`: "Land left by {b} went to {a}". The deaths are read
+    before the rows, since 2 has its death before the land and 4 after it;
+  - the kind's own sentence is now of 1: "Land held by {b} rose and went back to {a}";
+  - a `LandCeded` with the tick, a and b of an earlier one is no row. The row that stays
+    is the first, with its place.
+- **Why one hour.** ADR-209's count: no row has the a and b of an earlier hour of its
+  month. The revolts of a month are of its first hour, an area each, and a death gives
+  its land at two steps of one hour (2 and 4).
+- **Why the fold has no count** ("three regions"). The log has an event for each area that
+  rose, and an area is as many provinces as rose side by side: a count of events is not a
+  count of anything a watcher sees.
+- **Measured** (`tests/helpers/aiSweep.ts`, ten years; the state as each hour ended against
+  the rows). Seed 1: 252 events, 216 rows, 190 back to the core nation and 26 left by the
+  dead. Seed 2: 293, 252, 224 and 28. Seed 3: 354, 290, 265 and 25. A test of mine failed
+  first on its own fault (`includes(x, length - 64)` with fewer than 64 lines looks at the
+  last ones only); the hour it failed on, seed 3's tick 29,928, has three events of
+  land held by the Soviet Union going back to Italy with a fourth of other nations between
+  the second and the third: the rows to fold are not always next to one another.
+- **What it leaves.** About 22 rows a year of land going back to its core nation (190 in
+  seed 1's ten years, about a tenth of its rows: 1,813 before the fold, ADR-208). They are
+  not the log's to drop: each is land that changed hands, with a place. That the same two
+  nations hand land back month after month (the Soviet Union's to Italy in five months
+  running of seed 3, ticks 29,184 to 32,136; why Italy has cores there was not looked
+  into) is the game's, and a line for the review pass.
+- **Not done.** A region that goes back to its core nation in the hour of its holder's
+  death reads as left by the dead; not looked for. The pin is unmoved (no state changed).
+  No migration: a game saved before reads the new sentences.
+- **Seen.** `docs/evidence/2.15/kill-france-history.png` (God Mode kills France): five
+  rows "Land left by France went to Free Paris", "… British India", "… Italy", "… United
+  Kingdom", "… Netherlands" between "France collapsed" and "France was destroyed". The
+  sentence of land that went back was not looked at in the panel: the unit test and the
+  ten-year tests have it.
+
 ### ADR-209 · 2026-10-08 · accepted — A revolt's row says which of three things it was, told by the worker from the log (PLAN 3.12b1, critic R3-B6)
 
 - **Context.** The critic's third report: "Turkey broke away from Free Bursa", a row that

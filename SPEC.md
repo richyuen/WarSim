@@ -1052,9 +1052,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     joins that state. Only otherwise does it found a new nation.
   - *Land handed over (PLAN 2.15d, ADR-102):* a defection, and each handover of a God Kill, is
     the event `LandCeded` (a = who received the land, b = who held it), as is the land of a
-    dead nation that goes to its occupier (ADR-112), not a revolt: "Land of
-    {b} went over to {a}" in the history. An area that joins a rebel state stays a
-    `RevoltSpawned`.
+    dead nation that goes to its occupier (ADR-112), not a revolt. An area that joins a rebel
+    state stays a `RevoltSpawned`. In the history (PLAN 3.12b2, ADR-210) it is "Land held by
+    {b} rose and went back to {a}", or "Land left by {b} went to {a}" when b died in that
+    hour, and the events of one hour with the same a and b are one row: the worker tells
+    both from the log (`src/worker/historyRows.ts`).
   - *Overextension (ADR-47):* a holder above 4% of the world's owned land gains, in provinces
     more than 80 cells from its capital, 1.25 × min(2, share/4% − 1) unrest a month, plus 2 on
     core land while one of its wars has exhausted its side to ≥ 60. The share is of km², not

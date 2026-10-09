@@ -54,6 +54,10 @@ export function aiSweep(seed: number): void {
   const alive = new Set<number>();
   nations.forEach((n) => void (nations.cols.living[n] === 1 && alive.add(n)));
   const revoltsAs: string[] = [];
+  // PLAN 3.12b2: the land that went over, one line for two nations in an hour, and whether its
+  // holder was dead as the hour ended.
+  const cededAs: string[] = [];
+  let cededEvents = 0;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
     const year: Record<string, number> = {};
@@ -63,6 +67,12 @@ export function aiSweep(seed: number): void {
         const k = names[ev[i + 1]!]!;
         counts[k] = (counts[k] ?? 0) + 1;
         year[k] = (year[k] ?? 0) + 1;
+        if (ev[i + 1] === EventKind.LandCeded) {
+          cededEvents++;
+          const [to, from] = [ev[i + 2]!, ev[i + 3]!];
+          const line = `${ev[i]!} ${to} ${from} ${w.nations.cols.living[from] === 1 ? 'back' : 'left'}`;
+          if (!cededAs.includes(line)) cededAs.push(line);
+        }
         if (ev[i + 1] !== EventKind.RevoltSpawned) continue;
         const a = ev[i + 2]!;
         const back = ev.some((v, j) => j % 6 === 1 && v === EventKind.NationRevived && ev[j + 1] === a);
@@ -144,6 +154,15 @@ export function aiSweep(seed: number): void {
   for (const as of ['founded', 'joined']) expect(of(as), `seed ${seed}: revolts ${as}`).toBeGreaterThan(0);
   console.log(`seed ${seed}: ${revoltRows.length} revolts: ${of('founded')} founded, ${of('joined')} joined, ${of('revived')} revived`);
   console.log(`seed ${seed}: ${rows.length} history rows, ${allianceRows} of alliances (${rows.filter((r) => r.kind === EventKind.AllianceDissolved).length} dissolved), none with an id`);
+  // PLAN 3.12b2: each row of land that went over is of what the state showed, an hour's rows of
+  // two nations are one, and only the land of the dead was "left".
+  const cededRows = rows.filter((r) => r.kind === EventKind.LandCeded);
+  expect(cededRows.map((r) => `${r.tick} ${r.a} ${r.b} ${r.as ?? 'back'}`), `seed ${seed}: what the rows of land that went over are of`).toEqual(cededAs);
+  for (const r of cededRows) expect(historyText(r), `seed ${seed}, tick ${r.tick} (${r.as ?? 'back'})`).toMatch(r.as === 'left' ? /^Land left by \S.* went to \S/ : /^Land held by \S.* rose and went back to \S/);
+  const cededOf = (as: string): number => cededAs.filter((l) => l.endsWith(as)).length;
+  for (const as of ['back', 'left']) expect(cededOf(as), `seed ${seed}: land that went over, ${as}`).toBeGreaterThan(0);
+  expect(cededRows.length, `seed ${seed}: rows of land that went over, of ${cededEvents} events`).toBeLessThanOrEqual(cededEvents);
+  console.log(`seed ${seed}: ${cededEvents} events of land that went over, ${cededRows.length} rows: ${cededOf('back')} back to its core nation, ${cededOf('left')} left by the dead`);
   const wars = counts['WarDeclared'] ?? 0;
   const peace = counts['PeaceSigned'] ?? 0;
   const alliance = (counts['AllianceJoined'] ?? 0) + (counts['AllianceLeft'] ?? 0) + (counts['AllianceDissolved'] ?? 0);

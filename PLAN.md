@@ -5218,7 +5218,12 @@ quick sweep as a smoke test.
       and joined Free Barcelona", and "broke away" for a founding only. No state changed:
       the pin is unmoved. `tests/helpers/aiSweep.ts`: each revolt's row of ten years is of
       what the state showed.
-    - [ ] 3.12b2 The land that goes over. Measured in 3.12b1 (ADR-209): no `LandCeded`
+    - [x] 3.12b2 *Done 2026-10-08 (ADR-210):* two sentences ("Land held by Germany rose and
+      went back to Poland"; "Land left by France went to Italy" when the holder died in that
+      hour, told by the worker from the log) and one row for an hour's events of the same two
+      nations (ten years of seeds 1, 2 and 3: 252, 293 and 354 events as 216, 252 and 290
+      rows). The pin is unmoved. `tests/helpers/aiSweep.ts`: each row against the state.
+      The task as it was set: The land that goes over. Measured in 3.12b1 (ADR-209): no `LandCeded`
       follows a peace of its two nations (0 of 337 on seed 6021, 0 of 252 on seed 1), so
       nothing is to be folded into a peace's row. 281 and 12 of the 337 are a region that
       rose and went back to its core nation, whose holder lives; 44 are what a dead nation
@@ -5237,7 +5242,12 @@ quick sweep as a smoke test.
   aiSweep.ts` asks that a founded nation's name not match `/^Free state d+$/`, a `\d` that
   lost its backslash; 29 alliances were gone after ten years of seed 1 and 15 rows said so
   (a nation's death takes it out of its alliance with no row); "Mexico joined the Coalition
-  of Mexico" is the founder's own row.
+  of Mexico" is the founder's own row. And from 3.12b2 (ADR-210): about 22 history rows a
+  year are land that rose and went back to its core nation (190 in seed 1's ten years,
+  about a tenth of its rows), the same two nations month after month (land held by the
+  Soviet Union to Italy in five months running of seed 3, ticks 29,184 to 32,136; why Italy
+  has cores there was not looked into). That is the game's and not the log's: whether a holder should lose a region a month
+  to a living core nation is balance (Phase 7, ADR-58), and no row was dropped for it.
   **PLAN 3.8 to 3.12 are the critic's third report (ADR-177).** They are numbered tasks and
   count toward the next review pass. Their order is not the critic's (R3-B4, B2, B5, B3,
   B6): the three that change the world's state or its cost come before the two whose tests

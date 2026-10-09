@@ -194,7 +194,7 @@ test('Kill through the God tab: a few new nations, no new war', async ({ page },
   await page.getByTestId('history-kind').selectOption({ label: 'Land handed over' });
   await expect(page.getByTestId('history-row')).toHaveCount(ceded.length);
   const texts = await page.getByTestId('history-row').allInnerTexts();
-  for (const t of texts) expect(t).toMatch(/Land of France went over to \S/);
+  for (const t of texts) expect(t).toMatch(/Land left by France went to \S/);
   await page.getByTestId('history-kind').selectOption({ label: 'Revolt' });
   await expect(page.getByTestId('history-row')).toHaveCount(born.length);
   for (const t of await page.getByTestId('history-row').allInnerTexts()) expect(t).toMatch(/^.*Free .+ broke away from France$/s);

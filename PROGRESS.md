@@ -11502,3 +11502,39 @@ No rule changed and nothing on screen changed. One task came out of it.
   2,395) is not less: PLAN 3.12b2 folds an hour's and says what it leaves.
 - **Gate:** `npm run check` (code; a part: the changed spec file).
 - **Next:** PLAN 3.12b2.
+
+## 2026-10-08 — PLAN 3.12b2: land that goes over has two sentences and one row an hour (ADR-210)
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Cause.** One sentence, "Land of {b} went over to {a}", for land that rose and went back
+  to its core nation and for what a dead nation left; and a row for every area of a month.
+- **Done:** `HistoryAs` gains `'left'`; `src/worker/historyRows.ts` reads the deaths of the
+  log first (a collapse tells the death before the land, `eliminateNation` after it), sets
+  `as` and leaves out a `LandCeded` with the tick, a and b of an earlier one; `en.json`:
+  "Land held by {b} rose and went back to {a}", "Land left by {b} went to {a}". SPEC §
+  "Land handed over".
+- **Tests:** `tests/unit/history.test.ts` (14, two new: the two sentences; a log with a
+  month's areas, a collapse, a death by itself, an annexation, and the dead of an earlier
+  hour); `tests/helpers/aiSweep.ts`: every `LandCeded` of ten years classed by whether its
+  holder lived as the hour ended, one line for two nations an hour, equal to the worker's
+  rows one for one, each sentence matched, at least one of each a seed;
+  `tests/e2e/godUi1938.spec.ts`: the Kill's rows read "Land left by France went to".
+- **Run by hand** (a part, ADR-87): `godUi1938` and `history1938`, `--project chromium`, 10
+  tests, green; the Kill again with `EVIDENCE=1`. The three ten-year tests with the sweep's
+  config: green on the second run.
+- **Figures** (ten years): seed 1, 252 events as 216 rows (190 back, 26 left by the dead);
+  seed 2, 293 as 252 (224, 28); seed 3, 354 as 290 (265, 25).
+- **Seen:** `docs/evidence/2.15/kill-france-history.png`, looked at: 20 rows of 1 January
+  1938, five "Land left by France went to …" between "France collapsed" and "France was
+  destroyed". The sentence of land that went back was not looked at in the panel.
+- **The pin:** unmoved (no state changed).
+- **Learned:** `array.includes(x, from)` with a negative `from` counts from the end: my
+  test's "the last 64 lines" looked at one line while it had 63, and failed on seed 3
+  after 150 s. The rows to fold are not next to one another (seed 3, tick 29,928). The
+  sweep's config prints no `console.log`; `process.stderr.write` shows (taken out again).
+- **Performance:** not measured: one more pass over the log for each history request.
+- **Not done:** no sweep (ADR-58). About 22 rows a year of land going back stay: a line
+  under PLAN 3.12 for the review pass (balance, Phase 7).
+- **Gate:** `npm run check` (code; a part: the changed spec file).
+- **Next:** PLAN 3.12c.

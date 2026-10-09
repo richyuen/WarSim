@@ -176,6 +176,44 @@ describe('history rows name what they are of (PLAN 3.12a)', () => {
     expect(rows.map(historyText).slice(3, 6)).toEqual(['N2 took back land held by N3', 'N2 took back land held by N1', 'N2 returned']);
   });
 
+  // PLAN 3.12b2: 450 of the critic's 2,395 rows read "Land of X went over to Y".
+  it('land that goes over went back to its core nation, or was left by a nation that died', () => {
+    const ceded = (as?: HistoryRow['as']): HistoryRow => ({ ...row(EventKind.LandCeded, 'nation.POL', 'nation.GER'), ...(as ? { as } : {}) });
+    expect(historyText(ceded())).toBe('Land held by Germany rose and went back to Poland');
+    expect(historyText(ceded('left'))).toBe('Land left by Germany went to Poland');
+  });
+
+  it('the rows of a log: land left by the dead, whichever side of it the death is told, and one row an hour for two nations', () => {
+    const s = new Sim({ scenario: 'toy', seed: 1 });
+    const h = s.world.history;
+    const [A, B, C, D] = [1, 2, s.world.nations.create(), s.world.nations.create()]; // the toy world has two
+    h.record(10, EventKind.LandCeded, A, B, 1, 1); // three areas rise in one month: two go back to A,
+    h.record(10, EventKind.LandCeded, C, B, 2, 2); // one to C,
+    h.record(10, EventKind.LandCeded, A, B, 3, 3);
+    h.record(10, EventKind.LandCeded, B, A, 4, 4); // and one of A's to B: not the same two
+    h.record(20, EventKind.LandCeded, A, B, 5, 5); // a later hour: a row again
+    h.record(30, EventKind.NationCollapsed, B, 0, NaN, NaN); // a collapse: told before the land,
+    h.record(30, EventKind.LandCeded, A, B, 6, 6);
+    h.record(30, EventKind.LandCeded, A, B, 7, 7); // twice (the stray cells, then what A occupied)
+    h.record(30, EventKind.NationEliminated, B, 0, NaN, NaN);
+    h.record(40, EventKind.LandCeded, A, C, 8, 8); // a death by itself: told after the land
+    h.record(40, EventKind.NationEliminated, C, 0, NaN, NaN);
+    h.record(50, EventKind.NationAnnexed, D, A, NaN, NaN); // an annexation
+    h.record(50, EventKind.LandCeded, B, D, 9, 9);
+    h.record(50, EventKind.NationEliminated, D, 0, NaN, NaN);
+    h.record(60, EventKind.LandCeded, A, B, 10, 10); // the dead of an earlier hour: B lives again
+    const rows = historyRows(s.world, (n) => `=N${n}`, () => '');
+    const ceded = rows.filter((r) => r.kind === EventKind.LandCeded);
+    expect(ceded.map((r) => [r.tick, r.a, r.b, r.x, r.as])).toEqual([
+      [10, A, B, 1, undefined], [10, C, B, 2, undefined], [10, B, A, 4, undefined], [20, A, B, 5, undefined],
+      [30, A, B, 6, 'left'], [40, A, C, 8, 'left'], [50, B, D, 9, 'left'], [60, A, B, 10, undefined],
+    ]);
+    // No other row is folded or is `as` anything: the two of B's death are both there.
+    expect(rows.length).toBe(h.rows.length / HISTORY_STRIDE - 2);
+    expect(rows.filter((r) => r.kind !== EventKind.LandCeded).every((r) => r.as === undefined)).toBe(true);
+    expect(rows.filter((r) => r.tick === 30).map(historyText)).toEqual(['N2 collapsed', 'Land left by N2 went to N1', 'N2 was destroyed']);
+  });
+
   it('a save from before it loads: the leader stands for the founder, and nothing is past', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const al = s.world.alliances;
