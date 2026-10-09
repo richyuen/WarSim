@@ -174,9 +174,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   that peace's row". ADR-209 measured that no `LandCeded` follows a peace of its two nations
   (0 of 337 on seed 6021, 0 of 252 on seed 1): a peace moves the owner of land with no
   event. `LandCeded` (a = who has the land now, b = who held it) is emitted in four places:
-  1. `defect`, a region that rose and went back to its core nation: b lives.
-  2. `collapseNation`, the stray cells of a nation that falls apart, to the holder of their
-     province: after its `NationCollapsed`.
+  1. `defect` called by `revolt`, a region that rose and went back to its core nation: b
+     lives. It is the one place of a living b.
+  2. `collapseNation`, after its `NationCollapsed`: the pieces that found nothing, to a
+     neighbour or the heir (`defect` again, by `give`), and the stray cells of the nation
+     that falls apart, to the holder of their province.
   3. `leaveToNeighbour`, a Kill that found no heir.
   4. `leaveLand` in `eliminateNation`, what a living nation occupied of the dead: before
      its `NationEliminated`.
