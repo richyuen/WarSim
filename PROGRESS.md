@@ -11861,3 +11861,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rf (a nation's death takes it out of its alliance with no history
   row; first whether the state hash covers the log).
+
+## 2026-10-09 — PLAN 3.12Rf: a death is told of the alliance too
+
+- **Cause:** `eliminateNation` (`src/sim/systems/capitals.ts`) took the dead out of its
+  alliance with `Alliances.removeNation`, which emits nothing. The month's loyalty and the
+  command go through `leaveAlliance`, which emits `AllianceLeft` and `AllianceDissolved`.
+- **Done:** `eliminateNation` calls `leaveAlliance` first; `removeNation` still drops the
+  guarantees. ADR-213 (why both rows and not the dissolution alone). SPEC §3.5, PARITY row
+  61.
+- **The hash covers the log** (`History` is in `World.parts()`): the pin moves, `e05beda3`
+  to `d07a7db0`. A hash of each of the state's sections before and after (a scratch script,
+  not kept): `history.rows` alone differs.
+
+  | run | rows | left | dissolved | deaths | `alliances.past` |
+  |---|---|---|---|---|---|
+  | seed 99, 1 year | 172 → 178 | 0 → 5 | 0 → 1 | 7 | 1 |
+  | seed 1, 10 years | 1,813 → 1,863 | 17 → 53 | 15 → 29 | 77 | 29 |
+
+- **Tests:** `tests/unit/alliances.test.ts` (failed first: no `AllianceLeft` at Japan's
+  death): a death in an alliance of three, a death that dissolves it, the guarantees gone,
+  the sentences of the rows, a death outside any alliance. `tests/helpers/aiSweep.ts`: the
+  alliances the log says dissolved are those of `alliances.past`, id by id; `aiSweep1` to
+  `aiSweep3` green with it (by hand, the sweep config).
+- **Spec run by hand:** `history1938` (`--project chromium`, 3 tests, 18 s): green. No
+  picture: the panel draws rows of kinds it drew before.
+- **Performance:** not measured: one call at a death (77 in ten years of seed 1).
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rg (the founder's own "joined" row; a peace that annexes, one row or
+  two).

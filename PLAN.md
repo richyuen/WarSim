@@ -5431,9 +5431,14 @@ quick sweep as a smoke test.
       `flagsByScenario.test.ts` and `randomWorld.spec.ts`. The three seeds (`aiSweep1` to
       `aiSweep3`, ten years each) pass with it: no nation founded in them is a "Free
       state N". No finding.
-  - [ ] 3.12Rf A nation's death takes it out of its alliance with no history row (29
+  - [x] 3.12Rf A nation's death takes it out of its alliance with no history row (29
     alliances gone after ten years of seed 1, 15 rows said so): the log says what became of
     an alliance. First: whether the state hash covers the log (does the pin move).
+    - Done 2026-10-09 (ADR-213): `eliminateNation` goes through `leaveAlliance`, as the
+      month's loyalty and the command do: `AllianceLeft`, and `AllianceDissolved` when one
+      member is left. Seed 1's ten years: 29 gone and 29 rows. The hash covers the log: the
+      pin moves, `e05beda3` to `d07a7db0`, and `history.rows` is the one section that
+      differs. `aiSweep` asks that the log's dissolved alliances are the state's past ones.
   - [ ] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the
     founding has one row. With it (the ninth read's suspicion): a peace that annexes the
     loser puts "annexed" and then a peace with the annexed nation in the ticker in one hour

@@ -20,12 +20,13 @@
  * painted away whole is eliminated by it. Occupation with no war (controller ≠ owner) is not that.
  *
  * Elimination: `living` = 0, its formations, production orders and research lines are removed, its wars end,
- * the land it occupied goes back to its owners and its land that others occupy becomes theirs
+ * it leaves its alliance (`AllianceLeft`, and `AllianceDissolved` when one member is left), the land it occupied goes back to its owners and its land that others occupy becomes theirs
  * (`leaveLand`), `NationEliminated` is emitted.
  */
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import type { World } from '../world';
+import { leaveAlliance } from './alliances';
 import { destroyFormation } from './elements';
 import { releasePuppet } from './puppets';
 import { holdsCore, REVIVAL_COOLDOWN } from './revival';
@@ -181,6 +182,9 @@ export function eliminateNation(world: World, n: number): void {
     if (world.cities.cols.capitalOf[id] === n) world.cities.cols.capitalOf[id] = 0;
   });
   world.wars.endAllOf(n);
+  // It leaves its alliance as a member that walks out does, with the rows of it (PLAN 3.12Rf): an
+  // alliance that a death left with one member was gone from the log without a word.
+  leaveAlliance(world, n);
   world.alliances.removeNation(n);
   // Nor is it anybody's puppet (PLAN 3.4Rk, ADR-148): it would return as one, and the war of a
   // revival on its overlord's land was refused. Its autonomy and loyalty are read of a puppet only.

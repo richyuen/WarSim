@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-213 · 2026-10-09 · accepted — A nation that dies leaves its alliance with the log's rows; the pin moves, no rule does (PLAN 3.12Rf)
+
+- **Context.** PLAN 3.12a counted 29 alliances gone after ten years of seed 1 and 15
+  `AllianceDissolved` rows. `eliminateNation` took the dead out with
+  `Alliances.removeNation`, which emits nothing; every other way out (the month's loyalty,
+  the command) goes through `leaveAlliance`, which emits `AllianceLeft` and, when one
+  member is left, `AllianceDissolved`.
+- **Decision.** `eliminateNation` calls `leaveAlliance` before `removeNation` (which still
+  drops the guarantees). The rows come after the death's wars end and before its puppets are
+  freed, its land is given and `NationEliminated`: "Italy left the Anti-Comintern Pact",
+  "The Anti-Comintern Pact was dissolved", then the death.
+- **Why both rows, and not the dissolution alone.** A death that leaves an alliance alive
+  changes its members and may pass its lead on; with no row the log's joins and leaves of an
+  alliance no longer add up to its members. One path for every way out, and one sentence.
+- **Does the state hash cover the log?** Yes: `History` is a part of `World.parts()`, saved
+  and hashed. The pin of seed 99 after one year moves from `e05beda3` to `d07a7db0`. A hash
+  of each section of the state, before and after: `history.rows` alone differs, in seed 99's
+  year (172 rows to 178: 5 left and 1 dissolved, where there were none of either; 7 deaths)
+  and in seed 1's ten years (1,813 rows to 1,863: 17 left to 53, 15 dissolved to 29, the 29
+  of `alliances.past`; 77 deaths). No rule changed.
+- **Consequences.** `tests/helpers/aiSweep.ts` asks of ten years of three seeds that the
+  alliances the log says dissolved are those of `alliances.past`, id by id and in order.
+  The ticker is as it was: its kinds have none of an alliance. A game saved before keeps
+  its log as it was written.
+
 ### ADR-212 · 2026-10-09 · accepted — Sound: five cues made in code, the cue of what is new in the ticker, one a message (PLAN 3.12d, critic R3-B6) [AoC-DEVIATION]
 
 - **Context.** The critic's third report: no sound (no `AudioContext` in `src/`). AoC has

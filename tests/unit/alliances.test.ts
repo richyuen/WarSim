@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { HISTORY_STRIDE } from '../../src/sim/history';
 import { LEAVE_LOYALTY, UNION_AT } from '../../src/sim/systems/alliances';
+import { eliminateNation } from '../../src/sim/systems/capitals';
+import { historyText } from '../../src/ui/historyText';
+import { historyRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 
@@ -110,5 +114,47 @@ describe('alliances (PLAN 1.17)', () => {
     run(t, 24 * 60);
     expect(t.hash()).toBe(a.hash());
     expect(t.world.alliances.allianceOf(ITA)?.id).toBe(a.world.alliances.allianceOf(ITA)?.id);
+  });
+
+  // PLAN 3.12Rf: a death took a nation out of its alliance with no row, and the alliance it
+  // left with one member was gone with none (29 gone after ten years of seed 1, 15 rows).
+  it('a death is told of the alliance too: the dead left it, and it dissolved when one member was left', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    const { id, nameKey, founder } = w.alliances.allianceOf(GER)!;
+    /** The log's rows of alliances and of deaths as [kind, a, b] (a death frees puppets and gives land too). */
+    const told: number[] = [EventKind.AllianceLeft, EventKind.AllianceDissolved, EventKind.NationEliminated];
+    const logged = (): number[][] => {
+      const out: number[][] = [];
+      for (let i = 0; i < w.history.rows.length; i += HISTORY_STRIDE) if (told.includes(w.history.rows[i + 1]!)) out.push(w.history.rows.slice(i + 1, i + 4));
+      return out;
+    };
+    eliminateNation(w, JAP);
+    expect(logged()).toEqual([
+      [EventKind.AllianceLeft, JAP, id],
+      [EventKind.NationEliminated, JAP, 0],
+    ]);
+    expect(w.alliances.allianceOf(GER)!.members).toEqual([GER, ITA]);
+    w.alliances.guarantees.push({ guarantor: ITA, target: POL }, { guarantor: FRA, target: ITA });
+    eliminateNation(w, ITA);
+    expect(logged().slice(2)).toEqual([
+      [EventKind.AllianceLeft, ITA, id],
+      [EventKind.AllianceDissolved, id, GER],
+      [EventKind.NationEliminated, ITA, 0],
+    ]);
+    expect(w.alliances.allianceOf(GER)).toBeUndefined();
+    expect(w.alliances.past).toEqual([{ id, nameKey, founder }]);
+    expect(w.alliances.guarantees.some((g) => g.guarantor === ITA || g.target === ITA)).toBe(false);
+    // As the panel reads them: the dead nation and the alliance have their names.
+    const rows = historyRows(w, (n) => `=Nation ${n}`, () => '').filter((r) => r.kind === EventKind.AllianceLeft || r.kind === EventKind.AllianceDissolved);
+    expect(rows.map((r) => historyText(r))).toEqual([
+      `Nation ${JAP} left the Anti-Comintern Pact`,
+      `Nation ${ITA} left the Anti-Comintern Pact`,
+      'The Anti-Comintern Pact was dissolved',
+    ]);
+    // A nation in no alliance dies with no row of one.
+    const before = logged().length;
+    eliminateNation(w, GER);
+    expect(logged().slice(before)).toEqual([[EventKind.NationEliminated, GER, 0]]);
   });
 });

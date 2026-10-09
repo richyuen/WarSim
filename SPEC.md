@@ -614,7 +614,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *Monthly:* unity += 3 × (wars with ≥ 2 members on one side) + 0.25 × (members − 1) − 1, and
     loyalty += 0.25 × (unity − loyalty).
   - *Leaving:* a non-leader below loyalty 25 leaves; under two members, the alliance dissolves.
-    When the leader leaves, the lead passes on.
+    When the leader leaves, the lead passes on. A nation that dies leaves the same way, with the
+    same rows in the log (`AllianceLeft`, then `AllianceDissolved` when one member is left;
+    PLAN 3.12Rf, ADR-213): every alliance in `past` has its `AllianceDissolved`.
   - *Union:* at unity ≥ 80, kept until it drops below 70.
   - *Wars:* a declaration brings each leader's alliance and puppets, and the defender's
     guarantors (not chained further). Allies cannot declare on each other. A nation with a

@@ -146,6 +146,8 @@ export function aiSweep(seed: number): void {
     expect(r.of, `seed ${seed}, tick ${r.tick}: "${text}", its founder`).not.toBe('');
   }
   expect(allianceRows, `seed ${seed}: history rows of alliances`).toBeGreaterThan(0);
+  // PLAN 3.12Rf: every alliance that is gone has its row, a death's too (29 gone and 15 rows in seed 1).
+  expect(rows.filter((r) => r.kind === EventKind.AllianceDissolved).map((r) => r.a), `seed ${seed}: the alliances the log says dissolved`).toEqual(s.world.alliances.past.map((a) => a.id));
   // PLAN 3.12b: each revolt's row is of what the state showed, and only a founding "broke away".
   const revoltRows = rows.filter((r) => r.kind === EventKind.RevoltSpawned);
   expect(revoltRows.map((r) => `${r.tick} ${r.a} ${r.b} ${r.as ?? 'founded'}`), `seed ${seed}: what the revolts' rows are of`).toEqual(revoltsAs);
