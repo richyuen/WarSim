@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-243 · 2026-10-09 · accepted — The lane graph is derived from the zones; what the grid closes is joined by data (PLAN 4.1b)
+
+- **Context.** SPEC §3.3: "nodes at sea-zone centres, ports and straits; edges carry distance
+  and `crossing`". The zones of ADR-242 are in 19 groups by touch: a cell of the M map is
+  about 20 km, and the Bosporus and the Dardanelles are land on it, as the canals are.
+- **Counted first** (`.cache/laneProbe.ts`): 29 bodies of crossing cells from the 24 straits
+  of `straits.json`; 25 lie in one zone, 3 in two (the Øresund, Bonifacio, Palk), one in
+  water with no zone (Canso), and the Little Belt has none. No strait's cells join two
+  groups. So the crossings give nodes and no new way, and the joins are: the Black Sea to
+  the Sea of Marmara, that to the Aegean, and the Strait of Magellan's inner water to both
+  oceans. Suez, Panama and Kiel join zones of one group and are ways shorter.
+- **Decision.** `buildLaneGraph(grid, zones, passages)`: a node for each zone at its seed
+  and for each strait; an edge for each pair of zones that touch, for each zone of a
+  strait, and for each passage of `data/maps/<map>/passages.json`. An edge is a way over
+  water, cell by cell, with its km; a passage's edge has one jump, of the great circle
+  between its ends.
+- **Why the edges are ways over water and not lines between middles.** The task's test is
+  that no edge crosses land, and a line between two seeds does (round a cape). One search
+  from all the seeds, each in its own zone, gives every cell its km to its seed, and an
+  edge is put together from two of them: 0.37 s for all 930, where a search for each pair
+  would be one for each.
+- **Why a passage is an edge between zones and not a node.** It has no water cell of its
+  own. A fleet in it, or a blockade of it, is a matter of the edge (PLAN 4.2, 4.4).
+- **Why another file than `straits.json`.** A strait there is water a land unit walks over,
+  and paints crossing cells. A passage is water a ship passes where the map has none. The
+  Bosporus is both, in both files.
+- **Not joined:** the Caspian, Lake Maracaibo (no sea-going ship passed its bar in 1938) and
+  the lakes (the Saint Lawrence Seaway is of 1959).
+- **Consequences.** A route goes by the zones' middles and is longer than the sea's own
+  way (the Alboran Sea to the Red Sea 4,941 km against 4,024 by great-circle legs), and
+  its steps are 8-way: PLAN 4.2 has a line for it. The Kiel canal's edge (961 km from seed
+  to seed) is never the shortest beside the 174 km of the two zones that touch, the
+  Skagerrak's zone reaching the German Bight: it is in the data for a finer graph. Exported
+  from `nav/grid.ts` for this: `Heap` and `EARTH_R`.
+- **The pin stays:** nothing in play reads the lanes.
+- **Tests.** `tests/unit/lanes.test.ts`, six.
+
 ### ADR-242 · 2026-10-09 · accepted — Sea zones are a Voronoi over water from seeds in the map's data (PLAN 4.1a)
 
 - **Context.** SPEC §3.3 asked for zones "built as a Voronoi over water seeded by named seas

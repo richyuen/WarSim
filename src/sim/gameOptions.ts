@@ -38,6 +38,7 @@ export function applyGameOptions(world: World, o: GameOptions): void {
     // path stays (PLAN 3.7k): a march does not take a step over the seam that is one no more.
     world.nav = null;
     world.sea = null;
+    world.lanes = null;
     world.frontier = null;
     world.supplyDirty = true;
   }

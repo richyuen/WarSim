@@ -13007,3 +13007,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 4.1b (the lane graph, and the passages the grid closes).
 - **After the commit:** `npm run data -- --check` in full (`.cache/data-check-41a.log`): no
   changes, the seas file among them. The full run and `--seas` write the same seeds.
+
+## 2026-10-09 — PLAN 4.1b: the lane graph, and the passages the grid closes (ADR-243)
+
+- **Start:** the tree clean, `npm run check` nothing to run; `npm run critic:due`: not due.
+- **Counted first** (`.cache/laneProbe.ts`): 29 bodies of crossing cells, 25 in one zone, 3 in
+  two, one in water with no zone, none joining two groups of zones; the Little Belt paints
+  no cell. What a ship passes and the grid closes: the Bosporus, the Dardanelles, both arms
+  of the Strait of Magellan. Suez, Panama and Kiel are land between zones of one group.
+- **Built:** `src/sim/nav/lanes.ts` (`buildLaneGraph`, `laneRoute`, `greatCircleKm`),
+  `laneOf(world)` beside `seaOf`, dropped where the zones are; `data/maps/earth/passages.json`
+  (7, by hand) with its schema, read by the 1938 and the random world. 456 nodes (428 zones,
+  28 straits), 968 edges (930 between zones, 31 of straits, 7 passages), 61,007 cells in all;
+  0.37 s at M (the zones 0.2 s). 16 groups of nodes where the zones had 19: one of 438.
+- **Routes read** (`.cache/laneProbe2.ts`): the Alboran Sea to the Red Sea 4,941 km by the
+  canal, 22,511 km with the passages out; the Black Sea to the Aegean 836 km by the Sea of
+  Marmara; the Caribbean to the Gulf of Panama 893 km, one edge.
+- **One picture looked at** (`.cache/lanes-europe.png`, Europe at 4 px a cell): the edges
+  keep to the water round Jutland, Brittany and Italy; the strait nodes at Gibraltar,
+  Messina, Bonifacio, the Belts, Kerch; the passages at the Turkish straits, Kiel and Suez.
+- **Tests:** `tests/unit/lanes.test.ts`, six. They passed at the first run, so one was made
+  to fail: with the diagonal step let over a corner of land, "edge 0 (0–163): 732265 to
+  734312 cuts a corner of land". The routes are each tested with the passages out as well.
+- **Found, not mended:** a route by the zones' middles is 23 % longer than great-circle legs
+  from the Alboran Sea to the Red Sea (a line under PLAN 4.2); the Kiel canal's edge is
+  never the shortest at this size of zone (961 km against 174).
+- **Not looked at:** the graph at S, L and XL (the tests build it at M and on the toy world);
+  a map import; the lanes drawn in the game (PLAN 4.7); the build's time in the browser.
+- **No rule changed:** nothing in play reads the lanes. The pin stays. **No sweep** (ADR-58).
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.1c (ports and naval bases, each a node of the lane graph).

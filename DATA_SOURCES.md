@@ -16,6 +16,7 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 | Natural Earth 10m `geography_regions_polys` (same tag) | wetland + delta polygons → marsh | Public domain | in use (`npm run data`) | |
 | Wetland outlines (`tools/data/wetlands.json`) | 10 major wetlands missing from NE | Our own work | in use | coarse outlines from public geographic knowledge |
 | Straits list (`data/maps/earth/straits.json`) | 24 walkable crossings | Our own work | in use | shore points from public geography |
+| Passages list (`data/maps/earth/passages.json`) | 7 ways a ship passes that the cell grid closes: straits and canals (PLAN 4.1b) | Our own work | in use | end points from public geography |
 | 1938 economy calibration (`data/scenarios/1938/economy.json`) | GDP and GDP per head per country, 1938 | Our own rounded summary of public long-run economic history (Maddison-style estimates; facts, not copied tables) | in use (PLAN 1.9) | values approximate; pre-war states split over modern units by rough shares |
 | City rules (`data/scenarios/1938/city-rules.json`) | 1938 renames, exclusions, forced includes for NE populated places | Our own work | in use (PLAN 1.5) | `cities.json` is generated from NE populated places (public domain) by `npm run data` |
 | 1938 ownership (`data/scenarios/1938/ownership.json`, `nations.json`) | admin-0/1 → 1938 owner, 25 interwar border polygons, occupation | Our own work | in use (PLAN 1.3) | drawn from public historical knowledge (ADR-8, ADR-16); approximate inside modern admin-1 units |

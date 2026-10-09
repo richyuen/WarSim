@@ -6234,3 +6234,23 @@ Of 4.1 (open in PLAN.md):
     so the pin stays.
     AT: the 1938 map's zone count is within the range written in SPEC §3.3; every water cell
     of a zone reaches its seed inside the zone; the toy world and a map with no seeds have zones.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.1 (open in PLAN.md):
+
+  - [x] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings'
+    components), edges between zones that touch, with distance in km and `crossing`; what the
+    cell grid closes and a ship passes (the Bosporus, Suez, Panama, Kiel) is counted first and
+    then joined by data.
+    AT: Gibraltar to Suez and the Black Sea to the Mediterranean have a route; no edge's cells
+    cross land.

@@ -31,12 +31,7 @@ quick sweep as a smoke test.
   AT: every coastal province with a port connects to the lane graph; zone count within range.
   Split 2026-10-09 (one cause per commit), in this order:
   - [x] 4.1a The sea zones: the seeds of the named seas (`data/maps/earth/seas.json`, made by […]
-  - [ ] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings'
-    components), edges between zones that touch, with distance in km and `crossing`; what the
-    cell grid closes and a ship passes (the Bosporus, Suez, Panama, Kiel) is counted first and
-    then joined by data.
-    AT: Gibraltar to Suez and the Black Sea to the Mediterranean have a route; no edge's cells
-    cross land.
+  - [x] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings' […]
   - [ ] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by
     size, the naval bases by hand), held by the world, each a node of the lane graph.
     AT: every coastal province with a port connects to the lane graph (the task's own).
@@ -45,6 +40,11 @@ quick sweep as a smoke test.
     AT: on seed 99 at day 90 no formation on the march is over the fine mask's water.
 - [ ] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
   AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
+  From PLAN 4.1b (2026-10-09, ADR-243): a route over the lanes goes by the zones' middles and
+  in 8-way steps, and is longer than the sea's own way (the Alboran Sea to the north of the
+  Red Sea 4,941 km, 4,024 by great-circle legs). The time a fleet takes is to be that of the
+  way it sails: straighten the way, or say what "expected" is against. An edge's cells are of
+  the M grid, not of the fine mask.
 - [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
   AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.

@@ -472,6 +472,35 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
     (PLAN 4.1b).
 - **Lane graph**: nodes at sea-zone centres, ports and straits. Edges carry distance and
   `crossing` (AoC-style land-unit-walkable lanes, editable).
+  *As built (PLAN 4.1b, ADR-243; `src/sim/nav/lanes.ts`, `laneOf(world)`):* derived from the
+  zones and the map's passages, as the zones are: not saved, not hashed, dropped where they
+  are. 0.37 s at M. Ports are PLAN 4.1c's.
+  - *Nodes:* one for each zone, at its seed's cell (node `zone - 1`), then one for each
+    strait: a body of crossing cells (4-way) with a cell in a zone, at the middle one of
+    those cells. On the 1938 map at M 456: 428 zones and 28 straits (of 29 bodies; the Strait
+    of Canso's is in water with no zone, and the Little Belt has no crossing cell).
+  - *Edges* (968): between two zones that touch (930, the pairs of the zones' `adj`); from a
+    strait to each zone it has a cell in (31, `crossing`); one for each passage (7). An edge
+    holds its km and its cells, from its lower node's cell to the other's, each a neighbour
+    of the one before, all zoned water.
+  - *The length:* from every seed at once, the distance in km to each cell of its own zone
+    (8-way, `stepKm`; a diagonal step only where both cells beside it are sea, so no corner
+    of land is cut). An edge between two zones is the least of seed to cell, the step, cell
+    to seed over the pairs of cells where they touch, so it changes zone once.
+  - *Passages* (`data/maps/<map>/passages.json`, by hand: id, name, the water at each end):
+    what a ship passes and the cell grid closes or has as land. On the earth: the Bosporus,
+    the Dardanelles, the Suez, Panama and Kiel canals, and the two arms of the Strait of
+    Magellan. An end takes the nearest zoned water within 2 cells (`PASSAGE_SNAP`); a passage
+    with an end that finds none, or with both ends in one zone, is left out (`dropped`). Its
+    edge joins the two zones' nodes: seed to the end, the great circle between the ends
+    (`greatCircleKm`), the other end to its seed; `landAt` is where its cells jump.
+  - *The route* (`laneRoute`): the shortest over the edges, the lower node on a tie. It goes
+    by the zones' middles, so it is longer than the sea's own way: the Alboran Sea to the
+    north of the Red Sea is 4,941 km, 4,024 by great-circle legs (PLAN 4.2 moves ships).
+  - *Joined and not:* 16 groups of nodes where the zones had 19. One of 438 (every sea, the
+    Black Sea and the Sea of Marmara with them, and the Strait of Magellan's inner water);
+    the Caspian with Garabogaz Bay (3); Lake Maracaibo (its bar was not dredged until the
+    1950s); 13 lakes.
 - **Air zone**: a cluster of about 8–20 provinces. Air superiority is tracked per side per zone.
 
 **Sim boot (PLAN 1.9a).** `Sim({scenario: '1938', seed, assets})` builds the world with

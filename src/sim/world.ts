@@ -3,6 +3,7 @@
  * nothing outside this object influences a tick except queued commands.
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
+import { buildLaneGraph, type LaneGraph, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
@@ -404,6 +405,7 @@ class WorldCore implements Stateful {
     w.deployedBefore = null;
     w.nav = null;
     w.sea = null;
+    w.lanes = null;
     w.frontier = null;
     w.dropLandCounts();
     w.terrainVersion++;
@@ -427,6 +429,11 @@ export function navOf(world: World): { grid: NavGrid; graph: ProvinceGraph } {
 /** The sea zones for the world's terrain and its map's seeds (PLAN 4.1a; built once, cached). */
 export function seaOf(world: World): SeaZones {
   return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds));
+}
+
+/** The lane graph over the sea zones and the map's passages (PLAN 4.1b; built once, cached). */
+export function laneOf(world: World): LaneGraph {
+  return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages));
 }
 
 export class World {
@@ -638,6 +645,10 @@ export class World {
   seaSeeds: readonly SeaSeed[] = [];
   /** The sea zones: a derived cache, as `nav` is, and dropped where it is. */
   sea: SeaZones | null = null;
+  /** The map's passages (PLAN 4.1b): static data of the map, as `seaSeeds` is. None on the toy world. */
+  seaPassages: readonly SeaPassage[] = [];
+  /** The lane graph: a derived cache, dropped where `sea` is. */
+  lanes: LaneGraph | null = null;
   commandLog: LoggedCommand[] = [];
   /** Custom nation names from God Mode (PLAN 1.32); state, saved with the core. */
   names = new Map<number, string>();

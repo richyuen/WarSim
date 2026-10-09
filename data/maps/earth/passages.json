@@ -1,0 +1,12 @@
+{
+  "comment": "Water a ship passes that the cell grid closes or has as land (PLAN 4.1b): a and b are [lon, lat] of the water at each end. Written by hand.",
+  "passages": [
+    { "id": "bosporus", "name": "Bosporus", "a": [29.15, 41.35], "b": [28.9, 40.85] },
+    { "id": "dardanelles", "name": "Dardanelles", "a": [27.2, 40.6], "b": [25.9, 40.0] },
+    { "id": "suez", "name": "Suez Canal", "a": [32.35, 31.45], "b": [32.6, 29.6] },
+    { "id": "panama", "name": "Panama Canal", "a": [-79.95, 9.55], "b": [-79.5, 8.75] },
+    { "id": "kiel", "name": "Kiel Canal", "a": [8.6, 54.0], "b": [10.3, 54.6] },
+    { "id": "magellan_east", "name": "Strait of Magellan, First Narrows", "a": [-68.2, -52.45], "b": [-70.576, -52.833] },
+    { "id": "magellan_west", "name": "Strait of Magellan, western arm", "a": [-70.576, -52.833], "b": [-74.9, -52.7] }
+  ]
+}

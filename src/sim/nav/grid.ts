@@ -18,7 +18,7 @@ export const MOVE_COST: readonly Float64Array[] = MOBILITY_KEYS.map((m) =>
 /** Smallest finite cost per mobility (A* heuristic scale; keeps it admissible). */
 export const MIN_COST: readonly number[] = MOVE_COST.map((row) => Math.min(...row.filter((v) => Number.isFinite(v))));
 
-const EARTH_R = 6371.0088;
+export const EARTH_R = 6371.0088;
 
 export interface NavGrid {
   w: number;
@@ -203,7 +203,7 @@ export function octileKm(g: NavGrid, a: number, b: number): number {
  * Typed arrays, reused across searches (PLAN 1.42a: the array-of-numbers heap and its swaps were
  * half of a search).
  */
-class Heap {
+export class Heap {
   private keys = new Float64Array(1024);
   private vals = new Int32Array(1024);
   private seqs = new Float64Array(1024);

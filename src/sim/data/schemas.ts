@@ -244,6 +244,12 @@ export const StraitsFile = z.strictObject({ straits: z.array(StraitDef) });
 export const SeaSeedDef = z.strictObject({ name: z.string().min(1), part: z.number().int().min(0), lonLat });
 export const SeasFile = z.strictObject({ comment: z.string().optional(), seas: z.array(SeaSeedDef) });
 
+// ── passages (data/maps/<id>/passages.json) ──────────────────────────────────
+
+/** Water a ship passes that the cell grid closes or has as land (PLAN 4.1b): `a` and `b` are the water at each end. */
+export const SeaPassageDef = z.strictObject({ id, name: z.string().min(1), a: lonLat, b: lonLat });
+export const PassagesFile = z.strictObject({ comment: z.string().optional(), passages: z.array(SeaPassageDef) });
+
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
 
 export const ScenarioSettings = z.strictObject({
@@ -417,6 +423,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^maps\/[a-z0-9_]+\/map\.json$/, schema: MapMeta },
   { pattern: /^maps\/[a-z0-9_]+\/straits\.json$/, schema: StraitsFile },
   { pattern: /^maps\/[a-z0-9_]+\/seas\.json$/, schema: SeasFile },
+  { pattern: /^maps\/[a-z0-9_]+\/passages\.json$/, schema: PassagesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
   { pattern: /^scenarios\/[a-z0-9_]+\/nations\.json$/, schema: NationsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ownership\.json$/, schema: OwnershipFile },
