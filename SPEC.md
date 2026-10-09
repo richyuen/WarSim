@@ -887,6 +887,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     it need not be open from side to side, and the way by the cells went round it through
     provinces that the corridor did not hold.
     A march whose next cell has become a third nation's ends before it (`MoveRejected`).
+    With part of the step walked (PLAN 3.7l, ADR-172) it turns round where it stands and
+    walks back to the cell behind it: its path is the step read backwards, `MoveRejected`
+    comes in the hour the ground turned and `FormationArrived` when it is back. The walk
+    back is marked (`formations.home` = 2, `HOME_BACK`; a march home is 1, `HOME_MARCH`):
+    it is not barred in its turn, it waits before an enemy's cell as any march, the
+    operational AI leaves it alone as it does a march home, and any order ends it. With
+    none of the step walked the march ends on its cell.
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
   (speed × 0.3 march duty × the template's share of its speed on that ground: the least
   `terrainMods.speed` of its manoeuvre elements, PLAN 3.3b, ADR-138; the route is found by the
@@ -1842,9 +1849,17 @@ is the formation's strength, which the sim recomputes from its elements at each 
   overlay by `MapView`):* where the marker's box has given way to the elements, every formation
   with something in the view has a tag: its nation's flag, its strength, its name ("Infantry
   division 658": the template's name and the formation's id, derived in the view, not state).
-  A tag stands above the part of its formation that is on the screen. Stronger formations are
-  placed first; one that finds no place above, further out or below is left out and counted
-  (`tagsLeft`). It does not stand under the war banners or the bottom bar (PLAN 2.14f2). The
+  A tag stands by the part of its formation that is on the screen: above it, below it, left
+  or right of it, in that order, then a step further out on each side, five rings of places
+  (`TAG_TRIES`). Stronger formations are placed first; one that finds no place is left out
+  and counted (`tagsLeft`). It is tied to its elements, in three passes over those places
+  (`layoutTags`). First a place by the block (the first on each side) that is clear of
+  every other formation's elements and not nearer to the middle of another block than that
+  block's own tag, placed before it (PLAN 3.11f1, ADR-207). Then the nearest place clear of
+  other formations' elements (PLAN 3.7g, ADR-168). With none, any place free of tags. A tag
+  has a thin line in its nation's colour to the middle of its elements in the view when it
+  stands more than `TAG_GAP` + 1 px (5) from their box (ADR-168), and when another placed
+  tag is nearer to that middle than it is (PLAN 3.10c1b, ADR-188). It does not stand under the war banners or the bottom bar (PLAN 2.14f2). The
   tag of the formation whose panel is open is framed and placed before any other (PLAN
   2.14f3). A click on a tag or on a formation opens the formation panel (§9).
 - The map shader blends the detail layers by `z`, and border width is constant in screen px.
@@ -1926,8 +1941,13 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   and then they stand where the tick has them (PLAN 2.7y: put there at once, every marching
   sprite jumped by the rest of its step). A tick that comes while the game is paused (a single
   step) or at full speed has no length: its progress is 1.
-  The tint is the nation's own colour, lightened, in every map mode (PLAN 2.7i): the map's
-  palette carries the mode's colours, the units do not, at any tier.
+  The tint is the nation's own colour in every map mode (PLAN 2.7i): the map's palette
+  carries the mode's colours, the units do not, at any tier. For the stand-in sprite, the
+  elements and the figures (`spriteTint`, `src/render/units/tint.ts`; PLAN 3.11e, ADR-206)
+  a colour whose lightness (HSL) is under 0.42 (`SPRITE_LIGHT`) is made lighter up to it,
+  every channel times one factor, which keeps its hue and saturation; black is a grey of
+  that lightness. Any other colour is drawn as it is (until then every colour was mixed
+  45% toward white, and a dark red and a rose came out two pale reds).
 - Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes). *As built (PLAN
   2.4a):* tracers, muzzle flashes and impacts are drawn with Canvas2D on the overlay; no pools yet.
 
@@ -1958,6 +1978,14 @@ on screen.
   the sim's (`formation {id}`, §2.3), asked for again as ticks advance with the count of the
   first answer; the panel closes when the formation is gone, whether or not another has taken
   its id, and at a load (ADR-115). The formation is marked on the map while the panel is open.
+  A formation in contact has a button beside its status, "To its fight" (PLAN 3.11b,
+  ADR-199): `FormationDetail.fight` is the middle between its block and the block of the
+  nearest enemy it is in contact with (`contactsOf`, the one its block faces), that enemy's
+  id, and how far apart the two blocks' middles stand east-west and north-south. The camera
+  flies there (`MapView.showBattle` with that span): at 20 m/px, or further out, as far as
+  holds both blocks (28 m/px at most where the view is large enough for 20, so that it stays
+  T3; a smaller view, which has a battle at T2 already, as far out as holds the two). No rule of `deployOf` changed for it: a line behind its side's front stands up to a
+  cell from the enemy's block.
 - **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
   treasury, manpower) on the right, toggled by the bottom bar's Statistics button; one banner
@@ -2111,6 +2139,13 @@ on screen.
     `src/worker/historyRows.ts`). No row shows an id (PLAN 3.12a, ADR-208): an alliance has
     its name, alive or dissolved (`Alliances.past`), and its founder's (`Alliance.founder`,
     the row's `of`); a Major Battle the city it began near.
+  - A kind that is more than one thing has a sentence for each (`HistoryRow.as`, told from
+    the log alone, so a game saved before reads the same and no state changed). A
+    `RevoltSpawned` (PLAN 3.12b1, ADR-209): "{a} broke away from {b}" for a nation founded;
+    'revived', "{a} took back land held by {b}", when a has a `NationRevived` in that hour;
+    'joined', "More of {b} rose and joined {a}", when a had a `RevoltSpawned` before and no
+    `NationEliminated` since. A `LandCeded` (ADR-210, §4 "Land handed over"): its own
+    sentence, or 'left' when b died in that hour.
   - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
     (RFC 4180) and JSON export of the filtered rows. The sentence of a row is
     `src/ui/historyText.ts`.

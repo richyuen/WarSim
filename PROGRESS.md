@@ -11673,3 +11673,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   browser in the brief. 3.12Rb to 3.12Rn.
 - **Gate:** `npm run check` (documents: parity).
 - **Next:** PLAN 3.12Rb (SPEC re-read for drift, ADR-168 to ADR-212).
+
+## 2026-10-09 — PLAN 3.12Rb: SPEC re-read, ADR-168 to ADR-212
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Done (documents).** The 45 decisions looked for in SPEC: 34 cited. The passages of §3
+  (who may declare, who joins), §4 (the march home, the partial refresh, the land that goes
+  over) and §9 (the ticker, sound) read beside `war.ts`, `movement.ts`, `supply.ts`,
+  `historyRows.ts`, `Ticker.tsx` and `shared/sound.ts`: they say what the code does. The
+  route, the blocks, the front's allotment, the revolt's area and what a loss leaves were
+  checked by their constants and names, not line by line: all as SPEC has them.
+- **Written in, each from the code:** §4 the walk back from a step barred in its middle
+  (`HOME_BACK`, ADR-172); §8 the tags' three passes and when a tag has a line (ADR-168,
+  188, 207); §8 the sprite's tint (ADR-206: SPEC still said "lightened" of every colour);
+  §9 "To its fight" (ADR-199); §9 the three sentences of a revolt's row (ADR-209).
+- **Left out:** ADR-176, 185, 197 (a demo's seed) and ADR-177 (where the critic's findings
+  went).
+- **Learned:** of the seven decisions that had no word in SPEC, six are of the view or the
+  worker (`tags.ts`, `tint.ts`, the panel, `historyRows.ts`) and one of the rules
+  (ADR-172); the rules' others were written in with their tasks. ADR-168's first part was restated in its addendum: SPEC is
+  written from `layoutTags`, not from the decision's first text.
+- **SPEC describes the code of today:** the partial refresh as it is (3.12Rl) and the
+  march home that waits before an enemy's cell (3.12Rk); their tasks change SPEC with the
+  rule.
+- **Not done:** the AI's allotment (ADR-187 to 193) and the blocks (ADR-200 to 204) were
+  not read line by line beside `operational.ts` and `elements.ts`.
+- **Performance:** nothing measured; no source changed.
+- **Gate:** `npm run check` (documents: parity).
+- **Next:** PLAN 3.12Rc (dead code and refactor debt in the files changed since `033b15a`).

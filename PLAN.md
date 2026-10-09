@@ -5319,10 +5319,32 @@ quick sweep as a smoke test.
       row).
     - The rest (four suspicions): each goes with the part that touches its lines (3.12Rk,
       3.12Rl, 3.12Rh, 3.12Rg). Nothing to BLOCKERS.
-  - [ ] 3.12Rb SPEC re-read for drift: each decision since the last pass (ADR-168 to
+  - [x] 3.12Rb SPEC re-read for drift: each decision since the last pass (ADR-168 to
     ADR-212) looked for in SPEC and checked against the code, not against its ADR alone:
     what 3.8 to 3.11 changed (the route, the supply's partial refresh, the blocks of a
     contact, the tags, the tint, what a loss leaves), the history rows, the ticker, sound.
+    Done 2026-10-09. Of the 45 decisions, 34 were cited in SPEC. Read beside the code and
+    saying what it does: §3 (who may declare and who joins: `war.ts` `bond`, `declareWar`,
+    `realmsAtWar`), §4 (the march home and the repatriation: `movement.ts`; the partial
+    refresh: `supply.ts`, as it is, with the defect of 3.12Rl still in it; the history's
+    two sentences of `LandCeded`: `historyRows.ts`), §9 (the ticker, sound:
+    `historyRows.ts`, `Ticker.tsx`, `shared/sound.ts`). By their constants and names only
+    (each as SPEC has it): the route (`SHUT_PRICE`, the search's weights at 120 and 300
+    cells), the blocks (`DEPLOY_LINES`, `DEPLOY_SCATTER`, `DEPLOY_TURN`), the front's
+    allotment (60 cells, 15%, `MARCH_DAYS`, `SPARE_RANGES`, `POCKET_CELLS`), the revolt's
+    area, what a loss leaves (`MAX_HULLS`, `MAX_FALLEN`), `Alliances.past`,
+    `SimClient.onLoad`. Written in, each from the code:
+    - §4: a march barred in the middle of a step walks back (`HOME_BACK`, ADR-172); SPEC
+      had only the march that ends before the cell.
+    - §8: the tags' three passes and the two cases of a line (ADR-168, ADR-188, ADR-207);
+      SPEC had "above, further out or below" of PLAN 2.14a.
+    - §8: the sprite's tint (`spriteTint`, ADR-206); SPEC said "lightened" of every colour,
+      which was the mix toward white that 3.11e took out.
+    - §9: the formation panel's "To its fight" and `FormationDetail.fight` (ADR-199).
+    - §9: the three sentences of a `RevoltSpawned` row (`HistoryRow.as`, ADR-209).
+    - *Left out:* ADR-176, 185 and 197 (a demo's seed), ADR-177 (where the critic's
+      findings went): none is of what the game does.
+    - Nothing found where the code and its decision part.
   - [ ] 3.12Rc Dead code and refactor debt in the files changed since `033b15a`: exports
     nothing uses, i18n keys without a use, TODO and FIXME; whether `Hud` should own the
     ticker and the sound, which read the same rows; the worker's `world` number, which is in
