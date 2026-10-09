@@ -323,6 +323,22 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     - *What a red gate of this kind means:* nothing about the tree. The rule stands: no commit
       on red, no limit or worker count changed for it. Run again when the unit stage of a gate
       reads 45 s or less; if it reads 90, the run will fail and the sampler has the reason.
+    - *2026-10-09, the sampler's first slow gate* (PLAN 3.12Ro, 07:59 to 08:09, green; `.cache/
+      gate-ro.log`, `.cache/gate-ro-sampler.log`, 40 samples). The unit stage 283.5 s and the
+      ten-year stage 300.6 s, with "Timeout terminating forks worker" for five files, as in the
+      gate of 3.12Rn. The clock at 127 to 150 % throughout: not held down. No process but the
+      gate's `node` over one core (the user's Solitaire at up to 1.0). `node` on 4.8 cores on
+      average and 7.9 at most, of 24. So it is the third picture: neither, with the cores
+      not full. And the sentence above is no prediction: this gate read 283 s and was green.
+    - *The sampler is a file now:* `.cache/sampler.ps1` (not in the repository; it is in
+      PROGRESS.md of 2026-10-09, PLAN 3.12Ro, if `.cache` is gone). Beside a gate:
+      `pwsh -NoProfile -File .cache/sampler.ps1 -Out .cache/<gate>-sampler.log -Stop .cache/<gate>.stop`
+      in the background, and `touch .cache/<gate>.stop` when the gate is over.
+    - *Next, not done:* the load by core during a gate (`Get-Counter '\Processor
+      Information(*)\% Processor Time'`) and the affinity of the gate's processes
+      (`(Get-Process node).ProcessorAffinity`). The guess to test: vitest's forks run on the
+      efficiency cores, where the same sim code reads up to 1.65 times slower (CLAUDE.md, the
+      `--affinity` of `npm run sim`). A guess: nothing measured says so yet.
 - e2e, once (2026-10-04, the second gate run of PLAN 2.8c2): `markers1938` waited 60 s for the
   page and it did not come. Its trace has one console error: "Failed to load resource:
   net::ERR_NO_BUFFER_SPACE". The page loaded nothing of the game.

@@ -12400,3 +12400,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   with its enemy just beyond 3 cells on a diagonal (ADR-226, "Not done").
 - **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87); nothing drawn changes, no
   spec run by hand.
+- **Two causes in one commit** (PROMPT asks one): the retreat's half has no working state
+  of its own. Without the order's half the formation ordered again is barred again in its
+  first hour (the second test: 23 refusals), so the two were gated together.
+- **The tick's cost: not measured.** The hourly work added is `fallBack` for a formation
+  both on the retreat and on a walk back (63 formation-hours in 14,400 hours of seed 99).
+  `order` now makes its passage before the target is snapped, not after: one passage more
+  where an order is refused for its target.
+- **Gate:** `npm run check` green on the first run (`.cache/gate-ro.log`), slow again: the
+  unit stage 283.5 s, the ten-year stage 300.6 s. The sampler ran beside it (BLOCKERS.md):
+  the clock at 127 to 150 %, `node` on 4.8 cores of 24 on average, nothing else over one.
+  Neither the clock nor another program. The load by core is the next thing to look at.
+- **The sampler** (`.cache/sampler.ps1`; here in full, `.cache` is not in the repository):
+  ```powershell
+  param([string]$Out, [string]$Stop)
+  $cores = [Environment]::ProcessorCount
+  while (-not (Test-Path $Stop)) {
+    $a = Get-Process | Select-Object Id, ProcessName, CPU
+    Start-Sleep -Seconds 14
+    $b = Get-Process | Select-Object Id, ProcessName, CPU
+    $perf = (Get-Counter '\Processor Information(_Total)\% Processor Performance' -ErrorAction SilentlyContinue).CounterSamples[0].CookedValue
+    $before = @{}
+    foreach ($p in $a) { $before[$p.Id] = $p.CPU }
+    $top = $b | Where-Object { $before.ContainsKey($_.Id) -and $_.CPU } | ForEach-Object { [pscustomobject]@{ n = $_.ProcessName; d = ($_.CPU - $before[$_.Id]) / 14 } } | Group-Object n | ForEach-Object { [pscustomobject]@{ n = $_.Name; d = ($_.Group | Measure-Object d -Sum).Sum } } | Sort-Object d -Descending | Select-Object -First 5
+    Add-Content -Path $Out -Value ('{0:HH:mm:ss} clock {1:N0}% of {2} cores: {3}' -f (Get-Date), $perf, $cores, (($top | ForEach-Object { '{0} {1:N1}' -f $_.n, $_.d }) -join ', '))
+  }
+  ```
+- **Next:** PLAN 3.12Rp (the supply flood at the edges of a map that does not loop).
