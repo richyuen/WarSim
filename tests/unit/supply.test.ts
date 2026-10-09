@@ -72,11 +72,13 @@ function encircle(world: World, centre: number, tag: string, r0: number, r1: num
 
 /**
  * The network rule, cell by cell (the flood before PLAN 1.42a): blocs in ascending order, each
- * spreading 4-connected (wrapping x) from its sources over cells it holds and free crossing lanes.
+ * spreading 4-connected (wrapping x on a map that loops) from its sources over cells it holds
+ * and free crossing lanes.
  * `layer` is the network so far; with `only`, just those blocs are cleared and flooded again.
  */
 function referenceNetwork(world: World, layer: Uint16Array, only?: Set<number>): Uint16Array {
   const { controller, owner, terrain } = world.cells;
+  const wrap = world.settings.loopingMap;
   const out = only ? layer.map((b) => (only.has(b) ? 0 : b)) : new Uint16Array(layer.length);
   const sources = new Map<number, number[]>();
   world.cities.forEach((id) => {
@@ -94,7 +96,7 @@ function referenceNetwork(world: World, layer: Uint16Array, only?: Set<number>):
       const c = queue[head]!;
       const x = c % W;
       const y = (c - x) / W;
-      for (const n of [y > 0 ? c - W : -1, y < H - 1 ? c + W : -1, x > 0 ? c - 1 : c + W - 1, x < W - 1 ? c + 1 : c - W + 1]) {
+      for (const n of [y > 0 ? c - W : -1, y < H - 1 ? c + W : -1, x > 0 ? c - 1 : wrap ? c + W - 1 : -1, x < W - 1 ? c + 1 : wrap ? c - W + 1 : -1]) {
         if (n < 0 || out[n] !== 0) continue;
         const ctl = controller[n]!;
         if (ctl !== 0 ? blocOf(world, ctl) !== b : terrain[n] !== Terrain.Crossing) continue;
@@ -495,6 +497,7 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
   /** The network by the rule, cell by cell: the lowest bloc first, from its sources. */
   function byRule(world: World): Uint16Array {
     const { w, h, controller, owner, terrain } = world.cells;
+    const wrap = world.settings.loopingMap;
     const out = new Uint16Array(w * h);
     const sources = new Map<number, number[]>();
     world.cities.forEach((id) => {
@@ -511,7 +514,7 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
         const c = queue[head]!;
         const x = c % w;
         const y = (c - x) / w;
-        for (const n of [y > 0 ? c - w : -1, y < h - 1 ? c + w : -1, x > 0 ? c - 1 : c + w - 1, x < w - 1 ? c + 1 : c - w + 1]) {
+        for (const n of [y > 0 ? c - w : -1, y < h - 1 ? c + w : -1, x > 0 ? c - 1 : wrap ? c + w - 1 : -1, x < w - 1 ? c + 1 : wrap ? c - w + 1 : -1]) {
           if (n < 0 || out[n] !== 0) continue;
           const ctl = controller[n]!;
           if (ctl !== 0 ? blocOf(world, ctl) !== b : terrain[n] !== Terrain.Crossing) continue;
@@ -728,5 +731,76 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
     expect(stats.flooded).toBeGreaterThan(500);
     expect(stats.cut).toBeGreaterThan(200);
     expect(stats.relieved).toBeGreaterThan(150);
+  });
+
+  // PLAN 3.12Rp. The flood, the gain test and the ring joined column 0 and column w − 1 whatever
+  // `settings.loopingMap` said: on a map with hard edges a bloc's network went over the seam to
+  // land no march of it reaches that way.
+  describe('the network keeps to the map’s edges where the map does not loop (PLAN 3.12Rp)', () => {
+    const [w, h] = [60, 20];
+    const at = (x: number, y: number): number => y * w + x;
+    /**
+     * The first nation holds the stripe at each edge, the second the one between. The first has
+     * a city in the west, and one in the east when `eastCity`.
+     */
+    function seam(loop: boolean, eastCity: boolean): World {
+      const world = made(w, h, 3, 0, false);
+      const { controller, owner } = world.cells;
+      for (let i = 0; i < w * h; i++) if (controller[i] === 3) controller[i] = owner[i] = 1;
+      for (const c of [at(5, 2), at(30, 10), ...(eastCity ? [at(50, 10)] : [])]) world.cities.cols.cell[world.cities.create()] = c;
+      world.settings.loopingMap = loop;
+      world.supplyDirty = true;
+      refreshSupplyNetwork(world);
+      return world;
+    }
+    const east = (world: World): number => world.cells.supply.filter((b, c) => b === 1 && c % w >= 40).length;
+
+    it('a bloc with land at both edges and a city at one has no network at the other; on a map that loops it has', () => {
+      const hard = seam(false, false);
+      expect(east(hard)).toBe(0);
+      expect(hard.cells.supply[at(0, 10)]).toBe(1);
+      expect(apart(hard.cells.supply, byRule(hard))).toBe(0);
+      const round = seam(true, false);
+      expect(east(round)).toBe(20 * h);
+      expect(apart(round.cells.supply, byRule(round))).toBe(0);
+      // The option changed in a game: the full refresh it asks for gives the other network.
+      hard.settings.loopingMap = true;
+      hard.supplyDirty = true;
+      refreshSupplyNetwork(hard);
+      expect(east(hard)).toBe(20 * h);
+    });
+
+    it('a cell won at the far edge is not beside the network over the seam', () => {
+      for (const loop of [false, true]) {
+        const world = seam(loop, false);
+        world.setController(at(w - 1, 10), 2);
+        refreshSupplyNetwork(world);
+        expect(apart(world.cells.supply, byRule(world))).toBe(0);
+        world.setController(at(w - 1, 10), 1);
+        refreshSupplyNetwork(world);
+        expect(refreshStats.full).toBe(0);
+        expect(world.cells.supply[at(w - 1, 10)]).toBe(loop ? 1 : 0);
+        expect(east(world)).toBe(loop ? 20 * h : 0);
+        expect(apart(world.cells.supply, byRule(world))).toBe(0);
+      }
+    });
+
+    it('a cell lost at the edge cuts the network there, whatever the network over the seam holds', () => {
+      for (const loop of [false, true]) {
+        // Both edges are fed, each by its own city. The second nation takes the second column
+        // from row 9 down: the first column below is joined to the rest by row 9 alone.
+        const world = seam(loop, true);
+        expect(east(world)).toBe(20 * h);
+        for (let y = 9; y < h; y++) world.setController(at(1, y), 2);
+        refreshSupplyNetwork(world);
+        expect(apart(world.cells.supply, byRule(world))).toBe(0);
+        expect(world.cells.supply[at(0, 15)]).toBe(1);
+        // And the cell of the first column in row 10: what is below is cut off, but for the seam.
+        world.setController(at(0, 10), 2);
+        refreshSupplyNetwork(world);
+        expect(world.cells.supply[at(0, 15)]).toBe(loop ? 1 : 0);
+        expect(apart(world.cells.supply, byRule(world))).toBe(0);
+      }
+    });
   });
 });

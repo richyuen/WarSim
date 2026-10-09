@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-227 · 2026-10-09 · accepted — The supply network keeps to the edges of a map that does not loop (PLAN 3.12Rp)
+
+- **Context.** The supply flood joined column 0 and column w − 1 whatever
+  `settings.loopingMap` said (found by reading, with PLAN 3.12Rl). The route grid
+  (`makeNavGrid`), the front (`frontierOf`, `neighbours4`) and the AI's fronts ask the
+  setting. On a map with hard edges (the `looping=0` option of a new game; a scenario whose
+  map does not wrap) a bloc with land at both edges and a city at one fed its formations at
+  the other, over a seam no march of it crosses.
+- **Decision.** Three places of `refreshSupplyNetwork` ask the setting, read once a refresh:
+  - the flood's two seeds at a row's ends;
+  - `beside`, which says whether a cell won lies by its bloc's network (a partial refresh);
+  - `ringHolds`, which says whether the network hangs together without a cell lost: beyond
+    an edge there is no cell, as above the first row and below the last.
+  On a map that loops nothing changes. `applyGameOptions` already asks a full refresh when
+  the option changes.
+- **Each half has its own failing test** (`supply.test.ts`, three; a made map of 60 × 20,
+  one nation at both edges). With the flood's half alone the two tests of the partial
+  refresh stayed red: a cell won back at the far edge was marked from the network over the
+  seam (the test's first check; the stripe behind it was not counted in that state), and a
+  cell lost in the first column left the first column below it marked, since the ring was
+  closed by the last column's network.
+- **The rule of the tests** (`referenceNetwork`, `byRule`) asks the setting too. It wrapped
+  as the flood did, so the two agreed in the defect.
+- **The pin stays** (2104f897): 1938 loops.
+- **Not done** (PLAN 3.12Rs): other code of the sim joins the two edges without asking.
+  Seen by a search, not run: the reach of `supplySystem` (a formation on a cell not its
+  side's is fed by a network within 2 cells, over the seam); the pressure of
+  `territorySystem` (a formation's 2 cells of pressure, over the seam; PLAN 3.12Rp said
+  the territory rule asks the setting, which is so of its front and not of its pressure);
+  `wrapDx` and the distance of `elements.ts`; the distances of `operational.ts` (lines 212,
+  392, 402, 641); the place of a battle in `warBattle.ts`. Each is a cause of its own.
+
 ### ADR-226 · 2026-10-09 · accepted — A retreat barred in the middle of a step is ordered again from its enemy; an order in the middle of a step does not begin at an end closed to the formation (PLAN 3.12Ro)
 
 - **Context.** A march whose next cell has turned a third nation's in the middle of the step

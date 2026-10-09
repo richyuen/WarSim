@@ -3,7 +3,8 @@
  *
  * Network (every SUPPLY_REFRESH_HOURS): a supply bloc is a nation plus its puppets (an overlord's
  * bloc id is its own id; a puppet uses its overlord's). Sources are cities the bloc both owns and
- * controls. A multi-source flood (4-connected) spreads over cells the bloc controls and over
+ * controls. A multi-source flood (4-connected; over the east and west edges only on a map that
+ * loops, `settings.loopingMap`, PLAN 3.12Rp) spreads over cells the bloc controls and over
  * unclaimed crossing lanes; `cells.supply` stores the bloc id that reached each cell (blocs in
  * ascending id order; a lane reached first by one bloc is not shared in v1). The layer is state,
  * so a load between refreshes behaves exactly like the original run. A refresh is skipped when
@@ -93,22 +94,23 @@ export const refreshStats = { written: 0, flooded: 0, mended: 0, full: 0 };
  * joined in the ring may still be joined a longer way round: that is answered no, and the bloc is
  * flooded. So is a crossing lane in the cell or the eight (the lanes are where the blocs meet).
  */
-function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, c: number, m: number): boolean {
+function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, c: number, m: number): boolean {
   if (terrain[c] === Terrain.Crossing) return false;
   const x = c % w;
   const row = c - x;
-  const xl = x > 0 ? x - 1 : w - 1;
-  const xr = x < w - 1 ? x + 1 : 0;
+  // Beyond an edge of a map that does not loop there is no cell, as above the first row.
+  const xl = x > 0 ? x - 1 : wrap ? w - 1 : -1;
+  const xr = x < w - 1 ? x + 1 : wrap ? 0 : -1;
   const up = row > 0 ? row - w : -1;
   const dn = row < w * (h - 1) ? row + w : -1;
   ring[0] = up < 0 ? -1 : up + x;
-  ring[1] = up < 0 ? -1 : up + xr;
-  ring[2] = row + xr;
-  ring[3] = dn < 0 ? -1 : dn + xr;
+  ring[1] = up < 0 || xr < 0 ? -1 : up + xr;
+  ring[2] = xr < 0 ? -1 : row + xr;
+  ring[3] = dn < 0 || xr < 0 ? -1 : dn + xr;
   ring[4] = dn < 0 ? -1 : dn + x;
-  ring[5] = dn < 0 ? -1 : dn + xl;
-  ring[6] = row + xl;
-  ring[7] = up < 0 ? -1 : up + xl;
+  ring[5] = dn < 0 || xl < 0 ? -1 : dn + xl;
+  ring[6] = xl < 0 ? -1 : row + xl;
+  ring[7] = up < 0 || xl < 0 ? -1 : up + xl;
   // A place in the ring that is not the network's, to count the runs from.
   let gap = -1;
   for (let i = 0; i < 8; i++) {
@@ -174,6 +176,7 @@ export function refreshSupplyNetwork(world: World): void {
 
 function refresh(world: World): void {
   const { w, h, controller, owner, terrain, supply } = world.cells;
+  const wrap = world.settings.loopingMap;
   const blocOfNation = new Uint16Array(world.nations.highWater + 1);
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
   const full = world.supplyDirty;
@@ -235,7 +238,7 @@ function refresh(world: World): void {
       if (ctl !== 0 && blocOfNation[ctl] === m) continue;
       supply[c] = 0;
       cleared++;
-      if (m < only.length && only[m] !== 1 && !ringHolds(supply, terrain, w, h, c, m)) only[m] = 1;
+      if (m < only.length && only[m] !== 1 && !ringHolds(supply, terrain, w, h, wrap, c, m)) only[m] = 1;
     }
     // The blocs flooded whole are cleared, all of them before any flood. A span may hold cells
     // that have left the network since it was filled, and some of them bear another mark by now.
@@ -312,7 +315,10 @@ function refresh(world: World): void {
       for (const c of mend) {
         const x = c % w;
         const beside =
-          supply[x > 0 ? c - 1 : c + w - 1] === b || supply[x < w - 1 ? c + 1 : c - w + 1] === b || (c >= w && supply[c - w] === b) || (c < w * (h - 1) && supply[c + w] === b);
+          (x > 0 ? supply[c - 1] === b : wrap && supply[c + w - 1] === b) ||
+          (x < w - 1 ? supply[c + 1] === b : wrap && supply[c - w + 1] === b) ||
+          (c >= w && supply[c - w] === b) ||
+          (c < w * (h - 1) && supply[c + w] === b);
         if (beside) seeds.push(c);
       }
       if (seeds.length === 0) continue;
@@ -340,8 +346,8 @@ function refresh(world: World): void {
       spans[n++] = l;
       spans[n++] = r;
       // East–west wrap, then one seed per run of open cells in the rows above and below.
-      if (l === row && open(rowEnd - 1)) seeds.push(rowEnd - 1);
-      if (r === rowEnd && open(row)) seeds.push(row);
+      if (wrap && l === row && open(rowEnd - 1)) seeds.push(rowEnd - 1);
+      if (wrap && r === rowEnd && open(row)) seeds.push(row);
       for (let d = -w; d <= w; d += 2 * w) {
         if (d < 0 ? row === 0 : rowEnd === w * h) continue;
         let inRun = false;

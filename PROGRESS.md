@@ -12427,3 +12427,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   }
   ```
 - **Next:** PLAN 3.12Rp (the supply flood at the edges of a map that does not loop).
+
+## 2026-10-09 — PLAN 3.12Rp: the supply network keeps to the edges of a map that does not loop
+
+- **The defect** (read with PLAN 3.12Rl, not run until now): the flood's seeds at a row's
+  ends, the gain test (`beside`) and `ringHolds` joined column 0 and column w − 1 whatever
+  `settings.loopingMap` said. With `looping=0` a bloc with land at both edges and a city at
+  one had its network at the other.
+- **The mend** (ADR-227): the three ask the setting, read once a refresh (`supply.ts`).
+  Nothing changes on a map that loops.
+- **Tests:** `supply.test.ts`, three (the file has 20), on a made map of 60 × 20 with one
+  nation at both edges, each run with the map looping and not. All three red on the code
+  before. With the flood's half alone the first was green and the other two red (a cell
+  won back at the far edge marked from over the seam; a cell lost in the first column
+  leaving the column below it marked); with `beside` mended too, the third alone.
+  `referenceNetwork` and `byRule` ask the setting: they wrapped as the flood did.
+- **The pin:** stays at 2104f897 (`baselineHash.test.ts` run before the gate).
+- **By hand:** `tests/e2e/gameOptions1938.spec.ts` (the one spec that starts a game with
+  `looping=0`), 1 test green in 21 s. Nothing drawn changes.
+- **Found with it, not mended** (PLAN 3.12Rs, new): other code of the sim joins the edges
+  without asking. Seen by a search, none run: the 2-cell reach of `supplySystem`, the
+  pressure of `territorySystem` (PLAN 3.12Rp's text said the territory rule asks; its
+  front does, its pressure does not), `wrapDx` in `elements.ts`, four distances in
+  `operational.ts`, the place of a battle in `warBattle.ts`.
+- **The tick's cost: not measured.** One boolean read a refresh and a test of it at a
+  row's ends.
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87).
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rp.log`): 1,070 unit
+  tests in 133 files, the ten-year stage 17 tests in 12 files, build, parity 47.5%.
+- **Next:** PLAN 3.12Rq (a formation is not spawned at sea).

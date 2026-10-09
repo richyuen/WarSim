@@ -5558,7 +5558,7 @@ quick sweep as a smoke test.
       over them and take the pointer. The History panel (84 rows), the chart with its
       lines and the editor at 1,100 x 600: in their boxes, above the bar.
       `settings1938.spec.ts`, a second test, failed first on each cause.
-  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rr, with 3.12Rj's suite: what is left of it needs that log;
+  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rs, with 3.12Rj's suite: what is left of it needs that log;
     the parts below it come first**, 2026-10-09) The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
@@ -5715,7 +5715,7 @@ quick sweep as a smoke test.
     half alone formation 630 passed its enemy at 0.20 cells, was 0.75 off when the new day
     ended, fought 11 hours (2,314 men to 1,629) and got away at a second retreat; on the
     final code the game of seed 77 is another before that hour and the case is not in it.
-  - [ ] 3.12Rp **The supply flood keeps to the map's edges where the map does not loop**
+  - [x] 3.12Rp **The supply flood keeps to the map's edges where the map does not loop**
     (found with 3.12Rl, the ninth read's suspicion; read, not run). The flood
     (`supply.ts`, the two seeds at a row's ends), the gain test (`beside`) and `ringHolds`
     join column 0 and column w − 1 whatever `settings.loopingMap` says; the territory rule
@@ -5727,6 +5727,13 @@ quick sweep as a smoke test.
     AT: a unit test that fails first: on a made map with `loopingMap` off, a bloc with land
     at both edges and a city at one has no network at the other; with it on, it has; the
     mended network equals the rule's in both.
+    **Done 2026-10-09 (ADR-227).** The flood's seeds at a row's ends, `beside` and
+    `ringHolds` ask `settings.loopingMap`. Three tests in `supply.test.ts` on a made map of
+    60 × 20, red first, and each half red on its own: with the flood's half alone a cell won
+    back at the far edge was marked from the network over the seam, and a cell lost in the
+    first column left the first column below it marked. `referenceNetwork` and `byRule` ask the setting too. The
+    pin stays (2104f897). The territory rule asks the setting for its front and not for its
+    pressure: PLAN 3.12Rs.
   - [ ] 3.12Rq **A formation is not spawned at sea** (found with 3.12Rm; read, not run).
     `spawnFormation` (`tick.ts`) takes `standPoint` of the place given: in a cell that is
     all water that is the cell's middle, and the formation stands where no route begins. No
@@ -5756,7 +5763,20 @@ quick sweep as a smoke test.
     reason. The pin may move.
     AT: a unit test that fails first; in ten years of the sweep seeds no war is declared
     and gone in one hour (`aiSweep` counts them: 0, 2 and 0 today).
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rr: a line under PLAN 1.42 for the land that rises
+  - [ ] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found
+    with 3.12Rp by a search; read, not run). These wrap whatever `settings.loopingMap`
+    says: the reach of `supplySystem` (`supply.ts`, `(cx + dx + w) % w`: a formation on a
+    cell not its side's is fed by a network within 2 cells over the seam); the pressure of
+    `territorySystem` (`territory.ts`, the same expression); `wrapDx` and the distance
+    beside it in `elements.ts`; the distances of `operational.ts` (lines 212, 392, 402,
+    641); the place of a battle in `warBattle.ts`. The data and editor code that wraps a
+    brush or a build (`oob.ts`, `ownership.ts`, `provinces.ts`, `editor.ts`,
+    `scenarioEdit.ts`) is looked at and left or mended with its reason. One cause per
+    commit where they are apart. 1938 loops: the pin stays.
+    AT: a unit test for each place that fails first, on a made map with `loopingMap` off:
+    a formation at one edge is not fed from, presses on no cell of, fires at nothing at
+    and is sent to no front at the other edge.
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rs: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
     an earlier part broke fixed here; 3.12R ticked.
