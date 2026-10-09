@@ -141,7 +141,13 @@ quick sweep as a smoke test.
         callers found and PLAN did not name (a march home's cell, `spawnPoint`, a founded
         nation's field capital, the neighbour a collapsed nation's land goes to). The
         world's build wraps, as its map does. Six tests, red first; the pin stays.
-      - [ ] 3.12Rse2 The brushes: the God brush of control (`paintControl`, `tick.ts`), the
+      - [x] 3.12Rse2 *Done 2026-10-09 (ADR-239): the page does send such an x (a map with
+        edges has a margin at each side at the least zoom; a drag sends it unfolded, a click
+        was folded by `cellAt`), so all of it was mended: `brushCells` and `lineCells` take
+        `wrap`, the bucket, `paintControl` and `spawnCity` ask the setting, and the page's
+        `cellAt` and `nationAt` give no cell beside the map (`cellOfPoint`). Five tests,
+        red first, and the looping-off e2e reads the view's row.*
+        The brushes: the God brush of control (`paintControl`, `tick.ts`), the
         editor's brush, line and bucket (`editor.ts`, `brushCells`, `bucketCells`), the
         cell of a placed city (`scenarioEdit.ts:24`). First what the page sends: whether a
         pointer's x is ever outside `[0, w)` on a map that does not loop (`MapView`); if

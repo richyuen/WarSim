@@ -36,10 +36,10 @@ describe('paintControl along a segment (PLAN 1.44b)', () => {
     run(s, { kind: 'paintControl', nation: GER, x: wx, y: wy, r: 2, x2, y2 });
     const { controller, terrain } = s.world.cells;
     // The cells under the segment itself (the editor's line of radius 0), and the brush around them.
-    const under = lineCells(W, H, wx, wy, x2, y2, 0);
+    const under = lineCells(W, H, wx, wy, x2, y2, 0, true);
     expect(under.length).toBeGreaterThan(30);
     for (const c of under) expect(controller[c], `cell ${c}`).toBe(GER);
-    for (const c of lineCells(W, H, wx, wy, x2, y2, 2)) if (isLand(terrain[c]!)) expect(controller[c], `cell ${c}`).toBe(GER);
+    for (const c of lineCells(W, H, wx, wy, x2, y2, 2, true)) if (isLand(terrain[c]!)) expect(controller[c], `cell ${c}`).toBe(GER);
     expect(xxhash32View(s.world.cells.owner)).toBe(owners);
   });
 

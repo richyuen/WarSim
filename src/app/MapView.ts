@@ -34,7 +34,7 @@ import { t, type MessageKey } from '../ui/i18n';
 import { Frame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
-import { screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
@@ -231,7 +231,8 @@ export class MapView {
     this.controlGrid = new Uint16Array(geo.w * geo.h);
     // A paint tool takes the primary button (PLAN 1.44): the press starts a stroke that follows
     // the pointer from cell to cell until the release, and the camera leaves that button alone.
-    // World x is not wrapped here, so a stroke crosses the map's seam.
+    // World x is not wrapped here, so a stroke crosses the seam of a map that loops; beyond an
+    // edge of one that does not, the sim paints nothing (PLAN 3.12Rse2).
     this.controller.leftPans = () => !this.paint?.active();
     const worldAt = (e: PointerEvent): [number, number] => {
       const r = canvas.getBoundingClientRect();
@@ -1543,12 +1544,9 @@ export class MapView {
     ctx.restore();
   }
 
-  /** The cell under a CSS-px point (x wrapped), or null off the map. */
+  /** The cell under a CSS-px point (x wrapped on a map that loops), or null off the map. */
   cellAt(sx: number, sy: number): [number, number] | null {
-    const [wx, wy] = screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight);
-    const y = Math.floor(wy);
-    if (y < 0 || y >= this.geo.h) return null;
-    return [((Math.floor(wx) % this.geo.w) + this.geo.w) % this.geo.w, y];
+    return cellOfPoint(this.geo, ...screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight));
   }
 
   /** Admin-1 province of a cell (0 = none or not yet known). */
@@ -1557,11 +1555,8 @@ export class MapView {
   }
 
   nationAt(sx: number, sy: number): number {
-    const [wx, wy] = screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight);
-    const y = Math.floor(wy);
-    if (y < 0 || y >= this.geo.h) return 0;
-    const x = ((Math.floor(wx) % this.geo.w) + this.geo.w) % this.geo.w;
-    return this.controlGrid[y * this.geo.w + x] ?? 0;
+    const cell = this.cellAt(sx, sy);
+    return cell ? (this.controlGrid[cell[1] * this.geo.w + cell[0]] ?? 0) : 0;
   }
 
   /**

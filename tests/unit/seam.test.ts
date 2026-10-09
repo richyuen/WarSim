@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest';
+import { cellOfPoint, normalize, screenToWorld } from '../../src/render/camera';
+import type { Command } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
 import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER, operationalAi } from '../../src/sim/ai/operational';
 import { nearestCellWhere } from '../../src/sim/data/ownership';
-import { importLayer } from '../../src/sim/editor';
+import { brushCells, bucketCells, importLayer, lineCells } from '../../src/sim/editor';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { spawnCity } from '../../src/sim/scenarioEdit';
 import { Sim } from '../../src/sim/sim';
 import { capitalsSystem } from '../../src/sim/systems/capitals';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
 import { cellDist, destroyFormation } from '../../src/sim/systems/elements';
 import { addCorridor, inCorridor } from '../../src/sim/systems/majorBattles';
+import { applyPendingCommands } from '../../src/sim/tick';
 import { TARGET_SNAP_CELLS, snapTarget } from '../../src/sim/systems/movement';
 import { spawnPoint } from '../../src/sim/systems/production';
 import { RETREAT_CELLS, RETREAT_HOURS, RETREAT_ORG, RETREAT_REACH, RETREAT_RETRY_HOURS, RETREAT_SNAP, retreatSystem } from '../../src/sim/systems/retreat';
@@ -359,6 +363,88 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
         if (loop) expect(x).toBeGreaterThanOrEqual(W - Math.ceil(RETREAT_CELLS) - RETREAT_SNAP);
         else expect(x).toBeLessThanOrEqual(RETREAT_REACH);
       }
+    });
+  });
+
+  describe('the brushes (3.12Rse2)', () => {
+    /** Applies `cmd` now, as the tick's first step does. */
+    function command(world: World, cmd: Command): void {
+      world.enqueue(cmd);
+      applyPendingCommands(world);
+    }
+
+    it('the brush and the line paint no cell over an edge of a map that does not loop; on a map that loops they do', () => {
+      for (const loop of [false, true]) {
+        // The radius over an edge.
+        const disc = brushCells(W, H, 1.5, Y + 0.5, 3, loop);
+        expect(disc.includes(Y * W + W - 1)).toBe(loop);
+        expect(disc.includes(Y * W + W - 2)).toBe(loop);
+        expect(disc.includes(Y * W)).toBe(true);
+        expect(disc.length).toBe(loop ? 29 : 23);
+        expect(brushCells(W, H, W - 1.5, Y + 0.5, 2, loop).includes(Y * W)).toBe(loop);
+        // A point beyond an edge (a pointer in the margin beside the map).
+        expect(brushCells(W, H, -0.5, Y + 0.5, 0, loop)).toEqual(loop ? [Y * W + W - 1] : []);
+        expect(brushCells(W, H, W + 0.5, Y + 0.5, 0, loop)).toEqual(loop ? [Y * W] : []);
+        // A line drawn over an edge ends at it.
+        expect(lineCells(W, H, W - 2.5, Y + 0.5, W + 1.5, Y + 0.5, 0, loop)).toEqual(loop ? [Y * W, Y * W + 1, Y * W + W - 3, Y * W + W - 2, Y * W + W - 1] : [Y * W + W - 3, Y * W + W - 2, Y * W + W - 1]);
+      }
+    });
+
+    it('the bucket fills nothing over an edge, and nothing from a point beyond one', () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        // The two strips of plains, four cells by seven: one ground where the map loops.
+        const fill = bucketCells(world, 'terrain', 1.5, Y + 0.5);
+        expect(fill.includes(Y * W + W - 1)).toBe(loop);
+        expect(fill.length).toBe(loop ? 56 : 28);
+        expect(bucketCells(world, 'terrain', W - 0.5, Y + 0.5).includes(Y * W)).toBe(loop);
+        expect(bucketCells(world, 'terrain', -0.5, Y + 0.5).length).toBe(loop ? 56 : 0);
+        expect(bucketCells(world, 'terrain', W + 0.5, Y + 0.5).length).toBe(loop ? 56 : 0);
+      }
+    });
+
+    it("the editor's paint and the God brush of control give a nation no cell at the other edge", () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        const { owner, controller } = world.cells;
+        command(world, { kind: 'editPaint', layer: 'nation', tool: 'brush', x: 0.5, y: Y + 0.5, x2: 0.5, y2: Y + 0.5, r: 2, value: GER, mask: null });
+        expect(owner[Y * W]).toBe(GER);
+        expect(owner[Y * W + W - 1] === GER).toBe(loop);
+        command(world, { kind: 'paintControl', nation: POL, x: W - 0.5, y: Y + 0.5, r: 2 });
+        expect(controller[Y * W + W - 1]).toBe(POL);
+        expect(controller[Y * W] === POL).toBe(loop);
+        // Dragged out over the edge: the segment's stamps beyond it paint nothing.
+        command(world, { kind: 'paintControl', nation: POL, x: W - 2.5, y: Y + 2.5, r: 0, x2: W + 2.5, y2: Y + 2.5 });
+        expect(controller[(Y + 2) * W + W - 1]).toBe(POL);
+        expect(controller[(Y + 2) * W + 1] === POL).toBe(loop);
+      }
+    });
+
+    it('a city is placed on no cell from a point beyond an edge', () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        const id = spawnCity(world, -0.5, Y + 0.5, 'Seam', 1);
+        expect(id !== 0).toBe(loop);
+        if (loop) expect(world.cities.cols.cell[id]).toBe(Y * W + W - 1);
+        expect(spawnCity(world, 0.5, Y + 0.5, 'Edge', 1)).not.toBe(0);
+      }
+    });
+
+    it('the page takes a point in the margin beside a map that does not loop for no cell', () => {
+      for (const loop of [false, true]) {
+        const geo = { w: W, h: H, kmPerCell: 1, wrapX: loop };
+        expect(cellOfPoint(geo, -0.5, Y + 0.5)).toEqual(loop ? [W - 1, Y] : null);
+        expect(cellOfPoint(geo, W + 0.5, Y + 0.5)).toEqual(loop ? [0, Y] : null);
+        expect(cellOfPoint(geo, 0.5, Y + 0.5)).toEqual([0, Y]);
+        expect(cellOfPoint(geo, W - 0.5, Y + 0.5)).toEqual([W - 1, Y]);
+        expect(cellOfPoint(geo, 0.5, -0.5)).toBeNull();
+        expect(cellOfPoint(geo, 0.5, H)).toBeNull();
+      }
+      // Zoomed out as far as it goes, a map with edges has such a margin at each side.
+      const geo = { w: W, h: H, kmPerCell: 1, wrapX: false };
+      const cam = normalize({ cx: 0, cy: 0, scale: 0 }, geo, 1280, 720);
+      expect(screenToWorld(cam, 2, 360, 1280, 720)[0]).toBeLessThan(0);
+      expect(screenToWorld(cam, 1278, 360, 1280, 720)[0]).toBeGreaterThan(W);
     });
   });
 });

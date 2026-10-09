@@ -18,10 +18,15 @@ export const CITY_ECON_PER_SIZE = 20;
 export const NO_DEF = 0xffffffff;
 export const MAX_CITY_NAME = 40;
 
-/** Places a city of `size` (1..5) named `name` on the land cell at (x, y); returns its row or 0. */
+/**
+ * Places a city of `size` (1..5) named `name` on the land cell at (x, y); returns its row or 0.
+ * A point beyond an edge of a map that does not loop is no cell (PLAN 3.12Rse2).
+ */
 export function spawnCity(world: World, x: number, y: number, name: string, size: number): number {
   const { w, h, terrain, econ, owner } = world.cells;
-  const cx = ((Math.floor(x) % w) + w) % w;
+  const fx = Math.floor(x);
+  if (!world.settings.loopingMap && (fx < 0 || fx >= w)) return 0;
+  const cx = ((fx % w) + w) % w;
   const cy = Math.floor(y);
   if (cy < 0 || cy >= h) return 0;
   const cell = cy * w + cx;

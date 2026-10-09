@@ -70,6 +70,18 @@ export function screenToWorld(cam: Camera, sx: number, sy: number, viewW: number
   return [cam.cx + (sx - viewW / 2) / cam.scale, cam.cy + (sy - viewH / 2) / cam.scale];
 }
 
+/**
+ * The cell of a world point, or null off the map: above or below it, and beside a map that does
+ * not loop (the view is wider than such a map zoomed out; PLAN 3.12Rse2). x wraps on one that does.
+ */
+export function cellOfPoint(geo: MapGeometry, wx: number, wy: number): [number, number] | null {
+  const x = Math.floor(wx);
+  const y = Math.floor(wy);
+  if (y < 0 || y >= geo.h) return null;
+  if (!geo.wrapX && (x < 0 || x >= geo.w)) return null;
+  return [((x % geo.w) + geo.w) % geo.w, y];
+}
+
 export function worldToScreen(cam: Camera, wx: number, wy: number, viewW: number, viewH: number): [number, number] {
   return [(wx - cam.cx) * cam.scale + viewW / 2, (wy - cam.cy) * cam.scale + viewH / 2];
 }

@@ -12798,3 +12798,48 @@ No rule changed and nothing on screen changed. One task came out of it.
   parity 47.5%.
 - **Next:** PLAN 3.12Rse2 (the brushes: first what the page sends), 3.12Rse3, then 3.12Ri,
   3.12Rj.
+
+## 2026-10-09 — PLAN 3.12Rse2: the brushes keep to the edges of a map that does not loop (ADR-239)
+
+- **What the page sends** (PLAN's first question): an x outside `[0, w)`, yes. A map with
+  edges is at most 0.9 of the view at the least zoom and is centred in a wider view, so
+  there is a margin at each side. A drag sends the pointer's x unfolded (`worldAt`); a
+  click went by `cellAt`, which folded it, and the sim got a cell of the other edge. The
+  fold of one coordinate was not dead: all three were mended (a point beyond an edge, the
+  radius over an edge, the bucket's neighbour over the seam).
+- **Done:** `brushCells` and `lineCells` (`editor.ts`) take `wrap`, with no default, and
+  `paint` passes `settings.loopingMap`; `bucketCells`, `paintControl` (`tick.ts`) and
+  `spawnCity` (`scenarioEdit.ts`) ask the setting. The page: `cellOfPoint`
+  (`render/camera.ts`) is null beside a map that does not wrap; `cellAt` is that and
+  `nationAt` goes by it. The comment on `lineCells` said "no wrap across the seam" and the
+  stamps wrapped: it says what it does.
+- **What it did with `looping=0`:** a brush within its radius of an edge painted the other
+  edge too; the bucket filled one nation's land at both edges as one region; a click in
+  the margin selected, painted, placed a city or gave an order at the other edge.
+- **Tests:** `tests/unit/seam.test.ts`, five more (20 in the file), each with the map
+  looping and not, red first (`.cache/rse2-red.log`). The first red run had my helper
+  wrong (`world.command`, which is `enqueue`): run again, four fail on the assertion and
+  the fifth on `cellOfPoint` not being there. One figure of mine was wrong and was
+  corrected after the mend: a disc of radius 3 at column 1 has 23 cells on the map, not
+  24 (six of 29 are beyond the edge). `tests/e2e/gameOptions1938.spec.ts` has the row of
+  the view at the least zoom of the `looping=0` game: no cell and no nation at either
+  side, each column once from first to last. **It was not run before the mend** (the unit
+  test of `cellOfPoint` was).
+- **Existing tests:** `editor.test.ts`, `paintControl.test.ts`, `pathsKept.test.ts` pass
+  `true` to `brushCells` and `lineCells` (1938 loops; 13 calls, no assertion changed).
+- **By hand** (`--project chromium`, `.cache/rse2-e2e.log`): `gameOptions1938`,
+  `editor1938`, `editorDrag1938`, `godUi1938`, `scenarioEditor1938`, `player1938`,
+  `occupation1938`: 16 passed in 1.3 min.
+- **Not looked at:** the game with `looping=0` on the screen by eye (no picture taken);
+  a command log of a `looping=0` game written before this replays with fewer cells
+  painted at an edge (ADR-239; none is kept).
+- **SPEC** §9, the looping option; PARITY row 69, a dated line; ADR-239.
+- **The pin stays** (92689265; in the gate). **The tick's cost: not measured** (commands
+  only, nothing in a tick).
+- **No sweep** (ADR-58).
+- **`npm run plan:archive`:** nothing to move.
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rse2.log`): 1,096 unit
+  tests in 134 files (121.8 s), the ten-year stage 17 tests in 12 files (190.3 s), build,
+  the changed spec `gameOptions1938` (1 passed), parity 47.5%.
+- **Next:** PLAN 3.12Rse3 (a block's slots beside an edge; the reasons of what is left),
+  which ticks 3.12Rse and 3.12Rs; then 3.12Ri, 3.12Rj.

@@ -31,11 +31,11 @@ const brush = (value: number, r = 4, layer: 'nation' | 'terrain' = 'nation', mas
 
 describe('editor tools (PLAN 1.35)', () => {
   it('brush is a wrapped disc, line stamps along the segment, bucket fills one connected value', () => {
-    expect(brushCells(100, 50, 5, 5, 0)).toEqual([5 * 100 + 5]);
-    expect(brushCells(100, 50, 5, 5, 1).length).toBe(5);
-    expect(brushCells(100, 50, 0, 5, 1)).toContain(5 * 100 + 99); // wraps x
-    expect(brushCells(100, 50, 5, 0, 1).every((c) => c >= 0)).toBe(true); // clipped y
-    const line = lineCells(100, 50, 2, 2, 12, 2, 0);
+    expect(brushCells(100, 50, 5, 5, 0, true)).toEqual([5 * 100 + 5]);
+    expect(brushCells(100, 50, 5, 5, 1, true).length).toBe(5);
+    expect(brushCells(100, 50, 0, 5, 1, true)).toContain(5 * 100 + 99); // wraps x
+    expect(brushCells(100, 50, 5, 0, 1, true).every((c) => c >= 0)).toBe(true); // clipped y
+    const line = lineCells(100, 50, 2, 2, 12, 2, 0, true);
     expect(line).toEqual(Array.from({ length: 11 }, (_, i) => 2 * 100 + 2 + i));
     const s = sim();
     const fill = bucketCells(s.world, 'nation', wx, wy);
@@ -64,7 +64,7 @@ describe('editor tools (PLAN 1.35)', () => {
   it('a target mask limits the paint; terrain edits change land into land and invalidate pathing', () => {
     const s = sim();
     const t = s.world.cells.terrain;
-    const area = brushCells(W, H, wx, wy, 6);
+    const area = brushCells(W, H, wx, wy, 6, true);
     const kinds = new Set(area.map((c) => t[c]!));
     const only = [...kinds].find((k) => k !== Terrain.Water)!;
     run(s, brush(GER!, 6, 'nation', { kind: 'terrain', value: only }));
@@ -72,7 +72,7 @@ describe('editor tools (PLAN 1.35)', () => {
     navOf(s.world); // build pathing, then edit terrain
     run(s, brush(Terrain.Mountains, 3, 'terrain'));
     expect(s.world.nav).toBeNull();
-    expect(brushCells(W, H, wx, wy, 3).every((c) => t[c] === Terrain.Mountains || t[c] === Terrain.Water || t[c] === Terrain.Crossing)).toBe(true);
+    expect(brushCells(W, H, wx, wy, 3, true).every((c) => t[c] === Terrain.Mountains || t[c] === Terrain.Water || t[c] === Terrain.Crossing)).toBe(true);
     // Water is never painted and never becomes land.
     run(s, { kind: 'editPaint', layer: 'terrain', tool: 'brush', x: wx, y: wy, x2: 0, y2: 0, r: 2, value: Terrain.Water, mask: null });
     expect(s.world.edits.undo.length).toBe(2);
@@ -110,7 +110,7 @@ describe('brush strokes (PLAN 1.44)', () => {
     seg(value, wx, wy, wx + 12, wy, oneStroke ? 'more' : null),
     seg(value, wx + 12, wy, wx + 30, wy + 6, oneStroke ? 'more' : null),
   ];
-  const path = [...lineCells(W, H, wx, wy, wx + 12, wy, 0), ...lineCells(W, H, wx + 12, wy, wx + 30, wy + 6, 0)];
+  const path = [...lineCells(W, H, wx, wy, wx + 12, wy, 0, true), ...lineCells(W, H, wx + 12, wy, wx + 30, wy + 6, 0, true)];
 
   it('paints every cell under its path and is one undo step', () => {
     const s = sim();
@@ -219,7 +219,7 @@ describe('the history and an import give no land to a dead nation (PLAN 3.4Ri)',
   const [FRA, AUT] = ['FRA', 'AUT'].map(nationId) as number[];
   const [px, py] = cellOf(2.6, 48.6, W, H); // by Paris
   const at = (value: number, x: number, y: number, r = 3): Command => ({ kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: 0, y2: 0, r, value, mask: null });
-  const disc = (x: number, y: number, r = 3): number[] => brushCells(W, H, x, y, r);
+  const disc = (x: number, y: number, r = 3): number[] => brushCells(W, H, x, y, r, true);
   /** Cells that `n` owns or controls. */
   const held = (w: World, n: number): number => {
     let k = 0;

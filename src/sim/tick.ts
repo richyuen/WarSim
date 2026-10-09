@@ -26,13 +26,15 @@ export type System = (world: World) => void;
 const MAX_NAME = 40;
 
 /**
- * Sets the controller of land cells within r cells of (x, y) (wrapping x; water untouched). With
+ * Sets the controller of land cells within r cells of (x, y) (water untouched; x wraps on a map
+ * that loops, and a column beyond an edge of one that does not is no cell: PLAN 3.12Rse2). With
  * (x2, y2) the brush is stamped at every cell step of the segment to it (PLAN 1.44b), so no cell
  * under the segment is skipped. The command of an occupation: the God brush paints the owner
  * too, with `editPaint` (ADR-118).
  */
 function paintControl(world: World, nation: number, x: number, y: number, r: number, x2 = x, y2 = y): void {
   const { w, h, terrain } = world.cells;
+  const wrap = world.settings.loopingMap;
   if (nation !== 0 && !world.nations.has(nation)) return;
   const rr = Math.min(Math.max(0, r), 64);
   // One stamp per cell of the longer axis; a segment longer than the map is cut to its size.
@@ -45,7 +47,9 @@ function paintControl(world: World, nation: number, x: number, y: number, r: num
       if (cy < 0 || cy >= h) continue;
       for (let dx = Math.ceil(-rr); dx <= rr; dx++) {
         if (dx * dx + dy * dy > rr * rr) continue;
-        const cell = cy * w + ((Math.floor(px + dx) % w) + w) % w;
+        const cx = Math.floor(px + dx);
+        if (!wrap && (cx < 0 || cx >= w)) continue;
+        const cell = cy * w + ((cx % w) + w) % w;
         if (terrain[cell] !== 0) world.setController(cell, nation);
       }
     }

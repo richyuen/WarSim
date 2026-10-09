@@ -144,8 +144,13 @@ export class EditStack implements Stateful {
   }
 }
 
-/** Cells within radius r of (x, y): wrapping x, clipped to the map. */
-export function brushCells(w: number, h: number, x: number, y: number, r: number): number[] {
+/**
+ * Cells within radius r of (x, y), clipped to the map. With `wrap` (the looping map,
+ * `settings.loopingMap`) x goes over the seam; without, a column beyond an edge is no cell
+ * (PLAN 3.12Rse2): the page sends the point under the pointer, which is beside the map where
+ * the view is wider than a map with edges.
+ */
+export function brushCells(w: number, h: number, x: number, y: number, r: number, wrap: boolean): number[] {
   const rr = Math.max(0, Math.min(MAX_BRUSH, r));
   const out: number[] = [];
   const cx = Math.floor(x);
@@ -156,24 +161,36 @@ export function brushCells(w: number, h: number, x: number, y: number, r: number
     if (yy < 0 || yy >= h) continue;
     for (let dx = -ri; dx <= ri; dx++) {
       if (dx * dx + dy * dy > rr * rr) continue;
-      out.push(yy * w + ((((cx + dx) % w) + w) % w));
+      const xx = cx + dx;
+      if (!wrap && (xx < 0 || xx >= w)) continue;
+      out.push(yy * w + (((xx % w) + w) % w));
     }
   }
   return out;
 }
 
-/** The brush stamped every cell along the segment (x0, y0) → (x1, y1) (no wrap across the seam). */
-export function lineCells(w: number, h: number, x0: number, y0: number, x1: number, y1: number, r: number): number[] {
+/**
+ * The brush stamped every cell along the segment (x0, y0) → (x1, y1). The segment is not folded:
+ * it goes over the seam where an end is beyond an edge and the map wraps (`wrap`, as `brushCells`).
+ */
+export function lineCells(w: number, h: number, x0: number, y0: number, x1: number, y1: number, r: number, wrap: boolean): number[] {
   const steps = Math.max(1, Math.ceil(Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0))));
   const seen = new Set<number>();
-  for (let i = 0; i <= steps; i++) for (const c of brushCells(w, h, x0 + ((x1 - x0) * i) / steps, y0 + ((y1 - y0) * i) / steps, r)) seen.add(c);
+  for (let i = 0; i <= steps; i++) for (const c of brushCells(w, h, x0 + ((x1 - x0) * i) / steps, y0 + ((y1 - y0) * i) / steps, r, wrap)) seen.add(c);
   return [...seen].sort((a, b) => a - b);
 }
 
-/** 4-connected flood fill from (x, y) over cells whose `layer` value equals the start cell's (wrapping x). */
+/**
+ * 4-connected flood fill from (x, y) over cells whose `layer` value equals the start cell's. On
+ * a map that loops x wraps; on one that does not, the first and last columns are not neighbours
+ * and a point beyond an edge fills nothing (PLAN 3.12Rse2).
+ */
 export function bucketCells(world: World, layer: EditLayer, x: number, y: number): number[] {
   const { w, h, owner, terrain } = world.cells;
-  const sx = ((Math.floor(x) % w) + w) % w;
+  const wrap = world.settings.loopingMap;
+  const fx = Math.floor(x);
+  if (!wrap && (fx < 0 || fx >= w)) return [];
+  const sx = ((fx % w) + w) % w;
   const sy = Math.floor(y);
   if (sy < 0 || sy >= h) return [];
   const start = sy * w + sx;
@@ -191,7 +208,7 @@ export function bucketCells(world: World, layer: EditLayer, x: number, y: number
     out.push(c);
     const cx = c % w;
     const cy = (c - cx) / w;
-    const ns = [cy * w + ((cx + 1) % w), cy * w + ((cx + w - 1) % w), cy > 0 ? c - w : -1, cy < h - 1 ? c + w : -1];
+    const ns = [wrap || cx < w - 1 ? cy * w + ((cx + 1) % w) : -1, wrap || cx > 0 ? cy * w + ((cx + w - 1) % w) : -1, cy > 0 ? c - w : -1, cy < h - 1 ? c + w : -1];
     for (const n of ns) {
       if (n < 0 || seen[n]) continue;
       seen[n] = 1;
@@ -236,7 +253,8 @@ export function paint(world: World, layer: EditLayer, tool: EditTool, x: number,
   if (stroke !== 'more') st.stroke = false;
   if (layer === 'nation' && value !== 0 && !world.nations.has(value)) return null;
   if (layer === 'terrain' && !isLand(value)) return null;
-  const shape = tool === 'brush' ? brushCells(w, h, x, y, r) : tool === 'line' ? lineCells(w, h, x, y, x2, y2, r) : bucketCells(world, layer, x, y);
+  const wrap = world.settings.loopingMap;
+  const shape = tool === 'brush' ? brushCells(w, h, x, y, r, wrap) : tool === 'line' ? lineCells(w, h, x, y, x2, y2, r, wrap) : bucketCells(world, layer, x, y);
   const cells = shape.filter((c) => {
     if (!isLand(terrain[c]!)) return false; // both layers: land cells only (no water ↔ land yet)
     if (mask && (mask.kind === 'terrain' ? terrain[c] !== mask.value : owner[c] !== mask.value)) return false;

@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-239 · 2026-10-09 · accepted — The brushes keep to the edges of a map that does not loop (PLAN 3.12Rse2)
+
+- **Context.** The sixth part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236 to ADR-238). The
+  editor's brush, line and bucket (`brushCells`, `lineCells`, `bucketCells`, `editor.ts`),
+  the God brush of control (`paintControl`, `tick.ts`) and a placed city (`spawnCity`,
+  `scenarioEdit.ts`) folded x with `% w` whatever `settings.loopingMap` said. PLAN asked
+  first what the page sends: whether a pointer's x is ever outside `[0, w)` on a map that
+  does not loop.
+- **What the page sends.** It is. A map with edges is at most 0.9 of the view at the
+  least zoom (`minScale`), and a view wider than the map is centred on it (`clampAxis`):
+  there is a margin at each side, and `screenToWorld` gives x < 0 or x >= w there. A drag
+  sends that x as it is (`worldAt`, so that a stroke crosses the seam of a map that
+  loops). A click went by `cellAt`, which folded it: the sim got a cell of the other
+  edge and could not tell. So the fold of one coordinate is not dead.
+- **What was so**, with `looping=0`:
+  - a brush or a God brush stroke within its radius of an edge painted the cells of the
+    other edge too, and a stroke dragged out into the margin went on painting there;
+  - the bucket filled over the seam: land at the first column and land at the last of
+    one nation (or one terrain) were one region;
+  - a click in the margin beside the map selected the nation of the other edge, placed a
+    city there, painted there with the editor's click tools, and was an order's or a God
+    tool's cell there.
+- **Decision.**
+  - `brushCells` and `lineCells` take `wrap`, a parameter with no default (as
+    `nearestCellWhere`, ADR-238): without it a column beyond an edge is no cell. `paint`
+    passes `settings.loopingMap`. A line's segment was never folded and is not now: it goes
+    over the seam where an end is beyond an edge and the map wraps (the comment on it
+    said "no wrap across the seam", which the stamps did not keep).
+  - `bucketCells`, `paintControl` and `spawnCity` have the world and ask the setting: the
+    bucket's first and last columns are not neighbours, and a point beyond an edge fills
+    nothing, controls nothing and places no city.
+  - The page: `cellOfPoint` (`render/camera.ts`) gives the cell of a world point, or null
+    above, below and, where the geometry does not wrap, beside the map. `cellAt` is that,
+    and `nationAt` goes by `cellAt`. The drag's x stays unfolded; the sim clips it.
+  - On a map that loops every one of these gives what it gave: a point beyond an edge is
+    the cell over the seam.
+- **They are commands**: a replay or a save's command log made with `looping=0` before
+  this, with a stroke at an edge, paints fewer cells now. No such log is kept in the
+  repo; 1938's tests loop.
+- **Tests.** `tests/unit/seam.test.ts`, five more (20 in the file), each with the map
+  looping and not, red first (`.cache/rse2-red.log`); `tests/e2e/gameOptions1938.spec.ts`
+  reads the row of the view at the least zoom of a game with `looping=0`: no cell and no
+  nation beside the map, each column once from the first to the last.
+- **The pin stays** (92689265): 1938 loops.
+
 ### ADR-238 · 2026-10-09 · accepted — The nearest-cell search keeps to the edges of a map that does not loop (PLAN 3.12Rse1)
 
 - **Context.** The fifth part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236, ADR-237), split

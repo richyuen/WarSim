@@ -51,7 +51,7 @@ function onTheMarch(): { s: Sim; id: number } {
 /** Water by a map import on the cells within `r` of `cell` (a paint makes no water of land). */
 function flood(s: Sim, cell: number, r: number): void {
   const values = Uint16Array.from(s.world.cells.terrain);
-  for (const c of brushCells(W, H, (cell % W) + 0.5, Math.floor(cell / W) + 0.5, r)) values[c] = Terrain.Water;
+  for (const c of brushCells(W, H, (cell % W) + 0.5, Math.floor(cell / W) + 0.5, r, true)) values[c] = Terrain.Water;
   s.command({ kind: 'importLayer', layer: 'terrain', runs: encodeRuns(values) });
 }
 
