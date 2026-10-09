@@ -5286,6 +5286,12 @@ quick sweep as a smoke test.
       nor at the UI sizes above 100%, nor at Max speed.
     - Sound (3.12d): the worker's `world` number is in `nationStats` only; the ticker and
       the sound read the same rows, and whether `Hud` should own both is to be looked at.
+    - The e2e suite took 19.5 and 19.7 min in the two gates of 3.12's tick (159 tests) and
+      18.4 min once on 2026-10-08; it took about 10 on 2026-10-05 and 06 (138 tests). Not
+      the sound's listener (measured, PROGRESS 2026-10-09). Find which specs grew (the
+      gate's log has each test's time: `tankBattle1938` 4.1 min, `formationFight1938` 4.3,
+      `zoomDemo1938` 3.5) and whether the machine was idle; `fire1938`'s limit of 4 ms a
+      frame was passed once at 4.21 in such a suite (BLOCKERS.md).
   AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
   gate is green.
 

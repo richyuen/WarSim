@@ -11624,3 +11624,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   0.785 ms. The second run of the whole gate: green, 159 passed in 19.7 min, the layer at
   1.334 ms. The spec was not changed; a line in BLOCKERS.md. The suite's 19.5 min (about 10
   on 2026-10-08) is for the review pass 3.12R to look into.
+- **The suite's time, looked at** (after b098592): not the sound's doing. Four spec files that
+  press and tell no event (`settings1938`, `godUi1938`, `nationPanel1938`, `history1938`, 12
+  tests): 54.5 s and 55.7 s with the listener that makes the `AudioContext`, 55.8 s with it
+  commented out. And the suite took 18.4 min once on 2026-10-08, before any sound (the gate
+  of PLAN 3.11's tick). In both of today's gates the unit stage took 120 and 125 s and the
+  sweep stage 199 and 202 s. The line above says "about 10 on 2026-10-08": that day's own
+  figure was 18.4; the 10 is of 2026-10-05 and 06. Why it is 19.5 now: PLAN 3.12R.
