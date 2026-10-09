@@ -5359,10 +5359,6 @@ quick sweep as a smoke test.
     `turrets1938` 20), `zoomDemo1938` went from 84 s to 210 s, and the files in both took
     1.07 times as long (2,181 s to 2,335 s). No log of the 19.5 min runs was kept: the step
     from 13.6 to 19.5 (159 tests, PLAN 3.11 and 3.12) waits for the log of 3.12Rj's suite.
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rn: a line under PLAN 1.42 for the land that rises
-    and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
-    none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
-    an earlier part broke fixed here; 3.12R ticked.
   - [ ] 3.12Rk **A march home does not wait out a war before an enemy's ground** (the ninth
     read, finding 1; run there). `movement.ts` stops a march before a cell held by a nation
     its own is at war with; a formation with `home` set is left out by the operational AI
@@ -5417,6 +5413,10 @@ quick sweep as a smoke test.
     Whether the hash covers the log decides the pin (as 3.12Rf).
     AT: a unit test that fails first; in ten years of the sweep seeds every war declared
     has an end in the log or is in `wars.list`.
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rn: a line under PLAN 1.42 for the land that rises
+    and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
+    none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
+    an earlier part broke fixed here; 3.12R ticked.
 
 ## Phase 4 — Naval
 
