@@ -12226,3 +12226,32 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rl (the puppets of a nation annexed with its cities occupied keep
   their supply).
+
+## 2026-10-09 — PLAN 3.12Rl: the puppets of a nation annexed with its cities occupied are in the annexer's network
+
+- **The defect** (the ninth read, finding 2): `annexNation` moved the target's puppets to the
+  annexer's bloc and marked nothing. Their land kept the mark of the target's bloc: 6,240
+  cells of the Congo at Belgium's mark after Germany annexed Belgium, its formations unfed,
+  and the loaded save another game.
+- **The mend:** one line, `supplyDirty` when a puppet is handed over (ADR-223). A mark on
+  the blocs would flood nothing: the annexed cells are the annexer's and the target's own,
+  and a marked bloc with a changed cell of its own is mended, not flooded.
+- **Tests** (`tests/unit/supply.test.ts`, two):
+  - Belgium overrun, the network refreshed, annexed: red first (6,240 cells at Belgium's
+    mark); now the Congo at Germany's, the network the cell-by-cell rule's, and the game
+    and its loaded save one hash 30 days on. The hash clause was not seen red by itself:
+    the mark's assertion stands before it (the reader's run had the hashes apart on day 1).
+  - The other places where a bloc changes, in one world, each against the rule: a puppet
+    made and released (Poland, Germany's), the Netherlands annexed by France with its
+    cities its own, a French puppet annexed by Germany, the Congo integrated, Portugal
+    collapsed. Run with the mend switched off: green. Those places were sound.
+- **Not looked into:** a puppet's own puppets (`blocOf` goes one step up: a puppet handed
+  to an annexer that is itself a puppet is in the annexer's bloc, the annexer's land in
+  its overlord's); the revival's and the editor's writes beyond what the test walks.
+- **The suspicion** (the flood wraps whatever `loopingMap` says): read, not run. The flood,
+  the gain test and `ringHolds` wrap; the territory rule, the routes and the AI's fronts
+  ask the setting. PLAN 3.12Rp, before 3.12Rj.
+- **The pin:** stays at 2104f897.
+- **No sweep** (ADR-58). Nothing drawn changed: no spec run by hand; no e2e (a part, ADR-87).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rm (a formation is mustered where a route begins).

@@ -3,7 +3,9 @@ import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { SUPPLY_REACH, blocOf, refreshStats, refreshSupplyNetwork } from '../../src/sim/systems/supply';
+import { annexNation, integratePuppet, makePuppet, releasePuppet } from '../../src/sim/systems/puppets';
+import { collapseNation } from '../../src/sim/systems/revival';
+import { SUPPLY_REACH, SUPPLY_REFRESH_HOURS, blocOf, refreshStats, refreshSupplyNetwork } from '../../src/sim/systems/supply';
 import { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { PZ } from '../helpers/pocket';
@@ -373,6 +375,91 @@ describe('a partial refresh gives what a full one gives (PLAN 2.11j)', () => {
     expect(cells.filter((c) => w.cells.supply[c] === GRE)).toEqual([]);
     expect(cells.filter((c) => w.cells.supply[c] === blocOf(w, YUG)).length).toBeGreaterThan(20);
     expect(differs(w.cells.supply, referenceNetwork(w, w.cells.supply))).toBe(0);
+  });
+
+  // PLAN 3.12Rl (the ninth read, finding 2). Belgium annexed at a peace with its cities in
+  // Germany's hands: the Congo passed to Germany's bloc with no cell of its own changed, and kept
+  // the mark of Belgium's, which no flood clears and under which its cities are no seeds.
+  it('the puppets of a nation annexed with its cities occupied are in the annexer’s network (PLAN 3.12Rl)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const [BEL, GER, BCO] = [nationId('BEL'), nationId('GER'), nationId('BCO')];
+    expect(w.nations.cols.overlord[BCO]).toBe(BEL);
+    refreshSupplyNetwork(w);
+    const congo: number[] = [];
+    for (let c = 0; c < W * H; c++) if (w.cells.controller[c] === BCO) congo.push(c);
+    expect(congo.filter((c) => w.cells.supply[c] === BEL).length).toBeGreaterThan(1000);
+    // Overrun, and the network refreshed before the peace, as in a war of some days.
+    for (let c = 0; c < W * H; c++) if (w.cells.controller[c] === BEL) w.setController(c, GER);
+    refreshSupplyNetwork(w);
+    expect(annexNation(w, GER, BEL)).toBe(true);
+    expect(blocOf(w, BCO)).toBe(GER);
+    s.step(SUPPLY_REFRESH_HOURS);
+    expect(congo.filter((c) => w.cells.supply[c] === BEL).length).toBe(0);
+    expect(congo.filter((c) => w.cells.supply[c] === GER).length).toBeGreaterThan(1000);
+    expect(differs(w.cells.supply, referenceNetwork(w, w.cells.supply))).toBe(0);
+    // The loaded save, which refreshes in full, goes on as the game does.
+    const t = new Sim({ scenario: '1938', seed: 4, assets: assets1938(W) });
+    t.load(s.save());
+    s.step(30 * 24);
+    t.step(30 * 24);
+    expect(t.hash()).toBe(s.hash());
+  });
+
+  // Every other place where a nation's bloc changes (a bloc is a nation and its puppets: an
+  // alliance is none), one after the other in one world, each against the cell-by-cell rule.
+  it('after each change of a bloc the game’s refresh gives the rule’s network (PLAN 3.12Rl)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const nc = w.nations.cols;
+    refreshSupplyNetwork(w);
+    const puppetsOf = (o: number): number[] => {
+      const list: number[] = [];
+      w.nations.forEach((p) => {
+        if (nc.overlord[p] === o && nc.living[p] === 1) list.push(p);
+      });
+      return list;
+    };
+    const apart = (): number => {
+      refreshSupplyNetwork(w);
+      return differs(w.cells.supply, referenceNetwork(w, w.cells.supply));
+    };
+    const marked = (n: number, bloc: number): number => {
+      let k = 0;
+      for (let c = 0; c < W * H; c++) if (w.cells.controller[c] === n && w.cells.supply[c] === bloc) k++;
+      return k;
+    };
+    const [GER, POL, BEL, BCO, NED, FRA, POR] = ['GER', 'POL', 'BEL', 'BCO', 'NED', 'FRA', 'POR'].map(nationId) as [number, number, number, number, number, number, number];
+    // A puppet made, and released.
+    expect(makePuppet(w, GER, POL, 50)).toBe(true);
+    expect(apart()).toBe(0);
+    expect(marked(POL, GER)).toBeGreaterThan(100);
+    releasePuppet(w, POL);
+    expect(apart()).toBe(0);
+    expect(marked(POL, GER)).toBe(0);
+    // An overlord annexed with its cities its own: its puppets are the annexer's.
+    const dutch = puppetsOf(NED);
+    expect(dutch.length).toBeGreaterThan(0);
+    expect(annexNation(w, FRA, NED)).toBe(true);
+    expect(apart()).toBe(0);
+    for (const p of dutch) expect(marked(p, NED)).toBe(0);
+    // A puppet annexed by a third nation, and a puppet integrated by its overlord.
+    expect(nc.overlord[BCO]).toBe(BEL);
+    const french = puppetsOf(FRA);
+    expect(annexNation(w, GER, french[0]!)).toBe(true);
+    expect(apart()).toBe(0);
+    integratePuppet(w, BCO);
+    expect(nc.living[BCO]).toBe(0);
+    expect(apart()).toBe(0);
+    // An overlord that collapses: its puppets are freed.
+    const portuguese = puppetsOf(POR);
+    expect(portuguese.length).toBeGreaterThan(0);
+    collapseNation(w, POR, true);
+    for (const p of portuguese) expect(nc.overlord[p]).toBe(0);
+    expect(apart()).toBe(0);
+    for (const p of portuguese) expect(marked(p, POR)).toBe(0);
   });
 });
 

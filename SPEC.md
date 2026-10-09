@@ -805,7 +805,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Blocs:* a nation and its puppets (`nations.overlord`) share one supply bloc, the overlord's id.
 - *Network* (every 12 h since PLAN 1.25): sources are cities a bloc member owns and controls.
   Since the review after 1.25, a refresh after cell-level changes refloods only the blocs of the
-  nations whose cells changed. Load, overlord changes and raw layer writes force a full refresh.
+  nations whose cells changed. Load, overlord changes and raw layer writes force a full refresh
+  (since PLAN 3.12Rl an annexation that hands the target's puppets to the annexer too: no cell
+  of theirs changes, and their land kept the mark of the target's bloc).
   A refresh of some blocs gives the network a full one gives (PLAN 2.11j, ADR-81): the layer is
   a function of the cities, the control of the cells and the blocs, the marks of what to
   refresh are not state, and a loaded game, which refreshes in full, goes on as the game that

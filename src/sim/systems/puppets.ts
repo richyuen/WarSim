@@ -109,6 +109,9 @@ export function annexNation(world: World, annexer: number, target: number): bool
     if (p !== annexer) handed.push(p);
   });
   if (nc.overlord[target] !== 0) nc.overlord[target] = 0;
+  // The blocs changed with no cell of the puppets changed (PLAN 3.12Rl): their land bore the mark
+  // of the target's bloc on, and a loaded save, which refreshes in full, went on otherwise.
+  if (handed.length > 0) world.supplyDirty = true;
   world.out.emit(world.tick, EventKind.NationAnnexed, target, annexer, NaN, NaN);
   eliminateNation(world, target);
   // After the target has left its wars: what is left of them is the puppets' own.

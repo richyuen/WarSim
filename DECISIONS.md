@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-223 · 2026-10-09 · accepted — An annexation that hands puppets over refreshes the supply network in full; the flood is to keep to the edges of a map that does not loop (PLAN 3.12Rl)
+
+- **Context.** `annexNation` gave the target's puppets to the annexer and marked nothing.
+  No cell of a puppet changes, so the partial refresh (ADR-196) has nothing of theirs to
+  mend; the target's bloc has no source left and is never flooded; and a city under another
+  bloc's mark is no seed of its own bloc's flood. Belgium annexed by Germany at a peace with
+  its cities occupied (`.cache/read9/peaceSupply_BEL_GER_12.log`): the Congo's 6,240 cells
+  at mark 27, three formations unfed for 20 days (23,448 men to 12,190), and the loaded
+  save, which refreshes in full, another game from the first day (I2).
+- **Decision.** `annexNation` sets `supplyDirty` when a puppet is handed over, as
+  `makePuppet`, `releasePuppet` and `eliminateNation` do for their change of an overlord. An
+  annexation with no puppets stays on the partial path.
+- **Not chosen.** The puppet or the two blocs marked (`supplyDirtyNations`,
+  `supplyDirtyBlocs`): a marked bloc is flooded whole only when no changed cell is its own,
+  and the annexed cells are the annexer's and the target's, so nothing would be flooded. A
+  change of that rule, or of the seed that is skipped under another mark, is a change of
+  the mending for a case that a full refresh (6 ms) settles and that comes a few times a
+  game.
+- **The flood and `loopingMap`.** The flood, the gain test and `ringHolds` join the map's
+  west and east edges whatever the setting says; the territory rule, the route grid and
+  the AI's fronts ask it. They should agree: on a map with hard edges no march crosses the
+  seam, and a network should not. Not done here (a second cause): PLAN 3.12Rp. 1938 loops.
+- **Consequences.** The pin of seed 99 stays at 2104f897 (no annexation with puppets in its
+  first year). The other places where a bloc changes were sound and now have a test each
+  against the cell-by-cell rule (`supply.test.ts`).
+
 ### ADR-222 · 2026-10-09 · accepted — A march home does not wait before an enemy's ground: round it, across it where it stands on it, or the march ends and the mark with it (PLAN 3.12Rk)
 
 - **Context.** The march home (ADR-169) was routed over every holder's ground and waited

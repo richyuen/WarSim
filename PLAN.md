@@ -5558,7 +5558,7 @@ quick sweep as a smoke test.
       over them and take the pointer. The History panel (84 rows), the chart with its
       lines and the editor at 1,100 x 600: in their boxes, above the bar.
       `settings1938.spec.ts`, a second test, failed first on each cause.
-  - [ ] 3.12Ri (**after 3.12Rk to 3.12Ro, with 3.12Rj's suite: what is left of it needs that log;
+  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rp, with 3.12Rj's suite: what is left of it needs that log;
     the parts below it come first**, 2026-10-09) The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
@@ -5605,7 +5605,7 @@ quick sweep as a smoke test.
     none at all (the war was over), 2 that went from 1.4 cells off their nearest enemy to
     0.2 and were in contact 1 and 14 hours after: PLAN 3.12Ro. (2) the long marches: they
     never stand, it is the distance: a line under PLAN 1.42.
-  - [ ] 3.12Rl **The puppets of a nation annexed with its cities occupied keep their
+  - [x] 3.12Rl **The puppets of a nation annexed with its cities occupied keep their
     supply** (the ninth read, finding 2; run there and again here: `.cache/read9/
     peaceSupply.ts BEL GER 12`). `annexNation` (`puppets.ts`) moves the puppets to the
     annexer's bloc and does not set `supplyDirty`; the partial refresh (ADR-196) has no
@@ -5621,6 +5621,22 @@ quick sweep as a smoke test.
     are of alliances) is looked at for the same, each with the full-refresh twin.
     With it, the reader's suspicion: `ringHolds` and the gain test wrap east to west
     whatever `loopingMap` says, as the flood does; whether the flood should.
+    **Done 2026-10-09 (ADR-223).** `annexNation` asks for a full refresh when it hands a
+    puppet over, as every other change of an overlord does. A mark on the bloc or the
+    puppet would not do: the partial refresh floods a marked bloc whole only when no changed
+    cell is its own, and the annexed cells are the annexer's and the target's. Two tests in
+    `supply.test.ts`: Belgium overrun and annexed by Germany (red first: 6,240 cells of the
+    Congo at Belgium's mark; now Germany's, the network the rule's to the cell, the game and
+    its loaded save one hash 30 days on), and the other places in one world, each against
+    the cell-by-cell rule: a puppet made, released, an overlord annexed with its cities its
+    own, a puppet annexed by a third nation, a puppet integrated, an overlord collapsed.
+    That second test is green without the mend: those places were sound (`makePuppet`,
+    `releasePuppet`, `eliminateNation` and the collapse ask for a full refresh; in an
+    integration and in an annexation with the cities unoccupied the cities change hands and
+    their blocs are flooded whole). A bloc is a nation and its puppets: an alliance changes
+    none. The pin of seed 99 stays (2104f897): no such annexation in its first year.
+    The suspicion: read, and so: the flood should keep to the edges where the map does not
+    loop, as the territory rule and the routes do. A second cause: PLAN 3.12Rp.
   - [ ] 3.12Rm **A formation is mustered where a route begins** (the ninth read, finding 4;
     run there, `cities.ts` again here). `musterPoint` (`production.ts`) gives `standPoint`
     of the city's own place; for 436 of the 5,757 cities of 1938 that is in a cell of
@@ -5653,7 +5669,19 @@ quick sweep as a smoke test.
     that is its side's ground, or the walk back as it is with the reason. The pin may move.
     AT: a unit test that fails first: a formation on the retreat, barred in the middle of a
     step with its enemy behind it, is no nearer that enemy when the walk ends.
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Ro: a line under PLAN 1.42 for the land that rises
+  - [ ] 3.12Rp **The supply flood keeps to the map's edges where the map does not loop**
+    (found with 3.12Rl, the ninth read's suspicion; read, not run). The flood
+    (`supply.ts`, the two seeds at a row's ends), the gain test (`beside`) and `ringHolds`
+    join column 0 and column w − 1 whatever `settings.loopingMap` says; the territory rule
+    (`territory.ts`), the route grid (`makeNavGrid`) and the AI's fronts ask it. On a map
+    with hard edges (the `looping=0` option, a scenario whose map does not wrap) a bloc's
+    network goes over the seam to land no march of it can reach that way. 1938 loops: the
+    pin stays. `referenceNetwork` of `supply.test.ts` wraps as the flood does and is
+    changed with it.
+    AT: a unit test that fails first: on a made map with `loopingMap` off, a bloc with land
+    at both edges and a city at one has no network at the other; with it on, it has; the
+    mended network equals the rule's in both.
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rp: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
     an earlier part broke fixed here; 3.12R ticked.
