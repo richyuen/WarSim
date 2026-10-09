@@ -81,6 +81,7 @@ function strengths(world: World): Float64Array {
   const f = world.formations.cols;
   const nc = world.nations.cols;
   world.formations.forEach((id) => {
+    if (world.afloat(id)) return; // the armies' strength: no fleet takes land yet (PLAN 4.2b; a navy in a war's reckoning is PLAN 4.6)
     const n = f.nation[id]!;
     const o = nc.overlord[n]!;
     s[o !== 0 ? o : n]! += f.strength[id]!;

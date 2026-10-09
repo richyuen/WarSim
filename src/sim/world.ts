@@ -24,7 +24,7 @@ import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 import { LandCounts } from './landCounts';
 import type { TechMask, TechRule } from './tech';
-import { cellInland, landPoint, landWay, maskSure, type LandMask } from '../shared/landMask';
+import { cellInland, landPoint, landWay, maskField, maskSure, waterPoint, type LandMask } from '../shared/landMask';
 
 export interface PendingCommand {
   seq: number;
@@ -626,6 +626,31 @@ export class World {
     let p = this.cellPoints.get(cell);
     if (!p) this.cellPoints.set(cell, (p = landPoint(this.landMask, w, cx, cy, this.settings.loopingMap) ?? mid));
     return [p[0], p[1]];
+  }
+
+  /**
+   * Where a fleet stands in the water cell `cell` (PLAN 4.2b): its middle, or where the fine
+   * mask has land there the cell's water point (the point of it furthest from land); null for
+   * a cell with no water in the mask. Without a mask the middle.
+   */
+  seaPoint(cell: number): [number, number] | null {
+    const { w, h } = this.cells;
+    const cx = cell % w;
+    const cy = (cell - cx) / w;
+    const mask = this.landMask;
+    if (!mask) return [cx + 0.5, cy + 0.5];
+    // The middle is a corner of four pixels: open water when none of them is land.
+    if (maskField(mask, w, h, cx + 0.5, cy + 0.5, this.settings.loopingMap) === 0) return [cx + 0.5, cy + 0.5];
+    return waterPoint(mask, w, cx, cy, this.settings.loopingMap);
+  }
+
+  /**
+   * Whether formation `id` is a fleet (PLAN 4.2b): of a sea template of the rules
+   * (`TemplateRule.domain`). The rules of the land (the march, supply, contact and fire, the
+   * ground a formation holds, the AI's orders) ask this and leave a fleet alone.
+   */
+  afloat(id: number): boolean {
+    return this.rules?.templates[this.formations.cols.template[id]!]?.domain === Domain.sea;
   }
 
   /**

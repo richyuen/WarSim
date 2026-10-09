@@ -27,6 +27,8 @@ test('at T3 no element of a formation near a coast stands on the fine mask’s w
     const k = m.w / W;
     const out: { id: number; x: number; y: number; sea: number }[] = [];
     for (const id of v.formationIds()) {
+      // Of the land: a fleet stands on the mask's water (PLAN 4.2b).
+      if (v.formationAfloat(id)) continue;
       const [x, y] = v.formationPos(id)!;
       const [px, py] = [Math.floor(x * k), Math.floor((y * m.h) / H)];
       let sea = Infinity;

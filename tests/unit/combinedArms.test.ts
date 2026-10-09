@@ -133,10 +133,13 @@ describe('the combined-arms bonus (PLAN 3.4a)', () => {
     };
     const alone = perTarget([[GER, 'tank_brigade', 0, 0], [POL, 'infantry_div', 1, 0]]);
     const withGuns = perTarget([[GER, 'tank_brigade', 0, 0], [POL, 'infantry_div', 1, 0], [GER, 'infantry_div_cadre', 0, 1]]);
+    // But for its AT gun, which the German guns hold down (PLAN 3.4c, below): which target an
+    // element picks goes by its id, and with the ids of a start without fleets the gun's two
+    // volleys were at two types and never compared (PLAN 4.2b).
     let compared = 0;
     for (const [k, dmg] of withGuns) {
       if (!alone.has(k)) continue;
-      expect(dmg / alone.get(k)!).toBeCloseTo(1, 10);
+      expect(dmg / alone.get(k)!, k).toBeCloseTo(k.startsWith('anti_tank>') ? combatJson.gunsOnGuns.fire : 1, 10);
       compared++;
     }
     expect(compared).toBeGreaterThan(0);
@@ -228,9 +231,12 @@ describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () =>
    * The Polish division's volleys on plains at the German formation `of` (stand 0) and at
    * `beside`, another formation of its side, by shooter and target type (the ground and the
    * stance are the same for both, so a volley of one type at another is one figure). `dead`:
-   * the arm destroyed before the hour, in every formation of that side.
+   * the arm destroyed before the hour, in every formation of that side. The division's AT gun
+   * is aimed at a light tank of `of`: which target an element picks goes by its id, and the
+   * ids by what the world began with (PLAN 4.2b: with the fleets in it the gun picked no tank
+   * of a panzer division), so the tests that ask for that volley do not leave it to the pick.
    */
-  const fired = (of: string, dead?: keyof typeof ARMS, beside?: Stand): Map<string, number> => {
+  const fired = (of: string, dead?: keyof typeof ARMS, beside?: Stand, aim = false): Map<string, number> => {
     const stands: Stand[] = [[GER, of, 0, 0], [POL, 'infantry_div', 1, 0]];
     if (beside) stands.push(beside);
     const { world, ids } = battle(stands);
@@ -238,6 +244,17 @@ describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () =>
     world.elements.forEach((el) => {
       if (dead && ec.formation[el] !== ids[1] && ARMS[dead].includes(classOf(ec.unit[el]!))) ec.strength[el] = 0;
     });
+    let gun = 0;
+    let tank = 0;
+    world.elements.forEach((el) => {
+      if (ec.strength[el]! <= 0) return;
+      if (gun === 0 && ec.formation[el] === ids[1] && UNIT_IDS_1938[ec.unit[el]!] === 'anti_tank') gun = el;
+      if (tank === 0 && ec.formation[el] === ids[0] && UNIT_IDS_1938[ec.unit[el]!] === 'tank_light') tank = el;
+    });
+    if (aim && gun !== 0 && tank !== 0) {
+      ec.target[gun] = tank;
+      ec.cooldown[gun] = 1; // a target kept from the hour before: it is not picked anew
+    }
     const out = new Map<string, number>();
     for (const [s, [target, dmg]] of volleysOf(world, ids[1]!)) out.set(`${UNIT_IDS_1938[ec.unit[s]!]}>${UNIT_IDS_1938[ec.unit[target]!]}`, dmg);
     return out;
@@ -250,7 +267,7 @@ describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () =>
   };
   const AT_ON_TANK = 'anti_tank>tank_light';
   /** The tank brigade has no guns: what the Poles fire at it is the volley the rule leaves alone. */
-  const base = (): Map<string, number> => fired('tank_brigade');
+  const base = (): Map<string, number> => fired('tank_brigade', undefined, undefined, true);
 
   it('the data names the AT guns and a figure below 1', () => {
     expect(GUNS.fire).toBeLessThan(1);
@@ -261,7 +278,7 @@ describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () =>
   });
 
   it('an AT gun’s volley at a tank of a panzer division, which has guns, is its volley at one of a tank brigade × the figure', () => {
-    expect(fired('panzer_div').get(AT_ON_TANK)! / base().get(AT_ON_TANK)!).toBeCloseTo(GUNS.fire, 10);
+    expect(fired('panzer_div', undefined, undefined, true).get(AT_ON_TANK)! / base().get(AT_ON_TANK)!).toBeCloseTo(GUNS.fire, 10);
   });
 
   it('the howitzers’ and the rifles’ volleys are the same at both', () => {
@@ -277,7 +294,7 @@ describe('artillery on the enemy side holds down the AT guns (PLAN 3.4c)', () =>
   });
 
   it('the guns must be alive: with the panzer division’s artillery destroyed the AT gun fires in full', () => {
-    expect(fired('panzer_div', 'artillery').get(AT_ON_TANK)! / base().get(AT_ON_TANK)!).toBeCloseTo(1, 10);
+    expect(fired('panzer_div', 'artillery', undefined, true).get(AT_ON_TANK)! / base().get(AT_ON_TANK)!).toBeCloseTo(1, 10);
   });
 
   it('the guns of an ally of the enemy count, and so do those of another formation of his', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cellInland, landPoint, landWay, lineClear, maskBit, maskField, maskLand, maskSure, SHORE_NOISE, SURE_LAND, type LandMask } from '../../src/shared/landMask';
+import { cellInland, landPoint, landWay, waterPoint, lineClear, maskBit, maskField, maskLand, maskSure, SHORE_NOISE, SURE_LAND, type LandMask } from '../../src/shared/landMask';
 
 // PLAN 2.9a (ADR-79): the fine land mask, read one way by the sim, the renderer and the tests.
 
@@ -87,6 +87,24 @@ describe('the fine land mask (PLAN 2.9a)', () => {
     expect(Math.abs(mid[1] - 1.5)).toBeLessThanOrEqual(0.5 / 8);
     // A cell without land: none.
     expect(landPoint(half, 3, 0, 1, false)).toBeNull();
+  });
+
+  it('the water point of a cell is the middle of its water pixel furthest from land (PLAN 4.2b)', () => {
+    // Cell (1, 1) of a 3 × 3 map: its west half is sea (and all of the cells west of it).
+    const half = mask(3, 3, 8, (px) => px >= 12);
+    const p = waterPoint(half, 3, 1, 1, false)!;
+    // The west edge of the cell is 4 px from the land; of that column, the row at the middle.
+    expect(p[0]).toBeCloseTo(1 + 0.5 / 8, 12);
+    expect(Math.abs(p[1] - 1.5)).toBeLessThan(1 / 8);
+    expect(maskLand(half, 3, 3, p[0], p[1], false)).toBe(false);
+    // A cell of water with water all round: its middle; one without water: none.
+    const mid = waterPoint(mask(3, 3, 8, () => false), 3, 1, 1, false)!;
+    expect(Math.abs(mid[0] - 1.5)).toBeLessThanOrEqual(0.5 / 8);
+    expect(Math.abs(mid[1] - 1.5)).toBeLessThanOrEqual(0.5 / 8);
+    expect(waterPoint(half, 3, 2, 1, false)).toBeNull();
+    // A pond of 3 × 3 px in a cell of land: its middle pixel.
+    const pond = mask(3, 3, 8, (px, py) => !(px >= 13 && px < 16 && py >= 13 && py < 16));
+    expect(waterPoint(pond, 3, 1, 1, false)).toEqual([1 + 6.5 / 8, 1 + 6.5 / 8]);
   });
 
   it('a spit: the point is on its widest part', () => {

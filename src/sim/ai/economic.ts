@@ -127,6 +127,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     /** The tanks' part of the army's upkeep, the orders in training with it. */
     const tanks = new Map<number, number>();
     world.formations.forEach((id) => {
+      // A fleet is not of the army (PLAN 4.2b): it is not sent home, and its upkeep is no part of
+      // the share of the income an army may take. It is paid all the same: the balance is of
+      // all the expenses, so a nation short of money by its navy cuts its army.
+      if (world.afloat(id)) return;
       const n = f.nation[id]!;
       const l = own.get(n) ?? [];
       l.push(id);
@@ -285,7 +289,7 @@ function armourShareOfEnemies(world: World, n: number): number {
   let tanks = 0;
   let all = 0;
   world.formations.forEach((id) => {
-    if (!world.wars.atWar(n, f.nation[id]!)) return;
+    if (!world.wars.atWar(n, f.nation[id]!) || world.afloat(id)) return; // of the enemies' armies (PLAN 4.2b)
     for (const e of idx.get(id) ?? []) {
       all++;
       if (units[ec.unit[e]!]!.cls.startsWith('armor')) tanks++;

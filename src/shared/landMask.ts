@@ -99,10 +99,23 @@ export function maskSure(mask: LandMask, mapW: number, mapH: number, x: number, 
  *   numbers throughout, so every engine gives the same point.
  */
 export function landPoint(mask: LandMask, mapW: number, cx: number, cy: number, wrapX: boolean): [number, number] | null {
+  return farPoint(mask, mapW, cx, cy, wrapX, true);
+}
+
+/**
+ * The water point of cell (`cx`, `cy`): as `landPoint`, of the cell's water pixels the one
+ * furthest from land; null when the cell has no water pixel. Where a fleet stands (PLAN 4.2b).
+ */
+export function waterPoint(mask: LandMask, mapW: number, cx: number, cy: number, wrapX: boolean): [number, number] | null {
+  return farPoint(mask, mapW, cx, cy, wrapX, false);
+}
+
+/** Of the cell's pixels that are land (`land`) or water, the middle of the one furthest from the other kind (`landPoint`). */
+function farPoint(mask: LandMask, mapW: number, cx: number, cy: number, wrapX: boolean, land: boolean): [number, number] | null {
   const k = Math.round(mask.w / mapW); // mask pixels to a cell
   const x0 = cx * k;
   const y0 = cy * k;
-  const at = (px: number, py: number): boolean => maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py);
+  const at = (px: number, py: number): boolean => maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py) === land;
   let best = -1;
   let bestMid = 0;
   let bx = 0;
@@ -110,7 +123,7 @@ export function landPoint(mask: LandMask, mapW: number, cx: number, cy: number, 
   for (let py = y0; py < y0 + k; py++) {
     for (let px = x0; px < x0 + k; px++) {
       if (!at(px, py)) continue;
-      // The square of the distance to the nearest water pixel in the window, in pixels.
+      // The square of the distance to the nearest pixel of the other kind in the window, in pixels.
       let near = 2 * k * k + 1;
       for (let qy = y0 - k; qy < y0 + 2 * k && near > 1; qy++) {
         for (let qx = x0 - k; qx < x0 + 2 * k; qx++) {

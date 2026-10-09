@@ -68,6 +68,8 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
       const wet: string[] = [];
       const seen = { formations: 0, atRest: 0, elements: 0, drawnIn: 0, onItsFormation: 0, marching: 0, marchingWet: 0, crossing: 0 };
       w.formations.forEach((id) => {
+        // Of the land: a fleet stands on the mask's water (PLAN 4.2b, `fleets1938.test.ts`).
+        if (w.afloat(id)) return;
         seen.formations++;
         const [fx, fy] = [f.x[id]!, f.y[id]!];
         const list = idx.get(id) ?? [];

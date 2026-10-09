@@ -820,8 +820,8 @@ Element (authoritative unit proxy) {
   - `placeOob` (`src/sim/data/oob.ts`, part of `buildPoliticalMap`) floods each group out from its
     anchor over land the nation controls, or that its puppets own and control, keeping formations
     one cell apart; it places all of them in 8 ms at M.
-  - Strength = Σ element manpower / tanks / guns (`templateStrength`). Fleets and air wings start in
-    Phases 4–5.
+  - Strength = Σ element manpower / tanks / guns (`templateStrength`); a fleet's is its crews. Air wings start in
+    Phase 5.
   - **Fleet templates (PLAN 4.2a, ADR-247).** `data/templates/sea.json`, six: battle squadron
     (4 BB, 2 CA, 2 CL, 8 DD), carrier group (2 CV, 2 CA, 6 DD), cruiser squadron (2 CA, 2 CL,
     4 DD), destroyer flotilla (8 DD), submarine flotilla (8 SS), transport group (12 TP); an
@@ -832,7 +832,45 @@ Element (authoritative unit proxy) {
     template would move the sea's. A template is of one domain (`validateDataSet`). A fleet
     has the pace of its slowest ship and the cost, days, crew and upkeep of its ships, by the
     land's scales. *Not yet:* nothing makes one. The queue rejects a sea template and the
-    spawn command refuses it (`Refusal.NotOfLand`); the page lists the land templates only.
+    spawn command refuses it (`Refusal.NotOfLand`). *Since PLAN 4.2b* the start has fleets (below), and the page is sent
+    every template with its domain: it names and draws a formation by its template's index,
+    and its build list leaves the fleets out.
+  - **The fleets of the start (PLAN 4.2b, ADR-248).** `data/scenarios/1938/fleets.json`: 145
+    groups, 197 fleets, 1,786 ships, each group so many formations of a sea template at a
+    naval base of `ports.json`, by the base's name (`validateDataSet`: a sea template, a port
+    of that name with a naval base, held by the group's nation or by a puppet of it). 27
+    nations have one; the United Kingdom and the United States 36 each, Japan 29, France 21,
+    Italy 20, the Soviet Union 16, Germany 9. Round figures to the templates' ships, not a
+    navy's list. `placeFleets` (`src/sim/data/fleets.ts`) puts a group's first fleet in its
+    base's water (`portWater`: the water nearest the port by the terrain alone, which is the
+    cell of the port's lane node for all 61 bases used) and the others in the water about it
+    (a flood over water, 4-way, one fleet to a cell, no cell twice; at most 3 cells from the
+    base's water in 1938). A fleet stands at `World.seaPoint` of its cell: the middle, or
+    where the fine mask has land there the cell's water point (`waterPoint`, `landPoint`'s
+    twin). The fleets are the rows after the land's formations (1,055 to 1,251): no land id
+    moved. A world that is not the 1938 one has none (the toy world, the random world).
+  - **What reads a fleet, and what leaves it alone** (`World.afloat(id)`: its template is of
+    the sea).
+    - *Read:* the economy's upkeep (a navy is paid from the first month, with
+      `UPKEEP_SCALE`; `startTreasury` counts it); the techs of the start (a nation knows
+      what its ships need); a nation's death (its fleets go with it, `eliminateNation`) and
+      its integration by its overlord (they are the overlord's); the save, the hash, the
+      snapshot and the tiers (a marker with a hull at T1, the ships as elements at T2 and
+      T3); the editor (a fleet whose water is made land, by a brush or a map import, is
+      removed; on water it stays).
+    - *Left alone:* supply over land (a fleet keeps what it has: the sea's supply is PLAN
+      4.4); the march (`order` rejects it, the march home skips it: it sails by PLAN 4.2c);
+      contact and fire (`findBattles`: the sea's battles are PLAN 4.3); retreat (no enemy
+      on the ground); the pressure on the frontier (it holds no ground); the garrison of a
+      province against a revolt; the men at a major battle and a camp's strongest nation;
+      a nation's combat efficiency (its army's mean supply); the men of a war's sides
+      (`menOf`) and of the strategic AI's strengths; the operational AI's fronts and
+      sectors (neither one of its own to send nor an enemy's strength); the economic AI
+      (not sent home, and its upkeep no part of the army's share of the income: a nation
+      short of money by its navy cuts its army); desertion in bankruptcy (a rule of men);
+      the statistics' men (the army's).
+    - *Not yet:* a fleet does not sail (PLAN 4.2c), is not built (4.2e), fights nothing
+      (4.3), and is not laid up by a nation that cannot pay it (4.6).
 - **Slotted pose** is `slotPose(formation, slot, aliveMask)`, a pure function. It is the same
   code in the sim (for engagement start positions) and in the snapshot builder.
   *As built (`sim/core/pose`, PLAN 2.7a, ADR-70):* `slotPose(x, y, facing, slot, slots, spacing)`, where
@@ -1471,8 +1509,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   repair, rebase and enable supply. *As built (PLAN 4.1c):* a list of the scenario with the
   two levels, each a node of the lane graph (§3.3); nothing in play reads them yet.
 - Fleets are formations of ship elements: DD, CL, CA, BB, CV, SS, TP. *As built (PLAN 4.2a):*
-  the six templates and the seven ship types are in the rules (§3.6); no fleet exists yet
-  (PLAN 4.2b places them, 4.2c moves them). Movement runs along
+  the six templates and the seven ship types are in the rules (§3.6). *As built (PLAN 4.2b):*
+  197 fleets stand at the water of their bases in 1938 (§3.6), paid for and read by no rule
+  of the land; they do not sail yet (PLAN 4.2c). Movement runs along
   lanes with continuous positions. Detection uses zone-level search plus element-level
   range.
 - **Fleet battles** at element level: gunnery ranges (BB > CA > CL > DD), torpedoes

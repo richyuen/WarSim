@@ -376,8 +376,10 @@ export interface TemplateInfo {
   manpower: number;
   days: number;
   men: number;
-  /** Marker symbol class from the template's elements (PLAN 2.1). */
+  /** Marker symbol class from the template's elements (PLAN 2.1); a fleet's is `fleet` (PLAN 4.2b). */
   symbol: UnitSymbol;
+  /** Of the land (0), or a fleet (1): `Domain` of the sim. Only one of the land can be queued yet (PLAN 4.2e). */
+  domain: number;
   /** The techs a nation must know to raise it, as bits (PLAN 3.1a; `NationStat.techs`). */
   techs: readonly [number, number];
 }
@@ -389,7 +391,7 @@ export interface TechInfo {
   days: number;
 }
 
-export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison';
+export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison' | 'fleet';
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
 export interface NationStat {

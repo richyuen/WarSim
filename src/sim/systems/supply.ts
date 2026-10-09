@@ -401,6 +401,7 @@ export function supplySystem(world: World): void {
   /** Whether the network `net` feeds the formation at hand. */
   const feeds = (net: number): boolean => net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, nation));
   f.forEach((id) => {
+    if (world.afloat(id)) return; // a fleet is not fed over land: it keeps what it has (PLAN 4.2b; the sea's supply is PLAN 4.4)
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     nation = c.nation[id]!;
     bloc = blocOf(world, nation);

@@ -386,6 +386,14 @@ export const OobFile = z.strictObject({
   ),
 });
 
+/** Starting fleets (PLAN 4.2b, `src/sim/data/fleets.ts`): each group at a naval base of ports.json, by its name. */
+export const FleetsFile = z.strictObject({
+  comment: z.string().optional(),
+  groups: z.array(
+    z.strictObject({ nation: tag, template: id, count: z.number().int().min(1).max(100), port: z.string().min(1), note: z.string().optional() }),
+  ),
+});
+
 /** City-list inputs (PLAN 1.5): keys are 'NE NAME|ADM0_A3'; read by tools/data/cities.ts. */
 const placeKey = z.string().regex(/^[^|]+\|[A-Z0-9]{3}$/, "place keys are 'NAME|ADM0'");
 export const CityRulesFile = z.strictObject({
@@ -455,6 +463,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ports\.json$/, schema: PortsFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/fleets\.json$/, schema: FleetsFile },
 ];
 
 export function schemaFor(file: string): z.ZodType | undefined {
@@ -704,6 +713,26 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
         else if ((templateDomain.get(g.template) ?? 'land') !== 'land') errors.push(`${oobF}: groups[${i}].template: '${g.template}' is no land template: the groups of this file are placed on land`);
       });
     }
+    // The fleets (PLAN 4.2b): of the sea, each at a naval base that its nation or a puppet of it holds.
+    const fleetsF = f.replace(/nations\.json$/, 'fleets.json');
+    const fleets = ok[fleetsF] as z.infer<typeof FleetsFile> | undefined;
+    if (fleets) {
+      const portsF = f.replace(/nations\.json$/, 'ports.json');
+      const ports = (ok[portsF] as z.infer<typeof PortsFile> | undefined)?.ports;
+      if (!ports) errors.push(`${fleetsF}: no valid ports.json next to this file`);
+      fleets.groups.forEach((g, i) => {
+        const n = byTag.get(g.nation);
+        if (!n || n.alive === false) errors.push(`${fleetsF}: groups[${i}].nation: '${g.nation}' is not a living nation`);
+        if (!templates.has(g.template)) errors.push(`${fleetsF}: groups[${i}].template: unknown template '${g.template}'`);
+        else if (templateDomain.get(g.template) !== 'sea') errors.push(`${fleetsF}: groups[${i}].template: '${g.template}' is no sea template: the groups of this file are placed on water`);
+        if (!ports) return;
+        const rows = ports.filter((p) => p.name === g.port);
+        if (rows.length !== 1) errors.push(`${fleetsF}: groups[${i}].port: ${rows.length === 0 ? `no port '${g.port}'` : `${rows.length} ports named '${g.port}'`} in ${portsF}`);
+        else if (rows[0]!.navalBase < 1) errors.push(`${fleetsF}: groups[${i}].port: '${g.port}' is no naval base`);
+        else if (rows[0]!.nation !== g.nation && (rows[0]!.nation === undefined || byTag.get(rows[0]!.nation)?.overlord?.tag !== g.nation))
+          errors.push(`${fleetsF}: groups[${i}].port: '${g.port}' is held by '${rows[0]!.nation ?? 'no nation'}', neither '${g.nation}' nor a puppet of it`);
+      });
+    }
     const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;
     if (!own) continue;
     const of2 = f.replace(/nations\.json$/, 'ownership.json');
@@ -721,8 +750,8 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
       check(o.owner, `occupation[${i}].owner`);
     });
   }
-  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities|flags|oob)\.json$/)) {
-    if (!(f.replace(/(ownership|diplomacy|cities|flags|oob)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
+  for (const [f] of of<unknown>(/^scenarios\/[a-z0-9_]+\/(ownership|diplomacy|cities|flags|oob|fleets)\.json$/)) {
+    if (!(f.replace(/(ownership|diplomacy|cities|flags|oob|fleets)\.json$/, 'nations.json') in ok)) errors.push(`${f}: no valid nations.json next to this file`);
   }
   for (const [f, s] of of<ScenarioMeta>(/^scenarios\/[a-z0-9_]+\/scenario\.json$/)) {
     const dir = f.split('/')[1];

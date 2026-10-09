@@ -158,6 +158,15 @@ function symbolPath(ctx: CanvasRenderingContext2D, s: UnitSymbol, x: number, y: 
       ctx.moveTo(x, y + h / 2);
       ctx.lineTo(x + w, y + h / 2);
       break;
+    case 'fleet': // a hull and its mast
+      ctx.moveTo(x, y + h * 0.5);
+      ctx.lineTo(x + w, y + h * 0.5);
+      ctx.lineTo(x + w * 0.78, y + h);
+      ctx.lineTo(x + w * 0.22, y + h);
+      ctx.closePath();
+      ctx.moveTo(x + w / 2, y + h * 0.5);
+      ctx.lineTo(x + w / 2, y);
+      break;
   }
   ctx.stroke();
 }

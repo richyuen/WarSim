@@ -50,7 +50,7 @@ export function ceTarget(world: World, n: number): number {
   let men = 0;
   let sup = 0;
   world.formations.forEach((id) => {
-    if (f.nation[id] !== n) return;
+    if (f.nation[id] !== n || world.afloat(id)) return; // the army's supply: a fleet's is not the land's (PLAN 4.2b)
     men++;
     sup += f.supply[id]!;
   });

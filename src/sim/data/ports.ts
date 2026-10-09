@@ -55,6 +55,29 @@ export interface Port {
 
 /** How far a port given by hand looks for owned land, as a city does (`CITY_SNAP_CELLS`). */
 export const PORT_SNAP_CELLS = 2;
+/** How far from the place given for a port's water its water cell may be, cells (the lanes' `PASSAGE_SNAP`). */
+export const WATER_SNAP_CELLS = 2;
+
+/**
+ * The water cell of port `p` by the terrain alone (PLAN 4.2b; where its fleets stand): the
+ * water nearest the place given for its water, or else the water nearest the port's place
+ * among the cells within `reach` of its cell; -1 for none. The lane graph's node of the port
+ * is found the same way among the water that has a sea zone (`buildLaneGraph`), so the two
+ * are one cell but where the nearest water is a pond.
+ */
+export function portWater(p: Port, terrain: Uint8Array, w: number, h: number, reach: number, wrapX: boolean): number {
+  const water = (c: number): boolean => !isLand(terrain[c]!);
+  if (!Number.isNaN(p.waterX)) return nearestCellWhere(water, p.waterX, p.waterY, w, h, WATER_SNAP_CELLS, wrapX);
+  const px = p.cell % w;
+  const py = (p.cell - px) / w;
+  const near = (c: number): boolean => {
+    if (!water(c)) return false;
+    let dx = Math.abs((c % w) - px);
+    if (wrapX && dx > w - dx) dx = w - dx;
+    return dx <= reach && Math.abs(Math.floor(c / w) - py) <= reach;
+  };
+  return nearestCellWhere(near, p.x, p.y, w, h, 2 * reach + 2, wrapX);
+}
 
 function waterInReach(terrain: Uint8Array, cell: number, w: number, h: number, reach: number): boolean {
   const x = cell % w;

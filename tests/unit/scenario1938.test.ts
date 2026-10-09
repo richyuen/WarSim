@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { dateOfTick } from '../../src/shared/calendar';
 import { xxhash32View } from '../../src/sim/core/hash';
 import type { ScenarioAssets } from '../../src/shared/protocol';
-import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { FLEETS_1938, NATIONS_1938, SIZE_1938, TEMPLATES_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { CITIES_1938, assets1938, OOB_1938, politicalMap1938 } from '../helpers/earth';
 
@@ -54,12 +54,18 @@ describe('1938 world (PLAN 1.9a)', () => {
       if (w.cities.cols.capitalOf[id]! > 0) capitals++;
     });
     expect(capitals).toBe(NATIONS_1938.filter((n) => n.alive !== false).length);
-    expect(w.formations.count).toBe(OOB_1938.reduce((s, g) => s + g.count, 0));
+    // The land's order of battle, and after it the fleets (PLAN 4.2b).
+    const land = OOB_1938.reduce((s, g) => s + g.count, 0);
+    expect(w.formations.count).toBe(land + FLEETS_1938.reduce((s, g) => s + g.count, 0));
     const f = w.formations.cols;
     w.formations.forEach((id) => {
-      expect(TEMPLATES_LAND[f.template[id]!]).toBeDefined();
+      expect((id <= land ? TEMPLATES_LAND : TEMPLATES_1938)[f.template[id]!]).toBeDefined();
+      expect(w.afloat(id)).toBe(id > land);
       expect(f.strength[id]).toBeGreaterThan(0);
-      expect(w.cells.controller[Math.floor(f.y[id]!) * 2048 + Math.floor(f.x[id]!)]).toBeGreaterThan(0);
+      // On land somebody holds; a fleet on water, which nobody holds.
+      const holder = w.cells.controller[Math.floor(f.y[id]!) * 2048 + Math.floor(f.x[id]!)]!;
+      if (id <= land) expect(holder).toBeGreaterThan(0);
+      else expect(holder).toBe(0);
     });
   });
 

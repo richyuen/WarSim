@@ -26,6 +26,8 @@ function census(w: World): { all: number; armour: number; soviet: number; byNati
   const f = w.formations.cols;
   const out = { all: 0, armour: 0, soviet: 0, byNation: new Map<number, number>() };
   w.formations.forEach((id) => {
+    // The armies: the fleets of the start are no part of them (PLAN 4.2b, `fleets1938.test.ts`).
+    if (w.afloat(id)) return;
     out.all++;
     out.byNation.set(f.nation[id]!, (out.byNation.get(f.nation[id]!) ?? 0) + 1);
     if (!isArmour(f.template[id]!)) return;

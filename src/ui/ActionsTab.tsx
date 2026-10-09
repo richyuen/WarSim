@@ -68,6 +68,8 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand }:
 
       <div class="panel-sub">{t('act.production')}</div>
       {templates.map((tp, i) => {
+        // A fleet is not in the list (PLAN 4.2b): the queue takes none yet (PLAN 4.2e). `i` stays the template's index.
+        if (tp.domain !== 0) return null;
         const affordable = nation.gold >= tp.gold && nation.manpower >= tp.manpower;
         // The sim refuses a template whose techs the nation does not know (PLAN 3.1a).
         const known = (nation.techs[0] & tp.techs[0]) >>> 0 === tp.techs[0] && (nation.techs[1] & tp.techs[1]) >>> 0 === tp.techs[1];

@@ -13239,3 +13239,93 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not looked at:** the picture of the brigade's tag in the tank battle demo; a view
   with many blocks.
 - **Next:** PLAN 4.2b, the fleets.
+
+## 2026-10-09 — PLAN 4.2b: fleets in the 1938 order of battle, standing at their bases' water (ADR-248)
+
+- **Critic not due;** the report is 126 commits old, so step 2b does not apply.
+- **Counted first** (`.cache/navyCost.ts`): the income, the army's upkeep and what the
+  budget has left of each of the 48 nations with a naval base, against a template's upkeep
+  with `UPKEEP_SCALE` (a battle squadron 23.45 a month, a submarine flotilla 2.8). The data
+  was sized by it.
+- **Done:** `data/scenarios/1938/fleets.json`: 145 groups, 197 fleets, 1,786 ships, 27
+  nations, 61 bases. By nation, fleets / gold a month / share of the income: the United
+  Kingdom 36 / 258.6 / 10.7 %, the United States 36 / 249.5 / 4.5 %, Japan 29 / 183.0 /
+  21.9 %, France 21 / 116.2 / 10.8 %, Italy 20 / 91.3 / 14.0 %, the Soviet Union 16 / 73.5 /
+  6.4 %, Germany 9 / 52.5 / 2.4 %; 20 more with 1 to 6.
+  - `placeFleets` (`src/sim/data/fleets.ts`), `portWater` (`ports.ts`), `World.seaPoint`,
+    `waterPoint` (`landMask.ts`, with `landPoint` one function now), `addFleets`
+    (`scenario1938.ts`, before the techs and the treasury), `World.afloat`.
+  - `validateDataSet`: a group is of a sea template, at a port of `ports.json` with a naval
+    base, held by its nation or by a puppet of it.
+- **Each rule that reads a formation,** as the task asks (`World.afloat`):
+  - *reads a fleet:* the upkeep of the month and `startTreasury`; the techs of the start;
+    `eliminateNation` (gone with its nation); a puppet's integration (the overlord's); the
+    save, the hash, the snapshot; the editor (gone where its water is made land);
+  - *leaves it alone:* `supplySystem`; `order` and `repatriationSystem` (the march, the
+    march home); `findBattles` (contact and fire, so the fronts' battles, `largestBattle`
+    and `contactsOf`, which read `engaged`); `fallBack` (retreat); the frontier's pressure
+    (`territory.ts`); the revolts' garrison; the major battles' men and `strongest`; a
+    nation's combat efficiency (its army's mean supply); `menOf` (a war's sides); the strategic AI's `strengths`; the operational
+    AI (free formations, sectors, the enemy's strength); the economic AI (the cut, the
+    army's share, the enemies' armour share); desertion; the statistics' men.
+  - `movementSystem` and `retreatSystem` are not guarded: a fleet is never `moving` or
+    `engaged`, which is what they read.
+- **The AT:** ten years of seeds 1, 2 and 3 (`aiSweep`, `fleetsStand` asked every day): of
+  197 fleets 194, 195 and 197 at their place with their ships, their crews, supply 1, no
+  damage, never in contact or on the march; 3, 2 and 0 gone, each with its nation.
+- **Tests:** `fleets1938.test.ts`, eight (the placement, four; the start; the treasury and
+  the statistics; 60 days with a Chinese division on the shore beside a Japanese fleet, an
+  order to march to a fleet and to a flotilla put ashore by hand, and the United Kingdom
+  bankrupt; the data set's refusals); one in `landMask.test.ts`. Six mutations, each a
+  guard taken out (contact, desertion, the cut, the march, supply, the statistics): each
+  failed a test. Two did not at first: desertion wounds a ship and sinks none for 20 months
+  (`fleetsStand` reads the wounds now), and an order to a fleet on water finds no route
+  whatever the rule (a flotilla put on land by hand is ordered now).
+- **Mistakes of mine the tests caught.**
+  - The base's water was the port's node of the lane graph: the world's build went from
+    453 ms to 1,100, and `scenario1938.test.ts` (a limit of 2 s) failed at 4.3 s in the
+    suite. By the terrain alone it is 515 ms, and the same cell for all 61 bases.
+  - The navy's upkeep counted in the army's share of the income: the United Kingdom and
+    Sweden ordered no division. `economicAi.test.ts` failed for Sweden.
+  - A fleet was left where it stood in a map import whatever became of its water;
+    `mapImport.test.ts` asked what a fleet does there, and one on land is removed now.
+  - My own test of the water point asked for the middle of a cell with land 4 px east of it.
+- **Tests of others changed** (the reasons in ADR-248): the army's counts and places skip a
+  fleet in `coast1938`, `standYear`, `startArmies`, `armourWorth`, `stats`, `scenario1938`
+  and the ten-year helper; `economy.test.ts` 18 nations with a year of their shortfall for
+  16; `armourWorth.test.ts` the Soviet Union's cut, 49 others left for 61 (a navy is not
+  cut: its 73.5 a month are 12 rifle divisions more). `combinedArms.test.ts`, three tests:
+  an element's target goes by a hash of its id, the ids by what the world began with, and
+  with 1,786 elements more the one AT gun picked other targets; one test had passed since
+  PLAN 3.4c only because the gun's two volleys were never at one type. It holds the gun to
+  × 0.7 now, and two aim the gun. With the rule of 3.4c out, two of the three fail and one
+  more of the file. `coastElements1938` and `coastPicture1938` (e2e) look at the coastal
+  formations of the land (`MapView.formationAfloat`).
+- **The pin moves:** `da977ca2` → `bbfd15fc`. **No sweep** (ADR-58).
+- **Tick time:** two years of seed 99, pinned, two runs: 1.89 and 1.87 ms (1.83 and 1.87
+  before, another game). Not told apart. The world's build 453 → 515 ms.
+- **Seven pictures looked at** (`.cache/fleets/`, a scratch spec, removed): Scapa Flow at
+  3,000, 800, 200 and 40 m/px, the Channel, Japan, the Mediterranean. At T1 a box with a
+  hull, stacked by base ("×4"); at T2 the tag "Battle squadron 1055" and the ships in rows,
+  each the ship sprite; far out a counter of 45.1k at Scapa Flow under the army's symbol.
+  No error in the page's console. The page is sent all 25 templates; the build list has 19.
+- **Found, not mended:** a navy is never cut and weighs nothing in a war's reckoning (PLAN
+  4.6); a fleet stands at a base its nation has lost (PLAN 4.4); how a fleet is drawn (PLAN
+  4.7); one fleet in a crossing cell, Denmark's at Copenhagen (PLAN 4.2c); only the 1938
+  start has fleets (PLAN 4.2e).
+- **Not looked at:** S, L and XL; the formation panel of a fleet; a click on one; a save of
+  before this commit loaded (it has no fleet and its nations' treasuries are their own).
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **The browser suite in full, by hand** (this part changes the start of every 1938 game;
+  20.2 min): 162 of 163 passed. The one, `tags1938`, is PLAN 4.2b1 (ADR-249), mended and
+  committed before this. Before the suite, sixteen specs of markers, counters, elements and
+  the build list: `coastElements1938` failed (it took the fleets for its coastal
+  formations) and is changed, with `coastPicture1938`.
+  - With the rule of 4.2b1 and the fleets: the six specs that read tags, 11 tests, green.
+    Then `tags1938`, `fightSeen1938`, `formationFight1938` and `tankBattle1938` in one run of
+    8.3 min: `tankBattle1938` ("stop 4, tanks") and `fightSeen1938` ("marks drawn at 2
+    m/px") failed, once each; the two alone passed (3 tests, 5.0 min), as both had in the
+    full suite and `tankBattle1938` in the run of six. In BLOCKERS with the flaky tests; the
+    specs were not changed, and I did not read the two errors' details (the run's output
+    was not kept).
+- **Next:** PLAN 4.2c (a fleet sails along the lanes).

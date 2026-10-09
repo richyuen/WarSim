@@ -19,7 +19,8 @@ function expected(w: World, n: number, tick: number, area: Float64Array): number
   const nc = w.nations.cols;
   let men = 0;
   w.formations.forEach((f) => {
-    if (w.formations.cols.nation[f] === n) men += w.formations.cols.strength[f]!;
+    // The men of its army: a fleet's crews are not counted (PLAN 4.2b).
+    if (w.formations.cols.nation[f] === n && !w.afloat(f)) men += w.formations.cols.strength[f]!;
   });
   const f = Math.fround;
   return [f(tick), n, f(area[n]!), f(nc.income[n]!), f(nc.gold[n]!), f(men), f(nc.casualties[n]!)];

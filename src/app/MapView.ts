@@ -1359,6 +1359,12 @@ export class MapView {
     return Array.from(this.formIds);
   }
 
+  /** Whether formation `id` of the last snapshot is a fleet (PLAN 4.2b): by its template's domain, as the worker sent it. */
+  formationAfloat(id: number): boolean {
+    const i = this.formIds.indexOf(id);
+    return i >= 0 && this.templates[this.formTemplate[i]!]?.domain === 1;
+  }
+
   /**
    * Where formation `id` is, from the last snapshot, or null: where its block stands (PLAN
    * 3.11a), which is where a view that goes there finds its elements.

@@ -160,6 +160,7 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
     if (nc.bankrupt[n] === 1) deserting[n] = 1;
   });
   world.formations.forEach((id) => {
-    if (deserting[fc.nation[id]!]) bleedFormation(world, id, DESERTION); // through the elements
+    // Through the elements. A fleet keeps its ships (PLAN 4.2b): the rule counts men.
+    if (deserting[fc.nation[id]!] && !world.afloat(id)) bleedFormation(world, id, DESERTION);
   });
 }

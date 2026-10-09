@@ -323,6 +323,11 @@ function strandedToLand(world: World): void {
   const gone: number[] = [];
   world.formations.forEach((f) => {
     const c = Math.floor(fc.y[f]!) * w + Math.floor(fc.x[f]!);
+    // A fleet is not brought ashore (PLAN 4.2b): it stays on its water, and is gone with it.
+    if (world.afloat(f)) {
+      if (isLand(terrain[c]!)) gone.push(f);
+      return;
+    }
     if (isLand(terrain[c]!)) return;
     const to = nearestCellWhere((i) => isLand(terrain[i]!), fc.x[f]!, fc.y[f]!, w, h, STRANDED_REACH, world.settings.loopingMap);
     if (to < 0) {

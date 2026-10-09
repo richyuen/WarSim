@@ -6,7 +6,7 @@
  * Subscriptions only change what is *sent*; the sim never sees them (invariant I4).
  */
 import { LABEL_STRIDE } from '../shared/nationLabels';
-import { ECONOMY_TABLES_1938, NATIONS_1938, TEMPLATES_LAND, UNIT_IDS_1938 } from '../sim/scenario1938';
+import { ECONOMY_TABLES_1938, NATIONS_1938, TEMPLATES_1938, UNIT_IDS_1938 } from '../sim/scenario1938';
 import { deriveNationLabels } from './deriveLabels';
 import terrainJson from '../../data/terrain.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
@@ -54,7 +54,7 @@ import { Sim } from '../sim/sim';
 import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { TILE, type World } from '../sim/world';
+import { Domain, TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
@@ -370,7 +370,8 @@ export class SimServer {
       this.startLand = Uint8Array.from(world.cells.terrain, (t) => (t >= Terrain.Plains ? 1 : 0));
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
-      const templates = TEMPLATES_LAND.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: symbolOf(t), techs: rules[i]!.techs }));
+      // Every template of the rules, by its index, the fleets' with the land's (PLAN 4.2b): a formation is named and drawn by it.
+      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, techs: rules[i]!.techs }));
       const techs = (world.rules?.techs ?? []).map((t) => ({ nameKey: `tech.${t.id}`, gold: t.gold, days: t.days }));
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates, techs }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {

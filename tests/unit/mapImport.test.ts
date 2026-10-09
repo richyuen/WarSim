@@ -103,8 +103,17 @@ describe('map import keeps cities and formations on land', () => {
     const t = s.world.cells.terrain;
     expect(cityCells.every((c) => t[c] !== Terrain.Water)).toBe(true);
     expect(count(t, Terrain.Water)).toBe(W * H - new Set(cityCells).size);
-    // Every formation stands on land (a city island) or was removed.
+    // Every formation of the land stands on land (a city island) or was removed. A fleet stands
+    // on water as before, or was removed where a city island took its cell (PLAN 4.2b).
     const fc = s.world.formations.cols;
-    s.world.formations.forEach((f) => expect(t[Math.floor(fc.y[f]!) * W + Math.floor(fc.x[f]!)]).not.toBe(Terrain.Water));
+    let fleets = 0;
+    s.world.formations.forEach((f) => {
+      const on = t[Math.floor(fc.y[f]!) * W + Math.floor(fc.x[f]!)];
+      if (s.world.afloat(f)) {
+        fleets++;
+        expect(on).toBe(Terrain.Water);
+      } else expect(on).not.toBe(Terrain.Water);
+    });
+    expect(fleets).toBeGreaterThan(150);
   }, 120_000);
 });

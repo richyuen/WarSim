@@ -68,7 +68,7 @@ import { Mobility, MOVE_COST, stepKm, type MobilityId, type NavGrid, type Passag
 import { nearestCellWhere } from '../data/ownership';
 import { findRoute, nodeGroups } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
-import { navOf, type World } from '../world';
+import { Domain, navOf, type World } from '../world';
 import { noteMove } from './elements';
 import { spawnPoint } from './production';
 import { blocOf } from './supply';
@@ -260,7 +260,8 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const rule = f.has(id) ? world.rules?.templates[f.cols.template[id]!] : undefined;
   const tx = Math.floor(x);
   const ty = Math.floor(y);
-  if (!rule || ty < 0 || ty >= h || tx < 0 || tx >= w) {
+  // A fleet does not march (PLAN 4.2b): it sails by an order of its own (PLAN 4.2c).
+  if (!rule || rule.domain !== Domain.land || ty < 0 || ty >= h || tx < 0 || tx >= w) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, 0, NaN, NaN);
     return false;
   }
@@ -317,7 +318,7 @@ export function repatriationSystem(world: World): void {
   // The ground of the day's marches home, by nation.
   const ways = new Map<number, Passage>();
   f.forEach((id) => {
-    if (c.moving[id] === 1 || c.engaged[id] === 1 || !world.rules?.templates[c.template[id]!]) return;
+    if (c.moving[id] === 1 || c.engaged[id] === 1 || !world.rules?.templates[c.template[id]!] || world.afloat(id)) return;
     const nation = c.nation[id]!;
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const holder = controller[cell]!;

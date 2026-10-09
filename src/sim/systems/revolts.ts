@@ -155,6 +155,7 @@ export function revoltSystem(world: World): void {
   const bw = Math.ceil(world.cells.w / GARRISON_CELLS);
   const buckets = new Map<number, Set<number>>();
   world.formations.forEach((f) => {
+    if (world.afloat(f)) return; // a fleet off the coast is no garrison (PLAN 4.2b)
     const k = Math.floor(fc.y[f]! / GARRISON_CELLS) * bw + Math.floor(fc.x[f]! / GARRISON_CELLS);
     const set = buckets.get(k) ?? new Set<number>();
     set.add(fc.nation[f]!);

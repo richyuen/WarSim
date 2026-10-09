@@ -293,10 +293,13 @@ function occShare(land: LandCounts, occupiers: number[], victims: number[]): { s
   return { share: occ / own, rel: Math.min(1, occ / Math.max(1, Math.min(own, REL_CAP * landOf(land, occupiers)))) };
 }
 
+/** The men of each nation's army: a fleet's crews are not of it (PLAN 4.2b). */
 function menOf(world: World): Map<number, number> {
   const m = new Map<number, number>();
   const f = world.formations.cols;
-  world.formations.forEach((id) => m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + f.strength[id]!));
+  world.formations.forEach((id) => {
+    if (!world.afloat(id)) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + f.strength[id]!);
+  });
   return m;
 }
 

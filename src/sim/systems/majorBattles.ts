@@ -94,7 +94,7 @@ export function updateMajorBattles(world: World, groups: readonly number[][]): S
     const now = [0, 0];
     world.formations.forEach((id) => {
       const k = mb.camps[0].includes(f.nation[id]!) ? 0 : mb.camps[1].includes(f.nation[id]!) ? 1 : -1;
-      if (k < 0 || (f.x[id]! - mb.x) * (f.x[id]! - mb.x) + (f.y[id]! - mb.y) * (f.y[id]! - mb.y) > END_CELLS * END_CELLS) return;
+      if (k < 0 || world.afloat(id) || (f.x[id]! - mb.x) * (f.x[id]! - mb.x) + (f.y[id]! - mb.y) * (f.y[id]! - mb.y) > END_CELLS * END_CELLS) return;
       now[k]! += f.strength[id]!;
     });
     const w = now[0] !== now[1] ? (now[0]! > now[1]! ? 0 : 1) : mb.men[0] >= mb.men[1] ? 0 : 1;
@@ -117,7 +117,7 @@ function strongest(world: World, camp: number[]): number {
     if (world.nations.cols.living[n] !== 1) continue;
     let m = 0;
     world.formations.forEach((id) => {
-      if (f.nation[id] === n) m += f.strength[id]!;
+      if (f.nation[id] === n && !world.afloat(id)) m += f.strength[id]!; // of its army: a fleet's crews are not counted (PLAN 4.2b)
     });
     if (m > bestMen) {
       bestMen = m;

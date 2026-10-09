@@ -207,6 +207,111 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Not looked at.** A view with many blocks, where a tag passes over above and below and
   both sides are on other elements: the second pass places it as before.
 
+### ADR-248 · 2026-10-09 · accepted — The 1938 start has fleets at the water of their bases; the rules of the land leave a fleet alone (PLAN 4.2b)
+
+- **Context.** PLAN 4.2b: fleets in the 1938 order of battle, standing; every rule that
+  reads a formation leaves a fleet alone or is said to read it. Since PLAN 4.2a a fleet is
+  a row of `world.formations` of a sea template (ADR-247), and nothing made one.
+- **Counted first** (`.cache/navyCost.ts`): each nation with a naval base, its income, what
+  its army costs and what its budget has left, against the templates' upkeep with
+  `UPKEEP_SCALE` (a battle squadron 23.45 a month, a carrier group 12.6, a cruiser squadron
+  7.35, a destroyer flotilla 4.2, a submarine flotilla 2.8, a transport group 2.1). The
+  United States earn 5,538 a month, the United Kingdom 2,412, Japan 837, Italy 654 with 98
+  left, the Soviet Union 1,156 and is 285 short with its army alone.
+- **Decision: the data.** `data/scenarios/1938/fleets.json`: 145 groups, 197 fleets, 1,786
+  ships, of 27 nations, each group at a naval base of `ports.json` by its name. The United
+  Kingdom 36 fleets (258.6 a month, 10.7 % of its income), the United States 36 (249.5,
+  4.5 %), Japan 29 (183.0, 21.9 %), France 21 (116.2, 10.8 %), Italy 20 (91.3, 14.0 %), the
+  Soviet Union 16 (73.5, 6.4 %), Germany 9 (52.5, 2.4 %), the Netherlands 6, Sweden 4, and a
+  squadron or a flotilla or two for 18 more. Round figures to the templates' ships: a
+  battle squadron has four battleships whatever the navy had (Germany's one stands for two
+  new battleships and three pocket battleships, the Soviet one for three old ships),
+  France's one carrier is left out, Italy has 10 submarine flotillas for some 105 boats
+  and the Soviet Union 10 for some 150. No navy takes a quarter of its nation's income (a
+  test holds it).
+  - A group's base is a row of `ports.json` with a naval base, held by the group's nation
+    or by a puppet of it (`validateDataSet`), as a land group may stand in a puppet's land:
+    the Asiatic Fleet at Cavite, the East Indies squadron at Surabaya, the submarines at
+    Bizerte. A dominion's ships are its own (Australia, Canada).
+- **Decision: the place.** `placeFleets` (`src/sim/data/fleets.ts`): a group's first fleet
+  in its base's water, the others in the water about it (a flood over water, 4-way, one
+  fleet to a cell, no cell twice among all the groups). The fleet stands at
+  `World.seaPoint` of its cell: the middle, or the cell's water point (`waterPoint`,
+  `landPoint`'s twin) where the fine mask has land at the middle. All 197 are on water of
+  the grid and of the mask, in zoned water, at most 3 cells from their base's water; 26 are
+  off their cell's middle. They are the rows after the land's (1,055 to 1,251).
+  - *The base's water by the terrain alone* (`portWater`), not the port's node of the lane
+    graph. I wrote it with the lane graph first: the world's build went from 453 ms to
+    1,100 (the zones 210 ms, the graph 375), at each of the 277 places where a unit test
+    builds one, and `scenario1938.test.ts` ("builds in well under a second", a limit of 2 s)
+    failed at 4.3 s in the suite. By the terrain the build is 515 ms, and the cell is the
+    lane node's cell for all 61 bases used (a test holds a fleet in each node's cell). An
+    order to sail has to begin at a fleet's cell in any case, not at a node (PLAN 4.2c).
+- **Decision: what reads a fleet.** `World.afloat(id)` (its template is of the sea).
+  - *Read:* the economy's upkeep, and so `startTreasury`; the techs of the start; a
+    nation's death (`eliminateNation`) and its integration by its overlord; the save, the
+    hash, the snapshot, the tiers; the editor (below).
+  - *Left alone:* supply over land; the march (`order` rejects, the march home skips);
+    contact and fire; retreat; the frontier's pressure; a province's garrison; a major
+    battle's men and a camp's strongest; a nation's combat efficiency; the men of a war's
+    sides and of the strategic AI; the operational AI; the economic AI; desertion; the
+    statistics' men.
+- **A navy is not cut.** The economic AI sends no fleet home and desertion takes no ship.
+  Why: the AI cuts by the tanks' share of the upkeep and then by the men, the fewest
+  first, and a submarine flotilla has 400 men, a transport group 720: every nation that is
+  short (the Soviet Union, Poland, Romania, Yugoslavia, Turkey and both Spains among them)
+  would lay up its submarines and transports first and its whole navy in the
+  first year or two, before any rule reads a fleet. So a nation short of money by its navy
+  cuts its army: the Soviet Union with an empty treasury sends home 79 of its 162
+  formations where it sent 67 (`armourWorth.test.ts`: 49 others left for 61). Which ships
+  a nation lays up is the naval AI's (a line under PLAN 4.6).
+- **A fleet's upkeep is no part of the army's share.** The economic AI orders no formation
+  while the army's upkeep is over a share of the income. With the navy counted in it the
+  United Kingdom (army 52 a month, navy 259) and Sweden (10 and 17) ordered none; two
+  tests of `economicAi.test.ts` failed for Sweden and showed it. The balance, which is of
+  all the expenses, still counts the navy.
+- **The editor.** `strandedToLand` brought a formation on water ashore: a fleet stays on
+  water, and one whose water is made land (a brush, a map import) is removed. A map import
+  of all water keeps the fleets (`mapImport.test.ts`).
+- **The page.** `mapLayers` sends every template with its `domain` (`TemplateInfo`); the
+  build list leaves the fleets out; a fleet's marker has a hull for its symbol
+  (`UnitSymbol` `fleet`). Nothing else was made for the page: the ships are drawn by what
+  draws elements (PLAN 4.7).
+- **The pin moves:** `da977ca2` → `bbfd15fc` (seed 99 after one year). The start has 197
+  formations and 1,786 elements more, 18 nations begin with a year of their shortfall
+  where 16 did, and a nation knows the techs of its ships.
+- **Tests of others that changed, and why.**
+  - Counts and places that are the army's now skip a fleet: `coast1938.test.ts` and
+    `tests/sweep/standYear.test.ts` (a formation at rest on sure land), `startArmies.test.ts`
+    (1,054 formations), `armourWorth.test.ts`, `stats.test.ts` (the men), the ten-year
+    helper's "no formation in a cell no route enters". `scenario1938.test.ts` counts the
+    land's groups and the fleets', and holds a land formation on held land and a fleet on
+    water nobody holds. `economy.test.ts`: 18 nations for 16. `mapImport.test.ts`: above.
+  - `combinedArms.test.ts`, three tests. An element picks its target by a hash of its id,
+    and the ids are what the world began with: with 1,786 elements more the Polish
+    division's one AT gun picked other targets. "The side without the three arms fires as
+    it did" compared its volleys at a tank brigade with and without a German division's
+    guns beside it, type for type, and had passed since PLAN 3.4c because the gun's two
+    volleys were at two types and never compared; now they are at one, × 0.7 by 3.4c. The
+    test holds the gun's volley to × 0.7 and the others to × 1. Two tests of 3.4c asked for
+    the gun's volley at a light tank of a panzer division and it picked none: the helper
+    aims the gun at one (a target kept from the hour before). With the rule of 3.4c taken
+    out the first two fail, and a third of that file; the third changed asks for × 1 with
+    the guns destroyed, which the rule's absence gives too.
+  - The browser suite, run in full by hand (this part changes the start of every 1938
+    game): 162 of 163 passed. The one, `tags1938`, was a tag's place that went by which of
+    two divisions was the stronger by a man: PLAN 4.2b1 (ADR-249), committed before this.
+    `coastElements1938` and `coastPicture1938` look at the coastal formations of the land
+    (`MapView.formationAfloat`).
+- **Consequences, not mended.**
+  - A fleet does not sail, fight, starve or get built: PLAN 4.2c, 4.3, 4.4, 4.2e.
+  - A fleet stands at a base its nation has lost (the land taken, or handed over in a
+    peace): nothing reads it. A line under PLAN 4.4.
+  - One fleet stands in a crossing cell (Denmark's submarines at Copenhagen, in the
+    Øresund): water to a fleet, ground to a march. Nothing reads the two together.
+  - The random world and the toy world have no fleet; none can be placed in the editor.
+  - The world's build is 60 ms slower (453 to 515 ms).
+
 ### ADR-247 · 2026-10-09 · accepted — A fleet is a formation of a sea template; the sea's templates and units stand after the land's (PLAN 4.2a)
 
 - **Context.** PLAN 4.2 ("fleets and ship element types, movement along the lanes") was

@@ -13,6 +13,7 @@ import type { SeaSeed } from './nav/seaZones';
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
 import combatJson from '../../data/combat.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
+import fleets1938 from '../../data/scenarios/1938/fleets.json' with { type: 'json' };
 import ports1938 from '../../data/scenarios/1938/ports.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
@@ -38,7 +39,8 @@ import type { ScenarioAssets } from '../shared/protocol';
 import { TERRAIN_IDS, type TerrainId } from '../shared/terrain';
 import { dayOfIso } from '../shared/calendar';
 import type { CityDef, PlacedCity } from './data/cities';
-import { placePorts, type PortRules } from './data/ports';
+import { placeFleets, type FleetGroup } from './data/fleets';
+import { placePorts, portWater, type PortRules } from './data/ports';
 import { templateStrength, type OobGroup, type PlacedFormation, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
@@ -254,6 +256,8 @@ export function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: r
 export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
 /** The ports and naval bases of the 1938 scenario (PLAN 4.1c). */
 export const PORTS_1938 = ports1938 as unknown as PortRules;
+/** The fleets of the 1938 start (PLAN 4.2b). */
+export const FLEETS_1938 = fleets1938.groups as unknown as FleetGroup[];
 
 /** Inputs of the 1938 map build chain at w×h (shared by the sim world and the worker's views). */
 export function politicalMapInput1938(assets: ScenarioAssets, w: number, h: number): PoliticalMapInput {
@@ -316,6 +320,36 @@ export function addFormations(world: World, formations: readonly PlacedFormation
     f.supply[id] = 1;
     f.org[id] = 1;
     equipFormation(world, id, ti); // sets strength from the elements
+  }
+}
+
+/**
+ * The fleets of the start as rows of the world, after the land's (PLAN 4.2b): each group at the
+ * water of its base (`portWater`, `placeFleets`), at a place of its cell that is water in the
+ * fine mask (`World.seaPoint`); whole, in supply. `ports` are the rows of the scenario's
+ * ports.json, by which the world's ports know their base (`Port.def`). It throws for a group
+ * that found no water.
+ */
+export function addFleets(world: World, groups: readonly FleetGroup[], ports: PortRules, tags: readonly string[]): void {
+  const { w, h, terrain } = world.cells;
+  const wrapX = world.settings.loopingMap;
+  const waterOf = new Map<string, number>();
+  for (const p of world.ports) if (p.def >= 0) waterOf.set(ports.ports[p.def]!.name, portWater(p, terrain, w, h, world.portReach, wrapX));
+  const placed = placeFleets({ w, h, terrain, wrapX, tags, groups, waterOf, stands: (cell) => world.seaPoint(cell) !== null });
+  if (placed.unplaced.length) throw new Error(`fleets: ${placed.unplaced.map((i) => `${groups[i]!.nation} at ${groups[i]!.port}`).join(', ')} found no water`);
+  const templateIndex = new Map(TEMPLATES_1938.map((t, i) => [t.id, i]));
+  world.formations.reserve(world.formations.count + placed.fleets.length);
+  const f = world.formations.cols;
+  for (const p of placed.fleets) {
+    const id = world.formations.create();
+    const ti = templateIndex.get(p.template)!;
+    f.nation[id] = p.nation;
+    [f.x[id], f.y[id]] = world.seaPoint(p.cell)!;
+    f.facing[id] = 0;
+    f.template[id] = ti;
+    f.supply[id] = 1;
+    f.org[id] = 1;
+    equipFormation(world, id, ti); // sets strength from the elements: a fleet's is its crews
   }
 }
 
@@ -390,7 +424,6 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   world.portReach = PORTS_1938.reachCells;
   world.rules = RULES_1938;
   addFormations(world, map.formations);
-  grantStartTechs(world, GIVEN_TECHS_1938);
 
   // Province cores (rightful owners) for unrest and revolts (PLAN 1.19).
   initProvinceCores(
@@ -414,10 +447,14 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     world.wars.start(a, d, 0, [ftd(a), ftd(d)]);
   }
 
-  startTreasury(world);
   // Scenario settings seed the world's. Revolts by region keep the nation count in SPEC §10's
   // range (PLAN 1.40). The revival cooldown stays the code's REVIVAL_COOLDOWN; a unit test pins
   // the file to it.
   applyScenarioSettings(world, scenario1938.settings);
+  // The fleets (PLAN 4.2b): after the settings, as their water is found on the map as it loops;
+  // before the techs (a nation knows what its ships need) and the treasury (a navy is paid).
+  addFleets(world, FLEETS_1938, PORTS_1938, tags);
+  grantStartTechs(world, GIVEN_TECHS_1938);
+  startTreasury(world);
   return world;
 }

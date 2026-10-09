@@ -6354,3 +6354,28 @@ Of 4.2 (open in PLAN.md):
     Polish division the stronger by a man, and the German one's tag below with a line.
     AT: two blocks side by side with the eastern the stronger: neither tag has a line (unit;
     it fails without the rule); `tags1938` on the game with the fleets.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.2 (open in PLAN.md):
+
+  - [x] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule
+    that reads a formation (the march, supply, contact and fire, the fronts, the AI's orders,
+    retreat, the march home, revolts, the statistics) leaves a fleet alone or is said to
+    read it.
+    AT: after ten years headless every fleet is at its cell with its ships; the pin moves.
+    From PLAN 4.2a (2026-10-09, ADR-247): a fleet's upkeep is in the economy's tables (67 a
+    battle squadron, 14.3 an infantry division, before `UPKEEP_SCALE`), so a navy is paid
+    from the day it stands: count what the start's fleets cost each nation against its
+    income before placing them, and the starting treasury with them (`startTreasury`). The
+    page names a formation by the land templates' list (`MapView.templates`): a fleet needs
+    its name there. A new land template moves the fleets' indices.

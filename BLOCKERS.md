@@ -549,3 +549,11 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     and the file alone passed after it (34 tests). The commit touches nothing of routes (the
     page's copies of a looping map). The load of the machine in that run is not known (the
     first gate and five specs by hand ran in the hour before). The test was not changed.
+  - `tankBattle1938` ("stop 4, tanks") and `fightSeen1938` ("marks drawn at 2 m/px", the
+    marks of a day's fight looked at again at 2 m/px) (2026-10-09, four spec files run by hand
+    for PLAN 4.2b, 5 tests in 8.3 min): once each, in the one run. The two files alone passed
+    after it (3 tests, 5.0 min); both had passed in the full suite of the same game an hour
+    before (163 tests, 20.2 min), and `tankBattle1938` in a run of six files. The whole unit
+    suite, the ten-year stage and three browser runs had gone before in that hour and a
+    half; the load of the machine in that run is not known. The errors' details were not
+    read (the run's output was not kept). The specs were not changed.

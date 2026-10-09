@@ -35,17 +35,7 @@ quick sweep as a smoke test.
   is not in the map's data: close those zones to a fleet, or give them a cost.
   Split 2026-10-09 (one cause to a commit):
   - [x] 4.2a The ship types and the fleet templates in the scenario's rules: […]
-  - [ ] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule
-    that reads a formation (the march, supply, contact and fire, the fronts, the AI's orders,
-    retreat, the march home, revolts, the statistics) leaves a fleet alone or is said to
-    read it.
-    AT: after ten years headless every fleet is at its cell with its ships; the pin moves.
-    From PLAN 4.2a (2026-10-09, ADR-247): a fleet's upkeep is in the economy's tables (67 a
-    battle squadron, 14.3 an infantry division, before `UPKEEP_SCALE`), so a navy is paid
-    from the day it stands: count what the start's fleets cost each nation against its
-    income before placing them, and the starting treasury with them (`startTreasury`). The
-    page names a formation by the land templates' list (`MapView.templates`): a fleet needs
-    its name there. A new land template moves the fleets' indices.
+  - [x] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule […]
   - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
   - [ ] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found
     once at the order, the place cell by cell over its edges, a passage one step of its km, at
@@ -56,6 +46,12 @@ quick sweep as a smoke test.
     From PLAN 4.2a (2026-10-09, ADR-247): a template's pace is its slowest ship's top speed
     (`speed_kmh` of the unit data: 50 for a battle squadron, 65 for a flotilla, 30 for
     submarines and transports). Say whether a fleet sails at that or at a cruising share.
+    From PLAN 4.2b (2026-10-09, ADR-248): a fleet stands at `World.seaPoint` of a water cell
+    about its base, not at a node of the lane graph (the first of a group is in the cell of
+    its base's node; the others up to 3 cells off): a route begins at the fleet's cell.
+    `order` in movement.ts rejects a fleet, and `moving`, `pathStep` and `world.paths` are the
+    march's: say whether the sail uses them. One fleet stands in a crossing cell (Denmark's
+    at Copenhagen): water to a fleet, ground to a march.
   - [ ] 4.2d The Arctic is closed to a fleet, or costs: by the map's data.
     AT: Scapa Flow → Pearl Harbor goes by Panama.
   - [ ] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
@@ -65,6 +61,10 @@ quick sweep as a smoke test.
     days (`TRAIN_TIME_SCALE` 3 × the battleship's 900) and costs 6,720 gold, a destroyer
     flotilla 540 days and 1,120: say whether the scales are the ships' too. The page is sent
     the land templates only (`mapLayers`), and the economic AI's build mix has no ship.
+    From PLAN 4.2b (2026-10-09, ADR-248): the page is sent every template with its domain
+    now, and the build list of the Actions tab leaves the fleets out (`tp.domain !== 0`).
+    Only the 1938 start has fleets: the random world, the toy world and a world of the
+    editor have none, and none can be placed there.
 - [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
   AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
@@ -78,6 +78,12 @@ quick sweep as a smoke test.
   Narsarsuaq (Greenland) on the coast; Juneau and Valdez the same, in no province. Why the
   water of these three has no zone was not looked into. A port is to take water that has a
   zone where its reach has any.
+  From PLAN 4.2b (2026-10-09, ADR-248): the supply system leaves a fleet alone, so its
+  supply is 1 for ever. A fleet stands at a base its nation has lost (the land taken in a
+  war, handed over in a peace, risen in a revolt): nothing sends it away, takes it or
+  reads it. `portWater` (the fleets' water, by the terrain) and the lane graph's port node
+  (by zoned water) are two rules for one cell: the same for the 61 bases with fleets, not
+  looked at for the other 554 ports.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
@@ -104,6 +110,13 @@ quick sweep as a smoke test.
   them (an inlet, a river of the mask) stand so for 14 days and more, neither moving (seed
   99 with Germany against Poland by command, formations 386 and 439, hours 702 to 1,044 at
   least). Whether such a contact ever ends, and how many there are, was not counted.
+  From PLAN 4.2b (2026-10-09, ADR-248): a navy is never cut. The economic AI sends no fleet
+  home and desertion takes no ship, so a nation short of money by its navy cuts its army
+  (the Soviet Union with an empty treasury sends home 79 of 162 formations where it sent
+  67; Italy has 7 a month left against a margin of 33). Which ships a nation lays up, and
+  when, is to be decided here. A fleet's upkeep is no part of the share of the income the
+  AI lets an army take, and has no share of its own. The strategic AI's strengths and the
+  men of a war's sides count no fleet: a navy weighs nothing in a declaration or a peace.
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
@@ -117,6 +130,15 @@ quick sweep as a smoke test.
   game. A formation on a way can be in a cell beside its step's two (104 of 4,358
   formation-hours on a way in the 90 days; 2 of them in an enemy's cell): what the rules
   that read a formation's cell make of it was not looked at.
+  From PLAN 4.2b (2026-10-09, ADR-248; seven pictures looked at, `.cache/fleets/`): a fleet
+  is drawn by what draws the land's formations. At T1 its marker is a land box with a hull
+  for its symbol and its crews for its number (13.4k a battle squadron, 400 a submarine
+  flotilla); the fleets of a base stack as one marker ("×4"). Far out, a counter folds a
+  fleet's crews into its nation's men under the army's symbol (45.1k at Scapa Flow, where
+  no division stands). At T2 and T3 the ships stand in a land block's rows, each the one
+  ship sprite in its nation's colour, bows to the east, the tag "Battle squadron 1055" over
+  them. Not looked at: the formation panel of a fleet, a marker stack of a fleet and a
+  division, the ships at T3's closest, the ranking and charts (the men are the army's).
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
 - [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.

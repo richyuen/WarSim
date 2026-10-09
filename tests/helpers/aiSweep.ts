@@ -12,6 +12,7 @@ import { navOf } from '../../src/sim/world';
 import { historyText } from '../../src/ui/historyText';
 import { historyRows } from '../../src/worker/historyRows';
 import { deadLand } from './deadLand';
+import { fleetsStand } from './fleetsStand';
 import { homeWait } from './homeWait';
 import { assets1938, earthAdmin1 } from './earth';
 import { realmWars } from './realmWars';
@@ -41,8 +42,12 @@ import { strayNaN } from './stateNumbers';
  * PLAN 3.12Rk AT: no formation that bears the mark of a march home stands before an enemy's
  * cell for 30 days (`homeWait`).
  *
- * PLAN 3.12Rm AT: on every day no formation is in a cell no route enters (a cell of component 0
- * of the grid: water), where it could take no order.
+ * PLAN 3.12Rm AT: on every day no formation of the land is in a cell no route enters (a cell of
+ * component 0 of the grid: water), where it could take no order. A fleet stands on water and
+ * is not asked (PLAN 4.2b).
+ *
+ * PLAN 4.2b AT: on every day every fleet of the start is at its cell with its ships
+ * (`fleetsStand`), or is gone with its nation.
  *
  * PLAN 3.12Rn AT: every war that leaves `wars.list` has its end in the log of that hour: a peace
  * or a `WarEnded` between a nation of each side, or the death of one of its nations (a war whose
@@ -85,6 +90,7 @@ export function aiSweep(seed: number): void {
   // The days on which two living nations were called after one province, and the most at once.
   let namesakeDays = 0;
   const waits = homeWait();
+  const fleets = fleetsStand(s.world);
   let formationDays = 0;
   let namesakesMost = 0;
   // PLAN 3.12Rn: the wars as the hour before ended, by id, and how each that is gone ended.
@@ -182,10 +188,13 @@ export function aiSweep(seed: number): void {
         const comp = navOf(w).grid.component;
         const closed: string[] = [];
         w.formations.forEach((f) => {
+          if (w.afloat(f)) return;
           formationDays++;
           if (comp[Math.floor(fc.y[f]!) * w.cells.w + Math.floor(fc.x[f]!)] === 0) closed.push(`formation ${f} of ${tag(fc.nation[f]!)} at (${fc.x[f]!.toFixed(3)}, ${fc.y[f]!.toFixed(3)})`);
         });
         expect(closed, `seed ${seed}, day ${w.tick / 24}: formations in a cell no route enters`).toEqual([]);
+        // PLAN 4.2b: every fleet at its cell with its ships.
+        expect(fleets.day(w), `seed ${seed}, day ${w.tick / 24}: fleets that no rule should have touched`).toEqual([]);
       }
       if (isDayStart(w.tick)) {
         const holders = new Map<string, number>();
@@ -243,6 +252,11 @@ export function aiSweep(seed: number): void {
 `);
   expect(revoltsSeen, `seed ${seed}: months whose revolts were measured`).toBeGreaterThan(0);
   process.stderr.write(`seed ${seed}: ${formationDays} formation-days, none in a cell no route enters
+`);
+  // PLAN 4.2b: the fleets of the start stood for ten years, but for those of the nations that died.
+  expect(fleets.start, `seed ${seed}: fleets at the start`).toBeGreaterThan(100);
+  expect(fleets.start - fleets.gone, `seed ${seed}: fleets that stand after ten years`).toBeGreaterThan(0);
+  process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone} at their cells with their ships after ten years, ${fleets.gone} gone with their nations
 `);
   // PLAN 3.12Rk: no march home waits out a war before an enemy's cell.
   process.stderr.write(`seed ${seed}: ${waits.marked} formation-hours with the mark of a march home; the longest wait before an enemy's cell ${waits.longest} h${waits.where ? ` (${waits.where})` : ''}

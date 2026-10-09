@@ -33,7 +33,8 @@ function world1938(n: number): World {
 function army(w: World, n: number): Map<number, number> {
   const out = new Map<number, number>();
   w.formations.forEach((id) => {
-    if (w.formations.cols.nation[id] === n) out.set(w.formations.cols.template[id]!, (out.get(w.formations.cols.template[id]!) ?? 0) + 1);
+    // Its army: a fleet is not sent home (PLAN 4.2b).
+    if (w.formations.cols.nation[id] === n && !w.afloat(id)) out.set(w.formations.cols.template[id]!, (out.get(w.formations.cols.template[id]!) ?? 0) + 1);
   });
   return out;
 }
@@ -131,7 +132,10 @@ describe('what armour is worth to the AI that cuts (PLAN 3.1d)', () => {
     // By men the 34 were the weakest, and all 34 went (ADR-86). Now what has no tank in it at
     // all goes first, the 32 cavalry divisions, and then 35 of the 96 rifle divisions, which
     // have a tank battalion each.
+    // With the fleets of the start (PLAN 4.2b) it is short their 73.5 a month besides, and no
+    // fleet is sent home: 12 rifle divisions more go for them, 47 of the 96 (61 others were left
+    // before, 49 now).
     expect(army(w, SOV).get(template('cavalry_div'))).toBeUndefined();
-    expect(after.others).toBe(61);
+    expect(after.others).toBe(49);
   });
 });

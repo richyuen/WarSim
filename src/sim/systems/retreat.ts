@@ -96,7 +96,8 @@ function fallBack(world: World, id: number, reach: number): boolean {
   let nd = Infinity;
   const enemies: number[] = [];
   f.forEach((o) => {
-    if (c.retreat[o]! > 0 || !world.wars.atWar(nation, c.nation[o]!)) return;
+    // A fleet is no enemy on the ground (PLAN 4.2b).
+    if (c.retreat[o]! > 0 || !world.wars.atWar(nation, c.nation[o]!) || world.afloat(o)) return;
     const d = cellDist(world, x, y, c.x[o]!, c.y[o]!);
     if (d > ABOUT) return;
     enemies.push(o);

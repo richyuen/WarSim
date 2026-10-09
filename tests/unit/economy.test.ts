@@ -168,7 +168,8 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
   });
 
   it('every living nation earns something and starts with six months of income, or a year of what its army costs beyond its budget', () => {
-    // Since PLAN 2.13 (ADR-86) the second, where it is more: 16 nations of 1938.
+    // Since PLAN 2.13 (ADR-86) the second, where it is more: 16 nations of 1938 with their
+    // armies alone, 18 with the fleets of the start (PLAN 4.2b: a navy is paid from the first month).
     const acc = monthlyAccounts(sim.world, ECONOMY_TABLES_1938);
     let more = 0;
     NATIONS_1938.forEach((n, i) => {
@@ -179,7 +180,7 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
       if (short > START_GOLD_MONTHS * gross[i + 1]!) more++;
       expect(sim.world.nations.cols.gold[i + 1], n.tag).toBeCloseTo(Math.max(START_GOLD_MONTHS * gross[i + 1]!, short));
     });
-    expect(more).toBe(16);
+    expect(more).toBe(18);
   });
 
   it('one year of play pays 12 months and keeps the major economies solvent', () => {
