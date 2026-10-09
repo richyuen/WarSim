@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-214 · 2026-10-09 · accepted — The founder's row of an alliance is its founding, told from the log (PLAN 3.12Rg1)
+
+- **Context.** An alliance that is made emits `AllianceJoined` for each member, the founder
+  first (four places: the command, the player's proposal, the AI's pact against a threat,
+  the coalition). The panel read "Mexico joined the Coalition of Mexico" (ADR-208 noted it).
+- **Decision.** No new event. The worker marks the founder's row `as: 'founded'` when its a
+  is the alliance's founder (`Alliance.founder`, `Alliances.past`) and no earlier row names
+  the alliance. Its sentence is "{a} founded {b}", and b is told without "of {founder}":
+  "Norway founded a Defensive Pact", "Germany founded the Axis".
+- **Why "no earlier row".** A founder can leave and join again (its row is then a join), and
+  a scenario's alliance was founded before the log (its founder's first row follows its
+  own `AllianceLeft`).
+- **Why not an `AllianceFounded` event.** It would be four emit sites, a kind more in the
+  log and a moved pin, and a game saved before would keep "joined". `as` is the way of
+  ADR-209 and ADR-210: the log has what tells the two apart.
+- **Consequences.** No state, no hash, no pin. The row's type is still "Alliance joined" in
+  the filter and the exports (`type` `AllianceJoined`); its text says founded.
+  `tests/helpers/aiSweep.ts` asks of every `AllianceJoined` of ten years of three seeds
+  that it is 'founded' exactly when it is the first row of its alliance and its founder's.
+
 ### ADR-213 · 2026-10-09 · accepted — A nation that dies leaves its alliance with the log's rows; the pin moves, no rule does (PLAN 3.12Rf)
 
 - **Context.** PLAN 3.12a counted 29 alliances gone after ten years of seed 1 and 15

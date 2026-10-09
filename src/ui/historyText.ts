@@ -10,7 +10,8 @@ const COMMON_ALLIANCES: ReadonlySet<string> = new Set(['alliance.defensive', 'al
  * (PLAN 3.12a): an alliance is "the Defensive Pact of Sweden" or "the Comintern", a Major
  * Battle "the major battle near Lyon". A row with nobody as its b has the sentence
  * `history.<Kind>.none` where the kind has one, and a row that is `as` something
- * `history.<Kind>.<as>` (PLAN 3.12b).
+ * `history.<Kind>.<as>` (PLAN 3.12b). A founding names its alliance without the founder, who is
+ * the row's a: "Sweden founded a Defensive Pact" (PLAN 3.12Rg1).
  */
 export function historyText(r: HistoryRow): string {
   const [ra, rb] = HISTORY_ROLES[r.kind] ?? ['number', 'number'];
@@ -19,6 +20,7 @@ export function historyText(r: HistoryRow): string {
     if (role === 'battle') return name ? t('history.battleNear', { city: displayName(name) }) : t('history.aBattle');
     if (role === 'alliance') {
       if (!name) return t('history.anAlliance');
+      if (r.as === 'founded' && COMMON_ALLIANCES.has(name)) return t('history.oneAlliance', { name: displayName(name) });
       return t('history.theAlliance', { name: COMMON_ALLIANCES.has(name) && r.of ? t('history.allianceOf', { name: displayName(name), founder: displayName(r.of) }) : displayName(name) });
     }
     return name ? displayName(name) : t('history.nobody');

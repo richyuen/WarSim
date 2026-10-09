@@ -57,12 +57,13 @@ export interface HistoryRow {
    * kind's own). A `RevoltSpawned` is 'revived' when its a is a dead nation that returned in that
    * hour, and 'joined' when a was a nation of rebels already and the land rose to it. A
    * `LandCeded` is 'left' when its b died in that hour (PLAN 3.12b2); its own sentence is of
-   * land that rose and went back to its core nation.
+   * land that rose and went back to its core nation. An `AllianceJoined` is 'founded' when it is
+   * the founder's at the founding (PLAN 3.12Rg1): the first row that names the alliance.
    */
   as?: HistoryAs;
 }
 
-export type HistoryAs = 'revived' | 'joined' | 'left';
+export type HistoryAs = 'revived' | 'joined' | 'left' | 'founded';
 
 /** The major events, which the ticker tells as they happen (PLAN 3.12c): war, peace, a capital taken, a nation's death or return. */
 export const TICKER_KINDS: ReadonlySet<number> = new Set<number>([

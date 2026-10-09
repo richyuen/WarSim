@@ -3,6 +3,7 @@ import path from 'node:path';
 import { expect } from 'vitest';
 import { isDayStart, isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
+import type { HistoryRow } from '../../src/shared/history';
 import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../../src/shared/flagPixels';
 import { foundedName, provinceLabel } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
@@ -137,6 +138,20 @@ export function aiSweep(seed: number): void {
   const rows = historyRows(s.world, (id) => NATIONS_1938[id - 1]?.nameKey ?? `=${foundedName(id, nc.origin[id]!, labels)}`, (c) => `City ${String.fromCharCode(65 + (c % 26))}`);
   const ofAlliance: number[] = [EventKind.AllianceLeft, EventKind.AllianceDissolved, EventKind.AllianceJoined, EventKind.UnionFormed];
   let allianceRows = 0;
+  // PLAN 3.12Rg1: the first row of an alliance, when it is its founder's, is its founding and no
+  // other is (a scenario's alliance has no founding in the log: its first row is of another).
+  const founderOf = new Map<number, number>([...s.world.alliances.past, ...s.world.alliances.list].map((a) => [a.id, a.founder]));
+  const firstOf = new Map<number, HistoryRow>();
+  for (const r of rows) {
+    const id = r.kind === EventKind.AllianceJoined || r.kind === EventKind.AllianceLeft ? r.b : r.kind === EventKind.AllianceDissolved || r.kind === EventKind.UnionFormed ? r.a : 0;
+    if (id !== 0 && !firstOf.has(id)) firstOf.set(id, r);
+    if (r.kind !== EventKind.AllianceJoined) continue;
+    expect(r.as, `seed ${seed}, tick ${r.tick}: "${historyText(r)}", the founder's first row of its alliance or not`).toBe(firstOf.get(id) === r && founderOf.get(id) === r.a ? 'founded' : undefined);
+    expect(historyText(r), `seed ${seed}, tick ${r.tick}`).toMatch(r.as === 'founded' ? / founded (a|the) \S/ : / joined the \S/);
+  }
+  const foundings = rows.filter((r) => r.as === 'founded').length;
+  expect(foundings, `seed ${seed}: alliances founded in ten years`).toBeGreaterThan(0);
+  console.log(`seed ${seed}: ${foundings} alliances founded, each with one row of its founding`);
   for (const r of rows) {
     const text = historyText(r);
     expect(text, `seed ${seed}, tick ${r.tick}: a history row with an id`).not.toMatch(/#\d+/);

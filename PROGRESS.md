@@ -11891,3 +11891,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rg (the founder's own "joined" row; a peace that annexes, one row or
   two).
+
+## 2026-10-09 — PLAN 3.12Rg1: the founder founds its alliance
+
+- **Split:** 3.12Rg has two causes: the founder's row (3.12Rg1, here) and the order of a
+  peace that annexes (3.12Rg2, next; it moves the pin, this does not).
+- **Done:** `historyRows` marks the founder's `AllianceJoined` 'founded' when no row before
+  it names the alliance; `historyText` says "{a} founded {b}" and leaves "of {founder}"
+  out of b. No event and no state (ADR-214). SPEC §9, PARITY row 61.
+- **Tests:** `tests/unit/history.test.ts`, two that failed first ("Lithuania joined the
+  Coalition of Lithuania"; `as` undefined at the founding): the sentences, and a log with a
+  founding, a founder that leaves and joins again, and an alliance older than the log.
+  `tests/helpers/aiSweep.ts`: every joined row is 'founded' exactly when it is the first row
+  of its alliance and its founder's. My first form of it was wrong (it took every first row
+  for a founding: "Belgium joined the Anglo-French Entente", a scenario's alliance); with
+  the founder asked too, `aiSweep1` to `aiSweep3` are green (by hand, the sweep config).
+- **Spec run by hand:** `history1938` (`--project chromium`, 3 tests, 10 s), which now asks
+  for "Sweden founded a Defensive Pact": green. Picture looked at (`a-history-all.png` of
+  the run): "Norway founded a Defensive Pact", "Finland joined the Defensive Pact of
+  Norway", "Estonia founded a Defensive Pact".
+- **Seen there:** "Austria became a puppet of Germany" is in the log before "Germany made
+  peace with Austria": the same order as the annexation's, for 3.12Rg2.
+- **Performance:** not measured: a set lookup a row, in the worker, when the panel asks.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rg2 (the peace before its terms; the ticker's one row or two).

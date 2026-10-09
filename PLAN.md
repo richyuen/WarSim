@@ -5442,7 +5442,18 @@ quick sweep as a smoke test.
   - [ ] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the
     founding has one row. With it (the ninth read's suspicion): a peace that annexes the
     loser puts "annexed" and then a peace with the annexed nation in the ticker in one hour
-    (seed 77, tick 26,040); one row or two, decided.
+    (seed 77, tick 26,040); one row or two, decided. Two causes, two parts (2026-10-09):
+    - [x] 3.12Rg1 The founder's row is the founding.
+      - Done 2026-10-09 (ADR-214): the founder's `AllianceJoined` is 'founded'
+        (`HistoryRow.as`) when no row before it names the alliance: "Norway founded a
+        Defensive Pact", then "Finland joined the Defensive Pact of Norway". Told from the
+        log alone: no event, no state, no pin. `aiSweep` asks it of every joined row of
+        ten years of three seeds.
+    - [ ] 3.12Rg2 A peace that annexes: the log has `NationAnnexed`, `NationEliminated`
+      and then `PeaceSigned` with the dead (seed 77, tick 26,040, read again 2026-10-09),
+      and the ticker tells the first and the last. Decide the order of the log (the peace
+      before its terms, a puppet made at a peace too) and the ticker's one row or two. The
+      log is hashed: the pin moves if the order does.
   - [ ] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than
     the view less 12.5 rem, at the UI sizes above 100%, at Max speed. Pictures, looked at;
     what is wrong is fixed here or is a part of its own. With it (the ninth read's

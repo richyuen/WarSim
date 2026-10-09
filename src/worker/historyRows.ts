@@ -14,6 +14,11 @@
  * the land by a collapse and an annexation and after it by `eliminateNation`, so the deaths are
  * read first. The rows of one hour with the same a and b are one row, the first: they are one
  * month's revolts, an area each, and a death's land given at more than one step of it.
+ *
+ * `AllianceJoined` is emitted for every member of an alliance that is made, its founder first
+ * (PLAN 3.12Rg1): "Mexico joined the Coalition of Mexico" was the founding. The founder's row is
+ * 'founded' when no row before it names the alliance: a founder that left and joins again
+ * joins, and so does the founder of an alliance older than the log.
  */
 import { EventKind } from '../shared/events';
 import { HISTORY_ROLES, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
@@ -60,6 +65,8 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
   let cededAt = -1;
   /** The nations a revolt founded or brought back that have not died since. */
   const risen = new Set<number>();
+  /** The alliances a row has named. */
+  const named = new Set<number>();
   const revoltAs = (tick: number, a: number): HistoryAs | undefined => {
     const as = revived.has(tick * NATION_KEY + a) ? 'revived' : risen.has(a) ? 'joined' : undefined;
     risen.add(a);
@@ -76,10 +83,13 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     }
     const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
     if (kind === EventKind.MajorBattleStarted) battleCity.set(a, city(b));
-    const al = alliances.get(ra === 'alliance' ? a : rb === 'alliance' ? b : 0);
+    const alId = ra === 'alliance' ? a : rb === 'alliance' ? b : 0;
+    const al = alliances.get(alId);
+    const founding = kind === EventKind.AllianceJoined && !named.has(alId) && a === al?.founder;
+    if (alId !== 0) named.add(alId);
     const row: HistoryRow = { tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b), of: al ? nation(al.founder) : '' };
     if (kind === EventKind.NationEliminated) risen.delete(a);
-    const as = kind === EventKind.RevoltSpawned ? revoltAs(tick, a) : kind === EventKind.LandCeded && died.has(tick * NATION_KEY + b) ? 'left' : undefined;
+    const as = kind === EventKind.RevoltSpawned ? revoltAs(tick, a) : kind === EventKind.LandCeded && died.has(tick * NATION_KEY + b) ? 'left' : founding ? 'founded' : undefined;
     if (as) row.as = as;
     out.push(row);
   }

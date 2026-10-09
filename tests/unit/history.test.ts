@@ -176,6 +176,33 @@ describe('history rows name what they are of (PLAN 3.12a)', () => {
     expect(rows.map(historyText).slice(3, 6)).toEqual(['N2 took back land held by N3', 'N2 took back land held by N1', 'N2 returned']);
   });
 
+  // PLAN 3.12Rg1: "Mexico joined the Coalition of Mexico" was Mexico founding it.
+  it('the founder founds its alliance and the others join it', () => {
+    const joined = (bn: string, as?: HistoryRow['as']): HistoryRow => ({ ...row(EventKind.AllianceJoined, 'nation.LIT', bn, 'nation.LIT'), ...(as ? { as } : {}) });
+    expect(historyText(joined('alliance.coalition', 'founded'))).toBe('Lithuania founded a Coalition');
+    expect(historyText(joined('alliance.defensive', 'founded'))).toBe('Lithuania founded a Defensive Pact');
+    expect(historyText(joined('alliance.baltic_entente', 'founded'))).toBe('Lithuania founded the Baltic Entente');
+    expect(historyText(joined('alliance.coalition'))).toBe('Lithuania joined the Coalition of Lithuania');
+  });
+
+  it('the rows of a log: the founding is the first row of an alliance and of its founder, told from the log alone', () => {
+    const s = new Sim({ scenario: 'toy', seed: 1 });
+    const { history: h, alliances: al, nations } = s.world;
+    const [A, B, C, D, E] = [1, 2, nations.create(), nations.create(), nations.create()]; // the toy world has two
+    for (const a of [...al.list]) for (const m of [...a.members]) al.leave(m);
+    const made = al.create(A, [B, C], 'alliance.defensive', 50)!;
+    const old = al.create(D, [E], 'alliance.coalition', 50)!; // older than the log: no row of its founding
+    for (const m of made.members) h.record(10, EventKind.AllianceJoined, m, made.id, NaN, NaN);
+    h.record(20, EventKind.AllianceLeft, A, made.id, NaN, NaN);
+    h.record(30, EventKind.AllianceJoined, A, made.id, NaN, NaN); // the founder again: it joins
+    h.record(40, EventKind.AllianceLeft, D, old.id, NaN, NaN);
+    h.record(50, EventKind.AllianceJoined, D, old.id, NaN, NaN);
+    const rows = historyRows(s.world, (n) => `=N${n}`, () => '');
+    expect(rows.map((r) => [r.tick, r.a, r.as])).toEqual([[10, A, 'founded'], [10, B, undefined], [10, C, undefined], [20, A, undefined], [30, A, undefined], [40, D, undefined], [50, D, undefined]]);
+    expect(rows.slice(0, 3).map(historyText)).toEqual(['N1 founded a Defensive Pact', 'N2 joined the Defensive Pact of N1', 'N3 joined the Defensive Pact of N1']);
+    expect(historyText(rows[4]!)).toBe('N1 joined the Defensive Pact of N1');
+  });
+
   // PLAN 3.12b2: 450 of the critic's 2,395 rows read "Land of X went over to Y".
   it('land that goes over went back to its core nation, or was left by a nation that died', () => {
     const ceded = (as?: HistoryRow['as']): HistoryRow => ({ ...row(EventKind.LandCeded, 'nation.POL', 'nation.GER'), ...(as ? { as } : {}) });

@@ -2147,7 +2147,10 @@ on screen.
     'revived', "{a} took back land held by {b}", when a has a `NationRevived` in that hour;
     'joined', "More of {b} rose and joined {a}", when a had a `RevoltSpawned` before and no
     `NationEliminated` since. A `LandCeded` (ADR-210, §4 "Land handed over"): its own
-    sentence, or 'left' when b died in that hour.
+    sentence, or 'left' when b died in that hour. An `AllianceJoined` (PLAN 3.12Rg1,
+    ADR-214; every member of an alliance that is made has one, the founder first):
+    'founded', "{a} founded {b}", when a is the alliance's founder and no row before names
+    the alliance; b is then told without its founder ("Norway founded a Defensive Pact").
   - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
     (RFC 4180) and JSON export of the filtered rows. The sentence of a row is
     `src/ui/historyText.ts`.

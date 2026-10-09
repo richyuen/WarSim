@@ -109,7 +109,7 @@ test('history rows name their alliance, dissolved or not, and none shows an id',
   await expect(page.getByTestId('history-panel')).toBeVisible();
   await expect.poll(() => count(page), { timeout: 20_000 }).toBe(Math.min(rows.length, 400));
   const texts = (await page.getByTestId('history-row').allInnerTexts()).map((s) => s.replace(/\s+/g, ' '));
-  for (const want of ['Norway joined the Defensive Pact of Sweden', 'Norway left the Defensive Pact of Sweden', 'The Defensive Pact of Sweden was dissolved', 'Estonia left the Baltic Entente', 'The Baltic Entente was dissolved']) {
+  for (const want of ['Sweden founded a Defensive Pact', 'Norway joined the Defensive Pact of Sweden', 'Norway left the Defensive Pact of Sweden', 'The Defensive Pact of Sweden was dissolved', 'Estonia left the Baltic Entente', 'The Baltic Entente was dissolved']) {
     expect(texts.filter((s) => s.endsWith(want)), want).toHaveLength(1);
   }
   for (const s of texts) expect(s).not.toMatch(/#\d/);
