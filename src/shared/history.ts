@@ -32,6 +32,7 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.NationAnnexed]: ['nation', 'nation'],
   [EventKind.FormationsDisbanded]: ['nation', 'number'],
   [EventKind.LandCeded]: ['nation', 'nation'],
+  [EventKind.WarEnded]: ['nation', 'nation'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
@@ -58,17 +59,22 @@ export interface HistoryRow {
    * hour, and 'joined' when a was a nation of rebels already and the land rose to it. A
    * `LandCeded` is 'left' when its b died in that hour (PLAN 3.12b2); its own sentence is of
    * land that rose and went back to its core nation. An `AllianceJoined` is 'founded' when it is
-   * the founder's at the founding (PLAN 3.12Rg1): the first row that names the alliance.
+   * the founder's at the founding (PLAN 3.12Rg1): the first row that names the alliance. A
+   * `WarEnded` is 'puppet' when the log tells whose puppet its b became in that hour (PLAN
+   * 3.12Rn): `cn` names the overlord.
    */
   as?: HistoryAs;
+  /** A third nation's name, where the row's sentence has one ({c}): the new overlord of a `WarEnded` that is 'puppet'. */
+  cn?: string;
 }
 
-export type HistoryAs = 'revived' | 'joined' | 'left' | 'founded';
+export type HistoryAs = 'revived' | 'joined' | 'left' | 'founded' | 'puppet';
 
 /** The major events, which the ticker tells as they happen (PLAN 3.12c): war, peace, a capital taken, a nation's death or return. */
 export const TICKER_KINDS: ReadonlySet<number> = new Set<number>([
   EventKind.WarDeclared,
   EventKind.PeaceSigned,
+  EventKind.WarEnded,
   EventKind.CapitalCaptured,
   EventKind.NationEliminated,
   EventKind.NationCollapsed,

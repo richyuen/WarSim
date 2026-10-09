@@ -5558,7 +5558,7 @@ quick sweep as a smoke test.
       over them and take the pointer. The History panel (84 rows), the chart with its
       lines and the editor at 1,100 x 600: in their boxes, above the bar.
       `settings1938.spec.ts`, a second test, failed first on each cause.
-  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rq, with 3.12Rj's suite: what is left of it needs that log;
+  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rr, with 3.12Rj's suite: what is left of it needs that log;
     the parts below it come first**, 2026-10-09) The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
@@ -5665,7 +5665,7 @@ quick sweep as a smoke test.
     editor's `strandedToLand` (`cellPoint` of a land cell): sound. Two that are not this
     cause: a `spawnFormation` command given at sea (PLAN 3.12Rq), and the toy world, whose
     start puts one of 120 on a lake (it has no routes and no orders: left).
-  - [ ] 3.12Rn **A war ended by a bond has a row** (the ninth read, finding 3; run there,
+  - [x] 3.12Rn **A war ended by a bond has a row** (the ninth read, finding 3; run there,
     `histdump.ts` again here). `leaveBondedWars` (`war.ts`) removes a war left with an
     empty side with no event (no peace is signed and no truce begins, by its own comment):
     the log and the ticker declare the war and never end it. Seed 77: Germany's wars with
@@ -5674,6 +5674,21 @@ quick sweep as a smoke test.
     Whether the hash covers the log decides the pin (as 3.12Rf).
     AT: a unit test that fails first; in ten years of the sweep seeds every war declared
     has an end in the log or is in `wars.list`.
+    **Done 2026-10-09 (ADR-225).** `WarEnded` (40), emitted by `leaveBondedWars` when the
+    war is gone: a the leader of the side that stayed, b the nation that left. In the
+    history, the ticker (at b's capital) and the peace cue. The cause from the log alone:
+    the nearest row before it in its hour that is b's `PuppetCreated` or a `NationAnnexed`
+    names the overlord (`HistoryRow.cn`): "The war between France and Albania ended:
+    Albania is now a puppet of United Kingdom". One test in `realmWars.test.ts`, red first.
+    `aiSweep`: every war gone from the list has in that hour a peace or a `WarEnded` of a
+    nation of each side, or the death of one of its nations, and the sum holds; red with
+    the emit taken out (seed 1, tick 27,817). Ten years of seeds 1, 2, 3: 254, 242 and 198
+    declared; 238, 225 and 184 ended by a peace, 3, 1 and 1 by a bond, 9, 9 and 11 by a
+    death; 6, 9 and 4 go on. The hash covers the log; the pin stays (2104f897): no such end
+    in seed 99's first year.
+    A war that a death empties has no row of its own: the death's row is its end (decided
+    in ADR-225). Found with it: two wars of seed 2 declared and ended in one hour: PLAN
+    3.12Rr.
   - [ ] 3.12Ro **The walk back of a formation on the retreat does not go towards its enemy**
     (found with 3.12Rk, the ninth read's suspicion; `.cache/rk-back.ts <seed> <ticks>`). A
     retreat whose next cell has turned a third nation's in the middle of the step is barred
@@ -5708,7 +5723,21 @@ quick sweep as a smoke test.
     AT: a unit test that fails first: a formation spawned on open sea is refused or stands
     in a cell of a component; one spawned on the water of a coastal cell stands on its land
     as now.
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rq: a line under PLAN 1.42 for the land that rises
+  - [ ] 3.12Rr **A war is not declared and ended in one hour** (found with 3.12Rn; the hour's
+    events run, the cause read, not traced; `.cache/rn-short.ts <seed>`). Seed 2, ten
+    years, 2 of 244 wars: tick 18,793, "Germany declared war on Latvia" and "Latvia made
+    peace with Germany"; tick 85,369, nation 202 on nation 174 and 202 the winner. The
+    day's `warSystem` runs after the strategic AI's declaration and ends at ±100 a war one
+    of whose leaders has 75% of its land under occupiers of any war (`overrun`): the new
+    enemy wins a war of no hours, takes what it holds of the loser (nothing) or annexes a
+    loser under 8,500 km², and a truce of two years begins. Trace both first (which leader
+    was overrun, by whom, what the peace handed over). Then decide in DECISIONS: an overrun
+    nation declares no war and none is declared on it (`whyNotWar` or the AI), the
+    capitulation asks only the war's own occupiers on its first day, or it stays with the
+    reason. The pin may move.
+    AT: a unit test that fails first; in ten years of the sweep seeds no war is declared
+    and gone in one hour (`aiSweep` counts them: 0, 2 and 0 today).
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rr: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
     an earlier part broke fixed here; 3.12R ticked.

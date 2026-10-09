@@ -19,6 +19,12 @@
  * (PLAN 3.12Rg1): "Mexico joined the Coalition of Mexico" was the founding. The founder's row is
  * 'founded' when no row before it names the alliance: a founder that left and joins again
  * joins, and so does the founder of an alliance older than the log.
+ *
+ * `WarEnded` is of a war that a bond ended (PLAN 3.12Rn): its b, the last of its side, got an
+ * overlord tied to the other side. The row before it in its hour tells whose puppet it became:
+ * its own `PuppetCreated` (a peace's term), or the `NationAnnexed` of its overlord, whose annexer
+ * has it now. The row is then 'puppet' and names the overlord ("The war between Germany and
+ * Albania ended: Albania is now a puppet of Italy").
  */
 import { EventKind } from '../shared/events';
 import { HISTORY_ROLES, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
@@ -30,6 +36,19 @@ const NATION_KEY = 65536;
 
 /** The kinds that tell a nation's death (a = the dead). */
 const DEATHS: ReadonlySet<number> = new Set([EventKind.NationEliminated, EventKind.NationCollapsed, EventKind.NationAnnexed]);
+
+/**
+ * The nation whose puppet the b of the `WarEnded` at row `i` became in that hour, or 0 when the
+ * log does not tell: of the rows of the hour before it, the nearest that made b a puppet or
+ * annexed a nation (see the module comment).
+ */
+function overlordThen(rows: readonly number[], i: number): number {
+  for (let j = i - HISTORY_STRIDE; j >= 0 && rows[j] === rows[i]; j -= HISTORY_STRIDE) {
+    if (rows[j + 1] === EventKind.PuppetCreated && rows[j + 2] === rows[i + 3]) return rows[j + 3]!;
+    if (rows[j + 1] === EventKind.NationAnnexed) return rows[j + 3]!;
+  }
+  return 0;
+}
 
 /**
  * `nationName` gives a nation's name (an i18n key or '=' + literal), `cityName` a city row's
@@ -91,13 +110,15 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     if (kind === EventKind.NationEliminated) risen.delete(a);
     const as = kind === EventKind.RevoltSpawned ? revoltAs(tick, a) : kind === EventKind.LandCeded && died.has(tick * NATION_KEY + b) ? 'left' : founding ? 'founded' : undefined;
     if (as) row.as = as;
+    const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
+    if (over) [row.as, row.cn] = ['puppet', over];
     out.push(row);
   }
   return out;
 }
 
-/** The kinds whose b is the nation the event happened to (the one a war was declared on, the loser of a peace). */
-const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKind.PeaceSigned]);
+/** The kinds whose b is the nation the event happened to (the one a war was declared on, the loser of a peace, the one a bond took out of its war). */
+const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKind.PeaceSigned, EventKind.WarEnded]);
 
 /**
  * The ticker's rows (PLAN 3.12c): the last `TICKER_ROWS` major events of the last `TICKER_HOURS`,
@@ -106,7 +127,7 @@ const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKin
  * death told twice in an hour (a collapse or an annexation, then `NationEliminated`) is one row,
  * the first. A peace whose winner annexed its loser in that hour is one row too, the annexation
  * (PLAN 3.12Rg2, ADR-215), on whichever side of the peace the log has it: a game saved before
- * has the peace last.
+ * has the peace last. A war that a bond ended is told as the history tells it (PLAN 3.12Rn).
  */
 export function tickerRows(world: World, nationName: (id: number) => string): TickerRow[] {
   const rows = world.history.rows;
@@ -133,7 +154,10 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
     const at = PLACE_OF_B.has(kind) ? b : a;
     const placed = !Number.isNaN(x) && !Number.isNaN(y);
     const rb = (HISTORY_ROLES[kind] ?? ['number', 'number'])[1];
-    out.push({ i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: nation(a), bn: rb === 'nation' ? nation(b) : '', of: '' });
+    const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: nation(a), bn: rb === 'nation' ? nation(b) : '', of: '' };
+    const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
+    if (over) [row.as, row.cn] = ['puppet', over];
+    out.push(row);
   }
   return out.reverse();
 }

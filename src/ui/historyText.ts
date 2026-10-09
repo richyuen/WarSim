@@ -11,7 +11,8 @@ const COMMON_ALLIANCES: ReadonlySet<string> = new Set(['alliance.defensive', 'al
  * Battle "the major battle near Lyon". A row with nobody as its b has the sentence
  * `history.<Kind>.none` where the kind has one, and a row that is `as` something
  * `history.<Kind>.<as>` (PLAN 3.12b). A founding names its alliance without the founder, who is
- * the row's a: "Sweden founded a Defensive Pact" (PLAN 3.12Rg1).
+ * the row's a: "Sweden founded a Defensive Pact" (PLAN 3.12Rg1). A row with a third nation
+ * (`cn`) has it as {c} (PLAN 3.12Rn).
  */
 export function historyText(r: HistoryRow): string {
   const [ra, rb] = HISTORY_ROLES[r.kind] ?? ['number', 'number'];
@@ -28,6 +29,6 @@ export function historyText(r: HistoryRow): string {
   const kind = `history.${kindName(r.kind)}`;
   const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : kind;
   const none = `${key}.none`;
-  const s = t((!r.bn && rb !== 'number' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn) });
+  const s = t((!r.bn && rb !== 'number' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '' });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

@@ -97,6 +97,12 @@ export const EventKind = {
   TechResearched: 38,
   /** a = formation id, b = nation, (x, y) = where it broke off: with little org it leaves its battle (PLAN 3.5a). */
   FormationRetreated: 39,
+  /**
+   * A war ended with no peace signed (PLAN 3.12Rn): b, the last of its side, got a bond with a
+   * nation of the other side (an overlord at a peace, or a new one when its overlord was annexed)
+   * and left it. a = the leader of the side that stayed, b = the nation that left (global).
+   */
+  WarEnded: 40,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

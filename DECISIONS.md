@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-225 · 2026-10-09 · accepted — A war that a bond ends has its row, `WarEnded`, with whose puppet the nation is now; a death's row is the end of a war it empties (PLAN 3.12Rn)
+
+- **Context.** A nation that gets an overlord while at war leaves the wars against its new
+  realm and that realm's allies (`leaveBondedWars`, ADR-180, ADR-181), and a war it was the
+  last of its side in is removed. No event said so: the log and the ticker declared the war
+  and never ended it. The ninth read: Germany's wars with nations 114 and 107 in three
+  years of seed 77, 2 of 69. Ten years of seeds 1, 2 and 3 on today's rules: 3, 1 and 1.
+- **Decision.** A new event, `WarEnded` (40), emitted by `leaveBondedWars` when the war is
+  gone from the list: a the leader of the side that stayed, b the nation that left. It is a
+  kind of the history, of the ticker (at b's capital) and of the peace cue. Its sentence
+  tells the cause from the log alone, as the other kinds with more than one sentence do
+  (`HistoryRow.as`): the nearest row before it in its hour that is b's `PuppetCreated` (a
+  peace's term) or a `NationAnnexed` (b's overlord annexed: the annexer has b now) names
+  the overlord, the row's `cn`: "The war between Germany and Albania ended: Albania is now
+  a puppet of Italy". A row with no such row before it reads "… ended with no peace
+  signed"; the rules emit none such.
+- **Not chosen.**
+  - `PeaceSigned` for it: no peace is signed, nobody won, and no truce begins; the peace's
+    row names a winner first.
+  - The overlord in the event: an event has a and b, and a third number in x or y would
+    make the row one with a place. The log has the overlord one or a few rows before.
+  - A sentence for each kind of bond (an ally, one overlord, allied realms): every bond
+    that ends a war here begins with b's new overlord, and the row that names the overlord
+    is enough to read which it is.
+  - A row for a nation that leaves a war that goes on: the war is in the list, and the log
+    names a war by its leaders at the declaration alone. Not counted: how often the nation
+    that leaves is one of the two the declaration named.
+- **A war that a death ends.** `eliminateNation` takes the dead out of its wars
+  (`Wars.endAllOf`), and a war left with nobody on one side ends with no row of its own (9
+  to 11 in ten years of a seed). The death's row is its end: "X was destroyed" or "X was
+  annexed by Y" is in the log and the ticker in that hour, and a second row would say the
+  war with the dead is over. The ten-year tests take the death of a nation of the war as
+  the end of a war that is gone.
+- **Consequences.** The log is state and hashed (ADR-213). The pin of seed 99 stays at
+  2104f897: no war ends by a bond in its first year. A game in which one does has another
+  hash from that hour, in `history.rows` alone; no rule changed. A save from before reads
+  as before (it has no such row).
+- **Tests.** `realmWars.test.ts`, one, red first with the emit taken out: the puppet made at
+  a peace (one war ended, one that goes on, one that stands), the puppet handed over at an
+  annexation (two ended, one stands), the ticker's rows and their place, the cue, the bare
+  sentence. `aiSweep` (ten years of seeds 1, 2, 3): every war that leaves `wars.list` has
+  in that hour a peace or a `WarEnded` between a nation of each side, or the death of one
+  of its nations; and the wars ended and those in the list are the wars at the start and
+  those declared. Red with the emit taken out (seed 1, tick 27,817: war 76 of Germany,
+  Lithuania and nation 109 on nation 127).
+- **Found with it.** Two of seed 2's 244 wars are declared and ended by a peace in one hour
+  (tick 18,793: Germany declares on Latvia, and Latvia makes peace with Germany as the
+  winner; tick 85,369: nation 202 on nation 174, and 202 the winner). Read, not traced: the
+  day's `warSystem` runs after the declaration and holds a side lost whose leader has 75%
+  of its land under occupiers of any war (`overrun`). PLAN 3.12Rr.
+
 ### ADR-224 · 2026-10-09 · accepted — A formation mustered by a city stands in the city's cell (PLAN 3.12Rm)
 
 - **Context.** A division raised in an overseas theatre appears by the city nearest the

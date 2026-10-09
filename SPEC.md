@@ -602,6 +602,8 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     the loser's leader also becomes a puppet when the annexed land is ≥ 30% of the losers' land.
     A nation made a puppet leaves, with its own puppets, every other war in which it stands
     against a nation it now has a bond with; the land held between them goes back (ADR-180).
+    A war that this leaves with nobody on one side is over, with no peace and no truce, and
+    the log has its `WarEnded` (PLAN 3.12Rn, ADR-225).
     A losing leader left with less than 8,500 km² is annexed whole instead (PLAN 1.40; 40 cells
     until ADR-57). Its puppets become the winner's, and each leaves its wars in the same way
     (ADR-181).
@@ -2171,12 +2173,19 @@ on screen.
     ADR-214; every member of an alliance that is made has one, the founder first):
     'founded', "{a} founded {b}", when a is the alliance's founder and no row before names
     the alliance; b is then told without its founder ("Norway founded a Defensive Pact").
+    A `WarEnded` (PLAN 3.12Rn, ADR-225; a war that a bond ended, emitted by
+    `leaveBondedWars` when the nations that leave were the last of their side: a the leader
+    of the side that stayed, b the nation that left): 'puppet', "The war between {a} and {b}
+    ended: {b} is now a puppet of {c}", when a row before it in its hour is b's
+    `PuppetCreated` or a `NationAnnexed` (the nearest of them: the overlord, or the annexer
+    that has b now, is the row's `cn`); else "… ended with no peace signed". A war whose
+    last nation of a side died has no row of its own: the death's row is its end.
   - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
     (RFC 4180) and JSON export of the filtered rows. The sentence of a row is
     `src/ui/historyText.ts`.
 - **Ticker** (implemented PLAN 3.12c, ADR-211; `src/ui/Ticker.tsx`): the major events
-  (`TICKER_KINDS`: a war declared, a peace, a capital taken, a nation destroyed, collapsed,
-  annexed or returned) as they happen, bottom left above the bar, the newest last, a live
+  (`TICKER_KINDS`: a war declared, a peace, a war ended by a bond, a capital taken, a nation
+  destroyed, collapsed, annexed or returned) as they happen, bottom left above the bar, the newest last, a live
   region (`role="log"`).
   - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
@@ -2186,7 +2195,8 @@ on screen.
     one row too, the annexation (PLAN 3.12Rg2, ADR-215); the log has both, the peace first
     (`makePeace` emits `PeaceSigned` before its terms' `NationAnnexed` or `PuppetCreated`).
   - Every row has a place: the event's own (a capital taken, a return), else a capital as it
-    is now: of the nation a war was declared on, of a peace's loser, of the nation that died.
+    is now: of the nation a war was declared on, of a peace's loser, of the nation a bond
+    took out of its war, of the nation that died.
     A click flies the camera there (`MapView.showPlace`), 1,500 km across the view.
   - While a nation's or a formation's panel is open on the left, the last two rows only,
     each of two lines at most (PLAN 3.12Rh, ADR-216): the panel is the view less 12.5 rem
@@ -2202,7 +2212,7 @@ on screen.
   cue for each major event the ticker tells, made in code with the Web Audio API (no sound
   file is loaded).
   - Five cues (`cueOfKind`): a war declared (three rising notes, as of a trumpet), a peace
-    (two bells), a capital taken (two drum strokes), a nation destroyed, collapsed or annexed
+    or a war ended by a bond (two bells), a capital taken (two drum strokes), a nation destroyed, collapsed or annexed
     (two low falling tones), a nation returned (a rising arpeggio). The notes are data
     (`CUE_NOTES`), each cue over in 1.5 s at most.
   - The cue of a `nationStats` message is that of its ticker rows that are new and of its

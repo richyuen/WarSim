@@ -13,6 +13,7 @@ export type Cue = (typeof CUES)[number];
 const CUE_OF_KIND: Readonly<Record<number, Cue>> = {
   [EventKind.WarDeclared]: 'war',
   [EventKind.PeaceSigned]: 'peace',
+  [EventKind.WarEnded]: 'peace',
   [EventKind.CapitalCaptured]: 'capital',
   [EventKind.NationEliminated]: 'death',
   [EventKind.NationCollapsed]: 'death',

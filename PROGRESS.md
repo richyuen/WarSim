@@ -12307,3 +12307,54 @@ No rule changed and nothing on screen changed. One task came out of it.
   go). The 2,290 days on three lines are 763 days against the 731 of the two years; the
   111 gold already paid on its open lines on 1 January 1940 is not taken off that figure,
   so it is a measure, not a proof that the two years could not do.
+
+## 2026-10-09 — PLAN 3.12Rn: a war ended by a bond has its row
+
+- **The defect** (the ninth read, finding 3): `leaveBondedWars` removed a war left with
+  nobody on one side and emitted nothing. The log and the ticker declared the war and
+  never ended it.
+- **The mend** (ADR-225): `WarEnded` (40), emitted there when the war is gone from the
+  list: a the leader of the side that stayed, b the nation that left. A kind of the
+  history, of the ticker (at b's capital) and of the peace cue.
+- **The sentence** tells the cause from the log alone (`overlordThen`, `historyRows.ts`):
+  the nearest row before it in its hour that is b's `PuppetCreated` or a `NationAnnexed`
+  names the overlord (`HistoryRow.cn`, {c} in `historyText`): "The war between France and
+  Albania ended: Albania is now a puppet of United Kingdom". With no such row: "… ended
+  with no peace signed" (the rules emit none such; a log cut short would).
+- **Tests:**
+  - `realmWars.test.ts`, one, red first with the emit taken out (`[]` for the one row): a
+    puppet made at a peace, a puppet handed over at an annexation, the ticker's rows and
+    place, the cue, the bare sentence.
+  - `aiSweep` (seeds 1, 2, 3, ten years): every war gone from `wars.list` has in that hour
+    a peace or a `WarEnded` of a nation of each side, or the death of one of its nations;
+    the ended and those that go on are the 2 of the start and the declared. Red with the
+    emit taken out, seed 1 alone run so (tick 27,817, war 76).
+  - Figures: declared 254, 242, 198; by a peace 238, 225, 184; by a bond 3, 1, 1; by a
+    death 9, 9, 11; in the list 6, 9, 4.
+- **A war that a death empties** (9 to 11 a seed) has no row of its own: the death's row
+  is its end. Decided in ADR-225, not built.
+- **Found with it:** the check's first run failed on seed 2, 242 of 244: two wars declared
+  and ended by a peace in one hour, which no hour's end saw (`.cache/rn-short.ts 2`: tick
+  18,793, Germany on Latvia, Latvia the winner; tick 85,369, nation 202 on nation 174, 202
+  the winner). The check now finds the end of such a war after its declaration in the
+  hour's events and counts them (0, 2, 0). The cause is read, not traced (`overrun` in the
+  day's `warSystem`, after the declaration): PLAN 3.12Rr, before 3.12Rj.
+- **The pin:** stays at 2104f897 (`baselineHash.test.ts` run before the gate): no war ends
+  by a bond in seed 99's first year. The log is hashed: a game with such an end differs
+  from that hour, in `history.rows`.
+- **Specs by hand:** `ticker1938` and `history1938` (`--project chromium`, 7 passed, 59.7 s).
+  Neither has a `WarEnded` row: the row is not seen in a browser. Its sentence is
+  `historyText`'s, which the panel and the ticker call, and is tested on the rows the
+  worker's functions give.
+- **Not looked into:** a nation that leaves a war that goes on has no row (the war is in
+  the list); how often it is one of the two the declaration named is not counted. The
+  sentences have no article before a name ("a puppet of United Kingdom"), as every other
+  row.
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87).
+- **The gate failed once**, on time: `economy.test.ts`, one year of play, "timed out in
+  120000ms" in a unit stage of 289 s (121 s in the gate of 3.12Rm). Alone the file passes
+  in 31 s. The second run is green with the stages as slow (277 s and 275 s). The machine,
+  not the commit, as far as it is known: the three ten-year tests alone took 140 s twice.
+  In BLOCKERS' list; the test was not changed.
+- **Gate:** `npm run check` green on the second run (`.cache/gate-rn2.log`).
+- **Next:** PLAN 3.12Ro (the walk back of a formation on the retreat).

@@ -510,3 +510,12 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     commit touches nothing the layer draws. The spec was not changed. Not looked into: why the
     suite now takes 19.5 min where it took about 10 (the load of the machine is not known; the
     suite has grown to 159 tests).
+  - `economy.test.ts`, one year of play (2026-10-09, the gate of PLAN 3.12Rn): "Test timed
+    out in 120000ms", once, in a unit stage of 289 s (121 s in the gate before, of PLAN
+    3.12Rm); vitest also could not end six of its workers in time. Alone it passed (the
+    file in 31 s); in the gate's second run it passed (the unit stage 277 s, the ten-year
+    stage 275 s where it took 160 s). The commit adds one comparison to a war's end. No
+    node process of an earlier run was left. The load of the machine in those runs is not
+    known. The test was not changed. Not looked into: why both stages took about twice
+    their time of the gate before (the three ten-year tests alone, with the commit's check,
+    took 140 s twice in that hour).

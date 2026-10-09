@@ -142,7 +142,8 @@ export function bond(world: World, a: number, b: number): Refusal {
  * overlord is annexed). It leaves every war in
  * which a nation of the other side now has a `bond` with it, and its puppets of that side leave
  * with it. Such a war goes on without them, or ends when their side is left empty; nothing is
- * signed and no truce begins (the bond keeps the peace). Between each that left and each nation
+ * signed and no truce begins (the bond keeps the peace); a war that ends so has its row
+ * (`WarEnded`, PLAN 3.12Rn). Between each that left and each nation
  * it is no longer at war with, the land held goes back to its owner, as at a white peace. The
  * side's men at the start are scaled to those who stay, so its losses read as before.
  */
@@ -160,6 +161,9 @@ export function leaveBondedWars(world: World, n: number): void {
     const of = (side: number[]): number => side.reduce((sum, m) => sum + (men!.get(m) ?? 0), 0);
     const before = of(war.sides[s]!);
     world.wars.leave(war, leaving);
+    // The war is over when they were the last of their side: the log says so (PLAN 3.12Rn: it
+    // declared the war and never ended it).
+    if (!world.wars.list.includes(war)) world.out.emit(world.tick, EventKind.WarEnded, enemies[0]!, n, NaN, NaN);
     if (before > 0) war.startMen[s] = war.startMen[s]! * (of(war.sides[s]!) / before);
     for (const m of leaving) for (const o of enemies) parted.push([m, o]);
   }

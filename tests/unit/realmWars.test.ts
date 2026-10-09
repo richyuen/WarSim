@@ -7,6 +7,10 @@ import { Sim } from '../../src/sim/sim';
 import { canJoin, noWarAmong } from '../../src/sim/systems/alliances';
 import { annexNation, makePuppet } from '../../src/sim/systems/puppets';
 import { declareWar, whyNotWar } from '../../src/sim/systems/war';
+import { TICKER_KINDS } from '../../src/shared/history';
+import { cueOfKind } from '../../src/shared/sound';
+import { historyText } from '../../src/ui/historyText';
+import { historyRows, tickerRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { realmWars } from '../helpers/realmWars';
 import { nationId, runEvents } from '../helpers/sim1938';
@@ -149,6 +153,42 @@ describe('no war inside one realm or one alliance (PLAN 3.8)', () => {
     expect(controller[inAlb]).toBe(ALB);
     expect(controller[inFra]).toBe(FRA);
     expect(controller[inPor]).toBe(ALB);
+  });
+
+  // PLAN 3.12Rn (the ninth read, finding 3): a war that a bond ends was removed with no event. Seed
+  // 77: Germany's wars with nations 114 and 107 were declared in the log and the ticker and never
+  // ended there.
+  it('a war ended by a bond has its row, with whose puppet the nation is now; a war that goes on without it has none', () => {
+    const POR = nationId('POR');
+    const name = (id: number): string => `nation.${tag(id)}`;
+    const ended = (w: Sim['world']): string[] => historyRows(w, name, () => '').filter((r) => r.kind === EventKind.WarEnded).map((r) => historyText(r));
+    // A peace's term: Republican Spain, made France's puppet, leaves the war it led alone on
+    // French Equatorial Africa. The war of Portugal goes on, and its war with Germany stands.
+    const made = world1938(5).world;
+    const wars = [made.wars.start([POR, nationId('REP')], [AOF], made.tick), made.wars.start([nationId('REP')], [AEF], made.tick), made.wars.start([GER], [nationId('REP')], made.tick)];
+    expect(makePuppet(made, FRA, nationId('REP'), 30)).toBe(true);
+    expect(wars.filter((x) => made.wars.list.includes(x)).map((x) => x.sides)).toEqual([[[POR], [AOF]], [[GER], [nationId('REP')]]]);
+    expect(ended(made)).toEqual(['The war between French Equatorial Africa and Spanish Republic ended: Spanish Republic is now a puppet of France']);
+    // An overlord annexed: Albania, handed to the United Kingdom, is the last of Italy's side
+    // in one war and alone in France's; Portugal's war on it stands.
+    const handed = world1938(5).world;
+    const three = [handed.wars.start([ENG], [ITA, ALB], handed.tick), handed.wars.start([FRA], [ALB], handed.tick), handed.wars.start([POR], [ALB], handed.tick)];
+    expect(annexNation(handed, ENG, ITA)).toBe(true);
+    expect(three.filter((x) => handed.wars.list.includes(x)).map((x) => x.sides)).toEqual([[[POR], [ALB]]]);
+    expect(ended(handed)).toEqual([
+      'The war between United Kingdom and Albania ended: Albania is now a puppet of United Kingdom',
+      'The war between France and Albania ended: Albania is now a puppet of United Kingdom',
+    ]);
+    // The ticker tells it as the history does, at the capital of the nation that left.
+    const told = tickerRows(handed, name).filter((r) => r.kind === EventKind.WarEnded);
+    expect(told.map((r) => historyText(r))).toEqual(ended(handed));
+    const nc = handed.nations.cols;
+    for (const r of told) expect([r.x, r.y]).toEqual([nc.capitalX[ALB], nc.capitalY[ALB]]);
+    expect(TICKER_KINDS.has(EventKind.WarEnded) && cueOfKind(EventKind.WarEnded)).toBe('peace');
+    // A row with no cause in its hour (a log cut short) says what it knows.
+    const bare = world1938(5).world;
+    bare.history.record(48, EventKind.WarEnded, GER, ALB, NaN, NaN);
+    expect(ended(bare)).toEqual(['The war between Germany and Albania ended with no peace signed']);
   });
 
   // PLAN 3.8d3: an alliance ties its members' puppets too (`bond`). The rules asked only whether
