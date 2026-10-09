@@ -504,3 +504,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     test's 90 s, once. Alone it passed (12.7 s), and in a run with `fire1938` and `bench-pages`.
     It was the last test of the run. The load of the machine in that run is not known. The
     spec was not changed.
+  - `fire1938`, the fire layer's time (2026-10-09, the gate of PLAN 3.12's tick): "fire layer
+    4.21 ms a frame" against its limit of 4, once, in a suite of 159 tests that took 19.5 min.
+    Alone it passed at 0.785 ms; in the gate's second run (19.7 min, green) at 1.334 ms. The
+    commit touches nothing the layer draws. The spec was not changed. Not looked into: why the
+    suite now takes 19.5 min where it took about 10 (the load of the machine is not known; the
+    suite has grown to 159 tests).

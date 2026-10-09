@@ -11619,3 +11619,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` (code; the tick of 3.12: the whole e2e suite).
 - **Next:** PLAN 3.12R, the review pass over 3.8 to 3.12 (step 9: five numbered tasks since
   3.7), then PLAN 4.1.
+- **The gate, as it went** (added after the commit 3427562): the first run failed at e2e, one
+  test of 159: `fire1938`, "fire layer 4.21 ms a frame" against 4 (19.5 min). Alone: green,
+  0.785 ms. The second run of the whole gate: green, 159 passed in 19.7 min, the layer at
+  1.334 ms. The spec was not changed; a line in BLOCKERS.md. The suite's 19.5 min (about 10
+  on 2026-10-08) is for the review pass 3.12R to look into.
