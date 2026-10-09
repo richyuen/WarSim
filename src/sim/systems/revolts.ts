@@ -393,7 +393,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     // The middle of a crescent, of a strip of coast or of a group of islands is not the
     // nation's land, and is often the sea (PLAN 2.15e): its own cell nearest that middle.
     const h = owner.length / w;
-    const mid = cells > 0 ? nearestCellWhere((c) => owner[c] === id, sx / cells, sy / cells, w, h, Math.max(w, h)) : -1;
+    const mid = cells > 0 ? nearestCellWhere((c) => owner[c] === id, sx / cells, sy / cells, w, h, Math.max(w, h), world.settings.loopingMap) : -1;
     [nc.capitalX[id], nc.capitalY[id]] = mid >= 0 ? world.cellPoint(mid) : [0, 0];
     capitalCell = mid;
   }

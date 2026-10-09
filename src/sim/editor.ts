@@ -304,7 +304,7 @@ function strandedToLand(world: World): void {
   world.formations.forEach((f) => {
     const c = Math.floor(fc.y[f]!) * w + Math.floor(fc.x[f]!);
     if (isLand(terrain[c]!)) return;
-    const to = nearestCellWhere((i) => isLand(terrain[i]!), fc.x[f]!, fc.y[f]!, w, h, STRANDED_REACH);
+    const to = nearestCellWhere((i) => isLand(terrain[i]!), fc.x[f]!, fc.y[f]!, w, h, STRANDED_REACH, world.settings.loopingMap);
     if (to < 0) {
       gone.push(f);
       return;

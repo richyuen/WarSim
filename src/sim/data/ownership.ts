@@ -165,8 +165,10 @@ export function buildOwnership(inp: OwnershipInput): OwnershipResult {
 /**
  * The cell nearest to (x, y) (cell units) satisfying `pred(cell)`, within `maxR` cells
  * (Chebyshev rings; nearest centre inside a ring, first in row-major order on ties), or -1.
+ * With `wrap` a ring goes on over the left and right edges; without, it is cut at them (in play:
+ * `settings.loopingMap`, PLAN 3.12Rse1; a world's build wraps, as its map does).
  */
-export function nearestCellWhere(pred: (cell: number) => boolean, x: number, y: number, w: number, h: number, maxR: number): number {
+export function nearestCellWhere(pred: (cell: number) => boolean, x: number, y: number, w: number, h: number, maxR: number, wrap: boolean): number {
   const cx = Math.floor(x);
   const cy = Math.floor(y);
   for (let r = 0; r <= maxR; r++) {
@@ -181,6 +183,7 @@ export function nearestCellWhere(pred: (cell: number) => boolean, x: number, y: 
       const edge = Math.abs(dy) === r;
       const step = edge || r === 0 ? 1 : 2 * r;
       for (let dx = -r; dx <= r; dx += step) {
+        if (!wrap && (cx + dx < 0 || cx + dx >= w)) continue;
         const c = yy * w + ((((cx + dx) % w) + w) % w);
         if (!pred(c)) continue;
         const ddx = cx + dx + 0.5 - x;
@@ -197,9 +200,9 @@ export function nearestCellWhere(pred: (cell: number) => boolean, x: number, y: 
   return -1;
 }
 
-/** The cell owned by `nation` nearest to (x, y) within `maxR` cells, or -1 (coastal capitals). */
+/** The cell owned by `nation` nearest to (x, y) within `maxR` cells, or -1 (coastal capitals). A world's build: it wraps. */
 export function nearestOwnedCell(owner: Uint16Array, nation: number, x: number, y: number, w: number, h: number, maxR: number): number {
-  return nearestCellWhere((c) => owner[c] === nation, x, y, w, h, maxR);
+  return nearestCellWhere((c) => owner[c] === nation, x, y, w, h, maxR, true);
 }
 
 /** Land cells marked UNSET take the most common owner among their resolved land neighbours. */

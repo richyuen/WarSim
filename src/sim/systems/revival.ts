@@ -422,7 +422,7 @@ function leaveToNeighbour(world: World, c: number): void {
   let to = 0;
   for (const [n, k] of [...beside].sort((a, b) => a[0] - b[0])) if (to === 0 || k > beside.get(to)!) to = n;
   if (to === 0) {
-    const near = nearestCellWhere((q) => living(owner[q]!), sx, sy, w, h, Math.max(w, h));
+    const near = nearestCellWhere((q) => living(owner[q]!), sx, sy, w, h, Math.max(w, h), wrap);
     if (near < 0) return;
     to = owner[near]!;
   }

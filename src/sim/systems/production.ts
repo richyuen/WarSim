@@ -58,7 +58,7 @@ export function spawnPoint(world: World, nation: number): [number, number] | nul
   const nc = world.nations.cols;
   const cx = nc.capitalX[nation]!;
   const cy = nc.capitalY[nation]!;
-  const c = nearestCellWhere((i) => controller[i] === nation, cx, cy, w, h, SPAWN_REACH_CELLS);
+  const c = nearestCellWhere((i) => controller[i] === nation, cx, cy, w, h, SPAWN_REACH_CELLS, world.settings.loopingMap);
   if (c < 0) return null;
   // The capital's own cell keeps the exact capital position; elsewhere the cell's middle. Either
   // way on land by the fine mask (PLAN 2.9a): a capital on the shore, a coastal cell's middle.

@@ -79,7 +79,7 @@ export function capitalCell(world: World, n: number): number {
 function relocateToField(world: World, n: number): void {
   const nc = world.nations.cols;
   const { w, h, controller } = world.cells;
-  const cell = nearestCellWhere((c) => controller[c] === n, nc.capitalX[n]!, nc.capitalY[n]!, w, h, Math.max(w, h));
+  const cell = nearestCellWhere((c) => controller[c] === n, nc.capitalX[n]!, nc.capitalY[n]!, w, h, Math.max(w, h), world.settings.loopingMap);
   if (cell < 0) {
     eliminateNation(world, n);
     return;

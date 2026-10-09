@@ -2,13 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
 import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER, operationalAi } from '../../src/sim/ai/operational';
+import { nearestCellWhere } from '../../src/sim/data/ownership';
+import { importLayer } from '../../src/sim/editor';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { capitalsSystem } from '../../src/sim/systems/capitals';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
 import { cellDist, destroyFormation } from '../../src/sim/systems/elements';
 import { addCorridor, inCorridor } from '../../src/sim/systems/majorBattles';
+import { TARGET_SNAP_CELLS, snapTarget } from '../../src/sim/systems/movement';
+import { spawnPoint } from '../../src/sim/systems/production';
+import { RETREAT_CELLS, RETREAT_HOURS, RETREAT_ORG, RETREAT_REACH, RETREAT_RETRY_HOURS, RETREAT_SNAP, retreatSystem } from '../../src/sim/systems/retreat';
 import { SUPPLY_RATE, SUPPLY_REACH, blocOf, refreshSupplyNetwork, supplySystem } from '../../src/sim/systems/supply';
 import { PRESSURE_RADIUS, frontierOf, territorySystem } from '../../src/sim/systems/territory';
+import { navOf } from '../../src/sim/world';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -252,6 +259,105 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
         operationalAi(world);
         const far = (id: number): boolean => Math.abs((sentTo(world, id) % W) - (second % W)) <= 1 && sentTo(world, id) >= 0;
         expect([far(nearer), far(farther)]).toEqual(loop ? [false, true] : [true, false]);
+      }
+    });
+  });
+
+  describe('the nearest cell (3.12Rse1)', () => {
+    it('the search does not look over an edge of a map that does not loop; on a map that loops it does', () => {
+      const last = (c: number): boolean => c === Y * W + W - 1;
+      const first = (c: number): boolean => c === Y * W;
+      for (const loop of [false, true]) {
+        expect(nearestCellWhere(last, 0.5, Y + 0.5, W, H, 3, loop)).toBe(loop ? Y * W + W - 1 : -1);
+        expect(nearestCellWhere(first, W - 0.5, Y + 0.5, W, H, 3, loop)).toBe(loop ? Y * W : -1);
+        // A point beyond an edge (a retreat's, three cells behind a formation in the first column).
+        expect(nearestCellWhere(last, -2.6, Y + 0.5, W, H, 3, loop)).toBe(loop ? Y * W + W - 1 : -1);
+        expect(nearestCellWhere(first, -2.6, Y + 0.5, W, H, 3, loop)).toBe(Y * W);
+        // On the point's own side of the seam, both ways.
+        expect(nearestCellWhere((c) => c === Y * W + 3, 0.5, Y + 0.5, W, H, 3, loop)).toBe(Y * W + 3);
+      }
+    });
+
+    it("an order to a cell of another landmass at one edge is not snapped to the formation's own at the other", () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        world.nav = null;
+        const comp = navOf(world).grid.component;
+        // The two strips are one landmass where the map loops.
+        expect(comp[Y * W] === comp[Y * W + W - 1]).toBe(loop);
+        expect(TARGET_SNAP_CELLS).toBeGreaterThanOrEqual(1);
+        expect(snapTarget(world, Y * W + W - 1, 0, Y)).toBe(loop ? Y * W : -1);
+        expect(snapTarget(world, Y * W, W - 1, Y)).toBe(loop ? Y * W + W - 1 : -1);
+      }
+    });
+
+    it("a capital in the field moves to the nation's nearest cell on its side of the seam", () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        const cc = world.cities.cols;
+        const nc = world.nations.cols;
+        world.cities.forEach((city) => {
+          if (cc.capitalOf[city] === GER) cc.capitalOf[city] = 0;
+        });
+        // In the field, in the first column, on a cell that is not Germany's.
+        nc.capitalX[GER] = 0.5;
+        nc.capitalY[GER] = Y + 0.5;
+        expect(world.cells.controller[Y * W]).not.toBe(GER);
+        world.cells.controller[Y * W + W - 1] = GER;
+        world.cells.controller[Y * W + 3] = GER;
+        capitalsSystem(world);
+        expect([nc.capitalX[GER], nc.capitalY[GER]]).toEqual([loop ? W - 0.5 : 3.5, Y + 0.5]);
+      }
+    });
+
+    it("a new formation appears on the nation's cell nearest its capital on the capital's side of the seam", () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        const nc = world.nations.cols;
+        nc.capitalX[GER] = 0.5;
+        nc.capitalY[GER] = Y + 0.5;
+        world.cells.controller[Y * W + W - 1] = GER;
+        world.cells.controller[Y * W + 3] = GER;
+        expect(spawnPoint(world, GER)!.map(Math.floor)).toEqual([loop ? W - 1 : 3, Y]);
+      }
+    });
+
+    it('a formation left on water by an import of terrain goes to the nearest land on its side of the seam', () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        const id = addDivision(world, GER, 0.4, Y + 0.5);
+        const values = Uint16Array.from(world.cells.terrain);
+        // The first three columns go under: land is a cell away over the seam, three on this side.
+        for (let dy = -3; dy <= 3; dy++) for (const x of [0, 1, 2]) values[(Y + dy) * W + x] = Terrain.Water;
+        expect(importLayer(world, 'terrain', values)).toBe(21);
+        const f = world.formations.cols;
+        expect([Math.floor(f.x[id]!), Math.floor(f.y[id]!)]).toEqual([loop ? W - 1 : 3, Y]);
+      }
+    });
+
+    it('a retreat from the first column falls back to no cell of the last; on a map that loops it does', () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        const { terrain, controller } = world.cells;
+        // One landmass the width of the map, both ways: the cells of the last columns are of the
+        // formation's own, and a route to them goes the long way round where the map has edges.
+        for (let dy = -3; dy <= 3; dy++) for (let x = 0; x < W; x++) terrain[(Y + dy) * W + x] = Terrain.Plains;
+        for (let dy = -3; dy <= 3; dy++) for (const x of [0, 1, 2, 3, W - 6, W - 5, W - 4, W - 3, W - 2, W - 1]) controller[(Y + dy) * W + x] = GER;
+        world.nav = null;
+        const id = addDivision(world, GER, 0.4, Y + 0.5);
+        addDivision(world, POL, 1.6, Y + 0.5);
+        const f = world.formations.cols;
+        f.engaged[id] = 1;
+        f.org[id] = RETREAT_ORG / 2;
+        world.tick = (RETREAT_RETRY_HOURS - (id % RETREAT_RETRY_HOURS)) % RETREAT_RETRY_HOURS;
+        retreatSystem(world);
+        expect(f.retreat[id]).toBe(RETREAT_HOURS);
+        expect(f.moving[id]).toBe(1);
+        const x = f.targetCell[id]! % W;
+        // Looping: the cell nearest the point `RETREAT_CELLS` behind it, over the seam. With
+        // edges: no cell is about that point, and it goes to the nearest of its own about itself.
+        if (loop) expect(x).toBeGreaterThanOrEqual(W - Math.ceil(RETREAT_CELLS) - RETREAT_SNAP);
+        else expect(x).toBeLessThanOrEqual(RETREAT_REACH);
       }
     });
   });

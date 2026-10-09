@@ -205,7 +205,7 @@ export function snapTarget(world: World, origin: number, tx: number, ty: number)
   if (!snaps) SNAPS.set(grid, (snaps = new Map()));
   const key = from * w * h + target;
   let to = snaps.get(key);
-  if (to === undefined) snaps.set(key, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, TARGET_SNAP_CELLS)));
+  if (to === undefined) snaps.set(key, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, TARGET_SNAP_CELLS, world.settings.loopingMap)));
   return to;
 }
 const SNAPS = new WeakMap<object, Map<number, number>>();
@@ -289,7 +289,7 @@ export function repatriationSystem(world: World): void {
     if (!foreignTo(world, nation, holder)) return;
     let way = ways.get(nation);
     if (!way) ways.set(nation, (way = homeward(world, nation)));
-    const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS);
+    const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS, world.settings.loopingMap);
     if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, way, HOME_MARCH)) return;
     const at = spawnPoint(world, nation);
     if (!at) return;

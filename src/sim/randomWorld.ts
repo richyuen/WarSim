@@ -161,7 +161,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   // and none on an islet.
   const cityCell = CITIES.map((d) => {
     const [x, y] = cellOf(d.lonLat[0], d.lonLat[1], w, h);
-    return nearestCellWhere(isLand, x, y, w, h, CITY_SNAP_CELLS);
+    return nearestCellWhere(isLand, x, y, w, h, CITY_SNAP_CELLS, true);
   });
   const pieceCells = new Map<number, number>();
   for (let cell = 0; cell < w * h; cell++) if (isLand(cell)) pieceCells.set(grid.component[cell]!, (pieceCells.get(grid.component[cell]!) ?? 0) + 1);

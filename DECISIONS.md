@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-238 · 2026-10-09 · accepted — The nearest-cell search keeps to the edges of a map that does not loop (PLAN 3.12Rse1)
+
+- **Context.** The fifth part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236, ADR-237), split
+  in three: the search, the brushes (3.12Rse2), a block's slots beside an edge and the
+  reasons of what is left (3.12Rse3). `nearestCellWhere` (`data/ownership.ts`) looks for
+  the cell nearest a point in Chebyshev rings and took every ring over the seam
+  (`% w`), with no setting to ask: it has no world.
+- **What was so**, with `looping=0`:
+  - `snapTarget` (`movement.ts`): an order to a cell of another landmass at one edge was
+    snapped to the cell of the formation's own landmass at the other, "within 3 cells"
+    (ADR-237's first scene: a division sent to the first cell of its row).
+  - a retreat (`retreat.ts`, twice): the point `RETREAT_CELLS` behind a formation in the
+    first columns is at x < 0, and the cells about it were those of the last columns. On
+    one landmass the width of the map the search gave a cell there and the order to it was not
+    taken (why was not looked into): the formation did not retreat at all (the test's
+    first red: "expected +0 to be 24"). On two landmasses the rule of one landmass hid it.
+  - a capital's move to the field (`capitals.ts`), where a formation is mustered
+    (`spawnPoint`), a founded nation's field capital (`revolts.ts`), the neighbour a
+    collapsed nation's land goes to (`revival.ts`): the cell "nearest" was one over the
+    seam, a map's width away.
+  - a march home (`repatriationSystem`): its nearest own cell within 80, of its landmass.
+  - a formation an import of terrain left on water (`editor.ts`): put on land at the
+    other edge.
+  PLAN named the retreat, the capital, the editor and `snapTarget`; the other four are
+  the callers the compiler named when the parameter was added.
+- **Decision.** The search takes `wrap`, a parameter with no default, so that every caller
+  says which: without it a ring is cut at the left and right edges (the order within a
+  ring and the tie are as they were). In play every caller passes
+  `settings.loopingMap`. The world's build (`cities.ts`, `oob.ts`, `randomWorld.ts`,
+  `nearestOwnedCell`) passes `true`: a scenario's map wraps or not by its own data
+  (`schemas.ts`: `loopingMap` asks for a map that wraps), the world is built before the
+  new game's option is applied, and a build that changed with the option would give
+  another world, not the same world with edges.
+- **Tests.** `tests/unit/seam.test.ts`, six more (15 in the file), each with the map
+  looping and not, all red first (`.cache/rse1-red.log`; the sixth, `spawnPoint`, against
+  the old source afterwards): the search itself (a point beyond an edge too); `snapTarget`
+  both ways; a capital in the field; `spawnPoint`; a formation under an import; a retreat
+  from the first column on a landmass the width of the map. No scene for the march home,
+  the founded nation's capital or the collapsed nation's neighbour: each passes the same
+  argument to the search, and the search's own test is theirs.
+- **The pin stays** (92689265): 1938 loops, and every caller reads what it read.
+
 ### ADR-237 · 2026-10-09 · accepted — The operational AI's distances keep to the edges of a map that does not loop (PLAN 3.12Rsd)
 
 - **Context.** The fourth part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236): a nation's plan

@@ -2300,9 +2300,13 @@ on screen.
   (ADR-227), the measure of contact (who fights whom, where a block deploys, a retreat's
   way, a breakthrough corridor: ADR-233), the supply's reach about a formation (ADR-234),
   the pressure of a formation on a frontier cell (ADR-236), the operational AI's
-  distances and its sums over a sector's 3 × 3 buckets (ADR-237) or rendering; the
-  nearest-cell search (a retreat's cell, a capital's move, the cell an order is snapped
-  to) and the God brush of control still go over the seam, PLAN 3.12Rse), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
+  distances and its sums over a sector's 3 × 3 buckets (ADR-237), the nearest-cell
+  search in play (`nearestCellWhere` with `wrap`: a retreat's cell, a capital's move to
+  the field, the cell an order is snapped to, a march home's cell, where a formation is
+  mustered, a founded nation's field capital, the neighbour a collapsed nation's land
+  goes to, a formation an import left on water: ADR-238) or rendering; a world's build
+  wraps as its map does; the God brush of control and the editor's brush and bucket
+  still go over the seam, PLAN 3.12Rse2), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
   manpower multipliers and aggression bias), starting gold (random 0.25–2× or equal = median),
   CE mode, and for the random world the number of nations (`nations`, §3.4). Applied once at
   init from the seed; carried in the URL

@@ -111,7 +111,7 @@ export function placeOob(inp: OobInput): OobResult {
     const allowed = (c: number): boolean =>
       terrain[c]! >= Terrain.Plains && (controller[c] === nation || (mine !== undefined && mine.has(owner[c]!) && controller[c] === owner[c]));
     const [ax, ay] = cellOf(g.at[0], g.at[1], w, h);
-    const start = nearestCellWhere(allowed, ax, ay, w, h, ANCHOR_REACH_CELLS);
+    const start = nearestCellWhere(allowed, ax, ay, w, h, ANCHOR_REACH_CELLS, true);
     if (start < 0 || nation === 0) {
       unplaced.push(gi);
       return;

@@ -12758,3 +12758,43 @@ No rule changed and nothing on screen changed. One task came out of it.
   parity 47.5%. The first run failed at typecheck (the test's filter, above).
 - **Next:** PLAN 3.12Rse (the nearest-cell search in play, the God brush of control, the
   editor's brush; a block's slots beside an edge), which ticks 3.12Rs; then 3.12Ri, 3.12Rj.
+
+## 2026-10-09 — PLAN 3.12Rse1: the nearest-cell search keeps to the edges of a map that does not loop (ADR-238)
+
+- **Split:** 3.12Rse is three causes, one a commit: the search (this), the brushes
+  (3.12Rse2), a block's slots beside an edge with the reasons of what is left (3.12Rse3,
+  which ticks 3.12Rse and 3.12Rs).
+- **Done:** `nearestCellWhere` (`data/ownership.ts`) takes `wrap`, with no default: the
+  compiler named every caller. Play passes `settings.loopingMap` in nine places: a
+  retreat's cell (twice), a capital's move to the field, `snapTarget`, the editor's
+  stranded formations, and four PLAN did not name (a march home's cell, `spawnPoint`, a
+  founded nation's field capital, the neighbour a collapsed nation's land goes to). The
+  world's build passes `true` (`cities.ts`, `oob.ts`, `randomWorld.ts`,
+  `nearestOwnedCell`): the map's own data says whether it wraps, and the option is
+  applied after the build.
+- **What it did with `looping=0`:** an order to another landmass at one edge was snapped
+  to the formation's own at the other; a capital, a new formation and a formation an
+  import left on water went to the cell over the seam; a formation in the first column
+  of a landmass the width of the map did not retreat at all (the search gave a cell of
+  the last columns, and the order to it was not taken).
+- **Tests:** `tests/unit/seam.test.ts`, six more (15 in the file), each with the map
+  looping and not, red first (`.cache/rse1-red.log`, five; the sixth, `spawnPoint`, added
+  after the fix and run against the old source by `git stash`: six red). No scene for the
+  march home, the founded nation's capital or the collapsed nation's neighbour: the
+  search's own test stands for them.
+- **Gotchas:** the two strips of `edges` are two landmasses with the map not looping, and
+  a retreat asks for a cell of the formation's own (`comp`): the scene of the retreat
+  makes plains the width of the map, or the old code passes for another reason. Why the
+  old order across the map was not taken was not looked into.
+- **SPEC** §9, the looping option; PARITY row 69, a dated line.
+- **The pin stays** (92689265; `baselineHash.test.ts` by hand before the gate). **The
+  tick's cost: not measured** (one comparison a cell of a ring, with the map not looping
+  only).
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87); no spec by hand: nothing
+  drawn changed.
+- **`npm run plan:archive`:** nothing to move.
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rse1.log`): 1,091 unit
+  tests in 134 files (119.8 s), the ten-year stage 17 tests in 12 files (188.6 s), build,
+  parity 47.5%.
+- **Next:** PLAN 3.12Rse2 (the brushes: first what the page sends), 3.12Rse3, then 3.12Ri,
+  3.12Rj.

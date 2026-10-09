@@ -123,8 +123,8 @@ function fallBack(world: World, id: number, reach: number): boolean {
     for (const o of enemies) if (cellDist(world, kx, ky, c.x[o]!, c.y[o]!) <= CONTACT_CELLS) return false;
     return true;
   };
-  let target = nearestCellWhere(safe, px, py, w, h, RETREAT_SNAP);
-  if (target < 0) target = nearestCellWhere(safe, x, y, w, h, RETREAT_REACH);
+  let target = nearestCellWhere(safe, px, py, w, h, RETREAT_SNAP, world.settings.loopingMap);
+  if (target < 0) target = nearestCellWhere(safe, x, y, w, h, RETREAT_REACH, world.settings.loopingMap);
   return target >= 0 && orderMove(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
 }
 

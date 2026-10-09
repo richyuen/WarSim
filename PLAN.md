@@ -134,6 +134,29 @@ quick sweep as a smoke test.
       of a map that loops no more" is not taken (ADR-171); the fold of line 444
       (`x < 0 ? x + w`) is then reached on a map that loops only. Read, not run.
       AT: a test for each that is mended, failing first; a line of reason for each left.
+      Split 2026-10-09: three causes, one a commit. The last part ticks 3.12Rse and 3.12Rs.
+      - [x] 3.12Rse1 The nearest-cell search (`nearestCellWhere`, ADR-238): it takes `wrap`,
+        and play passes the setting: a retreat's cell (twice), a capital's move to the
+        field, `snapTarget`, the editor's stranded formations, and four the search of the
+        callers found and PLAN did not name (a march home's cell, `spawnPoint`, a founded
+        nation's field capital, the neighbour a collapsed nation's land goes to). The
+        world's build wraps, as its map does. Six tests, red first; the pin stays.
+      - [ ] 3.12Rse2 The brushes: the God brush of control (`paintControl`, `tick.ts`), the
+        editor's brush, line and bucket (`editor.ts`, `brushCells`, `bucketCells`), the
+        cell of a placed city (`scenarioEdit.ts:24`). First what the page sends: whether a
+        pointer's x is ever outside `[0, w)` on a map that does not loop (`MapView`); if
+        not, the fold of one coordinate is dead and what is left is the radius over an
+        edge and the bucket's neighbour over the seam. They are commands (replay, save).
+        The e2e specs of the God brush and the editor by hand.
+        AT: a test for each that is mended, failing first, with the map looping and not.
+      - [ ] 3.12Rse3 A block's slots beside the first or last column (`deployOf`,
+        `elementPlace`: places at x < 0): what the snapshot, the fires and the page do with
+        them, on a map that loops too; mended, or a line of PLAN if it is a defect of the
+        drawing. And the line of reason for each place left: `findBattles`' bucket lookup,
+        the step's fold of `movement.ts`, the world's build, the midpoint folds of
+        `warBattle.ts:105` and `worker/server.ts` (765, 1033: a point made with a mended
+        `wrapDx`, brought back onto the map). Ticks 3.12Rse and 3.12Rs.
+        AT: a test for what is mended; the reasons are in SPEC or the code's comments.
   - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rs: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
