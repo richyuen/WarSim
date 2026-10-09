@@ -41,7 +41,7 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   // 3.12Rm, ADR-224: in the game since, Latvia holds 3,689 cells in January 1940, with an income
   // of 3 until March 1939 and of 1,225 now. It has learnt one tech and has 14 of 1938 to 1941 to
   // go, 2,290 days of them on three lines: it learns all but `armor_medium_2` in the two
-  // years, 14 techs, and that one in February 1942). The rules give no nation that begins so
+  // years, 13 techs, and that one in February 1942). The rules give no nation that begins so
   // far behind the tech in two years; Latvia too is in the check of 1944.
   const early = RULES_1938.techs.map((t, i) => (t.year <= 1938 && !HELD_CATEGORIES.includes(t.category) ? i : -1)).filter((i) => i >= 0);
   const abreast = richThrough.filter((n) => knowsTechs(w, n, techMask(early)));

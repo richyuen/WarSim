@@ -12288,7 +12288,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   and knows `armor_medium_2` in February 1942, not in January. Traced month by month
   (`.cache/rm-lat.ts`, `rm-rich.ts`, `rm-need.ts`): income 3 until March 1939, 1,225 in
   January 1940; one tech learnt by then, 14 to go (2,290 days, three lines); budget 3.3 a
-  day or more, the treasury never short; 14 techs learnt in the two years. The rules'
+  day or more, the treasury never short; 13 techs learnt in the two years. The rules'
   time, not a defect. The check's premise is narrowed as in ADR-147 and ADR-153: rich
   through both years and no tech of 1938 or before to learn on 1 January 1940 (the Soviet
   Union, Britain, the United States: 5 techs and 880 days to go each). Latvia is in the
@@ -12302,3 +12302,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58). Nothing drawn changed: no spec run by hand; no e2e (a part, ADR-87).
 - **Gate:** `npm run check` green on the second run (`.cache/gate-rm2.log`).
 - **Next:** PLAN 3.12Rn (a war ended by a bond has a row).
+- **Its record, corrected after the commit:** Latvia learns 13 techs in the two years, not
+  14 (`assembly_line` is of December 1939; `armor_medium_2` is the 14th of those it had to
+  go). The 2,290 days on three lines are 763 days against the 731 of the two years; the
+  111 gold already paid on its open lines on 1 January 1940 is not taken off that figure,
+  so it is a measure, not a proof that the two years could not do.

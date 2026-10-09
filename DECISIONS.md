@@ -200,7 +200,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   nation. Latvia's income is 3 until March 1939 and 1,225 in January 1940 (3,689 cells);
   it has learnt one tech by then and has 14 of 1938 to 1941 to go: 2,290 days on three
   lines, 1,420 gold. Its budget is 3.3 to 3.6 gold a day, more than three lines take, and
-  its treasury is never short. It learns 14 techs in the two years, the lowest year first,
+  its treasury is never short. It learns 13 techs in the two years, the lowest year first,
   and `armor_medium_2` (200 days, open to it when a line is free in August 1941) in
   February 1942. That is the rules' time and no defect: the check was of nations whose
   research went on through the two years, and its premise never said from where. The
