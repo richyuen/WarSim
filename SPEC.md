@@ -2162,7 +2162,9 @@ on screen.
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
     last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at
     Max speed. A death told twice in an hour (a collapse or an annexation, then
-    `NationEliminated`) is one row.
+    `NationEliminated`) is one row. A peace whose winner annexed its loser in that hour is
+    one row too, the annexation (PLAN 3.12Rg2, ADR-215); the log has both, the peace first
+    (`makePeace` emits `PeaceSigned` before its terms' `NationAnnexed` or `PuppetCreated`).
   - Every row has a place: the event's own (a capital taken, a return), else a capital as it
     is now: of the nation a war was declared on, of a peace's loser, of the nation that died.
     A click flies the camera there (`MapView.showPlace`), 1,500 km across the view.

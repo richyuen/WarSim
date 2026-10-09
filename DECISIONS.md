@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-215 · 2026-10-09 · accepted — A peace is told before its terms; a peace that annexes is one row of the ticker; the pin moves, no rule does (PLAN 3.12Rg2)
+
+- **Context.** `makePeace` annexed a small loser or made it a puppet and then emitted
+  `PeaceSigned`. The log read, oldest first: "X was annexed by Germany", "X was destroyed",
+  "Germany made peace with X" (seed 77, tick 26,040: nations 118 and 1), and "Austria became
+  a puppet of Germany" before "Germany made peace with Austria". The ticker told the
+  annexation and then a peace with the dead.
+- **Decision, the log: two rows, the peace first.** `PeaceSigned` is emitted when the war
+  has ended, before `annexNation` or `makePuppet`. The peace is the cause and the row that
+  ends the war in the log (PLAN 3.12Rn asks every war for its end); the annexation is its
+  term and the row of the death. Neither is the other.
+- **Decision, the ticker: one row, the annexation.** A `PeaceSigned` whose loser has a
+  `NationAnnexed` by its winner in that hour is not told. The ticker holds five rows of the
+  major events and "made peace with" a nation that is gone in that hour says less than
+  "was annexed by"; a death told twice is one row there already (ADR-211). One cue with
+  it: the death's, not the peace's and then the death's (ADR-212). Looked for on both
+  sides of the peace: a game saved before has the peace last. An annexation by another
+  than the peace's winner (God Mode in that hour) leaves both rows.
+- **The pin.** `d07a7db0` to `4b019e8f`. A hash of each of the 118 sections of the state of
+  seed 99 after one year, before and after (`.cache/rg2/sections.ts`, not kept in the
+  repository): `history.rows` alone differs. Its 178 rows are the same rows as a sorted set
+  (one hash); 18 are in other places: the year's 6 peaces with a puppet made (2 rows each)
+  and 2 with an annexation (3 rows each: the peace, `NationAnnexed`, `NationEliminated`), of
+  21 peaces. No rule changed.
+- **Consequences.** `tests/unit/war.test.ts` asks the order of both terms;
+  `tests/unit/history.test.ts` the ticker's row with the log in either order. The truce
+  with the annexed nation is pushed as before (it holds if the nation returns).
+
 ### ADR-214 · 2026-10-09 · accepted — The founder's row of an alliance is its founding, told from the log (PLAN 3.12Rg1)
 
 - **Context.** An alliance that is made emits `AllianceJoined` for each member, the founder

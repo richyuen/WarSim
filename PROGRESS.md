@@ -11916,3 +11916,34 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rg2 (the peace before its terms; the ticker's one row or two).
+
+## 2026-10-09 — PLAN 3.12Rg2: the peace before its terms, and one row of the ticker
+
+- **Read first:** the read-9 save of seed 77 (`.cache/read9/inv_1938_77.bin`, `histdump.ts`),
+  tick 26,040: `NationAnnexed` 118 by 1, `NationEliminated` 118, `PeaceSigned` 1 with 118;
+  the ticker had rows 448 (annexed) and 450 (peace).
+- **Decided (ADR-215):** the log keeps both rows, the peace first: `makePeace`
+  (`src/sim/systems/war.ts`) emits `PeaceSigned` when the war has ended, before
+  `annexNation` or `makePuppet`. The ticker (`tickerRows`) leaves out a peace whose winner
+  annexed its loser in that hour, on whichever side of it the log has the annexation.
+- **The pin:** `d07a7db0` to `4b019e8f`. Each of the 118 sections of seed 99's year hashed
+  before and after (a scratch script in `.cache/rg2/`): `history.rows` alone differs; the
+  178 rows are the same set; 18 changed places (6 peaces with a puppet, 2 with an
+  annexation, of 21).
+- **Tests:** `tests/unit/war.test.ts`, two that failed first ([19, 14] for [14, 19]; [32,
+  11, 14] for [14, 32, 11]): the order at a puppet made and at an annexation, and a peace
+  with neither. `tests/unit/history.test.ts`, one that failed first: the ticker with the
+  log in the old order and the new, another peace of the winner's in that hour told, an
+  annexation by another than the winner told with its peace; the log has every row.
+- **The save again:** the same save's ticker with the new code: 445, 446, 447, 448 (annexed)
+  and 451; row 450 is not told. (The new order in a game: the war test's, from a run.)
+- **Specs run by hand** (`--project chromium`): `ticker1938`, `history1938`, `sound1938`
+  (5 tests, 24 s): green. No picture taken: the ticker draws a row fewer of kinds it drew
+  before, and no spec's game has a peace that annexes. Not looked at in the page: such a
+  peace as it happens.
+- **Performance:** not measured: one emit moved; in the worker a scan of the hour's rows
+  for each peace among at most the last month's.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rh (the ticker beside a tall panel, at the UI sizes above 100%, at Max
+  speed; the events between two messages).

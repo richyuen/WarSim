@@ -389,10 +389,12 @@ export function makePeace(world: World, war: War): void {
   const ll = L[0]!;
   const nc = world.nations.cols;
   world.wars.end(war);
+  // The peace before its terms (PLAN 3.12Rg2): the log read "annexed", "destroyed" and then a
+  // peace with the dead.
+  world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
   // A small losing leader is annexed outright by a decisive winner (PLAN 1.40 tuning: losing
   // rebels otherwise survived as rump states or puppets, and 50 years ended with 300–600 nations).
   if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && world.landCounts().owned[ll]! < SMALL_STATE_KM2) annexNation(world, wl, ll);
   else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && occupied >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
-  world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
 }

@@ -293,4 +293,32 @@ describe('history rows name what they are of (PLAN 3.12a)', () => {
     w.tick = 99 + TICKER_HOURS;
     expect(tickerRows(w, name)).toEqual([]);
   });
+
+  // PLAN 3.12Rg2: "N3 was annexed by N1" and "N1 made peace with N3" in one hour (seed 77, tick 26,040).
+  it('the ticker: a peace that annexes its loser is one row, the annexation, whichever the log has first', () => {
+    const s = new Sim({ scenario: 'toy', seed: 1 });
+    const w = s.world;
+    const h = w.history;
+    const [A, B, C, D] = [1, 2, w.nations.create(), w.nations.create()]; // the toy world has two
+    const name = (n: number): string => `=N${n}`;
+    w.tick = 30;
+    h.record(10, EventKind.NationAnnexed, C, A, NaN, NaN); // a log from before: the peace last
+    h.record(10, EventKind.NationEliminated, C, 0, NaN, NaN);
+    h.record(10, EventKind.PeaceSigned, A, C, NaN, NaN);
+    h.record(20, EventKind.PeaceSigned, B, D, NaN, NaN); // the peace, then its term
+    h.record(20, EventKind.PeaceSigned, B, A, NaN, NaN); // another peace of the winner's in that hour: told
+    h.record(20, EventKind.NationAnnexed, D, B, NaN, NaN);
+    h.record(20, EventKind.NationEliminated, D, 0, NaN, NaN);
+    h.record(25, EventKind.NationAnnexed, C, A, NaN, NaN); // annexed by another than the peace's winner (God Mode): both
+    h.record(25, EventKind.PeaceSigned, B, C, NaN, NaN);
+    expect(tickerRows(w, name).map((r) => [r.tick, historyText(r)])).toEqual([
+      [10, 'N3 was annexed by N1'],
+      [20, 'N2 made peace with N1'],
+      [20, 'N4 was annexed by N2'],
+      [25, 'N3 was annexed by N1'],
+      [25, 'N2 made peace with N3'],
+    ]);
+    // The log has every row.
+    expect(historyRows(w, name, () => '').length).toBe(h.rows.length / HISTORY_STRIDE);
+  });
 });

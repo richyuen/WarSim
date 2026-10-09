@@ -130,6 +130,8 @@ describe('wars and peace (PLAN 1.16)', () => {
     const ev = events(s, 1); // the 00:00 assessment
     const w = s.world;
     expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+    // The peace is told before its terms (PLAN 3.12Rg2).
+    expect(ev.map((e) => e[1]).filter((k) => k === EventKind.PeaceSigned || k === EventKind.PuppetCreated)).toEqual([EventKind.PeaceSigned, EventKind.PuppetCreated]);
     expect(w.wars.atWar(GER, POL)).toBe(false);
     for (const c of taken) expect([w.cells.owner[c], w.cells.controller[c]]).toEqual([GER, GER]);
     expect(w.nations.cols.overlord[POL]).toBe(GER);
@@ -338,7 +340,7 @@ describe('wars and peace (PLAN 1.16)', () => {
   }, 60_000);
 
   it('a small losing leader is annexed by km²: 48 cells at 60°N are small, 32 cells in the tropics are not', () => {
-    const lose = (loser: number, keep: number, occupy: number): { w: World; left: number[] } => {
+    const lose = (loser: number, keep: number, occupy: number): { w: World; left: number[]; told: number[] } => {
       const s = duel(GER, loser);
       const w = s.world;
       s.step(24);
@@ -346,8 +348,10 @@ describe('wars and peace (PLAN 1.16)', () => {
       // Germany holds the cells farthest from the capital; the loser is broke and sues.
       for (const c of kept.slice(keep - occupy)) w.setController(c, GER);
       w.nations.cols.gold[loser] = -1e9;
-      expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, loser]]);
-      return { w, left: kept.slice(0, keep - occupy) };
+      const ev = events(s, 1);
+      expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([[GER, loser]]);
+      const told = ev.map((e) => e[1]!).filter((k) => k === EventKind.PeaceSigned || k === EventKind.NationAnnexed || k === EventKind.NationEliminated);
+      return { w, left: kept.slice(0, keep - occupy), told };
     };
     // Finland around Helsinki: 60 cells, 12 lost. The 48 left are more than the 40 cells of the
     // old rule and less than SMALL_STATE_KM2: annexed whole.
@@ -356,12 +360,15 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(km2Of(fin.w, fin.left)).toBeLessThan(SMALL_STATE_KM2);
     expect(fin.w.nations.cols.living[FIN]).toBe(0);
     for (const c of fin.left) expect(fin.w.cells.owner[c]).toBe(GER);
+    // The peace, then its term and the death (PLAN 3.12Rg2: the log had the peace last, with the dead).
+    expect(fin.told).toEqual([EventKind.PeaceSigned, EventKind.NationAnnexed, EventKind.NationEliminated]);
     // Brazil around Rio de Janeiro: 38 cells, 6 lost. The 32 left are fewer than 40 cells and more
     // than SMALL_STATE_KM2: it keeps them.
     const bra = lose(BRA, 38, 6);
     expect(bra.left.length).toBeLessThan(40);
     expect(km2Of(bra.w, bra.left)).toBeGreaterThan(SMALL_STATE_KM2);
     expect(bra.w.nations.cols.living[BRA]).toBe(1);
+    expect(bra.told).toEqual([EventKind.PeaceSigned]);
     for (const c of bra.left) expect(bra.w.cells.owner[c]).toBe(BRA);
   }, 60_000);
 

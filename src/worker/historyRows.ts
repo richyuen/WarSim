@@ -104,13 +104,22 @@ const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKin
  * oldest first, read from the end of the log. A row whose event has no place has a capital as it
  * is now: of the nation a war was declared on, of a peace's loser, of the nation that died. A
  * death told twice in an hour (a collapse or an annexation, then `NationEliminated`) is one row,
- * the first.
+ * the first. A peace whose winner annexed its loser in that hour is one row too, the annexation
+ * (PLAN 3.12Rg2, ADR-215), on whichever side of the peace the log has it: a game saved before
+ * has the peace last.
  */
 export function tickerRows(world: World, nationName: (id: number) => string): TickerRow[] {
   const rows = world.history.rows;
   const nc = world.nations.cols;
   const nation = (v: number): string => (v !== 0 && world.nations.has(v) ? nationName(v) : '');
   const out: TickerRow[] = [];
+  /** Whether a row of the hour of row `i` is the annexation of `dead` by `by`. */
+  const annexedThen = (i: number, dead: number, by: number): boolean => {
+    const is = (j: number): boolean => rows[j + 1] === EventKind.NationAnnexed && rows[j + 2] === dead && rows[j + 3] === by;
+    for (let j = i - HISTORY_STRIDE; j >= 0 && rows[j] === rows[i]; j -= HISTORY_STRIDE) if (is(j)) return true;
+    for (let j = i + HISTORY_STRIDE; j < rows.length && rows[j] === rows[i]; j += HISTORY_STRIDE) if (is(j)) return true;
+    return false;
+  };
   for (let i = rows.length - HISTORY_STRIDE; i >= 0 && out.length < TICKER_ROWS; i -= HISTORY_STRIDE) {
     const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
     if (world.tick - tick > TICKER_HOURS) break;
@@ -120,6 +129,7 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
       for (let j = i - HISTORY_STRIDE; j >= 0 && rows[j] === tick && !told; j -= HISTORY_STRIDE) told = (rows[j + 1] === EventKind.NationCollapsed || rows[j + 1] === EventKind.NationAnnexed) && rows[j + 2] === a;
       if (told) continue;
     }
+    if (kind === EventKind.PeaceSigned && annexedThen(i, b, a)) continue;
     const at = PLACE_OF_B.has(kind) ? b : a;
     const placed = !Number.isNaN(x) && !Number.isNaN(y);
     const rb = (HISTORY_ROLES[kind] ?? ['number', 'number'])[1];

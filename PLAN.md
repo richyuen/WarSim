@@ -5439,7 +5439,7 @@ quick sweep as a smoke test.
       member is left. Seed 1's ten years: 29 gone and 29 rows. The hash covers the log: the
       pin moves, `e05beda3` to `d07a7db0`, and `history.rows` is the one section that
       differs. `aiSweep` asks that the log's dissolved alliances are the state's past ones.
-  - [ ] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the
+  - [x] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the
     founding has one row. With it (the ninth read's suspicion): a peace that annexes the
     loser puts "annexed" and then a peace with the annexed nation in the ticker in one hour
     (seed 77, tick 26,040); one row or two, decided. Two causes, two parts (2026-10-09):
@@ -5449,11 +5449,16 @@ quick sweep as a smoke test.
         Defensive Pact", then "Finland joined the Defensive Pact of Norway". Told from the
         log alone: no event, no state, no pin. `aiSweep` asks it of every joined row of
         ten years of three seeds.
-    - [ ] 3.12Rg2 A peace that annexes: the log has `NationAnnexed`, `NationEliminated`
+    - [x] 3.12Rg2 A peace that annexes: the log has `NationAnnexed`, `NationEliminated`
       and then `PeaceSigned` with the dead (seed 77, tick 26,040, read again 2026-10-09),
       and the ticker tells the first and the last. Decide the order of the log (the peace
       before its terms, a puppet made at a peace too) and the ticker's one row or two. The
       log is hashed: the pin moves if the order does.
+      - Done 2026-10-09 (ADR-215): `makePeace` emits `PeaceSigned` before the annexation
+        or the puppet. The log has both rows, the peace first; the ticker has one, the
+        annexation, whichever side of the peace the log has it (a game saved before). The
+        pin moves, `d07a7db0` to `4b019e8f`: of 118 sections `history.rows` alone differs,
+        the same 178 rows as a set, 18 in other places (6 puppets, 2 annexations).
   - [ ] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than
     the view less 12.5 rem, at the UI sizes above 100%, at Max speed. Pictures, looked at;
     what is wrong is fixed here or is a part of its own. With it (the ninth read's
