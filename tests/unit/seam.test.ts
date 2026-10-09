@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
+import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER, operationalAi } from '../../src/sim/ai/operational';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
@@ -132,6 +134,124 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
         expect(pressed(loop, 0, W - PRESSURE_RADIUS - 1, W - PRESSURE_RADIUS - 2)).toBe(0);
         expect(pressed(loop, 0, PRESSURE_RADIUS, PRESSURE_RADIUS + 1)).toBe(1);
         expect(pressed(loop, 0, PRESSURE_RADIUS + 1, PRESSURE_RADIUS)).toBe(0);
+      }
+    });
+  });
+
+  describe('the distances of the operational AI (3.12Rsd)', () => {
+    /** The cells of German ground west of the last column that the scenes below are made on. */
+    const STRIP = 110;
+    /**
+     * The Polish cell of the front at the last columns, and the two a German plan sends to: the
+     * enemy's, and the front cell it holds. A row below `Y`: the four German cells about it are
+     * of one sector.
+     */
+    const FOE = (Y + 1) * W + W - 2;
+    const HOLD = FOE - W;
+    /**
+     * `edges`, with the ground German: the four columns at the first edge and `STRIP` at the last,
+     * one landmass where the map loops and two where it does not. One Polish cell in the last
+     * columns but one: Germany's front there is one sector, on its own side of the seam.
+     */
+    function front(loop: boolean): World {
+      expect(Y % SECTOR_CELLS).toBe(0);
+      const world = edges(loop);
+      const { terrain, controller } = world.cells;
+      for (let dy = -3; dy <= 3; dy++) {
+        for (let x = -STRIP; x < 4; x++) {
+          const c = (Y + dy) * W + ((x + W) % W);
+          terrain[c] = Terrain.Plains;
+          controller[c] = GER;
+        }
+      }
+      controller[FOE] = POL;
+      // The ground is made, and the map loops or not: the routes are of this ground.
+      world.nav = null;
+      return world;
+    }
+    /** Germany's plan on a day when formation `idle` (if any) is one that a far front may take. */
+    function plan(world: World, idle = -1): void {
+      const day = idle < 0 ? 0 : (MARCH_DAYS - (idle % MARCH_DAYS)) % MARCH_DAYS;
+      world.tick = 24 * day + 6 * ((2 * STAGGER - (GER % STAGGER)) % STAGGER);
+      expect((world.tick / 6 + GER) % STAGGER).toBe(0);
+      operationalAi(world);
+      // No order was refused (an event is six numbers, its kind the second).
+      expect(world.out.events.filter((e, i) => i % 6 === 1 && e === EventKind.MoveRejected)).toEqual([]);
+    }
+    /** Where the formation is ordered to: a cell, or -1 for no order. */
+    const sentTo = (world: World, id: number): number => (world.formations.cols.moving[id] === 1 ? world.formations.cols.targetCell[id]! : -1);
+
+    it('a formation at one edge is in range of no sector at the other and is sent to none; on a map that loops it is', () => {
+      expect(W - 4).toBeGreaterThan(DEPLOY_RANGE_CELLS);
+      for (const loop of [false, true]) {
+        const world = front(loop);
+        const id = addDivision(world, GER, 0.4, Y + 0.5);
+        plan(world);
+        expect(sentTo(world, id)).toBe(loop ? FOE : -1);
+        // On the front's own side of the seam it is sent both ways.
+        const near = front(loop);
+        const there = addDivision(near, GER, W - 9.6, Y + 0.5);
+        plan(near);
+        expect(sentTo(near, there)).toBe(FOE);
+      }
+    });
+
+    it("an enemy at one edge is no threat to a sector at the other: the sector's formation attacks; on a map that loops it holds", () => {
+      for (const loop of [false, true]) {
+        const world = front(loop);
+        const id = addDivision(world, GER, W - 9.6, Y + 0.5);
+        // In the first sector bucket of the row, the one beside the last over the seam.
+        addDivision(world, POL, SECTOR_CELLS - 0.6, Y + 0.5);
+        plan(world);
+        expect(sentTo(world, id)).toBe(loop ? HOLD : FOE);
+      }
+    });
+
+    it('a march to a cell at one edge is not a march to the front at the other: it is given the order; on a map that loops it is kept', () => {
+      for (const loop of [false, true]) {
+        const world = front(loop);
+        const id = addDivision(world, GER, W - 9.6, Y + 0.5);
+        const f = world.formations.cols;
+        // On the march to the first column, two columns from the enemy's cell over the seam.
+        f.moving[id] = 1;
+        f.targetCell[id] = Y * W;
+        plan(world);
+        expect(sentTo(world, id)).toBe(loop ? Y * W : FOE);
+      }
+    });
+
+    it('a formation that stands at one edge does not man a sector at the other: the sector takes one from afar; on a map that loops it is manned', () => {
+      for (const loop of [false, true]) {
+        const world = front(loop);
+        const stands = addDivision(world, GER, 0.4, Y + 0.5);
+        // Beyond the range of the front, on its landmass.
+        const far = addDivision(world, GER, W - STRIP + 10.5, Y + 0.5);
+        expect(STRIP - 12).toBeGreaterThan(DEPLOY_RANGE_CELLS + SECTOR_CELLS);
+        plan(world, far);
+        expect(sentTo(world, far)).toBe(loop ? -1 : HOLD);
+        expect(sentTo(world, stands)).toBe(loop ? FOE : -1);
+      }
+    });
+
+    it('a formation on the march to the other edge is on an errand, and another is the one to spare; on a map that loops it is the one', () => {
+      /** A second Polish cell, beyond the range of the formations at the first front and within three ranges. */
+      const second = (Y + 1) * W + W - STRIP + 8;
+      for (const loop of [false, true]) {
+        const world = front(loop);
+        world.cells.controller[second] = POL;
+        const nearer = addDivision(world, GER, W - 6.6, Y + 0.5);
+        const farther = addDivision(world, GER, W - 12.6, Y + 0.5);
+        const f = world.formations.cols;
+        // On the march to the first edge: 16 cells over the seam, a map's width without it.
+        f.moving[farther] = 1;
+        f.targetCell[farther] = Y * W + 3;
+        // The nation's day in `MARCH_DAYS`: what the front can spare is asked.
+        world.tick = 24 * ((MARCH_DAYS - (GER % MARCH_DAYS)) % MARCH_DAYS) - 6 * (GER % STAGGER) + 6 * STAGGER;
+        expect((world.tick / 6 + GER) % STAGGER).toBe(0);
+        expect((Math.floor(world.tick / 24) + GER) % MARCH_DAYS).toBe(0);
+        operationalAi(world);
+        const far = (id: number): boolean => Math.abs((sentTo(world, id) % W) - (second % W)) <= 1 && sentTo(world, id) >= 0;
+        expect([far(nearer), far(farther)]).toEqual(loop ? [false, true] : [true, false]);
       }
     });
   });

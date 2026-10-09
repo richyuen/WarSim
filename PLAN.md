@@ -109,8 +109,9 @@ quick sweep as a smoke test.
       in the last; on a map that loops it is.
     - [x] 3.12Rsc The pressure of `territorySystem` (`territory.ts`; ADR-236).
       AT: a formation in the first column presses on no frontier cell of the last.
-    - [ ] 3.12Rsd The operational AI (`operational.ts`): `dist2` to a sector (212), the
-      errand's two folds (392, and 402 over the sector buckets, `bw / 2`), `cellDist` (641).
+    - [x] 3.12Rsd The operational AI (`operational.ts`; ADR-237): `dist2` to a sector, the
+      errand's two folds, `cellDist`, and by the search of the file the two sums over a
+      sector's 3 × 3 buckets (the threat, `stoodAt`: `% bw`, not named above).
       AT: a formation at one edge is in range of no sector at the other and is sent to none.
     - [ ] 3.12Rse What else wraps in play, found by 3.12Rsa's search and not looked into:
       `nearestCellWhere` (`data/ownership.ts`, `% w` on every ring) as called in play, for
@@ -123,6 +124,8 @@ quick sweep as a smoke test.
       `movement.ts` (363, 441: `stepOpen` lets no step over the seam of a map with edges);
       the world's build (`oob.ts`, `ownership.ts`, `provinces.ts`, `terrain.ts`: a
       scenario's own map, and `loopingMap` asks for a map that wraps, `schemas.ts:689`).
+      From 3.12Rsd: `snapTarget` (`movement.ts`, by `nearestCellWhere`) gave a formation at
+      the first edge an order to the cell of its landmass nearest a front at the last.
       Also, from the review of 3.12Rsa: a block's slots beside the first or last column
       (`elements.ts`, `deployOf`, `elementPlace`: a formation at x = 0.3 with a block five
       slots wide has places at x < 0; nothing folds them, and what the snapshot, the fires

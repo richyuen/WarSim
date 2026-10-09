@@ -6,7 +6,8 @@
  * side, controls and that touch an enemy's cell (PLAN 1.42b: an ally's front is its front too,
  * within DEPLOY_RANGE_CELLS of its formations); they are
  * grouped into sectors of SECTOR_CELLS × SECTOR_CELLS cells (ascending key). A sector's threat is
- * the enemy strength in its 3 × 3 sector neighbourhood.
+ * the enemy strength in its 3 × 3 sector neighbourhood. On a map that does not loop no distance
+ * and no neighbourhood of what follows goes over the seam (PLAN 3.12Rsd, ADR-237).
  *
  * Free formations (not engaged, not on the retreat: PLAN 3.5a; not on a march home: PLAN 3.7h, ADR-169) within DEPLOY_RANGE_CELLS of a sector are ranked by distance to
  * the nearest one they reach; the farthest RESERVE share stays put as the reserve (farther ones garrison).
@@ -155,6 +156,11 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   for (const m of fighting) if (wars.atWar(n, m)) enemyOf[m] = 1;
   const enemy = (m: number): boolean => enemyOf[m] === 1;
   const bw = Math.ceil(w / SECTOR_CELLS);
+  // The two edges of a map that does not loop are a map apart (PLAN 3.12Rsd, ADR-237): no
+  // distance below is the short way over the seam, and no sector bucket has one beyond an edge.
+  const loop = world.settings.loopingMap;
+  /** The column of sector buckets `dx` from column `sx`, or -1 where the map ends before it. */
+  const bucketX = (sx: number, dx: number): number => (loop ? (sx + dx + bw) % bw : sx + dx < 0 || sx + dx >= bw ? -1 : sx + dx);
   const sectors = new Map<number, Sector>();
   for (const [holder, { cells, near }] of frontier) {
     if (holder !== n && !wars.sameSide(holder, n)) continue;
@@ -209,7 +215,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   if (mine.length === 0) return;
   const dist2 = (id: number, s: Sector): number => {
     let dx = Math.abs(f.x[id]! - s.cx);
-    if (dx > w / 2) dx = w - dx;
+    if (loop && dx > w / 2) dx = w - dx;
     const dy = f.y[id]! - s.cy;
     return dx * dx + dy * dy;
   };
@@ -361,7 +367,11 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   for (const s of list) {
     const sy = Math.floor(s.key / bw);
     const sx = s.key - sy * bw;
-    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s.threat += enemyByBucket.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
+    for (let dx = -1; dx <= 1; dx++) {
+      const x = bucketX(sx, dx);
+      if (x < 0) continue;
+      for (let dy = -1; dy <= 1; dy++) s.threat += enemyByBucket.get((sy + dy) * bw + x) ?? 0;
+    }
   }
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
   const index = new Map(list.map((s, i) => [s.key, i] as const));
@@ -377,7 +387,11 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const sy = Math.floor(s.key / bw);
     const sx = s.key - sy * bw;
     let c = 0;
-    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) c += stands.get((sy + dy) * bw + ((sx + dx + bw) % bw)) ?? 0;
+    for (let dx = -1; dx <= 1; dx++) {
+      const x = bucketX(sx, dx);
+      if (x < 0) continue;
+      for (let dy = -1; dy <= 1; dy++) c += stands.get((sy + dy) * bw + x) ?? 0;
+    }
     return c;
   };
   // On an errand (PLAN 3.10c1d2, ADR-191's amendment): on the march to a cell beyond the range
@@ -389,7 +403,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     if (f.moving[id] !== 1) return false;
     const to = f.targetCell[id]!;
     let tx = Math.abs(f.x[id]! - ((to % w) + 0.5));
-    if (tx > w / 2) tx = w - tx;
+    if (loop && tx > w / 2) tx = w - tx;
     const ty = f.y[id]! - (Math.floor(to / w) + 0.5);
     if (tx * tx + ty * ty > RANGE2) return true;
     const i = index.get(sectorOfCell(to));
@@ -399,7 +413,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const bx = Math.floor(f.x[id]! / SECTOR_CELLS);
     const sy = Math.floor(s.key / bw);
     let dx = Math.abs(bx - (s.key - sy * bw));
-    if (dx > bw / 2) dx = bw - dx;
+    if (loop && dx > bw / 2) dx = bw - dx;
     return stoodAt(s) - (dx <= 1 && Math.abs(by - sy) <= 1 ? 1 : 0) === 0;
   };
   // To spare (PLAN 3.10c1d, ADR-191): on the nation's day in `MARCH_DAYS`, of the formations
@@ -628,7 +642,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     for (const id of s.formations) {
       const to = lead && !isArmour(id) ? s.hold : target;
       // Already heading there, or to a cell within one sector of it: no new route.
-      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w) <= SECTOR_CELLS) continue;
+      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w, loop) <= SECTOR_CELLS) continue;
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       if (here === to) continue;
       orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);
@@ -636,9 +650,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   }
 }
 
-function cellDist(a: number, b: number, w: number): number {
+/** Cells from one cell to another, a step to any of eight: over the seam where the map loops. */
+function cellDist(a: number, b: number, w: number, loop: boolean): number {
   let dx = Math.abs((a % w) - (b % w));
-  if (dx > w / 2) dx = w - dx;
+  if (loop && dx > w / 2) dx = w - dx;
   return Math.max(dx, Math.abs(Math.floor(a / w) - Math.floor(b / w)));
 }
 

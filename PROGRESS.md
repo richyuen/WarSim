@@ -12719,3 +12719,42 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests in 134 files (119.8 s), the ten-year stage 17 tests in 12 files (264.1 s), build,
   parity 47.5%.
 - **Next:** PLAN 3.12Rsd (the operational AI's distances), then 3.12Rse.
+
+## 2026-10-09 — PLAN 3.12Rsd: the operational AI's distances keep to the edges of a map that does not loop (ADR-237)
+
+- **Done:** six places of `planNation` (`ai/operational.ts`) took the short way over the
+  seam whatever `settings.loopingMap` said, and ask it now: `dist2` (a formation to a
+  sector), the two distances of `onErrand`, the file's `cellDist` (a march already heading
+  there), and two that PLAN did not name, found by the search of the file: the sums over a
+  sector's 3 × 3 buckets for the threat and for who stands by it (`% bw`). A bucket column
+  beyond an edge is skipped (`bucketX`), not read without the fold: `sx - 1` of the first
+  column is the key of the last bucket of the row above.
+- **What it did with `looping=0`:** a division in the first column was "in range" of a
+  front at the last and was ordered to the first cell of its row (the cell of its landmass
+  nearest the front over the seam, `snapTarget`); an enemy at one edge made a sector at the
+  other hold; a formation standing at one edge manned a sector at the other, which took
+  nobody from afar.
+- **Tests:** `tests/unit/seam.test.ts`, five more (nine in the file), each with the map
+  looping and not, all red first (`.cache/rsd-red.log`). Each fix undone by itself turns
+  its test red, but one: the fold over `bw / 2` in `onErrand` cannot be reached on a map
+  that does not loop once the distance before it is mended (ADR-237).
+- **Gotchas:** the world has its navigation built at construction, on the scenario's
+  ground and looping: a test that makes ground or turns the looping off and then asks for
+  a route sets `world.nav = null` (as `gameOptions.ts` does). A front cell at row `Y` has
+  its northern neighbour in the sector bucket above (`Y % SECTOR_CELLS = 0`): the scene's
+  enemy cell is a row below, so the front is one sector. `world.out.events` is flat
+  numbers, six an event: a filter on `e.kind` passes in vitest and fails in `tsc` (the
+  gate's first run stopped there, `npm run typecheck` before the gate would have said so).
+- **SPEC** §9, the looping option, and the head of `operational.ts`; PARITY row 69, a dated
+  line; PLAN 3.12Rse has a line for `snapTarget`.
+- **The pin stays** (92689265). **The tick's cost: not measured** (a comparison a distance;
+  1938 loops and reads what it read).
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87); no spec run by hand: nothing
+  drawn changed. By hand: `seam.test.ts` and `operationalAi.test.ts`, 23 passed
+  (`.cache/rsd-hand.log`).
+- **`npm run plan:archive`:** nothing to move.
+- **Gate:** `npm run check` green on the second run (`.cache/gate-rsd.log`): 1,085 unit
+  tests in 134 files (119.9 s), the ten-year stage 17 tests in 12 files (190.5 s), build,
+  parity 47.5%. The first run failed at typecheck (the test's filter, above).
+- **Next:** PLAN 3.12Rse (the nearest-cell search in play, the God brush of control, the
+  editor's brush; a block's slots beside an edge), which ticks 3.12Rs; then 3.12Ri, 3.12Rj.

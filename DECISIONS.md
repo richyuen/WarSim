@@ -167,6 +167,65 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-237 · 2026-10-09 · accepted — The operational AI's distances keep to the edges of a map that does not loop (PLAN 3.12Rsd)
+
+- **Context.** The fourth part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236): a nation's plan
+  measures from its formations to its front sectors (the range, `DEPLOY_RANGE_CELLS`), sums
+  the enemy and its own formations over a sector's 3 × 3 buckets, and keeps a march whose
+  target is within one sector of today's (SPEC §7).
+- **What was so.** Six places of `planNation` (`ai/operational.ts`) took the short way over
+  the seam whatever `settings.loopingMap` said; PLAN named four, the search of the file
+  found the two bucket sums. With `looping=0`:
+  - `dist2` (a formation to a sector's centre): a formation in the first columns was within
+    the range of a front at the last. Its landmass is another, so the order went to the
+    cell of its own landmass nearest the front over the seam (`snapTarget`, by
+    `nearestCellWhere`, which wraps: PLAN 3.12Rse): it marched to the first column and
+    stood there, and the sector counted it as its own.
+  - the threat (`enemyByBucket`, `% bw`): an enemy formation in the first bucket column was
+    a threat to a sector of the last, which then held where it would have attacked.
+  - `stoodAt` (`stands`, `% bw`): a formation that stood in the first bucket column manned
+    a sector of the last, which then took nobody from afar (ADR-190) and nobody to spare
+    (ADR-191).
+  - `onErrand`, the distance to the march's target: a march to a cell at the other edge
+    was not "beyond the range", so the formation was one to spare.
+  - `onErrand`, the fold over `bw / 2` between the formation's bucket and its sector's.
+  - `cellDist` (a march's target to today's): a march to the first column was "already
+    heading" to a cell of the last, and was given no order.
+- **Decision.** All six ask the setting. A bucket column beyond an edge of a map that does
+  not loop is left out of the sum (`bucketX`): without the fold `sx - 1` of the first
+  column is the key of the last bucket of the row above, so it is skipped, not read. The
+  file's own `cellDist` (cells, a step to any of eight) takes the setting as a parameter;
+  it is not `elements.ts`'s (points, straight). On a map that loops every place reads what
+  it read.
+- **Tests.** `tests/unit/seam.test.ts`, five more (nine in the file), each with the map
+  looping and not, on made ground: Germany's, 110 cells at the last edge and four at the
+  first, one Polish cell in the last column but one, a row below `Y` so that the four
+  front cells about it are of one sector. The navigation is dropped after the ground is
+  made (`world.nav = null`: the world had built it on the scenario's ground, looping).
+  Red first, all five:
+  - a division in the first column is sent nowhere (it was sent to the first cell of the
+    row: "expected 1050624 to be -1"); one nine cells from the front is sent to the
+    enemy's cell both ways;
+  - with a Polish division in the first bucket column the front's division attacks (it
+    held);
+  - a division on the march to the first column is given the order to the front (it kept
+    its march);
+  - with a division standing in the first column, one 100 cells from the front on its
+    landmass is sent to the front cell (it was not);
+  - of two divisions near the front, with a second front 90 cells off that has nobody, the
+    one on the march to the first edge is on an errand and the other is sent (the marcher
+    was sent).
+  Each fix undone by itself turns its test red, but one: the fold over `bw / 2` in
+  `onErrand`. With the distance before it mended, a formation whose bucket is more than
+  half the buckets from its target's sector has returned already (the target is beyond
+  the range); it asks the setting for the reader, and no scene can tell.
+- **Not done here.** `snapTarget`'s nearest cell over the seam (`nearestCellWhere`), which
+  is why the first scene had an order at all: PLAN 3.12Rse. On a map of a width that is
+  no multiple of `SECTOR_CELLS` the last bucket column is narrower, and on a map that
+  loops the 3 × 3 over the seam is narrower by as much: as it was (the map sizes of
+  `data/maps` are multiples).
+- **The pin stays** (92689265): 1938 loops.
+
 ### ADR-236 · 2026-10-09 · accepted — A formation's pressure on a frontier cell keeps to the edges of a map that does not loop (PLAN 3.12Rsc)
 
 - **Context.** The third part of PLAN 3.12Rs (ADR-233, ADR-234): every formation of a
