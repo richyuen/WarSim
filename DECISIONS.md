@@ -7349,6 +7349,67 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     a rule that works as written is not a defect to a reader; it wants a count.
   - **The eight reads together:** forty-six findings, thirty-four of them tasks.
 
+- **Addendum 2026-10-09, the ninth read (the review pass after PLAN 3.12, PLAN 3.12Ra).** The
+  same brief, on the 55 files of `src/`, `data/` and `tools/` changed since the eighth read
+  (`033b15a`, 2,750 lines), the new lines first; Node only; nothing of what changed or why,
+  and PLAN, PROGRESS, DECISIONS, BLOCKERS, SPEC, `critic/` and the git log's messages not to
+  be read. Told as known: the commands the page never sends, the AI's refused orders, the
+  war with no front, the tag on another formation's elements and the figures drawn in one
+  another, the land that rises and goes back, the two things of the alliances' rows that
+  PLAN 3.12Rf and 3.12Rg have, the balance, the cues nobody has heard.
+  - **Four findings, all run by the reader; four suspicions.** 330,000 tokens, 23 minutes;
+    its scripts and logs are in `.cache/read9/` (scratch, not kept in the repo). Checked
+    here: 2, 3 and 4 run again with the reader's scripts, which print what it reported; 1
+    read against the lines it names and against its log, and is run again as the failing
+    test of its task.
+    1. A march home (ADR-169) that meets ground of a nation its own is at war with waits
+       before it, and nothing ends the wait: the operational AI leaves a formation with
+       `home` set alone, the repatriation leaves a moving one alone, and it is not in
+       contact. Seed 77, three years: 403 marches home, 112 of 90 days or more; the 144 of
+       30 days or more began with 929,100 men and ended with 108,977. After Italy's war on
+       France at tick 18,624, 121 formations of Germany, Italy and Poland bore the mark at
+       tick 19,440; a German division stood 319 days and went from 10,518 men to 10. Seeds
+       42 and 99: 6 and 10 marches of 90 days or more.
+    2. A nation annexed while every city of its own is occupied leaves its puppets' land
+       with the dead bloc's supply marks: the puppets go to the annexer's bloc with no
+       `supplyDirty` (`annexNation`), their cells are not changed cells, and a source cell
+       that bears a mark is not a seed of the flood. Belgium annexed by Germany at a peace
+       (seed 1, the AI off, the occupation set by hand): the Congo's 6,240 cells keep mark
+       27 where a full refresh gives 1; its three formations are at supply 0 for 20 days
+       and go from 23,448 men to 12,190; the same game saved and loaded has other hashes
+       from the first day. The code of `033b15a` was 6 cells from the full refresh: this
+       came with the partial refresh's mending (ADR-196). Not met in 7,000 ticks of three
+       worlds with a twin that refreshes in full each time.
+    3. A war that ends because a member became the puppet of an enemy (`leaveBondedWars`)
+       is removed with no event: the log declares it and never ends it, and the land held
+       goes back in that hour. Seed 77: 2 of the 69 wars of three years (Germany's with
+       nations 114 and 107).
+    4. Not in the changed lines: `musterPoint` (`production.ts`) puts a new formation on
+       `standPoint` of a city's own place, which for 436 of the 5,757 cities of 1938 is in
+       a cell of no component; a formation there can take no order. Seed 77: 26 British
+       formations on one point at the end of three years, each order refused.
+  - **Tasks before Phase 4:** PLAN 3.12Rk (1), 3.12Rl (2), 3.12Rm (4), 3.12Rn (3). The
+    suspicions go with the parts that touch their lines: a retreat that is turned back as
+    a march home's way back (3.12Rk), the mending's wrap on a map with edges (3.12Rl), the
+    ticker's five rows at Max speed (3.12Rh), two rows for one annexation (3.12Rg).
+  - **What held:** a save loaded into a live game of another seed, saved again byte for
+    byte and run 300 ticks with the hash equal at each (38 saves over three worlds); the
+    full-refresh twin (above); every day of three years of seed 77, the invariants of
+    wars, alliances, puppets and formations it wrote; every ticker row with a place and
+    two names; the history rows of 3.12a to 3.12b2 against the events of their hour.
+  - **What it did not read:** `src/render` (`hulls.ts`, `tags.ts`) and `MapView.ts` past its
+    diff: no browser. The 236 lines of `hulls.ts` and the 90 of `tags.ts` have had no
+    reader; their specs are what they have.
+  - **Where the findings were.** 1 and 2 are each a rule of this stretch that was right for
+    the case it was written for and took a state out of every other rule's reach: the
+    march home's mark (ADR-169) was made to keep the AI's hands off a formation on its way,
+    and nothing asked what ends the way; the mending (ADR-196) was proved equal to the full
+    refresh on the games the AI plays, and a bloc that changes with no cell changed is not
+    in them. 4 is older than the stretch and was met only because the reader counted
+    formations on water every day. As after the eighth read: the reader's invariants and
+    twins held, and what it found it found by counting how long and how many.
+  - **The nine reads together:** fifty findings, thirty-eight of them tasks.
+
 - **Addendum 2026-10-04: the review pass is counted by numbered tasks (the user's decision).**
   - *What the user said,* when a pass was proposed after PLAN 2.8c2: "Let's clarify the
     5-iteration rule for review pass to proper numbered iterations (e.g., 2.7, etc.) instead of

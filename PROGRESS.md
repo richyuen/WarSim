@@ -11631,3 +11631,45 @@ No rule changed and nothing on screen changed. One task came out of it.
   of PLAN 3.11's tick). In both of today's gates the unit stage took 120 and 125 s and the
   sweep stage 199 and 202 s. The line above says "about 10 on 2026-10-08": that day's own
   figure was 18.4; the 10 is of 2026-10-05 and 06. Why it is 19.5 now: PLAN 3.12R.
+
+## 2026-10-09 — PLAN 3.12R split, and 3.12Ra: the ninth independent read
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Done:** the review pass 3.12R split into its parts, 3.12Ra to 3.12Rj (commit 69e06f7),
+  as 3.4R was. 3.12Ra: a reader with no word of what changed or why read the 55 files of
+  `src/`, `data/` and `tools/` changed since the eighth read (`033b15a`, 2,750 lines), Node
+  only (ADR-74, the addendum of today). Four findings, all run by it; four suspicions;
+  330,000 tokens, 23 minutes.
+- **The findings, each a task before 4.1:**
+  - 3.12Rk: a march home waits before ground of a nation at war with its own, and nothing
+    ends the wait (seed 77: 112 of 403 marches of 90 days or more; 929,100 men to 108,977
+    in the 144 of 30 days or more).
+  - 3.12Rl: a nation annexed with its cities occupied leaves its puppets' land with a dead
+    bloc's supply marks (the Congo: 6,240 cells, three formations at supply 0 for 20 days),
+    and the game and its loaded save part on the first day. It came with the partial
+    refresh's mending (ADR-196).
+  - 3.12Rm: `musterPoint` puts formations on a city's own place, which for 436 of 5,757
+    cities is in a cell no route enters (seed 77: 26 British formations on one point). Not
+    in the changed lines.
+  - 3.12Rn: a war ended by a bond has no row (2 of 69 wars of seed 77's three years).
+- **Checked here:** `peaceSupply.ts BEL GER 12`, `histdump.ts` on the reader's save and
+  `cities.ts` run again (3 s to a minute each): they print what it reported. Finding 1 read
+  against `movement.ts` (the wait before an enemy's cell; the repatriation's `moving`
+  guard), `operational.ts` (the two `home === 0` guards) and `stuck2_1938_77.log`; not run
+  again: its three-year run is the failing test of 3.12Rk.
+- **Learned:** both findings in the changed lines are a state that one rule made and no
+  other rule reaches (a mark that keeps the AI off; a bloc that changes with no cell
+  changed). The full-refresh twin held for 7,000 ticks of three worlds and did not meet
+  the second: equal on the games the AI plays is not equal. The reader could not write a
+  `.md` file (its harness refused): the report came as its message, `REPORT.txt` is an
+  index.
+- **The e2e suite's time (3.12Ri), a first figure from logs on disk, no run:** 10.0 min
+  (2026-10-06, 139 tests) to 13.6 min (2026-10-08, 147 tests) is growth: 492 s of test time
+  in new spec files, `zoomDemo1938` 84 s to 210 s, the files in both 1.07 times as long. No
+  log of the 19.5 min runs was kept; 3.12Rj keeps its own.
+- **Performance:** nothing measured; no source changed.
+- **Not done:** `src/render` had no reader (`hulls.ts` 236 new lines, `tags.ts` 90): no
+  browser in the brief. 3.12Rb to 3.12Rn.
+- **Gate:** `npm run check` (documents: parity).
+- **Next:** PLAN 3.12Rb (SPEC re-read for drift, ADR-168 to ADR-212).

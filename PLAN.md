@@ -5298,12 +5298,27 @@ quick sweep as a smoke test.
   numbered task: the gate runs the specs a part changes (ADR-87), and a part that touches
   what is drawn runs its specs by hand. No sweep: this is a pass of step 9, not a phase
   review (ADR-58). The last part ticks 3.12R and has the whole e2e suite.
-  - [ ] 3.12Ra The independent read (ADR-74), the ninth: the 55 files of `src/`, `data/` and
+  - [x] 3.12Ra The independent read (ADR-74), the ninth: the 55 files of `src/`, `data/` and
     `tools/` changed since the eighth (`033b15a`: PLAN 3.7g to 3.12d, 2,750 lines added),
     the new lines first. The same brief: defects only, nothing of what changed or why. Each
     finding is checked against the code here before it is anything; those a player can meet
     become tasks 3.12Rk and on, before 4.1, each with a test that fails first, most severe
     first; the rest go on the watch list.
+    Done 2026-10-09 (ADR-74, addendum: the ninth read). Four findings, all run by the
+    reader in Node (`.cache/read9/`, scratch, not kept in the repo); four suspicions;
+    330,000 tokens, 23 minutes. Checked here: findings 2, 3 and 4 run again with the
+    reader's scripts and they print what it reported; 1 read against the lines it names and
+    its log, and is run again as the failing test of its task. Save and load held wherever
+    it tried (38 saves over three worlds, each loaded into a live game of another seed), a
+    twin that refreshes the supply in full had the game's hash for 7,000 ticks of each, and
+    its invariants held every day of three years. It did not read `src/render`.
+    - Tasks, most severe first: 3.12Rk (a march home waits before an enemy's ground for the
+      rest of the war), 3.12Rl (the puppets of a nation annexed with its cities occupied
+      starve, and a loaded save is another game), 3.12Rm (formations mustered on a city's
+      place in a cell no route enters never move), 3.12Rn (a war ended by a bond has no
+      row).
+    - The rest (four suspicions): each goes with the part that touches its lines (3.12Rk,
+      3.12Rl, 3.12Rh, 3.12Rg). Nothing to BLOCKERS.
   - [ ] 3.12Rb SPEC re-read for drift: each decision since the last pass (ADR-168 to
     ADR-212) looked for in SPEC and checked against the code, not against its ADR alone:
     what 3.8 to 3.11 changed (the route, the supply's partial refresh, the blocks of a
@@ -5323,18 +5338,85 @@ quick sweep as a smoke test.
     alliances gone after ten years of seed 1, 15 rows said so): the log says what became of
     an alliance. First: whether the state hash covers the log (does the pin move).
   - [ ] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the
-    founding has one row.
+    founding has one row. With it (the ninth read's suspicion): a peace that annexes the
+    loser puts "annexed" and then a peace with the annexed nation in the ticker in one hour
+    (seed 77, tick 26,040); one row or two, decided.
   - [ ] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than
     the view less 12.5 rem, at the UI sizes above 100%, at Max speed. Pictures, looked at;
-    what is wrong is fixed here or is a part of its own.
+    what is wrong is fixed here or is a part of its own. With it (the ninth read's
+    suspicion): the ticker holds five rows and a message comes once a second at most; more
+    than five major events between two messages would drop rows and their cue unseen.
+    Count the events between two messages at Max.
   - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
     `formationFight1938`, `zoomDemo1938`: some 12 min of new tests) or slowed, and whether
     a wait is longer than what it waits for. `fire1938`'s limit with it (BLOCKERS.md).
-  - [ ] 3.12Rj Last: a line under PLAN 1.42 for the land that rises and goes back to its
-    core nation month after month (ADR-210; balance, ADR-58) if it has none; the full
-    suite on the final tree, whatever an earlier part broke fixed here; 3.12R ticked.
+    Found 2026-10-09 from two logs on disk (`.cache/rn/gate-b.log`, 2026-10-06, 139 tests,
+    10.0 min; `.cache/gate_full3.log`, 2026-10-08, 147 tests, 13.6 min): the suite grew.
+    The spec files new between them are 492 s of test time (`tankBattle1938` 246,
+    `burning1938` 77, `loadedEffects1938` 66, `muzzles1938` 49, `smallMark1938` 35,
+    `turrets1938` 20), `zoomDemo1938` went from 84 s to 210 s, and the files in both took
+    1.07 times as long (2,181 s to 2,335 s). No log of the 19.5 min runs was kept: the step
+    from 13.6 to 19.5 (159 tests, PLAN 3.11 and 3.12) waits for the log of 3.12Rj's suite.
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rn: a line under PLAN 1.42 for the land that rises
+    and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
+    none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
+    an earlier part broke fixed here; 3.12R ticked.
+  - [ ] 3.12Rk **A march home does not wait out a war before an enemy's ground** (the ninth
+    read, finding 1; run there). `movement.ts` stops a march before a cell held by a nation
+    its own is at war with; a formation with `home` set is left out by the operational AI
+    (`operational.ts`, two places) and, moving, by the repatriation; it is not in contact.
+    Seed 77, three years: 112 of 403 marches home of 90 days or more; the 144 of 30 days or
+    more went from 929,100 men to 108,977; 121 formations of Germany, Italy and Poland
+    marked at tick 19,440 after Italy's war on France (18,624). A played nation's too,
+    until each is given an order. Decide what ends the wait (the mark dropped where the
+    way is barred by an enemy, so that the AI has the formation again and the player's
+    stands as any other; or a way round) in DECISIONS. The pin may move.
+    AT: a unit test that fails first: a formation on a march home whose way a war closes is
+    the AI's to order again within a day; ten years of the sweep seeds hold no formation
+    with `home` set for 30 days that stood before an enemy's cell.
+    With it, the reader's suspicion: a formation on the retreat that is barred is walked
+    back as a march home's way back (`home` 2 with `retreat` over 0: 45 formation-hours in
+    three years of seed 77); trace one, and whether it walks back into contact. And its
+    count of marches home that never stand and take 40 to 124 days unfed (seed 99, eight
+    French formations, 2,566 men to 540): a line under PLAN 1.42 if it is the distance and
+    not a defect.
+  - [ ] 3.12Rl **The puppets of a nation annexed with its cities occupied keep their
+    supply** (the ninth read, finding 2; run there and again here: `.cache/read9/
+    peaceSupply.ts BEL GER 12`). `annexNation` (`puppets.ts`) moves the puppets to the
+    annexer's bloc and does not set `supplyDirty`; the partial refresh (ADR-196) has no
+    changed cell of theirs, and a source cell that bears a mark is skipped as a seed
+    (`supply.ts`), so the land keeps the mark of a bloc that is gone. Belgium annexed by
+    Germany at a peace: the Congo's 6,240 cells at mark 27, a full refresh gives 1; three
+    formations at supply 0 for 20 days, 23,448 men to 12,190; the same game saved and
+    loaded differs from the first day.
+    AT: a unit test that fails first: after such an annexation the network equals a full
+    refresh of the same state, and the game and its loaded save have one hash 30 days on.
+    Then every other place where a nation's bloc changes with no cell changed (a puppet
+    made, released, freed at its overlord's death, an alliance joined or left where blocs
+    are of alliances) is looked at for the same, each with the full-refresh twin.
+    With it, the reader's suspicion: `ringHolds` and the gain test wrap east to west
+    whatever `loopingMap` says, as the flood does; whether the flood should.
+  - [ ] 3.12Rm **A formation is mustered where a route begins** (the ninth read, finding 4;
+    run there, `cities.ts` again here). `musterPoint` (`production.ts`) gives `standPoint`
+    of the city's own place; for 436 of the 5,757 cities of 1938 that is in a cell of
+    component 0 (the city's cell is land, its place is over the neighbour's water), and a
+    formation there can take no order. Seed 77: 26 British formations on one point
+    (1280.054, 524.174) after three years. PLAN 2.11k mended the fine mask's side of this;
+    the grid's is open. Every other caller of `standPoint` that places a formation is
+    looked at with it (the spawn point, the repatriation, a revolt's).
+    AT: a unit test that fails first: no city of 1938 gives a muster point in a cell of
+    component 0; ten years of the sweep seeds hold no formation in such a cell.
+  - [ ] 3.12Rn **A war ended by a bond has a row** (the ninth read, finding 3; run there,
+    `histdump.ts` again here). `leaveBondedWars` (`war.ts`) removes a war left with an
+    empty side with no event (no peace is signed and no truce begins, by its own comment):
+    the log and the ticker declare the war and never end it. Seed 77: Germany's wars with
+    nations 114 and 107, 2 of 69 in three years. The state is as meant; the log wants its
+    event (one that tells the cause: "Germany's war with X ended: X is Italy's puppet").
+    Whether the hash covers the log decides the pin (as 3.12Rf).
+    AT: a unit test that fails first; in ten years of the sweep seeds every war declared
+    has an end in the log or is in `wars.list`.
 
 ## Phase 4 — Naval
 
