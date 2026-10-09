@@ -122,3 +122,30 @@ test('history rows name their alliance, dissolved or not, and none shows an id',
   await page.getByTestId('history-kind').selectOption('');
   await page.screenshot({ path: path.join(ev, 'a-history-all.png') });
 });
+
+// PLAN 3.12b (the critic's R3-B6: "Turkey broke away from Free Bursa"): a dead nation that
+// returns takes its land back from who holds it; it does not break away from them.
+test('a nation that returns took its land back: its rows do not say it broke away', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const tag = (t: string): number => NATIONS_1938.findIndex((n) => n.tag === t) + 1;
+  const [ETH, ITA] = ['ETH', 'ITA'].map(tag) as [number, number];
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => window.__warsim?.hud.stats.value !== null && window.__warsim?.hud.stats.value !== undefined, null, { timeout: 60_000 });
+  await page.evaluate((nation) => window.__warsim!.sim.command({ kind: 'reviveNation', nation }), ETH);
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  const rows = await page.evaluate(() => window.__warsim!.sim.history());
+  const back = rows.filter((r) => r.kind === EventKind.RevoltSpawned && r.a === ETH);
+  expect(back.map((r) => [r.b, r.as])).toEqual([[ITA, 'revived']]);
+  expect(rows.filter((r) => r.kind === EventKind.NationRevived).map((r) => r.a)).toEqual([ETH]);
+
+  await page.getByTestId('history-btn').click();
+  await expect(page.getByTestId('history-panel')).toBeVisible();
+  await expect.poll(() => count(page), { timeout: 20_000 }).toBe(rows.length);
+  const texts = (await page.getByTestId('history-row').allInnerTexts()).map((s) => s.replace(/\s+/g, ' '));
+  for (const want of ['Ethiopia took back land held by Italy', 'Ethiopia returned']) expect(texts.filter((s) => s.endsWith(want)), want).toHaveLength(1);
+  for (const s of texts) expect(s).not.toMatch(/broke away/);
+  const ev = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.12') : info.outputPath();
+  mkdirSync(ev, { recursive: true });
+  await page.screenshot({ path: path.join(ev, 'b1-history-returned.png') });
+});

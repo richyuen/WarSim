@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-209 · 2026-10-08 · accepted — A revolt's row says which of three things it was, told by the worker from the log (PLAN 3.12b1, critic R3-B6)
+
+- **Context.** The critic's third report: "Turkey broke away from Free Bursa", a row that
+  says the reverse of what happened. `RevoltSpawned` (a, b) is emitted in three places with
+  one sentence, "{a} broke away from {b}":
+  1. `spawnRebels`, a nation founded on the area that rose: a = the new nation, b = the
+     holder. The sentence is right.
+  2. `spawnRebels` called by `reviveNation`: a = a dead nation that returns, once for each
+     holder it takes land from, followed by its `NationRevived` ("{a} returned").
+  3. `revolt()` where rebels live next to the area: `defect(…, RevoltSpawned)`, a = those
+     rebels, b = the holder.
+- **Measured** (`.cache/probe312b.ts`, not committed: the events of each hour against the
+  nations alive as the hour began). Seed 6021, 14 years, 1,978 rows: 205 `RevoltSpawned`,
+  132 founded, 66 joined, 7 revived. Seed 1, ten years, 1,813 rows: 209, of them 114, 86
+  and 9. (A join in the hour of the founding counts as founded in these figures: 12 and 21
+  rows have the a and b of an earlier row of their hour.) Every row of seed 6021 whose a is
+  a nation of 1938 is a revival: "Czechoslovakia broke away from Germany", "Latvia broke
+  away from Free Riga". The critic's row is of that kind. PLAN 3.12b had guessed the join.
+  The join reads badly too, but not as the reverse: "Free Barcelona broke away from France"
+  a second time, by a nation that had broken away already.
+- **Decision.** `HistoryRow.as` (`'revived' | 'joined'`, absent for the kind's own
+  sentence), set in `src/worker/historyRows.ts` from the log alone: a `RevoltSpawned` whose
+  a has a `NationRevived` in the same hour is 'revived'; one whose a had a `RevoltSpawned`
+  before and no `NationEliminated` since is 'joined'. `historyText` takes the sentence
+  `history.<Kind>.<as>` where there is one: "{a} took back land held by {b}", "More of {b}
+  rose and joined {a}".
+- **Why the worker and not a new kind of event.** PLAN 3.12b says it of the fold, and it
+  holds here: the log has what is needed, a game saved before reads right without a
+  migration, and the tests that count `RevoltSpawned` by its a (`revoltLand`, the God Mode
+  Kill's "the nations born") stay as they are. The pin is unmoved, which is the proof that
+  no state changed.
+- **Why two rows for a return.** "Ethiopia took back land held by Italy" and "Ethiopia
+  returned" are of one hour. The first has the holder as its b, and the filter by nation
+  finds it under Italy; folded into "returned", whose b is the returns left, it would not.
+- **Not done.** A nation of rebels that died and returns in the hour in which an area also
+  rises to it has both rows as 'revived'; not looked for. The land that goes
+  over is PLAN 3.12b2, with what was counted for it: of 337 `LandCeded` on seed 6021 (252
+  on seed 1), 0 (0) are in the hour of a peace of their two nations, 44 (26) follow the
+  death of b, 293 (226) are land that went back to its core nation from a holder that
+  lives; 32 (36) have the a and b of an earlier row of their hour, and none of an earlier
+  hour of their month.
+- **Seen.** `docs/evidence/3.12/b1-history-returned.png` (God Mode brings Ethiopia back on
+  1 January 1938): "Ethiopia took back land held by Italy", "Italy declared war on
+  Ethiopia", "Ethiopia returned".
+
 ### ADR-208 · 2026-10-08 · accepted — The state keeps the name and the founder of an alliance that dissolved; no history row shows an id (PLAN 3.12a, critic R3-B6)
 
 - **Context.** The critic's third report: "#43 dissolved", "Denmark left #43". The history

@@ -9,7 +9,8 @@ const COMMON_ALLIANCES: ReadonlySet<string> = new Set(['alliance.defensive', 'al
  * The rendered sentence of a row (i18n `history.<Kind>` with {a} and {b}). No part is an id
  * (PLAN 3.12a): an alliance is "the Defensive Pact of Sweden" or "the Comintern", a Major
  * Battle "the major battle near Lyon". A row with nobody as its b has the sentence
- * `history.<Kind>.none` where the kind has one.
+ * `history.<Kind>.none` where the kind has one, and a row that is `as` something
+ * `history.<Kind>.<as>` (PLAN 3.12b).
  */
 export function historyText(r: HistoryRow): string {
   const [ra, rb] = HISTORY_ROLES[r.kind] ?? ['number', 'number'];
@@ -22,7 +23,8 @@ export function historyText(r: HistoryRow): string {
     }
     return name ? displayName(name) : t('history.nobody');
   };
-  const key = `history.${kindName(r.kind)}`;
+  const kind = `history.${kindName(r.kind)}`;
+  const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : kind;
   const none = `${key}.none`;
   const s = t((!r.bn && rb !== 'number' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn) });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);

@@ -52,7 +52,15 @@ export interface HistoryRow {
   bn: string;
   /** The founder of the row's alliance, as a name ('' when the row has no alliance or it is not known). */
   of: string;
+  /**
+   * What the row is of, where its kind has more than one sentence (PLAN 3.12b; absent: the
+   * kind's own). A `RevoltSpawned` is 'revived' when its a is a dead nation that returned in that
+   * hour, and 'joined' when a was a nation of rebels already and the land rose to it.
+   */
+  as?: HistoryAs;
 }
+
+export type HistoryAs = 'revived' | 'joined';
 
 export interface HistoryFilter {
   /** Event kind (null = all). */

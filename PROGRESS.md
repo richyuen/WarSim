@@ -11462,3 +11462,43 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` (code and a sim input: the 10-year sweep tests; a part: the
   changed spec file).
 - **Next:** PLAN 3.12b.
+
+## 2026-10-08 — PLAN 3.12b1: a revolt's row says which of three things it was (ADR-209)
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Measured first**, as PLAN 3.12b asked (`.cache/probe312b.ts`, seeds 6021 for 14 years
+  and 1 for ten; the figures are in ADR-209). Two of the task's guesses were wrong: the row
+  that says the reverse is a revival, not a join; and no land goes over at a peace, so
+  nothing is to be folded into a peace's row. 3.12b split in two, one cause each.
+- **Cause.** One sentence for three emits of `RevoltSpawned`: a nation founded, a dead one
+  that returns, rebels that more land rises to.
+- **Done:** `HistoryRow.as` and the type `HistoryAs` (`src/shared/history.ts`); the worker
+  sets it from the log (`src/worker/historyRows.ts`); `historyText` takes
+  `history.<Kind>.<as>`; `en.json`: "{a} took back land held by {b}", "More of {b} rose
+  and joined {a}".
+- **Tests:** `tests/unit/history.test.ts` (12, two new: the three sentences, and a log of
+  ten rows with a founding, joins in its hour and later, a return on the land of two, an id
+  founded anew after a death); `tests/helpers/aiSweep.ts`: every `RevoltSpawned` of ten
+  years classed by the state as the hour began (alive, or with a `NationRevived`), the
+  worker's rows equal to it one for one, "broke away" in a founding's row and in no other,
+  at least one founding and one join a seed; `tests/e2e/history1938.spec.ts` (a third test:
+  Ethiopia brought back by God Mode, its two rows in the panel, none "broke away").
+- **Run by hand** (a part, ADR-87): `history1938`, `--project chromium`, 3 tests, green,
+  with `EVIDENCE=1` (`docs/evidence/1.34/history.png` put back). The three ten-year tests
+  with the sweep's config: green on the second run. The first failed on the test's own
+  fault: it dated a revolt by `w.tick` in the step's callback, an hour after the event's.
+- **Seen:** `docs/evidence/3.12/b1-history-returned.png`, looked at: five rows of 1 January
+  1938, newest first: "Ethiopia returned", "Italy declared war on Ethiopia", "Ethiopia took
+  back land held by Italy". A join was not looked at in the panel: its sentence is in the
+  unit test only.
+- **The pin:** unmoved (no state changed).
+- **Learned:** in `Sim.step`'s callback `w.tick` is the hour after the events'; an event's
+  own tick is its first number. The sweep's config prints no `console.log`: the counts of
+  founded, joined and revived above are the probe's, not the test's.
+- **Performance:** not measured: the worker reads the log once more for each history
+  request (1,978 rows after 14 years).
+- **Not done:** no sweep (ADR-58). The volume the critic counted (450 "went over" rows of
+  2,395) is not less: PLAN 3.12b2 folds an hour's and says what it leaves.
+- **Gate:** `npm run check` (code; a part: the changed spec file).
+- **Next:** PLAN 3.12b2.

@@ -5209,15 +5209,24 @@ quick sweep as a smoke test.
       ten-year part is in `tests/helpers/aiSweep.ts` (three seeds): no row matches `#\d+`,
       and every row of an alliance has its name and its founder. `tests/unit/history.test.ts`
       has the wording; `tests/e2e/history1938.spec.ts` the rows in the panel.
-    - [ ] 3.12b The rows that say the reverse, and the land that goes over. First find
-      which emit makes "Turkey broke away from Free Bursa" (seed 6021, 14 years): every
-      `RevoltSpawned` is emitted with a = the rebels, b = the holder, and the sentence is
-      "{a} broke away from {b}"; `revolt()` uses the same kind where an area rises and joins
-      rebels that live next to it (seed 1, ten years: "Free Barcelona broke away from France"
-      twice). Then the 252 rows of ten years of seed 1 that read "Land of X went over to Y":
-      a peace emits no `LandCeded` (`war.ts`), so what they follow is to be counted (a death,
-      a revolt to the core nation, a revival) before anything is folded. A fold is of the
-      rows the worker sends, not of the state.
+    - [x] 3.12b1 *Done 2026-10-08 (ADR-209):* the rows that say the reverse. Measured
+      first (seed 6021, 14 years, 205 `RevoltSpawned`: 132 of a nation founded, 66 of land
+      that rose to rebels already there, 7 of a dead nation that returned): "Turkey broke
+      away from Free Bursa" is the third, `spawnRebels` called by `reviveNation`, and not
+      the join that the line below guessed. The worker tells the three from the log alone
+      (`HistoryRow.as`): "Turkey took back land held by Free Bursa", "More of France rose
+      and joined Free Barcelona", and "broke away" for a founding only. No state changed:
+      the pin is unmoved. `tests/helpers/aiSweep.ts`: each revolt's row of ten years is of
+      what the state showed.
+    - [ ] 3.12b2 The land that goes over. Measured in 3.12b1 (ADR-209): no `LandCeded`
+      follows a peace of its two nations (0 of 337 on seed 6021, 0 of 252 on seed 1), so
+      nothing is to be folded into a peace's row. 281 and 12 of the 337 are a region that
+      rose and went back to its core nation, whose holder lives; 44 are what a dead nation
+      left. Two sentences for the two (the death is told by a `NationEliminated`,
+      `NationCollapsed` or `NationAnnexed` of b in the same hour), and the rows of one hour
+      with the same a and b made one (32 of 337, 36 of 252; a month's rows are that hour's:
+      a wider window folds nothing more). What that leaves, about 20 rows a year of land
+      going back, is the game's and not the log's: say so under the review pass's line.
     - [ ] 3.12c The ticker: the major events (war, peace, a capital taken, a nation's death or
       return) as they happen, at the bottom left, read from the history log (the view's event
       queue drops records at Max speed); a click on a row flies the camera to its place (the

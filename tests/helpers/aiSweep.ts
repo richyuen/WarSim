@@ -28,6 +28,10 @@ import { strayNaN } from './stateNumbers';
  * PLAN 3.12 AT (the critic's R3-B6): no row of the history of those years shows an id ("#43
  * dissolved", "Denmark left #43"), and every row of an alliance names it.
  *
+ * PLAN 3.12b: a revolt's row says which of three things it was. What the state showed as the
+ * hour began (was the nation alive?) and the hour's `NationRevived` are kept here, and the row
+ * the worker makes from the log alone must agree: "broke away" is only of a nation founded.
+ *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
  */
@@ -45,6 +49,11 @@ export function aiSweep(seed: number): void {
   let owners: Uint16Array | null = null;
   let ownersAt = -1;
   let revoltsSeen = 0;
+  // PLAN 3.12b: what each revolt's row is of, by the state: the nations alive as the hour began.
+  const nations = s.world.nations;
+  const alive = new Set<number>();
+  nations.forEach((n) => void (nations.cols.living[n] === 1 && alive.add(n)));
+  const revoltsAs: string[] = [];
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
     const year: Record<string, number> = {};
@@ -54,6 +63,15 @@ export function aiSweep(seed: number): void {
         const k = names[ev[i + 1]!]!;
         counts[k] = (counts[k] ?? 0) + 1;
         year[k] = (year[k] ?? 0) + 1;
+        if (ev[i + 1] !== EventKind.RevoltSpawned) continue;
+        const a = ev[i + 2]!;
+        const back = ev.some((v, j) => j % 6 === 1 && v === EventKind.NationRevived && ev[j + 1] === a);
+        revoltsAs.push(`${ev[i]!} ${a} ${ev[i + 3]!} ${back ? 'revived' : alive.has(a) ? 'joined' : 'founded'}`);
+        alive.add(a); // an area that rises later in this hour rises to it
+      }
+      if (ev.length > 0) {
+        alive.clear();
+        w.nations.forEach((n) => void (w.nations.cols.living[n] === 1 && alive.add(n)));
       }
       // PLAN 3.9: what the month's revolts handed over, against the owners of the tick before.
       if (owners && ownersAt === w.tick - 1 && ev.some((k, i) => i % 6 === 1 && k === EventKind.RevoltSpawned)) {
@@ -118,6 +136,13 @@ export function aiSweep(seed: number): void {
     expect(r.of, `seed ${seed}, tick ${r.tick}: "${text}", its founder`).not.toBe('');
   }
   expect(allianceRows, `seed ${seed}: history rows of alliances`).toBeGreaterThan(0);
+  // PLAN 3.12b: each revolt's row is of what the state showed, and only a founding "broke away".
+  const revoltRows = rows.filter((r) => r.kind === EventKind.RevoltSpawned);
+  expect(revoltRows.map((r) => `${r.tick} ${r.a} ${r.b} ${r.as ?? 'founded'}`), `seed ${seed}: what the revolts' rows are of`).toEqual(revoltsAs);
+  for (const r of revoltRows) expect(/ broke away from /.test(historyText(r)), `seed ${seed}, tick ${r.tick}: "${historyText(r)}" (${r.as ?? 'founded'})`).toBe(r.as === undefined);
+  const of = (as: string): number => revoltsAs.filter((l) => l.endsWith(as)).length;
+  for (const as of ['founded', 'joined']) expect(of(as), `seed ${seed}: revolts ${as}`).toBeGreaterThan(0);
+  console.log(`seed ${seed}: ${revoltRows.length} revolts: ${of('founded')} founded, ${of('joined')} joined, ${of('revived')} revived`);
   console.log(`seed ${seed}: ${rows.length} history rows, ${allianceRows} of alliances (${rows.filter((r) => r.kind === EventKind.AllianceDissolved).length} dissolved), none with an id`);
   const wars = counts['WarDeclared'] ?? 0;
   const peace = counts['PeaceSigned'] ?? 0;

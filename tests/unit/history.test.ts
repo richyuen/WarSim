@@ -146,6 +146,36 @@ describe('history rows name what they are of (PLAN 3.12a)', () => {
     expect(t.world.alliances.list).toEqual(w.alliances.list);
   }, 120_000);
 
+  // PLAN 3.12b: "Turkey broke away from Free Bursa" was Turkey, dead, returning on its land.
+  it('a revolt is a nation founded, a dead one that takes its land back, or land that rises to rebels', () => {
+    const revolt = (as?: HistoryRow['as']): HistoryRow => ({ ...row(EventKind.RevoltSpawned, '=Free Bursa', 'nation.TUR'), ...(as ? { as } : {}) });
+    expect(historyText(revolt())).toBe('Free Bursa broke away from Turkey');
+    expect(historyText(revolt('joined'))).toBe('More of Turkey rose and joined Free Bursa');
+    expect(historyText({ ...row(EventKind.RevoltSpawned, 'nation.TUR', '=Free Bursa'), as: 'revived' })).toBe('Turkey took back land held by Free Bursa');
+    // A kind with one sentence has it whatever the row is said to be of.
+    expect(historyText({ ...row(EventKind.WarDeclared, 'nation.GER', 'nation.POL'), as: 'joined' })).toBe('Germany declared war on Poland');
+  });
+
+  it('the rows of a log: which of the three each revolt is, told from the log alone', () => {
+    const s = new Sim({ scenario: 'toy', seed: 1 });
+    const h = s.world.history;
+    const [FREE, OLD, A, B] = [1, 2, s.world.nations.create(), s.world.nations.create()]; // the toy world has two
+    h.record(10, EventKind.RevoltSpawned, FREE, A, 1, 1); // founded
+    h.record(10, EventKind.RevoltSpawned, FREE, A, 1, 1); // more of A rises to it in the same hour
+    h.record(20, EventKind.RevoltSpawned, FREE, B, 1, 1); // and of B later
+    h.record(30, EventKind.RevoltSpawned, OLD, A, 1, 1); // a dead nation returns on the land of two
+    h.record(30, EventKind.RevoltSpawned, OLD, FREE, 1, 1);
+    h.record(30, EventKind.NationRevived, OLD, 2, 1, 1);
+    h.record(40, EventKind.NationEliminated, FREE, 0, NaN, NaN);
+    h.record(50, EventKind.RevoltSpawned, FREE, B, 1, 1); // the id of the dead, founded anew
+    h.record(60, EventKind.NationRevived, OLD, 1, 1, 1); // a return by itself makes no later revolt one
+    h.record(70, EventKind.RevoltSpawned, OLD, B, 1, 1);
+    const rows = historyRows(s.world, (n) => `=N${n}`, () => '');
+    expect(rows.filter((r) => r.kind === EventKind.RevoltSpawned).map((r) => [r.tick, r.as])).toEqual([[10, undefined], [10, 'joined'], [20, 'joined'], [30, 'revived'], [30, 'revived'], [50, undefined], [70, 'joined']]);
+    expect(rows.filter((r) => r.kind !== EventKind.RevoltSpawned).every((r) => r.as === undefined)).toBe(true);
+    expect(rows.map(historyText).slice(3, 6)).toEqual(['N2 took back land held by N3', 'N2 took back land held by N1', 'N2 returned']);
+  });
+
   it('a save from before it loads: the leader stands for the founder, and nothing is past', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const al = s.world.alliances;

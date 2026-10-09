@@ -2,11 +2,20 @@
  * The history log as the rows the UI reads (PLAN 1.34a, 3.12a): the names of a and b resolved,
  * so that no row has to show an id. An alliance has its name whether it lives or dissolved, and
  * its founder's; a Major Battle has the city it began near, at its end too.
+ *
+ * And what a row is of, where the log has one kind for more than one thing (PLAN 3.12b, `as`).
+ * `RevoltSpawned` is emitted for a nation founded, for a dead one that returns (once for each
+ * holder it takes land from, before its `NationRevived`) and for rebels that an area next to them
+ * rises to: "Turkey broke away from Free Bursa" was the second. Told from the log alone: the
+ * state is not asked, so a game saved before reads the same.
  */
 import { EventKind } from '../shared/events';
-import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
+import { HISTORY_ROLES, type HistoryAs, type HistoryRole, type HistoryRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import type { World } from '../sim/world';
+
+/** More than any nation id: a tick and a nation as one key. */
+const NATION_KEY = 65536;
 
 /**
  * `nationName` gives a nation's name (an i18n key or '=' + literal), `cityName` a city row's
@@ -31,13 +40,27 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     if (role === 'battle') return battleCity.get(v) ?? '';
     return '';
   };
+  /** tick * NATION_KEY + nation of every `NationRevived`: it follows the revolts of its hour. */
+  const revived = new Set<number>();
+  for (let i = 0; i < rows.length; i += HISTORY_STRIDE) if (rows[i + 1] === EventKind.NationRevived) revived.add(rows[i]! * NATION_KEY + rows[i + 2]!);
+  /** The nations a revolt founded or brought back that have not died since. */
+  const risen = new Set<number>();
+  const revoltAs = (tick: number, a: number): HistoryAs | undefined => {
+    const as = revived.has(tick * NATION_KEY + a) ? 'revived' : risen.has(a) ? 'joined' : undefined;
+    risen.add(a);
+    return as;
+  };
   const out: HistoryRow[] = [];
   for (let i = 0; i < rows.length; i += HISTORY_STRIDE) {
     const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
     const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
     if (kind === EventKind.MajorBattleStarted) battleCity.set(a, city(b));
     const al = alliances.get(ra === 'alliance' ? a : rb === 'alliance' ? b : 0);
-    out.push({ tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b), of: al ? nation(al.founder) : '' });
+    const row: HistoryRow = { tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b), of: al ? nation(al.founder) : '' };
+    if (kind === EventKind.NationEliminated) risen.delete(a);
+    const as = kind === EventKind.RevoltSpawned ? revoltAs(tick, a) : undefined;
+    if (as) row.as = as;
+    out.push(row);
   }
   return out;
 }
