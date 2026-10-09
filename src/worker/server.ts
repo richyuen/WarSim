@@ -42,7 +42,7 @@ import {
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
-import { foundedName, provinceLabel } from '../shared/nationNames';
+import { foundedName, foundedNth, provinceLabel } from '../shared/nationNames';
 import { xxhash32View } from '../sim/core/hash';
 import { buildProvinceRaster } from '../sim/data/provinces';
 import { loadTerrain, type StraitDef } from '../sim/data/terrain';
@@ -822,8 +822,8 @@ export class SimServer {
     // The one table there is, is that of 1938: it names the nations of the scenarios with its tags.
     const def = SCENARIO_INFO[sim.scenario].nationTags[id - 1] !== undefined ? NATIONS_1938[id - 1] : undefined;
     if (def) return def.nameKey;
-    const origin = sim.world.nations.cols.origin[id] ?? 0;
-    return `=${foundedName(id, origin, this.provinceNames)}`;
+    const origins = sim.world.nations.cols.origin;
+    return `=${foundedName(id, origins[id] ?? 0, this.provinceNames, foundedNth(id, origins, this.provinceNames))}`;
   }
 
   private advance(n: number): void {

@@ -5508,13 +5508,22 @@ quick sweep as a smoke test.
       tests, both failed first ('capital' for 'war'; no `news`). In the page at Max (150
       messages, 34 with more than five major events): no cue but the loudest, 153 of 153
       wars in a message with the war cue; 4 messages would have been quieter before.
-  - [ ] 3.12Rh3 **Two nations of one name** (3.12Rh's picture at Max, seed 1938, April
+  - [x] 3.12Rh3 **Two nations of one name** (3.12Rh's picture at Max, seed 1938, April
     1943): "Free Damascus declared war on Free Damascus", "Free Damascus made peace with
     Free Damascus", and a banner "Free Bamyan" on both sides of two wars. Find whether it
     is two nations founded at one city (a founded nation dead and another risen, or two
     alive) or one nation at war with itself; a name that tells them apart, or the defect
     fixed. AT: in ten years of the sweep seeds no two living nations have one name and no
     war has a nation on both sides.
+    - Done 2026-10-09 (ADR-219): two living nations, never one at war with itself (seed
+      1938, six years, every day: 0 wars with a nation on both sides; 3 pairs of one origin
+      among 77 nations founded, each pair at war). A province rises again while the nation
+      it founded lives as its holder's puppet: the land does not go back to a puppet of the
+      holder, and a new nation is founded there. The rule stays; the later nation is "Free
+      Damascus II" (`foundedNth`: the nations of a lower id called after that label, the
+      dead too; no state, the pin unmoved). `nationNames.test.ts` and `workerLabels.test.ts`
+      (failed first), and `aiSweep` on every day of ten years of three seeds: 2,221, 2,104
+      and 2,385 days of 3,650 had namesakes (5, 3 and 4 at most), each now with its own name.
   - [ ] 3.12Rh4 **A view 1,100 px wide at the UI sizes above 100%** (3.12Rh's pictures):
     the bottom bar is 1,112 px at 115% and 1,254 px at 130% and runs off both sides (the
     pause button and the date are cut; since 3.12Rh1 the date is one line and the bar 989,

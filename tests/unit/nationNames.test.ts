@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { foundedName, provinceLabel } from '../../src/shared/nationNames';
+import { foundedName, foundedNth, provinceLabel } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { forceRevolt, spawnRebels } from '../../src/sim/systems/revolts';
@@ -103,6 +103,36 @@ describe('the names of founded nations (PLAN 2.15b)', () => {
     expect(cc.capitalOf[city], 'the city is the capital').toBe(id);
     expect(world.nations.cols.origin[id], 'origin').toBe(area[1]);
     expect(foundedName(id, world.nations.cols.origin[id]!, labels())).toBe(`Free ${labels()[area[1]! - 1]}`);
+  });
+
+  // PLAN 3.12Rh3: "Free Damascus declared war on Free Damascus" (seed 1938, the third year): a
+  // province rose again while the nation it had founded lived, as its holder's puppet.
+  it('a province that founds a second nation gives it a name of its own', () => {
+    const world = sim1938().world;
+    const l = labels();
+    const { owner, province } = world.cells;
+    const cc = world.cities.cols;
+    let city = 0;
+    world.cities.forEach((ci) => {
+      if (city === 0 && cc.capitalOf[ci] === 0 && owner[cc.cell[ci]!] !== 0) city = ci;
+    });
+    const p = province[cc.cell[city]!]!;
+    const holder = owner[cc.cell[city]!]!;
+    const first = spawnRebels(world, [p], holder);
+    const second = spawnRebels(world, [p], first);
+    const third = spawnRebels(world, [p], second);
+    const origins = world.nations.cols.origin;
+    expect([origins[first], origins[second], origins[third]], 'the three origins').toEqual([p, p, p]);
+    const name = (id: number): string => foundedName(id, origins[id]!, l, foundedNth(id, origins, l));
+    expect([name(first), name(second), name(third)]).toEqual([`Free ${l[p - 1]}`, `Free ${l[p - 1]} II`, `Free ${l[p - 1]} III`]);
+    // By the label, not the province: "Central" is ten provinces of the earth data.
+    const twin = l.findIndex((s, i) => i !== p - 1 && l.indexOf(s) !== i && l.indexOf(s) !== p - 1);
+    expect(twin, 'a label of two provinces').toBeGreaterThan(-1);
+    const col = [0, l.indexOf(l[twin]!) + 1, twin + 1, p];
+    expect([1, 2, 3].map((id) => foundedName(id, col[id]!, l, foundedNth(id, col, l)))).toEqual([`Free ${l[twin]}`, `Free ${l[twin]} II`, `Free ${l[p - 1]}`]);
+    // A nation of a scenario has no origin and is no one's namesake; the numerals.
+    expect(foundedNth(3, [0, 0, 0, p], l)).toBe(1);
+    expect([4, 9, 14, 40, 1999].map((n) => foundedName(1, p, l, n).split(' ').pop())).toEqual(['IV', 'IX', 'XIV', 'XL', 'MCMXCIX']);
   });
 
   it('a revolt forced in every province of the 1938 start: every nation founded has a name', () => {

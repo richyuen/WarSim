@@ -1,11 +1,11 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { expect } from 'vitest';
 import { isDayStart, isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
 import type { HistoryRow } from '../../src/shared/history';
 import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../../src/shared/flagPixels';
-import { foundedName, provinceLabel } from '../../src/shared/nationNames';
+import { foundedName, foundedNth, provinceLabel } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { historyText } from '../../src/ui/historyText';
@@ -33,6 +33,9 @@ import { strayNaN } from './stateNumbers';
  * hour began (was the nation alive?) and the hour's `NationRevived` are kept here, and the row
  * the worker makes from the log alone must agree: "broke away" is only of a nation founded.
  *
+ * PLAN 3.12Rh3 AT: on every day no two living nations have one name ("Free Damascus declared
+ * war on Free Damascus"), and no war has a nation on both sides.
+ *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
  */
@@ -59,6 +62,16 @@ export function aiSweep(seed: number): void {
   // holder was dead as the hour ended.
   const cededAs: string[] = [];
   let cededEvents = 0;
+  // PLAN 3.12Rh3: the names as the worker gives them (`SimServer.nameOf`), in English.
+  const labels = earthAdmin1().meta.map(provinceLabel);
+  const en = JSON.parse(readFileSync(path.resolve(import.meta.dirname, '../../src/ui/i18n/en.json'), 'utf8')) as Record<string, string>;
+  const nameOf = (id: number, nth = foundedNth(id, nations.cols.origin, labels)): string => {
+    const key = NATIONS_1938[id - 1]?.nameKey;
+    return key !== undefined ? en[key]! : foundedName(id, nations.cols.origin[id]!, labels, nth);
+  };
+  // The days on which two living nations were called after one province, and the most at once.
+  let namesakeDays = 0;
+  let namesakesMost = 0;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
     const year: Record<string, number> = {};
@@ -97,6 +110,24 @@ export function aiSweep(seed: number): void {
       w.out.fires.length = 0;
       // PLAN 3.8: on every day no two nations of one realm or of allied realms are at war.
       if (isDayStart(w.tick)) expect(realmWars(w, tag), `seed ${seed}, day ${w.tick / 24}: wars inside a realm or an alliance`).toEqual([]);
+      if (isDayStart(w.tick)) {
+        const holders = new Map<string, number>();
+        const twice: string[] = [];
+        const plain = new Set<string>();
+        let living = 0;
+        nations.forEach((n) => {
+          if (nations.cols.living[n] !== 1) return;
+          living++;
+          plain.add(nameOf(n, 1));
+          const name = nameOf(n);
+          if (holders.has(name)) twice.push(`"${name}": nations ${holders.get(name)!} and ${n}`);
+          else holders.set(name, n);
+        });
+        expect(twice, `seed ${seed}, day ${w.tick / 24}: two living nations of one name`).toEqual([]);
+        if (plain.size < living) namesakeDays++;
+        namesakesMost = Math.max(namesakesMost, living - plain.size);
+        for (const war of w.wars.list) expect(war.sides[0].filter((n) => war.sides[1].includes(n)), `seed ${seed}, day ${w.tick / 24}: war ${war.id}, nations on both sides`).toEqual([]);
+      }
       // PLAN 2.16Rf: at every month's end no cell has a dead nation as its owner or its controller.
       if (isMonthStart(w.startDay, w.tick)) expect(deadLand(w), `seed ${seed}, tick ${w.tick}: land of the dead`).toEqual([]);
     });
@@ -118,7 +149,6 @@ export function aiSweep(seed: number): void {
   // The nations the game founded (PLAN 2.15): each has a name and a flag. The flag is the one the
   // view draws: a function of the id and the colour (ADR-101).
   const nc = s.world.nations.cols;
-  const labels = earthAdmin1().meta.map(provinceLabel);
   let founded = 0;
   for (let id = NATIONS_1938.length + 1; id < s.world.nations.highWater; id++) {
     founded++;
@@ -132,10 +162,12 @@ export function aiSweep(seed: number): void {
     expect(colours, `seed ${seed}, nation ${id}: its colour on its flag`).toContain(nc.color[id]!);
   }
   expect(founded, `seed ${seed}: nations founded in ten years`).toBeGreaterThan(0);
+  process.stderr.write(`seed ${seed}: ${namesakeDays} days with living nations called after one province (${namesakesMost} more nations than provinces at most), each with a name of its own
+`);
   expect(revoltsSeen, `seed ${seed}: months whose revolts were measured`).toBeGreaterThan(0);
   console.log(`seed ${seed}: ${founded} nations founded in ten years, each with a name and a flag`);
   // The history as the panel has it (PLAN 3.12a): no row shows an id, no alliance is unnamed.
-  const rows = historyRows(s.world, (id) => NATIONS_1938[id - 1]?.nameKey ?? `=${foundedName(id, nc.origin[id]!, labels)}`, (c) => `City ${String.fromCharCode(65 + (c % 26))}`);
+  const rows = historyRows(s.world, (id) => NATIONS_1938[id - 1]?.nameKey ?? `=${nameOf(id)}`, (c) => `City ${String.fromCharCode(65 + (c % 26))}`);
   const ofAlliance: number[] = [EventKind.AllianceLeft, EventKind.AllianceDissolved, EventKind.AllianceJoined, EventKind.UnionFormed];
   let allianceRows = 0;
   // PLAN 3.12Rg1: the first row of an alliance, when it is its founder's, is its founding and no

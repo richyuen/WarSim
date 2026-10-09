@@ -12034,3 +12034,36 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rh3 (two nations of one name).
+
+## 2026-10-09 — PLAN 3.12Rh3: two nations of one name are told apart
+
+- **Found** (ADR-219; `.cache/rh3/probe.ts`, seed 1938, six years, every day): never one
+  nation at war with itself (0 wars with a nation on both sides). Two living nations with
+  one origin: 3 pairs among 77 founded, 1,370 pair-days, each pair at war. Nation 117 was
+  founded at Damascus against nation 10 and was its puppet a week later; Damascus, 10's
+  again, revolted, and since its core nation was the holder's puppet a new nation, 132,
+  was founded there. The same at Jilin; and a third Free Damascus against 117 itself.
+- **Done:** the revolt's rule stays. `foundedNth` (`src/shared/nationNames.ts`) counts the
+  nations of a lower id called after the same label, the dead too, and `foundedName` adds
+  the numeral: "Free Damascus", "Free Damascus II", "III". By the label: 116 labels are of
+  two provinces or more (315 of 4,596). No sim state: the pin unmoved.
+- **Tests:** `tests/unit/nationNames.test.ts` (three nations of one province, two
+  provinces of one label, the numerals) and `tests/unit/workerLabels.test.ts` (a province
+  made to revolt twice through the worker: the dead "Free Leningrad" and the living "Free
+  Leningrad II"). Failed first: the unit test on the code before had no `foundedNth` (its
+  three names were one). `tests/helpers/aiSweep.ts`: every day, no two living nations of
+  one name, no war with a nation on both sides. Run by hand (`--config
+  vitest.sweep.config.ts`, 189 s): green; namesakes lived on 2,221, 2,104 and 2,385 of
+  3,650 days in seeds 1, 2 and 3, so the check would have failed in each before.
+- **Gotcha:** a callback of `Sim.step` must empty `w.out.events` itself (`ev.length = 0`):
+  the first probe read each event again every tick and ran out of memory in combat's list.
+- **Gotcha:** a nation left without land by a second revolt of its only province is dead
+  in the next statistics, and Ethiopia is dead in 1938: "the dead that are new" is by id.
+- **Not looked into:** whether 132 was dead or bound to 117 when 162 was founded (by
+  `revolt`'s first branch it was one of the two).
+- **Specs run by hand:** none: nothing drawn changes but the text of a name.
+- **Performance:** not measured: one pass over the nations of a lower id for each name the
+  worker gives, once a second; no sim change.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rh4 (a view 1,100 px wide at the UI sizes above 100%).

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import type { FromWorker } from '../../src/shared/protocol';
-import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { foundedName, provinceLabel } from '../../src/shared/nationNames';
+import { NATIONS_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
 import { SimServer } from '../../src/worker/server';
-import { assets1938 } from '../helpers/earth';
+import { assets1938, earthAdmin1 } from '../helpers/earth';
 
 // Review after PLAN 1.29: the worker's label cadence. Labels follow init, are not re-derived
 // while control is unchanged, are re-derived after control changes (at most every 2 s of wall
@@ -108,5 +110,32 @@ describe('worker derived messages (labels, nation stats)', () => {
     server.pump(7300, () => 7300);
     expect(stats().length).toBe(before + 2);
     expect(stats().at(-1)!.news).toEqual([]);
+  }, 120_000);
+
+  // PLAN 3.12Rh3: the worker's name of a second nation founded at one province is its own
+  // ("Free Damascus declared war on Free Damascus": two nations, one name).
+  it('two nations founded at one province have two names in the statistics, the dead one too', () => {
+    const msgs: FromWorker[] = [];
+    const server = new SimServer((m) => msgs.push(m));
+    const stats = (): Extract<FromWorker, { type: 'nationStats' }>[] => msgs.filter((m): m is Extract<FromWorker, { type: 'nationStats' }> => m.type === 'nationStats');
+    server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) } }, 0);
+    const before = new Set(stats()[0]!.nations.map((n) => n.id));
+    // A province, as a twin game has it: that of the first city that is no capital.
+    const world = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) }).world;
+    const cc = world.cities.cols;
+    let p = 0;
+    world.cities.forEach((ci) => {
+      if (p === 0 && cc.capitalOf[ci] === 0 && world.cells.owner[cc.cell[ci]!] !== 0) p = world.cells.province[cc.cell[ci]!]!;
+    });
+    expect(p).toBeGreaterThan(0);
+    // It rises against its holder, and again against the nation it founded.
+    server.handle({ type: 'cmd', cmd: { kind: 'spawnRevolt', province: p }, now: true }, 100);
+    server.handle({ type: 'cmd', cmd: { kind: 'spawnRevolt', province: p }, now: true }, 200);
+    server.pump(1300, () => 1300);
+    // The first is left without land and dead: its name is its own still, and the second's too.
+    const last = stats().at(-1)!;
+    const first = `=${foundedName(0, p, earthAdmin1().meta.map(provinceLabel))}`;
+    expect(last.dead.filter((n) => n.id > NATIONS_1938.length).map((n) => n.name)).toEqual([first]);
+    expect(last.nations.filter((n) => !before.has(n.id)).map((n) => n.name)).toEqual([`${first} II`]);
   }, 120_000);
 });

@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-219 · 2026-10-09 · accepted — A later nation called after the same province is "Free Damascus II": the name tells two nations apart, the revolt's rule stays (PLAN 3.12Rh3)
+
+- **Context.** The ticker at Max, seed 1938, April 1943: "Free Damascus declared war on
+  Free Damascus", and a banner "Free Bamyan" on both sides of two wars.
+- **Found** (`.cache/rh3/probe.ts`, not kept; seed 1938, six years, every day): no war has
+  a nation on both sides. They are two living nations with one `origin`. Of 77 nations
+  founded, three such pairs (1,370 pair-days in the six years), each pair at war with each other:
+  - 117, founded at Damascus against nation 10 (tick 18,961), is 10's puppet a week later
+    (19,129). Damascus, 10's land again, revolts (25,561): its core nation 117 lives but is
+    the holder's puppet, so the land does not go back to it (`revolt`: `overlord[core] !==
+    holder`), a puppet is no rising neighbour, no dead nation claims it, and `spawnRebels`
+    founds 132 there. The same at Jilin (104, puppet of 69; then 134).
+  - 162 is founded at Damascus against 117 itself (45,985), which held it while its core
+    was 132 (by `revolt`'s first branch 132 was then dead or bound to 117; not looked into
+    which).
+- **Decision.** The rule stays: a province that rises against an overlord does not join
+  the overlord's puppet, and what it founds is a new nation. The name tells them apart: the
+  first is "Free Damascus", the next "Free Damascus II", then "III" (`foundedName`'s `nth`).
+- **How the number is found.** `foundedNth(id, origins, labels)`: one more than the nations
+  of a lower id whose origin has the same label. From the state as it is: no column, no
+  save format, no hash, the pin unmoved.
+  - Every nation, the dead too: counted over the living alone, a nation would lose its
+    numeral when its namesake died, and the log, which names a nation as it is read,
+    would be rewritten.
+  - By id: a nation's row is never removed (`Table.remove` has no caller for nations), so
+    ids rise with the founding and are never given to another; an origin is written once,
+    at the founding (a revival keeps it).
+  - By the label, not the province: of 4,596 provinces 315 share their label with another
+    (116 labels: "Central" is ten, "Northern" eight).
+- **Not chosen.** Another province of the area as the origin: an area can be one
+  province. Another word for each ("New", "Second"): the numeral has no end
+  and one rule. A count kept in the state at the founding: a column and a new pin for what
+  the ids already say.
+- **What can still be one name.** A God Mode rename is the player's: two nations can be
+  given one name. A game saved before shows its later namesakes with their numeral from the
+  load on.
+- **Cost.** One pass over the nations of a lower id for each name the worker gives (some
+  200 nations): not measured.
+- **Consequences.** `tests/unit/nationNames.test.ts`: one province founds three nations
+  ("Free X", "Free X II", "Free X III"), two provinces of one label, the numerals (failed
+  first: no `foundedNth`; the three names were one). `tests/helpers/aiSweep.ts`: on every
+  day of ten years of three seeds no two living nations have one name, as the worker names
+  them in English, and no war has a nation on both sides. Seeds 1, 2 and 3: namesakes
+  lived on 2,221, 2,104 and 2,385 of 3,650 days (5, 3 and 4 more nations than names at
+  most by the rule before). `tests/unit/workerLabels.test.ts`: a province made to revolt
+  twice through the worker: the dead first nation is "Free Leningrad" in the statistics,
+  the living second "Free Leningrad II".
+
 ### ADR-218 · 2026-10-09 · accepted — A statistics message carries its news: the kinds of every major event since the one before; the ticker stays the last five (PLAN 3.12Rh2)
 
 - **Context.** ADR-216's count at Max: 18% of the messages bring more than five major

@@ -513,7 +513,10 @@ of 1938, none for the random and the toy world. A nation's name is, in this orde
 `world.names` (a God Mode rename, the names of the random and the toy world), the name key of
 its tag, the name of a founded nation (`foundedName`, `src/shared/nationNames.ts`: "Free
 <province>", the province being its `origin`, called by its own name or else its country's;
-PLAN 2.15b, ADR-100). The worker's `nameOf` resolves it; a literal name travels with a leading
+PLAN 2.15b, ADR-100; a later nation called after the same province is "Free <province> II",
+"III", …: `foundedNth` counts the nations of a lower id whose origin has that label, the dead
+too, so no two living nations have one name and a name never changes; PLAN 3.12Rh3, ADR-219).
+The worker's `nameOf` resolves it; a literal name travels with a leading
 `=`. The flag follows the same rule (below).
 
 **Flags (PLAN 1.6, ADR-19).** `FlagSpec = {aspect, layers}` (`src/shared/flags.ts`), with layers:
