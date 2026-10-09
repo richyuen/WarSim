@@ -12456,3 +12456,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green on the first run (`.cache/gate-rp.log`): 1,070 unit
   tests in 133 files, the ten-year stage 17 tests in 12 files, build, parity 47.5%.
 - **Next:** PLAN 3.12Rq (a formation is not spawned at sea).
+- **Corrected after the commit:** `gameOptions1938.spec.ts` is not the one spec that
+  starts a game with `looping=0`: `title.spec.ts` starts three (seeds 4242, 77 and 5, two
+  of them compared with the game in Node). Run by hand on e83098b: 7 tests green in 31 s.
+- **The gate's stages**, slow as in the three gates before (PLAN 3.12Ri): unit 278.8 s,
+  ten-year 297.8 s.
