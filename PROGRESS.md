@@ -13070,3 +13070,32 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule changed:** nothing in play reads the ports. **No sweep** (ADR-58).
 - **PARITY:** our additions, row 3: a note added, still partial.
 - **Next:** PLAN 4.1d (the march over a bay; the pin moves there).
+
+## 2026-10-09 — PLAN 4.1d1: the camera of a war's battle holds two blocks on two shores (ADR-245)
+
+- **How it came:** PLAN 4.1d (the march round a bay) was written first, and its gate failed
+  two unit tests. One is its own (a formation on a way faces along the way: the test is of
+  4.1d2). The other, `warBattle.test.ts`, is this: "hour 702, war 2, formations 386 and
+  439, each other's nearest: 2 of 2" not whole in the view the camera takes.
+- **The cause is not the march.** Two formations in contact with an inlet between them keep
+  their blocks on their shores, 12 km apart, and the camera's view was 28 by 16 km. In the
+  game before, one of the two stood over the bay's water for those weeks, its block with
+  it, and the test passed.
+- **So 4.1d is split** (one cause per commit): 4.1d1 this, 4.1d2 the way. The way's code
+  and tests are in `git stash`, its documents in `.cache/b41d/`.
+- **Built:** `WarBattle.span`; `battleViewM` in `src/app/battleView.ts` (the constants of
+  `showBattle` moved there with it); `showBattle(x, y, span, fight)`; the HUD passes the
+  span of a war's battle, and `fight` for a formation's.
+- **Tests:** `warBattle.test.ts`, two more: two divisions over a river of the mask in China
+  (17 km between their blocks: not whole at 20 m/px, whole at the camera's 41.6), and the
+  function in a small view. The 60-day test takes its view from the function. One of mine
+  was wrong at the first run: two blocks front to front have their middles 3.3 km apart,
+  not under 3. One mutation (the cap of a fight for a war's battle) failed the first.
+- **By hand:** `toBattle1938`, `formationFight1938`, `fightSeen1938`: 5 tests pass.
+- **Not looked at:** the click in the browser on a battle across water (the HUD's three
+  lines are in no test); the picture of it.
+- **Found, not mended:** the two formations stand in contact over the water for 14 days and
+  more (PLAN 4.6).
+- **No rule changed.** The pin stays. **No sweep** (ADR-58).
+- **PARITY:** nothing: no row names the banner's camera.
+- **Next:** PLAN 4.1d2, from the stash.

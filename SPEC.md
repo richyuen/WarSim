@@ -141,7 +141,10 @@ ack, buildProvinces, buildTerrain, buildPolitical; requests carry a `reqId` and 
   2.14e; `largestBattle`, `src/sim/systems/warBattle.ts`). Worked out from the state when
   asked; read-only. A battle of the war's two leaders comes before one of a leader, before one
   of allies alone (ADR-95); of those, the one whose smaller side has the most men (ADR-94).
-  Each war of `nationStats` says whether it has one (`battle`, ADR-96).
+  Each war of `nationStats` says whether it has one (`battle`, ADR-96). `span` is how far
+  apart the two blocks' middles stand, in cells: the camera goes as far out as holds both, to
+  250 m/px (`battleViewM`, `src/app/battleView.ts`; PLAN 4.1d1, ADR-245). Two with water
+  between them stand each on its shore, up to a contact's reach apart.
 - `exportScenario`: the world without run history as state bytes + `scenarioHash` (PLAN 1.38).
 - `speed {ticksPerSecond | 'max'}`, `pause {paused}`, `step {n}`
 - `subscribe {bbox: [x0,y0,x1,y1] (world units, wrap-aware), z, tier, wantsElements}`

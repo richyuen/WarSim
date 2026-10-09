@@ -36,6 +36,15 @@ quick sweep as a smoke test.
   - [ ] 4.1d The march over a bay (the Phase 2 review's line above): routing below the cell
     or along the coast. It changes land paths: the pin moves, with an ADR.
     AT: on seed 99 at day 90 no formation on the march is over the fine mask's water.
+    Split 2026-10-09 (one cause per commit): written and gated as one, the gate failed
+    `warBattle.test.ts` on a defect of the camera that the game before had hidden.
+    - [x] 4.1d1 The camera of a war's battle holds two blocks that water keeps apart.
+      AT: two divisions in contact on two shores: both whole in the view the camera takes.
+      Done 2026-10-09 (ADR-245): the answer to `warBattle` has the two blocks' `span`, and
+      `battleViewM` (`src/app/battleView.ts`) is the camera's zoom for `showBattle` and the
+      tests; a war's battle goes out to 250 m/px, a formation's fight stays under 28.
+    - [ ] 4.1d2 The way of a step round a bay (written, set aside: `git stash`, "4.1d2 the
+      way"; its documents in `.cache/b41d/`).
 - [ ] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
   AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
   From PLAN 4.1b (2026-10-09, ADR-243): a route over the lanes goes by the zones' middles and
@@ -76,6 +85,10 @@ quick sweep as a smoke test.
   and a formation that reaches no front stands where it is. How many wars of a game have no
   front, and how they end, was never counted: count it here first, then plan the landing
   for such a war.
+  From PLAN 4.1d1 (2026-10-09, ADR-245): two formations in contact with water between
+  them (an inlet, a river of the mask) stand so for 14 days and more, neither moving (seed
+  99 with Germany against Poland by command, formations 386 and 439, hours 702 to 1,044 at
+  least). Whether such a contact ever ends, and how many there are, was not counted.
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the

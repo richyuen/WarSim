@@ -167,6 +167,47 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-245 · 2026-10-09 · accepted — The camera of a war's battle holds two blocks that water keeps apart (PLAN 4.1d1)
+
+- **Context.** PLAN 4.1d (a march goes round a bay) was written and gated first. Its gate
+  failed `warBattle.test.ts`: in its game (seed 99, Germany against Poland by command) the
+  largest battle of war 2 names formations 386 and 439 at hours 702, 1,014 and 1,044, and 4
+  or 5 of their elements are outside the view the camera takes, by 15 % of its half.
+- **What it is** (`.cache/wbDiag.ts`). The two are each other's nearest enemy, 1.45 cells
+  apart (a contact is 1.5), with an inlet of the fine mask between them. A block does not go
+  into the sea (`deployOf`), so each stands on its shore: 0.34 cells apart east to west and
+  0.63 north to south, 12 km. `showBattle` went to the middle at 20 m/px, a view of 28 by 16
+  km, made for two blocks front to front.
+- **Why the game before did not show it.** The same two formations were in contact there.
+  One of them stood on the step `1701,402 > 1701,401`, on the straight line over the bay's
+  water (699 formation-hours of that game's 1,266 over water are that step's). Its block
+  went over the water with it. So the test passed because a division fought from the sea.
+- **Decision.** The answer to `warBattle` carries `span`, how far apart the two blocks'
+  middles stand, as a formation's fight has since PLAN 3.11b. The camera's zoom is one
+  function, `battleViewM` (`src/app/battleView.ts`), and `showBattle` and the tests ask it:
+  - with a span the view holds both blocks with 6 km around them in the 0.7 of its height
+    that the bars leave free;
+  - a formation's fight stays under 28 m/px where the view allows (figures are drawn);
+  - a war's battle goes as far out as holds the two, to 250 m/px (elements are drawn).
+  Two blocks front to front (3.3 km between their middles in the test) leave it at 20.
+- **Why not the fight's cap of 28 m/px.** Two blocks 0.88 cells apart north to south (the
+  test's pair, 17 km) need 41.6 m/px. A war's banner promises the battle, not the figures.
+- **The test** places two divisions on two neighbouring cells of China with a river of the
+  mask between their points (cells 1676,419 and 1676,420, the widest of a search of 106
+  such pairs; 34 of 65 places on the line between them are water): the span is the blocks'
+  distance, the view at 20 m/px does not hold them, the camera's at 41.6 does. The 60-day
+  test takes its view from `battleViewM` and the answer's span, and is otherwise as it was:
+  691 battles, none outside, none further out than 20 m/px in the game of now.
+- **One mutation:** the war's battle capped at 28 m/px as the fight is: "expected 28 to be
+  greater than 35".
+- **Not a rule of the sim:** `largestBattle` reads only. The pin stays (`92689265`).
+- **Not looked at:** the click on such a banner in the browser (the three lines of `hud.ts`
+  and `game.tsx` that pass the span are in no test; `toBattle1938`, `formationFight1938`
+  and `fightSeen1938` pass, 4.7 min, all on pairs front to front); what the two blocks look
+  like at 41.6 m/px with a river between them; a pair further apart than the test's.
+- **Found, not mended:** the two formations stand in contact over the water for 14 days and
+  more (hours 702 to 1,044 at least), neither moving. A line under PLAN 4.6.
+
 ### ADR-244 · 2026-10-09 · accepted — Ports are data of the scenario, not state: city ports by a rule, naval bases by hand (PLAN 4.1c)
 
 - **Context.** SPEC §3.3 lists `port` and `navalBase` among a province's buildings; no

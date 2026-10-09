@@ -488,6 +488,12 @@ export interface WarBattle {
    */
   x: number;
   y: number;
+  /**
+   * How far apart the two blocks' middles stand, east-west and north-south, in cells (PLAN
+   * 4.1d1): a kilometre for two front to front, up to the reach of a contact for two with
+   * water between them, each on its shore. The camera's view holds both (`battleViewM`).
+   */
+  span: [number, number];
   formations: [number, number];
   /** Formations and men of the battle: [attackers, defenders]. */
   count: [number, number];

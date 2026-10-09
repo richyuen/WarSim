@@ -52,7 +52,7 @@ export class Hud {
   /** Selects a nation from the UI (panel chips); main wires it to the map view. */
   onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
   /** Brings a place into view at a zoom that shows a battle (PLAN 2.14e); main wires it to the map view. */
-  onShowBattle: (x: number, y: number, span?: readonly [number, number]) => void = () => {};
+  onShowBattle: (x: number, y: number, span?: readonly [number, number], fight?: boolean) => void = () => {};
 
   /** Brings the place of an event into view (a click on a row of the ticker, PLAN 3.12c); main wires it to the map view. */
   onShowPlace: (x: number, y: number) => void = () => {};
@@ -62,7 +62,7 @@ export class Hud {
     void this.sim
       .warBattle(war)
       .then((b) => {
-        if (b) this.onShowBattle(b.x, b.y);
+        if (b) this.onShowBattle(b.x, b.y, b.span);
       })
       .catch(() => {
         /* the worker is gone or busy with a load: the camera stays */
@@ -72,7 +72,7 @@ export class Hud {
   /** To the fight of the formation whose panel is open (PLAN 3.11b): its block and the block of the enemy it faces, both in the view. Out of contact the camera stays. */
   toFight(): void {
     const f = this.formationInfo.value?.fight;
-    if (f) this.onShowBattle(f.x, f.y, f.span);
+    if (f) this.onShowBattle(f.x, f.y, f.span, true);
   }
 
   /** The formation whose panel is open (0 = none; PLAN 2.14b), set by map clicks, and what the sim says of it. */

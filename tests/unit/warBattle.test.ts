@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { battleViewM } from '../../src/app/battleView';
+import { maskLand } from '../../src/shared/landMask';
 import type { FromWorker, Inspection, WarBattle } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -41,6 +43,27 @@ function game(): { s: Sim; w: World; north: [number, number]; south: [number, nu
   const south = sites.find((p) => p[1] - north[1] > 6);
   if (!south) throw new Error('no second border site six cells from the first');
   return { s, w, north, south };
+}
+
+/**
+ * Whether every element of the two formations a battle's site names is in a view of 1400 × 800
+ * px about the site's point at `m` metres a pixel, 50 px clear of its edges (a cell is 19.57 km).
+ */
+function wholeInView(w: World, site: WarBattleSite, m: number): boolean {
+  const half = { w: ((700 - 50) * m) / 19_570, h: ((400 - 50) * m) / 19_570 };
+  const idx = elementIndex(w);
+  for (const f of site.formations) {
+    const list = idx.get(f) ?? [];
+    expect(list.length, `elements of formation ${f}`).toBeGreaterThan(0);
+    const slots = slotCount(w, f, list.length);
+    for (const e of list) {
+      const p = elementPlace(w, f, w.elements.cols.slot[e]!, slots, e);
+      let dx = Math.abs(p[0] - site.x);
+      if (dx > W / 2) dx = W - dx;
+      if (dx >= half.w || Math.abs(p[1] - site.y) >= half.h) return false;
+    }
+  }
+  return true;
 }
 
 const warOf = (w: World, a: number, b: number): number => w.wars.list.find((x) => x.sides[0].includes(a) && x.sides[1].includes(b))!.id;
@@ -205,20 +228,87 @@ describe('the largest battle of a war with allies in it (PLAN 2.14f5b2)', () => 
   });
 });
 
+// PLAN 4.1d1: two formations in contact with water between them keep their blocks on their
+// shores (`deployOf`: a block does not go into the sea), up to the reach of a contact apart.
+// The camera went to the middle between the two at the zoom of two blocks front to front, 28
+// by 16 km: with the blocks 17 km apart north to south it held neither whole. Found by the gate
+// of PLAN 4.1d, whose game has such a pair for 14 days; in the game before it, one of the two
+// stood on the water of the bay for those days, and its block went over it.
+describe('the largest battle of a war across water (PLAN 4.1d1)', () => {
+  // Two neighbouring cells of China, north and south of a river of the fine mask (found by a
+  // search of the cells from 1660, 380 to 1720, 440 for the widest such pair).
+  const NORTH = 419 * W + 1676;
+  const SOUTH = 420 * W + 1676;
+
+  it('says how far apart the two blocks stand, and the view the camera takes holds both', () => {
+    const { s, w, north } = game();
+    const mask = assets1938(W).landMask!;
+    const holder = w.cells.controller[NORTH]!;
+    expect(holder).toBeGreaterThan(0);
+    expect(w.cells.controller[SOUTH]).toBe(holder);
+    const [pn, ps] = [w.cellPoint(NORTH), w.cellPoint(SOUTH)];
+    // Water between the two points, and both of them on land.
+    let wet = 0;
+    for (let i = 0; i <= 64; i++) if (!maskLand(mask, W, SIZE_1938.h, pn[0] + ((ps[0] - pn[0]) * i) / 64, pn[1] + ((ps[1] - pn[1]) * i) / 64, true)) wet++;
+    expect(wet).toBeGreaterThan(16);
+    expect(w.onLand(pn[0], pn[1]) && w.onLand(ps[0], ps[1])).toBe(true);
+    const a = addDivision(w, GER, pn[0], pn[1]);
+    const d = addDivision(w, holder, ps[0], ps[1]);
+    // And a pair front to front on open ground, in a war of its own.
+    addDivision(w, CZS, north[0], north[1]);
+    addDivision(w, POL, north[0] + 1, north[1]);
+    s.command({ kind: 'declareWar', attacker: GER, defender: holder });
+    s.command({ kind: 'declareWar', attacker: CZS, defender: POL });
+    s.step(2);
+
+    const b = largestBattle(w, warOf(w, GER, holder))!;
+    expect(b.formations).toEqual([a, d]);
+    const idx = elementIndex(w);
+    const [ba, bd] = [a, d].map((f) => deployOf(w, f, slotCount(w, f, idx.get(f)!.length))!);
+    expect(b.span[0]).toBeCloseTo(Math.abs(bd!.x - ba!.x), 9);
+    expect(b.span[1]).toBeCloseTo(Math.abs(bd!.y - ba!.y), 9);
+    // Each on its shore: 0.88 of a cell apart north to south, 17 km, where two front to front stand one.
+    expect(b.span[1]).toBeGreaterThan(0.7);
+    expect(b.y).toBeCloseTo((ba!.y + bd!.y) / 2, 9);
+    // The view of two blocks front to front does not hold them; the view the camera takes does, within T2.
+    expect(wholeInView(w, b, 20)).toBe(false);
+    const m = battleViewM(1400, 800, 19.57, b.span);
+    expect(m).toBeGreaterThan(35);
+    expect(m).toBeLessThan(60);
+    expect(wholeInView(w, b, m)).toBe(true);
+    // A formation's fight stays where figures are drawn (PLAN 3.11b): that view is not this one.
+    expect(battleViewM(1400, 800, 19.57, b.span, true)).toBe(28);
+
+    // Front to front: the blocks' middles 3.3 km apart, and the camera where it was.
+    const open = largestBattle(w, warOf(w, CZS, POL))!;
+    expect(Math.hypot(...open.span) * 19.57).toBeLessThan(4);
+    expect(battleViewM(1400, 800, 19.57, open.span)).toBe(20);
+    expect(battleViewM(1400, 800, 19.57)).toBe(20);
+    expect(wholeInView(w, open, 20)).toBe(true);
+  });
+
+  it('a smaller view goes further out, and no view beyond the tier of elements', () => {
+    // Two blocks a cell and a half apart east to west, in a view of 700 × 400.
+    expect(battleViewM(700, 400, 19.57, [1.5, 0])).toBeCloseTo(((1.5 * 19.57 + 6) * 1000) / 700, 9);
+    // The battle's own view of 28 by 14 km where that is wider.
+    expect(battleViewM(700, 400, 19.57, [0.05, 0])).toBe(40);
+    expect(battleViewM(100, 100, 19.57, [1.5, 1.5])).toBe(250);
+  });
+});
+
 // PLAN 2.14f5a: the same on a real front. The tests above have the pair put down for them; here
 // the armies of the start fight for 60 days (Germany against Poland by command, and the wars
 // the AI declares meanwhile). Every six hours, for every war: the two formations the answer
 // names stand whole, every element of each, in the view the camera takes on the answer's point
-// (`MapView.showBattle`: 20 m/px, so 28 by 16 km in a view of 1400 × 800), 50 px clear of its
-// edges. The fear was a battle with no two formations that are each other's nearest enemy: its
+// (`MapView.showBattle`: 20 m/px, so 28 by 16 km in a view of 1400 × 800; further out for two
+// whose blocks water keeps apart, by the answer's span: PLAN 4.1d1, `battleViewM`), 50 px clear
+// of its edges. The fear was a battle with no two formations that are each other's nearest enemy: its
 // two could stand 29 km apart with their blocks towards others.
 describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () => {
   it('names two formations whose blocks are whole in the view the camera takes', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
-    /** Half the view less 50 px, in cells (a cell is 19.57 km). */
-    const HALF = { w: (700 - 50) * 20 / 19_570, h: (400 - 50) * 20 / 19_570 };
-    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0] };
+    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, wide: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0] };
     const outside: string[] = [];
     let last: WarBattleSite | null = null;
     s.step(24 * 60, (w) => {
@@ -250,18 +340,9 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         else n.neither++;
         const blocks = [a, d].map((f) => deployOf(w, f, slotCount(w, f, idx.get(f)?.length ?? 0))!);
         n.widest = Math.max(n.widest, cellDist(w, blocks[0]!.x, blocks[0]!.y, blocks[1]!.x, blocks[1]!.y));
-        let whole = true;
-        for (const f of [a, d]) {
-          const list = idx.get(f) ?? [];
-          expect(list.length, `elements of formation ${f}`).toBeGreaterThan(0);
-          const slots = slotCount(w, f, list.length);
-          for (const e of list) {
-            const p = elementPlace(w, f, w.elements.cols.slot[e]!, slots, e);
-            let dx = Math.abs(p[0] - b.x);
-            if (dx > W / 2) dx = W - dx;
-            if (dx >= HALF.w || Math.abs(p[1] - b.y) >= HALF.h) whole = false;
-          }
-        }
+        const m = battleViewM(1400, 800, 19.57, b.span);
+        if (m > 20) n.wide++;
+        const whole = wholeInView(w, b, m);
         if (!whole) {
           n.outside++;
           if (outside.length < 5) outside.push(`hour ${w.tick}, war ${war.id}, formations ${a} and ${d}, each other's nearest: ${rank} of 2`);
@@ -271,7 +352,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     console.log(
       `60 days of Germany against Poland (seed 99), every six hours, every war: asked ${n.asked} times, a battle ${n.battles} times (${n.germanPolish} of Germany against Poland); ` +
         `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
-        `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times; ` +
+        `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times, the view further out than 20 m/px ${n.wide} times; ` +
         `one side under a tenth of the other in ${n.uneven}; ` +
         `of the two, the war's leaders have neither in ${n.leaders[0]}, one in ${n.leaders[1]}, both in ${n.leaders[2]}; ` +
         `the wars said to have a battle are those with an answer in ${n.known} of ${n.asked} (${n.byNearest} wars found by a formation's nearest enemy)`,

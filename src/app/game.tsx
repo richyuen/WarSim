@@ -45,7 +45,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     hud.onMapMode = (m) => view.setMapMode(m);
     view.onSelect = (id) => (hud.selected.value = id);
     hud.onSelectNation = (id) => view.select(id);
-    hud.onShowBattle = (x, y, span) => view.showBattle(x, y, span);
+    hud.onShowBattle = (x, y, span, fight) => view.showBattle(x, y, span, fight);
     hud.onShowPlace = (x, y) => view.showPlace(x, y);
     // The formation whose panel is open is marked on the map (PLAN 2.14f3), however the panel
     // was closed: a click on ground, its button, the nation's chip, or the formation's end.
