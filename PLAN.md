@@ -5398,6 +5398,23 @@ quick sweep as a smoke test.
     its own (2.4 ms was 1.42a's, on seed 99; BLOCKERS has the first year under PLAN 7.1),
     the years after the fifth of seed 8128 and the call of 363 ms in year 4 of seed 4242
     (361.7 at 3.10e): all PLAN 7.1.
+    Timed first (2026-10-09, year 1 of seed 8128, timers inside combat, taken out again): of
+    combat's 1.33 ms a tick with the timers, 0.19 is the hour's blocks (`deployAll`), 0.18
+    the rest of `findBattles`, 0.90 the volleys, of which some 0.25 to 0.35 is where two
+    elements of each shot stand (`elementPlace`; the timers' own cost is in that figure),
+    0.05 the losses. 403,000 blocks in the year, 209,000 of them on the way to an enemy's
+    block, and those went through 29 million contacts. Two causes, two parts:
+    - [x] 3.12Rd1a *Done 2026-10-09.* **A block on the way went through every contact of
+      the hour twice**: for the lines before it (3.11c1) and for the enemies' blocks in its
+      way (3.11c3b). The first list is the one the hour's order is made from (`orderOf`,
+      which was `turnsOf`): kept with the order and read from it. The second asks the
+      distance before the war and the turn. Year 1 of seed 8128: combat 1.23 to 1.18 ms a
+      tick, the tick 2.43-2.50 to 2.40; hash `b1a1f4e3` as before; every shot and every
+      block of 4,000 hours of seed 8128 and 3,000 of seed 99 bit for bit (a scratch
+      harness, `.cache/firehash.ts`).
+    - [ ] 3.12Rd1b **Where an element stands is worked out for every shot at it**, and its
+      two shares off its slot (3.11c4, two hashes) for every one of those: a share is its
+      id's alone, and a place holds for the hour. Then the three runs of the AT.
   - [ ] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
     `/^Free state d+$/`: the `\d` gets its backslash back. `Free state ${id}` is what
     `nationNames.ts` gives a nation with no province: if the three seeds then fail, that is

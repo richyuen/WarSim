@@ -11773,3 +11773,37 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` (documents: parity).
 - **Next:** PLAN 3.12Rd1 (what the blocks of 3.11c cost in an hour of combat, timed in
   year 1 of seed 8128, then made cheaper with the hashes unchanged).
+
+## 2026-10-09 — PLAN 3.12Rd1a: a block on the way no longer goes through every contact of the hour
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Timed before anything changed** (year 1 of seed 8128, pinned, `--profile`, with
+  `performance.now` counters inside `combatSystem` and `findBattles`, taken out again; the
+  tick read 2.55 ms with them, 2.43 to 2.50 without): over the year's 8,760 calls,
+  `findBattles` 3,240 ms, of which `deployAll` 1,664; the major battles 34; the volleys
+  7,872, of which the two `elementPlace` calls of each of 9.43 million shots 3,034 (two
+  timer calls a shot are in that figure: perhaps 2,000 to 2,500 without); the losses about
+  480 (by subtraction: that counter did not land). 402,729 blocks, 208,505 on the way to an
+  enemy's block (52 %); those passed 29.1 million contacts in their two loops. 263,708
+  target tables.
+- **So:** what 3.11c added sits in two places: the blocks of the hour (0.19 ms a tick) and
+  the place of an element (0.23 to 0.29). The volleys' tables and damage (0.55) and the
+  pairing (0.18) are older.
+- **Done (3.12Rd1a):** `turnsOf` is `orderOf` and keeps, with the turns, the lists it made
+  them from (those on the way to each enemy, nearest first, then the lower id), every list
+  sorted. `deployOf` reads its `others` from there: same filter, same distance, same
+  order. Its loop over the enemies' blocks before it asks the distance first.
+- **Verified:** year 1 of seed 8128 ends on `b1a1f4e3` as before. `.cache/firehash.ts`
+  (scratch, not in the repo): a SHA-256 over every fire event and every deployment of each
+  hour: seed 8128, 4,000 hours, 4,930,998 shots and 218,148 blocks: `7c42d60b2a653940`
+  before and after; seed 99, 3,000 hours, 3,514,400 shots, 156,927 blocks:
+  `de352376fa75a77e` before and after. The pin holds (the gate).
+- **Performance:** year 1 of seed 8128, one run: combat 1.180 ms a tick (1.23 at 3.12Rd),
+  4,653 calls of 1 ms or more (4,745), the tick 2.398 (2.433 to 2.502). The five years are
+  measured at 3.12Rd1b.
+- **No picture:** nothing drawn changed (the blocks and shots are the same numbers); specs
+  run by hand: none. No sweep (ADR-58).
+- **Gate:** `npm run check` green (typecheck, lint, test, test:sweep, build, parity; e2e
+  left out: a part).
+- **Next:** PLAN 3.12Rd1b (an element's place once an hour, its shares once).
