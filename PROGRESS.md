@@ -12108,3 +12108,40 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rh5 (the Settings panel in a view 600 px high).
+
+## 2026-10-09 — PLAN 3.12Rh5: the Settings panel in a low view scrolls in its box and is over the banners
+
+- **Cause 1:** `.history-panel` is a column with a `max-height` and no `overflow`. The
+  History panel's list shrinks and scrolls and the editor's panel scrolls itself; the
+  Settings panel's rows do neither and were drawn below its box (59 px at 1,100 x 600 and
+  100%). Now `.settings-panel { overflow-y: auto }`.
+- **Cause 2, found by forcing wars** (ADR-221): with the eight banners there is room for,
+  the banners at 1,100 px are four rows from 415.4 to 548.8 px and an open panel's foot is
+  at 480.4. They were mounted after the panels and took the pointer over "New game"
+  scrolled to the foot. The ticker and the banners are now mounted before the panels of
+  the centre (`App.tsx`), which are drawn over them.
+- **Test, failed first on each cause:** `settings1938.spec.ts`, a second test: at 1,100 x
+  600 (85, 100%) and 1,400 x 640 (85 to 130%) the panel is above the bar and the start's
+  two banners, nothing of it below its box, "New game" scrolled into the box and under the
+  pointer; then a game run to March 1938 at Max with eight wars forced: the History panel
+  (84 rows), the chart and the editor in their boxes above the bar, and "New game" pressed
+  under four rows of banners. First failures: "rows below the panel's box, 1100 x 600 at
+  1": 59 for 0; then, with the scroll, `hover` on "New game": "war-banners subtree
+  intercepts pointer events".
+- **Looked at:** `h5-settings-1100-1-foot.png`, `h5-settings-1400-1.3.png`,
+  `h5-history-panel-1100.png`, `h5-stats-chart-1100.png`, `h5-editor-panel-1100.png`,
+  `h5-settings-1100-banners.png` (the test's output, not kept). With three wars at 1,100
+  px the banners' second row begins some 3 px under the History panel's foot. The banners
+  behind a panel show faintly through it.
+- **Not looked into:** the editor's panel with its flag editor open in a low view (it
+  scrolls itself; only its first state was measured, 8 to 325.5 px); a view lower than
+  600 px; the nation panel and the ranking, which are not of `.history-panel`.
+- **Specs run by hand** (`--project chromium`), the eleven that name the banners, the
+  ticker or a panel of the centre: `charts1938`, `editor1938`, `godUi1938`, `history1938`,
+  `ranking1938`, `settings1938`, `sound1938`, `tags1938`, `ticker1938`, `title`,
+  `toBattle1938`: 30 passed (1.6 min).
+- **Performance:** not measured: one CSS rule and the order of two components; no sim
+  change, the pin unmoved.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Ri (the e2e suite's time).

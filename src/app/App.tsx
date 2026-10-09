@@ -85,6 +85,9 @@ export function App({
         onToggleEditor={stats ? () => hud.toggleEditor() : undefined}
         playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
+      {/* Before the panels of the centre, which are drawn over a row of banners that reaches them (PLAN 3.12Rh5). */}
+      {stats ? <Ticker rows={stats.ticker} short={formationTitle !== null || nation !== null} startDay={hud.startDay} onPlace={(x, y) => hud.onShowPlace(x, y)} /> : null}
+      {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {hud.showSettings.value ? (
         <SettingsPanel
           uiScale={settings.uiApplied.value}
@@ -182,8 +185,6 @@ export function App({
           onClose={() => hud.toggleHistory()}
         />
       ) : null}
-      {stats ? <Ticker rows={stats.ticker} short={formationTitle !== null || nation !== null} startDay={hud.startDay} onPlace={(x, y) => hud.onShowPlace(x, y)} /> : null}
-      {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {stats && hud.showStats.value && !hud.showEditor.value ? (
         <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />
       ) : null}

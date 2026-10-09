@@ -541,6 +541,10 @@ body {
   border-radius: 0.4rem;
   font-size: 0.8rem;
 }
+/* Its rows do not shrink: in a low view the panel scrolls them in its box (PLAN 3.12Rh5). */
+.settings-panel {
+  overflow-y: auto;
+}
 .history-filters input {
   width: 5.5rem;
   flex: 0 0 auto;

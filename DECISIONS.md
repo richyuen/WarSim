@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-221 · 2026-10-09 · accepted — A panel of the centre is drawn over the war banners; the Settings panel scrolls in its box (PLAN 3.12Rh5)
+
+- **Context.** In a view 600 px high the Settings panel's rows are 59 px taller than its
+  `max-height` (the view less 12 rem): its rows do not shrink and its box did not clip, so
+  "Combat efficiency" and "New game" were drawn below its foot. The war banners stand
+  above the bar and wrap upward: one or two rows are below the panel's foot (the two
+  banners of the 1938 start; three wars at 1,100 px begin 3 px under it), eight banners
+  at 1,100 px are four rows from 415 px, and the foot of an open panel is at 480 px. The
+  banners were mounted after the panels and took the pointer there.
+- **Decision.** The Settings panel scrolls its rows in its box (`overflow-y: auto`, as
+  the editor's panel does; the History panel's list already shrinks and scrolls). The
+  ticker and the banners are mounted before the panels of the centre (`App.tsx`), which
+  are drawn over a row of banners that reaches them and take the pointer: an open panel
+  is what the player is at. The banners below its foot stay in sight.
+- **Not chosen.** A shorter `max-height` for the panels that keeps their foot above four
+  rows of banners: 200 px of banners in a view of 600 leaves a panel of 290 px, for a case
+  (eight wars' banners in a view under 90 rem wide) that an open panel covers without loss.
+  Fewer banners in a narrow view: the banners are the wars' way to their battles.
+- **Consequences.** No rule of the sim, no pin. The banners behind a panel show faintly
+  through its ground (0.92 of opaque), as the map does.
+
 ### ADR-220 · 2026-10-09 · accepted — The game is laid out for a view of 64 rem: a UI size the view is too narrow for is not offered, and the choice is kept (PLAN 3.12Rh4)
 
 - **Context.** The bottom bar is one line and as wide as its content (ADR-217): 989 px at

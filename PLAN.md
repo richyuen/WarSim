@@ -5544,13 +5544,20 @@ quick sweep as a smoke test.
       too: the panel's right edge is at 18.9 rem and 2 px), the banners the view less 39.
       `ticker1938.spec.ts`, a fourth test and a line of the second, failed first;
       `uiScale.test.ts`.
-  - [ ] 3.12Rh5 **The Settings panel in a view 600 px high** (3.12Rh4's picture, 1,100 x
+  - [x] 3.12Rh5 **The Settings panel in a view 600 px high** (3.12Rh4's picture, 1,100 x
     600 at 100%): the panel is taller than its `max-height` of the view less 12 rem, its
     last row ("Combat efficiency") runs out of its foot and "New game" stands under the war
     banners. The panel scrolls or its foot is above the banners; the History and editor
     panels, which share `.history-panel`, looked at with it.
     AT: at 1,100 x 600 and 1,400 x 640, each UI size offered: "New game" can be brought
     into the view and pressed, and nothing of the panel is drawn outside its box.
+    - Done 2026-10-09 (ADR-221): the panel scrolls its rows in its box (59 px of them were
+      below it at 1,100 x 600 and 100%). Found with it: eight banners at 1,100 px are four
+      rows from 415 px, over the foot of an open panel at 480 and over "New game" scrolled
+      to it; the ticker and the banners are now mounted before the panels, which are drawn
+      over them and take the pointer. The History panel (84 rows), the chart with its
+      lines and the editor at 1,100 x 600: in their boxes, above the bar.
+      `settings1938.spec.ts`, a second test, failed first on each cause.
   - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,

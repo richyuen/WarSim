@@ -2272,6 +2272,11 @@ on screen.
   are cut. A played nation's label is the one item of the bar that shrinks (an ellipsis,
   the text in its `title`). The History panel is the view less 40 rem at most: clear of a
   panel on the left at the least view. The title screen keeps the size chosen.
+- **A low view** (PLAN 3.12Rh5, ADR-221): a panel of the centre is the view less 12 rem
+  high at most. The Settings panel scrolls its rows in that box, the History panel its
+  list. The ticker and the war banners are mounted before these panels: where the rows of
+  banners reach above a panel's foot (eight banners in a view 1,100 px wide), the panel is
+  drawn over them and takes the pointer.
 - **Seeds & randomisation**: seed field (shareable), random-seed button, options
   (randomise aggression, traits, starting gold, efficiency mode).
 
