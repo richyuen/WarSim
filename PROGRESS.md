@@ -11730,3 +11730,46 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests, build, parity): green. No e2e: a part, and no spec changed; `tags.ts` changed by a
   comment only, so no spec was run by hand.
 - **Next:** PLAN 3.12Rd (tick time beside the figure of 3.10e and the budget).
+
+## 2026-10-09 — PLAN 3.12Rd: the tick beside 3.10e: seed 8128 is at the budget (no source changed)
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Measured** (`4b83385`, from 1938, pinned to `0xFFFF`, one run after another,
+  `--profile`; the tick's mean in ms by year; 3.10e's figure of `00c2e68` in brackets):
+
+  | seed | y1 | y2 | y3 | y4 | y5 | five years | ends on |
+  |---|---|---|---|---|---|---|---|
+  | 99 | 2.176 (1.982) | 1.768 (1.685) | 1.008 (0.992) | 0.823 (0.815) | 0.929 (0.916) | 1.341, 1.343 (1.278) | `251656a1` |
+  | 4242 | 1.828 (1.671) | 1.368 (1.304) | 1.123 (1.086) | 1.537 (1.474) | 1.133 (1.093) | 1.398 (1.326) | `21cd2137` |
+  | 8128 | 2.451 (2.236) | 1.123 (1.096) | 1.490 (1.485) | 1.265 (1.219) | 1.162 (1.163) | 1.498, 1.527, 1.487 (1.440) | `34618be8` |
+
+  The years are those of each seed's first run. Seed 8128's first year in its three runs:
+  2.451, 2.502, 2.433. Seed 99 ran twice, seed 4242 once.
+- **The verdict:** seed 99, which the task names, is under. Seed 8128 is not: one run of
+  three is over 1.5 and their mean is 1.504. The three runs are 0.040 ms apart (0.010 at
+  3.10e), so 1.5 is inside what a run can read. Each seed is 0.06 to 0.07 ms over its
+  figure of 3.10e, which is the code and not a seed's luck. A task before 4.1: PLAN
+  3.12Rd1.
+- **By system:** combat in the first years 1.10, 0.84 and 1.23 ms (0.90, 0.70 and 1.00 at
+  3.10e; 3,847, 1,843 and 4,745 calls of 1 ms or more), 0.22 to 0.58 after (0.21 to 0.50).
+  The operational AI 0.20 to 0.47 (0.20 to 0.48), territory 0.14 to 0.27 (the same),
+  movement 0.07 to 0.17 (the same), supply 0.07 to 0.18 (the same). So the growth that
+  can be read from these runs is combat's, most of it in the first year.
+- **The trail was in the log:** the parts of 3.11c each measured two years of seed 99:
+  1.833 ms before 3.11c1, 1.966 and 1.976 after 3.11c4. Today's two years are 1.972. No
+  part was over by much (2 to 5 %), none measured the five years or seed 8128, and the
+  sum was not set beside the budget until now.
+- **Learned:** the final hashes are not 3.10e's (`5c31d145`, `0beb62f5`, `83d4d2a3`). Of
+  the eight commits that touched `src/sim` since `00c2e68`, one moved the pin (`e10a00b`,
+  3.12a, the log's rows); the parts of 3.11c logged the same hash after two years before
+  and after. Whether the games are step for step those of 3.10e was not checked: the
+  figures stand beside each other as code and game together.
+- **Seen beside it:** the one call of the operational AI in year 4 of seed 4242 is still
+  there, 363.2 ms (361.7 at 3.10e; BLOCKERS, PLAN 7.1).
+- **Not done:** nothing made faster; no profile inside combat. The load of the machine in
+  these runs is not known beyond the spread of the repeats. No picture: nothing drawn
+  changed; specs run by hand: none. No sweep (ADR-58).
+- **Gate:** `npm run check` (documents: parity).
+- **Next:** PLAN 3.12Rd1 (what the blocks of 3.11c cost in an hour of combat, timed in
+  year 1 of seed 8128, then made cheaper with the hashes unchanged).

@@ -5369,9 +5369,35 @@ quick sweep as a smoke test.
       rows it is about, in one message: the sound then asks nothing of the order of a
       load's reply (`SimClient.onLoad`) and the next statistics message. A page holds one
       game (the menu and a new game load the page again), so nothing else needs the number.
-  - [ ] 3.12Rd Tick time, not measured since PLAN 3.10e: `npm run sim -- --scenario 1938
-    --seed 99 --years 5 --affinity 0xFFFF` beside that figure and the budget. Over budget is
-    a task before 4.1; under it is a line here.
+  - [x] 3.12Rd *Done 2026-10-09 (`4b83385`): seed 99 is under, seed 8128 is at the budget
+    with no room; a task, 3.12Rd1.* Five years from 1938, pinned, `--profile`, one run
+    after another: seed 99 1.341 and 1.343 ms (1.278 at 3.10e), seed 4242 1.398 (1.326),
+    seed 8128 1.498, 1.527 and 1.487 (1.440; 1.434 to 1.444 then). Each seed 0.06 to 0.07
+    ms over its figure of 3.10e. The first years: 2.18, 1.83 and 2.43 to 2.50 ms (1.98,
+    1.67, 2.24), combat 1.10, 0.84 and 1.23 of it (0.90, 0.70, 1.00). The table is in
+    PROGRESS.
+    The task as it was set: Tick time, not measured since PLAN 3.10e: `npm run sim --
+    --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF` beside that figure and the
+    budget. Over budget is a task before 4.1; under it is a line here.
+  - [ ] 3.12Rd1 **The tick has no room on seed 8128** (3.12Rd: 1.498, 1.527 and 1.487 ms in
+    three runs of five years against 1.5, where 3.10e had 1.440; Phase 4 adds to it). All
+    three seeds are 0.06 to 0.07 ms over 3.10e, and combat in a first year is 0.14 to 0.23
+    ms over (1.23 ms a tick on seed 8128, 4,745 calls of 1 ms or more). What is known: the
+    parts of 3.11c each measured two years of seed 99 and logged 1.833 ms before 3.11c1
+    and 1.966 to 1.976 after 3.11c4 (2 to 5 % at c2, 1 to 4 % at c3a, 2 % at c4; "not
+    looked into" at c3a); today's two years of seed 99 are 1.972. So the first place to
+    look is what the blocks ask in an hour of combat (`deployOf` and the blocks in the
+    way, ADR-200 to 204), timed inside combat in year 1 of seed 8128 from a checkpoint or
+    by a counter, before anything is changed. Not known: what the operational AI has of
+    it (0.47 ms in year 3 of seed 8128, 0.26 to 0.48 at 3.10e: inside that range).
+    No rule changes: the hashes after five years stay `251656a1` (99), `21cd2137` (4242)
+    and `34618be8` (8128), and the pin holds.
+    AT: seed 8128, five years pinned, under 1.5 ms in each of three runs with the figures
+    of seeds 99 and 4242 beside them in PROGRESS, or what is left over is in BLOCKERS with
+    its numbers and the reason it was not taken. Not here: the first year as a limit of
+    its own (2.4 ms was 1.42a's, on seed 99; BLOCKERS has the first year under PLAN 7.1),
+    the years after the fifth of seed 8128 and the call of 363 ms in year 4 of seed 4242
+    (361.7 at 3.10e): all PLAN 7.1.
   - [ ] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
     `/^Free state d+$/`: the `\d` gets its backslash back. `Free state ${id}` is what
     `nationNames.ts` gives a nation with no province: if the three seeds then fail, that is
