@@ -105,14 +105,20 @@ export const PRODUCTION_SCHEMA = {
   readyDay: 'u32',
 } as const;
 
+/** What a formation is of, by its template (PLAN 4.2a): a land formation, a fleet, an air wing. */
+export const Domain = { land: 0, sea: 1, air: 2 } as const;
+export type DomainId = (typeof Domain)[keyof typeof Domain];
+
 /** Scenario rules the sim needs to apply commands (not state: fixed by the scenario). */
 export interface TemplateRule {
+  /** Of the land, or a fleet (PLAN 4.2a): all its elements are of the one domain. */
+  domain: DomainId;
   /** Gold and manpower paid when queued. */
   gold: number;
   manpower: number;
   /** Training days. */
   days: number;
-  /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked) and march speed, km/h. */
+  /** Mobility class (nav/grid Mobility: 0 foot, 1 motor, 2 tracked; not read for a fleet) and march speed, km/h. */
   mobility: number;
   speedKmh: number;
   /**
@@ -132,6 +138,8 @@ export interface TemplateRule {
 /** Combat-relevant unit type stats (PLAN 1.13; from data/units, per full element). */
 export interface UnitRule {
   cls: string;
+  /** Of the land, or a ship (PLAN 4.2a). */
+  domain: DomainId;
   /** Men, guns or vehicles per element, and men per such unit (manpower ÷ elementSize). */
   size: number;
   menPerUnit: number;

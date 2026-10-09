@@ -26,7 +26,9 @@ import techLand from '../../data/tech/land.json' with { type: 'json' };
 import techNaval from '../../data/tech/naval.json' with { type: 'json' };
 import techNuclear from '../../data/tech/nuclear.json' with { type: 'json' };
 import templatesLand from '../../data/templates/land.json' with { type: 'json' };
+import templatesSea from '../../data/templates/sea.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
+import unitsSea from '../../data/units/sea.json' with { type: 'json' };
 import diplomacy1938 from '../../data/scenarios/1938/diplomacy.json' with { type: 'json' };
 import economy1938 from '../../data/scenarios/1938/economy.json' with { type: 'json' };
 import traitsJson from '../../data/traits/traits.json' with { type: 'json' };
@@ -52,13 +54,16 @@ import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import type { CeMode } from './systems/efficiency';
 import { Mobility } from './nav/grid';
 import { grantStartTechs, MAX_TECHS, techClosure, type TechRule } from './tech';
-import type { ScenarioRules } from './world';
+import { Domain, type DomainId, type ScenarioRules } from './world';
 import { sin } from './core/dmath';
 import { millerLat, Y_TOP } from './data/projection';
 import { World } from './world';
 
 export const NATIONS_1938 = nations1938.nations as unknown as NationDef[];
 export const TEMPLATES_LAND = templatesLand.templates as TemplateDef[];
+export const TEMPLATES_SEA = templatesSea.templates as TemplateDef[];
+/** Every template of the rules, by its index: the land's, then the sea's (PLAN 4.2a). A formation and an order are saved with it. */
+export const TEMPLATES_1938: readonly TemplateDef[] = [...TEMPLATES_LAND, ...TEMPLATES_SEA];
 /** Starting treasury in months of gross income (ADR-22). */
 export const START_GOLD_MONTHS = 6;
 /**
@@ -71,40 +76,49 @@ export const START_GOLD_MONTHS = 6;
  */
 export const START_ARMY_MONTHS = 12;
 
-const unitTypes = new Map((unitsLand.types as unknown as UnitTypeLite[]).map((u) => [u.id, u]));
-const unitUpkeep = new Map((unitsLand.types as unknown as { id: string; upkeep: { gold: number } }[]).map((u) => [u.id, u.upkeep.gold]));
-const tankTypes = new Set((unitsLand.types as unknown as { id: string; class: string }[]).filter((u) => u.class.startsWith('armor')).map((u) => u.id));
-const upkeepOfElements = (t: TemplateDef, only?: ReadonlySet<string>): number => t.elements.reduce((s, e) => s + (only && !only.has(e.type) ? 0 : (unitUpkeep.get(e.type) ?? 0) * e.count), 0);
+type UnitDef = UnitTypeLite & {
+  mobility: string;
+  techReq?: string;
+  cost: { gold: number; manpower: number; days: number };
+  upkeep: { gold: number };
+  stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; fuelPerHour: number; speed_kmh: number };
+  terrainMods: Partial<Record<TerrainId, { atk: number; def: number; speed: number }>>;
+};
+/** The unit types of the rules, by their index: the land's, then the sea's (PLAN 4.2a). An element is saved with its type's index. */
+const UNITS: readonly UnitDef[] = [...(unitsLand.types as unknown as UnitDef[]), ...(unitsSea.types as unknown as UnitDef[])];
+const unitTypes = new Map(UNITS.map((u) => [u.id, u]));
+const tankTypes = new Set(UNITS.filter((u) => u.class.startsWith('armor')).map((u) => u.id));
+const upkeepOfElements = (t: TemplateDef, only?: ReadonlySet<string>): number => t.elements.reduce((s, e) => s + (only && !only.has(e.type) ? 0 : unitTypes.get(e.type)!.upkeep.gold * e.count), 0);
 /** Template tables for the economy (upkeep, full strength and the tanks' share of the upkeep per template index). */
 export const ECONOMY_TABLES_1938: EconomyTables = {
-  templateUpkeep: TEMPLATES_LAND.map((t) => upkeepOfElements(t)),
-  templateStrength: TEMPLATES_LAND.map((t) => templateStrength(t, unitTypes).men),
-  templateArmour: TEMPLATES_LAND.map((t) => upkeepOfElements(t, tankTypes) / (upkeepOfElements(t) || 1)),
+  templateUpkeep: TEMPLATES_1938.map((t) => upkeepOfElements(t)),
+  templateStrength: TEMPLATES_1938.map((t) => templateStrength(t, unitTypes).men),
+  templateArmour: TEMPLATES_1938.map((t) => upkeepOfElements(t, tankTypes) / (upkeepOfElements(t) || 1)),
 };
-/** Command rules: template cost and training time (PLAN 1.10, ADR-23). */
-const unitCost = new Map((unitsLand.types as unknown as { id: string; cost: { gold: number; manpower: number; days: number } }[]).map((u) => [u.id, u.cost]));
-const unitMove = new Map((unitsLand.types as unknown as { id: string; class: string; mobility: string; stats: { speed_kmh: number; fuelPerHour: number }; terrainMods: Partial<Record<TerrainId, { speed: number }>> }[]).map((u) => [u.id, u]));
 const SUPPORT = new Set(['art', 'at', 'aa']);
+const DOMAINS: Record<string, DomainId> = Domain;
 /**
  * A formation moves like its slowest manoeuvre element (infantry, cavalry, motorised, mechanised,
  * armour): foot if any walks, else tracked if any is tracked, else motor. Support guns (artillery,
  * AT, AA) are towed or carried by the formation's own transport, so they do not slow it. The same
  * elements give it its share of that speed on each ground (PLAN 3.3b): the least of theirs.
+ * A fleet (PLAN 4.2a) sails at the pace of its slowest ship; its mobility class is the land
+ * grid's and is not read.
  */
-function templateMobility(t: TemplateDef): { mobility: number; speedKmh: number; terrainSpeed: number[]; fuel: number } {
-  const all = t.elements.map((e) => unitMove.get(e.type)!);
+function templateMobility(t: TemplateDef): { domain: DomainId; mobility: number; speedKmh: number; terrainSpeed: number[]; fuel: number } {
+  const all = t.elements.map((e) => unitTypes.get(e.type)!);
+  const domain = DOMAINS[all[0]!.domain]!;
+  if (all.some((u) => DOMAINS[u.domain] !== domain)) throw new Error(`template ${t.id}: units of more than one domain`);
   const manoeuvre = all.filter((u) => !SUPPORT.has(u.class));
   const els = manoeuvre.length > 0 ? manoeuvre : all;
   const mobility = els.some((u) => u.mobility === 'foot') ? Mobility.foot : els.some((u) => u.mobility === 'tracked') ? Mobility.tracked : Mobility.motor;
-  const fuel = t.elements.reduce((s, e) => s + unitMove.get(e.type)!.stats.fuelPerHour * e.count, 0);
+  const fuel = t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.stats.fuelPerHour * e.count, 0);
   const terrainSpeed = TERRAIN_IDS.map((g) => Math.min(...els.map((u) => u.terrainMods[g]?.speed ?? 1)));
-  return { mobility, speedKmh: Math.min(...els.map((u) => u.stats.speed_kmh)), terrainSpeed, fuel };
+  return { domain, mobility, speedKmh: Math.min(...els.map((u) => u.stats.speed_kmh)), terrainSpeed, fuel };
 }
-type UnitStats = { id: string; class: string; elementSize: number; techReq?: string; cost: { manpower: number }; stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; fuelPerHour: number }; terrainMods: Partial<Record<TerrainId, { atk: number; def: number; speed: number }>> };
-const UNITS_LAND = unitsLand.types as unknown as UnitStats[];
-const unitIndex = new Map(UNITS_LAND.map((u, i) => [u.id, i]));
+const unitIndex = new Map(UNITS.map((u, i) => [u.id, i]));
 /** The id of each unit type by its index in `RULES_1938.units` (its name is the i18n key `unit.<id>`). */
-export const UNIT_IDS_1938: readonly string[] = UNITS_LAND.map((u) => u.id);
+export const UNIT_IDS_1938: readonly string[] = UNITS.map((u) => u.id);
 /** Template indices of the economic AI's build mix (PLAN 1.26). */
 export const BUILD_MIX_1938 = {
   infantry: TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div'),
@@ -128,8 +142,9 @@ const ARM_OF_CLASS = new Map<string, number>([combatJson.combinedArms.arms.infan
 export const RULES_1938: ScenarioRules = {
   namedNations: NATIONS_1938.length,
   techs: TECHS_1938,
-  units: UNITS_LAND.map((u) => ({
+  units: UNITS.map((u) => ({
     cls: u.class,
+    domain: DOMAINS[u.domain]!,
     size: u.elementSize,
     menPerUnit: u.cost.manpower / u.elementSize,
     soft: u.stats.soft,
@@ -142,19 +157,19 @@ export const RULES_1938: ScenarioRules = {
     terrainDef: TERRAIN_IDS.map((t) => u.terrainMods[t]?.def ?? 1),
     arm: ARM_OF_CLASS.get(u.class) ?? 0,
   })),
-  templates: TEMPLATES_LAND.map((t) => ({
+  templates: TEMPLATES_1938.map((t) => ({
     ...templateMobility(t),
     elements: t.elements.map((e) => ({ unit: unitIndex.get(e.type)!, count: e.count })),
     techs: techClosure(
       TECHS_1938,
       t.elements.flatMap((e) => {
-        const req = UNITS_LAND[unitIndex.get(e.type)!]!.techReq;
+        const req = unitTypes.get(e.type)!.techReq;
         return req === undefined ? [] : [techIndex.get(req)!];
       }),
     ),
-    gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitCost.get(e.type)!.gold * e.count, 0),
-    manpower: t.elements.reduce((s, e) => s + unitCost.get(e.type)!.manpower * e.count, 0),
-    days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitCost.get(e.type)!.days)),
+    gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.gold * e.count, 0),
+    manpower: t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.manpower * e.count, 0),
+    days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitTypes.get(e.type)!.cost.days)),
   })),
 };
 const traitManpower = new Map((traitsJson.traits as { id: string; modifiers: { manpower?: number } }[]).map((t) => [t.id, t.modifiers.manpower ?? 0]));

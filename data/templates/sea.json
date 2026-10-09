@@ -1,0 +1,11 @@
+{
+  "comment": "Fleet templates (PLAN 4.2a): one formation is a squadron, a flotilla or a group of ships, an element one ship of a type of data/units/sea.json (SPEC 3.6). They stand after the land templates in the rules: a formation and an order are saved with the index of their template, so a new template goes at the end of this file while no file follows it. Our own round figures for the usual groupings of 1938 navies.",
+  "templates": [
+    { "id": "battle_squadron", "nameKey": "template.battle_squadron", "elements": [{ "type": "battleship", "count": 4 }, { "type": "cruiser_heavy", "count": 2 }, { "type": "cruiser_light", "count": 2 }, { "type": "destroyer", "count": 8 }] },
+    { "id": "carrier_group", "nameKey": "template.carrier_group", "elements": [{ "type": "carrier", "count": 2 }, { "type": "cruiser_heavy", "count": 2 }, { "type": "destroyer", "count": 6 }] },
+    { "id": "cruiser_squadron", "nameKey": "template.cruiser_squadron", "elements": [{ "type": "cruiser_heavy", "count": 2 }, { "type": "cruiser_light", "count": 2 }, { "type": "destroyer", "count": 4 }] },
+    { "id": "destroyer_flotilla", "nameKey": "template.destroyer_flotilla", "elements": [{ "type": "destroyer", "count": 8 }] },
+    { "id": "submarine_flotilla", "nameKey": "template.submarine_flotilla", "elements": [{ "type": "submarine", "count": 8 }] },
+    { "id": "transport_group", "nameKey": "template.transport_group", "elements": [{ "type": "transport", "count": 12 }] }
+  ]
+}

@@ -228,6 +228,8 @@ export const Refusal = {
   AtSea: 22,
   /** A war by or on a nation with 75% of its land under occupiers: it would be over at once (PLAN 3.12Rr1, ADR-229). */
   Overrun: 23,
+  /** A spawn of a fleet's template: the command puts a formation on land (PLAN 4.2a). */
+  NotOfLand: 24,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

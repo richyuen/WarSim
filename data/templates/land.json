@@ -1,5 +1,5 @@
 {
-  "comment": "Land formation templates (PLAN 1.7): one formation is roughly one division or brigade, built from unit-type elements (SPEC 3.6: an infantry element is 500 men, a gun element 12 guns, a tank element 10 tanks). A formation and an order are saved with the index of their template: a new template goes at the end (PLAN 3.1c).",
+  "comment": "Land formation templates (PLAN 1.7): one formation is roughly one division or brigade, built from unit-type elements (SPEC 3.6: an infantry element is 500 men, a gun element 12 guns, a tank element 10 tanks). A formation and an order are saved with the index of their template: a new template goes at the end (PLAN 3.1c). The fleets' templates (data/templates/sea.json) stand after these in the rules (PLAN 4.2a): a new template here moves their indices, and a save with a fleet from before then means other templates by them.",
   "templates": [
     { "id": "infantry_div", "nameKey": "template.infantry_div", "elements": [{ "type": "infantry", "count": 24 }, { "type": "artillery", "count": 3 }, { "type": "anti_tank", "count": 1 }] },
     { "id": "infantry_div_square", "nameKey": "template.infantry_div_square", "elements": [{ "type": "infantry", "count": 40 }, { "type": "artillery", "count": 4 }, { "type": "anti_tank", "count": 1 }] },

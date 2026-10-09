@@ -13168,3 +13168,42 @@ No rule changed and nothing on screen changed. One task came out of it.
   way; the elements of a formation on a way; the margin of 2 cells in play.
 - **PARITY:** our additions, row 3: a note added, still partial.
 - **Next:** PLAN 4.2 (fleets and ship types, movement along the lanes).
+
+## 2026-10-09 — PLAN 4.2 split in five; 4.2a: the ship types and fleet templates in the rules (ADR-247)
+
+- **The split:** 4.2a the templates in the rules, 4.2b fleets in the 1938 order of battle
+  (standing), 4.2c a fleet sails along the lanes (the task's AT), 4.2d the Arctic, 4.2e ships
+  are built. Critic not due; the report is 124 commits old, so step 2b does not apply.
+- **Done:** `data/templates/sea.json` (six templates, every one of the seven ship types in
+  one); `TEMPLATES_1938` and the unit list are the land's and then the sea's (25 templates,
+  20 unit types; indices 19 to 24 and 13 to 19); `TemplateRule.domain` (`Domain` in
+  `world.ts`); the economy's tables cover all 25; `validateDataSet` refuses a template of two
+  domains and a sea template in the land order of battle; `queueFormation` rejects a sea
+  template, `spawnFormation` refuses one (`Refusal.NotOfLand`, with its text).
+- **The figures** (`.cache/seaTemplates.ts`), gold / crew / days / km/h / upkeep: battle
+  squadron 6,720 / 13,400 / 2,700 / 50 / 67; carrier group 3,500 / 7,900 / 2,400 / 58 / 36;
+  cruiser squadron 1,960 / 4,400 / 1,200 / 59 / 21; destroyer flotilla 1,120 / 2,000 / 540 /
+  65 / 12; submarine flotilla 840 / 400 / 450 / 30 / 8; transport group 630 / 720 / 270 / 30
+  / 6. An infantry division: 1,001 / 12,460 / 90 / 4 / 14.3.
+- **Tests:** `seaTemplates.test.ts`, five. Two mutations, each failed one: without the
+  queue's check a battle squadron was queued, without the spawn's one stood in London.
+- **A mistake of mine the test caught:** I took the United Kingdom's tag for `GBR` (it is
+  `ENG`), so the nation was 0 and every refusal passed for that reason. The land division
+  asked for beside the fleets failed and showed it; the test now holds the nation above 0.
+- **One test changed:** `armourWorth.test.ts` held the tanks' share table to the land
+  templates' count; it is held to the rules' count now (the table has a row for a fleet).
+- **The first gate failed `breakdown.test.ts`:** its list of what breaks down (a unit that
+  burns fuel and is not counted in men) had the seven ships in it. The rule of PLAN 3.2d
+  would have taken ships from a fleet out of supply as it takes tanks. A unit type has its
+  domain now (`UnitRule.domain`) and `breakDown` asks for the land; the test's list is as it
+  was, and holds that every ship burns fuel and has a crew. What a fleet out of supply
+  loses is PLAN 4.4's.
+- **The pin stays** (`da977ca2`): no fleet exists, so no game changed. **No sweep** (ADR-58).
+- **Found, not mended:** a new land template would move the fleets' indices (said in
+  `land.json`); the scales of cost and days are the land's (a line under PLAN 4.2e); the
+  pace is a ship's top speed (4.2c); a navy's upkeep will be paid from the day it stands
+  (4.2b).
+- **Not looked at:** nothing is drawn or placed, so no picture and no spec by hand; the
+  air units (`data/units/air.json`) are still read by nothing.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.2b (fleets in the 1938 order of battle, standing at their ports' water).

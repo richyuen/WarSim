@@ -10,7 +10,7 @@ import { EventKind } from '../../shared/events';
 import { atan2, cos, sin, sqrt } from '../core/dmath';
 import { hash32 } from '../core/hash';
 import { SLOT_SPACING, slotGrid, slotPose } from '../core/pose';
-import type { World } from '../world';
+import { Domain, type World } from '../world';
 
 /**
  * Where element `slot` of a formation at (`fx`, `fy`) stands: its slot in the block (`slotPose`);
@@ -588,7 +588,8 @@ export function breakDown(world: World, fid: number, fraction: number): void {
   const ec = world.elements.cols;
   for (const e of els) {
     const u = units[ec.unit[e]!]!;
-    if (u.fuel > 0 && u.menPerUnit > 1) applyLoss(world, e, ec.strength[e]! * fraction);
+    // Of the land (PLAN 4.2a): a ship burns fuel and has a crew, and is no vehicle of this rule.
+    if (u.domain === Domain.land && u.fuel > 0 && u.menPerUnit > 1) applyLoss(world, e, ec.strength[e]! * fraction);
   }
 }
 

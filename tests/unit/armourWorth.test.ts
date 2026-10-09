@@ -47,7 +47,9 @@ function isArmour(t: number): boolean {
 describe('what armour is worth to the AI that cuts (PLAN 3.1d)', () => {
   it('the share of a template that is tanks: none of a division on foot or in lorries, most of a tank brigade', () => {
     const share = (t: string): number => ECONOMY_TABLES_1938.templateArmour[template(t)]!;
-    expect(ECONOMY_TABLES_1938.templateArmour).toHaveLength(TEMPLATES_LAND.length);
+    // A share for every template of the rules: the fleets' stand after the land's (PLAN 4.2a).
+    expect(ECONOMY_TABLES_1938.templateArmour).toHaveLength(RULES_1938.templates.length);
+    expect(RULES_1938.templates.length).toBeGreaterThanOrEqual(TEMPLATES_LAND.length);
     for (const t of ['infantry_div', 'infantry_div_cadre', 'mountain_div', 'motorised_div', 'cavalry_div', 'garrison_brigade']) expect(share(t), t).toBe(0);
     // The Soviet rifle division has a tank battalion: a little, and far from an armour formation.
     expect(share('rifle_div_soviet')).toBeGreaterThan(0);

@@ -24,7 +24,7 @@ import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import { knowsTechs } from '../tech';
-import { navOf, type World } from '../world';
+import { Domain, navOf, type World } from '../world';
 import { frontierOf } from './territory';
 
 export const SPAWN_REACH_CELLS = 40;
@@ -37,7 +37,8 @@ export const TRAIN_TIME_SCALE = 3;
 export function queueFormation(world: World, nation: number, template: number): number {
   const rule = world.rules?.templates[template];
   const nc = world.nations.cols;
-  if (!rule || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) {
+  // No ship is built yet (PLAN 4.2e): a new formation appears on land.
+  if (!rule || rule.domain !== Domain.land || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) {
     world.out.emit(world.tick, EventKind.ProductionRejected, template, nation, NaN, NaN);
     return 0;
   }

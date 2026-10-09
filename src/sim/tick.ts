@@ -18,7 +18,7 @@ import { forceRevolt } from './systems/revolts';
 import { importLayer, paint, redoEdit, undoEdit } from './editor';
 import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
-import { navOf, type World } from './world';
+import { Domain, navOf, type World } from './world';
 
 export type System = (world: World) => void;
 
@@ -79,6 +79,8 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'spawnFormation': {
       const why = whyNotNation(world, cmd.nation);
       if (why) return why;
+      // A fleet is not put on land (PLAN 4.2a).
+      if (cmd.template !== undefined && (world.rules?.templates[cmd.template]?.domain ?? Domain.land) !== Domain.land) return Refusal.NotOfLand;
       // On land by the fine mask (PLAN 2.9a): a place given on the water of a coastal cell is the cell's land point.
       const [x, y] = world.standPoint(cmd.x, cmd.y);
       // Not at sea and not off the map (PLAN 3.12Rq, ADR-228): no route begins in a cell of no component.

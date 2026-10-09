@@ -6314,3 +6314,23 @@ Of 4.1 (open in PLAN.md):
   Done 2026-10-09 in four parts. Its AT: `ports.test.ts` (every port with a node on the seas
   is reached from Gibraltar; 428 zones). Not held for one coastal province: Narsarsuaq's port
   has no node (ADR-246; a line under PLAN 4.4).
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.2 (open in PLAN.md):
+
+  - [x] 4.2a The ship types and the fleet templates in the scenario's rules:
+    `data/templates/sea.json`, after the land templates (a formation is saved with its
+    template's index), the sea units after the land units; a template has its domain; nothing
+    builds or places one yet.
+    AT: the land templates and units keep their indices; a sea template holds sea units only;
+    an order to build one and a spawn of one are refused; the pin stays.

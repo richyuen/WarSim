@@ -822,6 +822,17 @@ Element (authoritative unit proxy) {
     one cell apart; it places all of them in 8 ms at M.
   - Strength = Σ element manpower / tanks / guns (`templateStrength`). Fleets and air wings start in
     Phases 4–5.
+  - **Fleet templates (PLAN 4.2a, ADR-247).** `data/templates/sea.json`, six: battle squadron
+    (4 BB, 2 CA, 2 CL, 8 DD), carrier group (2 CV, 2 CA, 6 DD), cruiser squadron (2 CA, 2 CL,
+    4 DD), destroyer flotilla (8 DD), submarine flotilla (8 SS), transport group (12 TP); an
+    element is one ship. A fleet is a formation of such a template: `TemplateRule.domain`
+    (`Domain`: land 0, sea 1, air 2) is the `kind` of the schema above, read by the
+    template's index, not a column. The rules hold the land templates and then the sea's
+    (`TEMPLATES_1938`), the land units and then the sea's: no land index moved, and a new land
+    template would move the sea's. A template is of one domain (`validateDataSet`). A fleet
+    has the pace of its slowest ship and the cost, days, crew and upkeep of its ships, by the
+    land's scales. *Not yet:* nothing makes one. The queue rejects a sea template and the
+    spawn command refuses it (`Refusal.NotOfLand`); the page lists the land templates only.
 - **Slotted pose** is `slotPose(formation, slot, aliveMask)`, a pure function. It is the same
   code in the sim (for engagement start positions) and in the snapshot builder.
   *As built (`sim/core/pose`, PLAN 2.7a, ADR-70):* `slotPose(x, y, facing, slot, slots, spacing)`, where
@@ -1459,7 +1470,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - Sea zones + lane graph (§3.3). Ports and naval bases are province buildings that
   repair, rebase and enable supply. *As built (PLAN 4.1c):* a list of the scenario with the
   two levels, each a node of the lane graph (§3.3); nothing in play reads them yet.
-- Fleets are formations of ship elements: DD, CL, CA, BB, CV, SS, TP. Movement runs along
+- Fleets are formations of ship elements: DD, CL, CA, BB, CV, SS, TP. *As built (PLAN 4.2a):*
+  the six templates and the seven ship types are in the rules (§3.6); no fleet exists yet
+  (PLAN 4.2b places them, 4.2c moves them). Movement runs along
   lanes with continuous positions. Detection uses zone-level search plus element-level
   range.
 - **Fleet battles** at element level: gunnery ranges (BB > CA > CL > DD), torpedoes

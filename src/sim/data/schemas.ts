@@ -576,13 +576,21 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
 
   unique('buildings', of<z.infer<typeof BuildingsFile>>(/^buildings\//).map(([f, x]) => [f, x.buildings]));
 
-  const unitIds = new Set(unitFiles.flatMap(([, x]) => x.types.map((u) => u.id)));
+  const unitDomain = new Map(unitFiles.flatMap(([, x]) => x.types.map((u) => [u.id, u.domain] as const)));
+  const unitIds = new Set(unitDomain.keys());
+  /** A template's domain (PLAN 4.2a): that of its first element's unit type. */
+  const templateDomain = new Map<string, string>();
   const templateFiles = of<z.infer<typeof TemplatesFile>>(/^templates\//);
   const templates = unique('templates', templateFiles.map(([f, x]) => [f, x.templates]));
   for (const [f, x] of templateFiles) {
     x.templates.forEach((t, i) =>
       t.elements.forEach((e, j) => {
         if (!unitIds.has(e.type)) errors.push(`${f}: templates[${i}].elements[${j}].type: unknown unit type '${e.type}'`);
+        const domain = unitDomain.get(e.type);
+        if (domain === undefined) return;
+        const first = templateDomain.get(t.id) ?? domain;
+        templateDomain.set(t.id, first);
+        if (domain !== first) errors.push(`${f}: templates[${i}].elements[${j}].type: '${e.type}' is a ${domain} unit in a ${first} template`);
       }),
     );
   }
@@ -693,6 +701,7 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
         const n = byTag.get(g.nation);
         if (!n || n.alive === false) errors.push(`${oobF}: groups[${i}].nation: '${g.nation}' is not a living nation`);
         if (!templates.has(g.template)) errors.push(`${oobF}: groups[${i}].template: unknown template '${g.template}'`);
+        else if ((templateDomain.get(g.template) ?? 'land') !== 'land') errors.push(`${oobF}: groups[${i}].template: '${g.template}' is no land template: the groups of this file are placed on land`);
       });
     }
     const own = ok[f.replace(/nations\.json$/, 'ownership.json')] as OwnershipFile | undefined;

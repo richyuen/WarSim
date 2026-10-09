@@ -33,6 +33,37 @@ quick sweep as a smoke test.
   From PLAN 4.1c (2026-10-09, ADR-244): the Arctic is open water to the lanes: from Scapa
   Flow to Pearl Harbor the shortest way is north of Siberia (15,974 km), not by Panama. Ice
   is not in the map's data: close those zones to a fleet, or give them a cost.
+  Split 2026-10-09 (one cause to a commit):
+  - [x] 4.2a The ship types and the fleet templates in the scenario's rules: […]
+  - [ ] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule
+    that reads a formation (the march, supply, contact and fire, the fronts, the AI's orders,
+    retreat, the march home, revolts, the statistics) leaves a fleet alone or is said to
+    read it.
+    AT: after ten years headless every fleet is at its cell with its ships; the pin moves.
+    From PLAN 4.2a (2026-10-09, ADR-247): a fleet's upkeep is in the economy's tables (67 a
+    battle squadron, 14.3 an infantry division, before `UPKEEP_SCALE`), so a navy is paid
+    from the day it stands: count what the start's fleets cost each nation against its
+    income before placing them, and the starting treasury with them (`startTreasury`). The
+    page names a formation by the land templates' list (`MapView.templates`): a fleet needs
+    its name there. A new land template moves the fleets' indices.
+  - [ ] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found
+    once at the order, the place cell by cell over its edges, a passage one step of its km, at
+    the pace of its slowest ship.
+    AT: Gibraltar → Suez takes the route's km over the pace; no place of it on land of the
+    fine mask but in a passage; the route's km against great-circle legs is counted, and the
+    way straightened if it is far over.
+    From PLAN 4.2a (2026-10-09, ADR-247): a template's pace is its slowest ship's top speed
+    (`speed_kmh` of the unit data: 50 for a battle squadron, 65 for a flotilla, 30 for
+    submarines and transports). Say whether a fleet sails at that or at a cruising share.
+  - [ ] 4.2d The Arctic is closed to a fleet, or costs: by the map's data.
+    AT: Scapa Flow → Pearl Harbor goes by Panama.
+  - [ ] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
+    AT: a queued flotilla appears at a port's water after its days; a nation with no port is
+    refused.
+    From PLAN 4.2a (2026-10-09, ADR-247): by the land's scales a battle squadron takes 2,700
+    days (`TRAIN_TIME_SCALE` 3 × the battleship's 900) and costs 6,720 gold, a destroyer
+    flotilla 540 days and 1,120: say whether the scales are the ships' too. The page is sent
+    the land templates only (`mapLayers`), and the economic AI's build mix has no ship.
 - [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
   AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.

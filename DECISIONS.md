@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-247 · 2026-10-09 · accepted — A fleet is a formation of a sea template; the sea's templates and units stand after the land's (PLAN 4.2a)
+
+- **Context.** PLAN 4.2 ("fleets and ship element types, movement along the lanes") was
+  split in five (4.2a to 4.2e): one cause to a commit. `data/units/sea.json` has had the
+  seven ship types since Phase 0 and nothing in play read it (the critic's R3-B1).
+- **Decision.** A fleet is a row of `world.formations` whose template is a sea template, as
+  SPEC §3.6 has it (`kind: 'land'|'fleet'|'airwing'`): no table of its own, and no column
+  for the kind. `TemplateRule.domain` (`Domain`: land 0, sea 1, air 2) says what a
+  formation is, read by its template's index.
+  - `data/templates/sea.json`, six by hand: battle squadron (4 BB, 2 CA, 2 CL, 8 DD),
+    carrier group (2 CV, 2 CA, 6 DD), cruiser squadron (2 CA, 2 CL, 4 DD), destroyer
+    flotilla (8 DD), submarine flotilla (8 SS), transport group (12 TP). Round figures of
+    the usual groupings, not a navy's own. Every ship type is in one.
+  - The rules hold the land templates, then the sea's (`TEMPLATES_1938`, indices 19 to 24),
+    and the land units, then the sea's (indices 13 to 19): a formation, an order and an
+    element are saved with those indices, and no land one moves.
+  - A template is of one domain: the data set refuses one of two (`validateDataSet`), and a
+    sea template in the land order of battle, whose groups are placed on land.
+  - Nothing makes a fleet yet. `queueFormation` rejects a sea template (a new formation
+    appears on land: PLAN 4.2e builds ships) and the `spawnFormation` command refuses one
+    (`Refusal.NotOfLand`, 24). The page is sent the land templates only, as before.
+- **Why not a table of fleets.** The elements, the save, the snapshot and the tiers read
+  formations. A second table would need each of them twice. What must not read a fleet (the
+  march on land, supply over land, contact) is to ask the domain: PLAN 4.2b.
+- **Why not a column.** The template says it. A column would be state that can disagree
+  with the template, and a save's layout would change.
+- **Consequences.**
+  - A new land template now moves the indices of the sea's: once a save holds a fleet (PLAN
+    4.2b), a save from before such a change means other templates by them. The comment of
+    `land.json` says so. Not mended: no template is planned.
+  - A sea template's `mobility` is the land grid's class and is read by nothing; its
+    `terrainSpeed` is 1 everywhere.
+  - The figures are those of the unit data with the land's scales: a battle squadron costs
+    6,720 gold and takes 2,700 days (`TRAIN_TIME_SCALE` 3 × the battleship's 900), an
+    infantry division 1,001 and 90. Its upkeep is 67 against 14.3. Whether the scales suit
+    ships is PLAN 4.2e's to say. The paces are the ships' top speeds (50 to 65 km/h; 30 for
+    submarines and transports): PLAN 4.2c says what a fleet sails at.
+  - Breakdowns (PLAN 3.2d) are a rule of the land: a ship burns fuel and has a crew, so
+    the rule's own test of a vehicle held for every ship. `UnitRule.domain`, and `breakDown`
+    asks for it. Found by the gate (`breakdown.test.ts`). What a fleet out of supply loses is
+    PLAN 4.4's.
+  - No fleet exists, so no game changed: the pin stays (`da977ca2`).
+- **Tests.** `tests/unit/seaTemplates.test.ts`, five: the indices kept; one domain to a
+  template and every ship type used; pace, cost, days, crew, fuel and upkeep from the
+  ships; the queue and the spawn refused, a land template taken by both; the data set's two
+  refusals. Two mutations, each failed the fourth: the queue's check taken out (a battle
+  squadron was queued), the spawn's (one stood in London).
+
 ### ADR-246 · 2026-10-09 · accepted — A march's step goes round a bay, by a way over land below the cell, in the step's own time (PLAN 4.1d2)
 
 - **Context.** A formation on the march was on the straight line between two cells' points

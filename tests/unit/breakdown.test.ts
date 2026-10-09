@@ -3,7 +3,7 @@ import { RULES_1938, SIZE_1938, UNIT_IDS_1938 } from '../../src/sim/scenario1938
 import { Sim } from '../../src/sim/sim';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { BASE_ATTRITION_PER_DAY, BREAKDOWN_PER_DAY } from '../../src/sim/systems/supply';
-import type { World } from '../../src/sim/world';
+import { Domain, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { setUp } from '../helpers/pocket';
 
@@ -27,8 +27,12 @@ function has(world: World, f: number, id: string): { now: number; whole: number 
 
 describe('breakdowns (PLAN 3.2d)', () => {
   it('a unit type breaks down when it burns fuel and is counted in vehicles or guns, not in men', () => {
-    const breaks = UNIT_IDS_1938.filter((_, u) => RULES_1938.units[u]!.fuel > 0 && RULES_1938.units[u]!.menPerUnit > 1);
+    // Of the land (PLAN 4.2a): every ship burns fuel and has a crew, and none is in the list.
+    const breaks = UNIT_IDS_1938.filter((_, u) => RULES_1938.units[u]!.domain === Domain.land && RULES_1938.units[u]!.fuel > 0 && RULES_1938.units[u]!.menPerUnit > 1);
     expect(breaks).toEqual(['artillery_heavy', 'tank_light', 'tank_medium', 'tank_medium_2', 'tank_heavy', 'tank_mbt']);
+    const ships = UNIT_IDS_1938.filter((_, u) => RULES_1938.units[u]!.domain === Domain.sea);
+    expect(ships).toHaveLength(7);
+    for (const id of ships) expect(RULES_1938.units[unit(id)]!.fuel * RULES_1938.units[unit(id)]!.menPerUnit, id).toBeGreaterThan(1);
     // The men of the motorised and the mechanised infantry burn fuel and are men.
     for (const id of ['infantry_motorised', 'infantry_mechanised']) {
       expect(RULES_1938.units[unit(id)]!.fuel, id).toBeGreaterThan(0);
