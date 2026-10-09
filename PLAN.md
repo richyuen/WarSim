@@ -5459,12 +5459,55 @@ quick sweep as a smoke test.
         annexation, whichever side of the peace the log has it (a game saved before). The
         pin moves, `d07a7db0` to `4b019e8f`: of 118 sections `history.rows` alone differs,
         the same 178 rows as a set, 18 in other places (6 puppets, 2 annexations).
-  - [ ] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than
+  - [x] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than
     the view less 12.5 rem, at the UI sizes above 100%, at Max speed. Pictures, looked at;
     what is wrong is fixed here or is a part of its own. With it (the ninth read's
     suspicion): the ticker holds five rows and a message comes once a second at most; more
     than five major events between two messages would drop rows and their cue unseen.
     Count the events between two messages at Max.
+    - Done 2026-10-09 (ADR-216): 30 pictures (1400 x 800 and 1100 x 600; 100, 115 and 130%;
+      no panel, a nation's, its God tab, with the History panel, a formation's) and five at
+      Max. Fixed here, the ticker's room: beside a panel a row is two lines at most (a row
+      of two long names was three and stood 29 px over the panel's foot at 100%), and the
+      war banners end 18 rem from each side (at 130% they began 14 px inside the ticker).
+      `ticker1938.spec.ts` has a second test, which failed first on both. Counted at Max
+      (seed 1938, 6.8 years in 150 s, the page alone): 380 hours between two messages
+      (median), 28 of 155 with more than five major events (14 at most), 69 of 492 rows
+      never in a message (28 of 154 wars declared). Found and not fixed here: 3.12Rh1 to
+      3.12Rh4.
+  - [ ] 3.12Rh1 **The paused bar is two lines and stands under the ticker and the war
+    banners** (3.12Rh's pictures). `.bar-date` has a least width of 10 rem and wraps: "25
+    February 1939 · Paused" is two lines, the bar 52 px for 43, and its top 9 px inside the
+    ticker's last row and the lowest banners (1400 x 800, 100%); "1 January 1938 · Paused"
+    is one line. The bar a line high with the longest date and "Paused", and no step of
+    its buttons when the game is paused or resumed.
+    AT: `speed.spec.ts` or the ticker's spec: the bar's height paused and running is one,
+    at a date of the longest month; the ticker's foot is above the bar's top.
+  - [ ] 3.12Rh2 **At Max a message drops major events: their cue, and their row** (3.12Rh's
+    count: 18% of the messages bring more than five, 14% of the rows are in no message, 28
+    of 154 wars declared). The ticker tells the last five of the worker's log, and the cue
+    is the loudest of the five (`cueOfTicker`): a war declared before five captured
+    capitals in one second is not heard. Decide in DECISIONS: the message carries what the
+    cue needs of every major row since the last message (the kinds, or the loudest), so
+    that no war goes unheard; and whether the ticker shows more than "the last five" at
+    Max (a fortnight a second: the History panel has every row). No sim state, no pin.
+    AT: a unit test that fails first: eight major rows between two messages, the war
+    first, is the war cue; the count of 3.12Rh again in the page (a scratch spec): no
+    message whose loudest new row was not its cue.
+  - [ ] 3.12Rh3 **Two nations of one name** (3.12Rh's picture at Max, seed 1938, April
+    1943): "Free Damascus declared war on Free Damascus", "Free Damascus made peace with
+    Free Damascus", and a banner "Free Bamyan" on both sides of two wars. Find whether it
+    is two nations founded at one city (a founded nation dead and another risen, or two
+    alive) or one nation at war with itself; a name that tells them apart, or the defect
+    fixed. AT: in ten years of the sweep seeds no two living nations have one name and no
+    war has a nation on both sides.
+  - [ ] 3.12Rh4 **A view 1,100 px wide at the UI sizes above 100%** (3.12Rh's pictures):
+    the bottom bar is 1,112 px at 115% and 1,254 px at 130% and runs off both sides (the
+    pause button and the date are cut); at 130% the History panel stands over the nation
+    panel's right 79 px and the war banners over both. Say in SPEC the least view each UI
+    size is laid out for, and below it the bar wraps or the size is not offered.
+    AT: at 1,100 x 600 and each UI size offered there, every button of the bar is inside
+    the view.
   - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,

@@ -167,6 +167,49 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-216 · 2026-10-09 · accepted — The ticker's room: two lines a row beside a panel, the war banners 18 rem from each side; at Max the ticker is a sample, counted (PLAN 3.12Rh)
+
+- **Context.** PLAN 3.12c gave the nation panel a height of the view less 12.5 rem, "above
+  the ticker's two rows", and looked at the ticker at 1400 x 800, 100%, with a panel shorter
+  than that. Looked at now (a scratch spec, pictures in `.cache/rh/`, not kept): 1400 x 800
+  and 1100 x 600, at 100, 115 and 130%, with no panel, a nation's, its God tab, the History
+  panel beside it, a formation's; and five pictures of a game at Max.
+- **Found, the rows.** A row is 17 rem wide and nearly every row is two lines (37 px at
+  100%; "6 February 1939 France made peace with Turkey" is one). The panel's 12.5 rem is
+  the room of two rows of two lines to the pixel: the panel's foot and the ticker's head
+  are 0 to 2 px apart at each UI size. A row of two long names (renamed nations; 38 letters
+  each) is three lines, and the ticker stood 29 px over the panel's foot at 100%.
+- **Decision.** Beside a panel a row is two lines at most, the rest an ellipsis
+  (`.ticker.short .ticker-line`, a line clamp). The whole sentence is in the History panel
+  and in the ticker when the panel is closed. Not a taller reservation: the panel would
+  lose a line at every size for a row that is rare.
+- **Found, the banners.** `.war-banners` was 60% of the view at most, centred: its left at
+  20% of the view at the least, 280 px of 1,400, where the ticker ends at 17.5 rem: 280 px
+  at 100%, 322 at 115%, 364 at 130%. With nine banners at 130% the banners' box began at
+  350.
+- **Decision.** The banners' width is the lesser of 60% and the view less 36 rem: 18 rem a
+  side, the ticker's 17.5 and a gap. At 1,400 px and 100% that is 824 px for 840.
+- **Counted, Max** (seed 1938, the page alone, 150 s: 59,719 hours, 6.8 years, 156
+  messages). 380 hours between two messages (median; 708 at most). Major events the ticker
+  would tell between two messages: median 3, at most 14; 28 of 155 (18%) bring more than
+  five. Of 492 such rows, 69 (14%) were in no message: 28 of 154 wars declared, 24 of 157
+  capitals taken, 10 of 131 peaces, 4 of 31 destroyed, 3 of 7 returned. With three other
+  pages on the machine a message spans 166 hours and 5 of 145 bring more than five: the
+  faster the machine, the more is dropped.
+- **Not decided here.** What the message should carry so that no war goes unheard, and
+  whether the ticker at Max shows more than the last five: PLAN 3.12Rh2. The ticker at Max
+  is today a sample of the fortnight a second brings, and ADR-211's "not from the view's
+  event queue, which drops records at Max speed" holds for the log, not for what is shown.
+- **Seen with it, parts of their own.** The bar is two lines when a long date is paused
+  and its top is 9 px inside the ticker and the banners (3.12Rh1). Two nations named "Free
+  Damascus" at war with one another (3.12Rh3). At 1,100 px wide the bar is wider than the
+  view above 100% (3.12Rh4).
+- **Consequences.** `tests/e2e/ticker1938.spec.ts`, a second test: at 1400 x 640 (the God
+  tab's panel at its full height at every size) and 100, 115 and 130%, two wars of long
+  names are two rows below the panel, and with 22 wars the banners begin right of the
+  ticker, with the panel and without. On the code before: "ticker below the panel at 1",
+  482.9 for 511.9; and "banners right of the ticker at 1.3", 350 for 364.
+
 ### ADR-215 · 2026-10-09 · accepted — A peace is told before its terms; a peace that annexes is one row of the ticker; the pin moves, no rule does (PLAN 3.12Rg2)
 
 - **Context.** `makePeace` annexed a small loser or made it a puppet and then emitted

@@ -98,3 +98,67 @@ test('the ticker: a God Mode war is told at once, and its row flies the camera t
   await page.screenshot({ path: path.join(ev, 'c-ticker-rows.png') });
   console.log(`ticker: ${(await row.allInnerTexts()).map((t) => t.replace(/\s+/g, ' ')).join(' | ')}`);
 });
+
+// PLAN 3.12Rh: the ticker's room at every UI size. Beside a panel at its full height a row of
+// long names (three lines in full) is two lines and stands below the panel; the war banners, as wide as they get,
+// begin to the right of the ticker.
+test('the ticker keeps its room beside a panel at its full height and the war banners, at every UI size', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1400, height: 640 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const [GER, POL, SWE, NOR] = [id('GER'), id('POL'), id('SWE'), id('NOR')];
+
+  // Wars enough for the banners to fill their width, the last two of long names.
+  const wars = await page.evaluate(
+    async ({ GER, POL, SWE, NOR }) => {
+      const sim = window.__warsim!.sim;
+      sim.command({ kind: 'renameNation', nation: GER, name: 'The United Provinces of Central Europe' });
+      sim.command({ kind: 'renameNation', nation: SWE, name: 'The Kingdoms of the Northern Mountains' });
+      sim.command({ kind: 'renameNation', nation: POL, name: 'The Commonwealth of Vistula and Baltic' });
+      sim.command({ kind: 'renameNation', nation: NOR, name: 'The Free Towns of the Western Fjords' });
+      const ids = window.__warsim!.hud.stats.value!.nations.map((n) => n.id).filter((n) => ![GER, POL, SWE, NOR].includes(n));
+      for (let k = 0; k + 1 < 40; k += 2) sim.command({ kind: 'declareWar', attacker: ids[k]!, defender: ids[k + 1]! });
+      sim.command({ kind: 'declareWar', attacker: GER, defender: POL });
+      sim.command({ kind: 'declareWar', attacker: SWE, defender: NOR });
+      await sim.step(1);
+      return (await sim.inspect()).wars.length;
+    },
+    { GER, POL, SWE, NOR },
+  );
+  expect(wars).toBeGreaterThanOrEqual(8);
+  await page.getByTestId('god-btn').click();
+  const row = page.getByTestId('ticker-row');
+  const box = (testid: string): Promise<{ left: number; right: number; top: number; bottom: number }> =>
+    page.evaluate((testid) => {
+      const r = document.querySelector(`[data-testid="${testid}"]`)!.getBoundingClientRect();
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
+    }, testid);
+  const ev = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.12') : info.outputPath();
+  mkdirSync(ev, { recursive: true });
+
+  for (const scale of [1, 1.15, 1.3]) {
+    await page.evaluate((v) => window.__warsim!.settings.setUiScale(v), scale);
+    const rem = 16 * scale;
+    await page.evaluate((n) => window.__warsim!.hud.onSelectNation(n), GER);
+    await page.getByTestId('tab-god').click();
+    await expect(row).toHaveCount(2);
+    await expect(row.nth(0)).toHaveText(/The United Provinces of Central Europe declared war on The Commonwealth of Vistula and Baltic$/);
+    await expect(row.nth(1)).toHaveText(/The Kingdoms of the Northern Mountains declared war on The Free Towns of the Western Fjords$/);
+    // The panel is at its full height, and the ticker below it.
+    const panel = await box('nation-panel');
+    expect(panel.bottom - panel.top, `panel at ${scale}`).toBeGreaterThan(640 - 12.5 * rem);
+    const short = await box('ticker');
+    expect(short.top, `ticker below the panel at ${scale}`).toBeGreaterThanOrEqual(panel.bottom - 0.5);
+    // The banners fill their width and begin right of the ticker.
+    const banners = await box('war-banners');
+    expect(banners.left, `banners right of the ticker at ${scale}`).toBeGreaterThanOrEqual(short.right);
+    await page.screenshot({ path: path.join(ev, `h-ticker-room-${scale}.png`) });
+    // With no panel every row is told in full, and the banners are right of them still.
+    await page.evaluate(() => window.__warsim!.hud.onSelectNation(0));
+    await expect(page.getByTestId('nation-panel')).toHaveCount(0);
+    await expect(row).toHaveCount(TICKER_ROWS);
+    expect((await box('war-banners')).left, `banners right of five rows at ${scale}`).toBeGreaterThanOrEqual((await box('ticker')).right);
+  }
+  await page.evaluate(() => window.__warsim!.settings.setUiScale(1));
+});

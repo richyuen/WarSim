@@ -11947,3 +11947,39 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rh (the ticker beside a tall panel, at the UI sizes above 100%, at Max
   speed; the events between two messages).
+
+## 2026-10-09 — PLAN 3.12Rh: the ticker looked at beside a tall panel, above 100%, at Max
+
+- **Looked at** (a scratch spec, deleted; pictures and figures in `.cache/rh/`): 30 pictures,
+  1400 x 800 and 1100 x 600, at 100, 115 and 130%, with no panel, a nation's, its God tab,
+  the History panel beside it, a formation's (seed 77 after 400 days, five rows); five of
+  seed 1938 at Max.
+- **Found and fixed (ADR-216):**
+  - nearly every row is two lines (37 px at 100%), and the panel's 12.5 rem is the room of
+    two such rows to the pixel. A row of two long names was three lines and 29 px over the
+    panel's foot. Beside a panel a row is now two lines at most (a line clamp);
+  - the war banners began at 20% of the view and the ticker ends at 17.5 rem: 14 px inside
+    one another at 130% and 1,400 px. The banners end 18 rem from each side.
+- **Counted at Max** (seed 1938, the page alone, 150 s, 6.8 years, 156 messages): 380 hours
+  between two messages (median); 28 of 155 messages with more than five major events (14 at
+  most); 69 of 492 rows in no message, 28 of 154 wars declared among them. With three other
+  pages running: 166 hours a message, 5 of 145 over five. The suspicion of the ninth read
+  holds: PLAN 3.12Rh2.
+- **Found, parts of their own:** the paused bar of a long date is two lines and 9 px under
+  the ticker and the banners (3.12Rh1); "Free Damascus declared war on Free Damascus"
+  (3.12Rh3); at 1,100 px wide the bar is wider than the view at 115 and 130% (3.12Rh4).
+- **Gotcha:** a nation's name is cut at 40 letters by the rename; the test's names are 36
+  to 38. The ticker's `i` is not an index of `sim.history()`'s list (89 of the rows shown
+  did not match by it): match by tick, kind, a and b.
+- **Tests:** `tests/e2e/ticker1938.spec.ts`, a second test, failed first on the code before
+  at both ("ticker below the panel at 1": 482.9 for 511.9; "banners right of the ticker at
+  1.3": 350 for 364), green now at the three sizes.
+- **Specs run by hand** (`--project chromium`): `ticker1938`, `history1938`, `sound1938` (6
+  tests, 20 s): green. The specs that read the war banners (`ranking1938`, `tags1938`,
+  `toBattle1938`: 4 tests, 22 s): green. Pictures looked at: `docs/evidence/3.12/h-ticker-room-1.png` and
+  `-1.3.png` (two rows of two lines with an ellipsis below the panel's foot; nine banners
+  and "+7" right of the ticker).
+- **Performance:** not measured: CSS and one span a row; no sim change, the pin unmoved.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rh1 (the paused bar's two lines).

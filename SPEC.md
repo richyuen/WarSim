@@ -2168,7 +2168,13 @@ on screen.
   - Every row has a place: the event's own (a capital taken, a return), else a capital as it
     is now: of the nation a war was declared on, of a peace's loser, of the nation that died.
     A click flies the camera there (`MapView.showPlace`), 1,500 km across the view.
-  - While a nation's or a formation's panel is open on the left, the last two rows only.
+  - While a nation's or a formation's panel is open on the left, the last two rows only,
+    each of two lines at most (PLAN 3.12Rh, ADR-216): the panel is the view less 12.5 rem
+    at most, which leaves the room of two rows of two lines at every UI size. The war
+    banners are as wide as the lesser of 60% of the view and the view less 36 rem: they
+    begin right of the ticker.
+  - At Max speed the ticker is a sample (counted, ADR-216): a message a second spans some
+    380 hours, and 18% of the messages bring more than five major events (PLAN 3.12Rh2).
 - **Sound** (implemented PLAN 3.12d, ADR-212; `src/shared/sound.ts`, `src/app/sound.ts`): a
   cue for each major event the ticker tells, made in code with the Web Audio API (no sound
   file is loaded).
