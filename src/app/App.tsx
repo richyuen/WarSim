@@ -9,6 +9,7 @@ import { t, type MessageKey } from '../ui/i18n';
 import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
+import { Ticker } from '../ui/Ticker';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
@@ -175,6 +176,7 @@ export function App({
           onClose={() => hud.toggleHistory()}
         />
       ) : null}
+      {stats ? <Ticker rows={stats.ticker} short={formationTitle !== null || nation !== null} startDay={hud.startDay} onPlace={(x, y) => hud.onShowPlace(x, y)} /> : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {stats && hud.showStats.value && !hud.showEditor.value ? (
         <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />

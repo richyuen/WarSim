@@ -16,7 +16,7 @@
  * month's revolts, an area each, and a death's land given at more than one step of it.
  */
 import { EventKind } from '../shared/events';
-import { HISTORY_ROLES, type HistoryAs, type HistoryRole, type HistoryRow } from '../shared/history';
+import { HISTORY_ROLES, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import type { World } from '../sim/world';
 
@@ -84,4 +84,36 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     out.push(row);
   }
   return out;
+}
+
+/** The kinds whose b is the nation the event happened to (the one a war was declared on, the loser of a peace). */
+const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKind.PeaceSigned]);
+
+/**
+ * The ticker's rows (PLAN 3.12c): the last `TICKER_ROWS` major events of the last `TICKER_HOURS`,
+ * oldest first, read from the end of the log. A row whose event has no place has a capital as it
+ * is now: of the nation a war was declared on, of a peace's loser, of the nation that died. A
+ * death told twice in an hour (a collapse or an annexation, then `NationEliminated`) is one row,
+ * the first.
+ */
+export function tickerRows(world: World, nationName: (id: number) => string): TickerRow[] {
+  const rows = world.history.rows;
+  const nc = world.nations.cols;
+  const nation = (v: number): string => (v !== 0 && world.nations.has(v) ? nationName(v) : '');
+  const out: TickerRow[] = [];
+  for (let i = rows.length - HISTORY_STRIDE; i >= 0 && out.length < TICKER_ROWS; i -= HISTORY_STRIDE) {
+    const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
+    if (world.tick - tick > TICKER_HOURS) break;
+    if (!TICKER_KINDS.has(kind)) continue;
+    if (kind === EventKind.NationEliminated) {
+      let told = false;
+      for (let j = i - HISTORY_STRIDE; j >= 0 && rows[j] === tick && !told; j -= HISTORY_STRIDE) told = (rows[j + 1] === EventKind.NationCollapsed || rows[j + 1] === EventKind.NationAnnexed) && rows[j + 2] === a;
+      if (told) continue;
+    }
+    const at = PLACE_OF_B.has(kind) ? b : a;
+    const placed = !Number.isNaN(x) && !Number.isNaN(y);
+    const rb = (HISTORY_ROLES[kind] ?? ['number', 'number'])[1];
+    out.push({ i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: nation(a), bn: rb === 'nation' ? nation(b) : '', of: '' });
+  }
+  return out.reverse();
 }

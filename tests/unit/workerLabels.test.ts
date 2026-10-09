@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
 import type { FromWorker } from '../../src/shared/protocol';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { SimServer } from '../../src/worker/server';
@@ -62,5 +63,14 @@ describe('worker derived messages (labels, nation stats)', () => {
     expect(stats().length).toBe(2);
     expect(stats()[1]!.tick).toBe(1); // flushed, not advanced
     expect(server.running).toBe(false);
+
+    // PLAN 3.12c: the ticker's rows come with the stats, and a God war is in them at once, paused.
+    const POL = TAGS_1938.indexOf('POL') + 1;
+    expect(stats()[1]!.ticker.filter((r) => r.a === GER && r.b === POL)).toEqual([]);
+    server.handle({ type: 'cmd', cmd: { kind: 'declareWar', attacker: GER, defender: POL }, now: true }, 1200);
+    server.pump(1250, () => 1250);
+    const told = stats().at(-1)!.ticker.filter((r) => r.a === GER && r.b === POL);
+    expect(told.map((r) => [r.kind, r.an, r.bn])).toEqual([[EventKind.WarDeclared, 'nation.GER', 'nation.POL']]);
+    expect(Number.isFinite(told[0]!.x) && Number.isFinite(told[0]!.y)).toBe(true);
   }, 120_000);
 });

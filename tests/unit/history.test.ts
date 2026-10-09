@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { filterHistory, HISTORY_ROLES as HISTORY_ROLES_ALL, kindName, NO_FILTER, toCsv, toExport, type HistoryRow } from '../../src/shared/history';
+import { filterHistory, HISTORY_ROLES as HISTORY_ROLES_ALL, kindName, NO_FILTER, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, toCsv, toExport, type HistoryRow } from '../../src/shared/history';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { HISTORY_STRIDE } from '../../src/sim/history';
 import { leaveAlliance } from '../../src/sim/systems/alliances';
 import { historyText } from '../../src/ui/historyText';
-import { historyRows } from '../../src/worker/historyRows';
+import { historyRows, tickerRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -222,4 +222,48 @@ describe('history rows name what they are of (PLAN 3.12a)', () => {
     expect(al.past).toEqual([]);
     for (const a of al.list) expect(a.founder).toBe(a.leader);
   }, 120_000);
+  // PLAN 3.12c: the ticker's rows, read from the end of the log.
+  it('the ticker: the last major events, each with a place, a death told once, none older than a month', () => {
+    const s = new Sim({ scenario: 'toy', seed: 1 });
+    const w = s.world;
+    const h = w.history;
+    const nc = w.nations.cols;
+    const [A, B] = [1, 2];
+    [nc.capitalX[A], nc.capitalY[A], nc.capitalX[B], nc.capitalY[B]] = [11.5, 12.5, 21.5, 22.5];
+    const name = (n: number): string => `=N${n}`;
+    w.tick = 100;
+    expect(tickerRows(w, name)).toEqual([]);
+    h.record(90, EventKind.WarDeclared, A, B, NaN, NaN); // the place: the capital of the nation it was declared on
+    h.record(91, EventKind.RevoltSpawned, A, B, 1, 1); // not major
+    h.record(92, EventKind.LandCeded, A, B, 1, 1);
+    h.record(93, EventKind.CapitalCaptured, B, A, 3, 4); // its own place
+    h.record(94, EventKind.NationCollapsed, B, 0, NaN, NaN); // a death told twice in an hour: once,
+    h.record(94, EventKind.LandCeded, A, B, 1, 1);
+    h.record(94, EventKind.NationEliminated, B, 0, NaN, NaN);
+    h.record(95, EventKind.NationEliminated, A, 0, NaN, NaN); // and one told once: at its capital
+    const rows = tickerRows(w, name);
+    expect(rows.map((r) => [r.i, r.tick, r.kind, r.x, r.y])).toEqual([
+      [0, 90, EventKind.WarDeclared, 21.5, 22.5],
+      [3, 93, EventKind.CapitalCaptured, 3, 4],
+      [4, 94, EventKind.NationCollapsed, 21.5, 22.5],
+      [7, 95, EventKind.NationEliminated, 11.5, 12.5],
+    ]);
+    expect(rows.map(historyText)).toEqual(['N1 declared war on N2', "N1 captured N2's capital", 'N2 collapsed', 'N1 was destroyed']);
+    for (const r of rows) expect(TICKER_KINDS.has(r.kind)).toBe(true);
+    // A peace is at its loser's capital, an annexation at the capital of the annexed, a return where the log has it.
+    h.record(96, EventKind.PeaceSigned, A, B, NaN, NaN);
+    h.record(97, EventKind.NationAnnexed, A, B, NaN, NaN);
+    h.record(97, EventKind.NationEliminated, A, 0, NaN, NaN);
+    h.record(98, EventKind.NationRevived, A, 2, 5, 6);
+    const later = tickerRows(w, name);
+    // No more than TICKER_ROWS, the newest last.
+    expect(later.length).toBe(TICKER_ROWS);
+    expect(later.slice(-3).map((r) => [r.kind, r.x, r.y])).toEqual([[EventKind.PeaceSigned, 21.5, 22.5], [EventKind.NationAnnexed, 11.5, 12.5], [EventKind.NationRevived, 5, 6]]);
+    expect(later.slice(-3).map(historyText)).toEqual(['N1 made peace with N2', 'N1 was annexed by N2', 'N1 returned']);
+    // A row leaves when it is more than TICKER_HOURS old.
+    w.tick = 96 + TICKER_HOURS;
+    expect(tickerRows(w, name).map((r) => r.tick)).toEqual([96, 97, 98]);
+    w.tick = 99 + TICKER_HOURS;
+    expect(tickerRows(w, name)).toEqual([]);
+  });
 });

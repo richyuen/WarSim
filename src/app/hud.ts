@@ -54,6 +54,9 @@ export class Hud {
   /** Brings a place into view at a zoom that shows a battle (PLAN 2.14e); main wires it to the map view. */
   onShowBattle: (x: number, y: number, span?: readonly [number, number]) => void = () => {};
 
+  /** Brings the place of an event into view (a click on a row of the ticker, PLAN 3.12c); main wires it to the map view. */
+  onShowPlace: (x: number, y: number) => void = () => {};
+
   /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
   toBattle(war: number): void {
     void this.sim

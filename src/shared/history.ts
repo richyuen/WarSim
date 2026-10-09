@@ -64,6 +64,29 @@ export interface HistoryRow {
 
 export type HistoryAs = 'revived' | 'joined' | 'left';
 
+/** The major events, which the ticker tells as they happen (PLAN 3.12c): war, peace, a capital taken, a nation's death or return. */
+export const TICKER_KINDS: ReadonlySet<number> = new Set<number>([
+  EventKind.WarDeclared,
+  EventKind.PeaceSigned,
+  EventKind.CapitalCaptured,
+  EventKind.NationEliminated,
+  EventKind.NationCollapsed,
+  EventKind.NationAnnexed,
+  EventKind.NationRevived,
+]);
+/** The ticker holds this many rows at most, */
+export const TICKER_ROWS = 5;
+/** and none older than this many hours of the game (30 days). */
+export const TICKER_HOURS = 24 * 30;
+
+/** A row of the ticker: a history row with its number in the log and a place, always. */
+export interface TickerRow extends HistoryRow {
+  /** The row's number in the log: a row is known by it. */
+  i: number;
+  x: number;
+  y: number;
+}
+
 export interface HistoryFilter {
   /** Event kind (null = all). */
   kind: number | null;

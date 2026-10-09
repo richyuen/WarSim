@@ -9,6 +9,7 @@ import type { LandMask } from './landMask';
  * snapshot carries everything that changed (coalescing) and no event is lost.
  */
 import type { Command } from './commands';
+import type { TickerRow } from './history';
 
 export type ScenarioId = 'toy' | '1938' | 'random';
 
@@ -365,8 +366,8 @@ export type FromWorker =
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
-  /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance. */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number; edits: { undo: number; redo: number } };
+  /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; and the ticker's rows (PLAN 3.12c). */
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[] };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {

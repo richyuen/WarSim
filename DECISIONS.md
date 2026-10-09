@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-211 · 2026-10-09 · accepted — The ticker reads the history log, and a row's place is a capital as it is now (PLAN 3.12c, critic R3-B6)
+
+- **Context.** The critic's third report: nothing tells a watcher what happens as it happens
+  (`critic/c3_q.json`, `liveRegions` empty). AoC has a line of events at the bottom left
+  (`reference/screens/steam-screenshot-01.jpg`) and popups of wars (text).
+- **Decision.**
+  1. The ticker's rows are read by the worker from the end of the history log and sent with
+     each `nationStats` (once a second at most; at once after a God command, paused too).
+     The view's event queue drops records at Max speed; the log is state and drops none.
+     No request of its own: the whole log as JSON every second would be a cost that grows
+     with the game, and the rows are five.
+  2. Seven kinds: `WarDeclared`, `PeaceSigned`, `CapitalCaptured`, `NationEliminated`,
+     `NationCollapsed`, `NationAnnexed`, `NationRevived`. The last 5 of the last 30 days of
+     the game; a death told by a collapse or an annexation and then by `NationEliminated`
+     in the same hour is one row, the first.
+  3. A row's place. Only `CapitalCaptured` and `NationRevived` are emitted with one. The
+     others get a capital from the nations' columns as they are when the row is sent: of b
+     for a war (the nation it was declared on) and a peace (its loser), of a for a death. It
+     is not written at the emit: that would move the state's hash for a thing only the view
+     asks. A capital that has moved since the event is where the camera goes; a dead
+     nation's is where it last was (PLAN 2.7g).
+  4. A click flies the camera to the place at 1,500 km across the view (`showPlace`), not
+     to a battle's 20 m a pixel: a war declared has no battle yet, and the row is of
+     nations. It selects nothing.
+  5. Bottom left above the bar, the newest row last (nearest the bar). A nation's or a
+     formation's panel stands on the left too: while one is open the ticker has its last
+     two rows, and the panel's greatest height is less by 4.5 rem (`calc(100% - 12.5rem)`).
+- **Deviation from AoC.** No popup in the middle of the map: a row at the edge, which does
+  not cover the fight it tells of. No filter of kinds and no chip of a nation's colour in a
+  row (PARITY row 62 stays partial).
+- **Seen.** `docs/evidence/3.12/c-ticker-war.png` (the row of a God war on the world map),
+  `c-ticker-flown.png` (after the click: Warsaw in the middle), `c-ticker-rows.png` (five
+  rows on 1 April 1938 of seed 1938, the panel closed), `c-ticker-under-panel.png` (two rows
+  under Germany's panel). All four looked at.
+- **Not done.** No sound (PLAN 3.12d). The pin is unmoved (no state changed). At Max speed
+  a row may come and go between two messages of a second: the history has it.
+
 ### ADR-210 · 2026-10-08 · accepted — Land that goes over: two sentences, and one row an hour for two nations (PLAN 3.12b2, critic R3-B6)
 
 - **Context.** The critic's third report: 450 of 2,395 history rows after 14 years read

@@ -2114,6 +2114,19 @@ on screen.
   - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
     (RFC 4180) and JSON export of the filtered rows. The sentence of a row is
     `src/ui/historyText.ts`.
+- **Ticker** (implemented PLAN 3.12c, ADR-211; `src/ui/Ticker.tsx`): the major events
+  (`TICKER_KINDS`: a war declared, a peace, a capital taken, a nation destroyed, collapsed,
+  annexed or returned) as they happen, bottom left above the bar, the newest last, a live
+  region (`role="log"`).
+  - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
+    of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
+    last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at
+    Max speed. A death told twice in an hour (a collapse or an annexation, then
+    `NationEliminated`) is one row.
+  - Every row has a place: the event's own (a capital taken, a return), else a capital as it
+    is now: of the nation a war was declared on, of a peace's loser, of the nation that died.
+    A click flies the camera there (`MapView.showPlace`), 1,500 km across the view.
+  - While a nation's or a formation's panel is open on the left, the last two rows only.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
 - **Title screen** (implemented PLAN 1.43a, `src/ui/TitleScreen.tsx`, `src/app/main.tsx`) [ADR-60]:

@@ -104,6 +104,8 @@ const ELEMENT_MIN_PX = 5;
  */
 const BATTLE_VIEW_M = 20;
 const BATTLE_VIEW_KM = 28;
+/** Where the camera goes for an event of the ticker (`showPlace`, PLAN 3.12c): this many km across the view, a country and its neighbours. */
+const PLACE_VIEW_KM = 1500;
 const BATTLE_VIEW_MAX_M = 250;
 /**
  * A formation's fight (PLAN 3.11b): its block and the block of the enemy it faces, which stand
@@ -993,6 +995,12 @@ export class MapView {
     const both = span ? Math.max(((span[0] * this.geo.kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, el.clientWidth), ((span[1] * this.geo.kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, el.clientHeight * FIGHT_VIEW_CLEAR)) : 0;
     const m = Math.min(BATTLE_VIEW_MAX_M, Math.max(base, Math.min(both, base <= FIGHT_VIEW_MAX_M ? FIGHT_VIEW_MAX_M : BATTLE_VIEW_MAX_M)));
     this.controller.flyTo({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
+    this.dirty = true;
+  }
+
+  /** Brings the place of an event into view (PLAN 3.12c): the camera flies to (x, y), PLACE_VIEW_KM across the view. */
+  showPlace(x: number, y: number): void {
+    this.controller.flyTo({ cx: x, cy: y, scale: (Math.max(1, this.canvas.clientWidth) * this.geo.kmPerCell) / PLACE_VIEW_KM });
     this.dirty = true;
   }
 

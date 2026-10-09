@@ -17,7 +17,7 @@ import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/event
 import { frameOf, symbolOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
-import { historyRows } from './historyRows';
+import { historyRows, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import {
@@ -529,7 +529,7 @@ export class SimServer {
     world.nations.forEach((id) => {
       if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id), color: world.nations.cols.color[id]! });
     });
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length } }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)) }, []);
   }
 
   /**

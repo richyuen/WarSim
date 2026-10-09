@@ -5232,7 +5232,17 @@ quick sweep as a smoke test.
       with the same a and b made one (32 of 337, 36 of 252; a month's rows are that hour's:
       a wider window folds nothing more). What that leaves, about 20 rows a year of land
       going back, is the game's and not the log's: say so under the review pass's line.
-    - [ ] 3.12c The ticker: the major events (war, peace, a capital taken, a nation's death or
+    - [x] 3.12c *Done 2026-10-09 (ADR-211):* the ticker (`src/ui/Ticker.tsx`), bottom left
+      above the bar, a live region: the last five major events of the last 30 days (war,
+      peace, a capital taken, a nation destroyed, collapsed, annexed or returned), read by
+      the worker from the end of the history log and sent with the statistics (at once after
+      a God command). A row with no place has a capital as it is now (of the nation a war was
+      declared on, of a peace's loser, of the dead); a click flies the camera there, 1,500 km
+      across the view. Two rows while a panel is open on the left. The pin is unmoved.
+      `tests/e2e/ticker1938.spec.ts` is the task's e2e (a God war in the ticker, the click,
+      the peace, three months of the world's own events against the log);
+      `tests/unit/history.test.ts` the rows; `tests/unit/workerLabels.test.ts` the message.
+      The task as it was set: The ticker: the major events (war, peace, a capital taken, a nation's death or
       return) as they happen, at the bottom left, read from the history log (the view's event
       queue drops records at Max speed); a click on a row flies the camera to its place (the
       worker gives a row without one the defender's capital). AT: the e2e of this task.

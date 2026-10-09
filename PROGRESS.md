@@ -11538,3 +11538,47 @@ No rule changed and nothing on screen changed. One task came out of it.
   under PLAN 3.12 for the review pass (balance, Phase 7).
 - **Gate:** `npm run check` (code; a part: the changed spec file).
 - **Next:** PLAN 3.12c.
+
+## 2026-10-09 — PLAN 3.12c: the ticker (ADR-211)
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Done:** `src/ui/Ticker.tsx`, bottom left above the bar, `role="log"` and
+  `aria-live="polite"`: the last five major events of the last 30 days, the newest last.
+  `tickerRows` (`src/worker/historyRows.ts`) reads them from the end of the history log and
+  the worker sends them with each `nationStats` (`ticker`); `TICKER_KINDS`, `TICKER_ROWS`
+  and `TICKER_HOURS` in `src/shared/history.ts`. A row with no place of its own has a
+  capital as it is now. A click: `Hud.onShowPlace` to `MapView.showPlace`, a flight to the
+  place at 1,500 km across the view. Two rows while a nation's or a formation's panel is
+  open, and that panel's greatest height is `calc(100% - 12.5rem)` (it was 8rem). SPEC
+  § "Ticker"; PARITY row 62 not started to partial.
+- **Tests:** `tests/unit/history.test.ts` (15, one new: the kinds, each place, a death told
+  once, five rows at most, the 30 days); `tests/unit/workerLabels.test.ts` (a God war,
+  paused, is in the next message's `ticker`); `tests/e2e/ticker1938.spec.ts` (new: no row
+  at the start; a war from the God tab is a row at once; the click ends on Poland's capital
+  at 1,500 km across; the peace is the second row; after 90 days every row shown is a major
+  row of the log's last 30 days, with a place on the map, and the last is the log's last;
+  two rows under the panel, all of them with it closed).
+- **Run by hand** (a part, ADR-87), `--project chromium`: `ticker1938` (1 test, green,
+  `EVIDENCE=1`); `nationPanel1938`, `formationPanel1938`, `research1938`,
+  `playerActions1938`, `godUi1938`, `history1938`, `i18n`, `puppets1938`, `alliances1938`
+  (20 tests, green, 1.3 min) for the panel's new height and the new message field.
+- **Seen**, all four looked at (`docs/evidence/3.12/`): `c-ticker-war.png` (one row on the
+  world map, "1 January 1938 Germany declared war on Poland", left of the war banners and
+  clear of them); `c-ticker-flown.png` (Warsaw in the middle of the view); `c-ticker-rows.png`
+  (five rows of 19 to 31 March 1938, two of them on two lines, left of the banners' two
+  lines and clear of them); `c-ticker-under-panel.png` (two rows under
+  Germany's God tab, which ends well above them).
+- **The pin:** unmoved (nothing in `src/sim` changed).
+- **Learned:** `npx prettier --write` on one file rewrote it with double quotes: the
+  repo's style is ESLint's, and no prettier config is read. A Bash heredoc of Python with
+  backticks in it failed again ("unexpected EOF"): the script was written to a file.
+  Preact's types do not allow `role="log"` on an `ol`: the region is a `div` around it.
+- **Performance:** not measured. `tickerRows` reads the log back from its end and stops at
+  30 days or five rows, once for each statistics message (one a second at most).
+- **Not done:** no sound (PLAN 3.12d). No popup, no nation chips and no filter of kinds in
+  the ticker (ADR-211). A panel taller than the view less 12.5 rem was not looked at with
+  the ticker under it, nor the UI sizes above 100%. At Max speed a row can come and go
+  between two messages; not looked at in the browser at Max.
+- **Gate:** `npm run check` (code; a part: the changed spec file).
+- **Next:** PLAN 3.12d (sound; ticks 3.12 and has the whole e2e suite).
