@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { Refusal } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, MAX_WAR_DAYS, noteCapitalCaptured, PUPPET_SCORE, PUPPET_SHARE, REL_CAP, SMALL_STATE_KM2, TRUCE_TICKS } from '../../src/sim/systems/war';
+import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, MAX_WAR_DAYS, noteCapitalCaptured, PUPPET_SCORE, PUPPET_SHARE, REL_CAP, SMALL_STATE_KM2, TRUCE_TICKS, whyNotWar } from '../../src/sim/systems/war';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/sim1938';
@@ -78,6 +79,17 @@ function atWar(seed = 1): Sim {
     s.world.alliances.guarantees = s.world.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
   }
   s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+  return s;
+}
+
+/** Germany and Poland at peace, each alone (no alliance or guarantee), the AI off. */
+function standing(seed = 1): Sim {
+  const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
+  s.world.settings.aiEnabled = false;
+  for (const n of [GER, POL]) {
+    s.world.alliances.leave(n);
+    s.world.alliances.guarantees = s.world.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+  }
   return s;
 }
 
@@ -414,6 +426,45 @@ describe('wars and peace (PLAN 1.16)', () => {
     for (const c of taken) expect(w.cells.owner[c]).toBe(GER);
     expect(w.nations.cols.overlord[POL]).toBe(GER);
   });
+
+  // PLAN 3.12Rr1 (ADR-229): seed 2, tick 85,369: a nation declared war on one with 81% of its
+  // land under a third nation's occupiers, and the war pass of that hour ended it at 100.
+  it('no war is declared on or by a nation that is overrun: it would be over at once', () => {
+    const s = standing();
+    const w = s.world;
+    const cells = polishCellsWestFirst(w);
+    const all = km2Of(w, cells);
+    // Brazil, which is at war with nobody, holds the west of Poland: just under the share first.
+    let n = 0;
+    for (let held = 0; held + km2Of(w, [cells[n]!]) < CAPITULATE * all; n++) {
+      held += km2Of(w, [cells[n]!]);
+      w.setController(cells[n]!, BRA);
+    }
+    expect(w.landCounts().lost[POL]! / w.landCounts().owned[POL]!).toBeLessThan(CAPITULATE);
+    expect(whyNotWar(w, GER, POL)).toBe(Refusal.None);
+    expect(whyNotWar(w, POL, GER)).toBe(Refusal.None);
+    w.setController(cells[n]!, BRA);
+    expect(w.landCounts().lost[POL]! / w.landCounts().owned[POL]!).toBeGreaterThanOrEqual(CAPITULATE);
+    const truces = w.wars.truces.length;
+    for (const [attacker, defender] of [[GER, POL], [POL, GER]] as const) {
+      s.command({ kind: 'declareWar', attacker, defender });
+      // Two days: the war pass of each 00:00 has run.
+      const ev = events(s, 48);
+      expect(ev.filter((e) => e[1] === EventKind.CommandRefused).map((e) => e[3]), `${attacker} on ${defender}`).toEqual([Refusal.Overrun]);
+      expect(ofKind(ev, EventKind.WarDeclared), `${attacker} on ${defender}`).toEqual([]);
+      expect(ofKind(ev, EventKind.WarRejected)).toEqual([[attacker, defender]]);
+      expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([]);
+    }
+    expect(w.wars.atWar(GER, POL)).toBe(false);
+    expect(w.wars.truces.length).toBe(truces);
+    expect(w.landCounts().lost[POL]! / w.landCounts().owned[POL]!).toBeGreaterThanOrEqual(CAPITULATE);
+    // A puppet that is overrun is no leader: a war on it is its overlord's, and is declared.
+    const o = standing();
+    o.world.nations.cols.overlord[POL] = BRA;
+    for (const c of polishCellsWestFirst(o.world).slice(0, n + 1)) o.world.setController(c, USA);
+    expect(whyNotWar(o.world, GER, POL)).toBe(Refusal.None);
+    expect(whyNotWar(o.world, POL, GER)).toBe(Refusal.Overrun);
+  }, 60_000);
 
   it('deadlock: a fight to the death ends on its score after MAX_WAR_DAYS', () => {
     const s = atWar();

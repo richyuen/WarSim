@@ -12491,3 +12491,42 @@ No rule changed and nothing on screen changed. One task came out of it.
   stages at their old pace: unit 117.4 s, ten-year 163.8 s (278.8 s and 297.8 s in the gate
   before; nothing was done about it, and the load of the machine is not known in either).
 - **Next:** PLAN 3.12Rr (a war is not declared and ended in one hour).
+
+## 2026-10-09 — PLAN 3.12Rr1: no war is declared on or by a nation that is overrun
+
+- **Traced first** (`.cache/rr-trace.ts <seed> <ticks>`: both leaders the hour before and
+  after; the war pass printed what it judged, the print taken out again). The two wars of
+  seed 2 that were declared and gone in an hour are two causes, so PLAN 3.12Rr is split:
+  - Tick 85,369, nation 202 on 174: 174 had 81.2% of its land under nation 170, in a war
+    174 does not lead (the capitulation asks leaders alone). It led the new war and lost it
+    at 100 in the hour. This part.
+  - Tick 18,793, Germany on Latvia: Estonia, at war with Germany already (war 21) and
+    holding 127,075 km² of it, was called to Latvia's side. War 44 was judged A = Germany
+    and six more, D = Latvia and Estonia, land of D 100,362 km², the hold 0.63 of twice
+    that: score −100, Germany crushed, and the peace made the land Estonia's while war 21
+    went on. PLAN 3.12Rr2, new.
+  - The broke leader PLAN 3.12Rr named was the cause of neither: all four had gold, none
+    was bankrupt. Nothing made for it.
+- **The mend** (ADR-229): `whyNotWar` refuses (`Refusal.Overrun`, 23, with its words in the
+  God tab) when the attacker or the defenders' leader has 75% of its own km² under
+  occupiers. The capitulation's rule is one function now (`overrun`).
+- **Tests:** `war.test.ts`, one (the file has 20): Poland a cell under 75% held by Brazil,
+  both may declare; a cell more, both declarations refused, no war, no peace and no truce
+  in two days; an overrun puppet is declared on and declares none. Red first ("expected []
+  to deeply equal [ 23 ]").
+- **Seed 2, ten years, after** (`.cache/rn-short.ts 2`): 243 wars begun (244 before), one
+  declared and gone in an hour, the Latvian one. Seeds 1 and 3 not run by hand.
+- **The pin:** stays at 2104f897 (`baselineHash.test.ts` run before the gate).
+- **By hand:** `godUi1938.spec.ts` (`--project chromium`), 7 tests green in 1.0 min. No
+  test sends a declaration that the God tab answers with the new words.
+- **Not done here:** `aiSweep` still counts and does not assert (it would be red on seed 2
+  until 3.12Rr2). Wars of independence pass through the same rule (a holder that is
+  overrun declares none on its rebels, and the log has `WarRejected`): read, not run.
+- **The tick's cost: not measured.** Two reads of the land tallies for each target the AI
+  weighs.
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87).
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rr1.log`): 1,073 unit
+  tests in 133 files (120.2 s), the ten-year stage 17 tests in 12 files (196.1 s), build,
+  parity 47.5%.
+- **Next:** PLAN 3.12Rr2 (nobody is called to a war against a nation it is at war with
+  already).

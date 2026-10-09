@@ -2,8 +2,9 @@
  * Wars v1 (SPEC §3.5, §7 Peace; PLAN 1.16): declaration, war score, exhaustion, peace.
  *
  * Declaration (`declareWar`): rejected for dead nations, self, an existing war, a truce, an
- * overlord–puppet pair, allies, two puppets of one overlord, or a nation and the puppet of its
- * ally (`bond`, PLAN 3.8). Each leader brings its puppets and its alliance (PLAN 1.17);
+ * overlord–puppet pair, allies, two puppets of one overlord, a nation and the puppet of its
+ * ally (`bond`, PLAN 3.8), or when one of the two that would lead the sides is overrun (see
+ * Capitulation; PLAN 3.12Rr1). Each leader brings its puppets and its alliance (PLAN 1.17);
  * the defender also gains its guarantors (each with its puppets). Of those, a nation with a bond
  * to a nation of the other side stays out, with its puppets (PLAN 3.8c). A side fights to the death when any
  * member's nation flag is set (God Mode can change it per war with `setWarFightToDeath`).
@@ -106,7 +107,18 @@ export function whyNotWar(world: World, attacker: number, defender: number): Ref
   const why = whyNotWarOn(world, attacker, defender);
   if (why !== Refusal.None) return why;
   const o = world.nations.cols.overlord[defender]!;
-  return o !== 0 ? whyNotWarOn(world, attacker, o) : Refusal.None;
+  const whyO = o !== 0 ? whyNotWarOn(world, attacker, o) : Refusal.None;
+  if (whyO !== Refusal.None) return whyO;
+  // The two that would lead the sides (PLAN 3.12Rr1, ADR-229): the day's war pass ends at once
+  // a war one of whose leaders is overrun, and the other took a truce, or a small state, for
+  // a war of no hours.
+  const land = world.landCounts();
+  return overrun(land, attacker) || overrun(land, o || defender) ? Refusal.Overrun : Refusal.None;
+}
+
+/** Whether `n` has CAPITULATE of its own land under occupiers, of whatever war (the capitulation's rule). */
+export function overrun(land: LandCounts, n: number): boolean {
+  return (land.owned[n] ?? 0) > 0 && land.lost[n]! >= CAPITULATE * land.owned[n]!;
 }
 
 function whyNotWarOn(world: World, attacker: number, defender: number): Refusal {
@@ -312,9 +324,8 @@ export function warSystem(world: World): void {
       war.exhaustion[s] = Math.min(100, 0.1 * days + 80 * lost + 60 * occ);
     }
     // Capitulation: an overrun side has lost, whatever its stance.
-    const overrun = (leader: number): boolean => (land.owned[leader] ?? 0) > 0 && land.lost[leader]! >= CAPITULATE * land.owned[leader]!;
-    const dDown = oAD.share >= CAPITULATE || overrun(D[0]!);
-    const aDown = oDA.share >= CAPITULATE || overrun(A[0]!);
+    const dDown = oAD.share >= CAPITULATE || overrun(land, D[0]!);
+    const aDown = oDA.share >= CAPITULATE || overrun(land, A[0]!);
     if (dDown || aDown) {
       war.score = dDown && aDown ? (oAD.share >= oDA.share ? 100 : -100) : dDown ? 100 : -100;
       makePeace(world, war);

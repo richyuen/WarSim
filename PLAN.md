@@ -5766,6 +5766,24 @@ quick sweep as a smoke test.
     reason. The pin may move.
     AT: a unit test that fails first; in ten years of the sweep seeds no war is declared
     and gone in one hour (`aiSweep` counts them: 0, 2 and 0 today).
+    **Traced 2026-10-09** (`.cache/rr-trace.ts`): two causes, one a case; split (one cause
+    per commit). The broke leader was the cause of neither (all four leaders had gold, none
+    bankrupt): read, never seen, nothing made for it.
+    - [x] 3.12Rr1 **No war on or by an overrun nation** (tick 85,369: nation 174 had 81.2%
+      of its land under nation 170, in a war it does not lead). *Done 2026-10-09
+      (ADR-229):* `whyNotWar` refuses (`Refusal.Overrun`) when the attacker or the
+      defenders' leader is overrun; one test in `war.test.ts`, red first. The pin stays.
+    - [ ] 3.12Rr2 **Nobody is called to a war against a nation it is at war with already**
+      (tick 18,793: Estonia, at war with Germany in war 21 and holding 127,075 km² of it,
+      was called to Latvia's side in war 44; its hold scored −100 against the land of
+      Latvia and Estonia on the first day, Germany was crushed and the peace gave Estonia
+      the land while war 21 went on). `Wars.between` and `noteCapitalCaptured` take one war
+      of a pair. Decide in DECISIONS: `add` in `declareWar` leaves out a nation at war with
+      the enemy's leader (as it leaves out a truce partner), or another rule with its
+      reason; and what of two members at war already that are neither leader. The pin may
+      move.
+      AT: a unit test that fails first; `aiSweep` asserts that no war was declared and gone
+      in one hour (it counts them today), green on its three seeds.
   - [ ] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found
     with 3.12Rp by a search; read, not run). These wrap whatever `settings.loopingMap`
     says: the reach of `supplySystem` (`supply.ts`, `(cx + dx + w) % w`: a formation on a

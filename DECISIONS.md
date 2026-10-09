@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-229 · 2026-10-09 · accepted — No war is declared on or by a nation that is overrun (PLAN 3.12Rr1)
+
+- **Context.** PLAN 3.12Rn counted wars declared and gone in one hour: 2 of 244 in ten
+  years of seed 2. Both traced (`.cache/rr-trace.ts`, the state of both leaders the hour
+  before and after; the war pass printed what it judged). They are two causes, and neither
+  is the broke leader PLAN 3.12Rr also named: all four leaders had gold and none was
+  bankrupt.
+  - Tick 85,369, nation 202 on nation 174. 174 had 81.2% of its land (10,117 of 12,464 km²)
+    under nation 170, its enemy in a war of which 174 is a member and not the leader. The
+    capitulation asks a war's leaders alone, so that war went on; in the war declared on
+    174 it led, and the pass of the same hour ended it at 100. 202 had fought nothing. It
+    took a truce of two years; 174 was over 8,500 km², or 202 would have annexed it whole.
+  - Tick 18,793, Germany on Latvia: not this cause (PLAN 3.12Rr2). Estonia, at war with
+    Germany already and holding 127,075 km² of it, was called to Latvia's side. Its hold
+    counted in the new war against the land of Latvia and Estonia (100,362 km², so
+    127,075 ÷ 200,724 = 0.63, a score of −100), Germany was crushed on the first day, and
+    the peace gave Estonia the land for good while the war it was taken in went on.
+- **Decision.** `whyNotWar` refuses a declaration when one of the two that would lead the
+  sides is overrun: the attacker, or the defender's overlord, or the defender if it has
+  none. `Refusal.Overrun` (23); the God tab's words: "one of them has three quarters of its
+  land under occupiers: the war would be over at once". Overrun is the capitulation's own
+  rule, now one function (`overrun`): 75% of the nation's own km² under whatever occupier.
+  The AI asks `whyNotWar` for every target already; a player's or a script's declaration
+  is told why.
+- **Why here and not in the capitulation.** The other way PLAN 3.12Rr named was to have the
+  capitulation ask only the war's own occupiers on its first day. The war would then begin
+  against a nation that cannot fight and end by the rule a day or a week later with the
+  same terms: a small state annexed whole by a nation that has not met it. The refusal
+  leaves the overrun nation to the wars it is in.
+- **A puppet that is overrun** is declared on as before: the war is its overlord's
+  (PLAN 3.8e), and the overlord leads. It declares none itself.
+- **Wars of independence** (`revolts.ts`, `puppets.ts`) pass through the same rule: a
+  holder that is overrun declares no war on its rebels, and the log has the `WarRejected`
+  that a refused declaration always has. Until now that war was lost by the holder in the
+  hour, and a holder under 8,500 km² went whole to its rebels. Not seen in the seeds run.
+- **What it does not stop.** The live tallies are asked at the declaration and the day's
+  snapshot at 00:00: a nation at 74% that is at 75% the next day leads a war of a day. A
+  member that is overrun is still no reason for its side to end (the leader-only rule,
+  as before).
+- **Tests** (`war.test.ts`, one): Brazil, at war with nobody, holds the west of Poland to
+  one cell under 75% of its km²: Germany may declare and Poland may. One cell more: both
+  declarations are refused with `Refusal.Overrun`, no war is declared, no peace signed, no
+  truce begun in two days. Red first (no refusal). Poland as Brazil's puppet and overrun:
+  Germany may declare on it, and it may not declare.
+- **The pin stays** (2104f897): no nation of seed 99's first year declares on an overrun one.
+
 ### ADR-228 · 2026-10-09 · accepted — A formation is spawned on no cell at sea: the command is refused (PLAN 3.12Rq)
 
 - **Context.** `spawnFormation` took `standPoint` of the place given. In a cell that is all

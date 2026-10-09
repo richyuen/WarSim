@@ -226,6 +226,8 @@ export const Refusal = {
   AlliedRealm: 21,
   /** A formation spawned on a cell that is water, or off the map: no route begins there (PLAN 3.12Rq, ADR-228). */
   AtSea: 22,
+  /** A war by or on a nation with 75% of its land under occupiers: it would be over at once (PLAN 3.12Rr1, ADR-229). */
+  Overrun: 23,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 
