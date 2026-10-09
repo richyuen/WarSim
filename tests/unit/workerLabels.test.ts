@@ -84,5 +84,29 @@ describe('worker derived messages (labels, nation stats)', () => {
     expect(stats().length).toBe(sent + 1);
     expect(stats().at(-1)!.world).toBe(world + 1);
     expect(stats().at(-1)!.ticker.map((r) => r.kind)).toEqual(stats().at(-2)!.ticker.map((r) => r.kind));
+
+    // PLAN 3.12Rh2: a message's news is the kinds of every major event since the message
+    // before, though the ticker holds the last five. A world's first message has none.
+    expect(stats()[0]!.news).toEqual([]);
+    expect(told.length === 1 && stats().find((m) => m.ticker.some((r) => r.i === told[0]!.i))!.news).toEqual([EventKind.WarDeclared]);
+    expect(stats().at(-1)!.news).toEqual([]);
+    const id = (tag: string): number => TAGS_1938.indexOf(tag) + 1;
+    const pairs = [['BRA', 'ARG'], ['MEX', 'CUB'], ['SWE', 'NOR'], ['POR', 'IRE'], ['CHL', 'PRU'], ['TUR', 'IRN']].map(([a, b]) => [id(a!), id(b!)]);
+    for (const [a, b] of pairs) expect(a! > 0 && b! > 0).toBe(true);
+    server.handle({ type: 'cmd', cmd: { kind: 'forcePeace', war: stats().at(-1)!.wars[0]!.id } }, 5100);
+    for (const [a, b] of pairs) server.handle({ type: 'cmd', cmd: { kind: 'declareWar', attacker: a!, defender: b! } }, 5100);
+    const before = stats().length;
+    server.handle({ type: 'step', reqId: 5, n: 1 }, 5200);
+    expect(stats().length).toBe(before); // throttled: one message for the seven
+    server.pump(6100, () => 6100);
+    const last = stats().at(-1)!;
+    expect(stats().length).toBe(before + 1);
+    expect(last.ticker.map((r) => r.kind)).toEqual([0, 0, 0, 0, 0].map(() => EventKind.WarDeclared));
+    expect(last.news).toEqual([EventKind.PeaceSigned, EventKind.WarDeclared]);
+    // Told once: the next message has no news.
+    server.handle({ type: 'step', reqId: 6, n: 1 }, 7200);
+    server.pump(7300, () => 7300);
+    expect(stats().length).toBe(before + 2);
+    expect(stats().at(-1)!.news).toEqual([]);
   }, 120_000);
 });

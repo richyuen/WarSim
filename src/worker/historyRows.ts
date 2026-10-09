@@ -137,3 +137,19 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
   }
   return out.reverse();
 }
+
+/**
+ * The news of a statistics message (PLAN 3.12Rh2): the kinds of the major events from row `from`
+ * of the log to its end, each once, in the order they came. At Max speed a message spans a
+ * fortnight and the ticker's five rows are the end of it: the cue is asked of these. Not bounded
+ * by `TICKER_HOURS`: a row a month old in the game can be a second old to the player.
+ */
+export function tickerNews(world: World, from: number): number[] {
+  const rows = world.history.rows;
+  const out: number[] = [];
+  for (let i = Math.max(0, from) * HISTORY_STRIDE; i < rows.length; i += HISTORY_STRIDE) {
+    const kind = rows[i + 1]!;
+    if (TICKER_KINDS.has(kind) && !out.includes(kind)) out.push(kind);
+  }
+  return out;
+}

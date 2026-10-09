@@ -2176,7 +2176,9 @@ on screen.
     banners are as wide as the lesser of 60% of the view and the view less 36 rem: they
     begin right of the ticker.
   - At Max speed the ticker is a sample (counted, ADR-216): a message a second spans some
-    380 hours, and 18% of the messages bring more than five major events (PLAN 3.12Rh2).
+    380 hours, and 18% of the messages bring more than five major events. It stays the last
+    five (PLAN 3.12Rh2, ADR-218): the History panel has every row, and the room beside a
+    panel is two rows. The cue does not depend on the five (see Sound).
 - **Sound** (implemented PLAN 3.12d, ADR-212; `src/shared/sound.ts`, `src/app/sound.ts`): a
   cue for each major event the ticker tells, made in code with the Web Audio API (no sound
   file is loaded).
@@ -2184,8 +2186,12 @@ on screen.
     (two bells), a capital taken (two drum strokes), a nation destroyed, collapsed or annexed
     (two low falling tones), a nation returned (a rising arpeggio). The notes are data
     (`CUE_NOTES`), each cue over in 1.5 s at most.
-  - The cue of a `nationStats` message is that of its ticker rows that are new
-    (`cueOfTicker`): one a message at most, the first of war, death, capital, return, peace.
+  - The cue of a `nationStats` message is that of its ticker rows that are new and of its
+    `news` (`cueOfTicker`): one a message at most, the first of war, death, capital, return,
+    peace. `news` is the kinds of every major event since the message before, each once
+    (`tickerNews`, PLAN 3.12Rh2, ADR-218): the worker keeps the log's length at its last
+    message (`SimServer.newsFrom`, not sim state), so a war declared before five captured
+    capitals in one second at Max is heard.
     The message carries the number of the worker's world (`world`), which a new game or a
     load changes: the first message of a world is its past and asks for nothing.
   - A browser lets a page sound after a press: the `AudioContext` is made at the first

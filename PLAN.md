@@ -5490,7 +5490,7 @@ quick sweep as a smoke test.
       989 x 40 px at 100% in every month, paused or not. `ticker1938.spec.ts`, a third
       test at 30 September and the three UI sizes, failed first ("bar height paused at 1":
       51.6 for 40.0).
-  - [ ] 3.12Rh2 **At Max a message drops major events: their cue, and their row** (3.12Rh's
+  - [x] 3.12Rh2 **At Max a message drops major events: their cue, and their row** (3.12Rh's
     count: 18% of the messages bring more than five, 14% of the rows are in no message, 28
     of 154 wars declared). The ticker tells the last five of the worker's log, and the cue
     is the loudest of the five (`cueOfTicker`): a war declared before five captured
@@ -5501,6 +5501,13 @@ quick sweep as a smoke test.
     AT: a unit test that fails first: eight major rows between two messages, the war
     first, is the war cue; the count of 3.12Rh again in the page (a scratch spec): no
     message whose loudest new row was not its cue.
+    - Done 2026-10-09 (ADR-218): `nationStats` has `news`, the kinds of every major event
+      since the worker's last message (`tickerNews`, `SimServer.newsFrom`), and the cue is
+      the loudest of the new rows and the news. The ticker stays the last five: its room
+      was fitted to five (3.12Rh, 3.12Rh1) and the History panel has every row. Two unit
+      tests, both failed first ('capital' for 'war'; no `news`). In the page at Max (150
+      messages, 34 with more than five major events): no cue but the loudest, 153 of 153
+      wars in a message with the war cue; 4 messages would have been quieter before.
   - [ ] 3.12Rh3 **Two nations of one name** (3.12Rh's picture at Max, seed 1938, April
     1943): "Free Damascus declared war on Free Damascus", "Free Damascus made peace with
     Free Damascus", and a banner "Free Bamyan" on both sides of two wars. Find whether it

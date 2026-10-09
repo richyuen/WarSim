@@ -32,20 +32,23 @@ export interface Heard {
 }
 
 /**
- * The cue of a statistics message's ticker rows, and what has now been heard. One cue a message
- * at most (at Max speed a message can bring five rows): the first of `CUES` among the rows that
- * are new. The first message of a world is its past and asks for nothing: a loaded game does
- * not sound its last month again.
+ * The cue of a statistics message, and what has now been heard. One cue a message at most: the
+ * first of `CUES` among the rows that are new and the message's `news`, the kinds of every major
+ * event since the message before (PLAN 3.12Rh2). At Max speed a message brings up to fourteen
+ * major events and the ticker's rows are the last five: a war declared before five captured
+ * capitals is in the news alone. The first message of a world is its past and asks for nothing:
+ * a loaded game does not sound its last month again.
  */
-export function cueOfTicker(rows: readonly TickerRow[], world: number, heard: Heard | null): { cue: Cue | null; heard: Heard } {
+export function cueOfTicker(rows: readonly TickerRow[], world: number, heard: Heard | null, news: readonly number[] = []): { cue: Cue | null; heard: Heard } {
   const last = rows.reduce((m, r) => Math.max(m, r.i), -1);
   if (!heard || heard.world !== world) return { cue: null, heard: { world, i: last } };
   let cue: Cue | null = null;
-  for (const r of rows) {
-    if (r.i <= heard.i) continue;
-    const c = cueOfKind(r.kind);
+  const louder = (kind: number): void => {
+    const c = cueOfKind(kind);
     if (c && (cue === null || CUES.indexOf(c) < CUES.indexOf(cue))) cue = c;
-  }
+  };
+  for (const r of rows) if (r.i > heard.i) louder(r.kind);
+  for (const kind of news) louder(kind);
   return { cue, heard: { world, i: Math.max(heard.i, last) } };
 }
 

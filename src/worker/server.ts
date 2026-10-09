@@ -17,7 +17,7 @@ import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/event
 import { frameOf, symbolOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
-import { historyRows, tickerRows } from './historyRows';
+import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import {
@@ -144,6 +144,8 @@ export class SimServer {
   /** Counts the worlds this worker has had (a new game, a load): the view tells a loaded world's past from news by it (PLAN 3.12d). */
   private worldNo = 0;
   private lastStatsMs = -1;
+  /** The log's length at the last statistics message: the next one's news begins there (PLAN 3.12Rh2). Below 0: a world's first message, whose log is its past. */
+  private newsFrom = -1;
 
   handle(msg: ToWorker, nowMs: number): void {
     try {
@@ -242,6 +244,7 @@ export class SimServer {
       case 'load':
         this.requireSim().load(msg.bytes);
         this.worldNo++;
+        this.newsFrom = -1;
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
         this.statsTick = -1;
@@ -320,6 +323,7 @@ export class SimServer {
   private startSim(init: SimInit, reqId: number): void {
     this.sim = new Sim(init);
     this.worldNo++;
+    this.newsFrom = -1;
     // Real-map scenarios get nation labels; province names name spawned nations.
     this.provinceNames = init.assets ? (JSON.parse(new TextDecoder().decode(init.assets.admin1Meta)) as Admin1Meta[]).map(provinceLabel) : null;
     this.labelVersion = -1;
@@ -533,7 +537,9 @@ export class SimServer {
     world.nations.forEach((id) => {
       if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id), color: world.nations.cols.color[id]! });
     });
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), world: this.worldNo }, []);
+    const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
+    this.newsFrom = world.history.length;
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), news, world: this.worldNo }, []);
   }
 
   /**

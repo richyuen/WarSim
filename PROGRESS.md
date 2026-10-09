@@ -12010,3 +12010,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rh2 (at Max a message drops major events: the cue and the row).
+
+## 2026-10-09 — PLAN 3.12Rh2: a message carries its news, and no war goes unheard at Max
+
+- **Decided** (ADR-218): `nationStats.news` is the kinds of every major event since the
+  worker's last message, each once (`tickerNews`; the mark is `SimServer.newsFrom`, moved
+  at a post, below 0 for a world's first message). `cueOfTicker` takes the loudest of the
+  new ticker rows and the news. The ticker stays the last five at Max: no new UI.
+- **Tests, failed first:** `tests/unit/sound.test.ts` (a war and seven captured capitals,
+  the ticker the last five: 'capital' for 'war'); `tests/unit/workerLabels.test.ts` (a
+  peace and six wars in one throttled message: no `news`).
+- **Counted in the page** (a scratch spec, removed; seed 1938 at Max, 150 s, 59,161 hours,
+  150 messages, 514 major rows): 34 messages with more than five major events, no message
+  whose cue was not the loudest major row since the one before, none with two cues, 153 of
+  153 wars in a message with the war cue. The rule before would have been quieter in 4.
+- **Gotcha:** `sim.history()` gives `historyRows`, which drops the repeated `LandCeded`
+  rows of an hour: its row numbers are not the ticker's `i`. The first probe compared the
+  two and read 98 of 149; compare by tick and kind.
+- **Specs run by hand** (`--project chromium`): `sound1938`, `ticker1938`, `history1938`
+  (7 tests, 33 s): green.
+- **Performance:** not measured: one pass over the log's rows since the last message, once
+  a second, in the worker's statistics; no sim change, the pin unmoved.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rh3 (two nations of one name).

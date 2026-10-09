@@ -95,7 +95,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   // Sound (PLAN 3.12d): the cue of what the ticker tells; a browser allows it after the first press.
   const sound = new Sound();
   for (const type of ['pointerdown', 'keydown'] as const) window.addEventListener(type, () => sound.unlock(), { capture: true });
-  sim.onStats((m) => sound.onTicker(m.ticker, m.world));
+  sim.onStats((m) => sound.onTicker(m.ticker, m.world, m.news));
   const settings = new Settings(view, sound);
   // F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).
   window.addEventListener('keydown', (e) => {

@@ -108,6 +108,29 @@ describe('sound cues (PLAN 3.12d)', () => {
     expect(cueOfTicker(rows, 1, { world: 1, i: 4 }).cue).toBe('peace');
   });
 
+  // PLAN 3.12Rh2: at Max speed a message spans a fortnight and the ticker holds its last five
+  // rows. The message's news is the kinds of every major row since the message before.
+  it('a war followed by seven captured capitals in one message is the war cue: the news, not the five rows', () => {
+    const heard = { world: 1, i: 0 };
+    const log = [row(1, EventKind.WarDeclared), ...[2, 3, 4, 5, 6, 7, 8].map((i) => row(i, EventKind.CapitalCaptured))];
+    const news = [EventKind.WarDeclared, EventKind.CapitalCaptured];
+    expect(cueOfTicker(log.slice(-5), 1, heard, news)).toEqual({ cue: 'war', heard: { world: 1, i: 8 } });
+    // News whose rows are all older than the ticker's month, or behind an event the ticker does not tell twice.
+    expect(cueOfTicker([], 1, heard, [EventKind.PeaceSigned, EventKind.NationRevived]).cue).toBe('return');
+    // No news and no new row; and a kind that has no cue.
+    expect(cueOfTicker(log.slice(-5), 1, { world: 1, i: 8 }, []).cue).toBeNull();
+    expect(cueOfTicker([], 1, heard, [EventKind.AllianceJoined]).cue).toBeNull();
+    // A world's first message is its past, whatever it carries.
+    expect(cueOfTicker(log.slice(-5), 2, heard, news).cue).toBeNull();
+    expect(cueOfTicker(log.slice(-5), 1, null, news).cue).toBeNull();
+    const { ctx } = fakeContext();
+    const sound = new Sound(() => ctx);
+    sound.unlock();
+    sound.onTicker([], 1, []);
+    sound.onTicker(log.slice(-5), 1, news);
+    expect(sound.asked).toEqual(['war']);
+  });
+
   it('a declaration of war asks the player for the war cue, and its notes are given to the context', () => {
     const { ctx, made } = fakeContext();
     const sound = new Sound(() => ctx);

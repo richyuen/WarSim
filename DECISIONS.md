@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-218 · 2026-10-09 · accepted — A statistics message carries its news: the kinds of every major event since the one before; the ticker stays the last five (PLAN 3.12Rh2)
+
+- **Context.** ADR-216's count at Max: 18% of the messages bring more than five major
+  events, and 14% of the major rows are in no message (28 of 154 wars declared). The cue
+  was the loudest of the ticker's new rows (`cueOfTicker`), and the ticker is the last
+  five: a war declared before five captured capitals in one second had no cue and no row.
+- **Decision, the cue.** `nationStats` has `news`: the kinds of the major events
+  (`TICKER_KINDS`) from the log's length at the worker's last message to its end, each
+  once, in the order they came (`tickerNews`, `src/worker/historyRows.ts`). The cue is the
+  loudest of the new ticker rows and the news. The kinds, not the loudest cue: seven
+  numbers at most, the worker knows no cue, and what a view does with a kind is the view's.
+  Not bounded by the ticker's 30 days: a row a month old in the game is a second old at
+  Max. Not folded as the ticker's rows are: a death told twice is one cue, and an
+  annexation is louder than its peace.
+- **Where the mark is.** `SimServer.newsFrom`, beside `worldNo`: moved when a message is
+  posted, never by the throttle, and below 0 after a new game or a load, whose first
+  message has no news. Not sim state: not saved, not hashed, the pin unmoved.
+- **Decision, the rows.** The ticker stays the last five at Max. More rows would undo
+  3.12Rh and 3.12Rh1, which fitted the panel, the banners and the bar to five rows of two
+  lines (two beside a panel); a fortnight a second cannot be read as rows however many
+  there are; and the History panel has every row. So at Max the ticker is a sample to the
+  eye and whole to the ear: one cue a second, the loudest thing that happened.
+- **Not built.** A row "and nine more", or the loudest row kept among the five: neither
+  was asked for, and each changes what "the last five" means for a test that reads it.
+- **Counted again** (a scratch spec, not kept; seed 1938 at Max, the page alone, 150 s:
+  59,161 hours, 150 messages, 514 major rows): 34 messages bring more than five major
+  events; in none is the cue other than the loudest major row of the log since the message
+  before, and in none are there two cues. All 153 wars declared came in a message with the
+  war cue. By the rule before, 4 of the 150 would have had a quieter cue.
+- **Consequences.** `tests/unit/sound.test.ts`: a war and seven captured capitals between
+  two messages, the ticker the last five, is the war cue (failed first: 'capital').
+  `tests/unit/workerLabels.test.ts`: a peace and six wars in one throttled message, the
+  ticker five wars, the news `[PeaceSigned, WarDeclared]`; a world's first message, a
+  loaded world's and the message after have none (failed first: no `news`).
+
 ### ADR-217 · 2026-10-09 · accepted — The bottom bar is as wide as its widest labels: one line, and no button steps at a pause (PLAN 3.12Rh1)
 
 - **Context.** 3.12Rh's pictures: "25 February 1939 · Paused" was two lines, the bar 52 px

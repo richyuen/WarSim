@@ -37,9 +37,9 @@ export class Sound {
     }
   }
 
-  /** The ticker's rows of a statistics message: the cue of what is new in them. */
-  onTicker(rows: readonly TickerRow[], world: number): void {
-    const next = cueOfTicker(rows, world, this.heard);
+  /** The ticker's rows and the news of a statistics message: the cue of what is new in them. */
+  onTicker(rows: readonly TickerRow[], world: number, news: readonly number[] = []): void {
+    const next = cueOfTicker(rows, world, this.heard, news);
     this.heard = next.heard;
     if (next.cue) this.play(next.cue);
   }
