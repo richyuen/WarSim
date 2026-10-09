@@ -99,12 +99,24 @@ export function panBy(cam: Camera, dx: number, dy: number): Camera {
 }
 
 /**
- * Horizontal copies of the world needed to cover the view on a looping map: offsets k·w such
- * that the shifted map intersects the visible x-range. Returns [0] when not wrapping.
+ * The furthest beside a looping map a place of the sim stands with its x left unfolded, cells
+ * (PLAN 3.12Rt): a block deployed over the seam and the slots of a block beside it keep the x
+ * of their formation's side, under 0 or the width and over (`elementPlace`, `deployOf` in
+ * sim/systems/elements.ts: `DEPLOY_REACH` and `BLOCK_REACH`, 1.5 and 0.5; tests/unit/seam.test.ts
+ * holds the two together). What draws such a place, or finds it under the pointer, asks
+ * `wrapOffsets` for the copies within this of the view.
  */
-export function wrapOffsets(cam: Camera, geo: MapGeometry, viewW: number): number[] {
+export const SEAM_MARGIN = 2;
+
+/**
+ * Horizontal copies of the world needed to cover the view on a looping map: offsets k·w such
+ * that the shifted map, and `margin` cells either side of it, intersects the visible x-range.
+ * Returns [0] when not wrapping. With no margin a view that ends short of the seam has the one
+ * copy, and nothing of it is drawn that stands over the seam with its x unfolded (`SEAM_MARGIN`).
+ */
+export function wrapOffsets(cam: Camera, geo: MapGeometry, viewW: number, margin = 0): number[] {
   if (!geo.wrapX) return [0];
-  const half = viewW / 2 / cam.scale;
+  const half = viewW / 2 / cam.scale + margin;
   const out: number[] = [];
   const kMin = Math.floor((cam.cx - half) / geo.w);
   const kMax = Math.floor((cam.cx + half) / geo.w);

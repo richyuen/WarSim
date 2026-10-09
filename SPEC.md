@@ -2309,7 +2309,10 @@ on screen.
   cell and the bucket's first and last columns are not neighbours; the page takes a point
   beside the map for no cell, `cellOfPoint`: ADR-239), where a block and its slots
   stand (none beyond an edge, `World.onMap`; over the seam of a map that loops their x is
-  left unfolded: ADR-240), what a view is sent (`inBbox`) or rendering; a world's build
+  left unfolded: ADR-240; the page draws such a place, and finds it under the pointer, in
+  the copies of the map within `SEAM_MARGIN` (2 cells) of the view, `wrapOffsets` in
+  `render/camera.ts`: the sprites, the tags, the shots, wrecks and hulls, the selection
+  ring and the click, ADR-241), what a view is sent (`inBbox`) or rendering; a world's build
   wraps as its map does), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
   manpower multipliers and aggression bias), starting gold (random 0.25–2× or equal = median),
   CE mode, and for the random world the number of nations (`nations`, §3.4). Applied once at

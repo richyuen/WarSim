@@ -12892,3 +12892,51 @@ No rule changed and nothing on screen changed. One task came out of it.
   parity 47.5%. No e2e in the gate (a part, no spec changed).
 - **Next:** PLAN 3.12Rt (a block over the seam of a map that loops, drawn from either
   side); then 3.12Ri, 3.12Rj.
+
+## 2026-10-09 — PLAN 3.12Rt: a block over the seam of a map that loops is drawn in every view that holds it (ADR-241)
+
+- **Step 2:** the tree was clean on `823beb2`, gated; `npm run critic:due`: not due.
+- **What was so** (run, `.cache/rt-e2e-red.log`, the margin at 0): two divisions that
+  meet 0.4 cells east of the 180th meridian in Chukotka, the Soviet one from 0.2 cells
+  west of it. Its block's x is 2048 and over. A view at 20 m/px from 0.03 to 1.47 cells
+  had its 28 elements in the snapshot and drew none: no tag, no formation under the
+  pointer, no tracer from it in any frame of the hour (the Japanese block: 319).
+- **Done:** `wrapOffsets(cam, geo, viewW, margin = 0)`; `SEAM_MARGIN = 2` in
+  `render/camera.ts`, passed by the sprites, the tags, the two picks and the selection
+  ring in `MapView`, and by `fx/fire.ts`, `fx/hulls.ts`, `fx/wrecks.ts`. The layers of
+  folded places (counters, markers, dots, names, flags) ask as before. `BLOCK_REACH` is
+  exported for the test that holds the margin to the sim's reach.
+- **Tests:** `tests/unit/camera.test.ts`, one more (the copies with a margin, both sides
+  of the seam, beyond the margin, a map with edges); red first on its assertion
+  (`[0]` for `[0, 2048]`, `.cache/rt-red.log`). `tests/unit/seam.test.ts`, two more (28):
+  a fight beside the seam, once each way, every element in a copy that a view of its
+  columns draws; and the margin against `DEPLOY_REACH + BLOCK_REACH` and every
+  template's block. These two were red only for want of the constant (`NaN`,
+  `undefined`), not on the assertion they are there for. My first scene was wrong and
+  was changed before the mend: two formations 0.4 either side of the seam deploy each on
+  its own side of the middle, and nothing is unfolded; the scene is now a cell and 0.2.
+  `tests/e2e/seamFight1938.spec.ts`, new: the fight east and west of the seam, a view
+  that ends short of it; both blocks' elements in the view's columns, one of them
+  unfolded, a tag each, the formation under the pointer at an element of each, tracers
+  in flight from each (319 and 315; 314 and 321). Red with the margin at 0 (at the tag;
+  the log has the pick 0 and the tracers 0 too), green with it, 29 s.
+- **Looked at:** `docs/evidence/3.12/seam-fight-east.png` and `seam-fight-west.png`:
+  both blocks whole, facing each other, each with its tag, in the first column and in
+  the last. The shots are too small to make out in the pictures at this size; the
+  count above is what says they fly.
+- **Not looked at:** a wreck or a hull over the seam (no test, no picture; the same
+  copies). A sprite or a tag at a folded place within its own half-width of the seam,
+  cut at the edge of a view that ends there. The cost of the second copy near the seam
+  (not measured).
+- **SPEC** §9, the looping option; PARITY row 69, a dated line; ADR-241.
+- **The pin stays** (rendering only). **No sweep** (ADR-58).
+- **By hand** (`--project chromium`, `.cache/rt-e2e-hand.log`): `gameOptions1938`,
+  `formationFight1938`, `camera`, `battleView1938`, `fire1938`: 11 passed in 4.3 min.
+- **`npm run plan:archive`:** 3.12Rt's text moved to `docs/PLAN_DONE.md`.
+- **Gate:** `npm run check` green at the first run (`.cache/gate-rt.log`): the unit
+  tests, build, the new spec (1 passed, 36 s), parity 47.5%.
+- **Next:** PLAN 3.12Ri and 3.12Rj (the full suite on the final tree, its log kept; the
+  line under PLAN 1.42; 3.12R ticked).
+- **Gate, again on the staged tree** (PROGRESS's lines added): failed once at the unit
+  tests (`.cache/gate-rt2.log`: `movement.test.ts`, a wall-clock limit of 5 ms passed at
+  6.38; BLOCKERS.md), the file alone green; the third run is the one named by the commit.

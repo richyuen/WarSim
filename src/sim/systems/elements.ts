@@ -168,7 +168,7 @@ export function contactsOf(world: World): Map<number, number> {
 }
 
 /** More than the furthest a block's corner lies from its middle, cells (a tank corps of 11 by 5 slots: 0.18). */
-const BLOCK_REACH = 0.5;
+export const BLOCK_REACH = 0.5;
 
 /** Of an hour's contacts: each formation's turn, and those on the way to each enemy's block (`orderOf`). */
 interface Order {

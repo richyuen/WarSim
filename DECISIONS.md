@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-241 · 2026-10-09 · accepted — The page's copies of a looping map take a margin (PLAN 3.12Rt)
+
+- **Context.** Over the seam of a map that loops a block's middle and its slots keep the
+  x of their formation's side, under 0 or the width and over (ADR-240): a block is whole
+  and an hour's move is short. The worker folds such a place where it asks whether a
+  view holds it (`inBbox`). The page drew the copies of the map that its view touched
+  (`wrapOffsets`): one, `[0]`, for a view that ends short of the seam.
+- **What was so.** A block that stood in the first column with its x at the width and
+  over was sent to a view of that column and drawn by none of its layers: no sprite, no
+  tag, no shot from it, and no formation under the pointer. Its enemy, folded, fired at
+  nothing. The same mirrored in the last column. Run in the browser with the margin at
+  0 (`.cache/rt-e2e-red.log`): of two divisions 0.4 cells east of the 180th meridian the
+  one from over the seam had 28 elements in the view's columns, no tag, no pick and no
+  tracer in flight (its enemy 319).
+- **Decision.** `wrapOffsets` takes a margin, in cells, 0 where none is given: the copies
+  whose map, and the margin either side of it, the view touches. `SEAM_MARGIN` (2,
+  `render/camera.ts`) is the furthest a place is left unfolded: `DEPLOY_REACH` (1.5) and
+  `BLOCK_REACH` (0.5, now exported). It is passed where a block's places are drawn or
+  found: the sprites, the tags, the pick of an element and of a formation, the selection
+  ring (`MapView`), the shots, the wrecks and the hulls. Not where every place is folded:
+  the T0 counters, the T1 markers and dots, the names, the capitals' flags, the major
+  battles' marks.
+- **Not the other way** (PLAN named two): folding each block about the view is a fold in
+  some fifteen places, each of which has the copies already.
+- **What holds the two sides together.** `render/` imports nothing of `sim/`, so the
+  margin is a number of its own. `tests/unit/seam.test.ts` asks that it is no less than
+  `DEPLOY_REACH + BLOCK_REACH` and that no template's block, with its elements' scatter,
+  reaches further from its middle than `BLOCK_REACH`.
+- **Cost.** A view within 2 cells of the seam draws its block layers twice; what is off
+  the screen is culled by each layer as it was (the sprites by the GPU). Not measured.
+- **Consequences.** Rendering only: the pin stays (92689265).
+- **Not looked at.** A sprite, a tag or a name whose place is folded and within its own
+  half-width of the seam is cut at the edge of a view that ends there, as before (the
+  copies cover places, not the size of what is drawn at them). The wrecks and the hulls
+  over the seam: they take the same copies, and no test or picture has one. A view at
+  the far zooms, where the margin is nothing beside the view.
+
 ### ADR-240 · 2026-10-09 · accepted — No block and no slot is beyond an edge of the map (PLAN 3.12Rse3)
 
 - **Context.** The last part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236 to ADR-239). A

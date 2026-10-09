@@ -71,6 +71,20 @@ describe('camera math', () => {
     expect(wrapOffsets({ cx: 1024, cy: 0, scale: 0.2 }, GEO, VW)).toEqual([-4096, -2048, 0, 2048, 4096]);
     expect(wrapOffsets({ cx: 10, cy: 0, scale: 10 }, { ...GEO, wrapX: false }, VW)).toEqual([0]);
   });
+
+  it('wrapOffsets with a margin lists the copies within it of the view (PLAN 3.12Rt)', () => {
+    // A view of 2 cells that ends 0.25 short of the seam, on either side of it.
+    const vw = 2 * 400;
+    expect(wrapOffsets({ cx: GEO.w - 1.25, cy: 0, scale: 400 }, GEO, vw)).toEqual([0]);
+    expect(wrapOffsets({ cx: GEO.w - 1.25, cy: 0, scale: 400 }, GEO, vw, 2)).toEqual([0, GEO.w]);
+    expect(wrapOffsets({ cx: 1.25, cy: 0, scale: 400 }, GEO, vw, 2)).toEqual([-GEO.w, 0]);
+    // 2.5 cells short of it: beyond the margin.
+    expect(wrapOffsets({ cx: GEO.w - 3.5, cy: 0, scale: 400 }, GEO, vw, 2)).toEqual([0]);
+    expect(wrapOffsets({ cx: 3.5, cy: 0, scale: 400 }, GEO, vw, 2)).toEqual([0]);
+    // A view over the seam has both copies with the margin or without; a map with edges has one.
+    expect(wrapOffsets({ cx: 0.5, cy: 0, scale: 400 }, GEO, vw, 2)).toEqual([-GEO.w, 0]);
+    expect(wrapOffsets({ cx: 1.25, cy: 0, scale: 400 }, { ...GEO, wrapX: false }, vw, 2)).toEqual([0]);
+  });
 });
 
 // PLAN 2.14f5b4: the click on a war's banner flies to the battle (`CameraController.flyTo`).

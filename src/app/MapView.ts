@@ -34,7 +34,7 @@ import { t, type MessageKey } from '../ui/i18n';
 import { Frame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
-import { cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
@@ -1043,7 +1043,7 @@ export class MapView {
     if (unitsIn <= 0.01 || !this.sprites) return;
     const dpr = window.devicePixelRatio || 1;
     const t = this.tickProgress(now);
-    const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth);
+    const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth, SEAM_MARGIN);
     const figures = this.shares.individuals;
     this.turnTurrets(now);
     if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
@@ -1252,7 +1252,7 @@ export class MapView {
     if (alpha <= 0.01) return;
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
-    const offs = wrapOffsets(cam, this.geo, vw);
+    const offs = wrapOffsets(cam, this.geo, vw, SEAM_MARGIN);
     // The box of each formation's elements on the screen, per copy of a looping map.
     // Keyed by formation and copy: a number, for a section of up to 40,000 elements a frame.
     const copies = Math.max(1, offs.length);
@@ -1338,7 +1338,7 @@ export class MapView {
     const cam = this.controller.cam;
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
-    const offs = wrapOffsets(cam, this.geo, vw);
+    const offs = wrapOffsets(cam, this.geo, vw, SEAM_MARGIN);
     let best = 0;
     if (this.elementCount > 0) {
       let bestD = Math.max(10, this.elementPx / 2 + 4);
@@ -1418,7 +1418,7 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) {
       if (this.formNation[i] !== nation) continue;
       const [fx, fy] = this.drawnAt(i);
-      for (const off of wrapOffsets(cam, this.geo, w)) {
+      for (const off of wrapOffsets(cam, this.geo, w, SEAM_MARGIN)) {
         const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
         const d = Math.hypot(px - sx, py - sy);
         if (d < bestD) {
@@ -1533,7 +1533,7 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) {
       if (!this.selectedFormations.has(this.formIds[i]!)) continue;
       const [fx, fy] = this.drawnAt(i);
-      for (const off of wrapOffsets(cam, this.geo, w)) {
+      for (const off of wrapOffsets(cam, this.geo, w, SEAM_MARGIN)) {
         const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
         if (px < -20 || py < -20 || px > w + 20 || py > h + 20) continue;
         ctx.beginPath();

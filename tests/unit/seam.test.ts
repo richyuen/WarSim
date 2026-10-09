@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cellOfPoint, normalize, screenToWorld } from '../../src/render/camera';
+import { SEAM_MARGIN, cellOfPoint, normalize, screenToWorld, wrapOffsets } from '../../src/render/camera';
 import type { Command } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { Terrain } from '../../src/shared/terrain';
@@ -11,7 +11,8 @@ import { spawnCity } from '../../src/sim/scenarioEdit';
 import { Sim } from '../../src/sim/sim';
 import { capitalsSystem } from '../../src/sim/systems/capitals';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
-import { cellDist, deployOf, destroyFormation, elementIndex, elementPlace, slotCount } from '../../src/sim/systems/elements';
+import { blockReach, SLOT_SPACING } from '../../src/sim/core/pose';
+import { BLOCK_REACH, DEPLOY_REACH, DEPLOY_SCATTER, cellDist, deployOf, destroyFormation, elementIndex, elementPlace, slotCount } from '../../src/sim/systems/elements';
 import { addCorridor, inCorridor } from '../../src/sim/systems/majorBattles';
 import { applyPendingCommands } from '../../src/sim/tick';
 import { TARGET_SNAP_CELLS, snapTarget } from '../../src/sim/systems/movement';
@@ -570,5 +571,59 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
         expect(sent.has(far)).toBe(loop);
       }
     });
+  });
+});
+
+// PLAN 3.12Rt. Over the seam of a map that loops a block keeps the x of its formation's side
+// (under 0, or the width and over), and the page drew the copies of the map its view touched:
+// a view that ended short of the seam did not draw a block that stood in it.
+describe('a block over the seam of a map that loops is drawn in every view that holds it (PLAN 3.12Rt)', () => {
+  const GEO = { w: W, h: H, kmPerCell: 19.57, wrapX: true };
+
+  it('a fight beside the seam: each element is in a copy of the map that a view of its columns draws, from either side', () => {
+    // Two blocks stand either side of the middle between their formations. A German a cell east
+    // of the seam and a Pole 0.2 west of it meet 0.4 east of it: the Pole's block is over the
+    // seam from its formation, its x left at the width and over. And the same mirrored: the
+    // German's block in the last column, its x under 0. The view is of the column they stand in,
+    // 0.9 cells wide, and ends 0.05 short of the seam.
+    const VW = 900;
+    for (const [gx, px, cx] of [[1, W - 0.2, 0.5], [0.2, W - 1, W - 0.5]] as const) {
+      const world = edges(true);
+      world.landMask = null;
+      const a = addDivision(world, GER, gx, Y + 0.5);
+      const b = addDivision(world, POL, px, Y + 0.5);
+      findBattles(world);
+      const xs = [a, b].flatMap((f) => {
+        const list = elementIndex(world).get(f)!;
+        const slots = slotCount(world, f, list.length);
+        expect(deployOf(world, f, slots)).not.toBeNull();
+        return list.map((e) => elementPlace(world, f, world.elements.cols.slot[e]!, slots, e)[0]);
+      });
+      expect(xs.length).toBe(56);
+      // One block whole on its formation's side of the numbers, over the seam; the other folded.
+      expect(xs.filter((x) => x < 0 || x >= W).length).toBe(28);
+      expect(Math.min(...xs)).toBeGreaterThan(-SEAM_MARGIN);
+      expect(Math.max(...xs)).toBeLessThan(W + SEAM_MARGIN);
+      const cam = { cx, cy: Y + 0.5, scale: 1000 };
+      const half = VW / 2 / cam.scale;
+      expect(wrapOffsets(cam, GEO, VW)).toEqual([0]);
+      const offs = wrapOffsets(cam, GEO, VW, SEAM_MARGIN);
+      // Both blocks are in the view, by where they stand on the map.
+      expect(xs.filter((x) => Math.abs((((x % W) + W) % W) - cx) <= half).length).toBe(56);
+      for (const x of xs) expect(offs.some((off) => Math.abs(x + off - cx) <= half), `x = ${x} in the view about ${cx}`).toBe(true);
+    }
+  });
+
+  it('the margin of the copies is no less than the furthest a place is left unfolded', () => {
+    const world = edges(true);
+    let most = 0;
+    for (const t of world.rules!.templates) {
+      let n = 0;
+      for (const e of t.elements) n += e.count;
+      most = Math.max(most, blockReach(n, SLOT_SPACING) + DEPLOY_SCATTER * SLOT_SPACING * Math.SQRT2);
+    }
+    expect(most).toBeGreaterThan(0.1);
+    expect(most).toBeLessThanOrEqual(BLOCK_REACH);
+    expect(SEAM_MARGIN).toBeGreaterThanOrEqual(DEPLOY_REACH + BLOCK_REACH);
   });
 });

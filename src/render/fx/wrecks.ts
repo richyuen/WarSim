@@ -8,7 +8,7 @@
  */
 import { EVENT_STRIDE, EventKind } from '../../shared/events';
 import { Wreck } from '../../shared/unitLooks';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { SEAM_MARGIN, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2 } from '../hash';
 import { ANIM_TAIL_MS, smooth } from '../timing';
 
@@ -148,7 +148,7 @@ export class WreckFx {
     this.shown.length = 0;
     this.bursts = 0;
     if (alpha <= 0.01 || this.wrecks.length === 0 || now >= this.until) return;
-    const offs = wrapOffsets(cam, geo, vw);
+    const offs = wrapOffsets(cam, geo, vw, SEAM_MARGIN);
     const margin = 3 * size;
     const solid = KINDS.map(() => new Path2D());
     const fading: { path: Path2D; kind: Wreck; opacity: number }[] = [];

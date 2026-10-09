@@ -84,20 +84,7 @@ quick sweep as a smoke test.
   - [x] 3.12Rq **A formation is not spawned at sea** (found with 3.12Rm; read, not run). […]
   - [x] 3.12Rr **A war is not declared and ended in one hour** (found with 3.12Rn; the hour's […]
   - [x] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found […]
-  - [ ] 3.12Rt **A block over the seam of a map that loops is drawn in every view that
-    holds it** (found with 3.12Rse3, ADR-240; read, not run). A block deployed over the
-    seam, and a slot of a block within 0.105 cells of it, keep the x of their formation's
-    side (under 0, or `w` and over; up to `DEPLOY_REACH` and a block's reach, 1.7 cells).
-    The worker sends them to a view on either side (`inBbox` folds). The page draws the
-    copies of the map the view touches (`wrapOffsets`, `render/camera.ts`: `[0]` for a
-    view that ends short of the seam), so a block at x = -1 is drawn in a view over the
-    seam and not in one of the columns `w - 2` to `w - 0.5`, where it stands. The same
-    for its fires, wrecks, hulls, tags and its formation's counter at the close tiers,
-    and for a click on it. Either the copies take a margin of the furthest a place is
-    left unfolded, or the page folds each formation's block about the view. 1938's seam
-    is the 180th meridian (Chukotka).
-    AT: a unit test of the copies, failing first, and a picture of a fight across the
-    seam from each side of it, looked at.
+  - [x] 3.12Rt **A block over the seam of a map that loops is drawn in every view that […]
   - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rt: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever

@@ -187,8 +187,9 @@ export class ProxyRenderer {
 
   /**
    * Draws all instances; `wrapOffsets` are world x-shifts (cells) of extra copies for a looping
-   * map (see camera.wrapOffsets), so sprites near the seam appear on both sides. A sprite is its
-   * size in cells at the zoom, at least `minPx` and at most `maxPx` CSS px (before `sizeMul`).
+   * map (see camera.wrapOffsets, with `SEAM_MARGIN`), so sprites near the seam appear on both
+   * sides. A sprite is its size in cells at the zoom, at least `minPx` and at most `maxPx` CSS
+   * px (before `sizeMul`).
    * `small`: the share of its small frame in each sprite that has one (`smallFrameOf`), 0–1.
    */
   draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1, maxPx = NO_MAX_PX, small = 0): void {

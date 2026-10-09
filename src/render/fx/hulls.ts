@@ -20,7 +20,7 @@
  */
 import { FormationFlag } from '../../shared/protocol';
 import { Frame, turretOf, Wreck } from '../../shared/unitLooks';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { SEAM_MARGIN, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, smooth } from '../timing';
 import { figureCells, figureCount, figureOffsets, gridSide } from '../units/individuals';
@@ -260,7 +260,7 @@ export class HullFx {
     this.flames = 0;
     this.fallenShown.length = 0;
     if (alpha <= 0.01 || (this.hulls.length === 0 && this.fallen.length === 0) || now >= this.until) return;
-    const offs = wrapOffsets(cam, geo, vw);
+    const offs = wrapOffsets(cam, geo, vw, SEAM_MARGIN);
     this.drawFallen(ctx, cam, offs, vw, vh, now, alpha, minPx, size);
     if (this.hulls.length === 0) return;
     // Burnt hulls and those left behind: [hulls, turrets] of each.

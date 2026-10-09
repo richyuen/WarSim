@@ -21,7 +21,7 @@
  */
 import { FIRE_STRIDE, FireField } from '../../shared/events';
 import { turretOf, Weapon } from '../../shared/unitLooks';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { SEAM_MARGIN, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, progress } from '../timing';
 import { muzzleOf } from '../units/atlas';
@@ -231,7 +231,7 @@ export class FireFx {
     this.flashes = 0;
     this.impacts = 0;
     if (alpha <= 0.01 || this.shots.length === 0 || now >= this.until) return;
-    const offs = wrapOffsets(cam, geo, vw);
+    const offs = wrapOffsets(cam, geo, vw, SEAM_MARGIN);
     const tracer = WEAPONS.map(() => new Path2D());
     const flash = WEAPONS.map(() => new Path2D());
     const tongue = new Path2D();

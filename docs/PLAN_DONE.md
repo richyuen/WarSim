@@ -6089,3 +6089,35 @@ Of 3.12R (open in PLAN.md):
         `warBattle.ts:105` and `worker/server.ts` (765, 1033: a point made with a mended
         `wrapDx`, brought back onto the map). Ticks 3.12Rse and 3.12Rs.
         AT: a test for what is mended; the reasons are in SPEC or the code's comments.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+
+Of 3.12R (open in PLAN.md):
+
+  - [x] 3.12Rt **A block over the seam of a map that loops is drawn in every view that
+    holds it** (found with 3.12Rse3, ADR-240; read, not run). A block deployed over the
+    seam, and a slot of a block within 0.105 cells of it, keep the x of their formation's
+    side (under 0, or `w` and over; up to `DEPLOY_REACH` and a block's reach, 1.7 cells).
+    The worker sends them to a view on either side (`inBbox` folds). The page draws the
+    copies of the map the view touches (`wrapOffsets`, `render/camera.ts`: `[0]` for a
+    view that ends short of the seam), so a block at x = -1 is drawn in a view over the
+    seam and not in one of the columns `w - 2` to `w - 0.5`, where it stands. The same
+    for its fires, wrecks, hulls, tags and its formation's counter at the close tiers,
+    and for a click on it. Either the copies take a margin of the furthest a place is
+    left unfolded, or the page folds each formation's block about the view. 1938's seam
+    is the 180th meridian (Chukotka).
+    AT: a unit test of the copies, failing first, and a picture of a fight across the
+    seam from each side of it, looked at.
+    *Done 2026-10-09 (ADR-241): the copies take a margin (`SEAM_MARGIN`, 2 cells).
+    `tests/unit/camera.test.ts`, `tests/unit/seam.test.ts`, `tests/e2e/seamFight1938.spec.ts`;
+    `docs/evidence/3.12/seam-fight-east.png`, `seam-fight-west.png`. Not looked at: a wreck
+    or a hull over the seam; a sprite or a tag whose folded place is within its own
+    half-width of the seam is cut at the edge of a view that ends there.*

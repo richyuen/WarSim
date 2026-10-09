@@ -537,3 +537,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     known. The test was not changed. Not looked into: why both stages took about twice
     their time of the gate before (the three ten-year tests alone, with the commit's check,
     took 140 s twice in that hour).
+  - `movement.test.ts`, an unreachable pair rejected at once (2026-10-09, the second gate of
+    PLAN 3.12Rt): "expected 6.38 to be less than 5" (ms, `findRoute`'s component check on the
+    wall clock), once, in a unit stage of 294 s. The gate's first run of the same code passed,
+    and the file alone passed after it (34 tests). The commit touches nothing of routes (the
+    page's copies of a looping map). The load of the machine in that run is not known (the
+    first gate and five specs by hand ran in the hour before). The test was not changed.
