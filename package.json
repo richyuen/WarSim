@@ -15,6 +15,7 @@
     "e2e": "playwright test",
     "check": "tsx tools/gate/check.ts",
     "critic:due": "tsx tools/gate/criticDue.ts",
+    "plan:archive": "tsx tools/plan/archive.ts",
     "check:full": "npm run typecheck && npm run lint && npm test && npm run test:sweep && npm run build && npm run e2e && npm run parity",
     "parity": "tsx tools/parity/cli.ts",
     "bench": "tsx tools/bench/run.ts",

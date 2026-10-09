@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ALL_STAGES, changedFiles, gatedTrees, planE2e, planGate, tickedTasks, worktreeTree } from '../../tools/gate/check';
 import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
+import { archive, MOVED } from '../../tools/plan/archive';
 
 // ADR-48, ADR-49: the gate is sized to what changed since HEAD. ADR-55: a clean tree that the
 // gate has already passed runs nothing. ADR-59: the critic comes back once per phase, when a
@@ -133,5 +134,63 @@ describe('critic cadence (ADR-59)', () => {
     expect(ticked.length).toBeGreaterThanOrEqual(3);
     expect(ticked).toEqual(all.slice(0, ticked.length));
     for (const id of all.slice(ticked.length)) expect(text).toMatch(new RegExp(`^- \\[ \\] ${id.replace('.', '\\.')} Phase \\d review`, 'm'));
+  });
+});
+
+// ADR-231: PLAN.md holds what is still to do. `npm run plan:archive` moves the text of a task
+// that is done to docs/PLAN_DONE.md and leaves its first line, which the gate and the critic's
+// count read.
+describe('the archive of the plan (ADR-231)', () => {
+  const plan = [
+    '## Phase 3',
+    '',
+    '- [x] 3.1 Tanks.',
+    '  AT: a test.',
+    '  - [x] 3.1a A part.',
+    '',
+    '- [x] 3.2 One line.',
+    '- [x] 3.3 Phase 3 review: all of it,',
+    '  on two lines.',
+    '- [ ] 3.4R Review pass.',
+    '  Its text.',
+    '  - [x] 3.4Ra Done part.',
+    '    *Done.*',
+    '  - [ ] 3.4Rb Open part.',
+    '    - [x] 3.4Rb1 Done under an open part.',
+    '      Stays.',
+    '  - [x] 3.4Rc A part with an open one under it.',
+    '    - [ ] 3.4Rc1 Open.',
+    '',
+    '## Phase 4',
+    '',
+    '- [ ] 4.1 Sea zones.',
+    '  AT: a test.',
+  ];
+
+  it('moves the done tasks and the done parts of an open task, and leaves their first lines', () => {
+    const r = archive(plan);
+    expect(r.moved).toBe(3);
+    expect(r.plan).toEqual([
+      '## Phase 3',
+      '',
+      `- [x] 3.1 Tanks.${MOVED}`,
+      '',
+      '- [x] 3.2 One line.',
+      `- [x] 3.3 Phase 3 review: all of it,${MOVED}`,
+      '- [ ] 3.4R Review pass.',
+      '  Its text.',
+      `  - [x] 3.4Ra Done part.${MOVED}`,
+      ...plan.slice(13),
+    ]);
+    expect(r.done).toEqual(['## Phase 3', '', ...plan.slice(2, 5), '', ...plan.slice(7, 9), '', 'Of 3.4R (open in PLAN.md):', '', ...plan.slice(11, 13), '']);
+    // What the gate and the critic's count read is as it was, and a second run moves nothing.
+    expect(tickedTasks(r.plan.join('\n'))).toEqual(tickedTasks(plan.join('\n')));
+    expect(tickedReviews(r.plan.join('\n'))).toEqual(['3.3']);
+    expect(archive(r.plan)).toEqual({ plan: r.plan, done: [], moved: 0 });
+  });
+
+  it('PLAN.md itself has nothing left to move: run `npm run plan:archive` after a tick', () => {
+    const text = readFileSync(path.resolve(import.meta.dirname, '../../PLAN.md'), 'utf8');
+    expect(archive(text.split(/\r?\n/)).moved).toBe(0);
   });
 });

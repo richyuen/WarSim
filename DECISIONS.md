@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-231 · 2026-10-09 · accepted — PLAN.md holds what is still to do; the text of done tasks is in docs/PLAN_DONE.md (the user's decision)
+
+- **Context.** PLAN.md was 528 KB and 6,348 lines: 389 boxes ticked, 38 open. PROMPT step 1
+  says to read it; it was no longer read but searched for the first open box, and what else
+  it held went unseen.
+- **Decision.** `npm run plan:archive` (`tools/plan/archive.ts`) moves the text of every
+  task that is done to `docs/PLAN_DONE.md`, word for word, and leaves its first line in
+  PLAN.md with the mark `[…]`. A task is done when it is ticked and no box under it is
+  open; of an open task the parts one level in are moved by the same rule. It is run after
+  each tick, in the tick's commit (PROMPT step 7). PLAN.md is read whole (step 1); the
+  archive is searched, not read.
+- **Why the first lines stay.** Three readers go by the ticks of PLAN.md: the gate
+  (`tickedTasks`: a numbered task ticked since HEAD runs the whole e2e suite),
+  `npm run critic:due` (`tickedReviews`: `- [x] 2.11 Phase 2 review`), and the count of
+  PROMPT step 9. `gate.test.ts` asks for the phase reviews by their lines. Nothing else
+  parses the file (`tools/`, `tests/`, the critic's prompt looked at).
+- **Why not PROGRESS.md.** It is 916 KB, append-only, and only its tail is read; it has
+  each task's entry already. The comments and ADRs that name a task (`PLAN 3.8c`) need its
+  text where a search finds it.
+- **The first run:** 168 tasks and parts moved, PLAN.md 528 KB → 69 KB (833 lines). Checked
+  (`.cache/plan-verify.ts`): the ticked tasks (85), the phase reviews (0.22, 1.41, 2.11,
+  3.7) and the open boxes (38) read the same before and after, and every line of the old
+  file is in one of the two. A second run moves nothing.
+- **Kept from sliding back.** A test in `gate.test.ts` fails while PLAN.md has something to
+  move. A commit of documents alone does not run it (its gate is parity); the next commit
+  with code does.
+- **What it costs.** A note a done task carried for a later one ("to settle in Phase 7")
+  is in the archive unless it was copied under the open task, as PROMPT now asks. Not
+  searched for in the 168 moved.
+- **Not done.** DECISIONS.md (787 KB), PROGRESS.md and SPEC.md (190 KB) are as they were:
+  they are searched, or read by the tail.
+
 ### ADR-230 · 2026-10-09 · accepted — Nobody is called to a war against a nation it is at war with already (PLAN 3.12Rr2)
 
 - **Context.** The second of the two wars of seed 2 that were declared and gone in one hour

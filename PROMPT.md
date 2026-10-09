@@ -130,6 +130,13 @@ added without code changes.
   each with an acceptance test. Phases: 0 foundations and benchmarks;
   1 baseline parity; 2 semantic zoom; 3 armor; 4 naval; 5 air; 6 nuclear AI;
   7 balance, polish, soak tests.
+  It holds what is still to do (added 2026-10-09, ADR-231, the user's
+  decision; it had grown to 528 KB and was no longer read): a task that is
+  done keeps its first line there, marked `[…]`, and its text is in
+  `docs/PLAN_DONE.md`. Never write a task's text back from there, never
+  delete a first line (the gate and `npm run critic:due` read the ticks),
+  and never edit `docs/PLAN_DONE.md` by hand. What a done task leaves to be
+  done goes under the open task that will do it, not into the done one.
 - `PROGRESS.md`: append-only log: what you did, learned, gotchas.
 - `BLOCKERS.md`: what you're stuck on and what you tried.
 - `DECISIONS.md`: key technical and design decisions and why, including every
@@ -150,7 +157,9 @@ added without code changes.
 # EVERY ITERATION
 
 1. Read SPEC.md, PLAN.md, the tail of PROGRESS.md, BLOCKERS.md, and
-   `critic/CRITIC_REPORT.md` if it exists.
+   `critic/CRITIC_REPORT.md` if it exists. PLAN.md is read whole. Do not
+   read `docs/PLAN_DONE.md`: search it when a comment or an ADR names a
+   task that is done.
 2. Run the full test/lint/typecheck/build suite. If anything is broken,
    fixing it is this iteration's only task.
 2a. Critic run. If `critic/CRITIC_REPORT.json` is missing, or a phase review
@@ -191,7 +200,9 @@ added without code changes.
    frames where relevant. Fix visible problems.
 6. Check performance against the budget when touching rendering or sim.
 7. Commit with a clear message; tick the task; append to PROGRESS.md; run
-   `npm run parity` and update PARITY.md rows you touched. Push every commit
+   `npm run parity` and update PARITY.md rows you touched. After the tick,
+   `npm run plan:archive` (ADR-231): it moves what is done to
+   `docs/PLAN_DONE.md`, in the same commit. Push every commit
    (`git push`; added 2026-10-05, ADR-107, the user's decision): a push to
    `main` builds the game and puts it on GitHub Pages.
 8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move

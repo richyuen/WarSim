@@ -12566,3 +12566,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests in 133 files (202.8 s), the ten-year stage 17 tests in 12 files (204.2 s), build,
   parity 47.5%.
 - **Next:** PLAN 3.12Rr3 (a war declared on a nation that an older war ends in that hour).
+
+## 2026-10-09 — PLAN.md holds what is still to do (ADR-231, the user's decision)
+
+- **Why:** PLAN.md was 528 KB (389 boxes ticked, 38 open) and was searched, not read.
+- **What reads it, looked at first:** the gate (`tickedTasks`), `npm run critic:due`
+  (`tickedReviews`) and `gate.test.ts` go by the ticked first lines at the left margin.
+  The critic's prompt names the file and parses nothing. Nothing else in `tools/` or
+  `tests/`.
+- **Done:** `npm run plan:archive` (`tools/plan/archive.ts`, new) moved 168 done tasks and
+  done parts of open tasks to `docs/PLAN_DONE.md`, word for word; each keeps its first line
+  in PLAN.md, marked `[…]`. PLAN.md is 69 KB and 833 lines. The ticked tasks, the phase
+  reviews and the open boxes read the same before and after; no line was lost
+  (`.cache/plan-verify.ts`).
+- **The rule for the next iteration:** PROMPT.md (the files, step 1, step 7) and CLAUDE.md:
+  read PLAN.md whole, search the archive, run `npm run plan:archive` after a tick in the
+  same commit. Two tests in `gate.test.ts` (16 in the file): the archiver on a made plan,
+  and PLAN.md itself with nothing left to move.
+- **Not done:** notes that a moved task carried for a later one were not searched for.
+  DECISIONS.md, PROGRESS.md and SPEC.md are as they were.
+- **Next:** PLAN 3.12Rr3, as before.
