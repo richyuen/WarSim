@@ -12530,3 +12530,39 @@ No rule changed and nothing on screen changed. One task came out of it.
   parity 47.5%.
 - **Next:** PLAN 3.12Rr2 (nobody is called to a war against a nation it is at war with
   already).
+
+## 2026-10-09 — PLAN 3.12Rr2: nobody is called to a war against a nation it is at war with already
+
+- **Traced first** (`.cache/rr2-trace.ts`, seed 2, the hour before tick 18,793): Estonia was
+  the Soviet Union's puppet, the ally of Latvia and Lithuania, and at war with Germany in
+  war 21 since tick 6,816. Germany's declaration on Latvia called it as Latvia's ally.
+  20 pairs were at war in two wars already (nation 23 with one alliance, wars 11 and 17);
+  no two nations of one side were at war.
+- **Nation 107** (`.cache/rr2-107.ts`): no case. War 42 was declared at tick 17,113, not in
+  that hour; its peace of tick 17,473 made 107 Germany's puppet, and it came to war 44 as
+  one. PLAN 3.12Rr2's "begun that hour" was a misreading of the day's print.
+- **The mend** (ADR-230): in `declareWar` a called nation at war with one of the other side
+  is torn as one with a bond is, and stays out by the same three steps, its puppets with
+  it. One line (`bound`). Not in `add`, where PLAN named it: a puppet of the one left out
+  would have been called alone.
+- **Tests:** `war.test.ts`, one (the file has 21): Germany on Latvia is the two alone,
+  Estonia and its puppet out, the old war the one between Estonia and Germany; Finland,
+  Germany's ally and at war with Estonia, stays out and Estonia fights. Red first
+  ("expected [ [ 1 ], [ 7, 8, 6 ] ] to deeply equal [ [ 1 ], [ 7 ] ]").
+- **`aiSweep` asserts now**, with one exception that it counts: a war whose nation an older
+  war ended in the hour. Seed 3 has one in its new run (tick 30,817: Poland on nation 130,
+  annexed that hour by the Soviet Union's peace; `.cache/rr2-seed3.log`). Another cause:
+  PLAN 3.12Rr3, new, to decide. PLAN 3.12Rr stays open for it.
+- **Ten years after:** seed 1, 303 wars declared, 0 gone in their hour; seed 2, 178 (243
+  before: the run is another) and 0; seed 3, 204 and the one.
+- **The pin moves:** 2104f897 → 92689265 (who is called is a rule).
+- **The tick's cost: not measured.** One lookup in a set for each called nation and enemy,
+  at a declaration only.
+- **Not done here:** the 20 pairs in two wars of an old save are left as they are; wars are
+  not joined; `Wars.between` still takes the first war of a pair. No spec run by hand:
+  nothing drawn changed.
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87).
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rr2.log`): 1,074 unit
+  tests in 133 files (202.8 s), the ten-year stage 17 tests in 12 files (204.2 s), build,
+  parity 47.5%.
+- **Next:** PLAN 3.12Rr3 (a war declared on a nation that an older war ends in that hour).

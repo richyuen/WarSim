@@ -167,6 +167,58 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-230 · 2026-10-09 · accepted — Nobody is called to a war against a nation it is at war with already (PLAN 3.12Rr2)
+
+- **Context.** The second of the two wars of seed 2 that were declared and gone in one hour
+  (ADR-229): tick 18,793, Germany on Latvia. Traced (`.cache/rr2-trace.ts`, the hour
+  before): Estonia was the Soviet Union's puppet and the ally of Latvia and Lithuania, and
+  with its overlord at war with Germany since tick 6,816 (war 21), holding 127,075 km² of
+  it. The declaration called it as Latvia's ally. War 44 was Germany and six more on Latvia
+  and Estonia; the war pass of the hour counted Estonia's hold against the land of the two
+  (100,362 km²): −100, Germany crushed, and the peace made the land Estonia's while war 21
+  went on.
+  - Pairs at war in two wars were there before it: 20 at that tick, all of nation 23
+    with the members of one alliance (wars 11 and 17: it declared on one of them, and
+    another of them declared on it). No two nations of one side were at war.
+  - **Nation 107**, which PLAN 3.12Rr2 took for a nation on the side of a leader it is at
+    war with: it was not (`.cache/rr2-107.ts`, every event that names it). War 42, Germany
+    on 107, was declared at tick 17,113 and not in that hour; its peace of tick 17,473 made
+    107 Germany's puppet, 55 days before war 44, and it came to war 44 as a puppet does.
+    Nothing to mend.
+- **Decision.** Of the nations a declaration calls, one that is at war with a nation of the
+  other side stays out, by the three steps that keep out a nation with a `bond` (ADR-179):
+  first who is at war with the enemy's leader, then the puppets at war with anyone of the
+  other side that stands, then the other nations. A puppet stays out with its overlord.
+  The two leaders stand: they are not at war with each other (`whyNotWar`), and a called
+  nation at war with one of them is out in the first step. So no pair is put into a second
+  war.
+- **Why the steps and not `add`.** PLAN 3.12Rr2 named the place where a truce partner is
+  left out (`add`: not against the enemy's leader). That asks each nation alone: Estonia
+  would stay out and a puppet of Estonia would be called against Germany without it. It
+  also leaves two members that are neither leader, which the steps answer as they do for a
+  bond: of two torn by each other alone, the one called first fights (the defenders' allies
+  are called before the attacker's). Every case seen was one against a leader; the other is
+  covered by the same line.
+- **What it costs.** An ally at war with the enemy already is not in the new war: when its
+  own war ends in a truce it is out of both. As with a truce partner.
+- **What it does not do.** The wars that are there are not joined into one, and
+  `Wars.between` and `noteCapitalCaptured` still take the first war of a pair: a pair comes
+  into two wars by no declaration now, and a save of before may hold some.
+- **The war on a nation that dies in the hour** is another matter, found when the count
+  became an assertion: seed 3, tick 30,817 (a run that the rule changed): Poland declared
+  on nation 130, which had 52% of its 3,716 km² under the Soviet Union in war 80, and
+  that war's peace of the same hour annexed it whole (a small state). The new war ended
+  with its nation, by no peace of its own. `aiSweep` asserts that no war is declared and
+  gone in its hour but such a one (the dead nation was at war as the hour began) and
+  counts those. Whether the AI should leave such a target alone: PLAN 3.12Rr3.
+- **Tests.** `war.test.ts`, one: Estonia at war with Germany and Latvia's ally, Lithuania
+  its puppet: Germany's war on Latvia is Germany on Latvia alone, the old war is the one
+  between Estonia and Germany, no peace in two days. Red first ("expected [ [ 1 ], [ 7, 8,
+  6 ] ] to deeply equal [ [ 1 ], [ 7 ] ]"). Finland, Germany's ally, at war with Estonia:
+  Estonia is called first and fights, Finland stays out.
+- **The pin moves:** 2104f897 → 92689265. Who is called is a rule, and seed 99's first
+  year has such a call.
+
 ### ADR-229 · 2026-10-09 · accepted — No war is declared on or by a nation that is overrun (PLAN 3.12Rr1)
 
 - **Context.** PLAN 3.12Rn counted wars declared and gone in one hour: 2 of 244 in ten

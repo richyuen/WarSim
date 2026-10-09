@@ -571,7 +571,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     alliance than its overlord; its overlord fights on), then the other nations with one.
     Within a step they are asked in the order of the call, against those of the other side
     let stand so far: of two torn by each other alone, the one called first fights. The two
-    leaders always stand. A nation that gets an overlord while at war leaves the wars against
+    leaders always stand. A called nation that is at war already with one of the other side
+    is torn as one with a bond is, and stays out by the same steps (PLAN 3.12Rr2, ADR-230): no
+    declaration puts a pair into a second war. A nation that gets an overlord while at war leaves the wars against
     its new realm (ADR-180, ADR-181); nobody joins or founds an alliance while it or a puppet of it is at war with a member or a member's puppet (`realmsAtWar`, ADR-182).
   - *A puppet is defended (PLAN 3.8e, ADR-183):* a declaration on a puppet is one on its
     overlord, which leads the defenders; the event names it. The puppet's own allies and

@@ -94,6 +94,8 @@ export function aiSweep(seed: number): void {
   const endedBy = { peace: 0, bond: 0, death: 0 };
   // The wars declared and gone within one hour, which no hour's end saw, and the next war's id.
   let short = 0;
+  const shortAt: string[] = [];
+  let shortDead = 0;
   let nextWar = s.world.wars.nextId;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
@@ -127,15 +129,23 @@ export function aiSweep(seed: number): void {
           if (now.has(id)) continue;
           short++;
           let how: 'peace' | 'bond' | 'death' | null = null;
+          let dead = 0;
           for (let i = 0; i < ev.length && how === null; i++) {
             if (!is(i, EventKind.WarDeclared) || declared.includes(i)) continue;
             const [a, b] = [ev[i + 1]!, ev[i + 2]!];
             const of = (j: number): boolean => (ev[j + 1] === a && ev[j + 2] === b) || (ev[j + 1] === b && ev[j + 2] === a);
             for (let j = i + 6; j < ev.length && how === null; j += 6) how = is(j, EventKind.PeaceSigned) && of(j) ? 'peace' : is(j, EventKind.WarEnded) && of(j) ? 'bond' : is(j, EventKind.NationEliminated) && (ev[j + 1] === a || ev[j + 1] === b) ? 'death' : null;
             if (how !== null) declared.push(i);
+            if (how === 'death') dead = w.nations.cols.living[a] === 1 ? b : a;
           }
           expect(how, `seed ${seed}, tick ${w.tick}: war ${id}, declared in this hour, is gone with no end in the log`).not.toBeNull();
           endedBy[how!]++;
+          // PLAN 3.12Rr: its own peace, or a bond, ended none in its hour. One whose nation died
+          // in the hour is not that when the nation was at war before it: an older war took it
+          // (seed 3, tick 30,817; PLAN 3.12Rr3).
+          const older = dead !== 0 && [...open.values()].some(([A, D]) => A.includes(dead) || D.includes(dead));
+          if (older) shortDead++;
+          else shortAt.push(`tick ${w.tick}: war ${id}, ended by a ${how!}`);
         }
         nextWar = w.wars.nextId;
         for (const [id, [A, D]] of open) {
@@ -289,8 +299,10 @@ export function aiSweep(seed: number): void {
   const wars = counts['WarDeclared'] ?? 0;
   const peace = counts['PeaceSigned'] ?? 0;
   // PLAN 3.12Rn: every war declared has an end in the log or is in the list.
-  process.stderr.write(`seed ${seed}: ${begun} wars at the start and ${wars} declared: ${endedBy.peace} ended by a peace, ${endedBy.bond} by a bond (${counts['WarEnded'] ?? 0} rows), ${endedBy.death} by a death, ${s.world.wars.list.length} go on; ${short} of those ended were declared in the hour of their end
+  process.stderr.write(`seed ${seed}: ${begun} wars at the start and ${wars} declared: ${endedBy.peace} ended by a peace, ${endedBy.bond} by a bond (${counts['WarEnded'] ?? 0} rows), ${endedBy.death} by a death, ${s.world.wars.list.length} go on; ${short} of those ended were declared in the hour of their end, ${shortDead} of them on or by a nation that an older war ended in that hour
 `);
+  // PLAN 3.12Rr: no war is declared and gone in one hour, but for the death of its nation in an older war.
+  expect(shortAt, `seed ${seed}: wars declared and gone in one hour`).toEqual([]);
   expect(endedBy.peace + endedBy.bond + endedBy.death + s.world.wars.list.length, `seed ${seed}: the wars ended and those that go on, of ${begun} at the start and ${wars} declared`).toBe(begun + wars);
   expect(endedBy.peace, `seed ${seed}: wars ended by a peace, and the peaces of the log`).toBe(peace);
   expect(endedBy.bond, `seed ${seed}: wars ended by a bond, and their rows`).toBe(counts['WarEnded'] ?? 0);

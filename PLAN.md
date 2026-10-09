@@ -5773,7 +5773,7 @@ quick sweep as a smoke test.
       of its land under nation 170, in a war it does not lead). *Done 2026-10-09
       (ADR-229):* `whyNotWar` refuses (`Refusal.Overrun`) when the attacker or the
       defenders' leader is overrun; one test in `war.test.ts`, red first. The pin stays.
-    - [ ] 3.12Rr2 **Nobody is called to a war against a nation it is at war with already**
+    - [x] 3.12Rr2 **Nobody is called to a war against a nation it is at war with already**
       (tick 18,793: Estonia, at war with Germany in war 21 and holding 127,075 km² of it,
       was called to Latvia's side in war 44; its hold scored −100 against the land of
       Latvia and Estonia on the first day, Germany was crushed and the peace gave Estonia
@@ -5791,6 +5791,22 @@ quick sweep as a smoke test.
       counted again.
       AT: a unit test that fails first; `aiSweep` asserts that no war was declared and gone
       in one hour (it counts them today), green on its three seeds.
+      *Done 2026-10-09 (ADR-230):* a called nation at war with one of the other side stays
+      out by the steps that keep out one with a bond, its puppets with it; one test in
+      `war.test.ts`, red first. Nation 107 was Germany's puppet since a peace 55 days
+      before: no case. The pin moves (2104f897 → 92689265). `aiSweep` asserts it, but for
+      a war whose nation an older war ended in the hour (seed 3 has one now): 3.12Rr3.
+    - [ ] 3.12Rr3 **A war declared on a nation that an older war ends in that hour** (found
+      with 3.12Rr2's assertion; traced, `.cache/rr2-seed3.log`). Seed 3, tick 30,817: Poland
+      declared on nation 130, which had 52.2% of its 3,716 km² under the Soviet Union (war
+      80, score 40); the war pass of the hour annexed it whole in war 80's peace (a small
+      state) and Poland's war ended with it: no peace, no truce, nothing handed over.
+      `aiSweep` lets such a war pass and counts it (0, 0 and 1). Decide in DECISIONS: it
+      stays with the reason (the log reads true: a declaration, then the annexation by
+      another), or the AI declares no war on a leader that would lose its own war at the
+      next pass (what the pass would ask: the score, the small state), or `whyNotWar`
+      refuses it. If a rule is made, the assertion loses its exception.
+      AT: the decision with its reason; a unit test that fails first if a rule is made.
   - [ ] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found
     with 3.12Rp by a search; read, not run). These wrap whatever `settings.loopingMap`
     says: the reach of `supplySystem` (`supply.ts`, `(cx + dx + w) % w`: a formation on a

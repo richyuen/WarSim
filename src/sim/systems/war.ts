@@ -233,8 +233,8 @@ export function declareWar(world: World, attacker: number, target: number, alone
     }
     for (const m of allies(attacker)) add(ATTACKERS, defender, m);
   }
-  // Nobody but the two leaders stands against a nation it has a bond with (PLAN 3.8c): a nation
-  // torn between the sides stays out, with its puppets. In three steps, each on what the one
+  // Nobody but the two leaders stands against a nation it has a bond with (PLAN 3.8c), or is at
+  // war with: a nation torn between the sides stays out, with its puppets. In three steps, each on what the one
   // before left: who has a bond with the enemy's leader (a guarantor of the defender that is the
   // attacker's ally); then, of the puppets, each that has one with a nation of the other side
   // (a puppet in another alliance than its overlord does not fight its overlord's side, and does
@@ -242,9 +242,12 @@ export function declareWar(world: World, attacker: number, target: number, alone
   // Within a step the nations are asked in the order of the call, each against those of the
   // other side that the step has let stand: of two that are torn by each other alone, the one
   // called first fights.
+  // A nation at war already with one of the other side stays out as one with a bond does (PLAN
+  // 3.12Rr2, ADR-230): no pair is at war in two wars. What it held of the enemy in the first
+  // war was scored in the second on its first day, and the second's peace handed it over.
   // The puppet a declaration names stands as the leaders do: the war is about it (PLAN 3.8e1).
   const leader = (x: number): boolean => x === attacker || x === defender || x === target;
-  const bound = (x: number, enemies: number[]): boolean => enemies.some((o) => bond(world, x, o) !== Refusal.None);
+  const bound = (x: number, enemies: number[]): boolean => enemies.some((o) => world.wars.atWar(x, o) || bond(world, x, o) !== Refusal.None);
   const without = (sides: [number[], number[]], asked: (x: number) => boolean, enemiesOf: (s: number, stand: Set<number>) => number[]): [number[], number[]] => {
     const out = new Set<number>();
     const stand = new Set<number>();

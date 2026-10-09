@@ -509,4 +509,51 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(war.sides[1]).not.toContain(CZS); // would face its ally
     expect(w.wars.atWar(AUT, CZS)).toBe(false);
   });
+
+  // PLAN 3.12Rr2 (ADR-230): seed 2, tick 18,793: Estonia, at war with Germany and holding
+  // 127,075 km² of it, was called to its ally Latvia's side in a second war; its hold scored
+  // −100 on the first day and the peace of the new war gave it the land while the old went on.
+  it('nobody is called to a war against a nation it is at war with already', () => {
+    const [LAT, EST, LIT] = [nationId('LAT'), nationId('EST'), nationId('LIT')];
+    const alone = (): Sim => {
+      const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      for (const n of [GER, LAT, EST, LIT, FIN]) {
+        w.alliances.leave(n);
+        w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+        w.nations.cols.overlord[n] = 0;
+      }
+      w.nations.forEach((n) => {
+        if (w.nations.cols.overlord[n] === GER) w.nations.cols.overlord[n] = 0;
+      });
+      expect(w.alliances.create(LAT, [EST], 'alliance.defensive', 50)).not.toBeNull();
+      return s;
+    };
+    // Against the enemy's leader: Estonia is at war with Germany, Lithuania is its puppet and is not.
+    const s = alone();
+    const w = s.world;
+    w.nations.cols.overlord[LIT] = EST;
+    w.wars.set(EST, GER, true);
+    const old = w.wars.between(EST, GER)!.war;
+    for (const c of cellsOf(w, GER, (c) => -(c % W)).slice(0, 40)) w.setController(c, EST);
+    s.command({ kind: 'declareWar', attacker: GER, defender: LAT });
+    // Two days: the war pass of each 00:00 has run.
+    const ev = events(s, 48);
+    expect(ofKind(ev, EventKind.WarDeclared)).toEqual([[GER, LAT]]);
+    expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([]);
+    const war = w.wars.between(GER, LAT)!.war;
+    expect(war.sides).toEqual([[GER], [LAT]]); // Estonia stays out, and its puppet with it
+    expect(w.wars.between(EST, GER)!.war).toBe(old);
+    expect(w.wars.atWar(LIT, GER)).toBe(false);
+    // Two that are neither leader: Germany's ally Finland is at war with Estonia. The one called
+    // first fights (the defenders' allies are), the other stays out, as of two with a bond.
+    const t = alone();
+    expect(t.world.alliances.create(GER, [FIN], 'alliance.defensive', 50)).not.toBeNull();
+    t.world.wars.set(FIN, EST, true);
+    t.command({ kind: 'declareWar', attacker: GER, defender: LAT });
+    t.step(1);
+    expect(t.world.wars.between(GER, LAT)!.war.sides).toEqual([[GER], [LAT, EST]]);
+    expect(t.world.wars.list.filter((x) => x.sides.some((side) => side.includes(FIN))).length).toBe(1);
+  }, 60_000);
 });
