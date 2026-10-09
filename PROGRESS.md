@@ -12050,8 +12050,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `tests/unit/nationNames.test.ts` (three nations of one province, two
   provinces of one label, the numerals) and `tests/unit/workerLabels.test.ts` (a province
   made to revolt twice through the worker: the dead "Free Leningrad" and the living "Free
-  Leningrad II"). Failed first: the unit test on the code before had no `foundedNth` (its
-  three names were one). `tests/helpers/aiSweep.ts`: every day, no two living nations of
+  Leningrad II"). On the code before, the first failed for want of `foundedNth`, before its
+  names were compared; the second was run with the fix only. What shows the defect is the
+  sweep's count below. `tests/helpers/aiSweep.ts`: every day, no two living nations of
   one name, no war with a nation on both sides. Run by hand (`--config
   vitest.sweep.config.ts`, 189 s): green; namesakes lived on 2,221, 2,104 and 2,385 of
   3,650 days in seeds 1, 2 and 3, so the check would have failed in each before.

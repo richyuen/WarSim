@@ -191,7 +191,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - Every nation, the dead too: counted over the living alone, a nation would lose its
     numeral when its namesake died, and the log, which names a nation as it is read,
     would be rewritten.
-  - By id: a nation's row is never removed (`Table.remove` has no caller for nations), so
+  - By id: a nation's row is never removed (every `.remove(` of `src/` read: cities,
+    production, research, elements, formations and buffs; none of nations. The two
+    comments on "a reused id" in `spawnRebels` are of a case that does not occur. Should
+    nations ever be removed, the numeral must be kept in the state instead), so
     ids rise with the founding and are never given to another; an origin is written once,
     at the founding (a revival keeps it).
   - By the label, not the province: of 4,596 provinces 315 share their label with another
@@ -206,8 +209,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Cost.** One pass over the nations of a lower id for each name the worker gives (some
   200 nations): not measured.
 - **Consequences.** `tests/unit/nationNames.test.ts`: one province founds three nations
-  ("Free X", "Free X II", "Free X III"), two provinces of one label, the numerals (failed
-  first: no `foundedNth`; the three names were one). `tests/helpers/aiSweep.ts`: on every
+  ("Free X", "Free X II", "Free X III"), two provinces of one label, the numerals (on the
+  code before it failed for want of `foundedNth`, before its names were compared). `tests/helpers/aiSweep.ts`: on every
   day of ten years of three seeds no two living nations have one name, as the worker names
   them in English, and no war has a nation on both sides. Seeds 1, 2 and 3: namesakes
   lived on 2,221, 2,104 and 2,385 of 3,650 days (5, 3 and 4 more nations than names at
