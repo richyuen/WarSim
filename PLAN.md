@@ -5782,6 +5782,13 @@ quick sweep as a smoke test.
       the enemy's leader (as it leaves out a truce partner), or another rule with its
       reason; and what of two members at war already that are neither leader. The pin may
       move.
+      Seen in the same trace, not looked into (`.cache/rr-case1.log`): war 42, begun that
+      hour, was Germany and five more on nation 107 alone; war 44 has 107 on Germany's
+      side. A nation on the side of a leader it is at war with: find how 107 came there
+      (a puppet or ally called by `add`, or an alliance joined in the hour) before the rule
+      is chosen; "at war with the enemy's leader" does not cover it.
+      After 3.12Rr1 seed 2 has one such war left (the Latvian); seeds 1 and 3 were not
+      counted again.
       AT: a unit test that fails first; `aiSweep` asserts that no war was declared and gone
       in one hour (it counts them today), green on its three seeds.
   - [ ] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found
