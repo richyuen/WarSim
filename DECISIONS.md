@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-217 · 2026-10-09 · accepted — The bottom bar is as wide as its widest labels: one line, and no button steps at a pause (PLAN 3.12Rh1)
+
+- **Context.** 3.12Rh's pictures: "25 February 1939 · Paused" was two lines, the bar 52 px
+  for 40, its top inside the ticker's last row and the lowest war banners.
+- **Cause.** Not the date's least width of 10 rem. `.bottombar` is absolute at `left: 50%`
+  with no width, so its fit is the half of the view right of that: 700 px of 1,400. Its
+  buttons, which do not wrap, are wider than that, the bar fell to its least width, and
+  the date was the one item that could wrap. A date that fit 10 rem ("1 January 1938 ·
+  Paused") was one line.
+- **Decision.** The bar is `width: max-content` and the date does not wrap. And since the
+  bar is centred, a label that changes its width moves every button by half of it: the
+  pause button ("Pause", "Resume") and the date (each month, with and without "Paused")
+  keep the room of their widest text. `data-reserve` holds the texts, a line each, and
+  `.bar-reserve::after` lays them out at no height, hidden: any locale's widths, measured
+  by the browser, and not in the element's text (specs and screen readers read the label
+  alone). The date's reserve is day 28 of each month of the year with "Paused".
+- **Not chosen.** A least width in rem for the date: a figure for English alone. The
+  speed label keeps its 6.5 rem, and the map mode's button still changes with the mode:
+  neither changes at a pause.
+- **Consequences.** The bar is 989 px at 100%, 1,135 at 115% and 1,281 at 130% in any
+  view (it was 1,112 and 1,254 at 1,100 px wide, the date wrapped): 3.12Rh4's figures,
+  amended there. `tests/e2e/ticker1938.spec.ts`, a third test, at 30 September 1938 and
+  the three UI sizes: the bar's height and sides are those of 1 January's, the ticker's
+  foot is above its top (3.2, 5.3 and 6.4 px), and across a resume and a pause the bar,
+  the pause button's right, the "+" and the date's left stand still. On the code before:
+  "bar height paused at 1", 51.6 for 40.0.
+
 ### ADR-216 · 2026-10-09 · accepted — The ticker's room: two lines a row beside a panel, the war banners 18 rem from each side; at Max the ticker is a sample, counted (PLAN 3.12Rh)
 
 - **Context.** PLAN 3.12c gave the nation panel a height of the view less 12.5 rem, "above

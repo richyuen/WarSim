@@ -30,12 +30,22 @@ export interface BottomBarProps {
   playing?: { name: string; selected: number } | null;
 }
 
+/**
+ * Every month's longest date of a year with "Paused", a line each: the room the date keeps, so
+ * that the bar is as wide in any month, paused or not (PLAN 3.12Rh1).
+ */
+function widestDates(year: number): string {
+  const lines: string[] = [];
+  for (let month = 1; month <= 12; month++) lines.push(`${t('date.format', { day: 28, month: t(`month.${month}` as MessageKey), year })} · ${t('bar.paused')}`);
+  return lines.join('\n');
+}
+
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
 export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   return (
     <footer class="bottombar" data-testid="bottombar">
-      <button type="button" class="bar-btn" data-testid="pause-btn" aria-pressed={paused} onClick={onTogglePause}>
+      <button type="button" class="bar-btn bar-reserve" data-testid="pause-btn" data-reserve={paused ? t('bar.pause') : t('bar.resume')} aria-pressed={paused} onClick={onTogglePause}>
         {paused ? t('bar.resume') : t('bar.pause')}
       </button>
       <button type="button" class="bar-btn" data-testid="speed-down" aria-label={t('bar.speedDown')} disabled={speedLevel === 0} onClick={() => onSpeed(speedLevel - 1)}>
@@ -87,7 +97,7 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
           {t('player.playing', { name: playing.name, n: playing.selected })}
         </span>
       ) : null}
-      <span class="bar-date" data-testid="date-label">
+      <span class="bar-date bar-reserve" data-testid="date-label" data-reserve={widestDates(date.year)}>
         {t('date.format', { day: date.day, month: t(`month.${date.month}` as MessageKey), year: date.year })}
         {paused ? <span class="bar-paused"> · {t('bar.paused')}</span> : null}
       </span>

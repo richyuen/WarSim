@@ -11983,3 +11983,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rh1 (the paused bar's two lines).
+
+## 2026-10-09 — PLAN 3.12Rh1: the bottom bar is one line, and stands still at a pause
+
+- **Cause** (ADR-217): not the date's 10 rem. The bar is absolute at `left: 50%` with no
+  width: its fit was half the view (700 px of 1,400), less than its buttons, and the date
+  was the one item that could wrap.
+- **Done:** `.bottombar` is `width: max-content`, `.bar-date` does not wrap. The pause
+  button and the date keep the room of their widest text: `data-reserve` (the other label;
+  day 28 of each month with "Paused", a line each) laid out by `.bar-reserve::after` at no
+  height. The bar is 989 x 40 px at 100% (1,135 x 44 at 115%, 1,281 x 50 at 130%), its top
+  3.2 to 6.4 px below the ticker's foot.
+- **Tests:** `tests/e2e/ticker1938.spec.ts`, a third test (30 September 1938, the three UI
+  sizes), failed first on the code before at "bar height paused at 1" (51.6 for 40.0),
+  green now.
+- **Specs run by hand** (`--project chromium`): `ticker1938`, `speed`, `boot1938`, `title`,
+  `player1938`, `history1938` (17 tests, 44 s): green. Pictures looked at:
+  `docs/evidence/3.12/h1-bar-paused-1.png` and `-1.3.png` (one line, clear of five ticker
+  rows and three rows of banners).
+- **Gotcha:** `EVIDENCE=1` on six spec files rewrote 24 pictures of other tasks; they were
+  restored (`docs/evidence/1.8/bottom-bar-paused.png` kept: it is this bar's picture).
+- **Left for 3.12Rh4:** the bar is now wider than a 1,100 px view at 115 and 130% by more
+  than before (1,135 and 1,281 px); at 100% it fits (989).
+- **Performance:** not measured: CSS, and twelve short strings a render of the bar; no sim
+  change, the pin unmoved.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rh2 (at Max a message drops major events: the cue and the row).

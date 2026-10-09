@@ -5475,7 +5475,7 @@ quick sweep as a smoke test.
       (median), 28 of 155 with more than five major events (14 at most), 69 of 492 rows
       never in a message (28 of 154 wars declared). Found and not fixed here: 3.12Rh1 to
       3.12Rh4.
-  - [ ] 3.12Rh1 **The paused bar is two lines and stands under the ticker and the war
+  - [x] 3.12Rh1 **The paused bar is two lines and stands under the ticker and the war
     banners** (3.12Rh's pictures). `.bar-date` has a least width of 10 rem and wraps: "25
     February 1939 · Paused" is two lines, the bar 52 px for 43, and its top 9 px inside the
     ticker's last row and the lowest banners (1400 x 800, 100%); "1 January 1938 · Paused"
@@ -5483,6 +5483,13 @@ quick sweep as a smoke test.
     its buttons when the game is paused or resumed.
     AT: `speed.spec.ts` or the ticker's spec: the bar's height paused and running is one,
     at a date of the longest month; the ticker's foot is above the bar's top.
+    - Done 2026-10-09 (ADR-217): the cause was the bar, not the date: at `left: 50%` with
+      no width its fit was half the view, less than its buttons, and the date alone could
+      wrap. The bar is `width: max-content`, the date does not wrap, and the pause button
+      and the date keep the room of their widest text (`data-reserve`, `.bar-reserve`):
+      989 x 40 px at 100% in every month, paused or not. `ticker1938.spec.ts`, a third
+      test at 30 September and the three UI sizes, failed first ("bar height paused at 1":
+      51.6 for 40.0).
   - [ ] 3.12Rh2 **At Max a message drops major events: their cue, and their row** (3.12Rh's
     count: 18% of the messages bring more than five, 14% of the rows are in no message, 28
     of 154 wars declared). The ticker tells the last five of the worker's log, and the cue
@@ -5503,7 +5510,8 @@ quick sweep as a smoke test.
     war has a nation on both sides.
   - [ ] 3.12Rh4 **A view 1,100 px wide at the UI sizes above 100%** (3.12Rh's pictures):
     the bottom bar is 1,112 px at 115% and 1,254 px at 130% and runs off both sides (the
-    pause button and the date are cut); at 130% the History panel stands over the nation
+    pause button and the date are cut; since 3.12Rh1 the date is one line and the bar 989,
+    1,135 and 1,281 px at 100, 115 and 130%, in any view); at 130% the History panel stands over the nation
     panel's right 79 px and the war banners over both. Say in SPEC the least view each UI
     size is laid out for, and below it the bar wraps or the size is not offered.
     With it (3.12Rh's review): the banners' 36 rem is the ticker's room (17.5 rem), not the

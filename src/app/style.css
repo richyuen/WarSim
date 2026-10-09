@@ -72,6 +72,8 @@ body {
   bottom: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
+  /* As wide as its buttons: at `left: 50%` the fit is half the view, and the date wrapped (PLAN 3.12Rh1). */
+  width: max-content;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -108,8 +110,19 @@ body {
 }
 
 .bar-date {
-  min-width: 10rem;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
+}
+
+/* The room of the widest text an element will hold, a line each in `data-reserve`: the bar is
+   centred, and a label that changes its width moves every button (PLAN 3.12Rh1). */
+.bar-reserve::after {
+  content: attr(data-reserve);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  white-space: pre;
 }
 
 .bar-paused {

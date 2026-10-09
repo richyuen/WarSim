@@ -162,3 +162,57 @@ test('the ticker keeps its room beside a panel at its full height and the war ba
   }
   await page.evaluate(() => window.__warsim!.settings.setUiScale(1));
 });
+
+// PLAN 3.12Rh1: the bottom bar is one line with the longest date and "Paused" (it was two, and
+// its top inside the ticker's last row), and as wide paused as running: no button steps.
+test('the bottom bar is one line under the ticker, and no button steps at a pause, at every UI size', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const box = (testid: string): Promise<{ left: number; right: number; top: number; bottom: number }> =>
+    page.evaluate((testid) => {
+      const r = document.querySelector(`[data-testid="${testid}"]`)!.getBoundingClientRect();
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
+    }, testid);
+  const date = page.getByTestId('date-label');
+  await expect(date).toHaveText('1 January 1938 · Paused');
+  const short: Record<number, { left: number; right: number; top: number; bottom: number }> = {};
+  for (const scale of [1, 1.15, 1.3]) {
+    await page.evaluate((v) => window.__warsim!.settings.setUiScale(v), scale);
+    short[scale] = await box('bottombar');
+  }
+  // The longest month, a day of two digits.
+  await page.evaluate(() => window.__warsim!.sim.step(24 * 272));
+  await expect(date).toHaveText('30 September 1938 · Paused', { timeout: 120_000 });
+  const ev = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.12') : info.outputPath();
+  mkdirSync(ev, { recursive: true });
+
+  for (const scale of [1, 1.15, 1.3]) {
+    await page.evaluate((v) => window.__warsim!.settings.setUiScale(v), scale);
+    const paused = { bar: await box('bottombar'), pause: await box('pause-btn'), speed: await box('speed-up'), date: await box('date-label') };
+    // One line, as the short date's bar is, and no wider or narrower than it.
+    expect(paused.bar.bottom - paused.bar.top, `bar height paused at ${scale}`).toBeCloseTo(short[scale]!.bottom - short[scale]!.top, 1);
+    expect(paused.bar.left, `bar left with the long date at ${scale}`).toBeCloseTo(short[scale]!.left, 1);
+    expect(paused.bar.right, `bar right with the long date at ${scale}`).toBeCloseTo(short[scale]!.right, 1);
+    // The ticker's foot (and the banners', at the same height) is above the bar.
+    expect((await box('ticker')).bottom, `ticker above the bar at ${scale}`).toBeLessThanOrEqual(paused.bar.top + 0.5);
+    await page.screenshot({ path: path.join(ev, `h1-bar-paused-${scale}.png`) });
+    console.log(`bar at ${scale}: ${(paused.bar.right - paused.bar.left).toFixed(1)} x ${(paused.bar.bottom - paused.bar.top).toFixed(1)} px, its top ${(paused.bar.top - (await box('ticker')).bottom).toFixed(1)} px below the ticker`);
+
+    // Resumed: the same bar, every button where it was.
+    await page.getByTestId('pause-btn').click();
+    await expect(page.getByTestId('pause-btn')).toHaveAttribute('aria-pressed', 'false');
+    await expect(date).not.toContainText('Paused');
+    const running = { bar: await box('bottombar'), pause: await box('pause-btn'), speed: await box('speed-up'), date: await box('date-label') };
+    await page.getByTestId('pause-btn').click();
+    await expect(page.getByTestId('pause-btn')).toHaveAttribute('aria-pressed', 'true');
+    await expect(date).toContainText('Paused');
+    expect(running.bar.bottom - running.bar.top, `bar height running at ${scale}`).toBeCloseTo(paused.bar.bottom - paused.bar.top, 1);
+    expect(running.bar.left, `bar left running at ${scale}`).toBeCloseTo(paused.bar.left, 1);
+    expect(running.pause.right, `pause button's right running at ${scale}`).toBeCloseTo(paused.pause.right, 1);
+    expect(running.speed.left, `speed button running at ${scale}`).toBeCloseTo(paused.speed.left, 1);
+    expect(running.date.left, `date running at ${scale}`).toBeCloseTo(paused.date.left, 1);
+  }
+  await page.evaluate(() => window.__warsim!.settings.setUiScale(1));
+});
