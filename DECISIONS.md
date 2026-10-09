@@ -167,6 +167,46 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-249 · 2026-10-09 · accepted — A tag does not take a place by its block where a tag placed before it is nearer to its block's middle (PLAN 4.2b1)
+
+- **Context.** Found by the browser suite of PLAN 4.2b (the fleets of the 1938 start,
+  ADR-248; written first, in a stash while this was mended, committed after it). With the
+  fleets `tags1938` failed at 150 m/px: "formation 1252's tag has a line". Its two
+  divisions, a German one west and a Polish one east, stand in contact side by side. An
+  element picks its target by a hash of its id, and with the fleets' 1,786 elements before
+  them the two divisions' elements have other ids: after the spec's hours the Polish
+  division had 12,447 men and the German one 12,446, where the western one had been the
+  stronger.
+- **What happened.** `layoutTags` places the stronger first. The Polish tag took "above"
+  (its foot at 380). The German tag's "above" lay on it, so it took "below" (its top at
+  421), 3.7 px off its block. From the middle of the German block the Polish tag was
+  20.3 px away and its own 20.7: by ADR-188 a tag that another is nearer to its block's
+  middle than has a line.
+- **Why the spec had passed.** PLAN 3.11f mended the same view with the western division
+  the stronger: a place by the block is not taken when it is nearer to *another* block's
+  middle than that block's own tag (the first pass of the placing). Its mirror was not
+  asked: a place that another tag is nearer to *this* block's middle than. Which of the two
+  the view needs goes by the blocks' edges to a part of a pixel, and those by which
+  elements have fallen.
+- **Decision.** The first pass asks both. A place by the block (above, below, left, right)
+  is passed over when a tag placed before it is nearer to this block's middle than the
+  place is; the next place by the block is taken, here the one beside it. The later
+  passes are as they were: with no such place the tag stands where it did and has its line
+  (ADR-188). View only (`src/render/units/tags.ts`).
+- **A tag of ADR-188 moves.** The tank brigade of that decision (a column 69 px tall, a
+  division's tag over its top) had its tag below its column with a line; the place beside
+  the column is free there, and the tag stands in it now, 25 px from the column's middle
+  where the division's is 36, with no line. ADR-188 said "no tag moves" and weighed two
+  other ways of placing (the places in the order of the block's shape; a gap clear of
+  other formations' elements); this one moves only a tag that would have a line, and only
+  to a place by its own block. The unit test of that view is changed to say so, and a new
+  one holds the line where no place by the column is clear.
+- **Tests.** `tags.test.ts`: the two blocks with the eastern the stronger (neither has a
+  line, the western tag beside its block; it fails without the rule); the brigade's view
+  (changed); the brigade with a block in its side place (new: below, with its line).
+- **Not looked at.** A view with many blocks, where a tag passes over above and below and
+  both sides are on other elements: the second pass places it as before.
+
 ### ADR-247 · 2026-10-09 · accepted — A fleet is a formation of a sea template; the sea's templates and units stand after the land's (PLAN 4.2a)
 
 - **Context.** PLAN 4.2 ("fleets and ship element types, movement along the lanes") was

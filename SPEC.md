@@ -2007,7 +2007,9 @@ is the formation's strength, which the sim recomputes from its elements at each 
   and counted (`tagsLeft`). It is tied to its elements, in three passes over those places
   (`layoutTags`). First a place by the block (the first on each side) that is clear of
   every other formation's elements and not nearer to the middle of another block than that
-  block's own tag, placed before it (PLAN 3.11f1, ADR-207). Then the nearest place clear of
+  block's own tag, placed before it (PLAN 3.11f1, ADR-207), nor further from its own
+  block's middle than a tag placed before it is (PLAN 4.2b1, ADR-249: it would have the
+  line of ADR-188 where a place beside the block has none). Then the nearest place clear of
   other formations' elements (PLAN 3.7g, ADR-168). With none, any place free of tags. A tag
   has a thin line in its nation's colour to the middle of its elements in the view when it
   stands more than `TAG_GAP` + 1 px (5) from their box (ADR-168), and when another placed

@@ -6334,3 +6334,23 @@ Of 4.2 (open in PLAN.md):
     builds or places one yet.
     AT: the land templates and units keep their indices; a sea template holds sea units only;
     an order to build one and a spawn of one are refused; the pin stays.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.2 (open in PLAN.md):
+
+  - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a
+    stash; committed after this): a tag does not take a place by its block where a tag
+    placed before it is nearer to its block's middle. With the fleets `tags1938` had its
+    Polish division the stronger by a man, and the German one's tag below with a line.
+    AT: two blocks side by side with the eastern the stronger: neither tag has a line (unit;
+    it fails without the rule); `tags1938` on the game with the fleets.

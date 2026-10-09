@@ -46,6 +46,7 @@ quick sweep as a smoke test.
     income before placing them, and the starting treasury with them (`startTreasury`). The
     page names a formation by the land templates' list (`MapView.templates`): a fleet needs
     its name there. A new land template moves the fleets' indices.
+  - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
   - [ ] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found
     once at the order, the place cell by cell over its edges, a passage one step of its km, at
     the pace of its slowest ship.

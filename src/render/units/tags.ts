@@ -147,6 +147,8 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       if (rx <= maxX) tries.push({ x: rx, y });
       if (k === 0) byBlock = tries.length;
     }
+    const tx = (vx0 + vx1) / 2;
+    const ty = (vy0 + vy1) / 2;
     let done = false;
     // First a place by the block, clear of every other formation's elements, that is not
     // nearer to the middle of another block than that block's own tag, placed before it (PLAN
@@ -159,6 +161,9 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
         if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
         if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
         if (pass === 0 && placed.some((p) => far(box, p.tx, p.ty) < far(p, p.tx, p.ty))) continue;
+        // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
+        // 4.2b1): it would have a line (ADR-188) where a place by the block has none.
+        if (pass === 0 && placed.some((p) => far(p, tx, ty) < far(box, tx, ty))) continue;
         // How far the tag's box is from its elements' (0 when it lies on them).
         const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
         placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx: (vx0 + vx1) / 2, ty: (vy0 + vy1) / 2, flag: false });

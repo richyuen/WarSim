@@ -13207,3 +13207,35 @@ No rule changed and nothing on screen changed. One task came out of it.
   air units (`data/units/air.json`) are still read by nothing.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.2b (fleets in the 1938 order of battle, standing at their ports' water).
+
+## 2026-10-09 — PLAN 4.2b1: a tag's place by its block, the mirror of PLAN 3.11f (ADR-249)
+
+- **Found by the browser suite of PLAN 4.2b** (the fleets of the 1938 start: written and
+  tested first, in a stash for this commit, the next one). I ran the whole suite by hand
+  for it, as it changes the start of every 1938 game: 162 passed, one failed, `tags1938`
+  at 150 m/px: "formation 1252's tag has a line".
+- **The cause** (a line printed from the spec, taken out again): the spec's two divisions
+  stand side by side in contact; with the fleets' elements before theirs they have other
+  ids, an element picks its target by its id, and after the spec's hours the Polish
+  division (east) had 12,447 men and the German one 12,446. The stronger is placed first:
+  the Polish tag above, the German one below, 20.7 px from its block's middle where the
+  Polish tag is 20.3. A line (ADR-188). PLAN 3.11f had mended the view with the western
+  division the stronger and had not asked its mirror.
+- **Done:** the first pass of `layoutTags` passes over a place by the block that a tag
+  placed before it is nearer to the block's middle than; the tag takes the next place by
+  its block (beside it). Five lines of `tags.ts`.
+- **A tag of ADR-188 moves:** the tank brigade's tag of that decision's view stands beside
+  its column with no line, where it stood below with one. Its unit test is changed to
+  that, and one more holds the line where the side place is on another block.
+- **Tests:** `tags.test.ts`, 22 (two new, one changed). Without the rule the new one of
+  the two blocks fails. The first figures I gave its eastern block did not make the case:
+  PLAN 3.11f's rule sent the tag beside the block already, and the test passed without
+  the rule. The block's foot is 416.5 now, and it fails without it.
+- **By hand, the specs that show tags,** on this commit (no fleets) and on the fleets:
+  `battleView1938`, `formationPanel1938`, `seamFight1938`, `tags1938`, `tankBattle1938`,
+  `toBattle1938`, `fightSeen1938`, `formationFight1938`: 14 tests in 7.3 min, green on this
+  commit; the first six, 11 tests in 3.5 min, green on the fleets with this rule.
+- **No rule changed,** the pin stays (`da977ca2`). **No sweep** (ADR-58).
+- **Not looked at:** the picture of the brigade's tag in the tank battle demo; a view
+  with many blocks.
+- **Next:** PLAN 4.2b, the fleets.

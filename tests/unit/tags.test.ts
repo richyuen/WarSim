@@ -158,17 +158,29 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
     const wide = (text: string): number => (text === 'Tank brigade 395' ? 71 : text.startsWith('Light') ? 106 : 30);
     const far = (t: { x: number; y: number; w: number; h: number }, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
 
-    it('the view of the demo: the brigade\'s tag is where it was, a gap below its column, and has a line; the others have none', () => {
+    // Until PLAN 4.2b1 (ADR-249) the brigade's tag stood below its column (647, 439) with a
+    // line: the division's tag was nearer to the column's middle. Such a place is not taken
+    // now while a place by the block has no nearer tag: it stands beside the column.
+    it('the view of the demo: the brigade\'s tag stands beside its column, a gap off, the nearest tag to its middle, and none has a line', () => {
       const { placed, left } = layoutTags([brigade, east, south], wide, 1400, 800);
       expect(left).toBe(0);
       const of = (id: number): (typeof placed)[number] => placed.find((t) => t.id === id)!;
       expect([of(410).x, of(410).y, of(410).w]).toEqual([680, 335, 112]);
-      expect([of(395).x, of(395).y, of(395).w]).toEqual([647, 439, 77]);
-      expect(of(395).gap).toBeCloseTo(TAG_GAP, 5);
-      // The division's tag is nearer to the middle of the column than the brigade's own.
+      expect([of(395).x, of(395).y, of(395).w]).toEqual([Math.round(664.3 - TAG_GAP - 77), Math.round((366.4 + 435) / 2 - of(395).h / 2), 77]);
+      expect(of(395).gap).toBeLessThanOrEqual(TAG_GAP + 1);
+      // The division's tag is further from the middle of the column than the brigade's own.
       const [mx, my] = [of(395).tx, of(395).ty];
-      expect(far(of(410), mx, my)).toBeLessThan(far(of(395), mx, my));
-      expect(placed.filter((t) => t.line).map((t) => t.id)).toEqual([395]);
+      expect(far(of(410), mx, my)).toBeGreaterThan(far(of(395), mx, my));
+      expect(placed.filter((t) => t.line).map((t) => t.id)).toEqual([]);
+    });
+
+    it('with no place by its column clear of the others, the brigade\'s tag stands below as it did, and has its line', () => {
+      // A block west of the column: the place beside it is on that block's elements.
+      const west = named(300, 500, 'Tank brigade 300', 590, 380, 650, 420);
+      const { placed } = layoutTags([brigade, east, south, west], wide, 1400, 800);
+      const t = placed.find((p) => p.id === 395)!;
+      expect([t.x, t.y]).toEqual([647, 439]);
+      expect(t.line).toBe(true);
     });
 
     it('every tag is the nearest to the middle of its own elements or has a line to them', () => {
@@ -209,6 +221,29 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
         for (const o of placed) if (o !== t) expect(far(o, t.tx, t.ty), `the tag of ${o.id} from the middle of ${t.id}`).toBeGreaterThan(far(t, t.tx, t.ty));
       }
       expect(layoutTags([east, west], measure, 1400, 800).placed).toEqual(placed);
+    });
+
+    // PLAN 4.2b1 (ADR-249): the two with the eastern one the stronger by a man, as `tags1938`
+    // had them once the start of 1938 held fleets (which of the two loses a man more goes by
+    // the ids of their elements): the eastern block's top at 383.76 and the western one's foot
+    // at 417.28, from the tags' gaps in that view; the other edges near those above. The
+    // eastern tag is above, its foot at 380; the western one's "below", at 421, is 20.7 px
+    // from its own block's middle and the eastern tag 20.3: it had a line (ADR-188).
+    it('the eastern block the stronger: the western tag stands beside its block, and neither has a line', () => {
+      const [w2, e2] = [item(1055, 12446, 679.9, 383.4, 698, 417.28), item(1056, 12447, 701.7, 383.76, 719.6, 416.5)];
+      const { placed, left } = layoutTags([w2, e2], measure, 1400, 800);
+      expect(left).toBe(0);
+      const [w, e] = [placed.find((t) => t.id === 1055)!, placed.find((t) => t.id === 1056)!];
+      expect(e.y).toBe(Math.round(383.76 - TAG_GAP - e.h));
+      // Its place below is the one a reader would take for the other block's.
+      expect(far(e, w.tx, w.ty)).toBeLessThan(far({ x: w.x, y: Math.round(417.28 + TAG_GAP), w: w.w, h: w.h }, w.tx, w.ty));
+      expect(w.x).toBe(Math.round(679.9 - TAG_GAP - w.w));
+      for (const t of placed) {
+        expect(t.gap, `the gap of ${t.id}`).toBeLessThanOrEqual(TAG_GAP + 1);
+        expect(t.line, `the line of ${t.id}`).toBe(false);
+        for (const o of placed) if (o !== t) expect(far(o, t.tx, t.ty), `the tag of ${o.id} from the middle of ${t.id}`).toBeGreaterThan(far(t, t.tx, t.ty));
+      }
+      expect(layoutTags([e2, w2], measure, 1400, 800).placed).toEqual(placed);
     });
 
     it('with no other place clear of the first block, the tag stands below as before, and the first has its line', () => {
