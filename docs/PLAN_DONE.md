@@ -5912,3 +5912,81 @@ Of 3.12R (open in PLAN.md):
     **Done 2026-10-09 (ADR-228).** Refused (`Refusal.AtSea`), not moved: the cell of the
     stand point has no component of the route grid, or the place is off the map. Two tests
     in `refusal.test.ts`, the first red first. The coast as before. The pin stays (2104f897).
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+
+Of 3.12R (open in PLAN.md):
+
+  - [x] 3.12Rr **A war is not declared and ended in one hour** (found with 3.12Rn; the hour's
+    events run, the cause read, not traced; `.cache/rn-short.ts <seed>`). Seed 2, ten
+    years, 2 of 244 wars: tick 18,793, "Germany declared war on Latvia" and "Latvia made
+    peace with Germany"; tick 85,369, nation 202 on nation 174 and 202 the winner. The
+    day's `warSystem` runs after the strategic AI's declaration and ends at ±100 a war one
+    of whose leaders has 75% of its land under occupiers of any war (`overrun`): the new
+    enemy wins a war of no hours, takes what it holds of the loser (nothing) or annexes a
+    loser under 8,500 km², and a truce of two years begins. A second cause the same
+    system has, read too: a leader that is broke (`gold < 0` or `bankrupt`) sues on the
+    day the war is first judged, at score 0 the attackers have the tie, and a white peace
+    and the truce follow. The first case needs a score under 0 (the defender wins): the
+    attacker overrun. The second fits either (the defender overrun, or broke). Trace both
+    first (of each leader at the tick: its land under occupiers and whose, its gold and
+    `bankrupt`; what the peace handed over). Then decide in DECISIONS, for each cause that
+    is found: an overrun nation declares no war and none is declared on it (`whyNotWar` or
+    the AI), the capitulation asks only the war's own occupiers on its first day, the AI
+    declares no war on a broke nation and a broke one declares none, or it stays with the
+    reason. The pin may move.
+    AT: a unit test that fails first; in ten years of the sweep seeds no war is declared
+    and gone in one hour (`aiSweep` counts them: 0, 2 and 0 today).
+    **Traced 2026-10-09** (`.cache/rr-trace.ts`): two causes, one a case; split (one cause
+    per commit). The broke leader was the cause of neither (all four leaders had gold, none
+    bankrupt): read, never seen, nothing made for it.
+    - [x] 3.12Rr1 **No war on or by an overrun nation** (tick 85,369: nation 174 had 81.2%
+      of its land under nation 170, in a war it does not lead). *Done 2026-10-09
+      (ADR-229):* `whyNotWar` refuses (`Refusal.Overrun`) when the attacker or the
+      defenders' leader is overrun; one test in `war.test.ts`, red first. The pin stays.
+    - [x] 3.12Rr2 **Nobody is called to a war against a nation it is at war with already**
+      (tick 18,793: Estonia, at war with Germany in war 21 and holding 127,075 km² of it,
+      was called to Latvia's side in war 44; its hold scored −100 against the land of
+      Latvia and Estonia on the first day, Germany was crushed and the peace gave Estonia
+      the land while war 21 went on). `Wars.between` and `noteCapitalCaptured` take one war
+      of a pair. Decide in DECISIONS: `add` in `declareWar` leaves out a nation at war with
+      the enemy's leader (as it leaves out a truce partner), or another rule with its
+      reason; and what of two members at war already that are neither leader. The pin may
+      move.
+      Seen in the same trace, not looked into (`.cache/rr-case1.log`): war 42, begun that
+      hour, was Germany and five more on nation 107 alone; war 44 has 107 on Germany's
+      side. A nation on the side of a leader it is at war with: find how 107 came there
+      (a puppet or ally called by `add`, or an alliance joined in the hour) before the rule
+      is chosen; "at war with the enemy's leader" does not cover it.
+      After 3.12Rr1 seed 2 has one such war left (the Latvian); seeds 1 and 3 were not
+      counted again.
+      AT: a unit test that fails first; `aiSweep` asserts that no war was declared and gone
+      in one hour (it counts them today), green on its three seeds.
+      *Done 2026-10-09 (ADR-230):* a called nation at war with one of the other side stays
+      out by the steps that keep out one with a bond, its puppets with it; one test in
+      `war.test.ts`, red first. Nation 107 was Germany's puppet since a peace 55 days
+      before: no case. The pin moves (2104f897 → 92689265). `aiSweep` asserts it, but for
+      a war whose nation an older war ended in the hour (seed 3 has one now): 3.12Rr3.
+    - [x] 3.12Rr3 **A war declared on a nation that an older war ends in that hour** (found
+      with 3.12Rr2's assertion; traced, `.cache/rr2-seed3.log`). Seed 3, tick 30,817: Poland
+      declared on nation 130, which had 52.2% of its 3,716 km² under the Soviet Union (war
+      80, score 40); the war pass of the hour annexed it whole in war 80's peace (a small
+      state) and Poland's war ended with it: no peace, no truce, nothing handed over.
+      `aiSweep` lets such a war pass and counts it (0, 0 and 1). Decide in DECISIONS: it
+      stays with the reason (the log reads true: a declaration, then the annexation by
+      another), or the AI declares no war on a leader that would lose its own war at the
+      next pass (what the pass would ask: the score, the small state), or `whyNotWar`
+      refuses it. If a rule is made, the assertion loses its exception.
+      AT: the decision with its reason; a unit test that fails first if a rule is made.
+      *Done 2026-10-09 (ADR-232):* it stays. Traced (`.cache/rr3-pass.ts`): war 80 ended
+      because nation 130 was crushed (68.1% held after the hour's flips, a score of 100; the
+      40 was a day old), not by the capitulation. Poland got no truce, no land, no puppet;
+      the log reads true. No rule, no test; `aiSweep` keeps its exception and its count.

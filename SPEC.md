@@ -612,7 +612,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose
     leader has lost ≥ 75% of its own land to occupiers of any war, loses at ±100 at once, fight
     to the death or not. No war is declared when one of the two that would lead its sides is
-    overrun so (`Refusal.Overrun`; PLAN 3.12Rr1, ADR-229): it was over in the hour.
+    overrun so (`Refusal.Overrun`; PLAN 3.12Rr1, ADR-229): it was over in the hour. A war
+    may be declared on a nation that another war is about to end (crushed, and annexed whole
+    as a small state): it ends with its nation, with no peace and no truce (ADR-232).
   - *Deadlock (ADR-47):* a war older than 5 years ends on its score, fight to the death or not.
   - *After peace:* a 2-year truce between the leaders. Idle formations left on land of a nation
     they are not at war with march home (`repatriationSystem`, daily): to the nearest cell of

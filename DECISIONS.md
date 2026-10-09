@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-232 · 2026-10-09 · accepted — A war declared on a nation that an older war ends in that hour stays as it is (PLAN 3.12Rr3)
+
+- **Context.** The one war of the sweep seeds that is still declared and gone in its hour
+  (ADR-230): seed 3, tick 30,817, Poland on nation 130, a state of 3,716 km² that the
+  Soviet Union and nine more had been at war with for seven days (war 80).
+- **Traced** (`.cache/rr3-trace.ts`, the days before; `.cache/rr3-pass.ts`, nation 130
+  before each system of the hour). War 80's score was 16 two days before and 40 the day
+  before: the score is the daily pass's and a day old. On the live tallies 130 had 1,939
+  km² under occupiers when Poland declared (52.2%, a score of 100 already), and 2,532 km²
+  (68.1%) after `territorySystem` of that hour. The pass scored 100: the defender was
+  crushed (`CRUSHED`, 90) and sued, and the winner annexed a loser under 8,500 km² whole.
+  Not the capitulation (under 75%), not gold (150, not bankrupt), not the men (9,523 of
+  12,268), not the deadlock. Poland's war 82 ended with its nation: no peace of its own, no
+  truce (Poland may declare on anyone the next day), no land or puppet to Poland.
+- **Decision.** It stays. No rule is made; `aiSweep` keeps its exception (a war whose
+  nation was at war as the hour began and dead by its end) and counts such wars.
+- **Why.** The two rules before it mended wars that gave something for nothing: a truce of
+  two years or a small state to a nation that never fought (ADR-229), German land to
+  Estonia while the war it was taken in went on (ADR-230). This one gives nothing to
+  anyone, and the log reads true: Poland declared, the Soviet Union made peace and
+  annexed. The hour is no line either: had Poland declared a day before, its war would
+  have been a day old when it ended the same way.
+- **The rule that could be written, and is not.** The end could be seen at the
+  declaration: a target that leads a war in which, on the live tallies, it is crushed (or
+  would be annexed whole: a loser at 10 or more with under 8,500 km²). `whyNotWar` could
+  refuse it. It would cost the score of each war of each target the AI weighs, and it
+  would be a rule about who may join in on a dying state, which is balance (ADR-58), with
+  no defect to mend. A forecast of the pass by exhaustion (the men) is not one that can be
+  made at the declaration at all.
+- **What it leaves.** A nation can declare on one that another is about to annex and get
+  nothing. How often: 0, 0 and 1 of 303, 178 and 204 wars in ten years of seeds 1, 2 and
+  3. For Phase 7 if the count grows (the stderr line of `aiSweep` has it).
+- **Tests.** None new: no rule. `aiSweep`'s assertion of ADR-230 stands as it was.
+- **The pin stays** (92689265): no code changed.
+
 ### ADR-231 · 2026-10-09 · accepted — PLAN.md holds what is still to do; the text of done tasks is in docs/PLAN_DONE.md (the user's decision)
 
 - **Context.** PLAN.md was 528 KB and 6,348 lines: 389 boxes ticked, 38 open. PROMPT step 1

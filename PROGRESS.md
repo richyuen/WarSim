@@ -12586,3 +12586,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** notes that a moved task carried for a later one were not searched for.
   DECISIONS.md, PROGRESS.md and SPEC.md are as they were.
 - **Next:** PLAN 3.12Rr3, as before.
+
+## 2026-10-09 — PLAN 3.12Rr3: a war declared on a nation that an older war ends in that hour stays (ADR-232)
+
+- **Traced before deciding** (`.cache/rr3-trace.ts`, `.cache/rr3-pass.ts`; seed 3, tick
+  30,817): the state an hour before tripped no rule of the pass (score 40, exhaustion
+  26.7, gold 150, 52.2% held). The 40 was a day old: the score is written by the daily
+  pass. Nation 130 had 1,939 of 3,716 km² under occupiers when Poland declared and 2,532
+  (68.1%) after `territorySystem` of the hour; the pass scored 100, it was crushed and
+  sued, and the Soviet Union annexed a state under 8,500 km² whole. Not the capitulation,
+  not gold, not the men, not the deadlock.
+- **Decided:** it stays; no rule. Poland got no truce, no land and no puppet, and the log
+  reads true. The rules of ADR-229 and ADR-230 mended wars that gave something for
+  nothing; this gives nothing. A rule could be written (a target crushed on the live
+  tallies in a war it leads) and would be balance (ADR-58).
+- **Gotcha:** `war.score` between passes is yesterday's. A trace that prints it beside the
+  live tallies shows two days.
+- **Done with it:** PLAN 3.12Rr3 and 3.12Rr ticked (parts: no e2e), archived
+  (`npm run plan:archive`: one task moved). SPEC §7 has a line. No code changed: the pin
+  stays (92689265), no test new, `aiSweep` as it was (counts 0, 0 and 1).
+- **Gate:** `npm run check`, documents only: parity (`.cache/gate-rr3.log`).
+- **Next:** PLAN 3.12Rs (nothing of the sim joins the two edges of a map that does not
+  loop), then 3.12Rj and 3.12Ri.
