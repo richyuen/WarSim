@@ -347,6 +347,16 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   - *In a cell* (a path's cells, a spawn, a move by the editor) it stands at the middle when
     that is surely land (the four mask pixels round the middle are land), and else at the
     cell's land point: the middle of the cell's pixel furthest from water (`World.cellPoint`).
+  - *On the march* (PLAN 4.1d2, ADR-246) it is on the straight line between the points of
+    the step's two cells where that line is clear of water (`lineClear`: every square between
+    four pixels' middles that it passes has four land pixels), and else on the step's way
+    over land (`landWay`, `World.stepWay`: over land pixels, 8-way, no corner of water cut,
+    in the box of the two cells and the cells beside it of the same land on the cell grid),
+    as far along its length as the share of the step done, facing along its piece
+    (`stepPlace`). The step's time is that of the cell grid
+    either way. Derived from the mask, not state. 12,999 of the 2,437,895 steps of the 1938
+    map at M have a way; 4,645 are not clear and have none (a river of the mask, a long bay)
+    and keep the line.
   - *At a given place* (the order of battle's, a capital's, a command's) it stands there when
     that is surely land, and else at its cell's point (`World.standPoint`).
   - *By a city* (a division mustered in a theatre: PLAN 2.11k) it stands at the city's own

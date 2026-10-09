@@ -23,28 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases.
-  From the Phase 2 review (PLAN 2.11c, 2026-10-05): a march goes straight from one cell's land
-  point to the next and can cross a bay (1 of 430 formations on the march was over the fine
-  mask's water at day 90 of seed 99, none of 134 at day 30). It needs routing below the cell
-  or along the coast, and belongs with the crossings.
-  AT: every coastal province with a port connects to the lane graph; zone count within range.
-  Split 2026-10-09 (one cause per commit), in this order:
-  - [x] 4.1a The sea zones: the seeds of the named seas (`data/maps/earth/seas.json`, made by […]
-  - [x] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings' […]
-  - [x] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by […]
-  - [ ] 4.1d The march over a bay (the Phase 2 review's line above): routing below the cell
-    or along the coast. It changes land paths: the pin moves, with an ADR.
-    AT: on seed 99 at day 90 no formation on the march is over the fine mask's water.
-    Split 2026-10-09 (one cause per commit): written and gated as one, the gate failed
-    `warBattle.test.ts` on a defect of the camera that the game before had hidden.
-    - [x] 4.1d1 The camera of a war's battle holds two blocks that water keeps apart.
-      AT: two divisions in contact on two shores: both whole in the view the camera takes.
-      Done 2026-10-09 (ADR-245): the answer to `warBattle` has the two blocks' `span`, and
-      `battleViewM` (`src/app/battleView.ts`) is the camera's zoom for `showBattle` and the
-      tests; a war's battle goes out to 250 m/px, a formation's fight stays under 28.
-    - [ ] 4.1d2 The way of a step round a bay (written, set aside: `git stash`, "4.1d2 the
-      way"; its documents in `.cache/b41d/`).
 - [ ] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
   AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
   From PLAN 4.1b (2026-10-09, ADR-243): a route over the lanes goes by the zones' middles and
@@ -63,6 +41,11 @@ quick sweep as a smoke test.
   then). A reader takes `laneOf(world).portNode`: 36 of 615 ports have no node (water with
   no zone). 43 ports stand in held land with no province (New York, Sydney), so a port's
   province is not always known. A city placed in the editor gets no port.
+  From PLAN 4.1d2 (2026-10-09, ADR-246): of the 36 ports with no node, those of 20 provinces
+  are their province's only ones: 19 read by their names as on a lake or a river, and
+  Narsarsuaq (Greenland) on the coast; Juneau and Valdez the same, in no province. Why the
+  water of these three has no zone was not looked into. A port is to take water that has a
+  zone where its reach has any.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
@@ -93,6 +76,15 @@ quick sweep as a smoke test.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
   fine mask has and the coarser coverage has not is drawn at T2 and T3 and not at T1.
+  From PLAN 4.1d2 (2026-10-09, ADR-246): the mask has rivers, and a march crosses one on
+  the straight line (4,645 steps of the map are not clear of water and have no way over
+  land; 275 of 775,801 formation-hours in 90 days of seed 99). At T2 and T3 a formation is
+  then drawn on the river. A way round a bay is walked in the step's time, up to 7.7 times
+  as quick over the ground (485 ways are over three times their line). The line of a march
+  drawn in the game is straight from cell to cell, not the way. None was looked at in the
+  game. A formation on a way can be in a cell beside its step's two (104 of 4,358
+  formation-hours on a way in the 90 days; 2 of them in an enemy's cell): what the rules
+  that read a formation's cell make of it was not looked at.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
 - [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
@@ -743,3 +735,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 3.11 *Done 2026-10-08 (its parts 3.11a to 3.11f, ADR-198 to ADR-207; the AT on seed […]
 - [x] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can […]
 - [x] 3.12R Review pass (PROMPT step 9) over PLAN 3.8 to 3.12, the five numbered tasks since […]
+- [x] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases. […]

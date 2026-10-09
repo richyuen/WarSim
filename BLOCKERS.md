@@ -507,6 +507,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     row, it passed (the tick's end after 913 to 1,049 ms). It runs the toy world, which has no unit
     rules: the rule of that commit is not on its path. The load of the machine in that run is
     not known. The spec was not changed.
+    2026-10-09 (the fourth gate of PLAN 4.1's tick, the suite in 21.0 min): the same, once in
+    163 tests; alone it passed (the tick's end after 834 ms). The gate before it had failed
+    `fire1938`'s timing and passed this spec. The spec was not changed.
   - `formationFight1938`, the way to the fight (2026-10-08, eight spec files run by hand for
     PLAN 3.11c3b, 17 tests in 1.6 min): "no flight began", its wait of 20 s for the camera to
     start after the press of "To its fight", at one of 31 formations, once. Alone it passed
@@ -526,6 +529,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     commit touches nothing the layer draws. The spec was not changed. Not looked into: why the
     suite now takes 19.5 min where it took about 10 (the load of the machine is not known; the
     suite has grown to 159 tests).
+    2026-10-09 (the gate of PLAN 4.1's tick, the third gate of that task): the same, "fire
+    layer 4.713 ms a frame", once in 163 tests of 20.1 min; alone 0.804 ms. The gate was run
+    again. Two gates and seven spec files by hand had run in the two hours before it.
   - `economy.test.ts`, one year of play (2026-10-09, the gate of PLAN 3.12Rn): "Test timed
     out in 120000ms", once, in a unit stage of 289 s (121 s in the gate before, of PLAN
     3.12Rm); vitest also could not end six of its workers in time. Alone it passed (the

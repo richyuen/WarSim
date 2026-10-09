@@ -828,6 +828,7 @@ describe('a march between two neighbouring cells is not a crossing of the seam (
     const turned: string[] = [];
     let direct = 0;
     let onTheStep = 0;
+    let onAWay = 0;
     for (let hour = 1; hour <= 24 * 4; hour++) {
       s.step(1);
       for (const m of marches) {
@@ -839,10 +840,30 @@ describe('a march between two neighbouring cells is not a crossing of the seam (
         if (acrossX(x, ax) > 3 || Math.abs(y - ay) > 3) far.push(`hour ${hour}: formation ${m.id} at ${x.toFixed(2)}, ${y.toFixed(2)} on its way from ${ax.toFixed(2)}, ${ay.toFixed(2)} to ${bx.toFixed(2)}, ${by.toFixed(2)}`);
         const path = fc.moving[m.id] === 1 ? w.paths.get(m.id) : undefined;
         if (path?.length === 2 && fc.pathStep[m.id] === 0 && fc.stepFrac[m.id]! > 0) {
-          // On the one step from the one cell to the other: facing along it.
+          // On the one step from the one cell to the other: facing along it. Since PLAN 4.1d2
+          // (ADR-246) a step whose straight line is not clear of water is its way over land:
+          // the formation is on a piece of that way, and faces along the piece, the way it walks.
           onTheStep++;
-          const along = Math.atan2(by - ay, bx - ax);
-          if (Math.cos(fc.facing[m.id]! - along) < 0.999) turned.push(`hour ${hour}: formation ${m.id} faces ${fc.facing[m.id]!.toFixed(3)} on a step along ${along.toFixed(3)}`);
+          const way = w.stepWay(m.from, m.to);
+          const along: number[] = [];
+          if (way) {
+            onAWay++;
+            const n = way.length / 3;
+            const fwd = m.from < m.to; // the way is kept from the lower cell to the higher
+            for (let i = 1; i < n; i++) {
+              const [px, py, qx, qy] = [way[2 * i - 2]!, way[2 * i - 1]!, way[2 * i]!, way[2 * i + 1]!];
+              // The formation's place against this piece, x the short way round from the piece's start.
+              let rx = x - px;
+              if (rx > W / 2) rx -= W;
+              else if (rx < -W / 2) rx += W;
+              const len = Math.hypot(qx - px, qy - py);
+              const t = (rx * (qx - px) + (y - py) * (qy - py)) / (len * len);
+              const off = Math.abs(rx * (qy - py) - (y - py) * (qx - px)) / len;
+              if (off < 1e-6 && t > -1e-6 && t < 1 + 1e-6) along.push(fwd ? Math.atan2(qy - py, qx - px) : Math.atan2(py - qy, px - qx));
+            }
+            if (along.length === 0) turned.push(`hour ${hour}: formation ${m.id} at ${x.toFixed(3)}, ${y.toFixed(3)} is on no piece of its step's way`);
+          } else along.push(Math.atan2(by - ay, bx - ax));
+          if (along.length > 0 && !along.some((d) => Math.cos(fc.facing[m.id]! - d) >= 0.999)) turned.push(`hour ${hour}: formation ${m.id} faces ${fc.facing[m.id]!.toFixed(3)} on a step along ${along.map((d) => d.toFixed(3)).join(' or ')}`);
         }
         if (hour === 1 && path?.length === 2) direct++;
       }
@@ -850,6 +871,9 @@ describe('a march between two neighbouring cells is not a crossing of the seam (
     // Most of the marches are the one step (a route may go round by a third cell).
     expect(direct).toBeGreaterThan(40);
     expect(onTheStep).toBeGreaterThan(200);
+    // Both kinds are looked at: a step on its way, and one on the straight line.
+    expect(onAWay).toBeGreaterThan(20);
+    expect(onTheStep - onAWay).toBeGreaterThan(20);
     expect(far.slice(0, 5)).toEqual([]);
     expect(turned.slice(0, 5)).toEqual([]);
   });

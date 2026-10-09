@@ -24,7 +24,7 @@ import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 import { LandCounts } from './landCounts';
 import type { TechMask, TechRule } from './tech';
-import { cellInland, landPoint, maskSure, type LandMask } from '../shared/landMask';
+import { cellInland, landPoint, landWay, maskSure, type LandMask } from '../shared/landMask';
 
 export interface PendingCommand {
   seq: number;
@@ -631,6 +631,55 @@ export class World {
     const cx = Math.min(w - 1, Math.max(0, Math.floor(x)));
     const cy = Math.min(this.cells.h - 1, Math.max(0, Math.floor(y)));
     return this.cellPoint(cy * w + cx);
+  }
+
+  /** Derived (not state): the way of each step asked about, by its two cells, the lower first (`stepWay`); and the grid they were found on. */
+  private readonly stepWays = new Map<number, Float64Array | null>();
+  private stepWaysGrid: NavGrid | null = null;
+
+  /**
+   * The way of a march's step between the neighbouring cells `a` and `b`, from the lower cell's
+   * point to the higher one's, where the straight line between the two points is not clear of
+   * the fine mask's water (PLAN 4.1d2, `landWay`): x and y by turns, the last x unfolded over
+   * the seam, and after the places the length to each of them. Null where the line is clear,
+   * where the mask has no way over land between the two, and without a mask: the step is the
+   * straight line then. A way keeps to the step's two cells (a diagonal step's four) and to the
+   * cells beside them that are of the same land on the cell grid (`NavGrid.component`): never
+   * a cell no route enters. On a grid made anew (terrain painted) the ways are found anew.
+   */
+  stepWay(a: number, b: number): Float64Array | null {
+    if (!this.landMask) return null;
+    const lo = a < b ? a : b;
+    const hi = a < b ? b : a;
+    const grid = navOf(this).grid;
+    if (this.stepWaysGrid !== grid) {
+      this.stepWays.clear();
+      this.stepWaysGrid = grid;
+    }
+    const key = lo * this.cells.terrain.length + hi;
+    let way = this.stepWays.get(key);
+    if (way !== undefined) return way;
+    const w = this.cells.w;
+    const h = this.cells.h;
+    const land = grid.component[lo]!;
+    const p = this.cellPoint(lo);
+    const q = this.cellPoint(hi);
+    if (q[0] - p[0] > w / 2) q[0] -= w;
+    else if (p[0] - q[0] > w / 2) q[0] += w;
+    const line = landWay(this.landMask, w, p, q, this.settings.loopingMap, undefined, (cx, cy) => cy >= 0 && cy < h && cx >= 0 && cx < w && land !== 0 && grid.component[cy * w + cx] === land);
+    way = null;
+    if (line) {
+      const n = line.length / 2;
+      way = new Float64Array(3 * n);
+      way.set(line);
+      for (let i = 1; i < n; i++) {
+        const dx = line[2 * i]! - line[2 * i - 2]!;
+        const dy = line[2 * i + 1]! - line[2 * i - 1]!;
+        way[2 * n + i] = way[2 * n + i - 1]! + Math.sqrt(dx * dx + dy * dy);
+      }
+    }
+    this.stepWays.set(key, way);
+    return way;
   }
 
   /**

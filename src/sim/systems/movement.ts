@@ -148,6 +148,41 @@ function centre(world: World, cell: number): [number, number] {
 }
 
 /**
+ * Where a formation is that has done `frac` of the step from the cell `a` to its neighbour `b`,
+ * and the way it faces: on the straight line between the two cells' points; or, where that
+ * line is not clear of the fine mask's water, on the step's way over land (`World.stepWay`,
+ * PLAN 4.1d2), as far along its length as `frac` says. The step's time is the same either way.
+ * The step from `b` to `a` is the same line walked back.
+ */
+export function stepPlace(world: World, a: number, b: number, frac: number): [number, number, number] {
+  const w = world.cells.w;
+  const way = world.stepWay(a, b);
+  let ax: number, ay: number, bx: number, by: number, t: number;
+  if (way) {
+    const n = way.length / 3;
+    const back = a > b;
+    const at = (back ? 1 - frac : frac) * way[3 * n - 1]!;
+    let i = 1;
+    while (i < n - 1 && way[2 * n + i]! < at) i++;
+    const from = way[2 * n + i - 1]!;
+    const u = (at - from) / (way[2 * n + i]! - from);
+    [ax, ay, bx, by, t] = back ? [way[2 * i]!, way[2 * i + 1]!, way[2 * i - 2]!, way[2 * i - 1]!, 1 - u] : [way[2 * i - 2]!, way[2 * i - 1]!, way[2 * i]!, way[2 * i + 1]!, u];
+  } else {
+    [ax, ay] = centre(world, a);
+    [bx, by] = centre(world, b);
+    t = frac;
+    // A step across the seam of a looping map goes the short way: its two ends are a map
+    // apart in x. (Not "more than 1 apart": that was the seam's mark while every place was a
+    // cell's middle. Two neighbouring cells' land points can be 1.9 apart, and the step was
+    // then walked round the world: PLAN 2.11i.)
+    if (bx - ax > w / 2) bx -= w;
+    else if (ax - bx > w / 2) bx += w;
+  }
+  const x = ax + (bx - ax) * t;
+  return [x < 0 ? x + w : x >= w ? x - w : x, ay + (by - ay) * t, atan2(by - ay, bx - ax)];
+}
+
+/**
  * Path of a moving formation. One that is missing (a save from before PLAN 3.4Rl) is found
  * again on the holders of now, from the cell the formation stands in: the steps it had counted
  * were along the path that is gone (PLAN 3.7k), so they begin again with the new one.
@@ -432,17 +467,9 @@ export function movementSystem(world: World): void {
       world.out.emit(world.tick, EventKind.FormationArrived, id, c.nation[id]!, ax, ay);
       return;
     }
-    const [bx0, by] = centre(world, path[i + 1]!);
-    let bx = bx0;
-    // A step across the seam of a looping map goes the short way: its two ends are a map
-    // apart in x. (Not "more than 1 apart": that was the seam's mark while every place was a
-    // cell's middle. Two neighbouring cells' land points can be 1.9 apart, and the step was
-    // then walked round the world: PLAN 2.11i.)
-    if (bx - ax > w / 2) bx -= w;
-    else if (ax - bx > w / 2) bx += w;
-    const x = ax + (bx - ax) * frac;
-    c.x[id] = x < 0 ? x + w : x >= w ? x - w : x;
-    c.y[id] = ay + (by - ay) * frac;
-    c.facing[id] = atan2(by - ay, bx - ax);
+    const [x, y, facing] = stepPlace(world, path[i]!, path[i + 1]!, frac);
+    c.x[id] = x;
+    c.y[id] = y;
+    c.facing[id] = facing;
   });
 }

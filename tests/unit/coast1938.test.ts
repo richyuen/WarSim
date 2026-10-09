@@ -3,11 +3,13 @@ import { tierOf, type FromWorker, type Snapshot, type Subscription } from '../..
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { Terrain } from '../../src/shared/terrain';
 import { buildLandCoverage } from '../../src/shared/landCoverage';
-import { addIslet, maskBit, maskLand, maskSure } from '../../src/shared/landMask';
+import { addIslet, lineClear, maskBit, maskLand, maskSure } from '../../src/shared/landMask';
 import { SLOT_SPACING, slotPose } from '../../src/sim/core/pose';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { navOf } from '../../src/sim/world';
 import { elementIndex, slotCount, slotPlace } from '../../src/sim/systems/elements';
+import { stepPlace } from '../../src/sim/systems/movement';
 import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
 
@@ -31,8 +33,37 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     // the mask too, whose shore wanders inside a pixel).
     const land = (x: number, y: number): boolean => maskLand(mask, W, H, x, y, true) && maskSure(mask, W, H, x, y, true);
     const f = w.formations.cols;
+    // PLAN 4.1d2: a march's step goes round a bay. Every formation on the march, every hour:
+    // one that is not on land is on a step the mask has no land way for (a river, a strait
+    // narrower than a cell), and never on a step with a way or with a clear line.
+    const K = mask.w / W;
+    const march = { hours: 0, wet: 0, steps: new Set<number>(), crossing: 0 };
+    const wrong: string[] = [];
+    const marches = (): void => {
+      w.formations.forEach((id) => {
+        if (f.moving[id] !== 1) return;
+        march.hours++;
+        if (land(f.x[id]!, f.y[id]!)) return;
+        const path = w.paths.get(id);
+        const a = path?.[f.pathStep[id]!];
+        const b = path?.[f.pathStep[id]! + 1];
+        // (At the path's last cell it is at rest in the next hour: it stands on that cell's point.)
+        if (a === undefined || b === undefined) return void wrong.push(`hour ${sim.tick}: formation ${id} on no step at ${f.x[id]!.toFixed(3)}, ${f.y[id]!.toFixed(3)}`);
+        if (w.cells.terrain[a] === Terrain.Crossing || w.cells.terrain[b] === Terrain.Crossing) return void march.crossing++;
+        const p = w.cellPoint(a);
+        const q = w.cellPoint(b);
+        if (q[0] - p[0] > W / 2) q[0] -= W;
+        else if (p[0] - q[0] > W / 2) q[0] += W;
+        if (w.stepWay(a, b) || lineClear(mask, p[0] * K, p[1] * K, q[0] * K, q[1] * K, true)) wrong.push(`hour ${sim.tick}: formation ${id} at ${f.x[id]!.toFixed(3)}, ${f.y[id]!.toFixed(3)} on the step ${a} > ${b}`);
+        march.wet++;
+        march.steps.add(Math.min(a, b) * W * H + Math.max(a, b));
+      });
+    };
     for (const day of [0, 30, 90]) {
-      while (sim.tick < day * 24) sim.step(24);
+      while (sim.tick < day * 24) {
+        sim.step(1);
+        marches();
+      }
       const idx = elementIndex(w);
       const wet: string[] = [];
       const seen = { formations: 0, atRest: 0, elements: 0, drawnIn: 0, onItsFormation: 0, marching: 0, marchingWet: 0, crossing: 0 };
@@ -74,6 +105,61 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
       expect(seen.elements, `day ${day}`).toBeGreaterThan(4000);
       expect(wet.slice(0, 5), `day ${day}: on the mask's water`).toEqual([]);
     }
+    console.log(`90 days: ${march.hours} formation-hours on the march, ${march.wet} of them over water, on ${march.steps.size} steps with no way over land; ${march.crossing} on a crossing's step`);
+    expect(wrong.slice(0, 5), 'over water on a step with a way over land').toEqual([]);
+    expect(march.hours).toBeGreaterThan(500_000);
+    // Before PLAN 4.1d2: 1,266 of 774,232 hours over the mask's water by its bit alone, on 77 steps. What is left is steps with no way over land (a river of the mask).
+    expect(march.wet / march.hours).toBeLessThan(0.0006);
+  }, 120_000);
+
+  it('a step with a way over land (PLAN 4.1d2): every place of it surely land, from the one cell’s point to the other’s, and the same walked back', () => {
+    const assets = assets1938(W);
+    const mask = assets.landMask!;
+    const w = new Sim({ scenario: '1938', seed: 99, assets }).world;
+    const terr = w.cells.terrain;
+    const dry = (c: number): boolean => terr[c] !== Terrain.Water && terr[c] !== Terrain.Crossing;
+    const seen = { steps: 0, ways: 0, longest: 0, third: 0 };
+    const comp = navOf(w).grid.component;
+    // A band of the map from the Baltic to the Sahara, all the way round.
+    for (let cy = 180; cy < 380; cy++) {
+      for (let cx = 0; cx < W; cx++) {
+        const a = cy * W + cx;
+        if (!dry(a)) continue;
+        for (const [dx, dy] of [[1, 0], [0, 1], [1, 1], [-1, 1]] as const) {
+          const nx = (cx + dx + W) % W;
+          const b = (cy + dy) * W + nx;
+          if (!dry(b) || (dx !== 0 && !dry(cy * W + nx)) || (dx !== 0 && dy !== 0 && !dry((cy + dy) * W + cx))) continue;
+          seen.steps++;
+          const way = w.stepWay(a, b);
+          if (!way) continue;
+          seen.ways++;
+          const n = way.length / 3;
+          const len = way[3 * n - 1]!;
+          const [pa, pb] = [w.cellPoint(a), w.cellPoint(b)];
+          seen.longest = Math.max(seen.longest, len / Math.hypot(Math.abs(pb[0] - pa[0]) > W / 2 ? W - Math.abs(pb[0] - pa[0]) : pb[0] - pa[0], pb[1] - pa[1]));
+          let last = pa;
+          for (let i = 0; i <= 40; i++) {
+            const t = i / 40;
+            const [x, y] = stepPlace(w, a, b, t);
+            if (!maskSure(mask, W, H, x, y, true)) throw new Error(`the step ${cx}, ${cy} > ${nx}, ${cy + dy} at ${t}: ${x}, ${y} is not surely land`);
+            // And in a cell a route enters, of the step's own land: the formation is in the cell its place is in (the gate's ten-year games had one in a water cell of the grid).
+            const at = Math.floor(y) * W + Math.floor(x);
+            if (comp[at] === 0 || comp[at] !== comp[a]) throw new Error(`the step ${cx}, ${cy} > ${nx}, ${cy + dy} at ${t}: ${x}, ${y} is in a cell of other land, or of none`);
+            if (at !== a && at !== b) seen.third++;
+            const back = stepPlace(w, b, a, 1 - t);
+            expect(Math.abs(back[0] - x) + Math.abs(back[1] - y)).toBeLessThan(1e-9);
+            // As far along its length as the share of the step done: no leap.
+            const gap = Math.abs(x - last[0]) > W / 2 ? W - Math.abs(x - last[0]) : x - last[0];
+            expect(Math.hypot(gap, y - last[1])).toBeLessThanOrEqual(len / 40 + 1e-9);
+            last = [x, y];
+          }
+          expect(stepPlace(w, a, b, 0).slice(0, 2)).toEqual(pa);
+          expect(stepPlace(w, a, b, 1).slice(0, 2)).toEqual(pb);
+        }
+      }
+    }
+    console.log(`${seen.steps} steps, ${seen.ways} with a way over land, the longest ${seen.longest.toFixed(2)} times its straight line; of ${seen.ways * 41} places on them ${seen.third} are in a cell that is neither of the step's two`);
+    expect(seen.ways).toBeGreaterThan(2000);
   }, 120_000);
 
   it('a snapshot has each element where the rule puts it, also one drawn in from a slot on water', () => {

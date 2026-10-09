@@ -6271,3 +6271,46 @@ Of 4.1 (open in PLAN.md):
   - [x] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by
     size, the naval bases by hand), held by the world, each a node of the lane graph.
     AT: every coastal province with a port connects to the lane graph (the task's own).
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases.
+  From the Phase 2 review (PLAN 2.11c, 2026-10-05): a march goes straight from one cell's land
+  point to the next and can cross a bay (1 of 430 formations on the march was over the fine
+  mask's water at day 90 of seed 99, none of 134 at day 30). It needs routing below the cell
+  or along the coast, and belongs with the crossings.
+  AT: every coastal province with a port connects to the lane graph; zone count within range.
+  Split 2026-10-09 (one cause per commit), in this order:
+  - [x] 4.1a The sea zones: the seeds of the named seas (`data/maps/earth/seas.json`, made by […]
+  - [x] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings' […]
+  - [x] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by […]
+  - [x] 4.1d The march over a bay (the Phase 2 review's line above): routing below the cell
+    or along the coast. It changes land paths: the pin moves, with an ADR.
+    AT: on seed 99 at day 90 no formation on the march is over the fine mask's water.
+    Split 2026-10-09 (one cause per commit): written and gated as one, the gate failed
+    `warBattle.test.ts` on a defect of the camera that the game before had hidden.
+    - [x] 4.1d1 The camera of a war's battle holds two blocks that water keeps apart.
+      AT: two divisions in contact on two shores: both whole in the view the camera takes.
+      Done 2026-10-09 (ADR-245): the answer to `warBattle` has the two blocks' `span`, and
+      `battleViewM` (`src/app/battleView.ts`) is the camera's zoom for `showBattle` and the
+      tests; a war's battle goes out to 250 m/px, a formation's fight stays under 28.
+    - [x] 4.1d2 The way of a step round a bay.
+      Done 2026-10-09 (ADR-246): a step whose straight line is not clear of the mask's
+      water goes by a way over land pixels (`landWay`, `World.stepWay`, `stepPlace`), in the
+      step's own time; 12,999 of 2,437,895 steps. At day 90: 0 of 382 on the march over
+      water (1,266 of 774,232 formation-hours in 90 days before, 275 after, on 14 steps with
+      no way over land; of the three looked at, two are over a river of the mask and one
+      over a wide body of water). The pin `92689265` → `da977ca2`.
+    Done 2026-10-09 in two parts.
+  Done 2026-10-09 in four parts. Its AT: `ports.test.ts` (every port with a node on the seas
+  is reached from Gibraltar; 428 zones). Not held for one coastal province: Narsarsuaq's port
+  has no node (ADR-246; a line under PLAN 4.4).

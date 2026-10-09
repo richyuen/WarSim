@@ -167,6 +167,88 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-246 · 2026-10-09 · accepted — A march's step goes round a bay, by a way over land below the cell, in the step's own time (PLAN 4.1d2)
+
+- **Context.** A formation on the march was on the straight line between two cells' points
+  (ADR-79: "a march may cross a bay", on the watch list since PLAN 2.9a; the Phase 2 review
+  put it under PLAN 4.1). The task's AT: on seed 99 at day 90 no formation on the march is
+  over the fine mask's water. Written before ADR-245 and committed after it: its gate found
+  the camera's defect, which went in first.
+- **Counted first** (`.cache/bayMeasure.ts`, `.cache/bayMeasure2.ts`; 1938 at M):
+  - of the map's 2,437,895 steps between two land cells, 15,442 have water on the straight
+    line by the mask's bit, 103 of them with a crossing cell; none has an end on water;
+  - seed 99, every hour of 90 days: 774,232 formation-hours on the march, 1,266 over water
+    by the bit, of 95 formations on 77 steps, none on a crossing's step. 699 of them are one
+    step's, `1701,402 > 1701,401`: a formation held there in contact (ADR-245).
+- **Decision.** A step whose straight line is not clear of water takes a way over land
+  (`landWay`, `src/shared/landMask.ts`; `World.stepWay`, `stepPlace` in `movement.ts`):
+  - *clear* (`lineClear`): each square between four mask pixels' middles that the line
+    passes has its four pixels land. The field is 1 there, so the line is surely land;
+  - *the way:* a search over the mask's land pixels from the one point to the other, 8-way,
+    no corner of water cut, in the cells of a way (below); then the corners a clear line
+    passes are left out. Every place of it is surely land;
+  - *the place on it:* as far along its length as the share of the step done; the
+    formation faces along the piece of the way it is on;
+  - *derived, not state:* worked out from the mask at the first asking and kept by the pair
+    of cells, the lower first; the step back is the same line walked back.
+- **The cells of a way.** A formation is in the cell its place is in. A way keeps to the
+  box of its step's two cells (the four of a diagonal step, which the straight line passes
+  too) and to the cells within one of that box that are of the same land on the cell grid
+  (`NavGrid.component`).
+  - *Why:* the first version took every land pixel within a cell of the box. Its gate
+    failed the three ten-year AI runs: "formations in a cell no route enters" (seed 1 day
+    355, four at cell 1176,353; seed 2 day 585; seed 3 day 110). A cell that is water on
+    the grid has land pixels, and a way led through one.
+  - *The box alone was tried:* 9,262 ways, and 1,075 of 773,742 formation-hours over water
+    in the 90 days, little better than before. The step that held a formation over a bay
+    for weeks needs the cell beside it.
+  - *What it leaves* (`.cache/thirdCell.ts`, seed 99, 90 days): of 4,358 formation-hours on
+    a step with a way, 104 are in a cell outside the step's box (18 formations, 12 steps).
+    Two of those hours are in a cell whose holder is neither the formation's nor that of
+    either cell of the step: an enemy's, both. None in the cell of a nation it is not at
+    war with. So a march can be, for hours, in a cell its path does not name. Not mended:
+    a line under PLAN 4.7.
+- **The step's time is the same.** `stepKm` on the cell grid, as the route search counts it.
+  Only where the formation is changes. So a formation is quicker over the ground on a long
+  way: 2,061 of the 12,999 ways are over twice their straight line, 485 over three times.
+  A step's time by its way's length would part the march from the search's cost; not done.
+- **What it leaves, and why.** 4,645 steps are not clear and have no way (68 with a crossing
+  cell). They keep the straight line.
+  - The mask has rivers, a pixel or two wide and a continent long. No way goes round one.
+    After the change 14 steps had a formation over water in the 90 days, 275 of 775,801
+    formation-hours. Three of them were drawn and looked at: two over a river a pixel or
+    two wide (in China), one over a wide body of water (the step `1192,352 > 1191,351`).
+    The other eleven lie within a few cells of those and were not drawn.
+  - A bay longer than a cell beyond the box has none either (in the first count a margin
+    of 2 cells found 1,319 more, most of them long).
+  - So the AT holds as counted, not as a rule: at days 30 and 90 of seed 99, 0 of 243 and 0
+    of 382 on the march are over water. The test holds the rule instead: every hour of the
+    90 days, a formation on the march that is not on sure land is on a step with no way.
+- **Why not close such a step in the grid.** A river would then part a continent; the
+  crossings (PLAN 4.1b) are for straits.
+- **Why sure land and not the bit.** The tests of formations at rest ask both (PLAN 2.9b),
+  and the coast is drawn from the field. By the bit alone a way could run in the drawn sea.
+- **A test of PLAN 2.11i follows the rule.** `movement.test.ts` held a formation on a step
+  to face along the straight line between the two cells' points. On a step with a way it
+  now holds it to be on a piece of the way and to face along that piece, the way it walks;
+  on a step without, as before. Its bound on how far a march strays is as it was.
+- **PLAN 4.1's own AT** ("every coastal province with a port connects to the lane graph"),
+  counted for the tick (`.cache/portAt.ts`): 456 provinces have a port; in 20 no port has a
+  node. 19 are read as on a lake or a river with no zone, by their names (Geneva,
+  Jerusalem, Hankow, Salt Lake City); their water was not looked at. One is on the coast:
+  Narsarsuaq (Greenland). Juneau and Valdez are the same, in no province. Why their water
+  has no zone was not looked into (a fjord cut from the sea on the cell grid is the guess).
+  Not mended: a line under PLAN 4.4. Every port with a node on the seas is reached from
+  Gibraltar (`ports.test.ts`).
+- **The pin moves:** `92689265` → `da977ca2` (seed 99, one year). A formation's place is
+  state, and contact is by place.
+- **Cost.** Two years of seed 99, one run each, pinned: 1.83 ms a tick before, 1.87 after
+  (two different games; timed on the first version, not again). The ways of the whole map:
+  8.9 s; in play only those marched.
+- **Not looked at:** S, L and XL (the search is in mask pixels, 16, 4 and 2 to a cell; at XL
+  a way has little room); a map import; the march's line drawn in the game; an element's
+  place on a way (it is drawn in to land as at rest).
+
 ### ADR-245 · 2026-10-09 · accepted — The camera of a war's battle holds two blocks that water keeps apart (PLAN 4.1d1)
 
 - **Context.** PLAN 4.1d (a march goes round a bay) was written and gated first. Its gate

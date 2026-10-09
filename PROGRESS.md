@@ -13099,3 +13099,72 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule changed.** The pin stays. **No sweep** (ADR-58).
 - **PARITY:** nothing: no row names the banner's camera.
 - **Next:** PLAN 4.1d2, from the stash.
+
+## 2026-10-09 — PLAN 4.1d2: a march goes round a bay; PLAN 4.1 ticked (ADR-246)
+
+- **Start:** from the stash, on the commit of 4.1d1.
+- **Counted first** (`.cache/bayMeasure.ts`): 15,442 of the map's 2,437,895 steps have water
+  on the straight line between their cells' points. Seed 99, every hour of 90 days: 1,266
+  of 774,232 formation-hours on the march over water, 95 formations, 77 steps.
+- **Built:** `lineClear` and `landWay` in `src/shared/landMask.ts`; `World.stepWay` (the
+  way of a step, kept by its two cells); `stepPlace` in `movement.ts`, which the march's
+  last lines now call. A step that is not clear of water goes over land pixels, 8-way, no
+  corner of water cut, in its two cells' box and the cells beside it of the same land on
+  the cell grid. The step's time is unchanged.
+- **After:** 12,999 steps have a way; 275 of 775,801 formation-hours over water, on 14
+  steps with no way over land. Three were drawn (`.cache/bayDump.ts`): two over a river of
+  the mask a pixel or two wide, one over a wide body of water. The other eleven were not
+  drawn. At days 30 and 90: 0 of 243 and 0 of 382 on the march over water (the AT).
+- **The AT holds as counted, not as a rule:** a river crossing can fall on day 90 in
+  another game. The test holds the rule: over water on the march only on a step with no way.
+- **Tests:** `landMask.test.ts`, six more (a bay, a river, a long bay, the seam). One of
+  mine was wrong at the first run: a line along the middles of the first row of land under
+  a bay is clear, and I had it closed. `coast1938.test.ts`: the march every hour of 90 days,
+  and 5,234 ways of a band of the map walked both ways (the longest 7.66 times its line).
+  One mutation, the march not taking the way: both failed ("over water on a step with a way
+  over land", "the step 88, 180 > 88, 181 at 0.2: 88.85, 180.35 is not surely land").
+- **The first gate failed two unit tests,** neither seen before it:
+  - `movement.test.ts` (PLAN 2.11i): "formation 1069 faces 2.498 on a step along 0.611".
+    The test held the facing to the straight line. It now holds a formation on a step with
+    a way to be on a piece of the way and to face along it; a step without, as before.
+  - `warBattle.test.ts`: the camera's defect, PLAN 4.1d1 (ADR-245), committed first.
+    In this game the 60-day test reads: 692 battles, the blocks at most 14.0 km apart, the
+    view further out than 20 m/px 4 times, not whole in it 0 times.
+  I had run only the two test files I wrote before the gate.
+- **The second gate failed the three ten-year AI runs:** "formations in a cell no route
+  enters" (seed 1, day 355: four formations at cell 1176,353). A defect of mine: a way took
+  every land pixel within a cell of its step's box, and a cell that is water on the grid
+  has land pixels. Now a way keeps to the box and to the cells beside it of the same land.
+  The box alone was tried and left 1,075 hours over water. Both kinds of cell are in the
+  tests now (`landMask.test.ts`: the cells that are open, and no other; `coast1938.test.ts`:
+  every place of 5,234 ways in a cell of its step's land). The ten-year stage alone then
+  passed (12 files, 17 tests), the pin with it: the year of seed 99 is the same game by
+  either version.
+- **The third gate failed one spec of 163:** `fire1938`, "fire layer 4.713 ms a frame"
+  against its limit of 4 (alone 0.804 ms): the timing under load that BLOCKERS has, a line
+  added there. The spec was not changed; the gate was run again.
+- **The fourth gate failed another one of 163:** `tickClock`, "waited 3000 ms for a frame at
+  the tick's end" (alone it passed, 834 ms), which BLOCKERS has too; `fire1938` passed in
+  it at 2.981 ms. Two gates, each with one spec failing on a wait or a time and no other.
+  The suite takes 20 to 21 min. The gate was run a fifth time.
+- **Counted for it** (`.cache/thirdCell.ts`): 104 of 4,358 formation-hours on a way are in a
+  cell outside the step's box; 2 in an enemy's cell, none in a neutral's.
+- **One picture looked at** (`.cache/bay-a.png`, cells 76 to 116 by 170 to 196, at 24 px a
+  cell): 45 ways round lagoons and lakes of a coast, each on land beside the water; 9 steps
+  in red with no way, most along one river (drawn again with the final rule: the same). My
+  first picture was of the wrong place (all
+  land): I took the map's rows for a plain 180 degrees over 1,024, and they are not.
+- **The pin moves:** `92689265` → `da977ca2`. A rule of where a formation is. **No sweep**
+  (ADR-58).
+- **Tick time:** two years of seed 99, pinned, one run each: 1.83 ms before, 1.87 after;
+  two different games, so not told apart. Timed on the first version, not again.
+- **PLAN 4.1's own AT, counted for the tick** (`.cache/portAt.ts`): 20 of the 456 provinces
+  with a port have none on a node; 19 by their names on lakes and rivers, one on the coast
+  (Narsarsuaq). Not mended (PLAN 4.4). 4.1 is ticked with that said in its text.
+- **Found, not mended:** a march crosses a river of the mask on the straight line (PLAN
+  4.7); a long way is walked in the step's time, up to 7.7 times as quick (PLAN 4.7); a
+  formation on a way can be in a cell beside its step's two (PLAN 4.7).
+- **Not looked at:** S, L and XL; a map import; the game's own picture of a march on a
+  way; the elements of a formation on a way; the margin of 2 cells in play.
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.2 (fleets and ship types, movement along the lanes).

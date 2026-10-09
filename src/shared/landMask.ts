@@ -163,3 +163,163 @@ export function addIslet(mask: LandMask, mapW: number, cx: number, cy: number): 
   }
   return true;
 }
+
+/**
+ * Whether the straight line from (`x0`, `y0`) to (`x1`, `y1`), in mask pixels (x left as it
+ * is: beyond the seam of a map that loops it is folded here), is clear of water: each square
+ * between four pixels' middles that it passes through has its four pixels land. Every place of
+ * such a line is surely land, and its field is 1. It says no to some lines that are surely
+ * land all the same (one along a spit a pixel wide): who asks takes another way then. With
+ * `open`, a pixel counts as land only where that says so too (`px` as it is, not folded).
+ */
+export function lineClear(mask: LandMask, x0: number, y0: number, x1: number, y1: number, wrapX: boolean, open?: (px: number, py: number) => boolean): boolean {
+  const at = (px: number, py: number): boolean => maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py) && (open === undefined || open(px, py));
+  const ux = x0 - 0.5;
+  const uy = y0 - 0.5;
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  // Where the line passes from one square to the next; between two of these it is in one.
+  const ts = [0, 1];
+  if (dx !== 0) for (let g = Math.ceil(Math.min(ux, ux + dx)); g <= Math.floor(Math.max(ux, ux + dx)); g++) ts.push((g - ux) / dx);
+  if (dy !== 0) for (let g = Math.ceil(Math.min(uy, uy + dy)); g <= Math.floor(Math.max(uy, uy + dy)); g++) ts.push((g - uy) / dy);
+  ts.sort((a, b) => a - b);
+  for (let i = 0; i + 1 < ts.length; i++) {
+    const t0 = ts[i]!;
+    const t1 = ts[i + 1]!;
+    if (t0 < 0 || t1 > 1 || t0 === t1) continue;
+    const t = (t0 + t1) / 2;
+    const sx = Math.floor(ux + dx * t);
+    const sy = Math.floor(uy + dy * t);
+    if (!at(sx, sy) || !at(sx + 1, sy) || !at(sx, sy + 1) || !at(sx + 1, sy + 1)) return false;
+  }
+  return true;
+}
+
+/** How far beyond the box of a step's two cells its way over land is looked for, in cells, where `landWay` is told which cells are open. */
+export const WAY_MARGIN_CELLS = 1;
+
+/**
+ * The way over land from the place `a` to the place `b` (in cells of a map `mapW` wide; `b`
+ * unfolded, at most a few cells from `a`), where the straight line between them is not clear
+ * of water (`lineClear`): the corners of a line over land pixels, x and y by turns, from `a`
+ * to `b`, x unfolded as `b` is. Null where the straight line is clear, and where the mask has
+ * no land way between the two in the cells it may use: the straight line is the way then
+ * (`found` says which of the two it was).
+ *
+ * A march takes it for a step between two cells' points (PLAN 4.1d2): the straight line went
+ * over a bay.
+ *
+ * - **The cells of a way.** The box of the two cells: the two of a step east-west or
+ *   north-south, the four of a diagonal one (the straight line between two points off their
+ *   cells' middles passes those too). With `open`, also a cell within `WAY_MARGIN_CELLS` of
+ *   that box that `open` says yes to (cell x folded onto the map, y as it is). A formation is
+ *   in the cell its place is in: with every cell of the margin taken, a way led through a
+ *   cell that is water on the cell grid and has land pixels, which no route enters (three of
+ *   the gate's ten-year games had a formation in one).
+ * - Each place is a mask pixel's middle (a cell's land point) or a corner of four land pixels
+ *   (a cell's middle); one that is neither has no way.
+ * - The search goes pixel by pixel, 8-way, with no corner of water cut: the field is 1 all
+ *   along such a line, so every place of it is surely land. Costs are whole numbers (10 a
+ *   step, 14 a diagonal one, 7 from a corner to a pixel's middle), the pixels of a cost are
+ *   taken in the order they were reached and a pixel's neighbours in row order: every engine
+ *   finds the same way.
+ * - Then the corners that a clear straight line makes needless are left out, from `a` on, each
+ *   time to the furthest corner that can be seen; such a line keeps to the way's cells too.
+ */
+export function landWay(mask: LandMask, mapW: number, a: readonly [number, number], b: readonly [number, number], wrapX: boolean, found?: { clear: boolean }, open?: (cx: number, cy: number) => boolean): Float64Array | null {
+  const k = Math.round(mask.w / mapW);
+  const [ax, ay, bx, by] = [a[0] * k, a[1] * k, b[0] * k, b[1] * k];
+  const clear = lineClear(mask, ax, ay, bx, by, wrapX);
+  if (found) found.clear = clear;
+  if (clear) return null;
+  // The two cells' box, in cells; and the pixels of a way: land, in the box or in an open cell beside it.
+  const [cx0, cy0, cx1, cy1] = [Math.floor(Math.min(a[0], b[0])), Math.floor(Math.min(a[1], b[1])), Math.floor(Math.max(a[0], b[0])), Math.floor(Math.max(a[1], b[1]))];
+  const cells = new Map<number, boolean>();
+  const mayUse = (px: number, py: number): boolean => {
+    const cx = Math.floor(px / k);
+    const cy = Math.floor(py / k);
+    if (cx >= cx0 && cx <= cx1 && cy >= cy0 && cy <= cy1) return true;
+    if (!open) return false;
+    const key = (cy - cy0 + 1) * 8 + (cx - cx0 + 1);
+    let ok = cells.get(key);
+    if (ok === undefined) cells.set(key, (ok = open(wrapX ? ((cx % mapW) + mapW) % mapW : cx, cy)));
+    return ok;
+  };
+  const at = (px: number, py: number): boolean => maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py) && mayUse(px, py);
+  const m = open ? WAY_MARGIN_CELLS * k : 0;
+  const X0 = cx0 * k - m;
+  const Y0 = cy0 * k - m;
+  const bw = (cx1 + 1) * k + m - X0;
+  const bh = (cy1 + 1) * k + m - Y0;
+  // The pixels a place is reached from, with the cost from it: its own, or the four round a corner.
+  const ends = (x0: number, y0: number): [number, number][] => {
+    // (To the half pixel: with a number of pixels to a cell that is no power of two, a pixel's middle is not exact.)
+    const x = Math.round(x0 * 2) / 2;
+    const y = Math.round(y0 * 2) / 2;
+    const fx = Math.floor(x);
+    const fy = Math.floor(y);
+    const out: [number, number][] = [];
+    if (Math.abs(x - x0) > 1e-9 || Math.abs(y - y0) > 1e-9) return out;
+    if (x === fx && y === fy) {
+      for (const [px, py] of [[fx - 1, fy - 1], [fx, fy - 1], [fx - 1, fy], [fx, fy]] as const) if (at(px, py)) out.push([(py - Y0) * bw + (px - X0), 7]);
+    } else if (x - fx === 0.5 && y - fy === 0.5 && at(fx, fy)) out.push([(fy - Y0) * bw + (fx - X0), 0]);
+    return out;
+  };
+  const INF = 0x7fffffff;
+  const dist = new Int32Array(bw * bh).fill(INF);
+  const prev = new Int32Array(bw * bh).fill(-1);
+  const buckets: number[][] = [];
+  const put = (v: number, d: number, from: number): void => {
+    if (d >= dist[v]!) return;
+    dist[v] = d;
+    prev[v] = from;
+    (buckets[d] ??= []).push(v);
+  };
+  for (const [v, d] of ends(ax, ay)) put(v, d, -1);
+  const goal = new Map(ends(bx, by));
+  let best = INF;
+  let last = -1;
+  for (let d = 0; d < buckets.length && d < best; d++) {
+    const row = buckets[d];
+    if (!row) continue;
+    for (let i = 0; i < row.length; i++) {
+      const u = row[i]!;
+      if (dist[u] !== d) continue;
+      const over = goal.get(u);
+      if (over !== undefined && d + over < best) {
+        best = d + over;
+        last = u;
+      }
+      const ux = u % bw;
+      const uy = (u - ux) / bw;
+      for (let sy = -1; sy <= 1; sy++) {
+        for (let sx = -1; sx <= 1; sx++) {
+          const vx = ux + sx;
+          const vy = uy + sy;
+          if ((sx === 0 && sy === 0) || vx < 0 || vy < 0 || vx >= bw || vy >= bh || !at(vx + X0, vy + Y0)) continue;
+          if (sx !== 0 && sy !== 0 && (!at(vx + X0, uy + Y0) || !at(ux + X0, vy + Y0))) continue;
+          put(vy * bw + vx, d + (sx !== 0 && sy !== 0 ? 14 : 10), u);
+        }
+      }
+    }
+  }
+  if (last < 0) return null;
+  // From b back to a, in pixels; then forward, leaving out the corners a clear line passes.
+  const line: number[] = [by, bx];
+  for (let u = last; u >= 0; u = prev[u]!) line.push(Math.floor(u / bw) + Y0 + 0.5, (u % bw) + X0 + 0.5);
+  line.push(ay, ax);
+  line.reverse();
+  const out: number[] = [];
+  const n = line.length / 2;
+  for (let i = 0; i < n; ) {
+    // (A place that is a pixel's middle is also the first pixel of the way.)
+    const x = line[2 * i]! / k;
+    const y = line[2 * i + 1]! / k;
+    if (out.length === 0 || out[out.length - 2] !== x || out[out.length - 1] !== y) out.push(x, y);
+    if (i === n - 1) break;
+    let j = n - 1;
+    while (j > i + 1 && !lineClear(mask, line[2 * i]!, line[2 * i + 1]!, line[2 * j]!, line[2 * j + 1]!, wrapX, mayUse)) j--;
+    i = j;
+  }
+  return Float64Array.from(out);
+}
