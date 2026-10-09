@@ -5506,6 +5506,9 @@ quick sweep as a smoke test.
     pause button and the date are cut); at 130% the History panel stands over the nation
     panel's right 79 px and the war banners over both. Say in SPEC the least view each UI
     size is laid out for, and below it the bar wraps or the size is not offered.
+    With it (3.12Rh's review): the banners' 36 rem is the ticker's room (17.5 rem), not the
+    nation panel's, whose right edge is at 19 rem; a first row of banners that fills a view
+    under 90 rem begins 1 rem inside an open panel. `.history-panel` has 38 rem for it.
     AT: at 1,100 x 600 and each UI size offered there, every button of the bar is inside
     the view.
   - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
