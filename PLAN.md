@@ -5294,6 +5294,47 @@ quick sweep as a smoke test.
       frame was passed once at 4.21 in such a suite (BLOCKERS.md).
   AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
   gate is green.
+  Split 2026-10-09, as PLAN 3.4R was: the pass is several causes, one a commit. No part is a
+  numbered task: the gate runs the specs a part changes (ADR-87), and a part that touches
+  what is drawn runs its specs by hand. No sweep: this is a pass of step 9, not a phase
+  review (ADR-58). The last part ticks 3.12R and has the whole e2e suite.
+  - [ ] 3.12Ra The independent read (ADR-74), the ninth: the 55 files of `src/`, `data/` and
+    `tools/` changed since the eighth (`033b15a`: PLAN 3.7g to 3.12d, 2,750 lines added),
+    the new lines first. The same brief: defects only, nothing of what changed or why. Each
+    finding is checked against the code here before it is anything; those a player can meet
+    become tasks 3.12Rk and on, before 4.1, each with a test that fails first, most severe
+    first; the rest go on the watch list.
+  - [ ] 3.12Rb SPEC re-read for drift: each decision since the last pass (ADR-168 to
+    ADR-212) looked for in SPEC and checked against the code, not against its ADR alone:
+    what 3.8 to 3.11 changed (the route, the supply's partial refresh, the blocks of a
+    contact, the tags, the tint, what a loss leaves), the history rows, the ticker, sound.
+  - [ ] 3.12Rc Dead code and refactor debt in the files changed since `033b15a`: exports
+    nothing uses, i18n keys without a use, TODO and FIXME; whether `Hud` should own the
+    ticker and the sound, which read the same rows; the worker's `world` number, which is in
+    `nationStats` only. The pin holds: a refactor that moves it changed a rule.
+  - [ ] 3.12Rd Tick time, not measured since PLAN 3.10e: `npm run sim -- --scenario 1938
+    --seed 99 --years 5 --affinity 0xFFFF` beside that figure and the budget. Over budget is
+    a task before 4.1; under it is a line here.
+  - [ ] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
+    `/^Free state d+$/`: the `\d` gets its backslash back. `Free state ${id}` is what
+    `nationNames.ts` gives a nation with no province: if the three seeds then fail, that is
+    a finding and a task, and the test is not weakened.
+  - [ ] 3.12Rf A nation's death takes it out of its alliance with no history row (29
+    alliances gone after ten years of seed 1, 15 rows said so): the log says what became of
+    an alliance. First: whether the state hash covers the log (does the pin move).
+  - [ ] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the
+    founding has one row.
+  - [ ] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than
+    the view less 12.5 rem, at the UI sizes above 100%, at Max speed. Pictures, looked at;
+    what is wrong is fixed here or is a part of its own.
+  - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
+    gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
+    workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
+    `formationFight1938`, `zoomDemo1938`: some 12 min of new tests) or slowed, and whether
+    a wait is longer than what it waits for. `fire1938`'s limit with it (BLOCKERS.md).
+  - [ ] 3.12Rj Last: a line under PLAN 1.42 for the land that rises and goes back to its
+    core nation month after month (ADR-210; balance, ADR-58) if it has none; the full
+    suite on the final tree, whatever an earlier part broke fixed here; 3.12R ticked.
 
 ## Phase 4 — Naval
 
