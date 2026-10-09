@@ -140,13 +140,14 @@ export function inCorridor(world: World, nation: number, cell: number): boolean 
   const cs = world.battles.corridors;
   if (cs.length === 0) return false;
   const w = world.cells.w;
+  const wrap = world.settings.loopingMap;
   const px = (cell % w) + 0.5;
   const py = Math.floor(cell / w) + 0.5;
   for (const c of cs) {
     if (c.nation !== nation || c.untilTick <= world.tick) continue;
     let rx = px - c.x;
-    if (rx > w / 2) rx -= w;
-    if (rx < -w / 2) rx += w;
+    if (wrap && rx > w / 2) rx -= w;
+    if (wrap && rx < -w / 2) rx += w;
     const ry = py - c.y;
     const along = rx * c.dx + ry * c.dy;
     const across = Math.abs(-rx * c.dy + ry * c.dx);

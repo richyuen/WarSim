@@ -103,20 +103,24 @@ export interface Deployment {
   facing: number;
 }
 
-/** East-west distance from a to b on the map's own side of the seam. */
-function wrapDx(world: World, ax: number, bx: number): number {
+/**
+ * East-west distance from a to b, the short way: over the seam where the map loops
+ * (`settings.loopingMap`), and never on a map with edges (PLAN 3.12Rs).
+ */
+export function wrapDx(world: World, ax: number, bx: number): number {
   const w = world.cells.w;
   let dx = bx - ax;
+  if (!world.settings.loopingMap) return dx;
   if (dx > w / 2) dx -= w;
   else if (dx < -w / 2) dx += w;
   return dx;
 }
 
-/** Distance in cells between two points, wrapping east-west: the one measure of contact (`CONTACT_CELLS`). */
+/** Distance in cells between two points, over the seam of a map that loops: the one measure of contact (`CONTACT_CELLS`). */
 export function cellDist(world: World, ax: number, ay: number, bx: number, by: number): number {
   const w = world.cells.w;
   let dx = Math.abs(ax - bx);
-  if (dx > w / 2) dx = w - dx;
+  if (dx > w / 2 && world.settings.loopingMap) dx = w - dx;
   const dy = ay - by;
   return sqrt(dx * dx + dy * dy);
 }

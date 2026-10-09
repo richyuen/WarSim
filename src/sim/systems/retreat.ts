@@ -44,7 +44,7 @@ import { EventKind } from '../../shared/events';
 import { sqrt } from '../core/dmath';
 import { nearestCellWhere } from '../data/ownership';
 import { navOf, type World } from '../world';
-import { cellDist, CONTACT_CELLS } from './elements';
+import { cellDist, CONTACT_CELLS, wrapDx } from './elements';
 import { foreignTo, HOME_BACK, orderMove } from './movement';
 import { blocOf } from './supply';
 
@@ -106,9 +106,7 @@ function fallBack(world: World, id: number, reach: number): boolean {
     }
   });
   if (nearest === 0) return false;
-  let dx = x - c.x[nearest]!;
-  if (dx > w / 2) dx -= w;
-  else if (dx < -w / 2) dx += w;
+  const dx = wrapDx(world, c.x[nearest]!, x);
   const dy = y - c.y[nearest]!;
   const d = sqrt(dx * dx + dy * dy);
   const px = d > 0 ? x + (dx / d) * RETREAT_CELLS : x;

@@ -13,7 +13,7 @@
  */
 import type { WarBattle } from '../../shared/protocol';
 import type { World } from '../world';
-import { cellDist, CONTACT_CELLS, contactsOf, deployOf, elementIndex, slotCount } from './elements';
+import { cellDist, CONTACT_CELLS, contactsOf, deployOf, elementIndex, slotCount, wrapDx } from './elements';
 
 export type WarBattleSite = Omit<WarBattle, 'tick'>;
 
@@ -101,9 +101,7 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
   };
   const pa = place(a);
   const pb = place(b);
-  let dx = pb[0] - pa[0];
-  if (dx > w / 2) dx -= w;
-  else if (dx < -w / 2) dx += w;
+  const dx = wrapDx(world, pa[0], pb[0]);
   return { war: warId, x: (((pa[0] + dx / 2) % w) + w) % w, y: (pa[1] + pb[1]) / 2, formations: [a, b], count, men: strength };
 }
 

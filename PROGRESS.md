@@ -12608,3 +12608,34 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check`, documents only: parity (`.cache/gate-rr3.log`).
 - **Next:** PLAN 3.12Rs (nothing of the sim joins the two edges of a map that does not
   loop), then 3.12Rj and 3.12Ri.
+
+## 2026-10-09 — PLAN 3.12Rsa: the measure of contact keeps to the edges of a map that does not loop (ADR-233)
+
+- **Split first:** PLAN 3.12Rs is one mechanism (a fold over `w / 2` or `% w` that does not
+  ask `settings.loopingMap`) in five systems: 3.12Rsa to 3.12Rse, one a commit.
+- **Done:** `cellDist` and `wrapDx` (`elements.ts`) ask the setting; `wrapDx` is exported
+  and is the fold of `retreat.ts` and `warBattle.ts`; `inCorridor` (`majorBattles.ts`)
+  asks too. On a map that loops the arithmetic is what it was.
+- **Found by the search, not by PLAN's text:** `inCorridor`, `retreat.ts:110`,
+  `warBattle.ts:105` (mended here); `nearestCellWhere` as called in play (a retreat's
+  fall-back cell, a capital's move, the editor's stranded formations) and the God brush of
+  control (`paintControl`, `tick.ts`) wrap too: PLAN 3.12Rse, with the reasons for what is
+  left (the buckets of `findBattles`, a step's fold in `movement.ts`, the world's build).
+- **Tests:** `tests/unit/seam.test.ts`, new, two, each scene with the map looping and not.
+  Red first: "expected 0.8000000000001819 to be close to 2047.2" (two enemies at x = 0.4
+  and x = w − 0.4 were in contact and fired), "expected true to be false" (a corridor
+  westwards from the first column held the last but one).
+- **Not reachable alone, so no test of their own:** the folds of `retreat.ts` and
+  `warBattle.ts` are asked only of two formations `cellDist` has put in reach.
+- **Gotcha:** `addDivision` twice in a world emptied by `destroyFormation` gives the higher
+  id first (the free list): sort before comparing with `findBattles`' groups.
+- **SPEC** §9, the looping option: what keeps to the edges now and what still goes over.
+- **The pin stays** (92689265). **The tick's cost: not measured** (one read of the
+  setting in `wrapDx`; in `cellDist` only for a distance over half the map).
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87); no spec run by hand: nothing
+  drawn changed, and `title.spec.ts` and `gameOptions1938.spec.ts` (games with `looping=0`
+  compared with Node's) wait for the last part.
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rsa.log`): 1,078 unit
+  tests in 134 files (118.0 s), the ten-year stage 17 tests in 12 files (185.0 s), build,
+  parity 47.5%.
+- **Next:** PLAN 3.12Rsb (the reach of `supplySystem`), then 3.12Rsc, 3.12Rsd, 3.12Rse.

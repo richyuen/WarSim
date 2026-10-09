@@ -245,6 +245,34 @@ quick sweep as a smoke test.
     AT: a unit test for each place that fails first, on a made map with `loopingMap` off:
     a formation at one edge is not fed from, presses on no cell of, fires at nothing at
     and is sent to no front at the other edge.
+    Split 2026-10-09: one mechanism (a fold over `w / 2` or `% w` that does not ask the
+    setting), apart by system, one a commit. The tests are in `tests/unit/seam.test.ts`,
+    each scene asked with the map looping and not. The last part ticks 3.12Rs.
+    - [x] 3.12Rsa The measure of contact (ADR-233): `cellDist` and `wrapDx` of `elements.ts`
+      (who fights whom, where a block deploys), and by the same search the way a retreat
+      falls back (`retreat.ts`), the place of a war's largest battle (`warBattle.ts`) and a
+      breakthrough corridor (`inCorridor`, `majorBattles.ts`, not named above). Two tests,
+      red first; the pin stays.
+    - [ ] 3.12Rsb The reach of `supplySystem` (`supply.ts`, the 2 cells about a formation).
+      AT: a formation on ground not its side's in the first column is not fed by a network
+      in the last; on a map that loops it is.
+    - [ ] 3.12Rsc The pressure of `territorySystem` (`territory.ts`).
+      AT: a formation in the first column presses on no frontier cell of the last.
+    - [ ] 3.12Rsd The operational AI (`operational.ts`): `dist2` to a sector (212), the
+      errand's two folds (392, and 402 over the sector buckets, `bw / 2`), `cellDist` (641).
+      AT: a formation at one edge is in range of no sector at the other and is sent to none.
+    - [ ] 3.12Rse What else wraps in play, found by 3.12Rsa's search and not looked into:
+      `nearestCellWhere` (`data/ownership.ts`, `% w` on every ring) as called in play, for
+      the cell a retreat falls back to (`retreat.ts`, twice), a capital's move
+      (`capitals.ts`, `nearestOwnedCell` and line 82) and the editor's stranded formations
+      (`editor.ts:307`); the God brush of control (`paintControl`, `tick.ts`); the editor's
+      brush, line and bucket (`editor.ts:159, 176, 194`, `scenarioEdit.ts:24`). Looked at
+      and left with their reason, if it holds: the bucket lookup of `findBattles`
+      (`combat.ts:112`, candidates only, `cellDist` decides); a step's fold in
+      `movement.ts` (363, 441: `stepOpen` lets no step over the seam of a map with edges);
+      the world's build (`oob.ts`, `ownership.ts`, `provinces.ts`, `terrain.ts`: a
+      scenario's own map, and `loopingMap` asks for a map that wraps, `schemas.ts:689`).
+      AT: a test for each that is mended, failing first; a line of reason for each left.
   - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rs: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever

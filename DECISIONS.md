@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-233 · 2026-10-09 · accepted — The measure of contact keeps to the edges of a map that does not loop (PLAN 3.12Rsa)
+
+- **Context.** PLAN 3.12Rs, found by a search with 3.12Rp (ADR-227) and read, not run: with
+  the new game's option `looping=0` (`settings.loopingMap` off) routes, the frontier and the
+  supply flood stop at the map's edges, and the distances of the sim did not ask. 1938
+  loops by default: no game of the tests or the sweeps is one with edges.
+- **What was so.** `cellDist` (`elements.ts`, "the one measure of contact") and `wrapDx`
+  folded any east-west distance over half the map. Two enemy formations at x = 0.4 and
+  x = w − 0.4 were 0.8 cells apart: in contact, in one battle, firing, their blocks
+  deployed towards each other over the seam, with no route between them.
+- **Decision.** Both ask `settings.loopingMap`; on a map that loops they do what they did,
+  by the same arithmetic. `wrapDx` is exported and takes the place of the same three lines
+  in `retreat.ts` (away from the nearest enemy) and `warBattle.ts` (the point between the
+  two formations of a war's largest battle). `inCorridor` (`majorBattles.ts`), which the
+  plan's text had not named, asks too: a breakthrough corridor westwards from the first
+  column went on in the last.
+- **Split.** 3.12Rs is five parts by system (PLAN): this, the supply's reach, the
+  territory's pressure, the operational AI, and what the search of this part found beside
+  them (`nearestCellWhere` in play, the God brush of control, the editor's brush).
+- **Left here.** `findBattles` looks into the buckets over the seam whatever the setting:
+  candidates only, and `cellDist` decides. A retreat's fall-back cell is looked for by
+  `nearestCellWhere`, which wraps: 3.12Rse.
+- **Tests.** `tests/unit/seam.test.ts`, new, two, each scene with the map looping and not:
+  two enemies at the two edges (the distance, the battle, `engaged`, the fires) and the
+  corridor. Red first ("expected 0.8000000000001819 to be close to 2047.2"; "expected true
+  to be false").
+- **The pin stays** (92689265): 1938 loops.
+
 ### ADR-232 · 2026-10-09 · accepted — A war declared on a nation that an older war ends in that hour stays as it is (PLAN 3.12Rr3)
 
 - **Context.** The one war of the sweep seeds that is still declared and gone in its hour
