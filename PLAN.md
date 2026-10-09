@@ -5734,7 +5734,7 @@ quick sweep as a smoke test.
     first column left the first column below it marked. `referenceNetwork` and `byRule` ask the setting too. The
     pin stays (2104f897). The territory rule asks the setting for its front and not for its
     pressure: PLAN 3.12Rs.
-  - [ ] 3.12Rq **A formation is not spawned at sea** (found with 3.12Rm; read, not run).
+  - [x] 3.12Rq **A formation is not spawned at sea** (found with 3.12Rm; read, not run).
     `spawnFormation` (`tick.ts`) takes `standPoint` of the place given: in a cell that is
     all water that is the cell's middle, and the formation stands where no route begins. No
     panel sends the command at a place of the player's choosing today (the specs and the
@@ -5743,6 +5743,9 @@ quick sweep as a smoke test.
     AT: a unit test that fails first: a formation spawned on open sea is refused or stands
     in a cell of a component; one spawned on the water of a coastal cell stands on its land
     as now.
+    **Done 2026-10-09 (ADR-228).** Refused (`Refusal.AtSea`), not moved: the cell of the
+    stand point has no component of the route grid, or the place is off the map. Two tests
+    in `refusal.test.ts`, the first red first. The coast as before. The pin stays (2104f897).
   - [ ] 3.12Rr **A war is not declared and ended in one hour** (found with 3.12Rn; the hour's
     events run, the cause read, not traced; `.cache/rn-short.ts <seed>`). Seed 2, ten
     years, 2 of 244 wars: tick 18,793, "Germany declared war on Latvia" and "Latvia made

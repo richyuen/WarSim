@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-228 · 2026-10-09 · accepted — A formation is spawned on no cell at sea: the command is refused (PLAN 3.12Rq)
+
+- **Context.** `spawnFormation` took `standPoint` of the place given. In a cell that is all
+  water that is the place itself, or the cell's middle: the formation stood in a cell of no
+  component of the route grid, where no route begins, and took no order. Off the map
+  `standPoint` gave the place as it was in a world without a fine mask (the toy world), and
+  the formation stood in no cell at all. Found by reading, with PLAN 3.12Rm. No panel sends
+  the command at a place of the player's choosing today; the specs and tools do, and God
+  Mode's spawn will.
+- **Decision.** Refused, with a reason of its own (`Refusal.AtSea`, 22; the God tab's words:
+  "the place is at sea or off the map: a formation stands on land"). The rule asks the
+  route grid, not the fine mask: the cell of the stand point has component 0, or the point
+  is off the map. The nation is asked first (a dead nation at sea is refused as dead), a
+  NaN before both.
+- **Not moved to the nearest land** (the other way PLAN 3.12Rq named, the editor's
+  `strandedToLand`). That rule is for formations a terrain import left on water: they were
+  the player's already, and their loss would be the import's side effect. A spawn is a
+  place the sender chose. A formation put 64 cells from the click, on the land of whoever
+  holds the nearest coast, is not what was asked, and a command that does something else
+  than it says is what PLAN 2.17a ended. The sender is told and chooses again.
+- **The coast stays as it was.** `standPoint` runs first: a place on the water of a cell
+  that has land is the cell's land point (PLAN 2.9a), and its cell has a component.
+- **Tests** (`refusal.test.ts`, two): the toy world's first cell of no component, a place
+  below the map and one left of it are refused, the count of formations as before, and a
+  dead nation at sea is refused as dead (red first: the spawn was carried out); Germany's
+  first cell with water in it by the fine mask, a place on that water: the formation
+  stands in that cell, on land, elsewhere than the place given (green before and after).
+- **The pin stays** (2104f897): no scenario sends the command.
+- **What the tests' own spawns are.** The six places the unit tests and `worker.spec.ts`
+  give in the toy world as bare numbers are all land (terrain 2, component 1; probed). The
+  specs of 1938 spawn in western China, on the German and Polish border or at a capital.
+
 ### ADR-227 · 2026-10-09 · accepted — The supply network keeps to the edges of a map that does not loop (PLAN 3.12Rp)
 
 - **Context.** The supply flood joined column 0 and column w − 1 whatever

@@ -2054,6 +2054,9 @@ on screen.
   `spawnFormation {nation, x, y, strength, template?}` (PLAN 2.5, ADR-68): with a template of
   the scenario the formation has its elements and fights, as one from production does; without
   one it is a bare strength with no elements (the toy world). It has no button in the God tab.
+  It stands where `standPoint` puts the place given (on the water of a coastal cell: the
+  cell's land point), and is refused (`Refusal.AtSea`; PLAN 3.12Rq, ADR-228) where that is a
+  cell of no component of the route grid (water) or off the map: no route begins there.
   **A command that is not carried out says why** (PLAN 2.17a, ADR-117): `applyCommand` returns a
   `Refusal` (`shared/commands`), the tick emits `CommandApplied` or `CommandRefused` (b = the
   reason) after the command, the worker posts `{type: 'refused', reason}` to the page, and the

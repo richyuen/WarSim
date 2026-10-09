@@ -18,7 +18,7 @@ import { forceRevolt } from './systems/revolts';
 import { importLayer, paint, redoEdit, undoEdit } from './editor';
 import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
-import type { World } from './world';
+import { navOf, type World } from './world';
 
 export type System = (world: World) => void;
 
@@ -75,11 +75,16 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'spawnFormation': {
       const why = whyNotNation(world, cmd.nation);
       if (why) return why;
+      // On land by the fine mask (PLAN 2.9a): a place given on the water of a coastal cell is the cell's land point.
+      const [x, y] = world.standPoint(cmd.x, cmd.y);
+      // Not at sea and not off the map (PLAN 3.12Rq, ADR-228): no route begins in a cell of no component.
+      const { w, h } = world.cells;
+      if (!(x >= 0 && x < w && y >= 0 && y < h) || navOf(world).grid.component[Math.floor(y) * w + Math.floor(x)] === 0) return Refusal.AtSea;
       const f = world.formations;
       const id = f.create();
       f.cols.nation[id] = cmd.nation;
-      // On land by the fine mask (PLAN 2.9a): a place given on the water of a coastal cell is the cell's land point.
-      [f.cols.x[id], f.cols.y[id]] = world.standPoint(cmd.x, cmd.y);
+      f.cols.x[id] = x;
+      f.cols.y[id] = y;
       f.cols.strength[id] = cmd.strength;
       f.cols.org[id] = 1;
       // Of a scenario template (PLAN 2.5): with its elements, as production delivers one.

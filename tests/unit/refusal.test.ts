@@ -4,9 +4,10 @@ import { EventKind } from '../../src/shared/events';
 import type { FromWorker } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { navOf } from '../../src/sim/world';
 import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
-import { runEvents } from '../helpers/sim1938';
+import { INF_DIV, nationId, runEvents } from '../helpers/sim1938';
 
 // PLAN 2.17a (the critic's R2-B8): a command that is not carried out says why. It was applied as
 // nothing, with a `CommandApplied` event before it; and a command naming a dead nation, or
@@ -146,6 +147,51 @@ describe('a command that is not carried out says why (PLAN 2.17a)', () => {
     expect(send(s, { kind: 'renameNation', nation: founded, name: 'Lyonesse' }).refused).toEqual([]);
     expect(send(s, { kind: 'renameNation', nation: founded, name: '' })).toEqual({ applied: 1, refused: [] });
     expect(s.world.names.has(founded)).toBe(false);
+  });
+
+  // PLAN 3.12Rq (ADR-228): `standPoint` gave the middle of a cell that is all water, and the
+  // formation stood where no route begins.
+  it('a formation is spawned on no cell at sea, and off the map', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    const { w, h } = s.world.cells;
+    const sea = navOf(s.world).grid.component.findIndex((c) => c === 0);
+    expect(sea).toBeGreaterThanOrEqual(0);
+    const formations = s.world.formations.count;
+    expect(send(s, { kind: 'spawnFormation', nation: 1, x: (sea % w) + 0.5, y: Math.floor(sea / w) + 0.5, strength: 900 })).toEqual({ applied: 0, refused: [Refusal.AtSea] });
+    expect(send(s, { kind: 'spawnFormation', nation: 1, x: 3, y: h + 2, strength: 900 }).refused).toEqual([Refusal.AtSea]);
+    expect(send(s, { kind: 'spawnFormation', nation: 1, x: -2, y: 3, strength: 900 }).refused).toEqual([Refusal.AtSea]);
+    expect(s.world.formations.count).toBe(formations);
+    // The nation is asked first: a dead one at sea is refused as dead.
+    const dead = toyWithDead();
+    expect(send(dead, { kind: 'spawnFormation', nation: 2, x: (sea % w) + 0.5, y: Math.floor(sea / w) + 0.5, strength: 900 }).refused).toEqual([Refusal.DeadNation]);
+  });
+
+  it('a formation spawned on the water of a coastal cell stands on its land, as before', () => {
+    const s = new Sim({ scenario: '1938', seed: 5, assets: assets1938(SIZE_1938.w) });
+    const world = s.world;
+    const { w, h, controller } = world.cells;
+    const comp = navOf(world).grid.component;
+    const GER = nationId('GER');
+    // Germany's first cell with water in it by the fine mask, and a place on that water.
+    let at: [number, number] | null = null;
+    for (let cell = 0; cell < w * h && !at; cell++) {
+      if (comp[cell] === 0 || controller[cell] !== GER) continue;
+      for (let i = 0; i < 16 && !at; i++) {
+        const [x, y] = [(cell % w) + ((i % 4) + 0.5) / 4, Math.floor(cell / w) + (Math.floor(i / 4) + 0.5) / 4];
+        if (!world.onLand(x, y) && world.onLand(...world.cellPoint(cell))) at = [x, y];
+      }
+    }
+    expect(at).not.toBeNull();
+    const [x, y] = at!;
+    const before = new Set(world.formations.ids());
+    expect(send(s, { kind: 'spawnFormation', nation: GER, x, y, strength: 0, template: INF_DIV })).toEqual({ applied: 1, refused: [] });
+    const made = world.formations.ids().filter((id) => !before.has(id));
+    expect(made).toHaveLength(1);
+    const fc = world.formations.cols;
+    const [fx, fy] = [fc.x[made[0]!]!, fc.y[made[0]!]!];
+    expect([Math.floor(fx), Math.floor(fy)]).toEqual([Math.floor(x), Math.floor(y)]);
+    expect([fx, fy]).not.toEqual([x, y]);
+    expect(world.onLand(fx, fy)).toBe(true);
   });
 
   it('a refused command is in the command log: a replay refuses it again', () => {

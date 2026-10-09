@@ -12461,3 +12461,33 @@ No rule changed and nothing on screen changed. One task came out of it.
   of them compared with the game in Node). Run by hand on e83098b: 7 tests green in 31 s.
 - **The gate's stages**, slow as in the three gates before (PLAN 3.12Ri): unit 278.8 s,
   ten-year 297.8 s.
+
+## 2026-10-09 — PLAN 3.12Rq: a formation is spawned on no cell at sea
+
+- **The defect** (read with PLAN 3.12Rm, run now): `spawnFormation` took `standPoint` of
+  the place given. On a cell that is all water the formation stood in a cell of no
+  component of the route grid; off the map, in a world without a fine mask, in no cell.
+- **The mend** (ADR-228): refused, `Refusal.AtSea` (22), with its words in the God tab. Not
+  moved to the nearest land: a spawn is a place the sender chose. The rule asks the route
+  grid (`navOf(world).grid.component`), not the fine mask, which the toy world has not.
+  The nation is asked first.
+- **Tests:** `refusal.test.ts`, two (the file has 12). The toy world's first cell of no
+  component, a place below the map and one left of it: red first (the spawn was carried
+  out). A place on the water of Germany's first cell with water in it: the formation in
+  that cell, on land; green before and after, as the task asks.
+- **A test of mine that was wrong, not the code:** the coastal test first took the first
+  such cell of the whole map (454, 0), and a bare strength of 900. After the tick the one
+  new formation was at (1100, 267). Not looked into: what became of a bare formation on
+  row 0, and whose the new one was. The test now takes a German cell and a template.
+- **The tests' own spawns:** the six places given as bare numbers in the toy world are
+  land (terrain 2, component 1; `.cache/rq-probe.ts`). None is refused.
+- **The pin:** stays at 2104f897 (`baselineHash.test.ts` run before the gate).
+- **By hand:** `worker.spec.ts`, `tiers1938.spec.ts`, `battleView1938.spec.ts`
+  (`--project chromium`), 5 tests green in 44.5 s. Nothing drawn changes.
+- **The tick's cost: not measured.** The check is in a command, not in a system.
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87).
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rq.log`): 1,072 unit
+  tests in 133 files, the ten-year stage 17 tests in 12 files, build, parity 47.5%. The
+  stages at their old pace: unit 117.4 s, ten-year 163.8 s (278.8 s and 297.8 s in the gate
+  before; nothing was done about it, and the load of the machine is not known in either).
+- **Next:** PLAN 3.12Rr (a war is not declared and ended in one hour).

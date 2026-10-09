@@ -32,6 +32,7 @@ const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.OnRetreat]: 'refusal.onRetreat',
   [Refusal.SameOverlord]: 'refusal.sameOverlord',
   [Refusal.AlliedRealm]: 'refusal.alliedRealm',
+  [Refusal.AtSea]: 'refusal.atSea',
 };
 
 export interface GodTabProps {

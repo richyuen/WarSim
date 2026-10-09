@@ -224,6 +224,8 @@ export const Refusal = {
   SameOverlord: 20,
   /** One, or its overlord, is the ally of the other or of its overlord (PLAN 3.8). */
   AlliedRealm: 21,
+  /** A formation spawned on a cell that is water, or off the map: no route begins there (PLAN 3.12Rq, ADR-228). */
+  AtSea: 22,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 
