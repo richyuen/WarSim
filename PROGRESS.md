@@ -11582,3 +11582,40 @@ No rule changed and nothing on screen changed. One task came out of it.
   between two messages; not looked at in the browser at Max.
 - **Gate:** `npm run check` (code; a part: the changed spec file).
 - **Next:** PLAN 3.12d (sound; ticks 3.12 and has the whole e2e suite).
+
+## 2026-10-09 — PLAN 3.12d: sound, and 3.12 ticked (ADR-212)
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Done:** `src/shared/sound.ts` (`cueOfKind`, `cueOfTicker`, `CUE_NOTES`: five cues as
+  notes) and `src/app/sound.ts` (`Sound`: oscillators and gain envelopes on an `AudioContext`
+  made at the first `pointerdown` or `keydown`). The cue is that of the ticker's new rows,
+  one a message. The worker numbers its worlds and sends the number with `nationStats`
+  (`world`): the first message of a world asks for nothing, so a loaded game is silent about
+  its past. Settings: `settings-volume` (25 to 100%, 50% at first; a choice sounds the peace
+  cue) and `settings-mute`, kept (`warsim.volume`, `warsim.muted`).
+  `window.__warsim.sound`. SPEC § "Sound"; PARITY row 79 not started to partial.
+- **Tests:** `tests/unit/sound.test.ts` (7, new: the cue of each kind and none for any other
+  event; the notes' numbers; a world's first message; one cue a message in the cues' order;
+  a declaration of war asks for the war cue and its notes reach a counting context; the
+  volume and the mute; before the first press); `tests/unit/workerLabels.test.ts` (a load
+  is another world, with the same ticker); `tests/e2e/sound1938.spec.ts` (new: the two
+  settings; a God war asks for "war" and `sounded` goes up by one in headless Chromium;
+  muted, the peace asks for nothing; after a load with `continue=1` both settings are
+  as they were and the two rows ask for nothing; a war on France sounds; a restore over it
+  does not).
+- **Seen:** `docs/evidence/3.12/d-settings-sound.png`, looked at: "Sound volume" with its
+  choice and "Mute sound" with its box, under "Unit size" and above the screenshot button.
+- **The pin:** unmoved (nothing in `src/sim` changed).
+- **Learned:** a click in headless Chromium does start an `AudioContext`: `sounded` can be
+  tested, not only `asked`. A God peace leaves a truce, and the God war after it is refused
+  ("a truce is in force"): the spec's second war is on France. A count of ticker rows that
+  is two before and after a press proves nothing: the spec polls the message's rows.
+- **Performance:** not measured. One pass over five rows for each statistics message; a cue
+  is two to four oscillators for a second and a half.
+- **Not done:** nobody has listened to the cues: they are notes checked as numbers. No
+  music, no sound of battles, none quieter when zoomed out (ADR-212). The volume is not on
+  the title screen.
+- **Gate:** `npm run check` (code; the tick of 3.12: the whole e2e suite).
+- **Next:** PLAN 3.12R, the review pass over 3.8 to 3.12 (step 9: five numbered tasks since
+  3.7), then PLAN 4.1.

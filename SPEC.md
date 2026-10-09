@@ -2127,6 +2127,24 @@ on screen.
     is now: of the nation a war was declared on, of a peace's loser, of the nation that died.
     A click flies the camera there (`MapView.showPlace`), 1,500 km across the view.
   - While a nation's or a formation's panel is open on the left, the last two rows only.
+- **Sound** (implemented PLAN 3.12d, ADR-212; `src/shared/sound.ts`, `src/app/sound.ts`): a
+  cue for each major event the ticker tells, made in code with the Web Audio API (no sound
+  file is loaded).
+  - Five cues (`cueOfKind`): a war declared (three rising notes, as of a trumpet), a peace
+    (two bells), a capital taken (two drum strokes), a nation destroyed, collapsed or annexed
+    (two low falling tones), a nation returned (a rising arpeggio). The notes are data
+    (`CUE_NOTES`), each cue over in 1.5 s at most.
+  - The cue of a `nationStats` message is that of its ticker rows that are new
+    (`cueOfTicker`): one a message at most, the first of war, death, capital, return, peace.
+    The message carries the number of the worker's world (`world`), which a new game or a
+    load changes: the first message of a world is its past and asks for nothing.
+  - A browser lets a page sound after a press: the `AudioContext` is made at the first
+    `pointerdown` or `keydown`. A cue asked for before that is dropped, not kept.
+  - Settings: the volume (25, 50, 75 or 100%, 50% at first; a choice sounds the peace cue at
+    it) and a mute, both persisted (`warsim.volume`, `warsim.muted`). A muted cue is not
+    asked for.
+  - `window.__warsim.sound`: `asked` (the cues asked for) and `sounded` (how many reached the
+    audio context), for a test, which cannot hear.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
 - **Title screen** (implemented PLAN 1.43a, `src/ui/TitleScreen.tsx`, `src/app/main.tsx`) [ADR-60]:
@@ -2169,7 +2187,8 @@ on screen.
     image differs.
 - **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
   interface size 85–130% (root font size, also on the title screen), unit size 50–200% (marker
-  size multiplier), both persisted; F2 or the panel saves a PNG of the map with its overlays;
+  size multiplier), both persisted; the sound's volume and mute (PLAN 3.12d, see Sound); F2 or
+  the panel saves a PNG of the map with its overlays;
   Main menu; seed field, random seed and New game (reloads with `?seed=`, paused).
 - **New-game options** (PLAN 1.39b1, `src/sim/gameOptions.ts`, `src/app/gameUrl.ts`): looping map
   (`settings.loopingMap`, saved; off = no wrap in pathing, territory, operational AI or

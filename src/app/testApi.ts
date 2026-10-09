@@ -8,6 +8,7 @@ import type { MapView } from './MapView';
 import type { PlayerControl } from './player';
 import type { Settings } from './settings';
 import type { SimClient } from './simClient';
+import type { Sound } from './sound';
 
 export interface WarsimTestApi {
   sim: SimClient;
@@ -20,6 +21,8 @@ export interface WarsimTestApi {
   player: PlayerControl | null;
   /** PLAN 1.39a: UI and unit size. */
   settings: Settings;
+  /** PLAN 3.12d: the cues asked for (`asked`) and given to the audio context (`sounded`). */
+  sound: Sound;
 }
 
 declare global {

@@ -12,6 +12,7 @@ import { importScenarioFile, readStagedScenario } from './scenarioFiles';
 import { saveScreenshot, Settings } from './settings';
 import { screenshotLabel } from './screenshotLabel';
 import { SimClient } from './simClient';
+import { Sound } from './sound';
 import { installTestApi } from './testApi';
 
 /**
@@ -91,14 +92,18 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   // options, with the number of nations a loaded world has (PLAN 2.16d).
   const setup = signal(options);
   const autosave = new Autosave(sim, scenarioId, () => ({ seed: seed.value, options: setup.value }));
-  const settings = new Settings(view);
+  // Sound (PLAN 3.12d): the cue of what the ticker tells; a browser allows it after the first press.
+  const sound = new Sound();
+  for (const type of ['pointerdown', 'keydown'] as const) window.addEventListener(type, () => sound.unlock(), { capture: true });
+  sim.onStats((m) => sound.onTicker(m.ticker, m.world));
+  const settings = new Settings(view, sound);
   // F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'F2' || !view) return;
     e.preventDefault();
     void saveScreenshot(view, screenshotLabel(hud));
   });
-  installTestApi({ sim, view, hud, autosave, player, settings });
+  installTestApi({ sim, view, hud, autosave, player, settings, sound });
 
   // Back to the title screen (PLAN 1.43): the game is autosaved first, so it can be continued.
   const toMenu = (): void => {

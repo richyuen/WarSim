@@ -72,5 +72,17 @@ describe('worker derived messages (labels, nation stats)', () => {
     const told = stats().at(-1)!.ticker.filter((r) => r.a === GER && r.b === POL);
     expect(told.map((r) => [r.kind, r.an, r.bn])).toEqual([[EventKind.WarDeclared, 'nation.GER', 'nation.POL']]);
     expect(Number.isFinite(told[0]!.x) && Number.isFinite(told[0]!.y)).toBe(true);
+
+    // PLAN 3.12d: the messages of one world have one number, and a load is another world: the
+    // view tells a loaded game's past from news by it.
+    expect(new Set(stats().map((m) => m.world)).size).toBe(1);
+    const world = stats().at(-1)!.world;
+    server.handle({ type: 'save', reqId: 3 }, 1300);
+    const saved = msgs.findLast((m): m is Extract<FromWorker, { type: 'reply' }> => m.type === 'reply' && m.reqId === 3)!.bytes!;
+    const sent = stats().length;
+    server.handle({ type: 'load', reqId: 4, bytes: saved }, 5000);
+    expect(stats().length).toBe(sent + 1);
+    expect(stats().at(-1)!.world).toBe(world + 1);
+    expect(stats().at(-1)!.ticker.map((r) => r.kind)).toEqual(stats().at(-2)!.ticker.map((r) => r.kind));
   }, 120_000);
 });

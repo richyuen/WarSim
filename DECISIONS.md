@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-212 · 2026-10-09 · accepted — Sound: five cues made in code, the cue of what is new in the ticker, one a message (PLAN 3.12d, critic R3-B6) [AoC-DEVIATION]
+
+- **Context.** The critic's third report: no sound (no `AudioContext` in `src/`). AoC has
+  music tracks, a trumpet at a declaration of war, and sounds that are quieter when zoomed
+  out (text; PARITY row 79).
+- **Decision.**
+  1. Five cues, synthesised with oscillators and gain envelopes (`CUE_NOTES`,
+     `src/shared/sound.ts`): war, peace, a capital taken, a death (destroyed, collapsed or
+     annexed are one cue), a return. No sound file: nothing to license, nothing to load, and
+     the notes are data a test can read.
+  2. The events that sound are the ticker's (`TICKER_KINDS`), and the cue is asked for from
+     the ticker's rows as they come with `nationStats` (`cueOfTicker`): what is heard is what
+     is told, and the view's event queue drops records at Max speed (ADR-211). A row is new
+     when its number in the log is above the last heard.
+  3. One cue a message (a second at most). At Max speed a message can bring five rows;
+     five cues over one another are noise. The one heard is the first of war, death,
+     capital, return, peace.
+  4. A loaded game does not sound its last month. The worker counts its worlds (a new game,
+     a load) and sends the number with `nationStats` (`world`); the first message of a world
+     sets what has been heard and asks for nothing. Told by the worker, because the view
+     cannot tell a load from a message in flight when it was asked for, and the numbers of
+     two logs' rows say nothing of one another.
+  5. The `AudioContext` is made at the first press or key (the browsers' rule); a cue
+     before it is dropped. So a game opened and left alone is silent until it is touched.
+  6. Volume in four steps (25 to 100%, 50% at first) and a mute, in the settings, kept in
+     `localStorage`. A choice of volume sounds the peace cue at it. A muted cue is not
+     asked for and is not sounded late when the mute is taken off.
+- **Deviation from AoC.** No music. No sound of battles, and none that is quieter when
+  zoomed out: every cue is of the whole world's news, the same at every zoom. PARITY row 79
+  is partial for these.
+- **Tests.** `tests/unit/sound.test.ts` (the cue of each kind; a declaration of war asks
+  for the war cue and its notes reach a counting context; the volume; the mute; before the
+  press); `tests/e2e/sound1938.spec.ts` (a God war is a cue that reaches the browser's
+  audio context; muted, the peace is none; both settings after a load; a loaded game asks
+  for nothing); `tests/unit/workerLabels.test.ts` (a load is another world).
+- **Not done.** Nobody has listened: the cues were written as notes and checked as
+  numbers (frequency, length, gain), not heard. Whether the war cue reads as a trumpet is
+  for a person with speakers. The pin is unmoved (nothing in `src/sim` changed).
+
 ### ADR-211 · 2026-10-09 · accepted — The ticker reads the history log, and a row's place is a capital as it is now (PLAN 3.12c, critic R3-B6)
 
 - **Context.** The critic's third report: nothing tells a watcher what happens as it happens

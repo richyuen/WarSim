@@ -141,6 +141,8 @@ export class SimServer {
   /** Land (1) / water (0) per cell at init, for `terrainLayer.landChanged`. */
   private startLand: Uint8Array | null = null;
   private statsTick = -1;
+  /** Counts the worlds this worker has had (a new game, a load): the view tells a loaded world's past from news by it (PLAN 3.12d). */
+  private worldNo = 0;
   private lastStatsMs = -1;
 
   handle(msg: ToWorker, nowMs: number): void {
@@ -239,6 +241,7 @@ export class SimServer {
         break;
       case 'load':
         this.requireSim().load(msg.bytes);
+        this.worldNo++;
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
         this.statsTick = -1;
@@ -316,6 +319,7 @@ export class SimServer {
   /** A fresh sim always starts paused; the host unpauses explicitly. */
   private startSim(init: SimInit, reqId: number): void {
     this.sim = new Sim(init);
+    this.worldNo++;
     // Real-map scenarios get nation labels; province names name spawned nations.
     this.provinceNames = init.assets ? (JSON.parse(new TextDecoder().decode(init.assets.admin1Meta)) as Admin1Meta[]).map(provinceLabel) : null;
     this.labelVersion = -1;
@@ -529,7 +533,7 @@ export class SimServer {
     world.nations.forEach((id) => {
       if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id), color: world.nations.cols.color[id]! });
     });
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)) }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), world: this.worldNo }, []);
   }
 
   /**

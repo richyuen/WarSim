@@ -14,7 +14,7 @@ import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
 import type { MapView } from './MapView';
-import { saveScreenshot, UI_SCALES, UNIT_SCALES, type Settings } from './settings';
+import { saveScreenshot, UI_SCALES, UNIT_SCALES, VOLUMES, type Settings } from './settings';
 import { SettingsPanel } from '../ui/SettingsPanel';
 import { screenshotLabel } from './screenshotLabel';
 import { newGameUrl } from './gameUrl';
@@ -96,6 +96,11 @@ export function App({
           nationsRange={SCENARIO_INFO[scenarioIdOf(base) ?? '1938'].nationsRange}
           onUiScale={(v) => settings.setUiScale(v)}
           onUnitScale={(v) => settings.setUnitScale(v)}
+          volume={settings.volume.value}
+          volumes={VOLUMES}
+          muted={settings.muted.value}
+          onVolume={(v) => settings.setVolume(v)}
+          onMuted={(v) => settings.setMuted(v)}
           onScreenshot={() => {
             if (view) void saveScreenshot(view, screenshotLabel(hud));
           }}

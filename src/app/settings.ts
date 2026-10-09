@@ -1,15 +1,19 @@
 /**
  * Player settings (PLAN 1.39a), persisted in localStorage: UI size (the root font size; the UI
- * is laid out in rem) and unit size (formation markers). Speed and pause persist in the HUD
- * (PLAN 1.8). Screenshots: F2 or the settings panel saves the map, with names and flags, as PNG.
+ * is laid out in rem), unit size (formation markers), and the sound's volume and mute
+ * (PLAN 3.12d). Speed and pause persist in the HUD (PLAN 1.8). Screenshots: F2 or the settings panel saves the map, with names and flags, as PNG.
  */
 import { signal } from '@preact/signals';
 import type { MapView } from './MapView';
+import type { Sound } from './sound';
 
 export const UI_SCALES = [0.85, 1, 1.15, 1.3] as const;
 export const UNIT_SCALES = [0.5, 0.75, 1, 1.5, 2] as const;
 const KEY_UI = 'warsim.uiScale';
+export const VOLUMES = [0.25, 0.5, 0.75, 1] as const;
 const KEY_UNIT = 'warsim.unitScale';
+const KEY_VOLUME = 'warsim.volume';
+const KEY_MUTED = 'warsim.muted';
 
 function load(key: string, allowed: readonly number[], fallback: number): number {
   try {
@@ -20,7 +24,15 @@ function load(key: string, allowed: readonly number[], fallback: number): number
   }
 }
 
-function store(key: string, v: number): void {
+function loadFlag(key: string): boolean {
+  try {
+    return localStorage.getItem(key) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function store(key: string, v: number | string): void {
   try {
     localStorage.setItem(key, String(v));
   } catch {
@@ -36,8 +48,13 @@ export function applyUiScale(): void {
 export class Settings {
   readonly uiScale = signal(load(KEY_UI, UI_SCALES, 1));
   readonly unitScale = signal(load(KEY_UNIT, UNIT_SCALES, 1));
+  readonly volume = signal(load(KEY_VOLUME, VOLUMES, 0.5));
+  readonly muted = signal(loadFlag(KEY_MUTED));
 
-  constructor(private readonly view: MapView | null) {
+  constructor(
+    private readonly view: MapView | null,
+    private readonly sound: Sound | null = null,
+  ) {
     this.apply();
   }
 
@@ -53,8 +70,26 @@ export class Settings {
     this.apply();
   }
 
+  /** The volume, and a cue at it: the player hears what was chosen. */
+  setVolume(v: number): void {
+    this.volume.value = v;
+    store(KEY_VOLUME, v);
+    this.apply();
+    this.sound?.play('peace');
+  }
+
+  setMuted(v: boolean): void {
+    this.muted.value = v;
+    store(KEY_MUTED, v ? '1' : '0');
+    this.apply();
+  }
+
   private apply(): void {
     document.documentElement.style.fontSize = `${16 * this.uiScale.value}px`;
+    if (this.sound) {
+      this.sound.volume = this.volume.value;
+      this.sound.muted = this.muted.value;
+    }
     if (this.view) {
       this.view.unitScale = this.unitScale.value;
       this.view.requestDraw();

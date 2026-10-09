@@ -5182,7 +5182,7 @@ quick sweep as a smoke test.
       its figure and its target above it; the spec now reads the cull from the figure's
       muzzle, as `FireFx.draw` does). No rule and nothing drawn changed: `CULL_PX` is
       exported.
-- [ ] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
+- [x] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can
   be read. What the critic saw: no ticker, no popup, no sound (`critic/c3_q.json`,
   `liveRegions` empty; no `AudioContext` in `src/`); AoC has a ticker line at the bottom
   left (`reference/screens/steam-screenshot-01.jpg`) and war popups and a war trumpet
@@ -5246,7 +5246,16 @@ quick sweep as a smoke test.
       return) as they happen, at the bottom left, read from the history log (the view's event
       queue drops records at Max speed); a click on a row flies the camera to its place (the
       worker gives a row without one the defender's capital). AT: the e2e of this task.
-    - [ ] 3.12d Sound: a few cues made in code, the cue of an event from a function that a
+    - [x] 3.12d *Done 2026-10-09 (ADR-212):* five cues made in code (`CUE_NOTES`,
+      `src/shared/sound.ts`: war, peace, a capital taken, a death, a return), played by
+      `src/app/sound.ts` on an `AudioContext` made at the first press. The cue is that of the
+      ticker's new rows, one a message; the worker numbers its worlds (`nationStats.world`),
+      so a loaded game does not sound its past. Volume (four steps) and mute in the
+      settings, kept. The pin is unmoved. `tests/unit/sound.test.ts` is the AT's "a cue is
+      asked for on a declaration of war"; `tests/e2e/sound1938.spec.ts` the same in the
+      browser, with the settings. PARITY row 79 not started to partial (no music, no sound
+      of battles, none quieter when zoomed out). Nobody has listened to the cues.
+      The task as it was set: Sound: a few cues made in code, the cue of an event from a function that a
       unit test can ask; a volume and a mute in the settings, kept. PARITY row 79. Ticks 3.12.
   For the review pass after 3.12 (found in 3.12a, not mended there): `tests/helpers/
   aiSweep.ts` asks that a founded nation's name not match `/^Free state d+$/`, a `\d` that
@@ -5262,6 +5271,23 @@ quick sweep as a smoke test.
   count toward the next review pass. Their order is not the critic's (R3-B4, B2, B5, B3,
   B6): the three that change the world's state or its cost come before the two whose tests
   and pictures are of that world. R3-B1 is Phases 4 to 6 (a line under PLAN 4.5).
+- [ ] 3.12R Review pass (PROMPT step 9) over PLAN 3.8 to 3.12, the five numbered tasks since
+  the phase review 3.7: refactor debt, dead code, SPEC re-read for drift (what 3.8 to 3.11
+  changed, the history rows, the ticker, sound), missing tests. It belongs to the tasks it
+  follows (ADR-74) and starts the count again. Known before it starts:
+    - `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
+      `/^Free state d+$/`: a `\d` that lost its backslash (found in 3.12a).
+    - A nation's death takes it out of its alliance with no history row: 29 alliances were
+      gone after ten years of seed 1 and 15 rows said so (3.12a).
+    - "Mexico joined the Coalition of Mexico" is the founder's own row (3.12a).
+    - About 22 history rows a year are land that rose and went back to its core nation
+      (ADR-210): balance, Phase 7 (ADR-58); a line under PLAN 1.42 if it has none.
+    - The ticker (3.12c) was not looked at with a panel taller than the view less 12.5 rem,
+      nor at the UI sizes above 100%, nor at Max speed.
+    - Sound (3.12d): the worker's `world` number is in `nationStats` only; the ticker and
+      the sound read the same rows, and whether `Hud` should own both is to be looked at.
+  AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
+  gate is green.
 
 ## Phase 4 — Naval
 
