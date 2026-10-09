@@ -16,8 +16,8 @@
  * Overseas muster (critic B1, 2026-10-03; an abstraction of sealift until PLAN 4.5): a nation at
  * war whose fronts all lie on other landmasses than its spawn point raises the formation in the
  * theatre instead: at the city it owns and controls nearest (and on the same landmass as) its
- * front cell nearest the capital, or at that front cell without such a city. Japan's divisions
- * otherwise piled up on the home islands while its army in China withered.
+ * front cell nearest the capital (`cityStand`), or at that front cell without such a city.
+ * Japan's divisions otherwise piled up on the home islands while its army in China withered.
  */
 import { equipFormation } from './elements';
 import { isDayStart } from '../../shared/calendar';
@@ -66,6 +66,21 @@ export function spawnPoint(world: World, nation: number): [number, number] | nul
   return world.cellPoint(c);
 }
 
+/**
+ * Where a formation stands by `city`: at the city's own place where that is in the city's cell
+ * and on sure land by the fine mask (PLAN 2.11k: Gibraltar's is in a water pixel), else where a
+ * formation stands in the city's cell. A city's place may lie over the cell beside its own
+ * (PLAN 3.12Rm: 436 of the 5,757 of 1938, on the shore), which is water on the grid: no route
+ * begins there, and a formation raised there took no order.
+ */
+export function cityStand(world: World, city: number): [number, number] {
+  const cc = world.cities.cols;
+  const x = cc.x[city]!;
+  const y = cc.y[city]!;
+  const cell = cc.cell[city]!;
+  return cell === Math.floor(y) * world.cells.w + Math.floor(x) ? world.standPoint(x, y) : world.cellPoint(cell);
+}
+
 /** Where a formation raised now appears: `spawnPoint`, or the overseas theatre (module comment). */
 export function musterPoint(world: World, nation: number): [number, number] | null {
   const home = spawnPoint(world, nation);
@@ -106,9 +121,7 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
       best = id;
     }
   });
-  // On sure land by the fine mask, as every place a formation takes (PLAN 2.9a missed this
-  // one: a city on the shore, Gibraltar, has its own place in a water pixel: PLAN 2.11k).
-  return best !== 0 ? world.standPoint(cc.x[best]!, cc.y[best]!) : world.cellPoint(front);
+  return best !== 0 ? cityStand(world, best) : world.cellPoint(front);
 }
 
 export function productionSystem(world: World): void {

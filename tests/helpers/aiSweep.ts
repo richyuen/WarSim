@@ -8,6 +8,7 @@ import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../../src/shared/flag
 import { foundedName, foundedNth, provinceLabel } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { navOf } from '../../src/sim/world';
 import { historyText } from '../../src/ui/historyText';
 import { historyRows } from '../../src/worker/historyRows';
 import { deadLand } from './deadLand';
@@ -39,6 +40,9 @@ import { strayNaN } from './stateNumbers';
  *
  * PLAN 3.12Rk AT: no formation that bears the mark of a march home stands before an enemy's
  * cell for 30 days (`homeWait`).
+ *
+ * PLAN 3.12Rm AT: on every day no formation is in a cell no route enters (a cell of component 0
+ * of the grid: water), where it could take no order.
  *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
@@ -76,6 +80,7 @@ export function aiSweep(seed: number): void {
   // The days on which two living nations were called after one province, and the most at once.
   let namesakeDays = 0;
   const waits = homeWait();
+  let formationDays = 0;
   let namesakesMost = 0;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
@@ -116,6 +121,17 @@ export function aiSweep(seed: number): void {
       waits.hour(w);
       // PLAN 3.8: on every day no two nations of one realm or of allied realms are at war.
       if (isDayStart(w.tick)) expect(realmWars(w, tag), `seed ${seed}, day ${w.tick / 24}: wars inside a realm or an alliance`).toEqual([]);
+      // PLAN 3.12Rm: on every day every formation is in a cell a route begins in.
+      if (isDayStart(w.tick)) {
+        const fc = w.formations.cols;
+        const comp = navOf(w).grid.component;
+        const closed: string[] = [];
+        w.formations.forEach((f) => {
+          formationDays++;
+          if (comp[Math.floor(fc.y[f]!) * w.cells.w + Math.floor(fc.x[f]!)] === 0) closed.push(`formation ${f} of ${tag(fc.nation[f]!)} at (${fc.x[f]!.toFixed(3)}, ${fc.y[f]!.toFixed(3)})`);
+        });
+        expect(closed, `seed ${seed}, day ${w.tick / 24}: formations in a cell no route enters`).toEqual([]);
+      }
       if (isDayStart(w.tick)) {
         const holders = new Map<string, number>();
         const twice: string[] = [];
@@ -171,6 +187,8 @@ export function aiSweep(seed: number): void {
   process.stderr.write(`seed ${seed}: ${namesakeDays} days with living nations called after one province (${namesakesMost} more nations than provinces at most), each with a name of its own
 `);
   expect(revoltsSeen, `seed ${seed}: months whose revolts were measured`).toBeGreaterThan(0);
+  process.stderr.write(`seed ${seed}: ${formationDays} formation-days, none in a cell no route enters
+`);
   // PLAN 3.12Rk: no march home waits out a war before an enemy's cell.
   process.stderr.write(`seed ${seed}: ${waits.marked} formation-hours with the mark of a march home; the longest wait before an enemy's cell ${waits.longest} h${waits.where ? ` (${waits.where})` : ''}
 `);

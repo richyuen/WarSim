@@ -2,6 +2,7 @@ import { expect, it } from 'vitest';
 import { daysFromCivil } from '../../src/shared/calendar';
 import { RULES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { HELD_CATEGORIES } from '../../src/sim/systems/research';
 import { knowsTechs, techMask } from '../../src/sim/tech';
 import { assets1938 } from '../helpers/earth';
 
@@ -36,6 +37,14 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   until(1940);
   // Rich on the first day of every month of 1940 and 1941.
   let richThrough = richNow();
+  // And up with the calendar as the two years begin: no tech of 1938 or before to learn (PLAN
+  // 3.12Rm, ADR-224: in the game since, Latvia holds 3,689 cells in January 1940, with an income
+  // of 3 until March 1939 and of 1,225 now. It has learnt one tech and has 14 of 1938 to 1941 to
+  // go, 2,290 days of them on three lines: it learns all but `armor_medium_2` in the two
+  // years, 14 techs, and that one in February 1942). The rules give no nation that begins so
+  // far behind the tech in two years; Latvia too is in the check of 1944.
+  const early = RULES_1938.techs.map((t, i) => (t.year <= 1938 && !HELD_CATEGORIES.includes(t.category) ? i : -1)).filter((i) => i >= 0);
+  const abreast = richThrough.filter((n) => knowsTechs(w, n, techMask(early)));
   for (const year of [1940, 1941]) {
     for (let month = 2; month <= 12; month++) {
       until(year, month);
@@ -46,8 +55,8 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   // The last hour of 1941.
   until(1942);
   expect(knowing()).toEqual([]);
-  // Research went on meanwhile: every nation that was rich through 1940 and 1941 knows a tech
-  // of 1941. The two years are the premise this check always had (PLAN 3.4Rj, ADR-147: in the
+  // Research went on meanwhile: every nation that was rich through 1940 and 1941, and began
+  // them abreast of the calendar, knows a tech of 1941. The two years are the premise this check always had (PLAN 3.4Rj, ADR-147: in the
   // game since, Denmark's income in peace is 157 until it takes 1,096 cells of Germany at the
   // peace of February 1941, and 1,087 after; rich for ten months, it has learnt 6 techs, the
   // earliest first, and has 6 of 1939 and 1940 to go before `armor_medium_2`). The check of
@@ -59,7 +68,7 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   // the check of 1944.
   const medium2 = techMask([RULES_1938.techs.findIndex((t) => t.id === 'armor_medium_2')]);
   const rich = richNow();
-  const richBoth = rich.filter((n) => richThrough.includes(n));
+  const richBoth = rich.filter((n) => richThrough.includes(n) && abreast.includes(n));
   expect(richBoth.length).toBeGreaterThanOrEqual(3);
   for (const n of richBoth) expect(knowsTechs(w, n, medium2), `${TAGS_1938[n - 1]} knows armor_medium_2 in 1942`).toBe(true);
   until(1944);

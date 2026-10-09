@@ -167,6 +167,49 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-224 · 2026-10-09 · accepted — A formation mustered by a city stands in the city's cell (PLAN 3.12Rm)
+
+- **Context.** A division raised in an overseas theatre appears by the city nearest the
+  front, at `standPoint` of the city's own place (PLAN 2.11k). A city's place and its cell
+  are two things: the cell is the land cell the data gives it, the place is where it is on
+  the globe, and for 436 of the 5,757 cities of 1938 the place lies over the cell beside,
+  which is water on the grid (component 0 of the route grid). `standPoint` asks the fine
+  mask alone, and keeps a place that is surely land by it or takes the point of the cell
+  that holds the place: the water cell either way. No route begins there, so the formation
+  took no order. Seed 77, three years, the rules of today: 7 British formations on two
+  points (3 at 1280.054, 524.174; 4 at 1217.043, 653.954); the ninth read counted 26 on
+  the first.
+- **Decision.** `cityStand` (`production.ts`): the city's own place, by `standPoint`, where
+  that place is in the city's cell; else `cellPoint` of the city's cell. `musterPoint` has
+  already chosen a city whose cell is on the front's landmass, so the cell is one a route
+  begins in.
+- **Not chosen.** A mend in `standPoint` (a place whose cell is water on the grid moved to a
+  neighbour): it has no city to say which neighbour, and its other callers do not need it:
+  the start of 1938 and of the random world hold no formation in such a cell, and
+  `spawnPoint` asks it only for a place in a cell its nation holds. The cities' places moved
+  into their cells in the data: the dots are drawn at the places, where the towns are (the
+  list under PLAN 7.4).
+- **Consequences.** The pin of seed 99 stays at 2104f897: no division is raised by such a
+  city in its first year. Its game is another from day 407, when the old rule put a British
+  division in the water at 1291.932, 534.554. The ten-year tests ask on every day that no
+  formation is in a cell of component 0. A `spawnFormation` command given at sea still puts
+  a formation there: PLAN 3.12Rq.
+- **The premise of `researchYears.test.ts`, a third time** (after ADR-147 and ADR-153). In
+  the game of seed 99 since, Latvia is rich on the first day of every month of 1940 and
+  1941 and does not know `armor_medium_2` in 1942, which the test asked of every such
+  nation. Latvia's income is 3 until March 1939 and 1,225 in January 1940 (3,689 cells);
+  it has learnt one tech by then and has 14 of 1938 to 1941 to go: 2,290 days on three
+  lines, 1,420 gold. Its budget is 3.3 to 3.6 gold a day, more than three lines take, and
+  its treasury is never short. It learns 14 techs in the two years, the lowest year first,
+  and `armor_medium_2` (200 days, open to it when a line is free in August 1941) in
+  February 1942. That is the rules' time and no defect: the check was of nations whose
+  research went on through the two years, and its premise never said from where. The
+  Soviet Union, Britain and the United States each had 5 techs and 880 days to go on that
+  day. The check now takes the nations rich through both years that had no tech of 1938 or
+  before to learn on 1 January 1940; still three or more of them; Latvia is in the check
+  of 1944 (the heavy tank), as Denmark and France are. Not chosen: Latvia left out by
+  name; "knows it in 1942" made later.
+
 ### ADR-223 · 2026-10-09 · accepted — An annexation that hands puppets over refreshes the supply network in full; the flood is to keep to the edges of a map that does not loop (PLAN 3.12Rl)
 
 - **Context.** `annexNation` gave the target's puppets to the annexer and marked nothing.

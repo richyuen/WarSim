@@ -5558,7 +5558,7 @@ quick sweep as a smoke test.
       over them and take the pointer. The History panel (84 rows), the chart with its
       lines and the editor at 1,100 x 600: in their boxes, above the bar.
       `settings1938.spec.ts`, a second test, failed first on each cause.
-  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rp, with 3.12Rj's suite: what is left of it needs that log;
+  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rq, with 3.12Rj's suite: what is left of it needs that log;
     the parts below it come first**, 2026-10-09) The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
@@ -5637,7 +5637,7 @@ quick sweep as a smoke test.
     none. The pin of seed 99 stays (2104f897): no such annexation in its first year.
     The suspicion: read, and so: the flood should keep to the edges where the map does not
     loop, as the territory rule and the routes do. A second cause: PLAN 3.12Rp.
-  - [ ] 3.12Rm **A formation is mustered where a route begins** (the ninth read, finding 4;
+  - [x] 3.12Rm **A formation is mustered where a route begins** (the ninth read, finding 4;
     run there, `cities.ts` again here). `musterPoint` (`production.ts`) gives `standPoint`
     of the city's own place; for 436 of the 5,757 cities of 1938 that is in a cell of
     component 0 (the city's cell is land, its place is over the neighbour's water), and a
@@ -5647,6 +5647,24 @@ quick sweep as a smoke test.
     looked at with it (the spawn point, the repatriation, a revolt's).
     AT: a unit test that fails first: no city of 1938 gives a muster point in a cell of
     component 0; ten years of the sweep seeds hold no formation in such a cell.
+    **Done 2026-10-09 (ADR-224).** `cityStand` (`production.ts`): by a city a formation
+    stands at the city's own place where that is in the city's cell, else at the point of
+    the city's cell, which `musterPoint` has already found on the front's landmass. One
+    test in `production.test.ts`, red first on both halves (436 cities; a division raised by
+    a British city overseas stood in the cell beside it). The ten-year tests ask on every
+    day that no formation is in a cell of component 0. Three years of seed 77: 7 British
+    formations on two points before, 0 now. The pin stays (2104f897).
+    The gate's first run failed in `researchYears.test.ts`: seed 99's game is another from
+    day 407, and in it Latvia, rich from January 1940 with 14 techs to learn from nothing,
+    knows `armor_medium_2` in February 1942 and not in January. The rules' time, no defect
+    (ADR-224): the check takes the rich that began 1940 with no tech of 1938 or before to
+    learn; Latvia stays in the check of 1944.
+    The other places a formation is put down: the start of 1938 and of the random world (0
+    of 1,054 and of 564 in such a cell), `spawnPoint` (the place is in a cell its nation
+    holds), a revolt's militia (`spawnPoint`), the repatriation (a march along a path), the
+    editor's `strandedToLand` (`cellPoint` of a land cell): sound. Two that are not this
+    cause: a `spawnFormation` command given at sea (PLAN 3.12Rq), and the toy world, whose
+    start puts one of 120 on a lake (it has no routes and no orders: left).
   - [ ] 3.12Rn **A war ended by a bond has a row** (the ninth read, finding 3; run there,
     `histdump.ts` again here). `leaveBondedWars` (`war.ts`) removes a war left with an
     empty side with no event (no peace is signed and no truce begins, by its own comment):
@@ -5681,7 +5699,16 @@ quick sweep as a smoke test.
     AT: a unit test that fails first: on a made map with `loopingMap` off, a bloc with land
     at both edges and a city at one has no network at the other; with it on, it has; the
     mended network equals the rule's in both.
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rp: a line under PLAN 1.42 for the land that rises
+  - [ ] 3.12Rq **A formation is not spawned at sea** (found with 3.12Rm; read, not run).
+    `spawnFormation` (`tick.ts`) takes `standPoint` of the place given: in a cell that is
+    all water that is the cell's middle, and the formation stands where no route begins. No
+    panel sends the command at a place of the player's choosing today (the specs and the
+    tools do); God Mode's spawn will. Decide in DECISIONS: refused (`Refusal`), or put on
+    the nearest land cell within a reach as the editor's `strandedToLand` does.
+    AT: a unit test that fails first: a formation spawned on open sea is refused or stands
+    in a cell of a component; one spawned on the water of a coastal cell stands on its land
+    as now.
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rq: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
     an earlier part broke fixed here; 3.12R ticked.

@@ -6,7 +6,7 @@ import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_LAND, ECONOMY_TABLES_193
 import { Sim } from '../../src/sim/sim';
 import { MANPOWER_CAP_SHARE, MANPOWER_MONTHLY_RATE, monthlyAccounts, runEconomyMonth, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { elementIndex, slotCount, slotPlace } from '../../src/sim/systems/elements';
-import { musterPoint, productionSystem, queueFormation, spawnPoint } from '../../src/sim/systems/production';
+import { cityStand, musterPoint, productionSystem, queueFormation, spawnPoint } from '../../src/sim/systems/production';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
@@ -190,5 +190,50 @@ describe('production (PLAN 1.10 AT)', () => {
       return !sure(x, y);
     });
     expect(wet).toEqual([]);
+  });
+
+  // PLAN 3.12Rm (the ninth independent read, finding 4): PLAN 2.11k mended the fine mask's side
+  // of a muster by a city, and left the grid's. A city's own place may lie over the water of
+  // the cell beside its own (436 of the 5,757), a cell no route enters: a formation raised
+  // there took no order (26 British formations on one point after three years of seed 77).
+  it('a muster by a city is in a cell a route begins in: for every city of 1938, and for the division raised by one whose place is over the next cell', () => {
+    const sim = sim1938();
+    const w = sim.world;
+    const W = w.cells.w;
+    const comp = navOf(w).grid.component;
+    const cc = w.cities.cols;
+    const cellAt = (p: [number, number]): number => Math.floor(p[1]) * W + Math.floor(p[0]);
+    const closed: number[] = [];
+    const wet: number[] = [];
+    const beside: number[] = [];
+    w.cities.forEach((id) => {
+      expect(comp[cc.cell[id]!], `city ${id}: its own cell`).not.toBe(0);
+      const at = cityStand(w, id);
+      if (comp[cellAt(at)] === 0) closed.push(id);
+      if (!w.onLand(at[0], at[1])) wet.push(id);
+      if (comp[cellAt([cc.x[id]!, cc.y[id]!])] === 0) beside.push(id);
+    });
+    expect(beside.length, 'cities whose own place is in a cell no route enters').toBeGreaterThan(400);
+    expect(closed, 'cities whose muster is in a cell no route enters').toEqual([]);
+    expect(wet, 'cities whose muster is not on sure land').toEqual([]);
+    // One of them musters: its holder at war on that landmass alone, the front beside it.
+    const fc = w.formations.cols;
+    const id = beside.find((c) => w.cells.owner[cc.cell[c]!] === w.cells.controller[cc.cell[c]!] && NATIONS_1938[w.cells.owner[cc.cell[c]!]! - 1]?.tag === 'ENG' && comp[cc.cell[c]!] !== comp[cellAt(spawnPoint(w, w.cells.owner[cc.cell[c]!]!)!)])!;
+    expect(id, 'a British city overseas whose place is over the next cell').toBeGreaterThan(0);
+    const ENG = w.cells.owner[cc.cell[id]!]!;
+    // The cell is made a front: its neighbour on its landmass goes to a nation Britain is at war with.
+    const cell = cc.cell[id]!;
+    const next = [cell - 1, cell + 1, cell - W, cell + W].find((n) => comp[n] === comp[cell])!;
+    w.wars.set(ENG, GER, true);
+    w.setController(next, GER);
+    w.frontier = null;
+    const at = musterPoint(w, ENG)!;
+    expect(cellAt(at), `Britain's muster at ${at[0].toFixed(3)}, ${at[1].toFixed(3)}`).toBe(cell);
+    const before = new Set(w.formations.ids());
+    expect(queueFormation(w, ENG, INF)).toBeGreaterThan(0);
+    sim.step((RULES_1938.templates[INF]!.days + 1) * 24);
+    const raised = w.formations.ids().filter((f) => !before.has(f) && fc.nation[f] === ENG);
+    expect(raised).toHaveLength(1);
+    expect(comp[cellAt([fc.x[raised[0]!]!, fc.y[raised[0]!]!])], 'the cell the division stands in').not.toBe(0);
   });
 });

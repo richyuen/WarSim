@@ -12255,3 +12255,50 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58). Nothing drawn changed: no spec run by hand; no e2e (a part, ADR-87).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rm (a formation is mustered where a route begins).
+
+## 2026-10-09 — PLAN 3.12Rm: a formation mustered by a city stands in the city's cell
+
+- **The defect** (the ninth read, finding 4): `musterPoint` gave `standPoint` of the city's
+  own place. For 436 of the 5,757 cities of 1938 the place is over the cell beside the
+  city's cell, water on the grid (component 0): no route begins there, and the formation
+  took no order. Seed 77, three years, today's rules: 7 British formations on two points
+  (the read's 26 were of the rules of its day).
+- **The mend:** `cityStand` (`production.ts`, ADR-224): the city's place where it is in the
+  city's cell, else `cellPoint` of the city's cell. Not in `standPoint`: no other caller
+  needs it (below).
+- **Tests:**
+  - `production.test.ts`, one, red first on both halves: every city of 1938 (436 red), and
+    a division raised by a British city overseas whose place is over the next cell (red:
+    its muster in cell 922938, the city's is 924986; the second half run alone, without
+    the first's two assertions, on the old code).
+  - The ten-year tests (`aiSweep`, seeds 1, 2, 3): on every day no formation in a cell of
+    component 0: 3,130,830, 3,366,076 and 3,689,021 formation-days, none. Not seen red:
+    the three seeds were not run on the old rule (seed 77 would have been, in year 3).
+- **The other places a formation is put down**, each looked at: the start of 1938 and of
+  the random world (0 of 1,054 and 0 of 564 in such a cell at tick 0, 0 after a year),
+  `spawnPoint` (asks `standPoint` only for a place in a cell its nation holds), a revolt's
+  militia (`spawnPoint`; its fallback, `standPoint` of the capital, is for a nation with
+  no cell within 40 of its capital: read, not run), the repatriation (a march, on a
+  path), the editor's `strandedToLand`. Two of another cause: `spawnFormation` at sea
+  (PLAN 3.12Rq, read, not run) and the toy world (1 of 120 on a lake from tick 0; it has
+  no routes: left).
+- **The gate failed once**, in `researchYears.test.ts` (seed 99): the pin of year 1 stays
+  (2104f897), but the game is another from day 407 (the old rule's first division in the
+  water, British, at 1291.932, 534.554), and in it Latvia is rich through 1940 and 1941
+  and knows `armor_medium_2` in February 1942, not in January. Traced month by month
+  (`.cache/rm-lat.ts`, `rm-rich.ts`, `rm-need.ts`): income 3 until March 1939, 1,225 in
+  January 1940; one tech learnt by then, 14 to go (2,290 days, three lines); budget 3.3 a
+  day or more, the treasury never short; 14 techs learnt in the two years. The rules'
+  time, not a defect. The check's premise is narrowed as in ADR-147 and ADR-153: rich
+  through both years and no tech of 1938 or before to learn on 1 January 1940 (the Soviet
+  Union, Britain, the United States: 5 techs and 880 days to go each). Latvia is in the
+  check of 1944. In ADR-224.
+- **Not looked into:** how Latvia comes to 3,689 cells by 1940 in this game (balance,
+  ADR-58); why its treasury stands at exactly 7,692 from December 1940 to May 1942 while
+  it pays for research (a cap or a reserve the economic AI spends down to: not read);
+  whether the tick the old rule's first stranded division appears (day 407) is the first
+  tick the two games differ, or a day after it.
+- **Performance:** nothing on the tick's path changed but one comparison a muster.
+- **No sweep** (ADR-58). Nothing drawn changed: no spec run by hand; no e2e (a part, ADR-87).
+- **Gate:** `npm run check` green on the second run (`.cache/gate-rm2.log`).
+- **Next:** PLAN 3.12Rn (a war ended by a bond has a row).
