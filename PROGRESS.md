@@ -11702,3 +11702,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Performance:** nothing measured; no source changed.
 - **Gate:** `npm run check` (documents: parity).
 - **Next:** PLAN 3.12Rc (dead code and refactor debt in the files changed since `033b15a`).
+
+## 2026-10-09 — PLAN 3.12Rc: dead code and refactor debt since `033b15a`
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due.
+- **Looked for** (a scratch script, not kept): the 534 exports of the 53 code files changed
+  since `033b15a`, 68 on added lines, each by name in every other file of `src/`, `tools/`
+  and `tests/`; the 19 i18n keys added; TODO and FIXME.
+- **Found and changed:** `HOME_MARCH` of `movement.ts` was named nowhere, and the march
+  home's mark was the literal 1 in five places (the two routes by `everywhere`, the order's
+  parameter and its two callers, the step that is barred): they read the constant.
+  `UnitClass` of `schemas.ts`, a type no file named, removed. `TAG_SIDES`' comment says it is
+  the most places of a ring (the tests count by it; the layout does not loop by it).
+- **Kept:** `cueSeconds`, `joinWalks` and `TAG_SIDES`, named by tests alone. Old exports
+  used once in their own file (an `export` too many: 31, `schemas.ts` not counted): left, as the passes before.
+- **None:** i18n keys without a use; TODO or FIXME.
+- **Decided, no change:** `Hud` does not take the sound (it holds the message as a signal;
+  `Sound` keeps what was heard and the audio context; nothing is computed twice). The
+  worker's world number stays in `nationStats`: it comes with the rows it is about, and a
+  page holds one game. Both with their reasons under PLAN 3.12Rc.
+- **Gotcha:** a search for i18n keys written whole finds 523 of 756 "unused": most keys are
+  built (`terrain.${id}`, `${kind}.${as}`). The added keys were looked for one by one.
+- **Performance:** nothing measured (3.12Rd is next); the constants are the values they
+  replace, and the pin of seed 99 holds.
+- **Gate:** `npm run check` (code: typecheck, lint, 1,046 unit tests, the 17 ten-year
+  tests, build, parity): green. No e2e: a part, and no spec changed; `tags.ts` changed by a
+  comment only, so no spec was run by hand.
+- **Next:** PLAN 3.12Rd (tick time beside the figure of 3.10e and the budget).

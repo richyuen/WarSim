@@ -76,7 +76,7 @@ export const TAG_GAP = 4;
 export const TAG_PICKED_REACH = 3;
 /** How many rings of places a tag tries before it is left out: in each, above, below, left and right, a step further out. */
 export const TAG_TRIES = 5;
-/** The places of a ring. */
+/** The places of a ring at most: the layout takes none beside a block where the view has no room, and the tests count by this. */
 export const TAG_SIDES = 4;
 /** A tag further than this from its elements has a line to them: the gap, and a px for the rounding of its place. */
 export const TAG_LINE_FROM = TAG_GAP + 1;

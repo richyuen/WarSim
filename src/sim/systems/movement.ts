@@ -130,7 +130,7 @@ export function formationPath(world: World, id: number): Int32Array | null {
   if (!rule) return null;
   const nav = navOf(world);
   const from = Math.floor(f.y[id]!) * world.cells.w + Math.floor(f.x[id]!);
-  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, f.home[id] === 1 ? everywhere(world) : passageOf(world, f.nation[id]!));
+  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, f.home[id] === HOME_MARCH ? everywhere(world) : passageOf(world, f.nation[id]!));
   if (!route) return null;
   p = Int32Array.from(route.cells);
   f.originCell[id] = from;
@@ -189,7 +189,7 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
 }
 
 /** `orderMove`, or with `home` 1 the order of a march home, over any ground (ADR-169). */
-function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | 1): boolean {
+function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | typeof HOME_MARCH): boolean {
   const f = world.formations;
   const { w, h } = world.cells;
   const rule = f.has(id) ? world.rules?.templates[f.cols.template[id]!] : undefined;
@@ -210,7 +210,7 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const beyond = mid ? was[frac < 0.5 ? at + 1 : at]! : -1;
   const nav = navOf(world);
   const target = snapTarget(world, origin, tx, ty);
-  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, home === 1 ? everywhere(world) : (pass ?? passageOf(world, c.nation[id]!)));
+  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, home === HOME_MARCH ? everywhere(world) : (pass ?? passageOf(world, c.nation[id]!)));
   if (!route) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);
     return false;
@@ -250,11 +250,11 @@ export function repatriationSystem(world: World): void {
     const holder = controller[cell]!;
     if (!foreignTo(world, nation, holder)) return;
     const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS);
-    if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, undefined, 1)) return;
+    if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, undefined, HOME_MARCH)) return;
     const at = spawnPoint(world, nation);
     if (!at) return;
     // Further from home than that: to the spawn point on foot, if land leads there.
-    if (comp[Math.floor(at[1]) * w + Math.floor(at[0])] === comp[cell] && order(world, id, at[0], at[1], undefined, 1)) return;
+    if (comp[Math.floor(at[1]) * w + Math.floor(at[0])] === comp[cell] && order(world, id, at[0], at[1], undefined, HOME_MARCH)) return;
     c.x[id] = at[0];
     c.y[id] = at[1];
   });
@@ -334,7 +334,7 @@ export function movementSystem(world: World): void {
       c.moving[id] = 0;
       world.paths.delete(id);
       // The same order: a march home stays one.
-      const home = c.home[id] === 1 ? 1 : 0;
+      const home = c.home[id] === HOME_MARCH ? HOME_MARCH : 0;
       c.home[id] = 0;
       order(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, undefined, home);
       return;

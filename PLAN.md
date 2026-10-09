@@ -5345,10 +5345,30 @@ quick sweep as a smoke test.
     - *Left out:* ADR-176, 185 and 197 (a demo's seed), ADR-177 (where the critic's
       findings went): none is of what the game does.
     - Nothing found where the code and its decision part.
-  - [ ] 3.12Rc Dead code and refactor debt in the files changed since `033b15a`: exports
+  - [x] 3.12Rc Dead code and refactor debt in the files changed since `033b15a`: exports
     nothing uses, i18n keys without a use, TODO and FIXME; whether `Hud` should own the
     ticker and the sound, which read the same rows; the worker's `world` number, which is in
     `nationStats` only. The pin holds: a refactor that moves it changed a rule.
+    Done 2026-10-09. The 53 code files changed since `033b15a` have 534 exports, 68 of them
+    on added lines; each looked for by name in every other file of `src/`, `tools/` and
+    `tests/`.
+    - `HOME_MARCH` (`movement.ts`) was named nowhere: the march's mark was the literal 1 in
+      five places beside `HOME_BACK`. They read the constant now. The pin holds.
+    - `UnitClass` (`schemas.ts`), a type no file named: removed.
+    - Named by tests alone, kept (a test's use is a use, as in 3.4Rc): `cueSeconds`,
+      `joinWalks`, `TAG_SIDES`. `TAG_SIDES` is the most places a ring has, not a bound the
+      layout loops by (a side the view has no room for gives none): its comment says so.
+    - i18n keys without a use: none of the 19 added (five are built from a kind and
+      `HistoryRow.as` in `historyText.ts`). TODO and FIXME: none in `src/` or `tools/`.
+    - *`Hud` does not take the sound.* `Hud` holds the statistics message as a signal and
+      the ticker draws its rows; `Sound` listens to the same message and keeps what it has
+      heard and the audio context. Nothing is computed twice (which rows are new is
+      `cueOfTicker`'s alone; the ticker shows all it is given), and `Hud` with an audio
+      context in it would be harder to build in a test. Left as it is.
+    - *The world number stays in `nationStats`.* It is read by the sound alone, with the
+      rows it is about, in one message: the sound then asks nothing of the order of a
+      load's reply (`SimClient.onLoad`) and the next statistics message. A page holds one
+      game (the menu and a new game load the page again), so nothing else needs the number.
   - [ ] 3.12Rd Tick time, not measured since PLAN 3.10e: `npm run sim -- --scenario 1938
     --seed 99 --years 5 --affinity 0xFFFF` beside that figure and the budget. Over budget is
     a task before 4.1; under it is a line here.

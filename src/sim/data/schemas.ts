@@ -23,7 +23,6 @@ export const LAND_CLASSES = ['inf', 'art', 'at', 'aa', 'armor_l', 'armor_m', 'ar
 export const SEA_CLASSES = ['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'] as const;
 export const AIR_CLASSES = ['fighter', 'bomber_tac', 'bomber_str', 'cas', 'naval_bomber', 'transport_air', 'nuke_missile'] as const;
 export const UNIT_CLASSES = [...LAND_CLASSES, ...SEA_CLASSES, ...AIR_CLASSES] as const;
-export type UnitClass = (typeof UNIT_CLASSES)[number];
 
 export const MOBILITIES = ['foot', 'motor', 'tracked', 'ship', 'air'] as const;
 
