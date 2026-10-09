@@ -12689,3 +12689,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `gate.test.ts`, the two of the archive rewritten for the section (16 in the
   file): a task ticked later joins it; PLAN.md has nothing to move and nothing to list.
 - **Next:** PLAN 3.12Rsc, as before.
+
+## 2026-10-09 — PLAN 3.12Rsc: a formation's pressure on a frontier cell keeps to the edges of a map that does not loop (ADR-236)
+
+- **Done:** `territorySystem` (`territory.ts`) put a formation's pressure on the frontier
+  cells within `PRESSURE_RADIUS` at the column `(cx + dx + w) % w` whatever
+  `settings.loopingMap` said. It asks the setting now: beyond an edge of a map that does
+  not loop there is no cell. The frontier scan and the connectivity rule asked already
+  (`neighbours4`): no cell was taken by a neighbour over the seam, but a formation at one
+  edge helped its side take or hold a cell at the other.
+- **Test:** `tests/unit/seam.test.ts`, one more (four in the file), with the map looping
+  and not: a Polish cell with a German cell beside it on its own side of the seam, one
+  German division at the other edge, the cell's hold progress after one hour. Red first:
+  "expected 1 to be +0" (the last column pressed on from the first with the option off).
+  Both ways over the seam, to the radius and one beyond; columns 2 and 3 of the
+  division's own side answer the same both ways (pressed, not pressed).
+- **Gotcha:** a Polish cell in the last column with German ground in the first only
+  passes with no fix on a map that does not loop: the connectivity rule has no neighbour
+  there. The cell needs a German neighbour on its own side.
+- **SPEC** §9, the looping option; PARITY row 69, a dated line.
+- **The pin stays** (92689265). **The tick's cost: not measured** (two comparisons a cell
+  of the radius, 25 cells a formation of a nation at war).
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87). By hand, the specs with
+  `looping=0` games that 3.12Rsb left for this part: `title.spec.ts` and
+  `gameOptions1938.spec.ts` (`--project chromium`), 8 passed in 26 s
+  (`.cache/rsc-specs.log`).
+- **`npm run plan:archive`:** nothing to move.
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rsc.log`): 1,080 unit
+  tests in 134 files (119.8 s), the ten-year stage 17 tests in 12 files (264.1 s), build,
+  parity 47.5%.
+- **Next:** PLAN 3.12Rsd (the operational AI's distances), then 3.12Rse.

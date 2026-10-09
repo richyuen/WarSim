@@ -2298,9 +2298,9 @@ on screen.
 - **New-game options** (PLAN 1.39b1, `src/sim/gameOptions.ts`, `src/app/gameUrl.ts`): looping map
   (`settings.loopingMap`, saved; off = no wrap in pathing, the frontier, the supply flood
   (ADR-227), the measure of contact (who fights whom, where a block deploys, a retreat's
-  way, a breakthrough corridor: ADR-233), the supply's reach about a formation (ADR-234)
-  or rendering; the pressure on a frontier cell and the operational AI's distances still
-  go over the seam, PLAN 3.12Rsc to 3.12Rse), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
+  way, a breakthrough corridor: ADR-233), the supply's reach about a formation (ADR-234),
+  the pressure of a formation on a frontier cell (ADR-236) or rendering; the operational
+  AI's distances still go over the seam, PLAN 3.12Rsd to 3.12Rse), aggression (random 0..100), traits (1–3 random, exclusions respected → income and
   manpower multipliers and aggression bias), starting gold (random 0.25–2× or equal = median),
   CE mode, and for the random world the number of nations (`nations`, §3.4). Applied once at
   init from the seed; carried in the URL

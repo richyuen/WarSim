@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-236 · 2026-10-09 · accepted — A formation's pressure on a frontier cell keeps to the edges of a map that does not loop (PLAN 3.12Rsc)
+
+- **Context.** The third part of PLAN 3.12Rs (ADR-233, ADR-234): every formation of a
+  nation at war presses on the frontier cells within `PRESSURE_RADIUS` (2) cells of it,
+  and a cell flips to a neighbour at war with its holder whose side presses harder than
+  the holder's (SPEC §4).
+- **What was so.** `territorySystem` put the pressure on the column `(cx + dx + w) % w`
+  whatever `settings.loopingMap` said. The frontier and the connectivity rule asked the
+  setting already (`neighbours4`), so no cell was taken by a neighbour over the seam; but
+  with `looping=0` a formation in the first two columns pressed on the frontier cells of
+  the last two, and the other way round: it helped its side take a cell there, or helped
+  its side hold one, a map's width from where it stood.
+- **Decision.** The pressure asks the setting: beyond an edge of a map that does not loop
+  there is no cell, as above the first row. On a map that loops it presses where it did.
+- **Tests.** `tests/unit/seam.test.ts`, one, with the map looping and not: a Polish cell
+  with a German cell beside it on its own side of the seam (the connectivity rule is met
+  without the seam, or the test would pass with no fix) and one German division at the
+  other edge; the cell's hold progress after one hour. The last column and the last but
+  one from the first, the first and the second from the last; the third from the end
+  (beyond the radius both ways) and columns 2 and 3 of the division's own side (pressed,
+  not pressed, both ways). Red first ("expected 1 to be +0": the last column pressed on
+  from the first with the option off).
+- **The pin stays** (92689265): 1938 loops.
+
 ### ADR-235 · 2026-10-09 · accepted — The first lines of done tasks are the plan's last section; an iteration reads the plan to Phase 7 (the user's decision)
 
 - **Context.** After ADR-231 PLAN.md was 67 KB and read whole, about 17,000 tokens an

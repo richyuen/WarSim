@@ -6,6 +6,7 @@ import { combatSystem, findBattles } from '../../src/sim/systems/combat';
 import { cellDist, destroyFormation } from '../../src/sim/systems/elements';
 import { addCorridor, inCorridor } from '../../src/sim/systems/majorBattles';
 import { SUPPLY_RATE, SUPPLY_REACH, blocOf, refreshSupplyNetwork, supplySystem } from '../../src/sim/systems/supply';
+import { PRESSURE_RADIUS, frontierOf, territorySystem } from '../../src/sim/systems/territory';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -98,6 +99,39 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
         expect(fedFrom(loop, W - SUPPLY_REACH - 1)).toBe(false);
         expect(fedFrom(loop, SUPPLY_REACH)).toBe(true);
         expect(fedFrom(loop, SUPPLY_REACH + 1)).toBe(false);
+      }
+    });
+  });
+
+  describe('the pressure of territorySystem (3.12Rsc)', () => {
+    /**
+     * A Polish cell in column `cell` of row `Y` with a German cell beside it in column `beside`
+     * (the connectivity rule is met on the cell's own side of the seam), and one German division
+     * in column `at`. The cell's hold progress after one hour: 1 where the division presses on it.
+     */
+    function pressed(loop: boolean, at: number, cell: number, beside: number): number {
+      const world = edges(loop);
+      const { controller, flip } = world.cells;
+      for (let dy = -3; dy <= 3; dy++) for (const x of [0, 1, 2, 3, W - 4, W - 3, W - 2, W - 1]) controller[(Y + dy) * W + x] = GER;
+      controller[Y * W + cell] = POL;
+      addDivision(world, GER, at + 0.4, Y + 0.5);
+      territorySystem(world);
+      // The cell can be taken whatever the map: a German cell is beside it on its own side.
+      expect(controller[Y * W + beside]).toBe(GER);
+      expect(frontierOf(world).has(Y * W + cell)).toBe(true);
+      return flip[Y * W + cell]!;
+    }
+
+    it('a formation in the first column presses on no frontier cell of the last, nor one in the last on a cell of the first; on a map that loops they do', () => {
+      for (const loop of [false, true]) {
+        expect(pressed(loop, 0, W - 1, W - 2)).toBe(loop ? 1 : 0);
+        expect(pressed(loop, 0, W - PRESSURE_RADIUS, W - PRESSURE_RADIUS - 1)).toBe(loop ? 1 : 0);
+        expect(pressed(loop, W - 1, 0, 1)).toBe(loop ? 1 : 0);
+        expect(pressed(loop, W - 1, PRESSURE_RADIUS - 1, PRESSURE_RADIUS)).toBe(loop ? 1 : 0);
+        // Beyond the radius over the seam, and within it on the formation's own side.
+        expect(pressed(loop, 0, W - PRESSURE_RADIUS - 1, W - PRESSURE_RADIUS - 2)).toBe(0);
+        expect(pressed(loop, 0, PRESSURE_RADIUS, PRESSURE_RADIUS + 1)).toBe(1);
+        expect(pressed(loop, 0, PRESSURE_RADIUS + 1, PRESSURE_RADIUS)).toBe(0);
       }
     });
   });

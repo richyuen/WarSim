@@ -107,7 +107,7 @@ quick sweep as a smoke test.
     - [x] 3.12Rsb The reach of `supplySystem` (`supply.ts`, the 2 cells about a formation).
       AT: a formation on ground not its side's in the first column is not fed by a network
       in the last; on a map that loops it is.
-    - [ ] 3.12Rsc The pressure of `territorySystem` (`territory.ts`).
+    - [x] 3.12Rsc The pressure of `territorySystem` (`territory.ts`; ADR-236).
       AT: a formation in the first column presses on no frontier cell of the last.
     - [ ] 3.12Rsd The operational AI (`operational.ts`): `dist2` to a sector (212), the
       errand's two folds (392, and 402 over the sector buckets, `bw / 2`), `cellDist` (641).

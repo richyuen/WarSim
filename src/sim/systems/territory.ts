@@ -9,7 +9,8 @@
  *
  * Pressure (hourly): every formation of a nation at war projects
  *   strength/1000 × (0.5 + 0.5 supply) × (1 − d/(R+1))
- * into the cells within R cells of it. A frontier cell C controlled by D is contested by each
+ * into the cells within R cells of it (over the east and west edges only on a map that loops,
+ * PLAN 3.12Rsc). A frontier cell C controlled by D is contested by each
  * nation A at war with D that controls a 4-neighbour of C (the connectivity rule: control spreads
  * cell by cell from held land and can never jump past a line). A's pressure on C, divided by C's
  * terrain defence, must exceed D's bloc pressure + GARRISON for HOLD_TICKS consecutive hours
@@ -120,6 +121,7 @@ export function territorySystem(world: World): void {
   const fighting = world.wars.nations();
   const pressure = new Map<number, Map<number, number>>();
   const f = world.formations.cols;
+  const wrap = world.settings.loopingMap;
   world.formations.forEach((id) => {
     const nation = f.nation[id]!;
     if (!fighting.has(nation) || f.retreat[id]! > 0) return; // on the retreat it holds no ground (PLAN 3.5a)
@@ -130,9 +132,13 @@ export function territorySystem(world: World): void {
       const y = cy + dy;
       if (y < 0 || y >= h) continue;
       for (let dx = -PRESSURE_RADIUS; dx <= PRESSURE_RADIUS; dx++) {
+        // Beyond an edge of a map that does not loop there is no cell (PLAN 3.12Rsc).
+        const x = cx + dx;
+        const xw = x < 0 ? (wrap ? x + w : -1) : x >= w ? (wrap ? x - w : -1) : x;
+        if (xw < 0) continue;
         const d = Math.max(Math.abs(dx), Math.abs(dy));
         const p = base * (1 - d / (PRESSURE_RADIUS + 1));
-        const c = y * w + ((cx + dx + w) % w);
+        const c = y * w + xw;
         if (mask[c] !== 1) continue; // only frontier cells can flip
         let m = pressure.get(c);
         if (!m) pressure.set(c, (m = new Map()));
