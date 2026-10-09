@@ -12940,3 +12940,38 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate, again on the staged tree** (PROGRESS's lines added): failed once at the unit
   tests (`.cache/gate-rt2.log`: `movement.test.ts`, a wall-clock limit of 5 ms passed at
   6.38; BLOCKERS.md), the file alone green; the third run is the one named by the commit.
+
+## 2026-10-09 — PLAN 3.12Ri and 3.12Rj: the suite on the final tree, its time, the line under PLAN 1.42; 3.12R ticked
+
+- **Start:** the tree clean, `npm run check` nothing to run (`.cache/gate-rj-start.log`);
+  `npm run critic:due`: not due.
+- **The suite (3.12Rj):** `npm run e2e` by hand on the tree of `1eacc2a`, since a commit of
+  documents alone runs only parity in the gate, whatever it ticks (`planGate` in
+  `tools/gate/check.ts`). `.cache/e2e-rj.log`: **164 passed, 19.9 min**, none failed, none
+  flaky, at the first run. Nothing of 3.12Rk to 3.12Rt was broken.
+- **Its time (3.12Ri):** the suite grew and did not slow. Beside `.cache/gate_full3.log`
+  (2026-10-08, 147 tests, 13.6 min): test time 2,828 s to 4,334 s (x 1.53), the wall clock
+  x 1.46 with four workers. Nine spec files are new, 1,319 s: `fightSeen1938` 642 (390 and
+  252), `formationFight1938` 264, `fallen1938` 144, `formationPlace1938` 84, `ticker1938`
+  73, `stackBlocks1938` 48, `seamFight1938` 25, `tint1938` 21, `sound1938` 18. The files in
+  both: 2,828 s to 3,015 s (x 1.07; `formationPanel1938` 78 to 115, `settings1938` 12 to 43
+  with a second test, `godMode1938` 34 to 63 with the same eleven). With the first half
+  (10.0 min and 139 tests on 2026-10-06): 2,181 s to 4,334 s of tests, of which 1,811 s
+  are files that did not exist then.
+- **The waits:** read in `fightSeen1938`, `formationFight1938` and `fallen1938` only: each
+  asks a condition (the view's tick, the zoom at rest) and then 400 ms. Their time is the
+  game they run for every formation in contact. Not read: the 50 `waitForTimeout` of the
+  other specs. Nothing was shortened and no test taken out.
+- **`fire1938`:** 1.03 ms a frame in this suite (limit 4; 4.21 once, BLOCKERS.md). No
+  limit was moved. Whether the machine was idle in the runs of 19.5 min is not known; in
+  this one nothing else ran that I started.
+- **The line under PLAN 1.42:** land that rises and goes back to its core nation month
+  after month (ADR-210): the figures of ADR-210 (190 rows in ten years of seed 1; the
+  Soviet Union's land to Italy five months running on seed 3), and what is to be decided
+  there. Not run again, not tuned (ADR-58).
+- **Ticked:** 3.12Ri, 3.12Rj and **3.12R**. The count of step 9 starts again: the next
+  review is the phase review 4.8 or after five numbered tasks.
+- **No code changed:** the pin stays, no ADR, no PARITY row. **No sweep** (ADR-58).
+- **`npm run plan:archive`** moved 3.12R and its parts to `docs/PLAN_DONE.md`.
+- **Gate:** `npm run check`, documents only: parity.
+- **Next:** PLAN 4.1 (sea zones, the lane graph, ports).

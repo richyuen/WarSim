@@ -21,75 +21,6 @@ quick sweep as a smoke test.
 
 ## Phase 3 — Armour
 
-- [ ] 3.12R Review pass (PROMPT step 9) over PLAN 3.8 to 3.12, the five numbered tasks since
-  the phase review 3.7: refactor debt, dead code, SPEC re-read for drift (what 3.8 to 3.11
-  changed, the history rows, the ticker, sound), missing tests. It belongs to the tasks it
-  follows (ADR-74) and starts the count again. Known before it starts:
-    - `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
-      `/^Free state d+$/`: a `\d` that lost its backslash (found in 3.12a).
-    - A nation's death takes it out of its alliance with no history row: 29 alliances were
-      gone after ten years of seed 1 and 15 rows said so (3.12a).
-    - "Mexico joined the Coalition of Mexico" is the founder's own row (3.12a).
-    - About 22 history rows a year are land that rose and went back to its core nation
-      (ADR-210): balance, Phase 7 (ADR-58); a line under PLAN 1.42 if it has none.
-    - The ticker (3.12c) was not looked at with a panel taller than the view less 12.5 rem,
-      nor at the UI sizes above 100%, nor at Max speed.
-    - Sound (3.12d): the worker's `world` number is in `nationStats` only; the ticker and
-      the sound read the same rows, and whether `Hud` should own both is to be looked at.
-    - The e2e suite took 19.5 and 19.7 min in the two gates of 3.12's tick (159 tests) and
-      18.4 min once on 2026-10-08; it took about 10 on 2026-10-05 and 06 (138 tests). Not
-      the sound's listener (measured, PROGRESS 2026-10-09). Find which specs grew (the
-      gate's log has each test's time: `tankBattle1938` 4.1 min, `formationFight1938` 4.3,
-      `zoomDemo1938` 3.5) and whether the machine was idle; `fire1938`'s limit of 4 ms a
-      frame was passed once at 4.21 in such a suite (BLOCKERS.md).
-  AT: what the pass finds is fixed or is a line of PLAN; SPEC says what the code does; the
-  gate is green.
-  Split 2026-10-09, as PLAN 3.4R was: the pass is several causes, one a commit. No part is a
-  numbered task: the gate runs the specs a part changes (ADR-87), and a part that touches
-  what is drawn runs its specs by hand. No sweep: this is a pass of step 9, not a phase
-  review (ADR-58). The last part ticks 3.12R and has the whole e2e suite.
-  - [x] 3.12Ra The independent read (ADR-74), the ninth: the 55 files of `src/`, `data/` and […]
-  - [x] 3.12Rb SPEC re-read for drift: each decision since the last pass (ADR-168 to […]
-  - [x] 3.12Rc Dead code and refactor debt in the files changed since `033b15a`: exports […]
-  - [x] 3.12Rd *Done 2026-10-09 (`4b83385`): seed 99 is under, seed 8128 is at the budget […]
-  - [x] 3.12Rd1 *Done 2026-10-09 (3.12Rd1a, 3.12Rd1b): seed 8128 at 1.435, 1.469 and 1.440 […]
-  - [x] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match […]
-  - [x] 3.12Rf A nation's death takes it out of its alliance with no history row (29 […]
-  - [x] 3.12Rg "Mexico joined the Coalition of Mexico" is the founder's own row: the […]
-  - [x] 3.12Rh The ticker (3.12c) looked at where it was not: beside a panel taller than […]
-  - [x] 3.12Rh1 **The paused bar is two lines and stands under the ticker and the war […]
-  - [x] 3.12Rh2 **At Max a message drops major events: their cue, and their row** (3.12Rh's […]
-  - [x] 3.12Rh3 **Two nations of one name** (3.12Rh's picture at Max, seed 1938, April […]
-  - [x] 3.12Rh4 **A view 1,100 px wide at the UI sizes above 100%** (3.12Rh's pictures): […]
-  - [x] 3.12Rh5 **The Settings panel in a view 600 px high** (3.12Rh4's picture, 1,100 x […]
-  - [ ] 3.12Ri (**after 3.12Rk to 3.12Rt, with 3.12Rj's suite: what is left of it needs that log;
-    the parts below it come first**, 2026-10-09) The e2e suite's time, 19.5 min where it was about 10: each test's time in a
-    gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
-    workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
-    `formationFight1938`, `zoomDemo1938`: some 12 min of new tests) or slowed, and whether
-    a wait is longer than what it waits for. `fire1938`'s limit with it (BLOCKERS.md).
-    Found 2026-10-09 from two logs on disk (`.cache/rn/gate-b.log`, 2026-10-06, 139 tests,
-    10.0 min; `.cache/gate_full3.log`, 2026-10-08, 147 tests, 13.6 min): the suite grew.
-    The spec files new between them are 492 s of test time (`tankBattle1938` 246,
-    `burning1938` 77, `loadedEffects1938` 66, `muzzles1938` 49, `smallMark1938` 35,
-    `turrets1938` 20), `zoomDemo1938` went from 84 s to 210 s, and the files in both took
-    1.07 times as long (2,181 s to 2,335 s). No log of the 19.5 min runs was kept: the step
-    from 13.6 to 19.5 (159 tests, PLAN 3.11 and 3.12) waits for the log of 3.12Rj's suite.
-  - [x] 3.12Rk **A march home does not wait out a war before an enemy's ground** (the ninth […]
-  - [x] 3.12Rl **The puppets of a nation annexed with its cities occupied keep their […]
-  - [x] 3.12Rm **A formation is mustered where a route begins** (the ninth read, finding 4; […]
-  - [x] 3.12Rn **A war ended by a bond has a row** (the ninth read, finding 3; run there, […]
-  - [x] 3.12Ro **The walk back of a formation on the retreat does not go towards its enemy** […]
-  - [x] 3.12Rp **The supply flood keeps to the map's edges where the map does not loop** […]
-  - [x] 3.12Rq **A formation is not spawned at sea** (found with 3.12Rm; read, not run). […]
-  - [x] 3.12Rr **A war is not declared and ended in one hour** (found with 3.12Rn; the hour's […]
-  - [x] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found […]
-  - [x] 3.12Rt **A block over the seam of a map that loops is drawn in every view that […]
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rt: a line under PLAN 1.42 for the land that rises
-    and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
-    none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
-    an earlier part broke fixed here; 3.12R ticked.
-
 ## Phase 4 — Naval
 
 - [ ] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases.
@@ -377,6 +308,16 @@ quick sweep as a smoke test.
     France the enemy is sent by Gibraltar and the Levant, 556 cells. Whether a way home has
     a longest length (and the formation then stands, or is disbanded into the pool), and
     whether a march home is fed by the nation it crosses.
+  From the review pass 3.12R (PLAN 3.12Rj, 2026-10-09), left by PLAN 3.12b2 (ADR-210). Not
+  tuned before the sweeps are back (ADR-58):
+  - Land rises and goes back to its core nation month after month (`defect` called by
+    `revolt`, the one `LandCeded` whose former holder lives): about 22 history rows a year
+    (190 in the ten years of seed 1, a tenth of its rows), and the same two nations in
+    months running (the Soviet Union's land to Italy in five months of seed 3, ticks
+    29,184 to 32,136). Why Italy has cores there was not looked into. To decide here:
+    whether a holder keeps so little of what it took that it loses it an area a month
+    (the suppression spending, the unrest of land with another's core), and whether the
+    cores of the data are right where it happens. The rows are not the log's to drop.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
@@ -763,3 +704,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 3.10 *Done 2026-10-08 (the AT of five years holds; the critic's years 8 and 9 of seed […]
 - [x] 3.11 *Done 2026-10-08 (its parts 3.11a to 3.11f, ADR-198 to ADR-207; the AT on seed […]
 - [x] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can […]
+- [x] 3.12R Review pass (PROMPT step 9) over PLAN 3.8 to 3.12, the five numbered tasks since […]
