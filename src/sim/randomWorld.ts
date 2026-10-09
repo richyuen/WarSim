@@ -26,12 +26,13 @@ import { RANDOM_NATIONS } from '../shared/scenarios';
 import { Terrain } from '../shared/terrain';
 import { hash32, hashToUnit } from './core/hash';
 import { CITY_SNAP_CELLS, placeCities, type CityDef } from './data/cities';
+import { placePorts } from './data/ports';
 import { placeOob, type OobGroup } from './data/oob';
 import { nearestCellWhere, reconcileIslands } from './data/ownership';
 import { buildProvinceRaster } from './data/provinces';
 import { cellOf, loadTerrain, type StraitDef } from './data/terrain';
 import { grantStartTechs } from './tech';
-import { addCities, addFormations, applyScenarioSettings, ECONOMY_TABLES_1938, fillEconomy, RULES_1938, SIZE_1938, startTreasury, TEMPLATES_LAND } from './scenario1938';
+import { addCities, addFormations, applyScenarioSettings, ECONOMY_TABLES_1938, fillEconomy, PORTS_1938, RULES_1938, SIZE_1938, startTreasury, TEMPLATES_LAND } from './scenario1938';
 import { MARGIN } from './ai/economic';
 import { monthlyAccounts } from './systems/economy';
 import { staticCe } from './systems/efficiency';
@@ -279,6 +280,10 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
     nc.revivalsLeft[id] = set.revival.maxPerNation;
   }
   addCities(world, cities);
+  // The ports of the 1938 file, as the cities are of its list: the naval bases stand where
+  // they stood, and whoever has the land has them (PLAN 4.1c).
+  world.ports = placePorts(PORTS_1938, cities, tags, c.owner, c.terrain, w, h, false).ports;
+  world.portReach = PORTS_1938.reachCells;
   const labels = meta.map(provinceLabel);
   // The name is state, as one given in God Mode is: no table of the scenario holds it.
   for (const p of cities) if (p.capitalOf !== 0) world.names.set(p.capitalOf, labels[province[p.cell]! - 1] || p.name);

@@ -474,7 +474,7 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   `crossing` (AoC-style land-unit-walkable lanes, editable).
   *As built (PLAN 4.1b, ADR-243; `src/sim/nav/lanes.ts`, `laneOf(world)`):* derived from the
   zones and the map's passages, as the zones are: not saved, not hashed, dropped where they
-  are. 0.37 s at M. Ports are PLAN 4.1c's.
+  are. 0.37 s at M. With the world's ports (PLAN 4.1c, below) 0.38 s.
   - *Nodes:* one for each zone, at its seed's cell (node `zone - 1`), then one for each
     strait: a body of crossing cells (4-way) with a cell in a zone, at the middle one of
     those cells. On the 1938 map at M 456: 428 zones and 28 straits (of 29 bodies; the Strait
@@ -501,6 +501,36 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
     Black Sea and the Sea of Marmara with them, and the Strait of Magellan's inner water);
     the Caspian with Garabogaz Bay (3); Lake Maracaibo (its bar was not dredged until the
     1950s); 13 lakes.
+- **Ports and naval bases** (PLAN 4.1c, ADR-244; `src/sim/data/ports.ts`, `world.ports`):
+  static data of the scenario, as the seeds and the passages are: not saved, not hashed.
+  Who holds a port is who holds its land cell. A port has the levels of the two buildings
+  (`port` 1 to 5, `navalBase` 0 to 5); they become state with the task that builds, damages
+  or blockades them (PLAN 4.4), and the province buildings of the list above are not built.
+  - *The file* (`data/scenarios/<id>/ports.json`): `minCitySize` (3), `reachCells` (2),
+    `levelBySize` ([1, 2, 3]) and `ports`, a list by hand: name, place, `nation` (who holds
+    it at the start: it takes that nation's land within 2 cells, and the world's build
+    fails with none), `port`, `navalBase`, and `water` where the sea is further than the
+    reach (the mouth of the river).
+  - *A city's port* (`placePorts`): a placed city of the size or more whose cell has water
+    within the reach, by the terrain alone (the zones are not built at a load); its level by
+    its size; one port to a cell. *By hand* (105 in 1938): 87 naval bases (20 main fleet
+    bases at level 3, 27 at 2, 40 stations at 1) and 18 ports, of rivers (London, Hamburg,
+    Calcutta) and of nations that had none (Memel, Aqaba, Matadi, Puerto Barrios). One by
+    hand in a city port's cell takes its place and keeps its city (Pearl Harbor is
+    Honolulu's). Truk has no land on the M map: Palau stands for the mandate.
+  - *Its node* (`buildLaneGraph(…, ports, reach)`, `LaneNode.port`, `portNode`): after the
+    straits, in the ports' order, at the port's water: the zoned water cell nearest to the
+    port's place within the reach of its land cell, or nearest to the water given by hand
+    (within `PASSAGE_SNAP`). One edge, from the node of that water's zone: the way from the
+    seed, its km. A port whose cell is no land any more, or with no zoned water in reach (a
+    lake under 10,000 km²: Geneva), has no node (`portNode` -1) and is no port to a ship.
+  - *The count* in 1938 at M: 615 ports, 579 with a node (the test holds 500–700), 557 of
+    them on the seas (reached from Gibraltar), the others on lakes and the Caspian; in 421
+    provinces. Every nation with a coast on the seas has one. The graph has 1,035 nodes and
+    1,547 edges.
+  - *The random world* has the same ports, the nations of the file not read.
+  - *Not done:* a port of a city placed in the editor, or one moved with a city; a port in
+    a scenario file (it has those of its base); the Arctic is open water to the lanes.
 - **Air zone**: a cluster of about 8–20 provinces. Air superiority is tracked per side per zone.
 
 **Sim boot (PLAN 1.9a).** `Sim({scenario: '1938', seed, assets})` builds the world with
@@ -1414,7 +1444,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 
 ### 6.2 Naval
 - Sea zones + lane graph (§3.3). Ports and naval bases are province buildings that
-  repair, rebase and enable supply.
+  repair, rebase and enable supply. *As built (PLAN 4.1c):* a list of the scenario with the
+  two levels, each a node of the lane graph (§3.3); nothing in play reads them yet.
 - Fleets are formations of ship elements: DD, CL, CA, BB, CV, SS, TP. Movement runs along
   lanes with continuous positions. Detection uses zone-level search plus element-level
   range.

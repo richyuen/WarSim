@@ -13037,3 +13037,36 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule changed:** nothing in play reads the lanes. The pin stays. **No sweep** (ADR-58).
 - **PARITY:** our additions, row 3: a note added, still partial.
 - **Next:** PLAN 4.1c (ports and naval bases, each a node of the lane graph).
+
+## 2026-10-09 — PLAN 4.1c: ports and naval bases, each a node of the lane graph (ADR-244)
+
+- **Start:** the tree clean, `npm run check` nothing to run; `npm run critic:due`: not due.
+- **Counted first** (`.cache/portProbe.ts`): 1,355 placed cities have water beside their
+  cell; 381 of size 3 or more are on the seas. With that rule New York, Shanghai, Ōsaka,
+  London, Stockholm and Manila were no ports: hence a reach of 2 cells, and the river ports
+  by hand.
+- **Built:** `data/scenarios/1938/ports.json` (the rule, and 105 rows by hand: 87 naval
+  bases, 18 ports) with its schema; `src/sim/data/ports.ts` (`placePorts`); `world.ports`
+  and `world.portReach`, set by the 1938 and the random world; `buildLaneGraph` takes the
+  ports (`LaneNode.port`, `portNode`). 615 ports, 579 with a node, 557 on the seas, in 421
+  provinces; the graph 1,035 nodes and 1,547 edges, 0.38 s (0.37 before).
+- **Held as data, not state** (ADR-244): no section, no save change. The pin stays.
+- **Each row's nation** was written from the land it took and read through: all 105 as in
+  1938 (Guantánamo Bay the United States', Singapore Malaya's, Bizerte Tunisia's).
+- **Tests:** `tests/unit/ports.test.ts`, eight. Three of mine were wrong at the first run (a
+  city 3 cells off for a reach of 2; a pond of one cell is 390,000 km² on a map of 64 and
+  has a zone; a port's province). One mutation, the reach not held in the lanes: three
+  tests failed ("Jerusalem: its water: expected 3 to be less than or equal to 2").
+- **One picture looked at** (`.cache/ports-europe.png`, Europe at 4 px a cell): each port on
+  its coast, its water beside it, the edge over water to its zone's seed; the bases at
+  Scapa Flow, Kiel, Toulon, Taranto, Sevastopol.
+- **Found, not mended:** the Arctic is open to the lanes, Scapa Flow to Pearl Harbor goes
+  north of Siberia (PLAN 4.2); 43 ports in held land with no province (PLAN 4.4);
+  Switzerland's cell in the Po delta, of Liechtenstein's communes (PLAN 7.4); Truk has no
+  land at M (Palau has the base).
+- **Not looked at:** the ports at S, L and XL (the reach is in cells, the tests are at M);
+  the ports drawn in the game (PLAN 4.7); a map import; the random world's ports beyond
+  their count.
+- **No rule changed:** nothing in play reads the ports. **No sweep** (ADR-58).
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.1d (the march over a bay; the pin moves there).

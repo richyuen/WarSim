@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-244 · 2026-10-09 · accepted — Ports are data of the scenario, not state: city ports by a rule, naval bases by hand (PLAN 4.1c)
+
+- **Context.** SPEC §3.3 lists `port` and `navalBase` among a province's buildings; no
+  province has buildings in the world as built. PLAN 4.1c: "ports from the coastal cities by
+  size, the naval bases by hand, held by the world, each a node of the lane graph".
+- **Counted first** (`.cache/portProbe.ts`): 1,355 placed cities have water beside their
+  cell (4-way): 495 of size 1, 441 of size 2, 217 of 3, 174 of 4, 28 of 5; 381 of size 3 or
+  more on the seas. Not among them: New York, Shanghai, Ōsaka, Boston (water 1 or 2 cells
+  off), London, Calcutta, Oslo (4), and Stockholm and Manila, whose water beside them has
+  no zone.
+- **Decision.** `data/scenarios/1938/ports.json`: a city of size 3 or more with water within
+  2 cells of its cell is a port, of level 1, 2 or 3 by its size; and a list by hand of 105:
+  87 naval bases and 18 ports. `placePorts` makes `world.ports` at the world's build, from
+  the terrain alone. `buildLaneGraph` gives each a node at its water and an edge from that
+  water's zone.
+- **Why not state.** Nothing builds, damages or takes a port's level yet, and its holder is
+  its cell's. A section added to the state for no rule would move the pin. They become
+  state with PLAN 4.4 (a line there).
+- **Why the zones are not read at the build.** They take 0.2 s and nothing in play asks for
+  them yet. So a city by a lake under 10,000 km² (Geneva, Jerusalem by the Dead Sea) is in
+  the list and has no node: 36 of 615. A reader takes `portNode`.
+- **Why a reach of 2 and not the water beside the cell.** A city's cell is already up to 2
+  cells from its place, and the largest ports of the world were left out (above). The water
+  is the nearest to the city's own place, so a city on an isthmus keeps its side (Balboa on
+  the Gulf of Panama, Suez on the Red Sea: tested).
+- **Why river ports are by hand.** A reach that takes London (7 cells to the sea) takes the
+  wrong sea for others.
+- **Why lake ports stay.** A port on Lake Erie has a node in its lake's group and no ship
+  of the seas reaches it: it costs nothing, and the Caspian's are real. 22 of 579.
+- **Why `nation` in each row by hand.** A base takes its holder's land, not the nearest
+  (Gibraltar, Guantánamo Bay, Hong Kong), and the row is checked: a border moved in the
+  data fails the world's build or the test.
+- **The random world** takes the same list with the nations not read: a base is where the
+  harbour is.
+- **Found, not mended.** (1) A fleet from Scapa Flow to Pearl Harbor goes north of Siberia
+  (15,974 km): the Arctic is open water to the lanes (a line under PLAN 4.2). (2) 43 ports
+  stand in held land that has no province (2,708 of 627,829 held land cells; New York,
+  Sydney): a line under PLAN 4.4. (3) Switzerland holds a cell in the Po delta: the
+  communes of Liechtenstein, each smaller than a cell, were placed there (a line under
+  PLAN 7.4). (4) A zone's name is its seed's and not the sea a port is on: Wilhelmshaven is
+  in the zone of the Skagerrak's seed, Casablanca in the Alboran Sea's.
+- **Not done:** Truk (no land on the M map; Palau has the mandate's base); Montréal and the
+  Yangtze's ports (Hankow, Nanking); a port for a city placed in the editor.
+- **The pin stays:** nothing in play reads the ports.
+- **Tests.** `tests/unit/ports.test.ts`, eight; one mutation (the reach not held) failed three.
+
 ### ADR-243 · 2026-10-09 · accepted — The lane graph is derived from the zones; what the grid closes is joined by data (PLAN 4.1b)
 
 - **Context.** SPEC §3.3: "nodes at sea-zone centres, ports and straits; edges carry distance

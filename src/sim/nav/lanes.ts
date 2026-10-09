@@ -5,7 +5,10 @@
  * passage of the map's data (`data/maps/<map>/passages.json`): water a ship passes and the cell
  * grid closes (the Bosporus) or has as land (the Suez canal). An edge holds its length in km and
  * the water cells it runs over, so no edge crosses land but a passage, at its one jump.
- * Derived from the zones and the map's passages: never saved, rebuilt identically after a load.
+ * A node for each port of the world too (PLAN 4.1c), at the port's water, with an edge to the
+ * node of the zone that water is in.
+ * Derived from the zones, the map's passages and the world's ports: never saved, rebuilt
+ * identically after a load.
  */
 import { isLand, Terrain } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
@@ -23,7 +26,16 @@ export interface SeaPassage {
   b: readonly [number, number];
 }
 
-export const LaneNode = { zone: 0, strait: 1 } as const;
+/** What the lanes read of a port (`Port`, `src/sim/data/ports.ts`): its land cell, its place, and its water's place when given (else NaN). */
+export interface LanePort {
+  cell: number;
+  x: number;
+  y: number;
+  waterX: number;
+  waterY: number;
+}
+
+export const LaneNode = { zone: 0, strait: 1, port: 2 } as const;
 export type LaneNodeKind = (typeof LaneNode)[keyof typeof LaneNode];
 
 export interface LaneEdge {
@@ -42,7 +54,7 @@ export interface LaneEdge {
 }
 
 export interface LaneGraph {
-  /** Per node. A zone's node is `zone - 1`; the straits follow, in cell order. */
+  /** Per node. A zone's node is `zone - 1`; the straits follow, in cell order; then the ports, in their order. A port's cell is its water. */
   kind: Uint8Array;
   cell: Int32Array;
   zones: number;
@@ -51,6 +63,8 @@ export interface LaneGraph {
   adj: readonly number[][];
   /** Passages of the list that made no edge: an end with no zoned water within `PASSAGE_SNAP`, or both ends in one zone. */
   dropped: number[];
+  /** Per port of the list given, its node; -1 for one whose cell is no land or that has no zoned water in reach. */
+  portNode: Int32Array;
 }
 
 /** How far, in cells, an end of a passage looks for zoned water (as a seed does, `SEED_SNAP`). */
@@ -116,7 +130,12 @@ function seedDistances(g: NavGrid, z: SeaZones): { dist: Float64Array; from: Int
   return { dist, from };
 }
 
-export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPassage[]): LaneGraph {
+/**
+ * `portReach`: how far, in cells, from a port's land cell its water may be (the nearest to the
+ * port's place is taken). A port with its water's place given takes the zoned water nearest to
+ * that, within `PASSAGE_SNAP`.
+ */
+export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPassage[], ports: readonly LanePort[] = [], portReach = 0): LaneGraph {
   const { w, h, terrain } = g;
   const { zoneOf } = z;
   const n = w * h;
@@ -240,12 +259,35 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
     }
   }
 
+  // The ports: a node at the port's water, and the way to it from the seed of that water's zone.
+  const portNode = new Int32Array(ports.length).fill(-1);
+  ports.forEach((p, i) => {
+    if (p.cell < 0 || p.cell >= n || !isLand(terrain[p.cell]!)) return;
+    const px = p.cell % w;
+    const py = (p.cell - px) / w;
+    const near = (c: number): boolean => {
+      if (zoneOf[c] === 0) return false;
+      let dx = Math.abs((c % w) - px);
+      if (g.wrapX && dx > w - dx) dx = w - dx;
+      return dx <= portReach && Math.abs(Math.floor(c / w) - py) <= portReach;
+    };
+    const given = !Number.isNaN(p.waterX);
+    const at = given
+      ? nearestCellWhere((c) => zoneOf[c] !== 0, p.waterX, p.waterY, w, h, PASSAGE_SNAP, g.wrapX)
+      : nearestCellWhere(near, p.x, p.y, w, h, 2 * portReach + 2, g.wrapX);
+    if (at < 0) return;
+    portNode[i] = kind.length;
+    edges.push({ a: zoneOf[at]! - 1, b: kind.length, km: dist[at]!, crossing: false, passage: -1, cells: Int32Array.from(toSeed(at).reverse()), landAt: -1 });
+    kind.push(LaneNode.port);
+    cell.push(at);
+  });
+
   const adj: number[][] = kind.map(() => []);
   edges.forEach((e, i) => {
     adj[e.a]!.push(i);
     adj[e.b]!.push(i);
   });
-  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges, adj, dropped };
+  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges, adj, dropped, portNode };
 }
 
 export interface LaneRoute {

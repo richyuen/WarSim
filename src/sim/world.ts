@@ -6,6 +6,7 @@ import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildLaneGraph, type LaneGraph, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
+import type { Port } from './data/ports';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { RngStreams } from './core/rng';
@@ -431,9 +432,9 @@ export function seaOf(world: World): SeaZones {
   return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds));
 }
 
-/** The lane graph over the sea zones and the map's passages (PLAN 4.1b; built once, cached). */
+/** The lane graph over the sea zones and the map's passages, with the world's ports (PLAN 4.1b, 4.1c; built once, cached). */
 export function laneOf(world: World): LaneGraph {
-  return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages));
+  return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages, world.ports, world.portReach));
 }
 
 export class World {
@@ -647,6 +648,13 @@ export class World {
   sea: SeaZones | null = null;
   /** The map's passages (PLAN 4.1b): static data of the map, as `seaSeeds` is. None on the toy world. */
   seaPassages: readonly SeaPassage[] = [];
+  /**
+   * The ports and naval bases (PLAN 4.1c, `placePorts`): static data of the scenario, as the
+   * seeds are, not state. Who holds a port is who holds its cell. None on the toy world.
+   */
+  ports: readonly Port[] = [];
+  /** How far from its cell a port's water may be, cells (the scenario's `reachCells`). */
+  portReach = 0;
   /** The lane graph: a derived cache, dropped where `sea` is. */
   lanes: LaneGraph | null = null;
   commandLog: LoggedCommand[] = [];

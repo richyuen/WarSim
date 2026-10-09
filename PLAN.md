@@ -32,9 +32,7 @@ quick sweep as a smoke test.
   Split 2026-10-09 (one cause per commit), in this order:
   - [x] 4.1a The sea zones: the seeds of the named seas (`data/maps/earth/seas.json`, made by […]
   - [x] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings' […]
-  - [ ] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by
-    size, the naval bases by hand), held by the world, each a node of the lane graph.
-    AT: every coastal province with a port connects to the lane graph (the task's own).
+  - [x] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by […]
   - [ ] 4.1d The march over a bay (the Phase 2 review's line above): routing below the cell
     or along the coast. It changes land paths: the pin moves, with an ADR.
     AT: on seed 99 at day 90 no formation on the march is over the fine mask's water.
@@ -45,9 +43,17 @@ quick sweep as a smoke test.
   Red Sea 4,941 km, 4,024 by great-circle legs). The time a fleet takes is to be that of the
   way it sails: straighten the way, or say what "expected" is against. An edge's cells are of
   the M grid, not of the fine mask.
+  From PLAN 4.1c (2026-10-09, ADR-244): the Arctic is open water to the lanes: from Scapa
+  Flow to Pearl Harbor the shortest way is north of Siberia (15,974 km), not by Panama. Ice
+  is not in the map's data: close those zones to a fleet, or give them a cost.
 - [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
   AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
+  From PLAN 4.1c (2026-10-09, ADR-244): the ports are data of the scenario (`world.ports`),
+  not state. What builds, damages or blockades a port makes its levels state (the pin moves
+  then). A reader takes `laneOf(world).portNode`: 36 of 615 ports have no node (water with
+  no zone). 43 ports stand in held land with no province (New York, Sydney), so a port's
+  province is not always known. A city placed in the editor gets no port.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
@@ -346,6 +352,11 @@ quick sweep as a smoke test.
 - [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.
   AT: sweep report green.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
+  From PLAN 4.1c (2026-10-09, ADR-244): Switzerland holds a cell in the Po delta (1094, 323
+  at M, by Ferrara). The communes of Liechtenstein are each smaller than a cell and were
+  placed there, one on land and others as cells of the Adriatic with a province
+  (`src/sim/data/provinces.ts`, the placing of a province under a cell).
+  `tests/unit/ports.test.ts` names SWI as the one nation with a coast and no port.
   AT: side-by-side screenshots vs reference frames logged in PROGRESS.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.

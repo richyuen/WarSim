@@ -13,6 +13,7 @@ import type { SeaSeed } from './nav/seaZones';
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
 import combatJson from '../../data/combat.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
+import ports1938 from '../../data/scenarios/1938/ports.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
@@ -35,6 +36,7 @@ import type { ScenarioAssets } from '../shared/protocol';
 import { TERRAIN_IDS, type TerrainId } from '../shared/terrain';
 import { dayOfIso } from '../shared/calendar';
 import type { CityDef, PlacedCity } from './data/cities';
+import { placePorts, type PortRules } from './data/ports';
 import { templateStrength, type OobGroup, type PlacedFormation, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
@@ -235,6 +237,8 @@ export function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: r
 }
 
 export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
+/** The ports and naval bases of the 1938 scenario (PLAN 4.1c). */
+export const PORTS_1938 = ports1938 as unknown as PortRules;
 
 /** Inputs of the 1938 map build chain at w×h (shared by the sim world and the worker's views). */
 export function politicalMapInput1938(assets: ScenarioAssets, w: number, h: number): PoliticalMapInput {
@@ -365,6 +369,10 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   });
 
   addCities(world, map.cities);
+  const placed = placePorts(PORTS_1938, map.cities, tags, map.owner, map.terrain, w, h);
+  if (placed.unplaced.length) throw new Error(`1938 ports: ${placed.unplaced.map((i) => PORTS_1938.ports[i]!.name).join(', ')} found no land`);
+  world.ports = placed.ports;
+  world.portReach = PORTS_1938.reachCells;
   world.rules = RULES_1938;
   addFormations(world, map.formations);
   grantStartTechs(world, GIVEN_TECHS_1938);

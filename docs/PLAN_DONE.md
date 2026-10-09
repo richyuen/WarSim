@@ -6254,3 +6254,20 @@ Of 4.1 (open in PLAN.md):
     then joined by data.
     AT: Gibraltar to Suez and the Black Sea to the Mediterranean have a route; no edge's cells
     cross land.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.1 (open in PLAN.md):
+
+  - [x] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by
+    size, the naval bases by hand), held by the world, each a node of the lane graph.
+    AT: every coastal province with a port connects to the lane graph (the task's own).

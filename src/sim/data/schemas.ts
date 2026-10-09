@@ -250,6 +250,26 @@ export const SeasFile = z.strictObject({ comment: z.string().optional(), seas: z
 export const SeaPassageDef = z.strictObject({ id, name: z.string().min(1), a: lonLat, b: lonLat });
 export const PassagesFile = z.strictObject({ comment: z.string().optional(), passages: z.array(SeaPassageDef) });
 
+// ── ports (data/scenarios/<id>/ports.json) ───────────────────────────────────
+
+/** Ports and naval bases (PLAN 4.1c, `src/sim/data/ports.ts`): the rule for the cities' ports, and the list by hand. */
+const buildingLevel = z.number().int().min(1).max(5);
+export const PortDef = z.strictObject({
+  name: z.string().min(1),
+  lonLat,
+  water: lonLat.optional(),
+  nation: z.string().regex(/^[A-Z]{3}$/).optional(),
+  port: buildingLevel.optional(),
+  navalBase: z.number().int().min(0).max(5),
+});
+export const PortsFile = z.strictObject({
+  comment: z.string().optional(),
+  minCitySize: z.number().int().min(1).max(5),
+  reachCells: z.number().int().min(1).max(4),
+  levelBySize: z.array(buildingLevel).min(1).max(5),
+  ports: z.array(PortDef),
+});
+
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
 
 export const ScenarioSettings = z.strictObject({
@@ -434,6 +454,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/economy\.json$/, schema: EconomyFile },
   { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/ports\.json$/, schema: PortsFile },
 ];
 
 export function schemaFor(file: string): z.ZodType | undefined {
