@@ -12145,3 +12145,69 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Ri (the e2e suite's time).
+
+## 2026-10-09 — PLAN 3.12Rk: a march home does not wait out a war before an enemy's ground
+
+- **Start of the iteration:** `npm run check` on the clean tree: green. `npm run
+  critic:due`: not due. PLAN 3.12Ri is first in the list and what is left of it waits for
+  the log of 3.12Rj's suite (its own text): marked so in PLAN, and 3.12Rk taken.
+- **Cause:** a march home (ADR-169) was routed over every holder's ground and waited
+  before an enemy's cell as a march at a front does. It has no front: its nation holds no
+  cell beside it, none flips, and the mark keeps the AI and the repatriation off it. 83%
+  of the hours counted by the ninth read were formations standing in the nation the war
+  was declared on.
+- **Decided** (ADR-222): the route keeps off the ground of the nation's enemies
+  (`homeward`); on an enemy's ground the march walks on across it and out; before an
+  enemy's cell it would walk into it is ordered home again round it, and with no way the
+  march ends and the mark with it; no formation is set on its spawn point across a war;
+  the walk back (`HOME_BACK`) loses its mark there too. Not the mark alone dropped: a
+  formation in the middle of an enemy's land can take no step, mark or none.
+- **Tests, failed first** (`tests/unit/movement.test.ts`, `.cache/rk-red.log`):
+  - "goes round a cell that has become an enemy's, takes no cell, and arrives": `[1, 1]`
+    for `[0, 0]` (moving, mark) after 60 days. It replaces "a march home waits before a
+    cell that has become an enemy's", which asserted the wait: the rule it tested is the
+    one changed (ADR-222), and what it also held (no cell changes hands, the enemy's cell
+    is never stood on) is kept.
+  - "on ground that has become an enemy's walks on across it and out" (Austria, the war
+    declared with the division in it): "hour 0: it does not wait". Its first form passed
+    on the old rule: Italy's own front took the Austrian cells before it and the test
+    did not see the wait; it now asks for a step every hour and for cells entered while
+    they were Austrian.
+  - "no way round" (Lisbon, at war with both Spains): 0 refusals for more than 0.
+  - "the walk back ... does not keep its mark before an enemy's cell": `[1, 2]` for `[1, 0]`.
+  - `homeWait` (`tests/helpers/homeWait.ts`, in `aiSweep`): on the old rules, three years
+    of seed 77 by `.cache/rk-wait.ts`: 7,656 h for under 720. Not run for ten years on the
+    old rules.
+- **Measured** (three years; another game from the first barred march on):
+  - seed 77, the reader's `stuck2.ts`: 403 marches home, 144 of 30 days or more, 112 of 90
+    or more, 493,025 h before an enemy's cell; now 358, 15, 4 and 0 h
+    (`.cache/rk-stuck2-77.log`).
+  - `homeWait`: the longest wait 0 h (seeds 77, 42) and 1 h (seed 99); formation-hours
+    with the mark on seed 77: 680,966 before, 95,344 now.
+- **Learned in the tests' first forms:** the land gives a way round where one does not look
+  for it: from Madrid with France the enemy the division was sent by Gibraltar, North
+  Africa and the Levant, 556 cells (straits are walked); the test moved to Portugal. And a
+  division crossing Germany at war with it was in contact after 181 hours and destroyed
+  after 706: the test moved to Austria.
+- **The reader's two suspicions** (the task's "with it"):
+  - The walk back on the retreat: traced (`.cache/rk-back.ts`, `.cache/rk-back-77.log`,
+    `-99.log`, the new rules): 23 walks in three years of two seeds; 21 with no enemy
+    within 25 cells; 2 went from 1.4 cells off their nearest enemy to 0.2 and were in
+    contact 1 and 14 hours after. A defect, small: PLAN 3.12Ro, not mended here.
+  - The long marches: they never stand; it is the distance, and since ADR-222 the way
+    round. A line under PLAN 1.42 with the figures (seed 77: 15 of 30 days or more, 20,661
+    men to 8,099).
+- **The pin:** 4b019e8f to 2104f897 (ADR-222).
+- **Not looked into:** a march home in the middle of a step into a cell that turns an
+  enemy's loses its mark and waits there as a march of the AI's (rare; no count taken);
+  a formation left idle on an enemy's ground with no way out (the order from closed
+  ground failed) can take no step, as any formation there; `MoveRejected` is emitted each
+  midnight for a formation whose way home a war bars (nothing in `src/` reads the event
+  but the tests); the ten-year tests' time with `homeWait` in them.
+- **Performance:** `homeward` is made once a nation a day in the repatriation and once an
+  order elsewhere, as `passageOf` is; three years of seed 77 in 50 s with the helper
+  against 44 s on the old rules (another game; one run each, not pinned to cores).
+- **No sweep** (ADR-58). Nothing drawn changed: no spec run by hand.
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rl (the puppets of a nation annexed with its cities occupied keep
+  their supply).

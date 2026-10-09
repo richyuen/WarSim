@@ -608,9 +608,17 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *After peace:* a 2-year truce between the leaders. Idle formations left on land of a nation
     they are not at war with march home (`repatriationSystem`, daily): to the nearest cell of
     their nation within 80 cells, or to its spawn point. The march home, and no other order,
-    crosses the ground of any nation (`formations.home`, ADR-169); it is not fed there, it
-    waits before an enemy's cell, and the operational AI leaves it alone until it arrives.
+    crosses the ground of any nation at peace with its own (`formations.home`, ADR-169); it
+    is not fed there, and the operational AI leaves it alone until it arrives.
     A formation is set on the spawn point only where no land leads there.
+    The march home and an enemy (PLAN 3.12Rk, ADR-222): its route keeps off the ground of
+    the nations its own is at war with. Where the war began while it crossed that nation,
+    it walks on over that enemy's cells and out of them, and takes none. Before an enemy's
+    cell that it would walk into it is ordered home again from where it stands, round that
+    ground; with no way round the march ends there and the mark with it (the formation is
+    its nation's to order as any other; the midnights after ask for a way again, and it is
+    not set on its spawn point across a war). No mark waits before an enemy's cell: the
+    walk back of ADR-172 loses its own there and waits as any march.
   - *God commands:* `forcePeace`, `setWarFightToDeath`.
 - **Alliance / union** {id, nameKey, members[], leader, unity 0..100, loyalty per
   member}. Low unity → members leave and the alliance can dissolve.

@@ -590,7 +590,10 @@ describe('no march across a nation that is not in the war (PLAN 3.4Rl)', () => {
     }
   });
 
-  it('a march home waits before a cell that has become an enemy\'s, and takes no cell, with its nation at war elsewhere', () => {
+  // PLAN 3.12Rk (ADR-222). Until then this test was "a march home waits before a cell that has
+  // become an enemy's": it waited there, marked, for as long as the war lasted, and the mark kept
+  // the AI off it (seed 77, three years: 112 marches home of 90 days or more).
+  it('a march home goes round a cell that has become an enemy\'s, takes no cell, and arrives', () => {
     const { s, far } = farFromHome();
     const w = s.world;
     const c = w.formations.cols;
@@ -601,17 +604,111 @@ describe('no march across a nation that is not in the war (PLAN 3.4Rl)', () => {
     held[path[9]!] = nationId('POL');
     w.setController(path[9]!, nationId('POL'));
     const stood = new Set<number>();
-    for (let h = 0; h < 24 * 20; h++) {
+    for (let h = 0; h < 24 * 60 && c.moving[far] === 1; h++) {
       s.step(1);
       stood.add(Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!));
+      if (c.moving[far] === 1) expect(c.home[far], `hour ${h}: the march home is one still`).toBe(1);
     }
-    expect([c.moving[far], c.home[far]]).toEqual([1, 1]);
-    expect(Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!)).toBe(path[8]);
+    expect([c.moving[far], c.home[far]]).toEqual([0, 0]);
+    expect(w.cells.controller[Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!)]).toBe(nationId('ITA'));
+    expect(stood.has(path[8]!), 'the premise: it came to the cell before the enemy\'s').toBe(true);
     expect(stood.has(path[9]!)).toBe(false);
-    expect(stood.size).toBeGreaterThan(6);
     const changed: number[] = [];
     for (let k = 0; k < held.length; k++) if (w.cells.controller[k] !== held[k]) changed.push(k);
     expect(changed).toEqual([]);
+  });
+
+  it('a march home on ground that has become an enemy\'s walks on across it and out', () => {
+    const { s, far } = farFromHome();
+    const w = s.world;
+    const c = w.formations.cols;
+    const AUT = nationId('AUT');
+    const at = (): number => w.cells.controller[Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!)]!;
+    const behind = (): number => w.cells.controller[w.paths.get(far)![c.pathStep[far]!]!]!;
+    s.step(1);
+    for (let h = 0; h < 24 * 40 && behind() !== AUT; h++) s.step(1);
+    expect([c.moving[far], c.home[far], at(), behind()], 'the premise: on its way, in Austria').toEqual([1, 1, AUT, AUT]);
+    w.wars.start([nationId('ITA')], [AUT], w.tick);
+    const path = [...w.paths.get(far)!];
+    const ahead = path.slice(c.pathStep[far]! + 1).filter((k) => w.cells.controller[k] === AUT);
+    expect(ahead.length, 'the premise: Austrian cells on the way yet').toBeGreaterThan(1);
+    const stood = new Set<number>();
+    const entered = new Set<number>();
+    for (let h = 0; h < 24 * 30 && c.moving[far] === 1; h++) {
+      const [x, y] = [c.x[far]!, c.y[far]!];
+      s.step(1);
+      const k = Math.floor(c.y[far]!) * W + Math.floor(c.x[far]!);
+      if (!stood.has(k) && w.cells.controller[k] === AUT) entered.add(k);
+      stood.add(k);
+      if (c.moving[far] !== 1) break;
+      expect([c.home[far], c.engaged[far]], `hour ${h}: the march home is one still`).toEqual([1, 0]);
+      expect([c.x[far], c.y[far]], `hour ${h}: it does not wait`).not.toEqual([x, y]);
+    }
+    expect(ahead.filter((k) => !stood.has(k)), 'cells of its way that it did not walk').toEqual([]);
+    expect(entered.size, 'cells it came into while they were Austrian').toBeGreaterThan(1);
+    expect([c.moving[far], c.home[far], at()]).toEqual([0, 0, nationId('ITA')]);
+    expect([c.x[far], c.y[far]]).toEqual(w.cellPoint(path[path.length - 1]!));
+  });
+
+  it('no way round: the march home ends before the enemy\'s ground, the mark with it, and the formation is not set down elsewhere', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    for (const war of [...w.wars.list]) w.wars.end(war);
+    const c = w.formations.cols;
+    const id = spawn(w, 'ITA', INF, -9.14, 38.72); // Lisbon: every way out of Portugal by land is through Spain
+    equipFormation(w, id, INF);
+    const spain = [nationId('NSP'), nationId('REP')];
+    const at = (): number => w.cells.controller[Math.floor(c.y[id]!) * W + Math.floor(c.x[id]!)]!;
+    s.step(2);
+    expect([c.moving[id], c.home[id], at()]).toEqual([1, 1, nationId('POR')]);
+    for (const n of spain) w.wars.start([nationId('ITA')], [n], w.tick);
+    let refused = 0;
+    let marked = -1;
+    const stood = new Set<number>();
+    for (let h = 0; h < 24 * 20; h++) {
+      if (hour(s, id, EventKind.MoveRejected)) refused++;
+      if (c.home[id] !== 0) marked = h;
+      stood.add(at());
+    }
+    expect(refused).toBeGreaterThan(0);
+    expect([c.moving[id], c.home[id]]).toEqual([0, 0]);
+    expect(w.paths.has(id)).toBe(false);
+    expect([...stood]).toEqual([nationId('POR')]);
+    // It stands before the Spanish border, in the middle of its cell, and the mark went in the hour it came there.
+    const [x, y] = [c.x[id]!, c.y[id]!];
+    expect([x, y]).toEqual(w.cellPoint(Math.floor(y) * W + Math.floor(x)));
+    const near: number[] = [];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) near.push(w.cells.controller[(Math.floor(y) + dy) * W + Math.floor(x) + dx]!);
+    expect(near.some((n) => spain.includes(n))).toBe(true);
+    expect(marked, 'the last hour it bore the mark').toBeGreaterThan(24);
+    expect(marked, 'the last hour it bore the mark').toBeLessThan(24 * 10);
+    // The midnights after leave it there: no way home, and it is not set on its spawn point.
+    s.step(24 * 3);
+    expect([c.x[id], c.y[id], c.moving[id], c.home[id]]).toEqual([x, y, 0, 0]);
+    // It is a formation as any other: an order on its holder's ground is taken.
+    s.command({ kind: 'moveFormation', id, x: x - 3, y });
+    expect(hour(s, id, EventKind.MoveRejected)).toBe(false);
+    expect([c.moving[id], c.home[id], at()]).toEqual([1, 0, nationId('POR')]);
+    // And with the wars over the next midnight sends it home.
+    for (const war of [...w.wars.list]) w.wars.end(war);
+    s.step(24 * 6);
+    expect([c.moving[id], c.home[id]]).toEqual([1, 1]);
+  });
+
+  it('the walk back from a step that was barred does not keep its mark before an enemy\'s cell', () => {
+    const { s, id, path } = midStep();
+    const w = s.world;
+    const c = w.formations.cols;
+    w.setController(path[6]!, nationId('POL'));
+    s.step(1);
+    expect([c.moving[id], c.home[id]], 'the premise: on the walk back').toEqual([1, 2]);
+    w.setController(path[5]!, nationId('FRA'));
+    const [x, y] = [c.x[id]!, c.y[id]!];
+    s.step(3);
+    expect(w.cells.controller[path[5]!], 'the premise: the cell behind it is the enemy\'s still').toBe(nationId('FRA'));
+    expect([c.x[id], c.y[id]], 'it waits').toEqual([x, y]);
+    expect([c.moving[id], c.home[id]]).toEqual([1, 0]);
   });
 
   it('a march home saved on its way and loaded goes on as the game that ran on', () => {

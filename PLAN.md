@@ -5558,7 +5558,8 @@ quick sweep as a smoke test.
       over them and take the pointer. The History panel (84 rows), the chart with its
       lines and the editor at 1,100 x 600: in their boxes, above the bar.
       `settings1938.spec.ts`, a second test, failed first on each cause.
-  - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
+  - [ ] 3.12Ri (**after 3.12Rk to 3.12Ro, with 3.12Rj's suite: what is left of it needs that log;
+    the parts below it come first**, 2026-10-09) The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,
     `formationFight1938`, `zoomDemo1938`: some 12 min of new tests) or slowed, and whether
@@ -5570,7 +5571,7 @@ quick sweep as a smoke test.
     `turrets1938` 20), `zoomDemo1938` went from 84 s to 210 s, and the files in both took
     1.07 times as long (2,181 s to 2,335 s). No log of the 19.5 min runs was kept: the step
     from 13.6 to 19.5 (159 tests, PLAN 3.11 and 3.12) waits for the log of 3.12Rj's suite.
-  - [ ] 3.12Rk **A march home does not wait out a war before an enemy's ground** (the ninth
+  - [x] 3.12Rk **A march home does not wait out a war before an enemy's ground** (the ninth
     read, finding 1; run there). `movement.ts` stops a march before a cell held by a nation
     its own is at war with; a formation with `home` set is left out by the operational AI
     (`operational.ts`, two places) and, moving, by the repatriation; it is not in contact.
@@ -5589,6 +5590,21 @@ quick sweep as a smoke test.
     count of marches home that never stand and take 40 to 124 days unfed (seed 99, eight
     French formations, 2,566 men to 540): a line under PLAN 1.42 if it is the distance and
     not a defect.
+    **Done 2026-10-09 (ADR-222).** What ends the wait: the route of a march home keeps off
+    the ground of its nation's enemies; on an enemy's ground (the war began while it
+    crossed that nation: 83% of the hours counted) it walks on across it and out; before
+    an enemy's cell it would walk into it is ordered home again round that ground, and
+    with no way the march ends, the mark with it. The mark alone dropped would have left
+    a formation in the middle of an enemy's land that can take no step. Four unit tests,
+    red first (`movement.test.ts`: the way round, across Austria turned enemy, no way out
+    of Portugal, the walk back). `homeWait` in the ten-year tests: the longest wait of a
+    marked formation. Seed 77, three years: 7,656 h before, 0 now; marches home of 90 days
+    or more 112 before, 4 now. The pin 4b019e8f to 2104f897.
+    The reader's two suspicions, looked at: (1) the walk back on the retreat: traced, three
+    years of seeds 77 and 99 on the new rules, 23 walks, 21 with no enemy within 25 cells or
+    none at all (the war was over), 2 that went from 1.4 cells off their nearest enemy to
+    0.2 and were in contact 1 and 14 hours after: PLAN 3.12Ro. (2) the long marches: they
+    never stand, it is the distance: a line under PLAN 1.42.
   - [ ] 3.12Rl **The puppets of a nation annexed with its cities occupied keep their
     supply** (the ninth read, finding 2; run there and again here: `.cache/read9/
     peaceSupply.ts BEL GER 12`). `annexNation` (`puppets.ts`) moves the puppets to the
@@ -5624,7 +5640,20 @@ quick sweep as a smoke test.
     Whether the hash covers the log decides the pin (as 3.12Rf).
     AT: a unit test that fails first; in ten years of the sweep seeds every war declared
     has an end in the log or is in `wars.list`.
-  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rn: a line under PLAN 1.42 for the land that rises
+  - [ ] 3.12Ro **The walk back of a formation on the retreat does not go towards its enemy**
+    (found with 3.12Rk, the ninth read's suspicion; `.cache/rk-back.ts <seed> <ticks>`). A
+    retreat whose next cell has turned a third nation's in the middle of the step is barred
+    and walks back to the cell behind it (`HOME_BACK`, ADR-172): that cell is the one it
+    left, on the enemy's side. Three years of seeds 77 and 99: 23 such walks; in 21 no enemy
+    was within 25 cells (the war had ended and the retreat's day ran on); in 2 the nearest
+    enemy was 1.4 cells off at the turn and 0.2 at the walk's end (formation 1054 of nation
+    104, seed 99, tick 14,230; formation 630 of nation 6, seed 77, tick 4,538), in contact
+    again 1 and 14 hours after. Decide in DECISIONS: the retreat ordered again from where
+    it stands (as `retreatSystem` finds a cell), the walk on to the step's far end where
+    that is its side's ground, or the walk back as it is with the reason. The pin may move.
+    AT: a unit test that fails first: a formation on the retreat, barred in the middle of a
+    step with its enemy behind it, is no nearer that enemy when the walk ends.
+  - [ ] 3.12Rj Last, after 3.12Rk to 3.12Ro: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
     an earlier part broke fixed here; 3.12R ticked.
@@ -5907,6 +5936,15 @@ quick sweep as a smoke test.
     one infantry division at a time.
   - The allotment (ADR-152): a sector allotted more of a class than stand near it takes
     them from afar.
+  - The march home (ADR-169, ADR-222) is unfed (ADR-143) and has no longest way: to the
+    nearest cell of its nation within 80 cells, else to the spawn point on foot, and since
+    ADR-222 round the ground of its nation's enemies. Seed 77, three years: 15 of 358
+    marches home last 30 days or more and 4 last 90 or more, none of them standing: 20,661
+    men at the mark, 8,099 at the end; three Japanese formations walk 153 days and arrive
+    with 5, 49 and 48 men of 785, 2,654 and 2,585. An Italian division in Madrid with
+    France the enemy is sent by Gibraltar and the Levant, 556 cells. Whether a way home has
+    a longest length (and the formation then stands, or is disbanded into the pool), and
+    whether a march home is fed by the nation it crosses.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

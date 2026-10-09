@@ -11,6 +11,7 @@ import { Sim } from '../../src/sim/sim';
 import { historyText } from '../../src/ui/historyText';
 import { historyRows } from '../../src/worker/historyRows';
 import { deadLand } from './deadLand';
+import { homeWait } from './homeWait';
 import { assets1938, earthAdmin1 } from './earth';
 import { realmWars } from './realmWars';
 import { revoltLand } from './revoltLand';
@@ -35,6 +36,9 @@ import { strayNaN } from './stateNumbers';
  *
  * PLAN 3.12Rh3 AT: on every day no two living nations have one name ("Free Damascus declared
  * war on Free Damascus"), and no war has a nation on both sides.
+ *
+ * PLAN 3.12Rk AT: no formation that bears the mark of a march home stands before an enemy's
+ * cell for 30 days (`homeWait`).
  *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
@@ -71,6 +75,7 @@ export function aiSweep(seed: number): void {
   };
   // The days on which two living nations were called after one province, and the most at once.
   let namesakeDays = 0;
+  const waits = homeWait();
   let namesakesMost = 0;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
@@ -108,6 +113,7 @@ export function aiSweep(seed: number): void {
       }
       ev.length = 0;
       w.out.fires.length = 0;
+      waits.hour(w);
       // PLAN 3.8: on every day no two nations of one realm or of allied realms are at war.
       if (isDayStart(w.tick)) expect(realmWars(w, tag), `seed ${seed}, day ${w.tick / 24}: wars inside a realm or an alliance`).toEqual([]);
       if (isDayStart(w.tick)) {
@@ -165,6 +171,11 @@ export function aiSweep(seed: number): void {
   process.stderr.write(`seed ${seed}: ${namesakeDays} days with living nations called after one province (${namesakesMost} more nations than provinces at most), each with a name of its own
 `);
   expect(revoltsSeen, `seed ${seed}: months whose revolts were measured`).toBeGreaterThan(0);
+  // PLAN 3.12Rk: no march home waits out a war before an enemy's cell.
+  process.stderr.write(`seed ${seed}: ${waits.marked} formation-hours with the mark of a march home; the longest wait before an enemy's cell ${waits.longest} h${waits.where ? ` (${waits.where})` : ''}
+`);
+  expect(waits.marked, `seed ${seed}: formation-hours with the mark of a march home`).toBeGreaterThan(0);
+  expect(waits.longest, `seed ${seed}: hours a marked formation stood before an enemy's cell (${waits.where})`).toBeLessThan(24 * 30);
   console.log(`seed ${seed}: ${founded} nations founded in ten years, each with a name and a flag`);
   // The history as the panel has it (PLAN 3.12a): no row shows an id, no alliance is unnamed.
   const rows = historyRows(s.world, (id) => NATIONS_1938[id - 1]?.nameKey ?? `=${nameOf(id)}`, (c) => `City ${String.fromCharCode(65 + (c % 26))}`);

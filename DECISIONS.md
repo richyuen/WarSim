@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-222 · 2026-10-09 · accepted — A march home does not wait before an enemy's ground: round it, across it where it stands on it, or the march ends and the mark with it (PLAN 3.12Rk)
+
+- **Context.** The march home (ADR-169) was routed over every holder's ground and waited
+  before an enemy's cell "as any march does". Any other march waits there for its front; a
+  march home has none: its nation holds no cell beside it, so no cell before it ever
+  flips. And the mark (`formations.home`) keeps the operational AI and the repatriation
+  off the formation. Seed 77, three years (`.cache/read9/stuck2_1938_77.log`): 403 marches
+  home, 144 of 30 days or more, 112 of 90 or more; of the 633,728 hours of those 144,
+  493,025 were a wait before an enemy's cell and 410,484 of them on that enemy's own
+  ground (the war began while the formation crossed the nation: Italy's on France, with
+  German, Italian and Polish divisions in it); 929,100 men at the mark, 108,977 at the end.
+  A played nation's formations too.
+- **Decision.**
+  - The route of a march home keeps off the ground of the nations its own is at war with
+    (`homeward`, a `Passage` with its provinces, so that "no way" is answered before any
+    search). With no war it is what it was.
+  - A march home that stands on an enemy's ground walks on over that enemy's cells and out
+    of them, as a route from closed ground does (ADR-149). It takes no cell: control
+    spreads from held land (PLAN 1.14), and it holds none there. It can be met and fought.
+  - Before an enemy's cell that it would walk into, at a cell's middle, it is ordered home
+    again from there, round that ground. With no way the march ends there, the mark with it:
+    the formation is idle and its nation's to order as any other (the AI's within a day by
+    its own plan, a player's at once). The midnights after ask for a way again.
+  - In the middle of a step into such a cell (the war began in that step) the mark goes and
+    the march waits as any other does; so does the walk back of ADR-172 (`HOME_BACK`)
+    before an enemy's cell. No mark waits.
+  - A formation is not set on its spawn point across a war: where the way home on its own
+    landmass is barred by an enemy it stands where it is. (With `everywhere` an order home
+    on one landmass never failed, so this is no case that was.)
+- **Not chosen.** The mark dropped and nothing more (the task's first form): a formation
+  in the middle of a nation at war with its own can take no step at all (every cell about
+  it is the enemy's and none flips), mark or none; the AI would have it and could do
+  nothing with it. That is 83% of the hours counted above. A limit to the length of the way
+  round: see the consequences; it is a number to be set with the balance.
+- **Consequences.**
+  - The pin of seed 99 moves, 4b019e8f to 2104f897: marches home of its first year go by
+    another way.
+  - Seed 77, three years, on the new rules (another game from the first barred march on):
+    358 marches home, 15 of 30 days or more, 4 of 90 or more; 0 hours before an enemy's
+    cell. `homeWait` (the ten-year tests): the longest wait of a marked formation is 0 h on
+    seeds 77 and 42 and 1 h on seed 99 in three years (7,656 h on seed 77 before).
+  - The way round can be long. In the unit test's first form an Italian division in
+    Madrid, Italy at war with France, was sent home by Gibraltar, North Africa and the
+    Levant: 556 cells, half its men gone in 35 days. On seed 77 three Japanese formations
+    walk 153 days and arrive with 5, 49 and 48 men of 785, 2,654 and 2,585. The march home
+    was unfed before (ADR-143) and the spawn point was at any distance on foot (ADR-169):
+    the line under PLAN 1.42 has the figures, and whether a way has a longest length
+    belongs there.
+  - A formation that crosses a nation at war with its own is alone on enemy ground and is
+    fought there (in the test's first form, in Germany: in contact after 181 hours and
+    destroyed after 706).
+  - Not mended here: the walk back of a formation on the retreat can go towards its enemy
+    (PLAN 3.12Ro).
+
 ### ADR-221 · 2026-10-09 · accepted — A panel of the centre is drawn over the war banners; the Settings panel scrolls in its box (PLAN 3.12Rh5)
 
 - **Context.** In a view 600 px high the Settings panel's rows are 59 px taller than its

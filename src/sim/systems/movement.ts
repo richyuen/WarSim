@@ -42,11 +42,24 @@
  *
  * The march home crosses any nation (PLAN 3.7h, ADR-169). This order, and no other, is routed
  * over all ground (`everywhere`), and the formation is marked (`formations.home`): its march does
- * not end before a third nation's cell. It waits before an enemy's as any march does, and it is
+ * not end before a third nation's cell, and it is
  * not fed on the way. Any other order takes the mark away, and so does the march's end. A
  * formation is set on its spawn point only where no land leads home (another landmass): it was
  * set there whenever the way crossed a second nation at peace with it, an army gone from one
  * place and standing in another, 80 times in a year of two seeds.
+ *
+ * The march home and an enemy's ground (PLAN 3.12Rk, ADR-222). It waited before an enemy's cell
+ * as any march does, and no front came to it: the mark kept the AI off the formation for as long
+ * as the war lasted (seed 77, three years: 112 marches home of 90 days or more, most of them
+ * standing in a land their nation had since gone to war with). Now:
+ * - its route keeps off the ground of the nations its own is at war with (`homeward`);
+ * - on an enemy's ground (the war began while it crossed that land) it walks on over that
+ *   enemy's cells and out of them, as a route from closed ground does, and takes no cell;
+ * - before an enemy's cell that it would walk into, it is ordered home again from where it
+ *   stands, round that ground; with no way round the march ends there and the mark with it: the
+ *   formation is its nation's to order as any other, and the midnights after ask for a way again;
+ * - no formation is set on its spawn point across a war: only where no land leads there.
+ * The walk back (`HOME_BACK`) loses its mark before an enemy's cell too, and waits as any march.
  */
 import { EventKind } from '../../shared/events';
 import { atan2 } from '../core/dmath';
@@ -107,9 +120,25 @@ export function passageOf(world: World, nation: number, shared?: Map<string, Pas
   return pass;
 }
 
-/** The ground of a march home (ADR-169): every holder's. No order of an AI or a player has it. */
-function everywhere(world: World): Passage {
-  return { ok: new Uint8Array(world.nations.highWater + 1).fill(1), holder: world.cells.controller };
+/**
+ * The ground of a march home (ADR-169): every holder's but that of a nation its own is at war
+ * with (PLAN 3.12Rk, ADR-222). No order of an AI or a player has it. With no war it is the
+ * ground without its provinces, as it was: the route is searched beyond their corridor.
+ */
+function homeward(world: World, nation: number): Passage {
+  const ok = new Uint8Array(world.nations.highWater + 1).fill(1);
+  let wars = false;
+  world.nations.forEach((m) => {
+    if (!world.wars.atWar(nation, m)) return;
+    ok[m] = 0;
+    wars = true;
+  });
+  if (!wars) return { ok, holder: world.cells.controller };
+  const graph = navOf(world).graph;
+  const open = new Uint8Array(graph.nodeCount);
+  const shut = new Uint8Array(graph.nodeCount);
+  for (const key of world.heldByNode().keys()) (ok[key % 65536] === 1 ? open : shut)[Math.floor(key / 65536)] = 1;
+  return { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open), shut };
 }
 
 /** Where a formation stands in a cell of its path: the middle, or the cell's land point (PLAN 2.9a). */
@@ -130,7 +159,7 @@ export function formationPath(world: World, id: number): Int32Array | null {
   if (!rule) return null;
   const nav = navOf(world);
   const from = Math.floor(f.y[id]!) * world.cells.w + Math.floor(f.x[id]!);
-  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, f.home[id] === HOME_MARCH ? everywhere(world) : passageOf(world, f.nation[id]!));
+  const route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, from, f.targetCell[id]!, f.home[id] === HOME_MARCH ? homeward(world, f.nation[id]!) : passageOf(world, f.nation[id]!));
   if (!route) return null;
   p = Int32Array.from(route.cells);
   f.originCell[id] = from;
@@ -188,7 +217,7 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
   return order(world, id, x, y, pass, 0);
 }
 
-/** `orderMove`, or with `home` 1 the order of a march home, over any ground (ADR-169). */
+/** `orderMove`, or with `home` 1 the order of a march home, over any ground but an enemy's (ADR-169, ADR-222; `pass` is then `homeward`'s). */
 function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | typeof HOME_MARCH): boolean {
   const f = world.formations;
   const { w, h } = world.cells;
@@ -210,7 +239,7 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const beyond = mid ? was[frac < 0.5 ? at + 1 : at]! : -1;
   const nav = navOf(world);
   const target = snapTarget(world, origin, tx, ty);
-  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, home === HOME_MARCH ? everywhere(world) : (pass ?? passageOf(world, c.nation[id]!)));
+  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, pass ?? (home === HOME_MARCH ? homeward(world, c.nation[id]!) : passageOf(world, c.nation[id]!)));
   if (!route) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);
     return false;
@@ -243,18 +272,26 @@ export function repatriationSystem(world: World): void {
   const c = f.cols;
   const { w, h, controller } = world.cells;
   const comp = navOf(world).grid.component;
+  // The ground of the day's marches home, by nation.
+  const ways = new Map<number, Passage>();
   f.forEach((id) => {
     if (c.moving[id] === 1 || c.engaged[id] === 1 || !world.rules?.templates[c.template[id]!]) return;
     const nation = c.nation[id]!;
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const holder = controller[cell]!;
     if (!foreignTo(world, nation, holder)) return;
+    let way = ways.get(nation);
+    if (!way) ways.set(nation, (way = homeward(world, nation)));
     const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS);
-    if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, undefined, HOME_MARCH)) return;
+    if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, way, HOME_MARCH)) return;
     const at = spawnPoint(world, nation);
     if (!at) return;
     // Further from home than that: to the spawn point on foot, if land leads there.
-    if (comp[Math.floor(at[1]) * w + Math.floor(at[0])] === comp[cell] && order(world, id, at[0], at[1], undefined, HOME_MARCH)) return;
+    if (comp[Math.floor(at[1]) * w + Math.floor(at[0])] === comp[cell]) {
+      if (order(world, id, at[0], at[1], way, HOME_MARCH)) return;
+      // A war bars the way (ADR-222): it stands where it is, and is asked again tomorrow.
+      if (way.open !== undefined) return;
+    }
     c.x[id] = at[0];
     c.y[id] = at[1];
   });
@@ -284,6 +321,7 @@ export function movementSystem(world: World): void {
     const nation = c.nation[id]!;
     let barred = false;
     let shut = false;
+    let foe = false;
     while (budget > 0 && i < path.length - 1) {
       const a = path[i]!;
       const b = path[i + 1]!;
@@ -297,7 +335,14 @@ export function movementSystem(world: World): void {
       const holder = world.cells.controller[b]!;
       if (holder !== 0 && holder !== nation) {
         // Not a formation on the retreat (PLAN 3.5a): it goes back over ground the enemy has taken behind it.
-        if (world.wars.atWar(nation, holder) && c.retreat[id] === 0) break;
+        // Nor a march home that stands on that enemy's ground (ADR-222): it walks on and out.
+        if (world.wars.atWar(nation, holder) && c.retreat[id] === 0 && !(c.home[id] === HOME_MARCH && world.cells.controller[a] === holder)) {
+          // A mark does not wait here (ADR-222): the march home is ordered again below, round
+          // this ground, and the walk back is a march as any other from now.
+          if (c.home[id] === HOME_MARCH && frac === 0) foe = true;
+          else c.home[id] = 0;
+          break;
+        }
         // Ground that has become a third nation's since the order: the march ends before it.
         // Not a march home (ADR-169): that one crosses it.
         // Nor the way back from such a step (PLAN 3.7l).
@@ -337,6 +382,18 @@ export function movementSystem(world: World): void {
       const home = c.home[id] === HOME_MARCH ? HOME_MARCH : 0;
       c.home[id] = 0;
       order(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, undefined, home);
+      return;
+    }
+    if (foe) {
+      // Before an enemy's cell (ADR-222): home again from this cell, round the enemy's ground;
+      // or the march ends here and the mark with it.
+      const to = c.targetCell[id]!;
+      c.x[id] = ax;
+      c.y[id] = ay;
+      c.moving[id] = 0;
+      c.home[id] = 0;
+      world.paths.delete(id);
+      order(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, undefined, HOME_MARCH);
       return;
     }
     if (barred && frac > 0) {
