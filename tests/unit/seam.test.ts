@@ -5,6 +5,7 @@ import { Sim } from '../../src/sim/sim';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
 import { cellDist, destroyFormation } from '../../src/sim/systems/elements';
 import { addCorridor, inCorridor } from '../../src/sim/systems/majorBattles';
+import { SUPPLY_RATE, SUPPLY_REACH, blocOf, refreshSupplyNetwork, supplySystem } from '../../src/sim/systems/supply';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -56,6 +57,47 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
         addCorridor(world, GER, 0.5, Y + 0.5, -1, 0);
         expect(inCorridor(world, GER, Y * W)).toBe(true);
         expect(inCorridor(world, GER, Y * W + W - 2)).toBe(loop);
+      }
+    });
+  });
+
+  describe('the reach of supplySystem (3.12Rsb)', () => {
+    /**
+     * A German division on Polish-held ground in the first column, and Germany's network in the
+     * cells of column `x`, five rows about `Y`. Whether the hour fed it.
+     */
+    function fedFrom(loop: boolean, x: number): boolean {
+      const world = edges(loop);
+      // The refresh the system would run in this hour, before the network is made by hand.
+      refreshSupplyNetwork(world);
+      world.tick = 1;
+      const { supply, controller } = world.cells;
+      const net = blocOf(world, GER);
+      // Nothing of the 1938 world feeds it from either side.
+      for (let dy = -SUPPLY_REACH; dy <= SUPPLY_REACH; dy++) {
+        for (const cx of [0, 1, 2, 3, W - 4, W - 3, W - 2, W - 1]) supply[(Y + dy) * W + cx] = 0;
+      }
+      controller[Y * W] = POL;
+      for (let dy = -SUPPLY_REACH; dy <= SUPPLY_REACH; dy++) supply[(Y + dy) * W + x] = net;
+      const id = addDivision(world, GER, 0.4, Y + 0.5);
+      world.formations.cols.supply[id] = 0.5;
+      supplySystem(world);
+      // The network is as it was made: no refresh took it away.
+      expect(supply[Y * W + x]).toBe(net);
+      expect(supply[Y * W]).toBe(0);
+      const s = world.formations.cols.supply[id]!;
+      expect([0.5 - SUPPLY_RATE, 0.5 + SUPPLY_RATE]).toContain(s);
+      return s > 0.5;
+    }
+
+    it("a formation on ground not its side's in the first column is not fed by a network in the last; on a map that loops it is", () => {
+      for (const loop of [false, true]) {
+        expect(fedFrom(loop, W - 1)).toBe(loop);
+        expect(fedFrom(loop, W - SUPPLY_REACH)).toBe(loop);
+        // Beyond the reach over the seam, and within it on the formation's own side.
+        expect(fedFrom(loop, W - SUPPLY_REACH - 1)).toBe(false);
+        expect(fedFrom(loop, SUPPLY_REACH)).toBe(true);
+        expect(fedFrom(loop, SUPPLY_REACH + 1)).toBe(false);
       }
     });
   });

@@ -12646,3 +12646,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   reason the step's fold of `movement.ts` is left (ADR-171, in that file's head). The
   specs with `looping=0` games are to run after 3.12Rsc, not only at the end. Gate:
   documents only, parity (`.cache/gate-rsa2.log`).
+
+## 2026-10-09 — PLAN 3.12Rsb: the supply's reach about a formation keeps to the edges of a map that does not loop (ADR-234)
+
+- **Done:** `supplySystem` (`supply.ts`) looked for a network of the formation's side within
+  `SUPPLY_REACH` cells at the column `(cx + dx + w) % w` whatever `settings.loopingMap`
+  said. It asks the setting now: beyond an edge of a map that does not loop there is no
+  cell. On a map that loops it looks where it looked.
+- **Test:** `tests/unit/seam.test.ts`, one more (three in the file), with the map looping
+  and not: a German division on Polish-held ground in the first column, Germany's network
+  made by hand in one column at a time. Red first: "expected true to be false" (fed from
+  the last column with the option off). Columns 2 and 3 of its own side answer the same
+  both ways (fed, not fed), and so does the third column from the end (not fed).
+- **Gotcha:** `supplySystem` refreshes the network at tick 0 of a world just made and
+  would write over marks made by hand: the test refreshes first, sets `world.tick = 1`,
+  and asks afterwards that its mark is still there.
+- **SPEC** §9, the looping option; PARITY row 69, a dated line.
+- **The pin stays** (92689265). **The tick's cost: not measured** (two comparisons a cell
+  of the reach, for formations on ground not their side's and off their network only).
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87); no spec run by hand: nothing
+  drawn changed. The specs with `looping=0` games (`title.spec.ts`,
+  `gameOptions1938.spec.ts`) are to run after 3.12Rsc.
+- **`npm run plan:archive`:** nothing to move (a part of a part stays with its open part).
+- **Gate:** `npm run check` green on the first run (`.cache/gate-rsb.log`, the sampler's
+  `.cache/gate-rsb-sampler.log`): 1,079 unit tests in 134 files (187.7 s), the ten-year
+  stage 17 tests in 12 files (187.5 s), build, parity 47.5%.
+- **Next:** PLAN 3.12Rsc (the pressure of `territorySystem`), then the two `looping=0`
+  specs by hand; 3.12Rsd, 3.12Rse.

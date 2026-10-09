@@ -253,7 +253,7 @@ quick sweep as a smoke test.
       falls back (`retreat.ts`), the place of a war's largest battle (`warBattle.ts`) and a
       breakthrough corridor (`inCorridor`, `majorBattles.ts`, not named above). Two tests,
       red first; the pin stays.
-    - [ ] 3.12Rsb The reach of `supplySystem` (`supply.ts`, the 2 cells about a formation).
+    - [x] 3.12Rsb The reach of `supplySystem` (`supply.ts`, the 2 cells about a formation).
       AT: a formation on ground not its side's in the first column is not fed by a network
       in the last; on a map that loops it is.
     - [ ] 3.12Rsc The pressure of `territorySystem` (`territory.ts`).

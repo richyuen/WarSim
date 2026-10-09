@@ -20,8 +20,8 @@
  * Formations (hourly): a formation on a cell of its own bloc's network, or of the network of a
  * bloc fighting on its side of a war (PLAN 1.42b: allies feed each other's armies while they
  * fight together), or on a cell that is not its side's with such a network within SUPPLY_REACH
- * cells (PLAN 3.4Rf), gains SUPPLY_RATE per hour
- * towards 1; otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
+ * cells (PLAN 3.4Rf; over the east and west edges only on a map that loops, PLAN 3.12Rsb),
+ * gains SUPPLY_RATE per hour towards 1; otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
  * template's fuel besides (PLAN 3.2b). At 0 it attrits: (BASE_ATTRITION_PER_DAY +
  * terrain supplyAttrition) of its strength per day, applied hourly; and one that moves on
  * engines loses ORG_RATE of its org per hour there (PLAN 3.2c). Every formation that is fed and
@@ -395,6 +395,7 @@ export function supplySystem(world: World): void {
   const f = world.formations;
   const c = f.cols;
   const { w, h, supply, terrain, controller } = world.cells;
+  const wrap = world.settings.loopingMap;
   let nation = 0;
   let bloc = 0;
   /** Whether the network `net` feeds the formation at hand. */
@@ -417,7 +418,11 @@ export function supplySystem(world: World): void {
           const y = cy + dy;
           if (y < 0 || y >= h) continue;
           for (let dx = -SUPPLY_REACH; dx <= SUPPLY_REACH; dx++) {
-            const net = supply[y * w + ((cx + dx + w) % w)]!;
+            // Beyond an edge of a map that does not loop there is no cell (PLAN 3.12Rsb).
+            const x = cx + dx;
+            const xw = x < 0 ? (wrap ? x + w : -1) : x >= w ? (wrap ? x - w : -1) : x;
+            if (xw < 0) continue;
+            const net = supply[y * w + xw]!;
             if (net === last) continue;
             last = net;
             if (feeds(net)) {

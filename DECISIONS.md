@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-234 · 2026-10-09 · accepted — The supply's reach about a formation keeps to the edges of a map that does not loop (PLAN 3.12Rsb)
+
+- **Context.** The second part of PLAN 3.12Rs (ADR-233): a formation on a cell that is not
+  its side's is fed when a network of its side lies within `SUPPLY_REACH` (2) cells of it
+  (PLAN 3.4Rf).
+- **What was so.** `supplySystem` looked at the column `(cx + dx + w) % w` whatever
+  `settings.loopingMap` said. With `looping=0` a formation on an enemy's ground in the
+  first two columns was fed by a network of its side in the last two, and the other way
+  round, with no route between them.
+- **Decision.** The reach asks the setting: beyond an edge of a map that does not loop
+  there is no cell, as above the first row. On a map that loops it looks where it looked.
+- **Tests.** `tests/unit/seam.test.ts`, one, with the map looping and not: a German
+  division on Polish-held ground in the first column, Germany's network made by hand in
+  one column at a time (the last, the last but one, the third from the end; columns 2 and
+  3 of its own side, which answer the same both ways). Red first ("expected true to be
+  false": fed from the last column with the option off).
+- **The pin stays** (92689265): 1938 loops.
+
 ### ADR-233 · 2026-10-09 · accepted — The measure of contact keeps to the edges of a map that does not loop (PLAN 3.12Rsa)
 
 - **Context.** PLAN 3.12Rs, found by a search with 3.12Rp (ADR-227) and read, not run: with
