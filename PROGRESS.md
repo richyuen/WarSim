@@ -11847,3 +11847,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` green (typecheck, lint, test, test:sweep, build, parity; e2e
   left out: a part).
 - **Next:** PLAN 3.12Re (the `\d` of `tests/helpers/aiSweep.ts`).
+
+## 2026-10-09 — PLAN 3.12Re: the founded names' test reads `\d` again
+
+- **Done:** `tests/helpers/aiSweep.ts` asked that a founded nation's name not match
+  `/^Free state d+$/`, a pattern no name could match (a literal "d"). It is
+  `/^Free state \d+$/` now, the pattern of `nationNames.test.ts`, `flagsByScenario.test.ts`
+  and `randomWorld.spec.ts`. No source changed.
+- **Verified:** `aiSweep1`, `aiSweep2` and `aiSweep3` (ten years each, by hand with
+  `--config vitest.sweep.config.ts`, 188 s): green with the pattern that can fail. No
+  nation founded in the three seeds is named "Free state N": no finding, no task.
+- **No sweep** (ADR-58). No spec run by hand: nothing drawn is touched.
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rf (a nation's death takes it out of its alliance with no history
+  row; first whether the state hash covers the log).

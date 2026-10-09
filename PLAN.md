@@ -5423,10 +5423,14 @@ quick sweep as a smoke test.
       (the places) to 1.055-1.073 ms a tick (the shares); shots and blocks bit for bit.
       Not taken: the volleys' tables and damage and the pairing of `findBattles` (0.55 and
       0.18 ms a tick in that year, older than 3.11c): PLAN 7.1 with the first year.
-  - [ ] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
+  - [x] 3.12Re `tests/helpers/aiSweep.ts` asks that a founded nation's name not match
     `/^Free state d+$/`: the `\d` gets its backslash back. `Free state ${id}` is what
     `nationNames.ts` gives a nation with no province: if the three seeds then fail, that is
     a finding and a task, and the test is not weakened.
+    - Done 2026-10-09: the pattern is `/^Free state \d+$/`, as in `nationNames.test.ts`,
+      `flagsByScenario.test.ts` and `randomWorld.spec.ts`. The three seeds (`aiSweep1` to
+      `aiSweep3`, ten years each) pass with it: no nation founded in them is a "Free
+      state N". No finding.
   - [ ] 3.12Rf A nation's death takes it out of its alliance with no history row (29
     alliances gone after ten years of seed 1, 15 rows said so): the log says what became of
     an alliance. First: whether the state hash covers the log (does the pin move).

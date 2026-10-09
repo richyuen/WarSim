@@ -123,7 +123,7 @@ export function aiSweep(seed: number): void {
     founded++;
     const origin = nc.origin[id]!;
     expect(origin, `seed ${seed}, nation ${id}: an origin`).toBeGreaterThan(0);
-    expect(foundedName(id, origin, labels), `seed ${seed}, nation ${id}, origin ${origin}`).not.toMatch(/^Free state d+$/);
+    expect(foundedName(id, origin, labels), `seed ${seed}, nation ${id}, origin ${origin}`).not.toMatch(/^Free state \d+$/);
     const n = new Map<number, number>();
     for (const v of specToPixels(foundedFlag(id, nc.color[id]!), {})) n.set(v, (n.get(v) ?? 0) + 1);
     const colours = [...n].filter(([, k]) => k >= (FLAG_W * FLAG_H) / 20).map(([c]) => c);
