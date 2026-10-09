@@ -1,7 +1,8 @@
 /**
  * History log rows for the UI and exports (PLAN 1.34a): what `a` and `b` mean per event kind,
  * the i18n message per kind, and the row shape the worker sends (names already resolved to
- * i18n keys or '=' + literal).
+ * i18n keys or '=' + literal). No row shows an id (PLAN 3.12a): an alliance has its name and
+ * its founder's, dissolved or not, and a Major Battle the city it began near.
  */
 import { dateOfTick } from './calendar';
 import { EventKind } from './events';
@@ -49,6 +50,8 @@ export interface HistoryRow {
   y: number | null;
   an: string;
   bn: string;
+  /** The founder of the row's alliance, as a name ('' when the row has no alliance or it is not known). */
+  of: string;
 }
 
 export interface HistoryFilter {

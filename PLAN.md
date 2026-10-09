@@ -5197,6 +5197,38 @@ quick sweep as a smoke test.
   AT: an e2e in which a war declared by God Mode appears in the ticker and a click on it
   moves the camera; no history row of a ten-year game matches `#\d+`; unit tests of the
   rows' wording; a test that a cue is asked for on a declaration of war.
+  Split 2026-10-08 into its causes, one a commit (the last ticks 3.12 and has the whole e2e
+  suite):
+    - [x] 3.12a *Done 2026-10-08 (ADR-208):* no row shows an id. The cause of "#43
+      dissolved" and "Denmark left #43": the worker took an alliance's name from the living
+      alliances, and one that dissolved is not among them. The state now keeps the name and
+      the founder of an alliance that dissolved (`Alliances.past`) and every alliance its
+      founder; a made alliance reads "the Defensive Pact of Sweden", one of the scenario "the
+      Baltic Entente". A Major Battle is "the major battle near Lyon" at its start and its
+      end, where it was "Major battle #12". The pin moves (e05beda3, no rule). The AT's
+      ten-year part is in `tests/helpers/aiSweep.ts` (three seeds): no row matches `#\d+`,
+      and every row of an alliance has its name and its founder. `tests/unit/history.test.ts`
+      has the wording; `tests/e2e/history1938.spec.ts` the rows in the panel.
+    - [ ] 3.12b The rows that say the reverse, and the land that goes over. First find
+      which emit makes "Turkey broke away from Free Bursa" (seed 6021, 14 years): every
+      `RevoltSpawned` is emitted with a = the rebels, b = the holder, and the sentence is
+      "{a} broke away from {b}"; `revolt()` uses the same kind where an area rises and joins
+      rebels that live next to it (seed 1, ten years: "Free Barcelona broke away from France"
+      twice). Then the 252 rows of ten years of seed 1 that read "Land of X went over to Y":
+      a peace emits no `LandCeded` (`war.ts`), so what they follow is to be counted (a death,
+      a revolt to the core nation, a revival) before anything is folded. A fold is of the
+      rows the worker sends, not of the state.
+    - [ ] 3.12c The ticker: the major events (war, peace, a capital taken, a nation's death or
+      return) as they happen, at the bottom left, read from the history log (the view's event
+      queue drops records at Max speed); a click on a row flies the camera to its place (the
+      worker gives a row without one the defender's capital). AT: the e2e of this task.
+    - [ ] 3.12d Sound: a few cues made in code, the cue of an event from a function that a
+      unit test can ask; a volume and a mute in the settings, kept. PARITY row 79. Ticks 3.12.
+  For the review pass after 3.12 (found in 3.12a, not mended there): `tests/helpers/
+  aiSweep.ts` asks that a founded nation's name not match `/^Free state d+$/`, a `\d` that
+  lost its backslash; 29 alliances were gone after ten years of seed 1 and 15 rows said so
+  (a nation's death takes it out of its alliance with no row); "Mexico joined the Coalition
+  of Mexico" is the founder's own row.
   **PLAN 3.8 to 3.12 are the critic's third report (ADR-177).** They are numbered tasks and
   count toward the next review pass. Their order is not the critic's (R3-B4, B2, B5, B3,
   B6): the three that change the world's state or its cost come before the two whose tests

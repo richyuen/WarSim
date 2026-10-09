@@ -11420,3 +11420,45 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `npm run check` (a numbered task ticked: the whole e2e suite), three runs: the
   two above, and a third on the specs as they now are, on whose green this commit is made.
 - **Next:** PLAN 3.12.
+
+## 2026-10-08 — PLAN 3.12a: no history row shows an id (ADR-208)
+
+- **Start of the iteration:** `npm run check` on the clean tree: nothing to run, green.
+  `npm run critic:due`: not due. PLAN 3.12 (the critic's R3-B6) split into four causes, a
+  to d, in PLAN.md; this is the first.
+- **Cause.** The worker named an alliance from the living alliances; one that dissolved
+  read "#id" in every row of it from then on. A Major Battle was "#id" always.
+- **Done:** `Alliance.founder` and `Alliances.past` in the state; the rows out of
+  `server.ts` into `src/worker/historyRows.ts`; the sentence out of `HistoryPanel.tsx` into
+  `src/ui/historyText.ts`; `en.json`: "the {name}", "{name} of {founder}", "an alliance",
+  "the major battle near {city}", "a major battle", and the sentences of a dissolved
+  alliance and of a Major Battle's start and end, with a `.none` each for the battle.
+- **Tests:** `tests/unit/history.test.ts` (10, six of them new: the wording kind by kind,
+  no `#\d` or brace in any kind's sentence with or without names, the rows of a game with
+  an alliance left by all and a battle begun and ended, a save from before);
+  `tests/helpers/aiSweep.ts`: the history of ten years, each row rendered, none with
+  `#\d+`, each alliance row with a name and a founder (seed 1 run by hand: green);
+  `tests/e2e/history1938.spec.ts` (a second test: a made alliance and the Baltic Entente
+  left by their members, five sentences in the panel, the filter "Alliance dissolved").
+- **Run by hand** (a part, ADR-87): `history1938` and `godUi1938`, `--project chromium`, 8
+  tests, green; `history1938` again with `EVIDENCE=1` (its old picture
+  `docs/evidence/1.34/history.png` put back).
+- **Seen:** seed 1, ten years, 1,813 rows: 125 joined, 17 left, 15 dissolved, 8 unions,
+  140 battles begun and 140 ended; the sentences are in ADR-208. Pictures:
+  `docs/evidence/3.12/a-history-dissolved.png`, looked at (the panel filtered to two rows,
+  "The Baltic Entente was dissolved", "The Defensive Pact of Sweden was dissolved"; the war
+  banners are below the panel and not over it at this size); `a-history-all.png`, looked
+  at (30 rows of a month: "Latvia joined the Defensive Pact of Estonia", "The major battle
+  near Salzburg was won by Italy", "A major battle began near Iași"; no id in any).
+- **The pin:** `8f937408` to `e05beda3` (what the state records; no rule).
+- **Learned:** a test cannot import a `.tsx` (`tsc -b` of `tests/` has no `--jsx`): what a
+  test words must be in a `.ts`. The figures above are from a script of the same calls as
+  the sweep's, not from the sweep's own output.
+- **Found, not mended** (a line under PLAN 3.12 for the review pass): `aiSweep.ts` has
+  `/^Free state d+$/` (a `\d` without its backslash); a nation's death takes it out of
+  its alliance with no row (29 past, 15 rows); "Mexico joined the Coalition of Mexico".
+- **Performance:** not measured: the state gains one small list, read by no system.
+- **Not done:** no sweep (ADR-58).
+- **Gate:** `npm run check` (code and a sim input: the 10-year sweep tests; a part: the
+  changed spec file).
+- **Next:** PLAN 3.12b.

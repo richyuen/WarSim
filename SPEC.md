@@ -2105,9 +2105,13 @@ on screen.
 - **History log** (implemented PLAN 1.34a):
   - `src/sim/history.ts`: state, saved as `history.rows`. Every emitted event of a
     `HISTORY_KINDS` kind is recorded on emit.
-  - The worker resolves names per `HISTORY_ROLES` (`history` request).
+  - The worker resolves names per `HISTORY_ROLES` (`history` request,
+    `src/worker/historyRows.ts`). No row shows an id (PLAN 3.12a, ADR-208): an alliance has
+    its name, alive or dissolved (`Alliances.past`), and its founder's (`Alliance.founder`,
+    the row's `of`); a Major Battle the city it began near.
   - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
-    (RFC 4180) and JSON export of the filtered rows.
+    (RFC 4180) and JSON export of the filtered rows. The sentence of a row is
+    `src/ui/historyText.ts`.
 - **History log**: wars, peace, battles, Major Battles, city captures, revolts,
   collapses, revivals, nukes. Filterable by type, nation and date, and exportable to CSV/JSON.
 - **Title screen** (implemented PLAN 1.43a, `src/ui/TitleScreen.tsx`, `src/app/main.tsx`) [ADR-60]:

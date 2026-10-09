@@ -76,3 +76,8 @@ export function t(key: MessageKey, params?: Record<string, string | number>): st
   if (!params) return msg;
   return msg.replace(/\{(\w+)\}/g, (m, name: string) => (name in params ? String(params[name]) : m));
 }
+
+/** Display name of an i18n key, or of a '=' + literal name (spawned nations). */
+export function displayName(key: string): string {
+  return key.startsWith('=') ? key.slice(1) : t(key as MessageKey);
+}

@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-208 · 2026-10-08 · accepted — The state keeps the name and the founder of an alliance that dissolved; no history row shows an id (PLAN 3.12a, critic R3-B6)
+
+- **Context.** The critic's third report: "#43 dissolved", "Denmark left #43". The history
+  log is rows of numbers (`[tick, kind, a, b, x, y]`), and the worker gave an alliance's id
+  its name out of `world.alliances.list`. An alliance that dissolved is taken off that list,
+  so every row of it (joined, left, dissolved, union) fell back to "#id" from then on. A
+  Major Battle had no name at all: "Major battle #12 began near Lyon", "Major battle #12 was
+  won by Germany".
+- **Decision.**
+  - `Alliance.founder`: its first leader, never changed. `Alliances.past`: `{ id, nameKey,
+    founder }` of each alliance that dissolved, pushed in `leave()`. Both are in
+    `alliances.json`. A save from before loads with the leader for the founder and nothing
+    past; its old rows of dissolved alliances read "an alliance".
+  - `src/worker/historyRows.ts` (out of `server.ts`, a function of the world and two name
+    functions, so a test can call it): an alliance's name from the living and the past, the
+    founder's name in the row's new field `of`, and for a Major Battle the city of the
+    battle's `MajorBattleStarted` row, at its end too.
+  - `src/ui/historyText.ts` (out of `HistoryPanel.tsx`: a `.tsx` cannot be imported by the
+    tests' typecheck): "the Defensive Pact of Sweden" for `alliance.defensive` and
+    `alliance.coalition`, of which a game has many, "the Baltic Entente" for a name of the
+    scenario's; "the major battle near Lyon"; a kind with a sentence `history.<Kind>.none`
+    has it where b is nobody ("… ended with no winner", "A major battle began"). The first
+    letter of a row is a capital. `displayName` moved to `ui/i18n` and is still exported by
+    `NationPanel.tsx`.
+- **Why the founder and not the leader.** The leader changes when the leader leaves, and
+  every earlier row of the alliance would change its wording with it. Why a name at all
+  beside "Defensive Pact": seed 1 has 29 alliances gone and 16 alive after ten years, all
+  but the scenario's with one of two names.
+- **Why state and not the log.** No row has the name: `AllianceJoined` has the nation and
+  the id. The name of a made alliance could be guessed from the id (the scenario's come
+  first), which a God Mode alliance with another name breaks.
+- **The pin.** `8f937408` to `e05beda3`: `alliances.json` has `founder` in each alliance
+  and `past`. No rule reads either. That the game is otherwise the same was not measured by
+  a hash without them.
+- **Not done.** The nation panel and the alliances map mode still show "Defensive Pact"
+  alone. A nation's death takes it out of its alliance with no row (`removeNation`): seed 1
+  has 29 alliances past and 15 "dissolved" rows. The CSV and JSON exports keep the ids in
+  their `a` and `b` columns, beside the names and the text.
+- **Seen.** Seed 1, ten years, 1,813 rows, as the panel words them: "Norway left the
+  Defensive Pact of Finland", "The Defensive Pact of Finland was dissolved", "The Comintern
+  became a union under Soviet Union", "Mexico joined the Coalition of Mexico" (the
+  founder's own row), "The major battle near … was won by Italy".
+  `docs/evidence/3.12/a-history-dissolved.png`, `a-history-all.png`.
+
 ### ADR-207 · 2026-10-08 · accepted — A tag does not take a place by its block that is nearer to another block than that block's own tag (PLAN 3.11f1)
 
 - **Context.** `tags1938` failed since PLAN 3.11c4: "T2, 150 m/px: formation 1055's tag has

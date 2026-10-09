@@ -86,3 +86,39 @@ test('history log: filters reduce rows, CSV and JSON exports match the filtered 
   await page.getByTestId('history-nation').selectOption('');
   await page.screenshot({ path: path.join(ev, 'history.png') });
 });
+
+// PLAN 3.12a (the critic's R3-B6: "#43 dissolved", "Denmark left #43"): the rows of an alliance
+// name it, after it dissolved too, and a made alliance is told from the others by its founder.
+test('history rows name their alliance, dissolved or not, and none shows an id', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const tag = (t: string): number => NATIONS_1938.findIndex((n) => n.tag === t) + 1;
+  const [SWE, NOR, EST, LAT] = ['SWE', 'NOR', 'EST', 'LAT'].map(tag) as [number, number, number, number];
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => window.__warsim?.hud.stats.value !== null && window.__warsim?.hud.stats.value !== undefined, null, { timeout: 60_000 });
+  // A made alliance and one of the scenario's, each left by all its members.
+  await page.evaluate(({ s, n }) => window.__warsim!.sim.command({ kind: 'createAlliance', leader: s, members: [n], nameKey: 'alliance.defensive' }), { s: SWE, n: NOR });
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  for (const n of [NOR, EST, LAT]) await page.evaluate((nation) => window.__warsim!.sim.command({ kind: 'leaveAlliance', nation }), n);
+  await page.evaluate(() => window.__warsim!.sim.step(24 * 30));
+  const rows = await page.evaluate(() => window.__warsim!.sim.history());
+  const gone = rows.filter((r) => r.kind === EventKind.AllianceDissolved);
+  expect(gone.map((r) => r.an)).toEqual(expect.arrayContaining(['alliance.defensive', 'alliance.baltic_entente']));
+
+  await page.getByTestId('history-btn').click();
+  await expect(page.getByTestId('history-panel')).toBeVisible();
+  await expect.poll(() => count(page), { timeout: 20_000 }).toBe(Math.min(rows.length, 400));
+  const texts = (await page.getByTestId('history-row').allInnerTexts()).map((s) => s.replace(/\s+/g, ' '));
+  for (const want of ['Norway joined the Defensive Pact of Sweden', 'Norway left the Defensive Pact of Sweden', 'The Defensive Pact of Sweden was dissolved', 'Estonia left the Baltic Entente', 'The Baltic Entente was dissolved']) {
+    expect(texts.filter((s) => s.endsWith(want)), want).toHaveLength(1);
+  }
+  for (const s of texts) expect(s).not.toMatch(/#\d/);
+
+  await page.getByTestId('history-kind').selectOption(String(EventKind.AllianceDissolved));
+  await expect.poll(() => count(page)).toBe(gone.length);
+  const ev = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.12') : info.outputPath();
+  mkdirSync(ev, { recursive: true });
+  await page.screenshot({ path: path.join(ev, 'a-history-dissolved.png') });
+  await page.getByTestId('history-kind').selectOption('');
+  await page.screenshot({ path: path.join(ev, 'a-history-all.png') });
+});

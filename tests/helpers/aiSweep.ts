@@ -7,6 +7,8 @@ import { FLAG_H, FLAG_W, foundedFlag, specToPixels } from '../../src/shared/flag
 import { foundedName, provinceLabel } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { historyText } from '../../src/ui/historyText';
+import { historyRows } from '../../src/worker/historyRows';
 import { deadLand } from './deadLand';
 import { assets1938, earthAdmin1 } from './earth';
 import { realmWars } from './realmWars';
@@ -22,6 +24,9 @@ import { strayNaN } from './stateNumbers';
  *
  * PLAN 3.9 AT (the critic's R3-B2): no revolt of a month's first hour hands a nation more land
  * than a region may hold (`revoltLand`).
+ *
+ * PLAN 3.12 AT (the critic's R3-B6): no row of the history of those years shows an id ("#43
+ * dissolved", "Denmark left #43"), and every row of an alliance names it.
  *
  * PLAN 2.15 AT (the critic's R2-B6): every nation founded in those years has an origin, a name
  * that is not "Free state N", and a flag of two colours or more with its own colour on it.
@@ -100,6 +105,20 @@ export function aiSweep(seed: number): void {
   expect(founded, `seed ${seed}: nations founded in ten years`).toBeGreaterThan(0);
   expect(revoltsSeen, `seed ${seed}: months whose revolts were measured`).toBeGreaterThan(0);
   console.log(`seed ${seed}: ${founded} nations founded in ten years, each with a name and a flag`);
+  // The history as the panel has it (PLAN 3.12a): no row shows an id, no alliance is unnamed.
+  const rows = historyRows(s.world, (id) => NATIONS_1938[id - 1]?.nameKey ?? `=${foundedName(id, nc.origin[id]!, labels)}`, (c) => `City ${String.fromCharCode(65 + (c % 26))}`);
+  const ofAlliance: number[] = [EventKind.AllianceLeft, EventKind.AllianceDissolved, EventKind.AllianceJoined, EventKind.UnionFormed];
+  let allianceRows = 0;
+  for (const r of rows) {
+    const text = historyText(r);
+    expect(text, `seed ${seed}, tick ${r.tick}: a history row with an id`).not.toMatch(/#\d+/);
+    if (!ofAlliance.includes(r.kind)) continue;
+    allianceRows++;
+    expect(text, `seed ${seed}, tick ${r.tick}: a row of an alliance without its name`).not.toMatch(/an alliance/i);
+    expect(r.of, `seed ${seed}, tick ${r.tick}: "${text}", its founder`).not.toBe('');
+  }
+  expect(allianceRows, `seed ${seed}: history rows of alliances`).toBeGreaterThan(0);
+  console.log(`seed ${seed}: ${rows.length} history rows, ${allianceRows} of alliances (${rows.filter((r) => r.kind === EventKind.AllianceDissolved).length} dissolved), none with an id`);
   const wars = counts['WarDeclared'] ?? 0;
   const peace = counts['PeaceSigned'] ?? 0;
   const alliance = (counts['AllianceJoined'] ?? 0) + (counts['AllianceLeft'] ?? 0) + (counts['AllianceDissolved'] ?? 0);

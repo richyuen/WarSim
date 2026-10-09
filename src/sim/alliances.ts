@@ -1,7 +1,8 @@
 /**
  * Alliances and unions (SPEC §3.5, PLAN 1.17): one alliance per nation, a leader, unity 0..100
  * and per-member loyalty 0..100; guarantees (a guarantor joins wars against its target).
- * Saved as one JSON section; `allianceOf` is a derived lookup.
+ * Saved as one JSON section; `allianceOf` is a derived lookup. An alliance that dissolved stays
+ * in `past` with its name and its founder: the history log has rows of it (PLAN 3.12a).
  */
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
@@ -10,6 +11,8 @@ export interface Alliance {
   id: number;
   nameKey: string;
   leader: number;
+  /** Its first leader: what tells one "Defensive Pact" from another. */
+  founder: number;
   /** Members including the leader, in joining order. */
   members: number[];
   /** Loyalty per member (same order as `members`). */
@@ -19,6 +22,13 @@ export interface Alliance {
   union: boolean;
 }
 
+/** What is kept of an alliance that dissolved. */
+export interface PastAlliance {
+  id: number;
+  nameKey: string;
+  founder: number;
+}
+
 export interface Guarantee {
   guarantor: number;
   target: number;
@@ -26,6 +36,7 @@ export interface Guarantee {
 
 export class Alliances implements Stateful {
   list: Alliance[] = [];
+  past: PastAlliance[] = [];
   guarantees: Guarantee[] = [];
   nextId = 1;
   private byNation = new Map<number, Alliance>();
@@ -48,7 +59,7 @@ export class Alliances implements Stateful {
   create(leader: number, members: number[], nameKey: string, unity: number, loyalty = 60): Alliance | null {
     const all = [leader, ...members.filter((m) => m !== leader)];
     if (all.some((m) => this.byNation.has(m))) return null;
-    const a: Alliance = { id: this.nextId++, nameKey, leader, members: all, loyalty: all.map(() => loyalty), unity, union: false };
+    const a: Alliance = { id: this.nextId++, nameKey, leader, founder: leader, members: all, loyalty: all.map(() => loyalty), unity, union: false };
     this.list.push(a);
     this.changed();
     return a;
@@ -74,7 +85,10 @@ export class Alliances implements Stateful {
     a.loyalty.splice(i, 1);
     if (a.leader === n && a.members.length > 0) a.leader = a.members[0]!;
     const dissolved = a.members.length < 2;
-    if (dissolved) this.list = this.list.filter((x) => x !== a);
+    if (dissolved) {
+      this.list = this.list.filter((x) => x !== a);
+      this.past.push({ id: a.id, nameKey: a.nameKey, founder: a.founder });
+    }
     this.changed();
     return { alliance: a, dissolved };
   }
@@ -90,13 +104,16 @@ export class Alliances implements Stateful {
   }
 
   serialize(): Section[] {
-    const json = JSON.stringify({ list: this.list, guarantees: this.guarantees, nextId: this.nextId });
+    const json = JSON.stringify({ list: this.list, past: this.past, guarantees: this.guarantees, nextId: this.nextId });
     return [{ name: 'alliances.json', dtype: 'u8', data: new TextEncoder().encode(json) }];
   }
 
   deserialize(sections: readonly Section[]): void {
-    const p = JSON.parse(new TextDecoder().decode(takeSection(sections, 'alliances.json', 'u8'))) as { list: Alliance[]; guarantees: Guarantee[]; nextId: number };
-    this.list = p.list;
+    const p = JSON.parse(new TextDecoder().decode(takeSection(sections, 'alliances.json', 'u8'))) as { list: Alliance[]; past?: PastAlliance[]; guarantees: Guarantee[]; nextId: number };
+    // A save from before PLAN 3.12a: the founder is not known (the leader stands for it), and
+    // the alliances that dissolved are not.
+    this.list = p.list.map((a) => ({ ...a, founder: a.founder ?? a.leader }));
+    this.past = p.past ?? [];
     this.guarantees = p.guarantees;
     this.nextId = p.nextId;
     this.changed();

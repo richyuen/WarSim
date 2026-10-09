@@ -17,8 +17,7 @@ import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/event
 import { frameOf, symbolOf, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
-import { HISTORY_ROLES, type HistoryRole, type HistoryRow } from '../shared/history';
-import { HISTORY_STRIDE } from '../sim/history';
+import { historyRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import {
@@ -711,22 +710,9 @@ export class SimServer {
   /** The history log with a/b names resolved (PLAN 1.34a), as JSON `HistoryRow[]`. */
   private historyRows(): Uint8Array {
     const world = this.requireSim().world;
-    const rows = world.history.rows;
-    const alliances = new Map(world.alliances.list.map((a) => [a.id, a.nameKey]));
     const cc = world.cities.cols;
-    const name = (role: HistoryRole, v: number): string => {
-      if (role === 'nation') return v !== 0 && world.nations.has(v) ? this.nameOf(v) : '';
-      if (role === 'alliance') return alliances.get(v) ?? `=#${v}`;
-      if (role === 'city') return v !== 0 && world.cities.has(v) ? `=${cities1938.cities[cc.def[v]!]?.name ?? world.cityNames.get(v) ?? ''}` : '';
-      return '';
-    };
-    const out: HistoryRow[] = [];
-    for (let i = 0; i < rows.length; i += HISTORY_STRIDE) {
-      const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
-      const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
-      out.push({ tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b) });
-    }
-    return new TextEncoder().encode(JSON.stringify(out));
+    const city = (v: number): string => cities1938.cities[cc.def[v]!]?.name ?? world.cityNames.get(v) ?? '';
+    return new TextEncoder().encode(JSON.stringify(historyRows(world, (id) => this.nameOf(id), city)));
   }
 
   /**

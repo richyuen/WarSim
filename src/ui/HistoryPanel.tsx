@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'preact/hooks';
 import { dateOfTick } from '../shared/calendar';
-import { filterHistory, HISTORY_ROLES, kindName, NO_FILTER, toCsv, toExport, type HistoryFilter, type HistoryRow } from '../shared/history';
+import { filterHistory, kindName, NO_FILTER, toCsv, toExport, type HistoryFilter, type HistoryRow } from '../shared/history';
 import { t, type MessageKey } from './i18n';
+import { historyText } from './historyText';
 import { displayName } from './NationPanel';
 
 const SHOWN = 400;
@@ -15,13 +16,6 @@ export interface HistoryPanelProps {
   /** Nations for the nation filter (living and dead). */
   nations: { id: number; name: string }[];
   onClose: () => void;
-}
-
-/** The rendered sentence of a row (i18n `history.<Kind>` with {a} and {b}). */
-export function historyText(r: HistoryRow): string {
-  const [ra, rb] = HISTORY_ROLES[r.kind] ?? ['number', 'number'];
-  const part = (role: string, v: number, name: string): string => (role === 'battle' ? `#${v}` : role === 'number' ? String(v) : name ? displayName(name) : t('history.nobody'));
-  return t(`history.${kindName(r.kind)}` as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn) });
 }
 
 function download(name: string, type: string, text: string): void {

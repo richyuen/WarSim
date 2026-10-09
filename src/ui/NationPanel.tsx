@@ -2,12 +2,9 @@ import { useState } from 'preact/hooks';
 import type { NationStat, TechInfo } from '../shared/protocol';
 import { ActionsTab, type ActionsTabProps } from './ActionsTab';
 import { GodTab, type GodTabProps } from './GodTab';
-import { t, type MessageKey } from './i18n';
+import { displayName, t, type MessageKey } from './i18n';
 
-/** Display name of an i18n key, or of a '=' + literal name (spawned nations). */
-export function displayName(key: string): string {
-  return key.startsWith('=') ? key.slice(1) : t(key as MessageKey);
-}
+export { displayName };
 
 const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
 const num = (v: number): string => Math.round(v).toLocaleString('en-US');
