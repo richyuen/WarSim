@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ALL_STAGES, changedFiles, gatedTrees, planE2e, planGate, tickedTasks, worktreeTree } from '../../tools/gate/check';
 import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
-import { archive, MOVED } from '../../tools/plan/archive';
+import { archive, LEDGER, MOVED } from '../../tools/plan/archive';
 
 // ADR-48, ADR-49: the gate is sized to what changed since HEAD. ADR-55: a clean tree that the
 // gate has already passed runs nothing. ADR-59: the critic comes back once per phase, when a
@@ -167,30 +167,44 @@ describe('the archive of the plan (ADR-231)', () => {
     '  AT: a test.',
   ];
 
-  it('moves the done tasks and the done parts of an open task, and leaves their first lines', () => {
+  // ADR-235: the first line of a numbered task that is done goes to the plan's last section,
+  // which an iteration does not read; that of a done part stays in its open task.
+  it('moves the done tasks and the done parts of an open task; the first lines of the tasks to the last section', () => {
     const r = archive(plan);
     expect(r.moved).toBe(3);
+    expect(r.listed).toBe(3);
     expect(r.plan).toEqual([
       '## Phase 3',
       '',
-      `- [x] 3.1 Tanks.${MOVED}`,
-      '',
-      '- [x] 3.2 One line.',
-      `- [x] 3.3 Phase 3 review: all of it,${MOVED}`,
       '- [ ] 3.4R Review pass.',
       '  Its text.',
       `  - [x] 3.4Ra Done part.${MOVED}`,
       ...plan.slice(13),
+      '',
+      LEDGER,
+      '',
+      expect.stringContaining('Not read at the start of an iteration'),
+      '',
+      `- [x] 3.1 Tanks.${MOVED}`,
+      '- [x] 3.2 One line.',
+      `- [x] 3.3 Phase 3 review: all of it,${MOVED}`,
+      '',
     ]);
     expect(r.done).toEqual(['## Phase 3', '', ...plan.slice(2, 5), '', ...plan.slice(7, 9), '', 'Of 3.4R (open in PLAN.md):', '', ...plan.slice(11, 13), '']);
     // What the gate and the critic's count read is as it was, and a second run moves nothing.
     expect(tickedTasks(r.plan.join('\n'))).toEqual(tickedTasks(plan.join('\n')));
     expect(tickedReviews(r.plan.join('\n'))).toEqual(['3.3']);
-    expect(archive(r.plan)).toEqual({ plan: r.plan, done: [], moved: 0 });
+    expect(archive(r.plan)).toEqual({ plan: r.plan, done: [], moved: 0, listed: 0 });
+    // A task ticked later joins the section at its end.
+    const later = archive(r.plan.map((l) => (l === '- [ ] 4.1 Sea zones.' ? '- [x] 4.1 Sea zones.' : l)));
+    expect([later.moved, later.listed]).toEqual([1, 1]);
+    expect(later.plan.slice(-5)).toEqual([`- [x] 3.1 Tanks.${MOVED}`, '- [x] 3.2 One line.', `- [x] 3.3 Phase 3 review: all of it,${MOVED}`, `- [x] 4.1 Sea zones.${MOVED}`, '']);
+    expect(later.plan).not.toContain('  AT: a test.');
   });
 
   it('PLAN.md itself has nothing left to move: run `npm run plan:archive` after a tick', () => {
     const text = readFileSync(path.resolve(import.meta.dirname, '../../PLAN.md'), 'utf8');
-    expect(archive(text.split(/\r?\n/)).moved).toBe(0);
+    const r = archive(text.split(/\r?\n/));
+    expect([r.moved, r.listed]).toEqual([0, 0]);
   });
 });

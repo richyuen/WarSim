@@ -12673,3 +12673,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   stage 17 tests in 12 files (187.5 s), build, parity 47.5%.
 - **Next:** PLAN 3.12Rsc (the pressure of `territorySystem`), then the two `looping=0`
   specs by hand; 3.12Rsd, 3.12Rse.
+
+## 2026-10-09 — The plan is read to Phase 7; the first lines of done tasks are its last section (ADR-235, the user's decision)
+
+- **Why:** read whole (ADR-231), PLAN.md cost about 17,000 tokens an iteration; 32 KB of
+  its 67 were Phase 7 and 18 KB the first lines kept for the gate.
+- **Done:** `npm run plan:archive` moved 147 first lines of done tasks to the plan's last
+  section, "Done: the first lines", and writes that section from now on. The done parts
+  of an open task keep their first lines in it. The 147 ticked lines at the margin, the
+  85 numbered tasks, the four phase reviews and the 39 open boxes read the same before
+  and after.
+- **The rule** (PROMPT step 1, CLAUDE.md): read PLAN.md from its top to `## Phase 7`
+  (17.5 KB, 227 lines); Phase 7 when working there or adding a line under PLAN 1.42; the
+  last section never.
+- **Tests:** `gate.test.ts`, the two of the archive rewritten for the section (16 in the
+  file): a task ticked later joins it; PLAN.md has nothing to move and nothing to list.
+- **Next:** PLAN 3.12Rsc, as before.

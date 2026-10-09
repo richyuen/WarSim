@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-235 · 2026-10-09 · accepted — The first lines of done tasks are the plan's last section; an iteration reads the plan to Phase 7 (the user's decision)
+
+- **Context.** After ADR-231 PLAN.md was 67 KB and read whole, about 17,000 tokens an
+  iteration, where the search for the first open box had cost about 2,000. Of it 32 KB
+  were Phase 7 (the findings put off, the polish notes) and 18 KB the first lines of done
+  tasks, kept for the gate: neither is of use to an iteration of phases 3 to 6.
+- **Decision.** `npm run plan:archive` puts the first line of every numbered task that is
+  done under the plan's last heading, "Done: the first lines", in the order they were
+  done, and writes that section itself. The first lines of the done parts of an open task
+  stay in it: they show which letters are taken. PROMPT step 1: PLAN.md is read from its
+  top to `## Phase 7`; Phase 7 when the task is one of its own or a line goes under PLAN
+  1.42; the last section never.
+- **Why it is safe.** The gate (`tickedTasks`), `npm run critic:due` (`tickedReviews`) and
+  the test of the phase reviews match a line at the left margin wherever it is. The
+  reviews are ticked in the order of the phases, and the section keeps the order of the
+  ticks. Checked on the run: 147 ticked lines at the margin before and after, the 85
+  numbered tasks, the four phase reviews and the 39 open boxes the same.
+- **What is read now:** 17.5 KB (227 lines), of which the open review 3.12R is 11 KB.
+- **Tests.** `gate.test.ts`: the made plan with its last section, a second run that changes
+  nothing, a task ticked later that joins the section; PLAN.md itself with nothing to move
+  and nothing to list.
+- **What it costs.** A phase's heading with every task done stands over nothing (phases 0
+  to 2). The order of the done tasks within the plan is in the archive only.
+
 ### ADR-234 · 2026-10-09 · accepted — The supply's reach about a formation keeps to the edges of a map that does not loop (PLAN 3.12Rsb)
 
 - **Context.** The second part of PLAN 3.12Rs (ADR-233): a formation on a cell that is not

@@ -133,9 +133,12 @@ added without code changes.
   It holds what is still to do (added 2026-10-09, ADR-231, the user's
   decision; it had grown to 528 KB and was no longer read): a task that is
   done keeps its first line there, marked `[…]`, and its text is in
-  `docs/PLAN_DONE.md`. Never write a task's text back from there, never
+  `docs/PLAN_DONE.md`. The first lines of the numbered tasks are in the
+  plan's last section, "Done: the first lines" (ADR-235); those of the done
+  parts of an open task stay in it, so that the next part's letter is seen.
+  Never write a task's text back from there, never
   delete a first line (the gate and `npm run critic:due` read the ticks),
-  and never edit `docs/PLAN_DONE.md` by hand. What a done task leaves to be
+  and never edit that section or `docs/PLAN_DONE.md` by hand. What a done task leaves to be
   done goes under the open task that will do it, not into the done one.
 - `PROGRESS.md`: append-only log: what you did, learned, gotchas.
 - `BLOCKERS.md`: what you're stuck on and what you tried.
@@ -157,8 +160,12 @@ added without code changes.
 # EVERY ITERATION
 
 1. Read SPEC.md, PLAN.md, the tail of PROGRESS.md, BLOCKERS.md, and
-   `critic/CRITIC_REPORT.md` if it exists. PLAN.md is read whole. Do not
-   read `docs/PLAN_DONE.md`: search it when a comment or an ADR names a
+   `critic/CRITIC_REPORT.md` if it exists. PLAN.md is read from its top to
+   the heading `## Phase 7` (about 18 KB: the open task and the phases
+   ahead; changed 2026-10-09, ADR-235, the user's decision). Phase 7 is
+   read when the task is one of its own or a line is to be added under
+   PLAN 1.42; the last section, "Done: the first lines", is not read. Do
+   not read `docs/PLAN_DONE.md`: search it when a comment or an ADR names a
    task that is done.
 2. Run the full test/lint/typecheck/build suite. If anything is broken,
    fixing it is this iteration's only task.
@@ -201,8 +208,9 @@ added without code changes.
 6. Check performance against the budget when touching rendering or sim.
 7. Commit with a clear message; tick the task; append to PROGRESS.md; run
    `npm run parity` and update PARITY.md rows you touched. After the tick,
-   `npm run plan:archive` (ADR-231): it moves what is done to
-   `docs/PLAN_DONE.md`, in the same commit. Push every commit
+   `npm run plan:archive` (ADR-231, ADR-235): it moves what is done to
+   `docs/PLAN_DONE.md` and a done task's first line to the plan's last
+   section, in the same commit. Push every commit
    (`git push`; added 2026-10-05, ADR-107, the user's decision): a push to
    `main` builds the game and puts it on GitHub Pages.
 8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move

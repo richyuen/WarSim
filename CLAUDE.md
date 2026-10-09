@@ -11,9 +11,10 @@ on source and writes only to `critic/`.
 
 There is no memory between sessions. Read these files:
 - `SPEC.md`: the design.
-- `PLAN.md`: tasks and acceptance tests, those still to do. Read it whole. A done task keeps
-  its first line there (`[…]`); its text is in `docs/PLAN_DONE.md`, which is searched, not read
-  (ADR-231).
+- `PLAN.md`: tasks and acceptance tests, those still to do. Read it from the top to
+  `## Phase 7`; Phase 7 only when working there or adding a line under PLAN 1.42; its last
+  section ("Done: the first lines", the ticks the gate reads) never. The text of a done task is
+  in `docs/PLAN_DONE.md`, which is searched, not read (ADR-231, ADR-235).
 - `PROGRESS.md`: the log; read the tail.
 - `BLOCKERS.md`.
 - `DECISIONS.md`.
@@ -35,7 +36,8 @@ There is no memory between sessions. Read these files:
 - `npm run typecheck`: `src/`, `tools/` and `tests/` (a bare `tsc --noEmit -p .` skips `tests/`; a
   type error in a spec then shows only as Playwright's "webServer was not able to start").
 - `npm run plan:archive`: after a tick, moves the done tasks and parts of `PLAN.md` to
-  `docs/PLAN_DONE.md`, in the same commit. A unit test fails while something is left to move.
+  `docs/PLAN_DONE.md` and a done task's first line to the plan's last section, in the same
+  commit. A unit test fails while something is left to move.
 - `npm run critic:due`: whether a critic run is due (PROMPT.md step 2a): no report yet, or a
   phase review ticked in PLAN.md since the report. One run per phase (ADR-59).
 - `npm run dev`: title screen at `/`; the 1938 world at `/?scenario=1938`, the toy world at
