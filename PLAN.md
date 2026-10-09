@@ -272,6 +272,13 @@ quick sweep as a smoke test.
       `movement.ts` (363, 441: `stepOpen` lets no step over the seam of a map with edges);
       the world's build (`oob.ts`, `ownership.ts`, `provinces.ts`, `terrain.ts`: a
       scenario's own map, and `loopingMap` asks for a map that wraps, `schemas.ts:689`).
+      Also, from the review of 3.12Rsa: a block's slots beside the first or last column
+      (`elements.ts`, `deployOf`, `elementPlace`: a formation at x = 0.3 with a block five
+      slots wide has places at x < 0; nothing folds them, and what the snapshot, the fires
+      and the page do with a place off the map was not looked at). The step's fold of
+      `movement.ts` has its reason in that file's head: a kept path's step over "the seam
+      of a map that loops no more" is not taken (ADR-171); the fold of line 444
+      (`x < 0 ? x + w`) is then reached on a map that loops only. Read, not run.
       AT: a test for each that is mended, failing first; a line of reason for each left.
   - [ ] 3.12Rj Last, after 3.12Rk to 3.12Rs: a line under PLAN 1.42 for the land that rises
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has

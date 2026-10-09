@@ -12639,3 +12639,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests in 134 files (118.0 s), the ten-year stage 17 tests in 12 files (185.0 s), build,
   parity 47.5%.
 - **Next:** PLAN 3.12Rsb (the reach of `supplySystem`), then 3.12Rsc, 3.12Rsd, 3.12Rse.
+- **Its record, after a review of the commit** (`5337e57`): PARITY row 69 (the looping map)
+  said since 2026-10-03 that pathing, territory and the operational AI do not cross the
+  seam; a dated line says what was and is so. Two notes under PLAN 3.12Rse: a block's
+  slots beside the first column have places at x < 0 (not folded, not looked at), and the
+  reason the step's fold of `movement.ts` is left (ADR-171, in that file's head). The
+  specs with `looping=0` games are to run after 3.12Rsc, not only at the end. Gate:
+  documents only, parity (`.cache/gate-rsa2.log`).
