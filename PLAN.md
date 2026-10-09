@@ -5524,7 +5524,7 @@ quick sweep as a smoke test.
       dead too; no state, the pin unmoved). `nationNames.test.ts` and `workerLabels.test.ts`
       (failed first), and `aiSweep` on every day of ten years of three seeds: 2,221, 2,104
       and 2,385 days of 3,650 had namesakes (5, 3 and 4 at most), each now with its own name.
-  - [ ] 3.12Rh4 **A view 1,100 px wide at the UI sizes above 100%** (3.12Rh's pictures):
+  - [x] 3.12Rh4 **A view 1,100 px wide at the UI sizes above 100%** (3.12Rh's pictures):
     the bottom bar is 1,112 px at 115% and 1,254 px at 130% and runs off both sides (the
     pause button and the date are cut; since 3.12Rh1 the date is one line and the bar 989,
     1,135 and 1,281 px at 100, 115 and 130%, in any view); at 130% the History panel stands over the nation
@@ -5535,6 +5535,22 @@ quick sweep as a smoke test.
     under 90 rem begins 1 rem inside an open panel. `.history-panel` has 38 rem for it.
     AT: at 1,100 x 600 and each UI size offered there, every button of the bar is inside
     the view.
+    - Done 2026-10-09 (ADR-220): the least view is 64 rem (the bar at its widest map mode,
+      1,007.7 px at 100%, and 0.5 rem a side): 871, 1,024, 1,178 and 1,332 px at 85, 100,
+      115 and 130%. A size the window is too narrow for is disabled in Settings and not in
+      use; the choice is kept and returns in a wider window. At 1,100 px: 85 and 100%. A
+      played nation's label shrinks to an ellipsis and no button does. The History panel is
+      the view less 40 rem (it stood 12.6 px over the nation panel at 1,100 px and 100%
+      too: the panel's right edge is at 18.9 rem and 2 px), the banners the view less 39.
+      `ticker1938.spec.ts`, a fourth test and a line of the second, failed first;
+      `uiScale.test.ts`.
+  - [ ] 3.12Rh5 **The Settings panel in a view 600 px high** (3.12Rh4's picture, 1,100 x
+    600 at 100%): the panel is taller than its `max-height` of the view less 12 rem, its
+    last row ("Combat efficiency") runs out of its foot and "New game" stands under the war
+    banners. The panel scrolls or its foot is above the banners; the History and editor
+    panels, which share `.history-panel`, looked at with it.
+    AT: at 1,100 x 600 and 1,400 x 640, each UI size offered: "New game" can be brought
+    into the view and pressed, and nothing of the panel is drawn outside its box.
   - [ ] 3.12Ri The e2e suite's time, 19.5 min where it was about 10: each test's time in a
     gate's log of 2026-10-05 or 06 beside today's, before any run of the suite; the
     workers of `playwright.config.ts`. Whether the suite grew (`tankBattle1938`,

@@ -2176,8 +2176,9 @@ on screen.
   - While a nation's or a formation's panel is open on the left, the last two rows only,
     each of two lines at most (PLAN 3.12Rh, ADR-216): the panel is the view less 12.5 rem
     at most, which leaves the room of two rows of two lines at every UI size. The war
-    banners are as wide as the lesser of 60% of the view and the view less 36 rem: they
-    begin right of the ticker.
+    banners are as wide as the lesser of 60% of the view and the view less 39 rem: they
+    begin right of the ticker and of an open panel, whose right edge is at 18.9 rem and
+    2 px (PLAN 3.12Rh4).
   - At Max speed the ticker is a sample (counted, ADR-216): a message a second spans some
     380 hours, and 18% of the messages bring more than five major events. It stays the last
     five (PLAN 3.12Rh2, ADR-218): the History panel has every row, and the room beside a
@@ -2259,9 +2260,18 @@ on screen.
   `GameOptions` (`src/shared/gameOptions.ts`).
 - **QoL**: keyboard (WASD/arrows pan; +/-, numpad ± and Q/E zoom as in AoC; space pause, 1–5 speed), drag,
   wheel and touch pinch. Speed and pause persist. Autosave. Screenshot key (F2 → PNG).
-  UI size (rem scale). Unit-size setting. Looping map. Map size picker (PLAN 7.1b, ADR-43: the
+  UI size (rem scale; "The least view" below). Unit-size setting. Looping map. Map size picker (PLAN 7.1b, ADR-43: the
   sim is tuned in cells for M until its distances are km-based). Locale
   picker (en first; all strings through `t()`).
+- **The least view** (PLAN 3.12Rh4, ADR-220): the game is laid out for a view 64 rem wide
+  or more, the bottom bar's one line at its widest map mode with 0.5 rem a side: 871 px at
+  85%, 1,024 at 100%, 1,178 at 115%, 1,332 at 130% (`LEAST_VIEW_REM`). A UI size whose
+  least view is wider than the window is not offered (disabled in Settings) and the size
+  in use is the largest offered that is no larger than the one chosen; the choice is kept
+  and is in use again in a wider window. Below 871 px the size is 85% and the bar's ends
+  are cut. A played nation's label is the one item of the bar that shrinks (an ellipsis,
+  the text in its `title`). The History panel is the view less 40 rem at most: clear of a
+  panel on the left at the least view. The title screen keeps the size chosen.
 - **Seeds & randomisation**: seed field (shareable), random-seed button, options
   (randomise aggression, traits, starting gold, efficiency mode).
 

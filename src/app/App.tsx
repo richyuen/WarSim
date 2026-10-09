@@ -87,9 +87,10 @@ export function App({
       />
       {hud.showSettings.value ? (
         <SettingsPanel
-          uiScale={settings.uiScale.value}
+          uiScale={settings.uiApplied.value}
           unitScale={settings.unitScale.value}
           uiScales={UI_SCALES}
+          uiOffered={settings.uiOffered.value}
           unitScales={UNIT_SCALES}
           seed={seed.value}
           options={options.value}

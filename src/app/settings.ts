@@ -8,6 +8,11 @@ import type { MapView } from './MapView';
 import type { Sound } from './sound';
 
 export const UI_SCALES = [0.85, 1, 1.15, 1.3] as const;
+/**
+ * The narrowest view the game is laid out for, in rem: the bottom bar's one line at its widest
+ * map mode (62.98 rem in English) and 0.5 rem each side (PLAN 3.12Rh4, ADR-220).
+ */
+export const LEAST_VIEW_REM = 64;
 export const UNIT_SCALES = [0.5, 0.75, 1, 1.5, 2] as const;
 const KEY_UI = 'warsim.uiScale';
 export const VOLUMES = [0.25, 0.5, 0.75, 1] as const;
@@ -40,13 +45,29 @@ function store(key: string, v: number | string): void {
   }
 }
 
+/** The UI sizes a view of this width is laid out for; the smallest where it is narrower than every one's. */
+export function offeredUiScales(viewWidth: number): readonly number[] {
+  const fit = UI_SCALES.filter((s) => LEAST_VIEW_REM * 16 * s <= viewWidth);
+  return fit.length > 0 ? fit : [UI_SCALES[0]];
+}
+
+/** The size in use: the largest offered that is no larger than the one chosen. */
+export function appliedUiScale(chosen: number, viewWidth: number): number {
+  const offered = offeredUiScales(viewWidth);
+  return offered.filter((s) => s <= chosen).at(-1) ?? offered[0]!;
+}
+
 /** The persisted UI size where no game runs (the title screen, PLAN 1.43). */
 export function applyUiScale(): void {
   document.documentElement.style.fontSize = `${16 * load(KEY_UI, UI_SCALES, 1)}px`;
 }
 
 export class Settings {
+  /** The size chosen: kept when the view is too narrow for it, and in use again in a wider one. */
   readonly uiScale = signal(load(KEY_UI, UI_SCALES, 1));
+  /** The sizes the view is wide enough for, and the one in use (PLAN 3.12Rh4). */
+  readonly uiOffered = signal(offeredUiScales(window.innerWidth));
+  readonly uiApplied = signal(appliedUiScale(this.uiScale.value, window.innerWidth));
   readonly unitScale = signal(load(KEY_UNIT, UNIT_SCALES, 1));
   readonly volume = signal(load(KEY_VOLUME, VOLUMES, 0.5));
   readonly muted = signal(loadFlag(KEY_MUTED));
@@ -56,6 +77,7 @@ export class Settings {
     private readonly sound: Sound | null = null,
   ) {
     this.apply();
+    window.addEventListener('resize', () => this.apply());
   }
 
   setUiScale(v: number): void {
@@ -85,7 +107,9 @@ export class Settings {
   }
 
   private apply(): void {
-    document.documentElement.style.fontSize = `${16 * this.uiScale.value}px`;
+    this.uiOffered.value = offeredUiScales(window.innerWidth);
+    this.uiApplied.value = appliedUiScale(this.uiScale.value, window.innerWidth);
+    document.documentElement.style.fontSize = `${16 * this.uiApplied.value}px`;
     if (this.sound) {
       this.sound.volume = this.volume.value;
       this.sound.muted = this.muted.value;

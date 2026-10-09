@@ -12068,3 +12068,38 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No sweep** (ADR-58).
 - **Gate:** `npm run check` green (see the commit).
 - **Next:** PLAN 3.12Rh4 (a view 1,100 px wide at the UI sizes above 100%).
+
+## 2026-10-09 — PLAN 3.12Rh4: a view 1,100 px wide has the UI sizes it is laid out for
+
+- **Decided** (ADR-220): the least view is 64 rem, the bar's one line at its widest map
+  mode (1,007.7 px at 100%; 989 with "Political") and 0.5 rem a side: 871, 1,024, 1,178
+  and 1,332 px at the four sizes. A size the window is too narrow for is disabled in
+  Settings and not in use (`offeredUiScales`, `appliedUiScale`, a `resize` listener); the
+  choice is stored as made. Not a bar that wraps: the ticker, the banners and the panel's
+  foot stand on its one line.
+- **Found with it:** the History panel stood over the nation panel at 1,100 px and 100%
+  too, by 12.6 px: `100% - 38rem` was its content without its padding, and the nation
+  panel's right edge is at 18.9 rem and 2 px. Now `100% - 40rem`; the banners `- 39rem`.
+- **Found in the picture:** with a nation played the buttons were pressed narrower than
+  their text ("Resume" cut, "Map: Political" over "Statistics"): `.bar-btn` has a
+  `min-width`, which lets a flex item shrink under its content. The first form of the test
+  (every button inside the view) passed on it; it now asks that each holds its text, and
+  failed on the code without the rule ("pause-btn holds its text, playing": 2 px).
+- **Tests, failed first:** `ticker1938.spec.ts`, the fourth test ("root font at 1.15":
+  18.4 px for 16; later "history right of the nation panel": 291.8 for 304.4) and a line
+  of the second ("banners right of the panel at 1.3": 374.4 for 395.1).
+  `tests/unit/uiScale.test.ts` was written with the functions; its first run failed on
+  the test's own error (the smallest size is offered below its least view too).
+- **Looked at:** `h4-bar-1100-playing.png`, `h4-settings-1100.png`, `h4-panels-1100.png`.
+  The Settings panel at 600 px high runs out of its foot, "New game" under the banners:
+  PLAN 3.12Rh5, not fixed here.
+- **Specs run by hand** (`--project chromium`): `ticker1938`, `settings1938`,
+  `history1938`, `player1938`, the editor's; and, before the bar's no-shrink rule and the
+  panels' widths, those with a view under 1,024 px, where the size is now 85%
+  (`smallMark1938`, `camera`, `mapview`, `formationFight1938`) and `title`: green.
+- **Not looked into:** another locale's bar width (the constant is English's).
+- **Performance:** not measured: CSS and one listener of `resize`; no sim change, the pin
+  unmoved.
+- **No sweep** (ADR-58).
+- **Gate:** `npm run check` green (see the commit).
+- **Next:** PLAN 3.12Rh5 (the Settings panel in a view 600 px high).

@@ -74,6 +74,9 @@ body {
   transform: translateX(-50%);
   /* As wide as its buttons: at `left: 50%` the fit is half the view, and the date wrapped (PLAN 3.12Rh1). */
   width: max-content;
+  /* Never wider than the view: the played nation's label gives way (PLAN 3.12Rh4). */
+  max-width: calc(100% - 1rem);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -83,6 +86,11 @@ body {
   border-radius: 0.4rem;
   font-size: 0.9rem;
   user-select: none;
+}
+
+/* A button's `min-width` would let it shrink under its text. */
+.bottombar > * {
+  flex-shrink: 0;
 }
 
 .bar-btn {
@@ -390,8 +398,8 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.3rem;
-  /* Between the ticker on the left and its width again on the right, at every UI size (PLAN 3.12Rh). */
-  max-width: min(60%, calc(100% - 36rem));
+  /* Right of an open panel on the left, whose right edge is at 18.9 rem and 2 px, and as far from the right, at every UI size (PLAN 3.12Rh, 3.12Rh4). */
+  max-width: min(60%, calc(100% - 39rem));
 }
 .war-banner {
   display: flex;
@@ -491,7 +499,12 @@ body {
   width: 100%;
   margin-bottom: 0.4rem;
 }
-.bar-playing {
+.bottombar > .bar-playing {
+  /* The one item of the bar that shrinks (PLAN 3.12Rh4). */
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
   color: #ffe28a;
 }
@@ -516,7 +529,8 @@ body {
   top: 3.4rem;
   left: 50%;
   transform: translateX(-50%);
-  width: min(36rem, calc(100% - 38rem));
+  /* Clear of a panel on the left: its 18.9 rem and 2 px each side, and this panel's own padding and border (PLAN 3.12Rh4). */
+  width: min(36rem, calc(100% - 40rem));
   min-width: 22rem;
   max-height: calc(100% - 12rem);
   display: flex;

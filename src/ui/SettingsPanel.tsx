@@ -6,6 +6,8 @@ export interface SettingsPanelProps {
   uiScale: number;
   unitScale: number;
   uiScales: readonly number[];
+  /** The sizes the view is wide enough for (PLAN 3.12Rh4); `uiScale` is the one in use. */
+  uiOffered: readonly number[];
   unitScales: readonly number[];
   volume: number;
   volumes: readonly number[];
@@ -33,7 +35,7 @@ export interface SettingsPanelProps {
  * random seed). Speed and pause persist on their own
  * (bottom bar).
  */
-export function SettingsPanel({ uiScale, unitScale, uiScales, unitScales, volume, volumes, muted, seed, options, nationsRange, onUiScale, onUnitScale, onVolume, onMuted, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
+export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitScales, volume, volumes, muted, seed, options, nationsRange, onUiScale, onUnitScale, onVolume, onMuted, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
   const pct = (v: number): string => `${Math.round(v * 100)}%`;
   return (
     <aside class="history-panel settings-panel" data-testid="settings-panel">
@@ -47,7 +49,7 @@ export function SettingsPanel({ uiScale, unitScale, uiScales, unitScales, volume
         <span class="form-name">{t('settings.uiSize')}</span>
         <select data-testid="settings-ui-scale" value={uiScale} onChange={(e) => onUiScale(Number((e.currentTarget as HTMLSelectElement).value))}>
           {uiScales.map((v) => (
-            <option key={v} value={v}>
+            <option key={v} value={v} disabled={!uiOffered.includes(v)}>
               {pct(v)}
             </option>
           ))}

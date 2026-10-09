@@ -93,7 +93,7 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
         </button>
       ) : null}
       {playing ? (
-        <span class="bar-playing" data-testid="player-label">
+        <span class="bar-playing" data-testid="player-label" title={t('player.playing', { name: playing.name, n: playing.selected })}>
           {t('player.playing', { name: playing.name, n: playing.selected })}
         </span>
       ) : null}

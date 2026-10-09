@@ -167,6 +167,54 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-220 · 2026-10-09 · accepted — The game is laid out for a view of 64 rem: a UI size the view is too narrow for is not offered, and the choice is kept (PLAN 3.12Rh4)
+
+- **Context.** The bottom bar is one line and as wide as its content (ADR-217): 989 px at
+  100% with "Map: Political", 1,007.7 px at its widest map mode (the mode's name is the one
+  label with no room kept), 62.98 rem. In a view 1,100 px wide it ran off both sides at 115
+  and 130%. The ticker, the war banners and the nation panel's height are placed by the
+  bar's one line (3.2 rem, 12.5 rem).
+- **Decision.** The least view is one figure, 64 rem: the bar at its widest mode and 0.5 rem
+  a side (`LEAST_VIEW_REM`, `src/app/settings.ts`). In px: 871 at 85%, 1,024 at 100%, 1,178
+  at 115%, 1,332 at 130%. A size whose least view is wider than the window is not offered
+  (its option in Settings is disabled) and not in use: the size in use is the largest
+  offered that is no larger than the one chosen (`appliedUiScale`). The choice is stored as
+  it was made, and a wider window has it again, at a resize, with nothing pressed. Below
+  871 px the size is 85% and the bar's ends are cut: the game is not laid out for it.
+- **Not chosen.** A bar that wraps. Its height would have to move the ticker, the banners
+  and the panel's foot (three rules on a measured height), ADR-217's one line would hold
+  only above some width, and the History panel would still stand over the nation panel at
+  130%.
+- **Not folded in: a played nation's label.** "Playing United Kingdom · 12 selected" is
+  some 16 rem more, and a least view of 80 rem would refuse 130% below 1,664 px. The label
+  is the one item of the bar that shrinks, to an ellipsis, with the whole text in its
+  `title`; the bar is never wider than the view less 1 rem, and no button is narrower than
+  its text (`.bottombar > *` does not shrink: a button's `min-width` of 2 rem had let it).
+  At 1,100 px and 100% the label reads "Playing Unit…".
+- **The figure is English's.** Another locale's bar may be wider; the constant is then
+  measured again (the spec below fails on it).
+- **The title screen** keeps the size chosen in any view: it has its own narrow layout
+  (PLAN 1.43) and no bar.
+- **Found with it, the panels.** The nation panel's right edge is at 18.9 rem and 2 px
+  (0.5 rem, 17 rem of content, 1.4 rem of padding, its border), not 17.5 rem; the History
+  panel's `100% - 38rem` is its content, and its padding and border are 1.4 rem and 2 px
+  more. At 1,100 px and 100% the History panel stood 12.6 px over the nation panel
+  (291.8 for 304.4), not only at 130% (79 px). It is `100% - 40rem` now (24 rem at the
+  least view, above its least width of 22), and the war banners `100% - 39rem` for the
+  ticker's 36.
+- **Consequences.** `tests/e2e/ticker1938.spec.ts`, a fourth test, at 1,100 x 600: at each
+  of the four sizes the root font is 13.6, 16, 16 and 16 px and the bar, each button and
+  the date are inside the view and as wide as their text in all eight map modes; Settings
+  shows 100% with 115 and 130% disabled; at 1,400 px the size is 130%, at 1,200 px 115%,
+  at 1,100 px 100% again; the History panel begins right of the nation panel; with a
+  nation played the buttons are whole and in the view. On the code before: "root font at
+  1.15", 18.4 px for 16; with the clamp alone, "pause-btn holds its text, playing", 2 px
+  cut; and with those two, "history right of the nation panel", 291.8 for 304.4. Its
+  second test asks that the banners begin right of the panel: 374.4 for 395.1 at 130%
+  before. `tests/unit/uiScale.test.ts`: the two functions.
+- **Seen and not fixed here.** The Settings panel in a view 600 px high: its last rows run
+  out of its foot and "New game" stands under the war banners (PLAN 3.12Rh5).
+
 ### ADR-219 · 2026-10-09 · accepted — A later nation called after the same province is "Free Damascus II": the name tells two nations apart, the revolt's rule stays (PLAN 3.12Rh3)
 
 - **Context.** The ticker at Max, seed 1938, April 1943: "Free Damascus declared war on

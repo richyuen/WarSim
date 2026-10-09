@@ -153,6 +153,8 @@ test('the ticker keeps its room beside a panel at its full height and the war ba
     // The banners fill their width and begin right of the ticker.
     const banners = await box('war-banners');
     expect(banners.left, `banners right of the ticker at ${scale}`).toBeGreaterThanOrEqual(short.right);
+    // And right of the panel, which is wider than the ticker by its padding (PLAN 3.12Rh4).
+    expect(banners.left, `banners right of the panel at ${scale}`).toBeGreaterThanOrEqual(panel.right);
     await page.screenshot({ path: path.join(ev, `h-ticker-room-${scale}.png`) });
     // With no panel every row is told in full, and the banners are right of them still.
     await page.evaluate(() => window.__warsim!.hud.onSelectNation(0));
@@ -214,5 +216,92 @@ test('the bottom bar is one line under the ticker, and no button steps at a paus
     expect(running.speed.left, `speed button running at ${scale}`).toBeCloseTo(paused.speed.left, 1);
     expect(running.date.left, `date running at ${scale}`).toBeCloseTo(paused.date.left, 1);
   }
+  await page.evaluate(() => window.__warsim!.settings.setUiScale(1));
+});
+
+// PLAN 3.12Rh4: a view 1,100 px wide is narrower than the bar at 115 and 130% (1,135 and
+// 1,281 px). A size the view is too narrow for is not offered and not applied; the choice is kept.
+test('a view 1,100 px wide: the bar is inside the view at every UI size offered there, and a wider size is not', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1100, height: 600 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const box = (testid: string): Promise<{ left: number; right: number; top: number; bottom: number }> =>
+    page.evaluate((testid) => {
+      const r = document.querySelector(`[data-testid="${testid}"]`)!.getBoundingClientRect();
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
+    }, testid);
+  const rootPx = (): Promise<string> => page.evaluate(() => getComputedStyle(document.documentElement).fontSize);
+  const BUTTONS = ['pause-btn', 'speed-down', 'speed-up', 'mapmode-btn', 'stats-btn', 'history-btn', 'settings-btn', 'editor-btn', 'god-btn', 'date-label'];
+  const MODES = 8;
+  const ev = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.12') : info.outputPath();
+  mkdirSync(ev, { recursive: true });
+  /** The bar and each of its buttons inside the view, in every map mode (the mode's name is the one label with no room kept). */
+  const barInView = async (what: string, width: number): Promise<number> => {
+    let widest = 0;
+    for (let m = 0; m < MODES; m++) {
+      const bar = await box('bottombar');
+      widest = Math.max(widest, bar.right - bar.left);
+      for (const b of BUTTONS) {
+        const r = await box(b);
+        expect(r.left, `${b} left, ${what}, mode ${m}`).toBeGreaterThanOrEqual(0);
+        expect(r.right, `${b} right, ${what}, mode ${m}`).toBeLessThanOrEqual(width);
+        // And as wide as its text: no button is pressed narrower than its label.
+        const cut = await page.evaluate((b) => {
+          const e = document.querySelector(`[data-testid="${b}"]`)!;
+          return e.scrollWidth - e.clientWidth;
+        }, b);
+        expect(cut, `${b} holds its text, ${what}, mode ${m}`).toBeLessThanOrEqual(0);
+      }
+      expect(bar.left, `bar left, ${what}, mode ${m}`).toBeGreaterThanOrEqual(0);
+      expect(bar.right, `bar right, ${what}, mode ${m}`).toBeLessThanOrEqual(width);
+      await page.getByTestId('mapmode-btn').click();
+    }
+    return widest;
+  };
+
+  // 85 and 100% are laid out for 1,100 px; 115 and 130% are not, and the size stays 100%.
+  for (const [scale, px] of [[0.85, '13.6px'], [1, '16px'], [1.15, '16px'], [1.3, '16px']] as const) {
+    await page.evaluate((v) => window.__warsim!.settings.setUiScale(v), scale);
+    expect(await rootPx(), `root font at ${scale}`).toBe(px);
+    const widest = await barInView(`at ${scale}`, 1100);
+    console.log(`bar at ${scale} in 1,100 px: root ${px}, ${widest.toFixed(1)} px at its widest mode`);
+    await page.screenshot({ path: path.join(ev, `h4-bar-1100-${scale}.png`) });
+  }
+
+  // The settings panel offers what fits and shows the size in use; the choice of 130% is kept.
+  await page.getByTestId('settings-btn').click();
+  const select = page.getByTestId('settings-ui-scale');
+  await expect(select).toHaveValue('1');
+  expect(await select.locator('option').evaluateAll((os) => os.map((o) => `${(o as HTMLOptionElement).value}:${(o as HTMLOptionElement).disabled}`))).toEqual(['0.85:false', '1:false', '1.15:true', '1.3:true']);
+  await page.screenshot({ path: path.join(ev, 'h4-settings-1100.png') });
+
+  // A wider window has the size chosen, a narrower one loses it again: nothing is pressed.
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await expect.poll(rootPx).toBe('20.8px');
+  await expect(select).toHaveValue('1.3');
+  expect(await select.locator('option').evaluateAll((os) => os.filter((o) => (o as HTMLOptionElement).disabled).length)).toBe(0);
+  await page.setViewportSize({ width: 1200, height: 700 });
+  await expect.poll(rootPx).toBe('18.4px');
+  await page.getByTestId('settings-close').click();
+  await barInView('at 115% in 1,200 px', 1200);
+  await page.setViewportSize({ width: 1100, height: 600 });
+  await expect.poll(rootPx).toBe('16px');
+
+  // The History panel is right of a nation's panel (at 130% it stood over its right 79 px).
+  await page.evaluate((n) => window.__warsim!.view!.select(n), id('ENG'));
+  await page.getByTestId('history-btn').click();
+  expect((await box('history-panel')).left, 'history right of the nation panel').toBeGreaterThanOrEqual((await box('nation-panel')).right);
+  await page.screenshot({ path: path.join(ev, 'h4-panels-1100.png') });
+  await page.getByTestId('history-btn').click();
+
+  // A played nation's label is the one item that gives way: the buttons stay in the view.
+  await page.getByTestId('take-control').click();
+  await expect(page.getByTestId('player-label')).toContainText('United Kingdom');
+  await page.evaluate(() => window.__warsim!.hud.onSelectNation(0));
+  await barInView('playing', 1100);
+  const label = await box('player-label');
+  expect(label.right - label.left, 'the played label has room').toBeGreaterThan(40);
+  await page.screenshot({ path: path.join(ev, 'h4-bar-1100-playing.png') });
   await page.evaluate(() => window.__warsim!.settings.setUiScale(1));
 });
