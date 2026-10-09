@@ -13005,3 +13005,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule changed:** nothing in play reads the zones. The pin stays. **No sweep** (ADR-58).
 - **PARITY:** our additions, row 3 (naval warfare) from not started to partial.
 - **Next:** PLAN 4.1b (the lane graph, and the passages the grid closes).
+- **After the commit:** `npm run data -- --check` in full (`.cache/data-check-41a.log`): no
+  changes, the seas file among them. The full run and `--seas` write the same seeds.
