@@ -51,7 +51,7 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace } from '../sim/systems/elements';
+import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { TILE, type World } from '../sim/world';
@@ -759,9 +759,8 @@ export class SimServer {
     if (enemy !== undefined && world.formations.has(enemy)) {
       const theirs = this.blockPose(world, enemy);
       const w = world.cells.w;
-      let dx = theirs.x - pose.x;
-      if (dx > w / 2) dx -= w;
-      else if (dx < -w / 2) dx += w;
+      // Brought back onto a map that loops, where a block may stand over the seam with its x unfolded (`slotPlace`).
+      const dx = wrapDx(world, pose.x, theirs.x);
       fight = { x: (((pose.x + dx / 2) % w) + w) % w, y: (pose.y + theirs.y) / 2, enemy, span: [Math.abs(dx), Math.abs(theirs.y - pose.y)] };
     }
     return {
@@ -1023,10 +1022,16 @@ export class SimServer {
     return { count: total, id, formation, nation, frame, strength, size, x, y, prevX, prevY, facing, flags, hit, truncated };
   }
 
-  /** Whether (x, y) is in the subscribed bbox, or within `reach` cells of it. */
+  /**
+   * Whether (x, y) is in the subscribed bbox, or within `reach` cells of it: over the seam of a
+   * map that loops, where x may be a place left unfolded too (`slotPlace`); on a map with edges
+   * as the numbers stand (PLAN 3.12Rse3: a view at one edge was sent the formations within
+   * `reach` of the other).
+   */
   private inBbox(x: number, y: number, world: World, reach = 0): boolean {
     const [x0, y0, x1, y1] = this.sub.bbox;
     if (y < y0 - reach || y > y1 + reach) return false;
+    if (!world.settings.loopingMap) return x >= x0 - reach && x <= x1 + reach;
     const w = world.cells.w;
     const span = x1 - x0 + 2 * reach;
     if (span >= w) return true;

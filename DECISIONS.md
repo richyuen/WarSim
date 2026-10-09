@@ -167,6 +167,67 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-240 · 2026-10-09 · accepted — No block and no slot is beyond an edge of the map (PLAN 3.12Rse3)
+
+- **Context.** The last part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236 to ADR-239). A
+  formation's place is on the map; where its block stands (`deployOf`) and where each
+  element of it stands (`slotPlace`) are worked out from that place and folded by
+  nothing. A division's block is 8 slots by 4, 0.21 cells from its first column to its
+  last; a file abreast stands 0.29 cells to the side, and a deployed block up to
+  `DEPLOY_REACH` (1.5 cells) from its formation.
+- **What was so.** PLAN's figure was wrong: a block at rest at x = 0.3 has no place at
+  x < 0 (its far slot is 0.105 out). One within 0.105 of an edge has, and a deployed one
+  from further.
+  - With the fine mask, on a map that does not loop: beyond an edge the mask has no land
+    (`maskBit`), so a slot there drew in towards its formation as one on water does, and
+    a block stood no further than there is land. This held, with two holes: a formation
+    whose own place is on the mask's water (a crossing, a bay, painted land; and any
+    place within half a mask pixel of an edge, where the field is blended with what is
+    beyond it) has its slots left as they are, off the map too; and a world without the
+    mask (a test's, a build without its asset) asked nothing.
+  - Above and below the map the same two holes, on every map.
+  - The worker's `inBbox` folded x whatever the setting: a view at one edge of a map with
+    edges was sent the formations within a block's reach (0.13 cells) of the other, and
+    the fires and the ends of elements there.
+- **Decision.**
+  - `World.onMap(x, y)`: not above or below the map, and not beside a map that does not
+    loop. `World.onLand` is false off the map, with the mask or without. `slotPlace` and
+    `deployOf` ask `onLand` always (they skipped it with no mask). A slot of a formation
+    on the mask's water is left as it is where it is on the map, and draws in towards the
+    formation where it is not. A file abreast with no place on the map stays at its
+    formation's place, as one with only water there does.
+  - `World.standPoint` gives a point off the map back as it is: it is in no cell. With
+    the mask it was given the nearest cell of the map's edge, and a formation ordered
+    into being below the map was made in its last row (ADR-228 meant it refused).
+  - `inBbox` asks the setting: on a map with edges, the numbers as they stand.
+  - The panel's place of a fight (`formationDetail`) had its own fold over `w / 2`: it is
+    `wrapDx`, as the place of a war's battle is.
+- **Left unfolded, on a map that loops.** A block or a slot over the seam keeps the x of
+  its formation's side (under 0, or `w` and over). Folded, a block would be in two parts
+  and an hour's move from the formation's place to the line would be a map long. What
+  reads such a place folds it where it needs to: `inBbox`, the midpoint of a fight
+  (`warBattle.ts`, `formationDetail`), the page's interpolation (`unwrapped`,
+  `fire.ts`). One reader does not, and it is a defect of the drawing: the page draws the
+  copies of the map that the view touches (`wrapOffsets`), so a block over the seam is
+  drawn only in a view that reaches the seam. PLAN 3.12Rt.
+- **Left as they are, with their reason** (in the code where it had none):
+  - `findBattles`' bucket lookup (`combat.ts`): candidates only; `cellDist` decides.
+  - A step's fold in `movement.ts`: no step over the seam of a map with edges is taken
+    (ADR-171, the file's head), so the fold is reached on a map that loops only.
+  - The world's build: a scenario's map wraps as the scenario says (ADR-238).
+  - The midpoint folds (`warBattle.ts`, `formationDetail`): they bring a point made with
+    `wrapDx` back onto a map that loops; on a map with edges both blocks are on it now
+    and the fold does nothing.
+- **Not state.** A block's place and a slot's are derived and not hashed; the rules read
+  the formation's place. The pin stays (92689265).
+- **Tests.** `tests/unit/seam.test.ts`, six more (26): `standPoint` off the map (written after
+  the gate failed on `refusal.test.ts`; not run red); the slots of a block at rest at
+  each edge, with the mask (the formation on its water) and without; on the mask's land
+  at an edge (it held before: not red); above and below the map; six formations in one
+  column 0.2 cells from an edge, whose files abreast had a block at x = -0.20; what a
+  view at the first column is sent of the last. Four failed first
+  (`.cache/rse3-red.log`).
+
 ### ADR-239 · 2026-10-09 · accepted — The brushes keep to the edges of a map that does not loop (PLAN 3.12Rse2)
 
 - **Context.** The sixth part of PLAN 3.12Rs (ADR-233, ADR-234, ADR-236 to ADR-238). The

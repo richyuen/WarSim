@@ -109,6 +109,8 @@ export function findBattles(world: World): number[][] {
     const by = Math.floor(c.y[a]! / BUCKET_CELLS);
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
+        // Over the seam whatever the map: candidates only, and `dist` keeps to the edges of a
+        // map that does not loop (PLAN 3.12Rs), so a bucket of the other edge gives no pair.
         const list = buckets.get((by + dy) * bw + ((bx + dx + bw) % bw));
         if (!list) continue;
         for (const b of list) {

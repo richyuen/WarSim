@@ -11,7 +11,7 @@ import { spawnCity } from '../../src/sim/scenarioEdit';
 import { Sim } from '../../src/sim/sim';
 import { capitalsSystem } from '../../src/sim/systems/capitals';
 import { combatSystem, findBattles } from '../../src/sim/systems/combat';
-import { cellDist, destroyFormation } from '../../src/sim/systems/elements';
+import { cellDist, deployOf, destroyFormation, elementIndex, elementPlace, slotCount } from '../../src/sim/systems/elements';
 import { addCorridor, inCorridor } from '../../src/sim/systems/majorBattles';
 import { applyPendingCommands } from '../../src/sim/tick';
 import { TARGET_SNAP_CELLS, snapTarget } from '../../src/sim/systems/movement';
@@ -21,6 +21,8 @@ import { SUPPLY_RATE, SUPPLY_REACH, blocOf, refreshSupplyNetwork, supplySystem }
 import { PRESSURE_RADIUS, frontierOf, territorySystem } from '../../src/sim/systems/territory';
 import { navOf } from '../../src/sim/world';
 import type { World } from '../../src/sim/world';
+import type { FromWorker, Snapshot } from '../../src/shared/protocol';
+import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
 
@@ -445,6 +447,128 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
       const cam = normalize({ cx: 0, cy: 0, scale: 0 }, geo, 1280, 720);
       expect(screenToWorld(cam, 2, 360, 1280, 720)[0]).toBeLessThan(0);
       expect(screenToWorld(cam, 1278, 360, 1280, 720)[0]).toBeGreaterThan(W);
+    });
+  });
+
+  describe('a block beside an edge (3.12Rse3)', () => {
+    /** Where every element of formation `f` stands. */
+    function places(world: World, f: number): [number, number][] {
+      const list = elementIndex(world).get(f)!;
+      const slots = slotCount(world, f, list.length);
+      return list.map((e) => elementPlace(world, f, world.elements.cols.slot[e]!, slots, e));
+    }
+
+    it('no slot of a block at rest is beside a map that does not loop, with the mask or without; on a map that loops it is, unfolded', () => {
+      for (const loop of [false, true]) {
+        for (const mask of [false, true]) {
+          const world = edges(loop);
+          if (!mask) world.landMask = null;
+          // With the mask the two stand on its water (the Pacific): such a block's slots are left as they are.
+          else expect([world.onLand(0.04, Y + 0.5), world.onLand(W - 0.04, Y + 0.5)]).toEqual([false, false]);
+          // Facing south: the block's width (8 slots of 28, 0.21 cells from first to last) lies east to west.
+          const a = addDivision(world, GER, 0.04, Y + 0.5);
+          const b = addDivision(world, GER, W - 0.04, Y + 0.5);
+          world.formations.cols.facing[a] = Math.PI / 2;
+          world.formations.cols.facing[b] = Math.PI / 2;
+          const xs = [...places(world, a), ...places(world, b)].map((p) => p[0]);
+          expect(xs.length).toBe(56);
+          if (loop) {
+            expect(Math.min(...xs)).toBeCloseTo(0.04 - 0.105, 9);
+            expect(Math.max(...xs)).toBeCloseTo(W - 0.04 + 0.105, 9);
+          } else {
+            expect(Math.min(...xs)).toBeGreaterThanOrEqual(0);
+            expect(Math.max(...xs)).toBeLessThan(W);
+          }
+        }
+      }
+    });
+
+    it('on the mask\'s land at an edge the slots beyond it draw in as from water; on a map that loops they stand on the land over the seam', () => {
+      // A row where the mask has land at both sides of the seam (Chukotka).
+      const probe = edges(true);
+      let row = -1;
+      for (let y = 0; y < H && row < 0; y++) if ([W - 0.2, W - 0.1, W - 0.04, 0.04, 0.1, 0.2].every((x) => probe.onLand(x, y + 0.5))) row = y;
+      expect(row).toBeGreaterThanOrEqual(0);
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        // 0.1 from the edge: surely land with the map looping or not (nearer, the field is blended with what is beyond the edge).
+        const a = addDivision(world, GER, 0.1, row + 0.5);
+        expect(world.onLand(0.1, row + 0.5)).toBe(true);
+        world.formations.cols.facing[a] = Math.PI / 2;
+        const xs = places(world, a).map((p) => p[0]);
+        if (loop) expect(Math.min(...xs)).toBeCloseTo(0.1 - 0.105, 9);
+        else expect(Math.min(...xs)).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('no slot is above or below the map, looping or not', () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        world.landMask = null;
+        // Facing east: the block's width lies north to south.
+        const a = addDivision(world, GER, 10.5, 0.04);
+        const b = addDivision(world, GER, 10.5, H - 0.04);
+        const ys = [...places(world, a), ...places(world, b)].map((p) => p[1]);
+        expect(Math.min(...ys)).toBeGreaterThanOrEqual(0);
+        expect(Math.max(...ys)).toBeLessThan(H);
+      }
+    });
+
+    it('a point off the map is given no cell to stand in', () => {
+      for (const loop of [false, true]) {
+        for (const mask of [false, true]) {
+          const world = edges(loop);
+          if (!mask) world.landMask = null;
+          expect(world.standPoint(3.5, H + 2)).toEqual([3.5, H + 2]);
+          expect(world.standPoint(3.5, -0.5)).toEqual([3.5, -0.5]);
+          if (!loop) expect(world.standPoint(-2, Y + 0.5)).toEqual([-2, Y + 0.5]);
+        }
+      }
+    });
+
+    it('no block is deployed beside a map that does not loop: a file abreast with no room on the map stays at its formation\'s place', () => {
+      for (const loop of [false, true]) {
+        const world = edges(loop);
+        world.landMask = null;
+        // A Pole 0.2 cells from the edge and six Germans north of it in one column: the nearest
+        // faces it, the five behind come up to its block, two lines to a file, and the files
+        // abreast stand 0.26 cells to either side.
+        const pole = addDivision(world, POL, 0.2, Y + 1.7);
+        const germans = [1.2, 0.9, 0.8, 0.7, 0.6, 0.5].map((y) => addDivision(world, GER, 0.2, Y + y));
+        findBattles(world);
+        const blocks = [pole, ...germans].map((f) => deployOf(world, f, slotCount(world, f, elementIndex(world).get(f)!.length))!);
+        expect(blocks.every((b) => b !== null)).toBe(true);
+        const xs = blocks.map((b) => b.x);
+        // Files to both sides were asked for.
+        expect(Math.max(...xs)).toBeGreaterThan(0.4);
+        const least = Math.min(...xs, ...germans.flatMap((f) => places(world, f).map((p) => p[0])));
+        if (loop) expect(Math.min(...xs)).toBeLessThan(0);
+        else expect(least).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('a view at one edge of a map that does not loop is sent no formation of the other edge', async () => {
+      for (const loop of [false, true]) {
+        let snap: Snapshot | null = null;
+        const server: SimServer = new SimServer((msg: FromWorker) => {
+          if (msg.type !== 'snapshot') return;
+          snap = msg.snap;
+          queueMicrotask(() => server.handle({ type: 'ack', seq: msg.snap.seq, buffers: [] }, 0));
+        });
+        server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 5, assets: assets1938(W) } }, 0);
+        const world = server.sim!.world;
+        world.settings.loopingMap = loop;
+        world.settings.aiEnabled = false;
+        // 0.04 cells short of the last column's end: within a block's reach of the view's first column, over the seam.
+        const far = addDivision(world, GER, W - 0.04, Y + 0.5);
+        const near = addDivision(world, GER, 2.5, Y + 0.5);
+        server.handle({ type: 'subscribe', sub: { bbox: [0, Y - 3, 8, Y + 4], z: 7, tier: 2, wantsElements: true } }, 0);
+        server.handle({ type: 'step', reqId: 2, n: 1 }, 0);
+        await Promise.resolve();
+        const sent = new Set(snap!.elements.formation.slice(0, snap!.elements.count));
+        expect(sent.has(near)).toBe(true);
+        expect(sent.has(far)).toBe(loop);
+      }
     });
   });
 });

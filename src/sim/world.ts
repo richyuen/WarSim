@@ -552,9 +552,11 @@ export class World {
   /**
    * Whether (`x`, `y`), in cells, is a place to stand on: surely land by the fine mask
    * (`maskSure`: in a land pixel, and land in the picture drawn from the mask, whose shore
-   * wanders inside a pixel: PLAN 2.9b). True where there is no mask to ask.
+   * wanders inside a pixel: PLAN 2.9b). True where there is no mask to ask, on the map: beyond
+   * an edge of it there is nowhere to stand, mask or none (`onMap`).
    */
   onLand(x: number, y: number): boolean {
+    if (!this.onMap(x, y)) return false;
     const mask = this.landMask;
     if (!mask) return true;
     // Most places asked about are inland, and combat asks for every shot: a cell's answer is
@@ -569,6 +571,15 @@ export class World {
       if (inland[cell] === 1) return true;
     }
     return maskSure(mask, w, h, x, y, this.settings.loopingMap);
+  }
+  /**
+   * Whether (`x`, `y`), in cells, is on the map: not above or below it, and not beside a map
+   * that does not loop (PLAN 3.12Rse3). Beside one that loops is on it: a place worked out from
+   * a formation's (a block's, a slot's) is left unfolded there, x under 0 or `w` and over.
+   */
+  onMap(x: number, y: number): boolean {
+    const { w, h } = this.cells;
+    return y >= 0 && y < h && (this.settings.loopingMap || (x >= 0 && x < w));
   }
   /** Derived (not state): for each cell asked about, whether all of it is surely land (see `onLand`). */
   private inland: Uint8Array | null = null;
@@ -594,9 +605,13 @@ export class World {
     return [p[0], p[1]];
   }
 
-  /** (`x`, `y`) where the fine mask has it on land; else where a formation stands in the cell that holds it. */
+  /**
+   * (`x`, `y`) where the fine mask has it on land; else where a formation stands in the cell
+   * that holds it. A point off the map is in no cell and comes back as it is (PLAN 3.12Rse3:
+   * with the mask it was given the nearest cell of the map's edge).
+   */
   standPoint(x: number, y: number): [number, number] {
-    if (this.onLand(x, y)) return [x, y];
+    if (this.onLand(x, y) || !this.onMap(x, y)) return [x, y];
     const w = this.cells.w;
     const cx = Math.min(w - 1, Math.max(0, Math.floor(x)));
     const cy = Math.min(this.cells.h - 1, Math.max(0, Math.floor(y)));

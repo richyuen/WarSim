@@ -22,7 +22,14 @@ import type { World } from '../world';
  * Not state: an element's place is worked out from its formation's. The snapshot, the fire
  * events and the event of an element's end all ask here, so they have one place for it.
  * Where the formation's own place is on the mask's water (on the march across a bay, on a
- * crossing, on land painted in the editor) the slot is left as it is.
+ * crossing, on land painted in the editor) the slot is left as it is, if it is on the map.
+ *
+ * No slot is beyond an edge of the map (PLAN 3.12Rse3): above or below it, or beside a map that
+ * does not loop, is no land (`World.onLand`, with the mask or without), and such a slot draws
+ * in as one on water does. Beside a map that loops a slot stands over the seam and its x is
+ * left unfolded (under 0, or the map's width and over), a block's middle likewise (`deployOf`):
+ * so a block is whole and an hour's move is short. What reads a place folds it where it needs
+ * a cell or a view (`inBbox` in worker/server.ts, the page's copies of a looping map).
  *
  * `element`, for a deployed block only (PLAN 3.11c4): the element in the slot, which stands off
  * it by its id (`DEPLOY_SCATTER`), on land as the slot would. A block at rest stands on its slots.
@@ -32,12 +39,14 @@ export function slotPlace(world: World, fx: number, fy: number, facing: number, 
     element === undefined
       ? slotPose(fx, fy, facing, slot, count, SLOT_SPACING)
       : slotPose(fx, fy, facing, slot, count, SLOT_SPACING, shareOf(element, 1) * DEPLOY_SCATTER * SLOT_SPACING, shareOf(element, 2) * DEPLOY_SCATTER * SLOT_SPACING);
-  if (!world.landMask || world.onLand(p[0], p[1]) || !world.onLand(fx, fy)) return p;
+  if (world.onLand(p[0], p[1])) return p;
+  const afloat = !world.onLand(fx, fy);
+  if (afloat && world.onMap(p[0], p[1])) return p;
   // In eighths of the way: the block's far corner is 0.134 cells out, a mask pixel is 0.125 wide.
   for (let k = 1; k < 8; k++) {
     const x = p[0] + ((fx - p[0]) * k) / 8;
     const y = p[1] + ((fy - p[1]) * k) / 8;
-    if (world.onLand(x, y)) return [x, y];
+    if (afloat ? world.onMap(x, y) : world.onLand(x, y)) return [x, y];
   }
   return [fx, fy];
 }
@@ -241,7 +250,9 @@ function orderOf(world: World, contacts: Map<number, number>): Order {
  * the sim has it; where the view has the formation at the close tiers, for a click, for the
  * camera and in its panel is where the block stands (PLAN 3.11a, `blockPose` in
  * worker/server.ts). A block does not go into the sea: on the fine mask's water it stands
- * as far forward as there is land (across a strait the two sides stay on their shores).
+ * as far forward as there is land (across a strait the two sides stay on their shores). Nor
+ * beyond an edge of the map (PLAN 3.12Rse3): a file abreast with no place on the map stays at
+ * its formation's. Over the seam of a map that loops its x is left unfolded (`slotPlace`).
  */
 export function deployOf(world: World, f: number, count: number): Deployment | null {
   const c = world.formations.cols;
@@ -398,7 +409,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       for (let k = 8; k >= (side === 0 ? 1 : 0); k--) {
         const x = fx + (ux * shift * k) / 8 - uy * side;
         const y = fy + (uy * shift * k) / 8 + ux * side;
-        if (!world.landMask || world.onLand(x, y)) {
+        if (world.onLand(x, y)) {
           out = { x, y, facing: out.facing };
           break;
         }
@@ -411,7 +422,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       const ux = f < enemy ? 1 : -1;
       const back = DEPLOY_GAP / 2 + depth / 2;
       const x = fx - ux * back;
-      out = { x: !world.landMask || world.onLand(x, fy) ? x : fx, y: fy, facing: atan2(0, ux) };
+      out = { x: world.onLand(x, fy) ? x : fx, y: fy, facing: atan2(0, ux) };
     }
   }
   cache.set(f, out);

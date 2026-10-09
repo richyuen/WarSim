@@ -12843,3 +12843,52 @@ No rule changed and nothing on screen changed. One task came out of it.
   the changed spec `gameOptions1938` (1 passed), parity 47.5%.
 - **Next:** PLAN 3.12Rse3 (a block's slots beside an edge; the reasons of what is left),
   which ticks 3.12Rse and 3.12Rs; then 3.12Ri, 3.12Rj.
+
+## 2026-10-09 — PLAN 3.12Rse3: no block and no slot is beyond an edge of the map (ADR-240); 3.12Rse and 3.12Rs ticked
+
+- **Step 2:** the gate on the clean tree ran nothing (green). **Step 2a:** no critic run
+  is due (`npm run critic:due`: no phase review ticked since the report, `a6f63ef`).
+- **Looked at first, what was so.** PLAN's figure was wrong: a block at rest at x = 0.3
+  has no place at x < 0 (a division is 28 elements, 8 slots by 4: its far slot is 0.105
+  out). With the mask and `looping=0` a slot beyond an edge drew in already, as from
+  water (`maskBit`: no land outside the mask). Two holes: a formation on the mask's water
+  has its slots left as they are (and within half a mask pixel of an edge no place is
+  "surely land", so every formation there is such a one); a world without the mask asked
+  nothing. Above and below the map the same.
+- **Done:** `World.onMap`; `onLand` is false off the map, mask or none; `slotPlace` and
+  `deployOf` ask it always, and a slot of a formation on the mask's water draws in where
+  it is off the map. The worker's `inBbox` asks the setting (a view at one edge of a map
+  with edges was sent the formations within a block's reach of the other).
+  `formationDetail`'s own fold over `w / 2` is `wrapDx`. `standPoint` gives a point off
+  the map back as it is: the first gate failed on it (`refusal.test.ts`, a spawn below
+  the toy map: with `onLand` false there it was given the edge's cell and spawned, as
+  it was with the mask before this part; `.cache/gate-rse3.log`). Reasons written where there
+  were none: `findBattles`' buckets, the midpoint of `warBattle.ts`; `movement.ts` and
+  the world's build had theirs (ADR-171, ADR-238).
+- **Found and not mended (PLAN 3.12Rt):** on a map that loops a block over the seam
+  keeps its x unfolded, and the page draws only the copies of the map its view touches:
+  such a block is not drawn in a view that ends short of the seam on the side it stands
+  on. Read from `wrapOffsets`, not run, no picture.
+- **Tests:** `tests/unit/seam.test.ts`, six more (26; the sixth, `standPoint`, written after
+  the gate's failure and not run red). Red first
+  (`.cache/rse3-red.log`): four on their assertions (x = -0.065 at rest, y = -0.065
+  above the map, a file abreast at x = -0.20, the far formation sent). The fifth (on the
+  mask's land at an edge) was green before the mend: it says what held. Two figures of
+  mine were wrong in the first red run and were corrected before the mend: a division
+  has 28 elements, not 21; and at 0.04 from an edge a place is not surely land with the
+  map not looping, so that scene stands at 0.1.
+- **By hand** (`--project chromium`, `.cache/rse3-e2e.log`): `gameOptions1938` (the
+  `looping=0` game) and `formationFight1938`: 2 passed in 2.3 min.
+- **Not looked at:** the game with `looping=0` on the screen by eye; a block beside an
+  edge in the browser (the unit tests read the places and the snapshot).
+- **SPEC** §9, the looping option; PARITY row 69, a dated line; ADR-240.
+- **The pin stays** (92689265; a block's place is not state). **The tick's cost: not
+  measured** (`onLand` has two comparisons more).
+- **No sweep** (ADR-58).
+- **`npm run plan:archive`:** 3.12Rs and its parts moved to `docs/PLAN_DONE.md`.
+- **Gate:** `npm run check` failed once at the unit tests (`.cache/gate-rse3.log`:
+  `refusal.test.ts`, see above), then green (`.cache/gate-rse3b.log`): 1,102 unit tests
+  in 134 files, the ten-year stage 17 tests in 12 files (the pin among them), build,
+  parity 47.5%. No e2e in the gate (a part, no spec changed).
+- **Next:** PLAN 3.12Rt (a block over the seam of a map that loops, drawn from either
+  side); then 3.12Ri, 3.12Rj.

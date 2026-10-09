@@ -101,6 +101,8 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
   };
   const pa = place(a);
   const pb = place(b);
+  // Brought back onto a map that loops, where a block may stand over the seam with its x
+  // unfolded (`slotPlace`). On a map with edges both blocks are on it and the fold does nothing.
   const dx = wrapDx(world, pa[0], pb[0]);
   return { war: warId, x: (((pa[0] + dx / 2) % w) + w) % w, y: (pa[1] + pb[1]) / 2, formations: [a, b], count, men: strength };
 }

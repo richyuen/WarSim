@@ -5990,3 +5990,102 @@ Of 3.12R (open in PLAN.md):
       because nation 130 was crushed (68.1% held after the hour's flips, a score of 100; the
       40 was a day old), not by the capitulation. Poland got no truce, no land, no puppet;
       the log reads true. No rule, no test; `aiSweep` keeps its exception and its count.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+
+Of 3.12R (open in PLAN.md):
+
+  - [x] 3.12Rs **Nothing of the sim joins the two edges of a map that does not loop** (found
+    with 3.12Rp by a search; read, not run). These wrap whatever `settings.loopingMap`
+    says: the reach of `supplySystem` (`supply.ts`, `(cx + dx + w) % w`: a formation on a
+    cell not its side's is fed by a network within 2 cells over the seam); the pressure of
+    `territorySystem` (`territory.ts`, the same expression); `wrapDx` and the distance
+    beside it in `elements.ts`; the distances of `operational.ts` (lines 212, 392, 402,
+    641); the place of a battle in `warBattle.ts`. The data and editor code that wraps a
+    brush or a build (`oob.ts`, `ownership.ts`, `provinces.ts`, `editor.ts`,
+    `scenarioEdit.ts`) is looked at and left or mended with its reason. One cause per
+    commit where they are apart. 1938 loops: the pin stays.
+    AT: a unit test for each place that fails first, on a made map with `loopingMap` off:
+    a formation at one edge is not fed from, presses on no cell of, fires at nothing at
+    and is sent to no front at the other edge.
+    Split 2026-10-09: one mechanism (a fold over `w / 2` or `% w` that does not ask the
+    setting), apart by system, one a commit. The tests are in `tests/unit/seam.test.ts`,
+    each scene asked with the map looping and not. The last part ticks 3.12Rs.
+    - [x] 3.12Rsa The measure of contact (ADR-233): `cellDist` and `wrapDx` of `elements.ts`
+      (who fights whom, where a block deploys), and by the same search the way a retreat
+      falls back (`retreat.ts`), the place of a war's largest battle (`warBattle.ts`) and a
+      breakthrough corridor (`inCorridor`, `majorBattles.ts`, not named above). Two tests,
+      red first; the pin stays.
+    - [x] 3.12Rsb The reach of `supplySystem` (`supply.ts`, the 2 cells about a formation).
+      AT: a formation on ground not its side's in the first column is not fed by a network
+      in the last; on a map that loops it is.
+    - [x] 3.12Rsc The pressure of `territorySystem` (`territory.ts`; ADR-236).
+      AT: a formation in the first column presses on no frontier cell of the last.
+    - [x] 3.12Rsd The operational AI (`operational.ts`; ADR-237): `dist2` to a sector, the
+      errand's two folds, `cellDist`, and by the search of the file the two sums over a
+      sector's 3 × 3 buckets (the threat, `stoodAt`: `% bw`, not named above).
+      AT: a formation at one edge is in range of no sector at the other and is sent to none.
+    - [x] 3.12Rse What else wraps in play, found by 3.12Rsa's search and not looked into:
+      `nearestCellWhere` (`data/ownership.ts`, `% w` on every ring) as called in play, for
+      the cell a retreat falls back to (`retreat.ts`, twice), a capital's move
+      (`capitals.ts`, `nearestOwnedCell` and line 82) and the editor's stranded formations
+      (`editor.ts:307`); the God brush of control (`paintControl`, `tick.ts`); the editor's
+      brush, line and bucket (`editor.ts:159, 176, 194`, `scenarioEdit.ts:24`). Looked at
+      and left with their reason, if it holds: the bucket lookup of `findBattles`
+      (`combat.ts:112`, candidates only, `cellDist` decides); a step's fold in
+      `movement.ts` (363, 441: `stepOpen` lets no step over the seam of a map with edges);
+      the world's build (`oob.ts`, `ownership.ts`, `provinces.ts`, `terrain.ts`: a
+      scenario's own map, and `loopingMap` asks for a map that wraps, `schemas.ts:689`).
+      From 3.12Rsd: `snapTarget` (`movement.ts`, by `nearestCellWhere`) gave a formation at
+      the first edge an order to the cell of its landmass nearest a front at the last.
+      Also, from the review of 3.12Rsa: a block's slots beside the first or last column
+      (`elements.ts`, `deployOf`, `elementPlace`: a formation at x = 0.3 with a block five
+      slots wide has places at x < 0; nothing folds them, and what the snapshot, the fires
+      and the page do with a place off the map was not looked at). The step's fold of
+      `movement.ts` has its reason in that file's head: a kept path's step over "the seam
+      of a map that loops no more" is not taken (ADR-171); the fold of line 444
+      (`x < 0 ? x + w`) is then reached on a map that loops only. Read, not run.
+      AT: a test for each that is mended, failing first; a line of reason for each left.
+      Split 2026-10-09: three causes, one a commit. The last part ticks 3.12Rse and 3.12Rs.
+      - [x] 3.12Rse1 The nearest-cell search (`nearestCellWhere`, ADR-238): it takes `wrap`,
+        and play passes the setting: a retreat's cell (twice), a capital's move to the
+        field, `snapTarget`, the editor's stranded formations, and four the search of the
+        callers found and PLAN did not name (a march home's cell, `spawnPoint`, a founded
+        nation's field capital, the neighbour a collapsed nation's land goes to). The
+        world's build wraps, as its map does. Six tests, red first; the pin stays.
+      - [x] 3.12Rse2 *Done 2026-10-09 (ADR-239): the page does send such an x (a map with
+        edges has a margin at each side at the least zoom; a drag sends it unfolded, a click
+        was folded by `cellAt`), so all of it was mended: `brushCells` and `lineCells` take
+        `wrap`, the bucket, `paintControl` and `spawnCity` ask the setting, and the page's
+        `cellAt` and `nationAt` give no cell beside the map (`cellOfPoint`). Five tests,
+        red first, and the looping-off e2e reads the view's row.*
+        The brushes: the God brush of control (`paintControl`, `tick.ts`), the
+        editor's brush, line and bucket (`editor.ts`, `brushCells`, `bucketCells`), the
+        cell of a placed city (`scenarioEdit.ts:24`). First what the page sends: whether a
+        pointer's x is ever outside `[0, w)` on a map that does not loop (`MapView`); if
+        not, the fold of one coordinate is dead and what is left is the radius over an
+        edge and the bucket's neighbour over the seam. They are commands (replay, save).
+        The e2e specs of the God brush and the editor by hand.
+        AT: a test for each that is mended, failing first, with the map looping and not.
+      - [x] 3.12Rse3 *Done 2026-10-09 (ADR-240): with the mask a slot beside a map with edges
+        drew in already (no land there), but for a formation on the mask's water; without
+        the mask none did, nor above or below any map. `World.onMap`; `onLand` is false off
+        the map; `inBbox` asks the setting. Five tests, four red first. Over the seam of a
+        map that loops a place is left unfolded, and the page does not draw it in every
+        view: PLAN 3.12Rt.*
+        A block's slots beside the first or last column (`deployOf`,
+        `elementPlace`: places at x < 0): what the snapshot, the fires and the page do with
+        them, on a map that loops too; mended, or a line of PLAN if it is a defect of the
+        drawing. And the line of reason for each place left: `findBattles`' bucket lookup,
+        the step's fold of `movement.ts`, the world's build, the midpoint folds of
+        `warBattle.ts:105` and `worker/server.ts` (765, 1033: a point made with a mended
+        `wrapDx`, brought back onto the map). Ticks 3.12Rse and 3.12Rs.
+        AT: a test for what is mended; the reasons are in SPEC or the code's comments.
