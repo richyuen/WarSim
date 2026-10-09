@@ -906,8 +906,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     walks back to the cell behind it: its path is the step read backwards, `MoveRejected`
     comes in the hour the ground turned and `FormationArrived` when it is back. The walk
     back is marked (`formations.home` = 2, `HOME_BACK`; a march home is 1, `HOME_MARCH`):
-    it is not barred in its turn, it waits before an enemy's cell as any march, the
-    operational AI leaves it alone as it does a march home, and any order ends it. With
+    it is not barred in its turn, the operational AI leaves it alone as it does a march
+    home, and any order ends it. Before an enemy's cell it loses the mark and waits as any
+    march, the AI's to order (PLAN 3.12Rk, ADR-222). With
     none of the step walked the march ends on its cell.
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
   (speed × 0.3 march duty × the template's share of its speed on that ground: the least

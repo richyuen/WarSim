@@ -12162,7 +12162,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   march ends and the mark with it; no formation is set on its spawn point across a war;
   the walk back (`HOME_BACK`) loses its mark there too. Not the mark alone dropped: a
   formation in the middle of an enemy's land can take no step, mark or none.
-- **Tests, failed first** (`tests/unit/movement.test.ts`, `.cache/rk-red.log`):
+- **Tests, failed first** (`tests/unit/movement.test.ts`; `.cache/rk-red.log` is the last
+  run on the old rules, of the tests as committed: three of the four red, the Austrian
+  one green until its second form):
   - "goes round a cell that has become an enemy's, takes no cell, and arrives": `[1, 1]`
     for `[0, 0]` (moving, mark) after 60 days. It replaces "a march home waits before a
     cell that has become an enemy's", which asserted the wait: the rule it tested is the
@@ -12198,12 +12200,25 @@ No rule changed and nothing on screen changed. One task came out of it.
     round. A line under PLAN 1.42 with the figures (seed 77: 15 of 30 days or more, 20,661
     men to 8,099).
 - **The pin:** 4b019e8f to 2104f897 (ADR-222).
-- **Not looked into:** a march home in the middle of a step into a cell that turns an
-  enemy's loses its mark and waits there as a march of the AI's (rare; no count taken);
+- **Counted after the commit** (`.cache/rk-mid.ts`, three years): marches that lost their
+  mark before an enemy's cell and waited on (the middle of a step, and the walk back): 8
+  on seed 77, 246 h in all, the longest 110 h, one destroyed after 75 h; 16 on seed 99,
+  100 h in all, the longest 43 h. The AI's "march from afar" takes only a formation that
+  stands still, so such a one waits for a sector within its range or for the cell to turn.
+  Left as it is.
+- **The ten-year tests in the gate** (seeds 1, 2, 3): 444,902, 527,047 and 298,556
+  formation-hours with the mark, the longest wait before an enemy's cell 0 h in each.
+- **The e2e suite was not run** (a part: ADR-87). The rule moves every seed's game from
+  its first barred march home on, and the specs that name a formation on a day
+  (`toBattle1938`, `fightSeen1938`, `zoomDemo1938`, `tankBattle1938`) are first run on it
+  with 3.12Rj's suite, after 3.12Rl to 3.12Ro have moved it again.
+- **Not looked into:**
   a formation left idle on an enemy's ground with no way out (the order from closed
   ground failed) can take no step, as any formation there; `MoveRejected` is emitted each
   midnight for a formation whose way home a war bars (nothing in `src/` reads the event
-  but the tests); the ten-year tests' time with `homeWait` in them.
+  but the tests); the ten-year tests' time with `homeWait` in them; a template that
+  cannot walk a ground a landmass has (the claim that an order home on one landmass never
+  failed is of the foot's ground).
 - **Performance:** `homeward` is made once a nation a day in the repatriation and once an
   order elsewhere, as `passageOf` is; three years of seed 77 in 50 s with the helper
   against 44 s on the old rules (another game; one run each, not pinned to cores).
