@@ -27,6 +27,15 @@
  * so the formations of a battle do not all look for a route in one tick. The encircled do not
  * surrender (not modelled), and nothing fires on a formation that retreats.
  *
+ * A retreat barred in the middle of a step (PLAN 3.12Ro, ADR-226). The cell ahead has turned a
+ * third nation's and the march walks back to the cell behind it (`HOME_BACK`, `movement.ts`):
+ * the cell it left, on its enemy's side. With an enemy within RETREAT_CELLS of it (nearer than
+ * the retreat was to take it; from further off the walk back ends out of contact) it is ordered
+ * again in that hour, by the same rule, from that enemy: back to the cell behind it, the one way
+ * out of the step, and on from there. Its day begins again with the order. With no such cell or
+ * no route, or the cell behind it a third nation's too, it walks back as any march and is asked
+ * again each hour of the walk.
+ *
  * All of it is read from the state of the hour (no cache of contacts), so a loaded game takes
  * the same retreats as the game that was saved.
  */
@@ -36,7 +45,7 @@ import { sqrt } from '../core/dmath';
 import { nearestCellWhere } from '../data/ownership';
 import { navOf, type World } from '../world';
 import { cellDist, CONTACT_CELLS } from './elements';
-import { orderMove } from './movement';
+import { foreignTo, HOME_BACK, orderMove } from './movement';
 import { blocOf } from './supply';
 
 /** In contact with less org than this a formation breaks off. */
@@ -68,58 +77,75 @@ export function orgLossSystem(world: World): void {
   l.length = 0;
 }
 
-export function retreatSystem(world: World): void {
+/** The enemies that may be in the contact of a cell within RETREAT_SNAP of the point a retreat makes for. */
+const ABOUT = Math.max(RETREAT_CELLS + RETREAT_SNAP, RETREAT_REACH) + 1 + CONTACT_CELLS;
+
+/**
+ * Orders the formation from its nearest enemy within `reach` cells, to ground of its side out of
+ * the contact of every enemy about it (the rule of the head of this file); false with no such
+ * enemy, no such cell or no route.
+ */
+function fallBack(world: World, id: number, reach: number): boolean {
   const f = world.formations;
   const c = f.cols;
   const { w, h, controller } = world.cells;
-  // The enemies that may be in the contact of a cell within RETREAT_SNAP of the point.
-  const about = Math.max(RETREAT_CELLS + RETREAT_SNAP, RETREAT_REACH) + 1 + CONTACT_CELLS;
+  const nation = c.nation[id]!;
+  const x = c.x[id]!;
+  const y = c.y[id]!;
+  let nearest = 0;
+  let nd = Infinity;
+  const enemies: number[] = [];
+  f.forEach((o) => {
+    if (c.retreat[o]! > 0 || !world.wars.atWar(nation, c.nation[o]!)) return;
+    const d = cellDist(world, x, y, c.x[o]!, c.y[o]!);
+    if (d > ABOUT) return;
+    enemies.push(o);
+    if (d <= reach && d < nd) {
+      nd = d;
+      nearest = o;
+    }
+  });
+  if (nearest === 0) return false;
+  let dx = x - c.x[nearest]!;
+  if (dx > w / 2) dx -= w;
+  else if (dx < -w / 2) dx += w;
+  const dy = y - c.y[nearest]!;
+  const d = sqrt(dx * dx + dy * dy);
+  const px = d > 0 ? x + (dx / d) * RETREAT_CELLS : x;
+  const py = d > 0 ? y + (dy / d) * RETREAT_CELLS : y;
+  const bloc = blocOf(world, nation);
+  const comp = navOf(world).grid.component;
+  const here = Math.floor(y) * w + Math.floor(x);
+  const safe = (k: number): boolean => {
+    const holder = controller[k]!;
+    if (holder === 0 || k === here || comp[k] !== comp[here]) return false;
+    if (holder !== nation && blocOf(world, holder) !== bloc && !world.wars.sameSide(holder, nation)) return false;
+    const kx = (k % w) + 0.5;
+    const ky = Math.floor(k / w) + 0.5;
+    for (const o of enemies) if (cellDist(world, kx, ky, c.x[o]!, c.y[o]!) <= CONTACT_CELLS) return false;
+    return true;
+  };
+  let target = nearestCellWhere(safe, px, py, w, h, RETREAT_SNAP);
+  if (target < 0) target = nearestCellWhere(safe, x, y, w, h, RETREAT_REACH);
+  return target >= 0 && orderMove(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
+}
+
+export function retreatSystem(world: World): void {
+  const f = world.formations;
+  const c = f.cols;
+  const controller = world.cells.controller;
   f.forEach((id) => {
     if (c.retreat[id]! > 0) {
-      c.retreat[id] = c.retreat[id]! - 1;
+      // Barred in the middle of a step and on the walk back (PLAN 3.12Ro, ADR-226): ordered again.
+      if (c.home[id] === HOME_BACK && !foreignTo(world, c.nation[id]!, controller[c.targetCell[id]!]!) && fallBack(world, id, RETREAT_CELLS)) c.retreat[id] = RETREAT_HOURS;
+      else c.retreat[id] = c.retreat[id]! - 1;
       return;
     }
     if (c.engaged[id] !== 1 || c.org[id]! >= RETREAT_ORG || (world.tick + id) % RETREAT_RETRY_HOURS !== 0) return;
-    const nation = c.nation[id]!;
     const x = c.x[id]!;
     const y = c.y[id]!;
-    let nearest = 0;
-    let nd = Infinity;
-    const enemies: number[] = [];
-    f.forEach((o) => {
-      if (c.retreat[o]! > 0 || !world.wars.atWar(nation, c.nation[o]!)) return;
-      const d = cellDist(world, x, y, c.x[o]!, c.y[o]!);
-      if (d > about) return;
-      enemies.push(o);
-      if (d <= CONTACT_CELLS && d < nd) {
-        nd = d;
-        nearest = o;
-      }
-    });
-    if (nearest === 0) return;
-    let dx = x - c.x[nearest]!;
-    if (dx > w / 2) dx -= w;
-    else if (dx < -w / 2) dx += w;
-    const dy = y - c.y[nearest]!;
-    const d = sqrt(dx * dx + dy * dy);
-    const px = d > 0 ? x + (dx / d) * RETREAT_CELLS : x;
-    const py = d > 0 ? y + (dy / d) * RETREAT_CELLS : y;
-    const bloc = blocOf(world, nation);
-    const comp = navOf(world).grid.component;
-    const here = Math.floor(y) * w + Math.floor(x);
-    const safe = (k: number): boolean => {
-      const holder = controller[k]!;
-      if (holder === 0 || k === here || comp[k] !== comp[here]) return false;
-      if (holder !== nation && blocOf(world, holder) !== bloc && !world.wars.sameSide(holder, nation)) return false;
-      const kx = (k % w) + 0.5;
-      const ky = Math.floor(k / w) + 0.5;
-      for (const o of enemies) if (cellDist(world, kx, ky, c.x[o]!, c.y[o]!) <= CONTACT_CELLS) return false;
-      return true;
-    };
-    let target = nearestCellWhere(safe, px, py, w, h, RETREAT_SNAP);
-    if (target < 0) target = nearestCellWhere(safe, x, y, w, h, RETREAT_REACH);
-    if (target < 0 || !orderMove(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5)) return;
+    if (!fallBack(world, id, CONTACT_CELLS)) return;
     c.retreat[id] = RETREAT_HOURS;
-    world.out.emit(world.tick, EventKind.FormationRetreated, id, nation, x, y);
+    world.out.emit(world.tick, EventKind.FormationRetreated, id, c.nation[id]!, x, y);
   });
 }

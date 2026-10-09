@@ -5,6 +5,7 @@ import { operationalAi, STAGGER } from '../../src/sim/ai/operational';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { cellDist, CONTACT_CELLS, destroyFormation } from '../../src/sim/systems/elements';
+import { orderMove } from '../../src/sim/systems/movement';
 import { ORG_PER_LOSS, RETREAT_HOURS, RETREAT_ORG, RETREAT_REACH, RETREAT_RETRY_HOURS } from '../../src/sim/systems/retreat';
 import { territorySystem } from '../../src/sim/systems/territory';
 import { FIRE_STRIDE, type World } from '../../src/sim/world';
@@ -208,6 +209,86 @@ describe('the retreat (PLAN 3.5a)', () => {
     s.command({ kind: 'moveFormation', id: sov, x: FIELD_X + 5.5, y: FIELD_Y + 0.5, nation: SOV });
     expect(eventKinds(runEvents(s, 1), EventKind.CommandRefused)).toEqual([]);
     expect(f.targetCell[sov]).toBe(FIELD_Y * W + FIELD_X + 5);
+  });
+
+  // PLAN 3.12Ro (ADR-226). A retreat barred in the middle of a step walked back to the cell it
+  // had left and stood there, by its enemy: 1.38 cells off at the turn and 0.21 at the walk's end
+  // (seed 77, formation 630, tick 4,538), in contact again 14 hours after.
+  it.each([
+    ['before the middle of the step', 0.1],
+    ['past the middle of the step', 0.5],
+  ])('a retreat barred %s, its enemy behind it, is ordered again and ends no nearer that enemy', (_, share) => {
+    const { s, w, sov, ger } = duel();
+    const f = w.formations.cols;
+    s.step(1);
+    f.org[sov] = RETREAT_ORG - 0.01;
+    untilRetreat(s, sov);
+    const [behind, ahead] = [...w.paths.get(sov)!] as [number, number];
+    for (let i = 0; i < RETREAT_HOURS / 2 && f.stepFrac[sov]! <= share; i++) s.step(1);
+    expect([f.pathStep[sov], f.stepFrac[sov]! > share, f.stepFrac[sov]! < 1], 'the premise: in the middle of its first step').toEqual([0, true, true]);
+    const off = (): number => cellDist(w, f.x[sov]!, f.y[sov]!, f.x[ger]!, f.y[ger]!);
+    const turn = off();
+    expect(turn, 'the premise: the cell behind it is nearer its enemy').toBeGreaterThan(cellDist(w, ...w.cellPoint(behind), f.x[ger]!, f.y[ger]!));
+    // The cell ahead turns a third nation's: the step is barred.
+    w.setController(ahead, nationId('POL'));
+    const ev = runEvents(s, 1);
+    expect(eventKinds(ev, EventKind.MoveRejected)).toEqual([[sov, SOV]]);
+    expect(eventKinds(ev, EventKind.FormationRetreated), 'the same retreat: no second row').toEqual([]);
+    // Ordered again in that hour, to ground of its side out of the enemy's contact; a day from now.
+    expect([f.moving[sov], f.home[sov], f.retreat[sov]]).toEqual([1, 0, RETREAT_HOURS]);
+    const target = f.targetCell[sov]!;
+    expect(target).not.toBe(behind);
+    expect(w.cells.controller[target]).toBe(SOV);
+    expect(cellDist(w, (target % W) + 0.5, Math.floor(target / W) + 0.5, f.x[ger]!, f.y[ger]!)).toBeGreaterThan(CONTACT_CELLS);
+    // Its way: back to the cell behind it and on, round the cell that is barred; no jump.
+    let refused = 0;
+    let entered = 0;
+    for (let hour = 1; hour < RETREAT_HOURS && f.moving[sov] === 1; hour++) {
+      const [x, y] = [f.x[sov]!, f.y[sov]!];
+      refused += eventKinds(runEvents(s, 1), EventKind.MoveRejected).length;
+      expect(Math.hypot(f.x[sov]! - x, f.y[sov]! - y), `hour ${hour}: an hour's march`).toBeLessThan(0.2);
+      if (Math.floor(f.y[sov]!) * W + Math.floor(f.x[sov]!) === ahead && [f.x[sov], f.y[sov]].join() === w.cellPoint(ahead).join()) entered++;
+    }
+    expect(refused, 'it is not barred again').toBe(0);
+    expect(entered, 'it does not go to the cell that is barred').toBe(0);
+    expect(f.engaged[sov]).toBe(0);
+    expect(off(), 'no nearer its enemy than at the turn').toBeGreaterThanOrEqual(turn);
+    expect(off()).toBeGreaterThan(CONTACT_CELLS);
+  });
+
+  // The case of seed 77 itself: the cell ahead turned while the formation was held in contact in
+  // the middle of the step, past its middle, and the retreat's own order began on that cell.
+  it('a retreat from the middle of a step whose nearer cell has turned a third nation\'s begins at the other and is not barred', () => {
+    const { s, w, sov, ger } = duel();
+    const f = w.formations.cols;
+    f.x[ger] = f.x[ger]! - 0.4;
+    expect(orderMove(w, sov, FIELD_X - 2.5, FIELD_Y + 0.5)).toBe(true);
+    const [behind, ahead] = [...w.paths.get(sov)!] as [number, number];
+    f.stepFrac[sov] = 0.55;
+    s.step(2);
+    expect([f.engaged[sov], f.pathStep[sov], f.stepFrac[sov]! > 0.5], 'the premise: held in contact past the middle of its first step').toEqual([1, 0, true]);
+    w.setController(ahead, nationId('POL'));
+    f.org[sov] = RETREAT_ORG - 0.01;
+    const ev = untilRetreat(s, sov);
+    expect(eventKinds(ev, EventKind.FormationRetreated)).toEqual([[sov, SOV]]);
+    expect([...w.paths.get(sov)!].slice(0, 2), 'back to the cell behind it, and on from there').toEqual([ahead, behind]);
+    const hours = 6;
+    expect(eventKinds(runEvents(s, hours), EventKind.MoveRejected)).toEqual([]);
+    expect([f.moving[sov], f.home[sov], f.retreat[sov]]).toEqual([1, 0, RETREAT_HOURS - hours]);
+  });
+
+  it('a retreat barred with no enemy near walks back to the cell behind it, as any march', () => {
+    const { s, w, sov, ger } = duel();
+    const f = w.formations.cols;
+    s.step(1);
+    f.org[sov] = RETREAT_ORG - 0.01;
+    untilRetreat(s, sov);
+    const [behind, ahead] = [...w.paths.get(sov)!] as [number, number];
+    s.step(2);
+    destroyFormation(w, ger);
+    w.setController(ahead, nationId('POL'));
+    s.step(1);
+    expect([f.moving[sov], f.home[sov], f.targetCell[sov], f.retreat[sov]]).toEqual([1, 2, behind, RETREAT_HOURS - 3]);
   });
 
   it('the retreat is state: a save has it, and the loaded game goes on as the saved one', () => {

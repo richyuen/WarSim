@@ -12364,3 +12364,39 @@ No rule changed and nothing on screen changed. One task came out of it.
   first; BLOCKERS' entry on the slow gate says what was running after it. The History
   panel's type filter is made of the kinds its rows have: it offers "War ended" where a
   game has one (read, not run).
+
+## 2026-10-09 — PLAN 3.12Ro: a retreat barred in the middle of a step
+
+- **The trace first** (`.cache/ro-case.ts 77 630 4534 80`, the code before): the PLAN's
+  cause was half the story. The cell ahead of formation 630 had turned nation 4's while it
+  stood held in contact past the middle of a step; the retreat's own order began at that
+  cell (the nearer end, ADR-151) and was barred in its first hour.
+- **The mend** (ADR-226), two halves:
+  - `order` (`movement.ts`): in the middle of a step, not at an end closed to the formation
+    where the other is open. Any order's.
+  - `retreatSystem`: on the walk back with an enemy within 3 cells, ordered again by the
+    retreat's own rule (`fallBack`, the body of `retreatSystem` made a function, with the
+    reach as its argument), its 24 hours from that hour, no second event.
+- **Tests:** `retreat.test.ts`, four (the file has 13): barred before and past the middle
+  of the step; the retreat that begins in the middle of a step with its nearer cell
+  turned; the walk back with no enemy near. The first two red on the code before; the
+  second and third red with the order's half taken out (23 refusals in 23 hours: the
+  formation went nowhere). The fourth is green before and after.
+- **What it does not do:** the way out is by the cell behind it, past the enemy. With the
+  retreat's half alone, formation 630: 1.38 cells off at the turn, 0.20 at its nearest,
+  0.75 when the new day ended, 11 hours in contact (2,314 men to 1,629), away at a second
+  retreat (4.0 cells off 40 hours on). Before: idle at 0.21 cells, in contact 14 hours
+  after.
+- **Not shown on the final code:** with the order's half the game of seed 77 differs
+  before tick 4,538 and formation 630 is elsewhere. The 1938 games traced no longer hold
+  the case; the unit test does.
+- **Figures** (`.cache/rk-back.ts`, before → after): formation-hours on a walk back, seed
+  99 in 14,400 hours 857 → 787, seed 77 in 4,700 hours 365 → 283. Walks on the retreat 12
+  → 12 and 7 → 5; after, none with an enemy within 37 cells. The seed 99 case of the PLAN
+  (tick 14,230) was already gone before this task: the game changed with 3.12Rm.
+- **The pin:** stays at 2104f897 (`baselineHash.test.ts` run before the gate, after each
+  half).
+- **Not looked into:** how many orders a year begin at the further end; a barred retreat
+  with its enemy just beyond 3 cells on a diagonal (ADR-226, "Not done").
+- **No sweep** (ADR-58). No e2e in the gate (a part, ADR-87); nothing drawn changes, no
+  spec run by hand.

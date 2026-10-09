@@ -918,6 +918,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     home, and any order ends it. Before an enemy's cell it loses the mark and waits as any
     march, the AI's to order (PLAN 3.12Rk, ADR-222). With
     none of the step walked the march ends on its cell.
+    An order in the middle of a step does not begin at an end that is closed to the
+    formation where the other end is open (PLAN 3.12Ro, ADR-226): the cell that barred a
+    walk back, or one turned a third nation's under a formation held in contact. A path
+    that began there was barred in its first hour.
 - *Hourly:* a formation advances along cell centres. Entering a cell costs step km × move cost ÷
   (speed × 0.3 march duty × the template's share of its speed on that ground: the least
   `terrainMods.speed` of its manoeuvre elements, PLAN 3.3b, ADR-138; the route is found by the
@@ -1167,6 +1171,14 @@ bombardment) participants join through their missions.
     no battle to stop it, an order sent a broken division over the enemy's cells and past his
     formations. The formation panel's status says "On the retreat: no orders for N h".
     `FormationRetreated` is the event (not in the history).
+  - *Barred in the middle of a step* (PLAN 3.12Ro, ADR-226): the cell ahead has turned a
+    third nation's and the march walks back to the cell behind it (§4, Land movement), the cell it left,
+    on its enemy's side. With an enemy within 3 cells it is ordered again in that hour by
+    the same rule, from that enemy: back to the cell behind it (the one way out of the
+    step) and on from there, and its 24 hours begin again; no second event. With no such
+    ground or no route, or the cell behind it a third nation's too, it walks back as any
+    march, asked again each hour of the walk. From further off the walk back ends out of
+    contact (3 cells less a step of 1.42).
   - *No ground within reach:* it holds and fights, with a quarter of its fire, and tries
     again every 6 hours (when (tick + id) mod 6 = 0; the first try waits for that hour too).
     The surrender of the encircled is not modelled.

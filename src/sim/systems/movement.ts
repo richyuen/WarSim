@@ -15,7 +15,8 @@
  * reachable from the formation (a coastal speck at map resolution) snaps to the nearest reachable
  * cell within TARGET_SNAP_CELLS; beyond that the order is rejected.
  * An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1): its
- * path begins with that step, on along it or back to the nearer of its two cells.
+ * path begins with that step, on along it or back to the nearer of its two cells (the further
+ * one where the nearer is ground closed to it and the further is not, PLAN 3.12Ro).
  *
  * No march across a nation that is not in the war (PLAN 3.4Rl, ADR-149). A formation enters the
  * ground of its own bloc, of a nation it is at war with, of one that fights beside it, and
@@ -235,11 +236,17 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const at = c.pathStep[id]!;
   const frac = c.stepFrac[id]!;
   const mid = was !== undefined && at < was.length - 1;
-  const origin = mid ? was[frac < 0.5 ? at : at + 1]! : Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
-  const beyond = mid ? was[frac < 0.5 ? at + 1 : at]! : -1;
+  const way = pass ?? (home === HOME_MARCH ? homeward(world, c.nation[id]!) : passageOf(world, c.nation[id]!));
+  // Not at an end that is closed to it where the other is open (PLAN 3.12Ro, ADR-226): a path
+  // that began on the cell that had barred a march, or had turned a third nation's under a
+  // formation held in contact, was barred in its first hour and walked back.
+  const shut = (cell: number): boolean => way.ok[way.holder[cell]!] !== 1;
+  const near = mid && (frac < 0.5 ? !shut(was[at]!) || shut(was[at + 1]!) : shut(was[at + 1]!) && !shut(was[at]!));
+  const origin = mid ? was[near ? at : at + 1]! : Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+  const beyond = mid ? was[near ? at + 1 : at]! : -1;
   const nav = navOf(world);
   const target = snapTarget(world, origin, tx, ty);
-  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, pass ?? (home === HOME_MARCH ? homeward(world, c.nation[id]!) : passageOf(world, c.nation[id]!)));
+  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, way);
   if (!route) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);
     return false;
@@ -255,7 +262,7 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
     const onward = route.cells[1] === beyond;
     const cells = onward ? route.cells : [beyond, ...route.cells];
     c.originCell[id] = cells[0]!;
-    c.stepFrac[id] = onward === frac < 0.5 ? frac : 1 - frac;
+    c.stepFrac[id] = onward === near ? frac : 1 - frac;
     world.paths.set(id, Int32Array.from(cells));
     return true;
   }

@@ -5689,7 +5689,7 @@ quick sweep as a smoke test.
     A war that a death empties has no row of its own: the death's row is its end (decided
     in ADR-225). Found with it: two wars of seed 2 declared and ended in one hour: PLAN
     3.12Rr.
-  - [ ] 3.12Ro **The walk back of a formation on the retreat does not go towards its enemy**
+  - [x] 3.12Ro **The walk back of a formation on the retreat does not go towards its enemy**
     (found with 3.12Rk, the ninth read's suspicion; `.cache/rk-back.ts <seed> <ticks>`). A
     retreat whose next cell has turned a third nation's in the middle of the step is barred
     and walks back to the cell behind it (`HOME_BACK`, ADR-172): that cell is the one it
@@ -5702,6 +5702,19 @@ quick sweep as a smoke test.
     that is its side's ground, or the walk back as it is with the reason. The pin may move.
     AT: a unit test that fails first: a formation on the retreat, barred in the middle of a
     step with its enemy behind it, is no nearer that enemy when the walk ends.
+    **Done 2026-10-09 (ADR-226).** Two causes. (1) An order in the middle of a step began at
+    the nearer of its two cells even where that cell was closed to the formation: in the
+    traced case (seed 77, formation 630) the cell had turned a third nation's while the
+    formation was held in contact, the retreat's own order began on it and was barred an
+    hour later. `order` now begins at the further end where the nearer is closed and the
+    further is not. (2) A retreat on the walk back with an enemy within 3 cells is ordered
+    again in that hour by the retreat's rule, and its day begins again; the walk on to the
+    far end cannot be (that cell is what barred it). Four tests in `retreat.test.ts`, red
+    first. The pin stays (2104f897). The way out is by the cell behind it all the same: a
+    formation in the middle of a step can leave it at no other place. With the retreat's
+    half alone formation 630 passed its enemy at 0.20 cells, was 0.75 off when the new day
+    ended, fought 11 hours (2,314 men to 1,629) and got away at a second retreat; on the
+    final code the game of seed 77 is another before that hour and the case is not in it.
   - [ ] 3.12Rp **The supply flood keeps to the map's edges where the map does not loop**
     (found with 3.12Rl, the ninth read's suspicion; read, not run). The flood
     (`supply.ts`, the two seeds at a row's ends), the gain test (`beside`) and `ringHolds`

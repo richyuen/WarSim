@@ -167,6 +167,77 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-226 · 2026-10-09 · accepted — A retreat barred in the middle of a step is ordered again from its enemy; an order in the middle of a step does not begin at an end closed to the formation (PLAN 3.12Ro)
+
+- **Context.** A march whose next cell has turned a third nation's in the middle of the step
+  walks back to the cell behind it (ADR-172). For a formation on the retreat that cell is
+  the one it left, on its enemy's side. PLAN 3.12Rk counted 23 such walks in three years of
+  seeds 77 and 99, two with an enemy near: 1.4 cells off at the turn, 0.2 at the walk's end.
+- **What the trace found** (seed 77, formation 630 of nation 6, tick 4,538; `.cache/
+  ro-case.ts`, on the code before): two causes, not one.
+  - The cell had not turned under the retreat. It turned while the formation stood held in
+    contact past the middle of a step (a formation in contact is not moved, so it was not
+    barred then). The retreat's own order, in the middle of that step, began at the nearer
+    of the step's two cells (ADR-151): the cell turned nation 4's. A route from closed
+    ground is allowed (who stands on it walks out), the path was the step to that cell and
+    on, and the march was barred in its first hour.
+  - The same in `order` for the walk back itself: an order given on the first half of a
+    walk back began at the cell that had barred it. The first test of this task showed it:
+    barred again in each of 23 hours, the formation going nowhere.
+- **Decision.**
+  - *The order* (`order`, `movement.ts`): in the middle of a step the route begins at the
+    nearer end, but at the further one where the nearer is closed to the formation by the
+    order's own passage and the further is not. For any order: a retreat's, an AI's, a
+    player's, a march home's (whose passage closes an enemy's ground alone).
+  - *The retreat* (`retreatSystem`): a formation on the retreat and on the walk back
+    (`HOME_BACK`) with an enemy within `RETREAT_CELLS` (3) is ordered again in that hour by
+    the retreat's own rule (`fallBack`, the search that was `retreatSystem`'s body), from
+    that enemy. Its `RETREAT_HOURS` begin again with the order; `FormationRetreated` is not
+    emitted again. With no cell or no route it walks back and is asked again each hour of
+    the walk. Not where the cell behind it is a third nation's too: the walk back alone is
+    not barred there (ADR-172).
+  - *Why 3 cells:* the distance a retreat means to put between the two. From further off a
+    walk back of one step (1.42 cells at most) ends out of contact (1.5).
+  - *Why the day begins again:* the way out is back to the cell behind it first, towards
+    the enemy, and on from there; what is left of the first day does not take it out of
+    contact (below).
+- **Not chosen.**
+  - *The walk on to the step's far end where that is its side's ground* (the PLAN's second
+    way): the far end is what barred it, a third nation's by the rule that bars.
+  - *A way that does not go back to the cell behind it.* A formation in the middle of a
+    step is on the line between two cell points; a path leaves that line at one of them,
+    and the other is closed. It passes its enemy.
+  - *The walk back left as it is:* the formation stood idle on its enemy's side with its
+    retreat running out, no order allowed it.
+  - *The re-order in `movementSystem`*, where the walk back begins: `retreat.ts` imports
+    `movement.ts`, and the retreat runs after the movement in the same hour.
+- **Measured.**
+  - Formation 630 with the retreat's half of this alone (an earlier state of the working
+    tree, `.cache/ro-case-after.log`): barred at tick 4,538 at 1.38 cells from its enemy,
+    ordered again, back past it at 0.20 cells (tick 4,549), 0.75 cells off when the new
+    day ended (4,562), in contact for 11 hours (2,314 men to 1,629), a second retreat at
+    4,573 and 4.0 cells off 40 hours on. Before: back at 0.21 cells and idle there, in
+    contact 14 hours after. So: it gets away at the second retreat, not the first.
+  - With both halves the game of seed 77 is another before that tick (the AI's orders in
+    the middle of a step begin elsewhere) and the formation is not in that place: the case
+    cannot be shown on the final code, and what the order's half does for it is the unit
+    test's word (`begins at the other and is not barred`).
+  - `.cache/rk-back.ts`, before and after: seed 99, 14,400 hours: 857 formation-hours on a
+    walk back, then 787; 12 walks on the retreat both times, none with an enemy within 98
+    cells. Seed 77, 4,700 hours: 365, then 283; 7 walks on the retreat (one the case
+    above), then 5, none with an enemy within 37 cells.
+- **The pin** stays at 2104f897: no order of seed 99's first year began at a closed end.
+- **Tests.** `retreat.test.ts`, four: a retreat barred before and past the middle of the
+  step is ordered again, is not barred again, does not go to the barred cell and ends out
+  of contact, no nearer its enemy than at the turn (red first: the walk back; the second
+  red again without the order's half, 23 refusals); a retreat from the middle of a step
+  whose nearer cell has turned begins at the other (red without the order's half); with no
+  enemy near, the walk back as before (green before and after).
+- **Not done.** No count of how many orders a year begin at the further end. No test of a
+  player's order on a walk back (ADR-172 has the same gap; the rule is now the passage's).
+  A formation barred with its enemy between 3 cells and 1.42 + 1.5 off on a diagonal is
+  not ordered again and could end a walk back in contact: not seen, not looked for.
+
 ### ADR-225 · 2026-10-09 · accepted — A war that a bond ends has its row, `WarEnded`, with whose puppet the nation is now; a death's row is the end of a war it empties (PLAN 3.12Rn)
 
 - **Context.** A nation that gets an overlord while at war leaves the wars against its new
