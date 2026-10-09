@@ -6212,3 +6212,25 @@ Of 3.12R (open in PLAN.md):
     and goes back to its core nation month after month (ADR-210; balance, ADR-58) if it has
     none; the full suite on the final tree, its log kept in `.cache/` for 3.12Ri, whatever
     an earlier part broke fixed here; 3.12R ticked.
+
+<!-- moved 2026-10-09 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.1 (open in PLAN.md):
+
+  - [x] 4.1a The sea zones: the seeds of the named seas (`data/maps/earth/seas.json`, made by
+    `npm run data` from the Natural Earth marine polygons, the large ones in parts), and at
+    load a Voronoi over the water and crossing cells from them (`src/sim/nav/seaZones.ts`);
+    water no seed reaches (a lake, a map with no seas file: toy, an import) is given zones of
+    its own. Derived from static layers: not saved, not hashed, read by nothing in play yet,
+    so the pin stays.
+    AT: the 1938 map's zone count is within the range written in SPEC §3.3; every water cell
+    of a zone reaches its seed inside the zone; the toy world and a map with no seeds have zones.

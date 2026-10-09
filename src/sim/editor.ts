@@ -232,6 +232,7 @@ function markDirty(world: World, c: number): void {
  */
 function terrainChanged(world: World): void {
   world.nav = null;
+  world.sea = null;
   world.frontier = null;
   world.supplyDirty = true;
   world.terrainVersion++;

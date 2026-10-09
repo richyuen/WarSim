@@ -238,6 +238,12 @@ const lonLat = z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(9
 export const StraitDef = z.strictObject({ id, nameKey: key, a: lonLat, b: lonLat });
 export const StraitsFile = z.strictObject({ straits: z.array(StraitDef) });
 
+// ── seas (data/maps/<id>/seas.json) ──────────────────────────────────────────
+
+/** A seed of a sea zone (PLAN 4.1a): `part` is 0 for a sea of one zone, else 1…k. */
+export const SeaSeedDef = z.strictObject({ name: z.string().min(1), part: z.number().int().min(0), lonLat });
+export const SeasFile = z.strictObject({ comment: z.string().optional(), seas: z.array(SeaSeedDef) });
+
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
 
 export const ScenarioSettings = z.strictObject({
@@ -410,6 +416,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^templates\/[a-z0-9_]+\.json$/, schema: TemplatesFile },
   { pattern: /^maps\/[a-z0-9_]+\/map\.json$/, schema: MapMeta },
   { pattern: /^maps\/[a-z0-9_]+\/straits\.json$/, schema: StraitsFile },
+  { pattern: /^maps\/[a-z0-9_]+\/seas\.json$/, schema: SeasFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
   { pattern: /^scenarios\/[a-z0-9_]+\/nations\.json$/, schema: NationsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ownership\.json$/, schema: OwnershipFile },

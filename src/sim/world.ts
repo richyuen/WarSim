@@ -4,6 +4,7 @@
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
+import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { RngStreams } from './core/rng';
@@ -402,6 +403,7 @@ class WorldCore implements Stateful {
     w.deployed = null;
     w.deployedBefore = null;
     w.nav = null;
+    w.sea = null;
     w.frontier = null;
     w.dropLandCounts();
     w.terrainVersion++;
@@ -420,6 +422,11 @@ export function navOf(world: World): { grid: NavGrid; graph: ProvinceGraph } {
     world.nav = { grid, graph: buildProvinceGraph(grid, world.cells.province) };
   }
   return world.nav;
+}
+
+/** The sea zones for the world's terrain and its map's seeds (PLAN 4.1a; built once, cached). */
+export function seaOf(world: World): SeaZones {
+  return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds));
 }
 
 export class World {
@@ -624,6 +631,13 @@ export class World {
    */
   paths = new Map<number, Int32Array>();
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
+  /**
+   * The seeds of the map's named seas (PLAN 4.1a): static data of the map, not state (not saved,
+   * not hashed). None on the toy world: its water is given zones with no name.
+   */
+  seaSeeds: readonly SeaSeed[] = [];
+  /** The sea zones: a derived cache, as `nav` is, and dropped where it is. */
+  sea: SeaZones | null = null;
   commandLog: LoggedCommand[] = [];
   /** Custom nation names from God Mode (PLAN 1.32); state, saved with the core. */
   names = new Map<number, string>();

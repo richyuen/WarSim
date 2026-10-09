@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-242 · 2026-10-09 · accepted — Sea zones are a Voronoi over water from seeds in the map's data (PLAN 4.1a)
+
+- **Context.** SPEC §3.3 asked for zones "built as a Voronoi over water seeded by named seas
+  and then subdivided". Nothing of the sea was in the sim. The Natural Earth marine polygons
+  were downloaded and pinned since PLAN 0.18 and read by nothing.
+- **Decision.** The data tool makes seeds from the polygons (`data/maps/earth/seas.json`:
+  name, part, a point), and the sim makes the zones from the seeds alone, one search over
+  water from all of them at once (`buildSeaZones`). The cutting of a large sea is done by the
+  tool and is in the file. Water with no seed is cut by the same function at load.
+- **Why seeds and not the polygons or a raster.** A raster of zones would be a shipped
+  asset for each map size; the polygons are 4 MB. Seeds are 30 KB of JSON, serve every size
+  of the map (tested at M and S), and a zone made by a search over water is in one piece
+  and never over land, which a polygon drawn on cells is not.
+- **Why by length as well as by area.** With one seed for each 1.5 M km² the Mediterranean
+  proper had one, and the seeds of its gulfs took its middle (a test asked for the sea at
+  20° E 34.5° N and was given the Gulf of Sidra). A sea is given a seed for each 1,500 km of
+  its length when that is more: 415 seeds instead of 360.
+- **Why a sea's pieces are spread over one by one.** A polygon's water is in pieces on the
+  cell grid (a lagoon in an atoll, a cell behind an isthmus). Spread as one region, 31 seeds
+  of the oceans stood in bodies of one cell. A piece under 10,000 km² has no seed.
+- **Consequences.** A zone's edge is not the polygon's. Steps are cells (4-way), so zones in
+  the open sea are diamonds and are not of equal area in km: the largest is 2.3 M km². What
+  is drawn of them is PLAN 4.7's, which may ask for another measure; nothing is saved, so
+  a change of it costs a run of the tool. The names are English in the data file. On a map
+  import the earth's seeds are used where they fall on water, with the earth's names.
+- **The pin stays:** nothing in play reads the zones.
+- **Tests.** `tests/unit/seaZones.test.ts`, five.
+
 ### ADR-241 · 2026-10-09 · accepted — The page's copies of a looping map take a margin (PLAN 3.12Rt)
 
 - **Context.** Over the seam of a map that loops a block's middle and its slots keep the

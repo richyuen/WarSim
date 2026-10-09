@@ -6,6 +6,8 @@
  * are looked up by id; only what changes during play is state.
  */
 import earthMap from '../../data/maps/earth/map.json' with { type: 'json' };
+import earthSeas from '../../data/maps/earth/seas.json' with { type: 'json' };
+import type { SeaSeed } from './nav/seaZones';
 import earthStraits from '../../data/maps/earth/straits.json' with { type: 'json' };
 import combatJson from '../../data/combat.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
@@ -315,6 +317,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   const { w, h } = SIZE_1938;
   const world = new World(seed, w, h);
   world.landMask = assets.landMask ?? null;
+  world.seaSeeds = earthSeas.seas as unknown as SeaSeed[];
   world.startDay = dayOfIso(scenario1938.startDate);
   const tags = TAGS_1938;
   const input = politicalMapInput1938(assets, w, h);

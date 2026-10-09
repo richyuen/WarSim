@@ -37,6 +37,7 @@ export function applyGameOptions(world: World, o: GameOptions): void {
     // The scenario build already made the pathing grid (wrapping): rebuild it on demand. A
     // path stays (PLAN 3.7k): a march does not take a step over the seam that is one no more.
     world.nav = null;
+    world.sea = null;
     world.frontier = null;
     world.supplyDirty = true;
   }

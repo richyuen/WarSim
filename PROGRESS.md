@@ -12975,3 +12975,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **`npm run plan:archive`** moved 3.12R and its parts to `docs/PLAN_DONE.md`.
 - **Gate:** `npm run check`, documents only: parity.
 - **Next:** PLAN 4.1 (sea zones, the lane graph, ports).
+
+## 2026-10-09 — PLAN 4.1 split in four; 4.1a: the sea zones
+
+- **Start:** the tree clean, `npm run check` nothing to run (`.cache/gate-41-start.log`);
+  `npm run critic:due`: not due.
+- **The split:** 4.1a the zones, 4.1b the lane graph and the straits, 4.1c ports and naval
+  bases, 4.1d the march over a bay (the only one that moves the pin).
+- **Built (ADR-242):** `tools/data/seas.ts` and `npm run data -- --seas` make
+  `data/maps/earth/seas.json` (415 seeds of 170 named seas) from the marine polygons that
+  were cached since PLAN 0.18; `src/sim/nav/seaZones.ts` makes the zones from the seeds, a
+  search over water from all of them at once; `seaOf(world)` holds them as `navOf` holds the
+  grid. 428 zones on the 1938 map at M (13 of them lakes with no name), 0.2 s; 3,227 water
+  cells in bodies under 10,000 km² have none.
+- **Found on the way, by the figures and one picture looked at** (`.cache/seaZones.png`,
+  from `.cache/seaProbe.ts`): 31 seeds of the oceans in bodies of one cell (a sea's pieces
+  are now spread over one by one); zones of 4.5 M km² where 1.5 M was meant (a seed now goes
+  to its part's middle by area: the largest is 2.3 M); the Mediterranean with one seed and
+  its middle taken by its gulfs (a seed for each 1,500 km of length: it has 5).
+- **For 4.1b, counted here:** the zones are in 19 groups by touch: the oceans; the Black Sea
+  with the Sea of Azov; the Sea of Marmara; the Caspian with Garabogaz Bay; the inner water
+  of the Strait of Magellan; Lake Maracaibo; 13 lakes. The Bosporus and the Dardanelles are
+  closed on the cell grid, and Suez, Panama and Kiel are land.
+- **Not looked at:** the zones at L and XL (no terrain is shipped at those sizes; the search
+  is one pass over the cells, so about 2 s at XL by the cell count, not measured); a map
+  import (the earth's seeds are used where they fall on water, names and all); the zones
+  drawn in the game (PLAN 4.7; in the open sea they are diamonds); `npm run data` in full
+  (only `--seas` was run: the full run calls the same function on the same terrain).
+- **No rule changed:** nothing in play reads the zones. The pin stays. **No sweep** (ADR-58).
+- **PARITY:** our additions, row 3 (naval warfare) from not started to partial.
+- **Next:** PLAN 4.1b (the lane graph, and the passages the grid closes).

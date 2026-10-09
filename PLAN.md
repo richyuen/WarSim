@@ -29,6 +29,20 @@ quick sweep as a smoke test.
   mask's water at day 90 of seed 99, none of 134 at day 30). It needs routing below the cell
   or along the coast, and belongs with the crossings.
   AT: every coastal province with a port connects to the lane graph; zone count within range.
+  Split 2026-10-09 (one cause per commit), in this order:
+  - [x] 4.1a The sea zones: the seeds of the named seas (`data/maps/earth/seas.json`, made by […]
+  - [ ] 4.1b The lane graph: nodes at the zones' centres and at the straits (the crossings'
+    components), edges between zones that touch, with distance in km and `crossing`; what the
+    cell grid closes and a ship passes (the Bosporus, Suez, Panama, Kiel) is counted first and
+    then joined by data.
+    AT: Gibraltar to Suez and the Black Sea to the Mediterranean have a route; no edge's cells
+    cross land.
+  - [ ] 4.1c Ports and naval bases: scenario data for 1938 (ports from the coastal cities by
+    size, the naval bases by hand), held by the world, each a node of the lane graph.
+    AT: every coastal province with a port connects to the lane graph (the task's own).
+  - [ ] 4.1d The march over a bay (the Phase 2 review's line above): routing below the cell
+    or along the coast. It changes land paths: the pin moves, with an ADR.
+    AT: on seed 99 at day 90 no formation on the march is over the fine mask's water.
 - [ ] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
   AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
 - [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).

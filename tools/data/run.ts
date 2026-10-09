@@ -17,6 +17,9 @@
 // 4. Scenario previews for the title screen (PLAN 1.43c, tools/data/preview.ts):
 //    public/data/scenarios/<id>/preview.png, from the shipped assets and the scenario data.
 //    `--previews` builds only these: no downloads, a few seconds.
+// 5. The seeds of the sea zones (PLAN 4.1a, tools/data/seas.ts): data/maps/earth/seas.json, from
+//    the marine polygons and the M terrain with the map's crossings. `--seas` builds only these,
+//    from the cached polygons and the shipped terrain: no downloads, a few seconds.
 // `--check` builds everything in memory and fails if any output would change.
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -30,6 +33,9 @@ import { clearBits, rasterizePolygon, setBits } from '../../src/shared/rasterize
 import { encodePng } from './png';
 import { writePreviews } from './preview';
 import { buildCities, type CityRules, type NePlace } from './cities';
+import { buildSeaSeeds, seasJson, type MarineFeature } from './seas';
+import { applyCrossings, type StraitDef } from '../../src/sim/data/terrain';
+import { earthAsset } from '../headless/assets';
 import { buildTerrain, halveTerrain, landFraction, terrainPreview } from './terrain';
 import { extractZipEntry } from './zip';
 
@@ -39,6 +45,7 @@ const outDir = path.join(root, 'public/data/earth');
 const sourcesPath = path.join(root, 'tools/data/sources.json');
 const CHECK = process.argv.includes('--check');
 const ONLY_PREVIEWS = process.argv.includes('--previews');
+const ONLY_SEAS = process.argv.includes('--seas');
 
 const MASK_W = 16384;
 const MASK_H = 8192;
@@ -285,7 +292,30 @@ function previews(): number {
   return changed.length;
 }
 
+/** Step 5, from the M terrain without crossings (the array is not changed); returns whether the file changed. */
+function seas(marine: Uint8Array, terrainM: Uint8Array): boolean {
+  const mapDir = path.join(root, 'data/maps/earth');
+  const terrain = new Uint8Array(terrainM);
+  applyCrossings(terrain, 2048, 1024, (JSON.parse(readFileSync(path.join(mapDir, 'straits.json'), 'utf8')) as { straits: StraitDef[] }).straits);
+  const seeds = buildSeaSeeds((JSON.parse(new TextDecoder().decode(marine)) as { features: MarineFeature[] }).features, terrain, 2048, 1024);
+  const json = seasJson(seeds);
+  const p = path.join(mapDir, 'seas.json');
+  const changed = !existsSync(p) || readFileSync(p, 'utf8') !== json;
+  console.log(`  seas: ${seeds.length} seeds of ${new Set(seeds.map((s) => s.name)).size} named seas`);
+  if (changed) {
+    if (CHECK) console.error('  would change: data/maps/earth/seas.json');
+    else writeFileSync(p, json);
+  }
+  return changed;
+}
+
 async function main(): Promise<void> {
+  if (ONLY_SEAS) {
+    const changed = seas(readFileSync(path.join(cacheDir, 'ne_10m_geography_marine_polys.geojson')), new Uint8Array(earthAsset('terrain', 2048)));
+    console.log(!changed ? 'data: seas unchanged' : `data: seas ${CHECK ? 'would change' : 'written'}`);
+    if (CHECK && changed) process.exit(1);
+    return;
+  }
   if (ONLY_PREVIEWS) {
     const n = previews();
     console.log(n === 0 ? 'data: previews unchanged' : `data: ${n} preview(s) ${CHECK ? 'would change' : 'written'}`);
@@ -400,6 +430,7 @@ async function main(): Promise<void> {
     else writeFileSync(cityPath, cityJson);
   }
   for (const a of assets) console.log(`  ${a.path}: ${(a.bytes / 1e6).toFixed(2)} MB`);
+  if (seas(raw.get('ne_10m_geography_marine_polys')!, tb.terrain)) changed++;
   // The previews are built from the assets on disk, so after those are written.
   changed += previews();
   console.log(changed === 0 ? 'data: no changes' : `data: ${changed} file(s) ${CHECK ? 'would change' : 'written'}`);

@@ -445,6 +445,31 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
 - **Sea zone**: id, name key, polygon (cells), lane graph nodes, adjacency, control per side.
   Built as a Voronoi over water seeded by named seas (Natural Earth marine
   polygons) and then subdivided.
+  *As built (PLAN 4.1a, ADR-242; `src/sim/nav/seaZones.ts`, `seaOf(world)`):* a zone is the
+  water and crossing cells nearest to its seed, in steps over water (4-way, the earlier seed
+  on a tie), so it is in one piece and no land is crossed. Derived from the terrain and the
+  map's seeds: not saved, not hashed, dropped where the nav grid is. 0.2 s at M.
+  - *The seeds* (`data/maps/earth/seas.json`, 415 of 170 named seas; `npm run data`, or
+    `npm run data -- --seas` from the cached polygons, `tools/data/seas.ts`): each named polygon
+    is drawn on the M map; one under 10,000 km² of water is left out; a cell in several is of
+    the smallest. A sea is given a seed for each 1.5 M km² of its area (`ZONE_KM2`), or for
+    each 1,500 km of its length when that asks for more (`ZONE_SPAN_KM`: the Mediterranean
+    has 5), spread over it (`spreadSeeds`: the deepest cell, the furthest from the seeds so
+    far, then each to the middle of its part by area). A seed has the sea's name and its
+    part (0, or 1…k). The names are English and in the file, as the cities' are.
+  - *Water no seed reaches* (a lake, the toy world, a map with no seas file): a body of
+    10,000 km² or more (`MIN_WATER_KM2`) is given seeds by the same spread and its zones
+    have no name; a smaller one has no zone (zone 0).
+  - *A seed on land* (the map at S, ground painted in the editor) takes the nearest water
+    within 2 cells that no seed has, and is left out with none (`dropped`).
+  - *The count* on the 1938 map at M is 428 (415 named, 13 lakes); the test holds it to
+    300–450. The largest is 2.3 M km², the median 0.67 M.
+  - *Not as the polygons:* a zone's edge is where two seeds are as near, not on the
+    polygon's line, and a step is a cell, so a zone in the open sea is a diamond on the map
+    and is smaller in km near the poles than its cells say. Bodies the cell grid closes are
+    not joined (the Black Sea with the Sea of Azov, the Sea of Marmara, the Caspian, the
+    Strait of Magellan's inner water, each lake): the lane graph joins what a ship passes
+    (PLAN 4.1b).
 - **Lane graph**: nodes at sea-zone centres, ports and straits. Edges carry distance and
   `crossing` (AoC-style land-unit-walkable lanes, editable).
 - **Air zone**: a cluster of about 8–20 provinces. Air superiority is tracked per side per zone.
