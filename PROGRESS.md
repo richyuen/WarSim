@@ -12096,7 +12096,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs run by hand** (`--project chromium`): `ticker1938`, `settings1938`,
   `history1938`, `player1938`, the editor's; and, before the bar's no-shrink rule and the
   panels' widths, those with a view under 1,024 px, where the size is now 85%
-  (`smallMark1938`, `camera`, `mapview`, `formationFight1938`) and `title`: green.
+  (`smallMark1938`, `camera`, `mapview`, `formationFight1938`) and `title`: green. After
+  the commit, `tags1938` (it reads the bar's box): green.
+- **Checked:** `Settings` is made once a page (`startGame`; a new game and the main menu
+  are `location.assign`), so its `resize` listener is one and needs no removal.
+- **Left as it is:** Settings shows the size in use, not the one chosen: in a narrow
+  window a stored 130% reads "100%" and the choice is not seen until the window is wider.
 - **Not looked into:** another locale's bar width (the constant is English's).
 - **Performance:** not measured: CSS and one listener of `resize`; no sim change, the pin
   unmoved.
