@@ -588,3 +588,8 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     from an aborted gate. The two unit files alone: 24 of 24. A year of seed 99 profiled on
     the commit and on the one before: each system within the run-to-run spread (combat 3.42
     and 3.69 ms, the commit before the slower). The tests were not changed.
+  - PLAN 4.4's tick (2026-10-10, this container): the browser suite 164 of 165 in its job's
+    two hours (zoomDemo, red on the commits before, not reached); red as before but for
+    editorDrag1938 (a timeout, green alone) and declutter1938 (red once alone, then green alone
+    on this commit and the one before). The ten-year stage: all three seeds through their ten
+    years with no rule broken, seeds 1 and 3 over the 600 s (719 and 731 s).

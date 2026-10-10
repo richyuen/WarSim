@@ -23,45 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
-  From PLAN 4.1c (2026-10-09, ADR-244): the ports are data of the scenario (`world.ports`),
-  not state. What builds, damages or blockades a port makes its levels state (the pin moves
-  then). A reader takes `laneOf(world).portNode`: 36 of 615 ports have no node (water with
-  no zone). 43 ports stand in held land with no province (New York, Sydney), so a port's
-  province is not always known. A city placed in the editor gets no port.
-  From PLAN 4.1d2 (2026-10-09, ADR-246): of the 36 ports with no node, those of 20 provinces
-  are their province's only ones: 19 read by their names as on a lake or a river, and
-  Narsarsuaq (Greenland) on the coast; Juneau and Valdez the same, in no province. Why the
-  water of these three has no zone was not looked into. A port is to take water that has a
-  zone where its reach has any.
-  From PLAN 4.2b (2026-10-09, ADR-248): the supply system leaves a fleet alone, so its
-  supply is 1 for ever. A fleet stands at a base its nation has lost (the land taken in a
-  war, handed over in a peace, risen in a revolt): nothing sends it away, takes it or
-  reads it. `portWater` (the fleets' water, by the terrain) and the lane graph's port node
-  (by zoned water) are two rules for one cell: the same for the 61 bases with fleets, not
-  looked at for the other 554 ports.
-  From PLAN 4.2c (2026-10-09, ADR-250): a fleet sails any water and any passage, whoever
-  holds its banks (Suez, Panama, Kiel, the Bosporus) and whoever it is at war with. Its
-  supply is 1 however far it sails, and it burns no fuel under way.
-  A fleet in a passage's step is over the canal's land cells for those hours (6 in the
-  Suez canal), and a map import of terrain removes every fleet whose cell is land
-  (`strandedToLand`, whatever the import changed): a fleet in a canal is gone by it. Read,
-  not tried. The step's two cells are in its path: a fleet on such a step is to be left.
-  From PLAN 4.2d (2026-10-10, ADR-251): ice is all the year (`data/maps/earth/ice.json`, 21
-  seas closed): the map has no seasons, and the Baltic, the Gulf of Bothnia and the White
-  Sea are open in winter. 16 ports have their water in the ice and keep a node with no edge
-  (Tiksi, Dikson, Resolute, Qaanaaq): a port no ship reaches. A fleet of a scenario placed in
-  the ice would have no way out (none of 1938 is: tested).
-  AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
-  Split 2026-10-10 (one cause to a commit):
-  - [x] 4.4a Sea control per zone: who holds each zone, by the warships in it, contested by […]
-  - [x] 4.4b Blockade: a port whose zone an enemy of its holder holds pays less. […]
-  - [x] 4.4c Supply over sea: a bloc's network takes its ports that a way over zones no […]
-  - [x] 4.4d Convoys and submarine raiding: income of overseas land by sea; sinkings logged. […]
-  - [ ] 4.4e A fleet's loose ends: a base its nation has lost, a passage whose banks an
-    enemy holds, a fleet in a canal under a map import, its supply and fuel at sea.
-    AT: a fleet at a base taken by an enemy sails for another of its nation's ports; a
-    fleet is refused a passage whose bank an enemy holds (test).
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
   5 and 6 are their tasks): without transport by sea the sea powers are out of every war.
@@ -97,6 +58,9 @@ quick sweep as a smoke test.
   From PLAN 4.2c (2026-10-09, ADR-250): only a player orders a fleet (`orderSail`, by the
   `moveFormation` command). A way costs about 2 ms and the lane graph 0.4 to 0.7 s at its
   first use in a game: count what a day of the AI's orders costs before it gives them.
+  From PLAN 4.4 (2026-10-10, ADR-257 to ADR-261): a fleet has no supply and burns no fuel at
+  sea (its supply is 1 however far it sails); a way found before a passage was shut keeps
+  it. The 615 ports' levels are still data, not state: nothing builds or damages one.
   From PLAN 4.3 (2026-10-10, ADR-256): a fleet in a sea battle fights until it is under half
   the ships it came in with (or has no weapon against an armed enemy), then breaks off for
   its nearest port for 24 hours; a fleet with guns and no destroyer under a submarine
@@ -793,3 +757,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases. […]
 - [x] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes. […]
 - [x] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening). […]
+- [x] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding. […]

@@ -149,7 +149,7 @@ function tighten(g: NavGrid, z: SeaZones, way: number[], never: boolean): { pts:
 }
 
 /** The way of a fleet from the water cell `from` to the water cell `to`; null where one of them has no zone or one ice closes, or no lane joins their zones. */
-export function sailRoute(g: NavGrid, z: SeaZones, lanes: LaneGraph, from: number, to: number): SailRoute | null {
+export function sailRoute(g: NavGrid, z: SeaZones, lanes: LaneGraph, from: number, to: number, shut?: (edge: number) => boolean): SailRoute | null {
   const zs = z.zoneOf[from]!;
   const zt = z.zoneOf[to]!;
   if (zs === 0 || zt === 0 || z.closed[zs] === 1 || z.closed[zt] === 1) return null;
@@ -158,7 +158,7 @@ export function sailRoute(g: NavGrid, z: SeaZones, lanes: LaneGraph, from: numbe
   let part = parts[0]!;
   for (let c = from; c !== -1; c = lanes.toSeed[c]!) part.push(c);
   if (zs !== zt) {
-    const r = laneRoute(lanes, zs - 1, zt - 1);
+    const r = laneRoute(lanes, zs - 1, zt - 1, shut);
     if (!r) return null;
     r.edges.forEach((e, i) => {
       const edge = lanes.edges[e]!;

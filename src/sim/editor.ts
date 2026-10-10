@@ -17,7 +17,8 @@ import { nearestCellWhere } from './data/ownership';
 import { destroyFormation } from './systems/elements';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
-import { TILE, type World } from './world';
+import { seaNeighbours } from './nav/sailRoute';
+import { navOf, TILE, type World } from './world';
 
 export const UNDO_DEPTH = 50;
 /** ~5 MB of diffs at most in a save (review after PLAN 1.36: 2 M cells was ~20 MB). */
@@ -326,7 +327,11 @@ function strandedToLand(world: World): void {
     const c = Math.floor(fc.y[f]!) * w + Math.floor(fc.x[f]!);
     // A fleet is not brought ashore (PLAN 4.2b): it stays on its water, and is gone with it.
     if (world.afloat(f)) {
-      if (isLand(terrain[c]!)) gone.push(f);
+      // In a passage's step (PLAN 4.4e) it is over the canal's land, and its two ends are water.
+      const path = world.paths.get(f);
+      const at = fc.pathStep[f]!;
+      const passing = fc.moving[f] === 1 && path !== undefined && at < path.length - 1 && !seaNeighbours(navOf(world).grid, path[at]!, path[at + 1]!) && !isLand(terrain[path[at]!]!) && !isLand(terrain[path[at + 1]!]!);
+      if (isLand(terrain[c]!) && !passing) gone.push(f);
       return;
     }
     if (isLand(terrain[c]!)) return;

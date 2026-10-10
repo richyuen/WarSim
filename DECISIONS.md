@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-261 · 2026-10-10 · accepted — A fleet's loose ends: a lost base, a passage held by the enemy, a fleet in a canal (PLAN 4.4e)
+
+- **Context.** PLAN 4.4e, from the notes of PLAN 4.2b and 4.2c: a fleet stood at a base its
+  nation had lost; a fleet sailed any passage whoever held its banks; a map import removed a
+  fleet in a canal's step. AT: a fleet at a base taken by an enemy sails for another of its
+  nation's ports; a fleet is refused a passage whose bank an enemy holds.
+- **A lost base.** Daily, before the sea control: a fleet that stands (not under way, not in a
+  sea battle) with a port held by a nation at war with it within 3 cells (the start's fleets
+  stand up to 3 cells from their base's water) and no port of its nation there sails for its
+  nation's nearest port a ship reaches (the break-off's search, ADR-256). With none, or no
+  way to it, it stands.
+- **A passage's bank** is one land cell: the land nearest the middle of its two ends, within
+  4 cells (`passageBank`): Egypt's for Suez, Turkey's for the Bosporus. A passage whose bank
+  is held by a nation at war with the fleet's is no edge of its way when the way is found; a
+  way found before keeps it. The supply's ways by sea (ADR-259) leave such a passage out for
+  the bloc too, so the convoys and the joined lands follow the same rule.
+- **A fleet in a canal.** Its place in the passage's step is over the canal's land; a terrain
+  import kept removing every fleet on land. It keeps one whose step is a passage whose two
+  ends are water.
+- **The pin moves:** `a45b7fab` → `e8fc6344`: in seed 99's first year 25 fleets of seven
+  nations leave bases their nations lost (Japan's on day 122, France's from day 323).
+- **The ten-year runs' rule of the fleets changed** (`tests/helpers/fleetsStand.ts`, PLAN
+  4.2b's: every fleet stands untouched). It failed on seeds 1 to 3 (days 35, 84, 136): fleets
+  sent from lost bases, and the sea battles they then met at enemy bases. A fleet is free of
+  the rule from the day it is found under way or moved having been at a lost base at the check
+  before (`sailed`), or having been in a sea battle in an hour since (the hour's fires name its
+  ships: a battle can begin and end in an hour; `fought`). Any other change is still a failure.
+  Seed 1 in ten years: 143 fleets stand, 44 sailed, 8 fought, 2 gone with their nations.
+- **Not done:** a fleet's supply and fuel at sea (a line under PLAN 4.6).
+- **Tests.** `tests/unit/fleetEnds1938.test.ts`, five; four mutations each failed one (the
+  canal's only after its import was made to change a cell: an import that changes nothing does
+  nothing).
+
 ### ADR-260 · 2026-10-10 · accepted — Convoys: enemy boats on a land's way home take a share of its income; a submarine holds no sea (PLAN 4.4d)
 
 - **Context.** PLAN 4.4d: convoys and submarine raiding; income of overseas land by sea;

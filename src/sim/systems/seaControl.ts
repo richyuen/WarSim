@@ -21,6 +21,7 @@
 import { isDayStart } from '../../shared/calendar';
 import { portSeaOf, seaOf, type World } from '../world';
 import { elementIndex } from './elements';
+import { rebaseFleets } from './navalCombat';
 import { blocOf } from './supply';
 
 /** What a blockaded province's land pays of its income: half of a coastal province's trade went by sea. */
@@ -79,6 +80,8 @@ export function navalPower(world: World): Map<number, Map<number, number>> {
 
 export function seaControlSystem(world: World): void {
   if (!isDayStart(world.tick) || !world.rules) return;
+  // A fleet at a base its nation has lost sails for one it holds (PLAN 4.4e).
+  rebaseFleets(world);
   const sc = seaControlOf(world);
   const power = navalPower(world);
   const nc = world.nations.cols;

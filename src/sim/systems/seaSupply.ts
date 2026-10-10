@@ -7,7 +7,8 @@
  * cell a member owns and controls, with water a ship reaches: `portSeaOf`, its zone not closed
  * by ice) is reached from a port of the bloc at home by a way from zone to zone (the zones that
  * touch, `SeaZones.adj`, and the map's passages) that enters no zone held by a nation at war
- * with the bloc (`seaHolder`, PLAN 4.4a) and starts from no such zone. A component where the
+ * with the bloc (`seaHolder`, PLAN 4.4a) and starts from no such zone, and takes no passage
+ * whose bank such a nation holds (`passageShut`, PLAN 4.4e). A component where the
  * bloc has no port is not cut by sea: its trade is not followed. A city is a source of its
  * bloc's network only on a component that is home, joined or not cut (`seaLinked`).
  *
@@ -15,6 +16,7 @@
  * (`markSeaLinks`): a bloc whose joined components changed is refreshed whole, so a partial
  * refresh gives what a full one gives.
  */
+import { isLand } from '../../shared/terrain';
 import { cellOf } from '../data/terrain';
 import { nearestCellWhere } from '../data/ownership';
 import { PASSAGE_SNAP } from '../nav/lanes';
@@ -22,15 +24,16 @@ import type { SeaZones } from '../nav/seaZones';
 import { navOf, portSeaOf, seaOf, type World } from '../world';
 import { blocOf } from './supply';
 
-/** The zones each zone leads to: those it touches and the other ends of its passages (cached by the zones). */
-const linksCache = new WeakMap<SeaZones, number[][]>();
-export function zoneLinks(world: World): number[][] {
+/** The zones each zone leads to: those it touches and the other ends of its passages; and which pairs only a passage joins, by its index (cached by the zones). */
+const linksCache = new WeakMap<SeaZones, { links: number[][]; through: Map<number, number> }>();
+function zoneGraph(world: World): { links: number[][]; through: Map<number, number> } {
   const z = seaOf(world);
-  let links = linksCache.get(z);
-  if (links) return links;
-  links = z.adj.map((a) => a.slice());
+  const hit = linksCache.get(z);
+  if (hit) return hit;
+  const links = z.adj.map((a) => a.slice());
+  const through = new Map<number, number>();
   const { w, h } = world.cells;
-  for (const p of world.seaPassages) {
+  world.seaPassages.forEach((p, i) => {
     const end = (lonLat: readonly [number, number]): number => {
       const [x, y] = cellOf(lonLat[0], lonLat[1], w, h);
       const c = nearestCellWhere((k) => z.zoneOf[k] !== 0, x, y, w, h, PASSAGE_SNAP, world.settings.loopingMap);
@@ -38,13 +41,41 @@ export function zoneLinks(world: World): number[][] {
     };
     const a = end(p.a);
     const b = end(p.b);
-    if (a === 0 || b === 0 || a === b) continue;
-    if (!links[a]!.includes(b)) links[a]!.push(b);
-    if (!links[b]!.includes(a)) links[b]!.push(a);
-  }
+    if (a === 0 || b === 0 || a === b) return;
+    if (!links[a]!.includes(b)) {
+      links[a]!.push(b);
+      links[b]!.push(a);
+      through.set(a * 0x10000 + b, i);
+      through.set(b * 0x10000 + a, i);
+    }
+  });
   for (const l of links) l.sort((p, q) => p - q);
-  linksCache.set(z, links);
-  return links;
+  const out = { links, through };
+  linksCache.set(z, out);
+  return out;
+}
+
+/** The zones each zone leads to: those it touches and the other ends of its passages. */
+export function zoneLinks(world: World): number[][] {
+  return zoneGraph(world).links;
+}
+
+/** How far, in cells, a passage's bank is looked for from the middle of its ends. */
+const BANK_REACH = 4;
+
+/** The land cell that is the bank of passage `i` of `world.seaPassages` (the land nearest the middle of its ends), or -1. */
+export function passageBank(world: World, i: number): number {
+  const p = world.seaPassages[i]!;
+  const { w, h, terrain } = world.cells;
+  const [x, y] = cellOf((p.a[0] + p.b[0]) / 2, (p.a[1] + p.b[1]) / 2, w, h);
+  return nearestCellWhere((k) => isLand(terrain[k]!), x, y, w, h, BANK_REACH, world.settings.loopingMap);
+}
+
+/** Whether passage `i` is shut to a ship of `nation` (PLAN 4.4e): its bank is held by a nation at war with it. */
+export function passageShut(world: World, i: number, nation: number): boolean {
+  const bank = passageBank(world, i);
+  const holder = bank < 0 ? 0 : world.cells.controller[bank]!;
+  return holder !== 0 && world.wars.atWar(holder, nation);
 }
 
 /** The land components whose cities feed bloc `bloc`'s network (see the head of the file), sorted. */
@@ -113,7 +144,7 @@ function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<numb
     m.set(c, (m.get(c) ?? 0) + 1);
   });
   const holder = world.seaControl?.holder;
-  const links = zoneLinks(world);
+  const { links, through } = zoneGraph(world);
   const seen = new Uint8Array(z.count + 1);
   const from = new Int32Array(z.count + 1);
   const order = new Int32Array(z.count + 1);
@@ -147,10 +178,13 @@ function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<numb
         }
       }
       for (let head = 0; head < queue.length; head++) {
-        for (const n of links[queue[head]!]!) {
+        const at = queue[head]!;
+        for (const n of links[at]!) {
           if (seen[n] || z.closed[n] === 1 || shut(n)) continue;
+          const by = through.get(at * 0x10000 + n);
+          if (by !== undefined && passageShut(world, by, b)) continue;
           seen[n] = 1;
-          from[n] = queue[head]!;
+          from[n] = at;
           order[n] = queue.length;
           queue.push(n);
         }

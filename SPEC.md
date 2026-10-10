@@ -1645,6 +1645,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   leaves (`monthlyAccounts`). Each raid is a history row a month (`ConvoyRaided`). A
   submarine holds no sea (it counts for no zone's control). On seed 99 Italy raids British
   convoys in 5 months of the first year.
+  *A fleet's loose ends (PLAN 4.4e, ADR-261):* a passage's bank is the land cell nearest the
+  middle of its ends (`passageBank`); a passage whose bank a nation at war with a fleet holds
+  is shut to its way (`orderSail`) and to its bloc's ways by sea (`passageShut`). Daily, a
+  fleet that stands with an enemy-held port within 3 cells of it and none of its own sails
+  for its nation's nearest port (`rebaseFleets`). A fleet in a passage's step is kept by a
+  map import (its cell is the canal's land, its step's ends are water).
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled
   zone adjacent to a port reduces its income and supply). **Submarines** raid convoys

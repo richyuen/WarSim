@@ -322,8 +322,8 @@ export interface LaneRoute {
   edges: number[];
 }
 
-/** The shortest way over the lanes between two nodes (the lower node on a tie), or null with none. */
-export function laneRoute(lanes: LaneGraph, start: number, goal: number): LaneRoute | null {
+/** The shortest way over the lanes between two nodes (the lower node on a tie), or null with none. `shut`: edges that may not be taken (PLAN 4.4e: a passage an enemy holds). */
+export function laneRoute(lanes: LaneGraph, start: number, goal: number, shut?: (edge: number) => boolean): LaneRoute | null {
   const n = lanes.kind.length;
   const km = new Float64Array(n).fill(Infinity);
   const by = new Int32Array(n).fill(-1);
@@ -336,6 +336,7 @@ export function laneRoute(lanes: LaneGraph, start: number, goal: number): LaneRo
     if (c === goal) break;
     closed[c] = 1;
     for (const e of lanes.adj[c]!) {
+      if (shut?.(e)) continue;
       const edge = lanes.edges[e]!;
       const m = edge.a === c ? edge.b : edge.a;
       const d = km[c]! + edge.km;

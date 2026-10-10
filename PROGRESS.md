@@ -13703,3 +13703,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   timed out, 780 s); build and parity green.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.4e (a fleet's loose ends).
+
+## 2026-10-10 — PLAN 4.4e: a fleet's loose ends; PLAN 4.4 done (ADR-261)
+
+- **Critic not due.**
+- **Done:** `rebaseFleets`, `nearestOwnPort`, `AT_PORT_CELLS` (`navalCombat.ts`, daily from
+  the sea control); `passageBank`, `passageShut` (`seaSupply.ts`; the supply's ways leave a
+  shut passage out); `laneRoute` and `sailRoute` take a test of shut edges, `orderSail`
+  shuts a passage an enemy holds; `strandedToLand` keeps a fleet in a passage's step.
+- **The AT:** the British fleets at Gibraltar stand while it is British and sail at the
+  next day's start for a British port when Germany, at war, holds its cell (not when
+  Germany is at peace); Gibraltar to the Gulf of Suez 4,115 km through the canal, 21,213
+  round the Cape with its bank held by Germany; a fleet in the canal's step (hour 122) is
+  kept by an import and comes through.
+- **Tests:** `fleetEnds1938.test.ts`, five. Four mutations each failed one; the canal's only
+  after the import changed a cell (one that changes nothing returns before the fleets are
+  looked at).
+- **The pin moves:** `a45b7fab` → `e8fc6344` (25 fleets of 7 nations leave lost bases in
+  seed 99's first year, `.cache/rebaseProbe.ts`).
+- **PLAN 4.4 ticked:** its AT's halves are 4.4b's and 4.4c's. The browser suite runs in full.
+- **The ten-year runs failed** on seeds 1 to 3 (days 35, 84, 136): PLAN 4.2b's rule that no
+  fleet is touched. Changed to the rules there are now (ADR-261): free from the day it sails
+  from a lost base, or fights. Three rounds: the check is the hour before a day's start, so a
+  fleet sent at 00:00 is 23 hours away at the next (the base as it was at the check before);
+  a sail can end within the day (moved, not under way); a battle can begin and end in an hour
+  (the hour's fires). Seed 1's ten years then: 143 fleets stand, 44 sailed, 8 fought, 2 gone;
+  seed 2 137, 57, 0, 3; seed 3 154, 42, 0, 1.
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage through on every seed, seeds 1 and 3 over the time; the browser suite 164 of 165 run,
+  red as on the commits before (BLOCKERS); build and parity green.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.5 (amphibious invasion).

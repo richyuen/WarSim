@@ -195,6 +195,13 @@ function breakOff(world: World, id: number): void {
   c.retreat[id] = BREAK_HOURS;
   c.engaged[id] = 0;
   world.out.emit(world.tick, EventKind.FormationRetreated, id, n, c.x[id]!, c.y[id]!);
+  sailHome(world, id);
+}
+
+/** The water of the port nearest to fleet `id` that its nation holds and a ship reaches, or -1. */
+export function nearestOwnPort(world: World, id: number): number {
+  const c = world.formations.cols;
+  const n = c.nation[id]!;
   const water = portSeaOf(world);
   const sea = seaOf(world);
   const w = world.cells.w;
@@ -209,7 +216,54 @@ function breakOff(world: World, id: number): void {
       best = at;
     }
   });
-  if (best >= 0) orderSail(world, id, (best % w) + 0.5, Math.floor(best / w) + 0.5);
+  return best;
+}
+
+/** Fleet `id` sails for `nearestOwnPort`; it stands where it is with none, or with no way to it. */
+function sailHome(world: World, id: number): boolean {
+  const at = nearestOwnPort(world, id);
+  const w = world.cells.w;
+  return at >= 0 && orderSail(world, id, (at % w) + 0.5, Math.floor(at / w) + 0.5);
+}
+
+/** How near, in cells, a fleet stands to a port to be at it: the start's fleets stand up to 3 cells from their base's water (PLAN 4.2b). */
+export const AT_PORT_CELLS = 3;
+
+/**
+ * A fleet at a base its nation has lost (PLAN 4.4e): daily, a fleet that stands (not under way,
+ * not in a sea battle) with a port held by a nation at war with it within `AT_PORT_CELLS` of it,
+ * and no port its nation holds there, sails for its nation's nearest port (`sailHome`).
+ */
+export function rebaseFleets(world: World): void {
+  const f = world.formations;
+  const c = f.cols;
+  f.forEach((id) => {
+    if (!world.afloat(id) || c.moving[id] === 1 || c.engaged[id] === 1) return;
+    if (atLostBase(world, id)) sailHome(world, id);
+  });
+}
+
+/** Whether fleet `id` is at a base its nation has lost: a port held by a nation at war with it within `AT_PORT_CELLS`, and none its nation holds. */
+export function atLostBase(world: World, id: number): boolean {
+  const c = world.formations.cols;
+  const water = portSeaOf(world);
+  const { w } = world.cells;
+  const ctl = world.cells.controller;
+  const n = c.nation[id]!;
+  const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+  let lost = false;
+  let own = false;
+  world.ports.forEach((p, i) => {
+    const at = water[i]!;
+    if (at < 0) return;
+    let dx = Math.abs((at % w) - (cell % w));
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    if (dx > AT_PORT_CELLS || Math.abs(Math.floor(at / w) - Math.floor(cell / w)) > AT_PORT_CELLS) return;
+    const holder = ctl[p.cell]!;
+    if (holder === n) own = true;
+    else if (holder !== 0 && world.wars.atWar(holder, n)) lost = true;
+  });
+  return lost && !own;
 }
 
 export function navalCombatSystem(world: World): void {

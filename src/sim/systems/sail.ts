@@ -14,8 +14,9 @@
  * The place is on the straight line between the two cells' water points (`World.seaPoint`).
  *
  * The seas that ice closes (PLAN 4.2d, `data/maps/<map>/ice.json`) are in no way and take no
- * order. Nobody's water is closed to a fleet else and nothing stops it: who holds a passage and
- * an enemy's fleet in the way are PLAN 4.4 and 4.3.
+ * order. A passage whose bank (`passageBank`) a nation at war with the fleet's holds is shut to
+ * it when its way is found (PLAN 4.4e); a way found before keeps it. An enemy's fleet in the way
+ * meets it in a sea battle (PLAN 4.3).
  *
  * Water made land under the way (the editor): the fleet stops in the cell before it and is
  * ordered to where it was going again, or stands there with no way.
@@ -26,6 +27,7 @@ import { atan2 } from '../core/dmath';
 import { sailRoute, sailStepKm } from '../nav/sailRoute';
 import { Domain, laneOf, navOf, seaOf, type World } from '../world';
 import { noteMove } from './elements';
+import { passageShut } from './seaSupply';
 
 /**
  * The share of its slowest ship's top speed a fleet sails at (PLAN 4.2c, ADR-250): a battle
@@ -102,7 +104,11 @@ export function orderSail(world: World, id: number, x: number, y: number): boole
   const near = frac < 0.5;
   const origin = mid ? was[near ? at : at + 1]! : Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
   const beyond = mid ? was[near ? at + 1 : at]! : -1;
-  const route = sailRoute(navOf(world).grid, seaOf(world), laneOf(world), origin, target);
+  // A passage whose bank an enemy of the fleet holds is shut to it (PLAN 4.4e).
+  const lanes = laneOf(world);
+  const nation = c.nation[id]!;
+  const shut = (e: number): boolean => lanes.edges[e]!.passage >= 0 && passageShut(world, lanes.edges[e]!.passage, nation);
+  const route = sailRoute(navOf(world).grid, seaOf(world), lanes, origin, target, shut);
   if (!route) return reject();
   noteMove(world, id);
   c.moving[id] = 1;
