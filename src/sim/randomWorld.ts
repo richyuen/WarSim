@@ -10,6 +10,7 @@
  * Everything drawn here comes from `hash32(seed, …)`: the same seed and count give the same
  * world, and none of the world's own streams is touched.
  */
+import earthIce from '../../data/maps/earth/ice.json' with { type: 'json' };
 import earthPassages from '../../data/maps/earth/passages.json' with { type: 'json' };
 import earthSeas from '../../data/maps/earth/seas.json' with { type: 'json' };
 import type { SeaPassage } from './nav/lanes';
@@ -132,6 +133,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   world.landMask = assets.landMask ?? null;
   world.seaSeeds = earthSeas.seas as unknown as SeaSeed[];
   world.seaPassages = earthPassages.passages as unknown as SeaPassage[];
+  world.seaIce = earthIce.closed;
   world.startDay = dayOfIso(scenarioRandom.startDate);
   const set = scenarioRandom.settings;
   applyScenarioSettings(world, set);

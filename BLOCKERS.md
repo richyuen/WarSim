@@ -557,3 +557,14 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     suite, the ten-year stage and three browser runs had gone before in that hour and a
     half; the load of the machine in that run is not known. The errors' details were not
     read (the run's output was not kept). The specs were not changed.
+  - `scenario1938.test.ts` ("builds in well under a second", under 2,000 ms) and
+    `snapshot-perf.test.ts` ("within 2 ms for a steady-state snapshot") (2026-10-10, PLAN
+    4.2d, a cloud container, not the machine the budgets were set on): both fail alone on the
+    unchanged HEAD 348f26c as on the commit, 2,003 to 2,091 ms and 2.03 to 2.27 ms; the build
+    passed once in four runs. `territory.test.ts` ("costs little per tick") failed once in
+    the full unit stage and passed alone. The commit was made with these three red in its
+    gate: the code they time is not touched (the zones and lanes are built at their first
+    use). The tests were not changed. The ten-year run of seed 1 (`tests/sweep/aiSweep1`)
+    timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on
+    the commit and 8.19 on HEAD, the same hash fac8ee64 (1.9 ms on the budget's machine).
+    Seeds 2 and 3 and the pinned hash passed.

@@ -244,6 +244,11 @@ export const StraitsFile = z.strictObject({ straits: z.array(StraitDef) });
 export const SeaSeedDef = z.strictObject({ name: z.string().min(1), part: z.number().int().min(0), lonLat });
 export const SeasFile = z.strictObject({ comment: z.string().optional(), seas: z.array(SeaSeedDef) });
 
+// ── ice (data/maps/<id>/ice.json) ────────────────────────────────────────────
+
+/** The seas of the map's `seas.json`, by name, that ice closes to a fleet (PLAN 4.2d). */
+export const IceFile = z.strictObject({ comment: z.string().optional(), closed: z.array(z.string().min(1)) });
+
 // ── passages (data/maps/<id>/passages.json) ──────────────────────────────────
 
 /** Water a ship passes that the cell grid closes or has as land (PLAN 4.1b): `a` and `b` are the water at each end. */
@@ -451,6 +456,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^maps\/[a-z0-9_]+\/map\.json$/, schema: MapMeta },
   { pattern: /^maps\/[a-z0-9_]+\/straits\.json$/, schema: StraitsFile },
   { pattern: /^maps\/[a-z0-9_]+\/seas\.json$/, schema: SeasFile },
+  { pattern: /^maps\/[a-z0-9_]+\/ice\.json$/, schema: IceFile },
   { pattern: /^maps\/[a-z0-9_]+\/passages\.json$/, schema: PassagesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/scenario\.json$/, schema: ScenarioMeta },
   { pattern: /^scenarios\/[a-z0-9_]+\/nations\.json$/, schema: NationsFile },
@@ -614,6 +620,21 @@ export function validateDataSet(files: Readonly<Record<string, unknown>>): strin
     const dir = f.split('/')[1]!;
     if (!(`maps/${dir}/map.json` in files)) errors.push(`${f}: no map.json next to this file`);
     unique('straits', [[f, st.straits]]);
+  }
+  for (const [f, ice] of of<z.infer<typeof IceFile>>(/^maps\/[a-z0-9_]+\/ice\.json$/)) {
+    const dir = f.split('/')[1]!;
+    const seas = ok[`maps/${dir}/seas.json`] as z.infer<typeof SeasFile> | undefined;
+    if (!seas) {
+      errors.push(`${f}: no seas.json next to this file`);
+      continue;
+    }
+    const names = new Set(seas.seas.map((s) => s.name));
+    const seen = new Set<string>();
+    ice.closed.forEach((name, i) => {
+      if (!names.has(name)) errors.push(`${f}: closed[${i}]: '${name}' is no sea of maps/${dir}/seas.json`);
+      if (seen.has(name)) errors.push(`${f}: closed[${i}]: '${name}' twice`);
+      seen.add(name);
+    });
   }
   for (const [f, nf] of of<z.infer<typeof NationsFile>>(/^scenarios\/[a-z0-9_]+\/nations\.json$/)) {
     const tags = new Map<string, number>();

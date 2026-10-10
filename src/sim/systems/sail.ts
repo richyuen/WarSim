@@ -13,8 +13,9 @@
  * the great circle between its ends, and the fleet is drawn over its land for those hours.
  * The place is on the straight line between the two cells' water points (`World.seaPoint`).
  *
- * Nobody's water is closed to a fleet and nothing stops it: who holds a passage, an enemy's
- * fleet in the way and ice are PLAN 4.2d, 4.3 and 4.4.
+ * The seas that ice closes (PLAN 4.2d, `data/maps/<map>/ice.json`) are in no way and take no
+ * order. Nobody's water is closed to a fleet else and nothing stops it: who holds a passage and
+ * an enemy's fleet in the way are PLAN 4.4 and 4.3.
  *
  * Water made land under the way (the editor): the fleet stops in the cell before it and is
  * ordered to where it was going again, or stands there with no way.
@@ -64,7 +65,8 @@ export function sailPlace(world: World, a: number, b: number, frac: number): [nu
 
 /**
  * The water cell an order to (`tx`, `ty`) sends a fleet to: that cell where it is water with a
- * zone; the water of a port that stands in it; else -1.
+ * zone; the water of a port that stands in it; else -1. Water in the ice is a target, and no
+ * way leads to it (`sailRoute`).
  */
 export function sailTarget(world: World, tx: number, ty: number): number {
   const { w, h, terrain } = world.cells;

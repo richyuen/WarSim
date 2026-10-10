@@ -437,7 +437,7 @@ export function navOf(world: World): { grid: NavGrid; graph: ProvinceGraph } {
 
 /** The sea zones for the world's terrain and its map's seeds (PLAN 4.1a; built once, cached). */
 export function seaOf(world: World): SeaZones {
-  return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds));
+  return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds, new Set(world.seaIce)));
 }
 
 /** The lane graph over the sea zones and the map's passages, with the world's ports (PLAN 4.1b, 4.1c; built once, cached). */
@@ -726,6 +726,8 @@ export class World {
    * not hashed). None on the toy world: its water is given zones with no name.
    */
   seaSeeds: readonly SeaSeed[] = [];
+  /** The seas of `seaSeeds`, by name, that ice closes to a fleet (PLAN 4.2d): static data of the map, as the seeds are. */
+  seaIce: readonly string[] = [];
   /** The sea zones: a derived cache, as `nav` is, and dropped where it is. */
   sea: SeaZones | null = null;
   /** The map's passages (PLAN 4.1b): static data of the map, as `seaSeeds` is. None on the toy world. */

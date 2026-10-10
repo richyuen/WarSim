@@ -524,6 +524,13 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
     circle between its ends' cells); the cells it turns at. Gibraltar to the Gulf of Suez:
     5,785 km by the seeds, 4,115 drawn tight, 3,856 by great circles between its 7 turns.
     About 2 ms a way.
+  - *Ice* (PLAN 4.2d, ADR-251; `data/maps/<map>/ice.json`, by hand, `World.seaIce`): the
+    seas of `seas.json`, by name, that pack ice closes to a fleet. On the earth 21 (29 zones
+    of 428): the Arctic Ocean, the Kara Sea to the Chukchi Sea, the Beaufort Sea to Baffin
+    Bay. Their zones are `closed` (`SeaZones.closed`); the lane graph has no edge with a
+    closed zone at an end (62 of 1,547 left out), a straight walk does not cross one, and a
+    fleet's way neither begins nor ends in one. All the year: the map has no seasons. Scapa
+    Flow to Pearl Harbor goes by Panama, 18,531 km.
   - *Joined and not:* 16 groups of nodes where the zones had 19. One of 438 (every sea, the
     Black Sea and the Sea of Marmara with them, and the Strait of Magellan's inner water);
     the Caspian with Garabogaz Bay (3); Lake Maracaibo (its bar was not dredged until the
@@ -554,10 +561,11 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   - *The count* in 1938 at M: 615 ports, 579 with a node (the test holds 500–700), 557 of
     them on the seas (reached from Gibraltar), the others on lakes and the Caspian; in 421
     provinces. Every nation with a coast on the seas has one. The graph has 1,035 nodes and
-    1,547 edges.
+    1,547 edges (1,485 with the ice, PLAN 4.2d).
   - *The random world* has the same ports, the nations of the file not read.
   - *Not done:* a port of a city placed in the editor, or one moved with a city; a port in
-    a scenario file (it has those of its base); the Arctic is open water to the lanes.
+    a scenario file (it has those of its base). A port whose water is in the ice keeps its
+    node, with no edge (16 in 1938: Tiksi, Dikson, Resolute, Qaanaaq).
 - **Air zone**: a cluster of about 8–20 provinces. Air superiority is tracked per side per zone.
 
 **Sim boot (PLAN 1.9a).** `Sim({scenario: '1938', seed, assets})` builds the world with
@@ -889,7 +897,8 @@ Element (authoritative unit proxy) {
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its
       node's cell). Rejected (`MoveRejected`): land that is no port, water with no zone,
-      water no lane leads to. The way is found once, at the order (§3.3, a fleet's way).
+      water no lane leads to, water in the ice (§3.3, ice). The way is found once, at the
+      order (§3.3, a fleet's way).
     - *The state* is the march's: `moving`, `originCell`, `targetCell`, `pathStep`,
       `stepFrac`, and the way in `world.paths`. Saved and hashed as a march.
     - *The hour* (`sailStep`, called by the movement system for a formation afloat): the

@@ -167,6 +167,49 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-251 · 2026-10-10 · accepted — Ice closes seas to a fleet: a list by hand of the map's seas, every zone of them out of the lanes (PLAN 4.2d)
+
+- **Context.** PLAN 4.2d: the Arctic was open water to the lanes (ADR-244): from Scapa Flow to
+  Pearl Harbor the shortest way went north of Siberia (15,974 km). Ice is not in the map's
+  data. The task: close those zones to a fleet, or give them a cost.
+- **Counted first** (`.cache/iceProbe.ts`, 120 ways between 16 bases): 44 went north of the
+  Arctic Circle, 35 of them by seas that pack ice closed in 1938. From Kiel, Kronstadt and Murmansk to
+  the Pacific by the Kara, Laptev and East Siberian Seas (up to 77.7°N); from Portsmouth,
+  Plymouth, Brest and Norfolk to the Pacific by Baffin Bay, the North-West Passages and the
+  Beaufort Sea. 26 ports have their water north of 64°, 16 of them in the seas closed below.
+- **Decision.** `data/maps/earth/ice.json`, by hand: 21 seas of `seas.json` by name (29
+  zones of 428 at M): the Arctic Ocean; the Kara Sea to the Chukchi Sea with their gulfs;
+  the Beaufort Sea, the Canadian Arctic's sounds and passages, the Foxe Basin, Baffin Bay
+  and the Melville Bay. `buildSeaZones(…, ice)` marks their zones `closed`; `buildLaneGraph`
+  leaves out every edge with a closed zone at an end; `seaWalk` does not cross a closed
+  zone; `sailRoute` gives no way from or to one, so an order there is rejected
+  (`MoveRejected`). With the ice 15 of the 120 ways go north of the Arctic Circle, all to
+  or from Murmansk, and none by a closed sea. Scapa Flow to Pearl Harbor is by Panama now: 18,531 km (20,365 by the
+  zones' seeds), never north of 58.9°.
+- **Why closed and not a cost.** In 1938 only Soviet convoys behind icebreakers sailed the
+  Northern Sea Route, in the weeks of its summer, and no ship had sailed the North-West
+  Passage since Amundsen's of 1903–1906 (the St. Roch's was of 1940–1942). No navy sent a
+  fleet that way. A cost would leave every way through it to be chosen when the others are
+  long enough (Murmansk to Vladivostok is 25,790 km by Suez now, 11,499 north of Siberia),
+  and nothing of 1938 sailed it.
+- **Why the list names seas and not latitudes.** The zones are the seas' (ADR-242), so the
+  list is the zones' own data and the same at every map size; a line of latitude would cut
+  zones. The data set refuses a name that is no sea of the map and a name twice
+  (`validateDataSet`).
+- **Open:** the Barents Sea (Murmansk is free of ice) and the White Sea; the Greenland and
+  Norwegian Seas; the Denmark and Davis Straits, Disko Bay, Hudson Bay by the Hudson Strait;
+  the Bering Sea; the Baltic and the Gulf of Bothnia (they freeze in winter); the Southern
+  Ocean, whose pack edge is not on any way.
+- **Consequences.** The map has no seasons: what is closed is closed all the year. A zone
+  that only a closed one joins to the rest has no way to it (Kotzebue Sound, behind the
+  Chukchi Sea). A port whose water is in the ice keeps its node, with no edge (16 ports:
+  Tiksi, Dikson, Resolute, Qaanaaq); a fleet there would have no way out, and none of 1938
+  stands there (tested). A way under way when ice is read is kept: only an order finds a
+  way. The random world reads the same file.
+- **The pin stays:** no fleet sails without a player. **Tests.** `tests/unit/ice1938.test.ts`,
+  seven; four mutations (no flag, no edge left out, the walk over ice, a way from the ice)
+  each failed one or more.
+
 ### ADR-250 · 2026-10-09 · accepted — A fleet sails: its way over the lanes, drawn tight; its pace a cruising share; the march's columns (PLAN 4.2c)
 
 - **Context.** PLAN 4.2c: a fleet sails along the lanes, by an order to a port or to water.

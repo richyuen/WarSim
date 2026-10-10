@@ -38,14 +38,7 @@ quick sweep as a smoke test.
   - [x] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule […]
   - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
   - [x] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found […]
-  - [ ] 4.2d The Arctic is closed to a fleet, or costs: by the map's data.
-    AT: Scapa Flow → Pearl Harbor goes by Panama.
-    From PLAN 4.2c (2026-10-09, ADR-250): a fleet's way is the lanes' way drawn tight
-    (`sailRoute`), so a zone closed in `laneRoute` is closed to it. Its turns are cells of
-    the lanes' way, not the capes it rounds, and a straight walk is a line of the Miller
-    map, not a great circle: over an ocean in the north the way is the longer by it
-    (Yokosuka to Pearl Harbor × 1.087 its great-circle legs, the worst of 90 ways between
-    ten bases). Which of those ways go by the Arctic was not looked at.
+  - [x] 4.2d The Arctic is closed to a fleet, or costs: by the map's data. […]
   - [ ] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
     AT: a queued flotilla appears at a port's water after its days; a nation with no port is
     refused.
@@ -83,6 +76,11 @@ quick sweep as a smoke test.
   Suez canal), and a map import of terrain removes every fleet whose cell is land
   (`strandedToLand`, whatever the import changed): a fleet in a canal is gone by it. Read,
   not tried. The step's two cells are in its path: a fleet on such a step is to be left.
+  From PLAN 4.2d (2026-10-10, ADR-251): ice is all the year (`data/maps/earth/ice.json`, 21
+  seas closed): the map has no seasons, and the Baltic, the Gulf of Bothnia and the White
+  Sea are open in winter. 16 ports have their water in the ice and keep a node with no edge
+  (Tiksi, Dikson, Resolute, Qaanaaq): a port no ship reaches. A fleet of a scenario placed in
+  the ice would have no way out (none of 1938 is: tested).
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,

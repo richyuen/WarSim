@@ -14,6 +14,9 @@
  * never longer than the lanes' way. A passage is kept as it is: the way is drawn tight on each
  * side of it.
  *
+ * No cell of the way is in a zone that ice closes (`SeaZones.closed`, PLAN 4.2d): the lanes have
+ * no edge to one, and a straight walk does not cross one; a way from or to one is none.
+ *
  * The result is a list of cells, each a neighbour (8-way) of the one before, all zoned water,
  * no corner of land cut; but for the one step of each passage taken, between its two ends.
  * Pure and by whole numbers: the same cells for the same grid, zones and lanes.
@@ -63,8 +66,8 @@ export function sailStepKm(g: NavGrid, a: number, b: number): number {
 
 /**
  * The straight walk from the cell `a` to the cell `b` (Bresenham's line, the short way round
- * on a map that loops): whether every cell of it after `a` is zoned water and no diagonal step
- * of it has land beside it. With `out`, the cells after `a` are added to it (all of them where
+ * on a map that loops): whether every cell of it after `a` is zoned water of a zone that ice
+ * does not close and no diagonal step of it has land beside it. With `out`, the cells after `a` are added to it (all of them where
  * the answer is true).
  */
 export function seaWalk(g: NavGrid, z: SeaZones, a: number, b: number, out?: number[]): boolean {
@@ -74,7 +77,7 @@ export function seaWalk(g: NavGrid, z: SeaZones, a: number, b: number, out?: num
 /** The km of the straight walk from `a` to `b` (`seaWalk`), or -1 where it is not clear. */
 function walkKm(g: NavGrid, z: SeaZones, a: number, b: number, out?: number[]): number {
   const { w, terrain } = g;
-  const { zoneOf } = z;
+  const { zoneOf, closed } = z;
   const dx = columns(g, a, b);
   const dy = Math.floor(b / w) - Math.floor(a / w);
   const sx = dx > 0 ? 1 : -1;
@@ -99,7 +102,8 @@ function walkKm(g: NavGrid, z: SeaZones, a: number, b: number, out?: number[]): 
     }
     const nx = (x + mx + w) % w;
     const ny = y + my;
-    if (zoneOf[ny * w + nx] === 0) return -1;
+    const zone = zoneOf[ny * w + nx]!;
+    if (zone === 0 || closed[zone] === 1) return -1;
     // A diagonal step: water on both sides of it (a crossing counts as water, as in the lanes).
     if (mx !== 0 && my !== 0 && (isLand(terrain[y * w + nx]!) || isLand(terrain[ny * w + x]!))) return -1;
     km += stepKm(g, my > 0 ? y : ny, mx, my);
@@ -144,11 +148,11 @@ function tighten(g: NavGrid, z: SeaZones, way: number[], never: boolean): { pts:
   return { pts, km: legs.reduce((sum, km) => sum + km, 0) };
 }
 
-/** The way of a fleet from the water cell `from` to the water cell `to`; null where one of them has no zone or no lane joins their zones. */
+/** The way of a fleet from the water cell `from` to the water cell `to`; null where one of them has no zone or one ice closes, or no lane joins their zones. */
 export function sailRoute(g: NavGrid, z: SeaZones, lanes: LaneGraph, from: number, to: number): SailRoute | null {
   const zs = z.zoneOf[from]!;
   const zt = z.zoneOf[to]!;
-  if (zs === 0 || zt === 0) return null;
+  if (zs === 0 || zt === 0 || z.closed[zs] === 1 || z.closed[zt] === 1) return null;
   // The parts of the way, one more than the passages taken: each a row of neighbours.
   const parts: number[][] = [[]];
   let part = parts[0]!;

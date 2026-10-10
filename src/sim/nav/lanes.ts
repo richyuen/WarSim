@@ -7,6 +7,8 @@
  * the water cells it runs over, so no edge crosses land but a passage, at its one jump.
  * A node for each port of the world too (PLAN 4.1c), at the port's water, with an edge to the
  * node of the zone that water is in.
+ * No edge has a node that is a zone ice closes (`SeaZones.closed`, PLAN 4.2d): such a zone's
+ * node, and a port's node in it, stand alone, and no way of the lanes goes by them.
  * Derived from the zones, the map's passages and the world's ports: never saved, rebuilt
  * identically after a load.
  */
@@ -284,12 +286,16 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
     cell.push(at);
   });
 
+  // Ice: every edge with a closed zone at an end is left out (after the others are made, so that
+  // what is made of the open water is the same).
+  const shut = (node: number): boolean => node < z.count && z.closed[node + 1] === 1;
+  const open = edges.filter((e) => !shut(e.a) && !shut(e.b));
   const adj: number[][] = kind.map(() => []);
-  edges.forEach((e, i) => {
+  open.forEach((e, i) => {
     adj[e.a]!.push(i);
     adj[e.b]!.push(i);
   });
-  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges, adj, dropped, portNode, toSeed: from };
+  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges: open, adj, dropped, portNode, toSeed: from };
 }
 
 export interface LaneRoute {

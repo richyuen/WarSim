@@ -3,8 +3,10 @@
  * belongs to one zone, the one whose seed is the fewest steps away over water (4-way, a Voronoi
  * that no land is crossed by). The seeds are the map's named seas (`data/maps/<map>/seas.json`,
  * the large ones in parts); water that no seed reaches (a lake, a map with no seas file) is
- * given seeds of its own, spread as the data tool spreads a sea's. Derived from static layers
- * (terrain), so it is rebuilt identically after a load and never saved.
+ * given seeds of its own, spread as the data tool spreads a sea's. A zone of a sea that ice
+ * closes (`data/maps/<map>/ice.json`, PLAN 4.2d) is `closed`: it is a zone as any other, and no
+ * fleet's way enters it. Derived from static layers (terrain) and the map's data, so it is
+ * rebuilt identically after a load and never saved.
  */
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
@@ -28,6 +30,8 @@ export interface SeaZones {
   seed: Int32Array;
   cells: Int32Array;
   areaKm2: Float64Array;
+  /** Per zone (index 0 unused, 0): 1 where its seed's sea is one that ice closes to a fleet. */
+  closed: Uint8Array;
   /** Sorted neighbour lists: zones with cells that touch (4-way). */
   adj: readonly number[][];
   /** Seeds of the list that made no zone: on land with no water within `SEED_SNAP`, or in a cell another seed has. */
@@ -191,7 +195,8 @@ export function areaOf(g: NavGrid, cells: ArrayLike<number>): number {
   return a;
 }
 
-export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[]): SeaZones {
+/** `ice`: the names of the seas whose zones are closed to a fleet (PLAN 4.2d). */
+export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[], ice: ReadonlySet<string> = new Set()): SeaZones {
   const { w, h, terrain } = g;
   const n = w * h;
   const s = seaScratch(g);
@@ -284,6 +289,7 @@ export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[]): SeaZones {
     seed: Int32Array.from(seedIdx),
     cells,
     areaKm2,
+    closed: Uint8Array.from(seedIdx, (i) => (i >= 0 && ice.has(seeds[i]!.name) ? 1 : 0)),
     adj: adjSets.map((set) => [...set].sort((a, b) => a - b)),
     dropped,
   };

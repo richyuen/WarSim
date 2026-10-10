@@ -13388,3 +13388,46 @@ No rule changed and nothing on screen changed. One task came out of it.
   in the browser (the command is what the click sends).
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.2d (the Arctic).
+
+## 2026-10-10 — PLAN 4.2d: ice closes the Arctic to a fleet (ADR-251)
+
+- **Critic not due** (no phase review ticked since its report); the report is far older than
+  10 commits, so step 2b does not apply. The clone was shallow: `npm run critic:due` said
+  "due" until the history was fetched (`git fetch --unshallow`).
+- **Counted first** (`.cache/iceProbe.ts`, 120 ways between 16 bases): 44 went north of the
+  Arctic Circle, 35 of them by the Kara, Laptev and East Siberian Seas or by Baffin Bay and
+  the North-West Passages; 26 ports have their water north of 64°.
+- **Done.** `data/maps/earth/ice.json` (by hand, 21 seas of `seas.json`; `IceFile`, and the
+  data set refuses a name that is no sea or one twice); `World.seaIce`, read by the 1938 and
+  the random worlds; `buildSeaZones(…, ice)` → `SeaZones.closed` (29 zones of 428);
+  `buildLaneGraph` leaves out each edge with a closed zone at an end (62 of 1,547);
+  `seaWalk` does not cross a closed zone; `sailRoute` gives no way from or to one, so the
+  order is rejected. Closed and not a cost: no navy of 1938 sailed there (ADR-251).
+- **The AT.** Scapa Flow to Pearl Harbor: by the Panama canal, its one passage, 18,531 km
+  (20,365 by the zones' seeds), never north of 58.9°; it was 15,974 km north of Siberia.
+  With the ice 15 of the 120 ways cross the Arctic Circle, all to or from Murmansk.
+- **Tests:** `ice1938.test.ts`, seven (the AT; the closed zones are those of the file and
+  no edge reaches one; 132 ways between 12 bases with Murmansk and Vladivostok, none in the
+  ice and none missing; every one of the 197 fleets stands in open water, all but the
+  Caspian's with a way to Gibraltar; an order to the Laptev Sea and to a port in the ice
+  rejected, to Murmansk taken; a small sea with a closed zone between two; the file's
+  checks). Four mutations, each failed a test: no flag, no edge left out, the walk over
+  ice (only the small sea's test caught it: no way of the 1938 map was drawn tight over
+  ice), a way from or to the ice. `sailTarget` was given a check of its own first and it
+  was taken out: `sailRoute` refuses the same, and no test told them apart.
+- **A test of PLAN 4.1c changed** (`ports.test.ts`): a port with a node had one edge, and the
+  ports off the seas were on lakes and the Caspian; a port whose water is in the ice has none
+  now (16, counted), and its sea is off the seas. Held so.
+- **`sail1938.test.ts` reads other ways:** of its 90 between ten bases, those of Kiel,
+  Kronstadt, Portsmouth and Plymouth to the Pacific went north of Siberia or Canada and go
+  by Suez or Panama now: 453 of 411,704 places on land of the fine mask (346 of 493,400
+  before), under its limit of 0.002.
+- **The gate on this container:** three timing tests red, two of them on the unchanged HEAD
+  as well (the world's build 2.0 to 2.1 s against 2 s; a snapshot 2.0 to 2.3 ms against 2),
+  the third (`territory`'s frontier cost) only in the full stage. In BLOCKERS; committed so.
+- **The pin stays:** no fleet sails without a player. **No sweep** (ADR-58). The tick is not
+  touched (the zones and lanes are built at their first use).
+- **Not looked at:** S, L and XL (the list is by name, so every size reads it, untested); a
+  picture (nothing drawn changes); seasons (PLAN 4.4 has the line).
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.2e (ships are built).

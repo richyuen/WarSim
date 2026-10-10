@@ -62,6 +62,7 @@ describe('ports of the 1938 world (PLAN 4.1c)', () => {
   it('every port with a node stands on land, has its water in reach, and one edge, from that water\'s zone', () => {
     expect(l.portNode.length).toBe(ports.length);
     let nodes = 0;
+    let iced = 0;
     ports.forEach((p, i) => {
       expect(isLand(g.terrain[p.cell]!), `${p.name} on land`).toBe(true);
       expect(world.cells.owner[p.cell], `${p.name} is held`).toBeGreaterThan(0);
@@ -73,6 +74,12 @@ describe('ports of the 1938 world (PLAN 4.1c)', () => {
       const at = l.cell[node]!;
       const zone = z.zoneOf[at]!;
       expect(zone, `the water of ${p.name}`).toBeGreaterThan(0);
+      // A port whose water is in the ice keeps its node, with no edge (PLAN 4.2d, ADR-251).
+      if (z.closed[zone] === 1) {
+        expect(l.adj[node]!.length, p.name).toBe(0);
+        iced++;
+        return;
+      }
       expect(l.adj[node]!.length, p.name).toBe(1);
       const e = l.edges[l.adj[node]![0]!]!;
       expect([e.a, e.b], p.name).toEqual([zone - 1, node]);
@@ -92,6 +99,8 @@ describe('ports of the 1938 world (PLAN 4.1c)', () => {
     // Counted 2026-10-09: 615 ports, 579 with a node, 557 on the seas.
     expect(nodes).toBeGreaterThanOrEqual(500);
     expect(nodes).toBeLessThanOrEqual(700);
+    // Counted 2026-10-10: 16 in the ice (Tiksi, Dikson, Resolute, Qaanaaq).
+    expect(iced).toBe(16);
     // Built again it is the same.
     const again = buildLaneGraph(g, z, world.seaPassages, ports, world.portReach);
     expect(again.portNode).toEqual(l.portNode);
@@ -115,8 +124,9 @@ describe('ports of the 1938 world (PLAN 4.1c)', () => {
       else off.add(zoneName(world, z, z.zoneOf[l.cell[node]!]!));
       provinces.set(province, (provinces.get(province) ?? false) || seas[node] === 1);
     });
-    // '' is a zone with no name: a lake.
-    expect([...off].sort()).toEqual(['', 'Caspian Sea']);
+    // '' is a zone with no name: a lake; and the seas that ice closes (PLAN 4.2d), no lane goes to.
+    expect([...off].filter((name) => !world.seaIce.includes(name)).sort()).toEqual(['', 'Caspian Sea']);
+    expect([...off].filter((name) => world.seaIce.includes(name)).length).toBeGreaterThan(0);
     // Held land the province raster gives to no province: 43 ports stand in such a cell
     // (counted 2026-10-09, New York and Sydney among them; a line under PLAN 4.4). No more may.
     expect(noProvince.length).toBeLessThanOrEqual(43);
