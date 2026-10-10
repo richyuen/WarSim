@@ -1,4 +1,4 @@
-import { HISTORY_ROLES, kindName, type HistoryRow } from '../shared/history';
+import { HISTORY_ROLES, kindName, seaSide, type HistoryRow } from '../shared/history';
 import { displayName, t, type MessageKey } from './i18n';
 import en from './i18n/en.json';
 
@@ -29,6 +29,8 @@ export function historyText(r: HistoryRow): string {
   const kind = `history.${kindName(r.kind)}`;
   const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : kind;
   const none = `${key}.none`;
-  const s = t((!r.bn && rb !== 'number' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '' });
+  // A sea battle's sides carry the ships each lost (PLAN 4.3c): {na} and {nb}.
+  const ships = ra === 'side' ? { na: seaSide(r.a).ships, nb: seaSide(r.b).ships } : {};
+  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

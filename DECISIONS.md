@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-256 · 2026-10-10 · accepted — A sea battle is a record: it merges, it ends, it is logged once; a fleet breaks off under half its ships (PLAN 4.3c)
+
+- **Context.** PLAN 4.3c: a sea battle in the history log and the events, with its place,
+  sides and ships lost; a fleet that is losing breaks off. AT: a sea battle logs one entry
+  with its sides and losses; a fleet with no gun or under half its ships leaves a battle.
+- **The record** (`world.seaBattles`) replaces 4.3a's per-fleet range (`world.seaRange`):
+  a battle's range, the ships each fleet came in with, the two sides' first nations, the
+  ships each side lost and where it began. The hour's groups of fleets in contact are found
+  as before; a group takes the record that has one of its fleets, and a second such record is
+  merged into it (losses by side). A battle that is over is the record no group took, or one
+  with no fleet of a side left after the hour's fire and break-offs: it is logged at once.
+- **One row, two numbers.** A history row has a and b. A side is its nation and the ships it
+  lost, packed as nation + 65,536 × ships (`seaSide`, `SIDE_SHIPS`): a role of its own
+  (`side`) reads the nation for the names and the ships for the sentence. Not two rows: the
+  AT asks for one entry, and the filters count battles. The CSV and JSON exports carry the
+  packed a and b with the names resolved.
+- **Breaking off.** Under half the ships the fleet came in with (not its template's: a
+  fleet already short does not run from every contact), or no weapon against an enemy that
+  has one (a transport group, a carrier group: their way is not to fight a gun line). It is
+  out of every sea battle for 24 hours (`retreat`, which the retreat system counts down for
+  every formation) and sails for the nearest port its nation holds that a ship reaches. A
+  pursuer can catch it again after the 24 hours: who pursues is the AI's (PLAN 4.6).
+- **Tests changed.** 4.3a's "a fleet with none left is gone" is now "under half, it breaks
+  off for its port" (the destroyer flotilla leaves with 1 of 8 after 3 hours, where it was sunk to the last).
+- **The pin stays.** **Tests.** Two more in `navalBattle1938.test.ts`, with the history
+  row read as a sentence; five mutations each failed one or two.
+
 ### ADR-255 · 2026-10-10 · accepted — Torpedoes, depth charges and the destroyer screen in the units' data (PLAN 4.3b)
 
 - **Context.** PLAN 4.3b: destroyers and submarines fire torpedoes at short range for high

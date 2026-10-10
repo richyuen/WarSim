@@ -6534,3 +6534,34 @@ Of 4.3 (open in PLAN.md):
     submarine's `piercing` 60 and a destroyer's 15 are read as guns'. The data has no
     torpedo field. A submarine flotilla is seen at 18 km by destroyers (stealth 40) and
     sees at 11: it fights as a gun line now.
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
+  AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
+  Split 2026-10-10 (one cause to a commit):
+  - [x] 4.3a Detection, contact and gunnery by range: fleets of nations at war that see each […]
+  - [x] 4.3b Torpedoes and the screen: destroyers and submarines fire torpedoes at short […]
+  - [x] 4.3c A sea battle in the history log and in the events: its place, sides and
+    ships lost; a fleet that is losing breaks off.
+    AT: a sea battle logs one entry with its sides and losses; a fleet with no gun or under
+    half its ships leaves a battle (test).
+    From PLAN 4.3a (2026-10-10, ADR-254): a sea battle is no battle of `world.battles`, has
+    no name, and a fleet in one fights until it or its enemy has no ship: a transport group
+    caught by a gun fleet is sunk to the last ship. The battleships of 1938 see no further
+    than 17 km (`detection` 18 less a cruiser's stealth): a line's stand-off holds only
+    where its enemy sees it first.
+    From PLAN 4.3b (2026-10-10, ADR-255): a submarine fires its torpedoes whatever the
+    range, and only destroyers' depth charges reach it: a submarine flotilla against a fleet
+    with no destroyer sinks it to the last ship, untouched; and a flotilla with destroyers
+    in a battle with only submarines left holds them for good if its charges cannot finish
+    them (they do: 0.2 of a submarine an hour each).

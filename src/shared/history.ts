@@ -7,7 +7,13 @@
 import { dateOfTick } from './calendar';
 import { EventKind } from './events';
 
-export type HistoryRole = 'nation' | 'alliance' | 'battle' | 'city' | 'number';
+export type HistoryRole = 'nation' | 'alliance' | 'battle' | 'city' | 'number' | 'side';
+
+/** A side of a sea battle in a row (PLAN 4.3c): its nation and the ships it lost, as nation + SIDE_SHIPS × ships. */
+export const SIDE_SHIPS = 65536;
+export function seaSide(v: number): { nation: number; ships: number } {
+  return { nation: v % SIDE_SHIPS, ships: Math.floor(v / SIDE_SHIPS) };
+}
 
 /** Roles of a and b per historic kind. */
 export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, HistoryRole]>> = {
@@ -33,6 +39,7 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.FormationsDisbanded]: ['nation', 'number'],
   [EventKind.LandCeded]: ['nation', 'nation'],
   [EventKind.WarEnded]: ['nation', 'nation'],
+  [EventKind.SeaBattle]: ['side', 'side'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */

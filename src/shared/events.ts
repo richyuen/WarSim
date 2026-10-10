@@ -103,6 +103,12 @@ export const EventKind = {
    * and left it. a = the leader of the side that stayed, b = the nation that left (global).
    */
   WarEnded: 40,
+  /**
+   * A sea battle ended (PLAN 4.3c): a and b are its two sides, each its first nation and the
+   * ships the side lost, as nation + SIDE_SHIPS × ships (`seaSide`, shared/history); (x, y) =
+   * where it began.
+   */
+  SeaBattle: 41,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

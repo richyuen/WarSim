@@ -13558,3 +13558,36 @@ No rule changed and nothing on screen changed. One task came out of it.
   (PLAN 5.4).
 - **PARITY:** our additions, row 3: a note added, still partial.
 - **Next:** PLAN 4.3c (the log and breaking off).
+
+## 2026-10-10 — PLAN 4.3c: a sea battle in the log; breaking off; PLAN 4.3 done (ADR-256)
+
+- **Critic not due.**
+- **Done.** `world.seaBattles` (records, saved while there is one) in place of
+  `world.seaRange`; `navalCombatSystem` takes, merges and ends records, counts each side's
+  ships lost, and breaks off a fleet under half the ships it came in with or with no weapon
+  against an armed enemy (`breakOff`: `retreat` 24 hours, `FormationRetreated`, a sail to
+  its nation's nearest port). `EventKind.SeaBattle` (41) in the history log: a and b each a
+  side's nation and ships lost (`seaSide`, a new role `side`), the place where it began;
+  `history.SeaBattle` in English.
+- **The AT:** a destroyer flotilla under a battle squadron's guns breaks off in its third
+  hour with 1 of its 8 ships for a British port, the battle over in that hour and logged once (Germany 0, the United Kingdom 7); no
+  battle the hour after though the squadron is near. A transport group breaks off in its
+  first hour; its row reads "Germany and United Kingdom fought at sea: Germany lost 0
+  ships, United Kingdom 1".
+- **A mistake of mine caught before the commit:** I wrote "3 of 8" and "United Kingdom 0"
+  from what I expected; the run printed 1 of 8 and 1. Breaking off is read once an hour,
+  after the volleys: a fleet can fall far under half before it is read.
+- **Tests:** `navalBattle1938.test.ts`, ten (two new, one of 4.3a changed: the flotilla is
+  not sunk to the last now; the save compares the records). Five mutations each failed one
+  or two: no break-off under half, none for no weapon, the sides' losses swapped, no sail
+  to port, no retreat hours.
+- **PLAN 4.3 ticked:** its AT's two halves are 4.3a's and 4.3b's. The gate: the unit stage
+  red only by the two timing tests of BLOCKERS; the ten-year stage 16 of 17 (seed 1 timed
+  out, 900 s); the browser suite by hand, 164 of 165 run in its two hours: red the 15 that
+  are red on the commit before 4.2f, camera (flaky there), and counters1938 and
+  declutter1938 by a timeout, which passed alone (BLOCKERS).
+- **The pin stays.** **No sweep.**
+- **Not looked at:** the history panel with a sea battle row on the page (the sentence is
+  tested); a battle of three nations; a merge of two records in play.
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.4 (sea control, supply, convoys, blockade).

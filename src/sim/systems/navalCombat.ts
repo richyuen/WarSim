@@ -8,7 +8,7 @@
  * and `hard` above 0; torpedoes: `torpedoKm` and `torpedo`), are in contact; fleets in contact, joined, are one sea battle. A fleet in a battle
  * is `engaged`: it holds (the movement system leaves it), as a land formation in contact does.
  *
- * The range of a battle (km, `world.seaRange`, state): at its first hour the distance of its
+ * The range of a battle (km, its record's in `world.seaBattles`, state): at its first hour the distance of its
  * nearest pair in contact, then each hour by the two sides' reach (their longest gun) and pace
  * (their slowest ship's top speed; a reach is a side's longest gun or torpedo). Beyond both reaches both close; between the two the side of
  * the shorter reach closes at what its pace has over the other's, and the other holds it off;
@@ -32,11 +32,22 @@
  * submarine is no target of a gun or a torpedo (it is under water): only of depth charges
  * (`asw`, a destroyer's), whatever the range, chosen among the enemy's submarines.
  *
- * Not here: a fleet breaking off (PLAN 4.3c); sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
+ * A battle's record (PLAN 4.3c, `world.seaBattles`): its fleets with the ships each came in
+ * with, its range, its two sides' first nations and the ships each side lost, where it began.
+ * An hour's battle takes the record that has one of its fleets (two such are merged). A fleet
+ * under half the ships it came in with, or with no weapon against an enemy that has one, breaks
+ * off (`breakOff`: `BREAK_HOURS` out of every sea battle, sailing for its nation's nearest port).
+ * A battle with no fleet of one side left, or with no contact in an hour, is over: one row in the
+ * history log (`SeaBattle`: each side with the ships it lost; where it began).
+ *
+ * Not here: sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
  */
 import { hash32, hashToUnit } from '../core/hash';
 import { hypot } from '../core/dmath';
-import { navOf, type World } from '../world';
+import { EventKind } from '../../shared/events';
+import { SIDE_SHIPS } from '../../shared/history';
+import { navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
+import { orderSail } from './sail';
 import { applyLoss, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
 
@@ -46,6 +57,8 @@ export const SEA_FIRE_SCALE = 2;
 export const SCREEN = 0.6;
 const SALT_TARGET = 0x5e47;
 const SALT_HUNT = 0x5e49;
+/** Hours a fleet that broke off is out of every sea battle (PLAN 4.3c). */
+export const BREAK_HOURS = 24;
 const SALT_SUBTICK = 0x5e48;
 
 /** What the battle reads of a fleet at the hour's start. */
@@ -151,14 +164,59 @@ export function findSeaBattles(world: World): { fleets: number[]; km: number }[]
   return [...groups.values()].sort((p, q) => p.fleets[0]! - q.fleets[0]!);
 }
 
+/** Live ships of fleet `id` (0 for one that is gone). */
+function shipsOf(world: World, id: number): number {
+  if (!world.formations.has(id)) return 0;
+  const ec = world.elements.cols;
+  let n = 0;
+  for (const e of elementIndex(world).get(id) ?? []) if (ec.strength[e]! > 0) n += ec.strength[e]!;
+  return n;
+}
+
+/** The ships a side packs into a `SeaBattle` row with its nation (`seaSide`, shared/history). */
+function side(nation: number, ships: number): number {
+  return nation + SIDE_SHIPS * Math.min(ships, SIDE_SHIPS - 1);
+}
+
+/** A sea battle is over: its row in the log, and its record gone. */
+function endBattle(world: World, rec: SeaBattle): void {
+  world.out.emit(world.tick, EventKind.SeaBattle, side(rec.a, rec.lostA), side(rec.b, rec.lostB), rec.x, rec.y);
+  world.seaBattles.splice(world.seaBattles.indexOf(rec), 1);
+}
+
+/**
+ * Fleet `id` breaks off (PLAN 4.3c): out of every sea battle for `BREAK_HOURS` (its `retreat`,
+ * which the retreat system counts down), and sails for the nearest port its nation holds that a
+ * ship reaches; it stands where it is with none.
+ */
+function breakOff(world: World, id: number): void {
+  const c = world.formations.cols;
+  const n = c.nation[id]!;
+  c.retreat[id] = BREAK_HOURS;
+  c.engaged[id] = 0;
+  world.out.emit(world.tick, EventKind.FormationRetreated, id, n, c.x[id]!, c.y[id]!);
+  const water = portSeaOf(world);
+  const sea = seaOf(world);
+  const w = world.cells.w;
+  let best = -1;
+  let bd = Infinity;
+  world.ports.forEach((p, i) => {
+    const at = water[i]!;
+    if (world.cells.controller[p.cell] !== n || at < 0 || sea.closed[sea.zoneOf[at]!] === 1) return;
+    const d = seaKm(world, c.x[id]!, c.y[id]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
+    if (d < bd) {
+      bd = d;
+      best = at;
+    }
+  });
+  if (best >= 0) orderSail(world, id, (best % w) + 0.5, Math.floor(best / w) + 0.5);
+}
+
 export function navalCombatSystem(world: World): void {
-  const battles = findSeaBattles(world);
-  const ranges = world.seaRange;
-  const fighting = new Set<number>();
-  if (battles.length === 0) {
-    ranges.clear();
-    return;
-  }
+  const groups = findSeaBattles(world);
+  const records = world.seaBattles;
+  if (groups.length === 0 && records.length === 0) return;
+  const seen = new Set<SeaBattle>();
   const units = world.rules!.units;
   const f = world.formations.cols;
   const e = world.elements;
@@ -166,16 +224,39 @@ export function navalCombatSystem(world: World): void {
   const idx = elementIndex(world);
   const fires = world.out.fires;
   const bf = world.buffs;
-  for (const battle of battles) {
-    const first = f.nation[battle.fleets[0]!]!;
+  for (const battle of groups) {
+    // Its record: the first that has one of its fleets; another that has one is merged into it.
+    const mine = records.filter((rec) => rec.fleets.some((id) => battle.fleets.includes(id)));
+    let rec = mine[0];
+    const fresh = rec === undefined;
+    if (!rec) {
+      const a = f.nation[battle.fleets[0]!]!;
+      const b = f.nation[battle.fleets.find((o) => world.wars.atWar(a, f.nation[o]!))!]!;
+      rec = { fleets: [], ships: [], range: battle.km, a, b, lostA: 0, lostB: 0, x: f.x[battle.fleets[0]!]!, y: f.y[battle.fleets[0]!]! };
+      records.push(rec);
+    }
+    for (const other of mine.slice(1)) {
+      const same = !world.wars.atWar(rec.a, other.a);
+      rec.lostA += same ? other.lostA : other.lostB;
+      rec.lostB += same ? other.lostB : other.lostA;
+      other.fleets.forEach((id, k) => {
+        rec.fleets.push(id);
+        rec.ships.push(other.ships[k]!);
+      });
+      records.splice(records.indexOf(other), 1);
+    }
+    // Its fleets are this hour's: one that left or is gone is out, one that came in is counted in.
+    const entry = new Map(rec.fleets.map((id, k) => [id, rec.ships[k]!]));
+    rec.fleets = battle.fleets.slice();
+    rec.ships = rec.fleets.map((id) => entry.get(id) ?? shipsOf(world, id));
+    seen.add(rec);
+    const first = rec.a;
     // The two sides: the reach and pace of each, and the range of the hour.
     let reachA = 0;
     let reachB = 0;
     let kmhA = Infinity;
     let kmhB = Infinity;
-    let r = Infinity;
     for (const id of battle.fleets) {
-      fighting.add(id);
       const ff = factsOf(world, id, idx.get(id)!)!;
       if (world.wars.atWar(first, ff.nation)) {
         reachB = Math.max(reachB, ff.reach);
@@ -184,11 +265,10 @@ export function navalCombatSystem(world: World): void {
         reachA = Math.max(reachA, ff.reach);
         kmhA = Math.min(kmhA, ff.kmh);
       }
-      const stored = ranges.get(id);
-      if (stored !== undefined) r = Math.min(r, stored);
     }
-    if (r === Infinity) r = battle.km;
-    else r = nextRange(r, reachA, kmhA, reachB, kmhB);
+    const r = fresh ? battle.km : nextRange(rec.range, reachA, kmhA, reachB, kmhB);
+    rec.range = r;
+    const before = new Map(battle.fleets.map((id) => [id, shipsOf(world, id)]));
 
     const pending = new Map<number, number>();
     // Each side's screen: its destroyers and its other surface ships alive at the hour's start.
@@ -292,8 +372,33 @@ export function navalCombatSystem(world: World): void {
     for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);
     for (const id of battle.fleets) {
       settleFormation(world, id);
-      if (world.formations.has(id)) ranges.set(id, r);
+      const lost = before.get(id)! - shipsOf(world, id);
+      if (world.wars.atWar(first, f.nation[id]!)) rec.lostB += lost;
+      else rec.lostA += lost;
+    }
+    // Who breaks off: a fleet under half the ships it came in with, or with no weapon against an
+    // enemy that has one.
+    const reachOf = (id: number): number => (world.formations.has(id) ? (factsOf(world, id, idx.get(id) ?? [])?.reach ?? 0) : 0);
+    const out = new Set<number>();
+    rec.fleets.forEach((id, k) => {
+      if (!world.formations.has(id)) return void out.add(id);
+      const theirs = world.wars.atWar(first, f.nation[id]!) ? reachA : reachB;
+      if (2 * shipsOf(world, id) < rec.ships[k]! || (reachOf(id) === 0 && theirs > 0)) {
+        breakOff(world, id);
+        out.add(id);
+      }
+    });
+    rec.ships = rec.ships.filter((_, k) => !out.has(rec.fleets[k]!));
+    rec.fleets = rec.fleets.filter((id) => !out.has(id));
+    // With no fleet of one side left in it, it is over now.
+    const sideA = rec.fleets.some((id) => !world.wars.atWar(first, f.nation[id]!));
+    const sideB = rec.fleets.some((id) => world.wars.atWar(first, f.nation[id]!));
+    if (!sideA || !sideB) {
+      for (const id of rec.fleets) f.engaged[id] = 0;
+      endBattle(world, rec);
+      seen.delete(rec);
     }
   }
-  for (const id of [...ranges.keys()]) if (!fighting.has(id) || !world.formations.has(id)) ranges.delete(id);
+  // A battle with no contact this hour is over.
+  for (const rec of [...records]) if (!seen.has(rec)) endBattle(world, rec);
 }

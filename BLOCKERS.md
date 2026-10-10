@@ -577,3 +577,8 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     than 13). Read as the container's speed (frames and ticks counted in a time of the wall,
     a software GPU); the errors read were counts of ticks and frames and distances near
     their bounds. The specs were not changed.
+  - The browser suite for PLAN 4.3's tick (2026-10-10, this container): 164 of 165 run
+    before its job's two hours ran out (the last, zoomDemo, was red in the run of 4.2f and
+    on the commit before it). The 17 red were those of 4.2f's run but fire1938 (green now),
+    and counters1938 and declutter1938, both by a test timeout (150 s, 300 s); the two alone
+    passed (3 tests, 3.9 min). The specs were not changed.

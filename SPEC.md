@@ -1604,7 +1604,17 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     ships). A submarine is no target of a gun or a torpedo: only of depth charges, at any
     range. A submarine flotilla on a battle squadron for 3 hours: its larger ships lose
     1,323 hit points with its 8 destroyers, 3,200 with none.
-  - *Not yet:* the log, breaking off (4.3c); air (5.4).
+  - *The battle's record and its end* (PLAN 4.3c, ADR-256; `world.seaBattles`, state,
+    saved while there is one): its fleets with the ships each came in with, its range,
+    its sides' first nations and the ships each lost, where it began. An hour's battle
+    takes the record with one of its fleets (two such merge). A fleet under half the ships
+    it came in with, or with no weapon against an armed enemy, breaks off: `BREAK_HOURS`
+    24 out of every sea battle (its `retreat`), `FormationRetreated`, and sails for its
+    nation's nearest port a ship reaches. With no fleet of one side left, or no contact in
+    an hour, the battle is over: one row of the history log, `SeaBattle` (each side its
+    nation and ships lost, packed as nation + 65,536 × ships; where it began): "Germany
+    and United Kingdom fought at sea: Germany lost 0 ships, United Kingdom 7".
+  - *Not yet:* air (5.4); seeking or avoiding a battle (4.6).
 - **Sea control** per zone per side = Σ naval power present and recent wins. It decays.
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled

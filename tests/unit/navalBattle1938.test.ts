@@ -4,9 +4,12 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_1938, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex, equipFormation, settleFormation } from '../../src/sim/systems/elements';
-import { findSeaBattles, nextRange, seaKm } from '../../src/sim/systems/navalCombat';
+import { BREAK_HOURS, findSeaBattles, nextRange, seaKm } from '../../src/sim/systems/navalCombat';
+import { seaSide } from '../../src/shared/history';
+import { historyRows } from '../../src/worker/historyRows';
+import { historyText } from '../../src/ui/historyText';
 import { declareWar } from '../../src/sim/systems/war';
-import { navOf, type World } from '../../src/sim/world';
+import { navOf, portSeaOf, seaRangeOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 4.3a: detection, contact and gunnery by range. AT: a battleship line beats a light
@@ -127,7 +130,7 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
       hours++;
       bbHit.push(full - hp(w, bb));
       clLeft.push(ships(w, cl1, 'cruiser_light') + ships(w, cl2, 'cruiser_light'));
-      ranges.push(w.seaRange.get(bb) ?? NaN);
+      ranges.push(seaRangeOf(w, bb) ?? NaN);
     }
     return { hours, bbHit, clLeft, bbLeft: ships(w, bb, 'battleship'), ranges };
   }
@@ -156,29 +159,72 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     expect(near.bbHit[near.bbHit.length - 1]).toBeGreaterThan(far.bbHit[far.bbHit.length - 1]!);
   });
 
-  it('a ship sunk is its element\'s end; a fleet with none left is gone, and its range with it', () => {
+  it('a ship sunk is its element\'s end; a fleet under half the ships it came in with breaks off for its port, and the battle is logged once', () => {
     const s = atWar();
     const w = s.world;
     const sea = openSea(w, 20);
     const bb = fleet(w, GER, 'battle_squadron', sea.x, sea.y);
     const dd = fleet(w, ENG, 'destroyer_flotilla', sea.x2, sea.y);
     const ends: number[] = [];
+    const broke: number[] = [];
+    const rows: number[][] = [];
     let hours = 0;
-    while (w.formations.has(dd) && hours < 48) {
+    while (w.formations.cols.retreat[dd] === 0 && w.formations.has(dd) && hours < 48) {
       s.step(1, (world) => {
         const ev = world.out.events;
-        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.ElementDestroyed) ends.push(ev[i + 2]!);
+        for (let i = 0; i < ev.length; i += 6) {
+          if (ev[i + 1] === EventKind.ElementDestroyed) ends.push(ev[i + 2]!);
+          if (ev[i + 1] === EventKind.FormationRetreated) broke.push(ev[i + 2]!);
+          if (ev[i + 1] === EventKind.SeaBattle) rows.push(ev.slice(i, i + 6));
+        }
         ev.length = 0;
       });
       hours++;
     }
-    expect(w.formations.has(dd)).toBe(false);
-    expect(ends.length).toBeGreaterThanOrEqual(8);
-    expect(w.seaRange.has(dd)).toBe(false);
-    // The battle is over: the squadron holds no range and is not engaged the hour after.
+    // Under 4 of its 8 destroyers: it broke off, alive, and sails for a British port.
+    expect(w.formations.has(dd)).toBe(true);
+    expect(broke).toEqual([dd]);
+    const left = ships(w, dd, 'destroyer');
+    expect(left).toBeLessThan(4);
+    expect(left).toBeGreaterThan(0);
+    process.stderr.write(`the flotilla broke off with ${left} of 8 after ${hours} h\n`);
+    expect(ends.length).toBe(8 - left);
+    expect(w.formations.cols.moving[dd]).toBe(1);
+    const port = w.formations.cols.targetCell[dd]!;
+    expect(w.ports.some((p, i) => w.cells.controller[p.cell] === ENG && portSeaOf(w)[i] === port)).toBe(true);
+    // The battle is over at once, and logged once: Germany lost nothing, the United Kingdom 8 − left.
+    expect(w.seaBattles).toEqual([]);
+    expect(seaRangeOf(w, dd)).toBeUndefined();
+    expect(rows).toHaveLength(1);
+    expect([seaSide(rows[0]![2]!), seaSide(rows[0]![3]!)]).toEqual([{ nation: GER, ships: 0 }, { nation: ENG, ships: 8 - left }]);
+    expect(w.history.rows.filter((_, i) => i % 6 === 1 && w.history.rows[i] === EventKind.SeaBattle)).toHaveLength(1);
+    // It is out of every sea battle for 24 hours, though the squadron is near: no battle the hour after.
     s.step(1);
-    expect(w.seaRange.size).toBe(0);
+    expect(w.seaBattles).toEqual([]);
     expect(w.formations.cols.engaged[bb]).toBe(0);
+    expect(w.formations.cols.retreat[dd]).toBeGreaterThan(20);
+  });
+
+  it('a fleet with no weapon against an enemy that has one breaks off at once; the row reads as a sentence', () => {
+    const s = atWar();
+    const w = s.world;
+    const sea = openSea(w, 10);
+    fleet(w, GER, 'cruiser_squadron', sea.x, sea.y);
+    const tp = fleet(w, ENG, 'transport_group', sea.x2, sea.y);
+    const rows: number[][] = [];
+    s.step(1, (world) => {
+      const ev = world.out.events;
+      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.SeaBattle) rows.push(ev.slice(i, i + 6));
+      ev.length = 0;
+    });
+    expect(w.formations.cols.retreat[tp]).toBe(BREAK_HOURS);
+    expect(rows).toHaveLength(1);
+    const row = historyRows(w, (id) => `nation.${NATIONS_1938[id - 1]!.tag}`, () => '').find((r) => r.kind === EventKind.SeaBattle)!;
+    expect(row.an).toBe('nation.GER');
+    expect(row.bn).toBe('nation.ENG');
+    const lost = seaSide(row.b).ships;
+    process.stderr.write(`${historyText(row)}\n`);
+    expect(historyText(row)).toBe(`Germany and United Kingdom fought at sea: Germany lost 0 ships, United Kingdom ${lost}`);
   });
 
   it('a save in the middle of a sea battle loads to the same state and goes on the same', () => {
@@ -188,12 +234,12 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     fleet(w, GER, 'battle_squadron', sea.x, sea.y);
     fleet(w, ENG, 'cruiser_squadron', sea.x2, sea.y);
     s.step(2);
-    expect(w.seaRange.size).toBe(2);
+    expect(w.seaBattles).toHaveLength(1);
     const bytes = s.save();
     const t = new Sim({ scenario: '1938', seed: 4301, assets: assets1938(W) });
     t.load(bytes);
     expect(t.hash()).toBe(s.hash());
-    expect([...t.world.seaRange]).toEqual([...w.seaRange]);
+    expect(t.world.seaBattles).toEqual(w.seaBattles);
     s.step(3);
     t.step(3);
     expect(t.hash()).toBe(s.hash());

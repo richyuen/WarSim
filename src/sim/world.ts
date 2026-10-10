@@ -382,9 +382,9 @@ class WorldCore implements Stateful {
       { name: 'world.commandLog', dtype: 'u8', data: log },
       { name: 'world.names', dtype: 'u8', data: names },
       { name: 'world.paths', dtype: 'i32', data: paths },
-      // The range of each fleet's sea battle (PLAN 4.3a), by id: only while there is one, so a
-      // world with no sea battle saves and hashes as before.
-      ...(w.seaRange.size === 0 ? [] : [{ name: 'world.seaRange', dtype: 'f64' as const, data: Float64Array.from([...w.seaRange].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
+      // only while there is one, so a world with no sea battle saves and hashes as before.
+      ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
     ];
   }
 
@@ -418,9 +418,17 @@ class WorldCore implements Stateful {
     w.paths.clear();
     const paths = sections.find((s) => s.name === 'world.paths')?.data as Int32Array | undefined;
     for (let at = 0; paths && at < paths.length; at += 2 + paths[at + 1]!) w.paths.set(paths[at]!, paths.slice(at + 2, at + 2 + paths[at + 1]!));
-    w.seaRange.clear();
-    const range = sections.find((s) => s.name === 'world.seaRange')?.data as Float64Array | undefined;
-    for (let at = 0; range && at < range.length; at += 2) w.seaRange.set(range[at]!, range[at + 1]!);
+    w.seaBattles = [];
+    const sea = sections.find((s) => s.name === 'world.seaBattles')?.data as Float64Array | undefined;
+    for (let at = 0; sea && at < sea.length; ) {
+      const n = sea[at++]!;
+      const fleets = Array.from(sea.subarray(at, at + n));
+      const ships = Array.from(sea.subarray(at + n, at + 2 * n));
+      at += 2 * n;
+      const [range, a, b, lostA, lostB, x, y] = Array.from(sea.subarray(at, at + 7)) as [number, number, number, number, number, number, number];
+      at += 7;
+      w.seaBattles.push({ fleets, ships, range, a, b, lostA, lostB, x, y });
+    }
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.elementIndex = null;
     w.contacts = null;
@@ -463,6 +471,28 @@ export function laneOf(world: World): LaneGraph {
 /** Per port of the world, its water as the lane graph has it, or -1 (`portWaters`: by the zones alone, not the lanes; built once, cached where `sea` is). */
 export function portSeaOf(world: World): Int32Array {
   return (world.portSea ??= portWaters(navOf(world).grid, seaOf(world), world.ports, world.portReach));
+}
+
+/**
+ * A sea battle (PLAN 4.3c): its fleets, with the ships each had when it came in; its range, km;
+ * its two sides' first nations (`a`, the first fleet's; `b`, the first of the fleets at war with
+ * it) and the ships each side lost; where it began.
+ */
+export interface SeaBattle {
+  fleets: number[];
+  ships: number[];
+  range: number;
+  a: number;
+  b: number;
+  lostA: number;
+  lostB: number;
+  x: number;
+  y: number;
+}
+
+/** The range of the sea battle fleet `id` is in, km; undefined for none (PLAN 4.3a). */
+export function seaRangeOf(world: World, id: number): number | undefined {
+  return world.seaBattles.find((b) => b.fleets.includes(id))?.range;
 }
 
 export class World {
@@ -740,8 +770,8 @@ export class World {
    * missing is found again (`formationPath`). The navigation graph is a derived cache.
    */
   paths = new Map<number, Int32Array>();
-  /** The range, km, of the sea battle each fleet in one fights (PLAN 4.3a, `navalCombatSystem`): state, saved while not empty. */
-  seaRange = new Map<number, number>();
+  /** The sea battles going on (PLAN 4.3a, 4.3c; `navalCombatSystem`): state, saved while there is one. */
+  seaBattles: SeaBattle[] = [];
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
   /**
    * The seeds of the map's named seas (PLAN 4.1a): static data of the map, not state (not saved,

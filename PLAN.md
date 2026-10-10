@@ -23,25 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
-  AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
-  Split 2026-10-10 (one cause to a commit):
-  - [x] 4.3a Detection, contact and gunnery by range: fleets of nations at war that see each […]
-  - [x] 4.3b Torpedoes and the screen: destroyers and submarines fire torpedoes at short […]
-  - [ ] 4.3c A sea battle in the history log and in the events: its place, sides and
-    ships lost; a fleet that is losing breaks off.
-    AT: a sea battle logs one entry with its sides and losses; a fleet with no gun or under
-    half its ships leaves a battle (test).
-    From PLAN 4.3a (2026-10-10, ADR-254): a sea battle is no battle of `world.battles`, has
-    no name, and a fleet in one fights until it or its enemy has no ship: a transport group
-    caught by a gun fleet is sunk to the last ship. The battleships of 1938 see no further
-    than 17 km (`detection` 18 less a cruiser's stealth): a line's stand-off holds only
-    where its enemy sees it first.
-    From PLAN 4.3b (2026-10-10, ADR-255): a submarine fires its torpedoes whatever the
-    range, and only destroyers' depth charges reach it: a submarine flotilla against a fleet
-    with no destroyer sinks it to the last ship, untouched; and a flotilla with destroyers
-    in a battle with only submarines left holds them for good if its charges cannot finish
-    them (they do: 0.2 of a submarine an hour each).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
   From PLAN 4.1c (2026-10-09, ADR-244): the ports are data of the scenario (`world.ports`),
   not state. What builds, damages or blockades a port makes its levels state (the pin moves
@@ -107,6 +88,11 @@ quick sweep as a smoke test.
   From PLAN 4.2c (2026-10-09, ADR-250): only a player orders a fleet (`orderSail`, by the
   `moveFormation` command). A way costs about 2 ms and the lane graph 0.4 to 0.7 s at its
   first use in a game: count what a day of the AI's orders costs before it gives them.
+  From PLAN 4.3 (2026-10-10, ADR-256): a fleet in a sea battle fights until it is under half
+  the ships it came in with (or has no weapon against an armed enemy), then breaks off for
+  its nearest port for 24 hours; a fleet with guns and no destroyer under a submarine
+  flotilla's torpedoes cannot hit back and loses half before it leaves. Whether to seek or
+  avoid a battle is the AI's.
   From PLAN 4.2e (2026-10-10, ADR-252): a nation with a shipyard can build a fleet, and
   the economic AI's build mix has no ship: which fleets it builds, and with what share of
   its income, is to be decided here (a battle squadron is 6,720 gold, 2.8 months of the
@@ -156,6 +142,10 @@ quick sweep as a smoke test.
 - [ ] 5.3 Air combat, interception, AA; air superiority per zone.
   AT: outcome tests (fighters beat bombers; AA attrition rate).
 - [ ] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
+  From PLAN 4.3 (2026-10-10, ADR-254): a battleship sees 18 km by the units' data, so a
+  battle line sees a cruiser at 17 km and its 32 km guns hold a stand-off only where the
+  enemy sees it first: spotting aircraft (a cruiser's or a carrier's) are to give a fleet
+  its detection. A carrier has no weapon in a sea battle and breaks off at once (ADR-256).
   AT: a battle with air superiority has a better outcome by the expected margin.
 - [ ] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
   AT: bombed industry produces less until repaired (test).
@@ -793,3 +783,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 3.12R Review pass (PROMPT step 9) over PLAN 3.8 to 3.12, the five numbered tasks since […]
 - [x] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases. […]
 - [x] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes. […]
+- [x] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening). […]
