@@ -6512,3 +6512,25 @@ Of 4.3 (open in PLAN.md):
     and pace; a ship fires only within its gun's reach.
     AT: a battleship line beats a light cruiser line from beyond the cruisers' reach, and
     takes no hit while the range is beyond it.
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.3 (open in PLAN.md):
+
+  - [x] 4.3b Torpedoes and the screen: destroyers and submarines fire torpedoes at short
+    range for high damage; a fleet's destroyers screen its larger ships from submarines.
+    AT: a submarine flotilla's hits on a battle squadron fall with its destroyers (test).
+    From PLAN 4.3a (2026-10-10, ADR-254): a ship's fire is `hard` against every ship, its
+    `piercing` against the target's `armor` (× 0.5 below it), by its `range_km`; a
+    submarine's `piercing` 60 and a destroyer's 15 are read as guns'. The data has no
+    torpedo field. A submarine flotilla is seen at 18 km by destroyers (stealth 40) and
+    sees at 11: it fights as a gun line now.

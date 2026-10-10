@@ -154,6 +154,10 @@ export interface UnitRule {
   rangeKm: number;
   detection: number;
   stealth: number;
+  /** Its torpedoes' damage an hour and reach, km, and its depth charges' damage at a submarine (PLAN 4.3b); 0 for none. */
+  torpedo: number;
+  torpedoKm: number;
+  asw: number;
   /**
    * Its own figures for the ground (PLAN 3.3a; `terrainMods` of the unit data), by terrain, 1
    * where it has none: its fire at a target on that ground, and the fire it takes holding it.

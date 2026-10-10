@@ -4,13 +4,13 @@
  *
  * Detection (hourly): a fleet of a nation at war sees an enemy fleet within its best ship's
  * `detection` (km) × (1 − the enemy's least stealthy ship's `stealth` / 100). Two fleets of
- * nations at war in which either sees the other, and of which one has a gun (`rangeKm` > 0 and
- * `hard` > 0), are in contact; fleets in contact, joined, are one sea battle. A fleet in a battle
+ * nations at war in which either sees the other, and of which one has a weapon (a gun: `rangeKm`
+ * and `hard` above 0; torpedoes: `torpedoKm` and `torpedo`), are in contact; fleets in contact, joined, are one sea battle. A fleet in a battle
  * is `engaged`: it holds (the movement system leaves it), as a land formation in contact does.
  *
  * The range of a battle (km, `world.seaRange`, state): at its first hour the distance of its
  * nearest pair in contact, then each hour by the two sides' reach (their longest gun) and pace
- * (their slowest ship's top speed). Beyond both reaches both close; between the two the side of
+ * (their slowest ship's top speed; a reach is a side's longest gun or torpedo). Beyond both reaches both close; between the two the side of
  * the shorter reach closes at what its pace has over the other's, and the other holds it off;
  * within the shorter reach it stays. A side's fleets are the battle's that are not at war with
  * its first fleet's nation; the other side, those that are.
@@ -24,8 +24,15 @@
  * element's (`ElementDestroyed`); a fleet with no ship left is gone. Each volley emits a
  * FireEvent (not state).
  *
- * Not here: torpedoes and the screen of destroyers (PLAN 4.3b); a fleet breaking off; sea
- * control (PLAN 4.4); the AI's orders (PLAN 4.6).
+ * Torpedoes and the screen (PLAN 4.3b): a ship with torpedoes fires them at its target too, where
+ * their reach (`torpedoKm`) covers the range; a submarine whatever the range (it closes
+ * submerged). A torpedo's damage is its `torpedo` with no armour against it, × the screen of
+ * the target: a ship that is no destroyer, of a side with destroyers in the battle, takes
+ * × (1 − SCREEN × min(1, its side's destroyers ÷ its side's other surface ships)). A
+ * submarine is no target of a gun or a torpedo (it is under water): only of depth charges
+ * (`asw`, a destroyer's), whatever the range, chosen among the enemy's submarines.
+ *
+ * Not here: a fleet breaking off (PLAN 4.3c); sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
  */
 import { hash32, hashToUnit } from '../core/hash';
 import { hypot } from '../core/dmath';
@@ -35,7 +42,10 @@ import { ARMOR_PEN, COOLDOWN } from './combat';
 
 /** Ships removed per hour by one ship per point of `hard` against a target of 1 hit point. */
 export const SEA_FIRE_SCALE = 2;
+/** The share of the torpedoes' damage a full screen of destroyers takes off (one destroyer to each other surface ship of the side). */
+export const SCREEN = 0.6;
 const SALT_TARGET = 0x5e47;
+const SALT_HUNT = 0x5e49;
 const SALT_SUBTICK = 0x5e48;
 
 /** What the battle reads of a fleet at the hour's start. */
@@ -84,6 +94,7 @@ function factsOf(world: World, id: number, els: readonly number[]): FleetFacts |
     detection = Math.max(detection, u.detection);
     stealth = Math.min(stealth, u.stealth);
     if (u.hard > 0) reach = Math.max(reach, u.rangeKm);
+    if (u.torpedo > 0) reach = Math.max(reach, u.torpedoKm);
   }
   if (stealth === Infinity) return null;
   const rule = world.rules!.templates[world.formations.cols.template[id]!];
@@ -180,60 +191,102 @@ export function navalCombatSystem(world: World): void {
     else r = nextRange(r, reachA, kmhA, reachB, kmhB);
 
     const pending = new Map<number, number>();
+    // Each side's screen: its destroyers and its other surface ships alive at the hour's start.
+    const screenOf = new Map<number, number>();
+    const screen = (n: number): number => {
+      let v = screenOf.get(n);
+      if (v === undefined) {
+        let dd = 0;
+        let big = 0;
+        for (const o of battle.fleets) {
+          if (world.wars.atWar(n, f.nation[o]!)) continue;
+          for (const el of idx.get(o)!) {
+            if (ec.strength[el]! <= 0) continue;
+            const cls = units[ec.unit[el]!]!.cls;
+            if (cls === 'dd') dd++;
+            else if (cls !== 'ss') big++;
+          }
+        }
+        screenOf.set(n, (v = big === 0 ? 1 : 1 - SCREEN * Math.min(1, dd / big)));
+      }
+      return v;
+    };
     for (const sf of battle.fleets) {
       const n = f.nation[sf]!;
       const enemies = battle.fleets.filter((o) => world.wars.atWar(n, f.nation[o]!));
       const buffAtk = Math.max(0, 1 + bf.sum('attack', 'nation', n) + bf.sum('attack', 'formation', sf));
-      let table: { cand: number[]; cum: number[]; total: number } | null = null;
-      for (const s of idx.get(sf)!) {
-        if (ec.strength[s]! <= 0) continue;
-        const us = units[ec.unit[s]!]!;
-        if (us.hard <= 0 || us.rangeKm < r) continue;
-        let t = ec.target[s]!;
-        const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && enemies.includes(ec.formation[t]!);
-        if (valid && ec.cooldown[s]! > 0) {
-          ec.cooldown[s] = ec.cooldown[s]! - 1;
-        } else {
-          if (!table) {
-            const cand: number[] = [];
-            const cum: number[] = [];
-            let total = 0;
-            for (const tf of enemies) {
-              for (const tid of idx.get(tf) ?? []) {
-                if (ec.strength[tid]! <= 0) continue;
-                total += units[ec.unit[tid]!]!.hpPerUnit * ec.strength[tid]!;
-                cand.push(tid);
-                cum.push(total);
-              }
+      // The enemy's ships by weight (hit points): on the surface, and under water.
+      const tables: ({ cand: number[]; cum: number[]; total: number } | null)[] = [null, null];
+      const tableOf = (sub: boolean): { cand: number[]; cum: number[]; total: number } => {
+        let table = tables[sub ? 1 : 0];
+        if (!table) {
+          const cand: number[] = [];
+          const cum: number[] = [];
+          let total = 0;
+          for (const tf of enemies) {
+            for (const tid of idx.get(tf) ?? []) {
+              if (ec.strength[tid]! <= 0 || (units[ec.unit[tid]!]!.cls === 'ss') !== sub) continue;
+              total += units[ec.unit[tid]!]!.hpPerUnit * ec.strength[tid]!;
+              cand.push(tid);
+              cum.push(total);
             }
-            table = { cand, cum, total };
           }
-          t = 0;
-          if (table.total > 0) {
-            const u = hashToUnit(hash32(world.seed, world.tick, s, SALT_TARGET)) * table.total;
-            let lo = 0;
-            let hi = table.cand.length - 1;
-            while (lo < hi) {
-              const mid = (lo + hi) >> 1;
-              if (table.cum[mid]! > u) hi = mid;
-              else lo = mid + 1;
-            }
-            t = table.cand[lo]!;
-          }
-          ec.target[s] = t;
-          ec.cooldown[s] = COOLDOWN;
+          tables[sub ? 1 : 0] = table = { cand, cum, total };
         }
-        if (t === 0) continue;
+        return table;
+      };
+      const pick = (table: { cand: number[]; cum: number[]; total: number }, s: number, salt: number): number => {
+        if (table.total <= 0) return 0;
+        const u = hashToUnit(hash32(world.seed, world.tick, s, salt)) * table.total;
+        let lo = 0;
+        let hi = table.cand.length - 1;
+        while (lo < hi) {
+          const mid = (lo + hi) >> 1;
+          if (table.cum[mid]! > u) hi = mid;
+          else lo = mid + 1;
+        }
+        return table.cand[lo]!;
+      };
+      const volley = (s: number, t: number, dmg: number): void => {
+        if (dmg <= 0) return;
         const tf = ec.formation[t]!;
-        const ut = units[ec.unit[t]!]!;
-        const pen = ut.armor > us.piercing ? ARMOR_PEN : 1;
-        const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
-        const dmg = ((us.hard * pen * SEA_FIRE_SCALE * (ec.strength[s]! / us.size) * buffAtk) / buffDef / ut.hpPerUnit);
-        if (dmg <= 0) continue;
         pending.set(t, (pending.get(t) ?? 0) + dmg);
         const [x0, y0] = elementPlace(world, sf, ec.slot[s]!, slotCount(world, sf, idx.get(sf)!.length), s);
         const [x1, y1] = elementPlace(world, tf, ec.slot[t]!, slotCount(world, tf, idx.get(tf)!.length), t);
         fires.push(world.tick, hash32(world.seed, world.tick, s, SALT_SUBTICK) % 60, s, t, ec.unit[s]!, dmg, x0, y0, x1, y1);
+      };
+      const defOf = (t: number): number => {
+        const tf = ec.formation[t]!;
+        return Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
+      };
+      for (const s of idx.get(sf)!) {
+        if (ec.strength[s]! <= 0) continue;
+        const us = units[ec.unit[s]!]!;
+        const full = (ec.strength[s]! / us.size) * SEA_FIRE_SCALE * buffAtk;
+        const gun = us.hard > 0 && us.rangeKm >= r;
+        const torpedo = us.torpedo > 0 && (us.cls === 'ss' || us.torpedoKm >= r);
+        if (gun || torpedo) {
+          // A target on the surface, kept while it lives and is the enemy's.
+          let t = ec.target[s]!;
+          const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && enemies.includes(ec.formation[t]!) && units[ec.unit[t]!]!.cls !== 'ss';
+          if (valid && ec.cooldown[s]! > 0) {
+            ec.cooldown[s] = ec.cooldown[s]! - 1;
+          } else {
+            t = pick(tableOf(false), s, SALT_TARGET);
+            ec.target[s] = t;
+            ec.cooldown[s] = COOLDOWN;
+          }
+          if (t !== 0) {
+            const ut = units[ec.unit[t]!]!;
+            if (gun) volley(s, t, (us.hard * (ut.armor > us.piercing ? ARMOR_PEN : 1) * full) / defOf(t) / ut.hpPerUnit);
+            if (torpedo) volley(s, t, (us.torpedo * full * (ut.cls === 'dd' ? 1 : screen(f.nation[ec.formation[t]!]!))) / defOf(t) / ut.hpPerUnit);
+          }
+        }
+        if (us.asw > 0) {
+          // Depth charges at a submarine of the enemy, whatever the range.
+          const t = pick(tableOf(true), s, SALT_HUNT);
+          if (t !== 0) volley(s, t, (us.asw * full) / defOf(t) / units[ec.unit[t]!]!.hpPerUnit);
+        }
       }
     }
     for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);

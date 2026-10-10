@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-255 · 2026-10-10 · accepted — Torpedoes, depth charges and the destroyer screen in the units' data (PLAN 4.3b)
+
+- **Context.** PLAN 4.3b: destroyers and submarines fire torpedoes at short range for high
+  damage, and a fleet's destroyers screen its larger ships from submarines; AT: a submarine
+  flotilla's hits on a battle squadron fall with its destroyers. The data had no torpedo.
+- **Decision.** Three optional stats of a unit (`torpedo`, `torpedo_km`, `asw`): destroyer
+  40 at 10 km with depth charges 10, light cruiser 20 at 8, submarine 70 at 6. The
+  submarine's `hard` 18 at 8 km with `piercing` 60 was its torpedo read as a gun; it is
+  now a deck gun, 3 at 4 km, piercing 10. A torpedo has no armour against it (it strikes
+  below the belt). A ship fires its gun and its torpedoes at the same target in an hour.
+- **A submarine fires whatever the range, and is hit only by depth charges.** The range of
+  a battle closes by pace (ADR-254), and a flotilla at 30 km/h never closes on a squadron
+  at 50: a submarine attacks submerged from where it lies, not by a chase. Under water it
+  is no target of a gun or a torpedo; a destroyer's charges find it at any range of the
+  battle (the destroyers go to where the torpedoes came from).
+- **The screen.** A torpedo at a ship that is no destroyer takes × (1 − 0.6 × min(1,
+  destroyers ÷ other surface ships of its side in the battle)): one destroyer to each
+  larger ship is a full screen. A battle squadron's 8 destroyers to its 8 larger ships are
+  one. All torpedoes, as SPEC §6.2 had it ("DDs protect capitals from subs and torpedoes").
+- **The AT's numbers.** In 3 hours a submarine flotilla takes 3,200 hit points from a
+  battle squadron's larger ships with no destroyer, 1,323 with its eight (the screen, the
+  torpedoes the destroyers draw on themselves, and one submarine sunk).
+- **Not done:** a fleet breaking off (PLAN 4.3c); raiding of convoys (PLAN 4.4). **The pin
+  stays:** no sea battle in seed 99's first year.
+- **Tests.** Three more in `navalBattle1938.test.ts`; four mutations each failed one or two.
+
 ### ADR-254 · 2026-10-10 · accepted — Sea battles: contact by detection less stealth, a range of the battle as state, guns by their reach (PLAN 4.3a)
 
 - **Context.** PLAN 4.3: detection and fleet battles at the level of the ship (gunnery

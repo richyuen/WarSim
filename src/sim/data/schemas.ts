@@ -118,6 +118,8 @@ export const UnitStats = z.strictObject({
   aa: nonNeg, range_km: nonNeg, speed_kmh: z.number().finite().positive(), org: nonNeg,
   hpPerUnit: z.number().finite().positive(), detection: nonNeg, stealth: nonNeg,
   fuelPerHour: nonNeg, supplyPerHour: nonNeg,
+  /** A ship's torpedoes (PLAN 4.3b): their damage an hour and their reach, km; its depth charges' damage at a submarine. 0 when left out. */
+  torpedo: nonNeg.optional(), torpedo_km: nonNeg.optional(), asw: nonNeg.optional(),
 });
 
 export const UnitTypeDef = z

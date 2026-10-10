@@ -199,3 +199,83 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     expect(t.hash()).toBe(s.hash());
   });
 });
+
+describe('torpedoes and the screen (PLAN 4.3b)', () => {
+  /** The volleys of an hour: [shooter's unit id, target's unit id, damage in ships]. */
+  function volleys(s: Sim): [string, string, number][] {
+    const out: [string, string, number][] = [];
+    s.step(1, (world) => {
+      const fr = world.out.fires;
+      // The target's unit is read before the hour's losses are settled: by the shooter's table.
+      for (let i = 0; i < fr.length; i += 10) out.push([UNIT_IDS_1938[fr[i + 4]!]!, UNIT_IDS_1938[world.elements.has(fr[i + 3]!) ? world.elements.cols.unit[fr[i + 3]!]! : 0]!, fr[i + 5]!]);
+      fr.length = 0;
+      world.out.events.length = 0;
+    });
+    return out;
+  }
+
+  it('a torpedo has no armour against it: a destroyer\'s on a battleship is 40 × 2 / 2,000 of a ship, its gun 6 × 0.5 × 2 / 2,000; beyond 10 km only the gun', () => {
+    for (const [km, torpedoes] of [[8, true], [11, false]] as const) {
+      const s = atWar();
+      const w = s.world;
+      const sea = openSea(w, km);
+      fleet(w, GER, 'battle_squadron', sea.x, sea.y, 'battleship');
+      fleet(w, ENG, 'destroyer_flotilla', sea.x2, sea.y);
+      const v = volleys(s).filter(([from]) => from === 'destroyer');
+      expect(v.length, `${km} km`).toBeGreaterThan(0);
+      for (const [, to] of v) expect(to).toBe('battleship');
+      const kinds = [...new Set(v.map(([, , d]) => d.toFixed(6)))].sort();
+      expect(kinds, `${km} km`).toEqual(torpedoes ? [(0.003).toFixed(6), (0.04).toFixed(6)] : [(0.003).toFixed(6)]);
+    }
+  });
+
+  it('no gun or torpedo is aimed at a submarine; destroyers\' depth charges are, whatever the range', () => {
+    const s = atWar();
+    const w = s.world;
+    const sea = openSea(w, 12);
+    fleet(w, GER, 'submarine_flotilla', sea.x, sea.y);
+    fleet(w, ENG, 'battle_squadron', sea.x2, sea.y);
+    const v = volleys(s);
+    // Hits on the submarines are the destroyers' only, of their depth charges: 10 × 2 / 100.
+    const onSubs = v.filter(([, to]) => to === 'submarine');
+    expect(onSubs.length).toBeGreaterThan(0);
+    for (const [from, , d] of onSubs) {
+      expect(from).toBe('destroyer');
+      expect(d).toBeCloseTo(0.2, 9);
+    }
+    // The submarines' torpedoes reach at 12 km, beyond their 6: they close submerged.
+    expect(v.some(([from, , d]) => from === 'submarine' && d > 0.01)).toBe(true);
+  });
+
+  it('the AT: a submarine flotilla\'s hits on a battle squadron\'s larger ships fall with its destroyers', () => {
+    /** The hit points the squadron's ships but its destroyers lose in `hours`, and the submarines it sinks. */
+    function attack(screened: boolean, hours: number): { lost: number; subsLeft: number } {
+      const s = atWar();
+      const w = s.world;
+      const sea = openSea(w, 12);
+      const ss = fleet(w, GER, 'submarine_flotilla', sea.x, sea.y);
+      const bs = fleet(w, ENG, 'battle_squadron', sea.x2, sea.y);
+      if (!screened) {
+        for (const e of elementIndex(w).get(bs)!) if (w.elements.cols.unit[e] === unit('destroyer')) w.elements.cols.strength[e] = 0;
+        settleFormation(w, bs);
+      }
+      const big = (): number => {
+        const ec = w.elements.cols;
+        return (elementIndex(w).get(bs) ?? []).filter((e) => ec.unit[e] !== unit('destroyer')).reduce((sum, e) => sum + (ec.strength[e]! - ec.wound[e]!) * RULES_1938.units[ec.unit[e]!]!.hpPerUnit, 0);
+      };
+      const before = big();
+      s.step(hours);
+      return { lost: before - big(), subsLeft: ships(w, ss, 'submarine') };
+    }
+    const bare = attack(false, 3);
+    const screened = attack(true, 3);
+    process.stderr.write(`a submarine flotilla on a battle squadron, 3 hours: its larger ships lose ${screened.lost.toFixed(0)} hit points with its 8 destroyers, ${bare.lost.toFixed(0)} with none; submarines left ${screened.subsLeft} and ${bare.subsLeft}\n`);
+    expect(bare.lost).toBeGreaterThan(0);
+    // A full screen (8 destroyers to 8 larger ships) takes 0.6 of each torpedo, and the
+    // destroyers draw some of the torpedoes and sink submarines: well under half.
+    expect(screened.lost).toBeLessThan(0.5 * bare.lost);
+    // With no destroyer nothing hunts the submarines.
+    expect(bare.subsLeft).toBe(8);
+    expect(screened.subsLeft).toBeLessThan(8);
+  });
+});

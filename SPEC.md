@@ -1595,7 +1595,16 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     `SEA_FIRE_SCALE` 2 × the buffs ÷ the target's hit points, in ships; simultaneous;
     FireEvents. Four battleships sink four light cruisers from 24 km in 5 hours, losing
     140 of 8,000 hit points and none in the first hour.
-  - *Not yet:* torpedoes, the screen (4.3b); the log, breaking off (4.3c); air (5.4).
+  - *Torpedoes and the screen* (PLAN 4.3b, ADR-255; `torpedo`, `torpedo_km`, `asw` of
+    the units' data: destroyer 40 at 10 km and depth charges 10, light cruiser 20 at 8,
+    submarine 70 at 6, its gun a deck gun of 3 at 4 km): a ship fires its torpedoes at its
+    target where their reach covers the range, a submarine whatever the range (it closes
+    submerged); no armour against a torpedo; × the screen of a target that is no
+    destroyer: 1 − `SCREEN` 0.6 × min(1, its side's destroyers ÷ its side's other surface
+    ships). A submarine is no target of a gun or a torpedo: only of depth charges, at any
+    range. A submarine flotilla on a battle squadron for 3 hours: its larger ships lose
+    1,323 hit points with its 8 destroyers, 3,200 with none.
+  - *Not yet:* the log, breaking off (4.3c); air (5.4).
 - **Sea control** per zone per side = Σ naval power present and recent wins. It decays.
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled

@@ -13532,3 +13532,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   pushed with the elements' places; PLAN 4.7 draws them); a fleet sailing into a battle.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.3b (torpedoes and the screen).
+
+## 2026-10-10 — PLAN 4.3b: torpedoes and the screen (ADR-255)
+
+- **Critic not due.**
+- **Done.** `data/units/sea.json`: `torpedo`, `torpedo_km`, `asw` (optional stats, in the
+  schema): destroyer 40/10 km and charges 10, light cruiser 20/8, submarine 70/6; the
+  submarine's gun is a deck gun (3 at 4 km, piercing 10; its `hard` 18 at 8 km had been its
+  torpedo). `navalCombat.ts`: torpedoes at the gun's target where their reach covers the
+  range, a submarine's whatever the range; no armour against them; the screen
+  (`SCREEN` 0.6); a submarine no target of guns or torpedoes, only of depth charges.
+- **The AT:** a submarine flotilla on a battle squadron for 3 hours: its larger ships lose
+  1,323 hit points with its 8 destroyers, 3,200 with none; one submarine sunk with them,
+  none without.
+- **Tests:** three more in `navalBattle1938.test.ts` (a destroyer's torpedo on a
+  battleship 0.04 of a ship and its gun 0.003, beyond 10 km the gun alone; nothing but
+  depth charges aimed at a submarine, 0.2 of one each, and the torpedoes at 12 km; the AT).
+  The six of 4.3a unchanged. Four mutations each failed one or two: no screen, guns at
+  submarines, a submarine held to its torpedoes' reach, armour against torpedoes.
+- **The pin stays.** **No sweep.** **The gate:** the unit stage red only by the two timing
+  tests of BLOCKERS; the ten-year stage 16 of 17, seed 1 timed out (888 s); build and
+  parity green.
+- **Not looked at:** surface torpedoes in a battle of lines (a light cruiser's 8 km is
+  inside the 18 km a cruiser line closes to: they come in only below it); a carrier's part
+  (PLAN 5.4).
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.3c (the log and breaking off).

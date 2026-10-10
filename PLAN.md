@@ -27,14 +27,7 @@ quick sweep as a smoke test.
   AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
   Split 2026-10-10 (one cause to a commit):
   - [x] 4.3a Detection, contact and gunnery by range: fleets of nations at war that see each […]
-  - [ ] 4.3b Torpedoes and the screen: destroyers and submarines fire torpedoes at short
-    range for high damage; a fleet's destroyers screen its larger ships from submarines.
-    AT: a submarine flotilla's hits on a battle squadron fall with its destroyers (test).
-    From PLAN 4.3a (2026-10-10, ADR-254): a ship's fire is `hard` against every ship, its
-    `piercing` against the target's `armor` (× 0.5 below it), by its `range_km`; a
-    submarine's `piercing` 60 and a destroyer's 15 are read as guns'. The data has no
-    torpedo field. A submarine flotilla is seen at 18 km by destroyers (stealth 40) and
-    sees at 11: it fights as a gun line now.
+  - [x] 4.3b Torpedoes and the screen: destroyers and submarines fire torpedoes at short […]
   - [ ] 4.3c A sea battle in the history log and in the events: its place, sides and
     ships lost; a fleet that is losing breaks off.
     AT: a sea battle logs one entry with its sides and losses; a fleet with no gun or under
@@ -44,6 +37,11 @@ quick sweep as a smoke test.
     caught by a gun fleet is sunk to the last ship. The battleships of 1938 see no further
     than 17 km (`detection` 18 less a cruiser's stealth): a line's stand-off holds only
     where its enemy sees it first.
+    From PLAN 4.3b (2026-10-10, ADR-255): a submarine fires its torpedoes whatever the
+    range, and only destroyers' depth charges reach it: a submarine flotilla against a fleet
+    with no destroyer sinks it to the last ship, untouched; and a flotilla with destroyers
+    in a battle with only submarines left holds them for good if its charges cannot finish
+    them (they do: 0.2 of a submarine an hour each).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
   From PLAN 4.1c (2026-10-09, ADR-244): the ports are data of the scenario (`world.ports`),
   not state. What builds, damages or blockades a port makes its levels state (the pin moves
