@@ -4,7 +4,7 @@ import { NATIONS_1938, PORTS_1938, RULES_1938, SIZE_1938, TEMPLATES_1938, ECONOM
 import { Sim } from '../../src/sim/sim';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { dockPoint, queueFormation, shipyard } from '../../src/sim/systems/production';
-import { laneOf, seaOf, type World } from '../../src/sim/world';
+import { laneOf, portSeaOf, seaOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 4.2e: ships are built. AT: a queued flotilla appears at a port's water after its days; a
@@ -115,6 +115,8 @@ describe('ships are built (PLAN 4.2e)', () => {
       expect(p.navalBase, tag).toBe(3);
       yards.push(`${tag} ${portName(w, yard)}`);
     }
+    // The ports' water by the zones alone (PLAN 4.2f) is the cell of each port's node of the lanes.
+    expect([...portSeaOf(w)]).toEqual([...lanes.portNode].map((n) => (n < 0 ? -1 : lanes.cell[n]!)));
     // Norfolk and not Pearl Harbor or San Diego: the nearest of the three to Washington.
     expect(yards).toEqual(['ENG Portsmouth', 'USA Norfolk', 'JAP Yokosuka', 'FRA Brest', 'ITA La Spezia', 'GER Kiel', 'SOV Kronstadt']);
   });

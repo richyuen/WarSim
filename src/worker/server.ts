@@ -20,6 +20,7 @@ import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
+import { shipyard } from '../sim/systems/production';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -679,6 +680,7 @@ export class SimServer {
         living: nc.living[id] === 1,
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
         techs: [nc.tech0[id]!, nc.tech1[id]!],
+        shipyard: nc.living[id] === 1 && shipyard(world, id) >= 0,
         research: nc.research[id]! * DAYS_PER_MONTH,
         lines: lines.get(id) ?? [],
       });

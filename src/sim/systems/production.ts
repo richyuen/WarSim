@@ -22,15 +22,16 @@
  * Ships (PLAN 4.2e): a fleet of a sea template is queued only by a nation that controls a port a
  * ship reaches (`shipyard`), and is delivered at the water of that port on its ready day (its
  * node's cell of the lane graph, at the cell's water point); with no such port then, the order
- * waits. A fleet takes its slowest ship's own days (`SHIP_TIME_SCALE`), and its gold is by the
- * land's scale.
+ * waits. The water is by the zones, not the lane graph's edges (PLAN 4.2f: the page asks
+ * every nation's shipyard). A fleet takes its slowest ship's own days (`SHIP_TIME_SCALE`), and
+ * its gold is by the land's scale.
  */
 import { equipFormation } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import { knowsTechs } from '../tech';
-import { Domain, laneOf, navOf, seaOf, type World } from '../world';
+import { Domain, navOf, portSeaOf, seaOf, type World } from '../world';
 import { waterOf } from './sail';
 import { frontierOf } from './territory';
 
@@ -49,21 +50,20 @@ export const SHIP_TIME_SCALE = 1;
 
 /**
  * The port where a new fleet of `nation` is delivered (index in `world.ports`), or -1: of the
- * ports whose land cell the nation controls and whose water a ship reaches (a node of the lane
- * graph, in a zone that ice does not close), the highest naval base, then the nearest to the
- * capital, then the first.
+ * ports whose land cell the nation controls and whose water a ship reaches (its water as the
+ * lane graph's node has it, `portSeaOf`, in a zone that ice does not close), the highest naval
+ * base, then the nearest to the capital, then the first.
  */
 export function shipyard(world: World, nation: number): number {
   const { w, controller } = world.cells;
-  const lanes = laneOf(world);
+  const water = portSeaOf(world);
   const sea = seaOf(world);
   const cx = world.nations.cols.capitalX[nation]!;
   const cy = world.nations.cols.capitalY[nation]!;
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
-    if (controller[p.cell] !== nation || lanes.portNode[i]! < 0) return;
-    if (sea.closed[sea.zoneOf[lanes.cell[lanes.portNode[i]!]!]!] === 1) return;
+    if (controller[p.cell] !== nation || water[i]! < 0 || sea.closed[sea.zoneOf[water[i]!]!] === 1) return;
     let dx = Math.abs(p.x - cx);
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const d = dx * dx + (p.y - cy) * (p.y - cy);
@@ -173,8 +173,7 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
 export function dockPoint(world: World, nation: number): [number, number] | null {
   const port = shipyard(world, nation);
   if (port < 0) return null;
-  const lanes = laneOf(world);
-  return waterOf(world, lanes.cell[lanes.portNode[port]!]!);
+  return waterOf(world, portSeaOf(world)[port]!);
 }
 
 export function productionSystem(world: World): void {

@@ -568,3 +568,12 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on
     the commit and 8.19 on HEAD, the same hash fac8ee64 (1.9 ms on the budget's machine).
     Seeds 2 and 3 and the pinned hash passed.
+  - The browser suite on this container (2026-10-10, PLAN 4.2's tick, 4.2f): 17 of 164
+    failed in 1.7 h (camera, cityNames ×2, fallen, fightSeen ×2, fire, formationFight,
+    handover, individuals, labelFades, lateFrame, precision, tickClock, tankBattle, ticker,
+    zoomDemo). The same 14 files on the commit before (4.2e, no change of the page but the
+    build list): the same 15 failed, camera and fire passed. Alone on 4.2f fire passed;
+    camera passed twice on 4.2f and failed twice on 4.2e (a zoom by E of 12.69 against more
+    than 13). Read as the container's speed (frames and ticks counted in a time of the wall,
+    a software GPU); the errors read were counts of ticks and frames and distances near
+    their bounds. The specs were not changed.

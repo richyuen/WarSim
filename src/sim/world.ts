@@ -3,7 +3,7 @@
  * nothing outside this object influences a tick except queued commands.
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
-import { buildLaneGraph, type LaneGraph, type SeaPassage } from './nav/lanes';
+import { buildLaneGraph, portWaters, type LaneGraph, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import type { Port } from './data/ports';
@@ -415,6 +415,7 @@ class WorldCore implements Stateful {
     w.nav = null;
     w.sea = null;
     w.lanes = null;
+    w.portSea = null;
     w.frontier = null;
     w.dropLandCounts();
     w.terrainVersion++;
@@ -443,6 +444,11 @@ export function seaOf(world: World): SeaZones {
 /** The lane graph over the sea zones and the map's passages, with the world's ports (PLAN 4.1b, 4.1c; built once, cached). */
 export function laneOf(world: World): LaneGraph {
   return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages, world.ports, world.portReach));
+}
+
+/** Per port of the world, its water as the lane graph has it, or -1 (`portWaters`: by the zones alone, not the lanes; built once, cached where `sea` is). */
+export function portSeaOf(world: World): Int32Array {
+  return (world.portSea ??= portWaters(navOf(world).grid, seaOf(world), world.ports, world.portReach));
 }
 
 export class World {
@@ -739,6 +745,8 @@ export class World {
   ports: readonly Port[] = [];
   /** How far from its cell a port's water may be, cells (the scenario's `reachCells`). */
   portReach = 0;
+  /** Each port's water (`portSeaOf`): a derived cache, dropped where `sea` is. */
+  portSea: Int32Array | null = null;
   /** The lane graph: a derived cache, dropped where `sea` is. */
   lanes: LaneGraph | null = null;
   commandLog: LoggedCommand[] = [];

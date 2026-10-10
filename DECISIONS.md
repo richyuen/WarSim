@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-253 · 2026-10-10 · accepted — The page is told who has a shipyard; a port's water by the zones alone (PLAN 4.2f)
+
+- **Context.** PLAN 4.2f: the Actions tab's build list offers the fleets to a nation with a
+  shipyard. The page knew nothing of ports (ADR-252).
+- **Decision.** `NationStat.shipyard`: the worker asks `shipyard` of each living nation in
+  its stats. The list shows the land and the sea templates; a fleet of a nation with none is
+  disabled with "no port" (`act.needsPort`), as a template not researched is.
+- **Why the list shows a fleet it cannot build.** The same as a template not researched:
+  the player sees what there is and why not. Hidden, Switzerland's list would say nothing.
+- **A port's water by the zones alone** (`portWaters` in `nav/lanes.ts`, `portSeaOf(world)`,
+  a cache dropped where the zones are). `shipyard` read the lane graph's port nodes, and the
+  stats of the first second of a game then built the graph: 2.6 s on this container (0.4 to
+  0.7 s on the machine of the budget), a stall of the worker at boot. The port node's cell
+  needs the zones only (0.87 s here, 0.2 s there); the edges are the cost. `buildLaneGraph`
+  takes its ports' cells from the same function, and a test holds the two equal for all 615
+  ports. All the nations' shipyards take about 3 ms.
+- **Not done:** the economic AI's ships (PLAN 4.6). **The pin stays.**
+- **Tests.** `tests/e2e/buildFleet1938.spec.ts` (Switzerland's six fleets disabled, "no
+  port"; the United Kingdom's flotilla built, its gold paid, in its queue); the equality of
+  the ports' water in `ships1938.test.ts`.
+
 ### ADR-252 · 2026-10-10 · accepted — A fleet is built at the nation's shipyard in its slowest ship's own days, priced by the land's scale (PLAN 4.2e)
 
 - **Context.** PLAN 4.2e: a sea template in the queue, delivered at a port of the nation; a
@@ -197,7 +218,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Why the lane graph at the order.** It is what makes a port one to a ship (`portNode`,
   the zones, the ice), and it is built once, 0.4 to 0.7 s, at a game's first fleet order or
   sail; the start's fleets are placed by the terrain alone (ADR-248) and the build of a
-  world does not pay for it.
+  world does not pay for it. (Since PLAN 4.2f the port's water is found by the zones alone,
+  the same cell: ADR-253.)
 - **Not done here:** the page's build list (PLAN 4.2f); the economic AI's ships (PLAN 4.6).
 - **The pin stays:** no fleet is ordered without a player. **Tests.**
   `tests/unit/ships1938.test.ts`, five; five mutations each failed one or two.

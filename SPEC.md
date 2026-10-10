@@ -892,8 +892,8 @@ Element (authoritative unit proxy) {
       short of money by its navy cuts its army); desertion in bankruptcy (a rule of men);
       the statistics' men (the army's).
     - *Not yet:* a fleet fights nothing (4.3), and is not laid up by a nation that cannot
-      pay it (4.6); the economic AI builds no ship (4.6), and the page's build list offers
-      none (4.2f).
+      pay it (4.6); the economic AI builds no ship (4.6). A player builds one from the
+      Actions tab (§ the page, production; PLAN 4.2f).
   - **A fleet is built** (PLAN 4.2e, ADR-252; `src/sim/systems/production.ts`).
     - *The order* (`queueFormation`): of a sea template, only by a nation with a shipyard;
       else `ProductionRejected`, nothing paid. Gold by the land's scale (3.5 × its ships'),
@@ -902,11 +902,12 @@ Element (authoritative unit proxy) {
       carrier group 800, a cruiser squadron 400, a destroyer flotilla 180, a submarine
       flotilla 150, a transport group 90 (the land's are 3 × their slowest element's).
     - *The shipyard* (`shipyard`): of the ports whose land cell the nation controls and
-      whose water a ship reaches (a node of the lane graph, in a zone ice does not close),
+      whose water a ship reaches (`portSeaOf`: the cell of its node of the lane graph, found
+      by the zones alone, `portWaters`; in a zone ice does not close),
       the highest naval base, then the nearest to the capital. In 1938: Portsmouth, Norfolk,
       Yokosuka, Brest, La Spezia, Kiel, Kronstadt.
     - *The delivery* (`productionSystem`, `dockPoint`): on its ready day at the shipyard's
-      water (its node's cell, at the cell's water point), chosen then; with no shipyard then
+      water (`portSeaOf`, at the cell's water point), chosen then; with no shipyard then
       the order waits, as a land order with no land does. Bankruptcy stalls it as any.
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
@@ -2297,8 +2298,12 @@ on screen.
       > 40, never against a side fighting to the death;
     - an alliance is accepted when the target is unallied, not a puppet and not at war with
       the proposer.
-  - Production: every template with gold, manpower and training days (`mapLayers.templates`),
-    Build when affordable, and the training queue (`NationStat.queue`).
+  - Production: every land and sea template with gold, manpower and training days
+    (`mapLayers.templates`), Build when affordable, and the training queue
+    (`NationStat.queue`). A fleet is disabled, "no port", for a nation with no shipyard
+    (`NationStat.shipyard`, PLAN 4.2f, ADR-253; the worker asks `shipyard` of each living
+    nation, about 3 ms for all, by the ports' water of the zones alone, `portSeaOf`: the
+    zones are built at the first stats of a game, not the lane graph).
 - **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).

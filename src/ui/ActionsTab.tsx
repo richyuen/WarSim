@@ -68,18 +68,19 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand }:
 
       <div class="panel-sub">{t('act.production')}</div>
       {templates.map((tp, i) => {
-        // A fleet is not in the list (PLAN 4.2b): the queue takes one since PLAN 4.2e, and the page does not know who has a port (PLAN 4.2f). `i` stays the template's index.
-        if (tp.domain !== 0) return null;
+        // Land and sea templates; no air formation is built (PLAN 5). `i` stays the template's index.
+        if (tp.domain > 1) return null;
         const affordable = nation.gold >= tp.gold && nation.manpower >= tp.manpower;
-        // The sim refuses a template whose techs the nation does not know (PLAN 3.1a).
+        // The sim refuses a template whose techs the nation does not know (PLAN 3.1a), and a fleet of a nation with no port (PLAN 4.2e).
         const known = (nation.techs[0] & tp.techs[0]) >>> 0 === tp.techs[0] && (nation.techs[1] & tp.techs[1]) >>> 0 === tp.techs[1];
+        const port = tp.domain === 0 || nation.shipyard;
         return (
           <div class="god-row act-template" key={i}>
             <span class="god-war-name" title={t('act.templateInfo', { men: num(tp.men), gold: num(tp.gold), manpower: num(tp.manpower), days: tp.days })}>
               {t(tp.nameKey as MessageKey)}
-              <span class="act-cost"> {known ? t('act.cost', { gold: num(tp.gold), days: tp.days }) : t('act.needsResearch')}</span>
+              <span class="act-cost"> {!known ? t('act.needsResearch') : !port ? t('act.needsPort') : t('act.cost', { gold: num(tp.gold), days: tp.days })}</span>
             </span>
-            <button type="button" class="god-btn" data-testid={`act-build-${i}`} disabled={!affordable || !known} onClick={() => onCommand({ kind: 'queueFormation', nation: n, template: i })}>
+            <button type="button" class="god-btn" data-testid={`act-build-${i}`} disabled={!affordable || !known || !port} onClick={() => onCommand({ kind: 'queueFormation', nation: n, template: i })}>
               {t('act.build')}
             </button>
           </div>

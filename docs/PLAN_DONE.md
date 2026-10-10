@@ -6455,3 +6455,41 @@ Of 4.2 (open in PLAN.md):
     now, and the build list of the Actions tab leaves the fleets out (`tp.domain !== 0`).
     Only the 1938 start has fleets: the random world, the toy world and a world of the
     editor have none, and none can be placed there.
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
+  AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
+  From PLAN 4.1b (2026-10-09, ADR-243): a route over the lanes goes by the zones' middles and
+  in 8-way steps, and is longer than the sea's own way (the Alboran Sea to the north of the
+  Red Sea 4,941 km, 4,024 by great-circle legs). The time a fleet takes is to be that of the
+  way it sails: straighten the way, or say what "expected" is against. An edge's cells are of
+  the M grid, not of the fine mask.
+  From PLAN 4.1c (2026-10-09, ADR-244): the Arctic is open water to the lanes: from Scapa
+  Flow to Pearl Harbor the shortest way is north of Siberia (15,974 km), not by Panama. Ice
+  is not in the map's data: close those zones to a fleet, or give them a cost.
+  Split 2026-10-09 (one cause to a commit):
+  - [x] 4.2a The ship types and the fleet templates in the scenario's rules: […]
+  - [x] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule […]
+  - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
+  - [x] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found […]
+  - [x] 4.2d The Arctic is closed to a fleet, or costs: by the map's data. […]
+  - [x] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation. […]
+  - [x] 4.2f The build list of the Actions tab offers the fleets to a nation with a shipyard.
+    AT: e2e: the United Kingdom's list has a destroyer flotilla, built and in its queue;
+    Switzerland's has none, or has it disabled.
+    From PLAN 4.2e (2026-10-10, ADR-252): the sim takes a sea template from a nation with
+    a shipyard (`shipyard`, `src/sim/systems/production.ts`) and refuses it from one with
+    none; the page knows nothing of ports, so the list still leaves the fleets out
+    (`tp.domain !== 0`, `ActionsTab.tsx`). The random world has the 1938 ports, so a fleet
+    can be built there now (not tried); the toy world has no port and builds none; the
+    editor places none.

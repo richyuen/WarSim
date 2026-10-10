@@ -427,6 +427,8 @@ export interface NationStat {
   queue: { template: number; readyDay: number }[];
   /** The techs it knows, as bits 0..31 and 32..63 (PLAN 3.1a). */
   techs: readonly [number, number];
+  /** Whether it holds a port a ship reaches, where a fleet it orders is built (PLAN 4.2e–f, `shipyard`). */
+  shipyard: boolean;
   /** Its research budget in gold per month, like `income` (the sim holds it per day; PLAN 3.1b). */
   research: number;
   /** What it is researching, in the order the lines were opened: index into `mapLayers.techs` and the gold paid. */

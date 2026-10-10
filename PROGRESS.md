@@ -13469,3 +13469,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   changes; the list leaves the fleets out until 4.2f).
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.2f (the build list).
+
+## 2026-10-10 — PLAN 4.2f: the build list offers the fleets; PLAN 4.2 done (ADR-253)
+
+- **Critic not due.**
+- **Done.** `NationStat.shipyard` (the worker's stats ask `shipyard` of each living
+  nation); `ActionsTab.tsx` lists the land and sea templates, a fleet of a nation with no
+  shipyard disabled with "no port" (`act.needsPort`, English).
+- **Measured, then changed:** the stats' first `shipyard` built the lane graph, 2.6 s on
+  this container, at the boot of every game. A port's water needs only the zones:
+  `portWaters` (`nav/lanes.ts`, now also what `buildLaneGraph` takes its ports' cells
+  from) and `portSeaOf(world)` (a cache dropped where the zones are): 0.87 s here for the
+  zones, 2 ms the waters, 3 ms all the shipyards; the same cell as the lanes' node for all
+  615 ports (a test).
+- **The AT** (`tests/e2e/buildFleet1938.spec.ts`): the six fleets are on the list;
+  Switzerland's disabled, "no port", its division enabled; the United Kingdom's destroyer
+  flotilla enabled, built, its 1,120 gold paid, "ready in 180 days" in its queue. Run by
+  hand with `playerActions1938` (2 tests, green). One picture looked at
+  (`.cache/buildFleet/build-fleet.png`): the six fleets with their gold and days under the
+  land's, the flotilla in training. In it the ranking's rows 13 to 16 overlap (two numbers
+  on Argentina's row): not looked into, nothing of this part draws it.
+- **Browser in this container:** Playwright asked for a headless shell (1243) that is not
+  installed; linked to the installed 1194's files under `/opt/pw-browsers`, outside the repo.
+- **PLAN 4.2 ticked:** its parts a to f are done; its AT (Gibraltar to Suez in the time of
+  its km, no hour on land of the fine mask) is PLAN 4.2c's. The gate runs the browser suite
+  in full for it.
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS. The browser
+  suite run by hand in full: 147 of 164 passed, 17 failed in 1.7 h; 15 of them fail on the
+  commit before as well, and the other two pass alone on this one (BLOCKERS).
+- **The pin stays.** **No sweep** (ADR-58).
+- **PARITY:** our additions, row 3: a note and the spec added, still partial.
+- **Next:** PLAN 4.3 (fleet battles).

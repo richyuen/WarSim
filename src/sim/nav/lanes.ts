@@ -265,20 +265,9 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
 
   // The ports: a node at the port's water, and the way to it from the seed of that water's zone.
   const portNode = new Int32Array(ports.length).fill(-1);
-  ports.forEach((p, i) => {
-    if (p.cell < 0 || p.cell >= n || !isLand(terrain[p.cell]!)) return;
-    const px = p.cell % w;
-    const py = (p.cell - px) / w;
-    const near = (c: number): boolean => {
-      if (zoneOf[c] === 0) return false;
-      let dx = Math.abs((c % w) - px);
-      if (g.wrapX && dx > w - dx) dx = w - dx;
-      return dx <= portReach && Math.abs(Math.floor(c / w) - py) <= portReach;
-    };
-    const given = !Number.isNaN(p.waterX);
-    const at = given
-      ? nearestCellWhere((c) => zoneOf[c] !== 0, p.waterX, p.waterY, w, h, PASSAGE_SNAP, g.wrapX)
-      : nearestCellWhere(near, p.x, p.y, w, h, 2 * portReach + 2, g.wrapX);
+  const waters = portWaters(g, z, ports, portReach);
+  ports.forEach((_, i) => {
+    const at = waters[i]!;
     if (at < 0) return;
     portNode[i] = kind.length;
     edges.push({ a: zoneOf[at]! - 1, b: kind.length, km: dist[at]!, crossing: false, passage: -1, cells: Int32Array.from(toSeed(at).reverse()), landAt: -1 });
@@ -296,6 +285,34 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
     adj[e.b]!.push(i);
   });
   return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges: open, adj, dropped, portNode, toSeed: from };
+}
+
+/**
+ * Per port, its water as the lane graph has it (the cell of its node), or -1: the zoned water
+ * cell nearest to the port's place within `portReach` of its land cell, or nearest to the water
+ * given by hand (within `PASSAGE_SNAP`); -1 for a port whose cell is no land or with none in
+ * reach. By the zones alone: what reads a port's water and not its way (`shipyard`) is spared
+ * the lane graph's edges.
+ */
+export function portWaters(g: NavGrid, z: SeaZones, ports: readonly LanePort[], portReach: number): Int32Array {
+  const { w, h, terrain } = g;
+  const { zoneOf } = z;
+  const out = new Int32Array(ports.length).fill(-1);
+  ports.forEach((p, i) => {
+    if (p.cell < 0 || p.cell >= w * h || !isLand(terrain[p.cell]!)) return;
+    const px = p.cell % w;
+    const py = (p.cell - px) / w;
+    const near = (c: number): boolean => {
+      if (zoneOf[c] === 0) return false;
+      let dx = Math.abs((c % w) - px);
+      if (g.wrapX && dx > w - dx) dx = w - dx;
+      return dx <= portReach && Math.abs(Math.floor(c / w) - py) <= portReach;
+    };
+    out[i] = !Number.isNaN(p.waterX)
+      ? nearestCellWhere((c) => zoneOf[c] !== 0, p.waterX, p.waterY, w, h, PASSAGE_SNAP, g.wrapX)
+      : nearestCellWhere(near, p.x, p.y, w, h, 2 * portReach + 2, g.wrapX);
+  });
+  return out;
 }
 
 export interface LaneRoute {

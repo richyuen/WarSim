@@ -234,6 +234,7 @@ function terrainChanged(world: World): void {
   world.nav = null;
   world.sea = null;
   world.lanes = null;
+  world.portSea = null;
   world.frontier = null;
   world.supplyDirty = true;
   world.terrainVersion++;
