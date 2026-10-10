@@ -1657,7 +1657,14 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   (sinkings logged).
 - **Amphibious invasion**: formations embark on transports at a port, move with an
   escorting fleet, land on a coast cell (landing penalty, needs sea control or
-  surprise), and receive naval bombardment support. **Crossings** remain for AoC-parity
+  surprise), and receive naval bombardment support. A land formation ordered to another land
+  (another component of the land grid) at a port its nation holds, where a transport group
+  of its nation stands with room for it (2,000 men a transport), goes aboard: it is where
+  its transports are, and no rule of the land reads it. They sail for the zoned water nearest
+  the target (within 8 cells) and it lands at the nearest cell of the target's land, its org
+  at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
+  land within 3 cells if any; sunk, they take it with them. With no port or no room the order
+  is a march as before (PLAN 4.5a). **Crossings** remain for AoC-parity
   walkable straits.
 
 ### 6.3 Aircraft

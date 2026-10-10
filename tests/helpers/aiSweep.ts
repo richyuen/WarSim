@@ -256,8 +256,8 @@ export function aiSweep(seed: number): void {
 `);
   // PLAN 4.2b: the fleets of the start stood for ten years, but for those of the nations that died.
   expect(fleets.start, `seed ${seed}: fleets at the start`).toBeGreaterThan(100);
-  expect(fleets.start - fleets.gone - fleets.sailed - fleets.fought, `seed ${seed}: fleets that stand after ten years`).toBeGreaterThan(0);
-  process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought} at their cells with their ships after ten years, ${fleets.sailed} sent from bases lost (PLAN 4.4e), ${fleets.fought} in sea battles, ${fleets.gone} gone with their nations
+  expect(fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried, `seed ${seed}: fleets that stand after ten years`).toBeGreaterThan(0);
+  process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried} at their cells with their ships after ten years, ${fleets.sailed} sent from bases lost (PLAN 4.4e), ${fleets.fought} in sea battles, ${fleets.carried} carried troops (PLAN 4.5a), ${fleets.gone} gone with their nations
 `);
   // PLAN 3.12Rk: no march home waits out a war before an enemy's cell.
   process.stderr.write(`seed ${seed}: ${waits.marked} formation-hours with the mark of a march home; the longest wait before an enemy's cell ${waits.longest} h${waits.where ? ` (${waits.where})` : ''}

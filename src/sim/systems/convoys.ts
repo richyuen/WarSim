@@ -42,7 +42,7 @@ export function convoyLosses(world: World): ConvoyLosses | null {
   const boats = new Map<number, Map<number, number>>();
   const screens = new Map<number, Map<number, number>>();
   f.forEach((id) => {
-    if (!world.afloat(id)) return;
+    if (!world.isFleet(id)) return;
     const zone = z.zoneOf[Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!)]!;
     if (zone === 0) return;
     let ss = 0;

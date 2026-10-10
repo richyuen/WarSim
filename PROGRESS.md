@@ -13734,3 +13734,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   red as on the commits before (BLOCKERS); build and parity green.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.5 (amphibious invasion).
+
+## 2026-10-10 — PLAN 4.5a: embark, sail, land (ADR-262)
+
+- **Critic not due.**
+- **Split:** PLAN 4.5 into 4.5a (the movement), 4.5b (sea control a landing needs, its
+  penalty; the AT of 4.5), 4.5c (bombardment).
+- **Done:** `amphibious.ts` (`orderLanding`, `amphibiousSystem` after the movement,
+  `transportRoom`, `TRANSPORT_MEN`, `LANDING_ORG`); `World.embarked` (a saved section);
+  `World.afloat` is a fleet or a formation aboard, `World.isFleet` a fleet (the sea rules
+  that mean ships ask it); `orderMove` asks `orderLanding` for a target on another land;
+  events `FormationEmbarked`, `FormationLanded`.
+- **The AT:** a British division at Portsmouth ordered to Calais goes aboard, sails and lands
+  in hour 12 at Calais' cell, its org 0.5. One at Birmingham marches to the coast of Kent as
+  before; at Portsmouth the two transport groups take three divisions, the fourth marches.
+- **Tests:** `amphibious1938.test.ts`, four. Three mutations each failed one.
+- **The pin stays** `e8fc6344`.
+- **The ten-year runs** failed on seed 2: a transport group sailed with a division the AI
+  ordered to another land (day 1351), then a start fleet was sunk whole in a sea battle (day
+  3489). `fleetsStand` frees a fleet that carried troops (`carried`) and one sunk in a battle
+  it was in (`fought`), ADR-262. Seed 2 then: 135 stand, 56 sailed, 3 fought, 1 carried, 2
+  gone.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage
+  through on every seed, seed 3 over the time (639 s alone, every check passed); build and
+  parity green. No numbered task ticked: no browser suite.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.5b (sea control and the landing).

@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-262 · 2026-10-10 · accepted — Embark, sail, land (PLAN 4.5a)
+
+- **Context.** The critic's R2-B1 and R3-B1: a British division ordered to Calais walked to
+  the coast of Kent and stood there; no land formation crossed a sea. PLAN 4.5 split: 4.5a
+  the movement, 4.5b the sea control a landing needs and its penalty (the AT of 4.5), 4.5c
+  the bombardment.
+- **The order.** `orderMove` to a cell on another land component than the formation's
+  (`overSea`) asks `orderLanding` first: the formation at a port its nation holds (within 3
+  cells, `AT_PORT_CELLS`), a transport group of its nation standing there with room
+  (`TRANSPORT_MEN` = 2,000 men a transport, a group of 12 carries 24,000, less those aboard).
+  The landing water is the zoned water, not ice-closed, nearest the target within 8 cells;
+  the landing cell the target's land nearest it. The transports sail for the water
+  (`orderSail`). Refused (no port, no room, no water), the order is a march as before, to
+  the nearest cell of the own land within 3 cells of the target.
+- **Aboard** (`World.embarked`, a saved section while any is aboard): the formation is at its
+  transports' place each hour and `afloat`, so the land's rules leave it out; a sea rule that
+  means ships asks `isFleet`. It takes no order. It lands when they stand at the water (org at
+  most `LANDING_ORG` = 0.5, then on to the target), at the land within 3 cells when they stand
+  elsewhere, and is destroyed with them when they are gone.
+- **The pin stays** `e8fc6344`: no AI orders a formation to another land at a port with
+  transports in seed 99's first year. The AI does by chance later (its marches' targets);
+  its planned invasions are PLAN 4.6.
+- **The ten-year runs' rule of the fleets** (`tests/helpers/fleetsStand.ts`) failed on seed 2:
+  on day 1351 a transport group of nation 20 sailed with a division the AI had ordered to
+  another land; once the game went another way, on day 3489 a start fleet of nation 14 was
+  sunk whole in a sea battle (a fleet that fought and lived was free since ADR-261, one sunk
+  was "gone while its nation lives"). A fleet that has carried a formation (`carried`) and one
+  sunk in a battle it was in (`fought`) are free. Seed 2: 135 stand, 56 sailed, 3 fought, 1
+  carried, 2 gone.
+- **Tests.** `tests/unit/amphibious1938.test.ts`, four: Portsmouth to Calais lands in hour 12
+  at Calais' cell; Birmingham marches to Kent; room for three divisions of 12,460 at
+  Portsmouth, the fourth marches; sunk transports take the division; a save mid-crossing.
+  Three mutations (no disorder, no room check, no loss with the transports) each failed one.
+
 ### ADR-261 · 2026-10-10 · accepted — A fleet's loose ends: a lost base, a passage held by the enemy, a fleet in a canal (PLAN 4.4e)
 
 - **Context.** PLAN 4.4e, from the notes of PLAN 4.2b and 4.2c: a fleet stood at a base its

@@ -61,7 +61,7 @@ export function navalPower(world: World): Map<number, Map<number, number>> {
   const w = world.cells.w;
   const out = new Map<number, Map<number, number>>();
   f.forEach((id) => {
-    if (!world.afloat(id)) return;
+    if (!world.isFleet(id)) return;
     const zone = z.zoneOf[Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!)]!;
     if (zone === 0) return;
     let p = 0;

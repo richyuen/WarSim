@@ -384,6 +384,8 @@ class WorldCore implements Stateful {
       { name: 'world.paths', dtype: 'i32', data: paths },
       // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
       // only while there is one, so a world with no sea battle saves and hashes as before.
+      // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
+      ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
       ...(w.seaControl === null || !w.seaControl.holder.some((h) => h !== 0) ? [] : [{ name: 'world.seaControl', dtype: 'f64' as const, data: Float64Array.from([w.seaControl.holder.length, ...w.seaControl.holder, ...w.seaControl.days]) }]),
       ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
@@ -423,6 +425,9 @@ class WorldCore implements Stateful {
     const control = sections.find((s) => s.name === 'world.seaControl')?.data as Float64Array | undefined;
     w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
     w.seaLinks = new Map();
+    w.embarked = new Map();
+    const emb = sections.find((s) => s.name === 'world.embarked')?.data as Float64Array | undefined;
+    for (let at = 0; emb && at < emb.length; at += 5) w.embarked.set(emb[at]!, { fleet: emb[at + 1]!, land: emb[at + 2]!, water: emb[at + 3]!, target: emb[at + 4]! });
     w.seaBattles = [];
     const sea = sections.find((s) => s.name === 'world.seaBattles')?.data as Float64Array | undefined;
     for (let at = 0; sea && at < sea.length; ) {
@@ -485,6 +490,7 @@ export function portSeaOf(world: World): Int32Array {
  */
 export type { SeaControl } from './systems/seaControl';
 import type { SeaControl } from './systems/seaControl';
+import type { Embarked } from './systems/amphibious';
 
 export interface SeaBattle {
   fleets: number[];
@@ -707,7 +713,13 @@ export class World {
    * (`TemplateRule.domain`). The rules of the land (the march, supply, contact and fire, the
    * ground a formation holds, the AI's orders) ask this and leave a fleet alone.
    */
+  /** A fleet, or a land formation aboard one (PLAN 4.5a): on the water, where no rule of the land reads it. */
   afloat(id: number): boolean {
+    return this.isFleet(id) || this.embarked.has(id);
+  }
+
+  /** A formation of a sea template (PLAN 4.2a). */
+  isFleet(id: number): boolean {
     return this.rules?.templates[this.formations.cols.template[id]!]?.domain === Domain.sea;
   }
 
@@ -780,6 +792,8 @@ export class World {
   paths = new Map<number, Int32Array>();
   /** The sea battles going on (PLAN 4.3a, 4.3c; `navalCombatSystem`): state, saved while there is one. */
   seaBattles: SeaBattle[] = [];
+  /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
+  embarked = new Map<number, Embarked>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

@@ -298,7 +298,7 @@ function menOf(world: World): Map<number, number> {
   const m = new Map<number, number>();
   const f = world.formations.cols;
   world.formations.forEach((id) => {
-    if (!world.afloat(id)) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + f.strength[id]!);
+    if (!world.isFleet(id)) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + f.strength[id]!);
   });
   return m;
 }

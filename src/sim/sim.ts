@@ -15,6 +15,7 @@ import { buffSystem } from './systems/buffs';
 import { efficiencySystem } from './systems/efficiency';
 import { capitalsSystem } from './systems/capitals';
 import { combatSystem } from './systems/combat';
+import { amphibiousSystem } from './systems/amphibious';
 import { navalCombatSystem } from './systems/navalCombat';
 import { seaControlSystem } from './systems/seaControl';
 import { movementSystem, repatriationSystem } from './systems/movement';
@@ -35,7 +36,7 @@ import { createToyWorld, TOY_SYSTEMS } from './toy';
 import type { World } from './world';
 
 /** The systems of the 1938 rules by name, in their order (several are closures without one). */
-const SYSTEM_NAMES_1938 = ['buffs', 'strategicAi', 'operationalAi', 'production', 'research', 'economicAi', 'economy', 'efficiency', 'supply', 'repatriation', 'movement', 'retreat', 'combat', 'navalCombat', 'seaControl', 'orgLoss', 'territory', 'capitals', 'war', 'alliances', 'puppets', 'revolts', 'collapse', 'stats'] as const;
+const SYSTEM_NAMES_1938 = ['buffs', 'strategicAi', 'operationalAi', 'production', 'research', 'economicAi', 'economy', 'efficiency', 'supply', 'repatriation', 'movement', 'amphibious', 'retreat', 'combat', 'navalCombat', 'seaControl', 'orgLoss', 'territory', 'capitals', 'war', 'alliances', 'puppets', 'revolts', 'collapse', 'stats'] as const;
 
 /** A call of a system that takes this long is counted as a slow one (`SystemProfile.slow`). */
 export const SLOW_CALL_MS = 1;
@@ -77,7 +78,7 @@ export class Sim {
         // SPEC §2.5 order: production and economy (3), supply (4), land movement (7),
         // engagement and combat (8), territory (9).
         // AI decides first (SPEC §2.5 step 2), on the state left by the previous tick.
-        this.systems = [buffSystem, strategicAi, operationalAiOf(ECONOMY_TABLES_1938), productionSystem, researchSystem, economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938), economySystem(ECONOMY_TABLES_1938), efficiencySystem, supplySystem, repatriationSystem, movementSystem, retreatSystem, combatSystem, navalCombatSystem, seaControlSystem, orgLossSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem, revoltSystem, collapseSystem, statsSystem];
+        this.systems = [buffSystem, strategicAi, operationalAiOf(ECONOMY_TABLES_1938), productionSystem, researchSystem, economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938), economySystem(ECONOMY_TABLES_1938), efficiencySystem, supplySystem, repatriationSystem, movementSystem, amphibiousSystem, retreatSystem, combatSystem, navalCombatSystem, seaControlSystem, orgLossSystem, territorySystem, capitalsSystem, warSystem, allianceSystem, puppetSystem, revoltSystem, collapseSystem, statsSystem];
         this.systemNames = SYSTEM_NAMES_1938;
         break;
     }

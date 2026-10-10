@@ -111,6 +111,10 @@ export const EventKind = {
   SeaBattle: 41,
   /** A nation's submarines raided a bloc's convoys in a month (PLAN 4.4d): a = the raiders' nation, b = the bloc raided; (x, y) = the middle of the zone. */
   ConvoyRaided: 42,
+  /** A land formation went aboard its nation's transports (PLAN 4.5a): a = formation, b = nation, (x, y) = the port. */
+  FormationEmbarked: 43,
+  /** An embarked formation landed (PLAN 4.5a): a = formation, b = nation, (x, y) = where. */
+  FormationLanded: 44,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

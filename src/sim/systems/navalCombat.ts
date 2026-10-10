@@ -122,7 +122,7 @@ export function findSeaBattles(world: World): { fleets: number[]; km: number }[]
   const atWar = world.wars.nations();
   const facts: FleetFacts[] = [];
   f.forEach((id) => {
-    if (!world.afloat(id) || !atWar.has(c.nation[id]!)) return;
+    if (!world.isFleet(id) || !atWar.has(c.nation[id]!)) return;
     const els = idx.get(id);
     const ff = els ? factsOf(world, id, els) : null;
     if (ff) facts.push(ff);
@@ -238,7 +238,7 @@ export function rebaseFleets(world: World): void {
   const f = world.formations;
   const c = f.cols;
   f.forEach((id) => {
-    if (!world.afloat(id) || c.moving[id] === 1 || c.engaged[id] === 1) return;
+    if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1) return;
     if (atLostBase(world, id)) sailHome(world, id);
   });
 }

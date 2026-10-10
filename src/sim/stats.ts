@@ -41,7 +41,7 @@ export function statsSystem(world: World): void {
   const men = new Float64Array(world.nations.highWater);
   const fc = world.formations.cols;
   world.formations.forEach((f) => {
-    if (!world.afloat(f)) men[fc.nation[f]!]! += fc.strength[f]!; // the army's men: a fleet's crews are not counted (PLAN 4.2b)
+    if (!world.isFleet(f)) men[fc.nation[f]!]! += fc.strength[f]!; // the army's men: a fleet's crews are not counted (PLAN 4.2b)
   });
   // Stored as f32: round here so the saved value equals the in-memory one.
   const f = Math.fround;
