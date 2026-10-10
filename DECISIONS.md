@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-260 · 2026-10-10 · accepted — Convoys: enemy boats on a land's way home take a share of its income; a submarine holds no sea (PLAN 4.4d)
+
+- **Context.** PLAN 4.4d: convoys and submarine raiding; income of overseas land by sea;
+  sinkings logged. AT: a submarine flotilla in a convoy's zone cuts the income it carries.
+- **Decision.** A land joined to home by sea (ADR-259) sends its income by convoy along the
+  shortest way in zones from a home port's zone to its port's (`convoyWays`). In each zone
+  of it, the enemy's boats there (S) take min(1, 0.05 × S) of what passes, screened by the
+  bloc's destroyers there (D) as in a sea battle: × (1 − 0.6 × min(1, D / S)). The land's
+  cells pay the product of what each zone leaves. A raid is a history row once a month per
+  zone and raiding nation (`ConvoyRaided`), not one per ship: no ship of a convoy is a unit.
+- **A submarine holds no sea.** A flotilla of 8 boats (800 hit points) would hold a zone
+  with no other warship in it, and so shut the way it raids (ADR-259): a convoy would not
+  pass it at all. A submarine attacks the sea it cannot hold; it counts for no zone's control
+  (the test of PLAN 4.4a changed for it). So Malta is no longer cut on the first day of a war
+  with Italy: the zones about it were held by Italy's boats (the test of PLAN 4.4c changed).
+- **Why a share of income and no lost ships.** The cargo is the land's trade; the economy
+  reads it monthly. The boats lose nothing in a raid: escorts sinking boats is a sea battle,
+  which the AI's escort of PLAN 4.6 will bring.
+- **The pin moves:** `67919bee` → `a45b7fab`: Italy's boats raid British convoys in 5 months
+  of seed 99's first year (and the zones its boats held are nobody's or another's).
+- **Cost.** The economy 0.055 ms a tick here (its month computes the losses twice).
+- **Tests.** `tests/unit/convoys1938.test.ts`, three; five mutations each failed one or more.
+
 ### ADR-259 · 2026-10-10 · accepted — Supply over sea: a land's cities feed only while a way by sea no enemy holds joins it to home (PLAN 4.4c)
 
 - **Context.** PLAN 4.4c, the second half of PLAN 4.4's AT: an overseas formation loses supply

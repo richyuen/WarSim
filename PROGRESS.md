@@ -13676,3 +13676,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   stage 16 of 17 (seed 1 timed out, 820 s); build and parity green.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.4d (convoys and raiding).
+
+## 2026-10-10 — PLAN 4.4d: convoys and submarine raiding (ADR-260)
+
+- **Critic not due.**
+- **Done:** `src/sim/systems/convoys.ts` (`RAID_PER_BOAT`, `convoyLosses`, `convoyShare`);
+  `convoyWays` in `seaSupply.ts` (the BFS keeps its way back); `monthlyAccounts` pays a
+  land's share; `runEconomyMonth` logs `ConvoyRaided` (42; history role nation, nation;
+  English sentence); `navalPower` leaves submarines out.
+- **The AT:** a German submarine flotilla in a zone of the way to Malta (0.15 % of the
+  United Kingdom's land income; two British lands' convoys pass it): Malta keeps 0.6 of
+  its income, 0.84 with a British destroyer flotilla there; the month is the sum over the
+  raided lands to six places (2,411.9 → 2,410.6 screened).
+- **Tests:** `convoys1938.test.ts`, three (the AT; the log, once a month per zone and
+  nation, its sentence, and no zone held by boats; no raid at peace or by a nation at war
+  with another). Five mutations each failed one or more.
+- **Mistakes of mine the runs caught:** the first zone I took had British destroyers in it
+  already (a full screen: 0.84 for 0.6); the test takes a zone with no British fleet. Then
+  the month was lower than one land's raid: the zone is on two lands' ways; the test sums them.
+- **A test of PLAN 4.4a changed** (`seaControl1938.test.ts`): the start's power leaves the
+  submarines out. **One of PLAN 4.4c** (`seaSupply1938.test.ts`): Malta was cut on the first
+  day of a war with Italy because Italy's boats held the zones about it; it is joined now.
+- **The pin moves:** `67919bee` → `a45b7fab` (Italy raids British convoys in 5 months).
+- **The gate:** the unit stage red by the two timing tests of BLOCKERS and by PLAN 4.4c's
+  Malta test, changed as above (green alone after it); the ten-year stage 16 of 17 (seed 1
+  timed out, 780 s); build and parity green.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4e (a fleet's loose ends).

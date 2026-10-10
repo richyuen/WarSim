@@ -36,6 +36,7 @@ export const HISTORY_KINDS: ReadonlySet<number> = new Set<number>([
   EventKind.LandCeded,
   EventKind.WarEnded,
   EventKind.SeaBattle,
+  EventKind.ConvoyRaided,
 ]);
 
 export class History implements Stateful {

@@ -6619,3 +6619,23 @@ Of 4.4 (open in PLAN.md):
   - [x] 4.4c Supply over sea: a bloc's network takes its ports that a way over zones no
     enemy holds joins to a port of its home network, and feeds from them.
     AT: an overseas formation loses supply when the lane is cut (test).
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.4 (open in PLAN.md):
+
+  - [x] 4.4d Convoys and submarine raiding: income of overseas land by sea; sinkings logged.
+    From PLAN 4.4c (2026-10-10, ADR-259): `seaLinkedAll` (`src/sim/systems/seaSupply.ts`)
+    gives each bloc's lands joined to home by sea; its ways are zone to zone, not the lanes'
+    cells, and a land where the bloc has no port is not cut. Malta is cut from the first day
+    of a war with Italy (Italy's fleets hold the zones about it).
+    AT: a submarine flotilla in a convoy's zone cuts the income it carries (test).

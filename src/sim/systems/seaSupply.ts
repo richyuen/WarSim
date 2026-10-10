@@ -54,6 +54,19 @@ export function seaLinked(world: World, bloc: number): number[] {
 
 /** `seaLinked` of every bloc with a city, in one pass over the nations, the ports and the cities. */
 export function seaLinkedAll(world: World): Map<number, number[]> {
+  return seaReach(world).linked;
+}
+
+/**
+ * The ways of every bloc's convoys (PLAN 4.4d): per bloc, per land joined to home by sea that is
+ * not home, the zones of the shortest way (in zones) from a home port's zone to a port of that
+ * land, the home end first.
+ */
+export function convoyWays(world: World): Map<number, Map<number, number[]>> {
+  return seaReach(world).ways;
+}
+
+function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<number, Map<number, number[]>> } {
   const comp = navOf(world).grid.component;
   const { w, owner, controller } = world.cells;
   const nc = world.nations.cols;
@@ -102,8 +115,11 @@ export function seaLinkedAll(world: World): Map<number, number[]> {
   const holder = world.seaControl?.holder;
   const links = zoneLinks(world);
   const seen = new Uint8Array(z.count + 1);
+  const from = new Int32Array(z.count + 1);
+  const order = new Int32Array(z.count + 1);
   const queue: number[] = [];
   const out = new Map<number, number[]>();
+  const ways = new Map<number, Map<number, number[]>>();
   for (const b of [...cities.keys()].sort((p, q) => p - q)) {
     const m = cities.get(b)!;
     const own = new Set(home.get(b));
@@ -125,6 +141,8 @@ export function seaLinkedAll(world: World): Map<number, number[]> {
         for (const zone of byComp!.get(c) ?? []) {
           if (seen[zone] || shut(zone)) continue;
           seen[zone] = 1;
+          from[zone] = 0;
+          order[zone] = queue.length;
           queue.push(zone);
         }
       }
@@ -132,15 +150,28 @@ export function seaLinkedAll(world: World): Map<number, number[]> {
         for (const n of links[queue[head]!]!) {
           if (seen[n] || z.closed[n] === 1 || shut(n)) continue;
           seen[n] = 1;
+          from[n] = queue[head]!;
+          order[n] = queue.length;
           queue.push(n);
         }
       }
-      for (const c of away) if (byComp!.get(c)!.some((zone) => seen[zone] === 1)) list.push(c);
+      const byLand = new Map<number, number[]>();
+      for (const c of away) {
+        // The port's zone reached first: its way back to home.
+        let end = 0;
+        for (const zone of byComp!.get(c)!) if (seen[zone] === 1 && (end === 0 || order[zone]! < order[end]!)) end = zone;
+        if (end === 0) continue;
+        list.push(c);
+        const way: number[] = [];
+        for (let k = end; k !== 0; k = from[k]!) way.push(k);
+        byLand.set(c, way.reverse());
+      }
+      ways.set(b, byLand);
     }
     for (const c of m.keys()) if (own.has(c) || !byComp?.has(c)) list.push(c);
     out.set(b, list.sort((p, q) => p - q));
   }
-  return out;
+  return { linked: out, ways };
 }
 
 /**

@@ -25,8 +25,9 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { pow } from '../core/dmath';
 import { cellKm2ByRow } from '../landCounts';
-import type { World } from '../world';
+import { seaOf, type World } from '../world';
 import { bleedFormation } from './elements';
+import { convoyLosses, convoyShare } from './convoys';
 import { BLOCKADE_SHARE, blockadedCells } from './seaControl';
 
 /** `cells.econ` unit: millions of 1990 $ (GDP per year, industrial-weighted). */
@@ -110,6 +111,8 @@ export function monthlyAccounts(
   const rowKm2 = cellKm2ByRow(w, h);
   // The blockade (PLAN 4.4b): a province whose every port is blockaded pays the share of it.
   const blockade = blockadedCells(world);
+  // Convoys (PLAN 4.4d): what the enemy's submarines take of the income of lands joined by sea.
+  const convoys = convoyLosses(world);
   for (let y = 0, c = 0; y < h; y++) {
     const km2 = rowKm2[y]!;
     for (let x = 0; x < w; x++, c++) {
@@ -119,6 +122,7 @@ export function monthlyAccounts(
       let v = econ[c]!;
       const own = owner[c] === n;
       if (v !== 0 && blockade && (blockade.provinces.has(province[c]!) || blockade.cells.has(c))) v *= BLOCKADE_SHARE;
+      if (v !== 0 && convoys) v *= convoyShare(world, convoys, n, c);
       if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
       if (own) population[n]! += pop[c]! * 1000;
     }
@@ -145,6 +149,12 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
   const nc = world.nations.cols;
   const fc = world.formations.cols;
   const { gross, expenses, population } = monthlyAccounts(world, tables);
+  // The month's raids on convoys, in the log (PLAN 4.4d).
+  const z = seaOf(world);
+  for (const r of convoyLosses(world)?.raids ?? []) {
+    const seed = z.seedCell[r.zone]!;
+    world.out.emit(world.tick, EventKind.ConvoyRaided, r.raider, r.bloc, (seed % world.cells.w) + 0.5, Math.floor(seed / world.cells.w) + 0.5);
+  }
   const deserting = new Uint8Array(world.nations.highWater);
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;

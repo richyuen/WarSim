@@ -109,6 +109,8 @@ export const EventKind = {
    * where it began.
    */
   SeaBattle: 41,
+  /** A nation's submarines raided a bloc's convoys in a month (PLAN 4.4d): a = the raiders' nation, b = the bloc raided; (x, y) = the middle of the zone. */
+  ConvoyRaided: 42,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

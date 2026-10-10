@@ -1635,7 +1635,16 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   home port's zone reaches its port's zone through no zone held by an enemy of the bloc. A
   city is a source of the supply network only on a land that is home, joined, or has no port
   of the bloc (`seaLinkedAll`); at each refresh hour a bloc whose joined lands changed is
-  refreshed whole (`markSeaLinks`). At war with Italy, Malta is cut at once.
+  refreshed whole (`markSeaLinks`). (At war with Italy Malta was cut at once while Italy's
+  submarines held the zones about it; since PLAN 4.4d a submarine holds no sea.)
+  *Convoys and raiding (PLAN 4.4d, ADR-260; `src/sim/systems/convoys.ts`):* the income of a
+  land joined to home by sea goes by convoy along its way (`convoyWays`, the zones from a home
+  port's to the land's port). In each zone of it the boats (S) of the nations at war with
+  the bloc take min(1, `RAID_PER_BOAT` 0.05 × S) of what passes, × (1 − 0.6 × min(1, D / S))
+  for the bloc's destroyers there (D); the land's cells pay the product of what each zone
+  leaves (`monthlyAccounts`). Each raid is a history row a month (`ConvoyRaided`). A
+  submarine holds no sea (it counts for no zone's control). On seed 99 Italy raids British
+  convoys in 5 months of the first year.
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled
   zone adjacent to a port reduces its income and supply). **Submarines** raid convoys

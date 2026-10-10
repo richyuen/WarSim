@@ -49,11 +49,11 @@ describe('supply over sea (PLAN 4.4c)', () => {
     expect(zones.length).toBeGreaterThan(0);
     expect(declareWar(w, ITA, ENG, true)).not.toBeNull();
     const div = addDivision(w, ENG, malta.x, malta.y);
-    // The first day's sea control: Italy's fleets hold the zones about Malta's (Malta's own is
-    // Britain's), and every way from a British home port to it goes through one.
+    // The first day's sea control: Malta's own zone is Britain's. (Until PLAN 4.4d Italy's
+    // submarines held the zones about it and cut it at once; a submarine holds no sea now.)
     s.step(1);
     expect(zones.every((z) => seaControlOf(w).holder[z] === ENG)).toBe(true);
-    expect(seaLinked(w, ENG)).not.toContain(malta.comp);
+    expect(seaLinked(w, ENG)).toContain(malta.comp);
     // The sea open (nobody holds a zone) until the next day's sea control.
     const sc = seaControlOf(w);
     sc.holder.fill(0);

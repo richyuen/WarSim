@@ -133,7 +133,8 @@ describe('sea control (PLAN 4.4a)', () => {
       if (!w.afloat(fid)) return;
       for (const e of elementIndex(w).get(fid) ?? []) {
         const u = w.rules!.units[w.elements.cols.unit[e]!]!;
-        if (u.hard > 0 || u.torpedo > 0) ships += u.hpPerUnit * w.elements.cols.strength[e]!;
+        // A submarine holds no sea since PLAN 4.4d.
+        if (u.cls !== 'ss' && (u.hard > 0 || u.torpedo > 0)) ships += u.hpPerUnit * w.elements.cols.strength[e]!;
       }
     });
     expect(total).toBe(ships);

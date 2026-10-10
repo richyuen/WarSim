@@ -4,7 +4,7 @@
  *
  * Daily at 00:00. A zone's naval power by bloc (a nation and its puppets, `blocOf`): the hit
  * points of the live ships with a weapon (a gun or torpedoes) of the fleets standing or sailing
- * in it; a transport is no power. The bloc of the most power holds the zone (the lower id on a
+ * in it; a transport is no power, nor a submarine (it raids, PLAN 4.4d: it holds no sea). The bloc of the most power holds the zone (the lower id on a
  * tie), unless a bloc at war with it has `CONTEST_SHARE` of its power there or more: then
  * nobody holds it. A zone with no power in it stays its holder's for `CONTROL_DAYS` after the
  * last day it held it with its ships there, then nobody's. A holder that is no longer a living
@@ -66,7 +66,7 @@ export function navalPower(world: World): Map<number, Map<number, number>> {
     let p = 0;
     for (const e of idx.get(id) ?? []) {
       const u = units[ec.unit[e]!]!;
-      if (ec.strength[e]! > 0 && (u.hard > 0 || u.torpedo > 0)) p += u.hpPerUnit * ec.strength[e]!;
+      if (ec.strength[e]! > 0 && u.cls !== 'ss' && (u.hard > 0 || u.torpedo > 0)) p += u.hpPerUnit * ec.strength[e]!;
     }
     if (p <= 0) return;
     const bloc = blocOf(world, c.nation[id]!);
