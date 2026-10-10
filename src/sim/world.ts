@@ -150,6 +150,10 @@ export interface UnitRule {
   hpPerUnit: number;
   /** Fuel an element of it burns in an hour on the march (`fuelPerHour` of the unit data). */
   fuel: number;
+  /** Its guns' reach, km; how far it sees, km; how hard it is to see, 0..100 (`range_km`, `detection`, `stealth`; read at sea, PLAN 4.3a). */
+  rangeKm: number;
+  detection: number;
+  stealth: number;
   /**
    * Its own figures for the ground (PLAN 3.3a; `terrainMods` of the unit data), by terrain, 1
    * where it has none: its fire at a target on that ground, and the fire it takes holding it.
@@ -374,6 +378,9 @@ class WorldCore implements Stateful {
       { name: 'world.commandLog', dtype: 'u8', data: log },
       { name: 'world.names', dtype: 'u8', data: names },
       { name: 'world.paths', dtype: 'i32', data: paths },
+      // The range of each fleet's sea battle (PLAN 4.3a), by id: only while there is one, so a
+      // world with no sea battle saves and hashes as before.
+      ...(w.seaRange.size === 0 ? [] : [{ name: 'world.seaRange', dtype: 'f64' as const, data: Float64Array.from([...w.seaRange].sort((a, b) => a[0] - b[0]).flat()) }]),
     ];
   }
 
@@ -407,6 +414,9 @@ class WorldCore implements Stateful {
     w.paths.clear();
     const paths = sections.find((s) => s.name === 'world.paths')?.data as Int32Array | undefined;
     for (let at = 0; paths && at < paths.length; at += 2 + paths[at + 1]!) w.paths.set(paths[at]!, paths.slice(at + 2, at + 2 + paths[at + 1]!));
+    w.seaRange.clear();
+    const range = sections.find((s) => s.name === 'world.seaRange')?.data as Float64Array | undefined;
+    for (let at = 0; range && at < range.length; at += 2) w.seaRange.set(range[at]!, range[at + 1]!);
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.elementIndex = null;
     w.contacts = null;
@@ -726,6 +736,8 @@ export class World {
    * missing is found again (`formationPath`). The navigation graph is a derived cache.
    */
   paths = new Map<number, Int32Array>();
+  /** The range, km, of the sea battle each fleet in one fights (PLAN 4.3a, `navalCombatSystem`): state, saved while not empty. */
+  seaRange = new Map<number, number>();
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
   /**
    * The seeds of the map's named seas (PLAN 4.1a): static data of the map, not state (not saved,

@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-254 · 2026-10-10 · accepted — Sea battles: contact by detection less stealth, a range of the battle as state, guns by their reach (PLAN 4.3a)
+
+- **Context.** PLAN 4.3: detection and fleet battles at the level of the ship (gunnery
+  ranges, torpedoes, screening); AT: a battleship line beats a light cruiser line at range,
+  and a destroyer screen reduces a submarine's hits. Split in three (PLAN 4.3a, b, c).
+- **Contact.** Each fleet's best `detection` (km) against the enemy's least stealthy ship
+  (× (1 − stealth / 100)), by either side: so a fleet is seen by its largest ship, and a
+  submarine flotilla only close. Two fleets with no gun between them are in no battle (a
+  carrier group and a transport group would hold each other for good).
+- **The range is state, of the battle, not the fleets' places.** A fleet in a battle holds
+  (as a land formation in contact does), and its place is a cell's water point; a range
+  from places would not move. So each fleet of a battle keeps its battle's range
+  (`world.seaRange`, an id → km map). It changes by a rule of the two sides' reach and
+  pace (`nextRange`): the side of the longer guns holds the range off where its pace
+  allows, the other closes. Saved in a section of its own only while there is a battle, so
+  a world with none saves and hashes as before (the pin stays: no sea battle in seed 99's
+  first year) and older saves load. Not a column of the formations: an older save has none.
+- **Fire.** `hard` against every ship (on land `soft` against what has no armour; a ship's
+  armour 0, a submarine's, would make it immune to `soft` 0), `piercing` against `armor` as
+  on land (`ARMOR_PEN`), weighed by hit points (a battleship draws more fire), `COOLDOWN`
+  as on land, simultaneous. `SEA_FIRE_SCALE` 2: four battleships sink four light cruisers in
+  5 hours; a battle of hours, as the battles of the 1940s (the Denmark Strait 20 minutes,
+  Jutland some hours).
+- **The detection of the data is used as it is.** A battleship sees 18 km: a battleship
+  line sees a cruiser at 17.1 km, so from 28 km neither side sees the other, and its
+  stand-off holds only where the enemy sees it first (the AT is from 24 km: the cruisers
+  see it at 24.5). Ranging aircraft and radar are of later tasks (PLAN 5.4).
+- **Not done:** torpedoes and the screen (PLAN 4.3b); the history log and breaking off (PLAN
+  4.3c): a fleet fights to its last ship. No sea battle without a player, as no AI orders a
+  fleet (PLAN 4.6).
+- **Tick time:** 0.25 ms of 8.7 a tick on this container (2.9 %), one year of seed 99.
+- **Tests.** `tests/unit/navalBattle1938.test.ts`, six; four mutations each failed one or two.
+
 ### ADR-253 · 2026-10-10 · accepted — The page is told who has a shipyard; a port's water by the zones alone (PLAN 4.2f)
 
 - **Context.** PLAN 4.2f: the Actions tab's build list offers the fleets to a nation with a

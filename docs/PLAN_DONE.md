@@ -6493,3 +6493,22 @@ Of 4.2 (open in PLAN.md):
     (`tp.domain !== 0`, `ActionsTab.tsx`). The random world has the 1938 ports, so a fleet
     can be built there now (not tried); the toy world has no port and builds none; the
     editor places none.
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.3 (open in PLAN.md):
+
+  - [x] 4.3a Detection, contact and gunnery by range: fleets of nations at war that see each
+    other (detection less stealth) fight a sea battle whose range closes by the sides' reach
+    and pace; a ship fires only within its gun's reach.
+    AT: a battleship line beats a light cruiser line from beyond the cruisers' reach, and
+    takes no hit while the range is beyond it.

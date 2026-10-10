@@ -13500,3 +13500,35 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin stays.** **No sweep** (ADR-58).
 - **PARITY:** our additions, row 3: a note and the spec added, still partial.
 - **Next:** PLAN 4.3 (fleet battles).
+
+## 2026-10-10 — PLAN 4.3a: detection, contact and gunnery by range (ADR-254)
+
+- **Critic not due.** **Split first:** 4.3a (detection, contact, gunnery by range), 4.3b
+  (torpedoes, the screen: the AT's second half), 4.3c (the log, breaking off).
+- **Done** (`src/sim/systems/navalCombat.ts`, after the land's combat in the 1938 systems):
+  `findSeaBattles` (detection less stealth, either side; fleets in contact joined;
+  `engaged`), `nextRange` (the sides' reach and pace), the fire of ships within their
+  reach (`SEA_FIRE_SCALE` 2), `seaKm`. `world.seaRange` (state, a section only while not
+  empty). `UnitRule` has `rangeKm`, `detection`, `stealth` from the units' data.
+- **The AT:** four battleships against four light cruisers from 24 km: the range 24, then
+  18 (the cruisers close by 9 km/h); no hit taken in the first hour; the cruisers gone in
+  5 hours, the battleships losing 140 of 8,000 hit points. From 15 km the battleships take
+  hits from the first hour, and more in all.
+- **A mistake of mine the first run caught:** from 28 km nobody saw anybody (a battleship
+  line sees 17.1 km, the cruisers 24.5): 48 hours of nothing. The AT starts at 24 km; the
+  detection of the data is kept (ADR-254, a line under PLAN 4.3c).
+- **Tests:** `navalBattle1938.test.ts`, six (the range's rule; detection, a submarine
+  seen closer, no battle at peace; the AT; from 15 km; a ship's end and a fleet's, the
+  range gone with the battle; a save in mid-battle loads to the same hash and goes on the
+  same). Four mutations each failed one or two: guns fire at any range, no stealth, no
+  range kept, the shorter side closing at its whole pace.
+- **A test of PLAN 1.x changed** (`headless.test.ts`): the 1938 systems are 23 with the
+  sea's battles, where it counted 22.
+- **The pin stays** (`bbfd15fc`): no sea battle in seed 99's first year. **No sweep.**
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage 16 of 17, seed 1 timed out (840 s, BLOCKERS); build and parity green.
+- **Tick time:** 0.25 ms of 8.69 a tick here (2.9 %).
+- **Not looked at:** a battle of three nations; a sea battle on the page (FireEvents are
+  pushed with the elements' places; PLAN 4.7 draws them); a fleet sailing into a battle.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.3b (torpedoes and the screen).

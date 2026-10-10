@@ -55,9 +55,10 @@ describe('headless runner (PLAN 0.20)', () => {
     const sim = new Sim({ scenario: '1938', seed: 1, assets: loadAssets1938(SIZE_1938.w) });
     const p = sim.profile(() => 0);
     sim.step(1);
-    expect(p.names).toHaveLength(22);
-    expect(new Set(p.names).size).toBe(22);
-    expect(p.ms).toHaveLength(22);
+    // 23 since PLAN 4.3a (the sea battles, after the land's).
+    expect(p.names).toHaveLength(23);
+    expect(new Set(p.names).size).toBe(23);
+    expect(p.ms).toHaveLength(23);
     expect(p.names.every((n) => n.length > 0)).toBe(true);
   });
 

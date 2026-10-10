@@ -1579,6 +1579,23 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - **Fleet battles** at element level: gunnery ranges (BB > CA > CL > DD), torpedoes
   (DD and SS, short range, high damage), carrier air groups (strikes from the CV's air
   wing at long range), screening (DDs protect capitals from subs and torpedoes).
+  *As built (PLAN 4.3a, ADR-254; `src/sim/systems/navalCombat.ts`, after the land's combat):*
+  - *Detection:* a fleet of a nation at war sees an enemy fleet within its best ship's
+    `detection` km × (1 − the enemy's least stealthy ship's `stealth` / 100): destroyers
+    see a battle squadron at 29 km and a submarine flotilla at 18.
+  - *Contact:* two fleets of nations at war of which either sees the other and one has a
+    gun (`range_km` and `hard` above 0); joined, a sea battle. A fleet in one is
+    `engaged` and holds.
+  - *Its range* (`world.seaRange`, state, saved while not empty): the nearest pair's
+    distance at its first hour, then by the sides' reach (longest gun) and pace (slowest
+    ship's top speed): beyond both both close at the two paces; between them the shorter
+    closes at what its pace has over the other's; within both it stays.
+  - *Fire:* each ship whose gun reaches the range fires at an enemy ship weighed by hit
+    points (kept 4 hours): `hard` × (0.5 where the target's armour beats its piercing) ×
+    `SEA_FIRE_SCALE` 2 × the buffs ÷ the target's hit points, in ships; simultaneous;
+    FireEvents. Four battleships sink four light cruisers from 24 km in 5 hours, losing
+    140 of 8,000 hit points and none in the first hour.
+  - *Not yet:* torpedoes, the screen (4.3b); the log, breaking off (4.3c); air (5.4).
 - **Sea control** per zone per side = Σ naval power present and recent wins. It decays.
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled
