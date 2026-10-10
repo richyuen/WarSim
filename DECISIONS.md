@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-257 · 2026-10-10 · accepted — Sea control per zone: the most armed hit points, contested at half by an enemy, held 14 days (PLAN 4.4a)
+
+- **Context.** PLAN 4.4: sea control per zone, sea supply, convoys, blockade, submarine
+  raiding; AT: a blockaded port's income drops by the expected factor, an overseas formation
+  loses supply when the lane is cut. SPEC §6.2: "sea control per zone per side = Σ naval
+  power present and recent wins; it decays". Split in five (4.4a–e).
+- **Decision.** Daily: a zone's power by bloc is the hit points of the armed ships of its
+  fleets (a transport group holds nothing); the most holds it, unless an enemy of it has half
+  its power there or more; with none of its ships there it keeps it for 14 days, then
+  nobody does. A battle won is "recent wins": the winner's ships are there and the loser's
+  have broken off (ADR-256).
+- **Why hit points.** They are what a sea battle takes (ADR-254), and they weigh a
+  battleship over a destroyer as the battle does. Counted per bloc (a puppet's navy is its
+  overlord's), as the supply's networks are.
+- **Why state.** The 14 days need a memory. Saved in a section of its own while any zone is
+  held; the start's fleets hold 45 zones from the first day, so the pin moves:
+  `bbfd15fc` → `e5c69f37`. No rule reads it yet (the blockade, PLAN 4.4b).
+- **A zone, not a cell.** Zones are the seas' (ADR-242); a map whose zones change (a
+  map import) starts the control again.
+- **Cost.** 0.11 ms a tick over a year of seed 99 here, nearly all of it the zones' build at
+  the first day (the page builds them at its first stats already, ADR-253). That build in the
+  first tick failed `territory.test.ts`'s cost of 72 ticks (26.1 ms a tick against 25; it
+  passed on the commit before): `buildSeaZones` is made faster for it, with the same zones (a
+  mask of the sea, the four neighbours into a fixed buffer, a flood into a typed array, no
+  array made per cell): 1,050 → about 420 ms here. The test passes then.
+- **Tests.** `tests/unit/seaControl1938.test.ts`, six; four mutations each failed one (the
+  first version of the test of peace passed with the war's check taken out: its German
+  force was under half anyway; it has two flotillas at peace now).
+
 ### ADR-256 · 2026-10-10 · accepted — A sea battle is a record: it merges, it ends, it is logged once; a fleet breaks off under half its ships (PLAN 4.3c)
 
 - **Context.** PLAN 4.3c: a sea battle in the history log and the events, with its place,

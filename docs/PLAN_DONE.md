@@ -6565,3 +6565,21 @@ Of 4.3 (open in PLAN.md):
     with no destroyer sinks it to the last ship, untouched; and a flotilla with destroyers
     in a battle with only submarines left holds them for good if its charges cannot finish
     them (they do: 0.2 of a submarine an hour each).
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.4 (open in PLAN.md):
+
+  - [x] 4.4a Sea control per zone: who holds each zone, by the warships in it, contested by
+    an enemy's, held for a time after they leave.
+    AT: a zone with one navy's warships is its from the next day; an enemy with half its
+    power contests it; with none of its ships there it keeps it 14 days (test).

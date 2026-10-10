@@ -53,6 +53,22 @@ quick sweep as a smoke test.
   (Tiksi, Dikson, Resolute, Qaanaaq): a port no ship reaches. A fleet of a scenario placed in
   the ice would have no way out (none of 1938 is: tested).
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
+  Split 2026-10-10 (one cause to a commit):
+  - [x] 4.4a Sea control per zone: who holds each zone, by the warships in it, contested by […]
+  - [ ] 4.4b Blockade: a port whose zone an enemy of its holder holds pays less.
+    AT: a blockaded port's income drops by the expected factor (test).
+    From PLAN 4.4a (2026-10-10, ADR-257): `seaHolder(world, zone)` reads who holds a zone;
+    a port's zone is that of its water (`portSeaOf`). A city's income is its cell's
+    (`cells.econ`); a port has no income of its own.
+  - [ ] 4.4c Supply over sea: a bloc's network takes its ports that a way over zones no
+    enemy holds joins to a port of its home network, and feeds from them.
+    AT: an overseas formation loses supply when the lane is cut (test).
+  - [ ] 4.4d Convoys and submarine raiding: income of overseas land by sea; sinkings logged.
+    AT: a submarine flotilla in a convoy's zone cuts the income it carries (test).
+  - [ ] 4.4e A fleet's loose ends: a base its nation has lost, a passage whose banks an
+    enemy holds, a fleet in a canal under a map import, its supply and fuel at sea.
+    AT: a fleet at a base taken by an enemy sails for another of its nation's ports; a
+    fleet is refused a passage whose bank an enemy holds (test).
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
   5 and 6 are their tasks): without transport by sea the sea powers are out of every war.

@@ -13591,3 +13591,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   tested); a battle of three nations; a merge of two records in play.
 - **PARITY:** our additions, row 3: a note added, still partial.
 - **Next:** PLAN 4.4 (sea control, supply, convoys, blockade).
+
+## 2026-10-10 — PLAN 4.4a: sea control per zone (ADR-257)
+
+- **Critic not due.** **Split first:** 4.4a sea control, 4.4b blockade, 4.4c supply over
+  sea, 4.4d convoys and raiding, 4.4e a fleet's loose ends (each with its AT).
+- **Done** (`src/sim/systems/seaControl.ts`, after the sea battles): `navalPower`,
+  `seaControlSystem` (daily), `seaHolder`, `world.seaControl` (state, a section while a
+  zone is held). 24 systems now (`headless.test.ts`).
+- **The AT:** Scapa Flow's zone is the United Kingdom's from the first day, Kiel's
+  Germany's, Yokosuka's Japan's; 45 of 428 zones held; a German force of 1,200 against a
+  British cruiser squadron's 2,800 does not contest it, of 2,400 does; the same at peace
+  (made French) leaves it British; a zone left keeps its holder 13 days and is nobody's at
+  the 14th day's start.
+- **Tests:** `seaControl1938.test.ts`, six. Four mutations each failed one, the first only
+  after its test was strengthened (see ADR-257).
+- **The pin moves:** `bbfd15fc` → `e5c69f37` (a new section of the state; no rule reads it).
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage 16 of 17 (seed 1 timed out, 930 s), run before the zones' build was made faster
+  (the same zones); build and parity green.
+- **Tick time:** seaControl 0.11 ms a tick over the year (one call of 917 ms at the first
+  day, the zones' build), navalCombat 0.26 ms; the mean 9.0 ms here.
+- **A test of PLAN 1.14 failed and was mended by speed, not changed:** `territory.test.ts`
+  times 72 ticks from the start (26.1 ms a tick against 25, passing on the commit before):
+  the zones' build now lands in the first tick. `buildSeaZones` made faster with the same
+  zones (the zones' tests and the pin hold): 1,050 → about 420 ms here; the test passes.
+- **Not looked at:** a map import's new zones (the control starts again by the zones'
+  count); a puppet's navy with its overlord's in play.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4b (blockade).

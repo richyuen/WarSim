@@ -200,12 +200,28 @@ export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[], ice: Readon
   const { w, h, terrain } = g;
   const n = w * h;
   const s = seaScratch(g);
-  const nb: number[] = [];
   const zoneOf = new Uint16Array(n);
   const seedCell: number[] = [0];
   const seedIdx: number[] = [-1];
   const dropped: number[] = [];
-  const sea = (c: number): boolean => !isLand(terrain[c]!);
+  const seaMask = new Uint8Array(n);
+  for (let c = 0; c < n; c++) seaMask[c] = isLand(terrain[c]!) ? 0 : 1;
+  const sea = (c: number): boolean => seaMask[c] === 1;
+  // The 4 neighbours of a cell, in `neighbours4`'s order, into `nb4`; their count. (A hot loop:
+  // no array is grown.)
+  const nb4 = new Int32Array(4);
+  const around = (c: number): number => {
+    const x = c % w;
+    const y = (c - x) / w;
+    let k = 0;
+    if (y > 0) nb4[k++] = c - w;
+    if (y < h - 1) nb4[k++] = c + w;
+    if (x > 0) nb4[k++] = c - 1;
+    else if (g.wrapX) nb4[k++] = c + w - 1;
+    if (x < w - 1) nb4[k++] = c + 1;
+    else if (g.wrapX) nb4[k++] = c - w + 1;
+    return k;
+  };
 
   seeds.forEach((sd, i) => {
     const [x, y] = cellOf(sd.lonLat[0], sd.lonLat[1], w, h);
@@ -222,20 +238,25 @@ export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[], ice: Readon
   // The bodies of water (4-way) with no seed in them: one large enough is given seeds of its own.
   const body = new Int32Array(n).fill(-1);
   const part = new Int32Array(n).fill(-1);
+  const flood = new Int32Array(n);
   for (let c0 = 0; c0 < n; c0++) {
     if (body[c0] !== -1 || !sea(c0)) continue;
-    const cells: number[] = [c0];
+    flood[0] = c0;
+    let tail = 1;
     body[c0] = c0;
     let seeded = zoneOf[c0] !== 0;
-    for (let head = 0; head < cells.length; head++) {
-      for (const m of neighbours4(cells[head]!, w, h, g.wrapX, nb)) {
-        if (body[m] !== -1 || !sea(m)) continue;
+    for (let head = 0; head < tail; head++) {
+      const k = around(flood[head]!);
+      for (let j = 0; j < k; j++) {
+        const m = nb4[j]!;
+        if (body[m] !== -1 || seaMask[m] === 0) continue;
         body[m] = c0;
         if (zoneOf[m] !== 0) seeded = true;
-        cells.push(m);
+        flood[tail++] = m;
       }
     }
     if (seeded) continue;
+    const cells = Array.from(flood.subarray(0, tail));
     const area = areaOf(g, cells);
     if (area < MIN_WATER_KM2) continue;
     cells.sort((a, b) => a - b);
@@ -255,8 +276,10 @@ export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[], ice: Readon
   for (let head = 0; head < tail; head++) {
     const c = queue[head]!;
     const z = zoneOf[c]!;
-    for (const m of neighbours4(c, w, h, g.wrapX, nb)) {
-      if (zoneOf[m] !== 0 || !sea(m)) continue;
+    const k = around(c);
+    for (let j = 0; j < k; j++) {
+      const m = nb4[j]!;
+      if (zoneOf[m] !== 0 || seaMask[m] === 0) continue;
       zoneOf[m] = z;
       queue[tail++] = m;
     }
@@ -275,7 +298,8 @@ export function buildSeaZones(g: NavGrid, seeds: readonly SeaSeed[], ice: Readon
     // East and south only: each pair of cells that touch is seen once.
     const east = x < w - 1 ? c + 1 : g.wrapX ? c - w + 1 : -1;
     const south = y < h - 1 ? c + w : -1;
-    for (const m of [east, south]) {
+    for (let k = 0; k < 2; k++) {
+      const m = k === 0 ? east : south;
       const zm = m < 0 ? 0 : zoneOf[m]!;
       if (zm === 0 || zm === z) continue;
       adjSets[z]!.add(zm);

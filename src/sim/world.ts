@@ -384,6 +384,8 @@ class WorldCore implements Stateful {
       { name: 'world.paths', dtype: 'i32', data: paths },
       // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
       // only while there is one, so a world with no sea battle saves and hashes as before.
+      // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
+      ...(w.seaControl === null || !w.seaControl.holder.some((h) => h !== 0) ? [] : [{ name: 'world.seaControl', dtype: 'f64' as const, data: Float64Array.from([w.seaControl.holder.length, ...w.seaControl.holder, ...w.seaControl.days]) }]),
       ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
     ];
   }
@@ -418,6 +420,8 @@ class WorldCore implements Stateful {
     w.paths.clear();
     const paths = sections.find((s) => s.name === 'world.paths')?.data as Int32Array | undefined;
     for (let at = 0; paths && at < paths.length; at += 2 + paths[at + 1]!) w.paths.set(paths[at]!, paths.slice(at + 2, at + 2 + paths[at + 1]!));
+    const control = sections.find((s) => s.name === 'world.seaControl')?.data as Float64Array | undefined;
+    w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
     w.seaBattles = [];
     const sea = sections.find((s) => s.name === 'world.seaBattles')?.data as Float64Array | undefined;
     for (let at = 0; sea && at < sea.length; ) {
@@ -478,6 +482,9 @@ export function portSeaOf(world: World): Int32Array {
  * its two sides' first nations (`a`, the first fleet's; `b`, the first of the fleets at war with
  * it) and the ships each side lost; where it began.
  */
+export type { SeaControl } from './systems/seaControl';
+import type { SeaControl } from './systems/seaControl';
+
 export interface SeaBattle {
   fleets: number[];
   ships: number[];
@@ -772,6 +779,8 @@ export class World {
   paths = new Map<number, Int32Array>();
   /** The sea battles going on (PLAN 4.3a, 4.3c; `navalCombatSystem`): state, saved while there is one. */
   seaBattles: SeaBattle[] = [];
+  /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */
+  seaControl: SeaControl | null = null;
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
   /**
    * The seeds of the map's named seas (PLAN 4.1a): static data of the map, not state (not saved,
