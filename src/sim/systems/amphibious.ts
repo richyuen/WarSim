@@ -18,17 +18,26 @@
  * nearest them within `AT_PORT_CELLS`, if any, and stays aboard otherwise. Transports that are gone
  * (sunk) take the formation with them.
  *
- * Not here: the sea control a landing needs, the landing's penalty in a fight, the bombardment
- * (PLAN 4.5b, 4.5c); the AI's invasions (PLAN 4.6).
+ * A landing needs the sea (PLAN 4.5b): when the transports stand at the landing water and the
+ * zone of that water is held by a bloc at war with the formation's nation (`seaHolder`, PLAN
+ * 4.4a), the landing is thrown back (`LandingRepulsed`): the transports sail for their nation's
+ * nearest port (`sailHome`) and the formation lands where they stand next. A formation that
+ * lands on a cell held by a nation at war with its own takes it (the beachhead): the front
+ * spreads only from held land (`territorySystem`), so without it a landing took nothing. The landing's
+ * penalty in a fight is its disorder: a formation fires by its org (`ORG_FIRE`), at 0.625 of
+ * its fire with `LANDING_ORG`, and recovers it as any formation.
+ *
+ * Not here: the bombardment (PLAN 4.5c); the AI's invasions (PLAN 4.6).
  */
 import { EventKind } from '../../shared/events';
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
 import { navOf, portSeaOf, seaOf, type World } from '../world';
 import { destroyFormation, elementIndex } from './elements';
-import { AT_PORT_CELLS } from './navalCombat';
+import { AT_PORT_CELLS, sailHome } from './navalCombat';
 import { orderMove } from './movement';
 import { orderSail } from './sail';
+import { seaHolder } from './seaControl';
 
 /** Men a transport carries. A transport group's 12 carry 24,000: two infantry divisions of 1938. */
 export const TRANSPORT_MEN = 2000;
@@ -127,6 +136,9 @@ function land(world: World, id: number, cell: number, target: number): void {
   world.embarked.delete(id);
   [c.x[id], c.y[id]] = world.cellPoint(cell);
   c.org[id] = Math.min(c.org[id]!, LANDING_ORG);
+  // The beachhead (PLAN 4.5b): an enemy's cell it lands on is its nation's, for the front to spread from.
+  const held = world.cells.controller[cell]!;
+  if (held !== 0 && world.wars.atWar(held, c.nation[id]!)) world.setController(cell, c.nation[id]!);
   world.out.emit(world.tick, EventKind.FormationLanded, id, c.nation[id]!, c.x[id]!, c.y[id]!);
   if (target !== cell) {
     const w = world.cells.w;
@@ -157,6 +169,15 @@ export function amphibiousSystem(world: World): void {
     if (c.moving[e.fleet] === 1 || c.engaged[e.fleet] === 1) continue;
     const at = cellOfPlace(world, e.fleet);
     if (at === e.water) {
+      // The sea about the landing held by an enemy (PLAN 4.5b): thrown back, home with the transports.
+      const holder = seaHolder(world, seaOf(world).zoneOf[e.water]!);
+      if (holder !== 0 && world.wars.atWar(holder, c.nation[id]!)) {
+        e.water = -1;
+        e.land = -1;
+        world.out.emit(world.tick, EventKind.LandingRepulsed, id, holder, c.x[id]!, c.y[id]!);
+        sailHome(world, e.fleet);
+        continue;
+      }
       land(world, id, e.land, e.target);
       continue;
     }

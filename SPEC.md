@@ -1664,7 +1664,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   the target (within 8 cells) and it lands at the nearest cell of the target's land, its org
   at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
   land within 3 cells if any; sunk, they take it with them. With no port or no room the order
-  is a march as before (PLAN 4.5a). **Crossings** remain for AoC-parity
+  is a march as before (PLAN 4.5a). When the transports reach the landing water and its zone
+  is held by a nation at war with the formation's, the landing is thrown back: they sail for
+  their nation's nearest port and it lands there. A landing on an enemy's cell takes that
+  cell (the beachhead), from which the front spreads; its disorder (org 0.5, fire 0.625) is
+  the landing's penalty (PLAN 4.5b). **Crossings** remain for AoC-parity
   walkable straits.
 
 ### 6.3 Aircraft

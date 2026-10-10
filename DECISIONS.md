@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-263 · 2026-10-10 · accepted — A landing needs the sea, and takes its beachhead (PLAN 4.5b)
+
+- **Context.** PLAN 4.5's AT: a scripted invasion lands and takes the coastal cells; it fails
+  without sea control. After 4.5a a landing ignored the sea, and a landed formation took no
+  cell: the front spreads only from held land (`territorySystem`, the connectivity rule).
+- **The sea.** When the transports stand at the landing water, a zone held by a nation at war
+  with the formation's (`seaHolder`) throws the landing back (`LandingRepulsed`): the
+  transports sail for their nation's nearest port (`sailHome`, exported from the break-off)
+  and the formation lands where they stand next, by 4.5a's rule. Checked on arrival only: the
+  sea control is daily, and a zone held at the order may be free at the landing. An escort
+  counts through the sea control: its warships in the zone contest or hold it.
+- **The beachhead.** A formation that lands on a cell held by a nation at war with its own
+  takes it (`setController`); the front spreads from there. At peace it takes nothing.
+- **The penalty** is the disorder of 4.5a: a formation fires by its org (`ORG_FIRE`), 0.625 of
+  its fire at org 0.5, no rule of its own.
+- **The AT's place.** Britain and France are allies in 1938 (`declareWar` refuses): Ostend,
+  Belgium's, for Calais. Two divisions at Portsmouth (a group's 24,000 take one of 12,460;
+  ADR-262 said three, corrected): 1 British cell at the landing, 13 within 8 cells ten days on.
+  Belgium holding the zones about Ostend: both thrown back, ashore in Britain, nothing taken.
+- **The pin stays** `e8fc6344`.
+- **The ten-year runs' rule of the fleets** failed on seed 2 (day 3491): a fleet at a base lost
+  since day 918, with no way home, was sent at a day's start when a way opened, and stood at
+  its new port within the day; its base had not been lost at the check before (the hole ADR-261
+  left: a base lost in the tick it is sent from). `fleetsStand.hour` notes a fleet found
+  under way at a lost base in any hour. Seed 2 then: 153 stand, 40 sailed, 0 fought, 1
+  carried, 3 gone.
+- **Tests.** `tests/unit/landing1938.test.ts`, three; four mutations (no repulse; no
+  beachhead; a beachhead at peace; a repulse by a holder at peace) each failed one or two.
+
 ### ADR-262 · 2026-10-10 · accepted — Embark, sail, land (PLAN 4.5a)
 
 - **Context.** The critic's R2-B1 and R3-B1: a British division ordered to Calais walked to
@@ -197,8 +226,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   sunk in a battle it was in (`fought`) are free. Seed 2: 135 stand, 56 sailed, 3 fought, 1
   carried, 2 gone.
 - **Tests.** `tests/unit/amphibious1938.test.ts`, four: Portsmouth to Calais lands in hour 12
-  at Calais' cell; Birmingham marches to Kent; room for three divisions of 12,460 at
-  Portsmouth, the fourth marches; sunk transports take the division; a save mid-crossing.
+  at Calais' cell; Birmingham marches to Kent; at Portsmouth a group's 24,000 take one
+  division of 12,460, so two go aboard and the third marches (4.5b corrected "three" here); sunk transports take the division; a save mid-crossing.
   Three mutations (no disorder, no room check, no loss with the transports) each failed one.
 
 ### ADR-261 · 2026-10-10 · accepted — A fleet's loose ends: a lost base, a passage held by the enemy, a fleet in a canal (PLAN 4.4e)

@@ -220,7 +220,7 @@ export function nearestOwnPort(world: World, id: number): number {
 }
 
 /** Fleet `id` sails for `nearestOwnPort`; it stands where it is with none, or with no way to it. */
-function sailHome(world: World, id: number): boolean {
+export function sailHome(world: World, id: number): boolean {
   const at = nearestOwnPort(world, id);
   const w = world.cells.w;
   return at >= 0 && orderSail(world, id, (at % w) + 0.5, Math.floor(at / w) + 0.5);

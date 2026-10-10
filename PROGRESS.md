@@ -13747,7 +13747,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   events `FormationEmbarked`, `FormationLanded`.
 - **The AT:** a British division at Portsmouth ordered to Calais goes aboard, sails and lands
   in hour 12 at Calais' cell, its org 0.5. One at Birmingham marches to the coast of Kent as
-  before; at Portsmouth the two transport groups take three divisions, the fourth marches.
+  before; at Portsmouth the two transport groups take three divisions, the fourth marches (wrong: two, one a group; corrected in 4.5b).
 - **Tests:** `amphibious1938.test.ts`, four. Three mutations each failed one.
 - **The pin stays** `e8fc6344`.
 - **The ten-year runs** failed on seed 2: a transport group sailed with a division the AI
@@ -13760,3 +13760,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   parity green. No numbered task ticked: no browser suite.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.5b (sea control and the landing).
+
+## 2026-10-10 — PLAN 4.5b: a landing needs the sea, and takes its beachhead (ADR-263)
+
+- **Critic not due.**
+- **Done:** `amphibiousSystem` throws back a landing whose water's zone an enemy holds
+  (`LandingRepulsed`, the transports `sailHome`); `land` takes an enemy's cell it lands on
+  (the beachhead: the front spreads only from held land). The penalty is 4.5a's disorder.
+- **The AT:** at war with Belgium (Britain and France are allies), two divisions from
+  Portsmouth land at Ostend: 1 British cell, 13 within 8 cells ten days on. With Belgium
+  holding the zones about Ostend both are thrown back and ashore in Britain; nothing taken.
+- **Corrected:** 4.5a's "three divisions" at Portsmouth: a group's 24,000 take one division
+  of 12,460, two in all; its test now asks for exactly two.
+- **Tests:** `landing1938.test.ts`, three. Four mutations each failed one or two.
+- **The pin stays** `e8fc6344`.
+- **The ten-year runs** failed on seed 2 (day 3491): a fleet sent from a base lost in the tick
+  it was sent, home within the day. `fleetsStand.hour` notes a fleet under way at a lost base
+  in any hour (ADR-263). Seed 2 then: 153 stand, 40 sailed, 1 carried, 3 gone.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage
+  through on every seed, seeds 1 and 3 over the time (607 s, 619 s; every check passed);
+  build and parity green. No numbered task ticked: no browser suite.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.5c (naval bombardment).

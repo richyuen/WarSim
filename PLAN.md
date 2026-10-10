@@ -38,9 +38,7 @@ quick sweep as a smoke test.
   in play. The critic: "sea transport first, as it also unfreezes the maritime powers".
   AT: a scripted invasion lands and takes the coastal cells; it fails without sea control (test).
   - [x] 4.5a Embark, sail, land: a land formation ordered to another land goes aboard its […]
-  - [ ] 4.5b Sea control and the landing: a landing needs the zone of its water not held by
-    an enemy (or its own escort there); a landing's first fight is at a penalty. The AT of
-    4.5: a scripted invasion takes the coastal cells, and fails without sea control (test).
+  - [x] 4.5b Sea control and the landing: a landing needs the zone of its water not held by […]
   - [ ] 4.5c Naval bombardment: a fleet by a coast adds its guns to a land fight there (test).
 - [ ] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
   AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.

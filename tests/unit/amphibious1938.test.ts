@@ -97,8 +97,8 @@ describe('amphibious movement (PLAN 4.5a)', () => {
       else refused = true;
     }
     expect(refused).toBe(true);
-    expect(aboard).toBeGreaterThan(0);
-    expect(aboard * 12_460).toBeLessThanOrEqual(room);
+    // A group's 24,000 take one division of 12,460, not two: two go aboard, the third marches.
+    expect(aboard).toBe(2);
   });
 
   it('transports sunk with a division aboard take it with them', () => {

@@ -14,7 +14,7 @@ import { seaRangeOf, type World } from '../../src/sim/world';
  * Since PLAN 4.4e a fleet at a base its nation has lost sails for another (`rebaseFleets`, at a
  * day's start, an hour after this is asked): one found under way or moved (its way can end in
  * the day) that was at a lost base (`atLostBase`) when it was last asked, or under way from
- * one now, is counted in `sailed` and no longer held to stand. One found in a sea battle, broken off from one, or that was in one in an hour since
+ * one now or at an hour since (`hour`), is counted in `sailed` and no longer held to stand. One found in a sea battle, broken off from one, or that was in one in an hour since
  * (`hour`, to be asked every hour before the hour's fires are cleared: a battle can begin and
  * end in one hour; PLAN 4.3: a fleet that sailed met it), or sunk in one, is counted in `fought`
  * and no longer held to stand. Since PLAN 4.5a a transport group carries a land formation that
@@ -35,6 +35,8 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
   const inBattle = new Set<number>();
   /** The fleets that have carried a land formation (PLAN 4.5a). */
   const carrying = new Set<number>();
+  /** The fleets found under way at a lost base in an hour since last asked. */
+  const sent = new Set<number>();
   const out = {
     start: fleets.size,
     gone: 0,
@@ -43,6 +45,9 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
     carried: 0,
     hour(w: World): void {
       for (const e of w.embarked.values()) carrying.add(e.fleet);
+      // Under way from a lost base: its base can be lost in the hour it is sent (a war declared,
+      // a cell taken, in the tick of the day's start), after the day's last check.
+      for (const id of fleets.keys()) if (w.formations.has(id) && w.formations.cols.moving[id] === 1 && !sent.has(id) && w.isFleet(id) && atLostBase(w, id)) sent.add(id);
       for (const b of w.seaBattles) for (const id of b.fleets) inBattle.add(id);
       // A battle can begin and end in one hour: its volleys name the ships (shooter, target).
       const fr = w.out.fires;
@@ -74,7 +79,7 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
         const touched = wound !== 0 || !w.isFleet(id) || c.x[id] !== was.x || c.y[id] !== was.y || ships !== was.ships || c.strength[id] !== was.strength || c.supply[id] !== 1 || c.org[id] !== 1 || c.engaged[id] === 1 || c.moving[id] === 1 || c.retreat[id] !== 0;
         // Sent from a lost base (PLAN 4.4e): free from here on.
         const moved = c.x[id] !== was.x || c.y[id] !== was.y;
-        if (touched && wound === 0 && ships === was.ships && w.isFleet(id) && ((c.moving[id] === 1 && atLostBase(w, id)) || ((c.moving[id] === 1 || moved) && lostBefore.has(id)))) {
+        if (touched && wound === 0 && ships === was.ships && w.isFleet(id) && ((c.moving[id] === 1 && atLostBase(w, id)) || ((c.moving[id] === 1 || moved) && (lostBefore.has(id) || sent.has(id))))) {
           fleets.delete(id);
           out.sailed++;
           continue;
@@ -97,6 +102,7 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
         }
       }
       inBattle.clear();
+      sent.clear();
       lostBefore = new Set([...fleets.keys()].filter((id) => w.formations.has(id) && w.isFleet(id) && atLostBase(w, id)));
       return lines;
     },
