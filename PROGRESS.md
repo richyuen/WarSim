@@ -13649,3 +13649,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not looked at:** income on the page while blockaded; the economic AI's view of it.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.4c (supply over sea).
+
+## 2026-10-10 — PLAN 4.4c: supply over sea (ADR-259)
+
+- **Critic not due.**
+- **Done** (`src/sim/systems/seaSupply.ts`: `zoneLinks`, `seaLinkedAll`, `seaLinked`,
+  `markSeaLinks`; `supply.ts`: the sources filtered, the joined lands asked at each refresh
+  hour; `World.seaLinks`, derived).
+- **The AT:** a British division on Malta at war with Italy: cut on the first day (Italy's
+  fleets hold the zones about Malta); with the sea open it is fed at the refresh of hour
+  12; with Malta's own port zone held it is out of the network at hour 24 and dry 8 hours
+  later; fed again after the refresh of hour 36 when the sea is open.
+- **Tests:** `seaSupply1938.test.ts`, four (the AT; a zone held on one way is no cut, the
+  whole sea held cuts every land with a port but home and none without; Suez joins two
+  zones; at the start no bloc has a city cut off). Five mutations each failed one or two.
+- **Mistakes of mine the runs caught:** by the capital's land alone 314 Brazilian cities
+  (and Estonia's, Liberia's, Nicaragua's, Panama's) were cut at the start: the land with
+  most of a bloc's cities is home too. A city on no land component was dropped as a source
+  (a supply test of random changes, 42 cells): such a city is not cut. My first test took
+  Italy for the holder of Malta's own zone: it is Britain's, the zones about it Italy's.
+  Asking each bloc apart made the supply 2.46 ms a tick; one pass for all, asked once an
+  hour, 0.95.
+- **The pin moves:** `503952b6` → `67919bee` (one British city cut off from month 7).
+- **Tick time:** supply 0.70 → 0.95 ms a tick here (mean tick 9.7 ms, within the spread).
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage 16 of 17 (seed 1 timed out, 820 s); build and parity green.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4d (convoys and raiding).

@@ -422,6 +422,7 @@ class WorldCore implements Stateful {
     for (let at = 0; paths && at < paths.length; at += 2 + paths[at + 1]!) w.paths.set(paths[at]!, paths.slice(at + 2, at + 2 + paths[at + 1]!));
     const control = sections.find((s) => s.name === 'world.seaControl')?.data as Float64Array | undefined;
     w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
+    w.seaLinks = new Map();
     w.seaBattles = [];
     const sea = sections.find((s) => s.name === 'world.seaBattles')?.data as Float64Array | undefined;
     for (let at = 0; sea && at < sea.length; ) {
@@ -779,6 +780,8 @@ export class World {
   paths = new Map<number, Int32Array>();
   /** The sea battles going on (PLAN 4.3a, 4.3c; `navalCombatSystem`): state, saved while there is one. */
   seaBattles: SeaBattle[] = [];
+  /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
+  seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */
   seaControl: SeaControl | null = null;
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;

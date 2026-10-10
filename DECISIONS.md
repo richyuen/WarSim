@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-259 · 2026-10-10 · accepted — Supply over sea: a land's cities feed only while a way by sea no enemy holds joins it to home (PLAN 4.4c)
+
+- **Context.** PLAN 4.4c, the second half of PLAN 4.4's AT: an overseas formation loses supply
+  when the lane is cut. The supply network's sources were every city a bloc owned and held,
+  wherever it stood: Malta fed itself under any blockade.
+- **Decision.** A city is a source only on a land component that is the bloc's home (a
+  member's capital's, or the one with most of its cities), or that a way by sea joins to home
+  (from a home port's zone, zone to zone over the zones that touch and the passages, through
+  no zone held by a nation at war with the bloc, to a port of the bloc there), or where the
+  bloc has no port. At each supply refresh hour the joined lands of every bloc are asked again
+  and a bloc whose lands changed is refreshed whole, so a partial refresh still gives what a
+  full one gives (PLAN 2.11j): a war declared, a zone taken, a port lost.
+- **Why zones and not the lanes' cells.** The zones that touch and the passages are the
+  lanes' graph without its cells: a way exists in one where it exists in the other, and the
+  zones need no lane graph built in the tick (0.4 to 1.7 s).
+- **Why a land with no port is not cut.** Its trade is by small craft that no rule follows:
+  cutting it would starve 24 of the 62 British lands with cities at once in a war at sea.
+- **Why the land with most cities is home.** A capital's cell can be a patch of land of its
+  own by the coast: Rio de Janeiro's, Tallinn's, Panama's, Monrovia's. By the capital alone
+  314 Brazilian cities were cut off at the start.
+- **Cost.** The supply system 0.70 → 0.95 ms a tick over a year of seed 99 here; a first
+  version asked each bloc apart (2.46 ms) and twice an hour (1.15 ms).
+- **The pin moves:** `503952b6` → `67919bee`. One British city is cut off from the seventh
+  month of seed 99.
+- **Tests.** `tests/unit/seaSupply1938.test.ts`, four; five mutations each failed one or two
+  (the last only after a test of the start's cities was added).
+
 ### ADR-258 · 2026-10-10 · accepted — The blockade: a province with every port in an enemy-held zone pays half its land's income (PLAN 4.4b)
 
 - **Context.** PLAN 4.4b, the first half of PLAN 4.4's AT: a blockaded port's income drops by

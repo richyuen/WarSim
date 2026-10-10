@@ -1628,6 +1628,14 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   province, pay `BLOCKADE_SHARE` 0.5 of their land's income in the economy's month
   (`blockadedCells`). On seed 99 Japan blockades 6 Chinese ports in the first month, 19 by
   the twelfth; 24 provinces of 8 nations are blockaded then.
+  *Supply over sea (PLAN 4.4c, ADR-259; `src/sim/systems/seaSupply.ts`):* a bloc's home is
+  every land component holding a living member's capital and the one holding most of its
+  cities. Another land with a port of the bloc (owned and held, water a ship reaches) is
+  joined when a way from zone to zone (touching zones and the passages, `zoneLinks`) from a
+  home port's zone reaches its port's zone through no zone held by an enemy of the bloc. A
+  city is a source of the supply network only on a land that is home, joined, or has no port
+  of the bloc (`seaLinkedAll`); at each refresh hour a bloc whose joined lands changed is
+  refreshed whole (`markSeaLinks`). At war with Italy, Malta is cut at once.
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled
   zone adjacent to a port reduces its income and supply). **Submarines** raid convoys

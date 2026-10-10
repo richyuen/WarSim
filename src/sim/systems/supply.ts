@@ -32,8 +32,9 @@
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { Terrain } from '../../shared/terrain';
 import { Mobility } from '../nav/grid';
-import type { World } from '../world';
+import { navOf, type World } from '../world';
 import { bleedFormation, breakDown } from './elements';
+import { markSeaLinks, seaLinkedAll } from './seaSupply';
 
 /** Network refresh period (12 h since PLAN 1.25: armies in motion keep it dirty; dry within 12 + 8 h). */
 export const SUPPLY_REFRESH_HOURS = 12;
@@ -169,12 +170,13 @@ function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: numbe
  * higher one, and a loaded world, which refreshes in full, went on otherwise than the world
  * that was saved.
  */
-export function refreshSupplyNetwork(world: World): void {
+export function refreshSupplyNetwork(world: World, linkedAll?: Map<number, number[]>): void {
   refreshStats.written = refreshStats.flooded = refreshStats.mended = refreshStats.full = 0;
-  refresh(world);
+  refresh(world, linkedAll ?? seaLinkedAll(world));
 }
 
-function refresh(world: World): void {
+/** `linkedAll`: `seaLinkedAll` of the world as it is (the supply system's, asked in the same hour). */
+function refresh(world: World, linkedAll: Map<number, number[]>): void {
   const { w, h, controller, owner, terrain, supply } = world.cells;
   const wrap = world.settings.loopingMap;
   const blocOfNation = new Uint16Array(world.nations.highWater + 1);
@@ -273,14 +275,20 @@ function refresh(world: World): void {
   changed.clear();
   /** Partial: this refresh met what only a full one settles. */
   let again = false;
-  // Sources per bloc: cities owned and controlled by a member.
+  // Sources per bloc: cities owned and controlled by a member, on a land its supply reaches by
+  // sea (PLAN 4.4c, `seaLinked`: home, joined by a way no enemy holds, or with no port of it).
   const sources = new Map<number, number[]>();
+  const linked = new Map<number, Set<number>>();
+  const comp = navOf(world).grid.component;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
     const ctl = controller[cell]!;
     if (ctl === 0 || owner[cell] !== ctl) return;
     const b = blocOfNation[ctl]!;
     if (!full && only[b] !== 1) return;
+    let ok = linked.get(b);
+    if (!ok) linked.set(b, (ok = new Set(linkedAll.get(b))));
+    if (comp[cell] !== 0 && !ok.has(comp[cell]!)) return;
     let list = sources.get(b);
     if (!list) sources.set(b, (list = []));
     list.push(cell);
@@ -386,12 +394,16 @@ function refresh(world: World): void {
   }
   if (again) {
     world.supplyDirty = true;
-    refresh(world);
+    refresh(world, linkedAll);
   }
 }
 
 export function supplySystem(world: World): void {
-  if (world.tick % SUPPLY_REFRESH_HOURS === 0 && (world.supplyDirty || world.supplyDirtyNations.size > 0 || world.supplyDirtyBlocs.size > 0)) refreshSupplyNetwork(world);
+  // Supply over sea (PLAN 4.4c): a bloc whose lands joined by sea changed is refreshed whole.
+  if (world.tick % SUPPLY_REFRESH_HOURS === 0) {
+    const linked = world.rules ? markSeaLinks(world) : undefined;
+    if (world.supplyDirty || world.supplyDirtyNations.size > 0 || world.supplyDirtyBlocs.size > 0) refreshSupplyNetwork(world, linked);
+  }
   const f = world.formations;
   const c = f.cols;
   const { w, h, supply, terrain, controller } = world.cells;
