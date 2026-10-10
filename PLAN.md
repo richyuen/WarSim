@@ -37,23 +37,15 @@ quick sweep as a smoke test.
   - [x] 4.2a The ship types and the fleet templates in the scenario's rules: […]
   - [x] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule […]
   - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
-  - [ ] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found
-    once at the order, the place cell by cell over its edges, a passage one step of its km, at
-    the pace of its slowest ship.
-    AT: Gibraltar → Suez takes the route's km over the pace; no place of it on land of the
-    fine mask but in a passage; the route's km against great-circle legs is counted, and the
-    way straightened if it is far over.
-    From PLAN 4.2a (2026-10-09, ADR-247): a template's pace is its slowest ship's top speed
-    (`speed_kmh` of the unit data: 50 for a battle squadron, 65 for a flotilla, 30 for
-    submarines and transports). Say whether a fleet sails at that or at a cruising share.
-    From PLAN 4.2b (2026-10-09, ADR-248): a fleet stands at `World.seaPoint` of a water cell
-    about its base, not at a node of the lane graph (the first of a group is in the cell of
-    its base's node; the others up to 3 cells off): a route begins at the fleet's cell.
-    `order` in movement.ts rejects a fleet, and `moving`, `pathStep` and `world.paths` are the
-    march's: say whether the sail uses them. One fleet stands in a crossing cell (Denmark's
-    at Copenhagen): water to a fleet, ground to a march.
+  - [x] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found […]
   - [ ] 4.2d The Arctic is closed to a fleet, or costs: by the map's data.
     AT: Scapa Flow → Pearl Harbor goes by Panama.
+    From PLAN 4.2c (2026-10-09, ADR-250): a fleet's way is the lanes' way drawn tight
+    (`sailRoute`), so a zone closed in `laneRoute` is closed to it. Its turns are cells of
+    the lanes' way, not the capes it rounds, and a straight walk is a line of the Miller
+    map, not a great circle: over an ocean in the north the way is the longer by it
+    (Yokosuka to Pearl Harbor × 1.087 its great-circle legs, the worst of 90 ways between
+    ten bases). Which of those ways go by the Arctic was not looked at.
   - [ ] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
     AT: a queued flotilla appears at a port's water after its days; a nation with no port is
     refused.
@@ -84,6 +76,9 @@ quick sweep as a smoke test.
   reads it. `portWater` (the fleets' water, by the terrain) and the lane graph's port node
   (by zoned water) are two rules for one cell: the same for the 61 bases with fleets, not
   looked at for the other 554 ports.
+  From PLAN 4.2c (2026-10-09, ADR-250): a fleet sails any water and any passage, whoever
+  holds its banks (Suez, Panama, Kiel, the Bosporus) and whoever it is at war with. Its
+  supply is 1 however far it sails, and it burns no fuel under way.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
@@ -117,6 +112,9 @@ quick sweep as a smoke test.
   when, is to be decided here. A fleet's upkeep is no part of the share of the income the
   AI lets an army take, and has no share of its own. The strategic AI's strengths and the
   men of a war's sides count no fleet: a navy weighs nothing in a declaration or a peace.
+  From PLAN 4.2c (2026-10-09, ADR-250): only a player orders a fleet (`orderSail`, by the
+  `moveFormation` command). A way costs about 2 ms and the lane graph 0.4 to 0.7 s at its
+  first use in a game: count what a day of the AI's orders costs before it gives them.
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
@@ -139,6 +137,14 @@ quick sweep as a smoke test.
   ship sprite in its nation's colour, bows to the east, the tag "Battle squadron 1055" over
   them. Not looked at: the formation panel of a fleet, a marker stack of a fleet and a
   division, the ships at T3's closest, the ranking and charts (the men are the army's).
+  From PLAN 4.2c (2026-10-09, ADR-250; three pictures looked at, `.cache/sail/`): a fleet
+  under way is drawn as one that stands, its ships in their rows facing along its course.
+  The dashed line of its order goes straight to its target, over Sicily from the west of
+  it to Alexandria: not its way. Its way is 8-way steps between cells' water points, so on
+  a leg that is neither it turns by 45° from cell to cell. A step can clip a shore of the
+  fine mask (346 of 493,400 places on 90 ways between ten bases; none from Gibraltar to
+  Suez), and in a passage the fleet is drawn over the land. `World.seaPoint` asks the mask
+  each hour for a cell by a coast: not timed with many fleets under way.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
 - [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.

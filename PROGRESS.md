@@ -13329,3 +13329,62 @@ No rule changed and nothing on screen changed. One task came out of it.
     specs were not changed, and I did not read the two errors' details (the run's output
     was not kept).
 - **Next:** PLAN 4.2c (a fleet sails along the lanes).
+
+## 2026-10-09 — PLAN 4.2c: a fleet sails along the lanes (ADR-250)
+
+- **Critic not due;** the report is 127 commits old, so step 2b does not apply.
+- **Said first, then measured:** a way more than a tenth over the great circles between its
+  turns is far over. By the zones' seeds Gibraltar's water to the canal's southern end is
+  5,785 km against 3,856 (× 1.50); among 90 ways between ten bases up to × 1.79. So the
+  way is straightened.
+- **Done.**
+  - `src/sim/nav/sailRoute.ts`: `sailRoute` (the cell's way to its seed, `laneRoute`, the
+    target's way from its seed; drawn tight by straight walks, `seaWalk`), `sailStepKm`,
+    `seaNeighbours`. The lane graph keeps the seeds' tree (`LaneGraph.toSeed`).
+  - `src/sim/systems/sail.ts`: `orderSail`, `sailStep`, `sailPlace`, `sailKmh`,
+    `CRUISE_SHARE` 0.55. The state is the march's columns and `world.paths`.
+  - `movement.ts`: `orderMove` hands a fleet to `orderSail`, `movementSystem` to
+    `sailStep`. No new command: `moveFormation` orders a fleet, and so does a player's click.
+- **The AT.** A cruiser squadron from Gibraltar to the Gulf of Suez: 217 cells, 7 turns,
+  4,115 km, 32.45 km/h, 126.8 hours, arrived in hour 127; 6 hours in the canal (196 km,
+  one step); no hour of the others on land of the fine mask. × 1.067 its great-circle legs.
+- **Tests:** `sail1938.test.ts`, ten: three of the route on a small sea (the straight
+  walk, round a wall, over the seam), the AT, 90 ways between ten bases, the orders (land,
+  a lake with no zone, the Caspian, its own base, another port, a division), Denmark's
+  fleet from its crossing cell to Kiel, a save in the middle of a sail, an order in the
+  middle of a step, water made land ahead. Eight mutations, each failed a test: no stop
+  before new land, a passage's km as a step's, no corner check, no cruising share, not
+  drawn tight, an order in mid-step from the cell, fleets left to the march, the place by
+  the land point. The passage's km failed nothing at first: the test took its km from the
+  code. It holds the canal's step to the passage's own great circle now.
+- **Mistakes of mine the tests caught.**
+  - Every clear straight walk was taken: on the small test sea the tight way was longer
+    in km than the lanes' (23,160 for 22,071). A line of the Miller map is not the
+    shortest far from the equator. Taking only walks that are no longer mended that and
+    made Gibraltar to Suez 4,476 km (the rule stops at the first walk a km longer). Both
+    are done now and the shorter taken (ADR-250).
+  - My test painted an island with the brush: no brush makes water land. A map import does.
+  - My test held the tight way to a tenth over its great-circle legs on the small sea,
+    where a cell is 600 km and the way over the pole is the shorter.
+- **A test of PLAN 4.2b changed** (`fleets1938.test.ts`): its fleet was ordered to the
+  shore cell beside it, which is its base's cell, and an order to a port is one to its
+  water now. It is ordered to Moscow and rejected.
+- **The pin stays** (`bbfd15fc`): no fleet sails without a player. **No sweep** (ADR-58).
+- **Tick time:** two years of seed 99, pinned, two runs alone: 1.93 and 1.92 ms (1.89 and
+  1.87 before PLAN 4.2c's code, in another hour). Not told apart. A way costs 1.7 ms on
+  average over the 90; the lane graph 0.7 s at its first use in the test.
+- **Three pictures looked at** (`.cache/sail/`, a scratch spec, removed; 800, 200 and 40
+  m/px, the squadron 50 hours out, west of Sicily): the marker at sea with the dashed
+  line of its order, straight to Alexandria over Sicily; at 200 and 40 m/px its tag and
+  its eight ships in rows, facing along its course. No error in the page's console.
+- **Found, not mended:** a step can clip a shore of the fine mask (346 of 493,400 places
+  on the 90 ways), the order's line is not the way, the course turns by 45° from cell to
+  cell (PLAN 4.7); a straight walk is no great circle and the turns are not the capes
+  (PLAN 4.2d); every water and canal is open to every fleet, and a fleet under way burns
+  nothing (PLAN 4.4); only a player orders a fleet (PLAN 4.6).
+- **Not looked at:** S, L and XL; a looping map with a fleet over the seam in play (the
+  walk and the step's km are tested on a small sea); many fleets under way at once (the
+  hour's cost of `seaPoint`); the formation panel of a fleet under way; the click itself
+  in the browser (the command is what the click sends).
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.2d (the Arctic).

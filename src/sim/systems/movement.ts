@@ -71,6 +71,7 @@ import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
 import { noteMove } from './elements';
 import { spawnPoint } from './production';
+import { orderSail, sailStep } from './sail';
 import { blocOf } from './supply';
 
 /** Share of each hour a formation marches (rest, forming up, roads): infantry ≈ 29 km/day. */
@@ -250,6 +251,8 @@ const SNAPS = new WeakMap<object, Map<number, number>>();
  * keeps off the ground of nations outside the formation's wars.
  */
 export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage): boolean {
+  // A fleet sails (PLAN 4.2c): its order is its own.
+  if (world.formations.has(id) && world.afloat(id)) return orderSail(world, id, x, y);
   return order(world, id, x, y, pass, 0);
 }
 
@@ -260,7 +263,7 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const rule = f.has(id) ? world.rules?.templates[f.cols.template[id]!] : undefined;
   const tx = Math.floor(x);
   const ty = Math.floor(y);
-  // A fleet does not march (PLAN 4.2b): it sails by an order of its own (PLAN 4.2c).
+  // A fleet does not march (PLAN 4.2b): it sails by an order of its own (`orderSail`, PLAN 4.2c).
   if (!rule || rule.domain !== Domain.land || ty < 0 || ty >= h || tx < 0 || tx >= w) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, 0, NaN, NaN);
     return false;
@@ -347,6 +350,10 @@ export function movementSystem(world: World): void {
   const w = world.cells.w;
   f.forEach((id) => {
     if (c.moving[id] !== 1 || c.engaged[id] === 1) return; // in contact: holds and fights (PLAN 1.13)
+    if (world.afloat(id)) {
+      sailStep(world, id);
+      return;
+    }
     const path = formationPath(world, id);
     const rule = world.rules?.templates[c.template[id]!];
     if (!path || !rule) {

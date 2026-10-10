@@ -215,11 +215,14 @@ describe('the fleets of the 1938 start (PLAN 4.2b)', () => {
     let own = 0;
     w.formations.forEach((id) => void (fc.nation[id] === eng && w.afloat(id) && own++));
     expect(own).toBe(36);
-    s.command({ kind: 'moveFormation', id: fleet, x: sx, y: sy });
-    // No route begins on water, so that order has none whatever the rule. A flotilla put on
-    // land by hand (no command does it) would have one: it is rejected as a fleet.
+    // An order to land that is no port (Moscow): a fleet sails, and to water or a port only
+    // (PLAN 4.2c; the shore beside it may be its base's cell, and an order there is one to
+    // the water it stands in). A flotilla put on land by hand (no command does it) has no
+    // water to sail from, and does not march.
     const sov = nationId('SOV');
     const [mx, my] = [w.nations.cols.capitalX[sov]!, w.nations.cols.capitalY[sov]!];
+    expect(w.ports.some((p) => p.cell === Math.floor(my) * W + Math.floor(mx))).toBe(false);
+    s.command({ kind: 'moveFormation', id: fleet, x: mx, y: my });
     const ashore = addDivision(w, sov, mx, my, TEMPLATES_1938.findIndex((t) => t.id === 'destroyer_flotilla'));
     s.command({ kind: 'moveFormation', id: ashore, x: mx + 3, y: my });
     const rejected: number[] = [];

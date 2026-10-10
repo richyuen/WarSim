@@ -65,6 +65,8 @@ export interface LaneGraph {
   dropped: number[];
   /** Per port of the list given, its node; -1 for one whose cell is no land or that has no zoned water in reach. */
   portNode: Int32Array;
+  /** Per cell, the next cell of the shortest way over its zone's water to the zone's seed (PLAN 4.2c: a fleet's way to and from the lanes); -1 at a seed and where there is no zone. */
+  toSeed: Int32Array;
 }
 
 /** How far, in cells, an end of a passage looks for zoned water (as a seed does, `SEED_SNAP`). */
@@ -287,7 +289,7 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
     adj[e.a]!.push(i);
     adj[e.b]!.push(i);
   });
-  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges, adj, dropped, portNode };
+  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges, adj, dropped, portNode, toSeed: from };
 }
 
 export interface LaneRoute {

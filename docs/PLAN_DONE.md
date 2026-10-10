@@ -6379,3 +6379,32 @@ Of 4.2 (open in PLAN.md):
     income before placing them, and the starting treasury with them (`startTreasury`). The
     page names a formation by the land templates' list (`MapView.templates`): a fleet needs
     its name there. A new land template moves the fleets' indices.
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.2 (open in PLAN.md):
+
+  - [x] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found
+    once at the order, the place cell by cell over its edges, a passage one step of its km, at
+    the pace of its slowest ship.
+    AT: Gibraltar → Suez takes the route's km over the pace; no place of it on land of the
+    fine mask but in a passage; the route's km against great-circle legs is counted, and the
+    way straightened if it is far over.
+    From PLAN 4.2a (2026-10-09, ADR-247): a template's pace is its slowest ship's top speed
+    (`speed_kmh` of the unit data: 50 for a battle squadron, 65 for a flotilla, 30 for
+    submarines and transports). Say whether a fleet sails at that or at a cruising share.
+    From PLAN 4.2b (2026-10-09, ADR-248): a fleet stands at `World.seaPoint` of a water cell
+    about its base, not at a node of the lane graph (the first of a group is in the cell of
+    its base's node; the others up to 3 cells off): a route begins at the fleet's cell.
+    `order` in movement.ts rejects a fleet, and `moving`, `pathStep` and `world.paths` are the
+    march's: say whether the sail uses them. One fleet stands in a crossing cell (Denmark's
+    at Copenhagen): water to a fleet, ground to a march.

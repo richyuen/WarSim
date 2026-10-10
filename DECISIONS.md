@@ -167,6 +167,66 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-250 · 2026-10-09 · accepted — A fleet sails: its way over the lanes, drawn tight; its pace a cruising share; the march's columns (PLAN 4.2c)
+
+- **Context.** PLAN 4.2c: a fleet sails along the lanes, by an order to a port or to water.
+  The task left four things to be said: whether the lanes' way is far over the sea's own and
+  is straightened; the pace; a passage's step; whether the sail uses the march's state.
+- **What "far over" is, said before the fleet's way was measured:** more than a tenth over
+  the great circles between the way's own turns. PLAN 4.1b had 23 % from node to node
+  (4,941 km against 4,024). A fleet's way begins and ends off the nodes, so it is worse: from
+  Gibraltar's water to the canal's southern end 5,785 km by the zones' seeds against 3,856
+  (× 1.50), and up to × 1.79 among 90 ways between ten bases. So the way is straightened.
+- **The way** (`sailRoute`, `src/sim/nav/sailRoute.ts`). From the fleet's cell to its zone's
+  seed (the lane graph keeps the seeds' tree now, `LaneGraph.toSeed`), the edges of
+  `laneRoute` between the two zones' nodes, and from the last seed to the target. Then drawn
+  tight: from a cell of it straight (`seaWalk`, Bresenham's line over zoned water, no
+  corner of land cut) to the furthest cell in a row that the walk reaches, and on from
+  there, until nothing more can be left out. A passage stays: each side of it is drawn
+  tight by itself. Gibraltar to Suez comes to 4,115 km, × 1.067 its legs; the worst of the
+  90 ways × 1.087 (Yokosuka to Pearl Harbor). What is left over the legs is the steps' eight ways (up to 8 %).
+- **A straight walk on the map is not the shortest in km.** The first version took every
+  clear walk, and on a small test sea its way was longer than the lanes' (23,160 km for
+  22,071): far from the equator a cell is fewer km across, and the lanes' way, shortest in
+  km, bends towards the pole. Yokosuka to Scapa Flow was × 1.103 its legs. Taking only the
+  walks that are no longer than what they replace mended that way and spoiled others (the
+  rule stops at the first walk that is a km longer: Gibraltar to Suez 4,476 km). So the way
+  is drawn tight both ways and the shorter is taken: never longer than the lanes' way.
+  Not weighed: a search over the water cells themselves (2 million cells for one order),
+  and legs that are great circles (the place would not be on a line of the map).
+- **The state is the march's.** `moving`, `originCell`, `targetCell`, `pathStep`, `stepFrac`
+  and `world.paths`: saved, hashed and sent to the page as a march is, and no new column.
+  The rules are not the march's: `movementSystem` hands a formation that is afloat to
+  `sailStep`, and `orderMove` to `orderSail` (`src/sim/systems/sail.ts`), so the command of
+  a march orders a fleet too. No holder's water is closed, nothing waits before an enemy,
+  no terrain cost, no supply in the pace.
+- **The pace: the slowest ship's top speed × 0.55** (`CRUISE_SHARE`), every hour of the
+  day. A battle squadron 27.5 km/h (15 knots), a cruiser squadron 32.5, destroyers 36 (19
+  knots), submarines and transports 16.5 (9 knots): about the cruising speeds of 1938. The
+  march's 0.3 is a day of rest and roads; a ship steams round the clock. Gibraltar to the
+  Gulf of Suez takes a cruiser squadron 127 hours.
+- **A passage is one step** between its two ends' cells, of the great circle between the
+  cells' middles (the Suez canal 196 km: 6 hours for the squadron), and the fleet is drawn
+  over its land for those hours. Kept by the cells alone: the one step of a way whose
+  cells are no neighbours. Who holds a canal does not matter yet (PLAN 4.4).
+- **An order** is to water with a zone, or to a port by its land cell (its water, the cell
+  of its node). Land that is no port, water with no zone and water no lane leads to (the
+  Caspian) are rejected, as a march's order is (`MoveRejected`). In the middle of a step
+  the fleet stays where it is, as a march does (PLAN 3.5a1).
+- **Water made land ahead** (a map import): the fleet stops in the cell before it and is
+  ordered to its target again.
+- **A test of PLAN 4.2b changed.** `fleets1938.test.ts` ordered a Japanese fleet to the
+  shore cell beside it and held the order rejected. That cell is its base's: an order
+  there is now one to the water it stands in. The test orders it to Moscow, which is
+  rejected for what the test means (a fleet does not go on land).
+- **Not mended, and where it goes.**
+  - A step between two cells' water points can clip a shore of the fine mask: 346 of
+    493,400 places on the 90 ways (none of Gibraltar to Suez). PLAN 4.7.
+  - The way's turns are cells of the lanes' way, not the capes it rounds, and a straight
+    walk is a line of the map, not a great circle. PLAN 4.2d, with the Arctic.
+  - Nothing orders a fleet but a player: PLAN 4.6. No fleet sails in a game without one,
+    so the pin stays.
+
 ### ADR-249 · 2026-10-09 · accepted — A tag does not take a place by its block where a tag placed before it is nearer to its block's middle (PLAN 4.2b1)
 
 - **Context.** Found by the browser suite of PLAN 4.2b (the fleets of the 1938 start,

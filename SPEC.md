@@ -510,6 +510,20 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   - *The route* (`laneRoute`): the shortest over the edges, the lower node on a tie. It goes
     by the zones' middles, so it is longer than the sea's own way: the Alboran Sea to the
     north of the Red Sea is 4,941 km, 4,024 by great-circle legs (PLAN 4.2 moves ships).
+  - *A fleet's way* (`sailRoute`, `src/sim/nav/sailRoute.ts`; PLAN 4.2c, ADR-250): from a
+    water cell to another. To the first cell's seed by the seeds' tree (`toSeed`: per cell,
+    the next cell towards its zone's seed), the route's edges between the two zones' nodes,
+    and from the last seed to the last cell; then drawn tight. From a cell of the way a
+    straight walk (`seaWalk`: Bresenham's line over zoned water, no corner of land cut,
+    over the seam of a map that loops) to the furthest cell in a row that it reaches, and
+    on from there, until no cell more can be left out; a second time with only the walks
+    that are no longer in km than what they replace (a line of the map is not the shortest
+    far from the equator); the shorter of the two. A passage stays, each side of it drawn
+    tight by itself. The result: cells, each a neighbour of the one before but at a
+    passage's one step; its km (`sailStepKm`: a neighbour's `stepKm`, a passage's great
+    circle between its ends' cells); the cells it turns at. Gibraltar to the Gulf of Suez:
+    5,785 km by the seeds, 4,115 drawn tight, 3,856 by great circles between its 7 turns.
+    About 2 ms a way.
   - *Joined and not:* 16 groups of nodes where the zones had 19. One of 438 (every sea, the
     Black Sea and the Sea of Marmara with them, and the Strait of Magellan's inner water);
     the Caspian with Garabogaz Bay (3); Lake Maracaibo (its bar was not dredged until the
@@ -859,7 +873,7 @@ Element (authoritative unit proxy) {
       T3); the editor (a fleet whose water is made land, by a brush or a map import, is
       removed; on water it stays).
     - *Left alone:* supply over land (a fleet keeps what it has: the sea's supply is PLAN
-      4.4); the march (`order` rejects it, the march home skips it: it sails by PLAN 4.2c);
+      4.4); the march (`order` rejects it, the march home skips it: it sails, below);
       contact and fire (`findBattles`: the sea's battles are PLAN 4.3); retreat (no enemy
       on the ground); the pressure on the frontier (it holds no ground); the garrison of a
       province against a revolt; the men at a major battle and a camp's strongest nation;
@@ -869,8 +883,29 @@ Element (authoritative unit proxy) {
       (not sent home, and its upkeep no part of the army's share of the income: a nation
       short of money by its navy cuts its army); desertion in bankruptcy (a rule of men);
       the statistics' men (the army's).
-    - *Not yet:* a fleet does not sail (PLAN 4.2c), is not built (4.2e), fights nothing
-      (4.3), and is not laid up by a nation that cannot pay it (4.6).
+    - *Not yet:* a fleet is not built (4.2e), fights nothing (4.3), and is not laid up by
+      a nation that cannot pay it (4.6).
+  - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
+    - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
+      to it): to water with a zone, or to a port by its land cell (the port's water, its
+      node's cell). Rejected (`MoveRejected`): land that is no port, water with no zone,
+      water no lane leads to. The way is found once, at the order (§3.3, a fleet's way).
+    - *The state* is the march's: `moving`, `originCell`, `targetCell`, `pathStep`,
+      `stepFrac`, and the way in `world.paths`. Saved and hashed as a march.
+    - *The hour* (`sailStep`, called by the movement system for a formation afloat): the
+      pace is the slowest ship's top speed × `CRUISE_SHARE` (0.55: a battle squadron
+      27.5 km/h, destroyers 36, submarines and transports 16.5), × the speed buffs, every
+      hour of the day; a step's time is its km over the pace. No terrain, no holder, no
+      supply. The place is on the line between the two cells' water points
+      (`World.seaPoint`; a cell's middle where the mask has no water in it), facing along
+      it. A passage is one step and the fleet is over its land for those hours.
+    - *The end:* at the last cell's water point, `FormationArrived`.
+    - *An order in the middle of a step* leaves the fleet where it is (as PLAN 3.5a1).
+    - *Water made land ahead:* it stops in the cell before and is ordered to its target
+      again.
+    - *Not yet:* nobody's water or canal is closed (4.4), no ice (4.2d), no enemy stops
+      it (4.3), no AI orders it (4.6); the line of its course on the page is straight to
+      its target (4.7).
 - **Slotted pose** is `slotPose(formation, slot, aliveMask)`, a pure function. It is the same
   code in the sim (for engagement start positions) and in the snapshot builder.
   *As built (`sim/core/pose`, PLAN 2.7a, ADR-70):* `slotPose(x, y, facing, slot, slots, spacing)`, where
@@ -1511,7 +1546,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - Fleets are formations of ship elements: DD, CL, CA, BB, CV, SS, TP. *As built (PLAN 4.2a):*
   the six templates and the seven ship types are in the rules (§3.6). *As built (PLAN 4.2b):*
   197 fleets stand at the water of their bases in 1938 (§3.6), paid for and read by no rule
-  of the land; they do not sail yet (PLAN 4.2c). Movement runs along
+  of the land. *As built (PLAN 4.2c):* a fleet sails by an order, over the lanes' way
+  drawn tight, at a cruising share of its slowest ship's speed (§3.3, §3.6); no AI orders
+  one yet. Movement runs along
   lanes with continuous positions. Detection uses zone-level search plus element-level
   range.
 - **Fleet battles** at element level: gunnery ranges (BB > CA > CL > DD), torpedoes
