@@ -39,17 +39,16 @@ quick sweep as a smoke test.
   - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
   - [x] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found […]
   - [x] 4.2d The Arctic is closed to a fleet, or costs: by the map's data. […]
-  - [ ] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
-    AT: a queued flotilla appears at a port's water after its days; a nation with no port is
-    refused.
-    From PLAN 4.2a (2026-10-09, ADR-247): by the land's scales a battle squadron takes 2,700
-    days (`TRAIN_TIME_SCALE` 3 × the battleship's 900) and costs 6,720 gold, a destroyer
-    flotilla 540 days and 1,120: say whether the scales are the ships' too. The page is sent
-    the land templates only (`mapLayers`), and the economic AI's build mix has no ship.
-    From PLAN 4.2b (2026-10-09, ADR-248): the page is sent every template with its domain
-    now, and the build list of the Actions tab leaves the fleets out (`tp.domain !== 0`).
-    Only the 1938 start has fleets: the random world, the toy world and a world of the
-    editor have none, and none can be placed there.
+  - [x] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation. […]
+  - [ ] 4.2f The build list of the Actions tab offers the fleets to a nation with a shipyard.
+    AT: e2e: the United Kingdom's list has a destroyer flotilla, built and in its queue;
+    Switzerland's has none, or has it disabled.
+    From PLAN 4.2e (2026-10-10, ADR-252): the sim takes a sea template from a nation with
+    a shipyard (`shipyard`, `src/sim/systems/production.ts`) and refuses it from one with
+    none; the page knows nothing of ports, so the list still leaves the fleets out
+    (`tp.domain !== 0`, `ActionsTab.tsx`). The random world has the 1938 ports, so a fleet
+    can be built there now (not tried); the toy world has no port and builds none; the
+    editor places none.
 - [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
   AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
 - [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
@@ -117,6 +116,10 @@ quick sweep as a smoke test.
   From PLAN 4.2c (2026-10-09, ADR-250): only a player orders a fleet (`orderSail`, by the
   `moveFormation` command). A way costs about 2 ms and the lane graph 0.4 to 0.7 s at its
   first use in a game: count what a day of the AI's orders costs before it gives them.
+  From PLAN 4.2e (2026-10-10, ADR-252): a nation with a shipyard can build a fleet, and
+  the economic AI's build mix has no ship: which fleets it builds, and with what share of
+  its income, is to be decided here (a battle squadron is 6,720 gold, 2.8 months of the
+  United Kingdom's income, and 900 days).
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the

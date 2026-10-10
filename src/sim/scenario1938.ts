@@ -53,7 +53,7 @@ import { equipFormation } from './systems/elements';
 import { initProvinceCores } from './systems/revolts';
 import { staticCe } from './systems/efficiency';
 import { LOYALTY_BASE, LOYALTY_PER_AUTONOMY } from './systems/puppets';
-import { PRODUCTION_COST_SCALE, TRAIN_TIME_SCALE } from './systems/production';
+import { PRODUCTION_COST_SCALE, SHIP_TIME_SCALE, TRAIN_TIME_SCALE } from './systems/production';
 import type { CeMode } from './systems/efficiency';
 import { Mobility } from './nav/grid';
 import { grantStartTechs, MAX_TECHS, techClosure, type TechRule } from './tech';
@@ -172,7 +172,8 @@ export const RULES_1938: ScenarioRules = {
     ),
     gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.gold * e.count, 0),
     manpower: t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.manpower * e.count, 0),
-    days: TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => unitTypes.get(e.type)!.cost.days)),
+    // A fleet's ships are built side by side in its nation's yards, each in its own days (PLAN 4.2e).
+    days: (unitTypes.get(t.elements[0]!.type)!.domain === 'sea' ? SHIP_TIME_SCALE : TRAIN_TIME_SCALE) * Math.max(...t.elements.map((e) => unitTypes.get(e.type)!.cost.days)),
   })),
 };
 const traitManpower = new Map((traitsJson.traits as { id: string; modifiers: { manpower?: number } }[]).map((t) => [t.id, t.modifiers.manpower ?? 0]));

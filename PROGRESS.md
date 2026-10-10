@@ -13431,3 +13431,41 @@ No rule changed and nothing on screen changed. One task came out of it.
   picture (nothing drawn changes); seasons (PLAN 4.4 has the line).
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.2e (ships are built).
+
+## 2026-10-10 — PLAN 4.2e: ships are built (ADR-252)
+
+- **Critic not due.** The gate of this container has the four timing reds of PLAN 4.2d
+  (BLOCKERS); nothing else was red at the start.
+- **Split first:** the page's build list knows nothing of ports, so offering the fleets
+  there is a part of its own, PLAN 4.2f (with its AT). The economic AI's ships go to 4.6.
+- **Said first:** the days are the ships' own (`SHIP_TIME_SCALE` 1: a battle squadron
+  900, a destroyer flotilla 180; 3 × would put a squadron of 1938 to sea in 1945); the gold
+  is the land's scale (a battleship 1,050 gold, about a division; a battle squadron 2.8
+  months of the United Kingdom's income).
+- **Done** (`src/sim/systems/production.ts`): `shipyard` (the controlled port a ship
+  reaches, by the lane graph and the ice; the highest naval base, then the nearest to the
+  capital), `dockPoint`; `queueFormation` takes a sea template from a nation with a
+  shipyard; `productionSystem` delivers a fleet at its shipyard's water on its ready day,
+  or the order waits. `waterOf` of `sail.ts` exported for it.
+- **The AT:** a destroyer flotilla queued by the United Kingdom: its 1,120 gold and 2,000
+  men paid at once, at Portsmouth's water at 00:00 of day 180, with its eight destroyers,
+  and it takes an order to Gibraltar. Switzerland, Hungary, Afghanistan, Bolivia and
+  Paraguay refused, nothing paid, a division still taken.
+- **Tests:** `ships1938.test.ts`, five (the AT; the refused; the seven naval powers'
+  yards; an order that waits while Poland holds no port and is delivered at the one it
+  gets back, and Tiksi alone is no shipyard; the six templates' days and the land's as
+  before). Five mutations each failed one or two: no shipyard at the order, the delivery
+  at the land's muster point, the ice not read, a scale of 3, the farthest port taken.
+- **A mistake of mine the tests caught:** the yard ranked the port's level before the
+  distance, and the United States built at Pearl Harbor. Norfolk now.
+- **A test of PLAN 4.2a changed** (`seaTemplates.test.ts`): its fleet days are the ships'
+  own, and the refusal it holds is Switzerland's, where every nation was refused before.
+- **The pin stays:** nothing orders a fleet but a command (the pinned hash test passed
+  alone). **No sweep** (ADR-58). The gate: the unit stage red only by the two timing tests
+  of BLOCKERS (the build 2 s, the snapshot 2 ms), red on HEAD too; the ten-year stage not
+  run in full (seed 1 times out on this container, BLOCKERS); build and parity green.
+- **Not looked at:** the random world's fleets (it has the ports: not tried); a save with a
+  fleet in the queue (the row is the land's, saved as it is); the page (nothing drawn
+  changes; the list leaves the fleets out until 4.2f).
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.2f (the build list).

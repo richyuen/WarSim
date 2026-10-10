@@ -18,13 +18,20 @@
  * theatre instead: at the city it owns and controls nearest (and on the same landmass as) its
  * front cell nearest the capital (`cityStand`), or at that front cell without such a city.
  * Japan's divisions otherwise piled up on the home islands while its army in China withered.
+ *
+ * Ships (PLAN 4.2e): a fleet of a sea template is queued only by a nation that controls a port a
+ * ship reaches (`shipyard`), and is delivered at the water of that port on its ready day (its
+ * node's cell of the lane graph, at the cell's water point); with no such port then, the order
+ * waits. A fleet takes its slowest ship's own days (`SHIP_TIME_SCALE`), and its gold is by the
+ * land's scale.
  */
 import { equipFormation } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import { knowsTechs } from '../tech';
-import { Domain, navOf, type World } from '../world';
+import { Domain, laneOf, navOf, seaOf, type World } from '../world';
+import { waterOf } from './sail';
 import { frontierOf } from './territory';
 
 export const SPAWN_REACH_CELLS = 40;
@@ -33,12 +40,49 @@ export const PRODUCTION_COST_SCALE = 3.5;
 /** Training days = TRAIN_TIME_SCALE × the slowest element's days (ADR-23). */
 export const TRAIN_TIME_SCALE = 3;
 
+/**
+ * Building days of a fleet = SHIP_TIME_SCALE × its slowest ship's days (PLAN 4.2e, ADR-252): a
+ * ship's days in the data are its time from the keel to its trials (a battleship 900, a
+ * destroyer 180), and a fleet's ships are built side by side.
+ */
+export const SHIP_TIME_SCALE = 1;
+
+/**
+ * The port where a new fleet of `nation` is delivered (index in `world.ports`), or -1: of the
+ * ports whose land cell the nation controls and whose water a ship reaches (a node of the lane
+ * graph, in a zone that ice does not close), the highest naval base, then the nearest to the
+ * capital, then the first.
+ */
+export function shipyard(world: World, nation: number): number {
+  const { w, controller } = world.cells;
+  const lanes = laneOf(world);
+  const sea = seaOf(world);
+  const cx = world.nations.cols.capitalX[nation]!;
+  const cy = world.nations.cols.capitalY[nation]!;
+  let best = -1;
+  let bd = Infinity;
+  world.ports.forEach((p, i) => {
+    if (controller[p.cell] !== nation || lanes.portNode[i]! < 0) return;
+    if (sea.closed[sea.zoneOf[lanes.cell[lanes.portNode[i]!]!]!] === 1) return;
+    let dx = Math.abs(p.x - cx);
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    const d = dx * dx + (p.y - cy) * (p.y - cy);
+    const q = best < 0 ? undefined : world.ports[best]!;
+    if (q === undefined || p.navalBase > q.navalBase || (p.navalBase === q.navalBase && d < bd)) {
+      best = i;
+      bd = d;
+    }
+  });
+  return best;
+}
+
 /** Applies a queue order; returns the production row id, or 0 when rejected. */
 export function queueFormation(world: World, nation: number, template: number): number {
   const rule = world.rules?.templates[template];
   const nc = world.nations.cols;
-  // No ship is built yet (PLAN 4.2e): a new formation appears on land.
-  if (!rule || rule.domain !== Domain.land || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) {
+  // A fleet only where the nation has a port (PLAN 4.2e); no air formation yet.
+  const ok = rule !== undefined && (rule.domain === Domain.land || (rule.domain === Domain.sea && world.nations.has(nation) && shipyard(world, nation) >= 0));
+  if (!rule || !ok || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) {
     world.out.emit(world.tick, EventKind.ProductionRejected, template, nation, NaN, NaN);
     return 0;
   }
@@ -125,6 +169,14 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
   return best !== 0 ? cityStand(world, best) : world.cellPoint(front);
 }
 
+/** Where a new fleet of `nation` is delivered: the water of its `shipyard`; null with none. */
+export function dockPoint(world: World, nation: number): [number, number] | null {
+  const port = shipyard(world, nation);
+  if (port < 0) return null;
+  const lanes = laneOf(world);
+  return waterOf(world, lanes.cell[lanes.portNode[port]!]!);
+}
+
 export function productionSystem(world: World): void {
   if (!isDayStart(world.tick) || world.production.count === 0) return;
   const p = world.production;
@@ -140,9 +192,9 @@ export function productionSystem(world: World): void {
       continue;
     }
     if (today < p.cols.readyDay[id]!) continue;
-    const at = musterPoint(world, nation);
-    if (!at) continue; // no land to raise it on: the order waits
     const t = p.cols.template[id]!;
+    const at = rules.templates[t]!.domain === Domain.sea ? dockPoint(world, nation) : musterPoint(world, nation);
+    if (!at) continue; // no land to raise it on, or no port: the order waits
     const f = world.formations;
     const fid = f.create();
     f.cols.nation[fid] = nation;

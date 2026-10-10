@@ -6430,3 +6430,28 @@ Of 4.2 (open in PLAN.md):
     map, not a great circle: over an ocean in the north the way is the longer by it
     (Yokosuka to Pearl Harbor × 1.087 its great-circle legs, the worst of 90 ways between
     ten bases). Which of those ways go by the Arctic was not looked at.
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.2 (open in PLAN.md):
+
+  - [x] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
+    AT: a queued flotilla appears at a port's water after its days; a nation with no port is
+    refused.
+    From PLAN 4.2a (2026-10-09, ADR-247): by the land's scales a battle squadron takes 2,700
+    days (`TRAIN_TIME_SCALE` 3 × the battleship's 900) and costs 6,720 gold, a destroyer
+    flotilla 540 days and 1,120: say whether the scales are the ships' too. The page is sent
+    the land templates only (`mapLayers`), and the economic AI's build mix has no ship.
+    From PLAN 4.2b (2026-10-09, ADR-248): the page is sent every template with its domain
+    now, and the build list of the Actions tab leaves the fleets out (`tp.domain !== 0`).
+    Only the 1938 start has fleets: the random world, the toy world and a world of the
+    editor have none, and none can be placed there.

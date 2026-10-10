@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-252 · 2026-10-10 · accepted — A fleet is built at the nation's shipyard in its slowest ship's own days, priced by the land's scale (PLAN 4.2e)
+
+- **Context.** PLAN 4.2e: a sea template in the queue, delivered at a port of the nation; a
+  nation with no port refused. PLAN 4.2a left a question: by the land's scales a battle
+  squadron takes 2,700 days (3 × the battleship's 900) and costs 6,720 gold.
+- **The days are the ships' own** (`SHIP_TIME_SCALE` 1). A ship's days in the data are its
+  time from the keel to its trials: a battleship 900 (the King George V class took three to
+  four years, Bismarck under three), a destroyer 180. The land's 3 × makes a division's
+  months of training from its equipment's days; a ship's crew trains on its trials. At 3 ×
+  a battle squadron of 1938 would be at sea in 1945. A fleet's ships are built side by side
+  in several yards, so its days are its slowest ship's.
+- **The gold is the land's scale** (3.5 × its ships'). One price for all goods keeps the
+  ratio of the units' data: a battleship 1,050 gold, about an infantry division's 1,001; a
+  battle squadron 6,720, 2.8 months of the United Kingdom's income in 1938 (2,412). The
+  upkeep of PLAN 4.2b is already priced by the units' data, and its test holds no navy to a
+  quarter of its nation's income.
+- **The shipyard** (`shipyard`): of the ports whose land cell the nation controls and whose
+  water a ship reaches (a node of the lane graph, its zone not closed by ice, ADR-251), the
+  highest naval base, then the nearest to the capital. A first version ranked the port's
+  level before the distance and sent the United States' ships to Pearl Harbor (its port 2
+  against Norfolk's 1); the test of the seven naval powers' yards caught it. In 1938:
+  Portsmouth, Norfolk, Yokosuka, Brest, La Spezia, Kiel, Kronstadt. Controlled and not
+  owned, as the land's spawn point: an occupier builds at a port it holds.
+- **Chosen at the delivery, not at the order**, as the land's muster point is: a port lost
+  in the months of building does not keep a fleet from being delivered elsewhere. With no
+  shipyard on the ready day the order waits, as a land order with no land does. Refused at
+  the order with none, so a nation with no port pays nothing.
+- **Why the lane graph at the order.** It is what makes a port one to a ship (`portNode`,
+  the zones, the ice), and it is built once, 0.4 to 0.7 s, at a game's first fleet order or
+  sail; the start's fleets are placed by the terrain alone (ADR-248) and the build of a
+  world does not pay for it.
+- **Not done here:** the page's build list (PLAN 4.2f); the economic AI's ships (PLAN 4.6).
+- **The pin stays:** no fleet is ordered without a player. **Tests.**
+  `tests/unit/ships1938.test.ts`, five; five mutations each failed one or two.
+  `seaTemplates.test.ts` changed: its days are the ships' own, and its refusal is
+  Switzerland's (a nation with no port), where the United Kingdom was refused before.
+
 ### ADR-251 · 2026-10-10 · accepted — Ice closes seas to a fleet: a list by hand of the map's seas, every zone of them out of the lanes (PLAN 4.2d)
 
 - **Context.** PLAN 4.2d: the Arctic was open water to the lanes (ADR-244): from Scapa Flow to

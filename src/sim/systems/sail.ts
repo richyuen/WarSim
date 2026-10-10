@@ -43,7 +43,7 @@ export function sailKmh(world: World, id: number): number {
 }
 
 /** Where a fleet is in `cell`: its water point, or its middle where the fine mask has no water in it (a crossing). */
-function waterOf(world: World, cell: number): [number, number] {
+export function waterOf(world: World, cell: number): [number, number] {
   const w = world.cells.w;
   return world.seaPoint(cell) ?? [(cell % w) + 0.5, Math.floor(cell / w) + 0.5];
 }

@@ -891,8 +891,23 @@ Element (authoritative unit proxy) {
       (not sent home, and its upkeep no part of the army's share of the income: a nation
       short of money by its navy cuts its army); desertion in bankruptcy (a rule of men);
       the statistics' men (the army's).
-    - *Not yet:* a fleet is not built (4.2e), fights nothing (4.3), and is not laid up by
-      a nation that cannot pay it (4.6).
+    - *Not yet:* a fleet fights nothing (4.3), and is not laid up by a nation that cannot
+      pay it (4.6); the economic AI builds no ship (4.6), and the page's build list offers
+      none (4.2f).
+  - **A fleet is built** (PLAN 4.2e, ADR-252; `src/sim/systems/production.ts`).
+    - *The order* (`queueFormation`): of a sea template, only by a nation with a shipyard;
+      else `ProductionRejected`, nothing paid. Gold by the land's scale (3.5 × its ships'),
+      its crews as manpower.
+    - *The days:* its slowest ship's own (`SHIP_TIME_SCALE` 1): a battle squadron 900, a
+      carrier group 800, a cruiser squadron 400, a destroyer flotilla 180, a submarine
+      flotilla 150, a transport group 90 (the land's are 3 × their slowest element's).
+    - *The shipyard* (`shipyard`): of the ports whose land cell the nation controls and
+      whose water a ship reaches (a node of the lane graph, in a zone ice does not close),
+      the highest naval base, then the nearest to the capital. In 1938: Portsmouth, Norfolk,
+      Yokosuka, Brest, La Spezia, Kiel, Kronstadt.
+    - *The delivery* (`productionSystem`, `dockPoint`): on its ready day at the shipyard's
+      water (its node's cell, at the cell's water point), chosen then; with no shipyard then
+      the order waits, as a land order with no land does. Bankruptcy stalls it as any.
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its
