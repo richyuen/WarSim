@@ -79,6 +79,10 @@ quick sweep as a smoke test.
   From PLAN 4.2c (2026-10-09, ADR-250): a fleet sails any water and any passage, whoever
   holds its banks (Suez, Panama, Kiel, the Bosporus) and whoever it is at war with. Its
   supply is 1 however far it sails, and it burns no fuel under way.
+  A fleet in a passage's step is over the canal's land cells for those hours (6 in the
+  Suez canal), and a map import of terrain removes every fleet whose cell is land
+  (`strandedToLand`, whatever the import changed): a fleet in a canal is gone by it. Read,
+  not tried. The step's two cells are in its path: a fleet on such a step is to be left.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
 - [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
   From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
