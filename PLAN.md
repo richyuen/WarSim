@@ -55,11 +55,7 @@ quick sweep as a smoke test.
   AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
   Split 2026-10-10 (one cause to a commit):
   - [x] 4.4a Sea control per zone: who holds each zone, by the warships in it, contested by […]
-  - [ ] 4.4b Blockade: a port whose zone an enemy of its holder holds pays less.
-    AT: a blockaded port's income drops by the expected factor (test).
-    From PLAN 4.4a (2026-10-10, ADR-257): `seaHolder(world, zone)` reads who holds a zone;
-    a port's zone is that of its water (`portSeaOf`). A city's income is its cell's
-    (`cells.econ`); a port has no income of its own.
+  - [x] 4.4b Blockade: a port whose zone an enemy of its holder holds pays less. […]
   - [ ] 4.4c Supply over sea: a bloc's network takes its ports that a way over zones no
     enemy holds joins to a port of its home network, and feeds from them.
     AT: an overseas formation loses supply when the lane is cut (test).

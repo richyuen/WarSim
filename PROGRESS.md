@@ -13620,3 +13620,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   count); a puppet's navy with its overlord's in play.
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.4b (blockade).
+
+## 2026-10-10 — PLAN 4.4b: the blockade (ADR-258)
+
+- **Critic not due.**
+- **Done** (`seaControl.ts`: `BLOCKADE_SHARE`, `blockadedPorts`, `blockadedCells`;
+  `economy.ts`'s `monthlyAccounts` reads them): a port in a zone an enemy of its holder
+  holds is blockaded; a province all of whose ports are blockaded pays half its land's
+  income.
+- **The AT:** a German battle squadron in the zone of a British province's ports (the
+  first province whose ports' water is in one zone with no warship): Germany holds the
+  zone the next day, the province's ports are blockaded, and the United Kingdom's month
+  is the expected sum to six places (the province is 0.14 % of its land's income: 2,411.9
+  → 2,410.2).
+- **Tests:** `blockade1938.test.ts`, three (the AT; at peace and with nobody holding, no
+  blockade; a province with a port on an open zone is not blockaded until both are held).
+  Three mutations each failed one or two: no cut, any holder blockades, one port enough.
+- **A mistake of mine the run caught:** the third test looked for a British province with
+  ports on two zones and found none; it takes the first such province of any nation.
+- **The pin moves:** `e5c69f37` → `503952b6`. Seed 99's first year (`.cache/blockProbe.ts`):
+  China 6 ports blockaded in month 1, 19 from month 8; Nationalist Spain 7, Germany 9,
+  Italy 3 later; 24 provinces at the year's end.
+- **The gate:** typecheck first failed on an unused variable of my test (mended); then the
+  unit stage red by the timing tests of BLOCKERS and two that ran beside a leftover
+  ten-year stage (economy's year timed out, territory's cost), both green alone; the
+  ten-year stage 15 of 17, seeds 1 and 2 timed out (BLOCKERS, with a profile of both
+  commits); build and parity green.
+- **Not looked at:** income on the page while blockaded; the economic AI's view of it.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4c (supply over sea).

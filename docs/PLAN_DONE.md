@@ -6583,3 +6583,22 @@ Of 4.4 (open in PLAN.md):
     an enemy's, held for a time after they leave.
     AT: a zone with one navy's warships is its from the next day; an enemy with half its
     power contests it; with none of its ships there it keeps it 14 days (test).
+
+<!-- moved 2026-10-10 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.4 (open in PLAN.md):
+
+  - [x] 4.4b Blockade: a port whose zone an enemy of its holder holds pays less.
+    AT: a blockaded port's income drops by the expected factor (test).
+    From PLAN 4.4a (2026-10-10, ADR-257): `seaHolder(world, zone)` reads who holds a zone;
+    a port's zone is that of its water (`portSeaOf`). A city's income is its cell's
+    (`cells.econ`); a port has no income of its own.

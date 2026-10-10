@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-258 · 2026-10-10 · accepted — The blockade: a province with every port in an enemy-held zone pays half its land's income (PLAN 4.4b)
+
+- **Context.** PLAN 4.4b, the first half of PLAN 4.4's AT: a blockaded port's income drops by
+  the expected factor. A port has no income of its own (ADR-244): a city's is its cell's.
+- **Decision.** A port is blockaded when the zone of its water is held (ADR-257) by a nation
+  at war with the port cell's controller. A province pays `BLOCKADE_SHARE` (0.5) of its
+  land's income when every port of it with water a ship reaches is blockaded; a blockaded
+  port standing in no province (43 in 1938: New York, Sydney) costs its own cell the same.
+  Read by the economy's month (`monthlyAccounts`).
+- **Why the province, not the port's cell.** The port is the province's way to the sea, and a
+  province's trade is its land's; the port's own cell is a 20 km square that may hold no
+  city. Why all its ports: a province with a port on an open sea trades by it.
+- **Why a half.** The share of a coastal province's trade that went by sea, rounded: the
+  blockaded Confederacy and Germany of 1914–18 lost much of their trade, and neither all.
+  Not tuned (ADR-58); a constant beside the sea control's.
+- **The pin moves:** `e5c69f37` → `503952b6`. On seed 99, Japan holds the zones off China
+  and blockades 6 Chinese ports in the first month, 19 by the twelfth; the Nationalists'
+  ports, Italy's, France's and Germany's follow as their wars come.
+- **Tests.** `tests/unit/blockade1938.test.ts`, three; three mutations each failed one or two.
+
 ### ADR-257 · 2026-10-10 · accepted — Sea control per zone: the most armed hit points, contested at half by an enemy, held 14 days (PLAN 4.4a)
 
 - **Context.** PLAN 4.4: sea control per zone, sea supply, convoys, blockade, submarine

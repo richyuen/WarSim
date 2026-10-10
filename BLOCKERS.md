@@ -582,3 +582,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     on the commit before it). The 17 red were those of 4.2f's run but fire1938 (green now),
     and counters1938 and declutter1938, both by a test timeout (150 s, 300 s); the two alone
     passed (3 tests, 3.9 min). The specs were not changed.
+  - PLAN 4.4b's gate (2026-10-10, this container): the ten-year run of seed 2 timed out too
+    (737 s against 600; seed 1 924 s), and `economy.test.ts`'s year (120 s) and
+    `territory.test.ts`'s cost in a unit stage that ran beside a ten-year stage left over
+    from an aborted gate. The two unit files alone: 24 of 24. A year of seed 99 profiled on
+    the commit and on the one before: each system within the run-to-run spread (combat 3.42
+    and 3.69 ms, the commit before the slower). The tests were not changed.

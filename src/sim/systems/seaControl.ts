@@ -12,13 +12,19 @@
  *
  * State (`world.seaControl`, per zone: its holder and the days left), saved in a section of its
  * own while any zone is held; a world whose zones change (a map import) starts it again.
- * Nothing reads it yet: the blockade, supply over sea and convoys are PLAN 4.4b–d, the map mode
- * PLAN 4.7.
+ * The blockade (PLAN 4.4b) reads it: a port is blockaded when the zone of its water is held by
+ * a nation at war with the port cell's controller (`blockadedPorts`); a province whose every
+ * port a ship reaches is blockaded, and the cell of such a port that is in no province, pay
+ * `BLOCKADE_SHARE` of their land's income (`blockadedCells`, read by the economy's month).
+ * Supply over sea and convoys are PLAN 4.4c–d, the map mode PLAN 4.7.
  */
 import { isDayStart } from '../../shared/calendar';
-import { seaOf, type World } from '../world';
+import { portSeaOf, seaOf, type World } from '../world';
 import { elementIndex } from './elements';
 import { blocOf } from './supply';
+
+/** What a blockaded province's land pays of its income: half of a coastal province's trade went by sea. */
+export const BLOCKADE_SHARE = 0.5;
 
 /** Days a zone stays its holder's with none of its ships there. */
 export const CONTROL_DAYS = 14;
@@ -96,4 +102,52 @@ export function seaControlSystem(world: World): void {
     sc.holder[zone] = contested ? 0 : top;
     sc.days[zone] = contested ? 0 : CONTROL_DAYS;
   }
+}
+
+/** Per port of `world.ports`: whether it is blockaded now (see the head of the file); none before the first day of sea control. */
+export function blockadedPorts(world: World): Uint8Array {
+  const out = new Uint8Array(world.ports.length);
+  const sc = world.seaControl;
+  if (!sc) return out;
+  const water = portSeaOf(world);
+  const sea = seaOf(world);
+  const ctl = world.cells.controller;
+  world.ports.forEach((p, i) => {
+    const at = water[i]!;
+    if (at < 0) return;
+    const zone = sea.zoneOf[at]!;
+    const holder = sc.holder[zone] ?? 0;
+    const c = ctl[p.cell]!;
+    if (holder !== 0 && c !== 0 && world.wars.atWar(holder, c)) out[i] = 1;
+  });
+  return out;
+}
+
+/**
+ * The cells whose land pays `BLOCKADE_SHARE` of its income: those of a province whose every port
+ * with water a ship reaches is blockaded, and the cell of a blockaded port in no province. Null
+ * when none is.
+ */
+export function blockadedCells(world: World): { provinces: Set<number>; cells: Set<number> } | null {
+  if (!world.seaControl) return null;
+  const blocked = blockadedPorts(world);
+  if (!blocked.includes(1)) return null;
+  const water = portSeaOf(world);
+  const sea = seaOf(world);
+  const province = world.cells.province;
+  const open = new Set<number>();
+  const shut = new Set<number>();
+  const cells = new Set<number>();
+  world.ports.forEach((p, i) => {
+    const at = water[i]!;
+    if (at < 0 || sea.closed[sea.zoneOf[at]!] === 1) return;
+    const pr = province[p.cell]!;
+    if (pr === 0) {
+      if (blocked[i]) cells.add(p.cell);
+      return;
+    }
+    (blocked[i] ? shut : open).add(pr);
+  });
+  for (const pr of open) shut.delete(pr);
+  return shut.size === 0 && cells.size === 0 ? null : { provinces: shut, cells };
 }

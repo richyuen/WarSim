@@ -27,6 +27,7 @@ import { pow } from '../core/dmath';
 import { cellKm2ByRow } from '../landCounts';
 import type { World } from '../world';
 import { bleedFormation } from './elements';
+import { BLOCKADE_SHARE, blockadedCells } from './seaControl';
 
 /** `cells.econ` unit: millions of 1990 $ (GDP per year, industrial-weighted). */
 export const ECON_PER_BN = 1000;
@@ -105,16 +106,19 @@ export function monthlyAccounts(
   const held = new Float64Array(size);
   /** People on land the nation both owns and controls (recruitable). */
   const population = new Float64Array(size);
-  const { owner, controller, econ, pop, w, h } = world.cells;
+  const { owner, controller, econ, pop, w, h, province } = world.cells;
   const rowKm2 = cellKm2ByRow(w, h);
+  // The blockade (PLAN 4.4b): a province whose every port is blockaded pays the share of it.
+  const blockade = blockadedCells(world);
   for (let y = 0, c = 0; y < h; y++) {
     const km2 = rowKm2[y]!;
     for (let x = 0; x < w; x++, c++) {
       const n = controller[c]!;
       if (n === 0) continue;
       held[n]! += km2;
-      const v = econ[c]!;
+      let v = econ[c]!;
       const own = owner[c] === n;
+      if (v !== 0 && blockade && (blockade.provinces.has(province[c]!) || blockade.cells.has(c))) v *= BLOCKADE_SHARE;
       if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
       if (own) population[n]! += pop[c]! * 1000;
     }

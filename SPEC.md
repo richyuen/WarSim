@@ -1621,8 +1621,13 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   the fleets in it; the bloc of the most holds it unless a bloc at war with it has half its
   power there or more (`CONTEST_SHARE`), then nobody; with none of its ships there it keeps
   it 14 days (`CONTROL_DAYS`). State (`world.seaControl`, per zone holder and days), saved
-  while a zone is held. 45 of 428 zones are held on the first day of 1938. Nothing reads
-  it yet (4.4b–d).
+  while a zone is held. 45 of 428 zones are held on the first day of 1938.
+  *The blockade (PLAN 4.4b, ADR-258):* a port is blockaded when the zone of its water is
+  held by a nation at war with the port cell's controller (`blockadedPorts`); a province
+  whose every port a ship reaches is blockaded, and the cell of a blockaded port in no
+  province, pay `BLOCKADE_SHARE` 0.5 of their land's income in the economy's month
+  (`blockadedCells`). On seed 99 Japan blockades 6 Chinese ports in the first month, 19 by
+  the twelfth; 24 provinces of 8 nations are blockaded then.
   It controls **supply over sea** (overseas formations and colonies), **convoys**
   (income from overseas provinces and trade), and **blockade** (an enemy-controlled
   zone adjacent to a port reduces its income and supply). **Submarines** raid convoys
