@@ -62,6 +62,10 @@ quick sweep as a smoke test.
   - [x] 4.6d Raiding: submarines sail to an enemy's convoy ways (test).
   - [ ] 4.6e The navy's cost: which fleets a nation builds and lays up, and with what share
     of its income; a navy's weight in a declaration and a peace (test).
+    - [x] 4.6e1 Builds and lay-ups: a navy's share of the income; the economic AI orders
+      fleets under it and lays them up over it when short (test).
+    - [ ] 4.6e2 A navy's weight in the strategic AI: its strength in a declaration and a
+      peace (test).
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
   though the elevation carries the sea floor (quantised to 10 m for this). A lake that the

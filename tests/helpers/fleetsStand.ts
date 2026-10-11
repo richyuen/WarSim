@@ -1,3 +1,4 @@
+import { EventKind } from '../../src/shared/events';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { seaRangeOf, type World } from '../../src/sim/world';
 
@@ -19,9 +20,10 @@ import { seaRangeOf, type World } from '../../src/sim/world';
  * and no longer held to stand. Since PLAN 4.5a a transport group carries a land formation that
  * a player or the AI ordered to another land (`World.embarked`, read by `hour`): from the hour
  * it carries one it is counted in `carried` and no longer held to stand. Any other change is
- * still a line.
+ * still a line. Since PLAN 4.6e1 a nation short of money lays up fleets (`FleetsLaidUp`, read by
+ * `hour`): as many of its fleets as it laid up may be gone, counted in `laid`.
  */
-export function fleetsStand(world: World): { start: number; gone: number; sailed: number; fought: number; carried: number; hour: (w: World) => void; day: (w: World) => string[] } {
+export function fleetsStand(world: World): { start: number; gone: number; sailed: number; fought: number; carried: number; laid: number; hour: (w: World) => void; day: (w: World) => string[] } {
   const f = world.formations;
   const idx = elementIndex(world);
   const fleets = new Map<number, { generation: number; x: number; y: number; ships: number; strength: number; nation: number }>();
@@ -33,6 +35,8 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
   for (const id of fleets.keys()) for (const e of idx.get(id) ?? []) shipOf.set(e, id);
   /** The fleets that were in a sea battle in an hour since last asked (`hour`, asked every hour). */
   const inBattle = new Set<number>();
+  /** Per nation: the fleets it laid up since last asked (PLAN 4.6e1, `FleetsLaidUp`, read by `hour`). */
+  const laidUp = new Map<number, number>();
   /** The fleets that have carried a land formation (PLAN 4.5a). */
   const carrying = new Set<number>();
   const out = {
@@ -41,7 +45,10 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
     sailed: 0,
     fought: 0,
     carried: 0,
+    laid: 0,
     hour(w: World): void {
+      const ev = w.out.events;
+      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.FleetsLaidUp) laidUp.set(ev[i + 2]!, (laidUp.get(ev[i + 2]!) ?? 0) + ev[i + 3]!);
       for (const e of w.embarked.values()) carrying.add(e.fleet);
       for (const b of w.seaBattles) for (const id of b.fleets) inBattle.add(id);
       // A battle can begin and end in one hour: its volleys name the ships (shooter, target).
@@ -64,6 +71,12 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
           // Sunk in a sea battle it was in: the sea's rules (PLAN 4.3).
           if (inBattle.has(id)) {
             out.fought++;
+            continue;
+          }
+          // Laid up by its nation short of money (PLAN 4.6e1).
+          if ((laidUp.get(was.nation) ?? 0) > 0) {
+            laidUp.set(was.nation, laidUp.get(was.nation)! - 1);
+            out.laid++;
             continue;
           }
           out.gone++;

@@ -13934,3 +13934,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   50/78/64, landings 34/30/10); build and parity green.
 - **PARITY:** row 3, a note; still partial.
 - **Next:** PLAN 4.6e (the navy's cost).
+
+## 2026-10-11 — PLAN 4.6e1: the navy's cost, builds and lay-ups (ADR-273)
+
+- **Critic not due.**
+- **Split:** PLAN 4.6e into 4.6e1 (builds and lay-ups) and 4.6e2 (a navy's weight in the
+  strategic AI).
+- **Done:** `NAVY_SHARE`, `BATTLE_FLEET_INCOME`, `pickFleet` and the lay-ups in
+  `src/sim/ai/economic.ts`; `BUILD_MIX_1938.fleets`; event `FleetsLaidUp`; `fleetsStand` counts
+  fleets laid up (`laid`).
+- **The AT:** the United States orders a battle squadron, Sweden a destroyer flotilla, Japan
+  (21.9 % of its income) none; at war with no front, transports first; Japan in debt lays up 5
+  fleets. Seed 99's first year: 14 fleets ordered, none laid up.
+- **Tests:** `navyBudget1938.test.ts`, three; five mutations each failed one.
+  `economicAi.test.ts`'s mix checks read the army's orders (a fleet is no part of it).
+- **The pin moves:** `736b414c` → `02966b63`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 14 of
+  17, the three seeds over the time (1,051, 762, 724 s) with every check passed (sea battles
+  93/90/77, landings 42/62/59, no fleet laid up); build and parity green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6e2 (a navy's weight in the strategic AI).

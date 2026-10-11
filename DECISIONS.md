@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-273 · 2026-10-11 · accepted — The navy's cost: builds and lay-ups (PLAN 4.6e1)
+
+- **Context.** PLAN 4.6, from PLAN 4.2b and 4.2e: the economic AI built no fleet and laid none
+  up; a navy's upkeep had no share of its own, so a nation short of money by its navy cut its
+  army. At the 1938 start a navy is 2 % to 22 % of its nation's income: Japan 21.9, Italy 14.0,
+  France 10.8, the United Kingdom 10.7, the Soviet Union 6.4, the United States 4.5, Germany 2.4.
+- **The share.** `NAVY_SHARE` = 0.12: about the British and French share of 1938.
+- **Builds** (monthly, after the army's orders, with what they left): a nation with a shipyard
+  (PLAN 4.2e) and no fleet in training orders one while its navy is under its share, if its
+  balance stays above its need with the fleet's upkeep and its gold covers the price and
+  `RESERVE_MONTHS` of income (the army's rules). Which (`pickFleet`): a transport group when it
+  is at war with no land front and has none (the invasion AI's want, ADR-268); else the best it
+  can pay for of a battle squadron (income from `BATTLE_FLEET_INCOME` = 1,000), a cruiser
+  squadron (from `RICH_INCOME` = 200), a destroyer flotilla; none under `POOR_INCOME`.
+- **Lay-ups** (step 1, before the army): short of money, while its navy is over its share, the
+  fleets that stand are laid up, the dearest first, a crew's `DISBAND_MANPOWER` back to the pool
+  (`FleetsLaidUp`, one a nation and month). Japan in debt lays up 5 (its battle squadrons first)
+  and is at 98 a month for a share of 100.
+- **The army first:** a first version ordered the fleet before the army's orders; on a tight
+  treasury the fleet took the reserve and two tests of the army's mix failed (PLAN 1.42c's
+  infantry in place of the dearer division, PLAN 3.5d's saving for armour).
+- **Seed 99's first year:** 14 fleets ordered (the United States a battle squadron; Germany,
+  France, the United Kingdom a cruiser squadron each; Belgium, the Netherlands a destroyer
+  flotilla; eight transport groups for wars with no front); none laid up.
+- **The pin moves:** `736b414c` → `02966b63`.
+- **The ten-year runs' rule of the fleets:** as many of a nation's fleets as it laid up may be
+  gone (`laid`).
+- **Tests.** `tests/unit/navyBudget1938.test.ts`, three (the United States a battle squadron,
+  Sweden a destroyer flotilla, Japan over its share none, one at a time; transports first at
+  war with no front; Japan in debt lays up its dearest within its share). Five mutations (no
+  lay-up twice; no transports first; no share for builds; the cheapest laid up first) each
+  failed one. `economicAi.test.ts`'s checks of the army's mix read the army's orders.
+
 ### ADR-272 · 2026-10-11 · accepted — A bloc whose lands by sea changed is flooded whole (amends ADR-259)
 
 - **Context.** PLAN 4.6d's ten-year runs changed seed 3's game, and `saveYear.test.ts` (a game

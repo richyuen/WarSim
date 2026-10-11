@@ -117,6 +117,8 @@ export const EventKind = {
   FormationLanded: 44,
   /** A landing was thrown back (PLAN 4.5b): the sea about it held by an enemy; a = formation, b = the zone's holder, (x, y) = the landing water. */
   LandingRepulsed: 45,
+  /** A nation short of money laid up fleets in a month (PLAN 4.6e1): a = nation, b = how many. */
+  FleetsLaidUp: 46,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
