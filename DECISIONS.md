@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-264 · 2026-10-10 · accepted — A lost base is a port of the fleet's nation (amends ADR-261)
+
+- **Context.** PLAN 4.5c's bombardment: a British battle squadron off Ostend, at war with
+  Belgium, sailed for home at the first day's start. ADR-261's lost base was any port within 3
+  cells held by a nation at war with the fleet, with none of its nation's: so a fleet sent to an
+  enemy's coast (to shell it, to land troops, later to blockade it) was sent home each midnight.
+- **Decision.** A lost base is a port the fleet's nation owns (`cells.owner`) that a nation at
+  war with it holds. An enemy's own port near a fleet is no reason to sail.
+- **The pin stays** `e8fc6344`: the 25 fleets of seed 99's first year that left lost bases
+  left ports their nations owned.
+- **Tests.** `tests/unit/fleetEnds1938.test.ts`, a sixth: Gibraltar made Germany's own, at war,
+  the British fleets there stay; with the owner's check taken out it failed.
+
 ### ADR-263 · 2026-10-10 · accepted — A landing needs the sea, and takes its beachhead (PLAN 4.5b)
 
 - **Context.** PLAN 4.5's AT: a scripted invasion lands and takes the coastal cells; it fails

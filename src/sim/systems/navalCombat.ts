@@ -243,7 +243,11 @@ export function rebaseFleets(world: World): void {
   });
 }
 
-/** Whether fleet `id` is at a base its nation has lost: a port held by a nation at war with it within `AT_PORT_CELLS`, and none its nation holds. */
+/**
+ * Whether fleet `id` is at a base its nation has lost: a port its nation owns, held by a nation
+ * at war with it, within `AT_PORT_CELLS`, and none its nation holds. An enemy's own port is no
+ * lost base: a fleet sent to an enemy's coast stays there (PLAN 4.5c).
+ */
 export function atLostBase(world: World, id: number): boolean {
   const c = world.formations.cols;
   const water = portSeaOf(world);
@@ -261,7 +265,7 @@ export function atLostBase(world: World, id: number): boolean {
     if (dx > AT_PORT_CELLS || Math.abs(Math.floor(at / w) - Math.floor(cell / w)) > AT_PORT_CELLS) return;
     const holder = ctl[p.cell]!;
     if (holder === n) own = true;
-    else if (holder !== 0 && world.wars.atWar(holder, n)) lost = true;
+    else if (holder !== 0 && world.cells.owner[p.cell] === n && world.wars.atWar(holder, n)) lost = true;
   });
   return lost && !own;
 }

@@ -13782,3 +13782,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   build and parity green. No numbered task ticked: no browser suite.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.5c (naval bombardment).
+
+## 2026-10-10 — A lost base is a port of the fleet's nation (ADR-264)
+
+- **Critic not due.** A cause of its own found in PLAN 4.5c: a British battle squadron off
+  Ostend, at war with Belgium, sailed home at the first day's start (ADR-261's lost base was
+  any enemy-held port near it).
+- **Done:** `atLostBase` asks that the port be owned by the fleet's nation.
+- **Tests:** `fleetEnds1938.test.ts`, a sixth (Gibraltar Germany's own: the fleets stay); one
+  mutation failed it. The pin stays `e8fc6344`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 17 of
+  17 (seed 1: 145 fleets stand, 42 sailed, 8 fought; seed 2: 156, 37, 0, 1 carried; seed 3:
+  154, 42, 0); build and parity green.
+- **Next:** PLAN 4.5c (naval bombardment), its work stashed meanwhile.

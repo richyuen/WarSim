@@ -71,6 +71,20 @@ describe('a fleet\'s loose ends (PLAN 4.4e)', () => {
     for (const f of fleets) expect(w.formations.cols.moving[f]).toBe(0);
   });
 
+  it('a fleet by an enemy\'s own port is at no lost base: it stays (PLAN 4.5c, a fleet sent to shell a coast)', () => {
+    const s = sim();
+    const w = s.world;
+    expect(declareWar(w, GER, ENG, true)).not.toBeNull();
+    const gib = portIndex(w, 'Gibraltar');
+    const fleets = fleetsNear(w, ENG, portSeaOf(w)[gib]!);
+    expect(fleets.length).toBeGreaterThan(0);
+    // Gibraltar Germany's own, as Ostend is Belgium's: no base the United Kingdom lost.
+    w.setOwner(w.ports[gib]!.cell, GER);
+    w.setController(w.ports[gib]!.cell, GER);
+    s.step(25);
+    for (const f of fleets) expect(w.formations.cols.moving[f]).toBe(0);
+  });
+
   it('the AT: the Suez canal is shut to a British fleet when Germany, at war with it, holds its bank: the way to the Gulf of Suez goes round Africa', () => {
     const s = sim();
     const w = s.world;
