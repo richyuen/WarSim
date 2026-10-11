@@ -13988,3 +13988,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   17, seeds 1 and 2 over the time (861, 825 s); the changed spec passed; build and parity green.
 - **PARITY:** row 3, a note and the spec; still partial.
 - **Next:** PLAN 4.7b (ships by class, wakes).
+
+## 2026-10-11 — PLAN 4.7b: ships by class, their length at T3, wakes (ADR-276)
+
+- **Critic not due.**
+- **Done:** five ship frames and the wake in the atlas (`unitLooks.ts`, `atlas.ts`);
+  `render/units/wakes.ts` (`appendWakes`), `render/units/ships.ts` (`shipSideCells`); both
+  tiers in `MapView`; `MapView.elementWakes` for tests.
+- **The AT:** `ships1938.spec.ts`: the Home Fleet's battle squadron has battleships, cruisers and
+  destroyers, each its sprite; no wake at rest, 16 under way. Pictures looked at: at 5 m/px the
+  first build drew each ship a speck (a grid place's size): a ship is its length since.
+- **Tests:** `wakes.test.ts`, one; `unitLooks.test.ts` changed for the frames.
+- **Not a rule change.** The gate: unit red only by the two timing tests of BLOCKERS; the
+  ten-year stage 15 of 17, seeds 1 and 2 over the time (869, 804 s); the changed spec passed;
+  build and parity green.
+- **PARITY:** row 3, a note and the spec; still partial.
+- **Next:** PLAN 4.7c (gunfire, torpedoes, sinking).

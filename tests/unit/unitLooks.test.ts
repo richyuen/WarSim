@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LOOKS } from '../../src/render/fx/fire';
-import { Frame, frameOf, NOT_DRAWN_SMALL, smallFrameOf, symbolOf, turretOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
+import { Frame, frameOf, isShipFrame, NOT_DRAWN_SMALL, smallFrameOf, symbolOf, turretOf, Weapon, weaponOf, Wreck, wreckOf } from '../../src/shared/unitLooks';
 import { TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { AIR_CLASSES, LAND_CLASSES, SEA_CLASSES, UNIT_CLASSES } from '../../src/sim/data/schemas';
 
@@ -18,7 +18,11 @@ describe('frameOf', () => {
     expect(frameOf('mech')).toBe(Frame.halftrack);
     // PLAN 2.6: a battery is not twelve soldiers.
     for (const cls of ['art', 'at', 'aa']) expect(frameOf(cls), cls).toBe(Frame.gun);
-    for (const cls of SEA_CLASSES) expect(frameOf(cls), cls).toBe(Frame.ship);
+    // PLAN 4.7b: a ship for each class (until then one for the seven); the cruisers share theirs.
+    const ships: Record<string, number> = { bb: Frame.battleship, cv: Frame.carrier, ss: Frame.submarine, tp: Frame.transport, dd: Frame.destroyer, cl: Frame.ship, ca: Frame.ship };
+    for (const cls of SEA_CLASSES) expect(frameOf(cls), cls).toBe(ships[cls]);
+    for (const cls of SEA_CLASSES) expect(isShipFrame(frameOf(cls)), cls).toBe(true);
+    for (const cls of [...LAND_CLASSES, ...AIR_CLASSES]) expect(isShipFrame(frameOf(cls)), cls).toBe(false);
     for (const cls of AIR_CLASSES.filter((c) => c !== 'nuke_missile')) expect(frameOf(cls), cls).toBe(Frame.aircraft);
   });
 
@@ -26,9 +30,11 @@ describe('frameOf', () => {
     // Five classes' frames and, since PLAN 2.14c2, the sixth: infantry prone, which no class has of itself (`shownFrame`).
     // Since PLAN 3.6a twelve: three hulls, a half-track and three turrets. Since PLAN 3.6e3b the
     // thirteenth, after them all (the snapshot's numbers stand): the tank's small mark.
-    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    // Since PLAN 4.7b nineteen: five ships of their classes and the wake, after them all.
+    expect(Object.values(Frame)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]);
     for (const cls of UNIT_CLASSES) expect(Object.values(Frame)).toContain(frameOf(cls));
     for (const cls of UNIT_CLASSES) expect(frameOf(cls), cls).not.toBe(Frame.prone);
+    for (const cls of UNIT_CLASSES) expect(frameOf(cls), cls).not.toBe(Frame.wake);
   });
 
   it('a tank has a turret of its weight; nothing else has one, and no class is a turret', () => {

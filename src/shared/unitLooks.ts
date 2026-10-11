@@ -11,7 +11,8 @@ import type { UnitSymbol } from './protocol';
  * `tankHeavy` are hulls (PLAN 3.6a): the turret of each is a frame of its own (`turretOf`),
  * drawn over the hull as a second sprite, so that it can turn. No class has a turret's frame.
  * `tankSmall` is no class's either: it is what a hull is drawn as where a sprite is too small to
- * hold one (`smallFrameOf`, PLAN 3.6e3b).
+ * hold one (`smallFrameOf`, PLAN 3.6e3b). Since PLAN 4.7b each ship class has its frame (`ship` the
+ * cruisers'), and `wake`, no class's, is the foam behind a ship under way.
  */
 export const Frame = {
   infantry: 0,
@@ -27,8 +28,24 @@ export const Frame = {
   turretMedium: 10,
   turretHeavy: 11,
   tankSmall: 12,
+  // A ship of each class (PLAN 4.7b): `ship` is the cruiser's.
+  battleship: 13,
+  carrier: 14,
+  submarine: 15,
+  transport: 16,
+  destroyer: 17,
+  /** The foam behind a ship under way (PLAN 4.7b): no class's; drawn after the ships, untinted. */
+  wake: 18,
 } as const;
 export type Frame = (typeof Frame)[keyof typeof Frame];
+
+/** The frames of the ships (PLAN 4.7b). */
+export const SHIP_FRAMES: readonly number[] = [Frame.ship, Frame.battleship, Frame.carrier, Frame.submarine, Frame.transport, Frame.destroyer];
+
+/** Whether `frame` is a ship's. */
+export function isShipFrame(frame: number): boolean {
+  return SHIP_FRAMES.includes(frame);
+}
 
 /** The frame of the turret that stands on the hull of `frame`, or -1 for what has none. */
 export function turretOf(frame: number): number {
@@ -68,7 +85,13 @@ export function frameOf(cls: string): Frame {
   // Infantry in half-tracks: a carrier, not a tank (PLAN 3.6a).
   if (cls === 'mech') return Frame.halftrack;
   if (cls === 'art' || cls === 'at' || cls === 'aa') return Frame.gun;
-  if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return Frame.ship;
+  // A ship of each class (PLAN 4.7b; until then one ship for the seven).
+  if (cls === 'bb') return Frame.battleship;
+  if (cls === 'cv') return Frame.carrier;
+  if (cls === 'ss') return Frame.submarine;
+  if (cls === 'tp') return Frame.transport;
+  if (cls === 'dd') return Frame.destroyer;
+  if (cls === 'cl' || cls === 'ca') return Frame.ship;
   if (['fighter', 'bomber_tac', 'bomber_str', 'cas', 'naval_bomber', 'transport_air'].includes(cls)) return Frame.aircraft;
   return Frame.infantry;
 }

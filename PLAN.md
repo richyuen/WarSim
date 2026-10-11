@@ -55,7 +55,7 @@ quick sweep as a smoke test.
   each hour for a cell by a coast: not timed with many fleets under way.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
   - [x] 4.7a The sea-control map mode: each zone held tinted with its holder's colour (e2e).
-  - [ ] 4.7b Ships: a sprite for each class at T2 and T3, and a wake behind a ship under way.
+  - [x] 4.7b Ships: a sprite for each class at T2 and T3, and a wake behind a ship under way.
   - [ ] 4.7c A sea battle drawn: gunfire, torpedo tracks, a ship sinking.
   - [ ] 4.7d A fleet's order line along its way, not straight over the land.
   - [ ] 4.7e The naval battle demo e2e, screenshots at T1, T2 and T3 viewed (the AT of 4.7).

@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-276 · 2026-10-11 · accepted — Ships by class, their length at T3, and wakes (PLAN 4.7b)
+
+- **Context.** PLAN 4.7, from PLAN 4.2b: every ship was the one ship sprite, at T3 the size of a
+  rifleman's place in a battalion's grid, and a fleet under way was drawn as one that stood.
+- **Frames.** Five new frames of the atlas after the thirteen there were (the snapshot's numbers
+  stand): `battleship` (the longest, three turrets), `carrier` (a flat deck, its island to
+  starboard), `submarine` (a slim hull, a tower), `transport` (a blunt hull, hatches),
+  `destroyer` (slim, three quarters of the battleship's length); `ship`, the old one, is the
+  cruisers'. And `wake`, no class's. `frameOf` gives each sea class its frame; `isShipFrame`.
+- **T3.** A ship figure is one ship, drawn its length (`shipSideCells`: the sprite's side 250 m
+  for a battleship, 260 a carrier, 200 a cruiser, 150 a destroyer, 170 a transport, 95 a
+  submarine), not the side of a grid's place.
+- **Wakes** (`appendWakes`): for each ship sprite on the march (its frame's march fraction), an
+  instance of `wake`, white, at `WAKE_ALPHA` = 0.7 of its ship's opacity, `WAKE_ASTERN` = 0.95 of
+  its sprite's side astern, after the turrets; at T2 and T3.
+- **Looked at** (`docs/evidence/4.7/`): the Home Fleet's battle squadron at 40 m/px at rest and
+  under way, and at 5 m/px under way: the battleships, cruisers and destroyers told apart by
+  their sizes and decks, the wakes astern of each.
+- **Tests.** `tests/unit/wakes.test.ts` (a ship under way has its wake astern, white; a ship at
+  rest and a tank on the march none); `tests/unit/unitLooks.test.ts` (each sea class its frame,
+  nineteen frames, no class the wake); `tests/e2e/ships1938.spec.ts` (battle squadron 1055: 16
+  ships of three frames, no wake at rest, 16 under way; three pictures).
+
 ### ADR-275 · 2026-10-11 · accepted — The sea-control map mode (PLAN 4.7a); PLAN 4.7 split
 
 - **Context.** PLAN 4.7: naval visuals and a sea-control map mode. The sea was one colour;

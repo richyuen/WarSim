@@ -32,7 +32,7 @@ const FLAG_MOVE_MS = 150;
 const FLAG_MAX_RISE = 40;
 import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
-import { Frame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
+import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
@@ -44,6 +44,8 @@ import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/m
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
+import { shipSideCells } from '../render/units/ships';
+import { appendWakes } from '../render/units/wakes';
 import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
@@ -734,6 +736,8 @@ export class MapView {
     const c = this.elementProxies.colors;
     return [c[i * 4]!, c[i * 4 + 1]!, c[i * 4 + 2]!];
   }
+  /** The wakes uploaded with the element sprites (PLAN 4.7b; tests). */
+  elementWakes = 0;
   /** The last subscription sent (tests). */
   subscription: Subscription | null = null;
   private lastSub = '';
@@ -754,7 +758,10 @@ export class MapView {
     // A tank is its hull and, after all the elements, its turret (PLAN 3.6a).
     let hulls = 0;
     for (let i = 0; i < e.count; i++) if (turretOf(e.frame[i]!) >= 0) hulls++;
-    p.reserve(e.count + hulls);
+    // And a ship under way its wake, after them (PLAN 4.7b).
+    let ships = 0;
+    for (let i = 0; i < e.count; i++) if (isShipFrame(e.frame[i]!) && marching(e.flags[i]!)) ships++;
+    p.reserve(e.count + hulls + ships);
     p.originX = Math.floor(this.geo.w / 2);
     p.originY = Math.floor(this.geo.h / 2);
     for (let i = 0; i < e.count; i++) {
@@ -774,7 +781,10 @@ export class MapView {
     }
     this.elementTurrets = hulls;
     this.elementTurretOwner = new Uint32Array(hulls);
-    p.upload(appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner));
+    const withTurrets = appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner);
+    const all = appendWakes(p.data, p.colors, e.count, withTurrets);
+    this.elementWakes = all - withTurrets;
+    p.upload(all);
     // Near T3 the section is kept, so that the figures can be built in the frame the close tier
     // comes in (`tierShares`); the snapshot's own arrays go back to the worker.
     this.elementsZoom = this.metresPerPx;
@@ -885,10 +895,12 @@ export class MapView {
     const t0 = performance.now();
     let total = 0;
     let hulls = 0;
+    let ships = 0;
     for (let i = 0; i < e.count; i++) {
       const n = figureCount(e.strength[i]!, e.size[i]!);
       total += n;
       if (turretOf(e.frame[i]!) >= 0) hulls += n;
+      if (isShipFrame(e.frame[i]!) && marching(e.flags[i]!)) ships += n;
     }
     // More than the renderer is measured for: the element sprites stay (never at T3 in practice,
     // where a view holds a few formations).
@@ -899,7 +911,7 @@ export class MapView {
       return;
     }
     const p = this.individualProxies;
-    p.reserve(total + hulls);
+    p.reserve(total + hulls + ships);
     p.originX = Math.floor(this.controller.cam.cx);
     p.originY = Math.floor(this.controller.cam.cy);
     const owner = new Uint32Array(total);
@@ -912,7 +924,8 @@ export class MapView {
       const frame = e.frame[i]!;
       // The grid of the whole element: what is left of it stands where it stood (PLAN 2.10b).
       const side = gridSide(frame, figureCount(e.size[i]!, e.size[i]!));
-      const size = figureCells(side);
+      // A ship is drawn its own length (PLAN 4.7b).
+      const size = isShipFrame(frame) ? shipSideCells(frame, this.geo.kmPerCell) : figureCells(side);
       // In contact the men of a battalion lie in a loose line at the front of its ground (PLAN 2.14c2).
       const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
       const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!, inContact && frame === Frame.infantry);
@@ -940,7 +953,8 @@ export class MapView {
     // Every tank's turret, after all the figures (PLAN 3.6a).
     this.individualTurrets = hulls;
     this.individualTurretOwner = new Uint32Array(hulls);
-    p.upload(appendTurrets(p.data, p.colors, total, this.individualTurretOwner));
+    // And a ship under way its wake (PLAN 4.7b).
+    p.upload(appendWakes(p.data, p.colors, total, appendTurrets(p.data, p.colors, total, this.individualTurretOwner)));
     this.individualCount = total;
     this.individualOwner = owner;
     this.individualX = xs;
