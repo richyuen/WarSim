@@ -54,6 +54,11 @@ quick sweep as a smoke test.
   Suez), and in a passage the fleet is drawn over the land. `World.seaPoint` asks the mask
   each hour for a cell by a coast: not timed with many fleets under way.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
+  - [x] 4.7a The sea-control map mode: each zone held tinted with its holder's colour (e2e).
+  - [ ] 4.7b Ships: a sprite for each class at T2 and T3, and a wake behind a ship under way.
+  - [ ] 4.7c A sea battle drawn: gunfire, torpedo tracks, a ship sinking.
+  - [ ] 4.7d A fleet's order line along its way, not straight over the land.
+  - [ ] 4.7e The naval battle demo e2e, screenshots at T1, T2 and T3 viewed (the AT of 4.7).
 - [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
   and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.

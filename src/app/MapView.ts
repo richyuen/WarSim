@@ -307,6 +307,11 @@ export class MapView {
       this.scatterKey = '';
       this.dirty = true;
     });
+    sim.onSeaControl((holder, zones) => {
+      if (zones) this.map.setSeaZones(this.geo.w, this.geo.h, zones);
+      this.map.setSeaHolders(holder);
+      this.dirty = true;
+    });
     sim.onUnrest((u) => {
       this.map.setUnrest(u);
       this.dirty = true;
@@ -505,7 +510,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
-    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : 0;
+    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : 0;
     this.applyPalette();
     this.dirty = true;
   }

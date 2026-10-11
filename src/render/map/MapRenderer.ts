@@ -49,9 +49,12 @@ export class MapRenderer {
   private terrainTex: WebGLTexture;
   private hasLand = false;
   private provinceTex: WebGLTexture;
+  /** Sea zone per cell, and the holder of each zone (128 a row), for the sea-control mode (PLAN 4.7a). */
+  private seaZoneTex: WebGLTexture;
+  private seaHolderTex: WebGLTexture;
   private unrestTex: WebGLTexture;
   private terrainColors = new Float32Array(12 * 3);
-  /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest. */
+  /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest, 3 = sea control. */
   fillMode = 0;
   /** The land's height in metres, one texel a cell (PLAN 2.8a); a 1×1 placeholder until the worker sends it. */
   private elevationTex: WebGLTexture;
@@ -86,6 +89,8 @@ export class MapRenderer {
     this.landTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.LINEAR);
     this.terrainTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.provinceTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
+    this.seaZoneTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
+    this.seaHolderTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
     this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.elevationTex = this.makeTexture(gl.R16I, gl.RED_INTEGER, gl.SHORT, 1, 1, new Int16Array([0]), gl.NEAREST);
     this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
@@ -120,6 +125,21 @@ export class MapRenderer {
   setProvinces(w: number, h: number, data: Uint16Array): void {
     this.gl.deleteTexture(this.provinceTex);
     this.provinceTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, w, h, data, this.gl.NEAREST);
+  }
+
+  /** Sea zone per cell (map size; 0 = none) for the sea-control mode (PLAN 4.7a). */
+  setSeaZones(w: number, h: number, data: Uint16Array): void {
+    this.gl.deleteTexture(this.seaZoneTex);
+    this.seaZoneTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, w, h, data, this.gl.NEAREST);
+  }
+
+  /** The nation that holds each sea zone (0 = none), by zone, laid out 128 per row. */
+  setSeaHolders(holder: Uint16Array): void {
+    const rows = Math.max(1, Math.ceil(holder.length / 128));
+    const data = new Uint16Array(rows * 128);
+    data.set(holder);
+    this.gl.deleteTexture(this.seaHolderTex);
+    this.seaHolderTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, 128, rows, data, this.gl.NEAREST);
   }
 
   /** Unrest per province id (0..100), laid out 128 per row. */
@@ -265,6 +285,8 @@ export class MapRenderer {
       uMode: this.fillMode,
       uProvince: this.provinceTex,
       uUnrest: this.unrestTex,
+      uSeaZone: this.seaZoneTex,
+      uSeaHolder: this.seaHolderTex,
       uTerrainCol: this.terrainColors,
       uElevation: this.elevationTex,
       uDetail: share,
@@ -291,6 +313,8 @@ export class MapRenderer {
     gl.deleteTexture(this.terrainTex);
     gl.deleteTexture(this.provinceTex);
     gl.deleteTexture(this.unrestTex);
+    gl.deleteTexture(this.seaZoneTex);
+    gl.deleteTexture(this.seaHolderTex);
     gl.deleteTexture(this.elevationTex);
     gl.deleteTexture(this.maskTex);
     gl.deleteVertexArray(this.vao);

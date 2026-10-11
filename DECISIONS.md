@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-275 · 2026-10-11 · accepted — The sea-control map mode (PLAN 4.7a); PLAN 4.7 split
+
+- **Context.** PLAN 4.7: naval visuals and a sea-control map mode. The sea was one colour;
+  who held a zone (PLAN 4.4a) was nowhere on the page.
+- **The data.** The worker sends `seaControl`: the holder of each zone (a `Uint16Array` by
+  zone, 429 entries in 1938) when it changes (at most daily), and with the first, or when the
+  zones were made again, the zone of each cell (the map's size). The client keeps them as two
+  textures (`setSeaZones`, `setSeaHolders`, 128 holders a row).
+- **The picture** (fill mode 3): a water pixel of a held zone takes `SEA_HELD_TINT` = 0.5 of
+  its holder's palette colour over the sea's; an open zone, or water in no zone (the fine
+  coast's water in a land cell), is the sea; the land fades `SEA_LAND_FADE` = 0.65 towards a
+  light grey, so the zones are told from it. A first look at 0.6 and 0.55 had Portugal's zone
+  west of it read as land. The legend says what a tint is. Zones are drawn by their cells, with
+  the cells' steps at their edges (pictures in `docs/evidence/4.7/`): the North Sea
+  Dutch, the Channel and the waters about Britain British, the western Mediterranean French
+  and the central Italian, west of Portugal Portugal's.
+- **PLAN 4.7 split:** 4.7a this; 4.7b ship sprites by class and wakes; 4.7c gunfire, torpedo
+  tracks and sinking; 4.7d a fleet's order line along its way; 4.7e the naval battle demo
+  and its pictures (4.7's AT).
+- **Tests.** `tests/e2e/seaControl1938.spec.ts`: on the first day Scapa Flow's zone is the sea
+  with 0.5 of British red, the South Pacific the sea, central Germany its colour faded; two
+  pictures looked at. `mapModes1938.spec.ts` renders every mode with its legend, this one too.
+
 ### ADR-274 · 2026-10-11 · accepted — A navy's weight in war and peace (PLAN 4.6e2); PLAN 4.6 done
 
 - **Context.** PLAN 4.6, from PLAN 4.2b: the strategic AI's strengths and the men of a war's

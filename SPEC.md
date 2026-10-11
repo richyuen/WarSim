@@ -2370,8 +2370,11 @@ on screen.
   - *Revolts* (1.30b): a per-province unrest choropleth. The worker sends the province raster
     in `mapLayers` and per-province unrest bytes (`provinceStats`) when `Provinces.version`
     changes; the shader colours land by its province's unrest (fill mode 2).
-- **Map modes still planned**: sea control, air superiority, fallout, supply (with their
-  phases).
+  - *Sea control* (PLAN 4.7a): the worker sends the zone of each cell when the zones are new
+    to the client and each zone's holder when that changes (`seaControl`); the shader tints a
+    zone held with 0.5 of its holder's colour over the sea's, leaves an open one the sea's, and
+    fades the land 0.65 towards grey (fill mode 3).
+- **Map modes still planned**: air superiority, fallout, supply (with their phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
   section `world.names`; the empty name gives back the scenario's name or the founding
   province's, and is refused for a nation with neither: ADR-124), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God

@@ -55,7 +55,7 @@ import { Sim } from '../sim/sim';
 import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { Domain, TILE, type World } from '../sim/world';
+import { Domain, seaOf, TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
@@ -135,6 +135,9 @@ export class SimServer {
   private labelVersion = -1;
   private lastLabelMs = -1;
   private unrestVersion = -1;
+  /** The sea control last sent (PLAN 4.7a): the zones' object and the holders, as a key. */
+  private seaZonesSent: unknown = null;
+  private seaHoldersSent = '';
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -248,6 +251,8 @@ export class SimServer {
         this.newsFrom = -1;
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
+        this.seaZonesSent = null;
+        this.seaHoldersSent = '';
         this.statsTick = -1;
         this.lastStatsMs = -1;
         this.resetStreams();
@@ -330,6 +335,8 @@ export class SimServer {
     this.labelVersion = -1;
     this.lastLabelMs = -1;
     this.unrestVersion = -1;
+    this.seaZonesSent = null;
+    this.seaHoldersSent = '';
     this.statsTick = -1;
     this.lastStatsMs = -1;
     this.flagsSent = -1;
@@ -583,6 +590,20 @@ export class SimServer {
       const unrest = new Uint8Array(world.provinces.count);
       for (let p = 0; p < unrest.length; p++) unrest[p] = Math.round(world.provinces.unrest[p]!);
       this.post({ type: 'provinceStats', unrest }, [unrest.buffer]);
+    }
+    // Sea control for its map mode (PLAN 4.7a): the holders when they changed (daily at most),
+    // and the zones of the cells with the first, or when the zones were made again.
+    if (world.seaControl) {
+      const zones = seaOf(world);
+      const key = world.seaControl.holder.join(',');
+      if (zones !== this.seaZonesSent || key !== this.seaHoldersSent) {
+        const holder = world.seaControl.holder.slice();
+        const fresh = zones !== this.seaZonesSent ? zones.zoneOf.slice() : undefined;
+        if (fresh) this.post({ type: 'seaControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
+        else this.post({ type: 'seaControl', holder }, [holder.buffer]);
+        this.seaZonesSent = zones;
+        this.seaHoldersSent = key;
+      }
     }
     const changed = world.controlChanges !== this.labelVersion || world.namesVersion !== this.labelNames;
     if (!changed || (this.lastLabelMs >= 0 && nowMs - this.lastLabelMs < LABEL_INTERVAL_MS)) return;

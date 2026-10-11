@@ -13972,3 +13972,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   (4 tests, 3.8 min), as in BLOCKERS.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.7 (naval visuals).
+
+## 2026-10-11 — PLAN 4.7a: the sea-control map mode (ADR-275)
+
+- **Critic not due.**
+- **Split:** PLAN 4.7 into 4.7a (sea-control mode), 4.7b (ship sprites, wakes), 4.7c (gunfire,
+  torpedoes, sinking), 4.7d (a fleet's order line along its way), 4.7e (the demo, 4.7's AT).
+- **Done:** worker message `seaControl` (holders; the cells' zones when new); `MapRenderer`
+  textures and fill mode 3; the map mode `seaControl` with its legend.
+- **The AT:** `seaControl1938.spec.ts`: Scapa Flow's zone British-tinted on the first day, the
+  South Pacific open, the land faded. Two pictures looked at (`docs/evidence/4.7/`): a first
+  version's tint had Portugal's zone read as land; tint 0.5 and the land faded 0.65 since.
+- **Not a rule change:** the pin is not touched.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 2 over the time (861, 825 s); the changed spec passed; build and parity green.
+- **PARITY:** row 3, a note and the spec; still partial.
+- **Next:** PLAN 4.7b (ships by class, wakes).

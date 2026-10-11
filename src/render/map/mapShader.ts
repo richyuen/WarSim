@@ -14,6 +14,7 @@
  */
 
 import { SHORE_NOISE } from '../../shared/landMask';
+import { SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
 import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST } from './ground';
 
 export const MAP_VS = `#version 300 es
@@ -46,9 +47,11 @@ uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
 uniform int uHasLand;
 uniform int uHasTerrain;           // a real terrain layer is loaded (water from terrain, PLAN 1.37a)
 uniform highp usampler2D uTerrain;  // terrain class per cell
-uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest
+uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest, 3 = sea control
 uniform highp usampler2D uProvince; // admin-1 province per cell
 uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
+uniform highp usampler2D uSeaZone;  // sea zone per cell (0 = none; PLAN 4.7a)
+uniform highp usampler2D uSeaHolder; // the nation that holds each zone, 128 wide (0 = none)
 uniform vec3 uTerrainCol[12];
 #ifdef GROUND
 uniform highp isampler2D uElevation; // the land's height in metres, one texel a cell (PLAN 2.8a)
@@ -324,8 +327,17 @@ void main() {
   uint fid = best != 0u ? best : secondId;
 
   vec3 col;
-  if (water) {
+  if (water && uMode == 3) {
+    // Sea control (PLAN 4.7a): a zone held is tinted with its holder's colour.
+    ivec2 sc = wrapCell(ivec2(floor(cellPos)));
+    uint zone = inMap(sc) ? texelFetch(uSeaZone, sc, 0).r : 0u;
+    uint holder = zone == 0u ? 0u : texelFetch(uSeaHolder, ivec2(int(zone % 128u), int(zone / 128u)), 0).r;
+    col = holder == 0u ? pal(0u) : mix(pal(0u), pal(holder), ${SEA_HELD_TINT.toFixed(3)});
+  } else if (water) {
     col = pal(0u);
+  } else if (uMode == 3) {
+    // The land faded, the sea told.
+    col = mix(fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid), vec3(0.78, 0.78, 0.75), ${SEA_LAND_FADE.toFixed(3)});
   } else if (uMode == 1) {
     // Terrain mode: bilinear blend of the four nearest cells' terrain colours.
     vec2 tq = cellPos - 0.5;
