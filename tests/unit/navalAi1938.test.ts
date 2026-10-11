@@ -7,6 +7,7 @@ import { AVOID_RATIO, fleetPower, SORTIE_KM } from '../../src/sim/ai/naval';
 import { equipFormation } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
+import { convoyWays } from '../../src/sim/systems/seaSupply';
 import { portSeaOf, seaOf, type World } from '../../src/sim/world';
 import { declareWar, makePeace } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
@@ -138,6 +139,33 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     // Sent home by the rule, not by a battle's break-off.
     expect(fought).toBe(false);
     expect(sent).toBeGreaterThanOrEqual(0);
+  });
+
+  it('Germany at war with the United Kingdom sends its submarines to a British convoy\'s way within a week; they raid it within 60 days (PLAN 4.6d)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4606, assets: assets1938(W) });
+    const w = s.world;
+    const GER = id('GER');
+    expect(declareWar(w, GER, ENG, true)).not.toBeNull();
+    const boats: number[] = [];
+    w.formations.forEach((f) => void (w.isFleet(f) && w.formations.cols.nation[f] === GER && TEMPLATES_1938[w.formations.cols.template[f]!]!.id === 'submarine_flotilla' && boats.push(f)));
+    expect(boats.length).toBeGreaterThan(0);
+    s.step(7 * 24);
+    // Under way to, or at, a zone of a British convoy's way.
+    const ways = new Set<number>();
+    for (const [bloc, byLand] of convoyWays(w)) if (w.wars.atWar(bloc, GER)) for (const way of byLand.values()) for (const z of way) ways.add(z);
+    const sent = boats.filter((f) => w.formations.cols.moving[f] === 1 && ways.has(seaOf(w).zoneOf[w.formations.cols.targetCell[f]!]!));
+    expect(sent.length).toBeGreaterThan(0);
+    let raided = -1;
+    for (let d = 7; d < 60 && raided < 0; d++) {
+      s.step(24, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.ConvoyRaided && ev[i + 2] === GER && raided < 0) raided = d;
+        world.out.events.length = 0;
+        world.out.fires.length = 0;
+      });
+    }
+    expect(raided).toBeGreaterThanOrEqual(0);
+    process.stderr.write(`GER–ENG: ${sent.length} of ${boats.length} U-boat flotillas sent to British convoy ways in a week; the first raid logged on day ${raided}\n`);
   });
 
   it('at peace a fleet away from its ports sails home', () => {

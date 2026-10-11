@@ -13913,3 +13913,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   17, the three seeds over the time (832, 802, 891 s) with every check in their output
   passed; build and parity green.
 - **Next:** PLAN 4.6d, unstashed.
+
+## 2026-10-11 — PLAN 4.6d: submarines raid (ADR-271)
+
+- **Critic not due.**
+- **Done:** `raid` in `src/sim/ai/naval.ts` (`RAID_KM`): at war a submarine flotilla off an
+  enemy's convoy way sails for the nearest zone of one.
+- **The AT:** Germany at war with Britain: two of its four flotillas sail in a week (two are
+  sunk at Kiel), the first raid on day 31. Seed 99's first year: 47 raids, 23 sea battles.
+- **Tests:** `navalAi1938.test.ts`, a fifth; two mutations failed it, and so did the first
+  version (only flotillas in port sent: the way had moved by the time they came).
+- **The pin moves:** `56ca6b12` → `736b414c`.
+- **Found by the ten-year runs:** the supply's partial refresh (ADR-272, its own commit before
+  this one), and a defect of `researchYears.test.ts`: it took the nations' columns once at the
+  start, and a table that grows gets new arrays: France's income of the day the table grew
+  (1,082) was read in 1942 and 1944 (its own 58 to 141), France read as rich and held to know
+  the heavy tank. The columns are read fresh; the test passes, its checks as before.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 14 of
+  17, the three seeds over the time (760, 785, 716 s) with every check passed (sea battles
+  50/78/64, landings 34/30/10); build and parity green.
+- **PARITY:** row 3, a note; still partial.
+- **Next:** PLAN 4.6e (the navy's cost).

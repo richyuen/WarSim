@@ -1765,6 +1765,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   else to the nearest enemy port whose zone's enemy power is no more than that of its nation's
   warfleets in port within 2,500 km of it together; one away from its ports where the enemy is
   over 1.5 times its power turns home. At peace a fleet away from its ports turns home.
+  At war, a submarine flotilla that stands off an enemy bloc's convoy way sails for the
+  nearest zone of one within 4,000 km (PLAN 4.6d, ADR-271).
   *Implemented v1 (PLAN 1.25, ADR-37; `src/sim/ai/operational.ts`):*
   - *Cadence:* each 6 h, a nation at war plans once a day (staggered).
   - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a

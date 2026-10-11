@@ -59,7 +59,7 @@ quick sweep as a smoke test.
   - [x] 4.6a Count first: the wars with no front (a cell of one side beside a cell of the […]
   - [x] 4.6b Invasion planning: the AI lands formations on the coast of an enemy it has no […]
   - [x] 4.6c Fleets at sea: the AI sails battle fleets to hold the zones by its enemies' […]
-  - [ ] 4.6d Raiding: submarines sail to an enemy's convoy ways (test).
+  - [x] 4.6d Raiding: submarines sail to an enemy's convoy ways (test).
   - [ ] 4.6e The navy's cost: which fleets a nation builds and lays up, and with what share
     of its income; a navy's weight in a declaration and a peace (test).
 - [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.

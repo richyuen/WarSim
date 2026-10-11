@@ -16,10 +16,13 @@
  *   and go together): a battle it would lose is not sought.
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
+ * - At war, its submarine flotillas raid (`raid`, PLAN 4.6d): each that stands off an enemy
+ *   bloc's convoy way sails for the zone of one nearest it within `RAID_KM`.
  * - At peace: a fleet away from its nation's ports sails home.
  */
 import { isDayStart } from '../../shared/calendar';
 import { elementIndex } from '../systems/elements';
+import { convoyWays } from '../systems/seaSupply';
 import { AT_PORT_CELLS, sailHome, seaKm } from '../systems/navalCombat';
 import { navalPower } from '../systems/seaControl';
 import { orderSail } from '../systems/sail';
@@ -29,6 +32,8 @@ import { STAGGER } from './strategic';
 
 /** How far, in km, a warfleet sails from its port to an enemy's (a little over the Mediterranean's length from Malta to Gibraltar or to Haifa). */
 export const SORTIE_KM = 2500;
+/** How far, in km, a submarine flotilla sails from its port to raid (an ocean boat's patrol: Lorient to the Western Approaches and beyond). */
+export const RAID_KM = 4000;
 /** A warfleet away from its ports turns home where the enemy's power in its zone is over this many times its own. */
 export const AVOID_RATIO = 1.5;
 
@@ -42,6 +47,45 @@ export function fleetPower(world: World, id: number): number {
     if (ec.strength[e]! > 0 && u.cls !== 'ss' && (u.hard > 0 || u.torpedo > 0)) p += u.hpPerUnit * ec.strength[e]!;
   }
   return p;
+}
+
+/** Whether fleet `id` has a live submarine. */
+function hasBoats(world: World, id: number): boolean {
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  return (elementIndex(world).get(id) ?? []).some((e) => ec.strength[e]! > 0 && units[ec.unit[e]!]!.cls === 'ss');
+}
+
+/**
+ * Submarines at war (PLAN 4.6d): each standing flotilla not in a zone on the way of a convoy
+ * of a bloc at war with its nation (`convoyWays`, PLAN 4.4d) sails for the nearest such zone
+ * within `RAID_KM`, to its seed cell. Convoys pass there; destroyers that screen them may too.
+ * A way moves as the sea is won and lost (it keeps off the zones an enemy holds): a flotilla
+ * whose zone is no longer on one goes on.
+ */
+function raid(world: World, n: number, boats: number[]): void {
+  const z = seaOf(world);
+  const w = world.cells.w;
+  const c = world.formations.cols;
+  const zones = new Set<number>();
+  for (const [bloc, byLand] of convoyWays(world)) {
+    if (!world.wars.atWar(bloc, n)) continue;
+    for (const way of byLand.values()) for (const zone of way) if (z.closed[zone] !== 1 && z.seedCell[zone]! >= 0) zones.add(zone);
+  }
+  if (zones.size === 0) return;
+  const sorted = [...zones].sort((a, b) => a - b);
+  for (const id of boats) {
+    // On a way already: it stays (a way moves as the sea is won and lost: then it goes on).
+    if (zones.has(z.zoneOf[Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!)]!)) continue;
+    let best = Infinity;
+    let at = -1;
+    for (const zone of sorted) {
+      const cell = z.seedCell[zone]!;
+      const d = seaKm(world, c.x[id]!, c.y[id]!, (cell % w) + 0.5, Math.floor(cell / w) + 0.5);
+      if (d <= RAID_KM && d < best) [best, at] = [d, cell];
+    }
+    if (at >= 0) orderSail(world, id, (at % w) + 0.5, Math.floor(at / w) + 0.5);
+  }
 }
 
 export function navalAi(world: World): void {
@@ -94,9 +138,14 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     return e;
   };
   const war: { id: number; p: number }[] = [];
+  const raiders: number[] = [];
   for (const id of mine) {
     const p = fleetPower(world, id);
-    if (p <= 0) continue;
+    if (p <= 0) {
+      // Submarines raid (PLAN 4.6d).
+      if (hasBoats(world, id)) raiders.push(id);
+      continue;
+    }
     if (!atOwnPort(id)) {
       // Away: out of a zone where the enemy is far the stronger.
       if (enemyIn(z.zoneOf[cellOf(id)]!) > AVOID_RATIO * p) sailHome(world, id);
@@ -104,6 +153,7 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     }
     war.push({ id, p });
   }
+  if (raiders.length > 0) raid(world, n, raiders);
   if (war.length === 0) return;
   // The escort: the water of a landing of its own under way.
   let escort = -1;

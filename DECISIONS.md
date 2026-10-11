@@ -184,6 +184,30 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   cell of England changes hands in one refresh's twelve hours: the partial refresh is the full
   one (with the sea as it read it). Red with the old rule: Malta's cell fed.
 
+### ADR-271 · 2026-10-11 · accepted — Submarines raid (PLAN 4.6d)
+
+- **Context.** PLAN 4.6d: submarines sail to an enemy's convoy ways. Since PLAN 4.4d a boat
+  raids a convoy in a zone of its way (`convoyLosses`), but no AI sailed a boat there: the
+  raids of the ten-year runs were by flotillas that stood at a base on a way by chance.
+- **The rule** (`raid` in `navalAi`, the same day and stagger): at war, each submarine
+  flotilla (no power, a live boat) that stands in no zone on the way of a convoy of a bloc at
+  war with its nation (`convoyWays`) sails for the nearest such zone within `RAID_KM` = 4,000
+  km (an ocean boat's patrol), to the zone's seed cell. A way keeps off the zones an enemy
+  holds, so it moves as the sea is won and lost; a flotilla whose zone leaves it goes on.
+- **The first version** sent only flotillas in port: Germany's two that sailed reached a zone
+  the British way had left by then (German warships held the zones it had crossed), and
+  stood there for good with no raid.
+- **The AT:** Germany at war with the United Kingdom: two of its four flotillas sail in a week
+  (the two at Kiel are sunk there by the British fleets that come for Germany's ports), the
+  first raid is logged on day 31, at the first month's accounts. Seed 99's first year: 47
+  convoy raids (ADR-260: Italy's, in 5 months), 23 sea battles, 11 landings.
+- **The pin moves:** `56ca6b12` → `736b414c`.
+- **Tests.** `tests/unit/navalAi1938.test.ts`, a fifth; two mutations (no raiding; no flotilla
+  sent) each failed it, and so did the first version.
+  `tests/sweep/researchYears.test.ts` read the nations' columns taken at its start: a table that
+  grows gets new arrays, and France's income of 1940 was read in 1942 and 1944. It reads them
+  fresh.
+
 ### ADR-270 · 2026-10-11 · accepted — The AI's fleets at sea (PLAN 4.6c)
 
 - **Context.** PLAN 4.6's AT, its battle half: ≥ 1 fleet battle per 10 years on 3/3 seeds. Only
