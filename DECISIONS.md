@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-267 · 2026-10-11 · accepted — The wars with no front, counted (PLAN 4.6a); PLAN 4.6 split
+
+- **Context.** PLAN 4.6, from the Phase 3 review: a war between nations with no land way
+  between them has no front, and how many there are was never counted; from PLAN 4.1d1:
+  contacts over water that stand 14 days and more, never counted. Count first, then plan.
+- **The tool.** `tools/diag/fronts.ts`: a headless 1938 run; each day, for each war, whether a
+  cell held by a member of one side is beside a cell held by a member of the other; at its end,
+  its days, days with a front, and peace or death. And each day the land formations in a fight
+  that have stood on one cell 14 days or more.
+- **The counts** (10 years; seeds 1, 2, 3):
+  - wars: 274, 212, 234 (mean 87, 87, 98 days);
+  - with no front on any day: 2, 2, 3 (mean 151, 50, 65 days; all but one ended by a peace,
+    one on at the end): Japan against new nations far off, Germany against Denmark and
+    Luxembourg, the Soviet Union against a new nation;
+  - with a front on under a tenth of their days: 8, 7, 8 (mean 337, 357, 421 days; 19 ended by
+    a peace, 2 by a death, 2 on): the long ones. The United Kingdom's bloc against Ireland in
+    every seed, 800 days each time with a front on 19 to 30 of them (Northern Ireland's
+    border); Nationalist Spain against Portugal and the British bloc, 1,152 days, 94 with a
+    front (seed 3); the Soviet Union against new nations in Asia;
+  - contacts standing 14 days or more: 0.6, 0.2, 0.5 formations on a mean day, at most 72, 52,
+    15 on one day. Rare; not a target of their own.
+- **For PLAN 4.6b.** A war with no front is rare and short; a war whose front is rare is long,
+  and is where a landing is wanted: the AI's invasion is to be planned for a war with no front
+  *today*, from the ports and transports of a member, at the enemy's coast.
+- **PLAN 4.6 split:** 4.6a the count; 4.6b invasion planning (the landing half of the AT); 4.6c
+  fleets at sea (the battle half); 4.6d raiding; 4.6e the navy's cost (builds, lay-ups, its
+  weight in a declaration and a peace).
+
 ### ADR-266 · 2026-10-11 · accepted — One review pass a phase, at its end (the user's decision; replaces ADR-74's count)
 
 - **Context.** PROMPT step 9 asked for a review pass every ~5 numbered tasks (ADR-74 counted

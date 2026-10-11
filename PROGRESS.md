@@ -13824,3 +13824,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   SPEC drift, missing tests over the whole phase); none every ~5 tasks. The phase reviews
   4.8, 5.8 and 6.9 of PLAN.md take its items. No 4.5R.
 - **Next:** PLAN 4.6 (naval AI).
+
+## 2026-10-11 — PLAN 4.6a: the wars with no front, counted (ADR-267)
+
+- **Critic not due.**
+- **Split:** PLAN 4.6 into 4.6a (count), 4.6b (invasion planning), 4.6c (fleets at sea), 4.6d
+  (raiding), 4.6e (the navy's cost).
+- **Done:** `tools/diag/fronts.ts` (a tool; no rule changed).
+- **The counts** (10 years, seeds 1/2/3): wars 274/212/234; no front on any day 2/2/3, short,
+  ended by a peace; a front on under a tenth of their days 8/7/8, long (mean 337/357/421
+  days): the British bloc against Ireland in every seed for 800 days, Nationalist Spain
+  against Portugal 1,152 days; contacts standing 14 days 0.6/0.2/0.5 formations on a mean day.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; build and parity green
+  (no sim input changed: no ten-year stage; no browser suite).
+- **Next:** PLAN 4.6b (invasion planning, for a war with no front today).
