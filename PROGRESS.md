@@ -13838,3 +13838,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** unit red only by the two timing tests of BLOCKERS; build and parity green
   (no sim input changed: no ten-year stage; no browser suite).
 - **Next:** PLAN 4.6b (invasion planning, for a war with no front today).
+
+## 2026-10-11 — An annexation leaves a third nation's occupation its own (ADR-269)
+
+- **Critic not due.** A cause of its own, found by PLAN 4.6b's ten-year runs (its work stashed
+  meanwhile): seed 7, Hungary annexed Austria and Italy held 18 of its cells with no war with
+  their new owner (`heldYears.test.ts`).
+- **Done:** `annexInto` gives a cell a third nation holds to that nation (ADR-112's rule).
+- **Tests:** `annexLand.test.ts`, one; red with the old rule. The pin stays `e8fc6344`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 3 over the time (639 s, 823 s) with no rule broken in their output; build and
+  parity green.
+- **Next:** PLAN 4.6b, unstashed.

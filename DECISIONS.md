@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-269 · 2026-10-11 · accepted — An annexation leaves a third nation's occupation its own (amends ADR-112's cases)
+
+- **Context.** PLAN 4.6b's ten-year runs changed seed 7's game, and `heldYears.test.ts` (ADR-147:
+  no cell held by a nation not at war with its owner at a month's start) failed at tick 3624:
+  Italy held 18 cells of Hungary's. At tick 2953 Hungary annexed Austria at a peace; Italy,
+  at war with Austria since tick 2833, held 18 Austrian cells. The annexation (`annexInto`)
+  made every cell of Austria's Hungary's, and Italy, at peace with Hungary, held them on.
+- **Decision.** In an annexation or an integration, a cell of the annexed nation's that a third
+  nation holds is the third nation's, as at a death (ADR-112: what others occupied of a dead
+  nation is theirs). The rest is the annexer's, as before.
+- **The pin stays** `e8fc6344`.
+- **Tests.** `tests/unit/annexLand.test.ts`: Italy at war with Austria holds three of its cells;
+  Hungary annexes Austria: the three are Italy's, the rest Hungary's, and no cell is held with
+  no war. With the old rule it failed.
+
 ### ADR-267 · 2026-10-11 · accepted — The wars with no front, counted (PLAN 4.6a); PLAN 4.6 split
 
 - **Context.** PLAN 4.6, from the Phase 3 review: a war between nations with no land way
