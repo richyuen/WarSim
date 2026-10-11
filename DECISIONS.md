@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-266 · 2026-10-11 · accepted — One review pass a phase, at its end (the user's decision; replaces ADR-74's count)
+
+- **Context.** PROMPT step 9 asked for a review pass every ~5 numbered tasks (ADR-74 counted
+  them), besides each phase's review. After PLAN 4.5 one was due with the Phase 4 review
+  (4.8) two tasks away.
+- **Decision (the user's, 2026-10-11).** Only one comprehensive review pass a phase, at its
+  end: the phase review (4.8, 5.8, 6.9) takes the review pass's items (refactor debt, dead
+  code, SPEC drift, missing tests) over the whole phase, besides its own. No review pass
+  between. PROMPT step 9 and the three phase reviews of PLAN.md say so.
+- **Consequences.** No 4.5R: the next task is 4.6. The gate's handling of a review pass's
+  tick (`- [x] 3.4R`, ADR-87) stays for the ticks that exist; a phase review is a numbered
+  task and runs every spec by that rule, and `check:full` as PROMPT says.
+
 ### ADR-265 · 2026-10-11 · accepted — Naval bombardment (PLAN 4.5c); PLAN 4.5 done
 
 - **Context.** PLAN 4.5c: a fleet by a coast adds its guns to a land fight there.

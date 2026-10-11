@@ -215,14 +215,12 @@ added without code changes.
    `main` builds the game and puts it on GitHub Pages.
 8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move
    on.
-9. Every ~5 numbered PLAN tasks (2.7, 2.8, 2.9, ...) do a review pass:
-   refactor debt, delete dead code, re-read SPEC.md for drift, add missing
-   tests.
-   Counted by numbered tasks, not by the parts a task is split into
-   (clarified 2026-10-04, ADR-74, the user's decision): 2.8a, 2.8b and
-   2.8c1 are one task, counted once. A task that comes out of a review
-   belongs to the task it follows up. A phase review is a review pass and
-   starts the count again.
+9. One review pass a phase, at its end: the phase review (4.8, 5.8, 6.9, ...)
+   is a comprehensive pass over the whole phase: refactor debt, delete dead
+   code, re-read SPEC.md for drift, add missing tests, besides its own items.
+   No review pass between (changed 2026-10-11, ADR-266, the user's decision:
+   before, one came every ~5 numbered tasks, ADR-74's count). A task that
+   comes out of the review belongs to the phase it reviews.
 
 # KEEPING ITERATIONS SHORT
 

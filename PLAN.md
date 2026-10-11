@@ -87,7 +87,8 @@ quick sweep as a smoke test.
   Suez), and in a passage the fleet is drawn over the land. `World.seaPoint` asks the mask
   each hour for a cell by a coast: not timed with many fleets under way.
   AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
-- [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+- [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
@@ -112,7 +113,8 @@ quick sweep as a smoke test.
   AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
 - [ ] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
   AT: air battle demo e2e + screenshots viewed.
-- [ ] 5.8 Phase 5 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+- [ ] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
@@ -135,7 +137,8 @@ quick sweep as a smoke test.
   AT: e2e passes and asserts that the decision record came from AI utility.
 - [ ] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.
   AT: sweep report: in ≥ 1 seed nukes are used; in no seed does > 50% of land carry fallout.
-- [ ] 6.9 Phase 6 review: re-read SPEC for drift, PARITY rows updated with evidence. The sweep
+- [ ] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence. The sweep
   of 6.8 is this phase's smoke run (ADR-58); the features are in, so sweeps judge again from
   here.
   AT: the five limits of the 6.8 sweep are in PROGRESS, with what fails listed for Phase 7.

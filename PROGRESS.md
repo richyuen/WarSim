@@ -13817,3 +13817,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   the 17 of BLOCKERS (4.2f's list but fire), nothing new; build and parity green.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.6 (naval AI).
+
+## 2026-10-11 — One review pass a phase, at its end (ADR-266, the user's decision)
+
+- **Done:** PROMPT step 9: the review pass is the phase review's (refactor debt, dead code,
+  SPEC drift, missing tests over the whole phase); none every ~5 tasks. The phase reviews
+  4.8, 5.8 and 6.9 of PLAN.md take its items. No 4.5R.
+- **Next:** PLAN 4.6 (naval AI).
