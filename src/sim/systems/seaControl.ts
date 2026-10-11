@@ -50,6 +50,26 @@ export function seaHolder(world: World, zone: number): number {
   return world.seaControl?.holder[zone] ?? 0;
 }
 
+/** The hit points of fleet `id`'s live ships with a weapon, submarines left out (as sea control counts them). */
+export function fleetPower(world: World, id: number): number {
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  let p = 0;
+  for (const e of elementIndex(world).get(id) ?? []) {
+    const u = units[ec.unit[e]!]!;
+    if (ec.strength[e]! > 0 && u.cls !== 'ss' && (u.hard > 0 || u.torpedo > 0)) p += u.hpPerUnit * ec.strength[e]!;
+  }
+  return p;
+}
+
+/** What a navy weighs in men, per hit point of its armed ships (PLAN 4.6e2): in a declaration and a war's reckoning. */
+export const NAVY_WEIGHT = 0.5;
+
+/** Fleet `id`'s weight in men (PLAN 4.6e2): NAVY_WEIGHT × its power; a submarine's or a transport's none. */
+export function fleetMen(world: World, id: number): number {
+  return NAVY_WEIGHT * fleetPower(world, id);
+}
+
 /** Naval power of each bloc in each zone: zone → (bloc → hit points of armed ships). */
 export function navalPower(world: World): Map<number, Map<number, number>> {
   const z = seaOf(world);

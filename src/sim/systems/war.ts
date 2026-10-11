@@ -50,6 +50,7 @@ import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { annexNation, makePuppet } from './puppets';
+import { fleetMen } from './seaControl';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { LandCounts } from '../landCounts';
 import type { World } from '../world';
@@ -293,12 +294,17 @@ function occShare(land: LandCounts, occupiers: number[], victims: number[]): { s
   return { share: occ / own, rel: Math.min(1, occ / Math.max(1, Math.min(own, REL_CAP * landOf(land, occupiers)))) };
 }
 
-/** The men of each nation's army: a fleet's crews are not of it (PLAN 4.2b). */
+/**
+ * The men of each nation's forces: its army's, and its navy's weight in men (`fleetMen`, PLAN
+ * 4.6e2: ships lost at sea weigh in a war's exhaustion; before, a fleet's crews were not of it,
+ * PLAN 4.2b).
+ */
 function menOf(world: World): Map<number, number> {
   const m = new Map<number, number>();
   const f = world.formations.cols;
   world.formations.forEach((id) => {
-    if (!world.isFleet(id)) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + f.strength[id]!);
+    const men = world.isFleet(id) ? fleetMen(world, id) : f.strength[id]!;
+    if (men > 0) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + men);
   });
   return m;
 }

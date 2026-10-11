@@ -6805,3 +6805,58 @@ Of 4.6 (open in PLAN.md):
   - [x] 4.6c Fleets at sea: the AI sails battle fleets to hold the zones by its enemies'
     coasts and its landings, and seeks or avoids a battle by the power there. AT: ≥ 1 fleet
     battle per 10 years on 3/3 seeds (test).
+
+<!-- moved 2026-10-11 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
+  AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07): a war between two nations with no land
+  way between them has no front (France and Portugal with Spain at peace; ADR-149, ADR-152),
+  and a formation that reaches no front stands where it is. How many wars of a game have no
+  front, and how they end, was never counted: count it here first, then plan the landing
+  for such a war.
+  From PLAN 4.1d1 (2026-10-09, ADR-245): two formations in contact with water between
+  them (an inlet, a river of the mask) stand so for 14 days and more, neither moving (seed
+  99 with Germany against Poland by command, formations 386 and 439, hours 702 to 1,044 at
+  least). Whether such a contact ever ends, and how many there are, was not counted.
+  From PLAN 4.2b (2026-10-09, ADR-248): a navy is never cut. The economic AI sends no fleet
+  home and desertion takes no ship, so a nation short of money by its navy cuts its army
+  (the Soviet Union with an empty treasury sends home 79 of 162 formations where it sent
+  67; Italy has 7 a month left against a margin of 33). Which ships a nation lays up, and
+  when, is to be decided here. A fleet's upkeep is no part of the share of the income the
+  AI lets an army take, and has no share of its own. The strategic AI's strengths and the
+  men of a war's sides count no fleet: a navy weighs nothing in a declaration or a peace.
+  From PLAN 4.2c (2026-10-09, ADR-250): only a player orders a fleet (`orderSail`, by the
+  `moveFormation` command). A way costs about 2 ms and the lane graph 0.4 to 0.7 s at its
+  first use in a game: count what a day of the AI's orders costs before it gives them.
+  From PLAN 4.4 (2026-10-10, ADR-257 to ADR-261): a fleet has no supply and burns no fuel at
+  sea (its supply is 1 however far it sails); a way found before a passage was shut keeps
+  it. The 615 ports' levels are still data, not state: nothing builds or damages one.
+  From PLAN 4.3 (2026-10-10, ADR-256): a fleet in a sea battle fights until it is under half
+  the ships it came in with (or has no weapon against an armed enemy), then breaks off for
+  its nearest port for 24 hours; a fleet with guns and no destroyer under a submarine
+  flotilla's torpedoes cannot hit back and loses half before it leaves. Whether to seek or
+  avoid a battle is the AI's.
+  From PLAN 4.2e (2026-10-10, ADR-252): a nation with a shipyard can build a fleet, and
+  the economic AI's build mix has no ship: which fleets it builds, and with what share of
+  its income, is to be decided here (a battle squadron is 6,720 gold, 2.8 months of the
+  United Kingdom's income, and 900 days).
+  - [x] 4.6a Count first: the wars with no front (a cell of one side beside a cell of the […]
+  - [x] 4.6b Invasion planning: the AI lands formations on the coast of an enemy it has no […]
+  - [x] 4.6c Fleets at sea: the AI sails battle fleets to hold the zones by its enemies' […]
+  - [x] 4.6d Raiding: submarines sail to an enemy's convoy ways (test).
+  - [x] 4.6e The navy's cost: which fleets a nation builds and lays up, and with what share
+    of its income; a navy's weight in a declaration and a peace (test).
+    - [x] 4.6e1 Builds and lay-ups: a navy's share of the income; the economic AI orders
+      fleets under it and lays them up over it when short (test).
+    - [x] 4.6e2 A navy's weight in the strategic AI: its strength in a declaration and a
+      peace (test).

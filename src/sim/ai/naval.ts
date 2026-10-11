@@ -24,7 +24,9 @@ import { isDayStart } from '../../shared/calendar';
 import { elementIndex } from '../systems/elements';
 import { convoyWays } from '../systems/seaSupply';
 import { AT_PORT_CELLS, sailHome, seaKm } from '../systems/navalCombat';
-import { navalPower } from '../systems/seaControl';
+import { fleetPower, navalPower } from '../systems/seaControl';
+
+export { fleetPower };
 import { orderSail } from '../systems/sail';
 import { blocOf } from '../systems/supply';
 import { portSeaOf, seaOf, seaRangeOf, type World } from '../world';
@@ -37,17 +39,6 @@ export const RAID_KM = 4000;
 /** A warfleet away from its ports turns home where the enemy's power in its zone is over this many times its own. */
 export const AVOID_RATIO = 1.5;
 
-/** The hit points of fleet `id`'s live ships with a weapon, submarines left out (as sea control counts them). */
-export function fleetPower(world: World, id: number): number {
-  const units = world.rules!.units;
-  const ec = world.elements.cols;
-  let p = 0;
-  for (const e of elementIndex(world).get(id) ?? []) {
-    const u = units[ec.unit[e]!]!;
-    if (ec.strength[e]! > 0 && u.cls !== 'ss' && (u.hard > 0 || u.torpedo > 0)) p += u.hpPerUnit * ec.strength[e]!;
-  }
-  return p;
-}
 
 /** Whether fleet `id` has a live submarine. */
 function hasBoats(world: World, id: number): boolean {

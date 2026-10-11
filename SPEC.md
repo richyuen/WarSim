@@ -1773,6 +1773,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   transport group at war with no front and none of them, else a battle squadron from an
   income of 1,000, a cruiser squadron from 200, a destroyer flotilla. Short of money and over
   it, it lays up its fleets in port, the dearest first, before its army is sent home.
+  *A navy's weight (PLAN 4.6e2, ADR-274):* a fleet weighs half its armed ships' hit points in
+  men (a transport's or a submarine's nothing): in a nation's strength for the strategic AI (a
+  declaration, an alliance against a threat, a coalition) and in a war's men of each side, so
+  ships lost at sea weigh in its exhaustion and its peace.
   *Implemented v1 (PLAN 1.25, ADR-37; `src/sim/ai/operational.ts`):*
   - *Cadence:* each 6 h, a nation at war plans once a day (staggered).
   - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a

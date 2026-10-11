@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-274 · 2026-10-11 · accepted — A navy's weight in war and peace (PLAN 4.6e2); PLAN 4.6 done
+
+- **Context.** PLAN 4.6, from PLAN 4.2b: the strategic AI's strengths and the men of a war's
+  sides counted no fleet: a navy weighed nothing in a declaration or a peace.
+- **The weight.** `fleetMen` = `NAVY_WEIGHT` (0.5) × `fleetPower` (the hit points of its live
+  ships with a gun or torpedoes; `seaControl.ts`, moved from the naval AI): a battle squadron
+  of four battleships, two heavy and two light cruisers and eight destroyers weighs 5,700 men,
+  half an infantry division. Not its crews: the United Kingdom's 137,380 sailors outnumber its
+  army of 90,360; by the weight its navy adds 43,000 to its strength (+48 %), Japan's 27,000
+  (+4 %), the Soviet Union's 9,000 (+0.6 %).
+- **Where:** `strengths` (the strategic AI: a declaration's ratio, an alliance against a
+  threat, a coalition's order) and `menOf` (a war's men of each side: its baseline and its
+  losses, so exhaustion and the peace it brings).
+- **The pin moves:** `02966b63` → `841d4422`. Seed 99's first year: 20 landings, 18 sea
+  battles, 28 convoy raids.
+- **PLAN 4.6 done:** its AT's halves are in the ten-year tests (≥ 1 landing, ADR-268; ≥ 1 sea
+  battle, ADR-270), on three seeds of three.
+- **Tests.** `tests/unit/navyWeight1938.test.ts`, two (the United Kingdom's strength; a battle
+  squadron lost raises British exhaustion from 0.30 to 3.71 in four days); two mutations (none
+  in the strength; none in a war's men) each failed one.
+
 ### ADR-273 · 2026-10-11 · accepted — The navy's cost: builds and lay-ups (PLAN 4.6e1)
 
 - **Context.** PLAN 4.6, from PLAN 4.2b and 4.2e: the economic AI built no fleet and laid none

@@ -29,6 +29,7 @@ import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { makePeace, declareWar, whyNotWar } from '../systems/war';
 import { canJoin, noWarAmong } from '../systems/alliances';
+import { fleetMen } from '../systems/seaControl';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 7;
@@ -76,15 +77,16 @@ export function neighbourMap(world: World): Map<number, Set<number>> {
   return out;
 }
 
-function strengths(world: World): Float64Array {
+/** Per nation (an overlord with its puppets): its army's men and its navy's weight in men (PLAN 4.6e2). */
+export function strengths(world: World): Float64Array {
   const s = new Float64Array(world.nations.highWater + 1);
   const f = world.formations.cols;
   const nc = world.nations.cols;
   world.formations.forEach((id) => {
-    if (world.isFleet(id)) return; // the armies' strength (an embarked one counts, PLAN 4.5a): no fleet takes land yet (PLAN 4.2b; a navy in a war's reckoning is PLAN 4.6)
+    // The army's men (an embarked one counts, PLAN 4.5a) and the navy's weight in men (PLAN 4.6e2: it lands armies and wins the sea).
     const n = f.nation[id]!;
     const o = nc.overlord[n]!;
-    s[o !== 0 ? o : n]! += f.strength[id]!;
+    s[o !== 0 ? o : n]! += world.isFleet(id) ? fleetMen(world, id) : f.strength[id]!;
   });
   return s;
 }

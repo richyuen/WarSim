@@ -13954,3 +13954,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   93/90/77, landings 42/62/59, no fleet laid up); build and parity green.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.6e2 (a navy's weight in the strategic AI).
+
+## 2026-10-11 — PLAN 4.6e2: a navy's weight in war and peace; PLAN 4.6 done (ADR-274)
+
+- **Critic not due.**
+- **Done:** `fleetMen`, `NAVY_WEIGHT` and `fleetPower` in `seaControl.ts`; `strengths`
+  (exported) and `menOf` count a fleet's weight.
+- **The AT:** the United Kingdom's strength is its army and half its warships' hit points; a
+  battle squadron lost raises British exhaustion from 0.30 to 3.71 in four days.
+- **Tests:** `navyWeight1938.test.ts`, two; two mutations each failed one.
+- **The pin moves:** `02966b63` → `841d4422`.
+- **PLAN 4.6 ticked:** its AT's halves are in the ten-year tests. The browser suite runs in full.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17: seed 3 in its time, seeds 1 and 2 over it (906, 879 s), every check passed (sea battles
+  117/102/97, landings 46/93/55); build and parity green; the browser suite by hand in 1.8 h,
+  164 of 165: red the 16 of BLOCKERS' list and declutter1938 and fire1938, which passed alone
+  (4 tests, 3.8 min), as in BLOCKERS.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.7 (naval visuals).
