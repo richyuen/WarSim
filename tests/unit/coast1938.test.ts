@@ -41,7 +41,8 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     const wrong: string[] = [];
     const marches = (): void => {
       w.formations.forEach((id) => {
-        if (f.moving[id] !== 1) return;
+        // A march: not a fleet's sail, nor troops aboard (PLAN 4.6b: the AI's transports sail now).
+        if (f.moving[id] !== 1 || w.afloat(id)) return;
         march.hours++;
         if (land(f.x[id]!, f.y[id]!)) return;
         const path = w.paths.get(id);

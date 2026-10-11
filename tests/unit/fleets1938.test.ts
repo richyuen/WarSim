@@ -16,7 +16,7 @@ import { knowsTechs } from '../../src/sim/tech';
 import { Domain, laneOf, seaOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { fleetsStand } from '../helpers/fleetsStand';
-import { addDivision, nationId, runEvents } from '../helpers/sim1938';
+import { addDivision, nationId } from '../helpers/sim1938';
 
 // PLAN 4.2b: fleets in the 1938 order of battle, standing at their ports' water. AT: every
 // rule that reads a formation leaves a fleet alone or is said to read it (the ten years are
@@ -230,7 +230,15 @@ describe('the fleets of the 1938 start (PLAN 4.2b)', () => {
     let bankrupt = 0;
     let engagedHours = 0;
     for (let day = 0; day < 60; day++) {
-      for (const e of runEvents(s, 24)) {
+      // Each hour's fleets for the rule (a battle, transports carrying troops since PLAN 4.6b), then its events.
+      const evs: number[][] = [];
+      s.step(24, (world) => {
+        fleets.hour(world);
+        for (let i = 0; i < world.out.events.length; i += 6) evs.push(world.out.events.slice(i, i + 6));
+        world.out.events.length = 0;
+        world.out.fires.length = 0;
+      });
+      for (const e of evs) {
         if (e[1] === EventKind.MoveRejected) rejected.push(e[2]!);
         if (e[1] === EventKind.FormationsDisbanded && e[2] === eng) disbanded += e[3]!;
         if (e[1] === EventKind.Bankruptcy && e[2] === eng && e[3] === 1) bankrupt++;

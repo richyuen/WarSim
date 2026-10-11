@@ -7,7 +7,8 @@
  * `AT_PORT_CELLS` of the formation's cell), and a transport group of its nation stands there
  * too, not under way, with room for it (`TRANSPORT_MEN` men a transport, less what it carries).
  * The landing is at the land cell of the target's land nearest to the zoned water nearest the
- * target (its `water`); the transports are ordered there (`orderSail`). The formation is then
+ * target (its `water`), one a nation owns where the target is owned (PLAN 4.6b); the
+ * transports are ordered there (`orderSail`). The formation is then
  * embarked (`World.embarked`, state): `World.afloat` is true of it, so no rule of the land reads
  * it (supply, contact, the fronts, the AI), and it is where its transports are.
  *
@@ -117,7 +118,12 @@ export function orderLanding(world: World, id: number, x: number, y: number): bo
   if (!isLand(terrain[target]!) || targetComp === 0) return false;
   const sea = nearestCellWhere((k) => z.zoneOf[k] !== 0 && z.closed[z.zoneOf[k]!] !== 1, tx + 0.5, ty + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
   if (sea < 0) return false;
-  const land = nearestCellWhere((k) => comp[k] === targetComp, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
+  // A cell of a nation's where the target is one's (PLAN 4.6b: a speck of no one's by the water
+  // took no beachhead), else any.
+  const owner = world.cells.owner;
+  const owned = owner[target] !== 0;
+  let land = owned ? nearestCellWhere((k) => comp[k] === targetComp && owner[k] !== 0, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap) : -1;
+  if (land < 0) land = nearestCellWhere((k) => comp[k] === targetComp, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
   if (land < 0) return false;
   if (!orderSail(world, fleet, (sea % w) + 0.5, Math.floor(sea / w) + 0.5)) return false;
   world.embarked.set(id, { fleet, land, water: sea, target });
@@ -136,9 +142,16 @@ function land(world: World, id: number, cell: number, target: number): void {
   world.embarked.delete(id);
   [c.x[id], c.y[id]] = world.cellPoint(cell);
   c.org[id] = Math.min(c.org[id]!, LANDING_ORG);
-  // The beachhead (PLAN 4.5b): an enemy's cell it lands on is its nation's, for the front to spread from.
+  // The beachhead (PLAN 4.5b): an enemy's cell it lands on is its nation's, for the front to
+  // spread from; or its owner's, where that is a living nation not at war with it (ADR-147, as
+  // a flip of the front: Italy had held 18 cells of Hungary's at peace).
+  const n = c.nation[id]!;
   const held = world.cells.controller[cell]!;
-  if (held !== 0 && world.wars.atWar(held, c.nation[id]!)) world.setController(cell, c.nation[id]!);
+  if (held !== 0 && world.wars.atWar(held, n)) {
+    const o = world.cells.owner[cell]!;
+    const freed = o !== 0 && o !== n && world.nations.cols.living[o] === 1 && !world.wars.atWar(n, o);
+    world.setController(cell, freed ? o : n);
+  }
   world.out.emit(world.tick, EventKind.FormationLanded, id, c.nation[id]!, c.x[id]!, c.y[id]!);
   if (target !== cell) {
     const w = world.cells.w;

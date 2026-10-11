@@ -1753,6 +1753,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   spearheads), sets defensive postures, tasks fleets (sea control around coasts, convoy
   escort, raiding, invasion), tasks air wings (superiority over active fronts, CAS on
   Major Battles, strategic bombing when superiority is high).
+  *Invasions (PLAN 4.6b, ADR-268; `src/sim/ai/invasion.ts`):* daily, staggered weekly by id, a
+  nation in a war with no land front today and no formation aboard takes its transport group
+  with the most room at a port it holds, and aims at the enemy's port nearest them whose sea is
+  open to it (not closed by ice, not held by its enemy). Its free formations at that port go
+  aboard there; with none there, the nearest on the port's land are sent to it to fill the
+  room. A landing takes a cell a nation owns where the target is owned.
   *Implemented v1 (PLAN 1.25, ADR-37; `src/sim/ai/operational.ts`):*
   - *Cadence:* each 6 h, a nation at war plans once a day (staggered).
   - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a

@@ -256,6 +256,9 @@ export function aiSweep(seed: number): void {
 `);
   // PLAN 4.2b: the fleets of the start stood for ten years, but for those of the nations that died.
   expect(fleets.start, `seed ${seed}: fleets at the start`).toBeGreaterThan(100);
+  // PLAN 4.6's AT, its landing half (4.6b): the AI lands an army from the sea in ten years.
+  expect(counts['FormationLanded'] ?? 0, `seed ${seed}: amphibious landings in ten years`).toBeGreaterThanOrEqual(1);
+  process.stderr.write(`seed ${seed}: ${counts['FormationEmbarked'] ?? 0} formations embarked, ${counts['FormationLanded'] ?? 0} landed, ${counts['LandingRepulsed'] ?? 0} thrown back (PLAN 4.6b)\n`);
   expect(fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried, `seed ${seed}: fleets that stand after ten years`).toBeGreaterThan(0);
   process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried} at their cells with their ships after ten years, ${fleets.sailed} sent from bases lost (PLAN 4.4e), ${fleets.fought} in sea battles, ${fleets.carried} carried troops (PLAN 4.5a), ${fleets.gone} gone with their nations
 `);

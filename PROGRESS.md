@@ -13850,3 +13850,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   17, seeds 1 and 3 over the time (639 s, 823 s) with no rule broken in their output; build and
   parity green.
 - **Next:** PLAN 4.6b, unstashed.
+
+## 2026-10-11 — PLAN 4.6b: the AI's invasions (ADR-268)
+
+- **Critic not due.**
+- **Done:** `src/sim/ai/invasion.ts` (`invasionAi`, after the operational AI; 27 systems);
+  `orderLanding` lands on an owned cell where the target is owned; the ten-year tests ask
+  ≥ 1 landing and print the counts.
+- **The AT:** landings in 10 years 35/18/25 on seeds 1/2/3, none thrown back. Britain at war
+  with Iceland (and Denmark): aboard on day 8, ashore in Jutland on day 12.
+- **Tests:** `invasionAi1938.test.ts`, two. Three mutations each failed one.
+- **A beachhead on a neutral's land** is the owner's (ADR-268, as ADR-147): a fourth test in
+  `landing1938.test.ts`, red with the old rule. Found with ADR-269 in the ten-year runs.
+- **The pin moves:** `e8fc6344` → `5688116f` (10 landings in seed 99's first year).
+- **Three tests of a march read the AI's transports as marches** (they had never sailed in
+  their 60 or 90 days): `movement.test.ts` (a sail of over a cell an hour), `coast1938.test.ts`
+  (a march over water) and `fleets1938.test.ts` (a transport group moved, its rule asked only
+  daily). The first two now leave out what is afloat, as the third's rest of the test did; the
+  third asks the fleets' rule every hour (`fleetsStand.hour`, ADR-262: a fleet that carried
+  troops is free). No assertion weakened: each still holds for every march.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 2 over the time (861 s, 918 s; every check in their output passed, the
+  landings' among them); build and parity green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6c (fleets at sea).

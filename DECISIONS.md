@@ -182,6 +182,41 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   Hungary annexes Austria: the three are Italy's, the rest Hungary's, and no cell is held with
   no war. With the old rule it failed.
 
+### ADR-268 · 2026-10-11 · accepted — The AI's invasions (PLAN 4.6b)
+
+- **Context.** PLAN 4.6's AT, its landing half: ≥ 1 amphibious landing per 10 years on 3/3
+  seeds. ADR-267: a war whose front is rare is long; the AI had no way to it over the sea.
+- **The rule** (`invasionAi`, a system after the operational AI; daily at 00:00, each nation
+  weekly by id, `STAGGER`): a nation in a war, living, its AI on, with no land front today
+  (no cell it holds beside one held by a nation at war with it) and no formation aboard:
+  - takes its transport group, standing at a port it holds, with the most room;
+  - aims at the port held by a nation at war with it nearest those transports (`seaKm`),
+    whose water's zone is not closed by ice nor held by its enemy (the landing would be
+    thrown back, ADR-263);
+  - puts its free land formations at that port aboard for it (`orderLanding`), one by one,
+    until the room ends; with none there, sends the nearest free ones on the port's land to
+    the port (`orderMove`) to fill the room: they go aboard on its next day, a week on.
+- **A landing on someone's land** (`orderLanding`): the landing cell is the nearest cell of the
+  target's land to the landing water that a nation owns, where the target is owned. The first
+  British landing on Denmark was on a cell of no one's: no beachhead, no front.
+- **A beachhead on a neutral's land** (`land`, amends ADR-263): the cell of an enemy's that a
+  landing takes is the cell's owner's where that is a living nation not at war with the lander,
+  as at a flip of the front (ADR-147).
+- **Why a port.** It has water by it, and a port is what a landing would take first.
+- **The AT:** in 10 years, landings 35, 18, 25 on seeds 1, 2, 3 (none thrown back; the ten-year tests' count): Japan,
+  Italy, the United Kingdom, France, Germany (`.cache/landingProbe.ts`); the ten-year tests
+  ask ≥ 1 (`tests/helpers/aiSweep.ts`). Britain at war with Iceland (Denmark on its side):
+  aboard on day 8, ashore in Jutland on day 12, the cell British.
+- **The pin moves:** `e8fc6344` → `5688116f`: 10 landings in seed 99's first year (Italy's
+  first on day 71, then France, Japan, the United Kingdom, Germany).
+- **Not done:** an escort or a fleet sent to hold the landing's sea (PLAN 4.6c); a landing for
+  a nation with a front elsewhere; a target chosen by its worth.
+- **Tests.** `tests/unit/invasionAi1938.test.ts`, two (Britain against Iceland lands; Germany
+  against Poland, with a front, embarks nobody in 30 days); three mutations (no front check;
+  no gathering; no owned cell) each failed one.
+  `tests/unit/landing1938.test.ts`, a fourth: a beachhead on France's land that Belgium held is
+  France's; red with the old rule.
+
 ### ADR-267 · 2026-10-11 · accepted — The wars with no front, counted (PLAN 4.6a); PLAN 4.6 split
 
 - **Context.** PLAN 4.6, from the Phase 3 review: a war between nations with no land way

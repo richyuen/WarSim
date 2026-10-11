@@ -92,6 +92,22 @@ describe('the sea a landing needs (PLAN 4.5b)', () => {
     expect(heldNear(w, ENG, 8)).toBe(0);
   });
 
+  it('a beachhead on a cell an enemy holds of a nation at peace with the lander is that nation\'s (ADR-268, as ADR-147)', () => {
+    const s = sim();
+    const w = s.world;
+    const FRA = id('FRA');
+    // The coast about Ostend France's, held by Belgium.
+    for (let y = Math.floor(CY) - 8; y <= Math.floor(CY) + 8; y++) for (let x = Math.floor(CX) - 8; x <= Math.floor(CX) + 8; x++) if (w.cells.controller[y * W + x] === BEL) w.setOwner(y * W + x, FRA);
+    const divs = invade(s);
+    const landed = new Set<number>();
+    for (let h = 0; h < 48 && landed.size < divs.length; h++) for (const e of runEvents(s, 1)) if (e[1] === EventKind.FormationLanded) landed.add(e[2]!);
+    expect(landed.size).toBe(2);
+    const cell = Math.floor(w.formations.cols.y[divs[0]!]!) * W + Math.floor(w.formations.cols.x[divs[0]!]!);
+    expect(w.cells.owner[cell]).toBe(FRA);
+    expect(w.cells.controller[cell]).toBe(FRA);
+    expect(heldNear(w, ENG, 8)).toBe(0);
+  });
+
   it('at peace a landing takes no cell', () => {
     const s = sim();
     const w = s.world;

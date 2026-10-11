@@ -6771,3 +6771,20 @@ Of 4.6 (open in PLAN.md):
   - [x] 4.6a Count first: the wars with no front (a cell of one side beside a cell of the
     other) and how they end, and the contacts that stand 14 days, over 10 years of seeds 1
     to 3 (`tools/diag/fronts.ts`). AT: the counts are in PROGRESS and DECISIONS (a tool).
+
+<!-- moved 2026-10-11 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.6 (open in PLAN.md):
+
+  - [x] 4.6b Invasion planning: the AI lands formations on the coast of an enemy it has no
+    front with, from its ports with transports. AT: ≥ 1 amphibious landing per 10 years on
+    3/3 seeds (test).

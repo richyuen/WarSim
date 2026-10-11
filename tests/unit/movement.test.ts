@@ -917,12 +917,13 @@ describe('a march between two neighbouring cells is not a crossing of the seam (
     for (let hour = 1; hour <= 24 * 60; hour++) {
       before.clear();
       w.formations.forEach((f) => {
-        if (fc.moving[f] === 1) before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! });
+        // A march: not a fleet's sail, nor troops aboard (PLAN 4.6b: the AI's transports sail in this game).
+        if (fc.moving[f] === 1 && !w.afloat(f)) before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! });
       });
       s.step(1);
       for (const [f, was] of before) {
         // The same formation, still on its march (an order, an arrival or its end is not a step of the march).
-        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation || fc.moving[f] !== 1) continue;
+        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation || fc.moving[f] !== 1 || w.afloat(f)) continue;
         looks++;
         const d = Math.hypot(acrossX(fc.x[f]!, was.x), fc.y[f]! - was.y);
         if (d > 1) jumps.push(`hour ${hour}: formation ${f} from ${was.x.toFixed(2)}, ${was.y.toFixed(2)} to ${fc.x[f]!.toFixed(2)}, ${fc.y[f]!.toFixed(2)}: ${d.toFixed(1)} cells`);
