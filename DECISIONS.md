@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-265 · 2026-10-11 · accepted — Naval bombardment (PLAN 4.5c); PLAN 4.5 done
+
+- **Context.** PLAN 4.5c: a fleet by a coast adds its guns to a land fight there.
+- **The rule** (`bombardmentSystem`, hourly after the land's and the sea's fights, before the
+  org's losses): a fleet that stands, not in a sea battle, fires each live ship with a gun
+  (`hard` > 0, not a submarine) at the nearest land formation of a nation at war with the
+  fleet's that is in a land fight (`engaged`) within the ship's reach (`rangeKm`, `seaKm`),
+  at its element with the most hit points left. The volley is the land's
+  (`effectiveness` × `FIRE_SCALE`) × `BOMBARD_FIRE` = 2.5: a land element's attack is a
+  battalion's, a ship is many guns (a heavy cruiser's 25 is an artillery battalion's). No
+  terrain, org or supply factor; the target cannot fire back. Losses apply in id order after
+  every fleet fired, and count in `battleLosses`.
+- **Why only a fight.** A fleet that shelled every enemy in reach would grind down coastal
+  garrisons with no front; the guns support an attack or a landing.
+- **Found on the way:** a fleet off an enemy's own port sailed home each midnight (ADR-264).
+- **The AT:** a British and a Belgian division in a fight at Ostend: the Belgian loses 155 men
+  in 12 hours alone, 428 with a British battle squadron 14.8 km off; a destroyer flotilla
+  there (12 km guns) adds nothing, nor a French squadron (at peace) or a transport group; a
+  squadron with no fight on the coast fires at nothing.
+- **The pin stays** `e8fc6344`: no fleet stands by a land fight in seed 99's first year.
+- **Tests.** `tests/unit/bombardment1938.test.ts`, four; four mutations (no war check; any
+  formation, not one in a fight; no fire; no reach) each failed one.
+
 ### ADR-264 · 2026-10-10 · accepted — A lost base is a port of the fleet's nation (amends ADR-261)
 
 - **Context.** PLAN 4.5c's bombardment: a British battle squadron off Ostend, at war with

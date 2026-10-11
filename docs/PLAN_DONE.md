@@ -6725,3 +6725,32 @@ Of 4.5 (open in PLAN.md):
   - [x] 4.5b Sea control and the landing: a landing needs the zone of its water not held by
     an enemy; a landing's first fight is at a penalty (its disorder). The AT of 4.5: a
     scripted invasion takes the coastal cells, and fails without sea control (test).
+
+<!-- moved 2026-10-11 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
+  From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
+  5 and 6 are their tasks): without transport by sea the sea powers are out of every war.
+  The United Kingdom had 3,390,436 men in 317 formations and the same 17,000 cells for 20
+  years of seed 31337. A British division ordered to Calais walked to the coast of Kent and
+  stood there. The same holds for Japan's home army, for the United States and for every
+  colony. All 15 templates that can be built are land formations.
+  From the critic's report of 2026-10-07 (R3-B1, its first blocking issue again; the three
+  differentiators still score 0): on seed 4242, 40 years headless, Canada holds 12.1 % of
+  the cells and the United States 7.7 % in every year from 15 to 40, and Denmark
+  (Greenland) 5.4 to 5.5 % in all 40. The division ordered to Calais stops 3.5 cells short,
+  on the English coast. `data/units/sea.json` and `data/units/air.json` are read by nothing
+  in play. The critic: "sea transport first, as it also unfreezes the maritime powers".
+  AT: a scripted invasion lands and takes the coastal cells; it fails without sea control (test).
+  - [x] 4.5a Embark, sail, land: a land formation ordered to another land goes aboard its […]
+  - [x] 4.5b Sea control and the landing: a landing needs the zone of its water not held by […]
+  - [x] 4.5c Naval bombardment: a fleet by a coast adds its guns to a land fight there (test).

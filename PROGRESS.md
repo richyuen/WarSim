@@ -13795,3 +13795,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   17 (seed 1: 145 fleets stand, 42 sailed, 8 fought; seed 2: 156, 37, 0, 1 carried; seed 3:
   154, 42, 0); build and parity green.
 - **Next:** PLAN 4.5c (naval bombardment), its work stashed meanwhile.
+
+## 2026-10-11 — PLAN 4.5c: naval bombardment; PLAN 4.5 done (ADR-265)
+
+- **Critic not due.**
+- **Done:** `bombardment.ts` (`bombardmentSystem`, hourly after the sea battles,
+  `BOMBARD_FIRE`); `effectiveness` exported from `combat.ts`; 26 systems.
+- **The AT:** at Ostend a Belgian division loses 155 men in 12 hours in a fight with a British
+  one, 428 with a British battle squadron 14.8 km off; a destroyer flotilla there (12 km
+  guns), a French squadron at peace and a transport group add nothing; with no fight the
+  squadron fires at nothing.
+- **Tests:** `bombardment1938.test.ts`, four. Four mutations each failed one (the reach's
+  only after a test of it was added).
+- **The pin stays** `e8fc6344`.
+- **PLAN 4.5 ticked:** its AT is 4.5b's. The browser suite runs in full.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 16 of
+  17, seed 3 over the time (840 s; its game changed with the bombardment: 197 revolts for 166,
+  year 8's tick 15.6 ms; the bombardment 0.1 ms of a tick, 1 %, by `--profile`; a first
+  version that looked at every fight from every fleet was made to look at the squares about
+  the fleet, the same choice); the browser suite by hand in its two hours, 164 of 165: red
+  the 17 of BLOCKERS (4.2f's list but fire), nothing new; build and parity green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6 (naval AI).

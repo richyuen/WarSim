@@ -1669,7 +1669,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   is held by a nation at war with the formation's, the landing is thrown back: they sail for
   their nation's nearest port and it lands there. A landing on an enemy's cell takes that
   cell (the beachhead), from which the front spreads; its disorder (org 0.5, fire 0.625) is
-  the landing's penalty (PLAN 4.5b). **Crossings** remain for AoC-parity
+  the landing's penalty (PLAN 4.5b). A fleet that stands off a coast fires each ship with a
+  gun (not a submarine) at the nearest enemy land formation in a fight within its reach
+  (a destroyer 12 km, a battleship 32 km), at the element with the most hit points, with a
+  land volley of its soft attack × 2.5 (a ship is many guns); the losses take org as a
+  fight's do (PLAN 4.5c). **Crossings** remain for AoC-parity
   walkable straits.
 
 ### 6.3 Aircraft
