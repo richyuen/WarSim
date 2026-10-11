@@ -210,7 +210,7 @@ function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<numb
 
 /**
  * At a refresh hour: each bloc whose joined components (`seaLinked`) are not those it had at the
- * last ask is marked to be refreshed whole (`supplyDirtyBlocs`). What it had is kept in
+ * last ask is marked to be refreshed whole (`supplySeaBlocs`, ADR-272). What it had is kept in
  * `World.seaLinks` (derived: a loaded world refreshes in full). Returns what it asked, for the
  * refresh of the same hour.
  */
@@ -221,10 +221,10 @@ export function markSeaLinks(world: World): Map<number, number[]> {
   for (const [b, list] of all) {
     const key = list.join(',');
     now.set(b, key);
-    if (was.get(b) !== key) world.supplyDirtyBlocs.add(b);
+    if (was.get(b) !== key) world.supplySeaBlocs.add(b);
   }
   // A bloc that had cities and has none: its network goes with its sources.
-  for (const b of was.keys()) if (!now.has(b)) world.supplyDirtyBlocs.add(b);
+  for (const b of was.keys()) if (!now.has(b)) world.supplySeaBlocs.add(b);
   world.seaLinks = now;
   return all;
 }

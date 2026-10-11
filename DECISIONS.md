@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-272 · 2026-10-11 · accepted — A bloc whose lands by sea changed is flooded whole (amends ADR-259)
+
+- **Context.** PLAN 4.6d's ten-year runs changed seed 3's game, and `saveYear.test.ts` (a game
+  that refreshes its supply in full at every refresh is the same game) parted at tick 2389 by
+  one cell: Malta's, British, fed in the full refresh and dry in the partial one. Britain's
+  lands by sea had changed (`markSeaLinks`, ADR-259, put it in `supplyDirtyBlocs`), and a cell
+  of Britain's had changed hands in the same twelve hours. A bloc marked so is flooded whole
+  only when no changed cell is its own (the mark there means the network a changed cell lay
+  in); with one, the partial refresh mended Britain at its changed cells and no more, and a
+  land joined or cut by sea kept its old network.
+- **Decision.** The blocs whose lands by sea changed are a set of their own
+  (`World.supplySeaBlocs`, derived), flooded whole at the refresh whatever else changed.
+- **The pin stays** `56ca6b12`.
+- **Tests.** `tests/unit/seaSupply1938.test.ts`, a fifth: Italy holds the sea about Malta and a
+  cell of England changes hands in one refresh's twelve hours: the partial refresh is the full
+  one (with the sea as it read it). Red with the old rule: Malta's cell fed.
+
 ### ADR-270 · 2026-10-11 · accepted — The AI's fleets at sea (PLAN 4.6c)
 
 - **Context.** PLAN 4.6's AT, its battle half: ≥ 1 fleet battle per 10 years on 3/3 seeds. Only

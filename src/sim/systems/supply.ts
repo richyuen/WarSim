@@ -215,6 +215,9 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
     // not always the one that flooded its cells (a puppet since annexed).
     for (const n of world.supplyDirtyNations) if (own[blocNow(n)] !== 1) whole(blocNow(n));
     for (const b of world.supplyDirtyBlocs) if (own[b] !== 1) whole(b);
+    // Lands joined by sea or cut (PLAN 4.4c): whole, cells of its own changed or not (ADR-272: the
+    // mends at its changed cells left a land newly joined unflooded).
+    for (const b of world.supplySeaBlocs) whole(b);
     for (const [b, kept] of reached) if (own[b] === 1 && kept.n > 2 * kept.base) whole(b);
     // A city that changed hands: a source made or lost.
     world.cities.forEach((id) => {
@@ -272,6 +275,7 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
   world.supplyDirty = false;
   world.supplyDirtyNations.clear();
   world.supplyDirtyBlocs.clear();
+  world.supplySeaBlocs.clear();
   changed.clear();
   /** Partial: this refresh met what only a full one settles. */
   let again = false;
@@ -402,7 +406,7 @@ export function supplySystem(world: World): void {
   // Supply over sea (PLAN 4.4c): a bloc whose lands joined by sea changed is refreshed whole.
   if (world.tick % SUPPLY_REFRESH_HOURS === 0) {
     const linked = world.rules ? markSeaLinks(world) : undefined;
-    if (world.supplyDirty || world.supplyDirtyNations.size > 0 || world.supplyDirtyBlocs.size > 0) refreshSupplyNetwork(world, linked);
+    if (world.supplyDirty || world.supplyDirtyNations.size > 0 || world.supplyDirtyBlocs.size > 0 || world.supplySeaBlocs.size > 0) refreshSupplyNetwork(world, linked);
   }
   const f = world.formations;
   const c = f.cols;

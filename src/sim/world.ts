@@ -561,6 +561,11 @@ export class World {
    */
   supplyDirtyBlocs = new Set<number>();
   /**
+   * Derived (not state): the blocs whose lands joined by sea changed (`markSeaLinks`, PLAN 4.4c):
+   * flooded whole at the refresh, cells of their own changed or not (ADR-272).
+   */
+  supplySeaBlocs = new Set<number>();
+  /**
    * Derived (not state): the cells whose controller or owner changed since the last refresh, each
    * with what it was then (controller × 65536 + owner). A partial refresh mends the network at
    * these cells (PLAN 3.10d1b); what a cell was says whether a city was a source, and which

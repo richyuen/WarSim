@@ -4,7 +4,7 @@ import { NATIONS_1938, PORTS_1938, SIZE_1938 } from '../../src/sim/scenario1938'
 import { Sim } from '../../src/sim/sim';
 import { seaControlOf } from '../../src/sim/systems/seaControl';
 import { seaLinked, zoneLinks } from '../../src/sim/systems/seaSupply';
-import { blocOf } from '../../src/sim/systems/supply';
+import { blocOf, refreshSupplyNetwork } from '../../src/sim/systems/supply';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, portSeaOf, seaOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -73,6 +73,34 @@ describe('supply over sea (PLAN 4.4c)', () => {
     s.step(36 - w.tick + 8);
     expect(w.cells.supply[cell]).toBe(ENG);
     expect(w.formations.cols.supply[div]).toBe(1);
+  });
+
+  it('a bloc whose lands by sea changed is flooded whole though a cell of its own changed hands too (ADR-272): the partial refresh is the full one', () => {
+    const s = sim();
+    const w = s.world;
+    const malta = compAt(w, 14.45, 35.9);
+    const zones = portZones(w, malta.comp);
+    expect(declareWar(w, ITA, ENG, true)).not.toBeNull();
+    s.step(12 - w.tick + 1); // the refresh of hour 12: Malta fed
+    const cell = Math.floor(malta.y) * W + Math.floor(malta.x);
+    expect(w.cells.supply[cell]).toBe(ENG);
+    // Italy holds the sea about Malta, and a British cell of England's changes hands, before the refresh of hour 24.
+    for (const z of zones) seaControlOf(w).holder[z] = ITA;
+    const [lx, ly] = cellOf(-1.5, 52.5, W, H).map(Math.floor) as [number, number];
+    expect(w.cells.controller[ly * W + lx]).toBe(ENG);
+    w.setController(ly * W + lx, ITA);
+    // The sea as the refresh of hour 24 read it (the day's sea control comes after it in the hour).
+    const sea = new Uint16Array(seaControlOf(w).holder);
+    s.step(24 - w.tick + 1);
+    expect(w.supplyDirty).toBe(false);
+    const partial = new Uint16Array(w.cells.supply);
+    seaControlOf(w).holder.set(sea);
+    w.supplyDirty = true;
+    refreshSupplyNetwork(w);
+    let apart = 0;
+    for (let i = 0; i < partial.length; i++) if (partial[i] !== w.cells.supply[i]) apart++;
+    expect(apart).toBe(0);
+    expect(w.cells.supply[cell]).toBe(0);
   });
 
   it('a zone held on one way is not a cut where another way is open; the whole sea held cuts every land of ports but home', () => {

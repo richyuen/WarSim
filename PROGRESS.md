@@ -13901,3 +13901,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   green.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.6d (raiding).
+
+## 2026-10-11 — A bloc whose lands by sea changed is flooded whole (ADR-272)
+
+- **Critic not due.** A cause of its own, found by PLAN 4.6d's ten-year runs (its work stashed):
+  seed 3, tick 2389, Malta's cell fed in a full refresh and dry in the partial one.
+- **Done:** `World.supplySeaBlocs` (from `markSeaLinks`), flooded whole at a refresh even when a
+  cell of the bloc's own changed hands.
+- **Tests:** `seaSupply1938.test.ts`, a fifth; red with the old rule. The pin stays `56ca6b12`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 14 of
+  17, the three seeds over the time (832, 802, 891 s) with every check in their output
+  passed; build and parity green.
+- **Next:** PLAN 4.6d, unstashed.
