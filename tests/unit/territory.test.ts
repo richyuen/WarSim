@@ -7,7 +7,7 @@ import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { frontierOf, HOLD_TICKS, territorySystem } from '../../src/sim/systems/territory';
 import { Wars } from '../../src/sim/wars';
-import type { World } from '../../src/sim/world';
+import { laneOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
 
@@ -136,6 +136,9 @@ describe('territory pressure and fronts (PLAN 1.14)', () => {
     // Bounded: border cells only (GER-POL plus the Spanish and Chinese fronts), not the map.
     expect(f0.size).toBeGreaterThan(50);
     expect(f0.size).toBeLessThan(6000);
+    // The lane graph, built once in a game at the first sail (0.5 to 2 s; since PLAN 4.6c the
+    // naval AI sails in the first days), is no cost of the ticks this measures.
+    laneOf(w);
     const t0 = performance.now();
     s.step(24 * 3);
     const perTick = (performance.now() - t0) / 72;

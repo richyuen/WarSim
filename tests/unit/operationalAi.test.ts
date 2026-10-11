@@ -318,7 +318,8 @@ describe('the range is to the sector (PLAN 3.10c1, ADR-187)', () => {
       ww.out.events.length = 0;
       ww.out.fires.length = 0;
       for (const id of ww.formations.ids()) {
-        if (f.nation[id] !== SOV) continue;
+        // The operational AI's orders: not a fleet's (the naval AI's, PLAN 4.6c) nor troops aboard.
+        if (f.nation[id] !== SOV || ww.afloat(id)) continue;
         const target = f.moving[id] === 1 && f.retreat[id] === 0 && f.home[id] === 0 ? f.targetCell[id]! : -1;
         if (target >= 0 && target !== last.get(id)) {
           const d = dist(f.x[id]!, f.y[id]!, target);

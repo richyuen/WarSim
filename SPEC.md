@@ -1759,6 +1759,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   open to it (not closed by ice, not held by its enemy). Its free formations at that port go
   aboard there; with none there, the nearest on the port's land are sent to it to fill the
   room. A landing takes a cell a nation owns where the target is owned.
+  *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
+  war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a
+  port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),
+  else to the nearest enemy port whose zone's enemy power is no more than that of its nation's
+  warfleets in port within 2,500 km of it together; one away from its ports where the enemy is
+  over 1.5 times its power turns home. At peace a fleet away from its ports turns home.
   *Implemented v1 (PLAN 1.25, ADR-37; `src/sim/ai/operational.ts`):*
   - *Cadence:* each 6 h, a nation at war plans once a day (staggered).
   - *Front sectors:* its front cells form 4×4-cell sectors. Threat is the enemy strength in a

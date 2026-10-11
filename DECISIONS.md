@@ -167,6 +167,55 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-270 · 2026-10-11 · accepted — The AI's fleets at sea (PLAN 4.6c)
+
+- **Context.** PLAN 4.6's AT, its battle half: ≥ 1 fleet battle per 10 years on 3/3 seeds. Only
+  a player sailed a fleet; the AI's fleets stood at their bases for good.
+- **The rule** (`navalAi`, a system after the invasion AI; daily at 00:00, each nation weekly
+  by id, `STAGGER`). A warfleet is a fleet with power (`fleetPower`: the hit points of its live
+  ships with a gun or torpedoes; submarines raid, 4.6d) that stands (not under way, not in a sea
+  battle).
+  - At war, each one at a port of its nation's sails, within `SORTIE_KM` = 2,500 km (a little
+    over Malta to Gibraltar or to Haifa), to the water of a landing of its nation's under way
+    (the escort); else to the water of the nearest enemy port, its zone not closed by ice,
+    whose zone's enemy power (`navalPower`, the blocs at war with it) is no more than that of
+    its nation's warfleets in port within 2,500 km of that water together. Fleets near each
+    other choose alike and sail together; a battle they would lose is not sought.
+  - At war, a warfleet away from its nation's ports in a zone where the enemy's power is over
+    `AVOID_RATIO` = 1.5 times its own turns home (`sailHome`).
+  - At peace, a fleet away from its nation's ports turns home.
+- **Home** is a port its bloc holds (the nation, its overlord, its puppets): the Netherlands'
+  East Indies squadrons stand at Surabaya, the Dutch East Indies'; read as away at peace, they
+  were sent for Den Helder every week.
+- **The cost.** The lane graph is built at a game's first sail (ADR-250: 0.4 to 0.7 s; 1.9 s on
+  this container); since the naval AI sails at war from the first days, a game pays it in its
+  first week. After it a fleet's way is 0.1 to 1.4 ms; the naval AI's day at the start of seed
+  1, Britain's 36 fleets, 17 ms. `territory.test.ts`'s cost per tick builds the lane graph
+  before its three days are timed (it measures the frontier; 54 ms a tick with the build in
+  the three days, against 25).
+- **The first version** sent all of a nation's warfleets in port to one port, nearest its
+  strongest fleet: the British fleets of Hong Kong and the Atlantic sailed for Italy. Each now
+  chooses within 2,500 km.
+- **The ten-year runs' rule of the fleets** (`fleetsStand`): a fleet found under way or moved
+  with its ships whole is free (`sailed`), whatever sent it; the lost bases' notes of ADR-261
+  and ADR-263 go (the AI sails fleets every week). Damage outside a battle is still a line. A
+  fleet sunk whole in a battle of one hour is known by its ships' elements kept from the start
+  (the hour's fires name them after they are gone from the table).
+  Ten years: sea battles 35, 40, 83 on seeds 1, 2, 3.
+- **The AT:** the ten-year tests ask ≥ 1 sea battle (`tests/helpers/aiSweep.ts`). Seed 99's first
+  year: 31 sea battles, the first on day 39 (none in it before; a few a decade by chance).
+  Britain at war with Italy: 22 of 26 British warfleets under way in a week, the first battle
+  on day 7.
+- **The pin moves:** `5688116f` → `56ca6b12`.
+- **Not done:** fuel and supply at sea; a nation keeping ships at home; blockade as an aim of
+  its own; the navy's cost (4.6e).
+- **Tests.** `tests/unit/navalAi1938.test.ts`, four (Britain sails and fights Italy; Greece
+  sails only for a zone its fleets together match; a Greek flotilla out-gunned, out of sight
+  of the enemy, turns home; at peace the fleets come home). Three mutations (no power check; no
+  turning home; none at peace) each failed one; the second only after the flotilla was put out
+  of the Italian fleet's sight (a battle's break-off had sent it home) and Italy's AI was
+  switched off (its fleets had left the zone).
+
 ### ADR-269 · 2026-10-11 · accepted — An annexation leaves a third nation's occupation its own (amends ADR-112's cases)
 
 - **Context.** PLAN 4.6b's ten-year runs changed seed 7's game, and `heldYears.test.ts` (ADR-147:

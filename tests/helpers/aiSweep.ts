@@ -258,9 +258,12 @@ export function aiSweep(seed: number): void {
   expect(fleets.start, `seed ${seed}: fleets at the start`).toBeGreaterThan(100);
   // PLAN 4.6's AT, its landing half (4.6b): the AI lands an army from the sea in ten years.
   expect(counts['FormationLanded'] ?? 0, `seed ${seed}: amphibious landings in ten years`).toBeGreaterThanOrEqual(1);
+  // Its battle half (4.6c): a sea battle in ten years.
+  expect(counts['SeaBattle'] ?? 0, `seed ${seed}: sea battles in ten years`).toBeGreaterThanOrEqual(1);
+  process.stderr.write(`seed ${seed}: ${counts['SeaBattle'] ?? 0} sea battles (PLAN 4.6c)\n`);
   process.stderr.write(`seed ${seed}: ${counts['FormationEmbarked'] ?? 0} formations embarked, ${counts['FormationLanded'] ?? 0} landed, ${counts['LandingRepulsed'] ?? 0} thrown back (PLAN 4.6b)\n`);
   expect(fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried, `seed ${seed}: fleets that stand after ten years`).toBeGreaterThan(0);
-  process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried} at their cells with their ships after ten years, ${fleets.sailed} sent from bases lost (PLAN 4.4e), ${fleets.fought} in sea battles, ${fleets.carried} carried troops (PLAN 4.5a), ${fleets.gone} gone with their nations
+  process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried} at their cells with their ships after ten years, ${fleets.sailed} sailed (from bases lost, PLAN 4.4e; by the naval AI, PLAN 4.6c), ${fleets.fought} in sea battles, ${fleets.carried} carried troops (PLAN 4.5a), ${fleets.gone} gone with their nations
 `);
   // PLAN 3.12Rk: no march home waits out a war before an enemy's cell.
   process.stderr.write(`seed ${seed}: ${waits.marked} formation-hours with the mark of a march home; the longest wait before an enemy's cell ${waits.longest} h${waits.where ? ` (${waits.where})` : ''}

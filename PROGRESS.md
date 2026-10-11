@@ -13874,3 +13874,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   landings' among them); build and parity green.
 - **PARITY:** row 3, a note and the test; still partial.
 - **Next:** PLAN 4.6c (fleets at sea).
+
+## 2026-10-11 — PLAN 4.6c: the AI's fleets at sea (ADR-270)
+
+- **Critic not due.**
+- **Done:** `src/sim/ai/naval.ts` (`navalAi`, after the invasion AI; 28 systems;
+  `fleetPower`, `SORTIE_KM`, `AVOID_RATIO`); the ten-year tests ask ≥ 1 sea battle;
+  `fleetsStand` frees any fleet that sails with its ships whole.
+- **The AT:** seed 99's first year 31 sea battles (the first on day 39). Britain at war with
+  Italy: 22 of 26 warfleets under way in a week, the first battle on day 7.
+- **Tests:** `navalAi1938.test.ts`, four. Three mutations each failed one (the turning home's
+  after its test was made to keep out of a battle and Italy's AI off).
+- **The pin moves:** `5688116f` → `56ca6b12`.
+- **Tests that read fleets as land:** `movement.test.ts` (seed 7's 55 days: a fleet's sail of
+  3.7 cells an hour) and `operationalAi.test.ts` (two fronts far apart: the Soviet fleets'
+  orders) leave out what is afloat; `territory.test.ts` builds the lane graph before it times
+  the frontier (ADR-270). No assertion weakened.
+- **Home is a port of its bloc's:** the Dutch East Indies squadrons at Surabaya were sent home
+  every week at peace (a way of 2 s).
+- **The ten-year runs:** sea battles 35/40/83 on seeds 1/2/3 (landings 30/32 on seeds 1/2).
+  They failed first on each seed: a fleet at its base sunk whole in a battle of one hour (an
+  enemy's fleet met it there) was "gone while its nation lives": the hour's fires named its
+  ships, already out of the table. `fleetsStand` keeps the start's ships by element.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage: every
+  check passed on the three seeds, all three over the time (847, 848, 922 s); build and parity
+  green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6d (raiding).

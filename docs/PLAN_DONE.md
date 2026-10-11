@@ -6788,3 +6788,20 @@ Of 4.6 (open in PLAN.md):
   - [x] 4.6b Invasion planning: the AI lands formations on the coast of an enemy it has no
     front with, from its ports with transports. AT: ≥ 1 amphibious landing per 10 years on
     3/3 seeds (test).
+
+<!-- moved 2026-10-11 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.6 (open in PLAN.md):
+
+  - [x] 4.6c Fleets at sea: the AI sails battle fleets to hold the zones by its enemies'
+    coasts and its landings, and seeks or avoids a battle by the power there. AT: ≥ 1 fleet
+    battle per 10 years on 3/3 seeds (test).
