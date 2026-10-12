@@ -719,7 +719,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     (≤ −90). Neither side sues if either fights to the death.
   - *Terms by |score|:* below 10 a white peace (all occupation reverts). Otherwise the winner
     annexes all of the losers' land it occupies, and the losers' occupations of the winners
-    revert (ADR-51; until then round(|score|% of the occupied land), nearest first). At ≥ 90
+    revert (ADR-51; until then round(|score|% of the occupied land), nearest first); a cell of the
+    annexed that a third nation holds stays that nation's, in an annexation or an integration
+    (ADR-269, as at a death: ADR-112). At ≥ 90
     the loser's leader also becomes a puppet when the annexed land is ≥ 30% of the losers' land.
     A nation made a puppet leaves, with its own puppets, every other war in which it stands
     against a nation it now has a bond with; the land held between them goes back (ADR-180).
@@ -853,8 +855,9 @@ Element (authoritative unit proxy) {
     (`TEMPLATES_1938`), the land units and then the sea's: no land index moved, and a new land
     template would move the sea's. A template is of one domain (`validateDataSet`). A fleet
     has the pace of its slowest ship and the cost, days, crew and upkeep of its ships, by the
-    land's scales. *Not yet:* nothing makes one. The queue rejects a sea template and the
-    spawn command refuses it (`Refusal.NotOfLand`). *Since PLAN 4.2b* the start has fleets (below), and the page is sent
+    land's scales. *Until PLAN 4.2e* nothing made one: the queue rejected a sea template, and
+    the spawn command refuses it still (`Refusal.NotOfLand`); a fleet is built at a shipyard
+    (below). *Since PLAN 4.2b* the start has fleets (below), and the page is sent
     every template with its domain: it names and draws a formation by its template's index,
     and its build list leaves the fleets out.
   - **The fleets of the start (PLAN 4.2b, ADR-248).** `data/scenarios/1938/fleets.json`: 145
@@ -891,9 +894,9 @@ Element (authoritative unit proxy) {
       (not sent home, and its upkeep no part of the army's share of the income: a nation
       short of money by its navy cuts its army); desertion in bankruptcy (a rule of men);
       the statistics' men (the army's).
-    - *Not yet:* a fleet fights nothing (4.3), and is not laid up by a nation that cannot
-      pay it (4.6); the economic AI builds no ship (4.6). A player builds one from the
-      Actions tab (§ the page, production; PLAN 4.2f).
+    - *Since:* a fleet fights (4.3, §6.2); the economic AI builds fleets under its navy's share
+      of the income and lays them up over it (4.6e1, §7). A player builds one from the Actions
+      tab (§ the page, production; PLAN 4.2f).
   - **A fleet is built** (PLAN 4.2e, ADR-252; `src/sim/systems/production.ts`).
     - *The order* (`queueFormation`): of a sea template, only by a nation with a shipyard;
       else `ProductionRejected`, nothing paid. Gold by the land's scale (3.5 × its ships'),
@@ -1567,13 +1570,17 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 ### 6.2 Naval
 - Sea zones + lane graph (§3.3). Ports and naval bases are province buildings that
   repair, rebase and enable supply. *As built (PLAN 4.1c):* a list of the scenario with the
-  two levels, each a node of the lane graph (§3.3); nothing in play reads them yet.
+  two levels, each a node of the lane graph (§3.3). Read since by a fleet's orders and its
+  lost base (4.2c, 4.4e), the shipyard (4.2e), the blockade, supply over sea and convoys
+  (4.4b–d) and the landings (4.5).
 - Fleets are formations of ship elements: DD, CL, CA, BB, CV, SS, TP. *As built (PLAN 4.2a):*
   the six templates and the seven ship types are in the rules (§3.6). *As built (PLAN 4.2b):*
-  197 fleets stand at the water of their bases in 1938 (§3.6), paid for and read by no rule
-  of the land. *As built (PLAN 4.2c):* a fleet sails by an order, over the lanes' way
-  drawn tight, at a cruising share of its slowest ship's speed (§3.3, §3.6); no AI orders
-  one yet. Movement runs along
+  197 fleets stand at the water of their bases in 1938 (§3.6), paid for. *As built (PLAN
+  4.2c):* a fleet sails by an order, over the lanes' way drawn tight, at a cruising share of
+  its slowest ship's speed (§3.3, §3.6); the naval and invasion AIs order them since PLAN 4.6
+  (§7), and a fleet weighs in a declaration and a war's exhaustion (ADR-274). Pack ice
+  closes 21 seas to a fleet (4.2d, ADR-251); a fleet is built at its nation's shipyard
+  (4.2e, ADR-252). Movement runs along
   lanes with continuous positions. Detection uses zone-level search plus element-level
   range.
 - **Fleet battles** at element level: gunnery ranges (BB > CA > CL > DD), torpedoes
@@ -1614,7 +1621,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     an hour, the battle is over: one row of the history log, `SeaBattle` (each side its
     nation and ships lost, packed as nation + 65,536 × ships; where it began): "Germany
     and United Kingdom fought at sea: Germany lost 0 ships, United Kingdom 7".
-  - *Not yet:* air (5.4); seeking or avoiding a battle (4.6).
+  - *Not yet:* air (5.4). The AI sails for a battle it can win and turns home outgunned
+    (PLAN 4.6c, §7).
 - **Sea control** per zone per side = Σ naval power present and recent wins. It decays.
   *As built (PLAN 4.4a, ADR-257; `src/sim/systems/seaControl.ts`, daily at 00:00):* a
   zone's power by bloc is the hit points of the live armed ships (a gun or torpedoes) of
@@ -1635,7 +1643,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   home port's zone reaches its port's zone through no zone held by an enemy of the bloc. A
   city is a source of the supply network only on a land that is home, joined, or has no port
   of the bloc (`seaLinkedAll`); at each refresh hour a bloc whose joined lands changed is
-  refreshed whole (`markSeaLinks`). (At war with Italy Malta was cut at once while Italy's
+  refreshed whole (`markSeaLinks`; ADR-272). (At war with Italy Malta was cut at once while Italy's
   submarines held the zones about it; since PLAN 4.4d a submarine holds no sea.)
   *Convoys and raiding (PLAN 4.4d, ADR-260; `src/sim/systems/convoys.ts`):* the income of a
   land joined to home by sea goes by convoy along its way (`convoyWays`, the zones from a home
@@ -1665,15 +1673,15 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   the target (within 8 cells) and it lands at the nearest cell of the target's land, its org
   at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
   land within 3 cells if any; sunk, they take it with them. With no port or no room the order
-  is a march as before (PLAN 4.5a). When the transports reach the landing water and its zone
+  is a march as before (PLAN 4.5a, ADR-262). When the transports reach the landing water and its zone
   is held by a nation at war with the formation's, the landing is thrown back: they sail for
   their nation's nearest port and it lands there. A landing on an enemy's cell takes that
   cell (the beachhead), from which the front spreads; its disorder (org 0.5, fire 0.625) is
-  the landing's penalty (PLAN 4.5b). A fleet that stands off a coast fires each ship with a
+  the landing's penalty (PLAN 4.5b, ADR-263). A fleet that stands off a coast fires each ship with a
   gun (not a submarine) at the nearest enemy land formation in a fight within its reach
   (a destroyer 12 km, a battleship 32 km), at the element with the most hit points, with a
   land volley of its soft attack × 2.5 (a ship is many guns); the losses take org as a
-  fight's do (PLAN 4.5c). **Crossings** remain for AoC-parity
+  fight's do (PLAN 4.5c, ADR-265). **Crossings** remain for AoC-parity
   walkable straits.
 
 ### 6.3 Aircraft
@@ -1929,8 +1937,8 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | Tier | m/px | Map | Forces |
 |---|---|---|---|
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
-| **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows, battle markers |
-| **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships with wakes |
+| **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes; the coast from the fine land mask from where a mask pixel is a device pixel (about 1,200 m/px on the 1938 map, all of it from there, none above 2,400: PLAN 4.7g, ADR-284), so a lake the coarse coverage averages away is drawn as at T2 | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows (a fleet's along its way by the points it turns at: PLAN 4.7d, ADR-281), battle markers |
+| **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask, the sea shaded by its depth (the elevation's sea floor, lighter over shallows: PLAN 4.7f, ADR-283) (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships by class with wakes under way (PLAN 4.7b, ADR-276), a sea battle's gunfire on a long arc, torpedo tracks and a ship going down into its slick (PLAN 4.7c, ADR-277) |
 | **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap] |
 
 *How far out the ground reaches (PLAN 2.11l):* the ground and what stands on it come and go
@@ -2727,11 +2735,21 @@ on screen.
   10-year sweep tests (`tests/sweep/`) → `vite build` → `playwright test` (against
   `vite preview` of the build) → `npm run parity`. Must be green before every commit. It is
   sized to what changed since HEAD (ADR-48, ADR-49): documents only (Markdown, `docs/`) run
-  parity alone; the sweep tests run only when a sim input changed; a clean tree that the gate
-  has already passed runs nothing (the passed trees are recorded in `.cache/gate/`, ADR-55).
-  `npm run check:full` runs every stage. The sweep tests include the pinned state hash of
-  seed 99 after one year (`tests/sweep/baselineHash.test.ts`): a change of rules moves the pin
-  and logs it in DECISIONS.
+  parity alone, unless they tick a numbered task or a review (ADR-286); a clean tree that the
+  gate has already passed runs nothing (the passed trees are recorded in `.cache/gate/`, ADR-55).
+  `npm run check:full` runs every stage. Of the stages:
+  - *unit:* in full when the change ticks a numbered task, a review pass or a phase review, or
+    something every test stands on changed (the vitest config, `tests/helpers/`, the data and
+    assets read from disk, the lock file); otherwise `vitest related` over what changed (ADR-280).
+    A 1938 world after a test file's first is made from its template (`keepWorldTemplates`,
+    the tests' setup), and pure runs are loaded from shared checkpoints in `.cache/checkpoints/`
+    (ADR-279).
+  - *sweep tests:* every one only at a phase review (and in `check:full`); a change to a sim
+    input runs the pinned state hash of seed 99 after one year alone
+    (`tests/sweep/baselineHash.test.ts`, ADR-278): a change of rules moves the pin and logs it
+    in DECISIONS.
+  - *e2e:* in full at a tick (ADR-87); for a part, the specs it changed, a perf spec with
+    `--project=perf --no-deps` (ADR-287).
 - **Critic cadence** (`npm run critic:due`, `tools/gate/criticDue.ts`, ADR-59): due when there
   is no report, or when a phase review has been ticked in PLAN.md since the commit the report
   names. One run per phase, and one for the DONE condition. Each blocking issue of a report

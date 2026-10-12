@@ -14178,3 +14178,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   line at T3, the T1 shores, the small shots at T2), 4.8f tick time, 4.8g PARITY, 4.8h the full
   gate, the quick sweep and the tick; then the critic.
 - **Next:** PLAN 4.8a.
+
+## 2026-10-12 — PLAN 4.8b: SPEC re-read for Phase 4's drift (documents)
+
+- **Checked:** each of ADR-242 to ADR-287 looked for in SPEC (by its number and by what it
+  says), the stale lines read against the code.
+- **Amended:** §6.2: ports are read now (orders, lost base, shipyard, blockade, supply, convoys,
+  landings); fleets are ordered by the AIs and weigh in war (ADR-274), ice and the shipyard named;
+  "seeking a battle" is no longer "not yet"; ADR-262, 263, 265 and 272 cited. §3.6: a fleet is
+  built, fights and is laid up (two "not yet" lines). §3.5: an annexation leaves a third
+  nation's occupation its own (ADR-269, not in SPEC). §8's tiers: the fine coast at T1 (ADR-284),
+  a fleet's order line (ADR-281), the sea by its depth (ADR-283), ships by class, wakes, gunfire,
+  torpedoes, a ship going down (ADR-276, ADR-277). §10's gate: the unit stage's related tests,
+  templates and checkpoints, the sweep tests at a phase review, the tick of documents, the perf
+  spec (ADR-278 to ADR-280, ADR-286, ADR-287).
+- **Not in SPEC, rightly:** ADR-245 and 249 (camera and tags: in §8 already by their PLAN), ADR-266,
+  267, 285 (process and measures).
+- **Next:** PLAN 4.8a's findings (the read is running), then 4.8c.

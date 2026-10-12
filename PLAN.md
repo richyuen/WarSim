@@ -37,11 +37,7 @@ quick sweep as a smoke test.
     finding is checked against the code here before it is anything; those a player can meet
     become parts 4.8k and on, each with a test that fails first, most severe first; the rest
     go on the watch list.
-  - [ ] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked
-    for in SPEC and checked against the code, not against its ADR alone: §6.2 (zones, lanes,
-    ports, fleets, sailing, ice, building, sea battles, sea control, blockade, sea supply,
-    convoys, landings, bombardment, the naval AI, the navy budget), what is drawn of the sea,
-    and the gate's and the tests' rules (ADR-278 to ADR-280, ADR-286, ADR-287).
+  - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
   - [ ] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports
     nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
     one place; the naval systems' shared helpers. The pin holds: a refactor that moves it

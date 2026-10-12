@@ -6944,3 +6944,22 @@ Of 4.7 (open in PLAN.md):
   - [x] 4.7g A lake of the fine mask that the coarse coverage has not: drawn at T1 as at T2 and […]
   - [x] 4.7h The march's crossing of a river by a coast, timed with the fleets of a year of war
     under way (the note of PLAN 4.1d2 above): within the tick budget, or a BLOCKER with numbers.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked
+    for in SPEC and checked against the code, not against its ADR alone: §6.2 (zones, lanes,
+    ports, fleets, sailing, ice, building, sea battles, sea control, blockade, sea supply,
+    convoys, landings, bombardment, the naval AI, the navy budget), what is drawn of the sea,
+    and the gate's and the tests' rules (ADR-278 to ADR-280, ADR-286, ADR-287).
