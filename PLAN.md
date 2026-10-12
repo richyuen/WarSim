@@ -58,7 +58,13 @@ quick sweep as a smoke test.
   - [x] 4.7b Ships: a sprite for each class at T2 and T3, and a wake behind a ship under way.
   - [x] 4.7c A sea battle drawn: gunfire, torpedo tracks, a ship sinking.
   - [x] 4.7d A fleet's order line along its way, not straight over the land.
-  - [ ] 4.7e The naval battle demo e2e, screenshots at T1, T2 and T3 viewed (the AT of 4.7).
+  - [x] 4.7e The naval battle demo e2e, screenshots at T1, T2 and T3 viewed (the AT of 4.7).
+  - [ ] 4.7f The sea at T2 and T3 shaded by its depth (the elevation's sea floor), not one flat
+    colour (the note of PLAN 2.11c above).
+  - [ ] 4.7g A lake of the fine mask that the coarse coverage has not: drawn at T1 as at T2 and
+    T3, or at none (the note of PLAN 2.11c above).
+  - [ ] 4.7h The march's crossing of a river by a coast, timed with the fleets of a year of war
+    under way (the note of PLAN 4.1d2 above): within the tick budget, or a BLOCKER with numbers.
 - [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
   and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.

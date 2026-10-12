@@ -14081,3 +14081,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   of BLOCKERS (2.46 ms alone with the change, 2.39 to 2.58 without); the pin held; the new
   spec passed; build and parity green.
 - **Next:** PLAN 4.7e (the naval battle demo, the AT of 4.7).
+
+## 2026-10-12 — PLAN 4.7e: the naval battle demo (ADR-282)
+
+- **Critic not due.**
+- **Done:** `navalDemo1938.spec.ts`: the first sea battle of a British war on Italy (seed 4604,
+  tick 41, off Takao) at T1, T2 and T3, each close picture the busiest moment of its hour. Four
+  pictures looked at: T1 reads; at T2 the ships and their shots are small (6 shots, flashes and
+  splashes in the busiest frame); at T3 hulls, wakes, tracks and slicks; the tiers by turns (T3
+  caught no shot in one run while it waited on T2's picture). A red line between two tags at
+  T3 is left for PLAN 4.8.
+- **PLAN 4.7's three notes** are parts 4.7f (the sea's depth at T2 and T3), 4.7g (a lake at T1)
+  and 4.7h (the river crossing timed with fleets under way): 4.7 is not ticked yet.
+- **Not a rule change.**
+- **The gate:** green (typecheck, lint, build, the demo 3.7 min, parity; no unit test related).
+- **Next:** PLAN 4.7f.

@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-282 · 2026-10-12 · accepted — The naval battle demo (PLAN 4.7e); PLAN 4.7's three notes as parts
+
+- **The demo** (`tests/e2e/navalDemo1938.spec.ts`): the United Kingdom declares war on Italy
+  (seed 4604); the first sea battle of the war (a British destroyer flotilla and cruiser
+  squadron against a Japanese cruiser squadron off Takao, from tick 41) at T1 (1,000 m/px: the
+  engaged markers, the order lines; the sea-control mode), T2 (40 m/px) and T3 (15 m/px), each
+  close picture the busiest moment of its hour (`busiest`: the shots in flight, flashes and
+  splashes the page's last frame drew), the two tiers by turns from the battle's first hour; T2's
+  picture its first hour with a shot (both sides in it), T3's its busiest. 28 ships drawn, the
+  naval look, 3 or 4 ships going down. A first version took T3 only after T2's picture and
+  caught no shot at T3 in one run of three: the battle was ending.
+- **Looked at** (`docs/evidence/4.7/naval-demo-*.png`): at T1 the battle reads; at T2 the ships
+  are a few px each at their length (ADR-276) and the shots small (6 in the busiest frame); at T3
+  the hulls, the tracks and the slicks. A thin red line joins the two British tags at T3: not
+  looked into (for PLAN 4.8). The first version waited 350 ms after the hour and caught no shot:
+  an hour's shots are over in about 400 ms of the page's time at ×5.
+- **PLAN 4.7's notes** (from PLAN 2.11c and 4.1d2) are parts 4.7f, 4.7g and 4.7h: the task is
+  not ticked on the demo alone.
+
 ### ADR-281 · 2026-10-12 · accepted — A fleet's order line along its way (PLAN 4.7d)
 
 - **Context.** A formation's order arrow is drawn straight from it to its target. A march's
