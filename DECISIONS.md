@@ -181,7 +181,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Looked at** (`docs/evidence/4.7/sea-depth-*.png`, 150 m/px): the Tyrrhenian deep beside
   the lighter shallows along Sicily and Calabria; the North Sea one light shelf. Off the Dutch
   coast a grey-blue shape of land is drawn as it was before (for PLAN 4.7g).
-- **Tests.** `seaShade.test.ts`; `tests/e2e/seaDepth1938.spec.ts`.
+- **Tests.** `seaShade.test.ts`; `tests/e2e/seaDepth1938.spec.ts`. Two specs that took the sea for
+  one colour at T2 (`coast1938`'s sea west of an atoll, `coastPicture1938`'s sea drawn as land)
+  failed on the commit and were found by hand after it (they are not specs of the change, and a
+  part runs its own): they take the sea now as its colour times a factor of the ramp, the same for
+  the three channels (within 3, or 12 by distance), which no land's colour is.
 
 ### ADR-282 · 2026-10-12 · accepted — The naval battle demo (PLAN 4.7e); PLAN 4.7's three notes as parts
 

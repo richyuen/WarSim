@@ -7,6 +7,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { assets1938, earthAsset } from '../helpers/earth';
+import { SEA_DEEP, SEA_SHALLOW } from '../../src/render/map/ground';
 
 // PLAN 1.28b: the coastline comes from the fine land mask (16384 × 8192 → 4096 × 2048 coverage),
 // not the 2048 × 1024 cell grid; and the terrain map mode. Where mask and cells disagree, the
@@ -127,7 +128,8 @@ test('off-map rows above and below the map render as sea, without stripes', asyn
 // fine mask had no pixel for. The map drew open sea there at every zoom, and whatever stood in
 // the cell stood in it. The world gives each an islet, in the mask the coasts are drawn from.
 test('an atoll smaller than a pixel of the mask is land in the picture, zoomed out and zoomed in', async ({ page }, info) => {
-  test.setTimeout(150_000);
+  // 1.4 to 1.5 min alone in a container's software rasteriser; over 2.5 beside five other specs.
+  test.setTimeout(300_000);
   const atolls: [string, number, number][] = [
     ['Pitcairn', 283, 742], ['Ralik Chain', 1985, 553], ['Johnston', 59, 501], ['Chagos', 1432, 627],
     ['Tuvalu', 2047, 650], ['Coral Sea Islands', 1868, 698], ['Clipperton', 402, 538], ['Ashmore and Cartier', 1727, 668],
@@ -140,8 +142,10 @@ test('an atoll smaller than a pixel of the mask is land in the picture, zoomed o
   for (const [name, cx, cy] of atolls) {
     // 40 px to a cell: the coverage's coast (T1). 400 and 1,600: the mask's (T2, T3).
     for (const scale of [40, 400, 1600]) expect(dist(await pixelAt(page, cx + 0.5, cy + 0.5, scale), sea), `${name} at ${scale} px to a cell`).toBeGreaterThan(40);
-    // And the sea is still there: two cells to the west.
-    expect(dist(await pixelAt(page, cx - 1.5, cy + 0.5, 400), sea), `the sea west of ${name}`).toBeLessThan(12);
+    // And the sea is still there: two cells to the west (at T2 the sea's colour by its depth, PLAN 4.7f).
+    const west = await pixelAt(page, cx - 1.5, cy + 0.5, 400);
+    const k = Math.min(SEA_SHALLOW, Math.max(SEA_DEEP, (west[0]! + west[1]! + west[2]!) / (sea[0]! + sea[1]! + sea[2]!)));
+    expect(dist(west, sea.map((c) => c * k)), `the sea west of ${name}`).toBeLessThan(12);
   }
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.15') : info.outputPath();
   mkdirSync(out, { recursive: true });

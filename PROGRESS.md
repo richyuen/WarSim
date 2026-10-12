@@ -14110,3 +14110,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **PARITY:** row 3, a note and the specs (and 4.7e's demo, missed there); still partial.
 - **The gate:** green (the unit tests related to 3 files, the new spec, build, parity).
 - **Next:** PLAN 4.7g.
+
+## 2026-10-12 — The coast specs and the sea by its depth (PLAN 4.7f, ADR-283)
+
+- **Found:** two specs took the sea for one colour at T2 and failed after 4.7f
+  (`coast1938`'s "the sea west of Pitcairn", `coastPicture1938`'s "the mask's sea drawn as land");
+  found while running the coast specs by hand for 4.7g. 4.7f's gate ran only its own spec.
+- **Fixed:** both take the sea as its colour times a factor of the depth ramp, one factor for the
+  three channels. No assertion loosened for land.
+- **The atoll test's time:** 1.4 min alone before 4.7f, 1.5 after; over its 150 s beside the five
+  other tests of the two files. It has 300 s now (no assertion changed).
+- **The gate:** the two spec files, green.
+- **Next:** PLAN 4.7g.
