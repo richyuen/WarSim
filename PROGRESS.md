@@ -14219,3 +14219,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gap:** `render/units/ships.ts` (a ship's length at T3) had none but the ships spec's look:
   `shipSize.test.ts` (each class its length, none for what is no ship).
 - **Next:** PLAN 4.8a's findings (the read is running), 4.8c, 4.8e, 4.8i.
+
+## 2026-10-12 — PLAN 4.8a: the tenth independent read; six parts before 4.8's tick
+
+- **The read:** a reader with no word of what changed or why, the 102 files changed since
+  `5d9f1a1` (6,807 lines), Node only, DECISIONS, PROGRESS, PLAN and SPEC not read: five
+  findings, four suspicions; save and load and determinism held on seeds 99, 4242 and 7 with a
+  live sea battle and troops aboard. 300,000 tokens, 18 minutes of its clock.
+- **Checked here:** the scripts of findings 1 to 4 run again and print what it reported
+  (`subs.ts`, `breakoff2.ts`, `reuse2.ts`, `bypass.ts`); findings 4 and 5 read against
+  `amphibious.ts` (the "stood elsewhere" branch's predicate, any holder) and `server.ts` (l. 597).
+- **Parts, most severe first:** 4.8k submarines that cannot hit each other locked in a battle
+  for the war; 4.8l a fleet that broke off caught again each hour; 4.8m an id given out again
+  keeps a dead formation's place aboard; 4.8n transports that stop elsewhere land on any coast
+  past an enemy's sea; 4.8o ports no sea reaches as a fleet's home and a shipyard (a suspicion
+  the reader ran); 4.8p the sea-control mode after a load.
+- **Watch list:** three suspicions not run (BLOCKERS).
+- **Next:** PLAN 4.8k.

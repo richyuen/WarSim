@@ -115,6 +115,16 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 
 ## Watch list (not blocking)
 
+- **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**
+  - the economic AI lays up a standing fleet without asking `world.embarked`: transports with
+    troops aboard, standing where they stopped, would go with the troops at the next hour;
+  - an embarked formation whose transports stand with no land within `AT_PORT_CELLS` stays
+    aboard for good: it takes no order, and the invasion AI skips its nation while it is
+    (`invasion.ts`, the `aboard` set);
+  - `orderLanding` takes a target on a neutral's land (the Calais of 4.5a's test, France at
+    peace); the next midnight's repatriation sets the division home. Whether a landing on a
+    neutral's coast is an order to refuse is a rule to decide (4.8n decides the transports').
+
 - **The tick after PLAN 3.10 (critic R3-B5, 2026-10-08, `00c2e68`).** The AT holds: five
   years from 1938, pinned to `0xFFFF`, are 1.278 ms on seed 99, 1.326 on 4242 and 1.440 on
   8128 (three runs: 1.434 to 1.444), against 1.5. What is left over is a line under PLAN

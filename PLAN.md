@@ -31,12 +31,7 @@ quick sweep as a smoke test.
   Split 2026-10-12, as 3.12R was: the pass is several causes, one a commit. A part is not a
   numbered task (its gate runs the tests related to it and the specs it changed, ADR-280);
   the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
-  - [ ] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and
-    `tools/` changed since the ninth (`5d9f1a1`: PLAN 4.1 to 4.7, 6,807 lines added), the
-    new lines first. The same brief: defects only, nothing of what changed or why. Each
-    finding is checked against the code here before it is anything; those a player can meet
-    become parts 4.8k and on, each with a test that fails first, most severe first; the rest
-    go on the watch list.
+  - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and […]
   - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
   - [ ] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports
     nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
@@ -54,6 +49,31 @@ quick sweep as a smoke test.
     the five years' hash as they were). Where the time went: movement +0.42 ms, naval combat
     0.30 (a contact search each hour with battles rare), the naval AI 0.24, supply +0.18,
     bombardment 0.10, sea control 0.10. Each a part of its own if it is more than one cause.
+  - [ ] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a
+    torpedo is reach, but a submarine is a target of depth charges alone and neither side has
+    any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60
+    days, 0 lost; seeds 99, 4242 and 7 by themselves: a US and four Japanese flotillas from day
+    7 to day 122). Contact needs a side with a weapon the other can be hit by. A test fails first.
+  - [ ] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not
+    leave out a fleet with `retreat` (land combat does): a transport group "broke off" eight
+    hours in a row and was sunk in nine (`.cache/read10/breakoff2.ts`). A test fails first.
+  - [ ] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a
+    division takes a dead transport group's place and lands in Berlin, or a new German
+    division is aboard British transports (`.cache/read10/reuse2.ts`; God Mode remove and
+    spawn, or transports sunk at 23:00 and a delivery at 00:00). `destroyFormation` clears it
+    (as key and as fleet). A test fails first.
+  - [ ] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a
+    neutral's, and past an enemy-held sea: an order to Calais, then the transports sent to
+    Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
+    coast it lands in the Netherlands at peace (`redirect.ts`). "Of its side or none", and the
+    sea's holder asked, as at the landing's own water. A test fails first.
+  - [ ] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
+    22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
+    the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
+    has no home to sail to. Ports a ship reaches only. A test fails first.
+  - [ ] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows
+    the last game's holders (the worker sends `seaControl` only while there is one) until the
+    next 00:00.
   - [ ] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
   - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed

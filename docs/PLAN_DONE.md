@@ -6997,3 +6997,23 @@ Of 4.8 (open in PLAN.md):
   - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule
     and, where it is drawn, a spec; the gaps listed, then filled, or a line for each that is
     not.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and
+    `tools/` changed since the ninth (`5d9f1a1`: PLAN 4.1 to 4.7, 6,807 lines added), the
+    new lines first. The same brief: defects only, nothing of what changed or why. Each
+    finding is checked against the code here before it is anything; those a player can meet
+    become parts 4.8k and on, each with a test that fails first, most severe first; the rest
+    go on the watch list.
