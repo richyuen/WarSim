@@ -416,6 +416,8 @@ export class MapView {
     this.formTemplate = f.template.slice(0, f.count);
     this.formFlags = f.flags.slice(0, f.count);
     this.formTarget = f.target.slice(0, f.count);
+    this.formWayStart = f.wayStart.slice(0, f.count + 1);
+    this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
     // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk).
     let dropped = false;
@@ -619,6 +621,9 @@ export class MapView {
   private formTemplate = new Uint16Array(0);
   private formFlags = new Uint8Array(0);
   private formTarget = new Uint32Array(0);
+  /** The ways left of the fleets under way (PLAN 4.7d; `Snapshot.formations.way`). */
+  private formWayStart = new Uint32Array(1);
+  private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private templates: TemplateInfo[] = [];
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
@@ -1211,6 +1216,7 @@ export class MapView {
         symbol: t?.symbol ?? 'infantry',
         engaged: (this.formFlags[i]! & FormationFlag.engaged) !== 0,
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
+        way: moving && this.formWayStart[i + 1]! - this.formWayStart[i]! >= 4 ? this.formWay.subarray(this.formWayStart[i]!, this.formWayStart[i + 1]!) : null,
       });
     }
     // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
@@ -1397,6 +1403,13 @@ export class MapView {
   formationPos(id: number): [number, number] | null {
     const i = this.formIds.indexOf(id);
     return i < 0 ? null : [this.blockX[i]!, this.blockY[i]!];
+  }
+
+  /** The points of formation `id`'s order line along its way, `x, y` in cells (PLAN 4.7d; a fleet under way), or null (tests). */
+  formationWay(id: number): number[] | null {
+    const i = this.formIds.indexOf(id);
+    if (i < 0 || this.formWayStart[i + 1]! - this.formWayStart[i]! < 4) return null;
+    return Array.from(this.formWay.subarray(this.formWayStart[i]!, this.formWayStart[i + 1]!));
   }
 
   /**

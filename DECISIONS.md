@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-281 · 2026-10-12 · accepted — A fleet's order line along its way (PLAN 4.7d)
+
+- **Context.** A formation's order arrow is drawn straight from it to its target. A march's
+  path keeps near that line; a fleet's way does not: Gibraltar to Alexandria, the arrow went
+  over Algeria and Libya (37 to 57 % of three such lines over land).
+- **The way sent** (`Snapshot.formations.wayStart`, `way`): for a fleet under way (afloat and
+  moving), its path from the step it is on, cut down to the points it turns at (`wayLine`:
+  Ramer–Douglas–Peucker, every cell of the path within `WAY_TOLERANCE` = 0.75 cell of the
+  line; on a map that loops each point on the near side of the one before). Gibraltar to
+  Alexandria: 200 cells, 13 points; Scapa Flow to Pearl Harbor 897 cells, 14 points.
+- **Drawn** (`drawMarkers`): the dashed line from the formation by those points, the arrow head
+  on its last leg; a formation with no way keeps the straight arrow. At T1 only, as before (the
+  markers are not drawn above about 4 km/px).
+- **Looked at** (`docs/evidence/4.7/fleet-order-line*.png`, 1,500 m/px): the squadron at
+  Gibraltar sent to Alexandria, its line out to sea, past Malta and along the coast of Libya to
+  Alexandria; none of it over Algeria.
+- **Tests.** `wayLine.test.ts` (a straight walk, a corner, stairs, the seam; the ways of 1938 on
+  land at 0 to 1.2 % of their length, the straight lines at 37 to 57 %);
+  `tests/e2e/fleetOrder1938.spec.ts` (the line's pixels at sea north of Algeria, none inland).
+- **Not a rule change:** the sim is not touched.
+
 ### ADR-280 · 2026-10-12 · accepted — The unit tests related to what changed; all of them when a task is ticked (the user's decision)
 
 - **Context.** After ADR-279 the unit stage is about 17 minutes of a gate. A part that changes

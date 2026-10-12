@@ -14063,3 +14063,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   what is drawn (`src/render/fx/wrecks.ts`) runs 2 files in a second; one in `src/sim/` 118.
 - **Tests:** `gate.test.ts`, the unit stage.
 - **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — PLAN 4.7d: a fleet's order line along its way (ADR-281)
+
+- **Critic not due.**
+- **Done:** the worker sends a fleet's way left, cut down to its turns (`wayLine`); the markers
+  draw the order line by them; `MapView.formationWay` for tests.
+- **The AT:** `fleetOrder1938.spec.ts`: a squadron at Gibraltar sent to Alexandria, 13 points;
+  at 1,500 m/px 469 more pixels of the line at sea north of Algeria, none inland. Two pictures
+  looked at. At 4 km/px the markers, and their lines, are not drawn: a first version of the
+  spec counted other pixels there.
+- **Tests:** `wayLine.test.ts`. `server.test.ts`: a snapshot in flight holds 19 pooled buffers,
+  17 before (the way's points and offsets); the pool's leak checks are as they were.
+- **Not a rule change:** the sim is not touched.
+- **PARITY:** row 3, a note and the specs; still partial.
+- **The gate:** the unit tests related to 7 files (27 files), red only by the snapshot time
+  of BLOCKERS (2.46 ms alone with the change, 2.39 to 2.58 without); the pin held; the new
+  spec passed; build and parity green.
+- **Next:** PLAN 4.7e (the naval battle demo, the AT of 4.7).

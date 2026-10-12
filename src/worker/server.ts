@@ -16,6 +16,7 @@ import type { LandMask } from '../shared/landMask';
 import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
 import { frameOf, symbolOf, Weapon, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
+import { wayLine } from '../shared/wayLine';
 import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
@@ -1157,6 +1158,10 @@ export class SimServer {
     const ftpl = this.view(Uint16Array, fc, buffers);
     const fflags = this.view(Uint8Array, fc, buffers);
     const ftarget = this.view(Uint32Array, fc, buffers);
+    // The ways left of the fleets under way (PLAN 4.7d): the points their order lines turn at.
+    const ways: number[][] = [];
+    const fwayStart = this.view(Uint32Array, fc + 1, buffers);
+    fwayStart[0] = 0; // (a pooled buffer)
     let j = 0;
     ft.forEach((id) => {
       fid[j] = id;
@@ -1180,8 +1185,14 @@ export class SimServer {
       const moving = ft.cols.moving[id] === 1;
       fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0);
       ftarget[j] = moving ? ft.cols.targetCell[id]! : 0;
+      const path = moving && world.afloat(id) ? world.paths.get(id) : undefined;
+      const way = path ? wayLine(fx[j]!, fy[j]!, path, ft.cols.pathStep[id]!, world.cells.w, world.settings.loopingMap) : [];
+      ways.push(way);
+      fwayStart[j + 1] = fwayStart[j]! + way.length;
       j++;
     });
+    const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
+    for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
     const elements = this.elementSection(world, buffers);
 
@@ -1219,7 +1230,7 @@ export class SimServer {
       tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
       nations: { count: n, data: nations },
       wars,
-      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget },
+      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
