@@ -1,5 +1,5 @@
 /** Map modes (SPEC §9): palette swaps over the same id textures (SPEC §8). */
-export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts'] as const;
+export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts', 'seaControl'] as const;
 export type MapMode = (typeof MAP_MODES)[number];
 
 /** Nations outside any alliance (alliance mode) or puppet bloc (puppet mode), 0xRRGGBB. */
@@ -13,6 +13,9 @@ export const SUBJECT_COLOR = 0x8fd19e;
 export const NEUTRAL_COLOR = 0xb4b4ac;
 export const INCOME_LOW = 0xf4f1d6;
 export const INCOME_HIGH = 0x16703a;
+/** Sea control (PLAN 4.7a): how much of its holder's colour a zone held takes over the sea's, and how far the land fades towards grey. */
+export const SEA_HELD_TINT = 0.5;
+export const SEA_LAND_FADE = 0.65;
 
 export type Relation = 'none' | 'self' | 'ally' | 'enemy' | 'subject' | 'neutral';
 
@@ -52,6 +55,8 @@ const RELATION_COLOR: Record<Exclude<Relation, 'none'>, number> = { self: SELF_C
  * the selected nation (self yellow, allies green, enemies red, overlord/puppets light green,
  * others grey; own colours when nothing is selected). Income: a ramp from pale to deep green.
  * Terrain and revolts modes do not use the palette (the shader colours terrain / province unrest).
+ * The sea-control mode (PLAN 4.7a) keeps the nations' colours: the shader fades the land and tints
+ * each sea zone held with its holder's.
  */
 export const PUPPET_LIGHTEN = 0.45;
 export function modeColor(mode: MapMode, n: NationColors): number {
@@ -91,5 +96,7 @@ export function legendFor(mode: MapMode): [number | null, string][] {
       return [[INCOME_LOW, 'legend.incomeLow'], [INCOME_HIGH, 'legend.incomeHigh']];
     case 'revolts':
       return [[0xe8e3cf, 'legend.calm'], [0xf0a050, 'legend.mayRevolt'], [0x8e1c10, 'legend.revoltLikely']];
+    case 'seaControl':
+      return [[null, 'legend.seaHeld'], [null, 'legend.seaOpen']];
   }
 }

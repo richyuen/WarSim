@@ -39,6 +39,7 @@ export function applyGameOptions(world: World, o: GameOptions): void {
     world.nav = null;
     world.sea = null;
     world.lanes = null;
+    world.portSea = null;
     world.frontier = null;
     world.supplyDirty = true;
   }

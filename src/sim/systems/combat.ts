@@ -147,7 +147,7 @@ export function findBattles(world: World): number[][] {
 }
 
 /** Attack value of a shooter type against a target type (SPEC §5.2 step 2). */
-function effectiveness(us: UnitRule, ut: UnitRule): number {
+export function effectiveness(us: UnitRule, ut: UnitRule): number {
   const base = ut.armor > 0 ? us.hard : us.soft;
   return ut.armor > us.piercing ? base * ARMOR_PEN : base;
 }

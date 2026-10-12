@@ -7,6 +7,7 @@ import { assets1938 } from '../helpers/earth';
 import { EventKind } from '../../src/shared/events';
 import { KILL_STATES } from '../../src/sim/systems/revival';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
+import { at1938 } from '../helpers/checkpoint';
 
 // PLAN 1.32a: the new God Mode commands (rename, spawn revolt, income bonus, forced collapse) and
 // the owned-cell counts they exposed as stale (now maintained by World.setOwner).
@@ -147,8 +148,7 @@ describe('God Mode commands (PLAN 1.32a)', () => {
   }, 120_000);
 
   it('owned-cell counts match the owner grid after two months of AI wars', () => {
-    const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
-    s.step(24 * 60);
+    const s = at1938(7, 24 * 60);
     expectCountsMatch(s.world);
   }, 120_000);
 });

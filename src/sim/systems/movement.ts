@@ -69,6 +69,7 @@ import { nearestCellWhere } from '../data/ownership';
 import { findRoute, nodeGroups } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
+import { orderLanding } from './amphibious';
 import { noteMove } from './elements';
 import { spawnPoint } from './production';
 import { orderSail, sailStep } from './sail';
@@ -250,9 +251,28 @@ const SNAPS = new WeakMap<object, Map<number, number>>();
  * Applies a move order; returns false (and emits MoveRejected) when no land route exists that
  * keeps off the ground of nations outside the formation's wars.
  */
+/** Whether (`x`, `y`) is land of another land component than land formation `id` stands on (PLAN 4.5a). */
+function overSea(world: World, id: number, x: number, y: number): boolean {
+  const { w, h } = world.cells;
+  const tx = Math.floor(x);
+  const ty = Math.floor(y);
+  if (tx < 0 || tx >= w || ty < 0 || ty >= h) return false;
+  const comp = navOf(world).grid.component;
+  const here = comp[Math.floor(world.formations.cols.y[id]!) * w + Math.floor(world.formations.cols.x[id]!)]!;
+  const there = comp[ty * w + tx]!;
+  return here !== 0 && there !== 0 && here !== there;
+}
+
 export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage): boolean {
   // A fleet sails (PLAN 4.2c): its order is its own.
-  if (world.formations.has(id) && world.afloat(id)) return orderSail(world, id, x, y);
+  if (world.formations.has(id) && world.isFleet(id)) return orderSail(world, id, x, y);
+  // Aboard transports it takes no order (PLAN 4.5a).
+  if (world.embarked.has(id)) {
+    world.out.emit(world.tick, EventKind.MoveRejected, id, 0, NaN, NaN);
+    return false;
+  }
+  // To another land: by sea, from a port its nation holds with transports there (PLAN 4.5a).
+  if (world.formations.has(id) && overSea(world, id, x, y) && orderLanding(world, id, x, y)) return true;
   return order(world, id, x, y, pass, 0);
 }
 
@@ -350,10 +370,11 @@ export function movementSystem(world: World): void {
   const w = world.cells.w;
   f.forEach((id) => {
     if (c.moving[id] !== 1 || c.engaged[id] === 1) return; // in contact: holds and fights (PLAN 1.13)
-    if (world.afloat(id)) {
+    if (world.isFleet(id)) {
       sailStep(world, id);
       return;
     }
+    if (world.embarked.has(id)) return; // aboard: where its transports are (`amphibiousSystem`)
     const path = formationPath(world, id);
     const rule = world.rules?.templates[c.template[id]!];
     if (!path || !rule) {

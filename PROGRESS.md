@@ -13388,3 +13388,981 @@ No rule changed and nothing on screen changed. One task came out of it.
   in the browser (the command is what the click sends).
 - **PARITY:** our additions, row 3: a note and the test added, still partial.
 - **Next:** PLAN 4.2d (the Arctic).
+
+## 2026-10-10 — PLAN 4.2d: ice closes the Arctic to a fleet (ADR-251)
+
+- **Critic not due** (no phase review ticked since its report); the report is far older than
+  10 commits, so step 2b does not apply. The clone was shallow: `npm run critic:due` said
+  "due" until the history was fetched (`git fetch --unshallow`).
+- **Counted first** (`.cache/iceProbe.ts`, 120 ways between 16 bases): 44 went north of the
+  Arctic Circle, 35 of them by the Kara, Laptev and East Siberian Seas or by Baffin Bay and
+  the North-West Passages; 26 ports have their water north of 64°.
+- **Done.** `data/maps/earth/ice.json` (by hand, 21 seas of `seas.json`; `IceFile`, and the
+  data set refuses a name that is no sea or one twice); `World.seaIce`, read by the 1938 and
+  the random worlds; `buildSeaZones(…, ice)` → `SeaZones.closed` (29 zones of 428);
+  `buildLaneGraph` leaves out each edge with a closed zone at an end (62 of 1,547);
+  `seaWalk` does not cross a closed zone; `sailRoute` gives no way from or to one, so the
+  order is rejected. Closed and not a cost: no navy of 1938 sailed there (ADR-251).
+- **The AT.** Scapa Flow to Pearl Harbor: by the Panama canal, its one passage, 18,531 km
+  (20,365 by the zones' seeds), never north of 58.9°; it was 15,974 km north of Siberia.
+  With the ice 15 of the 120 ways cross the Arctic Circle, all to or from Murmansk.
+- **Tests:** `ice1938.test.ts`, seven (the AT; the closed zones are those of the file and
+  no edge reaches one; 132 ways between 12 bases with Murmansk and Vladivostok, none in the
+  ice and none missing; every one of the 197 fleets stands in open water, all but the
+  Caspian's with a way to Gibraltar; an order to the Laptev Sea and to a port in the ice
+  rejected, to Murmansk taken; a small sea with a closed zone between two; the file's
+  checks). Four mutations, each failed a test: no flag, no edge left out, the walk over
+  ice (only the small sea's test caught it: no way of the 1938 map was drawn tight over
+  ice), a way from or to the ice. `sailTarget` was given a check of its own first and it
+  was taken out: `sailRoute` refuses the same, and no test told them apart.
+- **A test of PLAN 4.1c changed** (`ports.test.ts`): a port with a node had one edge, and the
+  ports off the seas were on lakes and the Caspian; a port whose water is in the ice has none
+  now (16, counted), and its sea is off the seas. Held so.
+- **`sail1938.test.ts` reads other ways:** of its 90 between ten bases, those of Kiel,
+  Kronstadt, Portsmouth and Plymouth to the Pacific went north of Siberia or Canada and go
+  by Suez or Panama now: 453 of 411,704 places on land of the fine mask (346 of 493,400
+  before), under its limit of 0.002.
+- **The gate on this container:** three timing tests red, two of them on the unchanged HEAD
+  as well (the world's build 2.0 to 2.1 s against 2 s; a snapshot 2.0 to 2.3 ms against 2),
+  the third (`territory`'s frontier cost) only in the full stage. In BLOCKERS; committed so.
+- **The pin stays:** no fleet sails without a player. **No sweep** (ADR-58). The tick is not
+  touched (the zones and lanes are built at their first use).
+- **Not looked at:** S, L and XL (the list is by name, so every size reads it, untested); a
+  picture (nothing drawn changes); seasons (PLAN 4.4 has the line).
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.2e (ships are built).
+
+## 2026-10-10 — PLAN 4.2e: ships are built (ADR-252)
+
+- **Critic not due.** The gate of this container has the four timing reds of PLAN 4.2d
+  (BLOCKERS); nothing else was red at the start.
+- **Split first:** the page's build list knows nothing of ports, so offering the fleets
+  there is a part of its own, PLAN 4.2f (with its AT). The economic AI's ships go to 4.6.
+- **Said first:** the days are the ships' own (`SHIP_TIME_SCALE` 1: a battle squadron
+  900, a destroyer flotilla 180; 3 × would put a squadron of 1938 to sea in 1945); the gold
+  is the land's scale (a battleship 1,050 gold, about a division; a battle squadron 2.8
+  months of the United Kingdom's income).
+- **Done** (`src/sim/systems/production.ts`): `shipyard` (the controlled port a ship
+  reaches, by the lane graph and the ice; the highest naval base, then the nearest to the
+  capital), `dockPoint`; `queueFormation` takes a sea template from a nation with a
+  shipyard; `productionSystem` delivers a fleet at its shipyard's water on its ready day,
+  or the order waits. `waterOf` of `sail.ts` exported for it.
+- **The AT:** a destroyer flotilla queued by the United Kingdom: its 1,120 gold and 2,000
+  men paid at once, at Portsmouth's water at 00:00 of day 180, with its eight destroyers,
+  and it takes an order to Gibraltar. Switzerland, Hungary, Afghanistan, Bolivia and
+  Paraguay refused, nothing paid, a division still taken.
+- **Tests:** `ships1938.test.ts`, five (the AT; the refused; the seven naval powers'
+  yards; an order that waits while Poland holds no port and is delivered at the one it
+  gets back, and Tiksi alone is no shipyard; the six templates' days and the land's as
+  before). Five mutations each failed one or two: no shipyard at the order, the delivery
+  at the land's muster point, the ice not read, a scale of 3, the farthest port taken.
+- **A mistake of mine the tests caught:** the yard ranked the port's level before the
+  distance, and the United States built at Pearl Harbor. Norfolk now.
+- **A test of PLAN 4.2a changed** (`seaTemplates.test.ts`): its fleet days are the ships'
+  own, and the refusal it holds is Switzerland's, where every nation was refused before.
+- **The pin stays:** nothing orders a fleet but a command (the pinned hash test passed
+  alone). **No sweep** (ADR-58). The gate: the unit stage red only by the two timing tests
+  of BLOCKERS (the build 2 s, the snapshot 2 ms), red on HEAD too; the ten-year stage not
+  run in full (seed 1 times out on this container, BLOCKERS); build and parity green.
+- **Not looked at:** the random world's fleets (it has the ports: not tried); a save with a
+  fleet in the queue (the row is the land's, saved as it is); the page (nothing drawn
+  changes; the list leaves the fleets out until 4.2f).
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.2f (the build list).
+
+## 2026-10-10 — PLAN 4.2f: the build list offers the fleets; PLAN 4.2 done (ADR-253)
+
+- **Critic not due.**
+- **Done.** `NationStat.shipyard` (the worker's stats ask `shipyard` of each living
+  nation); `ActionsTab.tsx` lists the land and sea templates, a fleet of a nation with no
+  shipyard disabled with "no port" (`act.needsPort`, English).
+- **Measured, then changed:** the stats' first `shipyard` built the lane graph, 2.6 s on
+  this container, at the boot of every game. A port's water needs only the zones:
+  `portWaters` (`nav/lanes.ts`, now also what `buildLaneGraph` takes its ports' cells
+  from) and `portSeaOf(world)` (a cache dropped where the zones are): 0.87 s here for the
+  zones, 2 ms the waters, 3 ms all the shipyards; the same cell as the lanes' node for all
+  615 ports (a test).
+- **The AT** (`tests/e2e/buildFleet1938.spec.ts`): the six fleets are on the list;
+  Switzerland's disabled, "no port", its division enabled; the United Kingdom's destroyer
+  flotilla enabled, built, its 1,120 gold paid, "ready in 180 days" in its queue. Run by
+  hand with `playerActions1938` (2 tests, green). One picture looked at
+  (`.cache/buildFleet/build-fleet.png`): the six fleets with their gold and days under the
+  land's, the flotilla in training. In it the ranking's rows 13 to 16 overlap (two numbers
+  on Argentina's row): not looked into, nothing of this part draws it.
+- **Browser in this container:** Playwright asked for a headless shell (1243) that is not
+  installed; linked to the installed 1194's files under `/opt/pw-browsers`, outside the repo.
+- **PLAN 4.2 ticked:** its parts a to f are done; its AT (Gibraltar to Suez in the time of
+  its km, no hour on land of the fine mask) is PLAN 4.2c's. The gate runs the browser suite
+  in full for it.
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS. The browser
+  suite run by hand in full: 147 of 164 passed, 17 failed in 1.7 h; 15 of them fail on the
+  commit before as well, and the other two pass alone on this one (BLOCKERS).
+- **The pin stays.** **No sweep** (ADR-58).
+- **PARITY:** our additions, row 3: a note and the spec added, still partial.
+- **Next:** PLAN 4.3 (fleet battles).
+
+## 2026-10-10 — PLAN 4.3a: detection, contact and gunnery by range (ADR-254)
+
+- **Critic not due.** **Split first:** 4.3a (detection, contact, gunnery by range), 4.3b
+  (torpedoes, the screen: the AT's second half), 4.3c (the log, breaking off).
+- **Done** (`src/sim/systems/navalCombat.ts`, after the land's combat in the 1938 systems):
+  `findSeaBattles` (detection less stealth, either side; fleets in contact joined;
+  `engaged`), `nextRange` (the sides' reach and pace), the fire of ships within their
+  reach (`SEA_FIRE_SCALE` 2), `seaKm`. `world.seaRange` (state, a section only while not
+  empty). `UnitRule` has `rangeKm`, `detection`, `stealth` from the units' data.
+- **The AT:** four battleships against four light cruisers from 24 km: the range 24, then
+  18 (the cruisers close by 9 km/h); no hit taken in the first hour; the cruisers gone in
+  5 hours, the battleships losing 140 of 8,000 hit points. From 15 km the battleships take
+  hits from the first hour, and more in all.
+- **A mistake of mine the first run caught:** from 28 km nobody saw anybody (a battleship
+  line sees 17.1 km, the cruisers 24.5): 48 hours of nothing. The AT starts at 24 km; the
+  detection of the data is kept (ADR-254, a line under PLAN 4.3c).
+- **Tests:** `navalBattle1938.test.ts`, six (the range's rule; detection, a submarine
+  seen closer, no battle at peace; the AT; from 15 km; a ship's end and a fleet's, the
+  range gone with the battle; a save in mid-battle loads to the same hash and goes on the
+  same). Four mutations each failed one or two: guns fire at any range, no stealth, no
+  range kept, the shorter side closing at its whole pace.
+- **A test of PLAN 1.x changed** (`headless.test.ts`): the 1938 systems are 23 with the
+  sea's battles, where it counted 22.
+- **The pin stays** (`bbfd15fc`): no sea battle in seed 99's first year. **No sweep.**
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage 16 of 17, seed 1 timed out (840 s, BLOCKERS); build and parity green.
+- **Tick time:** 0.25 ms of 8.69 a tick here (2.9 %).
+- **Not looked at:** a battle of three nations; a sea battle on the page (FireEvents are
+  pushed with the elements' places; PLAN 4.7 draws them); a fleet sailing into a battle.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.3b (torpedoes and the screen).
+
+## 2026-10-10 — PLAN 4.3b: torpedoes and the screen (ADR-255)
+
+- **Critic not due.**
+- **Done.** `data/units/sea.json`: `torpedo`, `torpedo_km`, `asw` (optional stats, in the
+  schema): destroyer 40/10 km and charges 10, light cruiser 20/8, submarine 70/6; the
+  submarine's gun is a deck gun (3 at 4 km, piercing 10; its `hard` 18 at 8 km had been its
+  torpedo). `navalCombat.ts`: torpedoes at the gun's target where their reach covers the
+  range, a submarine's whatever the range; no armour against them; the screen
+  (`SCREEN` 0.6); a submarine no target of guns or torpedoes, only of depth charges.
+- **The AT:** a submarine flotilla on a battle squadron for 3 hours: its larger ships lose
+  1,323 hit points with its 8 destroyers, 3,200 with none; one submarine sunk with them,
+  none without.
+- **Tests:** three more in `navalBattle1938.test.ts` (a destroyer's torpedo on a
+  battleship 0.04 of a ship and its gun 0.003, beyond 10 km the gun alone; nothing but
+  depth charges aimed at a submarine, 0.2 of one each, and the torpedoes at 12 km; the AT).
+  The six of 4.3a unchanged. Four mutations each failed one or two: no screen, guns at
+  submarines, a submarine held to its torpedoes' reach, armour against torpedoes.
+- **The pin stays.** **No sweep.** **The gate:** the unit stage red only by the two timing
+  tests of BLOCKERS; the ten-year stage 16 of 17, seed 1 timed out (888 s); build and
+  parity green.
+- **Not looked at:** surface torpedoes in a battle of lines (a light cruiser's 8 km is
+  inside the 18 km a cruiser line closes to: they come in only below it); a carrier's part
+  (PLAN 5.4).
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.3c (the log and breaking off).
+
+## 2026-10-10 — PLAN 4.3c: a sea battle in the log; breaking off; PLAN 4.3 done (ADR-256)
+
+- **Critic not due.**
+- **Done.** `world.seaBattles` (records, saved while there is one) in place of
+  `world.seaRange`; `navalCombatSystem` takes, merges and ends records, counts each side's
+  ships lost, and breaks off a fleet under half the ships it came in with or with no weapon
+  against an armed enemy (`breakOff`: `retreat` 24 hours, `FormationRetreated`, a sail to
+  its nation's nearest port). `EventKind.SeaBattle` (41) in the history log: a and b each a
+  side's nation and ships lost (`seaSide`, a new role `side`), the place where it began;
+  `history.SeaBattle` in English.
+- **The AT:** a destroyer flotilla under a battle squadron's guns breaks off in its third
+  hour with 1 of its 8 ships for a British port, the battle over in that hour and logged once (Germany 0, the United Kingdom 7); no
+  battle the hour after though the squadron is near. A transport group breaks off in its
+  first hour; its row reads "Germany and United Kingdom fought at sea: Germany lost 0
+  ships, United Kingdom 1".
+- **A mistake of mine caught before the commit:** I wrote "3 of 8" and "United Kingdom 0"
+  from what I expected; the run printed 1 of 8 and 1. Breaking off is read once an hour,
+  after the volleys: a fleet can fall far under half before it is read.
+- **Tests:** `navalBattle1938.test.ts`, ten (two new, one of 4.3a changed: the flotilla is
+  not sunk to the last now; the save compares the records). Five mutations each failed one
+  or two: no break-off under half, none for no weapon, the sides' losses swapped, no sail
+  to port, no retreat hours.
+- **PLAN 4.3 ticked:** its AT's two halves are 4.3a's and 4.3b's. The gate: the unit stage
+  red only by the two timing tests of BLOCKERS; the ten-year stage 16 of 17 (seed 1 timed
+  out, 900 s); the browser suite by hand, 164 of 165 run in its two hours: red the 15 that
+  are red on the commit before 4.2f, camera (flaky there), and counters1938 and
+  declutter1938 by a timeout, which passed alone (BLOCKERS).
+- **The pin stays.** **No sweep.**
+- **Not looked at:** the history panel with a sea battle row on the page (the sentence is
+  tested); a battle of three nations; a merge of two records in play.
+- **PARITY:** our additions, row 3: a note added, still partial.
+- **Next:** PLAN 4.4 (sea control, supply, convoys, blockade).
+
+## 2026-10-10 — PLAN 4.4a: sea control per zone (ADR-257)
+
+- **Critic not due.** **Split first:** 4.4a sea control, 4.4b blockade, 4.4c supply over
+  sea, 4.4d convoys and raiding, 4.4e a fleet's loose ends (each with its AT).
+- **Done** (`src/sim/systems/seaControl.ts`, after the sea battles): `navalPower`,
+  `seaControlSystem` (daily), `seaHolder`, `world.seaControl` (state, a section while a
+  zone is held). 24 systems now (`headless.test.ts`).
+- **The AT:** Scapa Flow's zone is the United Kingdom's from the first day, Kiel's
+  Germany's, Yokosuka's Japan's; 45 of 428 zones held; a German force of 1,200 against a
+  British cruiser squadron's 2,800 does not contest it, of 2,400 does; the same at peace
+  (made French) leaves it British; a zone left keeps its holder 13 days and is nobody's at
+  the 14th day's start.
+- **Tests:** `seaControl1938.test.ts`, six. Four mutations each failed one, the first only
+  after its test was strengthened (see ADR-257).
+- **The pin moves:** `bbfd15fc` → `e5c69f37` (a new section of the state; no rule reads it).
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage 16 of 17 (seed 1 timed out, 930 s), run before the zones' build was made faster
+  (the same zones); build and parity green.
+- **Tick time:** seaControl 0.11 ms a tick over the year (one call of 917 ms at the first
+  day, the zones' build), navalCombat 0.26 ms; the mean 9.0 ms here.
+- **A test of PLAN 1.14 failed and was mended by speed, not changed:** `territory.test.ts`
+  times 72 ticks from the start (26.1 ms a tick against 25, passing on the commit before):
+  the zones' build now lands in the first tick. `buildSeaZones` made faster with the same
+  zones (the zones' tests and the pin hold): 1,050 → about 420 ms here; the test passes.
+- **Not looked at:** a map import's new zones (the control starts again by the zones'
+  count); a puppet's navy with its overlord's in play.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4b (blockade).
+
+## 2026-10-10 — PLAN 4.4b: the blockade (ADR-258)
+
+- **Critic not due.**
+- **Done** (`seaControl.ts`: `BLOCKADE_SHARE`, `blockadedPorts`, `blockadedCells`;
+  `economy.ts`'s `monthlyAccounts` reads them): a port in a zone an enemy of its holder
+  holds is blockaded; a province all of whose ports are blockaded pays half its land's
+  income.
+- **The AT:** a German battle squadron in the zone of a British province's ports (the
+  first province whose ports' water is in one zone with no warship): Germany holds the
+  zone the next day, the province's ports are blockaded, and the United Kingdom's month
+  is the expected sum to six places (the province is 0.14 % of its land's income: 2,411.9
+  → 2,410.2).
+- **Tests:** `blockade1938.test.ts`, three (the AT; at peace and with nobody holding, no
+  blockade; a province with a port on an open zone is not blockaded until both are held).
+  Three mutations each failed one or two: no cut, any holder blockades, one port enough.
+- **A mistake of mine the run caught:** the third test looked for a British province with
+  ports on two zones and found none; it takes the first such province of any nation.
+- **The pin moves:** `e5c69f37` → `503952b6`. Seed 99's first year (`.cache/blockProbe.ts`):
+  China 6 ports blockaded in month 1, 19 from month 8; Nationalist Spain 7, Germany 9,
+  Italy 3 later; 24 provinces at the year's end.
+- **The gate:** typecheck first failed on an unused variable of my test (mended); then the
+  unit stage red by the timing tests of BLOCKERS and two that ran beside a leftover
+  ten-year stage (economy's year timed out, territory's cost), both green alone; the
+  ten-year stage 15 of 17, seeds 1 and 2 timed out (BLOCKERS, with a profile of both
+  commits); build and parity green.
+- **Not looked at:** income on the page while blockaded; the economic AI's view of it.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4c (supply over sea).
+
+## 2026-10-10 — PLAN 4.4c: supply over sea (ADR-259)
+
+- **Critic not due.**
+- **Done** (`src/sim/systems/seaSupply.ts`: `zoneLinks`, `seaLinkedAll`, `seaLinked`,
+  `markSeaLinks`; `supply.ts`: the sources filtered, the joined lands asked at each refresh
+  hour; `World.seaLinks`, derived).
+- **The AT:** a British division on Malta at war with Italy: cut on the first day (Italy's
+  fleets hold the zones about Malta); with the sea open it is fed at the refresh of hour
+  12; with Malta's own port zone held it is out of the network at hour 24 and dry 8 hours
+  later; fed again after the refresh of hour 36 when the sea is open.
+- **Tests:** `seaSupply1938.test.ts`, four (the AT; a zone held on one way is no cut, the
+  whole sea held cuts every land with a port but home and none without; Suez joins two
+  zones; at the start no bloc has a city cut off). Five mutations each failed one or two.
+- **Mistakes of mine the runs caught:** by the capital's land alone 314 Brazilian cities
+  (and Estonia's, Liberia's, Nicaragua's, Panama's) were cut at the start: the land with
+  most of a bloc's cities is home too. A city on no land component was dropped as a source
+  (a supply test of random changes, 42 cells): such a city is not cut. My first test took
+  Italy for the holder of Malta's own zone: it is Britain's, the zones about it Italy's.
+  Asking each bloc apart made the supply 2.46 ms a tick; one pass for all, asked once an
+  hour, 0.95.
+- **The pin moves:** `503952b6` → `67919bee` (one British city cut off from month 7).
+- **Tick time:** supply 0.70 → 0.95 ms a tick here (mean tick 9.7 ms, within the spread).
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage 16 of 17 (seed 1 timed out, 820 s); build and parity green.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4d (convoys and raiding).
+
+## 2026-10-10 — PLAN 4.4d: convoys and submarine raiding (ADR-260)
+
+- **Critic not due.**
+- **Done:** `src/sim/systems/convoys.ts` (`RAID_PER_BOAT`, `convoyLosses`, `convoyShare`);
+  `convoyWays` in `seaSupply.ts` (the BFS keeps its way back); `monthlyAccounts` pays a
+  land's share; `runEconomyMonth` logs `ConvoyRaided` (42; history role nation, nation;
+  English sentence); `navalPower` leaves submarines out.
+- **The AT:** a German submarine flotilla in a zone of the way to Malta (0.15 % of the
+  United Kingdom's land income; two British lands' convoys pass it): Malta keeps 0.6 of
+  its income, 0.84 with a British destroyer flotilla there; the month is the sum over the
+  raided lands to six places (2,411.9 → 2,410.6 screened).
+- **Tests:** `convoys1938.test.ts`, three (the AT; the log, once a month per zone and
+  nation, its sentence, and no zone held by boats; no raid at peace or by a nation at war
+  with another). Five mutations each failed one or more.
+- **Mistakes of mine the runs caught:** the first zone I took had British destroyers in it
+  already (a full screen: 0.84 for 0.6); the test takes a zone with no British fleet. Then
+  the month was lower than one land's raid: the zone is on two lands' ways; the test sums them.
+- **A test of PLAN 4.4a changed** (`seaControl1938.test.ts`): the start's power leaves the
+  submarines out. **One of PLAN 4.4c** (`seaSupply1938.test.ts`): Malta was cut on the first
+  day of a war with Italy because Italy's boats held the zones about it; it is joined now.
+- **The pin moves:** `67919bee` → `a45b7fab` (Italy raids British convoys in 5 months).
+- **The gate:** the unit stage red by the two timing tests of BLOCKERS and by PLAN 4.4c's
+  Malta test, changed as above (green alone after it); the ten-year stage 16 of 17 (seed 1
+  timed out, 780 s); build and parity green.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.4e (a fleet's loose ends).
+
+## 2026-10-10 — PLAN 4.4e: a fleet's loose ends; PLAN 4.4 done (ADR-261)
+
+- **Critic not due.**
+- **Done:** `rebaseFleets`, `nearestOwnPort`, `AT_PORT_CELLS` (`navalCombat.ts`, daily from
+  the sea control); `passageBank`, `passageShut` (`seaSupply.ts`; the supply's ways leave a
+  shut passage out); `laneRoute` and `sailRoute` take a test of shut edges, `orderSail`
+  shuts a passage an enemy holds; `strandedToLand` keeps a fleet in a passage's step.
+- **The AT:** the British fleets at Gibraltar stand while it is British and sail at the
+  next day's start for a British port when Germany, at war, holds its cell (not when
+  Germany is at peace); Gibraltar to the Gulf of Suez 4,115 km through the canal, 21,213
+  round the Cape with its bank held by Germany; a fleet in the canal's step (hour 122) is
+  kept by an import and comes through.
+- **Tests:** `fleetEnds1938.test.ts`, five. Four mutations each failed one; the canal's only
+  after the import changed a cell (one that changes nothing returns before the fleets are
+  looked at).
+- **The pin moves:** `a45b7fab` → `e8fc6344` (25 fleets of 7 nations leave lost bases in
+  seed 99's first year, `.cache/rebaseProbe.ts`).
+- **PLAN 4.4 ticked:** its AT's halves are 4.4b's and 4.4c's. The browser suite runs in full.
+- **The ten-year runs failed** on seeds 1 to 3 (days 35, 84, 136): PLAN 4.2b's rule that no
+  fleet is touched. Changed to the rules there are now (ADR-261): free from the day it sails
+  from a lost base, or fights. Three rounds: the check is the hour before a day's start, so a
+  fleet sent at 00:00 is 23 hours away at the next (the base as it was at the check before);
+  a sail can end within the day (moved, not under way); a battle can begin and end in an hour
+  (the hour's fires). Seed 1's ten years then: 143 fleets stand, 44 sailed, 8 fought, 2 gone;
+  seed 2 137, 57, 0, 3; seed 3 154, 42, 0, 1.
+- **The gate:** the unit stage red only by the two timing tests of BLOCKERS; the ten-year
+  stage through on every seed, seeds 1 and 3 over the time; the browser suite 164 of 165 run,
+  red as on the commits before (BLOCKERS); build and parity green.
+- **PARITY:** our additions, row 3: a note and the test added, still partial.
+- **Next:** PLAN 4.5 (amphibious invasion).
+
+## 2026-10-10 — PLAN 4.5a: embark, sail, land (ADR-262)
+
+- **Critic not due.**
+- **Split:** PLAN 4.5 into 4.5a (the movement), 4.5b (sea control a landing needs, its
+  penalty; the AT of 4.5), 4.5c (bombardment).
+- **Done:** `amphibious.ts` (`orderLanding`, `amphibiousSystem` after the movement,
+  `transportRoom`, `TRANSPORT_MEN`, `LANDING_ORG`); `World.embarked` (a saved section);
+  `World.afloat` is a fleet or a formation aboard, `World.isFleet` a fleet (the sea rules
+  that mean ships ask it); `orderMove` asks `orderLanding` for a target on another land;
+  events `FormationEmbarked`, `FormationLanded`.
+- **The AT:** a British division at Portsmouth ordered to Calais goes aboard, sails and lands
+  in hour 12 at Calais' cell, its org 0.5. One at Birmingham marches to the coast of Kent as
+  before; at Portsmouth the two transport groups take three divisions, the fourth marches (wrong: two, one a group; corrected in 4.5b).
+- **Tests:** `amphibious1938.test.ts`, four. Three mutations each failed one.
+- **The pin stays** `e8fc6344`.
+- **The ten-year runs** failed on seed 2: a transport group sailed with a division the AI
+  ordered to another land (day 1351), then a start fleet was sunk whole in a sea battle (day
+  3489). `fleetsStand` frees a fleet that carried troops (`carried`) and one sunk in a battle
+  it was in (`fought`), ADR-262. Seed 2 then: 135 stand, 56 sailed, 3 fought, 1 carried, 2
+  gone.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage
+  through on every seed, seed 3 over the time (639 s alone, every check passed); build and
+  parity green. No numbered task ticked: no browser suite.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.5b (sea control and the landing).
+
+## 2026-10-10 — PLAN 4.5b: a landing needs the sea, and takes its beachhead (ADR-263)
+
+- **Critic not due.**
+- **Done:** `amphibiousSystem` throws back a landing whose water's zone an enemy holds
+  (`LandingRepulsed`, the transports `sailHome`); `land` takes an enemy's cell it lands on
+  (the beachhead: the front spreads only from held land). The penalty is 4.5a's disorder.
+- **The AT:** at war with Belgium (Britain and France are allies), two divisions from
+  Portsmouth land at Ostend: 1 British cell, 13 within 8 cells ten days on. With Belgium
+  holding the zones about Ostend both are thrown back and ashore in Britain; nothing taken.
+- **Corrected:** 4.5a's "three divisions" at Portsmouth: a group's 24,000 take one division
+  of 12,460, two in all; its test now asks for exactly two.
+- **Tests:** `landing1938.test.ts`, three. Four mutations each failed one or two.
+- **The pin stays** `e8fc6344`.
+- **The ten-year runs** failed on seed 2 (day 3491): a fleet sent from a base lost in the tick
+  it was sent, home within the day. `fleetsStand.hour` notes a fleet under way at a lost base
+  in any hour (ADR-263). Seed 2 then: 153 stand, 40 sailed, 1 carried, 3 gone.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage
+  through on every seed, seeds 1 and 3 over the time (607 s, 619 s; every check passed);
+  build and parity green. No numbered task ticked: no browser suite.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.5c (naval bombardment).
+
+## 2026-10-10 — A lost base is a port of the fleet's nation (ADR-264)
+
+- **Critic not due.** A cause of its own found in PLAN 4.5c: a British battle squadron off
+  Ostend, at war with Belgium, sailed home at the first day's start (ADR-261's lost base was
+  any enemy-held port near it).
+- **Done:** `atLostBase` asks that the port be owned by the fleet's nation.
+- **Tests:** `fleetEnds1938.test.ts`, a sixth (Gibraltar Germany's own: the fleets stay); one
+  mutation failed it. The pin stays `e8fc6344`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 17 of
+  17 (seed 1: 145 fleets stand, 42 sailed, 8 fought; seed 2: 156, 37, 0, 1 carried; seed 3:
+  154, 42, 0); build and parity green.
+- **Next:** PLAN 4.5c (naval bombardment), its work stashed meanwhile.
+
+## 2026-10-11 — PLAN 4.5c: naval bombardment; PLAN 4.5 done (ADR-265)
+
+- **Critic not due.**
+- **Done:** `bombardment.ts` (`bombardmentSystem`, hourly after the sea battles,
+  `BOMBARD_FIRE`); `effectiveness` exported from `combat.ts`; 26 systems.
+- **The AT:** at Ostend a Belgian division loses 155 men in 12 hours in a fight with a British
+  one, 428 with a British battle squadron 14.8 km off; a destroyer flotilla there (12 km
+  guns), a French squadron at peace and a transport group add nothing; with no fight the
+  squadron fires at nothing.
+- **Tests:** `bombardment1938.test.ts`, four. Four mutations each failed one (the reach's
+  only after a test of it was added).
+- **The pin stays** `e8fc6344`.
+- **PLAN 4.5 ticked:** its AT is 4.5b's. The browser suite runs in full.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 16 of
+  17, seed 3 over the time (840 s; its game changed with the bombardment: 197 revolts for 166,
+  year 8's tick 15.6 ms; the bombardment 0.1 ms of a tick, 1 %, by `--profile`; a first
+  version that looked at every fight from every fleet was made to look at the squares about
+  the fleet, the same choice); the browser suite by hand in its two hours, 164 of 165: red
+  the 17 of BLOCKERS (4.2f's list but fire), nothing new; build and parity green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6 (naval AI).
+
+## 2026-10-11 — One review pass a phase, at its end (ADR-266, the user's decision)
+
+- **Done:** PROMPT step 9: the review pass is the phase review's (refactor debt, dead code,
+  SPEC drift, missing tests over the whole phase); none every ~5 tasks. The phase reviews
+  4.8, 5.8 and 6.9 of PLAN.md take its items. No 4.5R.
+- **Next:** PLAN 4.6 (naval AI).
+
+## 2026-10-11 — PLAN 4.6a: the wars with no front, counted (ADR-267)
+
+- **Critic not due.**
+- **Split:** PLAN 4.6 into 4.6a (count), 4.6b (invasion planning), 4.6c (fleets at sea), 4.6d
+  (raiding), 4.6e (the navy's cost).
+- **Done:** `tools/diag/fronts.ts` (a tool; no rule changed).
+- **The counts** (10 years, seeds 1/2/3): wars 274/212/234; no front on any day 2/2/3, short,
+  ended by a peace; a front on under a tenth of their days 8/7/8, long (mean 337/357/421
+  days): the British bloc against Ireland in every seed for 800 days, Nationalist Spain
+  against Portugal 1,152 days; contacts standing 14 days 0.6/0.2/0.5 formations on a mean day.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; build and parity green
+  (no sim input changed: no ten-year stage; no browser suite).
+- **Next:** PLAN 4.6b (invasion planning, for a war with no front today).
+
+## 2026-10-11 — An annexation leaves a third nation's occupation its own (ADR-269)
+
+- **Critic not due.** A cause of its own, found by PLAN 4.6b's ten-year runs (its work stashed
+  meanwhile): seed 7, Hungary annexed Austria and Italy held 18 of its cells with no war with
+  their new owner (`heldYears.test.ts`).
+- **Done:** `annexInto` gives a cell a third nation holds to that nation (ADR-112's rule).
+- **Tests:** `annexLand.test.ts`, one; red with the old rule. The pin stays `e8fc6344`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 3 over the time (639 s, 823 s) with no rule broken in their output; build and
+  parity green.
+- **Next:** PLAN 4.6b, unstashed.
+
+## 2026-10-11 — PLAN 4.6b: the AI's invasions (ADR-268)
+
+- **Critic not due.**
+- **Done:** `src/sim/ai/invasion.ts` (`invasionAi`, after the operational AI; 27 systems);
+  `orderLanding` lands on an owned cell where the target is owned; the ten-year tests ask
+  ≥ 1 landing and print the counts.
+- **The AT:** landings in 10 years 35/18/25 on seeds 1/2/3, none thrown back. Britain at war
+  with Iceland (and Denmark): aboard on day 8, ashore in Jutland on day 12.
+- **Tests:** `invasionAi1938.test.ts`, two. Three mutations each failed one.
+- **A beachhead on a neutral's land** is the owner's (ADR-268, as ADR-147): a fourth test in
+  `landing1938.test.ts`, red with the old rule. Found with ADR-269 in the ten-year runs.
+- **The pin moves:** `e8fc6344` → `5688116f` (10 landings in seed 99's first year).
+- **Three tests of a march read the AI's transports as marches** (they had never sailed in
+  their 60 or 90 days): `movement.test.ts` (a sail of over a cell an hour), `coast1938.test.ts`
+  (a march over water) and `fleets1938.test.ts` (a transport group moved, its rule asked only
+  daily). The first two now leave out what is afloat, as the third's rest of the test did; the
+  third asks the fleets' rule every hour (`fleetsStand.hour`, ADR-262: a fleet that carried
+  troops is free). No assertion weakened: each still holds for every march.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 2 over the time (861 s, 918 s; every check in their output passed, the
+  landings' among them); build and parity green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6c (fleets at sea).
+
+## 2026-10-11 — PLAN 4.6c: the AI's fleets at sea (ADR-270)
+
+- **Critic not due.**
+- **Done:** `src/sim/ai/naval.ts` (`navalAi`, after the invasion AI; 28 systems;
+  `fleetPower`, `SORTIE_KM`, `AVOID_RATIO`); the ten-year tests ask ≥ 1 sea battle;
+  `fleetsStand` frees any fleet that sails with its ships whole.
+- **The AT:** seed 99's first year 31 sea battles (the first on day 39). Britain at war with
+  Italy: 22 of 26 warfleets under way in a week, the first battle on day 7.
+- **Tests:** `navalAi1938.test.ts`, four. Three mutations each failed one (the turning home's
+  after its test was made to keep out of a battle and Italy's AI off).
+- **The pin moves:** `5688116f` → `56ca6b12`.
+- **Tests that read fleets as land:** `movement.test.ts` (seed 7's 55 days: a fleet's sail of
+  3.7 cells an hour) and `operationalAi.test.ts` (two fronts far apart: the Soviet fleets'
+  orders) leave out what is afloat; `territory.test.ts` builds the lane graph before it times
+  the frontier (ADR-270). No assertion weakened.
+- **Home is a port of its bloc's:** the Dutch East Indies squadrons at Surabaya were sent home
+  every week at peace (a way of 2 s).
+- **The ten-year runs:** sea battles 35/40/83 on seeds 1/2/3 (landings 30/32 on seeds 1/2).
+  They failed first on each seed: a fleet at its base sunk whole in a battle of one hour (an
+  enemy's fleet met it there) was "gone while its nation lives": the hour's fires named its
+  ships, already out of the table. `fleetsStand` keeps the start's ships by element.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage: every
+  check passed on the three seeds, all three over the time (847, 848, 922 s); build and parity
+  green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6d (raiding).
+
+## 2026-10-11 — A bloc whose lands by sea changed is flooded whole (ADR-272)
+
+- **Critic not due.** A cause of its own, found by PLAN 4.6d's ten-year runs (its work stashed):
+  seed 3, tick 2389, Malta's cell fed in a full refresh and dry in the partial one.
+- **Done:** `World.supplySeaBlocs` (from `markSeaLinks`), flooded whole at a refresh even when a
+  cell of the bloc's own changed hands.
+- **Tests:** `seaSupply1938.test.ts`, a fifth; red with the old rule. The pin stays `56ca6b12`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 14 of
+  17, the three seeds over the time (832, 802, 891 s) with every check in their output
+  passed; build and parity green.
+- **Next:** PLAN 4.6d, unstashed.
+
+## 2026-10-11 — PLAN 4.6d: submarines raid (ADR-271)
+
+- **Critic not due.**
+- **Done:** `raid` in `src/sim/ai/naval.ts` (`RAID_KM`): at war a submarine flotilla off an
+  enemy's convoy way sails for the nearest zone of one.
+- **The AT:** Germany at war with Britain: two of its four flotillas sail in a week (two are
+  sunk at Kiel), the first raid on day 31. Seed 99's first year: 47 raids, 23 sea battles.
+- **Tests:** `navalAi1938.test.ts`, a fifth; two mutations failed it, and so did the first
+  version (only flotillas in port sent: the way had moved by the time they came).
+- **The pin moves:** `56ca6b12` → `736b414c`.
+- **Found by the ten-year runs:** the supply's partial refresh (ADR-272, its own commit before
+  this one), and a defect of `researchYears.test.ts`: it took the nations' columns once at the
+  start, and a table that grows gets new arrays: France's income of the day the table grew
+  (1,082) was read in 1942 and 1944 (its own 58 to 141), France read as rich and held to know
+  the heavy tank. The columns are read fresh; the test passes, its checks as before.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 14 of
+  17, the three seeds over the time (760, 785, 716 s) with every check passed (sea battles
+  50/78/64, landings 34/30/10); build and parity green.
+- **PARITY:** row 3, a note; still partial.
+- **Next:** PLAN 4.6e (the navy's cost).
+
+## 2026-10-11 — PLAN 4.6e1: the navy's cost, builds and lay-ups (ADR-273)
+
+- **Critic not due.**
+- **Split:** PLAN 4.6e into 4.6e1 (builds and lay-ups) and 4.6e2 (a navy's weight in the
+  strategic AI).
+- **Done:** `NAVY_SHARE`, `BATTLE_FLEET_INCOME`, `pickFleet` and the lay-ups in
+  `src/sim/ai/economic.ts`; `BUILD_MIX_1938.fleets`; event `FleetsLaidUp`; `fleetsStand` counts
+  fleets laid up (`laid`).
+- **The AT:** the United States orders a battle squadron, Sweden a destroyer flotilla, Japan
+  (21.9 % of its income) none; at war with no front, transports first; Japan in debt lays up 5
+  fleets. Seed 99's first year: 14 fleets ordered, none laid up.
+- **Tests:** `navyBudget1938.test.ts`, three; five mutations each failed one.
+  `economicAi.test.ts`'s mix checks read the army's orders (a fleet is no part of it).
+- **The pin moves:** `736b414c` → `02966b63`.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 14 of
+  17, the three seeds over the time (1,051, 762, 724 s) with every check passed (sea battles
+  93/90/77, landings 42/62/59, no fleet laid up); build and parity green.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.6e2 (a navy's weight in the strategic AI).
+
+## 2026-10-11 — PLAN 4.6e2: a navy's weight in war and peace; PLAN 4.6 done (ADR-274)
+
+- **Critic not due.**
+- **Done:** `fleetMen`, `NAVY_WEIGHT` and `fleetPower` in `seaControl.ts`; `strengths`
+  (exported) and `menOf` count a fleet's weight.
+- **The AT:** the United Kingdom's strength is its army and half its warships' hit points; a
+  battle squadron lost raises British exhaustion from 0.30 to 3.71 in four days.
+- **Tests:** `navyWeight1938.test.ts`, two; two mutations each failed one.
+- **The pin moves:** `02966b63` → `841d4422`.
+- **PLAN 4.6 ticked:** its AT's halves are in the ten-year tests. The browser suite runs in full.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17: seed 3 in its time, seeds 1 and 2 over it (906, 879 s), every check passed (sea battles
+  117/102/97, landings 46/93/55); build and parity green; the browser suite by hand in 1.8 h,
+  164 of 165: red the 16 of BLOCKERS' list and declutter1938 and fire1938, which passed alone
+  (4 tests, 3.8 min), as in BLOCKERS.
+- **PARITY:** row 3, a note and the test; still partial.
+- **Next:** PLAN 4.7 (naval visuals).
+
+## 2026-10-11 — PLAN 4.7a: the sea-control map mode (ADR-275)
+
+- **Critic not due.**
+- **Split:** PLAN 4.7 into 4.7a (sea-control mode), 4.7b (ship sprites, wakes), 4.7c (gunfire,
+  torpedoes, sinking), 4.7d (a fleet's order line along its way), 4.7e (the demo, 4.7's AT).
+- **Done:** worker message `seaControl` (holders; the cells' zones when new); `MapRenderer`
+  textures and fill mode 3; the map mode `seaControl` with its legend.
+- **The AT:** `seaControl1938.spec.ts`: Scapa Flow's zone British-tinted on the first day, the
+  South Pacific open, the land faded. Two pictures looked at (`docs/evidence/4.7/`): a first
+  version's tint had Portugal's zone read as land; tint 0.5 and the land faded 0.65 since.
+- **Not a rule change:** the pin is not touched.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 2 over the time (861, 825 s); the changed spec passed; build and parity green.
+- **PARITY:** row 3, a note and the spec; still partial.
+- **Next:** PLAN 4.7b (ships by class, wakes).
+
+## 2026-10-11 — PLAN 4.7b: ships by class, their length at T3, wakes (ADR-276)
+
+- **Critic not due.**
+- **Done:** five ship frames and the wake in the atlas (`unitLooks.ts`, `atlas.ts`);
+  `render/units/wakes.ts` (`appendWakes`), `render/units/ships.ts` (`shipSideCells`); both
+  tiers in `MapView`; `MapView.elementWakes` for tests.
+- **The AT:** `ships1938.spec.ts`: the Home Fleet's battle squadron has battleships, cruisers and
+  destroyers, each its sprite; no wake at rest, 16 under way. Pictures looked at: at 5 m/px the
+  first build drew each ship a speck (a grid place's size): a ship is its length since.
+- **Tests:** `wakes.test.ts`, one; `unitLooks.test.ts` changed for the frames.
+- **Not a rule change.** The gate: unit red only by the two timing tests of BLOCKERS; the
+  ten-year stage 15 of 17, seeds 1 and 2 over the time (869, 804 s); the changed spec passed;
+  build and parity green.
+- **PARITY:** row 3, a note and the spec; still partial.
+- **Next:** PLAN 4.7c (gunfire, torpedoes, sinking).
+
+## 2026-10-11 — PLAN 4.7c: a sea battle drawn (ADR-277)
+
+- **Critic not due.**
+- **Done:** `Weapon.naval`, `Weapon.torpedo` and their looks; a torpedo's fire record has
+  −1 − its unit type; `Wreck.ship` going down (`SINK_MS`, `sunkOf`, the slick);
+  `MapView.formationEngaged` for tests.
+- **The AT:** `seaBattle1938.spec.ts`: the war's first sea battle (off Takao, tick 41) at T2:
+  naval and torpedo shots drawn, four ships going down. Two pictures looked at; the slicks were
+  larger than the ships at first (now 0.35 of a land sprite). No tracer in flight was caught in
+  the pictures.
+- **Tests:** a record test in `navalBattle1938.test.ts`; `sinking.test.ts`; `unitLooks.test.ts`
+  for the looks. Readers of the records in two helpers skip a torpedo's.
+- **Not a rule change:** fire records are not state.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 2 over the time (841 s, 801 s; the pin held); the changed spec passed (3.7
+  min); build and parity green.
+- **PARITY:** row 3, a note and the spec; still partial.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — The sweep tests only at phase reviews (ADR-278, the user's decision)
+
+- **Why:** the sweep stage was ~15 of a gate's ~45 minutes; the unit stage is the other ~27.
+- **Done:** `npm run check` runs every test of `tests/sweep/` only when the change ticks a phase
+  review (or FULL / `check:full`, or git cannot tell); any other sim change runs the pin alone.
+  The sweep tests' timeouts are 900 s. CLAUDE.md and PROMPT.md say so.
+- **Tests:** `gate.test.ts`, the sweep stage.
+- **The gate:** its unit stage run with the unit-test work of ADR-279 in the tree (only the
+  timing tests of BLOCKERS red, and the frontier's per-tick time under four workers); the pin
+  held (89 s); build, lint and parity green.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — The unit tests faster (ADR-279, the user's decision)
+
+- **Measured:** of 79 minutes of unit-test time, 901 builds of the 1938 world were 33.5 (2.2 s
+  each), stepping 28, the rest 17.
+- **Done:** a 1938 world made from a template of the file's first (`keepWorldTemplates`, the
+  tests' setup); shared checkpoints of pure runs (`at1938`, `.cache/checkpoints/`) in four tests;
+  a revolt by its provinces' cells (`provinceCellsOf`: 4,597 forced revolts 69 s → 9.6 s, the
+  same hash); the map's nav caches kept over a load where the map is the same (`checkNav`);
+  `rebelCapitals`' two tests share one forced world.
+- **Result:** the unit stage 27 → about 19 minutes of wall time on four workers (52 minutes of
+  CPU, from 86). Vitest keeps its three workers: on four, the frontier's per-tick time read 33 ms
+  against its 25.
+- **Tests:** `worldTemplate.test.ts` (a world made from a template is the built one: hash, the
+  parts outside its state, the tables' room, 36 hours on; a checkpoint is the stepped world).
+- **The pin** held: no rule changed.
+- **The gate:** unit 17.2 min, red only by the two timing tests of BLOCKERS and the frontier's
+  per-tick time (29.5 ms against 25; 13 to 19 alone, the same at HEAD: BLOCKERS); the pin held;
+  typecheck, lint, build and parity green.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — The unit tests related to what changed (ADR-280, the user's decision)
+
+- **Done:** `npm run check` runs every unit test when a numbered task or a review is ticked (or
+  FULL, or a shared file changed); otherwise `vitest related` over what changed. A change to
+  what is drawn (`src/render/fx/wrecks.ts`) runs 2 files in a second; one in `src/sim/` 118.
+- **Tests:** `gate.test.ts`, the unit stage.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — PLAN 4.7d: a fleet's order line along its way (ADR-281)
+
+- **Critic not due.**
+- **Done:** the worker sends a fleet's way left, cut down to its turns (`wayLine`); the markers
+  draw the order line by them; `MapView.formationWay` for tests.
+- **The AT:** `fleetOrder1938.spec.ts`: a squadron at Gibraltar sent to Alexandria, 13 points;
+  at 1,500 m/px 469 more pixels of the line at sea north of Algeria, none inland. Two pictures
+  looked at. At 4 km/px the markers, and their lines, are not drawn: a first version of the
+  spec counted other pixels there.
+- **Tests:** `wayLine.test.ts`. `server.test.ts`: a snapshot in flight holds 19 pooled buffers,
+  17 before (the way's points and offsets); the pool's leak checks are as they were.
+- **Not a rule change:** the sim is not touched.
+- **PARITY:** row 3, a note and the specs; still partial.
+- **The gate:** the unit tests related to 7 files (27 files), red only by the snapshot time
+  of BLOCKERS (2.46 ms alone with the change, 2.39 to 2.58 without); the pin held; the new
+  spec passed; build and parity green.
+- **Next:** PLAN 4.7e (the naval battle demo, the AT of 4.7).
+
+## 2026-10-12 — PLAN 4.7e: the naval battle demo (ADR-282)
+
+- **Critic not due.**
+- **Done:** `navalDemo1938.spec.ts`: the first sea battle of a British war on Italy (seed 4604,
+  tick 41, off Takao) at T1, T2 and T3, each close picture the busiest moment of its hour. Four
+  pictures looked at: T1 reads; at T2 the ships and their shots are small (6 shots, flashes and
+  splashes in the busiest frame); at T3 hulls, wakes, tracks and slicks; the tiers by turns (T3
+  caught no shot in one run while it waited on T2's picture). A red line between two tags at
+  T3 is left for PLAN 4.8.
+- **PLAN 4.7's three notes** are parts 4.7f (the sea's depth at T2 and T3), 4.7g (a lake at T1)
+  and 4.7h (the river crossing timed with fleets under way): 4.7 is not ticked yet.
+- **Not a rule change.**
+- **The gate:** green (typecheck, lint, build, the demo 3.7 min, parity; no unit test related).
+- **Next:** PLAN 4.7f.
+
+## 2026-10-12 — PLAN 4.7f: the sea at T2 and T3 by its depth (ADR-283)
+
+- **Critic not due.**
+- **Done:** the ground pass shades water by the elevation's sea floor (`seaShadeAt`, a log ramp
+  1.32 → 0.72 to 6,000 m), by the ground's share: T0 and T1 keep one colour.
+- **The AT:** `seaDepth1938.spec.ts`: the Dogger Bank 37,68,112 and the South Pacific 22,40,65
+  at T2, both 29,53,87 at T1. Two pictures looked at (Messina, the North Sea); a grey-blue shape
+  of land off the Dutch coast is as it was before the change (for 4.7g).
+- **Tests:** `seaShade.test.ts`.
+- **Not a rule change.**
+- **PARITY:** row 3, a note and the specs (and 4.7e's demo, missed there); still partial.
+- **The gate:** green (the unit tests related to 3 files, the new spec, build, parity).
+- **Next:** PLAN 4.7g.
+
+## 2026-10-12 — The coast specs and the sea by its depth (PLAN 4.7f, ADR-283)
+
+- **Found:** two specs took the sea for one colour at T2 and failed after 4.7f
+  (`coast1938`'s "the sea west of Pitcairn", `coastPicture1938`'s "the mask's sea drawn as land");
+  found while running the coast specs by hand for 4.7g. 4.7f's gate ran only its own spec.
+- **Fixed:** both take the sea as its colour times a factor of the depth ramp, one factor for the
+  three channels. No assertion loosened for land.
+- **The atoll test's time:** 1.4 min alone before 4.7f, 1.5 after; over its 150 s beside the five
+  other tests of the two files. It has 300 s now (no assertion changed).
+- **The gate:** the two spec files, green.
+- **Next:** PLAN 4.7g.
+## 2026-10-12 — PLAN 4.7g: the fine mask's coast at T1 (ADR-284)
+
+- **Critic not due.**
+- **Done:** the map draws the fine mask's coast at T1 from where a mask pixel is a device pixel
+  on screen (`fineCoastShare`, `uFine`), in the pass of T0 and T1 (`maskBilinear`), reading the
+  mask only where the coverage is mixed; T0 keeps the coverage. With or without the ground.
+- **Found on the way:** the ground's pass at T1 made `t0map` 1.5 → 2.0 min (software GL), and a
+  mask coast that came only with the ground broke `coastPicture1938`'s T0/T1 sameness; both gone.
+  The coast specs run by hand (10 tests, green).
+- **The AT:** `lakeT1.spec.ts`: a Finnish lake the coverage averages away is water at T1, as at
+  T2, and the coverage's land at T0; it fails on the code before. The picture looked at: the
+  lakes of Finland at T1, their shores in steps of the mask (no shore noise at that scale).
+- **Not measured:** the frame cost of T1 with the mask (no GPU here; for PLAN 4.8's bench).
+- **Not a rule change.**
+- **The gate:** green (the unit tests related to 2 files, the two changed specs, build, parity).
+- **Next:** PLAN 4.7h.
+
+## 2026-10-12 — The tick of a task runs its tests in a commit of documents alone (ADR-286)
+
+- **Found:** the commit ticking PLAN 4.7 changed documents only, and its gate ran parity alone.
+- **Fixed:** `planGate` takes the ticks: such a commit runs every stage but the sweep tests.
+- **Tests:** `gate.test.ts`.
+- **Next:** PLAN 4.7's tick, its gate in full.
+## 2026-10-12 — PLAN 4.7h: the river crossing timed with fleets under way (ADR-285); PLAN 4.7 done
+
+- **Critic not due.**
+- **Measured:** seed 99's first year, 9.87 ms a tick here; `World.stepWay` 63,220 ways found in
+  964 ms (0.110 ms a tick), all its calls at most 3.7 % of the tick; fleets do not ask it. In
+  BLOCKERS beside the first year's tick (PLAN 7.1).
+- **Found:** the lane graph at the first sail takes 1,956 ms in one call of the naval AI: once a
+  game (for PLAN 4.8).
+- **PLAN 4.7 ticked:** its gate runs every unit and browser test (ADR-286 made it do so).
+- **The gate:** unit 1,248 of 1,250, red only by the two timing tests of BLOCKERS; build and
+  parity green. The browser suite (BLOCKERS, at 4.7's tick): two full runs reached 140 of 172
+  in 7,000 s with the same 21 failing; file by file alone, 16 fail, each one of 4.2f's list in
+  this container; the rest pass, the 19 files the full runs did not reach among them.
+- **Next:** PLAN 4.8, the Phase 4 review.
+
+## 2026-10-12 — A perf spec run alone without its project's dependency (ADR-287)
+
+- **Found:** a perf spec named alone runs every browser test first (the perf project depends on
+  chromium): two hours of a by-hand run at 4.7's tick.
+- **Fixed:** the gate runs changed perf specs with `--project=perf --no-deps`, the others on
+  chromium; CLAUDE.md says so for a run by hand.
+- **Tests:** `gate.test.ts`.
+- **Next:** PLAN 4.8, the Phase 4 review.
+
+## 2026-10-12 — PLAN 4.8 split into its parts (documents)
+
+- **Critic not due** (it is after 4.8's tick).
+- **Done:** the Phase 4 review split, as 3.12R was: 4.8a the tenth independent read (102 files,
+  6,807 lines since `5d9f1a1`), 4.8b SPEC drift (ADR-242 to ADR-287), 4.8c dead code and refactor
+  debt, 4.8d missing tests, 4.8e what was left for the review (the lane graph's hitch, the red
+  line at T3, the T1 shores, the small shots at T2), 4.8f tick time, 4.8g PARITY, 4.8h the full
+  gate, the quick sweep and the tick; then the critic.
+- **Next:** PLAN 4.8a.
+
+## 2026-10-12 — PLAN 4.8b: SPEC re-read for Phase 4's drift (documents)
+
+- **Checked:** each of ADR-242 to ADR-287 looked for in SPEC (by its number and by what it
+  says), the stale lines read against the code.
+- **Amended:** §6.2: ports are read now (orders, lost base, shipyard, blockade, supply, convoys,
+  landings); fleets are ordered by the AIs and weigh in war (ADR-274), ice and the shipyard named;
+  "seeking a battle" is no longer "not yet"; ADR-262, 263, 265 and 272 cited. §3.6: a fleet is
+  built, fights and is laid up (two "not yet" lines). §3.5: an annexation leaves a third
+  nation's occupation its own (ADR-269, not in SPEC). §8's tiers: the fine coast at T1 (ADR-284),
+  a fleet's order line (ADR-281), the sea by its depth (ADR-283), ships by class, wakes, gunfire,
+  torpedoes, a ship going down (ADR-276, ADR-277). §10's gate: the unit stage's related tests,
+  templates and checkpoints, the sweep tests at a phase review, the tick of documents, the perf
+  spec (ADR-278 to ADR-280, ADR-286, ADR-287).
+- **Not in SPEC, rightly:** ADR-245 and 249 (camera and tags: in §8 already by their PLAN), ADR-266,
+  267, 285 (process and measures).
+- **Next:** PLAN 4.8a's findings (the read is running), then 4.8c.
+
+## 2026-10-12 — PLAN 4.8f: tick time after Phase 4 (documents)
+
+- **Measured** (this container, unpinned, `--profile`, five years of seed 99, one run each):
+
+  | commit | y1 | y2 | y3 | y4 | y5 | five years | ends on |
+  |---|---|---|---|---|---|---|---|
+  | `5d9f1a1` (before Phase 4) | 10.081 | 7.991 | 4.304 | 3.400 | 4.163 | 5.988 | `251656a1` |
+  | `90853a8` (now) | 11.040 | 7.192 | 6.104 | 4.448 | 6.609 | 7.079 | `3b8b45cb` |
+
+  × 1.18; on the budget machine (1.341 for `251656a1`) about 1.58 ms, over 1.5. The naval
+  systems and movement are the difference (BLOCKERS). The T1 frame's cost: no GPU here.
+- **Next:** a part 4.8i brings the tick back (6.70 ms or less here); 4.8a's findings first.
+
+## 2026-10-12 — PLAN 4.8d: missing tests over Phase 4
+
+- **Surveyed:** the 18 source files Phase 4 added, each against the tests that import it, and
+  each rule of the phase against its test (the PARITY row 3 list): the systems have unit tests of
+  their rules (the invasion AI and bombardment by the sim, `invasionAi1938`, `bombardment1938`),
+  and what is drawn has its specs (sea control, ships, a sea battle, a fleet's order, the demo,
+  the sea's depth, the lake at T1).
+- **The gap:** `render/units/ships.ts` (a ship's length at T3) had none but the ships spec's look:
+  `shipSize.test.ts` (each class its length, none for what is no ship).
+- **Next:** PLAN 4.8a's findings (the read is running), 4.8c, 4.8e, 4.8i.
+
+## 2026-10-12 — PLAN 4.8a: the tenth independent read; six parts before 4.8's tick
+
+- **The read:** a reader with no word of what changed or why, the 102 files changed since
+  `5d9f1a1` (6,807 lines), Node only, DECISIONS, PROGRESS, PLAN and SPEC not read: five
+  findings, four suspicions; save and load and determinism held on seeds 99, 4242 and 7 with a
+  live sea battle and troops aboard. 300,000 tokens, 18 minutes of its clock.
+- **Checked here:** the scripts of findings 1 to 4 run again and print what it reported
+  (`subs.ts`, `breakoff2.ts`, `reuse2.ts`, `bypass.ts`); findings 4 and 5 read against
+  `amphibious.ts` (the "stood elsewhere" branch's predicate, any holder) and `server.ts` (l. 597).
+- **Parts, most severe first:** 4.8k submarines that cannot hit each other locked in a battle
+  for the war; 4.8l a fleet that broke off caught again each hour; 4.8m an id given out again
+  keeps a dead formation's place aboard; 4.8n transports that stop elsewhere land on any coast
+  past an enemy's sea; 4.8o ports no sea reaches as a fleet's home and a shipyard (a suspicion
+  the reader ran); 4.8p the sea-control mode after a load.
+- **Watch list:** three suspicions not run (BLOCKERS).
+- **Next:** PLAN 4.8k.
+
+## 2026-10-12 — PLAN 4.8c: dead code and refactor debt of Phase 4
+
+- **Dead code:** of the exports of the files changed since `5d9f1a1`, one is used nowhere, not
+  even in its file: `LaneNodeKind` (`nav/lanes.ts`), deleted. The rest are used in their files
+  (the tunables, exported for their tests and readers) or by `.tsx` (`applyUiScale`). The i18n
+  keys added in the phase are all read, by templated names (`history.${kind}`, `template.${id}`,
+  `mapMode.${mode}`). No TODO or FIXME.
+- **Refactor:** a formation's men in a reckoning of forces, a fleet's weight or an army's
+  strength, was written twice (the strategic AI's `strengths`, the war system's `menOf`): one
+  `forceMen` beside `fleetMen` (`seaControl.ts`). The naval systems' helpers (`sailHome`,
+  `nearestOwnPort`, `seaHolder`) have one home each already.
+- **Not a rule change:** the pin holds.
+- **The gate:** the unit tests related to the change (119 files), red only by the three timing
+  tests of BLOCKERS; the pin held; build and parity green.
+- **Next:** PLAN 4.8e.
+
+## 2026-10-12 — PLAN 4.8e: what was left for the review (ADR-288)
+
+- **Done:** the worker builds the lane graph after it answers an init or a load (`warmLanes`):
+  the 2 s it took in the tick of the first sail (hour 48 of 1938) comes before any tick.
+  `serverElements.test.ts` holds it.
+- **Looked at, kept:** the red line between two tags at T3 is two leader lines (ADR-168); the T1
+  shores step by the mask's pixels; the shots at T2 are true to the ships' scale.
+- **Not a rule change.**
+- **The gate:** the unit tests related to the change (18 files), red only by the snapshot time of
+  BLOCKERS; build and parity green.
+- **Next:** PLAN 4.8i (the tick back within its budget).
+
+## 2026-10-12 — PLAN 4.8i1: the sea's contact search by rows
+
+- **Done:** `findSeaBattles` sorts the fleets at war by row and leaves the pairs further apart in
+  rows than the most any fleet sees at the fewest km a row has (`ky`'s least): they cannot see
+  each other. The pairs it keeps are judged as before; what it finds does not hang on their
+  order (the nearest a least, a battle's root its least id). Stealth is never below 0 (the
+  units' schema), so no fleet sees beyond its detection.
+- **Measured:** seed 99's first year, naval combat 0.253 → 0.148 ms a tick, the year's hash
+  841d4422 as before.
+- **Not a rule change:** the pin holds.
+- **The gate:** the related unit tests (119 files), red only by the two timing tests of BLOCKERS;
+  the pin held; build and parity green.
+- **Next:** PLAN 4.8i, the next cause: supply over sea's `seaReach` (2.4 ms every 12 hours,
+  about 0.2 ms a tick), the lane graph before the runner's clock as in the worker.
+
+## 2026-10-12 — PLAN 4.8i2: the lane graph before the runner's clock
+
+- **Done:** `runHeadless` builds the lane graph before it starts timing, as the game's worker
+  builds it before the first tick (PLAN 4.8e): the 1.96 s of the first sail was in the naval
+  AI's longest call of every measured run (about 0.045 ms of a five-year mean). A derived
+  cache: no state, the pin as it was.
+- **The gate:** every unit test (`tools/headless/` is shared), red only by the three timing tests
+  of BLOCKERS; the pin held; build and parity green.
+- **Next:** PLAN 4.8i, supply over sea's `seaReach`.
+
+## 2026-10-12 — PLAN 4.8i: where the tick stands (documents)
+
+- **Measured** (this container, unpinned, five years of seed 99, alternating old and new, two
+  runs each): `5d9f1a1` (before Phase 4) 5.847 and 5.835 ms, steady (251656a1 both); HEAD
+  (`c60c350`, with 4.8i1 and 4.8i2) 7.300 and 6.716 ms (3b8b45cb both). × 1.15 to 1.25; the
+  budget allows × 1.12 (1.5 / 1.341): 6.53 ms here. Single runs of HEAD vary by ±10 % (its
+  first year: 9.96 to 11.06 ms in an hour); the old commit's by 0.2 %.
+- **Tried and dropped:** the convoys' ways once a day for every raiding nation in the naval AI
+  (0.161 ms after, 0.162 before: raiding asks rarely); a small key for `stepWay` (200 ms in 3 M
+  look-ups a year, 0.02 ms a tick: the map's look-ups are not where movement's time went).
+- **What is left:** the naval systems (navalAi 0.19, navalCombat 0.17, seaControl 0.11,
+  bombardment 0.10, convoys and supply over sea about 0.2) and a game that is larger: by its
+  fifth year 1,152 formations and 121 nations against 888 and 110 before Phase 4 (fleets,
+  transports, the landings' marches). A comparison across commits does not part the code's
+  cost from the game's size.
+- **Next:** PLAN 4.8i3, supply over sea's `seaReach` (2.4 ms every 12 hours), then the
+  measure again.
+
+## 2026-10-12 — PLAN 4.8i3: supply over sea counts its cities in one look-up each
+
+- **Done:** `seaReach` counts the cities by (land, bloc) in one map, then groups them by bloc in
+  the order the pairs were met: each bloc's lands come in the order they did, so the land with
+  most cities and the ways are found as before.
+- **Measured:** a call on seed 99's day 60, 200 calls: 2.69 → 1.80 to 2.18 ms. The first year's
+  hash 841d4422 as before; supply's share of a single run (0.96 ms) is within the runs' spread.
+- **Not a rule change:** the pin holds.
+- **The gate:** the related unit tests (119 files), red only by the two timing tests of BLOCKERS;
+  the pin held; build and parity green.
+- **Next:** the rest of the tick's work moves to PLAN 7.1 (the user's decision).
+
+## 2026-10-12 — PLAN 4.8i closed: the rest of the tick's work under PLAN 7.1 (ADR-289, documents)
+
+- **The user's decision:** the performance work left after 4.8i1 to 4.8i3 is PLAN 7.1's: a line
+  there with the alternating measure (5.841 → 7.008 ms here, × 1.20 against × 1.12), what each
+  part cut, what is left by system, what was tried for nothing.
+- **Next:** PLAN 4.8k (submarines locked in a battle that never ends).
+
+## 2026-10-12 — PLAN 4.8k: a sea battle needs a weapon the other side can be hit by (ADR-290)
+
+- **Done:** contact asks `canHit` of either fleet: reach and a surface ship there, or depth
+  charges and a submarine there. Two submarine flotillas no longer lock each other in a battle
+  with no shot for the war.
+- **Tests:** `seaContact1938.test.ts` (failed first: a battle of two flotillas).
+- **The pin** holds (no such pair in seed 99's first year). SPEC §6.2's contact says so.
+- **The gate:** the related unit tests (120 files), red only by the two timing tests of BLOCKERS;
+  the pin held (run by hand before); build and parity green.
+- **Next:** PLAN 4.8l.
+
+## 2026-10-12 — PLAN 4.8l: a fleet that broke off is out of every sea battle while it retreats (ADR-291)
+
+- **Done:** `findSeaBattles` leaves out a fleet with `retreat` above 0, as land combat does.
+- **Tests:** `seaContact1938.test.ts`: a transport group chased by cruisers after its break keeps
+  its ships for its 24 hours, one row of the log (failed before: sunk in nine hours).
+- **The pin moves:** `841d4422` → `8622df0d` (24 sea battles, 34 raids, 22 landings in seed 99's
+  first year). SPEC §6.2 says the search leaves it out.
+- **The gate:** the related unit tests (120 files), red only by the three timing tests of BLOCKERS;
+  the pin at its new hash; build and parity green.
+- **Next:** PLAN 4.8m.
+
+## 2026-10-12 — PLAN 4.8m: a place aboard goes with its formation and its transports (ADR-292)
+
+- **Done:** `destroyFormation` deletes the formation's `embarked` entry and points the troops
+  of its transports at no fleet (-1), to be lost at sea at the amphibious hour as before.
+- **Tests:** `embarkedIds1938.test.ts` (both failed first).
+- **The pin** holds.
+- **The gate:** the related unit tests (121 files), red only by the two timing tests of BLOCKERS;
+  the pin held (run by hand); build and parity green.
+- **Next:** PLAN 4.8n.
+
+## 2026-10-12 — Every unit test and every spec once a phase, at its review (ADR-293, the user's decision)
+
+- **Done:** the gate runs the whole unit and e2e stages at a phase review's tick (and
+  `check:full`, an unknown change, a shared file), not at a numbered task's: that is a commit as
+  any other. CLAUDE.md, PROMPT.md and SPEC §10 say so.
+- **Tests:** `gate.test.ts`.
+- **Next:** PLAN 4.8n.

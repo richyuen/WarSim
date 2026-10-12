@@ -83,6 +83,93 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.fillStyle = '#c8c8c8';
     g.fillRect(-12, -5, 14, 10);
   });
+  // The ships of each class (PLAN 4.7b), facing +x, the longest the battleship's: its length and
+  // beam tell them apart at T2's sizes, the deck's marks closer.
+  const pointed = (g: CanvasRenderingContext2D, bow: number, stern: number, beam: number): void => {
+    g.beginPath();
+    g.moveTo(bow, 0);
+    g.lineTo(bow * 0.45, -beam);
+    g.lineTo(stern, -beam * 0.85);
+    g.lineTo(stern, beam * 0.85);
+    g.lineTo(bow * 0.45, beam);
+    g.closePath();
+    g.stroke();
+    g.fill();
+  };
+  frame(Frame.battleship, (g) => {
+    pointed(g, 31, -30, 12);
+    g.fillStyle = '#b4b4b4';
+    for (const x of [16, 6, -20]) {
+      g.beginPath();
+      g.arc(x, 0, 4.5, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.fillRect(-12, -5, 10, 10);
+  });
+  frame(Frame.carrier, (g) => {
+    g.beginPath();
+    g.rect(-30, -11, 60, 22);
+    g.stroke();
+    g.fill();
+    g.fillStyle = '#b4b4b4';
+    g.fillRect(-4, 8, 14, 3); // the island, to starboard
+    g.strokeStyle = 'rgba(120,120,120,0.9)';
+    g.lineWidth = 2;
+    g.setLineDash([5, 4]);
+    g.beginPath();
+    g.moveTo(-26, 0);
+    g.lineTo(26, 0);
+    g.stroke();
+  });
+  frame(Frame.submarine, (g) => {
+    g.beginPath();
+    g.ellipse(0, 0, 26, 5.5, 0, 0, Math.PI * 2);
+    g.stroke();
+    g.fill();
+    g.fillStyle = '#b4b4b4';
+    g.fillRect(0, -3, 7, 6);
+  });
+  frame(Frame.transport, (g) => {
+    g.beginPath();
+    g.moveTo(26, 0);
+    g.lineTo(18, -11);
+    g.lineTo(-24, -11);
+    g.lineTo(-24, 11);
+    g.lineTo(18, 11);
+    g.closePath();
+    g.stroke();
+    g.fill();
+    g.fillStyle = '#c8c8c8';
+    g.fillRect(-18, -6, 10, 12);
+    g.fillRect(-4, -6, 10, 12);
+    g.fillRect(-21, -4, 4, 8);
+  });
+  frame(Frame.destroyer, (g) => {
+    pointed(g, 24, -22, 6.5);
+    g.fillStyle = '#c8c8c8';
+    g.fillRect(-6, -3, 9, 6);
+  });
+  // The wake (PLAN 4.7b): two lines of foam that open astern, the ship's stern at +x. Drawn white,
+  // not tinted, behind a ship under way.
+  frame(Frame.wake, (g) => {
+    g.strokeStyle = 'rgba(255,255,255,0.85)';
+    g.lineCap = 'round';
+    for (const [w, a] of [[5, 0.9], [3, 0.6]] as const) {
+      g.lineWidth = w;
+      g.globalAlpha = a;
+      g.beginPath();
+      g.moveTo(30, -2);
+      g.quadraticCurveTo(0, -6, -30, -18);
+      g.moveTo(30, 2);
+      g.quadraticCurveTo(0, 6, -30, 18);
+      g.stroke();
+    }
+    g.globalAlpha = 0.35;
+    g.fillStyle = '#ffffff';
+    g.beginPath();
+    g.ellipse(18, 0, 14, 3, 0, 0, Math.PI * 2);
+    g.fill();
+  });
   // Aircraft: fuselage, wings and tail facing +x.
   frame(Frame.aircraft, (g) => {
     g.beginPath();

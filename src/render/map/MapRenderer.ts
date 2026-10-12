@@ -49,9 +49,12 @@ export class MapRenderer {
   private terrainTex: WebGLTexture;
   private hasLand = false;
   private provinceTex: WebGLTexture;
+  /** Sea zone per cell, and the holder of each zone (128 a row), for the sea-control mode (PLAN 4.7a). */
+  private seaZoneTex: WebGLTexture;
+  private seaHolderTex: WebGLTexture;
   private unrestTex: WebGLTexture;
   private terrainColors = new Float32Array(12 * 3);
-  /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest. */
+  /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest, 3 = sea control. */
   fillMode = 0;
   /** The land's height in metres, one texel a cell (PLAN 2.8a); a 1×1 placeholder until the worker sends it. */
   private elevationTex: WebGLTexture;
@@ -86,6 +89,8 @@ export class MapRenderer {
     this.landTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.LINEAR);
     this.terrainTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.provinceTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
+    this.seaZoneTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
+    this.seaHolderTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
     this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.elevationTex = this.makeTexture(gl.R16I, gl.RED_INTEGER, gl.SHORT, 1, 1, new Int16Array([0]), gl.NEAREST);
     this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
@@ -120,6 +125,21 @@ export class MapRenderer {
   setProvinces(w: number, h: number, data: Uint16Array): void {
     this.gl.deleteTexture(this.provinceTex);
     this.provinceTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, w, h, data, this.gl.NEAREST);
+  }
+
+  /** Sea zone per cell (map size; 0 = none) for the sea-control mode (PLAN 4.7a). */
+  setSeaZones(w: number, h: number, data: Uint16Array): void {
+    this.gl.deleteTexture(this.seaZoneTex);
+    this.seaZoneTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, w, h, data, this.gl.NEAREST);
+  }
+
+  /** The nation that holds each sea zone (0 = none), by zone, laid out 128 per row. */
+  setSeaHolders(holder: Uint16Array): void {
+    const rows = Math.max(1, Math.ceil(holder.length / 128));
+    const data = new Uint16Array(rows * 128);
+    data.set(holder);
+    this.gl.deleteTexture(this.seaHolderTex);
+    this.seaHolderTex = this.makeTexture(this.gl.R16UI, this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, 128, rows, data, this.gl.NEAREST);
   }
 
   /** Unrest per province id (0..100), laid out 128 per row. */
@@ -243,6 +263,10 @@ export class MapRenderer {
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     // The ground has a pass of its own: where none of it shows, the map is drawn by the pass of T0 and T1.
     const share = this.groundOn ? detail : 0;
+    // The fine mask's coast at T1 too (PLAN 4.7g): from a mask pixel a device pixel on screen, all
+    // of it at two, in the pass of T0 and T1 (no ground's noise) or in the ground's.
+    // Whether or not the ground is on: the coast of a place is one at a zoom.
+    const fine = this.hasMask && this.hasLand ? fineCoastShare((cam.scale * dpr * this.w) / this.maskSize[0]) : 0;
     const program = share > 0 ? this.groundProgram : this.program;
     gl.useProgram(program.program);
     twgl.setUniforms(program, {
@@ -265,6 +289,8 @@ export class MapRenderer {
       uMode: this.fillMode,
       uProvince: this.provinceTex,
       uUnrest: this.unrestTex,
+      uSeaZone: this.seaZoneTex,
+      uSeaHolder: this.seaHolderTex,
       uTerrainCol: this.terrainColors,
       uElevation: this.elevationTex,
       uDetail: share,
@@ -276,6 +302,7 @@ export class MapRenderer {
       uHasMask: this.hasMask ? 1 : 0,
       uMaskSize: this.maskSize,
       uMaskPerCell: this.maskSize[0] / this.w,
+      uFine: fine,
     });
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -291,10 +318,21 @@ export class MapRenderer {
     gl.deleteTexture(this.terrainTex);
     gl.deleteTexture(this.provinceTex);
     gl.deleteTexture(this.unrestTex);
+    gl.deleteTexture(this.seaZoneTex);
+    gl.deleteTexture(this.seaHolderTex);
     gl.deleteTexture(this.elevationTex);
     gl.deleteTexture(this.maskTex);
     gl.deleteVertexArray(this.vao);
     gl.deleteProgram(this.program.program);
     gl.deleteProgram(this.groundProgram.program);
   }
+}
+
+/**
+ * How much of the coast is the fine mask's at `pxPerMaskPx` device px to a mask pixel (PLAN 4.7g):
+ * none under one, all from two (a smoothstep between); at T2 and T3 the ground's share is 1 anyway.
+ */
+export function fineCoastShare(pxPerMaskPx: number): number {
+  const t = Math.min(1, Math.max(0, pxPerMaskPx - 1));
+  return t * t * (3 - 2 * t);
 }

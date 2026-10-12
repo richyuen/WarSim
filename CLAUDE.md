@@ -26,12 +26,24 @@ There is no memory between sessions. Read these files:
 - `npm run check`: the gate, sized to what changed since HEAD. It must pass before every commit.
   - Clean tree that the gate has already passed: nothing.
   - Documents only (Markdown, `docs/`): parity.
-  - Code: typecheck, lint, unit, build, parity, plus the 10-year sweep tests when a sim
-    input changed.
-  - e2e (7 to 9 minutes): in full only when the change ticks a numbered PLAN task (2.14, not
-    its part 2.14a) or the review pass after one (3.4R, not its part 3.4Ra) (ADR-87). For a part, only the spec files that changed, or none. While
-    working on a part, run the specs of what you touch by hand (`npx playwright test <file>`). They include the pinned state hash of seed 99 after one year
+  - Code: typecheck, lint, unit, build, parity, plus the pinned hash of seed 99 when a sim
+    input changed. Every 10-year sweep test (`tests/sweep/`) runs only when the change ticks a
+    phase review (`- [x] 4.8 Phase 4 review`), and in `npm run check:full` (ADR-278).
+  - Unit tests: in full only when the change ticks a phase review (`- [x] 4.8 Phase 4 review`),
+    when something they all stand on changed (`vitest.config.ts`, `tests/helpers/`, `data/`,
+    `public/data/`, `tools/headless/`, the lock file), and in `check:full`; otherwise only the
+    test files whose imports reach a changed file (`vitest related`, ADR-280). A commit that
+    ticks a numbered task is a commit as any other (ADR-293). Run the whole unit suite by hand
+    (`npm test`) when in doubt that the import graph covers a change.
+  - e2e (hours in a container without a GPU): in full only when the change ticks a phase review
+    (ADR-87, ADR-293), or a helper or the config every spec stands on changed. Otherwise only the
+    spec files that changed, or none. While
+    working on a part, run the specs of what you touch by hand (`npx playwright test <file>`; a
+    perf spec with `--project=perf --no-deps`, or it runs every test first). They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
+- Unit tests make each 1938 world after a file's first from its template, and load pure runs
+  from `.cache/checkpoints/` (`tests/helpers/checkpoint.ts`; ADR-279). `NOTEMPLATES=1` builds
+  every world.
 - `npm run check:full`: every stage, whatever changed.
 - `npm run typecheck`: `src/`, `tools/` and `tests/` (a bare `tsc --noEmit -p .` skips `tests/`; a
   type error in a spec then shows only as Playwright's "webServer was not able to start").

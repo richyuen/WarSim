@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { dateOfTick } from '../../src/shared/calendar';
 import { xxhash32View } from '../../src/sim/core/hash';
 import type { ScenarioAssets } from '../../src/shared/protocol';
-import { FLEETS_1938, NATIONS_1938, SIZE_1938, TEMPLATES_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { FLEETS_1938, keepWorldTemplates, NATIONS_1938, SIZE_1938, TEMPLATES_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { CITIES_1938, assets1938, OOB_1938, politicalMap1938 } from '../helpers/earth';
 
@@ -12,6 +12,8 @@ import { CITIES_1938, assets1938, OOB_1938, politicalMap1938 } from '../helpers/
 const assets: ScenarioAssets = assets1938(SIZE_1938.w);
 
 describe('1938 world (PLAN 1.9a)', () => {
+  // The build itself, not a world made from a template (ADR-279).
+  keepWorldTemplates(false);
   const t0 = performance.now();
   const sim = new Sim({ scenario: '1938', seed: 1938, assets });
   const buildMs = performance.now() - t0;

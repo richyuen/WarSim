@@ -215,14 +215,12 @@ added without code changes.
    `main` builds the game and puts it on GitHub Pages.
 8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move
    on.
-9. Every ~5 numbered PLAN tasks (2.7, 2.8, 2.9, ...) do a review pass:
-   refactor debt, delete dead code, re-read SPEC.md for drift, add missing
-   tests.
-   Counted by numbered tasks, not by the parts a task is split into
-   (clarified 2026-10-04, ADR-74, the user's decision): 2.8a, 2.8b and
-   2.8c1 are one task, counted once. A task that comes out of a review
-   belongs to the task it follows up. A phase review is a review pass and
-   starts the count again.
+9. One review pass a phase, at its end: the phase review (4.8, 5.8, 6.9, ...)
+   is a comprehensive pass over the whole phase: refactor debt, delete dead
+   code, re-read SPEC.md for drift, add missing tests, besides its own items.
+   No review pass between (changed 2026-10-11, ADR-266, the user's decision:
+   before, one came every ~5 numbered tasks, ADR-74's count). A task that
+   comes out of the review belongs to the phase it reviews.
 
 # KEEPING ITERATIONS SHORT
 
@@ -233,9 +231,11 @@ on simulation runs (DECISIONS ADR-48).
   2026-10-03, ADR-58, the user's decision). No `npm run sweep` and no
   `npm run sweep:quick` after a rule change: the balance will change with
   every feature, so a verdict on it now is wasted. What stays:
-  - the 10-year tests in the gate (`tests/sweep/`): the pinned hash, save and
-    load, allies never at war, no bankruptcy in peace. They test correctness,
-    not balance;
+  - the 10-year tests (`tests/sweep/`): the pinned hash, save and load, allies
+    never at war, no bankruptcy in peace. They test correctness, not balance.
+    The gate runs every one of them only at a phase review (the commit that
+    ticks it, and `npm run check:full`); any other commit with a sim input in
+    it runs the pin alone (added 2026-10-12, ADR-278, the user's decision);
   - one `npm run sweep:quick` at each phase review (PLAN 2.11, 3.7, 4.8, 5.8,
     6.9), as a smoke test. Report its five limits in PROGRESS.md. A limit
     that fails is logged in BLOCKERS.md and waits for Phase 7, unless its
@@ -262,22 +262,22 @@ on simulation runs (DECISIONS ADR-48).
   rules, rewrite it.
 - `npm run check` sizes the gate to what changed since HEAD: only
   `npm run parity` for a commit of documents alone (Markdown, `docs/`), and
-  no 10-year sweep tests when nothing they depend on changed. On a clean
+  no 10-year sweep tests when nothing they depend on changed, and of those
+  only the pin unless the change ticks a phase review (ADR-278). On a clean
   tree that the gate has already passed it runs nothing, so step 2 of an
   iteration that starts on a gated commit costs seconds (ADR-55).
   `npm run check:full` always runs everything: use it for the DONE CONDITION
   and whenever the working tree was not gated commit by commit (after a pull
   or a rebase).
-- The e2e suite runs in full when a numbered task is ticked, not for its parts (added
-  2026-10-05, ADR-87, the user's decision; it is 7 to 9 of a gate's 13 minutes).
-  `npm run check` sees to it: a commit that ticks `- [x] 2.14` runs every spec, a commit of
-  the part 2.14a runs the spec files it changed, or none. The tick of a review pass
-  (`- [x] 3.4R`, step 9) runs every spec as a numbered task's does; its parts (3.4Ra) are
-  parts (added 2026-10-06, PLAN 3.4Rn). So: a part that touches what is
-  drawn runs the specs of that feature by hand before its commit and names them in
-  PROGRESS.md; the last part of a task expects the full suite, and whatever it finds broken
-  by an earlier part is fixed there. A phase review and the DONE CONDITION use
-  `npm run check:full`.
+- The unit tests and the e2e suite run in full once a phase, at its review (`- [x] 4.8 Phase 4
+  review`) and in `npm run check:full` (changed 2026-10-12, ADR-293, the user's decision: until
+  then at every numbered task, ADR-87 and ADR-280). Any other commit, a numbered task's tick
+  among them, runs the unit test files whose imports reach a file that changed (`vitest
+  related`) and the spec files it changed; something every test stands on (the configs, the
+  helpers, the data and assets read from disk, the lock file) runs them all. So a task that
+  touches what is drawn runs the specs of that feature by hand before its commits and names
+  them in PROGRESS.md; what an earlier commit broke is found at the phase review, and fixed
+  there. The phase review and the DONE CONDITION use `npm run check:full`.
 - No hand-run hashes. `tests/sweep/baselineHash.test.ts` pins the state hash
   of seed 99 after one year. A change meant to leave behaviour alone is
   proved by that test in the gate. A change of rules moves the pin in the

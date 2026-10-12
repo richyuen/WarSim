@@ -169,6 +169,13 @@ export interface SnapshotFormations {
   flags: Uint8Array;
   /** Order target cell while moving (row-major index), else 0. */
   target: Uint32Array;
+  /**
+   * The way left of a fleet under way (PLAN 4.7d, `wayLine`): the points its order line turns
+   * at, `x, y` in cells by twos, formation i's from `wayStart[i]` to `wayStart[i + 1]` (in
+   * numbers; none for a formation on land or at rest). `wayStart` has count + 1 entries.
+   */
+  wayStart: Uint32Array;
+  way: Float32Array;
 }
 
 /**
@@ -364,6 +371,8 @@ export type FromWorker =
   | { type: 'terrainLayer'; data: Uint8Array; landChanged: boolean }
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
+  /** Sea control for its map mode (PLAN 4.7a): the holder of each zone (index 0 unused), and the zone of each cell when the zones are new to the client; sent when either changes. */
+  | { type: 'seaControl'; holder: Uint16Array; zones?: Uint16Array }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
@@ -427,6 +436,8 @@ export interface NationStat {
   queue: { template: number; readyDay: number }[];
   /** The techs it knows, as bits 0..31 and 32..63 (PLAN 3.1a). */
   techs: readonly [number, number];
+  /** Whether it holds a port a ship reaches, where a fleet it orders is built (PLAN 4.2e–f, `shipyard`). */
+  shipyard: boolean;
   /** Its research budget in gold per month, like `income` (the sim holds it per day; PLAN 3.1b). */
   research: number;
   /** What it is researching, in the order the lines were opened: index into `mapLayers.techs` and the gold paid. */

@@ -26,6 +26,11 @@ export interface MarkerInput {
   engaged: boolean;
   /** Order target in cells, or null. */
   target: [number, number] | null;
+  /**
+   * A fleet's way left (PLAN 4.7d): the points its order line turns at, `x, y` in cells by
+   * twos, the first where it stands; the line goes along them and not straight to `target`.
+   */
+  way?: ArrayLike<number> | null;
 }
 
 /**
@@ -238,17 +243,34 @@ export function drawMarkers(
   ctx.setLineDash([4, 3]);
   for (const m of markers) {
     if (!m.target || boxAlpha <= 0.01) continue;
-    for (const off of offs) {
-      const [ax, ay] = worldToScreen(cam, m.x + off, m.y, vw, vh);
+    // The points of the line in cells: the formation, then a fleet's turns (each on the near side
+    // of the one before: `wayLine`), or the target.
+    const line: number[] = [m.x, m.y];
+    const way = m.way;
+    if (way && way.length >= 4) {
+      const dx = m.x - way[0]!;
+      for (let i = 2; i < way.length; i += 2) line.push(way[i]! + dx, way[i + 1]!);
+    } else {
       let tx = m.target[0];
       if (geo.wrapX && Math.abs(tx - m.x) > geo.w / 2) tx += tx < m.x ? geo.w : -geo.w;
-      const [bx, by] = worldToScreen(cam, tx + off, m.target[1], vw, vh);
-      if (Math.max(ax, bx) < 0 || Math.min(ax, bx) > vw || Math.max(ay, by) < 0 || Math.min(ay, by) > vh) continue;
+      line.push(tx, m.target[1]);
+    }
+    for (const off of offs) {
+      const pts: [number, number][] = [];
+      let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
+      for (let i = 0; i < line.length; i += 2) {
+        const p = worldToScreen(cam, line[i]! + off, line[i + 1]!, vw, vh);
+        pts.push(p);
+        [x0, x1, y0, y1] = [Math.min(x0, p[0]), Math.max(x1, p[0]), Math.min(y0, p[1]), Math.max(y1, p[1])];
+      }
+      if (x1 < 0 || x0 > vw || y1 < 0 || y0 > vh) continue;
       ctx.strokeStyle = 'rgba(255, 232, 150, 0.9)';
       ctx.beginPath();
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(bx, by);
+      ctx.moveTo(pts[0]![0], pts[0]![1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i]![0], pts[i]![1]);
       ctx.stroke();
+      const [ax, ay] = pts[pts.length - 2]!;
+      const [bx, by] = pts[pts.length - 1]!;
       const ang = Math.atan2(by - ay, bx - ax);
       ctx.setLineDash([]);
       ctx.beginPath();

@@ -32,7 +32,7 @@ const FLAG_MOVE_MS = 150;
 const FLAG_MAX_RISE = 40;
 import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
-import { Frame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
+import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
@@ -44,6 +44,8 @@ import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/m
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
+import { shipSideCells } from '../render/units/ships';
+import { appendWakes } from '../render/units/wakes';
 import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
@@ -307,6 +309,11 @@ export class MapView {
       this.scatterKey = '';
       this.dirty = true;
     });
+    sim.onSeaControl((holder, zones) => {
+      if (zones) this.map.setSeaZones(this.geo.w, this.geo.h, zones);
+      this.map.setSeaHolders(holder);
+      this.dirty = true;
+    });
     sim.onUnrest((u) => {
       this.map.setUnrest(u);
       this.dirty = true;
@@ -409,6 +416,8 @@ export class MapView {
     this.formTemplate = f.template.slice(0, f.count);
     this.formFlags = f.flags.slice(0, f.count);
     this.formTarget = f.target.slice(0, f.count);
+    this.formWayStart = f.wayStart.slice(0, f.count + 1);
+    this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
     // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk).
     let dropped = false;
@@ -505,7 +514,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
-    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : 0;
+    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : 0;
     this.applyPalette();
     this.dirty = true;
   }
@@ -612,6 +621,9 @@ export class MapView {
   private formTemplate = new Uint16Array(0);
   private formFlags = new Uint8Array(0);
   private formTarget = new Uint32Array(0);
+  /** The ways left of the fleets under way (PLAN 4.7d; `Snapshot.formations.way`). */
+  private formWayStart = new Uint32Array(1);
+  private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private templates: TemplateInfo[] = [];
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
@@ -729,6 +741,8 @@ export class MapView {
     const c = this.elementProxies.colors;
     return [c[i * 4]!, c[i * 4 + 1]!, c[i * 4 + 2]!];
   }
+  /** The wakes uploaded with the element sprites (PLAN 4.7b; tests). */
+  elementWakes = 0;
   /** The last subscription sent (tests). */
   subscription: Subscription | null = null;
   private lastSub = '';
@@ -749,7 +763,10 @@ export class MapView {
     // A tank is its hull and, after all the elements, its turret (PLAN 3.6a).
     let hulls = 0;
     for (let i = 0; i < e.count; i++) if (turretOf(e.frame[i]!) >= 0) hulls++;
-    p.reserve(e.count + hulls);
+    // And a ship under way its wake, after them (PLAN 4.7b).
+    let ships = 0;
+    for (let i = 0; i < e.count; i++) if (isShipFrame(e.frame[i]!) && marching(e.flags[i]!)) ships++;
+    p.reserve(e.count + hulls + ships);
     p.originX = Math.floor(this.geo.w / 2);
     p.originY = Math.floor(this.geo.h / 2);
     for (let i = 0; i < e.count; i++) {
@@ -769,7 +786,10 @@ export class MapView {
     }
     this.elementTurrets = hulls;
     this.elementTurretOwner = new Uint32Array(hulls);
-    p.upload(appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner));
+    const withTurrets = appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner);
+    const all = appendWakes(p.data, p.colors, e.count, withTurrets);
+    this.elementWakes = all - withTurrets;
+    p.upload(all);
     // Near T3 the section is kept, so that the figures can be built in the frame the close tier
     // comes in (`tierShares`); the snapshot's own arrays go back to the worker.
     this.elementsZoom = this.metresPerPx;
@@ -880,10 +900,12 @@ export class MapView {
     const t0 = performance.now();
     let total = 0;
     let hulls = 0;
+    let ships = 0;
     for (let i = 0; i < e.count; i++) {
       const n = figureCount(e.strength[i]!, e.size[i]!);
       total += n;
       if (turretOf(e.frame[i]!) >= 0) hulls += n;
+      if (isShipFrame(e.frame[i]!) && marching(e.flags[i]!)) ships += n;
     }
     // More than the renderer is measured for: the element sprites stay (never at T3 in practice,
     // where a view holds a few formations).
@@ -894,7 +916,7 @@ export class MapView {
       return;
     }
     const p = this.individualProxies;
-    p.reserve(total + hulls);
+    p.reserve(total + hulls + ships);
     p.originX = Math.floor(this.controller.cam.cx);
     p.originY = Math.floor(this.controller.cam.cy);
     const owner = new Uint32Array(total);
@@ -907,7 +929,8 @@ export class MapView {
       const frame = e.frame[i]!;
       // The grid of the whole element: what is left of it stands where it stood (PLAN 2.10b).
       const side = gridSide(frame, figureCount(e.size[i]!, e.size[i]!));
-      const size = figureCells(side);
+      // A ship is drawn its own length (PLAN 4.7b).
+      const size = isShipFrame(frame) ? shipSideCells(frame, this.geo.kmPerCell) : figureCells(side);
       // In contact the men of a battalion lie in a loose line at the front of its ground (PLAN 2.14c2).
       const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
       const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!, inContact && frame === Frame.infantry);
@@ -935,7 +958,8 @@ export class MapView {
     // Every tank's turret, after all the figures (PLAN 3.6a).
     this.individualTurrets = hulls;
     this.individualTurretOwner = new Uint32Array(hulls);
-    p.upload(appendTurrets(p.data, p.colors, total, this.individualTurretOwner));
+    // And a ship under way its wake (PLAN 4.7b).
+    p.upload(appendWakes(p.data, p.colors, total, appendTurrets(p.data, p.colors, total, this.individualTurretOwner)));
     this.individualCount = total;
     this.individualOwner = owner;
     this.individualX = xs;
@@ -1192,6 +1216,7 @@ export class MapView {
         symbol: t?.symbol ?? 'infantry',
         engaged: (this.formFlags[i]! & FormationFlag.engaged) !== 0,
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
+        way: moving && this.formWayStart[i + 1]! - this.formWayStart[i]! >= 4 ? this.formWay.subarray(this.formWayStart[i]!, this.formWayStart[i + 1]!) : null,
       });
     }
     // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
@@ -1359,6 +1384,12 @@ export class MapView {
     return Array.from(this.formIds);
   }
 
+  /** Whether formation `id` of the last snapshot is in a fight (a land battle, or a sea battle: PLAN 4.7c; tests). */
+  formationEngaged(id: number): boolean {
+    const i = this.formIds.indexOf(id);
+    return i >= 0 && (this.formFlags[i]! & FormationFlag.engaged) !== 0;
+  }
+
   /** Whether formation `id` of the last snapshot is a fleet (PLAN 4.2b): by its template's domain, as the worker sent it. */
   formationAfloat(id: number): boolean {
     const i = this.formIds.indexOf(id);
@@ -1372,6 +1403,13 @@ export class MapView {
   formationPos(id: number): [number, number] | null {
     const i = this.formIds.indexOf(id);
     return i < 0 ? null : [this.blockX[i]!, this.blockY[i]!];
+  }
+
+  /** The points of formation `id`'s order line along its way, `x, y` in cells (PLAN 4.7d; a fleet under way), or null (tests). */
+  formationWay(id: number): number[] | null {
+    const i = this.formIds.indexOf(id);
+    if (i < 0 || this.formWayStart[i + 1]! - this.formWayStart[i]! < 4) return null;
+    return Array.from(this.formWay.subarray(this.formWayStart[i]!, this.formWayStart[i + 1]!));
   }
 
   /**

@@ -103,6 +103,22 @@ export const EventKind = {
    * and left it. a = the leader of the side that stayed, b = the nation that left (global).
    */
   WarEnded: 40,
+  /**
+   * A sea battle ended (PLAN 4.3c): a and b are its two sides, each its first nation and the
+   * ships the side lost, as nation + SIDE_SHIPS × ships (`seaSide`, shared/history); (x, y) =
+   * where it began.
+   */
+  SeaBattle: 41,
+  /** A nation's submarines raided a bloc's convoys in a month (PLAN 4.4d): a = the raiders' nation, b = the bloc raided; (x, y) = the middle of the zone. */
+  ConvoyRaided: 42,
+  /** A land formation went aboard its nation's transports (PLAN 4.5a): a = formation, b = nation, (x, y) = the port. */
+  FormationEmbarked: 43,
+  /** An embarked formation landed (PLAN 4.5a): a = formation, b = nation, (x, y) = where. */
+  FormationLanded: 44,
+  /** A landing was thrown back (PLAN 4.5b): the sea about it held by an enemy; a = formation, b = the zone's holder, (x, y) = the landing water. */
+  LandingRepulsed: 45,
+  /** A nation short of money laid up fleets in a month (PLAN 4.6e1): a = nation, b = how many. */
+  FleetsLaidUp: 46,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
@@ -127,6 +143,7 @@ export interface SimEvent {
  * being element ids and the points their slot poses. In a snapshot the `unit` slot carries the
  * `Weapon` of the shooter's class (`shared/unitLooks`; the view has no unit rules).
  */
+/** A fire record (`World.out.fires`): FIRE_STRIDE numbers, by `FireField`. In the sim's records the weapon field is the shooter's unit type, −1 − the type for a torpedo (PLAN 4.7c); the worker sends a `Weapon` there. */
 export const FIRE_STRIDE = 10;
 export const FireField = { tick: 0, subtick: 1, shooter: 2, target: 3, weapon: 4, dmg: 5, x0: 6, y0: 7, x1: 8, y1: 9 } as const;
 

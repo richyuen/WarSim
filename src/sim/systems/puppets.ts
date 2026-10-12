@@ -119,13 +119,18 @@ export function annexNation(world: World, annexer: number, target: number): bool
   return true;
 }
 
-/** Moves `from`'s cells, formations and cores to `to`. */
+/**
+ * Moves `from`'s cells, formations and cores to `to`. A cell of `from`'s that a third nation
+ * holds is that nation's, as at a death (ADR-112, ADR-269): before, it was `to`'s and the third
+ * held it on with no war with its owner (seed 7: Hungary annexed Austria, 18 cells Italy held).
+ */
 function annexInto(world: World, to: number, from: number): void {
   const overlord = to;
   const subject = from;
   const { owner, controller } = world.cells;
   for (let c = 0; c < owner.length; c++) {
-    if (owner[c] === subject) world.setOwner(c, overlord);
+    const held = controller[c]!;
+    if (owner[c] === subject) world.setOwner(c, held !== 0 && held !== subject && held !== overlord ? held : overlord);
     if (controller[c] === subject) world.setController(c, overlord);
   }
   const f = world.formations.cols;

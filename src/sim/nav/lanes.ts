@@ -7,6 +7,8 @@
  * the water cells it runs over, so no edge crosses land but a passage, at its one jump.
  * A node for each port of the world too (PLAN 4.1c), at the port's water, with an edge to the
  * node of the zone that water is in.
+ * No edge has a node that is a zone ice closes (`SeaZones.closed`, PLAN 4.2d): such a zone's
+ * node, and a port's node in it, stand alone, and no way of the lanes goes by them.
  * Derived from the zones, the map's passages and the world's ports: never saved, rebuilt
  * identically after a load.
  */
@@ -36,7 +38,6 @@ export interface LanePort {
 }
 
 export const LaneNode = { zone: 0, strait: 1, port: 2 } as const;
-export type LaneNodeKind = (typeof LaneNode)[keyof typeof LaneNode];
 
 export interface LaneEdge {
   /** Its nodes, `a` the lower. */
@@ -263,8 +264,41 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
 
   // The ports: a node at the port's water, and the way to it from the seed of that water's zone.
   const portNode = new Int32Array(ports.length).fill(-1);
+  const waters = portWaters(g, z, ports, portReach);
+  ports.forEach((_, i) => {
+    const at = waters[i]!;
+    if (at < 0) return;
+    portNode[i] = kind.length;
+    edges.push({ a: zoneOf[at]! - 1, b: kind.length, km: dist[at]!, crossing: false, passage: -1, cells: Int32Array.from(toSeed(at).reverse()), landAt: -1 });
+    kind.push(LaneNode.port);
+    cell.push(at);
+  });
+
+  // Ice: every edge with a closed zone at an end is left out (after the others are made, so that
+  // what is made of the open water is the same).
+  const shut = (node: number): boolean => node < z.count && z.closed[node + 1] === 1;
+  const open = edges.filter((e) => !shut(e.a) && !shut(e.b));
+  const adj: number[][] = kind.map(() => []);
+  open.forEach((e, i) => {
+    adj[e.a]!.push(i);
+    adj[e.b]!.push(i);
+  });
+  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges: open, adj, dropped, portNode, toSeed: from };
+}
+
+/**
+ * Per port, its water as the lane graph has it (the cell of its node), or -1: the zoned water
+ * cell nearest to the port's place within `portReach` of its land cell, or nearest to the water
+ * given by hand (within `PASSAGE_SNAP`); -1 for a port whose cell is no land or with none in
+ * reach. By the zones alone: what reads a port's water and not its way (`shipyard`) is spared
+ * the lane graph's edges.
+ */
+export function portWaters(g: NavGrid, z: SeaZones, ports: readonly LanePort[], portReach: number): Int32Array {
+  const { w, h, terrain } = g;
+  const { zoneOf } = z;
+  const out = new Int32Array(ports.length).fill(-1);
   ports.forEach((p, i) => {
-    if (p.cell < 0 || p.cell >= n || !isLand(terrain[p.cell]!)) return;
+    if (p.cell < 0 || p.cell >= w * h || !isLand(terrain[p.cell]!)) return;
     const px = p.cell % w;
     const py = (p.cell - px) / w;
     const near = (c: number): boolean => {
@@ -273,23 +307,11 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
       if (g.wrapX && dx > w - dx) dx = w - dx;
       return dx <= portReach && Math.abs(Math.floor(c / w) - py) <= portReach;
     };
-    const given = !Number.isNaN(p.waterX);
-    const at = given
+    out[i] = !Number.isNaN(p.waterX)
       ? nearestCellWhere((c) => zoneOf[c] !== 0, p.waterX, p.waterY, w, h, PASSAGE_SNAP, g.wrapX)
       : nearestCellWhere(near, p.x, p.y, w, h, 2 * portReach + 2, g.wrapX);
-    if (at < 0) return;
-    portNode[i] = kind.length;
-    edges.push({ a: zoneOf[at]! - 1, b: kind.length, km: dist[at]!, crossing: false, passage: -1, cells: Int32Array.from(toSeed(at).reverse()), landAt: -1 });
-    kind.push(LaneNode.port);
-    cell.push(at);
   });
-
-  const adj: number[][] = kind.map(() => []);
-  edges.forEach((e, i) => {
-    adj[e.a]!.push(i);
-    adj[e.b]!.push(i);
-  });
-  return { kind: Uint8Array.from(kind), cell: Int32Array.from(cell), zones: z.count, edges, adj, dropped, portNode, toSeed: from };
+  return out;
 }
 
 export interface LaneRoute {
@@ -299,8 +321,8 @@ export interface LaneRoute {
   edges: number[];
 }
 
-/** The shortest way over the lanes between two nodes (the lower node on a tie), or null with none. */
-export function laneRoute(lanes: LaneGraph, start: number, goal: number): LaneRoute | null {
+/** The shortest way over the lanes between two nodes (the lower node on a tie), or null with none. `shut`: edges that may not be taken (PLAN 4.4e: a passage an enemy holds). */
+export function laneRoute(lanes: LaneGraph, start: number, goal: number, shut?: (edge: number) => boolean): LaneRoute | null {
   const n = lanes.kind.length;
   const km = new Float64Array(n).fill(Infinity);
   const by = new Int32Array(n).fill(-1);
@@ -313,6 +335,7 @@ export function laneRoute(lanes: LaneGraph, start: number, goal: number): LaneRo
     if (c === goal) break;
     closed[c] = 1;
     for (const e of lanes.adj[c]!) {
+      if (shut?.(e)) continue;
       const edge = lanes.edges[e]!;
       const m = edge.a === c ? edge.b : edge.a;
       const d = km[c]! + edge.km;

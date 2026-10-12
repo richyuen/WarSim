@@ -5,6 +5,10 @@ import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { lookAt, measureGround, open1938 } from './mapView';
+import { SEA_DEEP, SEA_SHALLOW } from '../../src/render/map/ground';
+
+/** The sea's colour in the palette, 0xRRGGBB: at T0 and T1 the sea's, at T2 and T3 the ramp's base (PLAN 4.7f). */
+const SEA_BASE = 0x1d3557;
 
 // PLAN 2.9b2 (ADR-79): at T2 and T3 the coast is drawn from the fine land mask, the mask the
 // sim stands its formations on (PLAN 2.9a, 2.9b1). Until this task every coast was the coverage,
@@ -29,7 +33,7 @@ interface Agreement {
 
 /** The picture of the view at rest against the mask, at places 6 px apart. */
 function agreement(page: Page): Promise<Agreement> {
-  return page.evaluate(({ W, H }) => {
+  return page.evaluate(({ W, H, SEA, RAMP }) => {
     const v = window.__warsim!.view!;
     const m = window.__warsim!.sim.landMask!;
     v.instances = false;
@@ -61,22 +65,31 @@ function agreement(page: Page): Promise<Agreement> {
         samples.push({ kind, colour: (px[i]! << 16) | (px[i + 1]! << 8) | px[i + 2]! });
       }
     }
-    // The sea's colour: the one most of the surely-water places have.
+    // The sea's colour: the one most of the surely-water places have, and at T2 and T3 that
+    // colour by the sea's depth (PLAN 4.7f): the sea's times a factor of the ramp, the same for
+    // the three channels, within 3 of each.
     const counts = new Map<number, number>();
     for (const s of samples) if (s.kind === 0) counts.set(s.colour, (counts.get(s.colour) ?? 0) + 1);
     const sea = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? -1;
+    const base = [(SEA >> 16) & 255, (SEA >> 8) & 255, SEA & 255];
+    const isSea = (c: number): boolean => {
+      if (c === sea) return true;
+      const rgb = [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+      const k = (rgb[0]! + rgb[1]! + rgb[2]!) / (base[0]! + base[1]! + base[2]!);
+      return k >= RAMP[0]! - 0.02 && k <= RAMP[1]! + 0.02 && rgb.every((v, i) => Math.abs(v - base[i]! * k) <= 3);
+    };
     const out = { land: 0, water: 0, drowned: 0, dry: 0, coast: 0 };
     for (const s of samples) {
       if (s.kind === 1) {
         out.land++;
-        if (s.colour === sea) out.drowned++;
+        if (isSea(s.colour)) out.drowned++;
       } else if (s.kind === 0) {
         out.water++;
-        if (s.colour !== sea) out.dry++;
+        if (!isSea(s.colour)) out.dry++;
       } else out.coast++;
     }
     return out;
-  }, { W, H });
+  }, { W, H, SEA: SEA_BASE, RAMP: [SEA_DEEP, SEA_SHALLOW] });
 }
 
 /** The place on the mask's coast nearest to cell (`x`, `y`): the middle of the edge between a land pixel and a water pixel. */
@@ -230,8 +243,8 @@ test('at T0 and T1 the coast is as it was: with the ground of T2 and without it 
   await open1938(page);
   await page.waitForFunction(() => window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
   const [x, y] = cellOf(1.4, 51.0, W, H); // the Strait of Dover
-  // The mask's coast comes with the ground (the pass that draws the one draws the other). Without
-  // the ground the map is the map of before PLAN 2.8: the coverage's coast.
+  // The ground does not change the coast: at T0 the coverage's, at T1 from 1,200 m/px the mask's
+  // with the ground or without it (PLAN 4.7g, ADR-284; until then the mask's came with the ground).
   for (const mPerPx of [4000, 1000, 400]) {
     await lookAt(page, x, y, mPerPx);
     const m = await measureGround(page);

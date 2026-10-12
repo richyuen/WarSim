@@ -15,6 +15,9 @@
  *    the deficit instead (PLAN 2.13: the AI disbanded 228 of the 1,054 formations of 1938 in
  *    the first hour, the Soviet Union's with six years of its deficit in the treasury). One
  *    `FormationsDisbanded` event, and so one line of the history, per nation and month.
+ *    Before the army (PLAN 4.6e1): while its navy's upkeep is over NAVY_SHARE of its income, the
+ *    fleets that stand (not under way, not in a sea battle) are laid up, the dearest first
+ *    (`FleetsLaidUp`, a crew's DISBAND_MANPOWER back to the pool).
  * 2. Suppression: SUPPRESS_LEVEL while a province it holds has unrest ≥ SUPPRESS_FROM
  *    and the budget has room (B > SUPPRESS_ROOM × income), else 0.
  * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (at most MAX_PARALLEL),
@@ -39,6 +42,10 @@
  *    cannot pay for now is replaced by the infantry division if that one can be paid (critic B1,
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  *    So is one whose techs the nation does not know (PLAN 3.1a).
+ *    Then a fleet (PLAN 4.6e1, `pickFleet`), with what the army's orders left: a nation with a
+ *    shipyard and no fleet in training orders one while its navy's upkeep is under NAVY_SHARE
+ *    of its income, if its balance stays above the need with the fleet's upkeep and its gold
+ *    covers the price and RESERVE_MONTHS of income.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -56,10 +63,12 @@ import { monthlyAccounts, UPKEEP_SCALE, type EconomyTables } from '../systems/ec
 import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
 import { TRIBUTE } from '../systems/puppets';
 import { SUPPRESSION_COST } from '../systems/revolts';
-import { queueFormation } from '../systems/production';
+import { frontierOf } from '../systems/territory';
+import { neighbours4 } from '../nav/grid';
+import { queueFormation, shipyard } from '../systems/production';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
-import type { World } from '../world';
+import { Domain, navBuilt, seaRangeOf, type World } from '../world';
 
 export const DEBT_PAYBACK = 1 / 12;
 export const MARGIN = 0.05;
@@ -104,7 +113,14 @@ export interface BuildMix {
   motorised: number;
   /** The armoured divisions, the best first (PLAN 3.1c). */
   armour: readonly number[];
+  /** The fleets the AI builds (PLAN 4.6e1); none, it builds no fleet. */
+  fleets?: { battle: number; cruiser: number; destroyer: number; transport: number };
 }
+
+/** The share of its income a nation keeps its navy's upkeep near (PLAN 4.6e1): it builds below it and lays up above it when short. */
+export const NAVY_SHARE = 0.12;
+/** The income from which a nation builds battle squadrons (below it, cruiser squadrons from RICH_INCOME, destroyer flotillas under that). */
+export const BATTLE_FLEET_INCOME = 1000;
 
 export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World) => void {
   const upkeepOf = (world: World, id: number): number => {
@@ -126,10 +142,21 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     const training = new Map<number, number>();
     /** The tanks' part of the army's upkeep, the orders in training with it. */
     const tanks = new Map<number, number>();
+    /** Per nation: its fleets and their upkeep (PLAN 4.6e1). */
+    const fleets = new Map<number, number[]>();
+    const navy = new Map<number, number>();
     world.formations.forEach((id) => {
-      // A fleet is not of the army (PLAN 4.2b): it is not sent home, and its upkeep is no part of
-      // the share of the income an army may take. It is paid all the same: the balance is of
-      // all the expenses, so a nation short of money by its navy cuts its army.
+      // A fleet is not of the army (PLAN 4.2b): it is not sent home with it, and its upkeep is
+      // no part of the share of the income an army may take; it has a share of its own (PLAN
+      // 4.6e1). An army aboard is of the army.
+      if (world.isFleet(id)) {
+        const n = f.nation[id]!;
+        const l = fleets.get(n) ?? [];
+        l.push(id);
+        fleets.set(n, l);
+        navy.set(n, (navy.get(n) ?? 0) + upkeepOf(world, id));
+        return;
+      }
       if (world.afloat(id)) return;
       const n = f.nation[id]!;
       const l = own.get(n) ?? [];
@@ -141,9 +168,15 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     });
     const pending = new Map<number, number>();
     const upkeepOfTemplate = (t: number): number => (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0)) || 0;
+    /** Per nation: the fleets in training. */
+    const shipsPending = new Map<number, number>();
     world.production.forEach((id) => {
       const n = world.production.cols.nation[id]!;
       const t = world.production.cols.template[id]!;
+      if (world.rules?.templates[t]?.domain === Domain.sea) {
+        shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
+        return;
+      }
       pending.set(n, (pending.get(n) ?? 0) + 1);
       training.set(n, (training.get(n) ?? 0) + upkeepOfTemplate(t));
       tanks.set(n, (tanks.get(n) ?? 0) + (tables.templateArmour[t] ?? 0) * upkeepOfTemplate(t));
@@ -160,8 +193,23 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         if (world.rules) nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
         return;
       }
-      // 1. Disband while the books do not balance and the treasury cannot carry what is short.
+      // 1. Disband while the books do not balance and the treasury cannot carry what is short:
+      // first the fleets that stand, the dearest first, while the navy is over its share (PLAN
+      // 4.6e1: laid up, their crews home), then the army.
       if (balance < need) {
+        let laid = 0;
+        const standing = (fleets.get(n) ?? []).filter((id) => f.moving[id] !== 1 && f.engaged[id] !== 1 && seaRangeOf(world, id) === undefined).sort((a, b) => upkeepOf(world, b) - upkeepOf(world, a) || a - b);
+        for (const id of standing) {
+          if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance) || (navy.get(n) ?? 0) <= NAVY_SHARE * income) break;
+          const u = upkeepOf(world, id);
+          if (u <= 0) continue;
+          nc.manpower[n] = nc.manpower[n]! + DISBAND_MANPOWER * f.strength[id]!;
+          destroyFormation(world, id);
+          balance += u;
+          navy.set(n, (navy.get(n) ?? 0) - u);
+          laid++;
+        }
+        if (laid > 0) world.out.emit(world.tick, EventKind.FleetsLaidUp, n, laid, NaN, NaN);
         const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1).sort((a, b) => armourOf(a) - armourOf(b) || f.strength[a]! - f.strength[b]! || a - b);
         let cut = 0;
         for (const id of idle) {
@@ -190,33 +238,49 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       let upkeep = (army.get(n) ?? 0) + (training.get(n) ?? 0);
       let inTanks = tanks.get(n) ?? 0;
       balance -= training.get(n) ?? 0;
-      for (let k = pending.get(n) ?? 0; k < slots; k++) {
-        if (upkeep >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * nc.aggression[n]!) / 100)) * income) return;
-        let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0);
-        // It saves for its armour: no order more this month.
-        if (t < 0) return;
-        let rule = world.rules.templates[t]!;
-        const plain = world.rules.templates[mix.infantry];
-        if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
-          t = mix.infantry;
-          rule = plain;
+      // The army's orders first; what they leave may pay for a fleet.
+      const rules = world.rules;
+      const armyOrders = (): void => {
+        for (let k = pending.get(n) ?? 0; k < slots; k++) {
+          if (upkeep >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * nc.aggression[n]!) / 100)) * income) return;
+          let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0);
+          // It saves for its armour: no order more this month.
+          if (t < 0) return;
+          let rule = rules.templates[t]!;
+          const plain = rules.templates[mix.infantry];
+          if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
+            t = mix.infantry;
+            rule = plain;
+          }
+          // And one it has not the techs for by the plain division, or the cadre one, which asks for none (PLAN 3.1a).
+          for (const next of [mix.infantry, mix.cadre]) {
+            if (knowsTechs(world, n, rule.techs)) break;
+            const other = rules.templates[next];
+            if (!other) continue;
+            t = next;
+            rule = other;
+          }
+          const newUpkeep = upkeepOfTemplate(t);
+          if (balance - newUpkeep <= need) return;
+          if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
+          if (queueFormation(world, n, t) === 0) return;
+          nc.builds[n] = nc.builds[n]! + 1;
+          balance -= newUpkeep;
+          upkeep += newUpkeep;
+          inTanks += (tables.templateArmour[t] ?? 0) * newUpkeep;
         }
-        // And one it has not the techs for by the plain division, or the cadre one, which asks for none (PLAN 3.1a).
-        for (const next of [mix.infantry, mix.cadre]) {
-          if (knowsTechs(world, n, rule.techs)) break;
-          const other = world.rules.templates[next];
-          if (!other) continue;
-          t = next;
-          rule = other;
+      };
+      armyOrders();
+      // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
+      // navy is under its share of the income.
+      const fleet = mix.fleets && (shipsPending.get(n) ?? 0) === 0 && (navy.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, atWar, mix.fleets, fleets.get(n) ?? []) : -1;
+      if (fleet >= 0 && shipyard(world, n) >= 0) {
+        const rule = rules.templates[fleet]!;
+        const u = upkeepOfTemplate(fleet);
+        if (balance - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, fleet) !== 0) {
+          nc.builds[n] = nc.builds[n]! + 1;
+          balance -= u;
         }
-        const newUpkeep = upkeepOfTemplate(t);
-        if (balance - newUpkeep <= need) return;
-        if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
-        if (queueFormation(world, n, t) === 0) return;
-        nc.builds[n] = nc.builds[n]! + 1;
-        balance -= newUpkeep;
-        upkeep += newUpkeep;
-        inTanks += (tables.templateArmour[t] ?? 0) * newUpkeep;
       }
     });
   };
@@ -243,7 +307,7 @@ function restlessNations(world: World): Set<number> {
   const out = new Set<number>();
   const pv = world.provinces;
   if (pv.count === 0) return out;
-  const g = world.nav?.graph;
+  const g = navBuilt(world)?.graph;
   if (!g) return out;
   for (let p = 1; p < pv.count; p++) {
     if (pv.unrest[p]! < SUPPRESS_FROM) continue;
@@ -278,6 +342,38 @@ function pickTemplate(world: World, n: number, income: number, atWar: boolean, m
   }
   if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;
   return mix.infantry;
+}
+
+/**
+ * The fleet nation `n` orders next (PLAN 4.6e1), its navy under its share: a transport group
+ * when it is at war with no land front and has none (the invasion AI's want, PLAN 4.6b); else
+ * by its income, the best it can pay for with the reserve it keeps: a battle squadron from
+ * BATTLE_FLEET_INCOME, a cruiser squadron from RICH_INCOME, a destroyer flotilla. -1 for a
+ * poor nation, or one that can pay for none of them.
+ */
+function pickFleet(world: World, n: number, income: number, atWar: boolean, kinds: NonNullable<BuildMix['fleets']>, own: number[]): number {
+  if (income < POOR_INCOME) return -1;
+  const templates = world.rules!.templates;
+  const gold = world.nations.cols.gold[n]!;
+  const pays = (t: number): boolean => templates[t] !== undefined && gold >= templates[t]!.gold + RESERVE_MONTHS * income;
+  const f = world.formations.cols;
+  if (atWar && !own.some((id) => f.template[id] === kinds.transport) && !hasFront(world, n)) return pays(kinds.transport) ? kinds.transport : -1;
+  const wanted = income >= BATTLE_FLEET_INCOME ? [kinds.battle, kinds.cruiser, kinds.destroyer] : income >= RICH_INCOME ? [kinds.cruiser, kinds.destroyer] : [kinds.destroyer];
+  return wanted.find(pays) ?? -1;
+}
+
+/** Whether nation `n` holds a cell beside one held by a nation at war with it. */
+function hasFront(world: World, n: number): boolean {
+  const { w, h, controller } = world.cells;
+  const nb: number[] = [];
+  for (const c of frontierOf(world)) {
+    if (controller[c] !== n) continue;
+    for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
+      const m = controller[k]!;
+      if (m !== 0 && m !== n && world.wars.atWar(n, m)) return true;
+    }
+  }
+  return false;
 }
 
 /** Share of tank elements among the elements of n's enemies' formations. */

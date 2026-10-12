@@ -72,7 +72,7 @@ export function tankBattle(seed: number, firstDay: number, lastDay: number, shoo
       const raw = w.out.fires;
       for (let i = 0; i < raw.length; i += FIRE_STRIDE) {
         hour.hit.add(raw[i + FireField.target]!);
-        if (!units[raw[i + FireField.weapon]!]!.cls.startsWith('armor')) continue;
+        if (!units[raw[i + FireField.weapon]!]?.cls.startsWith('armor')) continue; // a torpedo's record is negative (PLAN 4.7c)
         hour.shots.push({ shooter: raw[i + FireField.shooter]!, x0: raw[i + FireField.x0]!, y0: raw[i + FireField.y0]!, x1: raw[i + FireField.x1]!, y1: raw[i + FireField.y1]! });
       }
       const idx = elementIndex(w);

@@ -9,6 +9,7 @@ import { Sim } from '../../src/sim/sim';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
+import { at1938 } from '../helpers/checkpoint';
 
 // PLAN 3.7k (the eighth independent read, finding 2): a paint of terrain and a change of
 // `loopingMap` dropped every path, and each was found again from the order's first cell on the
@@ -79,9 +80,7 @@ function walk(s: Sim, id: number, hours: number): { leaps: string[]; wet: number
 
 describe('a paint of terrain does not move a marching formation (PLAN 3.7k)', () => {
   it('a paint far from every formation leaves each where the game without it has it, an hour and 48 hours later', () => {
-    const first = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
-    first.step(1500);
-    const bytes = first.save();
+    const bytes = at1938(99, 1500).save();
     const plain = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     const painted = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     plain.load(bytes);

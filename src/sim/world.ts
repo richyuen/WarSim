@@ -3,12 +3,13 @@
  * nothing outside this object influences a tick except queued commands.
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
-import { buildLaneGraph, type LaneGraph, type SeaPassage } from './nav/lanes';
+import { buildLaneGraph, portWaters, type LaneGraph, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import type { Port } from './data/ports';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
+import { xxhash32View } from './core/hash';
 import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
@@ -150,6 +151,14 @@ export interface UnitRule {
   hpPerUnit: number;
   /** Fuel an element of it burns in an hour on the march (`fuelPerHour` of the unit data). */
   fuel: number;
+  /** Its guns' reach, km; how far it sees, km; how hard it is to see, 0..100 (`range_km`, `detection`, `stealth`; read at sea, PLAN 4.3a). */
+  rangeKm: number;
+  detection: number;
+  stealth: number;
+  /** Its torpedoes' damage an hour and reach, km, and its depth charges' damage at a submarine (PLAN 4.3b); 0 for none. */
+  torpedo: number;
+  torpedoKm: number;
+  asw: number;
   /**
    * Its own figures for the ground (PLAN 3.3a; `terrainMods` of the unit data), by terrain, 1
    * where it has none: its fire at a target on that ground, and the fire it takes holding it.
@@ -374,6 +383,13 @@ class WorldCore implements Stateful {
       { name: 'world.commandLog', dtype: 'u8', data: log },
       { name: 'world.names', dtype: 'u8', data: names },
       { name: 'world.paths', dtype: 'i32', data: paths },
+      // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
+      // only while there is one, so a world with no sea battle saves and hashes as before.
+      // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
+      ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
+      // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
+      ...(w.seaControl === null || !w.seaControl.holder.some((h) => h !== 0) ? [] : [{ name: 'world.seaControl', dtype: 'f64' as const, data: Float64Array.from([w.seaControl.holder.length, ...w.seaControl.holder, ...w.seaControl.days]) }]),
+      ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
     ];
   }
 
@@ -407,15 +423,32 @@ class WorldCore implements Stateful {
     w.paths.clear();
     const paths = sections.find((s) => s.name === 'world.paths')?.data as Int32Array | undefined;
     for (let at = 0; paths && at < paths.length; at += 2 + paths[at + 1]!) w.paths.set(paths[at]!, paths.slice(at + 2, at + 2 + paths[at + 1]!));
+    const control = sections.find((s) => s.name === 'world.seaControl')?.data as Float64Array | undefined;
+    w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
+    w.seaLinks = new Map();
+    w.embarked = new Map();
+    const emb = sections.find((s) => s.name === 'world.embarked')?.data as Float64Array | undefined;
+    for (let at = 0; emb && at < emb.length; at += 5) w.embarked.set(emb[at]!, { fleet: emb[at + 1]!, land: emb[at + 2]!, water: emb[at + 3]!, target: emb[at + 4]! });
+    w.seaBattles = [];
+    const sea = sections.find((s) => s.name === 'world.seaBattles')?.data as Float64Array | undefined;
+    for (let at = 0; sea && at < sea.length; ) {
+      const n = sea[at++]!;
+      const fleets = Array.from(sea.subarray(at, at + n));
+      const ships = Array.from(sea.subarray(at + n, at + 2 * n));
+      at += 2 * n;
+      const [range, a, b, lostA, lostB, x, y] = Array.from(sea.subarray(at, at + 7)) as [number, number, number, number, number, number, number];
+      at += 7;
+      w.seaBattles.push({ fleets, ships, range, a, b, lostA, lostB, x, y });
+    }
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.elementIndex = null;
     w.contacts = null;
     w.deployed = null;
     w.deployedBefore = null;
-    w.nav = null;
-    w.sea = null;
-    w.lanes = null;
+    // The nav caches and the seas' are of the map: kept if the map loaded is the same (`checkNav`).
+    w.navStale = true;
     w.frontier = null;
+    w.provinceCells = null;
     w.dropLandCounts();
     w.terrainVersion++;
     w.citiesVersion++;
@@ -426,23 +459,117 @@ class WorldCore implements Stateful {
   }
 }
 
+/** What the nav caches are built from: the terrain, the provinces and whether the map loops. */
+export function navKeyOf(world: World): string {
+  const { terrain, province } = world.cells;
+  return `${world.settings.loopingMap ? 1 : 0}:${terrain.length}:${xxhash32View(terrain)}:${xxhash32View(province)}`;
+}
+
+/**
+ * The grid of `grid` for a world of the same map with its own terrain layer: the same derived
+ * rasters, and no search of its own yet (scratch, the last barred search and the pockets are
+ * memos of the searches made on it), so it is the grid a build gives.
+ */
+export function freshGrid(grid: NavGrid, terrain: Uint8Array): NavGrid {
+  return { ...grid, terrain, scratch: null, barred: null, pockets: null };
+}
+
+/**
+ * After a load (`navStale`): the nav caches are kept where the map loaded is the one they were
+ * built from, and dropped where it is not (ADR-279: 0.3 s to build again on every load).
+ */
+function checkNav(world: World): void {
+  if (!world.navStale) return;
+  world.navStale = false;
+  if (world.nav && world.navKey === navKeyOf(world)) {
+    world.nav = { grid: freshGrid(world.nav.grid, world.cells.terrain), graph: world.nav.graph };
+    return;
+  }
+  world.nav = null;
+  world.sea = null;
+  world.lanes = null;
+  world.portSea = null;
+}
+
 /** The navigation grid and province graph for the world's static layers (built once, cached). */
 export function navOf(world: World): { grid: NavGrid; graph: ProvinceGraph } {
+  checkNav(world);
   if (!world.nav) {
     const grid = makeNavGrid(world.cells.terrain, world.cells.w, world.cells.h, world.settings.loopingMap);
     world.nav = { grid, graph: buildProvinceGraph(grid, world.cells.province) };
+    world.navKey = navKeyOf(world);
   }
+  return world.nav;
+}
+
+/** The nav caches if they are built (and still the map's), else null: nothing is built. */
+export function navBuilt(world: World): { grid: NavGrid; graph: ProvinceGraph } | null {
+  checkNav(world);
   return world.nav;
 }
 
 /** The sea zones for the world's terrain and its map's seeds (PLAN 4.1a; built once, cached). */
 export function seaOf(world: World): SeaZones {
-  return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds));
+  checkNav(world);
+  return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds, new Set(world.seaIce)));
 }
 
 /** The lane graph over the sea zones and the map's passages, with the world's ports (PLAN 4.1b, 4.1c; built once, cached). */
 export function laneOf(world: World): LaneGraph {
+  checkNav(world);
   return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages, world.ports, world.portReach));
+}
+
+/** Per port of the world, its water as the lane graph has it, or -1 (`portWaters`: by the zones alone, not the lanes; built once, cached where `sea` is). */
+export function portSeaOf(world: World): Int32Array {
+  checkNav(world);
+  return (world.portSea ??= portWaters(navOf(world).grid, seaOf(world), world.ports, world.portReach));
+}
+
+/**
+ * Each province's cells (ADR-279): province p's are `cells[start[p]]…cells[start[p + 1] - 1]`, in
+ * the order of the cell index, as a scan of the map meets them (built once, cached; a load drops it).
+ */
+export function provinceCellsOf(world: World): { start: Int32Array; cells: Int32Array } {
+  if (!world.provinceCells) {
+    const { province } = world.cells;
+    let count = world.provinces.count;
+    for (let c = 0; c < province.length; c++) if (province[c]! >= count) count = province[c]! + 1;
+    const start = new Int32Array(count + 1);
+    for (let c = 0; c < province.length; c++) start[province[c]! + 1]!++;
+    for (let p = 0; p < count; p++) start[p + 1]! += start[p]!;
+    const at = start.slice(0, count);
+    const cells = new Int32Array(province.length);
+    for (let c = 0; c < province.length; c++) cells[at[province[c]!]!++] = c;
+    world.provinceCells = { start, cells };
+  }
+  return world.provinceCells;
+}
+
+/**
+ * A sea battle (PLAN 4.3c): its fleets, with the ships each had when it came in; its range, km;
+ * its two sides' first nations (`a`, the first fleet's; `b`, the first of the fleets at war with
+ * it) and the ships each side lost; where it began.
+ */
+export type { SeaControl } from './systems/seaControl';
+import type { SeaControl } from './systems/seaControl';
+import type { Embarked } from './systems/amphibious';
+
+export interface SeaBattle {
+  fleets: number[];
+  ships: number[];
+  range: number;
+  a: number;
+  b: number;
+  lostA: number;
+  lostB: number;
+  x: number;
+  y: number;
+}
+
+/** The range of the sea battle fleet `id` is in, km; undefined for none (PLAN 4.3a). */
+export function seaRangeOf(world: World, id: number): number | undefined {
+  return world.seaBattles.find((b) => b.fleets.includes(id))?.range;
 }
 
 export class World {
@@ -496,6 +623,11 @@ export class World {
    * was annexed left its cells in its overlord's network: PLAN 2.11j).
    */
   supplyDirtyBlocs = new Set<number>();
+  /**
+   * Derived (not state): the blocs whose lands joined by sea changed (`markSeaLinks`, PLAN 4.4c):
+   * flooded whole at the refresh, cells of their own changed or not (ADR-272).
+   */
+  supplySeaBlocs = new Set<number>();
   /**
    * Derived (not state): the cells whose controller or owner changed since the last refresh, each
    * with what it was then (controller × 65536 + owner). A partial refresh mends the network at
@@ -649,7 +781,13 @@ export class World {
    * (`TemplateRule.domain`). The rules of the land (the march, supply, contact and fire, the
    * ground a formation holds, the AI's orders) ask this and leave a fleet alone.
    */
+  /** A fleet, or a land formation aboard one (PLAN 4.5a): on the water, where no rule of the land reads it. */
   afloat(id: number): boolean {
+    return this.isFleet(id) || this.embarked.has(id);
+  }
+
+  /** A formation of a sea template (PLAN 4.2a). */
+  isFleet(id: number): boolean {
     return this.rules?.templates[this.formations.cols.template[id]!]?.domain === Domain.sea;
   }
 
@@ -720,12 +858,27 @@ export class World {
    * missing is found again (`formationPath`). The navigation graph is a derived cache.
    */
   paths = new Map<number, Int32Array>();
+  /** The sea battles going on (PLAN 4.3a, 4.3c; `navalCombatSystem`): state, saved while there is one. */
+  seaBattles: SeaBattle[] = [];
+  /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
+  embarked = new Map<number, Embarked>();
+  /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
+  seaLinks = new Map<number, string>();
+  /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */
+  seaControl: SeaControl | null = null;
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
+  /** What `nav` was built from (`navKeyOf`), and whether a load has come since (`checkNav`: kept, or dropped with the seas'). */
+  navKey = '';
+  navStale = false;
+  /** Each province's cells (`provinceCellsOf`; derived, dropped on load). */
+  provinceCells: { start: Int32Array; cells: Int32Array } | null = null;
   /**
    * The seeds of the map's named seas (PLAN 4.1a): static data of the map, not state (not saved,
    * not hashed). None on the toy world: its water is given zones with no name.
    */
   seaSeeds: readonly SeaSeed[] = [];
+  /** The seas of `seaSeeds`, by name, that ice closes to a fleet (PLAN 4.2d): static data of the map, as the seeds are. */
+  seaIce: readonly string[] = [];
   /** The sea zones: a derived cache, as `nav` is, and dropped where it is. */
   sea: SeaZones | null = null;
   /** The map's passages (PLAN 4.1b): static data of the map, as `seaSeeds` is. None on the toy world. */
@@ -737,6 +890,8 @@ export class World {
   ports: readonly Port[] = [];
   /** How far from its cell a port's water may be, cells (the scenario's `reachCells`). */
   portReach = 0;
+  /** Each port's water (`portSeaOf`): a derived cache, dropped where `sea` is. */
+  portSea: Int32Array | null = null;
   /** The lane graph: a derived cache, dropped where `sea` is. */
   lanes: LaneGraph | null = null;
   commandLog: LoggedCommand[] = [];

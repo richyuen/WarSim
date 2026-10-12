@@ -32,10 +32,19 @@ function capitalCities(world: World): Map<number, number> {
   return cells;
 }
 
+/** The 1938 start with a revolt forced in every province, once for both tests (they only read it; 60 s). */
+let forced: { world: World; first: number } | null = null;
+function forcedEverywhere(): { world: World; first: number } {
+  if (!forced) {
+    const world = sim1938().world;
+    forced = { world, first: revoltEverywhere(world) };
+  }
+  return forced;
+}
+
 describe('where a rebel nation starts (PLAN 2.15e)', () => {
   it('a revolt forced in every province of the 1938 start: every capital is on its own land', () => {
-    const world = sim1938().world;
-    const first = revoltEverywhere(world);
+    const { world, first } = forcedEverywhere();
     const nc = world.nations.cols; // after the revolts: the table has grown (PLAN 2.12a)
     const { owner, w } = world.cells;
     const cities = capitalCities(world);
@@ -57,8 +66,7 @@ describe('where a rebel nation starts (PLAN 2.15e)', () => {
   // PLAN 2.15e2: the militia stood at the capital's coordinates. Those of a city on the shore
   // are in a sea cell of the coarse grid, and some of them in a water pixel of the fine mask.
   it('a revolt forced in every province of the 1938 start: every militia formation is on its own land', () => {
-    const world = sim1938().world;
-    const first = revoltEverywhere(world);
+    const { world, first } = forcedEverywhere();
     const { owner, w } = world.cells;
     const fc = world.formations.cols;
     let militia = 0;

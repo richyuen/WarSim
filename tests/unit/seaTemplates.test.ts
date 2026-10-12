@@ -9,7 +9,7 @@ import { EventKind } from '../../src/shared/events';
 import { validateDataSet } from '../../src/sim/data/schemas';
 import { ECONOMY_TABLES_1938, NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_1938, TEMPLATES_LAND, TEMPLATES_SEA, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { PRODUCTION_COST_SCALE, queueFormation, TRAIN_TIME_SCALE } from '../../src/sim/systems/production';
+import { PRODUCTION_COST_SCALE, queueFormation, SHIP_TIME_SCALE } from '../../src/sim/systems/production';
 import { Domain } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { runEvents } from '../helpers/sim1938';
@@ -69,7 +69,8 @@ describe('ship types and fleet templates in the rules (PLAN 4.2a)', () => {
       expect(rule.speedKmh, t.id).toBe(Math.min(...t.elements.map((e) => units.get(e.type)!.stats.speed_kmh)));
       expect(rule.gold, t.id).toBeCloseTo(PRODUCTION_COST_SCALE * sum((u) => u.cost.gold), 9);
       expect(rule.manpower, t.id).toBe(sum((u) => u.cost.manpower));
-      expect(rule.days, t.id).toBe(TRAIN_TIME_SCALE * Math.max(...t.elements.map((e) => units.get(e.type)!.cost.days)));
+      // Its slowest ship's own days since PLAN 4.2e (ADR-252); by the land's scale, 3 ×, before.
+      expect(rule.days, t.id).toBe(SHIP_TIME_SCALE * Math.max(...t.elements.map((e) => units.get(e.type)!.cost.days)));
       expect(rule.fuel, t.id).toBeCloseTo(sum((u) => u.stats.fuelPerHour), 9);
       expect(ECONOMY_TABLES_1938.templateUpkeep[i], t.id).toBeCloseTo(sum((u) => u.upkeep.gold), 9);
       expect(ECONOMY_TABLES_1938.templateStrength[i], t.id).toBe(sum((u) => u.cost.manpower));
@@ -81,7 +82,7 @@ describe('ship types and fleet templates in the rules (PLAN 4.2a)', () => {
     expect(RULES_1938.templates[template('transport_group')]!.speedKmh).toBe(30);
   });
 
-  it('a fleet is not built and not spawned: both put a formation on land', () => {
+  it('a fleet is not spawned (on land), and is built only by a nation with a port (PLAN 4.2e)', () => {
     const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
     const w = s.world;
     w.settings.aiEnabled = false;
@@ -91,12 +92,16 @@ describe('ship types and fleet templates in the rules (PLAN 4.2a)', () => {
     nc.manpower[GBR] = 1e7;
     const formations = w.formations.count;
     const elements = w.elements.count;
+    // Switzerland has no port a ship reaches: refused. (Until PLAN 4.2e every nation was.)
+    const SWI = NATIONS_1938.findIndex((n) => n.tag === 'SWI') + 1;
+    nc.gold[SWI] = 1e7;
+    nc.manpower[SWI] = 1e7;
     for (const t of SEA) {
       w.out.events.length = 0;
-      expect(queueFormation(w, GBR, template(t)), t).toBe(0);
+      expect(queueFormation(w, SWI, template(t)), t).toBe(0);
       expect(w.out.events.filter((v, i) => i % 6 === 1 && v === EventKind.ProductionRejected), t).toHaveLength(1);
     }
-    expect(nc.gold[GBR]).toBe(1e7);
+    expect(nc.gold[SWI]).toBe(1e7);
     expect(w.production.count).toBe(0);
     // A land template is built as before.
     expect(queueFormation(w, GBR, template('infantry_div'))).toBeGreaterThan(0);

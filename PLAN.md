@@ -23,137 +23,41 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes.
-  AT: a fleet route test Gibraltar → Suez takes the expected time; never crosses land (fine mask).
-  From PLAN 4.1b (2026-10-09, ADR-243): a route over the lanes goes by the zones' middles and
-  in 8-way steps, and is longer than the sea's own way (the Alboran Sea to the north of the
-  Red Sea 4,941 km, 4,024 by great-circle legs). The time a fleet takes is to be that of the
-  way it sails: straighten the way, or say what "expected" is against. An edge's cells are of
-  the M grid, not of the fine mask.
-  From PLAN 4.1c (2026-10-09, ADR-244): the Arctic is open water to the lanes: from Scapa
-  Flow to Pearl Harbor the shortest way is north of Siberia (15,974 km), not by Panama. Ice
-  is not in the map's data: close those zones to a fleet, or give them a cost.
-  Split 2026-10-09 (one cause to a commit):
-  - [x] 4.2a The ship types and the fleet templates in the scenario's rules: […]
-  - [x] 4.2b Fleets in the 1938 order of battle, standing at their ports' water: every rule […]
-  - [x] 4.2b1 Found by the browser suite of PLAN 4.2b (the fleets, written first and in a […]
-  - [x] 4.2c A fleet sails along the lanes: an order to a port or to water, the route found […]
-  - [ ] 4.2d The Arctic is closed to a fleet, or costs: by the map's data.
-    AT: Scapa Flow → Pearl Harbor goes by Panama.
-    From PLAN 4.2c (2026-10-09, ADR-250): a fleet's way is the lanes' way drawn tight
-    (`sailRoute`), so a zone closed in `laneRoute` is closed to it. Its turns are cells of
-    the lanes' way, not the capes it rounds, and a straight walk is a line of the Miller
-    map, not a great circle: over an ocean in the north the way is the longer by it
-    (Yokosuka to Pearl Harbor × 1.087 its great-circle legs, the worst of 90 ways between
-    ten bases). Which of those ways go by the Arctic was not looked at.
-  - [ ] 4.2e Ships are built: a sea template in the queue, delivered at a port of the nation.
-    AT: a queued flotilla appears at a port's water after its days; a nation with no port is
-    refused.
-    From PLAN 4.2a (2026-10-09, ADR-247): by the land's scales a battle squadron takes 2,700
-    days (`TRAIN_TIME_SCALE` 3 × the battleship's 900) and costs 6,720 gold, a destroyer
-    flotilla 540 days and 1,120: say whether the scales are the ships' too. The page is sent
-    the land templates only (`mapLayers`), and the economic AI's build mix has no ship.
-    From PLAN 4.2b (2026-10-09, ADR-248): the page is sent every template with its domain
-    now, and the build list of the Actions tab leaves the fleets out (`tp.domain !== 0`).
-    Only the 1938 start has fleets: the random world, the toy world and a world of the
-    editor have none, and none can be placed there.
-- [ ] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening).
-  AT: outcome tests (BB line beats CL line at range; DD screen reduces sub hits).
-- [ ] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding.
-  From PLAN 4.1c (2026-10-09, ADR-244): the ports are data of the scenario (`world.ports`),
-  not state. What builds, damages or blockades a port makes its levels state (the pin moves
-  then). A reader takes `laneOf(world).portNode`: 36 of 615 ports have no node (water with
-  no zone). 43 ports stand in held land with no province (New York, Sydney), so a port's
-  province is not always known. A city placed in the editor gets no port.
-  From PLAN 4.1d2 (2026-10-09, ADR-246): of the 36 ports with no node, those of 20 provinces
-  are their province's only ones: 19 read by their names as on a lake or a river, and
-  Narsarsuaq (Greenland) on the coast; Juneau and Valdez the same, in no province. Why the
-  water of these three has no zone was not looked into. A port is to take water that has a
-  zone where its reach has any.
-  From PLAN 4.2b (2026-10-09, ADR-248): the supply system leaves a fleet alone, so its
-  supply is 1 for ever. A fleet stands at a base its nation has lost (the land taken in a
-  war, handed over in a peace, risen in a revolt): nothing sends it away, takes it or
-  reads it. `portWater` (the fleets' water, by the terrain) and the lane graph's port node
-  (by zoned water) are two rules for one cell: the same for the 61 bases with fleets, not
-  looked at for the other 554 ports.
-  From PLAN 4.2c (2026-10-09, ADR-250): a fleet sails any water and any passage, whoever
-  holds its banks (Suez, Panama, Kiel, the Bosporus) and whoever it is at war with. Its
-  supply is 1 however far it sails, and it burns no fuel under way.
-  A fleet in a passage's step is over the canal's land cells for those hours (6 in the
-  Suez canal), and a map import of terrain removes every fleet whose cell is land
-  (`strandedToLand`, whatever the import changed): a fleet in a canal is gone by it. Read,
-  not tried. The step's two cells are in its path: a fleet on such a step is to be left.
-  AT: a blockaded port's income drops by the expected factor; an overseas formation loses supply when the lane is cut.
-- [ ] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment).
-  From the critic's report of 2026-10-05 (R2-B1: naval, air and nuclear scored 0; Phases 4,
-  5 and 6 are their tasks): without transport by sea the sea powers are out of every war.
-  The United Kingdom had 3,390,436 men in 317 formations and the same 17,000 cells for 20
-  years of seed 31337. A British division ordered to Calais walked to the coast of Kent and
-  stood there. The same holds for Japan's home army, for the United States and for every
-  colony. All 15 templates that can be built are land formations.
-  From the critic's report of 2026-10-07 (R3-B1, its first blocking issue again; the three
-  differentiators still score 0): on seed 4242, 40 years headless, Canada holds 12.1 % of
-  the cells and the United States 7.7 % in every year from 15 to 40, and Denmark
-  (Greenland) 5.4 to 5.5 % in all 40. The division ordered to Calais stops 3.5 cells short,
-  on the English coast. `data/units/sea.json` and `data/units/air.json` are read by nothing
-  in play. The critic: "sea transport first, as it also unfreezes the maritime powers".
-  AT: a scripted invasion lands and takes the coastal cells; it fails without sea control (test).
-- [ ] 4.6 Naval AI (sea control, escort, raiding, invasion planning).
-  AT: headless 1938 run: ≥ 1 fleet battle and ≥ 1 amphibious landing per 10 years on 3/3 seeds.
-  From the Phase 3 review (PLAN 3.7c, 2026-10-07): a war between two nations with no land
-  way between them has no front (France and Portugal with Spain at peace; ADR-149, ADR-152),
-  and a formation that reaches no front stands where it is. How many wars of a game have no
-  front, and how they end, was never counted: count it here first, then plan the landing
-  for such a war.
-  From PLAN 4.1d1 (2026-10-09, ADR-245): two formations in contact with water between
-  them (an inlet, a river of the mask) stand so for 14 days and more, neither moving (seed
-  99 with Germany against Poland by command, formations 386 and 439, hours 702 to 1,044 at
-  least). Whether such a contact ever ends, and how many there are, was not counted.
-  From PLAN 4.2b (2026-10-09, ADR-248): a navy is never cut. The economic AI sends no fleet
-  home and desertion takes no ship, so a nation short of money by its navy cuts its army
-  (the Soviet Union with an empty treasury sends home 79 of 162 formations where it sent
-  67; Italy has 7 a month left against a margin of 33). Which ships a nation lays up, and
-  when, is to be decided here. A fleet's upkeep is no part of the share of the income the
-  AI lets an army take, and has no share of its own. The strategic AI's strengths and the
-  men of a war's sides count no fleet: a navy weighs nothing in a declaration or a peace.
-  From PLAN 4.2c (2026-10-09, ADR-250): only a player orders a fleet (`orderSail`, by the
-  `moveFormation` command). A way costs about 2 ms and the lane graph 0.4 to 0.7 s at its
-  first use in a game: count what a day of the AI's orders costs before it gives them.
-- [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
-  From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
-  though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
-  fine mask has and the coarser coverage has not is drawn at T2 and T3 and not at T1.
-  From PLAN 4.1d2 (2026-10-09, ADR-246): the mask has rivers, and a march crosses one on
-  the straight line (4,645 steps of the map are not clear of water and have no way over
-  land; 275 of 775,801 formation-hours in 90 days of seed 99). At T2 and T3 a formation is
-  then drawn on the river. A way round a bay is walked in the step's time, up to 7.7 times
-  as quick over the ground (485 ways are over three times their line). The line of a march
-  drawn in the game is straight from cell to cell, not the way. None was looked at in the
-  game. A formation on a way can be in a cell beside its step's two (104 of 4,358
-  formation-hours on a way in the 90 days; 2 of them in an enemy's cell): what the rules
-  that read a formation's cell make of it was not looked at.
-  From PLAN 4.2b (2026-10-09, ADR-248; seven pictures looked at, `.cache/fleets/`): a fleet
-  is drawn by what draws the land's formations. At T1 its marker is a land box with a hull
-  for its symbol and its crews for its number (13.4k a battle squadron, 400 a submarine
-  flotilla); the fleets of a base stack as one marker ("×4"). Far out, a counter folds a
-  fleet's crews into its nation's men under the army's symbol (45.1k at Scapa Flow, where
-  no division stands). At T2 and T3 the ships stand in a land block's rows, each the one
-  ship sprite in its nation's colour, bows to the east, the tag "Battle squadron 1055" over
-  them. Not looked at: the formation panel of a fleet, a marker stack of a fleet and a
-  division, the ships at T3's closest, the ranking and charts (the men are the army's).
-  From PLAN 4.2c (2026-10-09, ADR-250; three pictures looked at, `.cache/sail/`): a fleet
-  under way is drawn as one that stands, its ships in their rows facing along its course.
-  The dashed line of its order goes straight to its target, over Sicily from the west of
-  it to Alexandria: not its way. Its way is 8-way steps between cells' water points, so on
-  a leg that is neither it turns by 45° from cell to cell. A step can clip a shore of the
-  fine mask (346 of 493,400 places on 90 ways between ten bases; none from Gibraltar to
-  Suez), and in a passage the fleet is drawn over the land. `World.seaPoint` asks the mask
-  each hour for a cell by a coast: not timed with many fleets under way.
-  AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
-- [ ] 4.8 Phase 4 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+- [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  Split 2026-10-12, as 3.12R was: the pass is several causes, one a commit. A part is not a
+  numbered task (its gate runs the tests related to it and the specs it changed, ADR-280);
+  the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
+  - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and […]
+  - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
+  - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports […]
+  - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
+  - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
+  - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
+  - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
+  - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
+  - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
+  - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
+  - [ ] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a
+    neutral's, and past an enemy-held sea: an order to Calais, then the transports sent to
+    Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
+    coast it lands in the Netherlands at peace (`redirect.ts`). "Of its side or none", and the
+    sea's holder asked, as at the landing's own water. A test fails first.
+  - [ ] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
+    22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
+    the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
+    has no home to sail to. Ports a ship reaches only. A test fails first.
+  - [ ] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows
+    the last game's holders (the worker sends `seaControl` only while there is one) until the
+    next 00:00.
+  - [ ] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
+  - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
+    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
+    if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
+    critic (due after a phase review, ADR-59).
 
 ## Phase 5 — Air
 
@@ -164,6 +68,10 @@ quick sweep as a smoke test.
 - [ ] 5.3 Air combat, interception, AA; air superiority per zone.
   AT: outcome tests (fighters beat bombers; AA attrition rate).
 - [ ] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
+  From PLAN 4.3 (2026-10-10, ADR-254): a battleship sees 18 km by the units' data, so a
+  battle line sees a cruiser at 17 km and its 32 km guns hold a stand-off only where the
+  enemy sees it first: spotting aircraft (a cruiser's or a carrier's) are to give a fleet
+  its detection. A carrier has no weapon in a sea battle and breaks off at once (ADR-256).
   AT: a battle with air superiority has a better outcome by the expected margin.
 - [ ] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
   AT: bombed industry produces less until repaired (test).
@@ -171,7 +79,8 @@ quick sweep as a smoke test.
   AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
 - [ ] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
   AT: air battle demo e2e + screenshots viewed.
-- [ ] 5.8 Phase 5 review: re-read SPEC for drift, PARITY rows updated with evidence, and the
+- [ ] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
@@ -194,7 +103,8 @@ quick sweep as a smoke test.
   AT: e2e passes and asserts that the decision record came from AI utility.
 - [ ] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.
   AT: sweep report: in ≥ 1 seed nukes are used; in no seed does > 50% of land carry fallout.
-- [ ] 6.9 Phase 6 review: re-read SPEC for drift, PARITY rows updated with evidence. The sweep
+- [ ] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence. The sweep
   of 6.8 is this phase's smoke run (ADR-58); the features are in, so sweeps judge again from
   here.
   AT: the five limits of the 6.8 sweep are in PROGRESS, with what fails listed for Phase 7.
@@ -303,6 +213,18 @@ quick sweep as a smoke test.
     - Not looked at in 3.10: the quick sweep of 3.7e (14.2 min against 4.9) and 40 years of
       seed 4242 headless (19.9 min, other runs beside it). Twenty years of 4242 were 1.847
       ms at 3.10b and were not run again.
+  From the Phase 4 review (PLAN 4.8i, 2026-10-12; moved here, the user's decision, ADR-289):
+  seed 99's five years in a cloud container, alternating, two runs each: 5.841 ms a tick
+  before Phase 4 (`5d9f1a1`) and 7.008 after 4.8i1 and 4.8i2 (`c60c350`, ±10 % a run), × 1.20
+  where the budget allows × 1.12 (1.5 / 1.341, 6.53 ms there). Done in 4.8i: the sea's
+  contact search by rows (naval combat 0.253 → 0.148 ms), the lane graph before the clock,
+  supply over sea's cities in one look-up (2.69 → about 2 ms a call). Left, by the five
+  years' means: the naval AI 0.19, naval combat 0.17, sea control 0.11, bombardment 0.10,
+  supply over sea and convoys about 0.2; movement 0.67 → 1.08 with a larger game (1,152
+  formations and 121 nations in year 5 against 888 and 110). Tried, nothing: the convoys'
+  ways once a naval AI's day, a small key for `stepWay`. Measure on the budget machine,
+  pinned, with the game's size beside it: a comparison across commits does not part the
+  code's cost from a larger game.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
@@ -800,3 +722,9 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 3.12 Critic R3-B6: a watcher is told what happens as it happens, and the history can […]
 - [x] 3.12R Review pass (PROMPT step 9) over PLAN 3.8 to 3.12, the five numbered tasks since […]
 - [x] 4.1 Sea zones (Voronoi + named seas) + lane graph + straits/crossings; ports & naval bases. […]
+- [x] 4.2 Fleets & ship element types (DD, CL, CA, BB, CV, SS, TP) + movement along lanes. […]
+- [x] 4.3 Detection + fleet battles at ship-element level (gunnery ranges, torpedoes, screening). […]
+- [x] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding. […]
+- [x] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment). […]
+- [x] 4.6 Naval AI (sea control, escort, raiding, invasion planning). […]
+- [x] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode. […]

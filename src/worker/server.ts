@@ -14,12 +14,14 @@ import { buildLandCoverage } from '../shared/landCoverage';
 import { decodeElevation } from '../shared/elevation';
 import type { LandMask } from '../shared/landMask';
 import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
-import { frameOf, symbolOf, weaponOf, wreckOf } from '../shared/unitLooks';
+import { frameOf, symbolOf, Weapon, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
+import { wayLine } from '../shared/wayLine';
 import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
+import { shipyard } from '../sim/systems/production';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -54,7 +56,7 @@ import { Sim } from '../sim/sim';
 import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { Domain, TILE, type World } from '../sim/world';
+import { Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
@@ -134,6 +136,9 @@ export class SimServer {
   private labelVersion = -1;
   private lastLabelMs = -1;
   private unrestVersion = -1;
+  /** The sea control last sent (PLAN 4.7a): the zones' object and the holders, as a key. */
+  private seaZonesSent: unknown = null;
+  private seaHoldersSent = '';
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -247,10 +252,13 @@ export class SimServer {
         this.newsFrom = -1;
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
+        this.seaZonesSent = null;
+        this.seaHoldersSent = '';
         this.statsTick = -1;
         this.lastStatsMs = -1;
         this.resetStreams();
         this.reply(msg.reqId);
+        this.warmLanes();
         break;
       case 'speed':
         this.speed = msg.speed;
@@ -329,6 +337,8 @@ export class SimServer {
     this.labelVersion = -1;
     this.lastLabelMs = -1;
     this.unrestVersion = -1;
+    this.seaZonesSent = null;
+    this.seaHoldersSent = '';
     this.statsTick = -1;
     this.lastStatsMs = -1;
     this.flagsSent = -1;
@@ -338,6 +348,19 @@ export class SimServer {
     this.owed = 0;
     this.resetStreams();
     this.reply(reqId);
+    this.warmLanes();
+  }
+
+  /**
+   * The lane graph built now (PLAN 4.8e): a game builds it at its first sail, 2 s in one tick of a
+   * game under way (the naval AI's at hour 48 of 1938). After the reply, before any tick: the page
+   * has its game, paused, and a derived cache changes no state.
+   */
+  private warmLanes(): void {
+    setTimeout(() => {
+      const world = this.sim?.world;
+      if (world && world.ports.length > 0 && world.seaSeeds.length > 0) laneOf(world);
+    }, 0);
   }
 
   /** Real-map scenarios: fetch and verify the map assets, then build the world (PLAN 1.9a). */
@@ -583,6 +606,20 @@ export class SimServer {
       for (let p = 0; p < unrest.length; p++) unrest[p] = Math.round(world.provinces.unrest[p]!);
       this.post({ type: 'provinceStats', unrest }, [unrest.buffer]);
     }
+    // Sea control for its map mode (PLAN 4.7a): the holders when they changed (daily at most),
+    // and the zones of the cells with the first, or when the zones were made again.
+    if (world.seaControl) {
+      const zones = seaOf(world);
+      const key = world.seaControl.holder.join(',');
+      if (zones !== this.seaZonesSent || key !== this.seaHoldersSent) {
+        const holder = world.seaControl.holder.slice();
+        const fresh = zones !== this.seaZonesSent ? zones.zoneOf.slice() : undefined;
+        if (fresh) this.post({ type: 'seaControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
+        else this.post({ type: 'seaControl', holder }, [holder.buffer]);
+        this.seaZonesSent = zones;
+        this.seaHoldersSent = key;
+      }
+    }
     const changed = world.controlChanges !== this.labelVersion || world.namesVersion !== this.labelNames;
     if (!changed || (this.lastLabelMs >= 0 && nowMs - this.lastLabelMs < LABEL_INTERVAL_MS)) return;
     this.lastLabelMs = nowMs;
@@ -679,6 +716,7 @@ export class SimServer {
         living: nc.living[id] === 1,
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
         techs: [nc.tech0[id]!, nc.tech1[id]!],
+        shipyard: nc.living[id] === 1 && shipyard(world, id) >= 0,
         research: nc.research[id]! * DAYS_PER_MONTH,
         lines: lines.get(id) ?? [],
       });
@@ -932,7 +970,8 @@ export class SimServer {
         this.firedAt.add(fires[i + FireField.target]!);
         const from = this.inBbox(fires[i + FireField.x0]!, fires[i + FireField.y0]!, world);
         if (!from && !this.inBbox(fires[i + FireField.x1]!, fires[i + FireField.y1]!, world)) continue;
-        for (let c = 0; c < FIRE_STRIDE; c++) q.push(c === FireField.weapon ? weaponOf(units[fires[i + c]!]?.cls ?? 'inf') : fires[i + c]!);
+        // A torpedo's record has −1 − its unit type (PLAN 4.7c).
+        for (let c = 0; c < FIRE_STRIDE; c++) q.push(c === FireField.weapon ? (fires[i + c]! < 0 ? Weapon.torpedo : weaponOf(units[fires[i + c]!]?.cls ?? 'inf')) : fires[i + c]!);
       }
       const over = q.length / FIRE_STRIDE - FIRE_QUEUE_CAP;
       if (over > 0) {
@@ -1133,6 +1172,10 @@ export class SimServer {
     const ftpl = this.view(Uint16Array, fc, buffers);
     const fflags = this.view(Uint8Array, fc, buffers);
     const ftarget = this.view(Uint32Array, fc, buffers);
+    // The ways left of the fleets under way (PLAN 4.7d): the points their order lines turn at.
+    const ways: number[][] = [];
+    const fwayStart = this.view(Uint32Array, fc + 1, buffers);
+    fwayStart[0] = 0; // (a pooled buffer)
     let j = 0;
     ft.forEach((id) => {
       fid[j] = id;
@@ -1156,8 +1199,14 @@ export class SimServer {
       const moving = ft.cols.moving[id] === 1;
       fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0);
       ftarget[j] = moving ? ft.cols.targetCell[id]! : 0;
+      const path = moving && world.afloat(id) ? world.paths.get(id) : undefined;
+      const way = path ? wayLine(fx[j]!, fy[j]!, path, ft.cols.pathStep[id]!, world.cells.w, world.settings.loopingMap) : [];
+      ways.push(way);
+      fwayStart[j + 1] = fwayStart[j]! + way.length;
       j++;
     });
+    const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
+    for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
     const elements = this.elementSection(world, buffers);
 
@@ -1195,7 +1244,7 @@ export class SimServer {
       tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
       nations: { count: n, data: nations },
       wars,
-      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget },
+      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },

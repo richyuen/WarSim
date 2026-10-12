@@ -458,6 +458,8 @@ const MARK_PAINT: Readonly<Record<Wreck, readonly [burnt: readonly [string, stri
   [Wreck.men]: [['rgba(30, 24, 22, 0.96)', 'rgba(12, 8, 8, 0.95)'], ['rgba(30, 24, 22, 0.96)', 'rgba(12, 8, 8, 0.95)']],
   [Wreck.gun]: [['rgba(28, 25, 23, 0.96)', 'rgba(150, 84, 44, 0.8)'], ['rgba(104, 106, 100, 0.96)', 'rgba(26, 26, 28, 0.9)']],
   [Wreck.vehicle]: [['rgba(24, 21, 19, 0.96)', 'rgba(150, 84, 44, 0.8)'], ['rgba(104, 106, 100, 0.96)', 'rgba(26, 26, 28, 0.9)']],
+  // A ship leaves no mark among the figures (`markOf`): it goes down (`WreckFx`, PLAN 4.7c).
+  [Wreck.ship]: [['rgba(24, 21, 19, 0.96)', 'rgba(150, 84, 44, 0.8)'], ['rgba(104, 106, 100, 0.96)', 'rgba(26, 26, 28, 0.9)']],
 };
 /** The ground under the fallen: a dark stain, so that they read on a pale field. */
 const STAIN = 'rgba(64, 14, 8, 0.5)';

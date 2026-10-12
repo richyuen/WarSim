@@ -7,9 +7,12 @@ import { RULES_1938 } from '../../src/sim/scenario1938';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { queueFormation } from '../../src/sim/systems/production';
-import { navOf } from '../../src/sim/world';
+import { Domain, navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
+
+/** An order of the army: a fleet's (PLAN 4.6e1, the navy's share) is no part of the army's mix. */
+const land = (w: { rules: { templates: readonly { domain: number }[] } | null; production: { cols: { template: ArrayLike<number> } } }, id: number): boolean => w.rules!.templates[w.production.cols.template[id]!]!.domain === Domain.land;
 
 // PLAN 1.26 economic AI v1: budget balance (disband), suppression, build mix.
 // (The 10-peaceful-years AT runs in tests/sweep/econSweep*.test.ts.)
@@ -52,7 +55,7 @@ describe('economic AI (PLAN 1.26)', () => {
     w.nations.cols.gold[LUX!] = 1e6;
     w.nations.cols.manpower[LUX!] = 1e7;
     runEvents(s, 1);
-    const ordered = (n: number): number[] => w.production.ids().filter((id) => w.production.cols.nation[id] === n).map((id) => w.production.cols.template[id]!);
+    const ordered = (n: number): number[] => w.production.ids().filter((id) => land(w, id) && w.production.cols.nation[id] === n).map((id) => w.production.cols.template[id]!);
     expect(ordered(SWE!)).toEqual([BUILD_MIX_1938.infantry]);
     expect(w.nations.cols.income[LUX!]!).toBeLessThan(20);
     expect(ordered(LUX!)).toEqual([BUILD_MIX_1938.cadre]);
@@ -70,7 +73,7 @@ describe('economic AI (PLAN 1.26)', () => {
     w.formations.ids().filter((id) => w.formations.cols.nation[id] === POL!).forEach((id) => destroyFormation(w, id));
     for (let k = 0; k < 6; k++) addDivision(w, GER!, 500 + k, 300, PANZER);
     runEvents(s, 1);
-    const polOrders = w.production.ids().filter((id) => w.production.cols.nation[id] === POL!).map((id) => w.production.cols.template[id]!);
+    const polOrders = w.production.ids().filter((id) => land(w, id) && w.production.cols.nation[id] === POL!).map((id) => w.production.cols.template[id]!);
     expect(polOrders).toContain(BUILD_MIX_1938.motorised);
   });
 
@@ -106,7 +109,7 @@ describe('economic AI (PLAN 1.26)', () => {
     const income = monthlyAccounts(w, ECONOMY_TABLES_1938).gross[USA]!;
     expect(income).toBeGreaterThan(MAX_PARALLEL * PARALLEL_INCOME);
     runEvents(s, 1);
-    const pending = (n: number): number => w.production.ids().filter((id) => w.production.cols.nation[id] === n).length;
+    const pending = (n: number): number => w.production.ids().filter((id) => land(w, id) && w.production.cols.nation[id] === n).length;
     expect(pending(USA)).toBe(MAX_PARALLEL);
     expect(pending(SWE!)).toBe(1); // income below PARALLEL_INCOME: one at a time
     // Nothing more is ordered while the slots are full.
@@ -125,7 +128,7 @@ describe('economic AI (PLAN 1.26)', () => {
       nc.manpower[GER!] = 1e7;
       nc.gold[GER!] = gold(Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!));
       runEvents(s, 1);
-      return w.production.ids().filter((id) => w.production.cols.nation[id] === GER!).map((id) => w.production.cols.template[id]!);
+      return w.production.ids().filter((id) => land(w, id) && w.production.cols.nation[id] === GER!).map((id) => w.production.cols.template[id]!);
     };
     const panzer = RULES_1938.templates[PANZER]!.gold;
     const infantry = RULES_1938.templates[BUILD_MIX_1938.infantry]!.gold;
@@ -143,7 +146,7 @@ describe('economic AI (PLAN 1.26)', () => {
 // peace too, and an armoured enemy does not shut its own armour out.
 describe('the mix (PLAN 3.5d)', () => {
   const FRA = nationId('FRA');
-  const orders = (w: Sim['world'], n: number): number[] => w.production.ids().filter((id) => w.production.cols.nation[id] === n).map((id) => w.production.cols.template[id]!);
+  const orders = (w: Sim['world'], n: number): number[] => w.production.ids().filter((id) => land(w, id) && w.production.cols.nation[id] === n).map((id) => w.production.cols.template[id]!);
   const clear = (w: Sim['world'], n: number): void => w.formations.ids().filter((id) => w.formations.cols.nation[id] === n).forEach((id) => destroyFormation(w, id));
   const rich = (w: Sim['world'], n: number): void => {
     w.nations.cols.gold[n] = 1e7;

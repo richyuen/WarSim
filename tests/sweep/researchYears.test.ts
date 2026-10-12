@@ -13,7 +13,10 @@ const RICH = 1000;
 it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944', () => {
   const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) });
   const w = s.world;
-  const nc = w.nations.cols;
+  // The columns read fresh: a table that grows (a nation founded) gets new arrays, and the ones
+  // taken at the start went on with the incomes of the day it grew (France's 1,082 of 1940 in
+  // 1942 and 1944, read as rich; its own were 58 to 141; PLAN 4.6d).
+  const nc = (): typeof w.nations.cols => w.nations.cols;
   const heavy = techMask([RULES_1938.techs.findIndex((t) => t.id === 'armor_heavy_1')]);
   const knowing = (): number[] => {
     const out: number[] = [];
@@ -30,7 +33,7 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   const richNow = (): number[] => {
     const out: number[] = [];
     w.nations.forEach((n) => {
-      if (nc.living[n] === 1 && nc.income[n]! >= RICH) out.push(n);
+      if (nc().living[n] === 1 && nc().income[n]! >= RICH) out.push(n);
     });
     return out;
   };
@@ -73,7 +76,7 @@ it('seed 99: nobody knows the heavy tank before 1942, the rich know it by 1944',
   for (const n of richBoth) expect(knowsTechs(w, n, medium2), `${TAGS_1938[n - 1]} knows armor_medium_2 in 1942`).toBe(true);
   until(1944);
   const known = knowing();
-  for (const n of rich) if (nc.living[n] === 1 && nc.income[n]! >= RICH) expect(known, `${TAGS_1938[n - 1]} knows armor_heavy_1 in 1944`).toContain(n);
+  for (const n of rich) if (nc().living[n] === 1 && nc().income[n]! >= RICH) expect(known, `${TAGS_1938[n - 1]} knows armor_heavy_1 in 1944`).toContain(n);
   expect(known.length).toBeGreaterThanOrEqual(3);
 }, 900_000);
 

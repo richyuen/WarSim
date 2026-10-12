@@ -115,6 +115,16 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 
 ## Watch list (not blocking)
 
+- **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**
+  - the economic AI lays up a standing fleet without asking `world.embarked`: transports with
+    troops aboard, standing where they stopped, would go with the troops at the next hour;
+  - an embarked formation whose transports stand with no land within `AT_PORT_CELLS` stays
+    aboard for good: it takes no order, and the invasion AI skips its nation while it is
+    (`invasion.ts`, the `aboard` set);
+  - `orderLanding` takes a target on a neutral's land (the Calais of 4.5a's test, France at
+    peace); the next midnight's repatriation sets the division home. Whether a landing on a
+    neutral's coast is an order to refuse is a rule to decide (4.8n decides the transports').
+
 - **The tick after PLAN 3.10 (critic R3-B5, 2026-10-08, `00c2e68`).** The AT holds: five
   years from 1938, pinned to `0xFFFF`, are 1.278 ms on seed 99, 1.326 on 4242 and 1.440 on
   8128 (three runs: 1.434 to 1.444), against 1.5. What is left over is a line under PLAN
@@ -126,6 +136,22 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     is 0.79 to 1.02 ms a tick (0.26 to 0.48 in the first five) and territory 0.30 to 0.51.
     3.10c found the long orders and 3.10c1 took them away; what the AI's time is in these
     years now was not looked at.
+  - *Phase 4's cost* (2026-10-12, PLAN 4.8f; a cloud container, unpinned, one run each):
+    seed 99's five years 5.988 ms a tick at `5d9f1a1` (before Phase 4; it ends on 251656a1, the
+    hash of the budget machine's 1.341) and 7.079 at `90853a8` (ends on 3b8b45cb): × 1.18, about
+    1.58 ms on the budget machine, over 1.5. By system, the five years' means: movement 0.667 →
+    1.084, naval combat 0.304, the naval AI 0.237, supply 0.589 → 0.772, bombardment 0.102, sea
+    control 0.101, the invasion AI 0.032; combat 1.774 → 1.555. PLAN 4.8i brings it back.
+    The T1 frame with the fine mask (ADR-284) is not measured: no GPU here (`npm run bench`
+    wants one); for a machine with one.
+  - *A march round a bay or over a river, with fleets under way* (2026-10-12, PLAN 4.7h,
+    ADR-285; a cloud container, unpinned, about 5 × the budget machine's time): seed 99's
+    first year, 9.87 ms a tick (hash 841d4422): combat 3.42, the operational AI 1.40,
+    movement 1.30. Of movement, `World.stepWay`: 2,951,069 calls, 63,220 ways found in
+    964 ms (0.110 ms a tick), the calls that find one kept 2.3 s with the probe's own clock
+    (at most 0.37 ms a tick, 3.7 %). Fleets sail by their paths and do not ask it. The
+    naval AI's longest call, 1,956 ms, is the lane graph built at the first sail (once a
+    game, PLAN 4.1b): a hitch of the worker, not of the tick's mean (for PLAN 4.8).
   - *One call of 361.7 ms* in the operational AI, year 4 of seed 4242. Not looked at.
   - *Not looked at:* why the quick sweep of 3.7e took 14.2 min against 4.9, and the 19.9 min
     of 40 years of seed 4242 (both in the task's text).
@@ -557,3 +583,50 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     suite, the ten-year stage and three browser runs had gone before in that hour and a
     half; the load of the machine in that run is not known. The errors' details were not
     read (the run's output was not kept). The specs were not changed.
+  - `scenario1938.test.ts` ("builds in well under a second", under 2,000 ms) and
+    `snapshot-perf.test.ts` ("within 2 ms for a steady-state snapshot") (2026-10-10, PLAN
+    4.2d, a cloud container, not the machine the budgets were set on): both fail alone on the
+    unchanged HEAD 348f26c as on the commit, 2,003 to 2,091 ms and 2.03 to 2.27 ms; the build
+    passed once in four runs. `territory.test.ts` ("costs little per tick") failed once in
+    the full unit stage and passed alone (again 2026-10-12, ADR-279: 33 and 29.5 ms in two
+    unit stages, 13 to 19 ms alone, the same at HEAD and with the change: 16.7/12.3/9.8 and
+    16.4/12.5/10.1 ms). The commit was made with these three red in its
+    gate: the code they time is not touched (the zones and lanes are built at their first
+    use). The tests were not changed. The ten-year run of seed 1 (`tests/sweep/aiSweep1`)
+    timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on
+    the commit and 8.19 on HEAD, the same hash fac8ee64 (1.9 ms on the budget's machine).
+    Seeds 2 and 3 and the pinned hash passed.
+  - The browser suite on this container at PLAN 4.7's tick (2026-10-12): twice in full (2
+    workers) it ran 140 of 172 tests in its 7,000 s, with the same 21 failing both times. Then
+    alone, file by file (1 worker): 9 of them (counters, declutter, editorDrag, formationPlace,
+    groundThings, markerStacks, muzzles, navalDemo, settings: 19 tests) passed; 16 failed, every
+    one of the list of 4.2f (cityNames ×2, fallen, fightSeen ×2, fire, formationFight, handover,
+    individuals, labelFades, lateFrame, precision, tankBattle, tickClock, ticker, zoomDemo); camera
+    passed; the 19 files the full runs did not reach passed but those 4; the perf spec passed
+    (run with `--project=perf --no-deps`: named alone, the perf project's dependency on chromium
+    runs all 172).
+  - The browser suite on this container (2026-10-10, PLAN 4.2's tick, 4.2f): 17 of 164
+    failed in 1.7 h (camera, cityNames ×2, fallen, fightSeen ×2, fire, formationFight,
+    handover, individuals, labelFades, lateFrame, precision, tickClock, tankBattle, ticker,
+    zoomDemo). The same 14 files on the commit before (4.2e, no change of the page but the
+    build list): the same 15 failed, camera and fire passed. Alone on 4.2f fire passed;
+    camera passed twice on 4.2f and failed twice on 4.2e (a zoom by E of 12.69 against more
+    than 13). Read as the container's speed (frames and ticks counted in a time of the wall,
+    a software GPU); the errors read were counts of ticks and frames and distances near
+    their bounds. The specs were not changed.
+  - The browser suite for PLAN 4.3's tick (2026-10-10, this container): 164 of 165 run
+    before its job's two hours ran out (the last, zoomDemo, was red in the run of 4.2f and
+    on the commit before it). The 17 red were those of 4.2f's run but fire1938 (green now),
+    and counters1938 and declutter1938, both by a test timeout (150 s, 300 s); the two alone
+    passed (3 tests, 3.9 min). The specs were not changed.
+  - PLAN 4.4b's gate (2026-10-10, this container): the ten-year run of seed 2 timed out too
+    (737 s against 600; seed 1 924 s), and `economy.test.ts`'s year (120 s) and
+    `territory.test.ts`'s cost in a unit stage that ran beside a ten-year stage left over
+    from an aborted gate. The two unit files alone: 24 of 24. A year of seed 99 profiled on
+    the commit and on the one before: each system within the run-to-run spread (combat 3.42
+    and 3.69 ms, the commit before the slower). The tests were not changed.
+  - PLAN 4.4's tick (2026-10-10, this container): the browser suite 164 of 165 in its job's
+    two hours (zoomDemo, red on the commits before, not reached); red as before but for
+    editorDrag1938 (a timeout, green alone) and declutter1938 (red once alone, then green alone
+    on this commit and the one before). The ten-year stage: all three seeds through their ten
+    years with no rule broken, seeds 1 and 3 over the 600 s (719 and 731 s).

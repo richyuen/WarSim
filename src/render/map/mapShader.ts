@@ -14,7 +14,8 @@
  */
 
 import { SHORE_NOISE } from '../../shared/landMask';
-import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST } from './ground';
+import { SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
+import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST, SEA_DEEP, SEA_DEPTH_FULL, SEA_DEPTH_KNEE, SEA_SHALLOW } from './ground';
 
 export const MAP_VS = `#version 300 es
 precision highp float;
@@ -46,9 +47,11 @@ uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
 uniform int uHasLand;
 uniform int uHasTerrain;           // a real terrain layer is loaded (water from terrain, PLAN 1.37a)
 uniform highp usampler2D uTerrain;  // terrain class per cell
-uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest
+uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest, 3 = sea control
 uniform highp usampler2D uProvince; // admin-1 province per cell
 uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
+uniform highp usampler2D uSeaZone;  // sea zone per cell (0 = none; PLAN 4.7a)
+uniform highp usampler2D uSeaHolder; // the nation that holds each zone, 128 wide (0 = none)
 uniform vec3 uTerrainCol[12];
 #ifdef GROUND
 uniform highp isampler2D uElevation; // the land's height in metres, one texel a cell (PLAN 2.8a)
@@ -57,11 +60,12 @@ uniform float uCellM;      // metres to a cell
 uniform float uRelief;     // how much steeper than it is the ground is shaded
 uniform vec3 uGround[12];  // the ground of each terrain class: (bump, grain, shade) (PLAN 2.8b, ground.ts)
 uniform float uBump;       // the slope the small relief of mountains is shaded with
+#endif
 uniform highp usampler2D uMask;  // the fine land mask, eight of its pixels to a texel, the lowest bit first (PLAN 2.9b)
 uniform int uHasMask;
 uniform ivec2 uMaskSize;   // the mask's size in its pixels
 uniform int uMaskPerCell;  // mask pixels to a cell
-#endif
+uniform float uFine;       // how much of the coast is the fine mask's at T1 (PLAN 4.7g), 0..1; at T2 and T3 uDetail's
 
 out vec4 outColor;
 
@@ -88,6 +92,23 @@ vec3 terrainCol(uint t) {
   return uTerrainCol[min(int(t), 11)];
 }
 
+// The fine mask's bit at pixel p (PLAN 2.9b): 1 land, 0 water; none beyond its rows.
+float maskBitAt(ivec2 p) {
+  if (p.y < 0 || p.y >= uMaskSize.y) return 0.0;
+  int x = (p.x + 4 * uMaskSize.x) % uMaskSize.x;
+  uint b = texelFetch(uMask, ivec2(x >> 3, p.y), 0).r;
+  return float((b >> uint(x & 7)) & 1u);
+}
+
+// The fine mask at local (cells from the centre cell), 0..1: its four pixels round the place, blended.
+float maskBilinear(vec2 local) {
+  vec2 m = local * float(uMaskPerCell) - 0.5;
+  vec2 fm = floor(m);
+  vec2 t = m - fm;
+  ivec2 p = uCenterCell * uMaskPerCell + ivec2(fm);
+  return mix(mix(maskBitAt(p), maskBitAt(p + ivec2(1, 0)), t.x), mix(maskBitAt(p + ivec2(0, 1)), maskBitAt(p + ivec2(1, 1)), t.x), t.y);
+}
+
 #ifdef GROUND
 // Height of a cell for the shading: the sea is level, and past the map's top and bottom the edge row goes on.
 float heightAt(ivec2 c) {
@@ -95,6 +116,24 @@ float heightAt(ivec2 c) {
   if (c.x < 0 || c.x >= uMapSize.x) return 0.0;
   c.y = clamp(c.y, 0, uMapSize.y - 1);
   return max(float(texelFetch(uElevation, c, 0).r), 0.0);
+}
+
+// Depth of the sea in a cell, m (PLAN 4.7f): the elevation below 0; past the top and bottom rows, the edge row's.
+float depthAt(ivec2 c) {
+  c = wrapCell(c);
+  if (c.x < 0 || c.x >= uMapSize.x) return 0.0;
+  c.y = clamp(c.y, 0, uMapSize.y - 1);
+  return max(-float(texelFetch(uElevation, c, 0).r), 0.0);
+}
+
+// The sea's brightness by its depth at a point, bilinear over the four cells about it (\`seaShade\`).
+float seaShadeAt(vec2 p) {
+  vec2 q = p - 0.5;
+  ivec2 c = ivec2(floor(q));
+  vec2 f = q - floor(q);
+  float d = mix(mix(depthAt(c), depthAt(c + ivec2(1, 0)), f.x), mix(depthAt(c + ivec2(0, 1)), depthAt(c + ivec2(1, 1)), f.x), f.y);
+  float t = min(1.0, log(1.0 + d / ${SEA_DEPTH_KNEE.toFixed(1)}) / ${Math.log(1 + SEA_DEPTH_FULL / SEA_DEPTH_KNEE).toFixed(6)});
+  return mix(${SEA_SHALLOW.toFixed(3)}, ${SEA_DEEP.toFixed(3)}, t);
 }
 
 vec3 groundOf(ivec2 c) {
@@ -151,24 +190,12 @@ vec3 groundOctave(int k, vec2 local) {
   return vec3(slope, va + u.x * (vb - va) + u.y * (vc - va) + u.x * u.y * kxy);
 }
 
-// The fine mask's bit at pixel p (PLAN 2.9b): 1 land, 0 water; none beyond its rows.
-float maskBitAt(ivec2 p) {
-  if (p.y < 0 || p.y >= uMaskSize.y) return 0.0;
-  int x = (p.x + 4 * uMaskSize.x) % uMaskSize.x;
-  uint b = texelFetch(uMask, ivec2(x >> 3, p.y), 0).r;
-  return float((b >> uint(x & 7)) & 1u);
-}
-
 // How much land there is at local (cells from the centre cell) by the fine mask, 0..1, the
 // coast at a half: the four mask pixels round the place, blended, and the shore moved inside
 // them by the ground's noise. Where the four agree it is 0 or 1 and nothing moves it: the drawn
 // coast never leaves the squares between a land pixel's middle and a water pixel's.
 float maskField(vec2 local, float pxPerCell) {
-  vec2 m = local * float(uMaskPerCell) - 0.5;
-  vec2 fm = floor(m);
-  vec2 t = m - fm;
-  ivec2 p = uCenterCell * uMaskPerCell + ivec2(fm);
-  float f = mix(mix(maskBitAt(p), maskBitAt(p + ivec2(1, 0)), t.x), mix(maskBitAt(p + ivec2(0, 1)), maskBitAt(p + ivec2(1, 1)), t.x), t.y);
+  float f = maskBilinear(local);
   if (f <= 0.0 || f >= 1.0) return f;
   // A shore, not a ruler's edge: octaves from a mask pixel's width down to 4 px on screen.
   float n = 0.0;
@@ -292,7 +319,6 @@ void main() {
   vec2 luv = vec2(fract(cellPos.x / float(uMapSize.x)), cellPos.y / float(uMapSize.y));
   float cov = texture(uLand, luv).r;
   float covW = max(fwidth(cov), 1e-6);
-#ifdef GROUND
   // The coast of T2 and T3 is the fine mask's (PLAN 2.9b, ADR-79), the mask the sim stands its
   // formations on; the coverage is a quarter as fine. The two coasts cross-fade by the
   // handover's share, as every tier change does: a place that is sea by the one and land by
@@ -300,32 +326,56 @@ void main() {
   // and each pixel it passed went from sea to land in one frame.)
   float fine = cov;
   float fineShare = 0.0;
-  if (uDetail > 0.0 && uHasMask == 1 && uHasLand == 1) {
-    fine = maskField(local, uScale / uDpr);
-    fineShare = uDetail;
+  // At T1 too, from where a mask pixel is a pixel on screen (PLAN 4.7g): a lake the coverage is
+  // too coarse for is drawn at T1 as at T2 and T3, and does not come in with the ground.
+  // (The pass of T0 and T1 has no ground's noise: the shore there is the mask's pixels blended.)
+#ifdef GROUND
+  float share = max(uDetail, uFine);
+#else
+  float share = uFine;
+#endif
+  if (share > 0.0 && uHasMask == 1 && uHasLand == 1) {
+    // Where the coverage is 1 every mask pixel about is land, where 0 none: the mask is read only
+    // between (the coast, and a lake the coverage averaged away), and is the coverage elsewhere.
+#ifdef GROUND
+    if (cov > 0.0 && cov < 1.0) fine = maskField(local, uScale / uDpr);
+#else
+    if (cov > 0.0 && cov < 1.0) fine = maskBilinear(local);
+#endif
+    fineShare = share;
   }
   float fineW = max(fwidth(fine), 1e-6);
-#endif
   // Off-map rows (above the top, below the bottom) are sea: clamped coverage would otherwise
   // stretch the polar rows into grey stripes when fully zoomed out (review after PLAN 1.31).
   bool offMap = cellPos.y < 0.0 || cellPos.y >= float(uMapSize.y);
   // Water: fine coverage when loaded; else the terrain layer (unowned land stays land); else the
   // cell rule (toy map: unowned = sea).
   bool water = offMap || (uHasLand == 1 ? cov <= 0.5 : uHasTerrain == 1 ? terrainAt(ivec2(floor(cellPos))) == 0u : best == 0u);
-#ifdef GROUND
   // How much of this pixel is land: by the coverage's coast and the mask's, each by its share.
   // What follows draws it as land when any of it is.
   bool coarseLand = !water;
   bool fineLand = !offMap && fine > 0.5;
   float landShare = fineShare > 0.0 ? mix(coarseLand ? 1.0 : 0.0, fineLand ? 1.0 : 0.0, fineShare) : (coarseLand ? 1.0 : 0.0);
   water = landShare <= 0.0;
-#endif
   // Land the cell rule called water takes the strongest land id around it.
   uint fid = best != 0u ? best : secondId;
 
   vec3 col;
-  if (water) {
+  if (water && uMode == 3) {
+    // Sea control (PLAN 4.7a): a zone held is tinted with its holder's colour.
+    ivec2 sc = wrapCell(ivec2(floor(cellPos)));
+    uint zone = inMap(sc) ? texelFetch(uSeaZone, sc, 0).r : 0u;
+    uint holder = zone == 0u ? 0u : texelFetch(uSeaHolder, ivec2(int(zone % 128u), int(zone / 128u)), 0).r;
+    col = holder == 0u ? pal(0u) : mix(pal(0u), pal(holder), ${SEA_HELD_TINT.toFixed(3)});
+  } else if (water) {
     col = pal(0u);
+#ifdef GROUND
+    // The sea floor at T2 and T3 (PLAN 4.7f): shallows lighter, the deep darker, by the ground's share.
+    col *= mix(1.0, seaShadeAt(cellPos), uDetail);
+#endif
+  } else if (uMode == 3) {
+    // The land faded, the sea told.
+    col = mix(fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid), vec3(0.78, 0.78, 0.75), ${SEA_LAND_FADE.toFixed(3)});
   } else if (uMode == 1) {
     // Terrain mode: bilinear blend of the four nearest cells' terrain colours.
     vec2 tq = cellPos - 0.5;
@@ -466,21 +516,13 @@ void main() {
     col = mix(col, lineCol, a * (cellCoast ? 0.55 : 1.0));
   }
   // Fine coast line on the land side.
-#ifdef GROUND
   if (uHasLand == 1 && !water) {
     // Each coast has its line, by its share; then the pixel is land by as much as the two say.
     float a = coarseLand ? (1.0 - smoothstep(halfW - 0.5, halfW + 0.5, (cov - 0.5) / covW)) * (1.0 - fineShare) : 0.0;
     if (fineLand) a += (1.0 - smoothstep(halfW - 0.5, halfW + 0.5, (fine - 0.5) / fineW)) * fineShare;
     col = mix(col, col * 0.62, a * 0.8);
-    col = mix(pal(0u), col, landShare);
+    if (fineShare > 0.0) col = mix(pal(0u), col, landShare);
   }
-#else
-  if (uHasLand == 1 && !water) {
-    float cpx = (cov - 0.5) / covW;
-    float a = 1.0 - smoothstep(halfW - 0.5, halfW + 0.5, cpx);
-    col = mix(col, col * 0.62, a * 0.8);
-  }
-#endif
   outColor = vec4(col, 1.0);
 }
 `;

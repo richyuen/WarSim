@@ -47,7 +47,7 @@ import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { nearestCellWhere } from '../data/ownership';
-import { navOf, type World } from '../world';
+import { navOf, provinceCellsOf, type World } from '../world';
 import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
@@ -245,13 +245,16 @@ function risingNeighbour(world: World, area: number[], holder: number): number {
  * is `kind`: land handed over, or a revolt where the area rises with rebels next to it.
  */
 export function defect(world: World, area: number[], holder: number, to: number, kind: EventKind = EventKind.LandCeded): void {
-  const inArea = new Set(area);
-  const { owner, province, w } = world.cells;
+  const { owner, w } = world.cells;
   let cells = 0;
   let sx = 0;
   let sy = 0;
-  for (let c = 0; c < owner.length; c++) {
-    if (owner[c] !== holder || !inArea.has(province[c]!)) continue;
+  // The area's cells in the order of the cell index, as a scan of the map meets them.
+  const index = provinceCellsOf(world);
+  const of = (p: number): Int32Array => (p + 1 < index.start.length ? index.cells.subarray(index.start[p]!, index.start[p + 1]!) : new Int32Array(0));
+  const inArea = area.length === 1 ? of(area[0]!) : Int32Array.from([...new Set(area)].flatMap((p) => Array.from(of(p)))).sort();
+  for (const c of inArea) {
+    if (owner[c] !== holder) continue;
     world.setOwner(c, to);
     world.setController(c, to);
     cells++;
@@ -297,30 +300,38 @@ function revoltArea(world: World, p: number, holder: number): number[] {
   const area = [p];
   const seen = new Set([p]);
   const km2 = heldKm2(world, holder);
-  let land = km2[p]!;
+  let land = km2(p);
   for (let i = 0; i < area.length && area.length < REGION_MAX; i++) {
     for (const q of g.adj[area[i]!] ?? []) {
       if (seen.has(q) || q >= pv.count || area.length >= REGION_MAX) continue;
       seen.add(q);
       const c = g.centre[q] ?? -1;
-      if (c < 0 || owner[c] !== holder || pv.core[q] !== pv.core[p] || pv.unrest[q]! < REGION_JOIN || land + km2[q]! > REGION_KM2) continue;
-      land += km2[q]!;
+      if (c < 0 || owner[c] !== holder || pv.core[q] !== pv.core[p] || pv.unrest[q]! < REGION_JOIN || land + km2(q) > REGION_KM2) continue;
+      land += km2(q);
       area.push(q);
     }
   }
   return area;
 }
 
-/** The land `holder` owns in each province, km² (as `LandCounts` counts a cell: ADR-57). */
-function heldKm2(world: World, holder: number): Float64Array {
-  const { owner, province, w, h } = world.cells;
+/**
+ * The land `holder` owns in a province, km² (as `LandCounts` counts a cell: ADR-57), summed in the
+ * order of the cell index; each province's asked once.
+ */
+function heldKm2(world: World, holder: number): (p: number) => number {
+  const { owner, w } = world.cells;
   const rowKm2 = world.landCounts().rowKm2;
-  const km2 = new Float64Array(world.provinces.count);
-  for (let y = 0, c = 0; y < h; y++) {
-    const a = rowKm2[y]!;
-    for (let x = 0; x < w; x++, c++) if (owner[c] === holder) km2[province[c]!]! += a;
-  }
-  return km2;
+  const { start, cells } = provinceCellsOf(world);
+  const known = new Map<number, number>();
+  return (p) => {
+    let km2 = known.get(p);
+    if (km2 === undefined) {
+      km2 = 0;
+      for (let i = start[p] ?? 0, end = start[p + 1] ?? 0; i < end; i++) if (owner[cells[i]!] === holder) km2 += rowKm2[Math.floor(cells[i]! / w)]!;
+      known.set(p, km2);
+    }
+    return km2;
+  };
 }
 
 /**

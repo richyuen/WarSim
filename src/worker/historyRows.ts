@@ -27,7 +27,7 @@
  * Albania ended: Albania is now a puppet of Italy").
  */
 import { EventKind } from '../shared/events';
-import { HISTORY_ROLES, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
+import { HISTORY_ROLES, seaSide, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import type { World } from '../sim/world';
 
@@ -68,6 +68,7 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
   const battleCity = new Map<number, string>();
   const name = (role: HistoryRole, v: number): string => {
     if (role === 'nation') return nation(v);
+    if (role === 'side') return nation(seaSide(v).nation);
     if (role === 'alliance') return alliances.get(v)?.nameKey ?? '';
     if (role === 'city') return city(v);
     if (role === 'battle') return battleCity.get(v) ?? '';

@@ -117,7 +117,7 @@ function strongest(world: World, camp: number[]): number {
     if (world.nations.cols.living[n] !== 1) continue;
     let m = 0;
     world.formations.forEach((id) => {
-      if (f.nation[id] === n && !world.afloat(id)) m += f.strength[id]!; // of its army: a fleet's crews are not counted (PLAN 4.2b)
+      if (f.nation[id] === n && !world.isFleet(id)) m += f.strength[id]!; // of its army: a fleet's crews are not counted (PLAN 4.2b)
     });
     if (m > bestMen) {
       bestMen = m;

@@ -739,10 +739,11 @@ describe('no march across a nation that is not in the war (PLAN 3.4Rl)', () => {
     let homeward = 0;
     for (let hour = 1; hour <= 24 * 55; hour++) {
       before.clear();
-      w.formations.forEach((f) => before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! }));
+      // Of the land: not a fleet's sail nor troops aboard (PLAN 4.6c: the AI's fleets sail in this game).
+      w.formations.forEach((f) => void (!w.afloat(f) && before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! })));
       s.step(1);
       for (const [f, was] of before) {
-        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation) continue;
+        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation || w.afloat(f)) continue;
         if (fc.home[f] === 1) homeward++;
         const d = Math.hypot(acrossX(fc.x[f]!, was.x), fc.y[f]! - was.y);
         if (d > 3 && comp[Math.floor(was.y) * W + Math.floor(was.x)] === comp[Math.floor(fc.y[f]!) * W + Math.floor(fc.x[f]!)]) jumps.push(`hour ${hour}: formation ${f} from ${was.x.toFixed(2)}, ${was.y.toFixed(2)} to ${fc.x[f]!.toFixed(2)}, ${fc.y[f]!.toFixed(2)}: ${d.toFixed(1)} cells`);
@@ -917,12 +918,13 @@ describe('a march between two neighbouring cells is not a crossing of the seam (
     for (let hour = 1; hour <= 24 * 60; hour++) {
       before.clear();
       w.formations.forEach((f) => {
-        if (fc.moving[f] === 1) before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! });
+        // A march: not a fleet's sail, nor troops aboard (PLAN 4.6b: the AI's transports sail in this game).
+        if (fc.moving[f] === 1 && !w.afloat(f)) before.set(f, { x: fc.x[f]!, y: fc.y[f]!, generation: w.formations.generation[f]! });
       });
       s.step(1);
       for (const [f, was] of before) {
         // The same formation, still on its march (an order, an arrival or its end is not a step of the march).
-        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation || fc.moving[f] !== 1) continue;
+        if (!w.formations.has(f) || w.formations.generation[f] !== was.generation || fc.moving[f] !== 1 || w.afloat(f)) continue;
         looks++;
         const d = Math.hypot(acrossX(fc.x[f]!, was.x), fc.y[f]! - was.y);
         if (d > 1) jumps.push(`hour ${hour}: formation ${f} from ${was.x.toFixed(2)}, ${was.y.toFixed(2)} to ${fc.x[f]!.toFixed(2)}, ${fc.y[f]!.toFixed(2)}: ${d.toFixed(1)} cells`);

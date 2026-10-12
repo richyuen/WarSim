@@ -387,3 +387,30 @@ describe('an element\'s size in snapshots (PLAN 2.10b, ADR-80)', () => {
     expect([...kinds].sort()).toEqual(['a battalion with losses', 'guns or vehicles with losses']);
   });
 });
+
+// PLAN 4.8e: the lane graph took 2 s in the tick of a game's first sail (the naval AI's, hour 48
+// of 1938). The worker builds it after it answers an init or a load, before any tick.
+describe('the lane graph built before the first tick (PLAN 4.8e)', () => {
+  const later = (): Promise<void> => new Promise((done) => setTimeout(done, 0));
+  it('after an init of 1938 and after a load; the toy world has none and asks for none', async () => {
+    const replies: number[] = [];
+    const server = new SimServer((m: FromWorker) => {
+      if (m.type === 'reply') replies.push(m.reqId);
+    });
+    server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) } }, 0);
+    expect(replies).toEqual([1]);
+    expect(server.sim!.world.lanes).toBeNull();
+    await later();
+    expect(server.sim!.world.lanes).not.toBeNull();
+    expect(server.sim!.world.tick).toBe(0);
+    // A load: the graph is the map's and is kept, or built again for another map.
+    const bytes = server.sim!.save();
+    server.handle({ type: 'load', reqId: 2, bytes }, 0);
+    await later();
+    expect(server.sim!.world.lanes).not.toBeNull();
+    const toy = new SimServer(() => undefined);
+    toy.handle({ type: 'init', reqId: 3, init: { scenario: 'toy', seed: 1 } }, 0);
+    await later();
+    expect(toy.sim!.world.lanes).toBeNull();
+  }, 60_000);
+});

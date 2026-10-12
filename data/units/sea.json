@@ -2,7 +2,7 @@
   "types": [
     {
       "id": "destroyer", "nameKey": "unit.destroyer", "class": "dd", "domain": "sea", "elementSize": 1, "mobility": "ship",
-      "stats": { "soft": 4, "hard": 6, "defense": 10, "breakthrough": 0, "armor": 5, "piercing": 15, "aa": 6, "range_km": 12, "speed_kmh": 65, "org": 50, "hpPerUnit": 150, "detection": 30, "stealth": 8, "fuelPerHour": 3, "supplyPerHour": 0.5 },
+      "stats": { "soft": 4, "hard": 6, "defense": 10, "breakthrough": 0, "armor": 5, "piercing": 15, "aa": 6, "range_km": 12, "speed_kmh": 65, "org": 50, "hpPerUnit": 150, "detection": 30, "stealth": 8, "fuelPerHour": 3, "supplyPerHour": 0.5, "torpedo": 40, "torpedo_km": 10, "asw": 10 },
       "cost": { "gold": 40, "industry": 40, "manpower": 250, "days": 180 },
       "upkeep": { "gold": 1.5, "supply": 0.5 },
       "terrainMods": {},
@@ -10,7 +10,7 @@
     },
     {
       "id": "cruiser_light", "nameKey": "unit.cruiser_light", "class": "cl", "domain": "sea", "elementSize": 1, "mobility": "ship",
-      "stats": { "soft": 8, "hard": 14, "defense": 18, "breakthrough": 0, "armor": 15, "piercing": 30, "aa": 10, "range_km": 18, "speed_kmh": 60, "org": 50, "hpPerUnit": 400, "detection": 25, "stealth": 5, "fuelPerHour": 5, "supplyPerHour": 0.9 },
+      "stats": { "soft": 8, "hard": 14, "defense": 18, "breakthrough": 0, "armor": 15, "piercing": 30, "aa": 10, "range_km": 18, "speed_kmh": 60, "org": 50, "hpPerUnit": 400, "detection": 25, "stealth": 5, "fuelPerHour": 5, "supplyPerHour": 0.9, "torpedo": 20, "torpedo_km": 8 },
       "cost": { "gold": 80, "industry": 85, "manpower": 700, "days": 300 },
       "upkeep": { "gold": 3, "supply": 0.9 },
       "terrainMods": {},
@@ -42,7 +42,7 @@
     },
     {
       "id": "submarine", "nameKey": "unit.submarine", "class": "ss", "domain": "sea", "elementSize": 1, "mobility": "ship",
-      "stats": { "soft": 0, "hard": 18, "defense": 6, "breakthrough": 0, "armor": 0, "piercing": 60, "aa": 0, "range_km": 8, "speed_kmh": 30, "org": 50, "hpPerUnit": 100, "detection": 12, "stealth": 40, "fuelPerHour": 1.5, "supplyPerHour": 0.3 },
+      "stats": { "soft": 0, "hard": 3, "defense": 6, "breakthrough": 0, "armor": 0, "piercing": 10, "aa": 0, "range_km": 4, "speed_kmh": 30, "org": 50, "hpPerUnit": 100, "detection": 12, "stealth": 40, "fuelPerHour": 1.5, "supplyPerHour": 0.3, "torpedo": 70, "torpedo_km": 6 },
       "cost": { "gold": 30, "industry": 30, "manpower": 50, "days": 150 },
       "upkeep": { "gold": 1, "supply": 0.3 },
       "terrainMods": {},

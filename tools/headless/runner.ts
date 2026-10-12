@@ -7,7 +7,7 @@ import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from './assets';
-import type { World } from '../../src/sim/world';
+import { laneOf, type World } from '../../src/sim/world';
 
 export const TICKS_PER_YEAR = 24 * 365;
 
@@ -121,6 +121,8 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
   const sim = new Sim(opts.scenario !== 'toy' ? { scenario: opts.scenario, seed: opts.seed, assets: loadAssets1938(SIZE_1938.w), ...(opts.nations !== undefined ? { options: { nations: opts.nations } } : {}) } : { scenario: opts.scenario, seed: opts.seed });
   if (opts.load) sim.load(opts.load);
   const world = sim.world;
+  // The lane graph before the clock, as the game's worker builds it before the first tick (PLAN 4.8e).
+  if (world.ports.length > 0 && world.seaSeeds.length > 0) laneOf(world);
   const prof = opts.profile ? sim.profile(now) : undefined;
   const firstYear = Math.floor(world.tick / TICKS_PER_YEAR);
   const yearly: YearMetrics[] = [];
