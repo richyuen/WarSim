@@ -14446,3 +14446,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   the critic ran beside it; the four files alone 22 of 22. Typecheck and lint green; build and
   parity green by hand.
 - **Next:** the critic's report (running).
+
+## 2026-10-12 — The critic's fourth report (run 4 on `5e91a56`, after Phase 4)
+
+- **Scores:** map visuals 6, diplomacy and war depth 6, emergent dynamics 5, God Mode 6, editor and scenarios 6, stats and history 5, UI/UX polish 5, performance 4, stability 7, semantic zoom 6, naval 4, tanks 5, aircraft 0, AI nukes 0. **Blocking: 6.**
+- **Filed:** R4-B2 (a player's invasion; refused orders never shown) → PLAN 4.9; R4-B4 (naval
+  warfare not seen) → PLAN 4.10; R4-B6 (the ranking's rows) → PLAN 4.11; R4-B5 (the tick grows
+  with the game's age) → a line under PLAN 7.1, where the tick's work is (ADR-289); R4-B1
+  (aircraft and nuclear weapons) → Phases 5 and 6.
+- **Deferred (ADR-58), logged once:** R4-B3, the world breaks into statelets (seed 5303: 94
+  nations alive in year 1, 183 in year 30; 245 founded) → a line under PLAN 1.42.
+- **Next:** PLAN 4.9.

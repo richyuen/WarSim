@@ -23,6 +23,35 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
+- [ ] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused
+  order says why. Seen by the critic (`critic/c4_c_2207.json`, `critic/c4_landing.log`): a
+  British division clicked onto German land with its transports 6.5 cells away did nothing for
+  20 days and said nothing (the sim emits `MoveRejected`; no code of the page reads it); the two
+  orders the sim needs (march to the port, then over the sea) sailed it to Germany and landed
+  it back in England, again silent. The critic's fix: an order over water marches to the
+  nearest port with transports, embarks and sails; a refused order says why on the screen; a
+  landing thrown back says so.
+  AT: an e2e spec: a British division in London ordered onto the German coast at war, with
+  transports at Portsmouth, marches, embarks, sails and lands (or is thrown back with a message
+  on the screen); an order the sim refuses shows its reason within a second (test of each
+  refusal kind the page can cause).
+- [ ] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
+  is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
+  small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
+  watched running (`critic/c4_b_6131.json`, `critic/c4_b2_6131.json`); the sea-control mode is
+  blocky and its colours do not say whose navy holds a zone. The critic's fix: a ship glyph on
+  a naval counter; both fleets of an engagement in one T2 view with their fire; a sea-control
+  legend.
+  AT: e2e: a fleet's counter at T0 differs from an army's (pixels); on seed 6131's war the
+  first sea battle, followed from its event, draws gunfire within its first hours at T2; the
+  sea-control mode names the holder of the zone under the cursor or in a legend.
+- [ ] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
+  value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
+  together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
+  a flex row for each line, the name cut by an ellipsis, the value never wrapping.
+  AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
+  no value wraps.
+
 ## Phase 5 — Air
 
 - [ ] 5.1 Air wings, airbases, carriers, range; air zones.
@@ -189,6 +218,14 @@ quick sweep as a smoke test.
   ways once a naval AI's day, a small key for `stepWay`. Measure on the budget machine,
   pinned, with the game's size beside it: a comparison across commits does not part the
   code's cost from a larger game.
+  From the critic's report of 2026-10-12 (R4-B5, run 4 on `5e91a56`): the tick grows with the
+  game's age. Seed 5303 alone: 5.34 ms a tick in year 5, 21.2 ms in year 21, 21.8 ms in year
+  23 (the allowance of this container 6.53 ms); p95 21 to 140 ms; the operational AI's calls
+  of 100 to 220 ms; about 3,200 refused AI orders a year (`critic/c4_perf_5303_24y_solo.log`,
+  `critic/c4_perf_profile_7717.log`). The critic's fix: find what grows with age (fleets,
+  nations, the refused orders) and cap or coarsen it; break up the operational AI's long
+  calls. AT for this line: a 25-year run of seed 5303, pinned and profiled, whose last five
+  years' tick is within 1.5 × its first five's.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
@@ -293,6 +330,13 @@ quick sweep as a smoke test.
     whether a holder keeps so little of what it took that it loses it an area a month
     (the suppression spending, the unrest of land with another's core), and whether the
     cores of the data are right where it happens. The rows are not the log's to drop.
+  From the critic's report of 2026-10-12 (R4-B3, run 4 on `5e91a56`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): the world breaks up more than in run 3. Seed 5303, 30
+  years headless: 94 nations alive in year 1, 183 in year 30, 112 founded in play and 245 in
+  all; seed 3889: 28 "Free X" alive after 8 years (`critic/c4_headless_5303.json`,
+  `critic/c4_d_3889.json`). What the critic asks: revolts return land to a core owner or a
+  neighbour first; weak statelets are absorbed; a run whose count of living nations rises
+  for 20 years fails.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
