@@ -14122,3 +14122,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   other tests of the two files. It has 300 s now (no assertion changed).
 - **The gate:** the two spec files, green.
 - **Next:** PLAN 4.7g.
+## 2026-10-12 — PLAN 4.7g: the fine mask's coast at T1 (ADR-284)
+
+- **Critic not due.**
+- **Done:** the map draws the fine mask's coast at T1 from where a mask pixel is a device pixel
+  on screen (`fineCoastShare`, `uFine`), in the pass of T0 and T1 (`maskBilinear`), reading the
+  mask only where the coverage is mixed; T0 keeps the coverage. With or without the ground.
+- **Found on the way:** the ground's pass at T1 made `t0map` 1.5 → 2.0 min (software GL), and a
+  mask coast that came only with the ground broke `coastPicture1938`'s T0/T1 sameness; both gone.
+  The coast specs run by hand (10 tests, green).
+- **The AT:** `lakeT1.spec.ts`: a Finnish lake the coverage averages away is water at T1, as at
+  T2, and the coverage's land at T0; it fails on the code before. The picture looked at: the
+  lakes of Finland at T1, their shores in steps of the mask (no shore noise at that scale).
+- **Not measured:** the frame cost of T1 with the mask (no GPU here; for PLAN 4.8's bench).
+- **Not a rule change.**
+- **The gate:** green (the unit tests related to 2 files, the two changed specs, build, parity).
+- **Next:** PLAN 4.7h.

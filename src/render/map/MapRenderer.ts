@@ -263,6 +263,10 @@ export class MapRenderer {
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     // The ground has a pass of its own: where none of it shows, the map is drawn by the pass of T0 and T1.
     const share = this.groundOn ? detail : 0;
+    // The fine mask's coast at T1 too (PLAN 4.7g): from a mask pixel a device pixel on screen, all
+    // of it at two, in the pass of T0 and T1 (no ground's noise) or in the ground's.
+    // Whether or not the ground is on: the coast of a place is one at a zoom.
+    const fine = this.hasMask && this.hasLand ? fineCoastShare((cam.scale * dpr * this.w) / this.maskSize[0]) : 0;
     const program = share > 0 ? this.groundProgram : this.program;
     gl.useProgram(program.program);
     twgl.setUniforms(program, {
@@ -298,6 +302,7 @@ export class MapRenderer {
       uHasMask: this.hasMask ? 1 : 0,
       uMaskSize: this.maskSize,
       uMaskPerCell: this.maskSize[0] / this.w,
+      uFine: fine,
     });
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -321,4 +326,13 @@ export class MapRenderer {
     gl.deleteProgram(this.program.program);
     gl.deleteProgram(this.groundProgram.program);
   }
+}
+
+/**
+ * How much of the coast is the fine mask's at `pxPerMaskPx` device px to a mask pixel (PLAN 4.7g):
+ * none under one, all from two (a smoothstep between); at T2 and T3 the ground's share is 1 anyway.
+ */
+export function fineCoastShare(pxPerMaskPx: number): number {
+  const t = Math.min(1, Math.max(0, pxPerMaskPx - 1));
+  return t * t * (3 - 2 * t);
 }

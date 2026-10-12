@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-284 · 2026-10-12 · accepted — The fine mask's coast at T1 (PLAN 4.7g)
+
+- **Context.** The note of PLAN 2.11c: a lake that the fine mask has and the coarse coverage
+  (a quarter as fine, a texel of 4 × 4 mask pixels, about 10 km) has not was drawn at T2 and T3
+  and not at T1: it came in with the ground. A lake of up to about 7 mask pixels in a texel is
+  averaged away: in Finland, Scotland, the Alps; and the mask's rivers.
+- **Decision.** The coast is the fine mask's at T1 too, from where a mask pixel is a device
+  pixel on screen, all of it at two (`fineCoastShare`, the uniform `uFine`: about 2,400 to 1,200
+  m/px on the 1938 map), with the ground or without it (the relief switch), in the pass of T0
+  and T1 (`maskBilinear`, no shore noise) as in the ground's. The mask is read only where the
+  coverage is neither 1 nor 0 (every mask pixel about land, or none): the coast and a lake the
+  coverage averaged away. T0 keeps the coverage's coast. A first version drew T1 with the
+  ground's pass (no ground) and read the mask everywhere: `t0map` 1.5 → 2.0 min in the
+  container's software rasteriser; now 1.6.
+  `coastPicture1938`'s test that the ground leaves T0 and T1 as they are holds again (it failed
+  on a first version that brought the mask's coast with the ground only). At T1 the shore has no noise (its octaves start
+  at 4 px of a lattice step), so a lake's shore steps by the mask's pixels (3 px at 800 m/px).
+- **Measured** (`tests/e2e/lakeT1.spec.ts`): a lake of the mask in Finland whose coverage reads
+  land: at T1 (800 m/px) the sea's colour 29,53,87; at T0 (3 km/px) Finland's 184,208,239; at T2
+  38,70,115. On the code before, at T1 Finland's colour (the test fails there).
+- **Looked at** (`docs/evidence/4.7/lake-t1.png`): the Finnish lakes at T1 as at T2, their
+  shores in steps of the mask. The frame cost of T1 on a GPU (the mask's four reads a pixel by
+  a coast) is not measured: no GPU in this container (for PLAN 4.8's bench).
+- **Tests.** `tests/e2e/lakeT1.spec.ts`.
+
 ### ADR-283 · 2026-10-12 · accepted — The sea at T2 and T3 by its depth (PLAN 4.7f)
 
 - **Context.** The note of PLAN 2.11c: the sea is one flat colour at T2 and T3, though the

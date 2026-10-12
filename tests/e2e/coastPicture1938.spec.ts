@@ -243,8 +243,8 @@ test('at T0 and T1 the coast is as it was: with the ground of T2 and without it 
   await open1938(page);
   await page.waitForFunction(() => window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
   const [x, y] = cellOf(1.4, 51.0, W, H); // the Strait of Dover
-  // The mask's coast comes with the ground (the pass that draws the one draws the other). Without
-  // the ground the map is the map of before PLAN 2.8: the coverage's coast.
+  // The ground does not change the coast: at T0 the coverage's, at T1 from 1,200 m/px the mask's
+  // with the ground or without it (PLAN 4.7g, ADR-284; until then the mask's came with the ground).
   for (const mPerPx of [4000, 1000, 400]) {
     await lookAt(page, x, y, mPerPx);
     const m = await measureGround(page);
