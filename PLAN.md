@@ -37,19 +37,7 @@ quick sweep as a smoke test.
   - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
   - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
   - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
-  - [ ] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this
-    container against 5.99 before Phase 4, about 1.58 ms on the budget machine against 1.5):
-    6.70 ms or less here (1.5 / 1.341 of 5.99), the same games (no rule changed, the pin and
-    the five years' hash as they were). Where the time went: movement +0.42 ms, naval combat
-    0.30 (a contact search each hour with battles rare), the naval AI 0.24, supply +0.18,
-    bombardment 0.10, sea control 0.10. Each a part of its own if it is more than one cause.
-    - [x] 4.8i1 The sea's contact search by rows: naval combat 0.253 → 0.148 ms a tick in seed
-      99's first year (hash 841d4422 both).
-    - [x] 4.8i2 The lane graph before the runner's clock (`runHeadless`), as the worker builds it
-      before the first tick (4.8e): its 1.96 s out of the measured ticks.
-    - [x] 4.8i3 Supply over sea's `seaReach` counts the cities by bloc and land in one look-up a
-      city: 2.69 → 1.8 to 2.2 ms a call (every 12 hours, and the naval AI's raids), the first
-      year's hash 841d4422 as before.
+  - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
   - [ ] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a
     torpedo is reach, but a submarine is a target of depth charges alone and neither side has
     any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60
@@ -235,6 +223,18 @@ quick sweep as a smoke test.
     - Not looked at in 3.10: the quick sweep of 3.7e (14.2 min against 4.9) and 40 years of
       seed 4242 headless (19.9 min, other runs beside it). Twenty years of 4242 were 1.847
       ms at 3.10b and were not run again.
+  From the Phase 4 review (PLAN 4.8i, 2026-10-12; moved here, the user's decision, ADR-289):
+  seed 99's five years in a cloud container, alternating, two runs each: 5.841 ms a tick
+  before Phase 4 (`5d9f1a1`) and 7.008 after 4.8i1 and 4.8i2 (`c60c350`, ±10 % a run), × 1.20
+  where the budget allows × 1.12 (1.5 / 1.341, 6.53 ms there). Done in 4.8i: the sea's
+  contact search by rows (naval combat 0.253 → 0.148 ms), the lane graph before the clock,
+  supply over sea's cities in one look-up (2.69 → about 2 ms a call). Left, by the five
+  years' means: the naval AI 0.19, naval combat 0.17, sea control 0.11, bombardment 0.10,
+  supply over sea and convoys about 0.2; movement 0.67 → 1.08 with a larger game (1,152
+  formations and 121 nations in year 5 against 888 and 110). Tried, nothing: the convoys'
+  ways once a naval AI's day, a small key for `stepWay`. Measure on the budget machine,
+  pinned, with the game's size beside it: a comparison across commits does not part the
+  code's cost from a larger game.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.

@@ -167,6 +167,16 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-289 · 2026-10-12 · accepted — The tick's work after Phase 4 is PLAN 7.1's (the user's decision)
+
+- **Context.** PLAN 4.8f found seed 99's five years × 1.18 to × 1.20 the figure before Phase 4
+  (the budget allows × 1.12). 4.8i1 to 4.8i3 cut the naval combat's contact search, the lane
+  graph's build out of the clock, and supply over sea's count; the alternating measure left
+  about 0.5 ms here (7.008 against 6.53), with single runs ±10 %.
+- **Decision** (the user's, of the two put to them): the rest is a line under PLAN 7.1, the
+  performance pass, with its numbers and what was tried; 4.8i is ticked with its three parts.
+  The review goes on with its findings (4.8k to 4.8p).
+
 ### ADR-288 · 2026-10-12 · accepted — What was left for the Phase 4 review (PLAN 4.8e)
 
 - **The lane graph at the first sail:** 1,960 ms to build (`laneOf`), in the tick of the game's

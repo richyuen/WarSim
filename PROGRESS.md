@@ -14319,3 +14319,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (119 files), red only by the two timing tests of BLOCKERS;
   the pin held; build and parity green.
 - **Next:** the rest of the tick's work moves to PLAN 7.1 (the user's decision).
+
+## 2026-10-12 — PLAN 4.8i closed: the rest of the tick's work under PLAN 7.1 (ADR-289, documents)
+
+- **The user's decision:** the performance work left after 4.8i1 to 4.8i3 is PLAN 7.1's: a line
+  there with the alternating measure (5.841 → 7.008 ms here, × 1.20 against × 1.12), what each
+  part cut, what is left by system, what was tried for nothing.
+- **Next:** PLAN 4.8k (submarines locked in a battle that never ends).

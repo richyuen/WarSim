@@ -7053,3 +7053,31 @@ Of 4.8 (open in PLAN.md):
     hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
     lake shores in steps of the mask (ADR-284); the shots small at T2 (ADR-282). Each looked
     at and fixed, or a line saying why not.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this
+    container against 5.99 before Phase 4, about 1.58 ms on the budget machine against 1.5):
+    6.70 ms or less here (1.5 / 1.341 of 5.99), the same games (no rule changed, the pin and
+    the five years' hash as they were). Where the time went: movement +0.42 ms, naval combat
+    0.30 (a contact search each hour with battles rare), the naval AI 0.24, supply +0.18,
+    bombardment 0.10, sea control 0.10. Each a part of its own if it is more than one cause.
+    - [x] 4.8i1 The sea's contact search by rows: naval combat 0.253 → 0.148 ms a tick in seed
+      99's first year (hash 841d4422 both).
+    - [x] 4.8i2 The lane graph before the runner's clock (`runHeadless`), as the worker builds it
+      before the first tick (4.8e): its 1.96 s out of the measured ticks.
+    - [x] 4.8i3 Supply over sea's `seaReach` counts the cities by bloc and land in one look-up a
+      city: 2.69 → 1.8 to 2.2 ms a call (every 12 hours, and the naval AI's raids), the first
+      year's hash 841d4422 as before.
+    The rest moved to PLAN 7.1 (the user's decision, 2026-10-12, ADR-289).
