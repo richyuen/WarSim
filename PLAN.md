@@ -42,10 +42,7 @@ quick sweep as a smoke test.
   - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
   - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
   - [x] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a […]
-  - [ ] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
-    22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
-    the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
-    has no home to sail to. Ports a ship reaches only. A test fails first.
+  - [x] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches: […]
   - [ ] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows
     the last game's holders (the worker sends `seaControl` only while there is one) until the
     next 00:00.

@@ -14378,3 +14378,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   (`scenario1938` build, `snapshot-perf`); the pin held, lint, build and parity green (run by
   hand after the gate stopped at the unit stage).
 - **Next:** PLAN 4.8o.
+
+## 2026-10-12 — PLAN 4.8o: a fleet's home and a shipyard are ports a ship reaches (ADR-295)
+
+- **Done:** `seaBasins` / `basinOf`: the zones a ship sails between (touch, passages, straits;
+  ice none), the ocean the largest. `shipyard` takes ports of the ocean, `nearestOwnPort` ports
+  of the fleet's basin. The basins give the same 22 unreachable ports as `sailRoute`. SPEC §6.2
+  and the production section say so.
+- **Tests:** `lakePorts1938.test.ts` (both failed first).
+- **The pin** holds.
+- **The gate:** the related unit tests (123 files, 817 tests), red only by the three timing
+  tests of BLOCKERS (`snapshot-perf`, `scenario1938` build, `territory` per tick); the pin held;
+  lint, build and parity green (run by hand after the gate stopped at the unit stage).
+- **Next:** PLAN 4.8p.

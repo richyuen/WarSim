@@ -906,7 +906,8 @@ Element (authoritative unit proxy) {
       flotilla 150, a transport group 90 (the land's are 3 × their slowest element's).
     - *The shipyard* (`shipyard`): of the ports whose land cell the nation controls and
       whose water a ship reaches (`portSeaOf`: the cell of its node of the lane graph, found
-      by the zones alone, `portWaters`; in a zone ice does not close),
+      by the zones alone, `portWaters`; in a zone of the world's seas, `seaBasins`' ocean:
+      not a lake, the Caspian or a sea ice closes, PLAN 4.8o, ADR-295),
       the highest naval base, then the nearest to the capital. In 1938: Portsmouth, Norfolk,
       Yokosuka, Brest, La Spezia, Kiel, Kronstadt.
     - *The delivery* (`productionSystem`, `dockPoint`): on its ready day at the shipyard's
@@ -1618,7 +1619,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     takes the record with one of its fleets (two such merge). A fleet under half the ships
     it came in with, or with no weapon against an armed enemy, breaks off: `BREAK_HOURS`
     24 out of every sea battle (its `retreat`: the contact search leaves it out, PLAN 4.8l), `FormationRetreated`, and sails for its
-    nation's nearest port a ship reaches. With no fleet of one side left, or no contact in
+    nation's nearest port a ship reaches (in the basin of the water it stands on: zones that
+    touch, a passage's ends, a strait's zones, PLAN 4.8o). With no fleet of one side left, or no contact in
     an hour, the battle is over: one row of the history log, `SeaBattle` (each side its
     nation and ships lost, packed as nation + 65,536 × ships; where it began): "Germany
     and United Kingdom fought at sea: Germany lost 0 ships, United Kingdom 7".

@@ -3,7 +3,7 @@
  * nothing outside this object influences a tick except queued commands.
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
-import { buildLaneGraph, portWaters, type LaneGraph, type SeaPassage } from './nav/lanes';
+import { buildLaneGraph, portWaters, seaBasins, type LaneGraph, type SeaBasins, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import type { Port } from './data/ports';
@@ -518,6 +518,16 @@ export function seaOf(world: World): SeaZones {
 export function laneOf(world: World): LaneGraph {
   checkNav(world);
   return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages, world.ports, world.portReach));
+}
+
+const basins = new WeakMap<SeaZones, SeaBasins>();
+
+/** The world's sea basins (`seaBasins`, PLAN 4.8o): built once for its zones, cached by them. */
+export function basinOf(world: World): SeaBasins {
+  const z = seaOf(world);
+  let b = basins.get(z);
+  if (!b) basins.set(z, (b = seaBasins(navOf(world).grid, z, world.seaPassages)));
+  return b;
 }
 
 /** Per port of the world, its water as the lane graph has it, or -1 (`portWaters`: by the zones alone, not the lanes; built once, cached where `sea` is). */

@@ -7155,3 +7155,21 @@ Of 4.8 (open in PLAN.md):
     Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
     coast it lands in the Netherlands at peace (`redirect.ts`). "Of its side or none", and the
     sea's holder asked, as at the landing's own water. A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
+    22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
+    the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
+    has no home to sail to. Ports a ship reaches only. A test fails first.

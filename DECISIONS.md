@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-295 · 2026-10-12 · accepted — A fleet's home and a shipyard are ports a ship reaches (PLAN 4.8o)
+
+- **Found** (the tenth read): `nearestOwnPort` and `shipyard` took any port whose water is in a
+  zone ice does not close, by straight km or naval base. 22 ports have no way to the world's
+  seas (the Great Lakes, Great Slave Lake, the Caspian, Lakes Victoria and Tanganyika): Iran's
+  shipyard was a city's port on the Caspian (49.7° E, 37.3° N), its fleets delivered there; a
+  Canadian fleet that broke off off New York sailed for Toronto, with no way there, and stood.
+- **Decision.** `seaBasins` (`lanes.ts`, cached by the zones, `basinOf`): zones join as the lane
+  graph joins them, by their 4-way touch, a passage's two ends and the zones of a body of
+  crossing cells, a closed zone none; the ocean is the basin of the most area. A shipyard is a
+  port of the ocean; a fleet's nearest port one of the basin of the water it stands on (the
+  ocean where it stands on no zone within `AT_PORT_CELLS`). The lane graph is not built for it:
+  the page asks every nation's shipyard (PLAN 4.2f). Against `sailRoute` from Portsmouth, the
+  basins give the same 22 ports and no other.
+- **The pin stays** 8622df0d.
+- **Tests.** `lakePorts1938.test.ts`: every living nation's shipyard has a way to Portsmouth;
+  the Canadian fleet off New York's home has one (both failed before).
+
 ### ADR-294 · 2026-10-12 · accepted — Transports that stop elsewhere land on their side's coast or no one's (PLAN 4.8n)
 
 - **Found** (the tenth read): transports that stood anywhere but the landing's water put their

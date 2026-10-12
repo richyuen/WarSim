@@ -46,7 +46,8 @@ import { hash32, hashToUnit } from '../core/hash';
 import { hypot } from '../core/dmath';
 import { EventKind } from '../../shared/events';
 import { SIDE_SHIPS } from '../../shared/history';
-import { navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
+import { nearestCellWhere } from '../data/ownership';
+import { basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
 import { orderSail } from './sail';
 import { applyLoss, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
@@ -227,18 +228,25 @@ function breakOff(world: World, id: number): void {
   sailHome(world, id);
 }
 
-/** The water of the port nearest to fleet `id` that its nation holds and a ship reaches, or -1. */
+/**
+ * The water of the port nearest to fleet `id` that its nation holds and a ship reaches, or -1:
+ * one in the basin of the fleet's water (`basinOf`, PLAN 4.8o; the world's seas where the fleet
+ * stands on no zone), not a port across land on a lake.
+ */
 export function nearestOwnPort(world: World, id: number): number {
   const c = world.formations.cols;
   const n = c.nation[id]!;
   const water = portSeaOf(world);
   const sea = seaOf(world);
-  const w = world.cells.w;
+  const { w, h } = world.cells;
+  const { basin, ocean } = basinOf(world);
+  const here = nearestCellWhere((k) => sea.zoneOf[k] !== 0, c.x[id]!, c.y[id]!, w, h, AT_PORT_CELLS, world.settings.loopingMap);
+  const mine = here >= 0 && basin[sea.zoneOf[here]!] !== 0 ? basin[sea.zoneOf[here]!]! : ocean;
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
     const at = water[i]!;
-    if (world.cells.controller[p.cell] !== n || at < 0 || sea.closed[sea.zoneOf[at]!] === 1) return;
+    if (world.cells.controller[p.cell] !== n || at < 0 || basin[sea.zoneOf[at]!] !== mine) return;
     const d = seaKm(world, c.x[id]!, c.y[id]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
     if (d < bd) {
       bd = d;

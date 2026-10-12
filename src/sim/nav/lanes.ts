@@ -287,6 +287,74 @@ export function buildLaneGraph(g: NavGrid, z: SeaZones, passages: readonly SeaPa
 }
 
 /**
+ * The waters a ship sails between (PLAN 4.8o): per zone (index 0 unused), its basin, 1…, or 0 for
+ * a zone ice closes. Zones join as the lane graph joins them, without its edges' ways: zones that
+ * touch (4-way), the two ends of a passage, every zone a body of crossing cells has a cell in;
+ * an edge with a closed zone at an end is none. `ocean` is the basin with the most area (the
+ * world's seas; a lake, the Caspian, a sea shut by ice are others).
+ */
+export interface SeaBasins {
+  basin: Int32Array;
+  ocean: number;
+}
+
+export function seaBasins(g: NavGrid, z: SeaZones, passages: readonly SeaPassage[]): SeaBasins {
+  const { w, h, terrain } = g;
+  const { zoneOf, count, closed } = z;
+  const parent = Int32Array.from({ length: count + 1 }, (_, i) => i);
+  const find = (a: number): number => {
+    while (parent[a] !== a) a = parent[a] = parent[parent[a]!]!;
+    return a;
+  };
+  const join = (a: number, b: number): void => {
+    if (a === 0 || b === 0 || closed[a] === 1 || closed[b] === 1) return;
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent[Math.max(ra, rb)] = Math.min(ra, rb);
+  };
+  for (let a = 1; a <= count; a++) for (const b of z.adj[a] ?? []) join(a, b);
+  for (const p of passages) {
+    const end = (lonLat: readonly [number, number]): number => {
+      const [x, y] = cellOf(lonLat[0], lonLat[1], w, h);
+      const c = nearestCellWhere((k) => zoneOf[k] !== 0, x, y, w, h, PASSAGE_SNAP, g.wrapX);
+      return c < 0 ? 0 : zoneOf[c]!;
+    };
+    join(end(p.a), end(p.b));
+  }
+  // The straits: the zones of a body of crossing cells.
+  const seen = new Uint8Array(w * h);
+  const nb: number[] = [];
+  for (let c0 = 0; c0 < w * h; c0++) {
+    if (seen[c0] || terrain[c0] !== Terrain.Crossing) continue;
+    const body = [c0];
+    seen[c0] = 1;
+    let first = 0;
+    for (let head = 0; head < body.length; head++) {
+      const c = body[head]!;
+      if (zoneOf[c] !== 0) {
+        if (first === 0 || closed[first] === 1) first = zoneOf[c]!;
+        else join(first, zoneOf[c]!);
+      }
+      for (const m of neighbours4(c, w, h, g.wrapX, nb)) {
+        if (seen[m] || terrain[m] !== Terrain.Crossing) continue;
+        seen[m] = 1;
+        body.push(m);
+      }
+    }
+  }
+  const basin = new Int32Array(count + 1);
+  const area = new Map<number, number>();
+  for (let a = 1; a <= count; a++) {
+    if (closed[a] === 1) continue;
+    basin[a] = find(a);
+    area.set(basin[a]!, (area.get(basin[a]!) ?? 0) + z.areaKm2[a]!);
+  }
+  let ocean = 0;
+  for (const [b, km2] of area) if (ocean === 0 || km2 > area.get(ocean)!) ocean = b;
+  return { basin, ocean };
+}
+
+/**
  * Per port, its water as the lane graph has it (the cell of its node), or -1: the zoned water
  * cell nearest to the port's place within `portReach` of its land cell, or nearest to the water
  * given by hand (within `PASSAGE_SNAP`); -1 for a port whose cell is no land or with none in
