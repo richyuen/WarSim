@@ -1,0 +1,76 @@
+{
+ "seed": 6131,
+ "shots": [
+  "critic/shots/c4b2_1_live_best_60m.png",
+  "critic/shots/c4b2_1_live_end.png"
+ ],
+ "samples": [
+  {
+   "battle": 1,
+   "hour": 40,
+   "pair": [
+    {
+     "f": 1086,
+     "pos": [
+      1707.5,
+      466.5
+     ],
+     "n": 20
+    },
+    {
+     "f": 1156,
+     "pos": [
+      1707.5,
+      466.5
+     ],
+     "n": 75
+    }
+   ],
+   "gapKm": 0
+  },
+  {
+   "battle": 1,
+   "tick": 41,
+   "m": 60,
+   "fx": 0,
+   "shots": 0,
+   "el": 23,
+   "byNation": {
+    "20": 7,
+    "75": 16
+   },
+   "wrecks": 0,
+   "engaged": true
+  },
+  {
+   "battle": 1,
+   "tick": 62,
+   "m": 60,
+   "fx": 0,
+   "shots": 0,
+   "el": 0,
+   "byNation": {},
+   "wrecks": 4,
+   "engaged": true
+  },
+  {
+   "battle": 1,
+   "tick": 73,
+   "m": 15,
+   "fx": 0,
+   "shots": 0,
+   "el": 0,
+   "byNation": {},
+   "wrecks": 0,
+   "engaged": false
+  }
+ ],
+ "speed": "Speed ×1",
+ "fatal": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('pause-btn')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" aria-pressed=\"false\" data-reserve=\"Resume\" data-testid=\"pause-btn\" class=\"bar-btn bar-reserve\">Pause</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - performing click action\u001b[22m\n\u001b[2m    - click action done\u001b[22m\n\u001b[2m    - waiting for scheduled navigations to finish\u001b[22m\n\n    at /home/user/WarSim/critic/scripts/c4_b2_watch.mjs:61:41",
+ "errors": [
+  "warning: [.WebGL-0x29340010bc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x29340010bc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x29340010bc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x29340010bc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ]
+}

@@ -1,0 +1,31 @@
+// Can the UK land a division in Germany by the player's two orders (to the port, then over the sea)? Headless, seed 2207.
+import { Sim } from '../../src/sim/sim';
+import { SIZE_1938, NATIONS_1938 } from '../../src/sim/scenario1938';
+import { loadAssets1938 } from '../../tools/headless/assets';
+import { EventKind } from '../../src/shared/events';
+import { laneOf } from '../../src/sim/world';
+import { cellOf } from '../../src/sim/data/terrain';
+const sim = new Sim({ scenario: '1938', seed: 2207, assets: loadAssets1938(SIZE_1938.w) });
+const w = sim.world;
+laneOf(w);
+const id = (t: string) => NATIONS_1938.findIndex((n) => n.tag === t) + 1;
+const ENG = id('ENG'), GER = id('GER');
+sim.command({ kind: 'setPlayer', nation: ENG } as never);
+sim.command({ kind: 'declareWar', attacker: ENG, defender: GER } as never);
+const div = 272;
+const port = cellOf(-1.08, 50.8, SIZE_1938.w, SIZE_1938.h);
+const log: unknown[] = [];
+const names: Record<number, string> = Object.fromEntries(Object.entries(EventKind).map(([k, v]) => [v, k]));
+const step = (n: number) => sim.step(n, (ww) => { const e = ww.out.events; for (let i = 0; i < e.length; i += 6) if (e[i + 2] === div || ((e[i+1] === EventKind.MoveRejected) && e[i+2] === div)) log.push({ tick: ww.tick, ev: names[e[i + 1]!], a: e[i + 2], b: e[i + 3], x: e[i + 4], y: e[i + 5] }); e.length = 0; ww.out.fires.length = 0; });
+step(1);
+const f = w.formations.cols;
+console.log('div at', f.x[div], f.y[div], 'nation', f.nation[div], 'port', port);
+sim.command({ kind: 'moveFormation', id: div, x: port[0], y: port[1], nation: ENG } as never);
+let h = 0;
+for (; h < 24 * 10 && f.moving[div] === 1 || h < 2; h++) step(1);
+console.log('after', h, 'h at', f.x[div].toFixed(2), f.y[div].toFixed(2), 'moving', f.moving[div]);
+const tgt = cellOf(8.58, 53.55, SIZE_1938.w, SIZE_1938.h);
+sim.command({ kind: 'moveFormation', id: div, x: tgt[0], y: tgt[1], nation: ENG } as never);
+const track: unknown[] = [];
+for (let d = 0; d < 20; d++) { step(24); track.push([d + 1, w.formations.has(div) ? [+f.x[div].toFixed(1), +f.y[div].toFixed(1), w.afloat(div)] : 'gone']); }
+console.log(JSON.stringify({ log, track }));

@@ -1,0 +1,1323 @@
+{
+ "seed": 6131,
+ "shots": [
+  "critic/shots/c4b_10_battle_T0_4000m.png",
+  "critic/shots/c4b_11_battle_T1_1000m.png",
+  "critic/shots/c4b_12_battle_T1_seacontrol.png",
+  "critic/shots/c4b_20_battle_40m_h0.png",
+  "critic/shots/c4b_21_battle_12m_h1.png",
+  "critic/shots/c4b_22_battle_4m_h2.png",
+  "critic/shots/c4b_23_battle_40m_h3.png",
+  "critic/shots/c4b_24_battle_12m_h4.png",
+  "critic/shots/c4b_25_battle_4m_h5.png",
+  "critic/shots/c4b_26_battle_40m_h6.png",
+  "critic/shots/c4b_27_battle_12m_h7.png",
+  "critic/shots/c4b_28_battle_4m_h8.png",
+  "critic/shots/c4b_29_battle_40m_h9.png",
+  "critic/shots/c4b_210_battle_12m_h10.png",
+  "critic/shots/c4b_211_battle_4m_h11.png",
+  "critic/shots/c4b_212_battle_40m_h12.png",
+  "critic/shots/c4b_213_battle_12m_h13.png",
+  "critic/shots/c4b_40_history.png",
+  "critic/shots/c4b_50_northsea_seacontrol_day75.png",
+  "critic/shots/c4b_51_northsea_political_day75.png",
+  "critic/shots/c4b_52_pacific_seacontrol_day75.png"
+ ],
+ "log": [],
+ "battles": [
+  {
+   "k": 0,
+   "tier": 40,
+   "fx": 0,
+   "el": 21,
+   "ind": 0,
+   "wrecks": 2,
+   "wakes": 2,
+   "tags": 3,
+   "engaged": 2,
+   "engagedNames": [
+    "Cruiser squadron 1085 / 20",
+    "Cruiser squadron 1156 / 75"
+   ]
+  },
+  {
+   "k": 1,
+   "tier": 12,
+   "fx": 0,
+   "el": 7,
+   "ind": 7,
+   "wrecks": 0,
+   "wakes": 7,
+   "tags": 1,
+   "engaged": 2,
+   "engagedNames": [
+    "Cruiser squadron 1085 / 20",
+    "Cruiser squadron 1156 / 75"
+   ]
+  },
+  {
+   "k": 2,
+   "tier": 4,
+   "fx": 0,
+   "el": 0,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 0,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 3,
+   "tier": 40,
+   "fx": 0,
+   "el": 18,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 2,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 4,
+   "tier": 12,
+   "fx": 0,
+   "el": 10,
+   "ind": 10,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 2,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 5,
+   "tier": 4,
+   "fx": 0,
+   "el": 7,
+   "ind": 7,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 1,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 6,
+   "tier": 40,
+   "fx": 0,
+   "el": 13,
+   "ind": 7,
+   "wrecks": 2,
+   "wakes": 0,
+   "tags": 2,
+   "engaged": 8,
+   "engagedNames": [
+    "Destroyer flotilla 1064 / 20",
+    "Destroyer flotilla 1073 / 20",
+    "Cruiser squadron 1085 / 20",
+    "Submarine flotilla 1157 / 75",
+    "Battle squadron 1199 / 1",
+    "Destroyer flotilla 1200 / 1",
+    "Submarine flotilla 1201 / 1",
+    "Submarine flotilla 1202 / 1"
+   ]
+  },
+  {
+   "k": 7,
+   "tier": 12,
+   "fx": 0,
+   "el": 11,
+   "ind": 11,
+   "wrecks": 2,
+   "wakes": 11,
+   "tags": 1,
+   "engaged": 2,
+   "engagedNames": [
+    "Cruiser squadron 1085 / 20",
+    "Submarine flotilla 1157 / 75"
+   ]
+  },
+  {
+   "k": 8,
+   "tier": 4,
+   "fx": 0,
+   "el": 0,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 0,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 9,
+   "tier": 40,
+   "fx": 0,
+   "el": 11,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 11,
+   "tags": 1,
+   "engaged": 5,
+   "engagedNames": [
+    "Carrier group 1063 / 20",
+    "Battle squadron 1199 / 1",
+    "Destroyer flotilla 1200 / 1",
+    "Submarine flotilla 1201 / 1",
+    "Submarine flotilla 1202 / 1"
+   ]
+  },
+  {
+   "k": 10,
+   "tier": 12,
+   "fx": 0,
+   "el": 0,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 0,
+   "engaged": 5,
+   "engagedNames": [
+    "Carrier group 1063 / 20",
+    "Battle squadron 1199 / 1",
+    "Destroyer flotilla 1200 / 1",
+    "Submarine flotilla 1201 / 1",
+    "Submarine flotilla 1202 / 1"
+   ]
+  },
+  {
+   "k": 11,
+   "tier": 4,
+   "fx": 0,
+   "el": 0,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 0,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 12,
+   "tier": 40,
+   "fx": 0,
+   "el": 3,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 3,
+   "tags": 1,
+   "engaged": 0,
+   "engagedNames": []
+  },
+  {
+   "k": 13,
+   "tier": 12,
+   "fx": 0,
+   "el": 0,
+   "ind": 0,
+   "wrecks": 0,
+   "wakes": 0,
+   "tags": 0,
+   "engaged": 3,
+   "engagedNames": [
+    "Destroyer flotilla 1071 / 20",
+    "Battle squadron 1199 / 1",
+    "Destroyer flotilla 1200 / 1"
+   ]
+  }
+ ],
+ "ids": {
+  "GER": 1,
+  "ENG": 20,
+  "JAP": 75,
+  "USA": 82,
+  "ITA": 15,
+  "FRA": 19
+ },
+ "warsAfterDeclare": [
+  {
+   "a": [
+    "nation.NSP"
+   ],
+   "d": [
+    "nation.REP"
+   ]
+  },
+  {
+   "a": [
+    "nation.JAP",
+    "nation.MAN",
+    "nation.MEN"
+   ],
+   "d": [
+    "nation.CHI",
+    "nation.CCP"
+   ]
+  },
+  {
+   "a": [
+    "nation.GER",
+    "nation.ITA",
+    "nation.ALB",
+    "nation.JAP",
+    "nation.MAN",
+    "nation.MEN"
+   ],
+   "d": [
+    "nation.ENG",
+    "nation.IRE",
+    "nation.EGY",
+    "nation.SUD",
+    "nation.BEA",
+    "nation.SAF",
+    "nation.SRH",
+    "nation.NIG",
+    "nation.GCO",
+    "nation.PAL",
+    "nation.TRJ",
+    "nation.OMN",
+    "nation.RAJ",
+    "nation.BUR",
+    "nation.CEY",
+    "nation.MAL",
+    "nation.SAR",
+    "nation.AST",
+    "nation.NZL",
+    "nation.CAN",
+    "nation.NFL",
+    "nation.FRA",
+    "nation.AOF",
+    "nation.AEF",
+    "nation.MAD",
+    "nation.FMO",
+    "nation.TUN",
+    "nation.SYR",
+    "nation.LEB",
+    "nation.INC"
+   ]
+  },
+  {
+   "a": [
+    "nation.JAP",
+    "nation.MAN",
+    "nation.MEN",
+    "nation.GER",
+    "nation.ITA",
+    "nation.ALB"
+   ],
+   "d": [
+    "nation.USA",
+    "nation.PHI"
+   ]
+  }
+ ],
+ "firstBattleHour": 36,
+ "firstBattleWallS": 28.39,
+ "firstEngaged": [
+  {
+   "f": 1085,
+   "pos": [
+    1705.9596396123334,
+    466.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1085",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1156,
+   "pos": [
+    1707.5,
+    466.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1156",
+    "kind": "Cruiser squadron",
+    "nation": 75
+   }
+  }
+ ],
+ "best": {
+  "t2": 0,
+  "t3": 0,
+  "t4": 0
+ },
+ "warsDay": [
+  {
+   "a": [
+    "nation.NSP"
+   ],
+   "d": [
+    "nation.REP"
+   ],
+   "score": 100,
+   "battle": true
+  },
+  {
+   "a": [
+    "nation.JAP",
+    "nation.MAN",
+    "nation.MEN"
+   ],
+   "d": [
+    "nation.CHI",
+    "nation.CCP"
+   ],
+   "score": -22,
+   "battle": true
+  },
+  {
+   "a": [
+    "nation.GER",
+    "nation.ITA",
+    "nation.ALB",
+    "nation.JAP",
+    "nation.MAN",
+    "nation.MEN"
+   ],
+   "d": [
+    "nation.ENG",
+    "nation.IRE",
+    "nation.EGY",
+    "nation.SUD",
+    "nation.BEA",
+    "nation.SAF",
+    "nation.SRH",
+    "nation.NIG",
+    "nation.GCO",
+    "nation.PAL",
+    "nation.TRJ",
+    "nation.OMN",
+    "nation.RAJ",
+    "nation.BUR",
+    "nation.CEY",
+    "nation.MAL",
+    "nation.SAR",
+    "nation.AST",
+    "nation.NZL",
+    "nation.CAN",
+    "nation.NFL",
+    "nation.FRA",
+    "nation.AOF",
+    "nation.AEF",
+    "nation.MAD",
+    "nation.FMO",
+    "nation.TUN",
+    "nation.SYR",
+    "nation.LEB",
+    "nation.INC"
+   ],
+   "score": 4,
+   "battle": true
+  },
+  {
+   "a": [
+    "nation.JAP",
+    "nation.MAN",
+    "nation.MEN",
+    "nation.GER",
+    "nation.ITA",
+    "nation.ALB"
+   ],
+   "d": [
+    "nation.USA",
+    "nation.PHI"
+   ],
+   "score": 0,
+   "battle": false
+  },
+  {
+   "a": [
+    "nation.TUR",
+    "nation.GRE"
+   ],
+   "d": [
+    "nation.BUL"
+   ],
+   "score": -3,
+   "battle": false
+  }
+ ],
+ "tickEnd": 777,
+ "history": [
+  "2 February 1938 The major battle near Geneva was won by Italy",
+  "2 February 1938 A major battle began near Lyon",
+  "1 February 1938 A major battle began near Geneva",
+  "1 February 1938 The major battle near Geneva was won by Germany",
+  "1 February 1938 Iceland was freed from Denmark",
+  "1 February 1938 Ireland was freed from United Kingdom",
+  "1 February 1938 Japan's submarines raided the convoys of United States",
+  "1 February 1938 Japan's submarines raided the convoys of United States",
+  "1 February 1938 Japan's submarines raided the convoys of United States",
+  "1 February 1938 United Kingdom's submarines raided the convoys of Japan",
+  "1 February 1938 Spanish Republic's submarines raided the convoys of Nationalist Spain",
+  "1 February 1938 Germany's submarines raided the convoys of United Kingdom",
+  "1 February 1938 Italy's submarines raided the convoys of United Kingdom",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "31 January 1938 The major battle near Geneva was won by Italy",
+  "31 January 1938 A major battle began near Geneva",
+  "31 January 1938 China captured Mengjiang's capital",
+  "31 January 1938 The major battle near Geneva was won by Italy",
+  "29 January 1938 A major battle began near Geneva",
+  "27 January 1938 A major battle began near Geneva",
+  "27 January 1938 The major battle near Geneva was won by Italy",
+  "26 January 1938 The major battle near Geneva was won by Italy",
+  "26 January 1938 A major battle began near Geneva",
+  "26 January 1938 The major battle near Geneva was won by Italy",
+  "25 January 1938 The major battle near Nanking was won by China",
+  "25 January 1938 A major battle began near Geneva",
+  "25 January 1938 A major battle began near Grenoble",
+  "25 January 1938 Turkey declared war on Bulgaria",
+  "24 January 1938 United Kingdom and Japan fought at sea: United Kingdom lost 2 ships, Japan 0",
+  "23 January 1938 A major battle began near Geneva",
+  "22 January 1938 The major battle near Geneva was won by Italy",
+  "20 January 1938 A major battle began near Nanking",
+  "18 January 1938 The major battle near Geneva was won by Italy",
+  "17 January 1938 A major battle began near Geneva",
+  "16 January 1938 The major battle near Geneva was won by Italy",
+  "15 January 1938 A major battle began near Geneva",
+  "15 January 1938 A major battle began near Geneva",
+  "15 January 1938 The major battle near Geneva was won by Italy",
+  "15 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 2 ships, Italy 0",
+  "15 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 1 ships, Italy 0",
+  "15 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 1 ships, Germany 1",
+  "14 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 0 ships, Italy 11",
+  "14 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 7 ships, Germany 0",
+  "12 January 1938 France and Italy fought at sea: France lost 1 ships, Italy 1",
+  "11 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 2 ships, Germany 0",
+  "11 January 1938 France and Italy fought at sea: France lost 2 ships, Italy 0",
+  "11 January 1938 France and Italy fought at sea: France lost 3 ships, Italy 0",
+  "10 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 6 ships, Germany 0",
+  "10 January 1938 A major battle began near Geneva",
+  "10 January 1938 France and Italy fought at sea: France lost 10 ships, Italy 1",
+  "9 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 4 ships, Germany 0",
+  "9 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 7 ships, Germany 2",
+  "9 January 1938 Belgium joined the Anglo-French Entente",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 2 ships, Italy 0",
+  "7 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 8 ships, Italy 10",
+  "7 January 1938 France and Italy fought at sea: France lost 0 ships, Italy 5",
+  "7 January 1938 Luxembourg joined the Anglo-French Entente",
+  "6 January 1938 Iran joined the Defensive Pact of Afghanistan",
+  "6 January 1938 Afghanistan founded a Defensive Pact",
+  "6 January 1938 Austria joined the Defensive Pact of Denmark",
+  "6 January 1938 Denmark founded a Defensive Pact",
+  "6 January 1938 Norway joined the Defensive Pact of Finland",
+  "6 January 1938 Finland founded a Defensive Pact",
+  "5 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 2 ships, Germany 0",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 1 ships, Germany 5",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 3 ships, Germany 0",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 2 ships, Germany 0",
+  "4 January 1938 Spanish Republic joined the Defensive Pact of Portugal",
+  "4 January 1938 Portugal founded a Defensive Pact",
+  "4 January 1938 Poland joined the Anti-Comintern Pact",
+  "3 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 9 ships, Germany 13",
+  "3 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 8 ships, Germany 3",
+  "3 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 8 ships, Germany 4",
+  "3 January 1938 United Kingdom and Japan fought at sea: United Kingdom lost 4 ships, Japan 0",
+  "3 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 19 ships, Germany 4",
+  "3 January 1938 Switzerland joined the Anglo-French Entente",
+  "2 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 8 ships, Germany 0",
+  "2 January 1938 United Kingdom and Japan fought at sea: United Kingdom lost 7 ships, Japan 5",
+  "1 January 1938 Italy's submarines raided the convoys of United Kingdom",
+  "1 January 1938 Cuba joined the Coalition of Mexico",
+  "1 January 1938 Mexico founded a Coalition",
+  "1 January 1938 Netherlands joined the Anglo-French Entente",
+  "1 January 1938 Japan declared war on United States",
+  "1 January 1938 Germany declared war on United Kingdom"
+ ],
+ "ticker": [
+  "25 January 1938 Turkey declared war on Bulgaria",
+  "31 January 1938 China captured Mengjiang's capital"
+ ],
+ "fleetsEnd": {
+  "1": [
+   {
+    "name": "Cruiser squadron 1203",
+    "pos": [
+     1030.5,
+     275.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1204",
+    "pos": [
+     1030.5,
+     275.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1205",
+    "pos": [
+     1040.5,
+     234.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1206",
+    "pos": [
+     1040.5,
+     234.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1207",
+    "pos": [
+     1081.5,
+     251.5
+    ],
+    "engaged": false
+   }
+  ],
+  "20": [
+   {
+    "name": "Battle squadron 1055",
+    "pos": [
+     1070.5,
+     256.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1056",
+    "pos": [
+     1071.5,
+     255.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1057",
+    "pos": [
+     1071.5,
+     255.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1058",
+    "pos": [
+     1071.5,
+     255.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1059",
+    "pos": [
+     1071.5,
+     255.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1060",
+    "pos": [
+     1071.5,
+     255.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1061",
+    "pos": [
+     1071.5,
+     255.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1062",
+    "pos": [
+     1070.6,
+     259.1
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1066",
+    "pos": [
+     1018.5,
+     283.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1067",
+    "pos": [
+     1017.5,
+     282.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1068",
+    "pos": [
+     1019.5,
+     282.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1069",
+    "pos": [
+     1020.5,
+     281.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1070",
+    "pos": [
+     1070.6,
+     259.1
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1072",
+    "pos": [
+     999.5,
+     284.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1074",
+    "pos": [
+     1006.5,
+     240.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1077",
+    "pos": [
+     1074.5,
+     327.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1079",
+    "pos": [
+     1110.5,
+     373.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1080",
+    "pos": [
+     1110.5,
+     373.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1081",
+    "pos": [
+     1110.5,
+     373.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1082",
+    "pos": [
+     1110.5,
+     373.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1083",
+    "pos": [
+     1110.5,
+     373.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1085",
+    "pos": [
+     1714.5,
+     372.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1087",
+    "pos": [
+     1741.5,
+     424.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1088",
+    "pos": [
+     1741.5,
+     424.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1089",
+    "pos": [
+     1486.5,
+     548.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1090",
+    "pos": [
+     655.5,
+     407.5
+    ],
+    "engaged": false
+   }
+  ],
+  "75": [
+   {
+    "name": "Battle squadron 1129",
+    "pos": [
+     1711.9,
+     434.9
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1130",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1131",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1132",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1133",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1134",
+    "pos": [
+     1819.5,
+     501.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1135",
+    "pos": [
+     1819.5,
+     501.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1136",
+    "pos": [
+     1819.1,
+     387.2
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1137",
+    "pos": [
+     1711.9,
+     434.9
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1138",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1139",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1140",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1141",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1142",
+    "pos": [
+     1748.5,
+     485.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1143",
+    "pos": [
+     1748.5,
+     485.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1144",
+    "pos": [
+     1778.3,
+     396.9
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1145",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1146",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1147",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1148",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1149",
+    "pos": [
+     1748.5,
+     485.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1150",
+    "pos": [
+     1748.5,
+     485.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1151",
+    "pos": [
+     1759.5,
+     400.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1152",
+    "pos": [
+     1760.5,
+     403.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1153",
+    "pos": [
+     1712.5,
+     418.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1154",
+    "pos": [
+     1704.9,
+     386.9
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1155",
+    "pos": [
+     1704.9,
+     386.9
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1156",
+    "pos": [
+     1699.9,
+     453.3
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1157",
+    "pos": [
+     1680.5,
+     489.5
+    ],
+    "engaged": false
+   }
+  ],
+  "82": [
+   {
+    "name": "Battle squadron 1093",
+    "pos": [
+     356.5,
+     404.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1094",
+    "pos": [
+     356.5,
+     403.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1095",
+    "pos": [
+     356.5,
+     405.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1096",
+    "pos": [
+     355.5,
+     404.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1097",
+    "pos": [
+     356.5,
+     402.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1098",
+    "pos": [
+     355.5,
+     403.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1099",
+    "pos": [
+     356.5,
+     406.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1100",
+    "pos": [
+     355.5,
+     405.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1101",
+    "pos": [
+     357.5,
+     405.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1102",
+    "pos": [
+     354.5,
+     404.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1103",
+    "pos": [
+     355.5,
+     402.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1104",
+    "pos": [
+     354.5,
+     403.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1105",
+    "pos": [
+     356.5,
+     407.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1106",
+    "pos": [
+     125.5,
+     474.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1107",
+    "pos": [
+     125.5,
+     475.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1108",
+    "pos": [
+     124.5,
+     474.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1109",
+    "pos": [
+     126.7,
+     474.9
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1110",
+    "pos": [
+     125.5,
+     476.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1111",
+    "pos": [
+     124.5,
+     475.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Battle squadron 1112",
+    "pos": [
+     590.5,
+     376.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Carrier group 1113",
+    "pos": [
+     590.5,
+     375.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1114",
+    "pos": [
+     591.5,
+     376.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1115",
+    "pos": [
+     590.5,
+     374.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1116",
+    "pos": [
+     591.5,
+     375.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1117",
+    "pos": [
+     592.5,
+     376.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1118",
+    "pos": [
+     590.5,
+     373.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1119",
+    "pos": [
+     999.4,
+     217.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1120",
+    "pos": [
+     1000.2,
+     217.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1121",
+    "pos": [
+     327.5,
+     304.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1122",
+    "pos": [
+     326.5,
+     371.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Transport group 1123",
+    "pos": [
+     326.5,
+     372.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1124",
+    "pos": [
+     603.5,
+     353.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1125",
+    "pos": [
+     603.5,
+     354.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Cruiser squadron 1126",
+    "pos": [
+     1789.5,
+     555.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Destroyer flotilla 1127",
+    "pos": [
+     1789.5,
+     555.5
+    ],
+    "engaged": false
+   },
+   {
+    "name": "Submarine flotilla 1128",
+    "pos": [
+     1706.9,
+     464.9
+    ],
+    "engaged": false
+   }
+  ]
+ },
+ "wallS": 381.914,
+ "errors": [
+  "warning: [.WebGL-0x20bc0012fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x20bc0012fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x20bc0012fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x20bc0012fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ]
+}

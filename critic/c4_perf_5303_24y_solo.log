@@ -1,0 +1,27 @@
+
+> warsim@0.0.1 sim
+> tsx tools/headless/cli.ts --scenario 1938 --seed 5303 --years 24 --out critic/c4_sim5303_24y.json
+
+year   1  tick 8760  hash 23caf0a9  nations 94  formations 1029  flipped 34303  tick ms mean 11.4612 p95 32.3094  (100.57 s)
+year   2  tick 17520  hash 9990100b  nations 105  formations 1078  flipped 26753  tick ms mean 5.6904 p95 22.3434  (50.00 s)
+year   3  tick 26280  hash 689fb7b7  nations 119  formations 1084  flipped 38906  tick ms mean 7.3593 p95 25.5220  (64.64 s)
+year   4  tick 35040  hash 2544db58  nations 127  formations 1104  flipped 20402  tick ms mean 5.8926 p95 21.6921  (51.73 s)
+year   5  tick 43800  hash 2d1792ad  nations 134  formations 1170  flipped 26786  tick ms mean 5.3394 p95 20.9584  (46.89 s)
+year   6  tick 52560  hash b653c748  nations 137  formations 1072  flipped 40193  tick ms mean 9.3655 p95 33.2865  (82.15 s)
+year   7  tick 61320  hash 34439caf  nations 141  formations 1055  flipped 29961  tick ms mean 7.6240 p95 31.0297  (66.90 s)
+year   8  tick 70080  hash c537b840  nations 137  formations 1003  flipped 87594  tick ms mean 11.0850 p95 44.3038  (97.22 s)
+year   9  tick 78840  hash fea7812b  nations 138  formations 851  flipped 51441  tick ms mean 16.1499 p95 70.5745  (141.59 s)
+year  10  tick 87600  hash 2af14bb0  nations 139  formations 828  flipped 43823  tick ms mean 13.9587 p95 71.1985  (122.41 s)
+year  11  tick 96360  hash 37f67b1c  nations 139  formations 867  flipped 40058  tick ms mean 10.6743 p95 55.3367  (93.62 s)
+year  12  tick 105120  hash 44dc3202  nations 150  formations 903  flipped 51175  tick ms mean 12.5148 p95 70.5450  (109.75 s)
+year  13  tick 113880  hash 4ebb3658  nations 149  formations 893  flipped 40579  tick ms mean 12.2274 p95 68.9960  (107.24 s)
+year  14  tick 122640  hash 58f384e5  nations 152  formations 892  flipped 33398  tick ms mean 10.3982 p95 60.0925  (91.20 s)
+year  15  tick 131400  hash f703779b  nations 162  formations 941  flipped 35778  tick ms mean 11.2894 p95 61.5127  (99.02 s)
+year  16  tick 140160  hash 034f94e3  nations 162  formations 946  flipped 41905  tick ms mean 13.7910 p95 82.3810  (120.93 s)
+year  17  tick 148920  hash fc95eb86  nations 158  formations 956  flipped 26803  tick ms mean 12.3048 p95 72.3074  (107.93 s)
+year  18  tick 157680  hash cda6045d  nations 164  formations 994  flipped 42987  tick ms mean 12.5778 p95 85.2874  (110.31 s)
+year  19  tick 166440  hash 752b2d09  nations 167  formations 1013  flipped 27406  tick ms mean 13.9307 p95 92.5176  (122.15 s)
+year  20  tick 175200  hash 7e34fee8  nations 168  formations 1050  flipped 37734  tick ms mean 17.6116 p95 100.9857  (154.39 s)
+year  21  tick 183960  hash 56479ed3  nations 167  formations 1058  flipped 70964  tick ms mean 21.1506 p95 119.4444  (185.40 s)
+year  22  tick 192720  hash a158322c  nations 167  formations 1086  flipped 49910  tick ms mean 16.2962 p95 103.6018  (142.88 s)
+year  23  tick 201480  hash 893d9036  nations 167  formations 972  flipped 44521  tick ms mean 21.7969 p95 140.3122  (191.06 s)

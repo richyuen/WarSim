@@ -1,0 +1,635 @@
+{
+ "shots": [
+  "critic/shots/c4a_00_title.png",
+  "critic/shots/c4a_01_boot.png",
+  "critic/shots/c4a_02_world_20000m.png",
+  "critic/shots/c4a_03_europe_4000m.png",
+  "critic/shots/c4a_10_ladder_home_04000m.png",
+  "critic/shots/c4a_10_ladder_home_01500m.png",
+  "critic/shots/c4a_10_ladder_home_00600m.png",
+  "critic/shots/c4a_10_ladder_home_00200m.png",
+  "critic/shots/c4a_10_ladder_home_00080m.png",
+  "critic/shots/c4a_10_ladder_home_00040m.png",
+  "critic/shots/c4a_10_ladder_home_00015m.png",
+  "critic/shots/c4a_10_ladder_home_00005m.png",
+  "critic/shots/c4a_10_ladder_home_00002m.png",
+  "critic/shots/c4a_20_mode_political.png",
+  "critic/shots/c4a_20_mode_alliances.png",
+  "critic/shots/c4a_20_mode_puppets.png",
+  "critic/shots/c4a_20_mode_terrain.png",
+  "critic/shots/c4a_20_mode_wars.png",
+  "critic/shots/c4a_20_mode_diplomacy.png",
+  "critic/shots/c4a_20_mode_income.png",
+  "critic/shots/c4a_20_mode_revolts.png",
+  "critic/shots/c4a_20_mode_seaControl.png",
+  "critic/shots/c4a_30_nation_panel.png",
+  "critic/shots/c4a_31_hover_speed.png"
+ ],
+ "steps": [
+  {
+   "titleMs": 2159
+  },
+  {
+   "bootMs": 11604
+  },
+  {
+   "ladder": 4000,
+   "m": 4000,
+   "markers": 0,
+   "tags": 0,
+   "elements": 0,
+   "individuals": 0,
+   "wakes": 0
+  },
+  {
+   "ladder": 1500,
+   "m": 1500,
+   "markers": 3,
+   "tags": 0,
+   "elements": 0,
+   "individuals": 0,
+   "wakes": 0
+  },
+  {
+   "ladder": 600,
+   "m": 600,
+   "markers": 4,
+   "tags": 0,
+   "elements": 0,
+   "individuals": 0,
+   "wakes": 0
+  },
+  {
+   "ladder": 200,
+   "m": 200,
+   "markers": 0,
+   "tags": 7,
+   "elements": 74,
+   "individuals": 0,
+   "wakes": 0
+  },
+  {
+   "ladder": 80,
+   "m": 80,
+   "markers": 0,
+   "tags": 7,
+   "elements": 74,
+   "individuals": 0,
+   "wakes": 0
+  },
+  {
+   "ladder": 40,
+   "m": 40,
+   "markers": 0,
+   "tags": 3,
+   "elements": 58,
+   "individuals": 0,
+   "wakes": 0
+  },
+  {
+   "ladder": 15,
+   "m": 15,
+   "markers": 0,
+   "tags": 1,
+   "elements": 16,
+   "individuals": 16,
+   "wakes": 0
+  },
+  {
+   "ladder": 5,
+   "m": 5,
+   "markers": 0,
+   "tags": 1,
+   "elements": 16,
+   "individuals": 16,
+   "wakes": 0
+  },
+  {
+   "ladder": 2,
+   "m": 2,
+   "markers": 0,
+   "tags": 1,
+   "elements": 16,
+   "individuals": 16,
+   "wakes": 0
+  }
+ ],
+ "fleetCount": 197,
+ "fleetsSample": [
+  {
+   "f": 1055,
+   "pos": [
+    1006.5,
+    216.5
+   ],
+   "t": {
+    "name": "Battle squadron 1055",
+    "kind": "Battle squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1056,
+   "pos": [
+    1006.5,
+    217.5
+   ],
+   "t": {
+    "name": "Battle squadron 1056",
+    "kind": "Battle squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1057,
+   "pos": [
+    1007.9375,
+    216.9375
+   ],
+   "t": {
+    "name": "Carrier group 1057",
+    "kind": "Carrier group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1058,
+   "pos": [
+    1006.3125,
+    218.0625
+   ],
+   "t": {
+    "name": "Cruiser squadron 1058",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1059,
+   "pos": [
+    1005.9375,
+    217.9375
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1059",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1060,
+   "pos": [
+    1007.5,
+    217.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1060",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1061,
+   "pos": [
+    1007.5,
+    215.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1061",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1062,
+   "pos": [
+    1018.1875,
+    280.9375
+   ],
+   "t": {
+    "name": "Battle squadron 1062",
+    "kind": "Battle squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1063,
+   "pos": [
+    1018.5,
+    281.5
+   ],
+   "t": {
+    "name": "Carrier group 1063",
+    "kind": "Carrier group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1064,
+   "pos": [
+    1018.5,
+    282.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1064",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1065,
+   "pos": [
+    1019.5,
+    281.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1065",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1066,
+   "pos": [
+    1018.5,
+    283.5
+   ],
+   "t": {
+    "name": "Submarine flotilla 1066",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1067,
+   "pos": [
+    1017.5,
+    282.5
+   ],
+   "t": {
+    "name": "Submarine flotilla 1067",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1068,
+   "pos": [
+    1019.5,
+    282.5
+   ],
+   "t": {
+    "name": "Transport group 1068",
+    "kind": "Transport group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1069,
+   "pos": [
+    1020.5,
+    281.5
+   ],
+   "t": {
+    "name": "Transport group 1069",
+    "kind": "Transport group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1070,
+   "pos": [
+    1000.5,
+    284.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1070",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1071,
+   "pos": [
+    1000.5,
+    285.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1071",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1072,
+   "pos": [
+    999.5,
+    284.5
+   ],
+   "t": {
+    "name": "Transport group 1072",
+    "kind": "Transport group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1073,
+   "pos": [
+    1006.5,
+    239.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1073",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1074,
+   "pos": [
+    1006.5,
+    240.5
+   ],
+   "t": {
+    "name": "Submarine flotilla 1074",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1075,
+   "pos": [
+    1030.5,
+    275.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1075",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1076,
+   "pos": [
+    1030.5,
+    274.5
+   ],
+   "t": {
+    "name": "Transport group 1076",
+    "kind": "Transport group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1077,
+   "pos": [
+    994.5,
+    382.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1077",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1078,
+   "pos": [
+    994.5,
+    381.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1078",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1079,
+   "pos": [
+    1106.9375,
+    384.9375
+   ],
+   "t": {
+    "name": "Battle squadron 1079",
+    "kind": "Battle squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1080,
+   "pos": [
+    1106.5,
+    385.5
+   ],
+   "t": {
+    "name": "Carrier group 1080",
+    "kind": "Carrier group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1081,
+   "pos": [
+    1105.5,
+    384.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1081",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1082,
+   "pos": [
+    1107.5,
+    384.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1082",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1083,
+   "pos": [
+    1106.5,
+    386.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1083",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1084,
+   "pos": [
+    1105.5,
+    385.5
+   ],
+   "t": {
+    "name": "Submarine flotilla 1084",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1085,
+   "pos": [
+    1674.5,
+    468.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1085",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1086,
+   "pos": [
+    1674.8125,
+    467.0625
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1086",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1087,
+   "pos": [
+    1674.5,
+    469.5
+   ],
+   "t": {
+    "name": "Submarine flotilla 1087",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1088,
+   "pos": [
+    1675.5,
+    468.5
+   ],
+   "t": {
+    "name": "Submarine flotilla 1088",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1089,
+   "pos": [
+    1486.5,
+    548.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1089",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1090,
+   "pos": [
+    655.5,
+    407.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1090",
+    "kind": "Cruiser squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1091,
+   "pos": [
+    1884.5,
+    798.5
+   ],
+   "t": {
+    "name": "Cruiser squadron 1091",
+    "kind": "Cruiser squadron",
+    "nation": 78
+   }
+  },
+  {
+   "f": 1092,
+   "pos": [
+    663.5,
+    325.5
+   ],
+   "t": {
+    "name": "Destroyer flotilla 1092",
+    "kind": "Destroyer flotilla",
+    "nation": 80
+   }
+  },
+  {
+   "f": 1093,
+   "pos": [
+    356.5,
+    404.5
+   ],
+   "t": {
+    "name": "Battle squadron 1093",
+    "kind": "Battle squadron",
+    "nation": 82
+   }
+  },
+  {
+   "f": 1094,
+   "pos": [
+    356.5,
+    403.5
+   ],
+   "t": {
+    "name": "Battle squadron 1094",
+    "kind": "Battle squadron",
+    "nation": 82
+   }
+  }
+ ],
+ "homeFleet": {
+  "f": 1055,
+  "pos": [
+   1006.5,
+   216.5
+  ],
+  "t": {
+   "name": "Battle squadron 1055",
+   "kind": "Battle squadron",
+   "nation": 20
+  }
+ },
+ "afterF2": "political",
+ "afterM": "political",
+ "panelOpen": true,
+ "panelAfterEsc": true,
+ "titleAttrs": [
+  "War score 0\nNo battle now",
+  "War score 0\nNo battle now"
+ ],
+ "settings": {
+  "winnerTakesAll": false,
+  "revoltMode": "region",
+  "ceMode": "dynamic",
+  "aiEnabled": true,
+  "player": 0,
+  "loopingMap": true
+ },
+ "living": 102,
+ "errors": [
+  "warning: [.WebGL-0x344c00138a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x344c00138a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x344c00138a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x344c00138a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ]
+}
