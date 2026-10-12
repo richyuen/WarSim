@@ -23,46 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode.
-  From the Phase 2 review (PLAN 2.11c, 2026-10-05): the sea is one flat colour at T2 and T3,
-  though the elevation carries the sea floor (quantised to 10 m for this). A lake that the
-  fine mask has and the coarser coverage has not is drawn at T2 and T3 and not at T1.
-  From PLAN 4.1d2 (2026-10-09, ADR-246): the mask has rivers, and a march crosses one on
-  the straight line (4,645 steps of the map are not clear of water and have no way over
-  land; 275 of 775,801 formation-hours in 90 days of seed 99). At T2 and T3 a formation is
-  then drawn on the river. A way round a bay is walked in the step's time, up to 7.7 times
-  as quick over the ground (485 ways are over three times their line). The line of a march
-  drawn in the game is straight from cell to cell, not the way. None was looked at in the
-  game. A formation on a way can be in a cell beside its step's two (104 of 4,358
-  formation-hours on a way in the 90 days; 2 of them in an enemy's cell): what the rules
-  that read a formation's cell make of it was not looked at.
-  From PLAN 4.2b (2026-10-09, ADR-248; seven pictures looked at, `.cache/fleets/`): a fleet
-  is drawn by what draws the land's formations. At T1 its marker is a land box with a hull
-  for its symbol and its crews for its number (13.4k a battle squadron, 400 a submarine
-  flotilla); the fleets of a base stack as one marker ("×4"). Far out, a counter folds a
-  fleet's crews into its nation's men under the army's symbol (45.1k at Scapa Flow, where
-  no division stands). At T2 and T3 the ships stand in a land block's rows, each the one
-  ship sprite in its nation's colour, bows to the east, the tag "Battle squadron 1055" over
-  them. Not looked at: the formation panel of a fleet, a marker stack of a fleet and a
-  division, the ships at T3's closest, the ranking and charts (the men are the army's).
-  From PLAN 4.2c (2026-10-09, ADR-250; three pictures looked at, `.cache/sail/`): a fleet
-  under way is drawn as one that stands, its ships in their rows facing along its course.
-  The dashed line of its order goes straight to its target, over Sicily from the west of
-  it to Alexandria: not its way. Its way is 8-way steps between cells' water points, so on
-  a leg that is neither it turns by 45° from cell to cell. A step can clip a shore of the
-  fine mask (346 of 493,400 places on 90 ways between ten bases; none from Gibraltar to
-  Suez), and in a passage the fleet is drawn over the land. `World.seaPoint` asks the mask
-  each hour for a cell by a coast: not timed with many fleets under way.
-  AT: naval battle demo e2e + screenshots at T1/T2/T3 viewed.
-  - [x] 4.7a The sea-control map mode: each zone held tinted with its holder's colour (e2e).
-  - [x] 4.7b Ships: a sprite for each class at T2 and T3, and a wake behind a ship under way.
-  - [x] 4.7c A sea battle drawn: gunfire, torpedo tracks, a ship sinking.
-  - [x] 4.7d A fleet's order line along its way, not straight over the land.
-  - [x] 4.7e The naval battle demo e2e, screenshots at T1, T2 and T3 viewed (the AT of 4.7).
-  - [x] 4.7f The sea at T2 and T3 shaded by its depth (the elevation's sea floor), not one flat […]
-  - [x] 4.7g A lake of the fine mask that the coarse coverage has not: drawn at T1 as at T2 and […]
-  - [ ] 4.7h The march's crossing of a river by a coast, timed with the fleets of a year of war
-    under way (the note of PLAN 4.1d2 above): within the tick budget, or a BLOCKER with numbers.
 - [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
   and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
@@ -725,3 +685,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.4 Sea control per zone; sea supply; convoys; blockade; submarine raiding. […]
 - [x] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment). […]
 - [x] 4.6 Naval AI (sea control, escort, raiding, invasion planning). […]
+- [x] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode. […]

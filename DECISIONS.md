@@ -176,6 +176,23 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Fixed:** `planGate`'s `ticked` (the gate passes `newTicks`): a commit that ticks a numbered
   task or a review pass runs every stage but the sweep tests (those at a phase review, ADR-278),
   whatever it changed. `gate.test.ts` holds it.
+### ADR-285 · 2026-10-12 · accepted — The march over a river by a coast, timed with fleets under way (PLAN 4.7h); PLAN 4.7 done
+
+- **Context.** The note of PLAN 4.1d2 (ADR-246): the mask has rivers a pixel or two wide, and
+  a march's step by a coast looks for a way over the mask's land (`World.stepWay`, kept by
+  the pair of cells): not timed in a game with many fleets under way.
+- **Measured** (a probe, not kept: `World.prototype.stepWay` timed; seed 99's first year, the
+  naval AI's fleets at sea at war, 1,299 fleet-days under way): 9.87 to 10.15 ms a tick in this
+  container (about 5 × the budget machine's); `stepWay` 2,951,069 calls, 63,220 ways found in
+  964 ms (0.110 ms a tick, the busiest month 119 ms), the calls that find a way kept 2.3 s by
+  the probe's clock: at most 3.7 % of the tick. Fleets do not ask it (`sailStep` walks its
+  path). The first year's tick is over the budget already (BLOCKERS, PLAN 7.1); this is not
+  what puts it there. In BLOCKERS with the numbers.
+- **Found:** the naval AI's longest call, 1,956 ms, is the lane graph at the first sail
+  (PLAN 4.1b): once a game, a hitch of the worker. For PLAN 4.8.
+- **PLAN 4.7 done:** the sea-control mode, ships by class with wakes, a sea battle drawn, a
+  fleet's order line along its way, the naval battle demo at T1, T2 and T3, the sea by its depth,
+  the fine coast at T1, and this.
 
 ### ADR-284 · 2026-10-12 · accepted — The fine mask's coast at T1 (PLAN 4.7g)
 

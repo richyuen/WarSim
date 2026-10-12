@@ -126,6 +126,14 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     is 0.79 to 1.02 ms a tick (0.26 to 0.48 in the first five) and territory 0.30 to 0.51.
     3.10c found the long orders and 3.10c1 took them away; what the AI's time is in these
     years now was not looked at.
+  - *A march round a bay or over a river, with fleets under way* (2026-10-12, PLAN 4.7h,
+    ADR-285; a cloud container, unpinned, about 5 × the budget machine's time): seed 99's
+    first year, 9.87 ms a tick (hash 841d4422): combat 3.42, the operational AI 1.40,
+    movement 1.30. Of movement, `World.stepWay`: 2,951,069 calls, 63,220 ways found in
+    964 ms (0.110 ms a tick), the calls that find one kept 2.3 s with the probe's own clock
+    (at most 0.37 ms a tick, 3.7 %). Fleets sail by their paths and do not ask it. The
+    naval AI's longest call, 1,956 ms, is the lane graph built at the first sail (once a
+    game, PLAN 4.1b): a hitch of the worker, not of the tick's mean (for PLAN 4.8).
   - *One call of 361.7 ms* in the operational AI, year 4 of seed 4242. Not looked at.
   - *Not looked at:* why the quick sweep of 3.7e took 14.2 min against 4.9, and the 19.9 min
     of 40 years of seed 4242 (both in the task's text).
@@ -570,6 +578,15 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on
     the commit and 8.19 on HEAD, the same hash fac8ee64 (1.9 ms on the budget's machine).
     Seeds 2 and 3 and the pinned hash passed.
+  - The browser suite on this container at PLAN 4.7's tick (2026-10-12): twice in full (2
+    workers) it ran 140 of 172 tests in its 7,000 s, with the same 21 failing both times. Then
+    alone, file by file (1 worker): 9 of them (counters, declutter, editorDrag, formationPlace,
+    groundThings, markerStacks, muzzles, navalDemo, settings: 19 tests) passed; 16 failed, every
+    one of the list of 4.2f (cityNames ×2, fallen, fightSeen ×2, fire, formationFight, handover,
+    individuals, labelFades, lateFrame, precision, tankBattle, tickClock, ticker, zoomDemo); camera
+    passed; the 19 files the full runs did not reach passed but those 4; the perf spec passed
+    (run with `--project=perf --no-deps`: named alone, the perf project's dependency on chromium
+    runs all 172).
   - The browser suite on this container (2026-10-10, PLAN 4.2's tick, 4.2f): 17 of 164
     failed in 1.7 h (camera, cityNames ×2, fallen, fightSeen ×2, fire, formationFight,
     handover, individuals, labelFades, lateFrame, precision, tickClock, tankBattle, ticker,

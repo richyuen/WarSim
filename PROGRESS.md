@@ -14145,3 +14145,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Fixed:** `planGate` takes the ticks: such a commit runs every stage but the sweep tests.
 - **Tests:** `gate.test.ts`.
 - **Next:** PLAN 4.7's tick, its gate in full.
+## 2026-10-12 — PLAN 4.7h: the river crossing timed with fleets under way (ADR-285); PLAN 4.7 done
+
+- **Critic not due.**
+- **Measured:** seed 99's first year, 9.87 ms a tick here; `World.stepWay` 63,220 ways found in
+  964 ms (0.110 ms a tick), all its calls at most 3.7 % of the tick; fleets do not ask it. In
+  BLOCKERS beside the first year's tick (PLAN 7.1).
+- **Found:** the lane graph at the first sail takes 1,956 ms in one call of the naval AI: once a
+  game (for PLAN 4.8).
+- **PLAN 4.7 ticked:** its gate runs every unit and browser test (ADR-286 made it do so).
+- **The gate:** unit 1,248 of 1,250, red only by the two timing tests of BLOCKERS; build and
+  parity green. The browser suite (BLOCKERS, at 4.7's tick): two full runs reached 140 of 172
+  in 7,000 s with the same 21 failing; file by file alone, 16 fail, each one of 4.2f's list in
+  this container; the rest pass, the 19 files the full runs did not reach among them.
+- **Next:** PLAN 4.8, the Phase 4 review.
