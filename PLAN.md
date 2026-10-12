@@ -23,33 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
-  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
-  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
-  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
-  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
-  Split 2026-10-12, as 3.12R was: the pass is several causes, one a commit. A part is not a
-  numbered task (its gate runs the tests related to it and the specs it changed, ADR-280);
-  the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
-  - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and […]
-  - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
-  - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports […]
-  - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
-  - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
-  - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
-  - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
-  - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
-  - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
-  - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
-  - [x] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a […]
-  - [x] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches: […]
-  - [x] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows […]
-  - [x] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
-  - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
-    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
-    if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
-    critic (due after a phase review, ADR-59).
-
 ## Phase 5 — Air
 
 - [ ] 5.1 Air wings, airbases, carriers, range; air zones.
@@ -719,3 +692,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment). […]
 - [x] 4.6 Naval AI (sea control, escort, raiding, invasion planning). […]
 - [x] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode. […]
+- [x] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]

@@ -14412,3 +14412,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   the additions are unscored.
 - **The gate:** documents only: parity.
 - **Next:** PLAN 4.8h, the phase review's tick.
+
+## 2026-10-12 — PLAN 4.8 done: the Phase 4 review (4.8h, its last part)
+
+- **check:full**, each stage on its own on the tree of 433e749 (the tick adds documents alone):
+  - typecheck, lint, build and parity green;
+  - the ten-year sweep tests: 17 of 17, 24 min;
+  - the unit tests: 1,262 of 1,265, red only by the three timing tests of BLOCKERS;
+  - the browser suite: 152 of 171 in two halves (1.2 h, 45 min); declutter, camera and t0map
+    then passed alone, as did the perf spec; the 16 left are BLOCKERS' list of this container.
+- **sweep:quick** (10 seeds × 20 years, 67.8 min, 4 processes): LIMITS GREEN, 10 of 10 seeds.
+  - land moving in the last 5 years: 15.7 to 38.0 % (≥ 1 %);
+  - the largest nation's land at the end: 9.7 to 18.1 % (< 35 %);
+  - the largest income at the end: 28.7 to 29.8 % (< 40 %);
+  - nations alive: 92 to 160 (20–250);
+  - years with a war: 100 % in every seed (≥ 80 %).
+  Reported, not judged at 20 years: a riser in 7 of 10 seeds, a faller in 10 of 10. A smoke test,
+  not a balance verdict (ADR-58).
+- **Phase 4 done.** The critic is due (a phase review ticked since its report, ADR-59).
+- **Next:** the critic run (PROMPT step 2a), then PLAN 5.

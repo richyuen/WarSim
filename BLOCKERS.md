@@ -596,6 +596,16 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on
     the commit and 8.19 on HEAD, the same hash fac8ee64 (1.9 ms on the budget's machine).
     Seeds 2 and 3 and the pinned hash passed.
+  - The full gate at PLAN 4.8's tick, the Phase 4 review (2026-10-12, this container), each
+    stage run on its own on the tree of 433e749 (the tick adds documents alone): typecheck,
+    lint, build, parity green; the ten-year sweep tests 17 of 17 (24 min); the unit tests
+    1,262 of 1,265, red only by the three timing tests above (`snapshot-perf`, the
+    `scenario1938` build, `territory`'s cost a tick). The browser suite in two halves of the
+    chromium project (1.2 h and 45 min): 152 of 171 passed; of the 19 red, declutter, camera
+    and t0map passed alone (1 worker), and the perf spec passed (`--project=perf --no-deps`).
+    The 16 left are the list of 4.2f and 4.7 (cityNames ×2, fallen, fightSeen ×2, fire,
+    formationFight, handover, individuals, labelFades, lateFrame, precision, tankBattle,
+    tickClock, ticker, zoomDemo). The specs were not changed.
   - The browser suite on this container at PLAN 4.7's tick (2026-10-12): twice in full (2
     workers) it ran 140 of 172 tests in its 7,000 s, with the same 21 failing both times. Then
     alone, file by file (1 worker): 9 of them (counters, declutter, editorDrag, formationPlace,
