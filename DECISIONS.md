@@ -167,6 +167,16 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-287 · 2026-10-12 · accepted — A perf spec run alone without its project's dependency
+
+- **Found** (PLAN 4.7's tick): `npx playwright test tests/e2e/provinces.perf.spec.ts` ran all
+  172 tests: the perf project depends on chromium (`playwright.config.ts`), so that it runs
+  after every other test. A gate of changed specs with a perf spec in it would have done the
+  same, and a by-hand run did (two hours).
+- **Fixed:** the gate's changed specs run as `changedSpecsCommand`: the perf specs with
+  `--project=perf --no-deps`, the others with `--project=chromium`. The full run keeps the
+  dependency. CLAUDE.md says how to run a perf spec by hand. `gate.test.ts` holds it.
+
 ### ADR-286 · 2026-10-12 · accepted — The tick of a task runs its tests in a commit of documents alone
 
 - **Found:** PLAN 4.7's tick (4.7h's numbers, the ticks and the notes: documents alone) had a

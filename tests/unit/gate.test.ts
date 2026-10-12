@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ALL_STAGES, changedFiles, gatedTrees, newTicks, PIN_TEST, planE2e, planGate, planSweep, planUnit, reviewTicked, tickedTasks, worktreeTree } from '../../tools/gate/check';
+import { ALL_STAGES, changedFiles, changedSpecsCommand, gatedTrees, newTicks, PIN_TEST, planE2e, planGate, planSweep, planUnit, reviewTicked, tickedTasks, worktreeTree } from '../../tools/gate/check';
 import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
 import { archive, LEDGER, MOVED } from '../../tools/plan/archive';
 
@@ -122,6 +122,13 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     expect(planE2e(code, head, null)).toMatchObject({ mode: 'full' });
     // The critic's own files are not a change.
     expect(planE2e(['critic/scripts/x.spec.ts', 'src/app/hud.ts'], head, head)).toMatchObject({ mode: 'none' });
+  });
+
+  // A perf spec named alone ran the whole suite: the perf project depends on chromium (PLAN 4.7's tick).
+  it('the changed specs: a perf spec on its project without its dependency, the others on chromium', () => {
+    expect(changedSpecsCommand(['tests/e2e/fire1938.spec.ts'])).toBe('npx playwright test tests/e2e/fire1938.spec.ts --project=chromium');
+    expect(changedSpecsCommand(['tests/e2e/provinces.perf.spec.ts'])).toBe('npx playwright test tests/e2e/provinces.perf.spec.ts --project=perf --no-deps');
+    expect(changedSpecsCommand(['tests/e2e/a.spec.ts', 'tests/e2e/b.perf.spec.ts'])).toBe('npx playwright test tests/e2e/a.spec.ts --project=chromium && npx playwright test tests/e2e/b.perf.spec.ts --project=perf --no-deps');
   });
 
   it('a file that only looks like a document is code', () => {

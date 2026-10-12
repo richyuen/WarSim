@@ -36,7 +36,8 @@ There is no memory between sessions. Read these files:
     whole unit suite by hand (`npm test`) when it doubts the import graph covers it.
   - e2e (7 to 9 minutes): in full only when the change ticks a numbered PLAN task (2.14, not
     its part 2.14a) or the review pass after one (3.4R, not its part 3.4Ra) (ADR-87). For a part, only the spec files that changed, or none. While
-    working on a part, run the specs of what you touch by hand (`npx playwright test <file>`). They include the pinned state hash of seed 99 after one year
+    working on a part, run the specs of what you touch by hand (`npx playwright test <file>`; a
+    perf spec with `--project=perf --no-deps`, or it runs every test first). They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
 - Unit tests make each 1938 world after a file's first from its template, and load pure runs
   from `.cache/checkpoints/` (`tests/helpers/checkpoint.ts`; ADR-279). `NOTEMPLATES=1` builds

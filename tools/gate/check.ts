@@ -114,6 +114,20 @@ export function planUnit(files: readonly string[] | null, ticked: readonly strin
   return { mode: 'related', files: code, why: 'no numbered task ticked: the tests that import what changed' };
 }
 
+/**
+ * The command for the spec files that changed (an e2e stage of `changed`): a perf spec on its own
+ * project without its dependency (`--no-deps`: the perf project runs after chromium's every test,
+ * so named alone it would run them all), the others on chromium.
+ */
+export function changedSpecsCommand(specs: readonly string[]): string {
+  const perf = specs.filter((f) => f.endsWith('.perf.spec.ts'));
+  const rest = specs.filter((f) => !f.endsWith('.perf.spec.ts'));
+  const parts: string[] = [];
+  if (rest.length > 0) parts.push(`npx playwright test ${rest.join(' ')} --project=chromium`);
+  if (perf.length > 0) parts.push(`npx playwright test ${perf.join(' ')} --project=perf --no-deps`);
+  return parts.join(' && ');
+}
+
 /** The numbered tasks and reviews ticked in `planNow` and not in `planAtHead` (null = unknown). */
 export function newTicks(planNow: string, planAtHead: string | null): string[] | null {
   if (planAtHead === null) return null;
@@ -259,7 +273,7 @@ function main(): void {
   for (const stage of stages) {
     const command =
       stage === 'e2e' && e2e.mode === 'changed'
-        ? `npx playwright test ${e2e.specs.join(' ')}`
+        ? changedSpecsCommand(e2e.specs)
         : stage === 'test' && unit.mode === 'related'
           ? `npx vitest related --run --passWithNoTests ${unit.files.join(' ')}`
           : stage === 'test:sweep' && sweep === 'pin'

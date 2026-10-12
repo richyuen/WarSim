@@ -14159,3 +14159,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   in 7,000 s with the same 21 failing; file by file alone, 16 fail, each one of 4.2f's list in
   this container; the rest pass, the 19 files the full runs did not reach among them.
 - **Next:** PLAN 4.8, the Phase 4 review.
+
+## 2026-10-12 — A perf spec run alone without its project's dependency (ADR-287)
+
+- **Found:** a perf spec named alone runs every browser test first (the perf project depends on
+  chromium): two hours of a by-hand run at 4.7's tick.
+- **Fixed:** the gate runs changed perf specs with `--project=perf --no-deps`, the others on
+  chromium; CLAUDE.md says so for a run by hand.
+- **Tests:** `gate.test.ts`.
+- **Next:** PLAN 4.8, the Phase 4 review.
