@@ -38,7 +38,6 @@ export interface LanePort {
 }
 
 export const LaneNode = { zone: 0, strait: 1, port: 2 } as const;
-export type LaneNodeKind = (typeof LaneNode)[keyof typeof LaneNode];
 
 export interface LaneEdge {
   /** Its nodes, `a` the lower. */

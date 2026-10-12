@@ -7017,3 +7017,21 @@ Of 4.8 (open in PLAN.md):
     finding is checked against the code here before it is anything; those a player can meet
     become parts 4.8k and on, each with a test that fails first, most severe first; the rest
     go on the watch list.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports
+    nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
+    one place; the naval systems' shared helpers. The pin holds: a refactor that moves it
+    changed a rule.

@@ -50,7 +50,7 @@ import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { annexNation, makePuppet } from './puppets';
-import { fleetMen } from './seaControl';
+import { forceMen } from './seaControl';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { LandCounts } from '../landCounts';
 import type { World } from '../world';
@@ -303,7 +303,7 @@ function menOf(world: World): Map<number, number> {
   const m = new Map<number, number>();
   const f = world.formations.cols;
   world.formations.forEach((id) => {
-    const men = world.isFleet(id) ? fleetMen(world, id) : f.strength[id]!;
+    const men = forceMen(world, id);
     if (men > 0) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + men);
   });
   return m;

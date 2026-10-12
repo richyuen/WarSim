@@ -14236,3 +14236,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   the reader ran); 4.8p the sea-control mode after a load.
 - **Watch list:** three suspicions not run (BLOCKERS).
 - **Next:** PLAN 4.8k.
+
+## 2026-10-12 — PLAN 4.8c: dead code and refactor debt of Phase 4
+
+- **Dead code:** of the exports of the files changed since `5d9f1a1`, one is used nowhere, not
+  even in its file: `LaneNodeKind` (`nav/lanes.ts`), deleted. The rest are used in their files
+  (the tunables, exported for their tests and readers) or by `.tsx` (`applyUiScale`). The i18n
+  keys added in the phase are all read, by templated names (`history.${kind}`, `template.${id}`,
+  `mapMode.${mode}`). No TODO or FIXME.
+- **Refactor:** a formation's men in a reckoning of forces, a fleet's weight or an army's
+  strength, was written twice (the strategic AI's `strengths`, the war system's `menOf`): one
+  `forceMen` beside `fleetMen` (`seaControl.ts`). The naval systems' helpers (`sailHome`,
+  `nearestOwnPort`, `seaHolder`) have one home each already.
+- **Not a rule change:** the pin holds.
+- **The gate:** the unit tests related to the change (119 files), red only by the three timing
+  tests of BLOCKERS; the pin held; build and parity green.
+- **Next:** PLAN 4.8e.

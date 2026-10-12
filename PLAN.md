@@ -33,10 +33,7 @@ quick sweep as a smoke test.
   the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
   - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and […]
   - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
-  - [ ] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports
-    nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
-    one place; the naval systems' shared helpers. The pin holds: a refactor that moves it
-    changed a rule.
+  - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports […]
   - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
   - [ ] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a
     hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
