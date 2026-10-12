@@ -6963,3 +6963,20 @@ Of 4.8 (open in PLAN.md):
     ports, fleets, sailing, ice, building, sea battles, sea control, blockade, sea supply,
     convoys, landings, bombardment, the naval AI, the navy budget), what is drawn of the sea,
     and the gate's and the tests' rules (ADR-278 to ADR-280, ADR-286, ADR-287).
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`
+    beside the last five-year figure of this container and the budget; the T1 frame's cost
+    with the mask (ADR-284) where a GPU is (or a BLOCKER: none here).

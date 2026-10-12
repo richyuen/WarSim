@@ -49,9 +49,13 @@ quick sweep as a smoke test.
     hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
     lake shores in steps of the mask (ADR-284); the shots small at T2 (ADR-282). Each looked
     at and fixed, or a line saying why not.
-  - [ ] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`
-    beside the last five-year figure of this container and the budget; the T1 frame's cost
-    with the mask (ADR-284) where a GPU is (or a BLOCKER: none here).
+  - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
+  - [ ] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this
+    container against 5.99 before Phase 4, about 1.58 ms on the budget machine against 1.5):
+    6.70 ms or less here (1.5 / 1.341 of 5.99), the same games (no rule changed, the pin and
+    the five years' hash as they were). Where the time went: movement +0.42 ms, naval combat
+    0.30 (a contact search each hour with battles rare), the naval AI 0.24, supply +0.18,
+    bombardment 0.10, sea control 0.10. Each a part of its own if it is more than one cause.
   - [ ] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
   - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed

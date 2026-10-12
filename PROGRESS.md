@@ -14195,3 +14195,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not in SPEC, rightly:** ADR-245 and 249 (camera and tags: in §8 already by their PLAN), ADR-266,
   267, 285 (process and measures).
 - **Next:** PLAN 4.8a's findings (the read is running), then 4.8c.
+
+## 2026-10-12 — PLAN 4.8f: tick time after Phase 4 (documents)
+
+- **Measured** (this container, unpinned, `--profile`, five years of seed 99, one run each):
+
+  | commit | y1 | y2 | y3 | y4 | y5 | five years | ends on |
+  |---|---|---|---|---|---|---|---|
+  | `5d9f1a1` (before Phase 4) | 10.081 | 7.991 | 4.304 | 3.400 | 4.163 | 5.988 | `251656a1` |
+  | `90853a8` (now) | 11.040 | 7.192 | 6.104 | 4.448 | 6.609 | 7.079 | `3b8b45cb` |
+
+  × 1.18; on the budget machine (1.341 for `251656a1`) about 1.58 ms, over 1.5. The naval
+  systems and movement are the difference (BLOCKERS). The T1 frame's cost: no GPU here.
+- **Next:** a part 4.8i brings the tick back (6.70 ms or less here); 4.8a's findings first.

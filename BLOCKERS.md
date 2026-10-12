@@ -126,6 +126,14 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     is 0.79 to 1.02 ms a tick (0.26 to 0.48 in the first five) and territory 0.30 to 0.51.
     3.10c found the long orders and 3.10c1 took them away; what the AI's time is in these
     years now was not looked at.
+  - *Phase 4's cost* (2026-10-12, PLAN 4.8f; a cloud container, unpinned, one run each):
+    seed 99's five years 5.988 ms a tick at `5d9f1a1` (before Phase 4; it ends on 251656a1, the
+    hash of the budget machine's 1.341) and 7.079 at `90853a8` (ends on 3b8b45cb): × 1.18, about
+    1.58 ms on the budget machine, over 1.5. By system, the five years' means: movement 0.667 →
+    1.084, naval combat 0.304, the naval AI 0.237, supply 0.589 → 0.772, bombardment 0.102, sea
+    control 0.101, the invasion AI 0.032; combat 1.774 → 1.555. PLAN 4.8i brings it back.
+    The T1 frame with the fine mask (ADR-284) is not measured: no GPU here (`npm run bench`
+    wants one); for a machine with one.
   - *A march round a bay or over a river, with fleets under way* (2026-10-12, PLAN 4.7h,
     ADR-285; a cloud container, unpinned, about 5 × the budget machine's time): seed 99's
     first year, 9.87 ms a tick (hash 841d4422): combat 3.42, the operational AI 1.40,
