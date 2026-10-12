@@ -2736,10 +2736,10 @@ on screen.
   10-year sweep tests (`tests/sweep/`) → `vite build` → `playwright test` (against
   `vite preview` of the build) → `npm run parity`. Must be green before every commit. It is
   sized to what changed since HEAD (ADR-48, ADR-49): documents only (Markdown, `docs/`) run
-  parity alone, unless they tick a numbered task or a review (ADR-286); a clean tree that the
+  parity alone, unless they tick a phase review (ADR-286, ADR-293); a clean tree that the
   gate has already passed runs nothing (the passed trees are recorded in `.cache/gate/`, ADR-55).
   `npm run check:full` runs every stage. Of the stages:
-  - *unit:* in full when the change ticks a numbered task, a review pass or a phase review, or
+  - *unit:* in full when the change ticks a phase review (ADR-293: not a numbered task), or
     something every test stands on changed (the vitest config, `tests/helpers/`, the data and
     assets read from disk, the lock file); otherwise `vitest related` over what changed (ADR-280).
     A 1938 world after a test file's first is made from its template (`keepWorldTemplates`,
@@ -2749,7 +2749,7 @@ on screen.
     input runs the pinned state hash of seed 99 after one year alone
     (`tests/sweep/baselineHash.test.ts`, ADR-278): a change of rules moves the pin and logs it
     in DECISIONS.
-  - *e2e:* in full at a tick (ADR-87); for a part, the specs it changed, a perf spec with
+  - *e2e:* in full at a phase review (ADR-87, ADR-293); otherwise the specs a commit changed, a perf spec with
     `--project=perf --no-deps` (ADR-287).
 - **Critic cadence** (`npm run critic:due`, `tools/gate/criticDue.ts`, ADR-59): due when there
   is no report, or when a phase review has been ticked in PLAN.md since the commit the report

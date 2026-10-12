@@ -7,8 +7,8 @@
  *   otherwise                                                        → everything, the sweep stage the pin alone
  *   a phase review ticked (`- [x] 4.8 Phase 4 review`)               → everything, every sweep test
  *
- * Of the unit stage (ADR-280, the user's decision): all of it when the change ticks a numbered
- * task, a review pass or a phase review, when git cannot tell what changed, under FULL, or when
+ * Of the unit stage (ADR-280, ADR-293, the user's decisions): all of it when the change ticks a
+ * phase review (not a numbered task: ADR-293), when git cannot tell what changed, under FULL, or when
  * something every test stands on changed (`UNIT_SHARED`); otherwise only the test files whose
  * imports reach a file that changed (`vitest related`), or none (`planUnit`).
  *
@@ -17,8 +17,8 @@
  * hash of seed 99 (`tests/sweep/baselineHash.test.ts`, 81 s), so a rule change still moves the
  * pin in its own commit (`planSweep`).
  *
- * And of the e2e stage (ADR-87): all of it when the change ticks a numbered task of PLAN.md or
- * the review pass after one (3.4R); for a part of either (2.14a, 3.4Ra) only the spec files that
+ * And of the e2e stage (ADR-87, ADR-293): all of it when the change ticks a phase review
+ * (`- [x] 4.8 Phase 4 review`; until ADR-293 every numbered task); otherwise only the spec files that
  * changed, or none (`planE2e`).
  *
  * Nothing but `npm run parity` reads the documents, and nothing but a sim input can change what
@@ -52,15 +52,14 @@ const isDocument = (file: string): boolean => file.endsWith('.md') || file.start
 /**
  * The stages to run for `files` changed since HEAD (repo-relative, `/`-separated); null = unknown.
  * `gated`: the gate has already passed the tree of HEAD. `review`: the change ticks a phase review
- * (`reviewTicked`), whose gate runs every stage whatever changed. `ticked`: it ticks a numbered
- * task or a review pass (`newTicks`): a commit of documents alone then runs the code's stages too.
+ * (`reviewTicked`), whose gate runs every stage whatever changed: a commit of documents alone too
+ * (ADR-286; since ADR-293 the tick of a numbered task is a commit as any other).
  */
-export function planGate(files: readonly string[] | null, gated = false, review = false, ticked = false): Stage[] {
+export function planGate(files: readonly string[] | null, gated = false, review = false): Stage[] {
   if (files === null || review) return [...ALL_STAGES];
   const changed = files.filter((f) => !ignored(f));
   if (changed.length === 0 && gated) return [];
-  // The tick of a numbered task runs every test, its last part's code or not (ADR-87, ADR-280).
-  if (changed.length > 0 && changed.every(isDocument) && !ticked) return ['parity'];
+  if (changed.length > 0 && changed.every(isDocument)) return ['parity'];
   const sim = changed.some((f) => SWEEP_INPUTS.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)));
   return ALL_STAGES.filter((s) => s !== 'test:sweep' || sim);
 }
@@ -103,7 +102,7 @@ export interface UnitPlan {
  */
 export function planUnit(files: readonly string[] | null, ticked: readonly string[] | null, exists: (f: string) => boolean): UnitPlan {
   if (files === null || ticked === null) return { mode: 'full', files: [], why: 'what changed is not known' };
-  if (ticked.length > 0) return { mode: 'full', files: [], why: `PLAN ${ticked.join(', ')} ticked` };
+  if (ticked.length > 0) return { mode: 'full', files: [], why: `PLAN ${ticked.join(', ')} ticked (a phase review)` };
   const changed = files.filter((f) => !ignored(f) && !isDocument(f));
   const shared = changed.find((f) => UNIT_SHARED.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)));
   if (shared !== undefined) return { mode: 'full', files: [], why: `${shared} changed` };
@@ -111,7 +110,7 @@ export function planUnit(files: readonly string[] | null, ticked: readonly strin
   const gone = code.find((f) => !exists(f));
   if (gone !== undefined) return { mode: 'full', files: [], why: `${gone} removed` };
   if (code.length === 0) return { mode: 'none', files: [], why: 'no source or unit test changed' };
-  return { mode: 'related', files: code, why: 'no numbered task ticked: the tests that import what changed' };
+  return { mode: 'related', files: code, why: 'no phase review ticked: the tests that import what changed' };
 }
 
 /**
@@ -128,11 +127,11 @@ export function changedSpecsCommand(specs: readonly string[]): string {
   return parts.join(' && ');
 }
 
-/** The numbered tasks and reviews ticked in `planNow` and not in `planAtHead` (null = unknown). */
+/** The phase reviews ticked in `planNow` and not in `planAtHead` (null = unknown; ADR-293: a numbered task is not one). */
 export function newTicks(planNow: string, planAtHead: string | null): string[] | null {
   if (planAtHead === null) return null;
-  const before = new Set(tickedTasks(planAtHead));
-  return tickedTasks(planNow).filter((id) => !before.has(id));
+  const before = new Set(tickedReviews(planAtHead));
+  return tickedReviews(planNow).filter((id) => !before.has(id));
 }
 
 /**
@@ -160,15 +159,14 @@ export interface E2ePlan {
  */
 export function planE2e(files: readonly string[] | null, planNow: string, planAtHead: string | null): E2ePlan {
   if (files === null || planAtHead === null) return { mode: 'full', specs: [], why: 'what changed is not known' };
-  const before = new Set(tickedTasks(planAtHead));
-  const ticked = tickedTasks(planNow).filter((id) => !before.has(id));
-  if (ticked.length > 0) return { mode: 'full', specs: [], why: `PLAN ${ticked.join(', ')} ticked` };
+  const ticked = newTicks(planNow, planAtHead) ?? [];
+  if (ticked.length > 0) return { mode: 'full', specs: [], why: `PLAN ${ticked.join(', ')} ticked (a phase review)` };
   const changed = files.filter((f) => !ignored(f));
   const shared = changed.filter((f) => f === 'playwright.config.ts' || (f.startsWith('tests/e2e/') && !f.endsWith('.spec.ts')));
   if (shared.length > 0) return { mode: 'full', specs: [], why: `${shared[0]} changed` };
   const specs = changed.filter((f) => f.startsWith('tests/e2e/') && f.endsWith('.spec.ts'));
-  if (specs.length > 0) return { mode: 'changed', specs, why: 'no numbered task ticked: the changed specs only' };
-  return { mode: 'none', specs: [], why: 'no numbered task ticked and no spec changed' };
+  if (specs.length > 0) return { mode: 'changed', specs, why: 'no phase review ticked: the changed specs only' };
+  return { mode: 'none', specs: [], why: 'no phase review ticked and no spec changed' };
 }
 
 /** Files that differ from HEAD (modified, staged, untracked, both ends of a rename), or null when git cannot tell. */
@@ -244,7 +242,7 @@ function main(): void {
   const planAtHead = atHead.status === 0 && !atHead.error && planNow !== '' ? atHead.stdout : null;
   const review = reviewTicked(planNow, planAtHead);
   const ticks = newTicks(planNow, planAtHead);
-  const stages = planGate(files, head !== null && gatedTrees().includes(head), review, (ticks?.length ?? 0) > 0);
+  const stages = planGate(files, head !== null && gatedTrees().includes(head), review);
   const sweep = planSweep(files, review);
   if (stages.length === 0) {
     console.log('gate: nothing changed since HEAD, and the gate has passed this tree (npm run check:full runs everything)');

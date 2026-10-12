@@ -14358,3 +14358,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (121 files), red only by the two timing tests of BLOCKERS;
   the pin held (run by hand); build and parity green.
 - **Next:** PLAN 4.8n.
+
+## 2026-10-12 — Every unit test and every spec once a phase, at its review (ADR-293, the user's decision)
+
+- **Done:** the gate runs the whole unit and e2e stages at a phase review's tick (and
+  `check:full`, an unknown change, a shared file), not at a numbered task's: that is a commit as
+  any other. CLAUDE.md, PROMPT.md and SPEC §10 say so.
+- **Tests:** `gate.test.ts`.
+- **Next:** PLAN 4.8n.

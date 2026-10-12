@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-293 · 2026-10-12 · accepted — Every unit test and every spec once a phase, at its review (the user's decision)
+
+- **Context.** A numbered task's tick ran the whole unit suite (about 20 minutes here) and the
+  whole browser suite (ADR-87, ADR-280, ADR-286), which does not finish in a container without a
+  GPU (over 117 minutes at PLAN 4.7's tick, then checked file by file).
+- **Decision.** The full unit and e2e stages run at a phase review's tick (`newTicks` and
+  `planE2e` read the phase reviews alone, `tickedReviews`), in `npm run check:full`, when git
+  cannot tell what changed, or when something every test stands on changed. A numbered task's
+  or a review pass's tick is a commit as any other: the unit tests related to what changed, the
+  specs it changed, the pin when a sim input changed; a tick in a commit of documents alone is
+  parity (ADR-286 now holds for a phase review's tick only).
+- **Cost.** What one commit breaks in a test it does not import, or a spec it does not change,
+  is found at the phase review. A task that changes what is drawn runs its feature's specs by
+  hand.
+- **Tests.** `gate.test.ts`: the unit and e2e stages in full for a phase review, not for a
+  numbered task.
+
 ### ADR-292 · 2026-10-12 · accepted — A place aboard goes with its formation and its transports (PLAN 4.8m)
 
 - **Found** (the tenth read): `destroyFormation` left `world.embarked` as it was; the amphibious

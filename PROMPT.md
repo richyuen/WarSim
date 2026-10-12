@@ -269,22 +269,15 @@ on simulation runs (DECISIONS ADR-48).
   `npm run check:full` always runs everything: use it for the DONE CONDITION
   and whenever the working tree was not gated commit by commit (after a pull
   or a rebase).
-- The e2e suite runs in full when a numbered task is ticked, not for its parts (added
-  2026-10-05, ADR-87, the user's decision; it is 7 to 9 of a gate's 13 minutes).
-  `npm run check` sees to it: a commit that ticks `- [x] 2.14` runs every spec, a commit of
-  the part 2.14a runs the spec files it changed, or none. The tick of a review pass
-  (`- [x] 3.4R`, step 9) runs every spec as a numbered task's does; its parts (3.4Ra) are
-  parts (added 2026-10-06, PLAN 3.4Rn). So: a part that touches what is
-  drawn runs the specs of that feature by hand before its commit and names them in
-  PROGRESS.md; the last part of a task expects the full suite, and whatever it finds broken
-  by an earlier part is fixed there. A phase review and the DONE CONDITION use
-  `npm run check:full`.
-- The unit tests run in full when a numbered task or a review is ticked, as the e2e suite does
-  (added 2026-10-12, ADR-280, the user's decision); for a part, `npm run check` runs only the
-  test files whose imports reach a file that changed (`vitest related`). Something every test
-  stands on (the vitest config, `tests/helpers/`, the data and assets read from disk, the lock
-  file) runs them all. The last part of a task expects the full unit suite, and fixes there
-  what an earlier part broke.
+- The unit tests and the e2e suite run in full once a phase, at its review (`- [x] 4.8 Phase 4
+  review`) and in `npm run check:full` (changed 2026-10-12, ADR-293, the user's decision: until
+  then at every numbered task, ADR-87 and ADR-280). Any other commit, a numbered task's tick
+  among them, runs the unit test files whose imports reach a file that changed (`vitest
+  related`) and the spec files it changed; something every test stands on (the configs, the
+  helpers, the data and assets read from disk, the lock file) runs them all. So a task that
+  touches what is drawn runs the specs of that feature by hand before its commits and names
+  them in PROGRESS.md; what an earlier commit broke is found at the phase review, and fixed
+  there. The phase review and the DONE CONDITION use `npm run check:full`.
 - No hand-run hashes. `tests/sweep/baselineHash.test.ts` pins the state hash
   of seed 99 after one year. A change meant to leave behaviour alone is
   proved by that test in the gate. A change of rules moves the pin in the
