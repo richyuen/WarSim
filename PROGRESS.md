@@ -14402,3 +14402,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   BLOCKERS (2.44 and 2.83 ms with the change, 2.09 and 2.81 ms at HEAD); lint, build and parity
   green by hand.
 - **Next:** PLAN 4.8g.
+
+## 2026-10-12 — PLAN 4.8g: PARITY rows of Phase 4 with evidence (documents)
+
+- **Done:** additions row 3 (naval warfare): the review's fixes, ADR-288 to ADR-296, and seven
+  tests added as evidence. Additions row 7 (supply): sea supply, the blockade and convoys, built
+  by PLAN 4.4b–4.4d and noted in row 3 alone until now; "ports and sea supply" no longer missing.
+  Additions row 8 (production): ships built and the navy budget. The score is unchanged (47.5 %):
+  the additions are unscored.
+- **The gate:** documents only: parity.
+- **Next:** PLAN 4.8h, the phase review's tick.

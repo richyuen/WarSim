@@ -44,7 +44,7 @@ quick sweep as a smoke test.
   - [x] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a […]
   - [x] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches: […]
   - [x] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows […]
-  - [ ] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
+  - [x] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
   - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
     if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
