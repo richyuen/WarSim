@@ -14208,3 +14208,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   × 1.18; on the budget machine (1.341 for `251656a1`) about 1.58 ms, over 1.5. The naval
   systems and movement are the difference (BLOCKERS). The T1 frame's cost: no GPU here.
 - **Next:** a part 4.8i brings the tick back (6.70 ms or less here); 4.8a's findings first.
+
+## 2026-10-12 — PLAN 4.8d: missing tests over Phase 4
+
+- **Surveyed:** the 18 source files Phase 4 added, each against the tests that import it, and
+  each rule of the phase against its test (the PARITY row 3 list): the systems have unit tests of
+  their rules (the invasion AI and bombardment by the sim, `invasionAi1938`, `bombardment1938`),
+  and what is drawn has its specs (sea control, ships, a sea battle, a fleet's order, the demo,
+  the sea's depth, the lake at T1).
+- **The gap:** `render/units/ships.ts` (a ship's length at T3) had none but the ships spec's look:
+  `shipSize.test.ts` (each class its length, none for what is no ship).
+- **Next:** PLAN 4.8a's findings (the read is running), 4.8c, 4.8e, 4.8i.

@@ -6980,3 +6980,20 @@ Of 4.8 (open in PLAN.md):
   - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`
     beside the last five-year figure of this container and the budget; the T1 frame's cost
     with the mask (ADR-284) where a GPU is (or a BLOCKER: none here).
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule
+    and, where it is drawn, a spec; the gaps listed, then filled, or a line for each that is
+    not.

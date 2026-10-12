@@ -42,9 +42,7 @@ quick sweep as a smoke test.
     nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
     one place; the naval systems' shared helpers. The pin holds: a refactor that moves it
     changed a rule.
-  - [ ] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule
-    and, where it is drawn, a spec; the gaps listed, then filled, or a line for each that is
-    not.
+  - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
   - [ ] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a
     hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
     lake shores in steps of the mask (ADR-284); the shots small at T2 (ADR-282). Each looked
