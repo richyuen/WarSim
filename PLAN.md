@@ -28,6 +28,39 @@ quick sweep as a smoke test.
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  Split 2026-10-12, as 3.12R was: the pass is several causes, one a commit. A part is not a
+  numbered task (its gate runs the tests related to it and the specs it changed, ADR-280);
+  the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
+  - [ ] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and
+    `tools/` changed since the ninth (`5d9f1a1`: PLAN 4.1 to 4.7, 6,807 lines added), the
+    new lines first. The same brief: defects only, nothing of what changed or why. Each
+    finding is checked against the code here before it is anything; those a player can meet
+    become parts 4.8k and on, each with a test that fails first, most severe first; the rest
+    go on the watch list.
+  - [ ] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked
+    for in SPEC and checked against the code, not against its ADR alone: §6.2 (zones, lanes,
+    ports, fleets, sailing, ice, building, sea battles, sea control, blockade, sea supply,
+    convoys, landings, bombardment, the naval AI, the navy budget), what is drawn of the sea,
+    and the gate's and the tests' rules (ADR-278 to ADR-280, ADR-286, ADR-287).
+  - [ ] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports
+    nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
+    one place; the naval systems' shared helpers. The pin holds: a refactor that moves it
+    changed a rule.
+  - [ ] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule
+    and, where it is drawn, a spec; the gaps listed, then filled, or a line for each that is
+    not.
+  - [ ] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a
+    hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
+    lake shores in steps of the mask (ADR-284); the shots small at T2 (ADR-282). Each looked
+    at and fixed, or a line saying why not.
+  - [ ] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`
+    beside the last five-year figure of this container and the budget; the T1 frame's cost
+    with the mask (ADR-284) where a GPU is (or a BLOCKER: none here).
+  - [ ] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
+  - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
+    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
+    if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
+    critic (due after a phase review, ADR-59).
 
 ## Phase 5 — Air
 

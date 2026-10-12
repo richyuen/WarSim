@@ -14168,3 +14168,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   chromium; CLAUDE.md says so for a run by hand.
 - **Tests:** `gate.test.ts`.
 - **Next:** PLAN 4.8, the Phase 4 review.
+
+## 2026-10-12 — PLAN 4.8 split into its parts (documents)
+
+- **Critic not due** (it is after 4.8's tick).
+- **Done:** the Phase 4 review split, as 3.12R was: 4.8a the tenth independent read (102 files,
+  6,807 lines since `5d9f1a1`), 4.8b SPEC drift (ADR-242 to ADR-287), 4.8c dead code and refactor
+  debt, 4.8d missing tests, 4.8e what was left for the review (the lane graph's hitch, the red
+  line at T3, the T1 shores, the small shots at T2), 4.8f tick time, 4.8g PARITY, 4.8h the full
+  gate, the quick sweep and the tick; then the critic.
+- **Next:** PLAN 4.8a.
