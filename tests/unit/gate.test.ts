@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ALL_STAGES, changedFiles, gatedTrees, PIN_TEST, planE2e, planGate, planSweep, reviewTicked, tickedTasks, worktreeTree } from '../../tools/gate/check';
+import { ALL_STAGES, changedFiles, gatedTrees, newTicks, PIN_TEST, planE2e, planGate, planSweep, planUnit, reviewTicked, tickedTasks, worktreeTree } from '../../tools/gate/check';
 import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
 import { archive, LEDGER, MOVED } from '../../tools/plan/archive';
 
@@ -58,6 +58,26 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     // The phase review's gate is every stage, even for a commit of documents alone.
     expect(planGate(['PLAN.md', 'PROGRESS.md'], true, true)).toEqual([...ALL_STAGES]);
     expect(readFileSync(path.resolve(import.meta.dirname, '../..', PIN_TEST), 'utf8')).toContain('BASELINE');
+  });
+
+  // ADR-280 (the user's decision, 2026-10-12): the whole unit stage when a numbered task is
+  // ticked; for a part, the test files whose imports reach what changed.
+  it('the unit stage: in full when a numbered task is ticked or a shared file changed; for a part, the related tests', () => {
+    const on = (): boolean => true;
+    const head = ['- [x] 4.7 A task', '  - [x] 4.7c a part', '- [ ] 4.8 Phase 4 review'].join('\n');
+    expect(newTicks(head, head)).toEqual([]);
+    expect(newTicks(head.replace('- [ ] 4.8', '- [x] 4.8'), head)).toEqual(['4.8']);
+    expect(newTicks(head, null)).toBeNull();
+    expect(planUnit(['src/render/fx/wrecks.ts', 'PROGRESS.md'], [], on)).toEqual({ mode: 'related', files: ['src/render/fx/wrecks.ts'], why: expect.any(String) });
+    expect(planUnit(['src/sim/world.ts', 'tests/unit/war.test.ts'], [], on).files).toEqual(['src/sim/world.ts', 'tests/unit/war.test.ts']);
+    expect(planUnit(['src/render/fx/wrecks.ts'], ['4.7'], on).mode).toBe('full');
+    expect(planUnit(['src/render/fx/wrecks.ts'], null, on).mode).toBe('full');
+    expect(planUnit(null, [], on).mode).toBe('full');
+    for (const f of ['vitest.config.ts', 'tests/helpers/earth.ts', 'package-lock.json', 'data/scenarios/1938/oob.json', 'public/data/earth/manifest.json', 'tools/headless/assets.ts']) expect(planUnit([f], [], on).mode, f).toBe('full');
+    // A file removed: what imported it is not known any more.
+    expect(planUnit(['src/sim/gone.ts'], [], (f) => f !== 'src/sim/gone.ts').mode).toBe('full');
+    // No source and no unit test: none (a spec, a picture, the critic's output).
+    expect(planUnit(['tests/e2e/fire1938.spec.ts', 'docs/evidence/4.7/a.png', 'critic/x.json'], [], on).mode).toBe('none');
   });
 
   it('the working tree has a tree id, the same when asked twice; the record of passed trees is a list of ids', () => {

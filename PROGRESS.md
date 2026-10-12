@@ -14055,3 +14055,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   per-tick time (29.5 ms against 25; 13 to 19 alone, the same at HEAD: BLOCKERS); the pin held;
   typecheck, lint, build and parity green.
 - **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — The unit tests related to what changed (ADR-280, the user's decision)
+
+- **Done:** `npm run check` runs every unit test when a numbered task or a review is ticked (or
+  FULL, or a shared file changed); otherwise `vitest related` over what changed. A change to
+  what is drawn (`src/render/fx/wrecks.ts`) runs 2 files in a second; one in `src/sim/` 118.
+- **Tests:** `gate.test.ts`, the unit stage.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).

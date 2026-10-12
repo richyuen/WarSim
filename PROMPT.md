@@ -279,6 +279,12 @@ on simulation runs (DECISIONS ADR-48).
   PROGRESS.md; the last part of a task expects the full suite, and whatever it finds broken
   by an earlier part is fixed there. A phase review and the DONE CONDITION use
   `npm run check:full`.
+- The unit tests run in full when a numbered task or a review is ticked, as the e2e suite does
+  (added 2026-10-12, ADR-280, the user's decision); for a part, `npm run check` runs only the
+  test files whose imports reach a file that changed (`vitest related`). Something every test
+  stands on (the vitest config, `tests/helpers/`, the data and assets read from disk, the lock
+  file) runs them all. The last part of a task expects the full unit suite, and fixes there
+  what an earlier part broke.
 - No hand-run hashes. `tests/sweep/baselineHash.test.ts` pins the state hash
   of seed 99 after one year. A change meant to leave behaviour alone is
   proved by that test in the gate. A change of rules moves the pin in the

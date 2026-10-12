@@ -29,6 +29,11 @@ There is no memory between sessions. Read these files:
   - Code: typecheck, lint, unit, build, parity, plus the pinned hash of seed 99 when a sim
     input changed. Every 10-year sweep test (`tests/sweep/`) runs only when the change ticks a
     phase review (`- [x] 4.8 Phase 4 review`), and in `npm run check:full` (ADR-278).
+  - Unit tests: in full when the change ticks a numbered PLAN task or a review (as e2e), when
+    something they all stand on changed (`vitest.config.ts`, `tests/helpers/`, `data/`,
+    `public/data/`, `tools/headless/`, the lock file), and in `check:full`; otherwise only the
+    test files whose imports reach a changed file (`vitest related`, ADR-280). A part runs the
+    whole unit suite by hand (`npm test`) when it doubts the import graph covers it.
   - e2e (7 to 9 minutes): in full only when the change ticks a numbered PLAN task (2.14, not
     its part 2.14a) or the review pass after one (3.4R, not its part 3.4Ra) (ADR-87). For a part, only the spec files that changed, or none. While
     working on a part, run the specs of what you touch by hand (`npx playwright test <file>`). They include the pinned state hash of seed 99 after one year

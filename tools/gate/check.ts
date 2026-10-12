@@ -7,6 +7,11 @@
  *   otherwise                                                        → everything, the sweep stage the pin alone
  *   a phase review ticked (`- [x] 4.8 Phase 4 review`)               → everything, every sweep test
  *
+ * Of the unit stage (ADR-280, the user's decision): all of it when the change ticks a numbered
+ * task, a review pass or a phase review, when git cannot tell what changed, under FULL, or when
+ * something every test stands on changed (`UNIT_SHARED`); otherwise only the test files whose
+ * imports reach a file that changed (`vitest related`), or none (`planUnit`).
+ *
  * Of the sweep stage (ADR-278, the user's decision): every 10-year test only when the change ticks
  * a phase review, git cannot tell what changed, or FULL is set; otherwise only the pinned state
  * hash of seed 99 (`tests/sweep/baselineHash.test.ts`, 81 s), so a rule change still moves the
@@ -74,6 +79,44 @@ export const PIN_TEST = 'tests/sweep/baselineHash.test.ts';
  */
 export function planSweep(files: readonly string[] | null, review: boolean): 'full' | 'pin' {
   return files === null || review ? 'full' : 'pin';
+}
+
+/**
+ * What every unit test stands on, or reads without importing it (the earth's assets and the
+ * scenario's data are read from disk): a change to any of it runs the whole unit stage.
+ */
+export const UNIT_SHARED = ['vitest.config.ts', 'tests/helpers/', 'package.json', 'package-lock.json', 'tsconfig.json', 'data/', 'public/data/', 'tools/headless/'];
+
+export interface UnitPlan {
+  /** 'full': every unit test. 'related': the test files whose imports reach `files`. 'none': the stage is left out. */
+  mode: 'full' | 'related' | 'none';
+  files: string[];
+  why: string;
+}
+
+/**
+ * How much of the unit stage a gate with code in it runs (ADR-280). `ticked`: the numbered tasks
+ * and reviews the change ticks (`newTicks`), null when unknown. `exists`: whether a path is on disk
+ * (a file removed runs everything: what imported it is not known any more).
+ */
+export function planUnit(files: readonly string[] | null, ticked: readonly string[] | null, exists: (f: string) => boolean): UnitPlan {
+  if (files === null || ticked === null) return { mode: 'full', files: [], why: 'what changed is not known' };
+  if (ticked.length > 0) return { mode: 'full', files: [], why: `PLAN ${ticked.join(', ')} ticked` };
+  const changed = files.filter((f) => !ignored(f) && !isDocument(f));
+  const shared = changed.find((f) => UNIT_SHARED.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)));
+  if (shared !== undefined) return { mode: 'full', files: [], why: `${shared} changed` };
+  const code = changed.filter((f) => (f.startsWith('src/') || f.startsWith('tools/') || f.startsWith('tests/unit/')) && /\.(ts|tsx|js|json)$/.test(f));
+  const gone = code.find((f) => !exists(f));
+  if (gone !== undefined) return { mode: 'full', files: [], why: `${gone} removed` };
+  if (code.length === 0) return { mode: 'none', files: [], why: 'no source or unit test changed' };
+  return { mode: 'related', files: code, why: 'no numbered task ticked: the tests that import what changed' };
+}
+
+/** The numbered tasks and reviews ticked in `planNow` and not in `planAtHead` (null = unknown). */
+export function newTicks(planNow: string, planAtHead: string | null): string[] | null {
+  if (planAtHead === null) return null;
+  const before = new Set(tickedTasks(planAtHead));
+  return tickedTasks(planNow).filter((id) => !before.has(id));
 }
 
 /**
@@ -201,17 +244,24 @@ function main(): void {
     if (e2e.mode === 'changed' && e2e.specs.length === 0) e2e.mode = 'none';
     if (e2e.mode === 'none') stages.splice(stages.indexOf('e2e'), 1);
   }
+  // The unit stage in full only when a numbered task is ticked (ADR-280); else the tests related to what changed.
+  const unit: UnitPlan = process.env['FULL'] ? { mode: 'full', files: [], why: '' } : planUnit(files, newTicks(planNow, planAtHead), (f) => existsSync(path.join(ROOT, f)));
+  const unitWhy = unit.why !== '' && stages.includes('test');
+  if (stages.includes('test') && unit.mode === 'none') stages.splice(stages.indexOf('test'), 1);
   const skipped = ALL_STAGES.filter((s) => !stages.includes(s));
   console.log(`gate: ${stages.join(' → ')}${skipped.length > 0 ? `   (skipped: ${skipped.join(', ')}; npm run check:full runs everything)` : ''}`);
+  if (unitWhy) console.log(`gate: unit ${unit.mode === 'full' ? 'in full' : unit.mode === 'related' ? `the tests related to ${unit.files.length} file(s)` : 'left out'}: ${unit.why}`);
   if (e2e.why !== '') console.log(`gate: e2e ${e2e.mode === 'full' ? 'in full' : e2e.mode === 'changed' ? `of ${e2e.specs.length} spec file(s)` : 'left out'}: ${e2e.why}`);
   if (stages.includes('test:sweep')) console.log(`gate: sweep ${sweep === 'full' ? 'in full' : `the pin alone (${PIN_TEST}); every sweep test at a phase review`}`);
   for (const stage of stages) {
     const command =
       stage === 'e2e' && e2e.mode === 'changed'
         ? `npx playwright test ${e2e.specs.join(' ')}`
-        : stage === 'test:sweep' && sweep === 'pin'
-          ? `npx vitest run --config vitest.sweep.config.ts ${PIN_TEST}`
-          : `npm run ${stage}`;
+        : stage === 'test' && unit.mode === 'related'
+          ? `npx vitest related --run --passWithNoTests ${unit.files.join(' ')}`
+          : stage === 'test:sweep' && sweep === 'pin'
+            ? `npx vitest run --config vitest.sweep.config.ts ${PIN_TEST}`
+            : `npm run ${stage}`;
     const r = spawnSync(command, { cwd: ROOT, stdio: 'inherit', shell: true });
     if (r.status !== 0) {
       console.error(`gate: FAILED at ${stage}`);

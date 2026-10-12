@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-280 · 2026-10-12 · accepted — The unit tests related to what changed; all of them when a task is ticked (the user's decision)
+
+- **Context.** After ADR-279 the unit stage is about 17 minutes of a gate. A part that changes
+  what is drawn (4.7c's fire looks and wrecks) reaches 2 of the 159 unit test files; a change in
+  `src/sim/` reaches 118 of them.
+- **Decision.** `npm run check` runs the whole unit stage when the change ticks a numbered task,
+  a review pass or a phase review (as the e2e stage, ADR-87), when git cannot tell what
+  changed, under FULL / `check:full`, when a file is removed, or when something every test
+  stands on or reads from disk changed (`UNIT_SHARED`: the vitest config, `tests/helpers/`,
+  `package.json`, the lock file, `tsconfig.json`, `data/`, `public/data/`, `tools/headless/`).
+  Otherwise it runs `vitest related` over the source and unit test files that changed (the
+  test files whose imports reach them), or leaves the stage out when none changed (`planUnit`).
+  The pin still runs for every change to a sim input (ADR-278).
+- **Cost.** A test that reads a file it does not import, outside `UNIT_SHARED`, is not run for a
+  change to it until the task's tick. The tick of a task runs everything, and fixes there what
+  its parts broke.
+- **Tests.** `gate.test.ts`, the unit stage.
+
 ### ADR-279 · 2026-10-12 · accepted — The unit tests: a 1938 world built once per file, shared checkpoints, a revolt by its provinces' cells, the map's nav kept over a load (the user's decision)
 
 - **Context.** The unit stage took 27 minutes of a gate (4 cores; 79 minutes of test time). Timed
