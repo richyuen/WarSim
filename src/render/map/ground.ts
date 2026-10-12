@@ -78,3 +78,20 @@ export const GROUND_CAST = 0.14;
 export const BORDER_CAST = 0.62;
 export const OCCUPIED_CAST = 0.42;
 export const BORDER_BAND = 0.6;
+
+/**
+ * The sea at T2 and T3 by its depth (PLAN 4.7f): the elevation's sea floor (to 10 m) lightens
+ * the sea's colour over shallows and darkens it over the deep, by the log of the depth up to
+ * SEA_DEPTH_FULL metres; at T0 and T1 the sea is one colour (the ground's share is 0).
+ */
+export const SEA_SHALLOW = 1.32;
+export const SEA_DEEP = 0.72;
+export const SEA_DEPTH_FULL = 6000;
+/** The depth, m, at which the log ramp has gone a fifth of the way: shelves read, ocean basins are even. */
+export const SEA_DEPTH_KNEE = 60;
+
+/** The sea's brightness against its colour at `depth` metres (the shader's ramp, for tests). */
+export function seaShade(depth: number): number {
+  const t = Math.min(1, Math.log(1 + Math.max(0, depth) / SEA_DEPTH_KNEE) / Math.log(1 + SEA_DEPTH_FULL / SEA_DEPTH_KNEE));
+  return SEA_SHALLOW + (SEA_DEEP - SEA_SHALLOW) * t;
+}

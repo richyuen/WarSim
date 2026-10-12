@@ -14096,3 +14096,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not a rule change.**
 - **The gate:** green (typecheck, lint, build, the demo 3.7 min, parity; no unit test related).
 - **Next:** PLAN 4.7f.
+
+## 2026-10-12 — PLAN 4.7f: the sea at T2 and T3 by its depth (ADR-283)
+
+- **Critic not due.**
+- **Done:** the ground pass shades water by the elevation's sea floor (`seaShadeAt`, a log ramp
+  1.32 → 0.72 to 6,000 m), by the ground's share: T0 and T1 keep one colour.
+- **The AT:** `seaDepth1938.spec.ts`: the Dogger Bank 37,68,112 and the South Pacific 22,40,65
+  at T2, both 29,53,87 at T1. Two pictures looked at (Messina, the North Sea); a grey-blue shape
+  of land off the Dutch coast is as it was before the change (for 4.7g).
+- **Tests:** `seaShade.test.ts`.
+- **Not a rule change.**
+- **PARITY:** row 3, a note and the specs (and 4.7e's demo, missed there); still partial.
+- **The gate:** green (the unit tests related to 3 files, the new spec, build, parity).
+- **Next:** PLAN 4.7g.

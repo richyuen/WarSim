@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-283 · 2026-10-12 · accepted — The sea at T2 and T3 by its depth (PLAN 4.7f)
+
+- **Context.** The note of PLAN 2.11c: the sea is one flat colour at T2 and T3, though the
+  elevation carries the sea floor (to 10 m).
+- **Decision.** In the pass with the ground (GROUND), a water pixel's colour is the sea's times
+  `seaShadeAt`: the depth bilinear over the four cells about it (`depthAt`, the elevation below
+  0), on a log ramp from `SEA_SHALLOW` = 1.32 at 0 m to `SEA_DEEP` = 0.72 at `SEA_DEPTH_FULL` =
+  6,000 m (`SEA_DEPTH_KNEE` = 60 m), faded in by the ground's share (`uDetail`): at T0 and T1 the
+  sea is one colour, as is the sea-control mode at every tier.
+- **Measured** (`tests/e2e/seaDepth1938.spec.ts`): the Dogger Bank 29,53,87 at T1 and
+  37,68,112 at T2; the South Pacific 29,53,87 and 22,40,65.
+- **Looked at** (`docs/evidence/4.7/sea-depth-*.png`, 150 m/px): the Tyrrhenian deep beside
+  the lighter shallows along Sicily and Calabria; the North Sea one light shelf. Off the Dutch
+  coast a grey-blue shape of land is drawn as it was before (for PLAN 4.7g).
+- **Tests.** `seaShade.test.ts`; `tests/e2e/seaDepth1938.spec.ts`.
+
 ### ADR-282 · 2026-10-12 · accepted — The naval battle demo (PLAN 4.7e); PLAN 4.7's three notes as parts
 
 - **The demo** (`tests/e2e/navalDemo1938.spec.ts`): the United Kingdom declares war on Italy

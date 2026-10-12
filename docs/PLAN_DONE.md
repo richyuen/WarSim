@@ -6860,3 +6860,19 @@ Of 4.6 (open in PLAN.md):
       fleets under it and lays them up over it when short (test).
     - [x] 4.6e2 A navy's weight in the strategic AI: its strength in a declaration and a
       peace (test).
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.7 (open in PLAN.md):
+
+  - [x] 4.7f The sea at T2 and T3 shaded by its depth (the elevation's sea floor), not one flat
+    colour (the note of PLAN 2.11c above).

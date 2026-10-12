@@ -15,7 +15,7 @@
 
 import { SHORE_NOISE } from '../../shared/landMask';
 import { SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
-import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST } from './ground';
+import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST, SEA_DEEP, SEA_DEPTH_FULL, SEA_DEPTH_KNEE, SEA_SHALLOW } from './ground';
 
 export const MAP_VS = `#version 300 es
 precision highp float;
@@ -98,6 +98,24 @@ float heightAt(ivec2 c) {
   if (c.x < 0 || c.x >= uMapSize.x) return 0.0;
   c.y = clamp(c.y, 0, uMapSize.y - 1);
   return max(float(texelFetch(uElevation, c, 0).r), 0.0);
+}
+
+// Depth of the sea in a cell, m (PLAN 4.7f): the elevation below 0; past the top and bottom rows, the edge row's.
+float depthAt(ivec2 c) {
+  c = wrapCell(c);
+  if (c.x < 0 || c.x >= uMapSize.x) return 0.0;
+  c.y = clamp(c.y, 0, uMapSize.y - 1);
+  return max(-float(texelFetch(uElevation, c, 0).r), 0.0);
+}
+
+// The sea's brightness by its depth at a point, bilinear over the four cells about it (\`seaShade\`).
+float seaShadeAt(vec2 p) {
+  vec2 q = p - 0.5;
+  ivec2 c = ivec2(floor(q));
+  vec2 f = q - floor(q);
+  float d = mix(mix(depthAt(c), depthAt(c + ivec2(1, 0)), f.x), mix(depthAt(c + ivec2(0, 1)), depthAt(c + ivec2(1, 1)), f.x), f.y);
+  float t = min(1.0, log(1.0 + d / ${SEA_DEPTH_KNEE.toFixed(1)}) / ${Math.log(1 + SEA_DEPTH_FULL / SEA_DEPTH_KNEE).toFixed(6)});
+  return mix(${SEA_SHALLOW.toFixed(3)}, ${SEA_DEEP.toFixed(3)}, t);
 }
 
 vec3 groundOf(ivec2 c) {
@@ -335,6 +353,10 @@ void main() {
     col = holder == 0u ? pal(0u) : mix(pal(0u), pal(holder), ${SEA_HELD_TINT.toFixed(3)});
   } else if (water) {
     col = pal(0u);
+#ifdef GROUND
+    // The sea floor at T2 and T3 (PLAN 4.7f): shallows lighter, the deep darker, by the ground's share.
+    col *= mix(1.0, seaShadeAt(cellPos), uDetail);
+#endif
   } else if (uMode == 3) {
     // The land faded, the sea told.
     col = mix(fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid), vec3(0.78, 0.78, 0.75), ${SEA_LAND_FADE.toFixed(3)});
