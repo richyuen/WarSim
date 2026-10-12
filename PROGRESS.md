@@ -14289,3 +14289,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** every unit test (`tools/headless/` is shared), red only by the three timing tests
   of BLOCKERS; the pin held; build and parity green.
 - **Next:** PLAN 4.8i, supply over sea's `seaReach`.
+
+## 2026-10-12 — PLAN 4.8i: where the tick stands (documents)
+
+- **Measured** (this container, unpinned, five years of seed 99, alternating old and new, two
+  runs each): `5d9f1a1` (before Phase 4) 5.847 and 5.835 ms, steady (251656a1 both); HEAD
+  (`c60c350`, with 4.8i1 and 4.8i2) 7.300 and 6.716 ms (3b8b45cb both). × 1.15 to 1.25; the
+  budget allows × 1.12 (1.5 / 1.341): 6.53 ms here. Single runs of HEAD vary by ±10 % (its
+  first year: 9.96 to 11.06 ms in an hour); the old commit's by 0.2 %.
+- **Tried and dropped:** the convoys' ways once a day for every raiding nation in the naval AI
+  (0.161 ms after, 0.162 before: raiding asks rarely); a small key for `stepWay` (200 ms in 3 M
+  look-ups a year, 0.02 ms a tick: the map's look-ups are not where movement's time went).
+- **What is left:** the naval systems (navalAi 0.19, navalCombat 0.17, seaControl 0.11,
+  bombardment 0.10, convoys and supply over sea about 0.2) and a game that is larger: by its
+  fifth year 1,152 formations and 121 nations against 888 and 110 before Phase 4 (fleets,
+  transports, the landings' marches). A comparison across commits does not part the code's
+  cost from the game's size.
+- **Next:** PLAN 4.8i3, supply over sea's `seaReach` (2.4 ms every 12 hours), then the
+  measure again.
