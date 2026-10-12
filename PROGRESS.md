@@ -14252,3 +14252,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the unit tests related to the change (119 files), red only by the three timing
   tests of BLOCKERS; the pin held; build and parity green.
 - **Next:** PLAN 4.8e.
+
+## 2026-10-12 — PLAN 4.8e: what was left for the review (ADR-288)
+
+- **Done:** the worker builds the lane graph after it answers an init or a load (`warmLanes`):
+  the 2 s it took in the tick of the first sail (hour 48 of 1938) comes before any tick.
+  `serverElements.test.ts` holds it.
+- **Looked at, kept:** the red line between two tags at T3 is two leader lines (ADR-168); the T1
+  shores step by the mask's pixels; the shots at T2 are true to the ships' scale.
+- **Not a rule change.**
+- **The gate:** the unit tests related to the change (18 files), red only by the snapshot time of
+  BLOCKERS; build and parity green.
+- **Next:** PLAN 4.8i (the tick back within its budget).

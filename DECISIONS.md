@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-288 · 2026-10-12 · accepted — What was left for the Phase 4 review (PLAN 4.8e)
+
+- **The lane graph at the first sail:** 1,960 ms to build (`laneOf`), in the tick of the game's
+  first sail (the naval AI's, hour 48 of 1938: the longest hour of its first ten days, 2,019
+  ms). The worker builds it after it answers an init or a load (`warmLanes`, a task after the
+  reply): the page has its game, paused, before it. A derived cache: no state, the pin as it
+  was. `serverElements.test.ts`: built after an init and a load, before any tick; none for the
+  toy world.
+- **The red line between two tags at T3** (ADR-282): the leader lines of two British tags that
+  stand off their fleets (ADR-168), above and below, in the nation's colour, meeting at the
+  blocks between: as designed.
+- **The T1 lake shores in steps** (ADR-284): the mask's pixels, 3 px each at 800 m/px, blended
+  by four (no noise at that scale). Kept: smoothing them would move the coast off the mask the
+  sim stands its formations on (the rule of ADR-79).
+- **The shots small at T2** (ADR-282): a ship at 40 m/px is 4 to 6 px (ADR-276), its shot's
+  streak 22 px and splash 3.8 px of the naval look; true to the scale. Kept.
+
 ### ADR-287 · 2026-10-12 · accepted — A perf spec run alone without its project's dependency
 
 - **Found** (PLAN 4.7's tick): `npx playwright test tests/e2e/provinces.perf.spec.ts` ran all

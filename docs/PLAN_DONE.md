@@ -7035,3 +7035,21 @@ Of 4.8 (open in PLAN.md):
     nothing uses, i18n keys without a use, TODO and FIXME; `fleetMen` and the land's men in
     one place; the naval systems' shared helpers. The pin holds: a refactor that moves it
     changed a rule.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a
+    hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
+    lake shores in steps of the mask (ADR-284); the shots small at T2 (ADR-282). Each looked
+    at and fixed, or a line saying why not.

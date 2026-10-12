@@ -56,7 +56,7 @@ import { Sim } from '../sim/sim';
 import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { Domain, seaOf, TILE, type World } from '../sim/world';
+import { Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
 import { BufferPool } from './pool';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
@@ -258,6 +258,7 @@ export class SimServer {
         this.lastStatsMs = -1;
         this.resetStreams();
         this.reply(msg.reqId);
+        this.warmLanes();
         break;
       case 'speed':
         this.speed = msg.speed;
@@ -347,6 +348,19 @@ export class SimServer {
     this.owed = 0;
     this.resetStreams();
     this.reply(reqId);
+    this.warmLanes();
+  }
+
+  /**
+   * The lane graph built now (PLAN 4.8e): a game builds it at its first sail, 2 s in one tick of a
+   * game under way (the naval AI's at hour 48 of 1938). After the reply, before any tick: the page
+   * has its game, paused, and a derived cache changes no state.
+   */
+  private warmLanes(): void {
+    setTimeout(() => {
+      const world = this.sim?.world;
+      if (world && world.ports.length > 0 && world.seaSeeds.length > 0) laneOf(world);
+    }, 0);
   }
 
   /** Real-map scenarios: fetch and verify the map assets, then build the world (PLAN 1.9a). */

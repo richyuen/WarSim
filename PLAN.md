@@ -35,10 +35,7 @@ quick sweep as a smoke test.
   - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
   - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports […]
   - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
-  - [ ] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a
-    hitch of the worker, ADR-285); the red line between two tags at T3 (ADR-282); the T1
-    lake shores in steps of the mask (ADR-284); the shots small at T2 (ADR-282). Each looked
-    at and fixed, or a line saying why not.
+  - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
   - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
   - [ ] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this
     container against 5.99 before Phase 4, about 1.58 ms on the budget machine against 1.5):
