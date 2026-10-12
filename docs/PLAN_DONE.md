@@ -7117,3 +7117,22 @@ Of 4.8 (open in PLAN.md):
   - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not
     leave out a fleet with `retreat` (land combat does): a transport group "broke off" eight
     hours in a row and was sunk in nine (`.cache/read10/breakoff2.ts`). A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a
+    division takes a dead transport group's place and lands in Berlin, or a new German
+    division is aboard British transports (`.cache/read10/reuse2.ts`; God Mode remove and
+    spawn, or transports sunk at 23:00 and a delivery at 00:00). `destroyFormation` clears it
+    (as key and as fleet). A test fails first.

@@ -641,4 +641,9 @@ export function destroyFormation(world: World, fid: number): void {
   world.out.emit(world.tick, EventKind.FormationDestroyed, fid, f.cols.nation[fid]!, f.cols.x[fid]!, f.cols.y[fid]!);
   f.remove(fid);
   world.paths.delete(fid);
+  // Its place aboard goes with it, and what its transports carried is carried by none (PLAN 4.8m):
+  // the amphibious system loses it at sea at its hour, as before, and a formation that is given
+  // the id again is not aboard and carries nothing.
+  world.embarked.delete(fid);
+  for (const e of world.embarked.values()) if (e.fleet === fid) e.fleet = -1;
 }

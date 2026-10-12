@@ -14348,3 +14348,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (120 files), red only by the three timing tests of BLOCKERS;
   the pin at its new hash; build and parity green.
 - **Next:** PLAN 4.8m.
+
+## 2026-10-12 — PLAN 4.8m: a place aboard goes with its formation and its transports (ADR-292)
+
+- **Done:** `destroyFormation` deletes the formation's `embarked` entry and points the troops
+  of its transports at no fleet (-1), to be lost at sea at the amphibious hour as before.
+- **Tests:** `embarkedIds1938.test.ts` (both failed first).
+- **The pin** holds.
+- **The gate:** the related unit tests (121 files), red only by the two timing tests of BLOCKERS;
+  the pin held (run by hand); build and parity green.
+- **Next:** PLAN 4.8n.

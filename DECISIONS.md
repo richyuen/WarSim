@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-292 · 2026-10-12 · accepted — A place aboard goes with its formation and its transports (PLAN 4.8m)
+
+- **Found** (the tenth read): `destroyFormation` left `world.embarked` as it was; the amphibious
+  system cleared a dead formation's entry, or lost the troops of dead transports, at its next
+  hour. A formation made before then took the freed id (the table gives the last freed first):
+  God Mode's remove and spawn set a British division aboard in Berlin, where it took the cell,
+  or put a new German division aboard British transports; transports sunk at 23:00 and a
+  delivery at 00:00 do the same.
+- **Decision.** `destroyFormation` deletes the formation's entry, and the entries of the troops
+  its transports carried point at no fleet (-1): the amphibious system loses them at sea at its
+  hour, as before (`has(-1)` is false). A formation given the id again is not aboard and carries
+  nothing. A save keeps -1 as any fleet's id.
+- **The pin stays** 8622df0d.
+- **Tests.** `embarkedIds1938.test.ts`: the division removed, a German one spawned in its id: not
+  aboard; the transports removed, a German one spawned in their id: the British division is lost
+  with them, the German one stays in Berlin (both failed before).
+
 ### ADR-291 · 2026-10-12 · accepted — A fleet that broke off is out of every sea battle while it retreats (PLAN 4.8l)
 
 - **Found** (the tenth read): a fleet breaks off with `retreat` = `BREAK_HOURS` 24, "out of

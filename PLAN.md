@@ -40,11 +40,7 @@ quick sweep as a smoke test.
   - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
   - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
   - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
-  - [ ] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a
-    division takes a dead transport group's place and lands in Berlin, or a new German
-    division is aboard British transports (`.cache/read10/reuse2.ts`; God Mode remove and
-    spawn, or transports sunk at 23:00 and a delivery at 00:00). `destroyFormation` clears it
-    (as key and as fleet). A test fails first.
+  - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
   - [ ] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a
     neutral's, and past an enemy-held sea: an order to Calais, then the transports sent to
     Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
