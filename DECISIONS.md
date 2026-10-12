@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-277 · 2026-10-11 · accepted — A sea battle drawn: ships' guns, torpedoes, a ship going down (PLAN 4.7c)
+
+- **Context.** PLAN 4.7: a ship's volley was drawn as a tank's (`Weapon.cannon`), a torpedo as its
+  ship's gun, and a ship sunk left a burnt-out vehicle's hull on the sea, smoking.
+- **The records.** A torpedo volley's fire record has −1 − the shooter's unit type in its weapon
+  field (`navalCombat`'s `volley`); its gun's, the unit type, as every volley's. The records are
+  not state: the pin does not move. The worker sends `Weapon.torpedo` for the first, and
+  `weaponOf` gives a sea class `Weapon.naval`. Readers of the sim's records in the tests decode
+  it (`navalBattle1938.test.ts`), or skip it (`armourFire`, `tankBattle`).
+- **The looks** (`LOOKS`): `naval`, a broadside's flash with no barrel's tongue, a shell on a
+  long arc (0.1), 560 ms, a column of spray (pale smoke); `torpedo`, no flash, a long pale
+  track (0.6 of the path, up to 160 px) run in 1.5 s, a white plume.
+- **A ship going down** (`Wreck.ship`, `wreckOf` of a sea class): over `SINK_MS` = 5 s its hull
+  shrinks into the sea (`sunkOf`), burning while it is above the water, and an oil slick spreads
+  where it was, under it, then fades with the wreck. A ship's wreck is `SHIP_WRECK` = 0.35 of a
+  land element's sprite: at first the slicks were larger than the ships about them.
+- **Looked at** (`docs/evidence/4.7/`): the United Kingdom at war with Italy (seed 4604): a
+  Japanese cruiser squadron and a British destroyer flotilla off Takao from tick 41, at 40 and
+  12 m/px; the slicks of four ships. The shots in flight were not caught in the two pictures
+  (a stepped hour's shots are over in 400 ms of wall time); the shots the view held were of the
+  naval and torpedo looks.
+- **Tests.** `navalBattle1938.test.ts`, a test of the records (a destroyer's torpedo −1 − its
+  type, its gun its type); `unitLooks.test.ts` (a sea class fires `naval` and goes down as a
+  ship); `sinking.test.ts`; `tests/e2e/seaBattle1938.spec.ts` (the first sea battle of the war
+  at T2: naval and torpedo shots, four ships going down; two pictures).
+
 ### ADR-276 · 2026-10-11 · accepted — Ships by class, their length at T3, and wakes (PLAN 4.7b)
 
 - **Context.** PLAN 4.7, from PLAN 4.2b: every ship was the one ship sprite, at T3 the size of a

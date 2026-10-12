@@ -14004,3 +14004,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   build and parity green.
 - **PARITY:** row 3, a note and the spec; still partial.
 - **Next:** PLAN 4.7c (gunfire, torpedoes, sinking).
+
+## 2026-10-11 — PLAN 4.7c: a sea battle drawn (ADR-277)
+
+- **Critic not due.**
+- **Done:** `Weapon.naval`, `Weapon.torpedo` and their looks; a torpedo's fire record has
+  −1 − its unit type; `Wreck.ship` going down (`SINK_MS`, `sunkOf`, the slick);
+  `MapView.formationEngaged` for tests.
+- **The AT:** `seaBattle1938.spec.ts`: the war's first sea battle (off Takao, tick 41) at T2:
+  naval and torpedo shots drawn, four ships going down. Two pictures looked at; the slicks were
+  larger than the ships at first (now 0.35 of a land sprite). No tracer in flight was caught in
+  the pictures.
+- **Tests:** a record test in `navalBattle1938.test.ts`; `sinking.test.ts`; `unitLooks.test.ts`
+  for the looks. Readers of the records in two helpers skip a torpedo's.
+- **Not a rule change:** fire records are not state.
+- **The gate:** unit red only by the two timing tests of BLOCKERS; the ten-year stage 15 of
+  17, seeds 1 and 2 over the time (841 s, 801 s; the pin held); the changed spec passed (3.7
+  min); build and parity green.
+- **PARITY:** row 3, a note and the spec; still partial.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).

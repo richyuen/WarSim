@@ -14,7 +14,7 @@ import { buildLandCoverage } from '../shared/landCoverage';
 import { decodeElevation } from '../shared/elevation';
 import type { LandMask } from '../shared/landMask';
 import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../shared/events';
-import { frameOf, symbolOf, weaponOf, wreckOf } from '../shared/unitLooks';
+import { frameOf, symbolOf, Weapon, weaponOf, wreckOf } from '../shared/unitLooks';
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
@@ -955,7 +955,8 @@ export class SimServer {
         this.firedAt.add(fires[i + FireField.target]!);
         const from = this.inBbox(fires[i + FireField.x0]!, fires[i + FireField.y0]!, world);
         if (!from && !this.inBbox(fires[i + FireField.x1]!, fires[i + FireField.y1]!, world)) continue;
-        for (let c = 0; c < FIRE_STRIDE; c++) q.push(c === FireField.weapon ? weaponOf(units[fires[i + c]!]?.cls ?? 'inf') : fires[i + c]!);
+        // A torpedo's record has −1 − its unit type (PLAN 4.7c).
+        for (let c = 0; c < FIRE_STRIDE; c++) q.push(c === FireField.weapon ? (fires[i + c]! < 0 ? Weapon.torpedo : weaponOf(units[fires[i + c]!]?.cls ?? 'inf')) : fires[i + c]!);
       }
       const over = q.length / FIRE_STRIDE - FIRE_QUEUE_CAP;
       if (over > 0) {

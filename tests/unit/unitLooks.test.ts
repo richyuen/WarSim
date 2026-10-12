@@ -73,8 +73,11 @@ describe('weaponOf', () => {
     expect(weaponOf('art')).toBe(Weapon.shell);
     for (const cls of ['at', 'aa', 'armor_l', 'armor_m', 'armor_h']) expect(weaponOf(cls), cls).toBe(Weapon.cannon);
     for (const cls of ['inf', 'mot', 'mech']) expect(weaponOf(cls), cls).toBe(Weapon.smallArms);
-    // Every land class has a look.
-    for (const cls of LAND_CLASSES) expect(LOOKS[weaponOf(cls)]).toBeDefined();
+    // A ship's guns are a ship's (PLAN 4.7c; its torpedoes are told by the fire record).
+    for (const cls of SEA_CLASSES) expect(weaponOf(cls), cls).toBe(Weapon.naval);
+    // Every land and sea class has a look, and so has the torpedo.
+    for (const cls of [...LAND_CLASSES, ...SEA_CLASSES]) expect(LOOKS[weaponOf(cls)]).toBeDefined();
+    expect(LOOKS[Weapon.torpedo]).toBeDefined();
   });
 });
 
@@ -84,6 +87,8 @@ describe('wreckOf', () => {
     for (const cls of ['art', 'at', 'aa']) expect(wreckOf(cls), cls).toBe(Wreck.gun);
     for (const cls of ['armor_l', 'armor_m', 'armor_h', 'mech', 'mot']) expect(wreckOf(cls), cls).toBe(Wreck.vehicle);
     expect(new Set(LAND_CLASSES.map(wreckOf)).size).toBe(3);
+    // A ship goes down (PLAN 4.7c).
+    for (const cls of SEA_CLASSES) expect(wreckOf(cls), cls).toBe(Wreck.ship);
   });
 });
 

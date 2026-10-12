@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EventKind } from '../../src/shared/events';
+import { EventKind, FIRE_STRIDE, FireField } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_1938, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -253,7 +253,8 @@ describe('torpedoes and the screen (PLAN 4.3b)', () => {
     s.step(1, (world) => {
       const fr = world.out.fires;
       // The target's unit is read before the hour's losses are settled: by the shooter's table.
-      for (let i = 0; i < fr.length; i += 10) out.push([UNIT_IDS_1938[fr[i + 4]!]!, UNIT_IDS_1938[world.elements.has(fr[i + 3]!) ? world.elements.cols.unit[fr[i + 3]!]! : 0]!, fr[i + 5]!]);
+      // A torpedo's record has −1 − the shooter's unit (PLAN 4.7c).
+      for (let i = 0; i < fr.length; i += 10) out.push([UNIT_IDS_1938[fr[i + 4]! < 0 ? -1 - fr[i + 4]! : fr[i + 4]!]!, UNIT_IDS_1938[world.elements.has(fr[i + 3]!) ? world.elements.cols.unit[fr[i + 3]!]! : 0]!, fr[i + 5]!]);
       fr.length = 0;
       world.out.events.length = 0;
     });
@@ -323,5 +324,28 @@ describe('torpedoes and the screen (PLAN 4.3b)', () => {
     // With no destroyer nothing hunts the submarines.
     expect(bare.subsLeft).toBe(8);
     expect(screened.subsLeft).toBeLessThan(8);
+  });
+});
+
+describe('a torpedo in the fire records (PLAN 4.7c)', () => {
+  it('a destroyer\'s torpedo volley has −1 − its unit type in the record\'s weapon field, its gunfire its unit type', () => {
+    const s = atWar();
+    const w = s.world;
+    // Within a destroyer's torpedoes' reach (10 km) of the battle squadron from the first hour.
+    const sea = openSea(w, 8);
+    fleet(w, GER, 'battle_squadron', sea.x, sea.y);
+    fleet(w, ENG, 'destroyer_flotilla', sea.x2, sea.y);
+    const kinds = new Set<number>();
+    for (let h = 0; h < 6; h++) {
+      s.step(1, (world) => {
+        const fr = world.out.fires;
+        for (let i = 0; i < fr.length; i += FIRE_STRIDE) kinds.add(fr[i + FireField.weapon]!);
+        world.out.events.length = 0;
+        world.out.fires.length = 0;
+      });
+    }
+    expect(kinds).toContain(-1 - unit('destroyer'));
+    expect(kinds).toContain(unit('destroyer'));
+    expect(kinds).toContain(unit('battleship'));
   });
 });

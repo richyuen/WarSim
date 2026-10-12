@@ -96,22 +96,29 @@ export function frameOf(cls: string): Frame {
   return Frame.infantry;
 }
 
-/** How a volley is drawn (PLAN 2.4): rifles and machine guns, direct-fire guns, indirect fire. */
-export const Weapon = { smallArms: 0, cannon: 1, shell: 2 } as const;
+/**
+ * How a volley is drawn (PLAN 2.4): rifles and machine guns, direct-fire guns, indirect fire;
+ * since PLAN 4.7c a ship's guns (`naval`: a long arc, a splash) and a torpedo (its track on the
+ * water).
+ */
+export const Weapon = { smallArms: 0, cannon: 1, shell: 2, naval: 3, torpedo: 4 } as const;
 export type Weapon = (typeof Weapon)[keyof typeof Weapon];
 
 export function weaponOf(cls: string): Weapon {
   if (cls === 'art') return Weapon.shell;
+  // A ship's guns (PLAN 4.7c); its torpedoes are told by the fire record (`FireField.weapon` < 0).
+  if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return Weapon.naval;
   if (cls === 'inf' || cls === 'mot' || cls === 'mech') return Weapon.smallArms;
   return Weapon.cannon;
 }
 
-/** What a destroyed element leaves where it stood (PLAN 2.4b): the fallen, a broken gun, a burnt-out vehicle. */
-export const Wreck = { men: 0, gun: 1, vehicle: 2 } as const;
+/** What a destroyed element leaves where it stood (PLAN 2.4b): the fallen, a broken gun, a burnt-out vehicle; a ship going down (PLAN 4.7c). */
+export const Wreck = { men: 0, gun: 1, vehicle: 2, ship: 3 } as const;
 export type Wreck = (typeof Wreck)[keyof typeof Wreck];
 
 export function wreckOf(cls: string): Wreck {
   if (cls === 'inf') return Wreck.men;
+  if (['dd', 'cl', 'ca', 'bb', 'cv', 'ss', 'tp'].includes(cls)) return Wreck.ship;
   if (cls === 'art' || cls === 'at' || cls === 'aa') return Wreck.gun;
   return Wreck.vehicle;
 }

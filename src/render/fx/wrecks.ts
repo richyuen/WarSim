@@ -1,7 +1,8 @@
 /**
  * The end of an element at T2 (SPEC §8 "Effects", PLAN 2.4b): an ElementDestroyed event is a
  * burst where the element stood, in the frame its sprite leaves the snapshot, and a wreck that
- * stays there for a while: the fallen, a broken gun, a burnt-out vehicle (smoking).
+ * stays there for a while: the fallen, a broken gun, a burnt-out vehicle (smoking); a ship that
+ * goes down over SINK_MS, burning, and leaves an oil slick (PLAN 4.7c).
  *
  * Nothing here is sim state: wrecks live on the render clock, drawing changes nothing, and a
  * reload starts with none. A wreck stays where the element died; its formation moves on.
@@ -26,9 +27,14 @@ const PUFFS = 3;
 /** Opacity of a puff over the four quarters of its rise, and of a burst's ring over its life. */
 const PUFF_ALPHA = [0.36, 0.26, 0.16, 0.07] as const;
 const RING_ALPHA = [0.95, 0.7, 0.42, 0.18] as const;
-const KINDS: readonly Wreck[] = [Wreck.men, Wreck.gun, Wreck.vehicle];
+const KINDS: readonly Wreck[] = [Wreck.men, Wreck.gun, Wreck.vehicle, Wreck.ship];
 /** Fill of the wreck by kind: scorched ground, dark iron, a burnt hull. */
-const FILL: Readonly<Record<Wreck, string>> = { [Wreck.men]: 'rgba(44, 32, 24, 0.78)', [Wreck.gun]: 'rgba(30, 28, 27, 0.9)', [Wreck.vehicle]: 'rgba(22, 20, 19, 0.95)' };
+const FILL: Readonly<Record<Wreck, string>> = { [Wreck.men]: 'rgba(44, 32, 24, 0.78)', [Wreck.gun]: 'rgba(30, 28, 27, 0.9)', [Wreck.vehicle]: 'rgba(22, 20, 19, 0.95)', [Wreck.ship]: 'rgba(30, 32, 36, 0.95)' };
+/** A ship goes down over SINK_MS (PLAN 4.7c): its hull shrinks into the sea, an oil slick spreads where it was. */
+export const SINK_MS = 5000;
+const SLICK = 'rgba(8, 10, 14, 0.42)';
+/** A ship's wreck and slick by an element sprite's side: a ship is a sprite of its own, not a battalion's block. */
+const SHIP_WRECK = 0.35;
 /** A rust edge, so that a wreck reads on a dark nation colour too. */
 const EDGE = 'rgba(206, 120, 62, 0.75)';
 const TAU = Math.PI * 2;
@@ -64,6 +70,11 @@ function lie(id: number): number {
   return ((hash2(id, 0) >>> 16) / 65536) * Math.PI;
 }
 
+/** How far ship wreck `w` is gone down at `now`, 0–1 (PLAN 4.7c); 0 for a wreck of the land. */
+export function sunkOf(w: WreckMark, now: number): number {
+  return w.kind === Wreck.ship ? Math.min(1, Math.max(0, now - w.born) / SINK_MS) : 0;
+}
+
 /** Adds the outline of a wreck of `kind` at (x, y), `s` px across, lying at `angle`. */
 function shape(p: Path2D, kind: Wreck, x: number, y: number, s: number, angle: number): void {
   if (kind === Wreck.men) {
@@ -71,8 +82,8 @@ function shape(p: Path2D, kind: Wreck, x: number, y: number, s: number, angle: n
     p.ellipse(x, y, 0.55 * s, 0.36 * s, angle, 0, TAU);
     return;
   }
-  // A gun is long and thin, a hull broad: a rectangle about the point, turned by the angle.
-  const [hl, hw] = kind === Wreck.gun ? [0.6 * s, 0.17 * s] : [0.55 * s, 0.34 * s];
+  // A gun is long and thin, a hull broad, a ship long and slim: a rectangle about the point, turned by the angle.
+  const [hl, hw] = kind === Wreck.gun ? [0.6 * s, 0.17 * s] : kind === Wreck.ship ? [0.6 * s, 0.14 * s] : [0.55 * s, 0.34 * s];
   const c = Math.cos(angle);
   const sn = Math.sin(angle);
   p.moveTo(x + hl * c - hw * sn, y + hl * sn + hw * c);
@@ -155,6 +166,7 @@ export class WreckFx {
     const puffs = PUFF_ALPHA.map(() => new Path2D());
     const rings = RING_ALPHA.map(() => new Path2D());
     const flashes = new Path2D();
+    const slicks: { x: number; y: number; r: number; opacity: number }[] = [];
     const disc = (p: Path2D, x: number, y: number, r: number): void => {
       p.moveTo(x + r, y);
       p.arc(x, y, r, 0, TAU);
@@ -168,14 +180,22 @@ export class WreckFx {
         const [x, y] = worldToScreen(cam, w.x + off, w.y, vw, vh);
         if (x < -margin || x > vw + margin || y < -margin || y > vh + margin) continue;
         seen = true;
-        if (opacity >= 0.999) shape(solid[w.kind]!, w.kind, x, y, size, w.angle);
-        else {
-          const path = new Path2D();
-          shape(path, w.kind, x, y, size, w.angle);
-          fading.push({ path, kind: w.kind, opacity });
+        // A ship goes down: its hull smaller as it sinks, gone at SINK_MS; its slick spreading (PLAN 4.7c).
+        const sunk = sunkOf(w, now);
+        // A ship is smaller than a land element's sprite (`size`): its wreck SHIP_WRECK of it.
+        const own = w.kind === Wreck.ship ? size * SHIP_WRECK : size;
+        if (w.kind === Wreck.ship) slicks.push({ x, y, r: own * (0.4 + 0.8 * sunk), opacity });
+        const hull = own * (1 - sunk);
+        if (hull > 0.5) {
+          if (opacity >= 0.999) shape(solid[w.kind]!, w.kind, x, y, hull, w.angle);
+          else {
+            const path = new Path2D();
+            shape(path, w.kind, x, y, hull, w.angle);
+            fading.push({ path, kind: w.kind, opacity });
+          }
         }
-        // What burns goes on smoking; the smoke thins as the wreck fades.
-        if (w.kind !== Wreck.men && opacity > 0.5) {
+        // What burns goes on smoking (a ship while it is still above the water); the smoke thins as the wreck fades.
+        if (w.kind !== Wreck.men && opacity > 0.5 && sunk < 0.9) {
           for (let k = 0; k < PUFFS; k++) {
             const t = ((now - w.born) / SMOKE_MS + k / PUFFS) % 1;
             const rise = t < 0 ? t + 1 : t;
@@ -191,6 +211,14 @@ export class WreckFx {
       if (seen) this.shown.push(w);
     }
     ctx.save();
+    // The slicks first, under the hulls.
+    ctx.fillStyle = SLICK;
+    for (const sl of slicks) {
+      ctx.globalAlpha = alpha * sl.opacity;
+      ctx.beginPath();
+      ctx.ellipse(sl.x, sl.y, sl.r, sl.r * 0.6, 0, 0, TAU);
+      ctx.fill();
+    }
     ctx.lineJoin = 'round';
     ctx.lineWidth = 1;
     ctx.strokeStyle = EDGE;

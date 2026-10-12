@@ -65,8 +65,12 @@ export const LOOKS: Readonly<Record<Weapon, Look>> = {
   [Weapon.smallArms]: { flight: 150, flash: 60, impact: 160, streak: 0.35, streakPx: 22, width: 1, color: '#fff2a8', flashR: 1.6, tongue: 0, burstR: 0, smokeR: 2.2, arc: 0, smoke: '226, 214, 186' },
   [Weapon.cannon]: { flight: 190, flash: 100, impact: 300, streak: 0.25, streakPx: 30, width: 1.6, color: '#ffc061', flashR: 2.8, tongue: 3.2, burstR: 2.2, smokeR: 4.5, arc: 0, smoke: '84, 76, 68' },
   [Weapon.shell]: { flight: 420, flash: 120, impact: 460, streak: 0.14, streakPx: 18, width: 1.8, color: '#ffab4d', flashR: 3.2, tongue: 3.6, burstR: 3.4, smokeR: 7.5, arc: 0.14, smoke: '64, 58, 52' },
+  // A ship's guns (PLAN 4.7c): a broadside's flash, a shell on a long arc, a column of spray.
+  [Weapon.naval]: { flight: 560, flash: 150, impact: 560, streak: 0.12, streakPx: 22, width: 2, color: '#ffb04a', flashR: 4.2, tongue: 0, burstR: 3.8, smokeR: 6.5, arc: 0.1, smoke: '226, 236, 244' },
+  // A torpedo (PLAN 4.7c): no flash, its track a long pale line on the water, run slowly, a white plume.
+  [Weapon.torpedo]: { flight: 1500, flash: 0, impact: 700, streak: 0.6, streakPx: 160, width: 1.4, color: '#e6f2ff', flashR: 0, tongue: 0, burstR: 5, smokeR: 8, arc: 0, smoke: '240, 246, 252' },
 };
-const WEAPONS: readonly Weapon[] = [Weapon.smallArms, Weapon.cannon, Weapon.shell];
+const WEAPONS: readonly Weapon[] = [Weapon.smallArms, Weapon.cannon, Weapon.shell, Weapon.naval, Weapon.torpedo];
 /** Opacity of an impact's smoke over its four quarters. */
 const SMOKE_ALPHA = [0.55, 0.42, 0.28, 0.13] as const;
 /** The bright burst is the first part of an impact. */

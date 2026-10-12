@@ -24,7 +24,7 @@ export function armourFires(start: number): { fires: Fire[]; before: number; aft
     const raw = w.out.fires;
     const units = w.rules!.units;
     for (let i = 0; i < raw.length; i += FIRE_STRIDE) {
-      if (!units[raw[i + FireField.weapon]!]!.cls.startsWith('armor')) continue;
+      if (!units[raw[i + FireField.weapon]!]?.cls.startsWith('armor')) continue; // a torpedo's record is negative (PLAN 4.7c)
       fires.push({ shooter: raw[i + FireField.shooter]!, x0: raw[i + FireField.x0]!, y0: raw[i + FireField.y0]!, x1: raw[i + FireField.x1]!, y1: raw[i + FireField.y1]! });
     }
     w.out.fires.length = 0;

@@ -1378,6 +1378,12 @@ export class MapView {
     return Array.from(this.formIds);
   }
 
+  /** Whether formation `id` of the last snapshot is in a fight (a land battle, or a sea battle: PLAN 4.7c; tests). */
+  formationEngaged(id: number): boolean {
+    const i = this.formIds.indexOf(id);
+    return i >= 0 && (this.formFlags[i]! & FormationFlag.engaged) !== 0;
+  }
+
   /** Whether formation `id` of the last snapshot is a fleet (PLAN 4.2b): by its template's domain, as the worker sent it. */
   formationAfloat(id: number): boolean {
     const i = this.formIds.indexOf(id);

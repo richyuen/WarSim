@@ -143,6 +143,7 @@ export interface SimEvent {
  * being element ids and the points their slot poses. In a snapshot the `unit` slot carries the
  * `Weapon` of the shooter's class (`shared/unitLooks`; the view has no unit rules).
  */
+/** A fire record (`World.out.fires`): FIRE_STRIDE numbers, by `FireField`. In the sim's records the weapon field is the shooter's unit type, −1 − the type for a torpedo (PLAN 4.7c); the worker sends a `Weapon` there. */
 export const FIRE_STRIDE = 10;
 export const FireField = { tick: 0, subtick: 1, shooter: 2, target: 3, weapon: 4, dmg: 5, x0: 6, y0: 7, x1: 8, y1: 9 } as const;
 
