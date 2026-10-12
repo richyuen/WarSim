@@ -39,9 +39,7 @@ quick sweep as a smoke test.
   - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
   - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
   - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
-  - [ ] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not
-    leave out a fleet with `retreat` (land combat does): a transport group "broke off" eight
-    hours in a row and was sunk in nine (`.cache/read10/breakoff2.ts`). A test fails first.
+  - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
   - [ ] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a
     division takes a dead transport group's place and lands in Berlin, or a new German
     division is aboard British transports (`.cache/read10/reuse2.ts`; God Mode remove and

@@ -14337,3 +14337,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (120 files), red only by the two timing tests of BLOCKERS;
   the pin held (run by hand before); build and parity green.
 - **Next:** PLAN 4.8l.
+
+## 2026-10-12 — PLAN 4.8l: a fleet that broke off is out of every sea battle while it retreats (ADR-291)
+
+- **Done:** `findSeaBattles` leaves out a fleet with `retreat` above 0, as land combat does.
+- **Tests:** `seaContact1938.test.ts`: a transport group chased by cruisers after its break keeps
+  its ships for its 24 hours, one row of the log (failed before: sunk in nine hours).
+- **The pin moves:** `841d4422` → `8622df0d` (24 sea battles, 34 raids, 22 landings in seed 99's
+  first year). SPEC §6.2 says the search leaves it out.
+- **The gate:** the related unit tests (120 files), red only by the three timing tests of BLOCKERS;
+  the pin at its new hash; build and parity green.
+- **Next:** PLAN 4.8m.

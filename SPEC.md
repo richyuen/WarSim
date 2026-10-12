@@ -1617,7 +1617,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     its sides' first nations and the ships each lost, where it began. An hour's battle
     takes the record with one of its fleets (two such merge). A fleet under half the ships
     it came in with, or with no weapon against an armed enemy, breaks off: `BREAK_HOURS`
-    24 out of every sea battle (its `retreat`), `FormationRetreated`, and sails for its
+    24 out of every sea battle (its `retreat`: the contact search leaves it out, PLAN 4.8l), `FormationRetreated`, and sails for its
     nation's nearest port a ship reaches. With no fleet of one side left, or no contact in
     an hour, the battle is over: one row of the history log, `SeaBattle` (each side its
     nation and ships lost, packed as nation + 65,536 × ships; where it began): "Germany

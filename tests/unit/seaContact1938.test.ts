@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { equipFormation } from '../../src/sim/systems/elements';
+import { BREAK_HOURS } from '../../src/sim/systems/navalCombat';
 import { orderSail } from '../../src/sim/systems/sail';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, type World } from '../../src/sim/world';
@@ -65,5 +67,43 @@ describe('a sea battle needs a weapon the other side can be hit by (PLAN 4.8k)',
     s.step(1);
     expect(s.world.seaBattles.length).toBe(1);
     expect([s.world.formations.cols.engaged[a], s.world.formations.cols.engaged[b]]).toEqual([1, 1]);
+  });
+});
+
+// PLAN 4.8l (the tenth read): a fleet that broke off is out of every sea battle for its
+// `BREAK_HOURS`, as a land formation that retreats is out of every fight. A transport group that
+// a cruiser squadron chased broke off eight hours in a row and was sunk in nine.
+describe('a fleet that broke off is out of every sea battle while it retreats (PLAN 4.8l)', () => {
+  it('a transport group chased by cruisers: from its break to its last hour out, not engaged and no ship lost, and one row of the log', () => {
+    const { s, a, b } = pair('cruiser_squadron', 'transport_group');
+    const w = s.world;
+    const c = w.formations.cols;
+    const ships = (): number => (w.elements.ids().filter((e) => w.elements.cols.formation[e] === b && w.elements.cols.strength[e]! > 0).length);
+    let broke = -1;
+    let rows = 0;
+    let lostAfter = 0;
+    let engagedAfter = 0;
+    for (let h = 0; h < 30 && w.formations.has(b); h++) {
+      // The cruisers are sent after the transports each hour they retreat (a player can).
+      if (c.retreat[b]! > 0) orderSail(w, a, c.x[b]!, c.y[b]!);
+      const before = ships();
+      s.step(1, (ww) => {
+        for (let i = 0; i < ww.out.events.length; i += 6) if (ww.out.events[i + 1] === EventKind.SeaBattle) rows++;
+        ww.out.events.length = 0;
+        ww.out.fires.length = 0;
+      });
+      if (broke < 0 && c.retreat[b]! > 0) broke = h;
+      else if (broke >= 0) {
+        lostAfter += before - ships();
+        engagedAfter += c.engaged[b]!;
+        // Its hours out of battle are over: what comes after is another battle.
+        if (h - broke >= BREAK_HOURS - 1) break;
+      }
+    }
+    expect(broke, 'the transports broke off').toBeGreaterThanOrEqual(0);
+    expect(w.formations.has(b), 'the transports live').toBe(true);
+    expect(engagedAfter).toBe(0);
+    expect(lostAfter).toBe(0);
+    expect(rows).toBe(1);
   });
 });

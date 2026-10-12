@@ -7100,3 +7100,20 @@ Of 4.8 (open in PLAN.md):
     any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60
     days, 0 lost; seeds 99, 4242 and 7 by themselves: a US and four Japanese flotillas from day
     7 to day 122). Contact needs a side with a weapon the other can be hit by. A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not
+    leave out a fleet with `retreat` (land combat does): a transport group "broke off" eight
+    hours in a row and was sunk in nine (`.cache/read10/breakoff2.ts`). A test fails first.

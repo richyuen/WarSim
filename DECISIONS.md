@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-291 · 2026-10-12 · accepted — A fleet that broke off is out of every sea battle while it retreats (PLAN 4.8l)
+
+- **Found** (the tenth read): a fleet breaks off with `retreat` = `BREAK_HOURS` 24, "out of
+  every sea battle" (ADR-256), but `findSeaBattles` did not read `retreat` (land combat's
+  `findBattles` does). A fleet still within an enemy's sight the next hour was caught again, its
+  `retreat` set to 24 again, a `SeaBattle` row each hour: a transport group chased by cruisers
+  "broke off" eight hours in a row and was sunk in nine (`.cache/read10/breakoff2.ts`).
+- **Decision.** `findSeaBattles` leaves out a fleet with `retreat` above 0. When its hours are
+  over it can be caught again: another battle.
+- **The pin moves:** `841d4422` → `8622df0d` (seed 99's first year: 24 sea battles, 34 raids,
+  22 landings).
+- **Tests.** `seaContact1938.test.ts`: a transport group chased by a cruiser squadron each hour
+  after its break: not engaged, no ship lost, one row of the log in its 24 hours (failed before:
+  sunk).
+
 ### ADR-290 · 2026-10-12 · accepted — A sea battle needs a weapon the other side can be hit by (PLAN 4.8k)
 
 - **Found** (the tenth read): contact asked only that one of two fleets had reach (a gun or

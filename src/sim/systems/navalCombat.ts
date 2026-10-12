@@ -137,7 +137,9 @@ export function findSeaBattles(world: World): { fleets: number[]; km: number }[]
   const atWar = world.wars.nations();
   const facts: FleetFacts[] = [];
   f.forEach((id) => {
-    if (!world.isFleet(id) || !atWar.has(c.nation[id]!)) return;
+    // A fleet that broke off is out of every sea battle while it retreats (PLAN 4.8l), as a land
+    // formation is out of every fight (`findBattles`).
+    if (!world.isFleet(id) || !atWar.has(c.nation[id]!) || c.retreat[id]! > 0) return;
     const els = idx.get(id);
     const ff = els ? factsOf(world, id, els) : null;
     if (ff) facts.push(ff);
