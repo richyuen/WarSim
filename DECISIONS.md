@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-296 · 2026-10-12 · accepted — The sea-control layer is cleared by a load with no zone held (PLAN 4.8p)
+
+- **Found** (the tenth read): the worker sent the holders only while `world.seaControl` was
+  there; a load resets what it sent, and a save made before any 00:00 reckoning, or in which no
+  zone was ever held, has none. The page kept the last game's holders until the next 00:00.
+- **Decision.** The worker remembers, over a load, whether the page was last shown a held zone
+  (`seaShown`); a world with no sea control is then sent every zone held by none, once. Nothing
+  is sent for a world that never had one (the toy world, the start of a game).
+- **The pin:** the sim is not changed.
+- **Tests.** `serverSeaLoad.test.ts`: a zone held and shown, then a save with none loaded: a
+  `seaControl` message of none follows (failed before).
+
 ### ADR-295 · 2026-10-12 · accepted — A fleet's home and a shipyard are ports a ship reaches (PLAN 4.8o)
 
 - **Found** (the tenth read): `nearestOwnPort` and `shipyard` took any port whose water is in a

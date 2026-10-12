@@ -7173,3 +7173,20 @@ Of 4.8 (open in PLAN.md):
     22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
     the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
     has no home to sail to. Ports a ship reaches only. A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows
+    the last game's holders (the worker sends `seaControl` only while there is one) until the
+    next 00:00.

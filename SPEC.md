@@ -2383,7 +2383,9 @@ on screen.
     in `mapLayers` and per-province unrest bytes (`provinceStats`) when `Provinces.version`
     changes; the shader colours land by its province's unrest (fill mode 2).
   - *Sea control* (PLAN 4.7a): the worker sends the zone of each cell when the zones are new
-    to the client and each zone's holder when that changes (`seaControl`); the shader tints a
+    to the client and each zone's holder when that changes (`seaControl`; a world with no
+    sea control yet, as after a load of a save in which no zone is held, is sent all open
+    once where the page had holders, PLAN 4.8p); the shader tints a
     zone held with 0.5 of its holder's colour over the sea's, leaves an open one the sea's, and
     fades the land 0.65 towards grey (fill mode 3).
 - **Map modes still planned**: air superiority, fallout, supply (with their phases).

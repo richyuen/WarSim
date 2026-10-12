@@ -139,6 +139,8 @@ export class SimServer {
   /** The sea control last sent (PLAN 4.7a): the zones' object and the holders, as a key. */
   private seaZonesSent: unknown = null;
   private seaHoldersSent = '';
+  /** Whether the page was last sent a zone held by someone: kept over a load, which it outlives. */
+  private seaShown = false;
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -607,12 +609,16 @@ export class SimServer {
       this.post({ type: 'provinceStats', unrest }, [unrest.buffer]);
     }
     // Sea control for its map mode (PLAN 4.7a): the holders when they changed (daily at most),
-    // and the zones of the cells with the first, or when the zones were made again.
-    if (world.seaControl) {
+    // and the zones of the cells with the first, or when the zones were made again. A world with
+    // none (a load of a save in which no zone is held) is sent all held by none once, where the
+    // page was shown holders (PLAN 4.8p).
+    if (world.seaControl || this.seaShown) {
       const zones = seaOf(world);
-      const key = world.seaControl.holder.join(',');
+      const holders = world.seaControl?.holder ?? new Uint16Array(zones.count + 1);
+      const key = holders.join(',');
       if (zones !== this.seaZonesSent || key !== this.seaHoldersSent) {
-        const holder = world.seaControl.holder.slice();
+        const holder = holders.slice();
+        this.seaShown = holder.some((h) => h !== 0);
         const fresh = zones !== this.seaZonesSent ? zones.zoneOf.slice() : undefined;
         if (fresh) this.post({ type: 'seaControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
         else this.post({ type: 'seaControl', holder }, [holder.buffer]);

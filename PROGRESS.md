@@ -14391,3 +14391,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests of BLOCKERS (`snapshot-perf`, `scenario1938` build, `territory` per tick); the pin held;
   lint, build and parity green (run by hand after the gate stopped at the unit stage).
 - **Next:** PLAN 4.8p.
+
+## 2026-10-12 — PLAN 4.8p: the sea-control layer cleared by a load with no zone held (ADR-296)
+
+- **Done:** the worker keeps `seaShown` over a load; a world with no sea control is sent all
+  zones open once where the page had holders. SPEC §8 says so.
+- **Tests:** `serverSeaLoad.test.ts` (failed first).
+- **The pin:** the sim is not changed.
+- **The gate:** the related unit tests (19 files, 116 tests), red only by `snapshot-perf` of
+  BLOCKERS (2.44 and 2.83 ms with the change, 2.09 and 2.81 ms at HEAD); lint, build and parity
+  green by hand.
+- **Next:** PLAN 4.8g.
