@@ -277,7 +277,11 @@ on simulation runs (DECISIONS ADR-48).
   helpers, the data and assets read from disk, the lock file) runs them all. So a task that
   touches what is drawn runs the specs of that feature by hand before its commits and names
   them in PROGRESS.md; what an earlier commit broke is found at the phase review, and fixed
-  there. The phase review and the DONE CONDITION use `npm run check:full`.
+  there. The phase review and the DONE CONDITION use `npm run check:full`; on a machine where
+  some tests fail for the machine's sake (BLOCKERS), the phase review runs `npm run
+  check:review` instead, before its tick (ADR-297, the user's decision): every stage on its
+  own, a failed test run again alone, a run cut off resumed; green when every test red twice
+  is on `tools/gate/knownRed.json`. The tick's commit then runs parity alone on that code.
 - No hand-run hashes. `tests/sweep/baselineHash.test.ts` pins the state hash
   of seed 99 after one year. A change meant to leave behaviour alone is
   proved by that test in the gate. A change of rules moves the pin in the

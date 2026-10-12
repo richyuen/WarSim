@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-297 · 2026-10-12 · accepted — The phase review's full run is recorded, and judged against a list of known reds (the user's decision)
+
+- **Context.** A phase review's tick runs every stage in full (ADR-293). At PLAN 4.8 the stages
+  were run one by one before the tick, for its results go in the tick's documents: `check:full`
+  stops at the first red stage, and on this container three unit timing tests and 16 browser
+  specs fail for the machine's sake (BLOCKERS), and the browser suite outlasts the two hours a
+  background command may run. The tick's commit, documents alone, would then have run it all
+  again, about four hours on the same code.
+- **Decision.** `npm run check:review` (`tools/gate/review.ts`) runs every stage on its own,
+  whatever the one before it did: the browser suite in chunks of 20 spec files, the perf spec
+  on its own project; a unit, sweep or browser test that fails is run again alone (its file,
+  one worker) and is red when it fails both times. Each step is recorded as it ends in
+  `.cache/gate/review.json` under the code key: the tree of the working tree without the
+  documents, `critic/` and the list of known reds; a run cut off goes on where it stopped. It is
+  green when every step is done and every red test is on `tools/gate/knownRed.json` (the
+  verdict is taken against the list as it is when read). The gate, on a commit that ticks a
+  phase review, asks the record of the code of the working tree: green, the tick is a commit
+  as any other (documents alone: parity).
+- **The list.** Each entry names a test, why it is there and its BLOCKERS entry; a test goes on
+  it only with one, and leaves it when fixed or green here. It starts with the three timing
+  tests and the 16 browser tests of 4.8's run (`camera`, `declutter`, `t0map` passed alone).
+- **Cost.** A known red hides a real regression of the same test until it leaves the list; the
+  record is this machine's (`.cache/` is not committed), so another machine runs it again.
+- **Tests.** `gateReview.test.ts`: the steps, the verdict, the code key's exclusions, the ids of
+  red tests from vitest's and Playwright's JSON reports, the list's entries.
+
 ### ADR-296 · 2026-10-12 · accepted — The sea-control layer is cleared by a load with no zone held (PLAN 4.8p)
 
 - **Found** (the tenth read): the worker sent the holders only while `world.seaControl` was

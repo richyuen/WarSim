@@ -14431,3 +14431,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   not a balance verdict (ADR-58).
 - **Phase 4 done.** The critic is due (a phase review ticked since its report, ADR-59).
 - **Next:** the critic run (PROMPT step 2a), then PLAN 5.
+
+## 2026-10-12 — The phase review's full run recorded, judged against known reds (ADR-297, the user's decision)
+
+- **Done:** `npm run check:review` (`tools/gate/review.ts`): every stage on its own, the browser
+  suite in chunks, a failed test again alone, resumable, recorded under the code key (the tree
+  without documents) in `.cache/gate/review.json`; green when every red test is on
+  `tools/gate/knownRed.json` (3 unit timing tests, 16 browser tests, each with its BLOCKERS
+  entry). The gate runs a phase review's tick as any commit when that record is green on the
+  code. CLAUDE.md, PROMPT.md, SPEC §10 say so.
+- **Tests:** `gateReview.test.ts` (5).
+- **The gate:** the unit stage in full (package.json changed): 1,263 of 1,270, red by the three
+  timing tests of BLOCKERS and four tests timed out (buffs, efficiency, replay1938, revolts) while
+  the critic ran beside it; the four files alone 22 of 22. Typecheck and lint green; build and
+  parity green by hand.
+- **Next:** the critic's report (running).

@@ -2743,7 +2743,12 @@ on screen.
   sized to what changed since HEAD (ADR-48, ADR-49): documents only (Markdown, `docs/`) run
   parity alone, unless they tick a phase review (ADR-286, ADR-293); a clean tree that the
   gate has already passed runs nothing (the passed trees are recorded in `.cache/gate/`, ADR-55).
-  `npm run check:full` runs every stage. Of the stages:
+  `npm run check:full` runs every stage. A phase review's tick on code that a green
+  `npm run check:review` ran on is a commit as any other (ADR-297): that command runs every
+  stage on its own, the browser suite in chunks of 20 spec files, a failed test again alone
+  (red is red twice), records each step under the code's tree without the documents
+  (`.cache/gate/review.json`, resumed where a run stopped), and is green when every red test is
+  on `tools/gate/knownRed.json`, each with why and its BLOCKERS entry. Of the stages:
   - *unit:* in full when the change ticks a phase review (ADR-293: not a numbered task), or
     something every test stands on changed (the vitest config, `tests/helpers/`, the data and
     assets read from disk, the lock file); otherwise `vitest related` over what changed (ADR-280).
