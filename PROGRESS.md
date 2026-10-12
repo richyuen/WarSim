@@ -14279,3 +14279,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   the pin held; build and parity green.
 - **Next:** PLAN 4.8i, the next cause: supply over sea's `seaReach` (2.4 ms every 12 hours,
   about 0.2 ms a tick), the lane graph before the runner's clock as in the worker.
+
+## 2026-10-12 — PLAN 4.8i2: the lane graph before the runner's clock
+
+- **Done:** `runHeadless` builds the lane graph before it starts timing, as the game's worker
+  builds it before the first tick (PLAN 4.8e): the 1.96 s of the first sail was in the naval
+  AI's longest call of every measured run (about 0.045 ms of a five-year mean). A derived
+  cache: no state, the pin as it was.
+- **The gate:** every unit test (`tools/headless/` is shared), red only by the three timing tests
+  of BLOCKERS; the pin held; build and parity green.
+- **Next:** PLAN 4.8i, supply over sea's `seaReach`.
