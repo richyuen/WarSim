@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-294 · 2026-10-12 · accepted — Transports that stop elsewhere land on their side's coast or no one's (PLAN 4.8n)
+
+- **Found** (the tenth read): transports that stood anywhere but the landing's water put their
+  troops ashore at the nearest land of any holder, the sea's holder not asked (the comment said
+  "of its side or none"; the predicate read land alone). An order to Calais, then the transports
+  sent to Wilhelmshaven's water, took a German beachhead with no landing thrown back; sent off
+  the Dutch coast, a British division landed in the Netherlands at peace.
+- **Decision.** `strayLanding`: the land nearest within `AT_PORT_CELLS` held by the formation's
+  nation, its supply bloc or a nation on its side of a war (`sameSide`), or by no one; no one's
+  not where a nation at war with it holds the sea's zone there (as at the landing's water). None:
+  it stays aboard. An enemy's coast is taken by a landing ordered there alone, which asks the
+  sea; a neutral's is no one's to land on. Its own coast, at a port it sailed home to, is
+  disembarking: the sea is not asked, so a repulsed landing still comes ashore at home.
+- **The pin stays** 8622df0d.
+- **Tests.** `strayLanding1938.test.ts`: off the Dutch coast at peace, no landing in the
+  Netherlands; at Wilhelmshaven's water at war, no German cell taken (both failed before); its own
+  coast under a German-held sea, ashore; the same coast made no one's, aboard under the German
+  sea and ashore under a free one.
+
 ### ADR-293 · 2026-10-12 · accepted — Every unit test and every spec once a phase, at its review (the user's decision)
 
 - **Context.** A numbered task's tick ran the whole unit suite (about 20 minutes here) and the

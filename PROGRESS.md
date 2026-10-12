@@ -14366,3 +14366,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   any other. CLAUDE.md, PROMPT.md and SPEC §10 say so.
 - **Tests:** `gate.test.ts`.
 - **Next:** PLAN 4.8n.
+
+## 2026-10-12 — PLAN 4.8n: transports that stop elsewhere land on their side's coast or no one's (ADR-294)
+
+- **Done:** `strayLanding` (`amphibious.ts`): ashore within 3 cells only on land of the
+  formation's nation, bloc or war side, or no one's where no enemy holds the sea; else aboard.
+  SPEC §6.2 says so.
+- **Tests:** `strayLanding1938.test.ts` (the Dutch and German cases failed first).
+- **The pin** holds.
+- **The gate:** the related unit tests, red only by the two timing tests of BLOCKERS
+  (`scenario1938` build, `snapshot-perf`); the pin held, lint, build and parity green (run by
+  hand after the gate stopped at the unit stage).
+- **Next:** PLAN 4.8o.

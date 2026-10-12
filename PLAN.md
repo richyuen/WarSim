@@ -41,11 +41,7 @@ quick sweep as a smoke test.
   - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
   - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
   - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
-  - [ ] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a
-    neutral's, and past an enemy-held sea: an order to Calais, then the transports sent to
-    Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
-    coast it lands in the Netherlands at peace (`redirect.ts`). "Of its side or none", and the
-    sea's holder asked, as at the landing's own water. A test fails first.
+  - [x] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a […]
   - [ ] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
     22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
     the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then

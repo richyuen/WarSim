@@ -16,7 +16,8 @@
  * place. When they stand at the landing water it lands: at the landing cell, its org at most
  * `LANDING_ORG`, and ordered on to its target if that is another cell. When they stand anywhere
  * else (broken off from a sea battle, PLAN 4.3c, at a port of their own) it lands at the land
- * nearest them within `AT_PORT_CELLS`, if any, and stays aboard otherwise. Transports that are gone
+ * nearest them within `AT_PORT_CELLS` of its side or no one's (`strayLanding`, PLAN 4.8n), if
+ * any, and stays aboard otherwise. Transports that are gone
  * (sunk) take the formation with them.
  *
  * A landing needs the sea (PLAN 4.5b): when the transports stand at the landing water and the
@@ -39,6 +40,7 @@ import { AT_PORT_CELLS, sailHome } from './navalCombat';
 import { orderMove } from './movement';
 import { orderSail } from './sail';
 import { seaHolder } from './seaControl';
+import { blocOf } from './supply';
 
 /** Men a transport carries. A transport group's 12 carry 24,000: two infantry divisions of 1938. */
 export const TRANSPORT_MEN = 2000;
@@ -160,12 +162,31 @@ function land(world: World, id: number, cell: number, target: number): void {
   }
 }
 
+/**
+ * Where a formation of `nation`'s aboard transports standing at cell `at`, not the landing's
+ * water, goes ashore (PLAN 4.8n): the land nearest within `AT_PORT_CELLS` held by its nation, its
+ * supply bloc or a nation fighting beside it, or by no one; no one's not where a nation at war
+ * with it holds the sea about `at` (as at the landing's own water). -1 for none: it stays aboard.
+ * An enemy's coast is the landing's alone, and a neutral's no one's to land on.
+ */
+export function strayLanding(world: World, nation: number, at: number): number {
+  const { w, h, terrain, controller } = world.cells;
+  const holder = seaHolder(world, seaOf(world).zoneOf[at]!);
+  const enemySea = holder !== 0 && world.wars.atWar(holder, nation);
+  const bloc = blocOf(world, nation);
+  const comp = navOf(world).grid.component;
+  const ours = (k: number): boolean => {
+    const o = controller[k]!;
+    if (o === 0) return !enemySea;
+    return o === nation || blocOf(world, o) === bloc || world.wars.sameSide(nation, o);
+  };
+  return nearestCellWhere((k) => isLand(terrain[k]!) && comp[k] !== 0 && ours(k), (at % w) + 0.5, Math.floor(at / w) + 0.5, w, h, AT_PORT_CELLS, world.settings.loopingMap);
+}
+
 export function amphibiousSystem(world: World): void {
   if (world.embarked.size === 0) return;
   const f = world.formations;
   const c = f.cols;
-  const { terrain } = world.cells;
-  const w = world.cells.w;
   for (const [id, e] of [...world.embarked].sort((a, b) => a[0] - b[0])) {
     if (!f.has(id)) {
       world.embarked.delete(id);
@@ -194,8 +215,8 @@ export function amphibiousSystem(world: World): void {
       land(world, id, e.land, e.target);
       continue;
     }
-    // Stood elsewhere: ashore at the land nearest, of any holder of its side or none.
-    const ashore = nearestCellWhere((k) => isLand(terrain[k]!) && navOf(world).grid.component[k] !== 0, (at % w) + 0.5, Math.floor(at / w) + 0.5, w, world.cells.h, AT_PORT_CELLS, world.settings.loopingMap);
+    // Stood elsewhere: ashore at the land nearest of its side or no one's (PLAN 4.8n).
+    const ashore = strayLanding(world, c.nation[id]!, at);
     if (ashore >= 0) land(world, id, ashore, ashore);
   }
 }

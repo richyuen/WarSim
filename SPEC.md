@@ -1673,7 +1673,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   its transports are, and no rule of the land reads it. They sail for the zoned water nearest
   the target (within 8 cells) and it lands at the nearest cell of the target's land, its org
   at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
-  land within 3 cells if any; sunk, they take it with them. With no port or no room the order
+  land within 3 cells of its side (its nation's, its bloc's, an ally's in the war) or no one's,
+  no one's not where an enemy holds the sea there; else it stays aboard (PLAN 4.8n, ADR-294); sunk, they take it with them. With no port or no room the order
   is a march as before (PLAN 4.5a, ADR-262). When the transports reach the landing water and its zone
   is held by a nation at war with the formation's, the landing is thrown back: they sail for
   their nation's nearest port and it lands there. A landing on an enemy's cell takes that
