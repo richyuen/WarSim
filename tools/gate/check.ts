@@ -4,7 +4,13 @@
  *   nothing changed, and the gate has passed this very tree           → nothing
  *   only documents changed (Markdown anywhere, anything under docs/)  → parity
  *   no sim input changed                                             → everything but the 10-year sweep tests
- *   otherwise                                                        → everything
+ *   otherwise                                                        → everything, the sweep stage the pin alone
+ *   a phase review ticked (`- [x] 4.8 Phase 4 review`)               → everything, every sweep test
+ *
+ * Of the sweep stage (ADR-278, the user's decision): every 10-year test only when the change ticks
+ * a phase review, git cannot tell what changed, or FULL is set; otherwise only the pinned state
+ * hash of seed 99 (`tests/sweep/baselineHash.test.ts`, 81 s), so a rule change still moves the
+ * pin in its own commit (`planSweep`).
  *
  * And of the e2e stage (ADR-87): all of it when the change ticks a numbered task of PLAN.md or
  * the review pass after one (3.4R); for a part of either (2.14a, 3.4Ra) only the spec files that
@@ -22,6 +28,7 @@
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { tickedReviews } from './criticDue';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const STAMP_DIR = path.join(ROOT, '.cache/gate');
@@ -39,15 +46,34 @@ const isDocument = (file: string): boolean => file.endsWith('.md') || file.start
 
 /**
  * The stages to run for `files` changed since HEAD (repo-relative, `/`-separated); null = unknown.
- * `gated`: the gate has already passed the tree of HEAD.
+ * `gated`: the gate has already passed the tree of HEAD. `review`: the change ticks a phase review
+ * (`reviewTicked`), whose gate runs every stage whatever changed.
  */
-export function planGate(files: readonly string[] | null, gated = false): Stage[] {
-  if (files === null) return [...ALL_STAGES];
+export function planGate(files: readonly string[] | null, gated = false, review = false): Stage[] {
+  if (files === null || review) return [...ALL_STAGES];
   const changed = files.filter((f) => !ignored(f));
   if (changed.length === 0 && gated) return [];
   if (changed.length > 0 && changed.every(isDocument)) return ['parity'];
   const sim = changed.some((f) => SWEEP_INPUTS.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)));
   return ALL_STAGES.filter((s) => s !== 'test:sweep' || sim);
+}
+
+/** Whether `planNow` ticks a phase review that `planAtHead` had not (null = unknown: no). */
+export function reviewTicked(planNow: string, planAtHead: string | null): boolean {
+  if (planAtHead === null) return false;
+  const before = new Set(tickedReviews(planAtHead));
+  return tickedReviews(planNow).some((id) => !before.has(id));
+}
+
+/** The pinned state hash: the one sweep test of a commit that ticks no phase review (ADR-278). */
+export const PIN_TEST = 'tests/sweep/baselineHash.test.ts';
+
+/**
+ * How much of the sweep stage a gate with a sim input in it runs (ADR-278, the user's decision):
+ * every test when the change ticks a phase review or what changed is not known; otherwise the pin.
+ */
+export function planSweep(files: readonly string[] | null, review: boolean): 'full' | 'pin' {
+  return files === null || review ? 'full' : 'pin';
 }
 
 /**
@@ -149,7 +175,17 @@ function recordGreen(tree: string | null): void {
 function main(): void {
   const files = process.env['FULL'] ? null : changedFiles();
   const head = git(['rev-parse', 'HEAD^{tree}']);
-  const stages = planGate(files, head !== null && gatedTrees().includes(head));
+  let planNow = '';
+  try {
+    planNow = readFileSync(path.join(ROOT, 'PLAN.md'), 'utf8');
+  } catch {
+    // No plan: everything runs.
+  }
+  const atHead = spawnSync('git', ['show', 'HEAD:PLAN.md'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+  const planAtHead = atHead.status === 0 && !atHead.error && planNow !== '' ? atHead.stdout : null;
+  const review = reviewTicked(planNow, planAtHead);
+  const stages = planGate(files, head !== null && gatedTrees().includes(head), review);
+  const sweep = planSweep(files, review);
   if (stages.length === 0) {
     console.log('gate: nothing changed since HEAD, and the gate has passed this tree (npm run check:full runs everything)');
     console.log('gate: green');
@@ -160,14 +196,7 @@ function main(): void {
   // The e2e stage in full only when a numbered task is ticked (ADR-87); a spec that changed is run.
   let e2e: E2ePlan = { mode: 'full', specs: [], why: '' };
   if (stages.includes('e2e') && !process.env['FULL']) {
-    let planNow = '';
-    try {
-      planNow = readFileSync(path.join(ROOT, 'PLAN.md'), 'utf8');
-    } catch {
-      // No plan: everything runs.
-    }
-    const atHead = spawnSync('git', ['show', 'HEAD:PLAN.md'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
-    e2e = planE2e(files, planNow, atHead.status === 0 && !atHead.error && planNow !== '' ? atHead.stdout : null);
+    e2e = planE2e(files, planNow, planAtHead);
     e2e.specs = e2e.specs.filter((f) => existsSync(path.join(ROOT, f)));
     if (e2e.mode === 'changed' && e2e.specs.length === 0) e2e.mode = 'none';
     if (e2e.mode === 'none') stages.splice(stages.indexOf('e2e'), 1);
@@ -175,8 +204,14 @@ function main(): void {
   const skipped = ALL_STAGES.filter((s) => !stages.includes(s));
   console.log(`gate: ${stages.join(' → ')}${skipped.length > 0 ? `   (skipped: ${skipped.join(', ')}; npm run check:full runs everything)` : ''}`);
   if (e2e.why !== '') console.log(`gate: e2e ${e2e.mode === 'full' ? 'in full' : e2e.mode === 'changed' ? `of ${e2e.specs.length} spec file(s)` : 'left out'}: ${e2e.why}`);
+  if (stages.includes('test:sweep')) console.log(`gate: sweep ${sweep === 'full' ? 'in full' : `the pin alone (${PIN_TEST}); every sweep test at a phase review`}`);
   for (const stage of stages) {
-    const command = stage === 'e2e' && e2e.mode === 'changed' ? `npx playwright test ${e2e.specs.join(' ')}` : `npm run ${stage}`;
+    const command =
+      stage === 'e2e' && e2e.mode === 'changed'
+        ? `npx playwright test ${e2e.specs.join(' ')}`
+        : stage === 'test:sweep' && sweep === 'pin'
+          ? `npx vitest run --config vitest.sweep.config.ts ${PIN_TEST}`
+          : `npm run ${stage}`;
     const r = spawnSync(command, { cwd: ROOT, stdio: 'inherit', shell: true });
     if (r.status !== 0) {
       console.error(`gate: FAILED at ${stage}`);

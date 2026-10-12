@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ALL_STAGES, changedFiles, gatedTrees, planE2e, planGate, tickedTasks, worktreeTree } from '../../tools/gate/check';
+import { ALL_STAGES, changedFiles, gatedTrees, PIN_TEST, planE2e, planGate, planSweep, reviewTicked, tickedTasks, worktreeTree } from '../../tools/gate/check';
 import { criticDue, tickedReviews } from '../../tools/gate/criticDue';
 import { archive, LEDGER, MOVED } from '../../tools/plan/archive';
 
@@ -41,6 +41,23 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     expect(planGate(['src/render/units/counters.ts'], true)).toEqual(ALL_STAGES.filter((s) => s !== 'test:sweep'));
     expect(planGate(['src/sim/systems/war.ts'], true)).toEqual([...ALL_STAGES]);
     expect(planGate(null, true)).toEqual([...ALL_STAGES]);
+  });
+
+  // ADR-278 (the user's decision, 2026-10-12): every 10-year sweep test only at a phase review.
+  it('the sweep stage: the pin alone, every sweep test when a phase review is ticked or what changed is not known', () => {
+    const head = ['- [x] 4.7 A task', '- [ ] 4.8 Phase 4 review, the phase\'s one review pass'].join('\n');
+    const ticked = head.replace('- [ ] 4.8', '- [x] 4.8');
+    expect(reviewTicked(head, head)).toBe(false);
+    expect(reviewTicked(ticked, head)).toBe(true);
+    expect(reviewTicked(ticked, ticked)).toBe(false);
+    expect(reviewTicked(ticked, null)).toBe(false);
+    expect(reviewTicked(head.replace('- [ ] 4.8', '- [x] 4.8') + '\n- [x] 4.7c a part', head.replace('- [x] 4.7', '- [ ] 4.7'))).toBe(true);
+    expect(planSweep(['src/sim/systems/war.ts'], false)).toBe('pin');
+    expect(planSweep(['src/sim/systems/war.ts'], true)).toBe('full');
+    expect(planSweep(null, false)).toBe('full');
+    // The phase review's gate is every stage, even for a commit of documents alone.
+    expect(planGate(['PLAN.md', 'PROGRESS.md'], true, true)).toEqual([...ALL_STAGES]);
+    expect(readFileSync(path.resolve(import.meta.dirname, '../..', PIN_TEST), 'utf8')).toContain('BASELINE');
   });
 
   it('the working tree has a tree id, the same when asked twice; the record of passed trees is a list of ids', () => {

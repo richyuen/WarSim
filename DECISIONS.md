@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-278 · 2026-10-12 · accepted — The 10-year sweep tests only at a phase review; their timeouts 900 s (the user's decision)
+
+- **Context.** Of a gate's ~45 minutes for a change to a sim input, the sweep stage was ~15
+  (its longest test: `aiSweep1` 869 s, `aiSweep2` 804 s; seeds 1 and 2 over their 600 s for
+  many tasks), and it ran on changes that could not move a 10-year result (4.7c's fire records).
+- **Decision.** `npm run check` runs every test of `tests/sweep/` only when the change ticks a
+  phase review (`- [x] 4.8 Phase 4 review`: `reviewTicked`, the critic cadence's
+  `tickedReviews`), when git cannot tell what changed, or under FULL / `check:full`. Any other
+  change to a sim input runs the pin alone (`tests/sweep/baselineHash.test.ts`, 81 s), so a rule
+  change still moves the pin in its own commit (ADR-55). The commit that ticks a phase review
+  runs every stage, even when it is documents alone. The sweep tests' timeouts are 900 s
+  (`aiSweep1`–`3`, `baselineHash`, `realmWarsDays`; the config's default was already 900 s).
+- **The pin kept per commit**: the user asked for every sweep at the phase reviews; the pin is
+  not a sweep but the hash a rule change must log, and it costs 81 s.
+- **Cost.** A defect a sweep test would find (save and load of ten years, allies at war, land of
+  the dead) is found at the phase review, not in the commit that made it: bisect from there.
+- **Tests.** `gate.test.ts`: the sweep stage, the pin alone or every test.
+
 ### ADR-277 · 2026-10-11 · accepted — A sea battle drawn: ships' guns, torpedoes, a ship going down (PLAN 4.7c)
 
 - **Context.** PLAN 4.7: a ship's volley was drawn as a tank's (`Weapon.cannon`), a torpedo as its

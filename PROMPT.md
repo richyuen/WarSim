@@ -231,9 +231,11 @@ on simulation runs (DECISIONS ADR-48).
   2026-10-03, ADR-58, the user's decision). No `npm run sweep` and no
   `npm run sweep:quick` after a rule change: the balance will change with
   every feature, so a verdict on it now is wasted. What stays:
-  - the 10-year tests in the gate (`tests/sweep/`): the pinned hash, save and
-    load, allies never at war, no bankruptcy in peace. They test correctness,
-    not balance;
+  - the 10-year tests (`tests/sweep/`): the pinned hash, save and load, allies
+    never at war, no bankruptcy in peace. They test correctness, not balance.
+    The gate runs every one of them only at a phase review (the commit that
+    ticks it, and `npm run check:full`); any other commit with a sim input in
+    it runs the pin alone (added 2026-10-12, ADR-278, the user's decision);
   - one `npm run sweep:quick` at each phase review (PLAN 2.11, 3.7, 4.8, 5.8,
     6.9), as a smoke test. Report its five limits in PROGRESS.md. A limit
     that fails is logged in BLOCKERS.md and waits for Phase 7, unless its
@@ -260,7 +262,8 @@ on simulation runs (DECISIONS ADR-48).
   rules, rewrite it.
 - `npm run check` sizes the gate to what changed since HEAD: only
   `npm run parity` for a commit of documents alone (Markdown, `docs/`), and
-  no 10-year sweep tests when nothing they depend on changed. On a clean
+  no 10-year sweep tests when nothing they depend on changed, and of those
+  only the pin unless the change ticks a phase review (ADR-278). On a clean
   tree that the gate has already passed it runs nothing, so step 2 of an
   iteration that starts on a gated commit costs seconds (ADR-55).
   `npm run check:full` always runs everything: use it for the DONE CONDITION

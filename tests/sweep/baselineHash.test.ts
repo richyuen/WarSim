@@ -23,4 +23,4 @@ it('seed 99 after one year has the pinned state hash', () => {
     if (isMonthStart(w.startDay, w.tick)) expect(deadLand(w), `tick ${w.tick}: land of the dead`).toEqual([]);
   });
   expect((s.hash() >>> 0).toString(16).padStart(8, '0')).toBe(BASELINE);
-}, 600_000);
+}, 900_000);

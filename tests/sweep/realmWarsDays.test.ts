@@ -30,7 +30,7 @@ function firstRealmWar(seed: number, days: number): string[] {
 // with four allies of Poland.
 it('seed 1, 305 days: on no day are two nations of one realm or of allied realms at war', () => {
   expect(firstRealmWar(1, 305)).toEqual([]);
-}, 300_000);
+}, 900_000);
 
 it('seed 3301, 825 days: on no day are two nations of one realm or of allied realms at war', () => {
   expect(firstRealmWar(3301, 825)).toEqual([]);

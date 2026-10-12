@@ -14023,3 +14023,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   min); build and parity green.
 - **PARITY:** row 3, a note and the spec; still partial.
 - **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — The sweep tests only at phase reviews (ADR-278, the user's decision)
+
+- **Why:** the sweep stage was ~15 of a gate's ~45 minutes; the unit stage is the other ~27.
+- **Done:** `npm run check` runs every test of `tests/sweep/` only when the change ticks a phase
+  review (or FULL / `check:full`, or git cannot tell); any other sim change runs the pin alone.
+  The sweep tests' timeouts are 900 s. CLAUDE.md and PROMPT.md say so.
+- **Tests:** `gate.test.ts`, the sweep stage.
+- **The gate:** its unit stage run with the unit-test work of ADR-279 in the tree (only the
+  timing tests of BLOCKERS red, and the frontier's per-tick time under four workers); the pin
+  held (89 s); build, lint and parity green.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).
