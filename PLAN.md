@@ -43,6 +43,8 @@ quick sweep as a smoke test.
     the five years' hash as they were). Where the time went: movement +0.42 ms, naval combat
     0.30 (a contact search each hour with battles rare), the naval AI 0.24, supply +0.18,
     bombardment 0.10, sea control 0.10. Each a part of its own if it is more than one cause.
+    - [x] 4.8i1 The sea's contact search by rows: naval combat 0.253 → 0.148 ms a tick in seed
+      99's first year (hash 841d4422 both).
   - [ ] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a
     torpedo is reach, but a submarine is a target of depth charges alone and neither side has
     any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60

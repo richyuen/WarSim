@@ -134,10 +134,20 @@ export function findSeaBattles(world: World): { fleets: number[]; km: number }[]
     while (parent.get(r) !== r) r = parent.get(r)!;
     return r;
   };
+  // By row (PLAN 4.8i): a pair further apart in rows than the most a fleet sees, at the fewest km a
+  // row has, cannot see each other. What is found is the same in any order of the pairs (the
+  // nearest is a least, a battle's root its least id): only the pairs looked at are fewer.
+  const g = navOf(world).grid;
+  let minKy = Infinity;
+  for (let r = 0; r < g.h; r++) minKy = Math.min(minKy, g.ky[r]!);
+  let maxSees = 0;
+  for (const ff of facts) maxSees = Math.max(maxSees, ff.detection);
+  facts.sort((p, q) => c.y[p.id]! - c.y[q.id]! || p.id - q.id);
   for (let i = 0; i < facts.length; i++) {
     const a = facts[i]!;
     for (let j = i + 1; j < facts.length; j++) {
       const b = facts[j]!;
+      if ((c.y[b.id]! - c.y[a.id]!) * minKy > maxSees) break;
       if (a.reach <= 0 && b.reach <= 0) continue;
       if (!world.wars.atWar(a.nation, b.nation)) continue;
       const km = seaKm(world, c.x[a.id]!, c.y[a.id]!, c.x[b.id]!, c.y[b.id]!);

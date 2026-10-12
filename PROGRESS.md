@@ -14264,3 +14264,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the unit tests related to the change (18 files), red only by the snapshot time of
   BLOCKERS; build and parity green.
 - **Next:** PLAN 4.8i (the tick back within its budget).
+
+## 2026-10-12 — PLAN 4.8i1: the sea's contact search by rows
+
+- **Done:** `findSeaBattles` sorts the fleets at war by row and leaves the pairs further apart in
+  rows than the most any fleet sees at the fewest km a row has (`ky`'s least): they cannot see
+  each other. The pairs it keeps are judged as before; what it finds does not hang on their
+  order (the nearest a least, a battle's root its least id). Stealth is never below 0 (the
+  units' schema), so no fleet sees beyond its detection.
+- **Measured:** seed 99's first year, naval combat 0.253 → 0.148 ms a tick, the year's hash
+  841d4422 as before.
+- **Not a rule change:** the pin holds.
+- **The gate:** the related unit tests (119 files), red only by the two timing tests of BLOCKERS;
+  the pin held; build and parity green.
+- **Next:** PLAN 4.8i, the next cause: supply over sea's `seaReach` (2.4 ms every 12 hours,
+  about 0.2 ms a tick), the lane graph before the runner's clock as in the worker.
