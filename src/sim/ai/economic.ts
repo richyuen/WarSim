@@ -68,7 +68,7 @@ import { neighbours4 } from '../nav/grid';
 import { queueFormation, shipyard } from '../systems/production';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
-import { Domain, seaRangeOf, type World } from '../world';
+import { Domain, navBuilt, seaRangeOf, type World } from '../world';
 
 export const DEBT_PAYBACK = 1 / 12;
 export const MARGIN = 0.05;
@@ -307,7 +307,7 @@ function restlessNations(world: World): Set<number> {
   const out = new Set<number>();
   const pv = world.provinces;
   if (pv.count === 0) return out;
-  const g = world.nav?.graph;
+  const g = navBuilt(world)?.graph;
   if (!g) return out;
   for (let p = 1; p < pv.count; p++) {
     if (pv.unrest[p]! < SUPPRESS_FROM) continue;

@@ -59,8 +59,12 @@ import { Mobility } from './nav/grid';
 import { grantStartTechs, MAX_TECHS, techClosure, type TechRule } from './tech';
 import { Domain, type DomainId, type ScenarioRules } from './world';
 import { sin } from './core/dmath';
+import { xxhash32 } from './core/hash';
+import { Table } from './core/table';
+import { RngStreams } from './core/rng';
+import { loadBytes, saveBytes } from './core/state';
 import { millerLat, Y_TOP } from './data/projection';
-import { World } from './world';
+import { freshGrid, World } from './world';
 
 export const NATIONS_1938 = nations1938.nations as unknown as NationDef[];
 export const TEMPLATES_LAND = templatesLand.templates as TemplateDef[];
@@ -382,13 +386,91 @@ export function startTreasury(world: World): void {
   });
 }
 
+/**
+ * The 1938 world as built, kept to make the next ones from (ADR-279): its state, and what the
+ * build gives it outside its state. Opt-in (`keepWorldTemplates`): the unit tests build some 900
+ * worlds of 2.2 s each; the game builds one.
+ */
+interface Template1938 {
+  bytes: Uint8Array;
+  islandCells: readonly number[];
+  ports: World['ports'];
+  /** Per part of the world, the rows a table has room for (-1 for a part that is not a table): a table loaded has room for its rows alone. */
+  capacities: number[];
+  /** The map's nav caches and seas as the build left them (read only; each world its own grid's searches: `freshGrid`). */
+  nav: World['nav'];
+  navKey: string;
+  sea: World['sea'];
+  lanes: World['lanes'];
+  portSea: World['portSea'];
+}
+const NO_MASK = {};
+let templates: WeakMap<object, Map<string, Template1938>> | null = null;
+
+/**
+ * Keeps each 1938 world built from now on as the template of the next built from the same
+ * assets (`on`), or no more. A world made from its template has the state a build gives it: the
+ * build draws on no random stream, so the template of one seed is every seed's with its own
+ * seed and streams (`worldTemplate.test.ts` holds it).
+ */
+export function keepWorldTemplates(on = true): void {
+  templates = on ? new WeakMap() : null;
+}
+
+/** The assets' content as a key; the land mask by identity (the build marks islets on it). */
+function templateKey(assets: ScenarioAssets): string {
+  return [assets.terrain, assets.admin1Geometry, assets.admin1Meta].map((b) => `${b.length}:${xxhash32(b)}`).join('/');
+}
+
 export function createWorld1938(seed: number, assets: ScenarioAssets): World {
+  if (!templates) return buildWorld1938(seed, assets).world;
+  const byMask = templates.get(assets.landMask ?? NO_MASK) ?? new Map<string, Template1938>();
+  templates.set(assets.landMask ?? NO_MASK, byMask);
+  const key = templateKey(assets);
+  const t = byMask.get(key);
+  if (!t) {
+    const built = buildWorld1938(seed, assets);
+    const b = built.world;
+    byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
+    return built.world;
+  }
   const { w, h } = SIZE_1938;
   const world = new World(seed, w, h);
+  staticParts1938(world, assets);
+  if (world.landMask) for (const cell of t.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
+  world.ports = t.ports;
+  world.portReach = PORTS_1938.reachCells;
+  world.rules = RULES_1938;
+  // The tables with the room the build left them (a held `cols` lasts over as many creates).
+  world.parts().forEach((part, i) => {
+    if (part instanceof Table && t.capacities[i]! > part.capacity) part.reserve(t.capacities[i]! - part.highWater);
+  });
+  loadBytes(world.parts(), t.bytes);
+  world.seed = seed >>> 0;
+  world.rng = new RngStreams(world.seed);
+  if (t.nav) {
+    world.navStale = false;
+    world.nav = { grid: freshGrid(t.nav.grid, world.cells.terrain), graph: t.nav.graph };
+    world.navKey = t.navKey;
+    world.sea = t.sea;
+    world.lanes = t.lanes;
+    world.portSea = t.portSea;
+  }
+  return world;
+}
+
+/** What a 1938 world has from its scenario and assets outside its state (but its ports, rules). */
+function staticParts1938(world: World, assets: ScenarioAssets): void {
   world.landMask = assets.landMask ?? null;
   world.seaSeeds = earthSeas.seas as unknown as SeaSeed[];
   world.seaPassages = earthPassages.passages as unknown as SeaPassage[];
   world.seaIce = earthIce.closed;
+}
+
+function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; islandCells: readonly number[] } {
+  const { w, h } = SIZE_1938;
+  const world = new World(seed, w, h);
+  staticParts1938(world, assets);
   world.startDay = dayOfIso(scenario1938.startDate);
   const tags = TAGS_1938;
   const input = politicalMapInput1938(assets, w, h);
@@ -471,5 +553,5 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   addFleets(world, FLEETS_1938, PORTS_1938, tags);
   grantStartTechs(world, GIVEN_TECHS_1938);
   startTreasury(world);
-  return world;
+  return { world, islandCells: map.islandCells };
 }

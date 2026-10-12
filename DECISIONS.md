@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-279 · 2026-10-12 · accepted — The unit tests: a 1938 world built once per file, shared checkpoints, a revolt by its provinces' cells, the map's nav kept over a load (the user's decision)
+
+- **Context.** The unit stage took 27 minutes of a gate (4 cores; 79 minutes of test time). Timed
+  per file: 901 builds of the 1938 world, 2.2 s each, were 33.5 minutes; stepping, 28; the rest,
+  17, most of it in a few files (a revolt forced in every province, 69 s each time; a God Mode
+  Kill of every nation, the nav grid built again after each of 102 loads).
+- **A world made from a template** (`keepWorldTemplates`, `createWorld1938`; opt-in, the unit
+  tests' setup `tests/helpers/setup.ts`; the game and the sweep tests build every world). The first
+  1938 world built from an asset set is kept: its state, its ports, its tables' room and its
+  map's nav caches and seas. The next is a `new World` with the scenario's parts, the room
+  reserved, the state loaded, and its own seed and streams: the build draws on no stream, so one
+  template serves every seed. The grid is the template's with its own terrain layer and no search
+  of its own (`freshGrid`); the province graph, the seas and the lanes are shared, read only.
+  `worldTemplate.test.ts`: the same hash for two seeds, the same parts outside the state, the
+  same tables' room, the same hash after 36 hours. `NOTEMPLATES=1` turns it off.
+- **Checkpoints** (`tests/helpers/checkpoint.ts`, `at1938(seed, ticks)`): a pure run (no command,
+  nothing looked at on the way) is saved in `.cache/checkpoints/<key>/` by the first test that
+  asks, and loaded by the others; the key hashes `src/sim`, `src/shared`, `data`, `public/data`
+  and the lock file. Four tests (the economy's year, stats' 40 days, God Mode's 60, the paths'
+  1,500 hours). Most long runs look at what happens on the way (`runEvents`, tallies kept through
+  a war) and stay runs.
+- **A revolt by its provinces' cells** (`provinceCellsOf`, a derived index dropped on load):
+  `defect` and `heldKm2` scanned the 2 M cells on every revolt; they read the area's cells in the
+  order of the cell index, as the scan did, so the sums and the state are the same (a revolt in
+  each of 4,597 provinces: hash `dae69ec` before and after; 69 s → 9.6 s).
+- **The map's nav caches kept over a load** (`checkNav`, `navKeyOf`): a load dropped the grid,
+  the province graph, the seas, the lanes and the ports' waters, 0.3 s to build again. They are
+  now kept where the loaded terrain, provinces and loop setting hash as those they were built
+  from, the grid with no search of its own. The economic AI's read of a built graph goes
+  through `navBuilt`.
+- **Two tests that forced a revolt everywhere** (`rebelCapitals`) share one forced world: both
+  only read it. The economy's year has 300 s (its first run, which writes the checkpoint, took
+  125 s beside three other files; 106 s alone).
+- **Not every core**: vitest leaves one of the four free. With four workers the unit stage took
+  19.4 min, and the frontier's per-tick time (`territory.test.ts`, under 25 ms) read 33 ms: the
+  default stays.
+- **The pin** (seed 99, one year) holds: no rule changed.
+
 ### ADR-278 · 2026-10-12 · accepted — The 10-year sweep tests only at a phase review; their timeouts 900 s (the user's decision)
 
 - **Context.** Of a gate's ~45 minutes for a change to a sim input, the sweep stage was ~15

@@ -8,5 +8,7 @@ export default defineConfig({
     // the strategic, operational and economic AIs (PLAN 1.24–1.26) multi-day 1938 simulations
     // can approach 30 s under the parallel worker pool; 90 s keeps them from flaking.
     testTimeout: 90_000,
+    // A 1938 world built once per file, the next ones made from it (ADR-279).
+    setupFiles: ['tests/helpers/setup.ts'],
   },
 });

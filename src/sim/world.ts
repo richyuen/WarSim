@@ -9,6 +9,7 @@ import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import type { Port } from './data/ports';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
+import { xxhash32View } from './core/hash';
 import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
@@ -444,11 +445,10 @@ class WorldCore implements Stateful {
     w.contacts = null;
     w.deployed = null;
     w.deployedBefore = null;
-    w.nav = null;
-    w.sea = null;
-    w.lanes = null;
-    w.portSea = null;
+    // The nav caches and the seas' are of the map: kept if the map loaded is the same (`checkNav`).
+    w.navStale = true;
     w.frontier = null;
+    w.provinceCells = null;
     w.dropLandCounts();
     w.terrainVersion++;
     w.citiesVersion++;
@@ -459,28 +459,91 @@ class WorldCore implements Stateful {
   }
 }
 
+/** What the nav caches are built from: the terrain, the provinces and whether the map loops. */
+export function navKeyOf(world: World): string {
+  const { terrain, province } = world.cells;
+  return `${world.settings.loopingMap ? 1 : 0}:${terrain.length}:${xxhash32View(terrain)}:${xxhash32View(province)}`;
+}
+
+/**
+ * The grid of `grid` for a world of the same map with its own terrain layer: the same derived
+ * rasters, and no search of its own yet (scratch, the last barred search and the pockets are
+ * memos of the searches made on it), so it is the grid a build gives.
+ */
+export function freshGrid(grid: NavGrid, terrain: Uint8Array): NavGrid {
+  return { ...grid, terrain, scratch: null, barred: null, pockets: null };
+}
+
+/**
+ * After a load (`navStale`): the nav caches are kept where the map loaded is the one they were
+ * built from, and dropped where it is not (ADR-279: 0.3 s to build again on every load).
+ */
+function checkNav(world: World): void {
+  if (!world.navStale) return;
+  world.navStale = false;
+  if (world.nav && world.navKey === navKeyOf(world)) {
+    world.nav = { grid: freshGrid(world.nav.grid, world.cells.terrain), graph: world.nav.graph };
+    return;
+  }
+  world.nav = null;
+  world.sea = null;
+  world.lanes = null;
+  world.portSea = null;
+}
+
 /** The navigation grid and province graph for the world's static layers (built once, cached). */
 export function navOf(world: World): { grid: NavGrid; graph: ProvinceGraph } {
+  checkNav(world);
   if (!world.nav) {
     const grid = makeNavGrid(world.cells.terrain, world.cells.w, world.cells.h, world.settings.loopingMap);
     world.nav = { grid, graph: buildProvinceGraph(grid, world.cells.province) };
+    world.navKey = navKeyOf(world);
   }
+  return world.nav;
+}
+
+/** The nav caches if they are built (and still the map's), else null: nothing is built. */
+export function navBuilt(world: World): { grid: NavGrid; graph: ProvinceGraph } | null {
+  checkNav(world);
   return world.nav;
 }
 
 /** The sea zones for the world's terrain and its map's seeds (PLAN 4.1a; built once, cached). */
 export function seaOf(world: World): SeaZones {
+  checkNav(world);
   return (world.sea ??= buildSeaZones(navOf(world).grid, world.seaSeeds, new Set(world.seaIce)));
 }
 
 /** The lane graph over the sea zones and the map's passages, with the world's ports (PLAN 4.1b, 4.1c; built once, cached). */
 export function laneOf(world: World): LaneGraph {
+  checkNav(world);
   return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages, world.ports, world.portReach));
 }
 
 /** Per port of the world, its water as the lane graph has it, or -1 (`portWaters`: by the zones alone, not the lanes; built once, cached where `sea` is). */
 export function portSeaOf(world: World): Int32Array {
+  checkNav(world);
   return (world.portSea ??= portWaters(navOf(world).grid, seaOf(world), world.ports, world.portReach));
+}
+
+/**
+ * Each province's cells (ADR-279): province p's are `cells[start[p]]…cells[start[p + 1] - 1]`, in
+ * the order of the cell index, as a scan of the map meets them (built once, cached; a load drops it).
+ */
+export function provinceCellsOf(world: World): { start: Int32Array; cells: Int32Array } {
+  if (!world.provinceCells) {
+    const { province } = world.cells;
+    let count = world.provinces.count;
+    for (let c = 0; c < province.length; c++) if (province[c]! >= count) count = province[c]! + 1;
+    const start = new Int32Array(count + 1);
+    for (let c = 0; c < province.length; c++) start[province[c]! + 1]!++;
+    for (let p = 0; p < count; p++) start[p + 1]! += start[p]!;
+    const at = start.slice(0, count);
+    const cells = new Int32Array(province.length);
+    for (let c = 0; c < province.length; c++) cells[at[province[c]!]!++] = c;
+    world.provinceCells = { start, cells };
+  }
+  return world.provinceCells;
 }
 
 /**
@@ -804,6 +867,11 @@ export class World {
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */
   seaControl: SeaControl | null = null;
   nav: { grid: NavGrid; graph: ProvinceGraph } | null = null;
+  /** What `nav` was built from (`navKeyOf`), and whether a load has come since (`checkNav`: kept, or dropped with the seas'). */
+  navKey = '';
+  navStale = false;
+  /** Each province's cells (`provinceCellsOf`; derived, dropped on load). */
+  provinceCells: { start: Int32Array; cells: Int32Array } | null = null;
   /**
    * The seeds of the map's named seas (PLAN 4.1a): static data of the map, not state (not saved,
    * not hashed). None on the toy world: its water is given zones with no name.

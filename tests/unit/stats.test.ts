@@ -8,6 +8,7 @@ import { STAT_STRIDE, StatSeries } from '../../src/sim/stats';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
+import { at1938 } from '../helpers/checkpoint';
 
 // PLAN 1.34b AT (unit part): the statistics series match the sim at the sampled months.
 
@@ -64,8 +65,7 @@ describe('statistics series (PLAN 1.34b)', () => {
   }, 180_000);
 
   it('survives save/load exactly (f32 section) and replays identically', () => {
-    const s = new Sim({ scenario: '1938', seed: 4, assets: assets1938(W) });
-    s.step(24 * 40);
+    const s = at1938(4, 24 * 40);
     const t = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
     t.load(s.save());
     expect(t.world.stats.rows).toEqual(s.world.stats.rows);

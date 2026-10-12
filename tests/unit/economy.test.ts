@@ -24,6 +24,7 @@ import {
 } from '../../src/sim/systems/economy';
 import { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
+import { at1938 } from '../helpers/checkpoint';
 
 // PLAN 1.9: one test per economic rule on a tiny world, plus the 1938 income ranking.
 
@@ -184,12 +185,13 @@ describe('1938 economy (PLAN 1.9 AT)', () => {
   });
 
   it('one year of play pays 12 months and keeps the major economies solvent', () => {
-    sim.step(tickOfDate(sim.world.startDay, 1939, 1, 1) + 1);
-    const nc = sim.world.nations.cols;
+    // The year's play is a checkpoint of seed 1938 (ADR-279): the same stepping, done once.
+    const year = at1938(1938, tickOfDate(sim.world.startDay, 1939, 1, 1) + 1);
+    const nc = year.world.nations.cols;
     for (const t of ['USA', 'ENG', 'GER', 'FRA', 'SOV', 'JAP', 'ITA']) {
       const id = tags.indexOf(t) + 1;
       expect(nc.bankrupt[id], t).toBe(0);
       expect(nc.income[id], t).toBeGreaterThan(0);
     }
-  }, 120_000); // a simulated year (8,760 ticks) with AI wars since PLAN 1.24
+  }, 300_000); // a simulated year (8,760 ticks) with AI wars since PLAN 1.24; once a checkpoint (ADR-279)
 });

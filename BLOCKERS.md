@@ -562,7 +562,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     4.2d, a cloud container, not the machine the budgets were set on): both fail alone on the
     unchanged HEAD 348f26c as on the commit, 2,003 to 2,091 ms and 2.03 to 2.27 ms; the build
     passed once in four runs. `territory.test.ts` ("costs little per tick") failed once in
-    the full unit stage and passed alone. The commit was made with these three red in its
+    the full unit stage and passed alone (again 2026-10-12, ADR-279: 33 and 29.5 ms in two
+    unit stages, 13 to 19 ms alone, the same at HEAD and with the change: 16.7/12.3/9.8 and
+    16.4/12.5/10.1 ms). The commit was made with these three red in its
     gate: the code they time is not touched (the zones and lanes are built at their first
     use). The tests were not changed. The ten-year run of seed 1 (`tests/sweep/aiSweep1`)
     timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on

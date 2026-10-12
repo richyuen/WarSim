@@ -14035,3 +14035,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   timing tests of BLOCKERS red, and the frontier's per-tick time under four workers); the pin
   held (89 s); build, lint and parity green.
 - **Next:** PLAN 4.7d (a fleet's order line along its way).
+
+## 2026-10-12 — The unit tests faster (ADR-279, the user's decision)
+
+- **Measured:** of 79 minutes of unit-test time, 901 builds of the 1938 world were 33.5 (2.2 s
+  each), stepping 28, the rest 17.
+- **Done:** a 1938 world made from a template of the file's first (`keepWorldTemplates`, the
+  tests' setup); shared checkpoints of pure runs (`at1938`, `.cache/checkpoints/`) in four tests;
+  a revolt by its provinces' cells (`provinceCellsOf`: 4,597 forced revolts 69 s → 9.6 s, the
+  same hash); the map's nav caches kept over a load where the map is the same (`checkNav`);
+  `rebelCapitals`' two tests share one forced world.
+- **Result:** the unit stage 27 → about 19 minutes of wall time on four workers (52 minutes of
+  CPU, from 86). Vitest keeps its three workers: on four, the frontier's per-tick time read 33 ms
+  against its 25.
+- **Tests:** `worldTemplate.test.ts` (a world made from a template is the built one: hash, the
+  parts outside its state, the tables' room, 36 hours on; a checkpoint is the stepped world).
+- **The pin** held: no rule changed.
+- **The gate:** unit 17.2 min, red only by the two timing tests of BLOCKERS and the frontier's
+  per-tick time (29.5 ms against 25; 13 to 19 alone, the same at HEAD: BLOCKERS); the pin held;
+  typecheck, lint, build and parity green.
+- **Next:** PLAN 4.7d (a fleet's order line along its way).

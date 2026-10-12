@@ -33,6 +33,9 @@ There is no memory between sessions. Read these files:
     its part 2.14a) or the review pass after one (3.4R, not its part 3.4Ra) (ADR-87). For a part, only the spec files that changed, or none. While
     working on a part, run the specs of what you touch by hand (`npx playwright test <file>`). They include the pinned state hash of seed 99 after one year
     (`tests/sweep/baselineHash.test.ts`): a rule change updates the pin and logs it in DECISIONS.
+- Unit tests make each 1938 world after a file's first from its template, and load pure runs
+  from `.cache/checkpoints/` (`tests/helpers/checkpoint.ts`; ADR-279). `NOTEMPLATES=1` builds
+  every world.
 - `npm run check:full`: every stage, whatever changed.
 - `npm run typecheck`: `src/`, `tools/` and `tests/` (a bare `tsc --noEmit -p .` skips `tests/`; a
   type error in a spec then shows only as Playwright's "webServer was not able to start").
