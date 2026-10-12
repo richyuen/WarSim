@@ -167,6 +167,16 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-286 · 2026-10-12 · accepted — The tick of a task runs its tests in a commit of documents alone
+
+- **Found:** PLAN 4.7's tick (4.7h's numbers, the ticks and the notes: documents alone) had a
+  gate of parity: `planGate` sends a change of documents to parity before anything asks
+  whether it ticks a task. So the full unit and browser runs that a tick is for (ADR-87,
+  ADR-280) did not run. Any task whose last part is documents had the same gap.
+- **Fixed:** `planGate`'s `ticked` (the gate passes `newTicks`): a commit that ticks a numbered
+  task or a review pass runs every stage but the sweep tests (those at a phase review, ADR-278),
+  whatever it changed. `gate.test.ts` holds it.
+
 ### ADR-284 · 2026-10-12 · accepted — The fine mask's coast at T1 (PLAN 4.7g)
 
 - **Context.** The note of PLAN 2.11c: a lake that the fine mask has and the coarse coverage

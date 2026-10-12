@@ -14138,3 +14138,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not a rule change.**
 - **The gate:** green (the unit tests related to 2 files, the two changed specs, build, parity).
 - **Next:** PLAN 4.7h.
+
+## 2026-10-12 — The tick of a task runs its tests in a commit of documents alone (ADR-286)
+
+- **Found:** the commit ticking PLAN 4.7 changed documents only, and its gate ran parity alone.
+- **Fixed:** `planGate` takes the ticks: such a commit runs every stage but the sweep tests.
+- **Tests:** `gate.test.ts`.
+- **Next:** PLAN 4.7's tick, its gate in full.

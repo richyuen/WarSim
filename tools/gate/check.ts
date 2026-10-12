@@ -52,13 +52,15 @@ const isDocument = (file: string): boolean => file.endsWith('.md') || file.start
 /**
  * The stages to run for `files` changed since HEAD (repo-relative, `/`-separated); null = unknown.
  * `gated`: the gate has already passed the tree of HEAD. `review`: the change ticks a phase review
- * (`reviewTicked`), whose gate runs every stage whatever changed.
+ * (`reviewTicked`), whose gate runs every stage whatever changed. `ticked`: it ticks a numbered
+ * task or a review pass (`newTicks`): a commit of documents alone then runs the code's stages too.
  */
-export function planGate(files: readonly string[] | null, gated = false, review = false): Stage[] {
+export function planGate(files: readonly string[] | null, gated = false, review = false, ticked = false): Stage[] {
   if (files === null || review) return [...ALL_STAGES];
   const changed = files.filter((f) => !ignored(f));
   if (changed.length === 0 && gated) return [];
-  if (changed.length > 0 && changed.every(isDocument)) return ['parity'];
+  // The tick of a numbered task runs every test, its last part's code or not (ADR-87, ADR-280).
+  if (changed.length > 0 && changed.every(isDocument) && !ticked) return ['parity'];
   const sim = changed.some((f) => SWEEP_INPUTS.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)));
   return ALL_STAGES.filter((s) => s !== 'test:sweep' || sim);
 }
@@ -227,7 +229,8 @@ function main(): void {
   const atHead = spawnSync('git', ['show', 'HEAD:PLAN.md'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
   const planAtHead = atHead.status === 0 && !atHead.error && planNow !== '' ? atHead.stdout : null;
   const review = reviewTicked(planNow, planAtHead);
-  const stages = planGate(files, head !== null && gatedTrees().includes(head), review);
+  const ticks = newTicks(planNow, planAtHead);
+  const stages = planGate(files, head !== null && gatedTrees().includes(head), review, (ticks?.length ?? 0) > 0);
   const sweep = planSweep(files, review);
   if (stages.length === 0) {
     console.log('gate: nothing changed since HEAD, and the gate has passed this tree (npm run check:full runs everything)');
@@ -245,7 +248,7 @@ function main(): void {
     if (e2e.mode === 'none') stages.splice(stages.indexOf('e2e'), 1);
   }
   // The unit stage in full only when a numbered task is ticked (ADR-280); else the tests related to what changed.
-  const unit: UnitPlan = process.env['FULL'] ? { mode: 'full', files: [], why: '' } : planUnit(files, newTicks(planNow, planAtHead), (f) => existsSync(path.join(ROOT, f)));
+  const unit: UnitPlan = process.env['FULL'] ? { mode: 'full', files: [], why: '' } : planUnit(files, ticks, (f) => existsSync(path.join(ROOT, f)));
   const unitWhy = unit.why !== '' && stages.includes('test');
   if (stages.includes('test') && unit.mode === 'none') stages.splice(stages.indexOf('test'), 1);
   const skipped = ALL_STAGES.filter((s) => !stages.includes(s));

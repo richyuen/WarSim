@@ -76,6 +76,10 @@ describe('gate plan (ADR-48, ADR-49)', () => {
     for (const f of ['vitest.config.ts', 'tests/helpers/earth.ts', 'package-lock.json', 'data/scenarios/1938/oob.json', 'public/data/earth/manifest.json', 'tools/headless/assets.ts']) expect(planUnit([f], [], on).mode, f).toBe('full');
     // A file removed: what imported it is not known any more.
     expect(planUnit(['src/sim/gone.ts'], [], (f) => f !== 'src/sim/gone.ts').mode).toBe('full');
+    // A tick in a commit of documents alone still runs the code's stages (the unit and e2e in full).
+    expect(planGate(['PLAN.md', 'PROGRESS.md', 'DECISIONS.md'], false, false, true)).toEqual(ALL_STAGES.filter((s) => s !== 'test:sweep'));
+    expect(planGate(['PLAN.md', 'PROGRESS.md'], false, false, false)).toEqual(['parity']);
+    expect(planUnit(['PLAN.md', 'PROGRESS.md'], ['4.7'], on).mode).toBe('full');
     // No source and no unit test: none (a spec, a picture, the critic's output).
     expect(planUnit(['tests/e2e/fire1938.spec.ts', 'docs/evidence/4.7/a.png', 'critic/x.json'], [], on).mode).toBe('none');
   });
