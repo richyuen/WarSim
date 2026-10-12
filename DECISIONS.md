@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-290 · 2026-10-12 · accepted — A sea battle needs a weapon the other side can be hit by (PLAN 4.8k)
+
+- **Found** (the tenth read): contact asked only that one of two fleets had reach (a gun or
+  torpedoes). A submarine's torpedoes are reach, but a submarine is a target of depth charges
+  alone (ADR-255), and submarines have none: two enemy submarine flotillas met, fought a battle
+  with no shot, never broke off (no losses), and stood engaged, held, for the war (seeds 99,
+  4242 and 7 with Germany, Italy and Japan at war from the first hour: a US and four Japanese
+  flotillas from day 7 to day 122).
+- **Decision.** Two fleets are in contact only if one has a weapon a ship of the other can be
+  hit by (`canHit`): a gun or torpedoes (`reach`) and a surface ship there, or depth charges
+  (`asw`) and a submarine there. A submarine flotilla meets a destroyer flotilla, a battle
+  squadron (its destroyers) and transports; not another submarine flotilla.
+- **The pin stays** 841d4422: seed 99's first year had no such pair.
+- **Tests.** `seaContact1938.test.ts`: two flotillas 5 km apart at war, no battle, and both sail
+  on when ordered (failed before); a destroyer flotilla and a submarine flotilla fight.
+
 ### ADR-289 · 2026-10-12 · accepted — The tick's work after Phase 4 is PLAN 7.1's (the user's decision)
 
 - **Context.** PLAN 4.8f found seed 99's five years × 1.18 to × 1.20 the figure before Phase 4

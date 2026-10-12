@@ -1591,7 +1591,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     `detection` km × (1 − the enemy's least stealthy ship's `stealth` / 100): destroyers
     see a battle squadron at 29 km and a submarine flotilla at 18.
   - *Contact:* two fleets of nations at war of which either sees the other and one has a
-    gun (`range_km` and `hard` above 0); joined, a sea battle. A fleet in one is
+    weapon a ship of the other can be hit by: a gun or torpedoes for a surface ship, depth
+    charges for a submarine (`canHit`, PLAN 4.8k, ADR-290); joined, a sea battle. A fleet in one is
     `engaged` and holds.
   - *Its range* (`world.seaRange`, state, saved while not empty): the nearest pair's
     distance at its first hour, then by the sides' reach (longest gun) and pace (slowest

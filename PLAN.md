@@ -38,11 +38,7 @@ quick sweep as a smoke test.
   - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
   - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
   - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
-  - [ ] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a
-    torpedo is reach, but a submarine is a target of depth charges alone and neither side has
-    any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60
-    days, 0 lost; seeds 99, 4242 and 7 by themselves: a US and four Japanese flotillas from day
-    7 to day 122). Contact needs a side with a weapon the other can be hit by. A test fails first.
+  - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
   - [ ] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not
     leave out a fleet with `retreat` (land combat does): a transport group "broke off" eight
     hours in a row and was sunk in nine (`.cache/read10/breakoff2.ts`). A test fails first.

@@ -7081,3 +7081,22 @@ Of 4.8 (open in PLAN.md):
       city: 2.69 → 1.8 to 2.2 ms a call (every 12 hours, and the naval AI's raids), the first
       year's hash 841d4422 as before.
     The rest moved to PLAN 7.1 (the user's decision, 2026-10-12, ADR-289).
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a
+    torpedo is reach, but a submarine is a target of depth charges alone and neither side has
+    any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60
+    days, 0 lost; seeds 99, 4242 and 7 by themselves: a US and four Japanese flotillas from day
+    7 to day 122). Contact needs a side with a weapon the other can be hit by. A test fails first.

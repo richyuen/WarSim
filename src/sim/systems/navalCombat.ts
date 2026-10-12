@@ -70,6 +70,10 @@ interface FleetFacts {
   stealth: number;
   reach: number;
   kmh: number;
+  /** Its depth charges (`asw`), the only weapon a submarine is a target of; and what of it can be hit: a surface ship, a submarine. */
+  asw: number;
+  surface: boolean;
+  submerged: boolean;
 }
 
 /** The distance in km between two points (cells) of the map: by the km of a cell at their middle row, the short way round a looping map. */
@@ -101,6 +105,9 @@ function factsOf(world: World, id: number, els: readonly number[]): FleetFacts |
   let detection = 0;
   let stealth = Infinity;
   let reach = 0;
+  let asw = 0;
+  let surface = false;
+  let submerged = false;
   for (const e of els) {
     if (ec.strength[e]! <= 0) continue;
     const u = units[ec.unit[e]!]!;
@@ -108,10 +115,18 @@ function factsOf(world: World, id: number, els: readonly number[]): FleetFacts |
     stealth = Math.min(stealth, u.stealth);
     if (u.hard > 0) reach = Math.max(reach, u.rangeKm);
     if (u.torpedo > 0) reach = Math.max(reach, u.torpedoKm);
+    asw = Math.max(asw, u.asw);
+    if (u.cls === 'ss') submerged = true;
+    else surface = true;
   }
   if (stealth === Infinity) return null;
   const rule = world.rules!.templates[world.formations.cols.template[id]!];
-  return { id, nation: world.formations.cols.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0 };
+  return { id, nation: world.formations.cols.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, surface, submerged };
+}
+
+/** Whether a fleet of `a`'s facts has a weapon a ship of `b`'s can be hit by. */
+function canHit(a: FleetFacts, b: FleetFacts): boolean {
+  return (a.reach > 0 && b.surface) || (a.asw > 0 && b.submerged);
 }
 
 /** Fleets in contact, joined into battles (ascending ids), and the nearest distance of a pair in each; sets `engaged`. */
@@ -148,7 +163,9 @@ export function findSeaBattles(world: World): { fleets: number[]; km: number }[]
     for (let j = i + 1; j < facts.length; j++) {
       const b = facts[j]!;
       if ((c.y[b.id]! - c.y[a.id]!) * minKy > maxSees) break;
-      if (a.reach <= 0 && b.reach <= 0) continue;
+      // A battle needs a weapon the other side can be hit by (PLAN 4.8k): a gun or a torpedo for a
+      // surface ship, depth charges for a submarine. Two submarine flotillas have none.
+      if (!canHit(a, b) && !canHit(b, a)) continue;
       if (!world.wars.atWar(a.nation, b.nation)) continue;
       const km = seaKm(world, c.x[a.id]!, c.y[a.id]!, c.x[b.id]!, c.y[b.id]!);
       const sees = Math.max(a.detection * (1 - b.stealth / 100), b.detection * (1 - a.stealth / 100));

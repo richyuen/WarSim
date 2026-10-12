@@ -14326,3 +14326,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   there with the alternating measure (5.841 → 7.008 ms here, × 1.20 against × 1.12), what each
   part cut, what is left by system, what was tried for nothing.
 - **Next:** PLAN 4.8k (submarines locked in a battle that never ends).
+
+## 2026-10-12 — PLAN 4.8k: a sea battle needs a weapon the other side can be hit by (ADR-290)
+
+- **Done:** contact asks `canHit` of either fleet: reach and a surface ship there, or depth
+  charges and a submarine there. Two submarine flotillas no longer lock each other in a battle
+  with no shot for the war.
+- **Tests:** `seaContact1938.test.ts` (failed first: a battle of two flotillas).
+- **The pin** holds (no such pair in seed 99's first year). SPEC §6.2's contact says so.
+- **The gate:** the related unit tests (120 files), red only by the two timing tests of BLOCKERS;
+  the pin held (run by hand before); build and parity green.
+- **Next:** PLAN 4.8l.
