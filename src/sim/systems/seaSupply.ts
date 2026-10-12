@@ -130,19 +130,26 @@ function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<numb
     if (!list) byComp.set(c, (list = []));
     list.push(zone);
   });
-  // The cities' components by bloc, with their counts.
-  const cities = new Map<number, Map<number, number>>();
+  // The cities' components by bloc, with their counts: counted by pair first (PLAN 4.8i3: one
+  // look-up a city, not two), then by bloc in the order the pairs were met, which is the order
+  // a bloc's components were met in.
+  const pairs = new Map<number, number>();
   const cc = world.cities.cols;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
     const ctl = controller[cell]!;
     const c = comp[cell]!;
     if (ctl === 0 || owner[cell] !== ctl || c === 0) return;
-    const b = blocOfNation[ctl]!;
+    const key = c * 0x10000 + blocOfNation[ctl]!;
+    pairs.set(key, (pairs.get(key) ?? 0) + 1);
+  });
+  const cities = new Map<number, Map<number, number>>();
+  for (const [key, n] of pairs) {
+    const b = key % 0x10000;
     let m = cities.get(b);
     if (!m) cities.set(b, (m = new Map()));
-    m.set(c, (m.get(c) ?? 0) + 1);
-  });
+    m.set((key - b) / 0x10000, n);
+  }
   const holder = world.seaControl?.holder;
   const { links, through } = zoneGraph(world);
   const seen = new Uint8Array(z.count + 1);

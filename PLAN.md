@@ -47,6 +47,9 @@ quick sweep as a smoke test.
       99's first year (hash 841d4422 both).
     - [x] 4.8i2 The lane graph before the runner's clock (`runHeadless`), as the worker builds it
       before the first tick (4.8e): its 1.96 s out of the measured ticks.
+    - [x] 4.8i3 Supply over sea's `seaReach` counts the cities by bloc and land in one look-up a
+      city: 2.69 → 1.8 to 2.2 ms a call (every 12 hours, and the naval AI's raids), the first
+      year's hash 841d4422 as before.
   - [ ] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a
     torpedo is reach, but a submarine is a target of depth charges alone and neither side has
     any; both stay engaged and hold (moving, unmoved) for the war (`.cache/read10/subs.ts`: 60

@@ -14307,3 +14307,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   cost from the game's size.
 - **Next:** PLAN 4.8i3, supply over sea's `seaReach` (2.4 ms every 12 hours), then the
   measure again.
+
+## 2026-10-12 — PLAN 4.8i3: supply over sea counts its cities in one look-up each
+
+- **Done:** `seaReach` counts the cities by (land, bloc) in one map, then groups them by bloc in
+  the order the pairs were met: each bloc's lands come in the order they did, so the land with
+  most cities and the ways are found as before.
+- **Measured:** a call on seed 99's day 60, 200 calls: 2.69 → 1.80 to 2.18 ms. The first year's
+  hash 841d4422 as before; supply's share of a single run (0.96 ms) is within the runs' spread.
+- **Not a rule change:** the pin holds.
+- **The gate:** the related unit tests (119 files), red only by the two timing tests of BLOCKERS;
+  the pin held; build and parity green.
+- **Next:** the rest of the tick's work moves to PLAN 7.1 (the user's decision).
