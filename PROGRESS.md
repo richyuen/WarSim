@@ -14457,3 +14457,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Deferred (ADR-58), logged once:** R4-B3, the world breaks into statelets (seed 5303: 94
   nations alive in year 1, 183 in year 30; 245 founded) → a line under PLAN 1.42.
 - **Next:** PLAN 4.9.
+
+## 2026-10-12 — PLAN 4.9 split into parts (documents)
+
+- **Found:** the critic's two-step landing (seed 2207) works as the rules say: unescorted
+  transports caught off the Weser broke off at hour 99 and sailed home, and the division came
+  ashore in England; no message said so. The parts: 4.9a a reason with every refused order;
+  4.9b an order over the sea from inland; 4.9c the page tells it; 4.9d the AT's spec.
+- **Next:** PLAN 4.9a.

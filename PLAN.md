@@ -35,6 +35,22 @@ quick sweep as a smoke test.
   transports at Portsmouth, marches, embarks, sails and lands (or is thrown back with a message
   on the screen); an order the sim refuses shows its reason within a second (test of each
   refusal kind the page can cause).
+  Split 2026-10-12 into parts, one cause a commit. Found first: the critic's two orders
+  (`critic/scripts/c4_landing.ts`, seed 2207) work as the rules say: the transports, alone,
+  were caught by the German navy off the Weser, broke off (hour 99, `FormationRetreated`) and
+  sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
+  - [ ] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard,
+    no land formation, no way by land, a march barred on the way; by sea: at no port of its
+    nation, no transports there with room, no water by the target, no way for the transports;
+    a fleet's: no water, no lane). Unit test of each.
+  - [ ] 4.9b An order over the sea from inland: the formation marches to its nation's nearest
+    port with transports that have room for it, embarks there and sails (the sea order kept
+    as state while it marches, saved). Unit test: London to the German coast; a save loaded
+    on the march.
+  - [ ] 4.9c The page says what became of an order: a refused one's reason by the formation
+    and in the ticker within a second; a landing thrown back; transports that broke off and
+    brought their troops ashore elsewhere. e2e.
+  - [ ] 4.9d The AT's spec (above), and the tick of 4.9.
 - [ ] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
   is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
   small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
