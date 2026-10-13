@@ -1744,6 +1744,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   any time by a straight line between base and target at its speed. A strike turns at once; a
   patrol stays over its zone for the fuel its range leaves it (2 × (range − km) ÷ speed), at
   most 4 hours.
+- *As built (PLAN 5.2b, ADR-312; `airSystem`, `airborne`):* each hour a wing with a mission and
+  no sortie launches one from its base (state: `world.sorties`, saved; the wing's row stays at
+  its base); home, it turns round 2 hours. `airborne` gives the sorties in the air at a time by
+  air zone, from `sortieAt`: where interception is reckoned (PLAN 5.3).
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

@@ -14660,3 +14660,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   rounding (the tick a sortie ends read as on its way back).
 - **The pin holds**: nothing calls it yet.
 - **Next:** PLAN 5.2b.
+
+## 2026-10-13 — PLAN 5.2b: the sortie scheduler (ADR-312). PLAN 5.2 done
+
+- **Done:** in `airSystem`, a wing with a mission and no sortie launches one each hour; home, it
+  turns round 2 hours; `world.sorties` saved; `airborne` (the sorties in the air by air zone).
+  A rebase ends a sortie. SPEC §6.3, PARITY.
+- **Tests:** `sortieScheduler1938.test.ts` (3), the AT of 5.2.
+- **The pin holds** at 1377ab88: no AI gives a mission yet.
+- **The gate:** the related unit tests red only by the three timing tests of BLOCKERS (the
+  build's 3,522 ms, `snapshot-perf` 2.28 ms, the territory's 25.5 ms a tick); the pin, build and
+  parity green by hand.
+- **Next:** PLAN 5.3.

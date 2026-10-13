@@ -25,15 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.2 Mission scheduler + sorties as derived kinematics.
-  AT: the sortie position function is pure (same inputs → same output, property test) and matches the sim's interception points.
-  Split 2026-10-13. Found first: a wing has a mission (PLAN 5.1e) and nothing flies it. One
-  cause a commit:
-  - [x] 5.2a The sortie: its flight as a pure function of (base, target, launch hour, speed, […]
-  - [ ] 5.2b The scheduler: each hour a wing with a mission and none in the air, ready on its
-    base, launches a sortie (state, saved: its launch and its target); home, it turns round
-    for some hours. The hour's sorties by air zone, from the sortie function: the points of
-    PLAN 5.3's interception, the same as the function's. The AT.
 - [ ] 5.3 Air combat, interception, AA; air superiority per zone.
   AT: outcome tests (fighters beat bombers; AA attrition rate).
 - [ ] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
@@ -717,3 +708,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter […]
 - [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a […]
 - [x] 5.1 Air wings, airbases, carriers, range; air zones. […]
+- [x] 5.2 Mission scheduler + sorties as derived kinematics. […]

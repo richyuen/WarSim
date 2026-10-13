@@ -10,6 +10,7 @@ import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
 import type { Airbase } from './data/airbases';
 import type { WingMission } from './systems/air';
+import type { Sortie } from './systems/sorties';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { xxhash32View } from './core/hash';
@@ -391,6 +392,8 @@ class WorldCore implements Stateful {
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
       // The air wings' missions (PLAN 5.1e): [id, kind (0 patrol, 1 strike), x, y] each, only while there is one.
       ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : 0, m.x, m.y])) }]),
+      // The air wings' sorties (PLAN 5.2b): [id, bx, by, tx, ty, launch, kmh, km, over] each, only while there is one.
+      ...(w.sorties.size === 0 ? [] : [{ name: 'world.sorties', dtype: 'f64' as const, data: Float64Array.from([...w.sorties].sort((a, b) => a[0] - b[0]).flatMap(([id, o]) => [id, o.bx, o.by, o.tx, o.ty, o.launch, o.kmh, o.km, o.over])) }]),
       // The air wings' bases (PLAN 5.1d): [id, base] each, only while there is one.
       ...(w.wingBase.size === 0 ? [] : [{ name: 'world.wingBase', dtype: 'f64' as const, data: Float64Array.from([...w.wingBase].sort((a, b) => a[0] - b[0]).flat()) }]),
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
@@ -437,6 +440,12 @@ class WorldCore implements Stateful {
     w.seaLinks = new Map();
     w.seaBound = new Map();
     w.wingBase = new Map();
+    w.sorties = new Map();
+    const sorties = sections.find((s) => s.name === 'world.sorties')?.data as Float64Array | undefined;
+    for (let at = 0; sorties && at < sorties.length; at += 9) {
+      const v = sorties;
+      w.sorties.set(v[at]!, { bx: v[at + 1]!, by: v[at + 2]!, tx: v[at + 3]!, ty: v[at + 4]!, launch: v[at + 5]!, kmh: v[at + 6]!, km: v[at + 7]!, over: v[at + 8]! });
+    }
     w.wingMission = new Map();
     const missions = sections.find((s) => s.name === 'world.wingMission')?.data as Float64Array | undefined;
     for (let at = 0; missions && at < missions.length; at += 4) w.wingMission.set(missions[at]!, { kind: missions[at + 1] === 1 ? 'strike' : 'patrol', x: missions[at + 2]!, y: missions[at + 3]! });
@@ -929,6 +938,12 @@ export class World {
   wingBase = new Map<number, number>();
   /** The air wings' missions (PLAN 5.1e, `orderMission`): state, saved while not empty; the scheduler of PLAN 5.2 reads them. */
   wingMission = new Map<number, WingMission>();
+  /**
+   * The air wings' sorties (PLAN 5.2b, `airSystem`), by wing: in the air, or home and turning
+   * round until `sortieEnd` + `TURNAROUND_HOURS`. State, saved while not empty; where one is is
+   * `sortieAt`'s, never stored.
+   */
+  sorties = new Map<number, Sortie>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

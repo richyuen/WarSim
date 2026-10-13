@@ -2,14 +2,16 @@
  * The air wings at their bases (PLAN 5.1d). A wing's base is state (`world.wingBase`): an airbase
  * (its index + 1) or a carrier's fleet (the fleet's id, negative). Hourly after the movement, a
  * wing on a carrier is where its fleet is; one whose carrier is gone (`destroyFormation` sets its
- * base to 0) is lost with it. No other rule reads a wing yet (`World.offLand`).
+ * base to 0) is lost with it. Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
+ * ready on its base, launches one. No other rule reads a wing yet (`World.offLand`).
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { airbaseRoom } from '../data/airbases';
 import { destroyFormation } from './elements';
 import { seaKm } from './navalCombat';
+import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
 import { blocOf } from './supply';
-import type { World } from '../world';
+import { airOf, type World } from '../world';
 
 export function airSystem(world: World): void {
   if (world.wingBase.size === 0) return;
@@ -29,7 +31,51 @@ export function airSystem(world: World): void {
       c.x[id] = c.x[-base]!;
       c.y[id] = c.y[-base]!;
     }
+    schedule(world, id);
   }
+}
+
+/** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */
+export const TURNAROUND_HOURS = 2;
+
+/**
+ * The scheduler for wing `id` this hour (PLAN 5.2b): a sortie done and turned round is
+ * forgotten; then a wing with a mission and none, whose target is within its range of its base,
+ * takes off now: a strike turns over its target, a patrol stays `patrolHours`.
+ */
+function schedule(world: World, id: number): void {
+  const s = world.sorties.get(id);
+  if (s) {
+    if (world.tick < sortieEnd(s) + TURNAROUND_HOURS) return;
+    world.sorties.delete(id);
+  }
+  const m = world.wingMission.get(id);
+  const at = m && basePlace(world, world.wingBase.get(id)!);
+  if (!m || !at) return;
+  const km = seaKm(world, at[0], at[1], m.x, m.y);
+  const range = wingRange(world, id);
+  if (km > range) return; // its carrier sailed off: it waits
+  const kmh = world.rules!.templates[world.formations.cols.template[id]!]!.speedKmh;
+  world.sorties.set(id, { bx: at[0], by: at[1], tx: m.x, ty: m.y, launch: world.tick, kmh, km, over: m.kind === 'patrol' ? patrolHours(range, kmh, km) : 0 });
+}
+
+/**
+ * The sorties in the air at time `t` by the air zone they are in (PLAN 5.2b; `airOf`), each zone's
+ * wings by id: where PLAN 5.3's interceptions are reckoned. From `sortieAt`, nothing stored.
+ */
+export function airborne(world: World, t: number): Map<number, number[]> {
+  const zones = airOf(world).zoneOf;
+  const w = world.cells.w;
+  const out = new Map<number, number[]>();
+  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+    const p = sortieAt(s, t, w);
+    if (p.leg === Leg.Home) continue;
+    const zone = zones[Math.min(world.cells.h - 1, Math.floor(p.y)) * w + Math.floor(p.x)]!;
+    const list = out.get(zone);
+    if (list) list.push(id);
+    else out.set(zone, [id]);
+  }
+  return out;
 }
 
 /** A wing's mission (PLAN 5.1e): to patrol about a place or strike it. Read by the scheduler of PLAN 5.2. */
@@ -145,6 +191,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   if (best === 0) return reject(world, id, far ? RejectReason.OutOfRange : RejectReason.NoBase);
   world.wingBase.set(id, best);
   world.wingMission.delete(id);
+  world.sorties.delete(id); // the flight there is PLAN 5.3's; it is ready at its new base
   [c.x[id], c.y[id]] = basePlace(world, best)!;
   return 0;
 }

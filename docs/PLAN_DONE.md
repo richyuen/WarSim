@@ -7537,3 +7537,25 @@ Of 5.2 (open in PLAN.md):
     hours over the target): where it is at any time, fractional hours too, and on which leg
     (out, over the target, back, home); none of it stored. A strike turns at once; a patrol
     stays over its zone for the fuel its range leaves it, at most 4 hours. Property test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.2 Mission scheduler + sorties as derived kinematics.
+  AT: the sortie position function is pure (same inputs → same output, property test) and matches the sim's interception points.
+  Split 2026-10-13. Found first: a wing has a mission (PLAN 5.1e) and nothing flies it. One
+  cause a commit:
+  - [x] 5.2a The sortie: its flight as a pure function of (base, target, launch hour, speed, […]
+  - [x] 5.2b The scheduler: each hour a wing with a mission and none in the air, ready on its
+    base, launches a sortie (state, saved: its launch and its target); home, it turns round
+    for some hours. The hour's sorties by air zone, from the sortie function: the points of
+    PLAN 5.3's interception, the same as the function's. The AT.

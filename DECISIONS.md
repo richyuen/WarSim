@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-312 · 2026-10-13 · accepted — The sortie scheduler; the hour's sorties by air zone (PLAN 5.2b)
+
+- **Decision.**
+  - *The scheduler*, in `airSystem` after a carrier's wing is set at its fleet, by wing id: a
+    wing with a mission (`world.wingMission`) and no sortie launches one this hour from its
+    base's place now (a carrier's sortie flies from where the fleet was at its launch and back
+    there), at its template's speed, a patrol staying `patrolHours`. Home, it turns round
+    `TURNAROUND_HOURS` (2) before the next. A target beyond its range (a carrier sailed off)
+    launches nothing; the wing waits. One sortie a wing: the wing flies whole (its strength by
+    its elements is PLAN 5.3's).
+  - *State*: `world.sorties` (saved while not empty, by wing: its launch); the wing's own row
+    stays at its base. A rebase ends its sortie (it is ready at its new base); a wing destroyed
+    loses it.
+  - `airborne(world, t)`: the sorties in the air at `t` by the air zone of their place
+    (`sortieAt`, `airOf`), each zone's wings by id: where PLAN 5.3 reckons interception.
+- **The pin holds** at 1377ab88: no AI gives a mission yet (PLAN 5.6).
+- **Tests.** `sortieScheduler1938.test.ts`: no mission, no sortie; a strike flies out and back,
+  turns round, flies again, the wing's row at its base throughout; a patrol's hours over; a
+  carrier's sortie from where its fleet was; the AT: 30 German wings over a day, `airborne` at
+  each hour and half hour the function's places by zone; saved mid-flight, the same hash and
+  sorties 10 hours on.
+
 ### ADR-311 · 2026-10-13 · accepted — A sortie's flight as a pure function (PLAN 5.2a)
 
 - **Decision.** `src/sim/systems/sorties.ts`: a `Sortie` is what it was launched with (its
