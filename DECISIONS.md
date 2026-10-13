@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-327 · 2026-10-13 · accepted — The eleventh independent read: ten findings and a suspicion, parts 5.8i to 5.8r (PLAN 5.8a)
+
+- **The read.** A reader with no part in the code (ADR-74), the 71 files of `src/`, `data/` and
+  `tools/` changed since `deafedf` (PLAN 4.9 to 5.7, the gate's review run), defects only.
+- **Checked here against the code, each holds:**
+  1. A desync: `airSuperiority` sums in the zone's map order (first flight in a running game, by
+     id after a load): 5.8i. The reader ran it: 2,353 of 20,000 random zones differ.
+  2. `check:review` green with a file red (an import or a hook's throw, a spec that fails to
+     load, a non-zero exit): 5.8p.
+  3. The review's key holds `critic/` (tracked files stay in the scratch index): 5.8q.
+  4. `orderRebase` throws for a wing of a carrier sunk this hour: 5.8j.
+  5. The air power never fades once no wing is left: 5.8k.
+  6. Wings outlive their carriers in a fleet that lives: 5.8l.
+  7. Wings fly from an airbase the enemy took: 5.8m.
+  8. The air mode's holders stale after a load; a day's first hour skipped by a pump: 5.8n.
+  9. A wing put aboard transports: 5.8o.
+  10. On a map that does not loop, the air's paths wrap: the watch list (BLOCKERS), the 1938
+      world loops.
+  - The suspicion, `byIndustry`'s key: 5.8r, a test first.
+- **Order:** the desync first (it moves every land battle of a game saved and loaded), then what
+  throws, then what a player sees wrong; the gate's two last before its use in 5.8h.
+
 ### ADR-326 · 2026-10-13 · accepted — The air battle demo; a sortie meets the enemy's within 150 km (PLAN 5.7d); PLAN 5.7 done
 
 - **The demo** (`tests/e2e/airDemo1938.spec.ts`, the AT of 5.7): Germany declares war on Poland

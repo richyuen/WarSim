@@ -7805,3 +7805,24 @@ Of 5.7 (open in PLAN.md):
   - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb […]
   - [x] 5.7c The air superiority map mode: each air zone by the side that holds its air.
   - [x] 5.7d The air battle demo e2e, its pictures looked at: the AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and
+    `tools/` changed since the tenth (`deafedf`: PLAN 4.9 to 5.7 and the gate's review run,
+    4,040 lines added), the new lines first. The same brief: defects only, nothing of what
+    changed or why. Each finding is checked against the code here before it is anything; those
+    a player can meet become parts 5.8i and on, each with a test that fails first, most severe
+    first; the rest go on the watch list.

@@ -14840,3 +14840,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Done:** 5.8a (the eleventh independent read, 71 files since `deafedf`) to 5.8h (the review
   run, the quick sweep, the tick), as 4.8 was.
 - **Next:** PLAN 5.8a.
+
+## 2026-10-13 — PLAN 5.8a: the eleventh independent read (ADR-327, documents)
+
+- **Done:** the read of the 71 files since `deafedf`: ten findings and a suspicion, each checked
+  here: parts 5.8i to 5.8r (a desync of air superiority after a load; a throw of `orderRebase`;
+  air power never fading without wings; wings outliving their carriers and flying from a taken
+  base; the air mode after a load; a wing aboard transports; two of the gate's review run; the
+  industry order's key). One on the watch list (paths that wrap on a map that does not loop).
+- **Next:** PLAN 5.8b.

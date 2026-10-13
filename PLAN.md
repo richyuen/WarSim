@@ -32,12 +32,7 @@ quick sweep as a smoke test.
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
   Split 2026-10-13, as 4.8 was: the pass is several causes, one a commit. A part is not a
   numbered task; the last part ticks 5.8 after `npm run check:review` (ADR-297).
-  - [ ] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and
-    `tools/` changed since the tenth (`deafedf`: PLAN 4.9 to 5.7 and the gate's review run,
-    4,040 lines added), the new lines first. The same brief: defects only, nothing of what
-    changed or why. Each finding is checked against the code here before it is anything; those
-    a player can meet become parts 5.8i and on, each with a test that fails first, most severe
-    first; the rest go on the watch list.
+  - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and […]
   - [ ] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326)
     against SPEC's text; what it says that the code does not, or the other way, set right.
   - [ ] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
@@ -46,6 +41,34 @@ quick sweep as a smoke test.
     and its save; a gap found is a test added (one that fails first where it finds a defect).
   - [ ] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's
     systems' share; over the budget of PLAN 7.1, the numbers in BLOCKERS.
+  - [ ] 5.8i A saved game plays on otherwise than the same game left running: air superiority
+    sums each side's power in the order of the zone's map, the nations' order of first flight in
+    a running game and by id after a load (`airSuperiority`; read by every land shot's
+    `airFactor` and by the air AI). The sums in a fixed order. Found by 5.8a, run there: 2,353
+    of 20,000 random four-nation zones differ.
+  - [ ] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until
+    `airSystem` runs): `basePlace(0)` is null and is spread. Refused with `NoBase`.
+  - [ ] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the
+    air power fades, and a land battle keeps the ± 20% of the last air war. It fades with none.
+  - [ ] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships
+    live keeps its wings, and they fly, see and strike for it; a rebase counts the template's
+    carriers, not the live ones. The wings beyond its live carriers are lost.
+  - [ ] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base):
+    a wing whose base is held by a nation not of its side rebases to its nation's nearest
+    airbase with room, or is lost with none.
+  - [ ] 5.8n The air-superiority mode after a load shows the game before's holders until the next
+    day's first hour (paused: for good), and a pump that steps past a day's first hour skips it:
+    the worker's air fields reset with a load; sent when the day changed.
+  - [ ] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only):
+    refused, as any formation that is not of the land.
+  - [ ] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to
+    import or throws in a hook (vitest: a failed file with no failed test), a spec that fails to
+    load (Playwright's top-level errors), a non-zero exit. Each is red.
+  - [ ] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index):
+    a critic's report committed after a review unproves it. Out of the key, as the header says.
+  - [ ] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the
+    industry, and an editor's change that keeps the sum keeps a stale order in a running game
+    that a loaded one does not have. A test first; a key that tells such changes apart.
   - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
