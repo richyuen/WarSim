@@ -14534,3 +14534,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   4.10a a fleet's counter, 4.10b a sea battle's mark and view, 4.10c the sea-control legend,
   4.10d the AT's specs.
 - **Next:** PLAN 4.10a.
+
+## 2026-10-13 — PLAN 4.10a: a fleet's counter at T0 is a navy's (ADR-302)
+
+- **Done:** fleets are counters of their own (`NAVAL` added to the nation for the clustering and
+  the declutter), drawn sea-blue with a light frame and a hull under the strength. SPEC §8 says so.
+- **Tests:** `navalCounter1938.spec.ts` (18 s); by hand `declutter1938`, `counters1938`,
+  `flagsClear1938`, 4 of 4.
+- **The pin:** the sim is not changed.
+- **The gate:** green (the related unit tests, 20 of 20; the new spec).
+- **Next:** PLAN 4.10b.

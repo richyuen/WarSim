@@ -18,8 +18,20 @@ import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../ca
 export interface CounterSource {
   x: number;
   y: number;
+  /** The nation, plus `NAVAL` for a fleet (`counterNation`): fleets are counters of their own (PLAN 4.10a). */
   nation: number;
   strength: number;
+}
+
+/**
+ * Added to a fleet's nation in a counter (PLAN 4.10a): fleets cluster and fold among themselves
+ * apart from armies, as another nation's would, and are drawn as a navy's (`counterNation`).
+ */
+export const NAVAL = 1 << 16;
+
+/** A counter's nation as a source gives it: `nation` + NAVAL for a fleet. */
+export function counterNation(nation: number, fleet: boolean): number {
+  return fleet ? nation + NAVAL : nation;
 }
 
 export interface Cluster {
@@ -36,6 +48,8 @@ export interface Cluster {
 export interface DrawnCounter {
   key: string;
   nation: number;
+  /** A navy's counter (PLAN 4.10a). */
+  naval: boolean;
   /** World position in cells (as drawn, after animation). */
   wx: number;
   wy: number;
@@ -419,6 +433,8 @@ export class CounterLayer {
     for (const it of shown) {
       const a = alpha * it.alpha;
       if (a <= 0.01) continue;
+      const naval = it.nation >= NAVAL;
+      const nation = naval ? it.nation - NAVAL : it.nation;
       const text = strengthText(it.strength);
       const w = boxWidth(it.strength, it.others);
       let box: [number, number] | null = null;
@@ -436,24 +452,35 @@ export class CounterLayer {
           ctx.scale(size, size);
           ctx.translate(-sx, -sy);
         }
-        ctx.fillStyle = 'rgba(16, 18, 24, 0.85)';
+        // A navy's counter (PLAN 4.10a): a sea-blue box and frame with a hull under its strength.
+        ctx.fillStyle = naval ? 'rgba(14, 38, 72, 0.9)' : 'rgba(16, 18, 24, 0.85)';
         ctx.fillRect(x, y, w, h);
-        ctx.fillStyle = colorOf(it.nation);
+        ctx.fillStyle = colorOf(nation);
         ctx.fillRect(x + 1, y + 1, 12, h - 2);
-        const flag = flagOf(it.nation);
+        const flag = flagOf(nation);
         if (flag) ctx.drawImage(flag, x + 2, y + 3, 10, 8);
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.strokeStyle = naval ? '#8ec5ff' : 'rgba(0, 0, 0, 0.9)';
         ctx.lineWidth = 1;
         ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
-        ctx.fillStyle = '#ffe28a';
-        ctx.fillText(text, x + 15, y + h / 2 + 0.5);
+        if (naval) {
+          ctx.fillStyle = '#8ec5ff';
+          ctx.beginPath();
+          ctx.moveTo(x + 14, y + h - 4);
+          ctx.lineTo(x + w - 2, y + h - 4);
+          ctx.lineTo(x + w - 5, y + h - 2);
+          ctx.lineTo(x + 16, y + h - 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.fillStyle = naval ? '#d6ecff' : '#ffe28a';
+        ctx.fillText(text, x + 15, y + h / 2 + (naval ? -0.5 : 0.5));
         if (it.others > 0) {
           ctx.fillStyle = '#b4bdcb';
           ctx.fillText(`+${it.others}`, x + 15 + widthOf(text) + BADGE_GAP, y + h / 2 + 0.5);
         }
         ctx.restore();
       }
-      if (box) this.drawn.push({ key: it.key, nation: it.nation, wx: it.x, wy: it.y, alpha: a, strength: it.strength, text, others: it.others, folded: it.folded, x: box[0], y: box[1], w: w * size, h: h * size });
+      if (box) this.drawn.push({ key: it.key, nation, naval, wx: it.x, wy: it.y, alpha: a, strength: it.strength, text, others: it.others, folded: it.folded, x: box[0], y: box[1], w: w * size, h: h * size });
     }
     ctx.restore();
   }

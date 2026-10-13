@@ -7313,3 +7313,20 @@ Of 4.9 (open in PLAN.md):
   - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest […]
   - [x] 4.9c The page says what became of an order: a refused one's reason by the formation […]
   - [x] 4.9d The AT's spec (above), and the tick of 4.9.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.10 (open in PLAN.md):
+
+  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a
+    ship glyph and the navy's colour of frame. e2e: pixels of a fleet's counter differ from an
+    army's at the same zoom.

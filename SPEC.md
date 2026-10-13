@@ -2028,7 +2028,10 @@ not move during the morph into T2; on the way back from T2 they grow where they 
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
 flag that would cover a counter stands just above it instead (up to 40 px from its usual place,
-else it is left out), so no counter's number is hidden (PLAN 1.45c). A destroyed nation has no
+else it is left out), so no counter's number is hidden (PLAN 1.45c). A nation's fleets are
+counters of their own (PLAN 4.10a, ADR-302): clustered and folded among themselves apart from
+its armies (as another nation's would be, `NAVAL` added to the nation), and drawn as a navy's,
+a sea-blue box and frame with a hull under the strength, the nation's flag in the chip. A destroyed nation has no
 flag: the snapshot says which nations live (PLAN 2.7g).
 
 *T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per

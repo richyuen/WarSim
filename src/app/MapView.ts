@@ -9,7 +9,7 @@ import { FlagStore } from './flagStore';
 import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
 import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
-import { CounterLayer, type CounterSource } from '../render/units/counters';
+import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -1188,7 +1188,8 @@ export class MapView {
     const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
     const flagOf = (n: number): CanvasImageSource | null => this.flags.canvasOf(n);
     const src: CounterSource[] = [];
-    for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: this.formNation[i]!, strength: this.formStrength[i]! });
+    // A fleet is a counter of its own, drawn as a navy's (PLAN 4.10a).
+    for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: counterNation(this.formNation[i]!, this.templates[this.formTemplate[i]!]?.domain === 1), strength: this.formStrength[i]! });
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);

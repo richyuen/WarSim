@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-302 · 2026-10-13 · accepted — A fleet's counter at T0 is a navy's (PLAN 4.10a)
+
+- **Found** (the critic's R4-B4): at T0 a fleet's counter was drawn as an army's, and a
+  nation's fleets and armies in one cell of the grid were one counter (Scapa Flow's fleet with
+  the army of Scotland's north).
+- **Decision.** A counter's source carries the nation plus `NAVAL` (65,536) for a fleet
+  (`counterNation`): the clustering, its animation and the declutter take it as another nation,
+  so fleets cluster and fold among themselves and a fold into an army's counter is shown as a
+  "+n", as a neighbour's is. The drawing reads the nation back for the colour and the flag and
+  draws a navy's box: sea-blue, with a light blue frame and a hull under its strength, the same
+  size as an army's (the declutter's boxes are unchanged). `DrawnCounter` has `naval`.
+- **Tests.** `navalCounter1938.spec.ts`: the British Isles at T0: a British navy counter by
+  Scapa Flow; every navy counter in view blue (blue over red by more than 25 of 255), every
+  army counter not (under 15). Picture `naval-counters-t0.png`.
+
 ### ADR-301 · 2026-10-13 · accepted — PLAN 4.9 done: the AT's spec, and what it found (PLAN 4.9d)
 
 - **The AT** (`invasion1938.spec.ts`, seed 2207): Britain, played, at war with Germany; a division

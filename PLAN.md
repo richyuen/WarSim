@@ -38,9 +38,7 @@ quick sweep as a smoke test.
   draws them (11 to 23 shots in a battle's hour, stepped); at ×1 a sea battle's five hours
   pass in five seconds, each hour's shots in a part of it, and in this container a sample came
   every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
-  - [ ] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a
-    ship glyph and the navy's colour of frame. e2e: pixels of a fleet's counter differ from an
-    army's at the same zoom.
+  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
   - [ ] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed
     guns on the water) for every battle of `world.seaBattles`, and its row in the ticker flies
     to a view of both fleets. e2e: the first battle of seed 6131's war is marked through its
