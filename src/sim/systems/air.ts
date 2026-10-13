@@ -2,7 +2,7 @@
  * The air wings at their bases (PLAN 5.1d). A wing's base is state (`world.wingBase`): an airbase
  * (its index + 1) or a carrier's fleet (the fleet's id, negative). Hourly after the movement, a
  * wing on a carrier is where its fleet is; one whose carrier is gone (`destroyFormation` sets its
- * base to 0) is lost with it. Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
+ * base to 0) is lost with it, as are the wings beyond its fleet's live carriers (PLAN 5.8l). Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
  * ready on its base, launches one; then the air power flown by zone (`airPowerSystem`, PLAN 5.3c)
  * and the hour's air fights (`airCombat`, PLAN 5.3a). No rule
  * of the land reads a wing yet (`World.offLand`).
@@ -12,7 +12,7 @@ import { airbaseRoom } from '../data/airbases';
 import { airCombat, antiAir, strikes } from './airCombat';
 import { airPowerSystem } from './airSuperiority';
 import { repairSystem } from './bombing';
-import { destroyFormation, loopW, wrapDx } from './elements';
+import { destroyFormation, elementIndex, loopW, wrapDx } from './elements';
 import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
 import { blocOf } from './supply';
@@ -27,6 +27,8 @@ export function airSystem(world: World): void {
   }
   const f = world.formations;
   const c = f.cols;
+  // A wing to each live carrier of a fleet, the lowest ids first (PLAN 5.8l).
+  const decks = new Map<number, number>();
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     if (!f.has(id)) {
       world.wingBase.delete(id);
@@ -38,6 +40,13 @@ export function airSystem(world: World): void {
       continue;
     }
     if (base < 0) {
+      const left = decks.get(-base) ?? liveCarriers(world, -base);
+      if (left === 0) {
+        // Its carrier sunk, the fleet afloat: lost with it.
+        destroyFormation(world, id);
+        continue;
+      }
+      decks.set(-base, left - 1);
       c.x[id] = c.x[-base]!;
       c.y[id] = c.y[-base]!;
     }
@@ -48,6 +57,17 @@ export function airSystem(world: World): void {
   strikes(world);
   if (byZone.size > 0) airCombat(world, byZone);
   antiAir(world);
+}
+
+/** Fleet `fleet`'s carriers afloat: its live elements of a carrier class (PLAN 5.8l). */
+export function liveCarriers(world: World, fleet: number): number {
+  const els = elementIndex(world).get(fleet);
+  if (!els) return 0;
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  let n = 0;
+  for (const e of els) if (ec.strength[e]! > 0 && units[ec.unit[e]!]!.cls === 'cv') n++;
+  return n;
 }
 
 /** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */
@@ -154,7 +174,7 @@ export function orderMission(world: World, id: number, kind: WingMission['kind']
  * Orders wing `id` to the base at (x, y) (PLAN 5.1e): an airbase within `BASE_PICK_CELLS` held by
  * its nation or a nation of its side (its supply bloc, or one fighting beside it), or a fleet of
  * its nation's with a carrier there; within its range of its base now, with room for it (an
- * airbase's `airbaseRoom` in aircraft; a fleet's a wing to each carrier). The wing is at its new
+ * airbase's `airbaseRoom` in aircraft; a fleet's a wing to each live carrier). The wing is at its new
  * base at once (the flight is PLAN 5.2's) and its mission ends. Else refused: `OutOfRange`, or
  * `NoBase`. 0 when ordered.
  */
@@ -198,10 +218,9 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
     if (holder !== nation && blocOf(world, holder) !== bloc && !world.wars.sameSide(nation, holder)) return;
     consider(i + 1, ...world.cellPoint(b.cell), (u) => u.aircraft + need <= airbaseRoom(b));
   });
-  const carrier = world.rules!.units.findIndex((u) => u.cls === 'cv');
   world.formations.forEach((f) => {
     if (!world.isFleet(f) || c.nation[f] !== nation) return;
-    const cvs = world.rules!.templates[c.template[f]!]!.elements.filter((e) => e.unit === carrier).reduce((s, e) => s + e.count, 0);
+    const cvs = liveCarriers(world, f);
     if (cvs > 0) consider(-f, c.x[f]!, c.y[f]!, (u) => u.wings + 1 <= cvs);
   });
   if (best === 0) return reject(world, id, far ? RejectReason.OutOfRange : RejectReason.NoBase);

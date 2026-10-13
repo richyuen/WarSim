@@ -40,9 +40,7 @@ quick sweep as a smoke test.
   - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority […]
   - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until […]
   - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the […]
-  - [ ] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships
-    live keeps its wings, and they fly, see and strike for it; a rebase counts the template's
-    carriers, not the live ones. The wings beyond its live carriers are lost.
+  - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships […]
   - [ ] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base):
     a wing whose base is held by a nation not of its side rebases to its nation's nearest
     airbase with room, or is lost with none.

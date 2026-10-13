@@ -14908,3 +14908,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (892 of 894) red only by two timing tests of BLOCKERS
   (3,056 ms, 2.39 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8l.
+
+## 2026-10-13 — PLAN 5.8l: wings beyond a fleet's live carriers are lost (ADR-335)
+
+- **Done:** `airSystem` keeps a wing to each live carrier of a fleet (`liveCarriers`), the lowest
+  ids; the rest are lost. `orderRebase` counts live carriers.
+- **Tests:** `carrierLoss1938` (2, new).
+- **The pin moves** 77670f43 → 57c9ae2e.
+- **The gate:** the related unit tests (893 of 896) red only by the three timing tests of
+  BLOCKERS (3,678 ms, 3.59 ms, 36.9 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8m.

@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-335 · 2026-10-13 · accepted — Wings beyond a fleet's live carriers are lost (PLAN 5.8l)
+
+- **Found** (the eleventh read): a wing was lost only with its whole fleet. A fleet whose carriers
+  were sunk and whose other ships lived kept its wings, and they flew, saw and struck for it; a
+  rebase to a fleet counted its template's carriers, not the live ones.
+- **Decision.** Hourly, `airSystem` keeps a wing to each live carrier of a fleet (`liveCarriers`:
+  its elements of class `cv` afloat), the lowest wing ids first; the wings beyond them are lost
+  (`destroyFormation`, as with a fleet sunk). `orderRebase` counts the live carriers.
+- **The pin moves** 77670f43 → 57c9ae2e: seed 99's year sinks carriers of fleets that live on.
+- **Tests.** `carrierLoss1938`: one carrier of two sunk, the higher wing lost; the other, the
+  lower; a rebase to a fleet with a deck free by its template and none by its live carriers is
+  refused.
+
 ### ADR-334 · 2026-10-13 · accepted — Air power fades with no wing left (PLAN 5.8k)
 
 - **Found** (the eleventh read): `airSystem` returned before the air power faded when no wing was
