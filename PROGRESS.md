@@ -14524,3 +14524,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (113 files, 735 tests), red only by two timing tests of
   BLOCKERS; the pin (c0a89199) and build green by hand.
 - **Next:** PLAN 4.10.
+
+## 2026-10-13 — PLAN 4.10 split into parts (documents)
+
+- **Found:** on seed 6131 (the critic's war) the sim fires at sea (28 naval shots in hour 41) and
+  the page draws them (11 to 23 in a battle's hour, stepped). At ×1 a five-hour battle passes in
+  five seconds, its shots in a part of each hour; the critic's samples (and this container's, 2
+  of 100) mostly missed them. Nothing stands for a sea battle on the map while it lasts. Parts:
+  4.10a a fleet's counter, 4.10b a sea battle's mark and view, 4.10c the sea-control legend,
+  4.10d the AT's specs.
+- **Next:** PLAN 4.10a.

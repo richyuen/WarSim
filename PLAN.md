@@ -33,6 +33,21 @@ quick sweep as a smoke test.
   AT: e2e: a fleet's counter at T0 differs from an army's (pixels); on seed 6131's war the
   first sea battle, followed from its event, draws gunfire within its first hours at T2; the
   sea-control mode names the holder of the zone under the cursor or in a legend.
+  Split 2026-10-13 into parts, one cause a commit. Found first (seed 6131, the critic's war):
+  the sim fires (28 naval shots in hour 41, 11 to 74 an hour after) and the page receives and
+  draws them (11 to 23 shots in a battle's hour, stepped); at ×1 a sea battle's five hours
+  pass in five seconds, each hour's shots in a part of it, and in this container a sample came
+  every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
+  - [ ] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a
+    ship glyph and the navy's colour of frame. e2e: pixels of a fleet's counter differ from an
+    army's at the same zoom.
+  - [ ] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed
+    guns on the water) for every battle of `world.seaBattles`, and its row in the ticker flies
+    to a view of both fleets. e2e: the first battle of seed 6131's war is marked through its
+    hours, and the view from its row has both fleets and draws their fire within its hours.
+  - [ ] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the
+    zone under the cursor named with its holder. e2e.
+  - [ ] 4.10d The AT's specs (above), and the tick of 4.10.
 - [ ] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
   value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
   together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
