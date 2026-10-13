@@ -1796,7 +1796,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   wing not of transports is refused it, `NotLand`). Its sortie, at the target in the hour it
   arrives, lifts 1/48 of a formation's supply an aircraft (a group of 24: a half) to its side's
   formations on the land within a cell that are short of it, the same share each, none past
-  full. No AI flies it yet (5.8u3).
+  full. The air AI's transports fly it (5.8u3a, ADR-350): daily, to the nation's own land
+  formation under half its supply nearest their base within range.
 - *As built (PLAN 5.8u2, ADR-349; `orderParadrop`, the `paradrop` command):* a formation of
   infantry alone, not in contact, at an airbase its nation holds, is flown by its nation's
   transport wings based there and on the ground (the fewest by id whose 64 men a plane lift its

@@ -15062,3 +15062,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (1,033 of 1,035) red only by two timing tests of
   BLOCKERS (3,000 ms, 2.56 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8u3.
+
+## 2026-10-13 — PLAN 5.8u3a: the AI flies supply (ADR-350)
+
+- **Done:** `airAi` tasks transports (`lift`) with supply to the nation's own land formation
+  under `LIFT_BELOW` nearest their base in range. 5.8u3 split: u3b the AI's paradrops.
+- **Tests:** `airAi1938` (1 more).
+- **The pin moves** 048c4760 → 76983901.
+- **The gate:** the related unit tests (823 of 826) red only by the three timing tests of
+  BLOCKERS (3,036 ms, 2.15 ms, 26.2 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u3b.

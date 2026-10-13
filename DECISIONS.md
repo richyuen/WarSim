@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-350 · 2026-10-13 · accepted — The AI flies supply (PLAN 5.8u3a)
+
+- **Found** (5.8b): with air supply (5.8u1) the air AI gave its transports no mission.
+- **Decision.** Daily, an AI nation at war tasks each land-based transport wing with `supply`
+  to its own land formation whose supply is under `LIFT_BELOW` 0.5 nearest the wing's base
+  within its range (`nearest`, as the fighters' front); with none, no mission. An ally's
+  formation is not its to feed, nor one aboard. PLAN 5.8u3 split: u3a supply, u3b the AI's
+  paradrops.
+- **The pin moves** 048c4760 → 76983901.
+- **Tests.** `airAi1938` (1 more): a German division on the front at a quarter's supply,
+  Germany's transports in range fly supply to it; fed again, with a Polish one short beside it,
+  no mission.
+
 ### ADR-349 · 2026-10-13 · accepted — The paradrop (PLAN 5.8u2)
 
 - **Found** (5.8b): SPEC §6.3 has the paradrop; no formation could go by air.

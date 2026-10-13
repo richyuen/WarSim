@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { airAi, BOMB_SUPERIORITY, byIndustry } from '../../src/sim/ai/air';
+import { airAi, BOMB_SUPERIORITY, byIndustry, LIFT_BELOW } from '../../src/sim/ai/air';
 import { kmFromBase, wingRange } from '../../src/sim/systems/air';
 import { airSuperiority } from '../../src/sim/systems/airSuperiority';
 import { airOf, type World } from '../../src/sim/world';
@@ -103,5 +103,29 @@ describe('the order of industry kept (PLAN 5.8r)', () => {
     const fresh = [...econ.keys()].filter((c) => econ[c]! > 0).sort((x, y) => econ[y]! - econ[x]! || x - y);
     expect(byIndustry(w)).toEqual(fresh);
     expect(byIndustry(w)[0]).toBe(b);
+  });
+});
+
+// PLAN 5.8u3a: the AI's transports fly supply to its own land formation short of it (under
+// LIFT_BELOW) nearest their base within range; with none, no mission.
+describe('the AI\'s transports (PLAN 5.8u3a)', () => {
+  it('a German division short of supply on the front: Germany\'s transports fly supply to it; fed again, no mission', () => {
+    const { w, ger, pol } = front();
+    const lifts = wingsOf(w, GER, 'air_transport_group');
+    expect(lifts.length).toBeGreaterThan(0);
+    w.formations.cols.supply[ger] = LIFT_BELOW / 2;
+    airAi(w);
+    for (const id of lifts) {
+      const m = w.wingMission.get(id);
+      if (kmFromBase(w, id, FX, FY) > wingRange(w, id)) continue;
+      expect(m).toEqual({ kind: 'supply', x: w.formations.cols.x[ger], y: w.formations.cols.y[ger] });
+    }
+    expect(lifts.some((id) => w.wingMission.get(id)?.kind === 'supply')).toBe(true);
+    // Fed again, and a Polish one short beside it: no German transport's mission.
+    w.formations.cols.supply[ger] = 1;
+    w.formations.cols.supply[pol] = LIFT_BELOW / 2;
+    w.tick += 24;
+    airAi(w);
+    for (const id of lifts) expect(w.wingMission.has(id)).toBe(false);
   });
 });
