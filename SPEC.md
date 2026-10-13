@@ -1793,6 +1793,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.7c, ADR-325):* the air-superiority map mode tints each air zone whose air a
   nation holds (superiority 0.6 or more) with its colour, stripes a contested one, and fades the
   rest; daily from the worker.
+- *As built (PLAN 5.7d, ADR-326):* a sortie fights the enemy's sorties of its zone within 150 km of
+  it (an air zone is too wide to be one fight); each meeting is a fight of its own, told between
+  its nearest foes. The air battle demo: `tests/e2e/airDemo1938.spec.ts`.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

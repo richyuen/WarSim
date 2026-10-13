@@ -14820,3 +14820,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (1,008 of 1,011) red only by the three timing tests of
   BLOCKERS (3,280 ms, 3.80 ms, 29.5 ms); the pin, build, the new spec (by hand) and parity green.
 - **Next:** PLAN 5.7d.
+
+## 2026-10-13 — PLAN 5.7d: the air battle demo (ADR-326). PLAN 5.7 done
+
+- **Done:** `airDemo1938.spec.ts`; four pictures looked at (`docs/evidence/5.7/air-demo-*.png`).
+- **Found by the demo, mended:** the sorties drawn an hour ahead (now the hour the snapshot ends);
+  an air fight told at a bystander's place (now between its nearest foes, `fightPlace`); a sortie
+  fighting every enemy sortie of its zone, 600 km apart (now within `INTERCEPT_KM`, 150 km, each
+  meeting a fight). SPEC §6.3, PARITY.
+- **Tests:** `airCombat1938` (2 more), the demo; `airYear` by hand: green (18,060 strikes, 384
+  zone-days contested over a front).
+- **The pin moves** 321cd835 → 28d6b82d.
+- **The gate:** the related unit tests (919 of 922) red only by the three timing tests of
+  BLOCKERS (2,884 ms, 3.08 ms, 26.2 ms); the pin, build, the demo (by hand) and parity green.
+- **Next:** PLAN 5.8, the Phase 5 review.

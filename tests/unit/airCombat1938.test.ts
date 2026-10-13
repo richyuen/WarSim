@@ -4,7 +4,8 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { orderMission } from '../../src/sim/systems/air';
-import { AIR_FIRE, aircraftOf, airCombat, BREAK_OFF } from '../../src/sim/systems/airCombat';
+import { AIR_FIRE, aircraftOf, airCombat, BREAK_OFF, INTERCEPT_KM } from '../../src/sim/systems/airCombat';
+import { seaKm } from '../../src/sim/systems/navalCombat';
 import { Leg, sortieAt } from '../../src/sim/systems/sorties';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -74,6 +75,56 @@ describe('air combat (PLAN 5.3a)', () => {
     }
     expect(w.formations.has(b) ? aircraftOf(w, b) / b0 : 0).toBeLessThan(0.25);
     expect(aircraftOf(w, f) / f0).toBeGreaterThan(0.85);
+  });
+
+  it('the fight is told between its nearest foes, not where a wing of the zone out of the war flies (PLAN 5.7d)', () => {
+    const w = sim().world;
+    w.wars.start([GER], [FRA], 0);
+    const f = wingOf(w, GER, 'fighter_group');
+    const b = wingOf(w, FRA, 'tactical_bomber_group');
+    over(w, f, STRASBOURG);
+    over(w, b, STRASBOURG);
+    // A wing of a nation at peace with both, in the same zone but far off, its id the last.
+    const c = w.formations.cols;
+    const ita = [...w.wingBase].filter(([id, base]) => base > 0 && id > Math.max(f, b) && ![GER, FRA].includes(c.nation[id]!) && !w.wars.atWar(c.nation[id]!, GER) && !w.wars.atWar(c.nation[id]!, FRA)).map(([id]) => id)[0]!;
+    expect(ita).toBeGreaterThan(Math.max(f, b));
+    over(w, ita, [STRASBOURG[0] + 20, STRASBOURG[1] + 15]);
+    w.out.events.length = 0;
+    airCombat(w, new Map([[7, [f, b, ita]]]));
+    const battle = events(w, EventKind.AirBattle)[0]!;
+    // Both over Strasbourg: the middle of the two is there.
+    const [pf, pb] = [f, b].map((id) => sortieAt(w.sorties.get(id)!, w.tick - 0, w.cells.w));
+    expect(battle[4]).toBeCloseTo((pf!.x + pb!.x) / 2, 9);
+    expect(battle[5]).toBeCloseTo((pf!.y + pb!.y) / 2, 9);
+    expect(Math.hypot(battle[4]! - STRASBOURG[0], battle[5]! - STRASBOURG[1])).toBeLessThan(1);
+  });
+
+  it('a sortie meets the enemy\'s within INTERCEPT_KM of it, not across its zone; two meetings in a zone are two fights (PLAN 5.7d)', () => {
+    const w = sim().world;
+    w.wars.start([GER], [FRA], 0);
+    const [f1, f2] = [0, 1].map((k) => wingOf(w, GER, 'fighter_group', k)) as [number, number];
+    const [b1, b2] = [wingOf(w, FRA, 'tactical_bomber_group'), wingOf(w, FRA, 'fighter_group')];
+    // Germans over Strasbourg; French over Strasbourg and far off in the same zone.
+    let dx = 0;
+    while (seaKm(w, STRASBOURG[0], STRASBOURG[1], STRASBOURG[0] + dx, STRASBOURG[1]) < 400) dx += 0.5;
+    const far: [number, number] = [STRASBOURG[0] - dx, STRASBOURG[1]];
+    over(w, f1, STRASBOURG);
+    over(w, b1, far);
+    const [a1, c1] = [aircraftOf(w, f1), aircraftOf(w, b1)];
+    w.out.events.length = 0;
+    airCombat(w, new Map([[7, [f1, b1]]]));
+    expect([left(w, f1), left(w, b1)]).toEqual([a1, c1]);
+    expect(events(w, EventKind.AirBattle)).toHaveLength(0);
+    // Two meetings: each German with a French wing near it.
+    over(w, b1, STRASBOURG);
+    over(w, f2, far);
+    over(w, b2, far);
+    airCombat(w, new Map([[7, [f1, b1, f2, b2]]]));
+    const fights = events(w, EventKind.AirBattle);
+    expect(fights).toHaveLength(2);
+    const near = (e: number[], p: readonly number[]): number => Math.hypot(e[4]! - p[0]!, e[5]! - p[1]!);
+    expect(fights.some((e) => near(e, STRASBOURG) < 1) && fights.some((e) => near(e, far) < 1)).toBe(true);
+    expect(INTERCEPT_KM).toBe(150);
   });
 
   it('fighters against fighters lose alike; nations at peace do not fight; one side alone in a zone does not', () => {

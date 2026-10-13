@@ -7783,3 +7783,25 @@ Of 5.7 (open in PLAN.md):
 
   - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb
     bursts at a strike's target (`AirStrike`), and flak bursts about a sortie fired on by AA.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
+  AT: air battle demo e2e + screenshots viewed.
+  Split 2026-10-13. Found first: the snapshot leaves the wings out (PLAN 5.1d); a sortie is a
+  function of its launch (`sortieAt`, in the sim's layer, which the page may not import); the
+  air's events (`AirBattle`, `AirStrike`) have no picture. One cause a commit:
+  - [x] 5.7a Sorties drawn: the snapshot carries the sorties in the air (their launches, nation, […]
+  - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb […]
+  - [x] 5.7c The air superiority map mode: each air zone by the side that holds its air.
+  - [x] 5.7d The air battle demo e2e, its pictures looked at: the AT.

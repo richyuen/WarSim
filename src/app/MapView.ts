@@ -1283,8 +1283,11 @@ export class MapView {
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     // The sorties in flight (PLAN 5.7a), at T0 to T2, where they are at this frame's time: under
-    // the counters, which stay readable over them.
-    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now), cam, this.geo, vw, vh, 1 - this.shares.individuals, (n) => hex(n), this.unitScale);
+    // the counters, which stay readable over them. A snapshot of tick T + 1 is the world after the
+    // hour that began at T, which the page plays from its arrival (the formations go from where
+    // they were to where they are): the frame's time is T + its share of the tick (PLAN 5.7d: it
+    // was T + 1 + the share, the sorties an hour ahead of all else and of their own fights).
+    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1 - this.shares.individuals, (n) => hex(n), this.unitScale);
     // The air's fights, bombs and flak (PLAN 5.7b), with the sorties.
     this.airFx.draw(ctx, cam, this.geo, vw, vh, now, 1 - this.shares.individuals, this.unitScale * planeZoom(cam.scale));
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);

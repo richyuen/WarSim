@@ -30,6 +30,7 @@ export interface PlacedSortie {
   heading: number;
   leg: Leg;
   planes: number;
+  nation: number;
 }
 
 /** Planes drawn for a wing of `aircraft`: one, two or three. */
@@ -128,7 +129,7 @@ export function drawSorties(
         [x, y] = [ox + r * Math.cos(at.orbit.angle), oy + r * Math.sin(at.orbit.angle)];
       }
       if (x < -3 * span || y < -3 * span || x > vw + 3 * span || y > vh + 3 * span) continue;
-      out.push({ x, y, heading: at.heading, leg: at.leg, planes: n });
+      out.push({ x, y, heading: at.heading, leg: at.leg, planes: n, nation: rows[i + 8]! });
       // A short trail behind it.
       ctx.save();
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';

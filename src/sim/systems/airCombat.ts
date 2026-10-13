@@ -19,6 +19,11 @@ import { Leg, legHours, sortieAt } from './sorties';
 export const AIR_FIRE = 0.25;
 /** The share of its aircraft a sortie loses in an hour's fight that turns it home. */
 export const BREAK_OFF = 0.25;
+/**
+ * How far, km, a sortie meets the enemy's in an hour (PLAN 5.7d): an air zone is up to some
+ * million km² wide, and its sorties far apart do not fight. About the ground a patrol watches.
+ */
+export const INTERCEPT_KM = 150;
 
 /** The aircraft of wing `id` (its squadrons' strength). */
 export function aircraftOf(world: World, id: number): number {
@@ -27,10 +32,11 @@ export function aircraftOf(world: World, id: number): number {
 }
 
 /**
- * The hour's air fights, over the sorties in the air by zone (`airborne`). Each zone's wings of
- * nations at war with one another fight; a wing's fire is spread over the enemy wings there by
- * their aircraft, and within a wing over its squadrons by theirs. Emits `AirBattle` per zone
- * fought in.
+ * The hour's air fights, over the sorties in the air by zone (`airborne`). A wing fights the
+ * wings of nations at war with its own in its zone within `INTERCEPT_KM` of it (PLAN 5.7d: the
+ * whole zone's, once); its fire is spread over those by their aircraft, and within a wing over
+ * its squadrons by theirs. The wings joined by such meetings are one fight: an `AirBattle` each,
+ * with its aircraft lost, at the middle of its nearest two sorties of foes (`fightPlace`).
  */
 export function airCombat(world: World, byZone: Map<number, number[]>): void {
   const rules = world.rules!;
@@ -42,14 +48,32 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
   const fought: { zone: number; wings: number[] }[] = [];
   for (const [zone, wings] of [...byZone].sort((a, b) => a[0] - b[0])) {
     if (wings.length < 2) continue;
-    let any = false;
-    for (const a of wings) {
-      const foes = wings.filter((b) => world.wars.atWar(fc.nation[a]!, fc.nation[b]!));
-      if (foes.length === 0) continue;
-      any = true;
+    // Who meets whom (PLAN 5.7d): a zone is wide, and a sortie fights only the enemy's sorties
+    // within `INTERCEPT_KM` of it this hour.
+    const at = wings.map((id) => sortieAt(world.sorties.get(id)!, world.tick, world.cells.w));
+    const foesOf = wings.map((a, i) => wings.filter((b, j) => world.wars.atWar(fc.nation[a]!, fc.nation[b]!) && seaKm(world, at[i]!.x, at[i]!.y, at[j]!.x, at[j]!.y) <= INTERCEPT_KM));
+    // The fights: wings joined by such meetings (each its lowest id's).
+    const root = new Map<number, number>();
+    const find = (a: number): number => {
+      let r = a;
+      while (root.get(r) !== r) r = root.get(r)!;
+      return r;
+    };
+    wings.forEach((a, i) => {
+      for (const b of foesOf[i]!) {
+        if (!root.has(a)) root.set(a, a);
+        if (!root.has(b)) root.set(b, b);
+        const [ra, rb] = [find(a), find(b)];
+        if (ra !== rb) root.set(Math.max(ra, rb), Math.min(ra, rb));
+      }
+    });
+    if (root.size === 0) continue;
+    wings.forEach((a, i) => {
+      const foes = foesOf[i]!;
+      if (foes.length === 0) return;
       const foeAircraft = foes.map((b) => aircraftOf(world, b));
       const total = foeAircraft.reduce((s, n) => s + n, 0);
-      if (total === 0) continue;
+      if (total === 0) return;
       for (const e of index.get(a) ?? []) {
         const fire = ec.strength[e]! * rules.units[ec.unit[e]!]!.aa * AIR_FIRE;
         if (fire === 0) continue;
@@ -63,30 +87,63 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
           }
         });
       }
+    });
+    const groups = new Map<number, number[]>();
+    for (const id of [...root.keys()].sort((a, b) => a - b)) {
+      before.set(id, aircraftOf(world, id));
+      const r = find(id);
+      const g = groups.get(r);
+      if (g) g.push(id);
+      else groups.set(r, [id]);
     }
-    if (!any) continue;
-    for (const id of wings) before.set(id, aircraftOf(world, id));
-    fought.push({ zone, wings });
+    for (const g of [...groups.keys()].sort((a, b) => a - b)) fought.push({ zone, wings: groups.get(g)! });
   }
-  if (loss.size === 0) return;
+  if (loss.size === 0 && fought.length === 0) return;
+  // Where each fight is told, before any loss or turn home.
+  const places = fought.map((f) => fightPlace(world, f.wings));
   for (const [e, units] of [...loss].sort((a, b) => a[0] - b[0])) applyLoss(world, e, units);
-  for (const { zone, wings } of fought) {
+  fought.forEach(({ zone, wings }, k) => {
     let lost = 0;
-    let x = 0;
-    let y = 0;
     for (const id of wings) {
       const was = before.get(id)!;
       const now = aircraftOf(world, id);
       lost += was - now;
       const s = world.sorties.get(id);
       const p = s && sortieAt(s, world.tick, world.cells.w);
-      if (p) [x, y] = [p.x, p.y];
       settleFormation(world, id);
       if (!world.formations.has(id) || now === 0) continue;
       if (p && p.leg !== Leg.Back && was - now >= BREAK_OFF * was) turnHome(world, id);
     }
-    world.out.emit(world.tick, EventKind.AirBattle, zone, lost, x, y);
+    world.out.emit(world.tick, EventKind.AirBattle, zone, lost, places[k]!.x, places[k]!.y);
+  });
+}
+
+/**
+ * Where an hour's fight among `wings` (the sorties of one zone) is told (PLAN 5.7d): a zone is
+ * wide (1.5 M km²), so at the middle of the two sorties of foes nearest each other, the short way
+ * round the map; of equals, the pair of the lowest ids. Before any loss or turn home.
+ */
+export function fightPlace(world: World, wings: readonly number[]): { x: number; y: number } {
+  const fc = world.formations.cols;
+  const w = world.cells.w;
+  const at = wings.map((id) => sortieAt(world.sorties.get(id)!, world.tick, w));
+  let best = { x: at[0]!.x, y: at[0]!.y };
+  let bd = Infinity;
+  for (let i = 0; i < wings.length; i++) {
+    for (let j = i + 1; j < wings.length; j++) {
+      if (!world.wars.atWar(fc.nation[wings[i]!]!, fc.nation[wings[j]!]!)) continue;
+      let dx = at[j]!.x - at[i]!.x;
+      if (dx > w / 2) dx -= w;
+      else if (dx < -w / 2) dx += w;
+      const dy = at[j]!.y - at[i]!.y;
+      const d = dx * dx + dy * dy;
+      if (d < bd) {
+        bd = d;
+        best = { x: (((at[i]!.x + dx / 2) % w) + w) % w, y: at[i]!.y + dy / 2 };
+      }
+    }
   }
+  return best;
 }
 
 /**

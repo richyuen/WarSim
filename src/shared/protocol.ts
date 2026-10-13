@@ -274,7 +274,8 @@ export interface Snapshot {
    * The sorties in the air (PLAN 5.7a), SORTIE_STRIDE each: [bx, by, tx, ty, launch, kmh, km,
    * over, nation, aircraft, role]: a sortie as `shared/sorties` has it, its launch as hours from
    * the snapshot's tick (so that a float holds it to the second), its wing's nation and aircraft,
-   * and its role (`SortieRole`). Where it is at a frame is `sortieAt`'s.
+   * and its role (`SortieRole`). Where it is at a frame is `sortieAt`'s, at −1 + the frame's
+   * share of the tick: the hour the snapshot ends.
    */
   sorties: Float32Array;
   events: SnapshotEvents;

@@ -1358,13 +1358,13 @@ export class SimServer {
 /** A wing's role by its aircraft's class (`SortieRole`). */
 const ROLE_OF_CLASS: Record<string, number> = { fighter: SortieRole.fighter, cas: SortieRole.closeSupport, bomber_tac: SortieRole.bomber, bomber_str: SortieRole.heavyBomber, naval_bomber: SortieRole.navalBomber, transport_air: SortieRole.transport };
 
-/** The snapshot's sorties (PLAN 5.7a): those in the air at the tick or within the hour after it, by wing id. */
+/** The snapshot's sorties (PLAN 5.7a): those in the air in the hour before the tick (the hour the page plays) or at it, by wing id. */
 export function sortieSection(world: World): Float32Array {
   const rows: number[] = [];
   if (world.sorties.size === 0 || !world.rules) return new Float32Array(0);
   const c = world.formations.cols;
   for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
-    if (!world.formations.has(id) || sortieEnd(s) <= world.tick || s.launch > world.tick + 1) continue;
+    if (!world.formations.has(id) || sortieEnd(s) <= world.tick - 1 || s.launch > world.tick) continue;
     const first = world.rules.templates[c.template[id]!]?.elements[0];
     const role = first ? (ROLE_OF_CLASS[world.rules.units[first.unit]!.cls] ?? SortieRole.fighter) : SortieRole.fighter;
     rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, c.nation[id]!, aircraftOf(world, id), role);

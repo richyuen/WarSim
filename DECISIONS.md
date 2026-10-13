@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-326 · 2026-10-13 · accepted — The air battle demo; a sortie meets the enemy's within 150 km (PLAN 5.7d); PLAN 5.7 done
+
+- **The demo** (`tests/e2e/airDemo1938.spec.ts`, the AT of 5.7): Germany declares war on Poland
+  (seed 1); an hour at a time, the first hour with an air fight that has sorties of two nations
+  within 70 px of it at T1; that hour at T0 (4,000 m/px), T1 (1,000), T2 (150) and in the
+  air-superiority mode (2,500), each picture drawn at a set time into the hour's marks (kept by
+  the test before its camera's moves bring other snapshots) with the frame loop held.
+- **Looked at** (`docs/evidence/5.7/air-demo-*.png`), hour 30: at T0 groups of planes over the
+  border east of Berlin, the fight among them; at T1 German groups west of the border and the
+  fight's tracers at it, small, the bombs mostly under the counters; at T2 planes over the border
+  country, bursts and flak about the Polish cavalry brigade struck; in the mode the wide western
+  zone in Italy's colour (Germany's side, Italy flew the most there), Poland's zone faded.
+  Not changed: the fight's tracers at T1 are small, and the counters cover bombs at T1.
+- **Found by the demo, mended:**
+  - *The sorties were drawn an hour ahead.* A snapshot of tick T + 1 is the world after the hour
+    that began at T; the page plays that hour from its arrival (the formations go from where they
+    were to where they are). The sorties were drawn at T + 1 + the share of the tick: an hour after
+    their own fights. Now at T + the share (`tickProgress − 1`); the snapshot holds the sorties in
+    the air in that hour.
+  - *An air fight was told at the zone's last wing's place*, which could be one at peace far off:
+    at the middle of its nearest two foes now (`fightPlace`).
+  - *A sortie fought every enemy sortie of its air zone*, and zone 20 runs from Spain to Poland:
+    German and Polish sorties 600 km apart fought, the fight told in empty sky. A sortie now meets
+    the enemy's within `INTERCEPT_KM` (150 km, about the ground a patrol watches) of it this hour;
+    the wings joined by such meetings are one fight, an `AirBattle` each. Air superiority stays
+    by zone (the power flown).
+- **The figures** (seed 99, a year, `airYear`): 18,060 strikes (18,856 before), 2,393 strategic,
+  2,369 of those at superiority 0.6 or more; 584 zone-days contested, 384 over a front (216).
+- **The pin moves** 321cd835 → 28d6b82d.
+- **Tests.** `airCombat1938`: foes 400 km apart in one zone do not fight, two meetings are two
+  fights at their places; a fight told between its foes, not at a bystander's place; the demo.
+- **PLAN 5.7 done.**
+
 ### ADR-325 · 2026-10-13 · accepted — The air-superiority map mode (PLAN 5.7c)
 
 - **Decision.**
