@@ -29,8 +29,10 @@ import techNaval from '../../data/tech/naval.json' with { type: 'json' };
 import techNuclear from '../../data/tech/nuclear.json' with { type: 'json' };
 import templatesLand from '../../data/templates/land.json' with { type: 'json' };
 import templatesSea from '../../data/templates/sea.json' with { type: 'json' };
+import templatesAir from '../../data/templates/air.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
 import unitsSea from '../../data/units/sea.json' with { type: 'json' };
+import unitsAir from '../../data/units/air.json' with { type: 'json' };
 import diplomacy1938 from '../../data/scenarios/1938/diplomacy.json' with { type: 'json' };
 import economy1938 from '../../data/scenarios/1938/economy.json' with { type: 'json' };
 import traitsJson from '../../data/traits/traits.json' with { type: 'json' };
@@ -69,8 +71,9 @@ import { freshGrid, World } from './world';
 export const NATIONS_1938 = nations1938.nations as unknown as NationDef[];
 export const TEMPLATES_LAND = templatesLand.templates as TemplateDef[];
 export const TEMPLATES_SEA = templatesSea.templates as TemplateDef[];
-/** Every template of the rules, by its index: the land's, then the sea's (PLAN 4.2a). A formation and an order are saved with it. */
-export const TEMPLATES_1938: readonly TemplateDef[] = [...TEMPLATES_LAND, ...TEMPLATES_SEA];
+export const TEMPLATES_AIR = templatesAir.templates as TemplateDef[];
+/** Every template of the rules, by its index: the land's, then the sea's (PLAN 4.2a), then the air's (PLAN 5.1b). A formation and an order are saved with it. */
+export const TEMPLATES_1938: readonly TemplateDef[] = [...TEMPLATES_LAND, ...TEMPLATES_SEA, ...TEMPLATES_AIR];
 /** Starting treasury in months of gross income (ADR-22). */
 export const START_GOLD_MONTHS = 6;
 /**
@@ -91,8 +94,8 @@ type UnitDef = UnitTypeLite & {
   stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; fuelPerHour: number; speed_kmh: number; range_km: number; detection: number; stealth: number; torpedo?: number; torpedo_km?: number; asw?: number };
   terrainMods: Partial<Record<TerrainId, { atk: number; def: number; speed: number }>>;
 };
-/** The unit types of the rules, by their index: the land's, then the sea's (PLAN 4.2a). An element is saved with its type's index. */
-const UNITS: readonly UnitDef[] = [...(unitsLand.types as unknown as UnitDef[]), ...(unitsSea.types as unknown as UnitDef[])];
+/** The unit types of the rules, by their index: the land's, then the sea's (PLAN 4.2a), then the air's (PLAN 5.1b). An element is saved with its type's index. */
+const UNITS: readonly UnitDef[] = [...(unitsLand.types as unknown as UnitDef[]), ...(unitsSea.types as unknown as UnitDef[]), ...(unitsAir.types as unknown as UnitDef[])];
 const unitTypes = new Map(UNITS.map((u) => [u.id, u]));
 const tankTypes = new Set(UNITS.filter((u) => u.class.startsWith('armor')).map((u) => u.id));
 const upkeepOfElements = (t: TemplateDef, only?: ReadonlySet<string>): number => t.elements.reduce((s, e) => s + (only && !only.has(e.type) ? 0 : unitTypes.get(e.type)!.upkeep.gold * e.count), 0);

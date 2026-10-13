@@ -14601,3 +14601,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   two comma expressions in the test); then the related unit tests 831 of 833, red only by two
   timing tests of BLOCKERS; the pin (unchanged), build and parity green by hand.
 - **Next:** PLAN 5.1b.
+
+## 2026-10-13 — PLAN 5.1b: air wing templates in the rules (ADR-307)
+
+- **Done:** the aircraft types after the ships, six wing templates after the fleets
+  (`data/templates/air.json`); no wing is built or spawned yet. SPEC §6.3 says so.
+- **Tests:** `airTemplates.test.ts` (3); `seaTemplates.test.ts` reads the sea's own slice now.
+- **The pin** holds (c0a89199).
+- **The gate:** the unit tests in full (a data file changed): 1,286 of 1,289, red only by the three
+  timing tests of BLOCKERS; the pin, build and parity green by hand.
+- **Next:** PLAN 5.1c.

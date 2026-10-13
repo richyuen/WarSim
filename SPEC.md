@@ -1710,6 +1710,13 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   a lattice of that side in km, each region grown from its seed over the graph by the km between
   the nodes' centres; a land mass under a third of the target (an island) joins whole the zone
   of the nearest seed. Derived, not saved; read by nothing yet.
+- *As built (PLAN 5.1b, ADR-307):* the nine aircraft types of `data/units/air.json` are in the
+  rules after the ships, and six wing templates (`data/templates/air.json`) after the fleets: a
+  fighter group (3 squadrons of 12), a tactical bomber group (3 × 8), a strategic bomber group
+  (4 × 6), a close support group (3 × 10), a naval bomber group (3 × 8) and an air transport
+  group (4 × 6). A wing is a formation of an air template. None exists yet: the order to build
+  one is refused (no domain but the land's and, with a shipyard, the sea's), as is the spawn
+  (`NotOfLand`); the build list leaves them out.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

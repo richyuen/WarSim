@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-307 · 2026-10-13 · accepted — Air wing templates in the rules, after the sea's (PLAN 5.1b)
+
+- **Decision.** The aircraft types (`data/units/air.json`, nine with the ballistic missile of
+  Phase 6) stand in the rules after the ships, and six wing templates (`data/templates/air.json`)
+  after the fleets: a formation, an order and an element are saved by their index, so the land's
+  and the sea's keep theirs and an old save loads as before. A wing is a group of squadrons of
+  one type, an element a squadron of `elementSize` aircraft: fighter 3 × 12, tactical bomber
+  3 × 8, strategic bomber 4 × 6, close support 3 × 10, naval bomber 3 × 8, air transport 4 × 6.
+  Our own round figures for the groupings of 1938 air forces. No wing exists: the build order
+  refuses the air domain and the spawn refuses any template not of the land, as for fleets
+  before PLAN 4.2b; the page's build list leaves the air out.
+- **The pin stays** c0a89199 (the rules are not state).
+- **Tests.** `airTemplates.test.ts`: the indices; each air template of aircraft alone, every wing
+  class in one, a fighter group's range 800 km and a strategic bomber group's 3,000; no order or
+  spawn of one. `seaTemplates.test.ts` (PLAN 4.2a) read the sea's as the last of the rules: it
+  now reads their own slice, the same claims.
+
 ### ADR-306 · 2026-10-13 · accepted — Air zones: the sea's zones, and the land in regions of whole provinces (PLAN 5.1a)
 
 - **Context.** SPEC §6.3 reckons the air war per zone and hour; the sea has its zones (PLAN 4.1a),

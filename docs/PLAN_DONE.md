@@ -7434,3 +7434,22 @@ Of 5.1 (open in PLAN.md):
     Test: every cell with a province or a sea zone in one air zone, each zone in one piece
     (an island under a third of the target joins the nearest zone), their areas within a
     factor of the target.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber,
+    close support, naval bomber and transport groups) in the scenario's rules after the sea
+    ones, a template of the air domain; a wing is a formation of one. None exists: the queue
+    and the spawn refuse one, as the sea's did before 4.2b. Test.

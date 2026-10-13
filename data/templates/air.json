@@ -1,0 +1,11 @@
+{
+  "comment": "Air wing templates (PLAN 5.1b): one formation is a group of aircraft (a Gruppe, a wing), an element a squadron of a type of data/units/air.json (its elementSize aircraft). They stand after the sea templates in the rules: a formation and an order are saved with the index of their template, so a new template goes at the end of this file while no file follows it. Our own round figures for the usual groupings of 1938 air forces.",
+  "templates": [
+    { "id": "fighter_group", "nameKey": "template.fighter_group", "elements": [{ "type": "fighter", "count": 3 }] },
+    { "id": "tactical_bomber_group", "nameKey": "template.tactical_bomber_group", "elements": [{ "type": "bomber_tactical", "count": 3 }] },
+    { "id": "strategic_bomber_group", "nameKey": "template.strategic_bomber_group", "elements": [{ "type": "bomber_strategic", "count": 4 }] },
+    { "id": "close_support_group", "nameKey": "template.close_support_group", "elements": [{ "type": "close_air_support", "count": 3 }] },
+    { "id": "naval_bomber_group", "nameKey": "template.naval_bomber_group", "elements": [{ "type": "naval_bomber", "count": 3 }] },
+    { "id": "air_transport_group", "nameKey": "template.air_transport_group", "elements": [{ "type": "transport_plane", "count": 4 }] }
+  ]
+}
