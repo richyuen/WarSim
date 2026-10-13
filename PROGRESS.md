@@ -14508,3 +14508,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   hand too: `ticker1938` and `formationPanel1938`, 7 of 8, red only by the ticker's 1,100 px test
   of BLOCKERS.
 - **Next:** PLAN 4.9d.
+
+## 2026-10-13 — PLAN 4.9 done: a player can invade, and a refused order says why (4.9d, ADR-301)
+
+- **Done:** `invasion1938.spec.ts`, the AT: Britain played, at war with Germany, a division in
+  London ordered onto Cuxhaven embarks, a second order aboard is refused and told, the voyage is
+  thrown back and the troops brought ashore on the Thames, both told; then no water by the target,
+  a fleet onto land, a fleet to the Caspian, no transports, each told within a second.
+- **Found by the spec, mended:** a refused order made the worker forget the order it replaced
+  (the voyage then went untold); no port of its land with transports was told "no port" where
+  the nation has ports (now "no transports"; "no port" where it holds none).
+- **PARITY:** additions row 3 (the player's invasion).
+- **Tests:** `invasion1938.spec.ts`, `orderNews1938.spec.ts` (2 passed, 1.4 min, by hand);
+  `serverOrderNews.test.ts`, `seaBound1938.test.ts`, `rejectReasons1938.test.ts` (11).
+- **The gate:** the related unit tests (113 files, 735 tests), red only by two timing tests of
+  BLOCKERS; the pin (c0a89199) and build green by hand.
+- **Next:** PLAN 4.10.

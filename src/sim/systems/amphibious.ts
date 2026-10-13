@@ -152,9 +152,10 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
  * The port a player's land formation `id` marches to for an order over the sea (PLAN 4.9b), index
  * in `world.ports`, or -1: of the ports on its land that its nation holds, with transports of its
  * nation standing at them (not under way, in no battle) with room for it, the nearest by straight
- * cells.
+ * cells. `withTransports` false: of the ports on its land that its nation holds, with transports
+ * or not (whether a refusal is for no port or for no transports).
  */
-export function transportsPort(world: World, id: number): number {
+export function transportsPort(world: World, id: number, withTransports = true): number {
   const f = world.formations;
   const c = f.cols;
   const nation = c.nation[id]!;
@@ -171,7 +172,7 @@ export function transportsPort(world: World, id: number): number {
   let bd = Infinity;
   world.ports.forEach((p, i) => {
     if (water[i]! < 0 || world.cells.controller[p.cell] !== nation || comp[p.cell] !== comp[here]) return;
-    if (!fleets.some((o) => near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS))) return;
+    if (withTransports && !fleets.some((o) => near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS))) return;
     let dx = Math.abs((p.cell % w) - (here % w));
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const dy = Math.floor(p.cell / w) - Math.floor(here / w);

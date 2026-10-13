@@ -54,8 +54,14 @@ describe('the page is told what became of a player\'s order (PLAN 4.9c)', () => 
     const div = 272;
     expect(s.sim!.world.formations.cols.nation[div]).toBe(ENG);
     s.handle({ type: 'cmd', cmd: { kind: 'moveFormation', id: div, x: CUXHAVEN[0], y: CUXHAVEN[1], nation: ENG } }, 2);
+    run(3);
+    // A second order while aboard is refused, and the voyage it left standing is told on (found by the AT's spec).
+    const [kx, ky] = cellOf(9.5, 51.3, W, H).map((v) => Math.floor(v) + 0.5) as [number, number];
+    s.handle({ type: 'cmd', cmd: { kind: 'moveFormation', id: div, x: kx, y: ky, nation: ENG } }, 3);
     run(24 * 8);
-    expect(news.map((n) => n.kind)).toEqual(['repulsed', 'landedAway']);
+    expect(news.map((n) => n.kind)).toEqual(['refused', 'repulsed', 'landedAway']);
+    expect(news[0]!.reason).toBe(RejectReason.Aboard);
+    news.shift();
     expect(news.every((n) => n.id === div && n.nation === ENG)).toBe(true);
     expect(news[1]!.x).toBeLessThan(CUXHAVEN[0] - 20);
   });

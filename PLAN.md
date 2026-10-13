@@ -23,26 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused
-  order says why. Seen by the critic (`critic/c4_c_2207.json`, `critic/c4_landing.log`): a
-  British division clicked onto German land with its transports 6.5 cells away did nothing for
-  20 days and said nothing (the sim emits `MoveRejected`; no code of the page reads it); the two
-  orders the sim needs (march to the port, then over the sea) sailed it to Germany and landed
-  it back in England, again silent. The critic's fix: an order over water marches to the
-  nearest port with transports, embarks and sails; a refused order says why on the screen; a
-  landing thrown back says so.
-  AT: an e2e spec: a British division in London ordered onto the German coast at war, with
-  transports at Portsmouth, marches, embarks, sails and lands (or is thrown back with a message
-  on the screen); an order the sim refuses shows its reason within a second (test of each
-  refusal kind the page can cause).
-  Split 2026-10-12 into parts, one cause a commit. Found first: the critic's two orders
-  (`critic/scripts/c4_landing.ts`, seed 2207) work as the rules say: the transports, alone,
-  were caught by the German navy off the Weser, broke off (hour 99, `FormationRetreated`) and
-  sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
-  - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard, […]
-  - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest […]
-  - [x] 4.9c The page says what became of an order: a refused one's reason by the formation […]
-  - [ ] 4.9d The AT's spec (above), and the tick of 4.9.
 - [ ] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
   is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
   small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
@@ -745,3 +725,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.6 Naval AI (sea control, escort, raiding, invasion planning). […]
 - [x] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode. […]
 - [x] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
+- [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused […]

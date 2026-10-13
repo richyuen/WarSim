@@ -7281,3 +7281,35 @@ Of 4.9 (open in PLAN.md):
   - [x] 4.9c The page says what became of an order: a refused one's reason by the formation
     and in the ticker within a second; a landing thrown back; transports that broke off and
     brought their troops ashore elsewhere. e2e.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused
+  order says why. Seen by the critic (`critic/c4_c_2207.json`, `critic/c4_landing.log`): a
+  British division clicked onto German land with its transports 6.5 cells away did nothing for
+  20 days and said nothing (the sim emits `MoveRejected`; no code of the page reads it); the two
+  orders the sim needs (march to the port, then over the sea) sailed it to Germany and landed
+  it back in England, again silent. The critic's fix: an order over water marches to the
+  nearest port with transports, embarks and sails; a refused order says why on the screen; a
+  landing thrown back says so.
+  AT: an e2e spec: a British division in London ordered onto the German coast at war, with
+  transports at Portsmouth, marches, embarks, sails and lands (or is thrown back with a message
+  on the screen); an order the sim refuses shows its reason within a second (test of each
+  refusal kind the page can cause).
+  Split 2026-10-12 into parts, one cause a commit. Found first: the critic's two orders
+  (`critic/scripts/c4_landing.ts`, seed 2207) work as the rules say: the transports, alone,
+  were caught by the German navy off the Weser, broke off (hour 99, `FormationRetreated`) and
+  sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
+  - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard, […]
+  - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest […]
+  - [x] 4.9c The page says what became of an order: a refused one's reason by the formation […]
+  - [x] 4.9d The AT's spec (above), and the tick of 4.9.

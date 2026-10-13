@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-301 · 2026-10-13 · accepted — PLAN 4.9 done: the AT's spec, and what it found (PLAN 4.9d)
+
+- **The AT** (`invasion1938.spec.ts`, seed 2207): Britain, played, at war with Germany; a division
+  in London (spawned: none stands there on this seed) ordered onto Cuxhaven embarks at once;
+  a second order while aboard is refused and told ("aboard transports"); the voyage is thrown
+  back off the Weser, told, and the transports bring the division ashore on the Thames, told.
+  Then refusals told within a second: no water by the target (London to Kassel), a fleet onto
+  land, a fleet to the Caspian, and no transports (every British fleet removed). No port: the
+  Swiss spec (4.9c). No way by land and a march barred: the unit test (4.9a), the same path.
+- **Found by it, mended:**
+  - The worker forgot a formation's order when a later order was refused; the sim keeps the
+    earlier order then (a division aboard keeps its voyage), so its landing went untold. The
+    refused order now gives the earlier one back (`ordered`'s `before`).
+  - A player's order over the sea with no port of its land holding transports for it was
+    refused "at no port" from an inland city though its nation has ports: it is now
+    `NoTransports` where the nation holds a port on that land (`transportsPort(…, false)`), and
+    `NoPort` where it holds none (Switzerland).
+- **The pin stays** c0a89199 (the AI's orders give no reason the page reads; nothing else moved).
+- **Tests.** `invasion1938.spec.ts` (1); `serverOrderNews.test.ts`: the refused order while
+  aboard, then the voyage told; `seaBound1938.test.ts`: no transports anywhere is `NoTransports`.
+
 ### ADR-300 · 2026-10-13 · accepted — The page says what became of a player's order (PLAN 4.9c)
 
 - **Context** (the critic's R4-B2): a refused order, a landing thrown back and troops brought

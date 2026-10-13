@@ -2563,8 +2563,10 @@ on screen.
     the worker remembers each formation a player's `moveFormation` names and tells the page at
     once (`orderNews`, not with the stats) a refusal with its reason (`RejectReason`), a landing
     thrown back, and troops ashore more than 3 cells from the order's cell (their transports
-    broke off). The page keeps the last 4 (beside a panel the last one); a click flies to the
-    formation and forgets the row; the formation's panel shows its last (`formation-notice`).
+    broke off). A refused order leaves the one before it standing, and that one is told on (a
+    division aboard keeps its voyage; ADR-301). The page keeps the last 4 (beside a panel the
+    last one); a click flies to the formation and forgets the row; the formation's panel shows
+    its last (`formation-notice`).
   - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
     last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at

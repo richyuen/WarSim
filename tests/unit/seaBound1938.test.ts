@@ -90,7 +90,7 @@ describe('a player\'s order over the sea from inland (PLAN 4.9b)', () => {
     const r = untilAboard(s, div, 2);
     expect(r.hour).toBe(-1);
     expect(r.refused.length).toBe(1);
-    expect([RejectReason.NoPort, RejectReason.NoTransports]).toContain(r.refused[0]);
+    expect(r.refused[0], 'no port of its land has transports: that is why').toBe(RejectReason.NoTransports);
     expect(s.world.seaBound.has(div)).toBe(false);
   });
 });

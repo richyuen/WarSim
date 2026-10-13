@@ -296,6 +296,8 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
       }
       return false;
     }
+    // No port of its land has transports for it: that is why where its nation holds one there.
+    return order(world, id, x, y, pass, 0, transportsPort(world, id, false) >= 0 ? RejectReason.NoTransports : RejectReason.NoPort);
   }
   return order(world, id, x, y, pass, 0, sea);
 }

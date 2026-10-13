@@ -143,8 +143,11 @@ export class SimServer {
   private seaHoldersSent = '';
   /** Whether the page was last sent a zone held by someone: kept over a load, which it outlives. */
   private seaShown = false;
-  /** The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is told. */
-  private ordered = new Map<number, number>();
+  /**
+   * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
+   * told. `before`: the order it replaced, which stands again if this one is refused.
+   */
+  private ordered = new Map<number, { target: number; before: number | undefined }>();
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -206,7 +209,9 @@ export class SimServer {
           break;
         }
         // A player's order of a formation (it names its nation): what becomes of it is told (PLAN 4.9c).
-        if (msg.cmd.kind === 'moveFormation' && msg.cmd.nation !== undefined) this.ordered.set(msg.cmd.id, Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x));
+        if (msg.cmd.kind === 'moveFormation' && msg.cmd.nation !== undefined) {
+          this.ordered.set(msg.cmd.id, { target: Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x), before: this.ordered.get(msg.cmd.id)?.target });
+        }
         // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
         // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
         if (msg.now) {
@@ -965,14 +970,17 @@ export class SimServer {
 
   /**
    * What became of a player's order (PLAN 4.9c), told at once: a refusal with its reason, a
-   * landing thrown back, troops ashore more than `AT_PORT_CELLS` from the order's cell. The order
-   * is forgotten when refused, at a landing, at an arrival on land and at the formation's end.
+   * landing thrown back, troops ashore more than `AT_PORT_CELLS` from the order's cell. A refused
+   * order leaves the one before it standing (the sim changes nothing then: a division aboard keeps
+   * its voyage), and that one is told on; the order is forgotten at a landing, at an arrival on
+   * land and at the formation's end.
    */
   private orderNews(world: World, ev: number[], i: number): void {
     const kind = ev[i + 1]!;
     const id = ev[i + 2]!;
-    const target = this.ordered.get(id);
-    if (target === undefined) return;
+    const kept = this.ordered.get(id);
+    if (kept === undefined) return;
+    const target = kept.target;
     const c = world.formations.cols;
     const w = world.cells.w;
     const tell = (k: OrderNews['kind'], reason: number): void => {
@@ -981,7 +989,8 @@ export class SimServer {
     };
     if (kind === EventKind.MoveRejected) {
       tell('refused', ev[i + 4]!);
-      this.ordered.delete(id);
+      if (kept.before === undefined) this.ordered.delete(id);
+      else this.ordered.set(id, { target: kept.before, before: undefined });
     } else if (kind === EventKind.LandingRepulsed) {
       tell('repulsed', 0);
     } else if (kind === EventKind.FormationLanded) {
