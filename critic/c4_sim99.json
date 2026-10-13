@@ -1,0 +1,783 @@
+{
+  "scenario": "1938",
+  "seed": 99,
+  "years": 1,
+  "ticksPerYear": 8760,
+  "map": [
+    2048,
+    1024
+  ],
+  "finalHash": 2250432269,
+  "totalWallMs": 91687.51109100001,
+  "meanTickMs": 10.44482095251147,
+  "yearly": [
+    {
+      "year": 1,
+      "tick": 8760,
+      "hash": 2250432269,
+      "nations": [
+        {
+          "id": 1,
+          "controlled": 5873,
+          "owned": 3948,
+          "formations": 64,
+          "strength": 245173
+        },
+        {
+          "id": 2,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 3,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 4,
+          "controlled": 439,
+          "owned": 2995,
+          "formations": 38,
+          "strength": 154982
+        },
+        {
+          "id": 5,
+          "controlled": 7,
+          "owned": 7,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 6,
+          "controlled": 110,
+          "owned": 110,
+          "formations": 3,
+          "strength": 7605
+        },
+        {
+          "id": 7,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 8,
+          "controlled": 92,
+          "owned": 83,
+          "formations": 1,
+          "strength": 1635
+        },
+        {
+          "id": 9,
+          "controlled": 737,
+          "owned": 737,
+          "formations": 1,
+          "strength": 460
+        },
+        {
+          "id": 10,
+          "controlled": 176879,
+          "owned": 172831,
+          "formations": 178,
+          "strength": 1371236
+        },
+        {
+          "id": 11,
+          "controlled": 385,
+          "owned": 385,
+          "formations": 2,
+          "strength": 792
+        },
+        {
+          "id": 12,
+          "controlled": 197,
+          "owned": 578,
+          "formations": 1,
+          "strength": 2
+        },
+        {
+          "id": 13,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 14,
+          "controlled": 412,
+          "owned": 412,
+          "formations": 3,
+          "strength": 1024
+        },
+        {
+          "id": 15,
+          "controlled": 12984,
+          "owned": 13510,
+          "formations": 97,
+          "strength": 554726
+        },
+        {
+          "id": 16,
+          "controlled": 230,
+          "owned": 357,
+          "formations": 2,
+          "strength": 1703
+        },
+        {
+          "id": 17,
+          "controlled": 667,
+          "owned": 667,
+          "formations": 11,
+          "strength": 106664
+        },
+        {
+          "id": 18,
+          "controlled": 3082,
+          "owned": 3059,
+          "formations": 23,
+          "strength": 209232
+        },
+        {
+          "id": 19,
+          "controlled": 8501,
+          "owned": 10343,
+          "formations": 30,
+          "strength": 85188
+        },
+        {
+          "id": 20,
+          "controlled": 8831,
+          "owned": 8858,
+          "formations": 59,
+          "strength": 315889
+        },
+        {
+          "id": 21,
+          "controlled": 301,
+          "owned": 301,
+          "formations": 2,
+          "strength": 3054
+        },
+        {
+          "id": 22,
+          "controlled": 1029,
+          "owned": 1029,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 23,
+          "controlled": 3240,
+          "owned": 2889,
+          "formations": 41,
+          "strength": 428625
+        },
+        {
+          "id": 24,
+          "controlled": 159,
+          "owned": 159,
+          "formations": 33,
+          "strength": 48430
+        },
+        {
+          "id": 25,
+          "controlled": 159,
+          "owned": 512,
+          "formations": 3,
+          "strength": 2045
+        },
+        {
+          "id": 26,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 27,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 28,
+          "controlled": 385,
+          "owned": 587,
+          "formations": 9,
+          "strength": 37986
+        },
+        {
+          "id": 29,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 30,
+          "controlled": 33934,
+          "owned": 33934,
+          "formations": 1,
+          "strength": 400
+        },
+        {
+          "id": 31,
+          "controlled": 4271,
+          "owned": 4271,
+          "formations": 5,
+          "strength": 14328
+        },
+        {
+          "id": 32,
+          "controlled": 3921,
+          "owned": 3921,
+          "formations": 9,
+          "strength": 44620
+        },
+        {
+          "id": 33,
+          "controlled": 3638,
+          "owned": 3151,
+          "formations": 3,
+          "strength": 14830
+        },
+        {
+          "id": 34,
+          "controlled": 5727,
+          "owned": 6139,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 35,
+          "controlled": 4254,
+          "owned": 4253,
+          "formations": 2,
+          "strength": 8114
+        },
+        {
+          "id": 36,
+          "controlled": 6241,
+          "owned": 6241,
+          "formations": 3,
+          "strength": 24360
+        },
+        {
+          "id": 37,
+          "controlled": 3399,
+          "owned": 3399,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 38,
+          "controlled": 2220,
+          "owned": 2220,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 39,
+          "controlled": 6447,
+          "owned": 6444,
+          "formations": 4,
+          "strength": 13272
+        },
+        {
+          "id": 40,
+          "controlled": 1119,
+          "owned": 1119,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 41,
+          "controlled": 2562,
+          "owned": 2562,
+          "formations": 2,
+          "strength": 16240
+        },
+        {
+          "id": 42,
+          "controlled": 639,
+          "owned": 639,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 43,
+          "controlled": 251,
+          "owned": 251,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 44,
+          "controlled": 13251,
+          "owned": 13208,
+          "formations": 6,
+          "strength": 44841
+        },
+        {
+          "id": 45,
+          "controlled": 7919,
+          "owned": 7884,
+          "formations": 3,
+          "strength": 16960
+        },
+        {
+          "id": 46,
+          "controlled": 1730,
+          "owned": 1730,
+          "formations": 1,
+          "strength": 8120
+        },
+        {
+          "id": 47,
+          "controlled": 1320,
+          "owned": 1320,
+          "formations": 4,
+          "strength": 32480
+        },
+        {
+          "id": 48,
+          "controlled": 324,
+          "owned": 323,
+          "formations": 2,
+          "strength": 2696
+        },
+        {
+          "id": 49,
+          "controlled": 696,
+          "owned": 696,
+          "formations": 3,
+          "strength": 24360
+        },
+        {
+          "id": 50,
+          "controlled": 35,
+          "owned": 35,
+          "formations": 1,
+          "strength": 1614
+        },
+        {
+          "id": 51,
+          "controlled": 95,
+          "owned": 95,
+          "formations": 1,
+          "strength": 2966
+        },
+        {
+          "id": 52,
+          "controlled": 301,
+          "owned": 301,
+          "formations": 1,
+          "strength": 1350
+        },
+        {
+          "id": 53,
+          "controlled": 1518,
+          "owned": 1518,
+          "formations": 3,
+          "strength": 24360
+        },
+        {
+          "id": 54,
+          "controlled": 5867,
+          "owned": 5867,
+          "formations": 2,
+          "strength": 16240
+        },
+        {
+          "id": 55,
+          "controlled": 419,
+          "owned": 419,
+          "formations": 1,
+          "strength": 8120
+        },
+        {
+          "id": 56,
+          "controlled": 910,
+          "owned": 910,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 57,
+          "controlled": 4921,
+          "owned": 5624,
+          "formations": 12,
+          "strength": 78206
+        },
+        {
+          "id": 58,
+          "controlled": 2003,
+          "owned": 2026,
+          "formations": 6,
+          "strength": 9775
+        },
+        {
+          "id": 59,
+          "controlled": 12975,
+          "owned": 12975,
+          "formations": 14,
+          "strength": 114960
+        },
+        {
+          "id": 60,
+          "controlled": 1958,
+          "owned": 1958,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 61,
+          "controlled": 176,
+          "owned": 176,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 62,
+          "controlled": 474,
+          "owned": 474,
+          "formations": 2,
+          "strength": 16240
+        },
+        {
+          "id": 63,
+          "controlled": 1441,
+          "owned": 1441,
+          "formations": 6,
+          "strength": 41000
+        },
+        {
+          "id": 64,
+          "controlled": 2068,
+          "owned": 2068,
+          "formations": 3,
+          "strength": 24360
+        },
+        {
+          "id": 65,
+          "controlled": 345,
+          "owned": 345,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 66,
+          "controlled": 328,
+          "owned": 328,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 67,
+          "controlled": 4922,
+          "owned": 4922,
+          "formations": 6,
+          "strength": 43254
+        },
+        {
+          "id": 68,
+          "controlled": 786,
+          "owned": 786,
+          "formations": 2,
+          "strength": 12480
+        },
+        {
+          "id": 69,
+          "controlled": 28437,
+          "owned": 27579,
+          "formations": 140,
+          "strength": 817398
+        },
+        {
+          "id": 70,
+          "controlled": 226,
+          "owned": 226,
+          "formations": 3,
+          "strength": 13716
+        },
+        {
+          "id": 71,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 72,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 73,
+          "controlled": 923,
+          "owned": 923,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 74,
+          "controlled": 6759,
+          "owned": 6759,
+          "formations": 3,
+          "strength": 24360
+        },
+        {
+          "id": 75,
+          "controlled": 1956,
+          "owned": 2602,
+          "formations": 31,
+          "strength": 139280
+        },
+        {
+          "id": 76,
+          "controlled": 7488,
+          "owned": 7488,
+          "formations": 2,
+          "strength": 7240
+        },
+        {
+          "id": 77,
+          "controlled": 941,
+          "owned": 941,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 78,
+          "controlled": 25318,
+          "owned": 25304,
+          "formations": 7,
+          "strength": 39680
+        },
+        {
+          "id": 79,
+          "controlled": 1140,
+          "owned": 1140,
+          "formations": 2,
+          "strength": 6960
+        },
+        {
+          "id": 80,
+          "controlled": 77522,
+          "owned": 77522,
+          "formations": 5,
+          "strength": 21440
+        },
+        {
+          "id": 81,
+          "controlled": 2360,
+          "owned": 2360,
+          "formations": 0,
+          "strength": 0
+        },
+        {
+          "id": 82,
+          "controlled": 45755,
+          "owned": 45755,
+          "formations": 67,
+          "strength": 422880
+        },
+        {
+          "id": 83,
+          "controlled": 5974,
+          "owned": 5974,
+          "formations": 6,
+          "strength": 37440
+        },
+        {
+          "id": 84,
+          "controlled": 305,
+          "owned": 305,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 85,
+          "controlled": 309,
+          "owned": 309,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 86,
+          "controlled": 57,
+          "owned": 57,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 87,
+          "controlled": 331,
+          "owned": 331,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 88,
+          "controlled": 136,
+          "owned": 136,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 89,
+          "controlled": 200,
+          "owned": 200,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 90,
+          "controlled": 326,
+          "owned": 326,
+          "formations": 2,
+          "strength": 6000
+        },
+        {
+          "id": 91,
+          "controlled": 80,
+          "owned": 80,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 92,
+          "controlled": 137,
+          "owned": 137,
+          "formations": 1,
+          "strength": 3000
+        },
+        {
+          "id": 93,
+          "controlled": 2997,
+          "owned": 2997,
+          "formations": 3,
+          "strength": 18720
+        },
+        {
+          "id": 94,
+          "controlled": 2443,
+          "owned": 2443,
+          "formations": 2,
+          "strength": 12480
+        },
+        {
+          "id": 95,
+          "controlled": 673,
+          "owned": 673,
+          "formations": 2,
+          "strength": 12480
+        },
+        {
+          "id": 96,
+          "controlled": 3476,
+          "owned": 3476,
+          "formations": 6,
+          "strength": 31600
+        },
+        {
+          "id": 97,
+          "controlled": 23303,
+          "owned": 23303,
+          "formations": 11,
+          "strength": 22927
+        },
+        {
+          "id": 98,
+          "controlled": 3048,
+          "owned": 3048,
+          "formations": 3,
+          "strength": 18720
+        },
+        {
+          "id": 99,
+          "controlled": 1205,
+          "owned": 1205,
+          "formations": 3,
+          "strength": 18720
+        },
+        {
+          "id": 100,
+          "controlled": 2978,
+          "owned": 2978,
+          "formations": 6,
+          "strength": 33200
+        },
+        {
+          "id": 101,
+          "controlled": 10311,
+          "owned": 10311,
+          "formations": 11,
+          "strength": 68780
+        },
+        {
+          "id": 102,
+          "controlled": 611,
+          "owned": 611,
+          "formations": 2,
+          "strength": 6000
+        },
+        {
+          "id": 103,
+          "controlled": 0,
+          "owned": 0,
+          "formations": 0,
+          "strength": 0
+        }
+      ],
+      "living": 93,
+      "formations": 1047,
+      "cellsFlipped": 31224,
+      "events": {
+        "AllianceJoined": 18,
+        "ProductionQueued": 85,
+        "FormationArrived": 11862,
+        "FormationRetreated": 3763,
+        "WarDeclared": 25,
+        "MajorBattleStarted": 64,
+        "ElementDestroyed": 6422,
+        "FormationDestroyed": 270,
+        "MajorBattleEnded": 63,
+        "ConvoyRaided": 34,
+        "PuppetReleased": 3,
+        "SeaBattle": 24,
+        "PeaceSigned": 21,
+        "PuppetCreated": 5,
+        "CapitalCaptured": 36,
+        "CapitalMoved": 65,
+        "MoveRejected": 1116,
+        "FormationEmbarked": 22,
+        "NationAnnexed": 3,
+        "AllianceLeft": 7,
+        "NationEliminated": 9,
+        "FormationLanded": 22,
+        "FormationSpawned": 66,
+        "TechResearched": 37,
+        "LandCeded": 3,
+        "UnionFormed": 4,
+        "LandingRepulsed": 4,
+        "AllianceDissolved": 1,
+        "FormationsDisbanded": 6
+      },
+      "tickMs": {
+        "mean": 10.44482095251147,
+        "p95": 28.918706999997084,
+        "max": 486.96549400000004
+      },
+      "wallMs": 91685.793965
+    }
+  ]
+}

@@ -265,6 +265,11 @@ export interface Snapshot {
   elements: SnapshotElements;
   /** Active Major Battles as flat [x, y, …] (battle markers, PLAN 2.1). */
   majors: Float32Array;
+  /**
+   * The sea battles going on (PLAN 4.10b), SEA_STRIDE each: [x, y, r, a, b]: its place, the cells
+   * from it to its furthest fleet, and its two sides' leaders.
+   */
+  seas: Float32Array;
   events: SnapshotEvents;
   fires: SnapshotFires;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */
@@ -331,6 +336,12 @@ export type FromWorker =
   | { type: 'snapshot'; snap: Snapshot }
   /** A command was not carried out; `reason` is a `Refusal` (shared/commands; PLAN 2.17a). */
   | { type: 'refused'; reason: number }
+  /**
+   * What became of a player's order of a formation (PLAN 4.9c), at once: `refused` (`reason`, a
+   * `RejectReason`), a landing thrown back (`repulsed`), or troops ashore away from the order's
+   * target (`landedAway`: their transports broke off). (`x`, `y`): the formation's place then.
+   */
+  | { type: 'orderNews'; news: OrderNews }
   | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
   | { type: 'terrain'; reqId: number; result: TerrainBuildResult }
   | { type: 'political'; reqId: number; result: PoliticalBuildResult }
@@ -372,7 +383,7 @@ export type FromWorker =
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Sea control for its map mode (PLAN 4.7a): the holder of each zone (index 0 unused), and the zone of each cell when the zones are new to the client; sent when either changes. */
-  | { type: 'seaControl'; holder: Uint16Array; zones?: Uint16Array }
+  | { type: 'seaControl'; holder: Uint16Array; zones?: Uint16Array; /** With `zones`: each zone's sea's name ('' for none), index 0 unused (PLAN 4.10c). */ names?: string[] }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
@@ -558,3 +569,18 @@ export interface WarStat {
    */
   battle: boolean;
 }
+
+/** What became of a player's order (PLAN 4.9c; `orderNews`). */
+export interface OrderNews {
+  kind: 'refused' | 'repulsed' | 'landedAway';
+  id: number;
+  nation: number;
+  /** A `RejectReason` for `refused`, else 0. */
+  reason: number;
+  x: number;
+  y: number;
+  tick: number;
+}
+
+/** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
+export const SEA_STRIDE = 5;

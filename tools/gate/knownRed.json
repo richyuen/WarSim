@@ -1,0 +1,81 @@
+{
+ "about": "Tests that fail on this machine and not because of the code (ADR-297): a run of npm run check:review is green when every test red twice is listed here. Each entry says why and where BLOCKERS has it. A test leaves the list when it is fixed or passes here; never add a test to make a run green without a BLOCKERS entry for it.",
+ "tests": [
+  {
+   "id": "tests/unit/scenario1938.test.ts › 1938 world (PLAN 1.9a) builds in well under a second at M and starts on 1 January 1938",
+   "why": "A timing budget set on another machine; fails alone on unchanged code in a cloud container. BLOCKERS: 2026-10-10, PLAN 4.2d."
+  },
+  {
+   "id": "tests/unit/snapshot-perf.test.ts › snapshot build time (M size) stays within 2 ms for a steady-state snapshot",
+   "why": "A timing budget set on another machine; fails alone on unchanged code in a cloud container. BLOCKERS: 2026-10-10, PLAN 4.2d."
+  },
+  {
+   "id": "tests/unit/territory.test.ts › territory pressure and fronts (PLAN 1.14) the frontier set is the border, stays consistent under flips and costs little per tick",
+   "why": "A timing budget set on another machine; fails alone on unchanged code in a cloud container. BLOCKERS: 2026-10-10, PLAN 4.2d."
+  },
+  {
+   "id": "tests/e2e/cityNames1938.spec.ts › city names are not under the T0 counters or the capital flags, and are not simply left out",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/cityNames1938.spec.ts › city names keep clear of the T1 markers, and are not simply left out",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/fallen1938.spec.ts › T3: within a day of a fight that costs strength, what a battalion and a battery lose lies where it stood",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/fightSeen1938.spec.ts › PLAN 3.11 on a seed not used: every formation in contact of Japan's war on China is seen with its enemy at T3, and a day of a fight leaves its marks",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/fightSeen1938.spec.ts › PLAN 3.11 on a seed not used: every formation in contact of Germany's war on Poland is seen with its enemy at T3, and a day of a fight leaves its marks",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/fire1938.spec.ts › T2 fire: one tracer for every FireEvent in the window, with its flash and its impact",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/formationFight1938.spec.ts › the panel of a formation in contact leads to its fight: both sides on the screen at T3",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/handover1938.spec.ts › T0 ↔ T1: a resting camera shows one unit layer in full, never a half-faded copy of the other",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/individuals1938.spec.ts › T3: an element is its individuals, a figure a unit for guns and tanks and a battalion's share of 64, inside its footprint",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/labelFades1938.spec.ts › no popping of labels and flags: each comes and goes by a fade, and at rest is in full or absent",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/lateFrame1938.spec.ts › a frame that comes late still draws the end of what a camera step started",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/precision.spec.ts › sprite positions are stable to ≤ 0.5 px while panning at 1 m/px at lon 179°",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/tankBattle1938.spec.ts › the tank battle: one zoom from a marker to a burning hull, with turrets on their targets and a flash at a muzzle on the way",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/tickClock.spec.ts › a snapshot of the tick in hand does not send the sprites back",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/ticker1938.spec.ts › a view 1,100 px wide: the bar is inside the view at every UI size offered there, and a wider size is not",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/e2e/zoomDemo1938.spec.ts › one zoom from the whole world to the men of a battle: eight stops, every tier, no layer in a jump",
+   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  }
+ ]
+}

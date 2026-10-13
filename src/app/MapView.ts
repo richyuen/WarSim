@@ -9,7 +9,8 @@ import { FlagStore } from './flagStore';
 import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
 import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
-import { CounterLayer, type CounterSource } from '../render/units/counters';
+import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
+import { drawSeaBattles } from '../render/units/seaBattles';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -34,7 +35,7 @@ import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, t
 import { t, type MessageKey } from '../ui/i18n';
 import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
-import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
+import { NATION_STRIDE, NationField, SEA_STRIDE, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
@@ -221,6 +222,12 @@ export class MapView {
       return screenToWorld(this.controller.cam, e.clientX - r.left, e.clientY - r.top, canvas.clientWidth, canvas.clientHeight);
     };
     let stroke: { id: number; cx: number; cy: number } | null = null;
+    // The sea zone under the cursor in the sea-control mode (PLAN 4.10c), told when it changes.
+    canvas.addEventListener('pointermove', (e) => {
+      if (this.mapMode !== 'seaControl') return;
+      const [wx, wy] = worldAt(e);
+      this.hoverSea(wx, wy);
+    });
     window.addEventListener('pointermove', (e) => {
       if (!stroke || e.pointerId !== stroke.id) return;
       const [wx, wy] = worldAt(e);
@@ -309,9 +316,18 @@ export class MapView {
       this.scatterKey = '';
       this.dirty = true;
     });
-    sim.onSeaControl((holder, zones) => {
-      if (zones) this.map.setSeaZones(this.geo.w, this.geo.h, zones);
+    sim.onSeaControl((holder, zones, names) => {
+      if (zones) {
+        this.map.setSeaZones(this.geo.w, this.geo.h, zones);
+        this.seaZoneOf = zones.slice();
+        this.seaNames = names ?? [];
+      }
       this.map.setSeaHolders(holder);
+      this.seaHolder = holder.slice();
+      // The holders and their zones, for the legend (PLAN 4.10c), the most first.
+      const count = new Map<number, number>();
+      for (let z = 1; z < this.seaHolder.length; z++) if (this.seaHolder[z]! !== 0) count.set(this.seaHolder[z]!, (count.get(this.seaHolder[z]!) ?? 0) + 1);
+      this.onSeaHolders([...count].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(([id, zones]) => ({ id, zones })));
       this.dirty = true;
     });
     sim.onUnrest((u) => {
@@ -419,6 +435,13 @@ export class MapView {
     this.formWayStart = f.wayStart.slice(0, f.count + 1);
     this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
+    this.seas = s.seas.slice();
+    // The sea battles going on, for the ticker (PLAN 4.10b): told when the set changes.
+    const seaKey = Array.from(this.seas, (v, k) => (k % SEA_STRIDE < 3 ? Math.round(v) : v)).join(',');
+    if (seaKey !== this.seaKey) {
+      this.seaKey = seaKey;
+      this.onSeaBattles(this.seaBattles());
+    }
     // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk).
     let dropped = false;
     for (const id of this.selectedFormations) {
@@ -625,6 +648,48 @@ export class MapView {
   private formWayStart = new Uint32Array(1);
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
+  private seas = new Float32Array(0);
+  private seaKey = '';
+  /** Called when the sea battles going on change (PLAN 4.10b; the ticker's rows). */
+  onSeaBattles: (battles: SeaBattleView[]) => void = () => {};
+  /** Where the sea battles' marks were drawn in the last frame (tests). */
+  seaMarks: { x: number; y: number }[] = [];
+
+  /** Sea control (PLAN 4.10c): each cell's zone, each zone's holder and sea's name, as the worker sent them. */
+  private seaZoneOf = new Uint16Array(0);
+  private seaHolder = new Uint16Array(0);
+  private seaNames: string[] = [];
+  private seaHovered = -1;
+  /** The holders of the seas and how many zones each holds, the most first (the legend). */
+  onSeaHolders: (holders: { id: number; zones: number }[]) => void = () => {};
+  /** The zone under the cursor in the sea-control mode, or null off the sea (the legend). */
+  onSeaHover: (zone: { name: string; holder: number } | null) => void = () => {};
+
+  /** The zone at (x, y), in cells, with its sea's name and holder; null where no zone is. */
+  seaZoneAt(x: number, y: number): { zone: number; name: string; holder: number } | null {
+    const { w, h } = this.geo;
+    const cx = ((Math.floor(x) % w) + w) % w;
+    const cy = Math.floor(y);
+    if (cy < 0 || cy >= h || this.seaZoneOf.length !== w * h) return null;
+    const zone = this.seaZoneOf[cy * w + cx]!;
+    return zone === 0 ? null : { zone, name: this.seaNames[zone] ?? '', holder: this.seaHolder[zone] ?? 0 };
+  }
+
+  /** Tells the zone at (x, y) when it is another than the last (PLAN 4.10c; the pointer, tests). */
+  hoverSea(x: number, y: number): void {
+    const at = this.seaZoneAt(x, y);
+    const key = at ? at.zone * 65536 + at.holder : 0;
+    if (key === this.seaHovered) return;
+    this.seaHovered = key;
+    this.onSeaHover(at ? { name: at.name, holder: at.holder } : null);
+  }
+
+  /** The sea battles going on, from the last snapshot (PLAN 4.10b). */
+  seaBattles(): SeaBattleView[] {
+    const out: SeaBattleView[] = [];
+    for (let i = 0; i + SEA_STRIDE <= this.seas.length; i += SEA_STRIDE) out.push({ x: this.seas[i]!, y: this.seas[i + 1]!, r: this.seas[i + 2]!, a: this.seas[i + 3]!, b: this.seas[i + 4]! });
+    return out;
+  }
   private templates: TemplateInfo[] = [];
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
   markerRects: PlacedMarker[] = [];
@@ -1188,10 +1253,13 @@ export class MapView {
     const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
     const flagOf = (n: number): CanvasImageSource | null => this.flags.canvasOf(n);
     const src: CounterSource[] = [];
-    for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: this.formNation[i]!, strength: this.formStrength[i]! });
+    // A fleet is a counter of its own, drawn as a navy's (PLAN 4.10a).
+    for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: counterNation(this.formNation[i]!, this.templates[this.formTemplate[i]!]?.domain === 1), strength: this.formStrength[i]! });
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
+    // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
+    this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);
     if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) {
       // No markers: the next ones take their places in their stacks at once.
       this.markerStacks.clear();
@@ -1724,4 +1792,13 @@ export class MapView {
     cancelAnimationFrame(this.raf);
     this.controller.dispose();
   }
+}
+
+/** A sea battle going on, as the page has it (PLAN 4.10b): its place, the cells to its furthest fleet, its two sides' leaders. */
+export interface SeaBattleView {
+  x: number;
+  y: number;
+  r: number;
+  a: number;
+  b: number;
 }

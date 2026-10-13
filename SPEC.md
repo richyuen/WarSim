@@ -906,7 +906,8 @@ Element (authoritative unit proxy) {
       flotilla 150, a transport group 90 (the land's are 3 × their slowest element's).
     - *The shipyard* (`shipyard`): of the ports whose land cell the nation controls and
       whose water a ship reaches (`portSeaOf`: the cell of its node of the lane graph, found
-      by the zones alone, `portWaters`; in a zone ice does not close),
+      by the zones alone, `portWaters`; in a zone of the world's seas, `seaBasins`' ocean:
+      not a lake, the Caspian or a sea ice closes, PLAN 4.8o, ADR-295),
       the highest naval base, then the nearest to the capital. In 1938: Portsmouth, Norfolk,
       Yokosuka, Brest, La Spezia, Kiel, Kronstadt.
     - *The delivery* (`productionSystem`, `dockPoint`): on its ready day at the shipyard's
@@ -1099,6 +1100,12 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   a freed id that another nation's formation has taken is not ordered by it.
   - A target unreachable from the formation snaps to the nearest reachable cell within 3;
     otherwise the order is rejected (`MoveRejected`).
+  - Every `MoveRejected` says why in its x (`RejectReason`, PLAN 4.9a, ADR-298; y stays NaN):
+    aboard, no formation of the order's kind or a target off the map, no way by land, a march
+    barred on its way; over the sea: at no port of its nation, no transports there with room,
+    no landing by the target, no way over the water; a fleet's: no water and no port there.
+    An order over the sea that is refused and whose target snaps to this land is a march to
+    that coast (Calais from Portsmouth with no transports: Dover).
   - An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1,
     ADR-151): the route begins at the nearer of the step's two cells, and the path with the
     step itself, on along it or back.
@@ -1618,7 +1625,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     takes the record with one of its fleets (two such merge). A fleet under half the ships
     it came in with, or with no weapon against an armed enemy, breaks off: `BREAK_HOURS`
     24 out of every sea battle (its `retreat`: the contact search leaves it out, PLAN 4.8l), `FormationRetreated`, and sails for its
-    nation's nearest port a ship reaches. With no fleet of one side left, or no contact in
+    nation's nearest port a ship reaches (in the basin of the water it stands on: zones that
+    touch, a passage's ends, a strait's zones, PLAN 4.8o). With no fleet of one side left, or no contact in
     an hour, the battle is over: one row of the history log, `SeaBattle` (each side its
     nation and ships lost, packed as nation + 65,536 × ships; where it began): "Germany
     and United Kingdom fought at sea: Germany lost 0 ships, United Kingdom 7".
@@ -1673,8 +1681,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   its transports are, and no rule of the land reads it. They sail for the zoned water nearest
   the target (within 8 cells) and it lands at the nearest cell of the target's land, its org
   at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
-  land within 3 cells if any; sunk, they take it with them. With no port or no room the order
-  is a march as before (PLAN 4.5a, ADR-262). When the transports reach the landing water and its zone
+  land within 3 cells of its side (its nation's, its bloc's, an ally's in the war) or no one's,
+  no one's not where an enemy holds the sea there; else it stays aboard (PLAN 4.8n, ADR-294); sunk, they take it with them. With no port or no room the order
+  is a march as before (PLAN 4.5a, ADR-262). A formation is at a port within 3 cells of its land cell or of its water (London's water is 7.5 cells down the Thames), and embarks at the first such port with transports for it (PLAN 4.9b, ADR-299). A player's order over the sea from where no transports wait marches to the nearest port of its land whose transports have room, and the order is kept (`world.seaBound`, saved) until the march ends: it embarks there and sails, or is refused with its reason; any order ends it. The AI's orders do not do this (its landings are its own, PLAN 4.6b). When the transports reach the landing water and its zone
   is held by a nation at war with the formation's, the landing is thrown back: they sail for
   their nation's nearest port and it lands there. A landing on an enemy's cell takes that
   cell (the beachhead), from which the front spreads; its disorder (org 0.5, fire 0.625) is
@@ -2019,7 +2028,13 @@ not move during the morph into T2; on the way back from T2 they grow where they 
 The snapshot carries template, flags and target per formation, plus Major Battle positions. T0
 sprites stop once markers are fully in; capital flags draw above the markers. At T0 a capital
 flag that would cover a counter stands just above it instead (up to 40 px from its usual place,
-else it is left out), so no counter's number is hidden (PLAN 1.45c). A destroyed nation has no
+else it is left out), so no counter's number is hidden (PLAN 1.45c). A nation's fleets are
+counters of their own (PLAN 4.10a, ADR-302): clustered and folded among themselves apart from
+its armies (as another nation's would be, `NAVAL` added to the nation), and drawn as a navy's,
+a sea-blue box and frame with a hull under the strength, the nation's flag in the chip. A sea
+battle going on is marked at its place at T0 to T2 (PLAN 4.10b, ADR-303; `seas` of the snapshot:
+place, cells to its furthest fleet, its sides): a navy-blue disc with crossed guns over a wave,
+and a dashed ring round the water its fleets are on; it is gone with the figures of T3. A destroyed nation has no
 flag: the snapshot says which nations live (PLAN 2.7g).
 
 *T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per
@@ -2380,9 +2395,14 @@ on screen.
     in `mapLayers` and per-province unrest bytes (`provinceStats`) when `Provinces.version`
     changes; the shader colours land by its province's unrest (fill mode 2).
   - *Sea control* (PLAN 4.7a): the worker sends the zone of each cell when the zones are new
-    to the client and each zone's holder when that changes (`seaControl`); the shader tints a
+    to the client and each zone's holder when that changes (`seaControl`; a world with no
+    sea control yet, as after a load of a save in which no zone is held, is sent all open
+    once where the page had holders, PLAN 4.8p); the shader tints a
     zone held with 0.5 of its holder's colour over the sea's, leaves an open one the sea's, and
-    fades the land 0.65 towards grey (fill mode 3).
+    fades the land 0.65 towards grey (fill mode 3). Its legend (PLAN 4.10c, ADR-304) lists the
+    holders in their colours with their zones, the most first (8, and how many more), and names
+    the zone under the cursor with its holder ("Inner Seas: held by United Kingdom"; its sea's
+    name from the map's seeds, sent with the zones; "held by none").
 - **Map modes still planned**: air superiority, fallout, supply (with their phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
   section `world.names`; the empty name gives back the scenario's name or the founding
@@ -2548,6 +2568,17 @@ on screen.
   (`TICKER_KINDS`: a war declared, a peace, a war ended by a bond, a capital taken, a nation
   destroyed, collapsed, annexed or returned) as they happen, bottom left above the bar, the newest last, a live
   region (`role="log"`).
+  - Below the events, what became of the player's orders of formations (PLAN 4.9c, ADR-300):
+    the worker remembers each formation a player's `moveFormation` names and tells the page at
+    once (`orderNews`, not with the stats) a refusal with its reason (`RejectReason`), a landing
+    thrown back, and troops ashore more than 3 cells from the order's cell (their transports
+    broke off). A refused order leaves the one before it standing, and that one is told on (a
+    division aboard keeps its voyage; ADR-301). The page keeps the last 4 (beside a panel the
+    last one); a click flies to the formation and forgets the row; the formation's panel shows
+    its last (`formation-notice`).
+  - Before the orders, the sea battles going on (PLAN 4.10b, ADR-303): "Sea battle: <side>
+    against <side>" from each snapshot's `seas`; a click flies to a T2 view of both fleets
+    (`showBattle`, the span the cells across them).
   - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
     last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at
@@ -2738,7 +2769,12 @@ on screen.
   sized to what changed since HEAD (ADR-48, ADR-49): documents only (Markdown, `docs/`) run
   parity alone, unless they tick a phase review (ADR-286, ADR-293); a clean tree that the
   gate has already passed runs nothing (the passed trees are recorded in `.cache/gate/`, ADR-55).
-  `npm run check:full` runs every stage. Of the stages:
+  `npm run check:full` runs every stage. A phase review's tick on code that a green
+  `npm run check:review` ran on is a commit as any other (ADR-297): that command runs every
+  stage on its own, the browser suite in chunks of 20 spec files, a failed test again alone
+  (red is red twice), records each step under the code's tree without the documents
+  (`.cache/gate/review.json`, resumed where a run stopped), and is green when every red test is
+  on `tools/gate/knownRed.json`, each with why and its BLOCKERS entry. Of the stages:
   - *unit:* in full when the change ticks a phase review (ADR-293: not a numbered task), or
     something every test stands on changed (the vitest config, `tests/helpers/`, the data and
     assets read from disk, the lock file); otherwise `vitest related` over what changed (ADR-280).

@@ -22,6 +22,7 @@ import type {
   Subscription,
   TerrainBuildResult,
   ToWorker,
+  OrderNews,
 } from '../shared/protocol';
 
 /** Static map layers sent by the worker (PLAN 1.28b). */
@@ -68,7 +69,7 @@ export class SimClient {
       return;
     }
     if (msg.type === 'seaControl') {
-      for (const l of this.seaControlListeners) l(msg.holder, msg.zones);
+      for (const l of this.seaControlListeners) l(msg.holder, msg.zones, msg.names);
       return;
     }
     if (msg.type === 'provinceStats') {
@@ -118,6 +119,10 @@ export class SimClient {
       for (const l of this.refusedListeners) l(msg.reason);
       return;
     }
+    if (msg.type === 'orderNews') {
+      for (const l of this.orderNewsListeners) l(msg.news);
+      return;
+    }
     const p = this.pending.get(msg.reqId);
     if (!p) return;
     this.pending.delete(msg.reqId);
@@ -154,9 +159,9 @@ export class SimClient {
   /** Listeners must copy what they need: the snapshot's arrays are returned to the worker on the next frame. */
   /** Province unrest from the worker (PLAN 1.30b); late listeners get the last values at once. */
   unrest: Uint8Array | null = null;
-  private readonly seaControlListeners = new Set<(holder: Uint16Array, zones?: Uint16Array) => void>();
+  private readonly seaControlListeners = new Set<(holder: Uint16Array, zones?: Uint16Array, names?: string[]) => void>();
   /** Sea control for its map mode (PLAN 4.7a): each zone's holder, and the cells' zones when new. */
-  onSeaControl(l: (holder: Uint16Array, zones?: Uint16Array) => void): () => void {
+  onSeaControl(l: (holder: Uint16Array, zones?: Uint16Array, names?: string[]) => void): () => void {
     this.seaControlListeners.add(l);
     return () => this.seaControlListeners.delete(l);
   }
@@ -290,6 +295,13 @@ export class SimClient {
     const r = await this.request({ type: 'buildPolitical', assetBase, w, h });
     if (!('political' in r)) throw new Error('unexpected reply to buildPolitical');
     return r.political;
+  }
+
+  private readonly orderNewsListeners = new Set<(news: OrderNews) => void>();
+  /** What became of a player's order of a formation (PLAN 4.9c). */
+  onOrderNews(l: (news: OrderNews) => void): () => void {
+    this.orderNewsListeners.add(l);
+    return () => this.orderNewsListeners.delete(l);
   }
 
   private readonly refusedListeners = new Set<(reason: number) => void>();

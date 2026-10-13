@@ -167,6 +167,211 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-304 · 2026-10-13 · accepted — The sea-control mode says whose (PLAN 4.10c)
+
+- **Found** (the critic's R4-B4): the sea-control mode's tints did not say whose navy held a
+  zone: the legend had "held" and "open" with no colours.
+- **Decision.** The worker sends each zone's sea's name with the zones (`seaControl.names`, from
+  the map's seeds; '' for a zone no named sea has). The view keeps the zones, the holders and
+  the names, tells the holders with their zone counts (the most first) when they change, and,
+  in the sea-control mode, the zone under the cursor when it changes. The legend lists 8
+  holders in their nation's colours with their zones (and how many more), and the zone under
+  the cursor: "<sea>: held by <nation>" or "held by none".
+- **Tests.** `seaLegend1938.spec.ts`: on the first day of 1938 the holders are listed, the most
+  zones first, the United Kingdom among them; the cursor over Scapa Flow's water names its zone,
+  held by the United Kingdom; over the South Pacific, held by none. Picture
+  `sea-control-legend.png`.
+
+### ADR-303 · 2026-10-13 · accepted — A sea battle is seen while it lasts (PLAN 4.10b)
+
+- **Found** (the critic's R4-B4; PLAN 4.10's split): on seed 6131 the sim fires at sea and the
+  page draws the shots, but a five-hour battle is five seconds at ×1, its shots are small and
+  each hour's last a part of its second; nothing stood for a sea battle on the map.
+- **Decision.** The snapshot carries the sea battles going on (`seas`, `SEA_STRIDE` 5: place,
+  cells to the furthest fleet, the two sides). The map marks each at T0 to T2 (a navy-blue disc
+  with crossed guns over a wave, a dashed ring round its fleets' water; faded with the figures of
+  T3). The ticker lists them before the orders' news ("Sea battle: <side> against <side>"), from
+  the view's set when it changes; a click flies to a T2 view of both fleets (`showBattle`'s span).
+- **Not done:** a sea battle's row stays only while it goes on: its end is in the history log
+  (`SeaBattle`), as before.
+- **Tests.** `seaBattleSeen1938.spec.ts`: the critic's war, seed 6131: the first battle marked at
+  T0 and listed; its row flies over it; marked in its hours there, and its fire drawn. Pictures
+  `sea-battle-mark-t0.png`, `sea-battle-t2.png`.
+
+### ADR-302 · 2026-10-13 · accepted — A fleet's counter at T0 is a navy's (PLAN 4.10a)
+
+- **Found** (the critic's R4-B4): at T0 a fleet's counter was drawn as an army's, and a
+  nation's fleets and armies in one cell of the grid were one counter (Scapa Flow's fleet with
+  the army of Scotland's north).
+- **Decision.** A counter's source carries the nation plus `NAVAL` (65,536) for a fleet
+  (`counterNation`): the clustering, its animation and the declutter take it as another nation,
+  so fleets cluster and fold among themselves and a fold into an army's counter is shown as a
+  "+n", as a neighbour's is. The drawing reads the nation back for the colour and the flag and
+  draws a navy's box: sea-blue, with a light blue frame and a hull under its strength, the same
+  size as an army's (the declutter's boxes are unchanged). `DrawnCounter` has `naval`.
+- **Tests.** `navalCounter1938.spec.ts`: the British Isles at T0: a British navy counter by
+  Scapa Flow; every navy counter in view blue (blue over red by more than 25 of 255), every
+  army counter not (under 15). Picture `naval-counters-t0.png`.
+
+### ADR-301 · 2026-10-13 · accepted — PLAN 4.9 done: the AT's spec, and what it found (PLAN 4.9d)
+
+- **The AT** (`invasion1938.spec.ts`, seed 2207): Britain, played, at war with Germany; a division
+  in London (spawned: none stands there on this seed) ordered onto Cuxhaven embarks at once;
+  a second order while aboard is refused and told ("aboard transports"); the voyage is thrown
+  back off the Weser, told, and the transports bring the division ashore on the Thames, told.
+  Then refusals told within a second: no water by the target (London to Kassel), a fleet onto
+  land, a fleet to the Caspian, and no transports (every British fleet removed). No port: the
+  Swiss spec (4.9c). No way by land and a march barred: the unit test (4.9a), the same path.
+- **Found by it, mended:**
+  - The worker forgot a formation's order when a later order was refused; the sim keeps the
+    earlier order then (a division aboard keeps its voyage), so its landing went untold. The
+    refused order now gives the earlier one back (`ordered`'s `before`).
+  - A player's order over the sea with no port of its land holding transports for it was
+    refused "at no port" from an inland city though its nation has ports: it is now
+    `NoTransports` where the nation holds a port on that land (`transportsPort(…, false)`), and
+    `NoPort` where it holds none (Switzerland).
+- **The pin stays** c0a89199 (the AI's orders give no reason the page reads; nothing else moved).
+- **Tests.** `invasion1938.spec.ts` (1); `serverOrderNews.test.ts`: the refused order while
+  aboard, then the voyage told; `seaBound1938.test.ts`: no transports anywhere is `NoTransports`.
+
+### ADR-300 · 2026-10-13 · accepted — The page says what became of a player's order (PLAN 4.9c)
+
+- **Context** (the critic's R4-B2): a refused order, a landing thrown back and troops brought
+  back by transports that broke off reached no screen: the critic's division sailed to Germany
+  and came ashore in England with no word.
+- **Decision.** The worker keeps the formations a player's order names (`moveFormation` with its
+  nation) with the order's cell, and from each tick's events posts `orderNews` at once, not with
+  the stats (a refusal after a click must not wait for them, and the stats do not come while
+  paused): `refused` (with the `RejectReason`), `repulsed` (`LandingRepulsed`), `landedAway`
+  (`FormationLanded` more than `AT_PORT_CELLS` from the order's cell). It forgets an order when
+  refused, at a landing, at an arrival on land with no order over the sea kept, at the
+  formation's end, and at a new game or a load. The page keeps the last 4 in the ticker below
+  its events (the last one beside a panel), in words with the formation's name; a click flies
+  to the formation and forgets the row; the formation's panel shows its last. An AI's order
+  and God Mode's spawn tell nothing.
+- **Tests.** `serverOrderNews.test.ts`: a player's refused order is told at once with its
+  reason, an order with no nation is not; the critic's landing of seed 2207 is told thrown back,
+  then ashore away. `orderNews1938.spec.ts`: Switzerland, played, orders a division to London:
+  the ticker says "no port" within a second, the panel too, a click forgets the row.
+
+### ADR-299 · 2026-10-13 · accepted — A player's order over the sea from inland goes by a port; a formation is at a port by its city too (PLAN 4.9b)
+
+- **Found** (the critic's R4-B2): a British division in London ordered onto Germany did nothing:
+  London's water is given by hand 7.5 cells down the Thames, and a formation was at a port only
+  within 3 cells of the port's water, so a division in the city was at none (`NoPort`). And a
+  player's order over the sea from inland was refused: only two orders by hand (to the port,
+  then over the sea) did it.
+- **Decision.** A formation is at a port within `AT_PORT_CELLS` of its land cell or of its water;
+  of the ports it is at, it embarks at the first with transports for it. A player's order
+  (`moveFormation`, `orderMove`'s `byPort`) over the sea refused for no port or no transports
+  marches to the nearest port of its land that its nation holds with transports standing there
+  with room (`transportsPort`), and keeps the order (`world.seaBound`: state, saved while not
+  empty); at the end of the march the amphibious system embarks it (`tryLanding`) or emits the
+  refusal with its reason. Any order, and the formation's end, ends it. The AI's orders are as
+  before: its landings are planned by its own (PLAN 4.6b).
+- **The pin moves** 8622df0d → c0a89199: the AI's landings from a port whose water is far from
+  its city.
+- **Tests.** `seaBound1938.test.ts`: Birmingham to Cuxhaven at war marches, embarks and sails; a
+  save loaded on the march embarks at the same hour with the same hash; another order ends it;
+  with no British transports it is refused with its reason. `rejectReasons1938.test.ts`: the
+  `NoPort` case by the AI's order. `movement.test.ts`'s "no land route to Britain" gave its
+  order as a player's command, which now goes by sea: the march is now ordered as the AI orders
+  it (`orderMove`), still refused and still standing, and the player's command is checked to go
+  by a port.
+
+### ADR-298 · 2026-10-12 · accepted — A refused order says why (PLAN 4.9a)
+
+- **Context** (the critic's R4-B2): a refused order emitted `MoveRejected` with nothing of why,
+  and no code of the page read it: a British division ordered onto Germany with its transports
+  6.5 cells away did nothing for 20 days and said nothing.
+- **Decision.** `RejectReason` (`src/shared/events.ts`) in the event's x, y NaN (a refusal has
+  no place, as before; the history reads a place from both): `Aboard`, `NotLand` (no formation
+  of the order's kind, a target off the map), `NoRoute`, `Barred`, and by sea `NoPort`,
+  `NoTransports`, `NoLanding`, `NoSeaWay`, a fleet's `NotWater`. `tryLanding` gives the
+  landing's reason (`orderLanding` is it, as a boolean, for the AI); an order over the sea
+  that is refused falls to a march as before and, with no way by land, gives the sea's reason.
+  The event's b is the formation's nation where it was 0 aboard. Events are not state: the pin
+  stays 8622df0d.
+- **Seen, for 4.9b and 4.9c:** an order over the sea whose target is near this land's coast
+  snaps to it and is a march (Calais from Portsmouth with no transports goes to Dover): the
+  sea's refusal is not emitted then.
+- **Tests.** `rejectReasons1938.test.ts`: each reason from a 1938 case.
+
+### ADR-297 · 2026-10-12 · accepted — The phase review's full run is recorded, and judged against a list of known reds (the user's decision)
+
+- **Context.** A phase review's tick runs every stage in full (ADR-293). At PLAN 4.8 the stages
+  were run one by one before the tick, for its results go in the tick's documents: `check:full`
+  stops at the first red stage, and on this container three unit timing tests and 16 browser
+  specs fail for the machine's sake (BLOCKERS), and the browser suite outlasts the two hours a
+  background command may run. The tick's commit, documents alone, would then have run it all
+  again, about four hours on the same code.
+- **Decision.** `npm run check:review` (`tools/gate/review.ts`) runs every stage on its own,
+  whatever the one before it did: the browser suite in chunks of 20 spec files, the perf spec
+  on its own project; a unit, sweep or browser test that fails is run again alone (its file,
+  one worker) and is red when it fails both times. Each step is recorded as it ends in
+  `.cache/gate/review.json` under the code key: the tree of the working tree without the
+  documents, `critic/` and the list of known reds; a run cut off goes on where it stopped. It is
+  green when every step is done and every red test is on `tools/gate/knownRed.json` (the
+  verdict is taken against the list as it is when read). The gate, on a commit that ticks a
+  phase review, asks the record of the code of the working tree: green, the tick is a commit
+  as any other (documents alone: parity).
+- **The list.** Each entry names a test, why it is there and its BLOCKERS entry; a test goes on
+  it only with one, and leaves it when fixed or green here. It starts with the three timing
+  tests and the 16 browser tests of 4.8's run (`camera`, `declutter`, `t0map` passed alone).
+- **Cost.** A known red hides a real regression of the same test until it leaves the list; the
+  record is this machine's (`.cache/` is not committed), so another machine runs it again.
+- **Tests.** `gateReview.test.ts`: the steps, the verdict, the code key's exclusions, the ids of
+  red tests from vitest's and Playwright's JSON reports, the list's entries.
+
+### ADR-296 · 2026-10-12 · accepted — The sea-control layer is cleared by a load with no zone held (PLAN 4.8p)
+
+- **Found** (the tenth read): the worker sent the holders only while `world.seaControl` was
+  there; a load resets what it sent, and a save made before any 00:00 reckoning, or in which no
+  zone was ever held, has none. The page kept the last game's holders until the next 00:00.
+- **Decision.** The worker remembers, over a load, whether the page was last shown a held zone
+  (`seaShown`); a world with no sea control is then sent every zone held by none, once. Nothing
+  is sent for a world that never had one (the toy world, the start of a game).
+- **The pin:** the sim is not changed.
+- **Tests.** `serverSeaLoad.test.ts`: a zone held and shown, then a save with none loaded: a
+  `seaControl` message of none follows (failed before).
+
+### ADR-295 · 2026-10-12 · accepted — A fleet's home and a shipyard are ports a ship reaches (PLAN 4.8o)
+
+- **Found** (the tenth read): `nearestOwnPort` and `shipyard` took any port whose water is in a
+  zone ice does not close, by straight km or naval base. 22 ports have no way to the world's
+  seas (the Great Lakes, Great Slave Lake, the Caspian, Lakes Victoria and Tanganyika): Iran's
+  shipyard was a city's port on the Caspian (49.7° E, 37.3° N), its fleets delivered there; a
+  Canadian fleet that broke off off New York sailed for Toronto, with no way there, and stood.
+- **Decision.** `seaBasins` (`lanes.ts`, cached by the zones, `basinOf`): zones join as the lane
+  graph joins them, by their 4-way touch, a passage's two ends and the zones of a body of
+  crossing cells, a closed zone none; the ocean is the basin of the most area. A shipyard is a
+  port of the ocean; a fleet's nearest port one of the basin of the water it stands on (the
+  ocean where it stands on no zone within `AT_PORT_CELLS`). The lane graph is not built for it:
+  the page asks every nation's shipyard (PLAN 4.2f). Against `sailRoute` from Portsmouth, the
+  basins give the same 22 ports and no other.
+- **The pin stays** 8622df0d.
+- **Tests.** `lakePorts1938.test.ts`: every living nation's shipyard has a way to Portsmouth;
+  the Canadian fleet off New York's home has one (both failed before).
+
+### ADR-294 · 2026-10-12 · accepted — Transports that stop elsewhere land on their side's coast or no one's (PLAN 4.8n)
+
+- **Found** (the tenth read): transports that stood anywhere but the landing's water put their
+  troops ashore at the nearest land of any holder, the sea's holder not asked (the comment said
+  "of its side or none"; the predicate read land alone). An order to Calais, then the transports
+  sent to Wilhelmshaven's water, took a German beachhead with no landing thrown back; sent off
+  the Dutch coast, a British division landed in the Netherlands at peace.
+- **Decision.** `strayLanding`: the land nearest within `AT_PORT_CELLS` held by the formation's
+  nation, its supply bloc or a nation on its side of a war (`sameSide`), or by no one; no one's
+  not where a nation at war with it holds the sea's zone there (as at the landing's water). None:
+  it stays aboard. An enemy's coast is taken by a landing ordered there alone, which asks the
+  sea; a neutral's is no one's to land on. Its own coast, at a port it sailed home to, is
+  disembarking: the sea is not asked, so a repulsed landing still comes ashore at home.
+- **The pin stays** 8622df0d.
+- **Tests.** `strayLanding1938.test.ts`: off the Dutch coast at peace, no landing in the
+  Netherlands; at Wilhelmshaven's water at war, no German cell taken (both failed before); its own
+  coast under a German-held sea, ashore; the same coast made no one's, aboard under the German
+  sea and ashore under a free one.
+
 ### ADR-293 · 2026-10-12 · accepted — Every unit test and every spec once a phase, at its review (the user's decision)
 
 - **Context.** A numbered task's tick ran the whole unit suite (about 20 minutes here) and the

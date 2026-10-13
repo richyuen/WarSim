@@ -831,3 +831,17 @@ body {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+/* What became of the player's orders (PLAN 4.9c), in the ticker below its events. */
+.ticker-row.order-news {
+  border-left-color: #6fa8dc;
+}
+.formation-notice {
+  display: block;
+  color: #f4d58d;
+  font-size: 0.78rem;
+}
+/* The sea battles going on (PLAN 4.10b). */
+.ticker-row.sea-battle {
+  border-left-color: #8ec5ff;
+}

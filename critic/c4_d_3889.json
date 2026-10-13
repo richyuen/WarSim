@@ -1,0 +1,2050 @@
+{
+ "seed": 3889,
+ "shots": [
+  "critic/shots/c4d_102_world_year2.png",
+  "critic/shots/c4d_104_world_year4.png",
+  "critic/shots/c4d_106_world_year6.png",
+  "critic/shots/c4d_108_world_year8.png",
+  "critic/shots/c4d_50_europe_end.png",
+  "critic/shots/c4d_51_asia_end.png",
+  "critic/shots/c4d_52_americas_end.png",
+  "critic/shots/c4d_60_stats.png",
+  "critic/shots/c4d_61_charts.png",
+  "critic/shots/c4d_62_history.png"
+ ],
+ "years": [
+  {
+   "year": 1,
+   "tick": 8932,
+   "wallS": 323.567,
+   "living": 93,
+   "founded": 0,
+   "foundedNames": [],
+   "top": [
+    "nation.SOV 16.2%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.8%",
+    "nation.BRA 6.4%",
+    "nation.AST 6.1%",
+    "nation.CHI 4.9%",
+    "nation.AOF 3.5%",
+    "nation.ITA 3.3%",
+    "nation.RAJ 3.2%",
+    "nation.AEF 2.2%"
+   ],
+   "wars": 8,
+   "sound": {
+    "asked": 32,
+    "sounded": 68,
+    "cues": [
+     "death",
+     "capital",
+     "war",
+     "war",
+     "capital"
+    ]
+   },
+   "date": "16 January 1939"
+  },
+  {
+   "year": 2,
+   "tick": 17631,
+   "wallS": 571.638,
+   "living": 96,
+   "founded": 4,
+   "foundedNames": [
+    "=Free Inner Mongolia",
+    "=Free Vienna",
+    "=Free Luxembourg",
+    "=Free Jilin"
+   ],
+   "top": [
+    "nation.SOV 16.7%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.9%",
+    "nation.BRA 6.4%",
+    "nation.AST 6.1%",
+    "nation.CHI 4.7%",
+    "nation.AOF 3.7%",
+    "nation.RAJ 3.2%",
+    "nation.ITA 3.2%",
+    "nation.FRA 2.2%"
+   ],
+   "wars": 4,
+   "sound": {
+    "asked": 32,
+    "sounded": 116,
+    "cues": [
+     "death",
+     "capital",
+     "capital",
+     "peace",
+     "capital"
+    ]
+   },
+   "date": "20 January 1940"
+  },
+  {
+   "year": 3,
+   "tick": 26409,
+   "wallS": 824.544,
+   "living": 109,
+   "founded": 17,
+   "foundedNames": [
+    "=Free Inner Mongolia",
+    "=Free Vienna",
+    "=Free Luxembourg",
+    "=Free Jilin",
+    "=Free Salzburg",
+    "=Free Budapest",
+    "=Free Székesfehérvár",
+    "=Free Dikhil",
+    "=Free Bizerte",
+    "=Free Seine-Maritime",
+    "=Free Tartu",
+    "=Free Loir-et-Cher"
+   ],
+   "top": [
+    "nation.SOV 16.7%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.9%",
+    "nation.BRA 6.4%",
+    "nation.AST 6.1%",
+    "nation.CHI 5.2%",
+    "nation.AOF 3.5%",
+    "nation.FRA 3.3%",
+    "nation.RAJ 3.2%",
+    "nation.ENG 2.6%"
+   ],
+   "wars": 10,
+   "sound": {
+    "asked": 32,
+    "sounded": 152,
+    "cues": [
+     "capital",
+     "war",
+     "capital",
+     "capital",
+     "war"
+    ]
+   },
+   "date": "19 January 1941"
+  },
+  {
+   "year": 4,
+   "tick": 35303,
+   "wallS": 1159.938,
+   "living": 113,
+   "founded": 21,
+   "foundedNames": [
+    "=Free Inner Mongolia",
+    "=Free Vienna",
+    "=Free Jilin",
+    "=Free Salzburg",
+    "=Free Budapest",
+    "=Free Székesfehérvár",
+    "=Free Dikhil",
+    "=Free Bizerte",
+    "=Free Tartu",
+    "=Free Loir-et-Cher",
+    "=Free Valencia",
+    "=Free Kaposvár"
+   ],
+   "top": [
+    "nation.SOV 16.9%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.8%",
+    "nation.BRA 6.4%",
+    "nation.AST 6.1%",
+    "nation.CHI 4.5%",
+    "nation.AOF 3.5%",
+    "nation.SIN 2.8%",
+    "nation.ENG 2.6%",
+    "nation.AEF 2.2%"
+   ],
+   "wars": 11,
+   "sound": {
+    "asked": 32,
+    "sounded": 194,
+    "cues": [
+     "war",
+     "war",
+     "capital",
+     "capital",
+     "war"
+    ]
+   },
+   "date": "26 January 1942"
+  },
+  {
+   "year": 5,
+   "tick": 43902,
+   "wallS": 1394.226,
+   "living": 112,
+   "founded": 22,
+   "foundedNames": [
+    "=Free Inner Mongolia",
+    "=Free Vienna",
+    "=Free Jilin",
+    "=Free Salzburg",
+    "=Free Budapest",
+    "=Free Székesfehérvár",
+    "=Free Dikhil",
+    "=Free Bizerte",
+    "=Free Tartu",
+    "=Free Loir-et-Cher",
+    "=Free Valencia",
+    "=Free Kaposvár"
+   ],
+   "top": [
+    "nation.SOV 16.6%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.8%",
+    "nation.BRA 6.6%",
+    "nation.AST 6.1%",
+    "nation.CHI 4.9%",
+    "nation.AOF 3.4%",
+    "nation.SIN 2.8%",
+    "nation.ENG 2.6%",
+    "nation.FRA 2.2%"
+   ],
+   "wars": 8,
+   "sound": {
+    "asked": 32,
+    "sounded": 223,
+    "cues": [
+     "war",
+     "peace",
+     "war",
+     "war",
+     "peace"
+    ]
+   },
+   "date": "19 January 1943"
+  },
+  {
+   "year": 6,
+   "tick": 53046,
+   "wallS": 1661.88,
+   "living": 114,
+   "founded": 24,
+   "foundedNames": [
+    "=Free Inner Mongolia",
+    "=Free Vienna",
+    "=Free Jilin",
+    "=Free Salzburg",
+    "=Free Budapest",
+    "=Free Székesfehérvár",
+    "=Free Dikhil",
+    "=Free Bizerte",
+    "=Free Tartu",
+    "=Free Loir-et-Cher",
+    "=Free Valencia",
+    "=Free Kaposvár"
+   ],
+   "top": [
+    "nation.SOV 16.4%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.8%",
+    "nation.BRA 6.6%",
+    "nation.AST 6.1%",
+    "nation.CHI 4.8%",
+    "nation.AOF 3.4%",
+    "nation.RAJ 2.9%",
+    "nation.ENG 2.5%",
+    "nation.FRA 2.2%"
+   ],
+   "wars": 10,
+   "sound": {
+    "asked": 32,
+    "sounded": 254,
+    "cues": [
+     "capital",
+     "peace",
+     "war",
+     "capital",
+     "peace"
+    ]
+   },
+   "date": "4 February 1944"
+  },
+  {
+   "year": 7,
+   "tick": 61443,
+   "wallS": 1893.091,
+   "living": 112,
+   "founded": 25,
+   "foundedNames": [
+    "=Free Vienna",
+    "=Free Jilin",
+    "=Free Salzburg",
+    "=Free Budapest",
+    "=Free Székesfehérvár",
+    "=Free Dikhil",
+    "=Free Bizerte",
+    "=Free Tartu",
+    "=Free Loir-et-Cher",
+    "=Free Valencia",
+    "=Free Kaposvár",
+    "=Free Salamanca"
+   ],
+   "top": [
+    "nation.SOV 16.5%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.8%",
+    "nation.BRA 6.6%",
+    "nation.AST 6.1%",
+    "nation.CHI 5.9%",
+    "nation.AOF 3.4%",
+    "nation.RAJ 2.9%",
+    "nation.ENG 2.5%",
+    "nation.FRA 2.4%"
+   ],
+   "wars": 9,
+   "sound": {
+    "asked": 32,
+    "sounded": 281,
+    "cues": [
+     "peace",
+     "death",
+     "peace",
+     "war",
+     "death"
+    ]
+   },
+   "date": "17 January 1945"
+  },
+  {
+   "year": 8,
+   "tick": 70307,
+   "wallS": 2227.559,
+   "living": 107,
+   "founded": 28,
+   "foundedNames": [
+    "=Free Vienna",
+    "=Free Jilin",
+    "=Free Salzburg",
+    "=Free Budapest",
+    "=Free Székesfehérvár",
+    "=Free Dikhil",
+    "=Free Bizerte",
+    "=Free Tartu",
+    "=Free Loir-et-Cher",
+    "=Free Valencia",
+    "=Free Kaposvár",
+    "=Free Salamanca"
+   ],
+   "top": [
+    "nation.SOV 16.3%",
+    "nation.FRA 9.2%",
+    "nation.USA 7.0%",
+    "nation.CAN 6.8%",
+    "nation.BRA 6.6%",
+    "nation.AST 6.1%",
+    "nation.CHI 5.7%",
+    "nation.ENG 4.8%",
+    "nation.RAJ 3.0%",
+    "nation.ARG 2.1%"
+   ],
+   "wars": 7,
+   "sound": {
+    "asked": 32,
+    "sounded": 308,
+    "cues": [
+     "capital",
+     "war",
+     "death",
+     "war",
+     "war"
+    ]
+   },
+   "date": "23 January 1946"
+  }
+ ],
+ "ticker": [
+  {
+   "wallS": 92.435,
+   "r": "5 January 1938 Soviet Union declared war on Romania"
+  },
+  {
+   "wallS": 92.435,
+   "r": "14 January 1938 Germany declared war on Lithuania"
+  },
+  {
+   "wallS": 109.083,
+   "r": "26 January 1938 Soviet Union declared war on Lithuania"
+  },
+  {
+   "wallS": 109.083,
+   "r": "30 January 1938 China captured Mengjiang's capital"
+  },
+  {
+   "wallS": 109.083,
+   "r": "4 February 1938 Italy declared war on Yugoslavia"
+  },
+  {
+   "wallS": 117.135,
+   "r": "7 February 1938 China captured Mengjiang's capital"
+  },
+  {
+   "wallS": 117.135,
+   "r": "13 February 1938 Nationalist Spain made peace with Spanish Republic"
+  },
+  {
+   "wallS": 125.133,
+   "r": "16 February 1938 Germany captured Czechoslovakia's capital"
+  },
+  {
+   "wallS": 125.133,
+   "r": "16 February 1938 China captured Mengjiang's capital"
+  },
+  {
+   "wallS": 125.133,
+   "r": "17 February 1938 Germany captured Lithuania's capital"
+  },
+  {
+   "wallS": 125.133,
+   "r": "21 February 1938 China captured Mengjiang's capital"
+  },
+  {
+   "wallS": 125.133,
+   "r": "24 February 1938 Germany captured Lithuania's capital"
+  },
+  {
+   "wallS": 133.452,
+   "r": "26 February 1938 Soviet Union made peace with Romania"
+  },
+  {
+   "wallS": 133.452,
+   "r": "27 February 1938 Italy made peace with Yugoslavia"
+  },
+  {
+   "wallS": 133.452,
+   "r": "4 March 1938 Italy declared war on Hungary"
+  },
+  {
+   "wallS": 133.452,
+   "r": "5 March 1938 Germany made peace with Lithuania"
+  },
+  {
+   "wallS": 141.341,
+   "r": "15 March 1938 Poland declared war on Lithuania"
+  },
+  {
+   "wallS": 141.341,
+   "r": "17 March 1938 Nationalist Spain declared war on Portugal"
+  },
+  {
+   "wallS": 141.341,
+   "r": "28 March 1938 Bulgaria declared war on Romania"
+  },
+  {
+   "wallS": 141.341,
+   "r": "28 March 1938 Poland captured Lithuania's capital"
+  },
+  {
+   "wallS": 141.341,
+   "r": "29 March 1938 Lithuania was annexed by Poland"
+  },
+  {
+   "wallS": 149.257,
+   "r": "1 April 1938 Germany declared war on Latvia"
+  },
+  {
+   "wallS": 149.257,
+   "r": "5 April 1938 Turkey declared war on Bulgaria"
+  },
+  {
+   "wallS": 149.257,
+   "r": "11 April 1938 China captured Mengjiang's capital"
+  },
+  {
+   "wallS": 156.926,
+   "r": "17 April 1938 Germany captured Latvia's capital"
+  },
+  {
+   "wallS": 156.926,
+   "r": "19 April 1938 Latvia was annexed by Germany"
+  },
+  {
+   "wallS": 156.926,
+   "r": "29 April 1938 Nationalist Spain captured Portugal's capital"
+  },
+  {
+   "wallS": 156.926,
+   "r": "1 May 1938 Yugoslavia captured Bulgaria's capital"
+  },
+  {
+   "wallS": 165.07,
+   "r": "8 May 1938 Romania made peace with Bulgaria"
+  },
+  {
+   "wallS": 165.07,
+   "r": "9 May 1938 France declared war on Nationalist Spain"
+  },
+  {
+   "wallS": 165.07,
+   "r": "13 May 1938 Mengjiang was destroyed"
+  },
+  {
+   "wallS": 165.07,
+   "r": "15 May 1938 China captured Manchukuo's capital"
+  },
+  {
+   "wallS": 165.07,
+   "r": "20 May 1938 Italy declared war on Austria"
+  },
+  {
+   "wallS": 173.614,
+   "r": "28 May 1938 Germany captured Austria's capital"
+  },
+  {
+   "wallS": 173.614,
+   "r": "29 May 1938 Hungary captured Austria's capital"
+  },
+  {
+   "wallS": 173.614,
+   "r": "30 May 1938 Italy captured Switzerland's capital"
+  },
+  {
+   "wallS": 173.614,
+   "r": "30 May 1938 Nationalist Spain captured French Morocco's capital"
+  },
+  {
+   "wallS": 173.614,
+   "r": "1 June 1938 Soviet Union declared war on Estonia"
+  },
+  {
+   "wallS": 182.039,
+   "r": "8 June 1938 China captured Manchukuo's capital"
+  },
+  {
+   "wallS": 182.039,
+   "r": "10 June 1938 Italy declared war on Switzerland"
+  },
+  {
+   "wallS": 182.039,
+   "r": "12 June 1938 Luxembourg was destroyed"
+  },
+  {
+   "wallS": 182.039,
+   "r": "14 June 1938 France captured Spanish Republic's capital"
+  },
+  {
+   "wallS": 182.039,
+   "r": "14 June 1938 Germany captured Switzerland's capital"
+  },
+  {
+   "wallS": 192.832,
+   "r": "23 June 1938 France captured Nationalist Spain's capital"
+  },
+  {
+   "wallS": 192.832,
+   "r": "26 June 1938 Germany captured Switzerland's capital"
+  },
+  {
+   "wallS": 192.832,
+   "r": "29 June 1938 Switzerland was annexed by Italy"
+  },
+  {
+   "wallS": 201.095,
+   "r": "6 July 1938 Soviet Union declared war on Finland"
+  },
+  {
+   "wallS": 201.095,
+   "r": "10 July 1938 Germany made peace with Denmark"
+  },
+  {
+   "wallS": 209.12,
+   "r": "24 July 1938 France captured Nationalist Spain's capital"
+  },
+  {
+   "wallS": 209.12,
+   "r": "26 July 1938 China captured Manchukuo's capital"
+  },
+  {
+   "wallS": 209.12,
+   "r": "26 July 1938 Manchukuo was destroyed"
+  },
+  {
+   "wallS": 217.557,
+   "r": "3 August 1938 Nationalist Spain captured French Morocco's capital"
+  },
+  {
+   "wallS": 226.164,
+   "r": "12 August 1938 Germany declared war on Poland"
+  },
+  {
+   "wallS": 234.589,
+   "r": "17 August 1938 Soviet Union declared war on Turkey"
+  },
+  {
+   "wallS": 234.589,
+   "r": "24 August 1938 Soviet Union made peace with Finland"
+  },
+  {
+   "wallS": 242.795,
+   "r": "1 September 1938 Tunisia was destroyed"
+  },
+  {
+   "wallS": 242.795,
+   "r": "2 September 1938 Germany declared war on Austria"
+  },
+  {
+   "wallS": 242.795,
+   "r": "4 September 1938 Soviet Union captured Poland's capital"
+  },
+  {
+   "wallS": 242.795,
+   "r": "6 September 1938 Germany made peace with Poland"
+  },
+  {
+   "wallS": 242.795,
+   "r": "6 September 1938 Soviet Union made peace with Poland"
+  },
+  {
+   "wallS": 251.563,
+   "r": "9 September 1938 Italy declared war on United Kingdom"
+  },
+  {
+   "wallS": 259.498,
+   "r": "24 September 1938 Italy captured France's capital"
+  },
+  {
+   "wallS": 259.498,
+   "r": "1 October 1938 Germany captured Belgium's capital"
+  },
+  {
+   "wallS": 259.498,
+   "r": "4 October 1938 Germany captured Austria's capital"
+  },
+  {
+   "wallS": 259.498,
+   "r": "4 October 1938 Austria was destroyed"
+  },
+  {
+   "wallS": 267.565,
+   "r": "7 October 1938 Germany captured Belgium's capital"
+  },
+  {
+   "wallS": 267.565,
+   "r": "13 October 1938 Germany captured Belgium's capital"
+  },
+  {
+   "wallS": 267.565,
+   "r": "17 October 1938 Germany captured Belgium's capital"
+  },
+  {
+   "wallS": 267.565,
+   "r": "17 October 1938 Belgium was destroyed"
+  },
+  {
+   "wallS": 267.565,
+   "r": "18 October 1938 Germany captured Netherlands's capital"
+  },
+  {
+   "wallS": 284.02,
+   "r": "31 October 1938 Italy captured French Morocco's capital"
+  },
+  {
+   "wallS": 302.573,
+   "r": "7 December 1938 Soviet Union declared war on Japan"
+  },
+  {
+   "wallS": 302.573,
+   "r": "11 December 1938 China declared war on Tibet"
+  },
+  {
+   "wallS": 311.274,
+   "r": "20 December 1938 Italy captured France's capital"
+  },
+  {
+   "wallS": 342.883,
+   "r": "6 February 1939 Peru declared war on Bolivia"
+  },
+  {
+   "wallS": 351.098,
+   "r": "10 February 1939 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 351.098,
+   "r": "14 February 1939 Iraq declared war on Saudi Arabia"
+  },
+  {
+   "wallS": 351.098,
+   "r": "14 February 1939 New Zealand captured Japan's capital"
+  },
+  {
+   "wallS": 359.819,
+   "r": "26 February 1939 Portugal made peace with Nationalist Spain"
+  },
+  {
+   "wallS": 359.819,
+   "r": "26 February 1939 France made peace with Nationalist Spain"
+  },
+  {
+   "wallS": 369.075,
+   "r": "6 March 1939 Germany made peace with United Kingdom"
+  },
+  {
+   "wallS": 369.075,
+   "r": "8 March 1939 Argentina declared war on Bolivia"
+  },
+  {
+   "wallS": 369.075,
+   "r": "12 March 1939 Brazil declared war on Bolivia"
+  },
+  {
+   "wallS": 378.066,
+   "r": "20 March 1939 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 394.794,
+   "r": "11 April 1939 Italy made peace with United Kingdom"
+  },
+  {
+   "wallS": 394.794,
+   "r": "23 April 1939 United Kingdom declared war on Saudi Arabia"
+  },
+  {
+   "wallS": 394.794,
+   "r": "25 April 1939 Soviet Union made peace with Japan"
+  },
+  {
+   "wallS": 403.3,
+   "r": "1 May 1939 China declared war on Free Inner Mongolia"
+  },
+  {
+   "wallS": 403.3,
+   "r": "6 May 1939 Peru made peace with Bolivia"
+  },
+  {
+   "wallS": 403.3,
+   "r": "10 May 1939 Soviet Union declared war on Free Inner Mongolia"
+  },
+  {
+   "wallS": 412.045,
+   "r": "15 May 1939 Soviet Union made peace with Turkey"
+  },
+  {
+   "wallS": 412.045,
+   "r": "18 May 1939 Brazil made peace with Bolivia"
+  },
+  {
+   "wallS": 412.045,
+   "r": "19 May 1939 Argentina made peace with Bolivia"
+  },
+  {
+   "wallS": 412.046,
+   "r": "25 May 1939 Iraq made peace with Saudi Arabia"
+  },
+  {
+   "wallS": 412.046,
+   "r": "2 June 1939 United Kingdom made peace with Saudi Arabia"
+  },
+  {
+   "wallS": 420.831,
+   "r": "7 June 1939 Soviet Union declared war on Germany"
+  },
+  {
+   "wallS": 420.831,
+   "r": "22 June 1939 China captured Free Inner Mongolia's capital"
+  },
+  {
+   "wallS": 420.831,
+   "r": "24 June 1939 Soviet Union captured Hungary's capital"
+  },
+  {
+   "wallS": 420.831,
+   "r": "25 June 1939 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 429.012,
+   "r": "6 July 1939 Soviet Union made peace with Germany"
+  },
+  {
+   "wallS": 439.029,
+   "r": "12 July 1939 China made peace with Free Inner Mongolia"
+  },
+  {
+   "wallS": 439.029,
+   "r": "12 July 1939 Soviet Union made peace with Free Inner Mongolia"
+  },
+  {
+   "wallS": 439.029,
+   "r": "16 July 1939 United Kingdom declared war on Ireland"
+  },
+  {
+   "wallS": 439.029,
+   "r": "18 July 1939 Soviet Union captured Hungary's capital"
+  },
+  {
+   "wallS": 439.029,
+   "r": "26 July 1939 Soviet Union declared war on Denmark"
+  },
+  {
+   "wallS": 448.836,
+   "r": "5 August 1939 France captured Ireland's capital"
+  },
+  {
+   "wallS": 448.836,
+   "r": "12 August 1939 Hungary was destroyed"
+  },
+  {
+   "wallS": 448.836,
+   "r": "18 August 1939 Paraguay declared war on Bolivia"
+  },
+  {
+   "wallS": 470.22,
+   "r": "1 September 1939 Soviet Union declared war on Free Vienna"
+  },
+  {
+   "wallS": 470.22,
+   "r": "10 September 1939 Soviet Union captured Free Vienna's capital"
+  },
+  {
+   "wallS": 481.756,
+   "r": "12 September 1939 Soviet Union made peace with Free Vienna"
+  },
+  {
+   "wallS": 481.756,
+   "r": "28 September 1939 Soviet Union captured Italy's capital"
+  },
+  {
+   "wallS": 490.144,
+   "r": "2 October 1939 France declared war on Italy"
+  },
+  {
+   "wallS": 490.144,
+   "r": "5 October 1939 Soviet Union made peace with Denmark"
+  },
+  {
+   "wallS": 498.566,
+   "r": "1 November 1939 Paraguay made peace with Bolivia"
+  },
+  {
+   "wallS": 498.566,
+   "r": "1 November 1939 Soviet Union declared war on Free Fejér"
+  },
+  {
+   "wallS": 498.566,
+   "r": "4 November 1939 Yugoslavia declared war on Free Fejér"
+  },
+  {
+   "wallS": 498.566,
+   "r": "7 November 1939 United Kingdom made peace with Ireland"
+  },
+  {
+   "wallS": 506.743,
+   "r": "18 November 1939 Soviet Union made peace with Free Fejér"
+  },
+  {
+   "wallS": 506.743,
+   "r": "23 November 1939 France captured Germany's capital"
+  },
+  {
+   "wallS": 506.743,
+   "r": "26 November 1939 China made peace with Tibet"
+  },
+  {
+   "wallS": 518.646,
+   "r": "1 December 1939 China declared war on Free Jilin"
+  },
+  {
+   "wallS": 518.646,
+   "r": "3 December 1939 Free Luxembourg made peace with Soviet Union"
+  },
+  {
+   "wallS": 518.646,
+   "r": "6 December 1939 Soviet Union declared war on Yugoslavia"
+  },
+  {
+   "wallS": 518.646,
+   "r": "12 December 1939 Czechoslovakia captured Free Fejér's capital"
+  },
+  {
+   "wallS": 518.646,
+   "r": "15 December 1939 Free Fejér was annexed by Yugoslavia"
+  },
+  {
+   "wallS": 531.374,
+   "r": "21 December 1939 Soviet Union captured Czechoslovakia's capital"
+  },
+  {
+   "wallS": 564.21,
+   "r": "2 January 1940 Soviet Union captured Czechoslovakia's capital"
+  },
+  {
+   "wallS": 564.21,
+   "r": "7 January 1940 Soviet Union made peace with Yugoslavia"
+  },
+  {
+   "wallS": 596.5,
+   "r": "3 February 1940 China captured Free Jilin's capital"
+  },
+  {
+   "wallS": 596.5,
+   "r": "7 February 1940 Greece declared war on Italy"
+  },
+  {
+   "wallS": 596.5,
+   "r": "28 February 1940 China made peace with Free Jilin"
+  },
+  {
+   "wallS": 605.583,
+   "r": "1 March 1940 Greece captured Albania's capital"
+  },
+  {
+   "wallS": 616.479,
+   "r": "27 March 1940 Soviet Union declared war on Romania"
+  },
+  {
+   "wallS": 625.324,
+   "r": "20 April 1940 Soviet Union captured Czechoslovakia's capital"
+  },
+  {
+   "wallS": 625.324,
+   "r": "24 April 1940 Soviet Union made peace with Romania"
+  },
+  {
+   "wallS": 625.324,
+   "r": "1 May 1940 Soviet Union declared war on Free Salzburg"
+  },
+  {
+   "wallS": 633.813,
+   "r": "14 May 1940 Soviet Union captured Free Salzburg's capital"
+  },
+  {
+   "wallS": 633.813,
+   "r": "19 May 1940 Soviet Union made peace with Free Salzburg"
+  },
+  {
+   "wallS": 643.83,
+   "r": "30 June 1940 United Kingdom declared war on Belgian Congo"
+  },
+  {
+   "wallS": 643.83,
+   "r": "1 July 1940 Italy declared war on Free Dikhil"
+  },
+  {
+   "wallS": 643.83,
+   "r": "1 July 1940 France declared war on Free Bizerte"
+  },
+  {
+   "wallS": 643.83,
+   "r": "1 July 1940 France declared war on Free Seine-Maritime"
+  },
+  {
+   "wallS": 643.83,
+   "r": "1 July 1940 Soviet Union declared war on Free Tartu"
+  },
+  {
+   "wallS": 655.834,
+   "r": "3 July 1940 Free Dikhil made peace with Italy"
+  },
+  {
+   "wallS": 655.834,
+   "r": "8 July 1940 Free Seine-Maritime made peace with France"
+  },
+  {
+   "wallS": 655.834,
+   "r": "8 July 1940 Free Tartu captured Estonia's capital"
+  },
+  {
+   "wallS": 655.834,
+   "r": "18 July 1940 Free Tartu made peace with Soviet Union"
+  },
+  {
+   "wallS": 666.69,
+   "r": "24 July 1940 Free Tartu declared war on Germany"
+  },
+  {
+   "wallS": 666.69,
+   "r": "21 August 1940 Soviet Union declared war on France"
+  },
+  {
+   "wallS": 678.632,
+   "r": "28 August 1940 Soviet Union declared war on Iran"
+  },
+  {
+   "wallS": 678.632,
+   "r": "1 September 1940 France declared war on Free Loir-et-Cher"
+  },
+  {
+   "wallS": 678.632,
+   "r": "3 September 1940 Poland declared war on Romania"
+  },
+  {
+   "wallS": 689.875,
+   "r": "10 September 1940 Poland declared war on Germany"
+  },
+  {
+   "wallS": 689.875,
+   "r": "11 September 1940 France made peace with Free Bizerte"
+  },
+  {
+   "wallS": 701.225,
+   "r": "18 September 1940 Free Loir-et-Cher made peace with France"
+  },
+  {
+   "wallS": 711.719,
+   "r": "1 October 1940 Nationalist Spain declared war on Free Valencia"
+  },
+  {
+   "wallS": 748.66,
+   "r": "30 October 1940 French Equatorial Africa captured Belgian Congo's capital"
+  },
+  {
+   "wallS": 748.66,
+   "r": "1 November 1940 Soviet Union declared war on Free Kaposvár"
+  },
+  {
+   "wallS": 748.66,
+   "r": "1 November 1940 Soviet Union captured Iran's capital"
+  },
+  {
+   "wallS": 748.66,
+   "r": "2 November 1940 Free Kaposvár made peace with Soviet Union"
+  },
+  {
+   "wallS": 759.554,
+   "r": "7 November 1940 United Kingdom made peace with Belgian Congo"
+  },
+  {
+   "wallS": 780.153,
+   "r": "1 December 1940 Free Budapest declared war on Free Salgótarján"
+  },
+  {
+   "wallS": 780.153,
+   "r": "1 December 1940 France declared war on Free Salamanca"
+  },
+  {
+   "wallS": 780.153,
+   "r": "1 December 1940 Soviet Union declared war on Free Nagykanizsa"
+  },
+  {
+   "wallS": 780.153,
+   "r": "2 December 1940 Free Salgótarján made peace with Free Budapest"
+  },
+  {
+   "wallS": 780.153,
+   "r": "2 December 1940 Free Nagykanizsa made peace with Soviet Union"
+  },
+  {
+   "wallS": 790.602,
+   "r": "13 December 1940 Free Valencia captured Spanish Republic's capital"
+  },
+  {
+   "wallS": 804.644,
+   "r": "19 December 1940 Soviet Union captured Iran's capital"
+  },
+  {
+   "wallS": 804.644,
+   "r": "20 December 1940 Soviet Union made peace with Iran"
+  },
+  {
+   "wallS": 816.758,
+   "r": "31 December 1940 Free Loir-et-Cher declared war on Free Seine-Maritime"
+  },
+  {
+   "wallS": 816.758,
+   "r": "3 January 1941 Free Loir-et-Cher captured Free Seine-Maritime's capital"
+  },
+  {
+   "wallS": 816.758,
+   "r": "6 January 1941 Czechoslovakia captured Poland's capital"
+  },
+  {
+   "wallS": 837.134,
+   "r": "8 January 1941 Soviet Union declared war on Poland"
+  },
+  {
+   "wallS": 837.134,
+   "r": "23 January 1941 Czechoslovakia captured Poland's capital"
+  },
+  {
+   "wallS": 837.134,
+   "r": "24 January 1941 Free Salamanca made peace with France"
+  },
+  {
+   "wallS": 848.622,
+   "r": "6 February 1941 Free Loir-et-Cher captured Free Seine-Maritime's capital"
+  },
+  {
+   "wallS": 848.622,
+   "r": "6 February 1941 Free Seine-Maritime was destroyed"
+  },
+  {
+   "wallS": 873.286,
+   "r": "22 February 1941 Soviet Union captured Poland's capital"
+  },
+  {
+   "wallS": 873.286,
+   "r": "28 February 1941 Romania made peace with Poland"
+  },
+  {
+   "wallS": 873.286,
+   "r": "28 February 1941 Germany made peace with Poland"
+  },
+  {
+   "wallS": 873.286,
+   "r": "28 February 1941 Soviet Union made peace with Poland"
+  },
+  {
+   "wallS": 873.286,
+   "r": "1 March 1941 China declared war on Free Tibet"
+  },
+  {
+   "wallS": 885.673,
+   "r": "4 March 1941 Iraq declared war on Turkey"
+  },
+  {
+   "wallS": 885.673,
+   "r": "5 March 1941 Soviet Union declared war on Finland"
+  },
+  {
+   "wallS": 907.647,
+   "r": "4 April 1941 Free Salamanca declared war on Nationalist Spain"
+  },
+  {
+   "wallS": 921.007,
+   "r": "18 April 1941 Greece made peace with Italy"
+  },
+  {
+   "wallS": 931.715,
+   "r": "25 April 1941 Germany declared war on Free Luxembourg"
+  },
+  {
+   "wallS": 954.087,
+   "r": "18 May 1941 Soviet Union made peace with Finland"
+  },
+  {
+   "wallS": 954.087,
+   "r": "28 May 1941 Soviet Union declared war on Turkey"
+  },
+  {
+   "wallS": 978.517,
+   "r": "28 June 1941 Germany captured Free Luxembourg's capital"
+  },
+  {
+   "wallS": 978.517,
+   "r": "30 June 1941 Germany captured Free Luxembourg's capital"
+  },
+  {
+   "wallS": 978.517,
+   "r": "1 July 1941 France declared war on Free Sabha"
+  },
+  {
+   "wallS": 988.91,
+   "r": "2 July 1941 Free Luxembourg was annexed by Germany"
+  },
+  {
+   "wallS": 999.29,
+   "r": "22 July 1941 Free Tartu made peace with Germany"
+  },
+  {
+   "wallS": 1009.339,
+   "r": "25 July 1941 Germany declared war on Denmark"
+  },
+  {
+   "wallS": 1019.899,
+   "r": "6 August 1941 China captured Free Tibet's capital"
+  },
+  {
+   "wallS": 1030.166,
+   "r": "20 August 1941 Xinjiang captured British India's capital"
+  },
+  {
+   "wallS": 1043.215,
+   "r": "1 September 1941 Soviet Union declared war on Free Upper Austria"
+  },
+  {
+   "wallS": 1043.215,
+   "r": "5 September 1941 Germany declared war on Free Upper Austria"
+  },
+  {
+   "wallS": 1043.215,
+   "r": "5 September 1941 Free Upper Austria captured Free Vienna's capital"
+  },
+  {
+   "wallS": 1043.215,
+   "r": "6 September 1941 Free Upper Austria made peace with Soviet Union"
+  },
+  {
+   "wallS": 1054.232,
+   "r": "16 September 1941 Free Upper Austria made peace with Germany"
+  },
+  {
+   "wallS": 1054.232,
+   "r": "18 September 1941 China captured Free Tibet's capital"
+  },
+  {
+   "wallS": 1067.283,
+   "r": "1 October 1941 China declared war on Free Inner Mongolia II"
+  },
+  {
+   "wallS": 1067.283,
+   "r": "1 October 1941 Free Budapest declared war on Hungary"
+  },
+  {
+   "wallS": 1067.283,
+   "r": "1 October 1941 Hungary returned"
+  },
+  {
+   "wallS": 1067.283,
+   "r": "2 October 1941 China made peace with Free Tibet"
+  },
+  {
+   "wallS": 1067.283,
+   "r": "2 October 1941 Hungary made peace with Free Budapest"
+  },
+  {
+   "wallS": 1079,
+   "r": "9 October 1941 Iraq made peace with Turkey"
+  },
+  {
+   "wallS": 1079,
+   "r": "11 October 1941 Soviet Union made peace with Turkey"
+  },
+  {
+   "wallS": 1089.933,
+   "r": "22 October 1941 Soviet Union declared war on Japan"
+  },
+  {
+   "wallS": 1089.933,
+   "r": "26 October 1941 Free Székesfehérvár declared war on Hungary"
+  },
+  {
+   "wallS": 1089.933,
+   "r": "30 October 1941 Free Inner Mongolia captured Free Inner Mongolia II's capital"
+  },
+  {
+   "wallS": 1100.993,
+   "r": "11 November 1941 China captured Free Inner Mongolia II's capital"
+  },
+  {
+   "wallS": 1100.993,
+   "r": "11 November 1941 Free Inner Mongolia II was destroyed"
+  },
+  {
+   "wallS": 1113.644,
+   "r": "28 November 1941 Hungary was annexed by Free Székesfehérvár"
+  },
+  {
+   "wallS": 1125.991,
+   "r": "1 December 1941 Soviet Union declared war on Free Carinthia"
+  },
+  {
+   "wallS": 1125.991,
+   "r": "1 December 1941 France declared war on Free Anseba"
+  },
+  {
+   "wallS": 1125.991,
+   "r": "8 December 1941 Peru declared war on Bolivia"
+  },
+  {
+   "wallS": 1138.038,
+   "r": "14 December 1941 Brazil declared war on Bolivia"
+  },
+  {
+   "wallS": 1138.038,
+   "r": "14 December 1941 Free Carinthia made peace with Soviet Union"
+  },
+  {
+   "wallS": 1138.038,
+   "r": "18 December 1941 Soviet Union made peace with France"
+  },
+  {
+   "wallS": 1138.038,
+   "r": "28 December 1941 United Kingdom declared war on Brazil"
+  },
+  {
+   "wallS": 1148.761,
+   "r": "1 January 1942 China declared war on Free Jilin II"
+  },
+  {
+   "wallS": 1148.761,
+   "r": "6 January 1942 Germany captured Free Salzburg's capital"
+  },
+  {
+   "wallS": 1148.761,
+   "r": "8 January 1942 France captured Free Anseba's capital"
+  },
+  {
+   "wallS": 1186.622,
+   "r": "29 January 1942 Peru made peace with Bolivia"
+  },
+  {
+   "wallS": 1186.622,
+   "r": "29 January 1942 Brazil made peace with Bolivia"
+  },
+  {
+   "wallS": 1186.622,
+   "r": "29 January 1942 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 1186.622,
+   "r": "17 February 1942 China captured Free Jilin II's capital"
+  },
+  {
+   "wallS": 1186.622,
+   "r": "18 February 1942 Soviet Union declared war on Nationalist Spain"
+  },
+  {
+   "wallS": 1197.803,
+   "r": "20 February 1942 China captured Free Jilin II's capital"
+  },
+  {
+   "wallS": 1197.803,
+   "r": "24 February 1942 Free Valencia captured Spanish Republic's capital"
+  },
+  {
+   "wallS": 1197.803,
+   "r": "26 February 1942 China captured Free Jilin II's capital"
+  },
+  {
+   "wallS": 1208.646,
+   "r": "9 March 1942 Free Sabha made peace with France"
+  },
+  {
+   "wallS": 1208.646,
+   "r": "10 March 1942 Free Sabha declared war on Free Bizerte"
+  },
+  {
+   "wallS": 1208.646,
+   "r": "11 March 1942 China made peace with Free Jilin II"
+  },
+  {
+   "wallS": 1250.349,
+   "r": "25 April 1942 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 1274.754,
+   "r": "1 June 1942 Mozambique was destroyed"
+  },
+  {
+   "wallS": 1274.754,
+   "r": "9 June 1942 Free Carinthia made peace with Germany"
+  },
+  {
+   "wallS": 1274.754,
+   "r": "17 June 1942 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 1274.754,
+   "r": "18 June 1942 Soviet Union made peace with Japan"
+  },
+  {
+   "wallS": 1274.754,
+   "r": "24 June 1942 Soviet Union declared war on Romania"
+  },
+  {
+   "wallS": 1286.441,
+   "r": "4 July 1942 Czechoslovakia captured Free Vienna's capital"
+  },
+  {
+   "wallS": 1306.838,
+   "r": "29 July 1942 Xinjiang captured Nationalist Spain's capital"
+  },
+  {
+   "wallS": 1306.838,
+   "r": "5 August 1942 Soviet Union made peace with Romania"
+  },
+  {
+   "wallS": 1306.838,
+   "r": "7 August 1942 United Kingdom made peace with Brazil"
+  },
+  {
+   "wallS": 1306.838,
+   "r": "12 August 1942 Soviet Union declared war on Free Salamanca"
+  },
+  {
+   "wallS": 1317.898,
+   "r": "18 August 1942 Turkey declared war on Romania"
+  },
+  {
+   "wallS": 1317.898,
+   "r": "18 August 1942 Iraq declared war on Iran"
+  },
+  {
+   "wallS": 1330.002,
+   "r": "30 August 1942 Free Kaposvár declared war on Yugoslavia"
+  },
+  {
+   "wallS": 1330.002,
+   "r": "31 August 1942 Free Upper Austria declared war on Free Carinthia"
+  },
+  {
+   "wallS": 1330.002,
+   "r": "1 September 1942 Free Kaposvár made peace with Yugoslavia"
+  },
+  {
+   "wallS": 1330.002,
+   "r": "13 September 1942 Free Kaposvár declared war on Free Budapest"
+  },
+  {
+   "wallS": 1340.216,
+   "r": "3 October 1942 Free Carinthia was annexed by Free Upper Austria"
+  },
+  {
+   "wallS": 1362.266,
+   "r": "1 November 1942 Romania declared war on Free Sofia"
+  },
+  {
+   "wallS": 1362.266,
+   "r": "13 November 1942 Free Sofia made peace with Romania"
+  },
+  {
+   "wallS": 1362.266,
+   "r": "18 November 1942 Free Sofia declared war on Yugoslavia"
+  },
+  {
+   "wallS": 1384.304,
+   "r": "31 December 1942 China made peace with Japan"
+  },
+  {
+   "wallS": 1384.304,
+   "r": "1 January 1943 China declared war on Free Kangwon"
+  },
+  {
+   "wallS": 1409.767,
+   "r": "9 January 1943 Free Sofia made peace with Yugoslavia"
+  },
+  {
+   "wallS": 1409.767,
+   "r": "17 January 1943 China declared war on Nepal"
+  },
+  {
+   "wallS": 1409.767,
+   "r": "24 January 1943 China captured Free Kangwon's capital"
+  },
+  {
+   "wallS": 1409.767,
+   "r": "28 January 1943 China made peace with Free Kangwon"
+  },
+  {
+   "wallS": 1409.767,
+   "r": "1 February 1943 China declared war on Free South Hwanghae"
+  },
+  {
+   "wallS": 1420.075,
+   "r": "8 February 1943 China captured Free South Hwanghae's capital"
+  },
+  {
+   "wallS": 1420.075,
+   "r": "8 February 1943 Free South Hwanghae was destroyed"
+  },
+  {
+   "wallS": 1443.776,
+   "r": "9 March 1943 Poland declared war on Romania"
+  },
+  {
+   "wallS": 1443.776,
+   "r": "1 April 1943 China declared war on Free Seoul"
+  },
+  {
+   "wallS": 1454.715,
+   "r": "4 April 1943 China captured Free Seoul's capital"
+  },
+  {
+   "wallS": 1454.715,
+   "r": "4 April 1943 Free Seoul was destroyed"
+  },
+  {
+   "wallS": 1465.099,
+   "r": "1 May 1943 China declared war on Free Pyongyang"
+  },
+  {
+   "wallS": 1465.099,
+   "r": "5 May 1943 China captured Free Pyongyang's capital"
+  },
+  {
+   "wallS": 1465.099,
+   "r": "6 May 1943 Free Pyongyang was annexed by China"
+  },
+  {
+   "wallS": 1475.95,
+   "r": "24 May 1943 Free Upper Austria declared war on Yugoslavia"
+  },
+  {
+   "wallS": 1475.95,
+   "r": "1 June 1943 China declared war on Free Tibet II"
+  },
+  {
+   "wallS": 1527.31,
+   "r": "27 August 1943 Free Tibet II declared war on Nepal"
+  },
+  {
+   "wallS": 1527.31,
+   "r": "1 September 1943 United Kingdom declared war on Free North Kivu"
+  },
+  {
+   "wallS": 1560.885,
+   "r": "8 October 1943 Germany declared war on Denmark"
+  },
+  {
+   "wallS": 1560.885,
+   "r": "8 October 1943 United Kingdom captured Free North Kivu's capital"
+  },
+  {
+   "wallS": 1571.186,
+   "r": "18 October 1943 China captured Free Tibet II's capital"
+  },
+  {
+   "wallS": 1571.186,
+   "r": "20 October 1943 Free Tartu declared war on Germany"
+  },
+  {
+   "wallS": 1571.186,
+   "r": "21 October 1943 Yugoslavia made peace with Free Upper Austria"
+  },
+  {
+   "wallS": 1571.186,
+   "r": "25 October 1943 Iran captured Iraq's capital"
+  },
+  {
+   "wallS": 1583.398,
+   "r": "1 November 1943 Free Budapest declared war on Free Salgótarján"
+  },
+  {
+   "wallS": 1609.109,
+   "r": "18 November 1943 United Kingdom made peace with Free North Kivu"
+  },
+  {
+   "wallS": 1629.29,
+   "r": "13 December 1943 Soviet Union captured Germany's capital"
+  },
+  {
+   "wallS": 1629.29,
+   "r": "16 December 1943 Iran made peace with Iraq"
+  },
+  {
+   "wallS": 1629.29,
+   "r": "17 December 1943 Denmark made peace with Germany"
+  },
+  {
+   "wallS": 1629.29,
+   "r": "17 December 1943 Free Tartu made peace with Germany"
+  },
+  {
+   "wallS": 1643.127,
+   "r": "20 December 1943 France declared war on Germany"
+  },
+  {
+   "wallS": 1643.127,
+   "r": "21 December 1943 China captured Free Tibet II's capital"
+  },
+  {
+   "wallS": 1643.127,
+   "r": "22 December 1943 Free Tibet II made peace with Nepal"
+  },
+  {
+   "wallS": 1643.127,
+   "r": "24 December 1943 China made peace with Free Tibet II"
+  },
+  {
+   "wallS": 1654.005,
+   "r": "12 January 1944 Free Tartu declared war on Poland"
+  },
+  {
+   "wallS": 1693.63,
+   "r": "1 April 1944 Yugoslavia declared war on Free Nagykanizsa"
+  },
+  {
+   "wallS": 1693.63,
+   "r": "1 April 1944 Free Inner Mongolia was destroyed"
+  },
+  {
+   "wallS": 1693.63,
+   "r": "2 April 1944 Free Kaposvár made peace with Free Budapest"
+  },
+  {
+   "wallS": 1705.058,
+   "r": "22 May 1944 Peru declared war on Bolivia"
+  },
+  {
+   "wallS": 1705.058,
+   "r": "2 June 1944 Free Bizerte declared war on Free Sabha"
+  },
+  {
+   "wallS": 1705.058,
+   "r": "4 June 1944 China declared war on Soviet Union"
+  },
+  {
+   "wallS": 1714.767,
+   "r": "12 June 1944 France declared war on Free Sabha"
+  },
+  {
+   "wallS": 1714.767,
+   "r": "14 June 1944 Peru captured Bolivia's capital"
+  },
+  {
+   "wallS": 1725.779,
+   "r": "22 June 1944 Free Salamanca made peace with Soviet Union"
+  },
+  {
+   "wallS": 1737.845,
+   "r": "16 July 1944 Yugoslavia made peace with Free Nagykanizsa"
+  },
+  {
+   "wallS": 1749.768,
+   "r": "31 July 1944 Peru made peace with Bolivia"
+  },
+  {
+   "wallS": 1759.688,
+   "r": "22 August 1944 Romania declared war on Italy"
+  },
+  {
+   "wallS": 1770.153,
+   "r": "1 September 1944 China declared war on Free Heilongjiang"
+  },
+  {
+   "wallS": 1770.153,
+   "r": "1 September 1944 China declared war on Free Busan"
+  },
+  {
+   "wallS": 1780.698,
+   "r": "6 September 1944 Free Inner Mongolia III declared war on Free Heilongjiang"
+  },
+  {
+   "wallS": 1791.01,
+   "r": "24 September 1944 China captured Xinjiang's capital"
+  },
+  {
+   "wallS": 1791.01,
+   "r": "24 September 1944 Xinjiang was destroyed"
+  },
+  {
+   "wallS": 1791.01,
+   "r": "24 September 1944 Yugoslavia captured Albania's capital"
+  },
+  {
+   "wallS": 1791.01,
+   "r": "30 September 1944 France made peace with Free Sabha"
+  },
+  {
+   "wallS": 1814.534,
+   "r": "15 October 1944 China captured Tannu Tuva's capital"
+  },
+  {
+   "wallS": 1814.534,
+   "r": "15 October 1944 Tannu Tuva was destroyed"
+  },
+  {
+   "wallS": 1814.534,
+   "r": "17 October 1944 Yugoslavia captured Albania's capital"
+  },
+  {
+   "wallS": 1848.836,
+   "r": "14 November 1944 Free Inner Mongolia III made peace with Free Heilongjiang"
+  },
+  {
+   "wallS": 1861.243,
+   "r": "29 November 1944 Yugoslavia captured Albania's capital"
+  },
+  {
+   "wallS": 1861.243,
+   "r": "29 November 1944 Albania was destroyed"
+  },
+  {
+   "wallS": 1861.243,
+   "r": "4 December 1944 China made peace with Free Heilongjiang"
+  },
+  {
+   "wallS": 1884.474,
+   "r": "1 January 1945 Free Loir-et-Cher declared war on Free Paris"
+  },
+  {
+   "wallS": 1884.474,
+   "r": "2 January 1945 Free Busan was destroyed"
+  },
+  {
+   "wallS": 1907.598,
+   "r": "20 January 1945 Free Paris made peace with Free Loir-et-Cher"
+  },
+  {
+   "wallS": 1954.883,
+   "r": "25 February 1945 China captured Mongolia's capital"
+  },
+  {
+   "wallS": 1954.883,
+   "r": "1 March 1945 China declared war on Free South Gyeongsang"
+  },
+  {
+   "wallS": 1975.525,
+   "r": "21 March 1945 China captured Free South Gyeongsang's capital"
+  },
+  {
+   "wallS": 1999.834,
+   "r": "17 April 1945 China captured Mongolia's capital"
+  },
+  {
+   "wallS": 2010.71,
+   "r": "19 April 1945 China captured Mongolia's capital"
+  },
+  {
+   "wallS": 2010.71,
+   "r": "1 May 1945 China declared war on Free Liaoning"
+  },
+  {
+   "wallS": 2035.351,
+   "r": "23 May 1945 Free South Gyeongsang captured Free Kangwon's capital"
+  },
+  {
+   "wallS": 2035.351,
+   "r": "30 May 1945 Free Sofia declared war on Yugoslavia"
+  },
+  {
+   "wallS": 2046.342,
+   "r": "1 June 1945 Yugoslavia declared war on Free Érd"
+  },
+  {
+   "wallS": 2046.342,
+   "r": "2 June 1945 Free Érd made peace with Yugoslavia"
+  },
+  {
+   "wallS": 2073.482,
+   "r": "30 June 1945 France made peace with Germany"
+  },
+  {
+   "wallS": 2073.482,
+   "r": "30 June 1945 Poland made peace with Germany"
+  },
+  {
+   "wallS": 2084.143,
+   "r": "1 July 1945 French West Africa was destroyed"
+  },
+  {
+   "wallS": 2084.143,
+   "r": "1 July 1945 French Equatorial Africa was destroyed"
+  },
+  {
+   "wallS": 2084.143,
+   "r": "1 July 1945 Madagascar was destroyed"
+  },
+  {
+   "wallS": 2084.143,
+   "r": "1 July 1945 French Indochina was destroyed"
+  },
+  {
+   "wallS": 2084.143,
+   "r": "1 July 1945 Dutch East Indies was destroyed"
+  },
+  {
+   "wallS": 2094.444,
+   "r": "15 July 1945 Free Sofia made peace with Yugoslavia"
+  },
+  {
+   "wallS": 2094.444,
+   "r": "16 July 1945 France declared war on Free Bizerte"
+  },
+  {
+   "wallS": 2094.444,
+   "r": "18 July 1945 Free South Gyeongsang captured Free Kangwon's capital"
+  },
+  {
+   "wallS": 2128.339,
+   "r": "10 August 1945 France made peace with Free Bizerte"
+  },
+  {
+   "wallS": 2128.339,
+   "r": "10 August 1945 The war between Free Sabha and Free Bizerte ended: Free Bizerte is now a puppet of France"
+  },
+  {
+   "wallS": 2148.449,
+   "r": "2 September 1945 Free South Gyeongsang captured Free Jilin II's capital"
+  },
+  {
+   "wallS": 2148.449,
+   "r": "2 September 1945 Free Jilin II was destroyed"
+  },
+  {
+   "wallS": 2148.449,
+   "r": "11 September 1945 Free South Gyeongsang captured Free Heilongjiang's capital"
+  },
+  {
+   "wallS": 2148.449,
+   "r": "11 September 1945 Free Heilongjiang was destroyed"
+  },
+  {
+   "wallS": 2158.707,
+   "r": "30 September 1945 Free Valencia made peace with Nationalist Spain"
+  },
+  {
+   "wallS": 2158.707,
+   "r": "30 September 1945 The war between Free Salamanca and Nationalist Spain ended: Nationalist Spain is now a puppet of Free Valencia"
+  },
+  {
+   "wallS": 2158.707,
+   "r": "1 October 1945 Free Valencia declared war on Free Málaga"
+  },
+  {
+   "wallS": 2158.707,
+   "r": "1 October 1945 Free Valencia declared war on Free Burgos"
+  },
+  {
+   "wallS": 2180.51,
+   "r": "30 October 1945 Iraq declared war on Saudi Arabia"
+  },
+  {
+   "wallS": 2191.258,
+   "r": "20 November 1945 Free Málaga captured Free Valencia's capital"
+  },
+  {
+   "wallS": 2191.258,
+   "r": "1 December 1945 United Kingdom declared war on Free North Kivu II"
+  },
+  {
+   "wallS": 2191.258,
+   "r": "2 December 1945 Free Málaga made peace with Free Valencia"
+  },
+  {
+   "wallS": 2191.258,
+   "r": "2 December 1945 Free Burgos made peace with Free Valencia"
+  },
+  {
+   "wallS": 2211.277,
+   "r": "17 December 1945 Belgian Congo captured Free North Kivu II's capital"
+  },
+  {
+   "wallS": 2211.277,
+   "r": "17 December 1945 Free North Kivu II was destroyed"
+  },
+  {
+   "wallS": 2221.475,
+   "r": "31 December 1945 Free Upper Austria declared war on Yugoslavia"
+  },
+  {
+   "wallS": 2253.103,
+   "r": "1 February 1946 Free Salamanca declared war on Free Málaga"
+  },
+  {
+   "wallS": 2253.103,
+   "r": "21 February 1946 Free Málaga captured Free Salamanca's capital"
+  },
+  {
+   "wallS": 2263.35,
+   "r": "26 February 1946 Turkey declared war on Romania"
+  },
+  {
+   "wallS": 2274.534,
+   "r": "12 March 1946 Free Burgos declared war on Nationalist Spain"
+  },
+  {
+   "wallS": 2274.534,
+   "r": "19 March 1946 Romania made peace with Italy"
+  },
+  {
+   "wallS": 2284.858,
+   "r": "23 March 1946 Turkey captured Romania's capital"
+  },
+  {
+   "wallS": 2294.976,
+   "r": "7 April 1946 Free Málaga made peace with Free Salamanca"
+  },
+  {
+   "wallS": 2294.976,
+   "r": "14 April 1946 Iraq made peace with Saudi Arabia"
+  },
+  {
+   "wallS": 2305.726,
+   "r": "1 May 1946 Soviet Union declared war on Free Sakha Republic"
+  },
+  {
+   "wallS": 2317.342,
+   "r": "14 May 1946 Poland declared war on Romania"
+  },
+  {
+   "wallS": 2317.342,
+   "r": "22 May 1946 Free Sofia declared war on Romania"
+  },
+  {
+   "wallS": 2317.342,
+   "r": "26 May 1946 United Kingdom declared war on Iran"
+  },
+  {
+   "wallS": 2317.342,
+   "r": "1 June 1946 Soviet Union declared war on Free South Gyeongsang"
+  },
+  {
+   "wallS": 2327.134,
+   "r": "13 June 1946 Soviet Union captured Nepal's capital"
+  },
+  {
+   "wallS": 2337.145,
+   "r": "28 June 1946 Free Upper Austria made peace with Yugoslavia"
+  },
+  {
+   "wallS": 2337.145,
+   "r": "1 July 1946 Yugoslavia declared war on Free Tirana"
+  },
+  {
+   "wallS": 2347.103,
+   "r": "11 July 1946 Soviet Union captured Nepal's capital"
+  },
+  {
+   "wallS": 2347.103,
+   "r": "11 July 1946 Nepal was destroyed"
+  },
+  {
+   "wallS": 2347.103,
+   "r": "16 July 1946 Free Tirana made peace with Yugoslavia"
+  },
+  {
+   "wallS": 2347.103,
+   "r": "21 July 1946 Turkey made peace with Romania"
+  },
+  {
+   "wallS": 2358.534,
+   "r": "1 August 1946 United Kingdom declared war on Free Katanga"
+  },
+  {
+   "wallS": 2358.534,
+   "r": "1 August 1946 France declared war on Free Jabal al Akhdar"
+  },
+  {
+   "wallS": 2369.164,
+   "r": "7 August 1946 Free Jabal al Akhdar made peace with France"
+  },
+  {
+   "wallS": 2369.164,
+   "r": "18 August 1946 Free Kaposvár declared war on Yugoslavia"
+  },
+  {
+   "wallS": 2379.863,
+   "r": "24 August 1946 British India captured Afghanistan's capital"
+  },
+  {
+   "wallS": 2379.863,
+   "r": "25 August 1946 Free Kaposvár made peace with Yugoslavia"
+  },
+  {
+   "wallS": 2379.863,
+   "r": "26 August 1946 Soviet Union captured Tibet's capital"
+  },
+  {
+   "wallS": 2379.863,
+   "r": "26 August 1946 Tibet was destroyed"
+  },
+  {
+   "wallS": 2379.863,
+   "r": "1 September 1946 Soviet Union declared war on Free Almaty"
+  },
+  {
+   "wallS": 2389.58,
+   "r": "2 September 1946 Free Almaty made peace with Soviet Union"
+  },
+  {
+   "wallS": 2389.58,
+   "r": "10 September 1946 Soviet Union captured Free Tibet's capital"
+  },
+  {
+   "wallS": 2389.58,
+   "r": "10 September 1946 Free Tibet was destroyed"
+  },
+  {
+   "wallS": 2399.475,
+   "r": "16 September 1946 Free Tibet II was destroyed"
+  },
+  {
+   "wallS": 2399.475,
+   "r": "18 September 1946 Free Katanga captured Free North Kivu's capital"
+  },
+  {
+   "wallS": 2399.475,
+   "r": "21 September 1946 United Kingdom made peace with Iran"
+  },
+  {
+   "wallS": 2410.154,
+   "r": "1 October 1946 Syria declared war on Free Nineveh"
+  },
+  {
+   "wallS": 2410.154,
+   "r": "8 October 1946 Soviet Union captured Free Jilin's capital"
+  },
+  {
+   "wallS": 2410.154,
+   "r": "8 October 1946 Free Jilin was destroyed"
+  },
+  {
+   "wallS": 2410.154,
+   "r": "14 October 1946 France declared war on Free Valencia"
+  },
+  {
+   "wallS": 2410.154,
+   "r": "15 October 1946 Soviet Union made peace with Free South Gyeongsang"
+  }
+ ],
+ "speedLabel": "Speed Max",
+ "endTick": 77802,
+ "historyCount": "1690 of 1690 events",
+ "historyHead": [
+  "16 November 1946 Free Sofia made peace with Romania",
+  "15 November 1946 Free Sofia captured Free Budapest's capital",
+  "15 November 1946 Poland made peace with Romania",
+  "13 November 1946 Free Bheri Zone made peace with Soviet Union",
+  "8 November 1946 Free Sofia captured Czechoslovakia's capital",
+  "1 November 1946 Soviet Union declared war on Free Bheri Zone",
+  "1 November 1946 Free Bheri Zone broke away from Soviet Union",
+  "1 November 1946 More of Soviet Union rose and joined Free Inner Mongolia III",
+  "1 November 1946 Land held by Yugoslavia rose and went back to Italy",
+  "1 November 1946 Land held by Soviet Union rose and went back to Germany",
+  "1 November 1946 Netherlands's submarines raided the convoys of Free Valencia",
+  "1 November 1946 United Kingdom's submarines raided the convoys of Free Valencia",
+  "1 November 1946 France's submarines raided the convoys of Free Valencia",
+  "1 November 1946 Italy's submarines raided the convoys of Free Valencia",
+  "1 November 1946 Soviet Union's submarines raided the convoys of China",
+  "16 October 1946 Greece declared war on Romania",
+  "15 October 1946 France and Free Valencia fought at sea: France lost 12 ships, Free Valencia 0",
+  "15 October 1946 Soviet Union made peace with Free South Gyeongsang",
+  "14 October 1946 France declared war on Free Valencia",
+  "8 October 1946 Free Jilin was destroyed",
+  "8 October 1946 Land left by Free Jilin went to Free Liaoning",
+  "8 October 1946 Land left by Free Jilin went to Free South Gyeongsang",
+  "8 October 1946 Soviet Union captured Free Jilin's capital",
+  "1 October 1946 Land held by Soviet Union rose and went back to Germany",
+  "1 October 1946 Syria declared war on Free Nineveh",
+  "1 October 1946 More of Syria rose and joined Free Nineveh",
+  "1 October 1946 Iraq declared war on Free Nineveh",
+  "1 October 1946 Free Nineveh broke away from Iraq",
+  "1 October 1946 Soviet Union's submarines raided the convoys of China",
+  "21 September 1946 United Kingdom made peace with Iran",
+  "18 September 1946 Free Katanga captured Free North Kivu's capital",
+  "16 September 1946 Free Tibet II was destroyed",
+  "16 September 1946 Land left by Free Tibet II went to Soviet Union",
+  "11 September 1946 Free South Gyeongsang joined the Defensive Pact of Free Almaty",
+  "11 September 1946 Free Almaty founded a Defensive Pact",
+  "10 September 1946 Free Tibet was destroyed",
+  "10 September 1946 Soviet Union captured Free Tibet's capital",
+  "2 September 1946 Free Almaty made peace with Soviet Union",
+  "1 September 1946 Soviet Union declared war on Free Almaty",
+  "1 September 1946 Free Almaty broke away from Soviet Union",
+  "1 September 1946 Land held by Soviet Union rose and went back to Germany",
+  "1 September 1946 Soviet Union's submarines raided the convoys of China",
+  "26 August 1946 Tibet was destroyed",
+  "26 August 1946 Soviet Union captured Tibet's capital",
+  "25 August 1946 Free Kaposvár made peace with Yugoslavia",
+  "24 August 1946 British India captured Afghanistan's capital",
+  "18 August 1946 Free Kaposvár declared war on Yugoslavia",
+  "7 August 1946 Free Jabal al Akhdar made peace with France",
+  "1 August 1946 France declared war on Free Jabal al Akhdar",
+  "1 August 1946 Free Jabal al Akhdar broke away from France",
+  "1 August 1946 United Kingdom declared war on Free Katanga",
+  "1 August 1946 Free Katanga broke away from United Kingdom",
+  "1 August 1946 Land held by Soviet Union rose and went back to Germany",
+  "1 August 1946 Soviet Union's submarines raided the convoys of China",
+  "21 July 1946 Turkey made peace with Romania",
+  "16 July 1946 Free Tirana made peace with Yugoslavia",
+  "11 July 1946 Nepal was destroyed",
+  "11 July 1946 Soviet Union captured Nepal's capital",
+  "1 July 1946 Yugoslavia declared war on Free Tirana",
+  "1 July 1946 Free Tirana broke away from Yugoslavia"
+ ],
+ "wallS": 2530.802,
+ "errors": [
+  "warning: [.WebGL-0x9ec00103c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x9ec00103c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x9ec00103c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x9ec00103c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ]
+}

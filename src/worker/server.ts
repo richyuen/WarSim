@@ -22,6 +22,7 @@ import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
+import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -41,6 +42,7 @@ import {
   type Inspection,
   type WarBattle,
   type WarStat,
+  type OrderNews,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
@@ -139,6 +141,13 @@ export class SimServer {
   /** The sea control last sent (PLAN 4.7a): the zones' object and the holders, as a key. */
   private seaZonesSent: unknown = null;
   private seaHoldersSent = '';
+  /** Whether the page was last sent a zone held by someone: kept over a load, which it outlives. */
+  private seaShown = false;
+  /**
+   * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
+   * told. `before`: the order it replaced, which stands again if this one is refused.
+   */
+  private ordered = new Map<number, { target: number; before: number | undefined }>();
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -199,6 +208,10 @@ export class SimServer {
           console.warn(`sim worker: refused a command of an unknown kind: ${JSON.stringify(msg.cmd)?.slice(0, 120)}`);
           break;
         }
+        // A player's order of a formation (it names its nation): what becomes of it is told (PLAN 4.9c).
+        if (msg.cmd.kind === 'moveFormation' && msg.cmd.nation !== undefined) {
+          this.ordered.set(msg.cmd.id, { target: Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x), before: this.ordered.get(msg.cmd.id)?.target });
+        }
         // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
         // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
         if (msg.now) {
@@ -254,6 +267,7 @@ export class SimServer {
         this.unrestVersion = -1;
         this.seaZonesSent = null;
         this.seaHoldersSent = '';
+        this.ordered.clear();
         this.statsTick = -1;
         this.lastStatsMs = -1;
         this.resetStreams();
@@ -339,6 +353,7 @@ export class SimServer {
     this.unrestVersion = -1;
     this.seaZonesSent = null;
     this.seaHoldersSent = '';
+    this.ordered.clear();
     this.statsTick = -1;
     this.lastStatsMs = -1;
     this.flagsSent = -1;
@@ -607,14 +622,20 @@ export class SimServer {
       this.post({ type: 'provinceStats', unrest }, [unrest.buffer]);
     }
     // Sea control for its map mode (PLAN 4.7a): the holders when they changed (daily at most),
-    // and the zones of the cells with the first, or when the zones were made again.
-    if (world.seaControl) {
+    // and the zones of the cells with the first, or when the zones were made again. A world with
+    // none (a load of a save in which no zone is held) is sent all held by none once, where the
+    // page was shown holders (PLAN 4.8p).
+    if (world.seaControl || this.seaShown) {
       const zones = seaOf(world);
-      const key = world.seaControl.holder.join(',');
+      const holders = world.seaControl?.holder ?? new Uint16Array(zones.count + 1);
+      const key = holders.join(',');
       if (zones !== this.seaZonesSent || key !== this.seaHoldersSent) {
-        const holder = world.seaControl.holder.slice();
+        const holder = holders.slice();
+        this.seaShown = holder.some((h) => h !== 0);
         const fresh = zones !== this.seaZonesSent ? zones.zoneOf.slice() : undefined;
-        if (fresh) this.post({ type: 'seaControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
+        // With the zones, each one's sea by name (PLAN 4.10c): the legend names the zone under the cursor.
+        const names = fresh ? Array.from({ length: zones.count + 1 }, (_, k) => (k === 0 ? '' : (world.seaSeeds[zones.seed[k]!]?.name ?? ''))) : undefined;
+        if (fresh) this.post({ type: 'seaControl', holder, zones: fresh, names: names! }, [holder.buffer, fresh.buffer]);
         else this.post({ type: 'seaControl', holder }, [holder.buffer]);
         this.seaZonesSent = zones;
         this.seaHoldersSent = key;
@@ -931,6 +952,7 @@ export class SimServer {
       // A refusal goes to the page at once and whatever it looks at: the panel that sent the
       // command says why (PLAN 2.17a).
       if (ev[i + 1] === EventKind.CommandRefused) this.post({ type: 'refused', reason: b }, []);
+      if (this.ordered.size > 0) this.orderNews(world, ev, i);
       if (ev[i + 1] === EventKind.ElementDestroyed) {
         // The end of an element is for a view that draws elements (PLAN 2.4b); it gets what the
         // unit leaves behind in place of the unit.
@@ -945,6 +967,41 @@ export class SimServer {
     if (over > 0) {
       this.eventQueue.splice(0, over * EVENT_STRIDE);
       this.droppedEvents += over;
+    }
+  }
+
+  /**
+   * What became of a player's order (PLAN 4.9c), told at once: a refusal with its reason, a
+   * landing thrown back, troops ashore more than `AT_PORT_CELLS` from the order's cell. A refused
+   * order leaves the one before it standing (the sim changes nothing then: a division aboard keeps
+   * its voyage), and that one is told on; the order is forgotten at a landing, at an arrival on
+   * land and at the formation's end.
+   */
+  private orderNews(world: World, ev: number[], i: number): void {
+    const kind = ev[i + 1]!;
+    const id = ev[i + 2]!;
+    const kept = this.ordered.get(id);
+    if (kept === undefined) return;
+    const target = kept.target;
+    const c = world.formations.cols;
+    const w = world.cells.w;
+    const tell = (k: OrderNews['kind'], reason: number): void => {
+      const has = world.formations.has(id);
+      this.post({ type: 'orderNews', news: { kind: k, id, nation: has ? c.nation[id]! : ev[i + 3]!, reason, x: has ? c.x[id]! : ev[i + 4]!, y: has ? c.y[id]! : ev[i + 5]!, tick: ev[i]! } }, []);
+    };
+    if (kind === EventKind.MoveRejected) {
+      tell('refused', ev[i + 4]!);
+      if (kept.before === undefined) this.ordered.delete(id);
+      else this.ordered.set(id, { target: kept.before, before: undefined });
+    } else if (kind === EventKind.LandingRepulsed) {
+      tell('repulsed', 0);
+    } else if (kind === EventKind.FormationLanded) {
+      const dx = Math.abs(Math.floor(ev[i + 4]!) - (target % w));
+      const dy = Math.abs(Math.floor(ev[i + 5]!) - Math.floor(target / w));
+      if (Math.min(dx, w - dx) > AT_PORT_CELLS || dy > AT_PORT_CELLS) tell('landedAway', 0);
+      this.ordered.delete(id);
+    } else if (kind === EventKind.FormationDestroyed || (kind === EventKind.FormationArrived && !world.seaBound.has(id) && !world.afloat(id))) {
+      this.ordered.delete(id);
     }
   }
 
@@ -1208,6 +1265,15 @@ export class SimServer {
     const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
     for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
+    // The sea battles (PLAN 4.10b): the place, the cells to the furthest fleet, the two sides.
+    const fc0 = world.formations.cols;
+    const seas = Float32Array.from(
+      world.seaBattles.flatMap((b) => {
+        let r = 0;
+        for (const f of b.fleets) if (world.formations.has(f)) r = Math.max(r, Math.hypot(wrapDx(world, b.x, fc0.x[f]!), fc0.y[f]! - b.y));
+        return [b.x, b.y, r, b.a, b.b];
+      }),
+    );
     const elements = this.elementSection(world, buffers);
 
     // Events: global ones always, spatial ones only inside the subscribed bbox.
@@ -1246,6 +1312,7 @@ export class SimServer {
       wars,
       formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
+      seas,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
       fires: { count: fq.length / FIRE_STRIDE, data: fires, dropped: this.droppedFires },

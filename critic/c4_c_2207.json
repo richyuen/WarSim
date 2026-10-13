@@ -1,0 +1,540 @@
+{
+ "seed": 2207,
+ "shots": [
+  "critic/shots/c4c_00_actions_tab.png",
+  "critic/shots/c4c_10_channel_1500m.png",
+  "critic/shots/c4c_11_order_to_germany.png",
+  "critic/shots/c4c_12_after_20_days.png",
+  "critic/shots/c4c_20_fleet_order.png",
+  "critic/shots/c4c_21_fleet_after_3_days.png",
+  "critic/shots/c4c_30_history.png"
+ ],
+ "log": [],
+ "ids": {
+  "GER": 1,
+  "ENG": 20,
+  "NOR": 31
+ },
+ "player": 20,
+ "nearPortsmouthLand": [
+  {
+   "f": 272,
+   "pos": [
+    1014.34164078644,
+    278.50585319944
+   ],
+   "afloat": false,
+   "t": {
+    "name": "Infantry division 272",
+    "kind": "Infantry division",
+    "nation": 20
+   }
+  },
+  {
+   "f": 277,
+   "pos": [
+    1013.57082039322,
+    280.65292659972
+   ],
+   "afloat": false,
+   "t": {
+    "name": "Tank brigade 277",
+    "kind": "Tank brigade",
+    "nation": 20
+   }
+  },
+  {
+   "f": 274,
+   "pos": [
+    1016.48328157288,
+    276.21170639888
+   ],
+   "afloat": false,
+   "t": {
+    "name": "Infantry division 274",
+    "kind": "Infantry division",
+    "nation": 20
+   }
+  },
+  {
+   "f": 270,
+   "pos": [
+    1014.2,
+    276.2
+   ],
+   "afloat": false,
+   "t": {
+    "name": "Infantry division 270",
+    "kind": "Infantry division",
+    "nation": 20
+   }
+  }
+ ],
+ "nearPortsmouthShips": [
+  {
+   "f": 1062,
+   "pos": [
+    1018.1875,
+    280.9375
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Battle squadron 1062",
+    "kind": "Battle squadron",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1063,
+   "pos": [
+    1018.5,
+    281.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Carrier group 1063",
+    "kind": "Carrier group",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1065,
+   "pos": [
+    1019.5,
+    281.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Destroyer flotilla 1065",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1067,
+   "pos": [
+    1017.5,
+    282.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Submarine flotilla 1067",
+    "kind": "Submarine flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1064,
+   "pos": [
+    1018.5,
+    282.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Destroyer flotilla 1064",
+    "kind": "Destroyer flotilla",
+    "nation": 20
+   }
+  },
+  {
+   "f": 1068,
+   "pos": [
+    1019.5,
+    282.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Transport group 1068",
+    "kind": "Transport group",
+    "nation": 20
+   }
+  }
+ ],
+ "selected1": [
+  272
+ ],
+ "afterOrder": {
+  "pos": [
+   1014.34164078644,
+   278.50585319944
+  ],
+  "afloat": false,
+  "way": null
+ },
+ "refusalText": [],
+ "tickerAfterOrder": [
+  "1 January 1938 United Kingdom declared war on Germany"
+ ],
+ "track": [
+  {
+   "day": 1,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 2,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 3,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 4,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 5,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 6,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 7,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 8,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 9,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 10,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 11,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 12,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 13,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 14,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 15,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 16,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 17,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 18,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 19,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  },
+  {
+   "day": 20,
+   "pos": [
+    1014.3,
+    278.5
+   ],
+   "afloat": false,
+   "engaged": false
+  }
+ ],
+ "portTransports": [
+  {
+   "f": 1068,
+   "pos": [
+    1019.5,
+    282.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Transport group 1068",
+    "kind": "Transport group",
+    "nation": 20
+   },
+   "dist": 2.624880949681367
+  },
+  {
+   "f": 1069,
+   "pos": [
+    1020.5,
+    281.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Transport group 1069",
+    "kind": "Transport group",
+    "nation": 20
+   },
+   "dist": 2.8792360097776366
+  },
+  {
+   "f": 1076,
+   "pos": [
+    1030.5,
+    274.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Transport group 1076",
+    "kind": "Transport group",
+    "nation": 20
+   },
+   "dist": 14.045995870709957
+  },
+  {
+   "f": 1072,
+   "pos": [
+    999.5,
+    284.5
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Transport group 1072",
+    "kind": "Transport group",
+    "nation": 20
+   },
+   "dist": 18.7320580823357
+  }
+ ],
+ "fleetSelected": [
+  1062
+ ],
+ "fleetTrack": {
+  "f": {
+   "f": 1062,
+   "pos": [
+    1018.1875,
+    280.9375
+   ],
+   "afloat": true,
+   "t": {
+    "name": "Battle squadron 1062",
+    "kind": "Battle squadron",
+    "nation": 20
+   }
+  },
+  "ftrack": [
+   {
+    "pos": [
+     1037.7,
+     273.3
+    ],
+    "engaged": false
+   },
+   {
+    "pos": [
+     1054.6,
+     255.4
+    ],
+    "engaged": true
+   },
+   {
+    "pos": [
+     1057.5,
+     252.5
+    ],
+    "engaged": false
+   },
+   {
+    "pos": [
+     1057.5,
+     252.5
+    ],
+    "engaged": false
+   },
+   {
+    "pos": [
+     1057.5,
+     252.5
+    ],
+    "engaged": false
+   },
+   {
+    "pos": [
+     1057.5,
+     252.5
+    ],
+    "engaged": false
+   }
+  ]
+ },
+ "ukForms": 0,
+ "history": [
+  "23 January 1938 A major battle began near Geneva",
+  "23 January 1938 A major battle began near Albacete",
+  "22 January 1938 The major battle near Geneva was won by Italy",
+  "22 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 3 ships, Germany 0",
+  "22 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 4 ships, Germany 2",
+  "21 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 2 ships, Italy 0",
+  "21 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 1 ships, Italy 0",
+  "20 January 1938 The major battle near Nanking was won by China",
+  "19 January 1938 A major battle began near Nanking",
+  "19 January 1938 Poland captured Lithuania's capital",
+  "18 January 1938 The major battle near Geneva was won by Italy",
+  "17 January 1938 A major battle began near Geneva",
+  "17 January 1938 France and Germany fought at sea: France lost 1 ships, Germany 0",
+  "17 January 1938 Switzerland joined the Anglo-French Entente",
+  "16 January 1938 The major battle near Geneva was won by Italy",
+  "16 January 1938 A major battle began near Geneva",
+  "16 January 1938 A major battle began near Geneva",
+  "15 January 1938 The major battle near Geneva was won by Italy",
+  "15 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 4 ships, Germany 10",
+  "15 January 1938 France and Italy fought at sea: France lost 3 ships, Italy 0",
+  "15 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 8 ships, Germany 2",
+  "15 January 1938 France and Italy fought at sea: France lost 3 ships, Italy 0",
+  "15 January 1938 Netherlands joined the Anglo-French Entente",
+  "14 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 2 ships, Italy 0",
+  "14 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 0 ships, Italy 4",
+  "14 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 1 ships, Italy 3",
+  "14 January 1938 France and Italy fought at sea: France lost 1 ships, Italy 5",
+  "14 January 1938 France and Italy fought at sea: France lost 0 ships, Italy 4",
+  "13 January 1938 Austria joined the Defensive Pact of Denmark",
+  "13 January 1938 Denmark founded a Defensive Pact",
+  "11 January 1938 France and Italy fought at sea: France lost 3 ships, Italy 0",
+  "11 January 1938 France and Italy fought at sea: France lost 2 ships, Italy 1",
+  "11 January 1938 Poland declared war on Lithuania",
+  "10 January 1938 A major battle began near Geneva",
+  "10 January 1938 France and Italy fought at sea: France lost 11 ships, Italy 0",
+  "10 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 4 ships, Italy 6",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 9 ships, Italy 1",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 3 ships, Italy 10",
+  "7 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 5 ships, Italy 0",
+  "7 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 7 ships, Italy 2",
+  "7 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 0 ships, Italy 11",
+  "7 January 1938 France and Italy fought at sea: France lost 0 ships, Italy 5",
+  "7 January 1938 Luxembourg joined the Anglo-French Entente",
+  "6 January 1938 Iran joined the Defensive Pact of Afghanistan",
+  "6 January 1938 Afghanistan founded a Defensive Pact",
+  "6 January 1938 Norway joined the Defensive Pact of Finland",
+  "6 January 1938 Finland founded a Defensive Pact",
+  "5 January 1938 France and Germany fought at sea: France lost 10 ships, Germany 11",
+  "5 January 1938 France and Germany fought at sea: France lost 2 ships, Germany 2",
+  "4 January 1938 France and Germany fought at sea: France lost 6 ships, Germany 8",
+  "4 January 1938 France and Germany fought at sea: France lost 12 ships, Germany 1",
+  "4 January 1938 France and Germany fought at sea: France lost 8 ships, Germany 0",
+  "4 January 1938 Spanish Republic joined the Defensive Pact of Portugal",
+  "4 January 1938 Portugal founded a Defensive Pact",
+  "4 January 1938 Poland joined the Anti-Comintern Pact",
+  "2 January 1938 Belgium joined the Anglo-French Entente",
+  "1 January 1938 Italy's submarines raided the convoys of United Kingdom",
+  "1 January 1938 Cuba joined the Coalition of Mexico",
+  "1 January 1938 Mexico founded a Coalition",
+  "1 January 1938 United Kingdom declared war on Germany"
+ ],
+ "wallS": 184.835,
+ "errors": [
+  "warning: [.WebGL-0x7540010c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x7540010c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x7540010c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x7540010c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ]
+}

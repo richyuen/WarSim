@@ -62,14 +62,14 @@
  * - no formation is set on its spawn point across a war: only where no land leads there.
  * The walk back (`HOME_BACK`) loses its mark before an enemy's cell too, and waits as any march.
  */
-import { EventKind } from '../../shared/events';
+import { EventKind, RejectReason } from '../../shared/events';
 import { atan2 } from '../core/dmath';
 import { Mobility, MOVE_COST, stepKm, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
 import { findRoute, nodeGroups } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
-import { orderLanding } from './amphibious';
+import { transportsPort, tryLanding } from './amphibious';
 import { noteMove } from './elements';
 import { spawnPoint } from './production';
 import { orderSail, sailStep } from './sail';
@@ -263,21 +263,50 @@ function overSea(world: World, id: number, x: number, y: number): boolean {
   return here !== 0 && there !== 0 && here !== there;
 }
 
-export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage): boolean {
+/**
+ * `byPort` (a player's order, PLAN 4.9b): an order over the sea from where no transports wait
+ * marches to the nearest port of its land with transports that have room (`transportsPort`), and
+ * the order is kept (`world.seaBound`) for the amphibious system to embark it there. Any order
+ * ends an order kept so.
+ */
+export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage, byPort = false): boolean {
+  world.seaBound.delete(id);
   // A fleet sails (PLAN 4.2c): its order is its own.
   if (world.formations.has(id) && world.isFleet(id)) return orderSail(world, id, x, y);
   // Aboard transports it takes no order (PLAN 4.5a).
   if (world.embarked.has(id)) {
-    world.out.emit(world.tick, EventKind.MoveRejected, id, 0, NaN, NaN);
+    world.out.emit(world.tick, EventKind.MoveRejected, id, world.formations.cols.nation[id]!, RejectReason.Aboard, NaN);
     return false;
   }
-  // To another land: by sea, from a port its nation holds with transports there (PLAN 4.5a).
-  if (world.formations.has(id) && overSea(world, id, x, y) && orderLanding(world, id, x, y)) return true;
-  return order(world, id, x, y, pass, 0);
+  // To another land: by sea, from a port its nation holds with transports there (PLAN 4.5a). With
+  // none, a march as before (a target by the coast may snap to this land); refused, it says why
+  // the sea was refused (PLAN 4.9a).
+  const sea = world.formations.has(id) && overSea(world, id, x, y) ? tryLanding(world, id, x, y) : RejectReason.NoRoute;
+  if (sea === 0) return true;
+  if (byPort && (sea === RejectReason.NoPort || sea === RejectReason.NoTransports)) {
+    const port = transportsPort(world, id);
+    const w = world.cells.w;
+    const tx = Math.floor(x);
+    const ty = Math.floor(y);
+    if (port >= 0) {
+      const at = world.ports[port]!.cell;
+      if (order(world, id, (at % w) + 0.5, Math.floor(at / w) + 0.5, pass, 0, sea)) {
+        world.seaBound.set(id, ty * w + tx);
+        return true;
+      }
+      return false;
+    }
+    // No port of its land has transports for it: that is why where its nation holds one there.
+    return order(world, id, x, y, pass, 0, transportsPort(world, id, false) >= 0 ? RejectReason.NoTransports : RejectReason.NoPort);
+  }
+  return order(world, id, x, y, pass, 0, sea);
 }
 
-/** `orderMove`, or with `home` 1 the order of a march home, over any ground but an enemy's (ADR-169, ADR-222; `pass` is then `homeward`'s). */
-function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | typeof HOME_MARCH): boolean {
+/**
+ * `orderMove`, or with `home` 1 the order of a march home, over any ground but an enemy's (ADR-169,
+ * ADR-222; `pass` is then `homeward`'s). `why`: the reason a refusal for want of a way gives.
+ */
+function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | typeof HOME_MARCH, why: RejectReason = RejectReason.NoRoute): boolean {
   const f = world.formations;
   const { w, h } = world.cells;
   const rule = f.has(id) ? world.rules?.templates[f.cols.template[id]!] : undefined;
@@ -285,7 +314,7 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const ty = Math.floor(y);
   // A fleet does not march (PLAN 4.2b): it sails by an order of its own (`orderSail`, PLAN 4.2c).
   if (!rule || rule.domain !== Domain.land || ty < 0 || ty >= h || tx < 0 || tx >= w) {
-    world.out.emit(world.tick, EventKind.MoveRejected, id, 0, NaN, NaN);
+    world.out.emit(world.tick, EventKind.MoveRejected, id, 0, RejectReason.NotLand, NaN);
     return false;
   }
   const c = f.cols;
@@ -307,7 +336,7 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const target = snapTarget(world, origin, tx, ty);
   const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, way);
   if (!route) {
-    world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, NaN, NaN);
+    world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, why, NaN);
     return false;
   }
   noteMove(world, id);
@@ -476,7 +505,7 @@ export function movementSystem(world: World): void {
       c.pathStep[id] = 0;
       c.stepFrac[id] = 1 - frac;
       c.home[id] = HOME_BACK;
-      world.out.emit(world.tick, EventKind.MoveRejected, id, nation, NaN, NaN);
+      world.out.emit(world.tick, EventKind.MoveRejected, id, nation, RejectReason.Barred, NaN);
       return;
     }
     if (barred) {
@@ -484,7 +513,7 @@ export function movementSystem(world: World): void {
       c.y[id] = ay;
       c.moving[id] = 0;
       world.paths.delete(id);
-      world.out.emit(world.tick, EventKind.MoveRejected, id, nation, NaN, NaN);
+      world.out.emit(world.tick, EventKind.MoveRejected, id, nation, RejectReason.Barred, NaN);
       return;
     }
     if (i >= path.length - 1) {

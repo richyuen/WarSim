@@ -23,41 +23,31 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
-  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
-  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
-  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
-  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
-  Split 2026-10-12, as 3.12R was: the pass is several causes, one a commit. A part is not a
-  numbered task (its gate runs the tests related to it and the specs it changed, ADR-280);
-  the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
-  - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and […]
-  - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
-  - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports […]
-  - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
-  - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
-  - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
-  - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
-  - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
-  - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
-  - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
-  - [ ] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a
-    neutral's, and past an enemy-held sea: an order to Calais, then the transports sent to
-    Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
-    coast it lands in the Netherlands at peace (`redirect.ts`). "Of its side or none", and the
-    sea's holder asked, as at the landing's own water. A test fails first.
-  - [ ] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
-    22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
-    the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
-    has no home to sail to. Ports a ship reaches only. A test fails first.
-  - [ ] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows
-    the last game's holders (the worker sends `seaControl` only while there is one) until the
-    next 00:00.
-  - [ ] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
-  - [ ] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
-    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
-    if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
-    critic (due after a phase review, ADR-59).
+- [ ] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
+  is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
+  small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
+  watched running (`critic/c4_b_6131.json`, `critic/c4_b2_6131.json`); the sea-control mode is
+  blocky and its colours do not say whose navy holds a zone. The critic's fix: a ship glyph on
+  a naval counter; both fleets of an engagement in one T2 view with their fire; a sea-control
+  legend.
+  AT: e2e: a fleet's counter at T0 differs from an army's (pixels); on seed 6131's war the
+  first sea battle, followed from its event, draws gunfire within its first hours at T2; the
+  sea-control mode names the holder of the zone under the cursor or in a legend.
+  Split 2026-10-13 into parts, one cause a commit. Found first (seed 6131, the critic's war):
+  the sim fires (28 naval shots in hour 41, 11 to 74 an hour after) and the page receives and
+  draws them (11 to 23 shots in a battle's hour, stepped); at ×1 a sea battle's five hours
+  pass in five seconds, each hour's shots in a part of it, and in this container a sample came
+  every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
+  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
+  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
+  - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the […]
+  - [ ] 4.10d The AT's specs (above), and the tick of 4.10.
+- [ ] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
+  value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
+  together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
+  a flex row for each line, the name cut by an ellipsis, the value never wrapping.
+  AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
+  no value wraps.
 
 ## Phase 5 — Air
 
@@ -225,6 +215,14 @@ quick sweep as a smoke test.
   ways once a naval AI's day, a small key for `stepWay`. Measure on the budget machine,
   pinned, with the game's size beside it: a comparison across commits does not part the
   code's cost from a larger game.
+  From the critic's report of 2026-10-12 (R4-B5, run 4 on `5e91a56`): the tick grows with the
+  game's age. Seed 5303 alone: 5.34 ms a tick in year 5, 21.2 ms in year 21, 21.8 ms in year
+  23 (the allowance of this container 6.53 ms); p95 21 to 140 ms; the operational AI's calls
+  of 100 to 220 ms; about 3,200 refused AI orders a year (`critic/c4_perf_5303_24y_solo.log`,
+  `critic/c4_perf_profile_7717.log`). The critic's fix: find what grows with age (fleets,
+  nations, the refused orders) and cap or coarsen it; break up the operational AI's long
+  calls. AT for this line: a 25-year run of seed 5303, pinned and profiled, whose last five
+  years' tick is within 1.5 × its first five's.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
@@ -329,6 +327,13 @@ quick sweep as a smoke test.
     whether a holder keeps so little of what it took that it loses it an area a month
     (the suppression spending, the unrest of land with another's core), and whether the
     cores of the data are right where it happens. The rows are not the log's to drop.
+  From the critic's report of 2026-10-12 (R4-B3, run 4 on `5e91a56`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): the world breaks up more than in run 3. Seed 5303, 30
+  years headless: 94 nations alive in year 1, 183 in year 30, 112 founded in play and 245 in
+  all; seed 3889: 28 "Free X" alive after 8 years (`critic/c4_headless_5303.json`,
+  `critic/c4_d_3889.json`). What the critic asks: revolts return land to a core owner or a
+  neighbour first; weak statelets are absorbed; a run whose count of living nations rises
+  for 20 years fails.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
@@ -728,3 +733,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.5 Amphibious invasion (embark, escort, land, penalties, bombardment). […]
 - [x] 4.6 Naval AI (sea control, escort, raiding, invasion planning). […]
 - [x] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode. […]
+- [x] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
+- [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused […]

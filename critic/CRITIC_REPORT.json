@@ -1,92 +1,88 @@
 {
-  "commit": "a6f63ef7e4f04a1b929a5364ef2260435901b0f7",
+  "commit": "5e91a569bd867bf6e3fcaa105e8fcb9406467e44",
   "scores": {
     "mapVisuals": 6,
-    "diplomacyWarDepth": 5,
-    "emergentDynamics": 4,
+    "diplomacyWarDepth": 6,
+    "emergentDynamics": 5,
     "godMode": 6,
     "editorScenarios": 6,
     "statsHistory": 5,
     "uiUxPolish": 5,
-    "performance": 5,
+    "performance": 4,
     "stability": 7,
     "semanticZoom": 6,
-    "naval": 0,
+    "naval": 4,
     "tanks": 5,
     "aircraft": 0,
     "aiNukes": 0
   },
   "blocking": [
     {
-      "id": "R3-B1",
-      "title": "Naval, air and nuclear systems do not exist; armies cannot cross water, and the Americas stand still for 25 years (Canada 12.1 %, United States 7.7 % of cells in every year from 15 to 40 on seed 4242)",
+      "id": "R4-B1",
+      "title": "Aircraft and nuclear weapons do not exist: two of the five differentiators are 0",
       "evidence": [
-        "critic/c3_j.json",
-        "critic/shots/c3j_22_uk_after_30_days.png",
-        "critic/shots/c3j_23_channel_300m.png",
-        "critic/c3_seed4242_40y.json"
+        "critic/c4_e_9157.json"
       ],
-      "fix": "Phases 4, 5 and 6; sea transport first, as it also unfreezes the maritime powers."
+      "fix": "Phases 5 and 6."
     },
     {
-      "id": "R3-B2",
-      "title": "The world shatters into rebel statelets and never consolidates: 59 of 137 living nations are \"Free <province>\" after 14 years, \"Free Herat\" is the sixth largest country, 430 nations are created in 40 years and the living count climbs from 97 to 170",
+      "id": "R4-B2",
+      "title": "A player cannot carry out an invasion, and no refused order is ever shown: a click across the sea does nothing for 20 days and says nothing; the two-step order lands the division back in England without a message; MoveRejected reaches no UI code",
       "evidence": [
-        "critic/c3_a.json",
-        "critic/shots/c3a_20_after_world.png",
-        "critic/shots/c3a_21_after_europe_4000m.png",
-        "critic/shots/c3a_31_charts_land.png",
-        "critic/c3_seed4242_40y.json"
+        "critic/c4_c_2207.json",
+        "critic/c4_c_2207_land.json",
+        "critic/c4_landing.log",
+        "critic/shots/c4c_11_order_to_germany.png",
+        "critic/shots/c4c_12_after_20_days.png"
       ],
-      "fix": "A revolt returns land to a core owner or a neighbour before it founds a nation; cap a rebel at its province and region; let a weak statelet be annexed in one war; fail a sweep whose living count rises for 20 years."
+      "fix": "An order over water marches to the nearest port with transports, embarks and sails; a refused order says why on screen; a landing that turns back says so in the ticker."
     },
     {
-      "id": "R3-B3",
-      "title": "The close zoom still does not show a battle: an engaged formation's tag and position are 12.9 km (two thirds of a cell) from its elements, so zooming to it shows an empty field; the largest fight is one division alone in view; units stand in a lattice; no wreck was drawn in 230 sim hours",
+      "id": "R4-B3",
+      "title": "The world still shatters into statelets, more than in run 3: 94 nations in year 1, 183 in year 30 (112 founded in play, 245 founded in all) on seed 5303; 28 'Free X' alive after 8 years on seed 3889",
       "evidence": [
-        "critic/c3_m.json",
-        "critic/shots/c3k2_22_armour_live_006m_a.png",
-        "critic/shots/c3m_10_form40_06m_at_position.png",
-        "critic/shots/c3m_21_fight_040m_live.png",
-        "critic/shots/c3j_11_tank_paused_0040m.png",
-        "critic/shots/c3j_12_tank_live_002m_2.png"
+        "critic/c4_headless_5303.json",
+        "critic/c4_d_3889.json",
+        "critic/shots/c4d_50_europe_end.png"
       ],
-      "fix": "Keep engaged elements at the cell edge, and move the tag, the click target and the camera target to where the elements are; place both sides of an engagement inside one T3 view; break the lattice and turn hulls when engaged; draw losses from strength lost, not only from a dead element."
+      "fix": "Revolts return land to a core owner or neighbour first; weak statelets are absorbed; a run whose living count rises for 20 years fails."
     },
     {
-      "id": "R3-B4",
-      "title": "Wars inside one realm and one alliance: the United Kingdom and seven French puppets are at war with French West Africa, a puppet of France, their ally; 30 nations go to war with one rebel province",
+      "id": "R4-B4",
+      "title": "Naval warfare cannot be seen: a fleet is an army counter at T0, a few pills at T3, and in the critic's own war no shot was drawn in 14 sampled hours and 32 live hours of sea battle",
       "evidence": [
-        "critic/c3_l.json",
-        "critic/shots/c3k_10_front_day60_2500m.png",
-        "critic/shots/c3c_19b_god_revive.png"
+        "critic/shots/c4a_11_crop_scapa_counter_4000m.png",
+        "critic/shots/c4a_12_crop_army_counter_4000m.png",
+        "critic/shots/c4b3_s4604_15m_best.png",
+        "critic/c4_b_6131.json",
+        "critic/c4_b2_6131.json",
+        "critic/shots/c4b2_1_live_best_60m.png",
+        "critic/shots/c4b_50_northsea_seacontrol_day75.png"
       ],
-      "fix": "Refuse a declaration between nations that share an overlord or an alliance (AI and God alike); scope a war on a rebel to its parent nation."
+      "fix": "A ship glyph on naval counters; both fleets of an engagement in one T2 view with tags on their ships; gun arcs, splashes and burning ships readable at 40 m/px; a sea-control legend by navy."
     },
     {
-      "id": "R3-B5",
-      "title": "Max speed is 15 to 28 seconds a simulated year alone (the run 2 script: 16 to 61 s now against 8 to 19 then), and the mean tick is 2.27 ms against a budget of 1.5 ms (seed 4242, pinned, alone)",
+      "id": "R4-B5",
+      "title": "The tick is over its budget and grows with the game: seed 5303 alone 5.34 ms in year 5, 21.2 ms in year 21, 21.8 ms in year 23 (allowance here 6.53 ms); p95 21 to 140 ms",
       "evidence": [
-        "critic/c3_q.json",
-        "critic/shots/c3q_00_running_max_world.png",
-        "critic/c3_a.json",
-        "critic/c3_perf_node.log",
-        "critic/c3_perf_node_late.log",
-        "critic/c3_headless40.log"
+        "critic/c4_perf_5303_24y_solo.log",
+        "critic/c4_perf_seed99_solo.log",
+        "critic/c4_headless_5303.log",
+        "critic/c4_perf_profile_7717.log"
       ],
-      "fix": "A coarse sim path for fronts no close tier is watching; profile the years that cost 2.4 ms a tick and more."
+      "fix": "Find what grows with age (fleets, nations, 3,200 refused AI orders a year) and cap or coarsen it; break up the operational AI's 100 to 220 ms calls."
     },
     {
-      "id": "R3-B6",
-      "title": "A watcher is told nothing as it happens: no sound, no event ticker, no popup; the history is a panel of 2,395 rows after 14 years",
+      "id": "R4-B6",
+      "title": "The ranking draws values against the wrong names from row 11 down (a float wraps); row 13 shows two numbers run together; on screen from the first frame",
       "evidence": [
-        "critic/c3_q.json",
-        "critic/shots/c3q_00_running_max_world.png",
-        "critic/shots/c3a_32_history.png",
-        "critic/c3_a.json"
+        "critic/shots/c4a_01_boot.png",
+        "critic/shots/c4c0_20_fleet_order.png",
+        "critic/c4_e_9157.json",
+        "docs/evidence/4.7/naval-demo-t3.png"
       ],
-      "fix": "A ticker of major events (war, peace, capital, death) whose rows fly the camera there; basic sound; fold land handovers into one row per peace."
+      "fix": "A flex row for each ranking line with the name truncated by ellipsis; the value never wraps."
     }
   ],
-  "timestamp": "2026-10-07T18:27:23.452Z"
+  "timestamp": "2026-10-12T23:24:08Z"
 }

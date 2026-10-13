@@ -31,7 +31,7 @@ import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import { knowsTechs } from '../tech';
-import { Domain, navOf, portSeaOf, seaOf, type World } from '../world';
+import { basinOf, Domain, navOf, portSeaOf, seaOf, type World } from '../world';
 import { waterOf } from './sail';
 import { frontierOf } from './territory';
 
@@ -51,19 +51,21 @@ export const SHIP_TIME_SCALE = 1;
 /**
  * The port where a new fleet of `nation` is delivered (index in `world.ports`), or -1: of the
  * ports whose land cell the nation controls and whose water a ship reaches (its water as the
- * lane graph's node has it, `portSeaOf`, in a zone that ice does not close), the highest naval
+ * lane graph's node has it, `portSeaOf`, in a zone of the world's seas, `basinOf`'s ocean: not a
+ * lake, the Caspian or a sea ice closes, PLAN 4.8o), the highest naval
  * base, then the nearest to the capital, then the first.
  */
 export function shipyard(world: World, nation: number): number {
   const { w, controller } = world.cells;
   const water = portSeaOf(world);
   const sea = seaOf(world);
+  const { basin, ocean } = basinOf(world);
   const cx = world.nations.cols.capitalX[nation]!;
   const cy = world.nations.cols.capitalY[nation]!;
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
-    if (controller[p.cell] !== nation || water[i]! < 0 || sea.closed[sea.zoneOf[water[i]!]!] === 1) return;
+    if (controller[p.cell] !== nation || water[i]! < 0 || basin[sea.zoneOf[water[i]!]!] !== ocean) return;
     let dx = Math.abs(p.x - cx);
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const d = dx * dx + (p.y - cy) * (p.y - cy);

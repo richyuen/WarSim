@@ -21,7 +21,7 @@
  * Water made land under the way (the editor): the fleet stops in the cell before it and is
  * ordered to where it was going again, or stands there with no way.
  */
-import { EventKind } from '../../shared/events';
+import { EventKind, RejectReason } from '../../shared/events';
 import { isLand } from '../../shared/terrain';
 import { atan2 } from '../core/dmath';
 import { sailRoute, sailStepKm } from '../nav/sailRoute';
@@ -88,13 +88,13 @@ export function orderSail(world: World, id: number, x: number, y: number): boole
   const c = f.cols;
   const w = world.cells.w;
   const rule = f.has(id) ? world.rules?.templates[c.template[id]!] : undefined;
-  const reject = (): boolean => {
-    world.out.emit(world.tick, EventKind.MoveRejected, id, rule ? c.nation[id]! : 0, NaN, NaN);
+  const reject = (why: RejectReason): boolean => {
+    world.out.emit(world.tick, EventKind.MoveRejected, id, rule ? c.nation[id]! : 0, why, NaN);
     return false;
   };
-  if (!rule || rule.domain !== Domain.sea) return reject();
+  if (!rule || rule.domain !== Domain.sea) return reject(RejectReason.NotLand);
   const target = sailTarget(world, Math.floor(x), Math.floor(y));
-  if (target < 0) return reject();
+  if (target < 0) return reject(RejectReason.NotWater);
   // Under way and in the middle of a step, it stays where it is: the way begins at the nearer
   // end of the step, by the other end or back from it (as a march's does, PLAN 3.5a1).
   const was = c.moving[id] === 1 && c.stepFrac[id]! > 0 ? world.paths.get(id) : undefined;
@@ -109,7 +109,7 @@ export function orderSail(world: World, id: number, x: number, y: number): boole
   const nation = c.nation[id]!;
   const shut = (e: number): boolean => lanes.edges[e]!.passage >= 0 && passageShut(world, lanes.edges[e]!.passage, nation);
   const route = sailRoute(navOf(world).grid, seaOf(world), lanes, origin, target, shut);
-  if (!route) return reject();
+  if (!route) return reject(RejectReason.NoSeaWay);
   noteMove(world, id);
   c.moving[id] = 1;
   c.home[id] = 0;

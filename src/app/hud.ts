@@ -10,10 +10,13 @@ import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
-import type { FormationDetail, TechInfo, TemplateInfo } from '../shared/protocol';
+import type { FormationDetail, OrderNews, TechInfo, TemplateInfo } from '../shared/protocol';
+import type { SeaBattleView } from './MapView';
 import type { EditorState } from '../shared/editorState';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
+/** Order news kept on the screen at most (PLAN 4.9c). */
+const ORDER_NEWS_KEPT = 4;
 const KEY_LEVEL = 'warsim.speedLevel';
 const KEY_PAUSED = 'warsim.paused';
 const KEY_MAP_MODE = 'warsim.mapMode';
@@ -56,6 +59,12 @@ export class Hud {
 
   /** Brings the place of an event into view (a click on a row of the ticker, PLAN 3.12c); main wires it to the map view. */
   onShowPlace: (x: number, y: number) => void = () => {};
+  /** The sea battles going on (PLAN 4.10b): the ticker lists them, a click flies to both fleets. */
+  readonly seaBattles = signal<SeaBattleView[]>([]);
+  /** Who holds the seas, and how many zones each (PLAN 4.10c), the most first; the sea-control legend. */
+  readonly seaHolders = signal<{ id: number; zones: number }[]>([]);
+  /** The sea zone under the cursor in the sea-control mode (PLAN 4.10c), null off the sea. */
+  readonly seaHover = signal<{ name: string; holder: number } | null>(null);
 
   /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
   toBattle(war: number): void {
@@ -156,6 +165,10 @@ export class Hud {
     sim.onRefused((reason) => {
       if (this.selected.peek() === this.commandFor) this.refusal.value = reason;
     });
+    // What became of the player's orders (PLAN 4.9c): the newest last, ORDER_NEWS_KEPT at most.
+    sim.onOrderNews((news) => {
+      this.orderNews.value = [...this.orderNews.peek(), { ...news, seq: this.orderSeq++ }].slice(-ORDER_NEWS_KEPT);
+    });
     effect(() => {
       const selected = this.selected.value;
       this.refusal.value = 0;
@@ -171,7 +184,10 @@ export class Hud {
     const metric = load(KEY_RANK_METRIC);
     if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;
     // A loaded world's formations are others, whatever their ids and counts (a load does not raise the counts).
-    sim.onLoad(() => this.selectFormation(0));
+    sim.onLoad(() => {
+      this.selectFormation(0);
+      this.dismissOrderNews();
+    });
     sim.onSnapshotReceived((s) => {
       this.tick.value = s.tick;
       // The open formation panel follows the game.
@@ -395,6 +411,13 @@ export class Hud {
 
   /** Why the sim did not carry out the last command sent from here (`Refusal`; 0 = it did; PLAN 2.17a). */
   readonly refusal = signal(0);
+  /** What became of the player's orders of formations, the newest last (PLAN 4.9c; `seq` numbers them). */
+  readonly orderNews = signal<(OrderNews & { seq: number })[]>([]);
+  private orderSeq = 0;
+  /** Forgets the order news (a click on one, a new game). */
+  dismissOrderNews(seq?: number): void {
+    this.orderNews.value = seq === undefined ? [] : this.orderNews.peek().filter((n) => n.seq !== seq);
+  }
   /** The selection when the last command was sent: a refusal is shown to that nation's panel only. */
   private commandFor = 0;
 

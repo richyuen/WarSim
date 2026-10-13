@@ -14366,3 +14366,204 @@ No rule changed and nothing on screen changed. One task came out of it.
   any other. CLAUDE.md, PROMPT.md and SPEC §10 say so.
 - **Tests:** `gate.test.ts`.
 - **Next:** PLAN 4.8n.
+
+## 2026-10-12 — PLAN 4.8n: transports that stop elsewhere land on their side's coast or no one's (ADR-294)
+
+- **Done:** `strayLanding` (`amphibious.ts`): ashore within 3 cells only on land of the
+  formation's nation, bloc or war side, or no one's where no enemy holds the sea; else aboard.
+  SPEC §6.2 says so.
+- **Tests:** `strayLanding1938.test.ts` (the Dutch and German cases failed first).
+- **The pin** holds.
+- **The gate:** the related unit tests, red only by the two timing tests of BLOCKERS
+  (`scenario1938` build, `snapshot-perf`); the pin held, lint, build and parity green (run by
+  hand after the gate stopped at the unit stage).
+- **Next:** PLAN 4.8o.
+
+## 2026-10-12 — PLAN 4.8o: a fleet's home and a shipyard are ports a ship reaches (ADR-295)
+
+- **Done:** `seaBasins` / `basinOf`: the zones a ship sails between (touch, passages, straits;
+  ice none), the ocean the largest. `shipyard` takes ports of the ocean, `nearestOwnPort` ports
+  of the fleet's basin. The basins give the same 22 unreachable ports as `sailRoute`. SPEC §6.2
+  and the production section say so.
+- **Tests:** `lakePorts1938.test.ts` (both failed first).
+- **The pin** holds.
+- **The gate:** the related unit tests (123 files, 817 tests), red only by the three timing
+  tests of BLOCKERS (`snapshot-perf`, `scenario1938` build, `territory` per tick); the pin held;
+  lint, build and parity green (run by hand after the gate stopped at the unit stage).
+- **Next:** PLAN 4.8p.
+
+## 2026-10-12 — PLAN 4.8p: the sea-control layer cleared by a load with no zone held (ADR-296)
+
+- **Done:** the worker keeps `seaShown` over a load; a world with no sea control is sent all
+  zones open once where the page had holders. SPEC §8 says so.
+- **Tests:** `serverSeaLoad.test.ts` (failed first).
+- **The pin:** the sim is not changed.
+- **The gate:** the related unit tests (19 files, 116 tests), red only by `snapshot-perf` of
+  BLOCKERS (2.44 and 2.83 ms with the change, 2.09 and 2.81 ms at HEAD); lint, build and parity
+  green by hand.
+- **Next:** PLAN 4.8g.
+
+## 2026-10-12 — PLAN 4.8g: PARITY rows of Phase 4 with evidence (documents)
+
+- **Done:** additions row 3 (naval warfare): the review's fixes, ADR-288 to ADR-296, and seven
+  tests added as evidence. Additions row 7 (supply): sea supply, the blockade and convoys, built
+  by PLAN 4.4b–4.4d and noted in row 3 alone until now; "ports and sea supply" no longer missing.
+  Additions row 8 (production): ships built and the navy budget. The score is unchanged (47.5 %):
+  the additions are unscored.
+- **The gate:** documents only: parity.
+- **Next:** PLAN 4.8h, the phase review's tick.
+
+## 2026-10-12 — PLAN 4.8 done: the Phase 4 review (4.8h, its last part)
+
+- **check:full**, each stage on its own on the tree of 433e749 (the tick adds documents alone):
+  - typecheck, lint, build and parity green;
+  - the ten-year sweep tests: 17 of 17, 24 min;
+  - the unit tests: 1,262 of 1,265, red only by the three timing tests of BLOCKERS;
+  - the browser suite: 152 of 171 in two halves (1.2 h, 45 min); declutter, camera and t0map
+    then passed alone, as did the perf spec; the 16 left are BLOCKERS' list of this container.
+- **sweep:quick** (10 seeds × 20 years, 67.8 min, 4 processes): LIMITS GREEN, 10 of 10 seeds.
+  - land moving in the last 5 years: 15.7 to 38.0 % (≥ 1 %);
+  - the largest nation's land at the end: 9.7 to 18.1 % (< 35 %);
+  - the largest income at the end: 28.7 to 29.8 % (< 40 %);
+  - nations alive: 92 to 160 (20–250);
+  - years with a war: 100 % in every seed (≥ 80 %).
+  Reported, not judged at 20 years: a riser in 7 of 10 seeds, a faller in 10 of 10. A smoke test,
+  not a balance verdict (ADR-58).
+- **Phase 4 done.** The critic is due (a phase review ticked since its report, ADR-59).
+- **Next:** the critic run (PROMPT step 2a), then PLAN 5.
+
+## 2026-10-12 — The phase review's full run recorded, judged against known reds (ADR-297, the user's decision)
+
+- **Done:** `npm run check:review` (`tools/gate/review.ts`): every stage on its own, the browser
+  suite in chunks, a failed test again alone, resumable, recorded under the code key (the tree
+  without documents) in `.cache/gate/review.json`; green when every red test is on
+  `tools/gate/knownRed.json` (3 unit timing tests, 16 browser tests, each with its BLOCKERS
+  entry). The gate runs a phase review's tick as any commit when that record is green on the
+  code. CLAUDE.md, PROMPT.md, SPEC §10 say so.
+- **Tests:** `gateReview.test.ts` (5).
+- **The gate:** the unit stage in full (package.json changed): 1,263 of 1,270, red by the three
+  timing tests of BLOCKERS and four tests timed out (buffs, efficiency, replay1938, revolts) while
+  the critic ran beside it; the four files alone 22 of 22. Typecheck and lint green; build and
+  parity green by hand.
+- **Next:** the critic's report (running).
+
+## 2026-10-12 — The critic's fourth report (run 4 on `5e91a56`, after Phase 4)
+
+- **Scores:** map visuals 6, diplomacy and war depth 6, emergent dynamics 5, God Mode 6, editor and scenarios 6, stats and history 5, UI/UX polish 5, performance 4, stability 7, semantic zoom 6, naval 4, tanks 5, aircraft 0, AI nukes 0. **Blocking: 6.**
+- **Filed:** R4-B2 (a player's invasion; refused orders never shown) → PLAN 4.9; R4-B4 (naval
+  warfare not seen) → PLAN 4.10; R4-B6 (the ranking's rows) → PLAN 4.11; R4-B5 (the tick grows
+  with the game's age) → a line under PLAN 7.1, where the tick's work is (ADR-289); R4-B1
+  (aircraft and nuclear weapons) → Phases 5 and 6.
+- **Deferred (ADR-58), logged once:** R4-B3, the world breaks into statelets (seed 5303: 94
+  nations alive in year 1, 183 in year 30; 245 founded) → a line under PLAN 1.42.
+- **Next:** PLAN 4.9.
+
+## 2026-10-12 — PLAN 4.9 split into parts (documents)
+
+- **Found:** the critic's two-step landing (seed 2207) works as the rules say: unescorted
+  transports caught off the Weser broke off at hour 99 and sailed home, and the division came
+  ashore in England; no message said so. The parts: 4.9a a reason with every refused order;
+  4.9b an order over the sea from inland; 4.9c the page tells it; 4.9d the AT's spec.
+- **Next:** PLAN 4.9a.
+
+## 2026-10-12 — PLAN 4.9a: a refused order says why (ADR-298)
+
+- **Done:** `RejectReason` in `MoveRejected`'s x (y NaN): aboard, no formation of the order's kind,
+  no way by land, a march barred; by sea no port, no transports, no landing, no sea way; a
+  fleet's no water. `tryLanding` gives the landing's reason. SPEC §5 (orders) says so.
+- **Seen:** a refused order over the sea near this land's coast snaps to a march (Calais from
+  Portsmouth with no transports: Dover), silent; for 4.9b and 4.9c.
+- **Tests:** `rejectReasons1938.test.ts` (5).
+- **The pin** holds (events are not state).
+- **The gate:** the related unit tests (129 files, 859 tests), red only by two timing tests of
+  BLOCKERS (`snapshot-perf`, the `scenario1938` build); the pin, build and parity green by hand.
+- **Next:** PLAN 4.9b.
+
+## 2026-10-13 — PLAN 4.9b: a player's order over the sea from inland goes by a port (ADR-299)
+
+- **Done:** `transportsPort`, `world.seaBound` (saved): a player's order over the sea refused for
+  no port or no transports marches to the nearest port with transports with room and embarks at
+  the march's end, or says why. A formation is at a port by its city or its water (the critic's
+  London case: the water 7.5 cells down the Thames), at the first with transports for it. The
+  AI's orders as before. SPEC §6.2 says so.
+- **Tests:** `seaBound1938.test.ts` (4); `rejectReasons1938.test.ts` (NoPort by the AI's order).
+- **The pin moves** 8622df0d → c0a89199 (the AI's landings from such ports).
+- **The gate:** the related unit tests (126 files, 827 tests), red by two timing tests of
+  BLOCKERS and `movement.test.ts`'s "no land route to Britain", whose player's command now goes
+  by sea: its march is now ordered as the AI's (still refused), and the command checked to go by
+  a port (ADR-299); the file then 34 of 34; the pin, lint, build and parity green by hand.
+- **Next:** PLAN 4.9c.
+
+## 2026-10-13 — PLAN 4.9c: the page says what became of a player's order (ADR-300)
+
+- **Done:** the worker's `orderNews` (at once, for the formations a player ordered): a refusal
+  with its reason, a landing thrown back, troops ashore away from the target. The ticker shows
+  the last 4 below its events (a click flies to the formation and forgets the row), the
+  formation's panel its last. SPEC §8 (the ticker) says so.
+- **Tests:** `serverOrderNews.test.ts` (2), `orderNews1938.spec.ts` (1, run by hand: 28 s).
+- **The pin:** the sim is not changed.
+- **The gate:** first red by the two HUD tests' stub clients, which lacked the new listener
+  (`onOrderNews` added to both; no assertion changed); then the related unit tests 284 of 285, red
+  only by `snapshot-perf` of BLOCKERS; the pin, build, the new spec and parity green by hand. By
+  hand too: `ticker1938` and `formationPanel1938`, 7 of 8, red only by the ticker's 1,100 px test
+  of BLOCKERS.
+- **Next:** PLAN 4.9d.
+
+## 2026-10-13 — PLAN 4.9 done: a player can invade, and a refused order says why (4.9d, ADR-301)
+
+- **Done:** `invasion1938.spec.ts`, the AT: Britain played, at war with Germany, a division in
+  London ordered onto Cuxhaven embarks, a second order aboard is refused and told, the voyage is
+  thrown back and the troops brought ashore on the Thames, both told; then no water by the target,
+  a fleet onto land, a fleet to the Caspian, no transports, each told within a second.
+- **Found by the spec, mended:** a refused order made the worker forget the order it replaced
+  (the voyage then went untold); no port of its land with transports was told "no port" where
+  the nation has ports (now "no transports"; "no port" where it holds none).
+- **PARITY:** additions row 3 (the player's invasion).
+- **Tests:** `invasion1938.spec.ts`, `orderNews1938.spec.ts` (2 passed, 1.4 min, by hand);
+  `serverOrderNews.test.ts`, `seaBound1938.test.ts`, `rejectReasons1938.test.ts` (11).
+- **The gate:** the related unit tests (113 files, 735 tests), red only by two timing tests of
+  BLOCKERS; the pin (c0a89199) and build green by hand.
+- **Next:** PLAN 4.10.
+
+## 2026-10-13 — PLAN 4.10 split into parts (documents)
+
+- **Found:** on seed 6131 (the critic's war) the sim fires at sea (28 naval shots in hour 41) and
+  the page draws them (11 to 23 in a battle's hour, stepped). At ×1 a five-hour battle passes in
+  five seconds, its shots in a part of each hour; the critic's samples (and this container's, 2
+  of 100) mostly missed them. Nothing stands for a sea battle on the map while it lasts. Parts:
+  4.10a a fleet's counter, 4.10b a sea battle's mark and view, 4.10c the sea-control legend,
+  4.10d the AT's specs.
+- **Next:** PLAN 4.10a.
+
+## 2026-10-13 — PLAN 4.10a: a fleet's counter at T0 is a navy's (ADR-302)
+
+- **Done:** fleets are counters of their own (`NAVAL` added to the nation for the clustering and
+  the declutter), drawn sea-blue with a light frame and a hull under the strength. SPEC §8 says so.
+- **Tests:** `navalCounter1938.spec.ts` (18 s); by hand `declutter1938`, `counters1938`,
+  `flagsClear1938`, 4 of 4.
+- **The pin:** the sim is not changed.
+- **The gate:** green (the related unit tests, 20 of 20; the new spec).
+- **Next:** PLAN 4.10b.
+
+## 2026-10-13 — PLAN 4.10b: a sea battle is seen while it lasts (ADR-303)
+
+- **Done:** the snapshot's `seas`; a mark for each sea battle at T0 to T2 (disc, crossed guns,
+  a ring round its fleets); the ticker lists the battles going on, a click flies to both fleets
+  at T2. SPEC §8 says so.
+- **Tests:** `seaBattleSeen1938.spec.ts` (1.5 min, by hand); by hand `seaBattle1938`, `ticker1938`,
+  `navalDemo1938`, 5 of 6, red only by the ticker's 1,100 px test of BLOCKERS.
+- **The pin:** the sim is not changed.
+- **The gate:** the related unit tests 284 of 285, red only by `snapshot-perf` (2.05 to 2.38 ms
+  with the `seas` of the snapshot, 2.72 to 2.79 ms at HEAD, three runs each); the pin, build and
+  parity green by hand.
+- **Next:** PLAN 4.10c.
+
+## 2026-10-13 — PLAN 4.10c: the sea-control mode says whose (ADR-304)
+
+- **Done:** the zones' sea names sent with them; the legend lists the holders in their colours
+  with their zones, and names the zone under the cursor with its holder. SPEC §8 says so.
+- **Tests:** `seaLegend1938.spec.ts` (23 s); by hand `seaControl1938`, `mapModes1938` (2 of 2).
+- **The pin:** the sim is not changed.
+- **The gate:** the related unit tests 284 of 285, red only by `snapshot-perf` of BLOCKERS (the
+  snapshot is not changed here); the pin, build and parity green by hand.
+- **Next:** PLAN 4.10d.

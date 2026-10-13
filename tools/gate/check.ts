@@ -6,6 +6,7 @@
  *   no sim input changed                                             → everything but the 10-year sweep tests
  *   otherwise                                                        → everything, the sweep stage the pin alone
  *   a phase review ticked (`- [x] 4.8 Phase 4 review`)               → everything, every sweep test
+ *   … on code a green `npm run check:review` ran on (ADR-297)          → as if none were ticked
  *
  * Of the unit stage (ADR-280, ADR-293, the user's decisions): all of it when the change ticks a
  * phase review (not a numbered task: ADR-293), when git cannot tell what changed, under FULL, or when
@@ -34,6 +35,7 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { tickedReviews } from './criticDue';
+import { reviewProven } from './review';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const STAMP_DIR = path.join(ROOT, '.cache/gate');
@@ -240,8 +242,14 @@ function main(): void {
   }
   const atHead = spawnSync('git', ['show', 'HEAD:PLAN.md'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
   const planAtHead = atHead.status === 0 && !atHead.error && planNow !== '' ? atHead.stdout : null;
-  const review = reviewTicked(planNow, planAtHead);
-  const ticks = newTicks(planNow, planAtHead);
+  // A phase review's tick whose code a green `npm run check:review` proved (ADR-297): a commit as
+  // any other, its full run already done on this code.
+  const ticked = reviewTicked(planNow, planAtHead);
+  const proof = ticked && !process.env['FULL'] ? reviewProven() : null;
+  if (proof) console.log(`gate: a phase review ticked: ${proof.why}`);
+  const review = ticked && !proof?.proven;
+  const planBefore = proof?.proven ? planNow : planAtHead;
+  const ticks = newTicks(planNow, planBefore);
   const stages = planGate(files, head !== null && gatedTrees().includes(head), review);
   const sweep = planSweep(files, review);
   if (stages.length === 0) {
@@ -254,7 +262,7 @@ function main(): void {
   // The e2e stage in full only when a numbered task is ticked (ADR-87); a spec that changed is run.
   let e2e: E2ePlan = { mode: 'full', specs: [], why: '' };
   if (stages.includes('e2e') && !process.env['FULL']) {
-    e2e = planE2e(files, planNow, planAtHead);
+    e2e = planE2e(files, planNow, planBefore);
     e2e.specs = e2e.specs.filter((f) => existsSync(path.join(ROOT, f)));
     if (e2e.mode === 'changed' && e2e.specs.length === 0) e2e.mode = 'none';
     if (e2e.mode === 'none') stages.splice(stages.indexOf('e2e'), 1);

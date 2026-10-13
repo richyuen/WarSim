@@ -7136,3 +7136,231 @@ Of 4.8 (open in PLAN.md):
     division is aboard British transports (`.cache/read10/reuse2.ts`; God Mode remove and
     spawn, or transports sunk at 23:00 and a delivery at 00:00). `destroyFormation` clears it
     (as key and as fleet). A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a
+    neutral's, and past an enemy-held sea: an order to Calais, then the transports sent to
+    Wilhelmshaven's water, takes a German beachhead (`.cache/read10/bypass.ts`); off the Dutch
+    coast it lands in the Netherlands at peace (`redirect.ts`). "Of its side or none", and the
+    sea's holder asked, as at the landing's own water. A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches:
+    22 of them (the Great Lakes, the Caspian, Lakes Victoria and Tanganyika), Iran's shipyard on
+    the Caspian (`.cache/read10/ports.ts`); a fleet that broke off or a repulsed landing then
+    has no home to sail to. Ports a ship reaches only. A test fails first.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.8 (open in PLAN.md):
+
+  - [x] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows
+    the last game's holders (the worker sends `seaControl` only while there is one) until the
+    next 00:00.
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
+  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
+  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
+  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  Split 2026-10-12, as 3.12R was: the pass is several causes, one a commit. A part is not a
+  numbered task (its gate runs the tests related to it and the specs it changed, ADR-280);
+  the last part ticks 4.8 and has every stage, the sweep tests among them (ADR-278).
+  - [x] 4.8a The independent read (ADR-74), the tenth: the 102 files of `src/`, `data/` and […]
+  - [x] 4.8b SPEC re-read for drift: each decision of Phase 4 (ADR-242 to ADR-287) looked […]
+  - [x] 4.8c Dead code and refactor debt in the files changed since `5d9f1a1`: exports […]
+  - [x] 4.8d Missing tests over the phase: each system of Phase 4 has a unit test of its rule […]
+  - [x] 4.8e What was left for this review: the lane graph's 1,956 ms at the first sail (a […]
+  - [x] 4.8f Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile` […]
+  - [x] 4.8i The tick back within its budget (4.8f: seed 99's five years 7.08 ms in this […]
+  - [x] 4.8k Two enemy submarine flotillas in contact fight a sea battle that never ends: a […]
+  - [x] 4.8l A fleet that broke off is caught again the next hour: `findSeaBattles` does not […]
+  - [x] 4.8m A formation id given out again keeps the `embarked` entry of the dead one: a […]
+  - [x] 4.8n Transports that stop elsewhere land their troops on any coast, an enemy's or a […]
+  - [x] 4.8o A fleet's nearest port and a shipyard by straight km, among ports no sea reaches: […]
+  - [x] 4.8p After a load of a save in which no zone is held, the sea-control map mode shows […]
+  - [x] 4.8g PARITY rows of Phase 4 updated with evidence (row 3 and the rows it touched).
+  - [x] 4.8h Last: `npm run check:full` (every stage, every sweep test), one
+    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
+    if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
+    critic (due after a phase review, ADR-59).
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.9 (open in PLAN.md):
+
+  - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard,
+    no land formation, no way by land, a march barred on the way; by sea: at no port of its
+    nation, no transports there with room, no water by the target, no way for the transports;
+    a fleet's: no water, no lane). Unit test of each.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.9 (open in PLAN.md):
+
+  - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest
+    port with transports that have room for it, embarks there and sails (the sea order kept
+    as state while it marches, saved). Unit test: London to the German coast; a save loaded
+    on the march.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.9 (open in PLAN.md):
+
+  - [x] 4.9c The page says what became of an order: a refused one's reason by the formation
+    and in the ticker within a second; a landing thrown back; transports that broke off and
+    brought their troops ashore elsewhere. e2e.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused
+  order says why. Seen by the critic (`critic/c4_c_2207.json`, `critic/c4_landing.log`): a
+  British division clicked onto German land with its transports 6.5 cells away did nothing for
+  20 days and said nothing (the sim emits `MoveRejected`; no code of the page reads it); the two
+  orders the sim needs (march to the port, then over the sea) sailed it to Germany and landed
+  it back in England, again silent. The critic's fix: an order over water marches to the
+  nearest port with transports, embarks and sails; a refused order says why on the screen; a
+  landing thrown back says so.
+  AT: an e2e spec: a British division in London ordered onto the German coast at war, with
+  transports at Portsmouth, marches, embarks, sails and lands (or is thrown back with a message
+  on the screen); an order the sim refuses shows its reason within a second (test of each
+  refusal kind the page can cause).
+  Split 2026-10-12 into parts, one cause a commit. Found first: the critic's two orders
+  (`critic/scripts/c4_landing.ts`, seed 2207) work as the rules say: the transports, alone,
+  were caught by the German navy off the Weser, broke off (hour 99, `FormationRetreated`) and
+  sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
+  - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard, […]
+  - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest […]
+  - [x] 4.9c The page says what became of an order: a refused one's reason by the formation […]
+  - [x] 4.9d The AT's spec (above), and the tick of 4.9.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.10 (open in PLAN.md):
+
+  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a
+    ship glyph and the navy's colour of frame. e2e: pixels of a fleet's counter differ from an
+    army's at the same zoom.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.10 (open in PLAN.md):
+
+  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed
+    guns on the water) for every battle of `world.seaBattles`, and its row in the ticker flies
+    to a view of both fleets. e2e: the first battle of seed 6131's war is marked through its
+    hours, and the view from its row has both fleets and draws their fire within its hours.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.10 (open in PLAN.md):
+
+  - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the
+    zone under the cursor named with its holder. e2e.
