@@ -5,7 +5,7 @@
  * side's share of the power of its side and its enemies there: 0 to 1, a half where neither
  * flew. Read by the rules of PLAN 5.4 and 5.5.
  */
-import type { World } from '../world';
+import { airOf, type World } from '../world';
 import { elementIndex } from './elements';
 
 /** What is left of an hour's air power after an hour: a half-life of 24 hours (0.5^(1/24)). */
@@ -72,6 +72,20 @@ export const AIR_SUPPLY = 0.5;
  * it) × (1 + AIR_DETECTION × (2s − 1)), s its nation's superiority in its air zone.
  */
 export const AIR_DETECTION = 0.25;
+
+/**
+ * The air's factor on a strike's bombs (PLAN 5.8t3): its fire on the enemy's elements and its tons
+ * on industry and ports × (1 + AIR_STRIKE × (2s − 1)), s its nation's superiority in the air
+ * zone of its target.
+ */
+export const AIR_STRIKE = 0.25;
+
+/** `AIR_STRIKE`'s factor for wing `wing`'s strike at (x, y): 1 where no one has flown. */
+export function strikeFactor(world: World, wing: number, x: number, y: number): number {
+  if (world.airPower.size === 0) return 1;
+  const zone = airOf(world).zoneOf[Math.min(world.cells.h - 1, Math.floor(y)) * world.cells.w + Math.floor(x)]!;
+  return 1 + AIR_STRIKE * (2 * airSuperiority(world, world.formations.cols.nation[wing]!, zone) - 1);
+}
 
 /** An air zone's holder in `airHolders` where two sides at war fly and neither holds it. */
 export const AIR_CONTESTED = 0xffff;

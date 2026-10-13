@@ -15030,3 +15030,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (908 of 911) red only by the three timing tests of
   BLOCKERS (2,811 ms, 2.19 ms, 25.6 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8t3.
+
+## 2026-10-13 — PLAN 5.8t3: air superiority on a strike (ADR-347)
+
+- **Done:** `strikes` and `bombIndustry` take the strike's fire and tons × `strikeFactor` (1 +
+  `AIR_STRIKE` × (2s − 1)). PLAN 5.8t done.
+- **Tests:** `airStrikeSuperiority1938` (2, new; failed before).
+- **The pin moves** 675ec86f → 048c4760.
+- **The gate:** the related unit tests (911 of 913) red only by two timing tests of BLOCKERS
+  (2,995 ms, 2.30 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u.

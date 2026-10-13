@@ -14,6 +14,7 @@
  */
 import type { World } from '../world';
 import { cellX, elementIndex, wrapDx } from './elements';
+import { strikeFactor } from './airSuperiority';
 
 /** $M of a year's industrial output a ton of bombs puts out of work. */
 export const BOMB_DAMAGE = 2;
@@ -45,6 +46,8 @@ export function bombIndustry(world: World, wing: number, tx: number, ty: number)
   let tons = 0;
   for (const e of elementIndex(world).get(wing) ?? []) tons += ec.strength[e]! * rules.units[ec.unit[e]!]!.bombT;
   if (tons === 0) return 0;
+  // Under its side's air more fall where they are aimed, under the enemy's fewer (PLAN 5.8t3).
+  tons *= strikeFactor(world, wing, tx, ty);
   const { w, h, controller, econ } = world.cells;
   const nation = world.formations.cols.nation[wing]!;
   bombPorts(world, nation, tons, tx, ty);

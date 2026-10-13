@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-347 · 2026-10-13 · accepted — Air superiority on a strike (PLAN 5.8t3)
+
+- **Found** (5.8b): SPEC §6.3 has the air on bombing; a strike struck as hard under the enemy's
+  air as under its own (only the air battle and the flak read the enemy).
+- **Decision.** A strike's fire on the enemy's elements (land and ships) and its tons on
+  industry and ports × (1 + `AIR_STRIKE` × (2s − 1)) (`strikeFactor`), s its nation's air
+  superiority in the air zone of its target: `AIR_STRIKE` 0.25, so 1.25 under its side's air,
+  0.75 under the enemy's, 1 at a half and where no one flew. What the tons damage is by the tons,
+  capped at `MAX_DAMAGE` a cell as before. This closes PLAN 5.8t (t1 supply, t2 detection).
+- **The pin moves** 675ec86f → 048c4760.
+- **Tests.** `airStrikeSuperiority1938` (2, new; both failed before): a close support group's
+  strike on a Polish division takes × 1.25 under Germany's air, × 0.75 under Poland's, as much
+  under none and Sweden's; a tactical bomber group's tons on industry the same.
+
 ### ADR-346 · 2026-10-13 · accepted — Air superiority on a fleet's detection (PLAN 5.8t2)
 
 - **Found** (5.8b): SPEC §6.3 has the air on naval detection; a fleet saw as far under the

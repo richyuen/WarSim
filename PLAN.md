@@ -51,7 +51,7 @@ quick sweep as a smoke test.
   - [x] 5.8s2 The economic AI keeps its air force, a share of its army's upkeep. Until then a […]
   - [x] 5.8t1 Air superiority's other effects (SPEC §6.3, found by 5.8b), each a factor of the […]
   - [x] 5.8t2 The same on a fleet's detection.
-  - [ ] 5.8t3 The same on a strike's bombs.
+  - [x] 5.8t3 The same on a strike's bombs.
   - [ ] 5.8u The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut
     off, a paradrop of a formation from an airbase within range.
   - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).

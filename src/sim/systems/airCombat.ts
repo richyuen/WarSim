@@ -14,6 +14,7 @@ import { seaKm } from './navalCombat';
 import { bombIndustry } from './bombing';
 import { ARMOR_PEN, effectiveness } from './combat';
 import { Leg, legHours, sortieAt } from './sorties';
+import { strikeFactor } from './airSuperiority';
 
 /** The share of an aircraft's air attack that is hit points on a target of defence 1 in an hour. */
 export const AIR_FIRE = 0.25;
@@ -303,12 +304,13 @@ export function strikes(world: World): void {
     const health = targets.map((t) => ec.strength[t]! * rules.units[ec.unit[t]!]!.hpPerUnit);
     const total = health.reduce((a, b) => a + b, 0);
     const loss = new Map<number, number>();
+    const air = strikeFactor(world, id, s.tx, s.ty);
     for (const e of index.get(id) ?? []) {
       const us = rules.units[ec.unit[e]!]!;
       targets.forEach((t, k) => {
         const ut = rules.units[ec.unit[t]!]!;
         const fire = ut.domain === Domain.sea ? shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE : effectiveness(us, ut) * STRIKE_FIRE;
-        const units = (ec.strength[e]! * fire * health[k]!) / total / ut.hpPerUnit;
+        const units = (ec.strength[e]! * fire * air * health[k]!) / total / ut.hpPerUnit;
         if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
       });
     }
