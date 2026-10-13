@@ -54,7 +54,7 @@ import { SIDE_SHIPS } from '../../shared/history';
 import { nearestCellWhere } from '../data/ownership';
 import { basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
 import { orderSail } from './sail';
-import { applyLoss, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
+import { applyLoss, elementIndex, elementPlace, loopW, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
 import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
@@ -85,7 +85,7 @@ function carrierWings(world: World): Map<number, number[]> {
   for (const [wing, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     if (base >= 0 || !world.formations.has(wing)) continue;
     const s = world.sorties.get(wing);
-    if (s && sortieAt(s, world.tick, world.cells.w).leg !== Leg.Home) continue;
+    if (s && sortieAt(s, world.tick, loopW(world)).leg !== Leg.Home) continue;
     const list = out.get(-base);
     if (list) list.push(wing);
     else out.set(-base, [wing]);

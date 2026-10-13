@@ -13,7 +13,7 @@
  * (`portShut`): its transports embark no one, its yard delivers no fleet.
  */
 import type { World } from '../world';
-import { elementIndex } from './elements';
+import { cellX, elementIndex, wrapDx } from './elements';
 
 /** $M of a year's industrial output a ton of bombs puts out of work. */
 export const BOMB_DAMAGE = 2;
@@ -56,7 +56,9 @@ export function bombIndustry(world: World, wing: number, tx: number, ty: number)
     const y = cy + dy;
     if (y < 0 || y >= h) continue;
     for (let dx = -BOMB_CELLS; dx <= BOMB_CELLS; dx++) {
-      const c = y * w + ((((cx + dx) % w) + w) % w);
+      const x = cellX(world, cx + dx);
+      if (x === null) continue;
+      const c = y * w + x;
       if (econ[c] === 0 || !world.wars.atWar(nation, controller[c]!)) continue;
       cells.push(c);
       total += econ[c]!;
@@ -74,8 +76,7 @@ function bombPorts(world: World, nation: number, tons: number, tx: number, ty: n
   const cx = Math.floor(tx);
   const cy = Math.floor(ty);
   world.ports.forEach((p, i) => {
-    let dx = Math.abs((p.cell % w) - cx);
-    if (dx > w / 2) dx = w - dx;
+    const dx = Math.abs(wrapDx(world, cx, p.cell % w));
     if (dx > BOMB_CELLS || Math.abs(Math.floor(p.cell / w) - cy) > BOMB_CELLS) return;
     if (!world.wars.atWar(nation, controller[p.cell]!)) return;
     world.portDamage.set(i, Math.min(MAX_DAMAGE, (world.portDamage.get(i) ?? 0) + tons / (PORT_TONS * Math.max(1, p.port))));

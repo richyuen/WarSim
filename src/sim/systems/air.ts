@@ -12,7 +12,7 @@ import { airbaseRoom } from '../data/airbases';
 import { airCombat, antiAir, strikes } from './airCombat';
 import { airPowerSystem } from './airSuperiority';
 import { repairSystem } from './bombing';
-import { destroyFormation } from './elements';
+import { destroyFormation, loopW, wrapDx } from './elements';
 import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
 import { blocOf } from './supply';
@@ -79,7 +79,7 @@ export function airborne(world: World, t: number): Map<number, number[]> {
   const w = world.cells.w;
   const out = new Map<number, number[]>();
   for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
-    const p = sortieAt(s, t, w);
+    const p = sortieAt(s, t, loopW(world));
     if (p.leg === Leg.Home) continue;
     const zone = zones[Math.min(world.cells.h - 1, Math.floor(p.y)) * w + Math.floor(p.x)]!;
     const list = out.get(zone);
@@ -156,12 +156,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   const c = world.formations.cols;
   const nation = c.nation[id]!;
   const bloc = blocOf(world, nation);
-  const w = world.cells.w;
-  const near = (px: number, py: number): boolean => {
-    let dx = Math.abs(px - x);
-    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
-    return dx <= BASE_PICK_CELLS && Math.abs(py - y) <= BASE_PICK_CELLS;
-  };
+  const near = (px: number, py: number): boolean => Math.abs(wrapDx(world, x, px)) <= BASE_PICK_CELLS && Math.abs(py - y) <= BASE_PICK_CELLS;
   const need = wingAircraft(world, c.template[id]!);
   const used = (base: number): { aircraft: number; wings: number } => {
     let aircraft = 0;

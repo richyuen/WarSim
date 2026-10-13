@@ -115,13 +115,6 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 
 ## Watch list (not blocking)
 
-- **The eleventh independent read (PLAN 5.8a, 2026-10-13), not a part:** on a map that does not
-  loop east–west (`loopingMap` off: the random world's, an import's), the air's paths still wrap:
-  bombs and flak near one edge fall on cells of the other (`bombing.ts` `bombIndustry`,
-  `airCombat.ts` `antiAir`), and a sortie's place and heading take the short way round an edge
-  that is not there (`sortieAt` given `cells.w`; `render/units/sorties.ts`). Only sorties within
-  range of an edge; the 1938 world loops.
-
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**
   - the economic AI lays up a standing fleet without asking `world.embarked`: transports with
     troops aboard, standing where they stopped, would go with the troops at the next hour;

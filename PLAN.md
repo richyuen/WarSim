@@ -34,8 +34,7 @@ quick sweep as a smoke test.
   numbered task; the last part ticks 5.8 after `npm run check:review` (ADR-297).
   - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and […]
   - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326) […]
-  - [ ] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
-    reads, code no path reaches, a rule written twice.
+  - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing […]
   - [ ] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule
     and its save; a gap found is a test added (one that fails first where it finds a defect).
   - [ ] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's

@@ -9,7 +9,7 @@
  */
 import { EventKind } from '../../shared/events';
 import { Domain, type UnitRule, type World } from '../world';
-import { applyLoss, elementIndex, settleFormation } from './elements';
+import { applyLoss, cellX, elementIndex, loopW, settleFormation, wrapDx } from './elements';
 import { seaKm } from './navalCombat';
 import { bombIndustry } from './bombing';
 import { ARMOR_PEN, effectiveness } from './combat';
@@ -50,7 +50,7 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
     if (wings.length < 2) continue;
     // Who meets whom (PLAN 5.7d): a zone is wide, and a sortie fights only the enemy's sorties
     // within `INTERCEPT_KM` of it this hour.
-    const at = wings.map((id) => sortieAt(world.sorties.get(id)!, world.tick, world.cells.w));
+    const at = wings.map((id) => sortieAt(world.sorties.get(id)!, world.tick, loopW(world)));
     const foesOf = wings.map((a, i) => wings.filter((b, j) => world.wars.atWar(fc.nation[a]!, fc.nation[b]!) && seaKm(world, at[i]!.x, at[i]!.y, at[j]!.x, at[j]!.y) <= INTERCEPT_KM));
     // The fights: wings joined by such meetings (each its lowest id's).
     const root = new Map<number, number>();
@@ -109,7 +109,7 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
       const now = aircraftOf(world, id);
       lost += was - now;
       const s = world.sorties.get(id);
-      const p = s && sortieAt(s, world.tick, world.cells.w);
+      const p = s && sortieAt(s, world.tick, loopW(world));
       settleFormation(world, id);
       if (!world.formations.has(id) || now === 0) continue;
       if (p && p.leg !== Leg.Back && was - now >= BREAK_OFF * was) turnHome(world, id);
@@ -125,21 +125,20 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
  */
 export function fightPlace(world: World, wings: readonly number[]): { x: number; y: number } {
   const fc = world.formations.cols;
-  const w = world.cells.w;
-  const at = wings.map((id) => sortieAt(world.sorties.get(id)!, world.tick, w));
+  const lw = loopW(world);
+  const at = wings.map((id) => sortieAt(world.sorties.get(id)!, world.tick, lw));
   let best = { x: at[0]!.x, y: at[0]!.y };
   let bd = Infinity;
   for (let i = 0; i < wings.length; i++) {
     for (let j = i + 1; j < wings.length; j++) {
       if (!world.wars.atWar(fc.nation[wings[i]!]!, fc.nation[wings[j]!]!)) continue;
-      let dx = at[j]!.x - at[i]!.x;
-      if (dx > w / 2) dx -= w;
-      else if (dx < -w / 2) dx += w;
+      const dx = wrapDx(world, at[i]!.x, at[j]!.x);
       const dy = at[j]!.y - at[i]!.y;
       const d = dx * dx + dy * dy;
       if (d < bd) {
         bd = d;
-        best = { x: (((at[i]!.x + dx / 2) % w) + w) % w, y: at[i]!.y + dy / 2 };
+        const x = at[i]!.x + dx / 2;
+        best = { x: lw > 0 ? ((x % lw) + lw) % lw : x, y: at[i]!.y + dy / 2 };
       }
     }
   }
@@ -152,7 +151,7 @@ export function fightPlace(world: World, wings: readonly number[]): { x: number;
  */
 function turnHome(world: World, id: number): void {
   const s = world.sorties.get(id)!;
-  const p = sortieAt(s, world.tick, world.cells.w);
+  const p = sortieAt(s, world.tick, loopW(world));
   const km = seaKm(world, s.bx, s.by, p.x, p.y);
   world.sorties.set(id, { bx: s.bx, by: s.by, tx: p.x, ty: p.y, launch: world.tick - (s.kmh > 0 ? km / s.kmh : 0), kmh: s.kmh, km, over: 0 });
 }
@@ -185,7 +184,7 @@ export function antiAir(world: World): void {
   const above = new Map<number, number[]>();
   for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
     if (!world.formations.has(id)) continue;
-    const p = sortieAt(s, world.tick, w);
+    const p = sortieAt(s, world.tick, loopW(world));
     if (p.leg === Leg.Home) continue;
     const cell = Math.min(h - 1, Math.floor(p.y)) * w + Math.floor(p.x);
     const list = above.get(cell);
@@ -203,7 +202,8 @@ export function antiAir(world: World): void {
       const y = gy + dy;
       if (y < 0 || y >= h) continue;
       for (let dx = -AA_CELLS; dx <= AA_CELLS; dx++) {
-        const x = (((gx + dx) % w) + w) % w;
+        const x = cellX(world, gx + dx);
+        if (x === null) continue;
         for (const id of above.get(y * w + x) ?? []) if (world.wars.atWar(fc.nation[g]!, fc.nation[id]!)) targets.push(id);
       }
     }
@@ -234,7 +234,7 @@ export function antiAir(world: World): void {
   }
   for (const id of [...hit].sort((a, b) => a - b)) {
     // Its flak, where it flies (PLAN 5.7b: a picture, not state).
-    const p = sortieAt(world.sorties.get(id)!, world.tick, w);
+    const p = sortieAt(world.sorties.get(id)!, world.tick, loopW(world));
     world.out.emit(world.tick, EventKind.FlakFired, id, fc.nation[id]!, p.x, p.y);
     settleFormation(world, id);
   }
@@ -274,7 +274,6 @@ export function strikes(world: World): void {
   const rules = world.rules!;
   const ec = world.elements.cols;
   const fc = world.formations.cols;
-  const w = world.cells.w;
   const h = world.cells.h;
   const index = elementIndex(world);
   for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
@@ -288,8 +287,7 @@ export function strikes(world: World): void {
     world.formations.forEach((g) => {
       // The land's formations, and fleets (PLAN 5.4c); not wings, nor what is aboard a fleet.
       if (world.isWing(g) || world.embarked.has(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) return;
-      let dx = Math.abs(Math.floor(fc.x[g]!) - tx);
-      if (dx > w / 2) dx = w - dx;
+      const dx = Math.abs(wrapDx(world, tx, Math.floor(fc.x[g]!)));
       const dy = Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty);
       if (dx > AA_CELLS || dy > AA_CELLS) return;
       // A submarine is under water: no strike's target, as no gun's (PLAN 5.6 found it sunk from the air).

@@ -7843,3 +7843,20 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326)
     against SPEC's text; what it says that the code does not, or the other way, set right.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
+    reads, code no path reaches, a rule written twice.

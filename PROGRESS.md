@@ -14857,3 +14857,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   §6.3 not built: wings built, air superiority's other effects, the transports' missions: parts
   5.8s, 5.8t, 5.8u.
 - **Next:** PLAN 5.8c.
+
+## 2026-10-13 — PLAN 5.8c: dead code and refactor debt (ADR-329)
+
+- **Done:** no dead export found. The air's east–west wrap, hand-rolled in six places (two asking
+  whether the map loops), now `wrapDx`, `cellX` and `loopW`; the watch list's entry of 5.8a mended
+  with it.
+- **Tests:** `airEdges.test.ts` (2).
+- **The pin holds** at 28d6b82d.
+- **The gate:** the related unit tests (886 of 889) red only by the three timing tests of
+  BLOCKERS (3,124 ms, 2.73 ms, 29.1 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8d.

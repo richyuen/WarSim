@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-329 · 2026-10-13 · accepted — Dead code and refactor debt since the last review: the air's wrap written once (PLAN 5.8c)
+
+- **Dead code:** none. Of the exports of the 71 files changed since `deafedf`, every function and
+  constant is read (in its own file, in another, or in a test); exported constants and types read
+  only in their own file are the repository's habit (a rule's figures named and found), left so.
+- **A rule written five times:** the east–west wrap of a cell distance was hand-rolled in the
+  air's code (`strikes`, `antiAir`, `bombIndustry`, `bombPorts`, `orderRebase`, `fightPlace`),
+  and only two of them asked whether the map loops. Now `wrapDx` (elements.ts, already the land's),
+  and beside it `cellX` (a column of the grid, wrapped where the map loops, none off the edge of one
+  that does not) and `loopW` (the width a sortie's flight wraps by: 0 where the map does not loop),
+  given to every `sortieAt` of the sim; the page's sorties wrap by `geo.wrapX`.
+- **The watch list's entry of 5.8a** (bombs, flak and flights wrapping on a map that does not
+  loop) is mended by it and leaves the list.
+- **The pin holds** at 28d6b82d: the 1938 world loops.
+- **Tests.** `airEdges.test.ts`: bombs by the west edge reach the east edge's cells where the map
+  loops and not where it does not (failed before); `cellX` and `loopW` both ways.
+
 ### ADR-328 · 2026-10-13 · accepted — SPEC re-read for drift since the last review; three gaps of Phase 5 (PLAN 5.8b)
 
 - **Set right in SPEC §6.3:** the air zones are read (5.1a said by nothing); wings exist from the

@@ -116,6 +116,16 @@ export interface Deployment {
  * East-west distance from a to b, the short way: over the seam where the map loops
  * (`settings.loopingMap`), and never on a map with edges (PLAN 3.12Rs).
  */
+/** The width a map wraps by east–west: its cells' where it loops, 0 where it does not (`sortieAt`'s `w`). */
+export const loopW = (world: World): number => (world.settings.loopingMap ? world.cells.w : 0);
+
+/** Column `x` of the grid: wrapped where the map loops; null off the edge of one that does not. */
+export function cellX(world: World, x: number): number | null {
+  const w = world.cells.w;
+  if (world.settings.loopingMap) return ((x % w) + w) % w;
+  return x < 0 || x >= w ? null : x;
+}
+
 export function wrapDx(world: World, ax: number, bx: number): number {
   const w = world.cells.w;
   let dx = bx - ax;

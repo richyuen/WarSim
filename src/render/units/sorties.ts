@@ -115,7 +115,8 @@ export function drawSorties(
   ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
   ctx.shadowBlur = 3;
   for (let i = 0; i + SORTIE_STRIDE <= rows.length; i += SORTIE_STRIDE) {
-    const at = sortiePlace(rows, i, t, geo.w);
+    // The short way round only where the map loops.
+    const at = sortiePlace(rows, i, t, geo.wrapX ? geo.w : 0);
     if (!at) continue;
     const role = rows[i + 10]!;
     const span = (PLANE_PX[role] ?? PLANE_PX[SortieRole.fighter]) * size;
