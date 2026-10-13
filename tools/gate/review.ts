@@ -118,28 +118,30 @@ export function runRed(red: string[], ok: boolean, stage: string): string[] {
 /** The file of a test id. */
 const fileOf = (id: string): string => id.split(' › ')[0]!;
 
-const git = (args: string[], env?: NodeJS.ProcessEnv): string | null => {
-  const r = spawnSync('git', args, { cwd: ROOT, encoding: 'utf8', env: env ?? process.env });
+const git = (args: string[], env?: NodeJS.ProcessEnv, cwd = ROOT): string | null => {
+  const r = spawnSync('git', args, { cwd, encoding: 'utf8', env: env ?? process.env });
   return r.status === 0 && !r.error ? r.stdout.trim() : null;
 };
 
-/** The code key of the working tree (see the head of the file), or null when git cannot tell. */
-export function codeTree(): string | null {
-  mkdirSync(DIR, { recursive: true });
-  const index = path.join(DIR, 'index-review');
-  const real = git(['rev-parse', '--git-path', 'index']);
+/** The code key of the working tree of the repository at `root` (see the head of the file), or null when git cannot tell. */
+export function codeTree(root = ROOT): string | null {
+  const dir = path.join(root, '.cache/gate');
+  mkdirSync(dir, { recursive: true });
+  const index = path.join(dir, 'index-review');
+  const real = git(['rev-parse', '--git-path', 'index'], undefined, root);
   try {
     // From the real index, so files that did not change are not hashed again.
     if (real === null) throw new Error();
-    copyFileSync(path.resolve(ROOT, real), index);
+    copyFileSync(path.resolve(root, real), index);
   } catch {
     rmSync(index, { force: true });
   }
   const env = { ...process.env, GIT_INDEX_FILE: index };
-  if (git(['add', '-A', '--', '.', ':!critic'], env) === null) return null;
-  // Out of the key: the documents and the list of known reds (`git rm` from the scratch index alone).
-  if (git(['rm', '-r', '-q', '--cached', '--ignore-unmatch', '--', '*.md', 'docs', KNOWN], env) === null) return null;
-  return git(['write-tree'], env);
+  if (git(['add', '-A', '--', '.', ':!critic'], env, root) === null) return null;
+  // Out of the key: the documents, the critic's files (tracked ones are in the index copied: PLAN
+  // 5.8q) and the list of known reds (`git rm` from the scratch index alone).
+  if (git(['rm', '-r', '-q', '--cached', '--ignore-unmatch', '--', '*.md', 'docs', 'critic', KNOWN], env, root) === null) return null;
+  return git(['write-tree'], env, root);
 }
 
 export function readRecord(): ReviewRecord | null {

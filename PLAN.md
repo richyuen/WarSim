@@ -45,8 +45,7 @@ quick sweep as a smoke test.
   - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next […]
   - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only): […]
   - [x] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to […]
-  - [ ] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index):
-    a critic's report committed after a review unproves it. Out of the key, as the header says.
+  - [x] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index): […]
   - [ ] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the
     industry, and an editor's change that keeps the sum keeps a stale order in a running game
     that a loaded one does not have. A test first; a key that tells such changes apart.

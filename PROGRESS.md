@@ -14969,3 +14969,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at ae18ce8c.
 - **The gate:** green (the related unit tests, 25).
 - **Next:** PLAN 5.8q.
+
+## 2026-10-13 — PLAN 5.8q: the critic's files out of the review's code key (ADR-341)
+
+- **Done:** `codeTree` removes `critic` from its scratch index with the documents; it takes a
+  repository root.
+- **Tests:** `gateReview` (1 more; failed with the old list).
+- **The pin holds** at ae18ce8c.
+- **The gate:** green (the related unit tests, 26).
+- **Next:** PLAN 5.8r.

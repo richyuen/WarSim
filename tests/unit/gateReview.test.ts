@@ -1,7 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestRed, type ReviewRecord } from '../../tools/gate/review';
+import { codeTree, E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestRed, type ReviewRecord } from '../../tools/gate/review';
 
 // ADR-297 (the user's decision): the phase review's full run is recorded by `npm run check:review`
 // under a code key, and judged against a list of known reds, so that the commit that ticks the
@@ -78,6 +80,42 @@ describe('npm run check:review (ADR-297)', () => {
     expect(runRed([], true, 'test')).toEqual([]);
     // And none of these is green against an empty list of known reds.
     expect(judge(record({ lint: [], test: v, 'e2e:1': p }), []).green).toBe(false);
+  });
+
+  it('the code key of a repository: the same after a commit of the critic\'s files or the documents, tracked or not; another after code (PLAN 5.8q)', () => {
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'review-key-'));
+    try {
+      const git = (...args: string[]): void => {
+        const r = spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...args], { cwd: dir, encoding: 'utf8' });
+        expect(r.status, r.stderr).toBe(0);
+      };
+      const put = (file: string, text: string): void => {
+        mkdirSync(path.dirname(path.join(dir, file)), { recursive: true });
+        writeFileSync(path.join(dir, file), text);
+      };
+      git('init', '-q');
+      put('.gitignore', '.cache/\n');
+      put('src/a.ts', 'export const a = 1;\n');
+      put('critic/CRITIC_REPORT.json', '{}\n');
+      put('README.md', 'one\n');
+      git('add', '-A');
+      git('commit', '-q', '-m', 'one');
+      const key = codeTree(dir);
+      expect(key).not.toBeNull();
+      // A critic's report changed, not committed; then committed: the same key.
+      put('critic/CRITIC_REPORT.json', '{"verdict":1}\n');
+      expect(codeTree(dir)).toBe(key);
+      git('add', '-A');
+      git('commit', '-q', '-m', 'critic');
+      expect(codeTree(dir)).toBe(key);
+      put('README.md', 'two\n');
+      git('commit', '-q', '-am', 'docs');
+      expect(codeTree(dir)).toBe(key);
+      put('src/a.ts', 'export const a = 2;\n');
+      expect(codeTree(dir)).not.toBe(key);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it('the list of known reds: each test once, of a file that exists, with why it is there', () => {

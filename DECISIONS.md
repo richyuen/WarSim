@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-341 · 2026-10-13 · accepted — The critic's files out of the review's code key (PLAN 5.8q)
+
+- **Found** (the eleventh read): `codeTree` left `critic/` out of its `git add` but not out of
+  the scratch index it copies from the real one: the critic's tracked files stayed in the key,
+  and a report committed after a review unproved it, against the head of `review.ts`.
+- **Decision.** `critic` joins the documents in the `git rm --cached` of the scratch index.
+  `codeTree` takes the repository's root (the working tree's by default), for its test.
+- **The pin holds:** the gate's, no rule.
+- **Tests.** `gateReview` (1 more): in a repository made for it, the key is the same after the
+  critic's report changes, committed or not, and after a document; another after code. With
+  the old list it failed at the critic's commit.
+
 ### ADR-340 · 2026-10-13 · accepted — A broken test file is red in the review (PLAN 5.8p)
 
 - **Found** (the eleventh read): `check:review` read red tests alone from the reports. A unit
