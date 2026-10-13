@@ -25,14 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.3 Air combat, interception, AA; air superiority per zone.
-  AT: outcome tests (fighters beat bombers; AA attrition rate).
-  Split 2026-10-13. Found first: sorties fly (PLAN 5.2) and nothing meets them; the aircraft's
-  `aa` (air attack) and `defense` are in the unit data and not in the rules. One cause a commit:
-  - [x] 5.3a Air combat: the sorties of nations at war in one air zone in an hour fire on each […]
-  - [x] 5.3b AA: a sortie over an enemy's ground or fleet is fired on by the AA of what is […]
-  - [ ] 5.3c Air superiority per zone per side (0–1), from the air power each side flew there,
-    kept for the rules of PLAN 5.4 and 5.5 to read; saved. Test.
 - [ ] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
   From PLAN 4.3 (2026-10-10, ADR-254): a battleship sees 18 km by the units' data, so a
   battle line sees a cruiser at 17 km and its 32 km guns hold a stand-off only where the
@@ -715,3 +707,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a […]
 - [x] 5.1 Air wings, airbases, carriers, range; air zones. […]
 - [x] 5.2 Mission scheduler + sorties as derived kinematics. […]
+- [x] 5.3 Air combat, interception, AA; air superiority per zone. […]

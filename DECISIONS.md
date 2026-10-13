@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-315 · 2026-10-13 · accepted — Air superiority per zone from the air power flown there (PLAN 5.3c)
+
+- **Decision.** `src/sim/systems/airSuperiority.ts`:
+  - *Air power* (`world.airPower`, per air zone per nation, state, saved while not empty): each
+    hour, before the air fights, what was there fades by `AIR_POWER_DECAY` (0.97153, a
+    half-life of 24 hours) and is forgotten under `AIR_POWER_FLOOR` (0.5), so a zone no one flies
+    over leaves the state; each sortie in the air adds its aircraft × their air attack (`aa`) to
+    its nation's power in its zone. A fighter group is 900 an hour, a tactical bomber group 96.
+  - `airSuperiority(world, n, zone)`: the power of `n` and the nations on its side of a war
+    (`sameSide`) over that and the power of the nations at war with it; a half where neither
+    side flew. A nation outside the wars of those flying there reckons them as no one's.
+- **Why.** SPEC §6.3: superiority per zone per side, 0 to 1, read by ground combat, supply,
+  naval detection and bombing (PLAN 5.4, 5.5). From what was flown, not from wings on their
+  bases: a wing that does not fly holds no air. A day's memory: a zone held by patrols stays
+  held between them (a patrol turns round 2 hours).
+- **The pin holds** at 1377ab88: no sortie flies in an AI game yet.
+- **Tests.** `airSuperiority1938.test.ts`: a half unflown; one side alone 1, its ally too, its
+  enemy 0, a nation outside 0.5; allies' power added, two to one; half in a day, gone in
+  twelve; in the game, German fighters over Strasbourg against French bombers: over 0.8; saved,
+  the same game.
+
 ### ADR-314 · 2026-10-13 · accepted — AA: what is below a sortie fires on it (PLAN 5.3b)
 
 - **Decision.** `antiAir`, after the hour's air fights: each sortie in the air (out, over its

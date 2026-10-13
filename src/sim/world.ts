@@ -395,6 +395,8 @@ class WorldCore implements Stateful {
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
       // The air wings' missions (PLAN 5.1e): [id, kind (0 patrol, 1 strike), x, y] each, only while there is one.
       ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : 0, m.x, m.y])) }]),
+      // The air power flown by zone (PLAN 5.3c): [zone, nation, power] each, only while there is some.
+      ...(w.airPower.size === 0 ? [] : [{ name: 'world.airPower', dtype: 'f64' as const, data: Float64Array.from([...w.airPower].sort((a, b) => a[0] - b[0]).flatMap(([z, m]) => [...m].sort((a, b) => a[0] - b[0]).flatMap(([n, p]) => [z, n, p]))) }]),
       // The air wings' sorties (PLAN 5.2b): [id, bx, by, tx, ty, launch, kmh, km, over] each, only while there is one.
       ...(w.sorties.size === 0 ? [] : [{ name: 'world.sorties', dtype: 'f64' as const, data: Float64Array.from([...w.sorties].sort((a, b) => a[0] - b[0]).flatMap(([id, o]) => [id, o.bx, o.by, o.tx, o.ty, o.launch, o.kmh, o.km, o.over])) }]),
       // The air wings' bases (PLAN 5.1d): [id, base] each, only while there is one.
@@ -443,6 +445,13 @@ class WorldCore implements Stateful {
     w.seaLinks = new Map();
     w.seaBound = new Map();
     w.wingBase = new Map();
+    w.airPower = new Map();
+    const power = sections.find((s) => s.name === 'world.airPower')?.data as Float64Array | undefined;
+    for (let at = 0; power && at < power.length; at += 3) {
+      const z = power[at]!;
+      if (!w.airPower.has(z)) w.airPower.set(z, new Map());
+      w.airPower.get(z)!.set(power[at + 1]!, power[at + 2]!);
+    }
     w.sorties = new Map();
     const sorties = sections.find((s) => s.name === 'world.sorties')?.data as Float64Array | undefined;
     for (let at = 0; sorties && at < sorties.length; at += 9) {
@@ -947,6 +956,8 @@ export class World {
    * `sortieAt`'s, never stored.
    */
   sorties = new Map<number, Sortie>();
+  /** Per air zone, per nation, the air power it flew there, fading (PLAN 5.3c, `airPowerSystem`): state, saved while not empty. */
+  airPower = new Map<number, Map<number, number>>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

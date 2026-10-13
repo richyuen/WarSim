@@ -1756,6 +1756,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   its enemies within a cell of its place, land and fleets: each element's `aa` per full element
   × 2, over the aircraft's defence; a tactical bomber group over an infantry division loses
   1.25% an hour.
+- *As built (PLAN 5.3c, ADR-315; `airSuperiority`):* per air zone per nation the air power flown
+  there (a sortie's aircraft × air attack an hour, half-life a day; `world.airPower`, saved); a
+  nation's superiority there is its side's share of its side's and its enemies' power, a half
+  where neither flew.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

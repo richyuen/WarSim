@@ -7595,3 +7595,24 @@ Of 5.3 (open in PLAN.md):
 
   - [x] 5.3b AA: a sortie over an enemy's ground or fleet is fired on by the AA of what is
     below it (land elements' and ships' `aa`). AA attrition rate test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.3 Air combat, interception, AA; air superiority per zone.
+  AT: outcome tests (fighters beat bombers; AA attrition rate).
+  Split 2026-10-13. Found first: sorties fly (PLAN 5.2) and nothing meets them; the aircraft's
+  `aa` (air attack) and `defense` are in the unit data and not in the rules. One cause a commit:
+  - [x] 5.3a Air combat: the sorties of nations at war in one air zone in an hour fire on each […]
+  - [x] 5.3b AA: a sortie over an enemy's ground or fleet is fired on by the AA of what is […]
+  - [x] 5.3c Air superiority per zone per side (0–1), from the air power each side flew there,
+    kept for the rules of PLAN 5.4 and 5.5 to read; saved. Test.

@@ -14695,3 +14695,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests red only by the three timing tests of BLOCKERS (3,600 ms,
   2.29 ms, 26.9 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.3c.
+
+## 2026-10-13 — PLAN 5.3c: air superiority per zone (ADR-315). PLAN 5.3 done
+
+- **Done:** `airPowerSystem` (the air power flown per zone per nation, half-life a day,
+  `world.airPower` saved), `airSuperiority` (a side's share, a half unflown). SPEC §6.3, PARITY.
+- **Tests:** `airSuperiority1938.test.ts` (3).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,786 ms,
+  4.10 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.4.
