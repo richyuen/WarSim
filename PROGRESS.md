@@ -14918,3 +14918,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (893 of 896) red only by the three timing tests of
   BLOCKERS (3,678 ms, 3.59 ms, 36.9 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8m.
+
+## 2026-10-13 — A sea battle is no battle of the land (ADR-337)
+
+- **Done:** found by the gate of PLAN 5.8m (`warBattle` named two fleets): `largestBattle`,
+  `warsWithBattle` and the derived `contactsOf` skip formations off the land.
+- **Tests:** `seaNotLand` (1, new; failed before).
+- **The pin holds** at 57c9ae2e.
+- **The gate:** the related unit tests (894 of 897) red only by the three timing tests of
+  BLOCKERS (3,370 ms, 2.53 ms, 30.3 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8m, its gate again.

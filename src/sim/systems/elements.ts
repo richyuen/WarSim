@@ -155,7 +155,8 @@ export function contactsOf(world: World): Map<number, number> {
   const c = world.formations.cols;
   const engaged: number[] = [];
   world.formations.forEach((id) => {
-    if (c.engaged[id] === 1) engaged.push(id);
+    // Of the land: a fleet in a sea battle is engaged too, and `findBattles` pairs none (ADR-337).
+    if (c.engaged[id] === 1 && !world.offLand(id)) engaged.push(id);
   });
   const near = new Map<number, [number, number]>();
   const note = (a: number, b: number, d: number): void => {

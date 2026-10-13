@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-337 · 2026-10-13 · accepted — A sea battle is no battle of the land (fix)
+
+- **Found** (the gate of PLAN 5.8m): `navalCombat` sets `engaged` on the fleets of a sea battle
+  after `findBattles` set it on the land's. `largestBattle` and `warsWithBattle` read every
+  engaged formation, so two fleets of a war fighting at sea with no land battle larger were named
+  its largest battle, with no block (`deployOf`: they have no contact); and `contactsOf`, worked
+  out after a load, paired fleets that `findBattles` never pairs.
+- **Decision.** The three read only formations on land (`!world.offLand`).
+- **The pin holds** at 57c9ae2e: none of the three is read by a rule.
+- **Tests.** `seaNotLand`: two fleets of a war engaged at one place: no largest battle, no war
+  said to have one, no contact (it failed before).
+
 ### ADR-335 · 2026-10-13 · accepted — Wings beyond a fleet's live carriers are lost (PLAN 5.8l)
 
 - **Found** (the eleventh read): a wing was lost only with its whole fleet. A fleet whose carriers
