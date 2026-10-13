@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-309 · 2026-10-13 · accepted — The 1938 start's air forces at their airbases and on the carriers (PLAN 5.1d)
+
+- **Decision.**
+  - *The wings.* `data/scenarios/1938/air.json` gives each nation's wings by template (198);
+    `placeWings` puts each at an airbase its nation holds, the one with the most room left that
+    holds it (ties to the lower base), in the file's order; a wing no base holds is an error of
+    the data. Each carrier of the start's fleets carries a naval bomber group (`CARRIER_WING`; 18).
+    A wing of the start stands for about three first-line groups of the record (Germany 28
+    wings, about 840 aircraft, against some 2,900 first-line in late 1938): the tick carries some
+    250 wings, not the 800 of the record.
+  - *The base* is state (`world.wingBase`, saved while not empty): an airbase's index + 1, or a
+    carrier's fleet negated. `airSystem`, hourly after the movement, keeps a carrier's wing at its
+    fleet; `destroyFormation` of the fleet marks its wings (base 0), and `airSystem` loses them.
+  - *Off the land.* `World.isWing`, `World.offLand` (afloat or a wing): the land's rules that
+    left a fleet alone (the march, supply, contact and fire, the ground held, a garrison, a major
+    battle's armies, the army's men and upkeep in the economic AI, the operational and the
+    invasion AI's orders) leave a wing alone too; `forceMen` gives a wing 0 (the air's weight
+    comes with its war). The naval uses keep `afloat`.
+  - *Not drawn yet.* The snapshot leaves the wings out (and their elements) until the air's
+    visuals (PLAN 5.7): the renderers have no aircraft yet.
+  - *The airbases' levels* (ADR-308) did not hold the forces (Germany's four bases 450 aircraft
+    for 840): a capital is now of level 4, a city of size 5 of 3, a station by hand of 4 or 5,
+    and four stations more (Jüterbog, Gütersloh, Aviano, Lipetsk).
+- **The pin moves** c0a89199 → 1377ab88 (the wings are rows of the formations' table and paid).
+- **Found by the full unit stage, mended:**
+  - A wing stood at its airbase's place, which for a coastal city can be the water beside its
+    land cell: a wing now stands at its base's land cell (`cellPoint`).
+  - `isWing` and `isFleet` read rules with no templates (a test's stub) as none.
+  - The headless runner's names of the systems: `air` after `amphibious`.
+- **Tests that read the army as all that is not afloat** now read it as not off the land (a wing
+  is no part of it, as a fleet is not): `startArmies`, `armourWorth` (the Soviet cut, 49 → 42
+  others: the wings' upkeep is paid as well), `stats`, `coast1938`, the movement test of 55 days,
+  `navyWeight1938`, `fleets1938` (the wings are the last rows; the statistics' men), `economy`
+  (19 nations start with a year of their army's costs, 18 before), `scenario1938` (the rows: the
+  land's, the fleets, the wings), `headless` (29 systems).
+- **Tests whose rolls moved with the ids** (a hit is rolled by its shooter's element id, and the
+  wings shift the ids of what a test makes after the start): `navalBattle1938`'s world from seed
+  4301 to 4302 (4302 to 4306 all pass; on 4301 a flotilla went from 4 destroyers to none in one
+  hour, and a submarine flotilla lost none in 3); `terrainCombat`'s forest-against-plains
+  comparison over 96 hours, not 48 (the same band: 0.7108 at 48 was its noise; 0.722 to 0.725
+  over 72 to 144).
+- **Tests.** `wings1938.test.ts`: the counts by nation and template, every wing at a base of its
+  nation's within its room, a group on each carrier, the templates' upkeep; a month on, every
+  wing at its base, whole, never moving or engaged; a carrier sunk takes its wings; a save loads
+  with the same hash.
+
 ### ADR-308 · 2026-10-13 · accepted — Airbases: the capitals, the large cities and the main air stations (PLAN 5.1c)
 
 - **Decision.** An airbase is static data of the scenario, as a port is (`world.airbases`,

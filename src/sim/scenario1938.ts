@@ -17,6 +17,7 @@ import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'jso
 import fleets1938 from '../../data/scenarios/1938/fleets.json' with { type: 'json' };
 import ports1938 from '../../data/scenarios/1938/ports.json' with { type: 'json' };
 import airbases1938 from '../../data/scenarios/1938/airbases.json' with { type: 'json' };
+import air1938 from '../../data/scenarios/1938/air.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
@@ -46,6 +47,7 @@ import type { CityDef, PlacedCity } from './data/cities';
 import { placeFleets, type FleetGroup } from './data/fleets';
 import { placePorts, portWater, type PortRules } from './data/ports';
 import { placeAirbases, type AirbaseRules } from './data/airbases';
+import { placeWings, type WingGroup } from './data/wings';
 import { templateStrength, type OobGroup, type PlacedFormation, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
@@ -281,6 +283,10 @@ export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
 export const PORTS_1938 = ports1938 as unknown as PortRules;
 /** The airbases of the 1938 scenario (PLAN 5.1c). */
 export const AIRBASES_1938 = airbases1938 as unknown as AirbaseRules;
+/** The air forces of the 1938 start (PLAN 5.1d). */
+export const AIR_1938 = air1938.groups as WingGroup[];
+/** Each carrier of a fleet of the start carries a wing of this template (PLAN 5.1d). */
+export const CARRIER_WING = 'naval_bomber_group';
 /** The fleets of the 1938 start (PLAN 4.2b). */
 export const FLEETS_1938 = fleets1938.groups as unknown as FleetGroup[];
 
@@ -376,6 +382,44 @@ export function addFleets(world: World, groups: readonly FleetGroup[], ports: Po
     f.org[id] = 1;
     equipFormation(world, id, ti); // sets strength from the elements: a fleet's is its crews
   }
+}
+
+/**
+ * The air forces of the start as rows of the world, after the fleets (PLAN 5.1d): each wing of
+ * `groups` at its airbase (`placeWings`), at the base's place; and a `CARRIER_WING` for every
+ * carrier of each fleet, based on the fleet. Whole, in supply. It throws for a group that found
+ * no base with room.
+ */
+export function addWings(world: World, groups: readonly WingGroup[], tags: readonly string[]): void {
+  const rules = world.rules!;
+  const templateIndex = new Map(TEMPLATES_1938.map((t, i) => [t.id, i]));
+  const aircraft = (t: string): number => rules.templates[templateIndex.get(t)!]!.elements.reduce((s, e) => s + e.count * rules.units[e.unit]!.size, 0);
+  const placed = placeWings(world.airbases, world.cells.controller, groups, tags, aircraft);
+  if (placed.unplaced.length) throw new Error(`air forces: ${[...new Set(placed.unplaced)].map((i) => `${groups[i]!.nation} ${groups[i]!.template}`).join(', ')} found no airbase with room`);
+  const carrier = UNITS.findIndex((u) => u.class === 'cv');
+  const f = world.formations.cols;
+  const carried: { nation: number; fleet: number }[] = [];
+  world.formations.forEach((id) => {
+    if (!world.isFleet(id)) return;
+    for (const e of rules.templates[f.template[id]!]!.elements) if (e.unit === carrier) for (let k = 0; k < e.count; k++) carried.push({ nation: f.nation[id]!, fleet: id });
+  });
+  world.formations.reserve(world.formations.count + placed.wings.length + carried.length);
+  const make = (nation: number, template: string, x: number, y: number, base: number): void => {
+    const id = world.formations.create();
+    const ti = templateIndex.get(template)!;
+    f.nation[id] = nation;
+    f.x[id] = x;
+    f.y[id] = y;
+    f.facing[id] = 0;
+    f.template[id] = ti;
+    f.supply[id] = 1;
+    f.org[id] = 1;
+    equipFormation(world, id, ti);
+    world.wingBase.set(id, base);
+  };
+  // At its base's land cell (a coastal city's own place may be in the water beside it).
+  for (const p of placed.wings) make(p.nation, p.template, ...world.cellPoint(world.airbases[p.base]!.cell), p.base + 1);
+  for (const c of carried) make(c.nation, CARRIER_WING, f.x[c.fleet]!, f.y[c.fleet]!, -c.fleet);
 }
 
 /** Starting treasury and manpower pool of every nation, from its land and the army it starts with. */
@@ -563,6 +607,8 @@ function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; i
   // The fleets (PLAN 4.2b): after the settings, as their water is found on the map as it loops;
   // before the techs (a nation knows what its ships need) and the treasury (a navy is paid).
   addFleets(world, FLEETS_1938, PORTS_1938, tags);
+  // The air forces (PLAN 5.1d): after the fleets, whose carriers carry wings; before the treasury (paid).
+  addWings(world, AIR_1938, tags);
   grantStartTechs(world, GIVEN_TECHS_1938);
   startTreasury(world);
   return { world, islandCells: map.islandCells };

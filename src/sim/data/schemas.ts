@@ -294,6 +294,14 @@ export const AirbasesFile = z.strictObject({
   bases: z.array(AirbaseDef),
 });
 
+// ── air forces (data/scenarios/<id>/air.json) ────────────────────────────────
+
+/** The air forces of the start (PLAN 5.1d, `src/sim/data/wings.ts`): each nation's wings by template. */
+export const AirFile = z.strictObject({
+  comment: z.string().optional(),
+  groups: z.array(z.strictObject({ nation: z.string().regex(/^[A-Z]{3}$/), template: id, count: z.number().int().min(1).max(100) })),
+});
+
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
 
 export const ScenarioSettings = z.strictObject({
@@ -489,6 +497,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ports\.json$/, schema: PortsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/airbases\.json$/, schema: AirbasesFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/air\.json$/, schema: AirFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/fleets\.json$/, schema: FleetsFile },
 ];
 

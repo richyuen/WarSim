@@ -86,7 +86,7 @@ export function findBattles(world: World): number[][] {
     c.engaged[id] = 0;
     // One on the retreat is in no battle (PLAN 3.5a): it does not fire and is not fired on.
     // A fleet is in no battle of the land (PLAN 4.2b): the sea's are PLAN 4.3.
-    if (!idx.has(id) || !atWar.has(c.nation[id]!) || c.retreat[id]! > 0 || world.afloat(id)) return;
+    if (!idx.has(id) || !atWar.has(c.nation[id]!) || c.retreat[id]! > 0 || world.offLand(id)) return;
     fighters.push(id);
     const k = Math.floor(c.y[id]! / BUCKET_CELLS) * bw + Math.floor(c.x[id]! / BUCKET_CELLS);
     let b = buckets.get(k);

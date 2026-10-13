@@ -647,4 +647,8 @@ export function destroyFormation(world: World, fid: number): void {
   world.embarked.delete(fid);
   for (const e of world.embarked.values()) if (e.fleet === fid) e.fleet = -1;
   world.seaBound.delete(fid);
+  // A wing's base goes with it; the wings a carrier's fleet carried are lost with it at the air
+  // system's hour (PLAN 5.1d), and a formation given the id again carries none.
+  world.wingBase.delete(fid);
+  for (const [wing, base] of world.wingBase) if (base === -fid) world.wingBase.set(wing, 0);
 }

@@ -112,8 +112,11 @@ describe('terrain in a battle, by class and by unit type (PLAN 3.3a)', () => {
   });
 
   it('infantry holding a forest loses 1 ÷ (1.25 × 1.1) of what it loses on plains to infantry', () => {
-    const plains = losses(Terrain.Plains, 'garrison_brigade', 'garrison_brigade', 48);
-    const forest = losses(Terrain.Forest, 'garrison_brigade', 'garrison_brigade', 48);
+    // 96 hours since PLAN 5.1d (ADR-309): the rolls are by element id, and the air wings of the
+    // start moved the ids; over 48 the ratio's noise put it at 0.7108, over 72 to 144 hours at
+    // 0.722 to 0.725, all within the band below, which is as it was.
+    const plains = losses(Terrain.Plains, 'garrison_brigade', 'garrison_brigade', 96);
+    const forest = losses(Terrain.Forest, 'garrison_brigade', 'garrison_brigade', 96);
     expect(plains.def).toBeGreaterThan(0);
     // The attacker has no cover on either ground; it loses a little more in the forest, where
     // more of the defender lives to fire. Its own fire is all but the same, so the defender's

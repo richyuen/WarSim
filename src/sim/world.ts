@@ -388,6 +388,8 @@ class WorldCore implements Stateful {
       // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
       // only while there is one, so a world with no sea battle saves and hashes as before.
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
+      // The air wings' bases (PLAN 5.1d): [id, base] each, only while there is one.
+      ...(w.wingBase.size === 0 ? [] : [{ name: 'world.wingBase', dtype: 'f64' as const, data: Float64Array.from([...w.wingBase].sort((a, b) => a[0] - b[0]).flat()) }]),
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
       ...(w.seaBound.size === 0 ? [] : [{ name: 'world.seaBound', dtype: 'f64' as const, data: Float64Array.from([...w.seaBound].sort((a, b) => a[0] - b[0]).flat()) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
@@ -431,6 +433,9 @@ class WorldCore implements Stateful {
     w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
     w.seaLinks = new Map();
     w.seaBound = new Map();
+    w.wingBase = new Map();
+    const wings = sections.find((s) => s.name === 'world.wingBase')?.data as Float64Array | undefined;
+    for (let at = 0; wings && at < wings.length; at += 2) w.wingBase.set(wings[at]!, wings[at + 1]!);
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
     for (let at = 0; bound && at < bound.length; at += 2) w.seaBound.set(bound[at]!, bound[at + 1]!);
     w.embarked = new Map();
@@ -815,9 +820,23 @@ export class World {
     return this.isFleet(id) || this.embarked.has(id);
   }
 
+  /** A formation of an air template (PLAN 5.1b): an air wing, at its base (`wingBase`, PLAN 5.1d). */
+  isWing(id: number): boolean {
+    return this.rules?.templates?.[this.formations.cols.template[id]!]?.domain === Domain.air;
+  }
+
+  /**
+   * Off the land (PLAN 5.1d): afloat (a fleet, or an army aboard one), or an air wing. No rule of
+   * the land (the march, supply, contact and fire, the ground held, a garrison, the army's men and
+   * upkeep, the AI's orders) reads it.
+   */
+  offLand(id: number): boolean {
+    return this.afloat(id) || this.isWing(id);
+  }
+
   /** A formation of a sea template (PLAN 4.2a). */
   isFleet(id: number): boolean {
-    return this.rules?.templates[this.formations.cols.template[id]!]?.domain === Domain.sea;
+    return this.rules?.templates?.[this.formations.cols.template[id]!]?.domain === Domain.sea;
   }
 
   /**
@@ -897,6 +916,11 @@ export class World {
    * of the march.
    */
   seaBound = new Map<number, number>();
+  /**
+   * The air wings' bases (PLAN 5.1d), by wing: an airbase's index + 1, or a carrier's fleet as its
+   * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.
+   */
+  wingBase = new Map<number, number>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

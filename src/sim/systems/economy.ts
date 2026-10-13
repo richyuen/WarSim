@@ -175,6 +175,6 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
   });
   world.formations.forEach((id) => {
     // Through the elements. A fleet keeps its ships (PLAN 4.2b): the rule counts men.
-    if (deserting[fc.nation[id]!] && !world.afloat(id)) bleedFormation(world, id, DESERTION);
+    if (deserting[fc.nation[id]!] && !world.offLand(id)) bleedFormation(world, id, DESERTION);
   });
 }

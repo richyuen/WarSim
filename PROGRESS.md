@@ -14623,3 +14623,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   airbases' placement itself is under a millisecond: the gap is the container's); the pin
   (c0a89199), build and parity green by hand.
 - **Next:** PLAN 5.1d.
+
+## 2026-10-13 — PLAN 5.1d: the 1938 start's air forces (ADR-309)
+
+- **Done:** `data/scenarios/1938/air.json` (198 wings by nation and template) placed at the
+  airbases within their room, a naval bomber group on each of the 18 carriers; `world.wingBase`
+  (saved), `airSystem` (a carrier's wings follow it, are lost with it); `World.offLand` for the
+  land's rules; wings paid, weigh nothing, not drawn yet. The airbases' levels raised to hold them
+  (capitals 4, large cities 3, stations 4–5, four stations more). SPEC §6.3.
+- **Tests:** `wings1938.test.ts` (3).
+- **The pin moves** c0a89199 → 1377ab88.
+- **The gate:** the unit stage in full: first 23 red besides the timing tests (a wing on a coastal
+  city's water, a test's stub without templates, the system names; tests that read the army as all
+  not afloat; two whose rolls moved with the ids), each mended or recorded in ADR-309; then
+  1,295 of 1,297, red only by the two timing tests of BLOCKERS (`snapshot-perf` 2.62 to 2.88 ms
+  with the change, 2.31 to 3.24 at HEAD); the pin, build and parity green by hand.
+- **Next:** PLAN 5.1e.

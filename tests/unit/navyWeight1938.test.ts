@@ -25,13 +25,13 @@ describe('a navy\'s weight (PLAN 4.6e2)', () => {
     w.formations.forEach((f) => {
       if (w.formations.cols.nation[f] !== ENG) return;
       if (w.isFleet(f)) navy += fleetPower(w, f);
-      else army += w.formations.cols.strength[f]!;
+      else if (!w.isWing(f)) army += w.formations.cols.strength[f]!; // a wing weighs nothing yet (PLAN 5.1d)
     });
     // Its puppets' forces with it.
     let puppets = 0;
     w.formations.forEach((f) => {
       const n = w.formations.cols.nation[f]!;
-      if (n !== ENG && w.nations.cols.overlord[n] === ENG) puppets += w.isFleet(f) ? fleetMen(w, f) : w.formations.cols.strength[f]!;
+      if (n !== ENG && w.nations.cols.overlord[n] === ENG && !w.isWing(f)) puppets += w.isFleet(f) ? fleetMen(w, f) : w.formations.cols.strength[f]!;
     });
     expect(navy).toBeGreaterThan(50_000);
     expect(strengths(w)[ENG]).toBeCloseTo(army + NAVY_WEIGHT * navy + puppets, 6);

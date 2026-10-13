@@ -42,7 +42,7 @@ export function bombardmentSystem(world: World): void {
   const bw = Math.ceil(w / BUCKET);
   const buckets = new Map<number, number[]>();
   f.forEach((id) => {
-    if (c.engaged[id] !== 1 || world.afloat(id)) return;
+    if (c.engaged[id] !== 1 || world.offLand(id)) return;
     const k = Math.floor(c.y[id]! / BUCKET) * bw + Math.floor(c.x[id]! / BUCKET);
     let list = buckets.get(k);
     if (!list) buckets.set(k, (list = []));

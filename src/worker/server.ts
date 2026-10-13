@@ -1055,7 +1055,7 @@ export class SimServer {
     const idx = this.wantsElements() && world.rules ? elementIndex(world) : null;
     if (idx) {
       ft.forEach((f) => {
-        if (truncated) return;
+        if (truncated || world.isWing(f)) return; // an air wing is not drawn yet (PLAN 5.1d)
         const list = idx.get(f);
         if (!list) return;
         // By where its block stands: at the formation's place, or deployed against the enemy (PLAN 2.14c1).
@@ -1214,9 +1214,14 @@ export class SimServer {
     for (const war of world.wars.list) for (const a of war.sides[0]) for (const b of war.sides[1]) warPairs.push(a, b);
     const wars = Uint16Array.from(warPairs);
 
-    // Formations (all; elements arrive with Phase 2 when the subscription asks for them).
+    // Formations (all but the air wings, which nothing draws yet: PLAN 5.1d, until the air's
+    // visuals of PLAN 5.7; elements arrive with Phase 2 when the subscription asks for them).
     const ft = world.formations;
-    const fc = ft.count;
+    const shown: number[] = [];
+    ft.forEach((id) => {
+      if (!world.isWing(id)) shown.push(id);
+    });
+    const fc = shown.length;
     const fid = this.view(Uint32Array, fc, buffers);
     const fnat = this.view(Uint16Array, fc, buffers);
     const fx = this.view(Float64Array, fc, buffers);
@@ -1234,7 +1239,7 @@ export class SimServer {
     const fwayStart = this.view(Uint32Array, fc + 1, buffers);
     fwayStart[0] = 0; // (a pooled buffer)
     let j = 0;
-    ft.forEach((id) => {
+    for (const id of shown) {
       fid[j] = id;
       fnat[j] = ft.cols.nation[id]!;
       fx[j] = ft.cols.x[id]!;
@@ -1261,7 +1266,7 @@ export class SimServer {
       ways.push(way);
       fwayStart[j + 1] = fwayStart[j]! + way.length;
       j++;
-    });
+    }
     const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
     for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));

@@ -1718,11 +1718,21 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   one is refused (no domain but the land's and, with a shipyard, the sea's), as is the spawn
   (`NotOfLand`); the build list leaves them out.
 - *As built (PLAN 5.1c, ADR-308; `src/sim/data/airbases.ts`, `data/scenarios/1938/airbases.json`):*
-  every capital city is an airbase of level 1, a city of size 5 one of level 2, and 23 main air
+  every capital city is an airbase of level 4, a city of size 5 one of level 3, and 27 main air
   stations of 1938 are listed by hand (Mildenhall, Le Bourget, Tempelhof, Guidonia, Monino,
-  Kasumigaura, Langley Field…, levels 2 and 3): 172 in 1938, every living nation with one. Who
+  Kasumigaura, Langley Field…, levels 4 and 5; the levels raised at 5.1d to hold the start's air
+  forces): every living nation holds one. Who
   holds the cell holds the base; its room is the airbase building's 50 aircraft a level. Static
   data of the scenario (`world.airbases`), as the ports are; the random world has them too.
+- *As built (PLAN 5.1d, ADR-309; `data/scenarios/1938/air.json`, `addWings`, `src/sim/systems/air.ts`):*
+  the 1938 start has 216 air wings: 198 of the nations' air forces by template at their airbases
+  (the base with the most room left that holds the wing; Germany 28, the Soviet Union 30, Britain
+  20, Italy 17, Japan 16, France 15, the United States 15, a few for 33 more nations; a wing of
+  the start stands for about three first-line groups of the record) and a naval bomber group on
+  each of the 18 carriers. A wing's base is state (`world.wingBase`: an airbase, or a carrier's
+  fleet, which it follows hourly, `airSystem`; it is lost with its carrier). It is paid; it weighs
+  nothing in a reckoning of forces yet; no rule of the land reads it (`World.offLand`: afloat or a
+  wing); the page draws none yet (left out of the snapshot until PLAN 5.7).
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

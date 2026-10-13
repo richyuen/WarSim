@@ -7472,3 +7472,22 @@ Of 5.1 (open in PLAN.md):
     the cities of the larger nations), with levels; a base is its cell's controller's; its
     room is `airCapacity` × level aircraft. Test: every nation with an air force in 1938 has
     one; a base taken is its taker's.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record
+    (`data/scenarios/1938/air.json`), the carriers' air groups aboard the carriers of the
+    fleets; paid from the first month; no rule reads a wing yet. Test: counts by nation; ten
+    years, every wing at its base.

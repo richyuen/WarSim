@@ -42,7 +42,7 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     const marches = (): void => {
       w.formations.forEach((id) => {
         // A march: not a fleet's sail, nor troops aboard (PLAN 4.6b: the AI's transports sail now).
-        if (f.moving[id] !== 1 || w.afloat(id)) return;
+        if (f.moving[id] !== 1 || w.offLand(id)) return;
         march.hours++;
         if (land(f.x[id]!, f.y[id]!)) return;
         const path = w.paths.get(id);
@@ -70,7 +70,7 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
       const seen = { formations: 0, atRest: 0, elements: 0, drawnIn: 0, onItsFormation: 0, marching: 0, marchingWet: 0, crossing: 0 };
       w.formations.forEach((id) => {
         // Of the land: a fleet stands on the mask's water (PLAN 4.2b, `fleets1938.test.ts`).
-        if (w.afloat(id)) return;
+        if (w.offLand(id)) return;
         seen.formations++;
         const [fx, fy] = [f.x[id]!, f.y[id]!];
         const list = idx.get(id) ?? [];

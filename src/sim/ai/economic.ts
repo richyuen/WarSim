@@ -157,7 +157,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         navy.set(n, (navy.get(n) ?? 0) + upkeepOf(world, id));
         return;
       }
-      if (world.afloat(id)) return;
+      if (world.offLand(id)) return;
       const n = f.nation[id]!;
       const l = own.get(n) ?? [];
       l.push(id);
@@ -385,7 +385,7 @@ function armourShareOfEnemies(world: World, n: number): number {
   let tanks = 0;
   let all = 0;
   world.formations.forEach((id) => {
-    if (!world.wars.atWar(n, f.nation[id]!) || world.afloat(id)) return; // of the enemies' armies (PLAN 4.2b)
+    if (!world.wars.atWar(n, f.nation[id]!) || world.offLand(id)) return; // of the enemies' armies (PLAN 4.2b)
     for (const e of idx.get(id) ?? []) {
       all++;
       if (units[ec.unit[e]!]!.cls.startsWith('armor')) tanks++;

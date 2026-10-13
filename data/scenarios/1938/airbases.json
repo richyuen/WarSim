@@ -1,31 +1,251 @@
 {
-  "comment": "Airbases of 1938 (PLAN 5.1c). Every capital city is an airbase of capitalLevel, a city of minCitySize or more one of sizeLevel. The list is written by hand: the main air stations of the larger air forces of 1938 (level 3 a main base of several groups, 2 a station of one or two). nation: who holds it in 1938.",
-  "capitalLevel": 1,
-  "minCitySize": 5,
-  "sizeLevel": 2,
-  "bases": [
-    { "name": "Biggin Hill", "nation": "ENG", "lonLat": [0.03, 51.33], "level": 2 },
-    { "name": "Duxford", "nation": "ENG", "lonLat": [0.13, 52.09], "level": 2 },
-    { "name": "Mildenhall", "nation": "ENG", "lonLat": [0.49, 52.36], "level": 3 },
-    { "name": "Hal Far", "nation": "ENG", "lonLat": [14.52, 35.81], "level": 2 },
-    { "name": "Heliopolis", "nation": "EGY", "lonLat": [31.32, 30.1], "level": 2 },
-    { "name": "Le Bourget", "nation": "FRA", "lonLat": [2.44, 48.96], "level": 3 },
-    { "name": "Villacoublay", "nation": "FRA", "lonLat": [2.19, 48.77], "level": 2 },
-    { "name": "Reims", "nation": "FRA", "lonLat": [4.03, 49.26], "level": 2 },
-    { "name": "Tempelhof", "nation": "GER", "lonLat": [13.4, 52.47], "level": 3 },
-    { "name": "Rechlin", "nation": "GER", "lonLat": [12.75, 53.33], "level": 2 },
-    { "name": "Fassberg", "nation": "GER", "lonLat": [10.17, 52.92], "level": 2 },
-    { "name": "Werneuchen", "nation": "GER", "lonLat": [13.76, 52.63], "level": 2 },
-    { "name": "Guidonia", "nation": "ITA", "lonLat": [12.73, 41.99], "level": 3 },
-    { "name": "Campoformido", "nation": "ITA", "lonLat": [13.16, 46.03], "level": 2 },
-    { "name": "Monino", "nation": "SOV", "lonLat": [38.18, 55.85], "level": 3 },
-    { "name": "Kubinka", "nation": "SOV", "lonLat": [36.65, 55.61], "level": 2 },
-    { "name": "Kasumigaura", "nation": "JAP", "lonLat": [140.27, 36.03], "level": 3 },
-    { "name": "Tachikawa", "nation": "JAP", "lonLat": [139.4, 35.71], "level": 2 },
-    { "name": "Langley Field", "nation": "USA", "lonLat": [-76.36, 37.08], "level": 3 },
-    { "name": "March Field", "nation": "USA", "lonLat": [-117.26, 33.88], "level": 2 },
-    { "name": "Randolph Field", "nation": "USA", "lonLat": [-98.28, 29.53], "level": 2 },
-    { "name": "Hickam Field", "nation": "USA", "lonLat": [-157.94, 21.32], "level": 2 },
-    { "name": "Clark Field", "nation": "PHI", "lonLat": [120.55, 15.19], "level": 2 }
-  ]
+ "comment": "Airbases of 1938 (PLAN 5.1c, levels raised at 5.1d). Every capital city is an airbase of capitalLevel, a city of minCitySize or more one of sizeLevel. The list is written by hand: the main air stations of the larger air forces of 1938 (level 5 a main base of several groups, 4 a station of one or two). The levels hold the start's air forces (air.json, 50 aircraft a level). nation: who holds it in 1938.",
+ "capitalLevel": 4,
+ "minCitySize": 5,
+ "sizeLevel": 3,
+ "bases": [
+  {
+   "name": "Biggin Hill",
+   "nation": "ENG",
+   "lonLat": [
+    0.03,
+    51.33
+   ],
+   "level": 4
+  },
+  {
+   "name": "Duxford",
+   "nation": "ENG",
+   "lonLat": [
+    0.13,
+    52.09
+   ],
+   "level": 4
+  },
+  {
+   "name": "Mildenhall",
+   "nation": "ENG",
+   "lonLat": [
+    0.49,
+    52.36
+   ],
+   "level": 5
+  },
+  {
+   "name": "Hal Far",
+   "nation": "ENG",
+   "lonLat": [
+    14.52,
+    35.81
+   ],
+   "level": 4
+  },
+  {
+   "name": "Heliopolis",
+   "nation": "EGY",
+   "lonLat": [
+    31.32,
+    30.1
+   ],
+   "level": 4
+  },
+  {
+   "name": "Le Bourget",
+   "nation": "FRA",
+   "lonLat": [
+    2.44,
+    48.96
+   ],
+   "level": 5
+  },
+  {
+   "name": "Villacoublay",
+   "nation": "FRA",
+   "lonLat": [
+    2.19,
+    48.77
+   ],
+   "level": 4
+  },
+  {
+   "name": "Reims",
+   "nation": "FRA",
+   "lonLat": [
+    4.03,
+    49.26
+   ],
+   "level": 4
+  },
+  {
+   "name": "Tempelhof",
+   "nation": "GER",
+   "lonLat": [
+    13.4,
+    52.47
+   ],
+   "level": 5
+  },
+  {
+   "name": "Rechlin",
+   "nation": "GER",
+   "lonLat": [
+    12.75,
+    53.33
+   ],
+   "level": 4
+  },
+  {
+   "name": "Fassberg",
+   "nation": "GER",
+   "lonLat": [
+    10.17,
+    52.92
+   ],
+   "level": 4
+  },
+  {
+   "name": "Werneuchen",
+   "nation": "GER",
+   "lonLat": [
+    13.76,
+    52.63
+   ],
+   "level": 4
+  },
+  {
+   "name": "Guidonia",
+   "nation": "ITA",
+   "lonLat": [
+    12.73,
+    41.99
+   ],
+   "level": 5
+  },
+  {
+   "name": "Campoformido",
+   "nation": "ITA",
+   "lonLat": [
+    13.16,
+    46.03
+   ],
+   "level": 4
+  },
+  {
+   "name": "Monino",
+   "nation": "SOV",
+   "lonLat": [
+    38.18,
+    55.85
+   ],
+   "level": 5
+  },
+  {
+   "name": "Kubinka",
+   "nation": "SOV",
+   "lonLat": [
+    36.65,
+    55.61
+   ],
+   "level": 4
+  },
+  {
+   "name": "Kasumigaura",
+   "nation": "JAP",
+   "lonLat": [
+    140.27,
+    36.03
+   ],
+   "level": 5
+  },
+  {
+   "name": "Tachikawa",
+   "nation": "JAP",
+   "lonLat": [
+    139.4,
+    35.71
+   ],
+   "level": 4
+  },
+  {
+   "name": "Langley Field",
+   "nation": "USA",
+   "lonLat": [
+    -76.36,
+    37.08
+   ],
+   "level": 5
+  },
+  {
+   "name": "March Field",
+   "nation": "USA",
+   "lonLat": [
+    -117.26,
+    33.88
+   ],
+   "level": 4
+  },
+  {
+   "name": "Randolph Field",
+   "nation": "USA",
+   "lonLat": [
+    -98.28,
+    29.53
+   ],
+   "level": 4
+  },
+  {
+   "name": "Hickam Field",
+   "nation": "USA",
+   "lonLat": [
+    -157.94,
+    21.32
+   ],
+   "level": 4
+  },
+  {
+   "name": "Clark Field",
+   "nation": "PHI",
+   "lonLat": [
+    120.55,
+    15.19
+   ],
+   "level": 4
+  },
+  {
+   "name": "Jüterbog",
+   "nation": "GER",
+   "lonLat": [
+    13.07,
+    51.99
+   ],
+   "level": 4
+  },
+  {
+   "name": "Gütersloh",
+   "nation": "GER",
+   "lonLat": [
+    8.33,
+    51.92
+   ],
+   "level": 4
+  },
+  {
+   "name": "Aviano",
+   "nation": "ITA",
+   "lonLat": [
+    12.6,
+    46.03
+   ],
+   "level": 4
+  },
+  {
+   "name": "Lipetsk",
+   "nation": "SOV",
+   "lonLat": [
+    39.6,
+    52.61
+   ],
+   "level": 4
+  }
+ ]
 }
