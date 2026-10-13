@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-342 · 2026-10-13 · accepted — The order of industry told exactly (PLAN 5.8r)
+
+- **Found** (the suspicion of 5.8a, now a test): `byIndustry` kept its order while a weighted sum
+  of the industry was unchanged (weights `cell % 9973 + 1`). Two cells 9,973 apart have one
+  weight: their industry swapped kept the sum, and a running game kept the stale order that a
+  loaded one does not have (the richest cell named the old one). Sums past 2^53 lose their low
+  bits as well.
+- **Decision.** The key is the industry itself, sparse: the cells with industry and theirs, in
+  the cells' order, compared in one pass of the map (as the sum was taken). Exact, and a few
+  thousand numbers kept.
+- **The pin holds** at ae18ce8c: the order is the same wherever the sum told.
+- **Tests.** `airAi1938` (1 more; it failed before): the richest cell's industry swapped with
+  the cell's 9,973 on, the order is sorted again, the same as a fresh sort.
+
 ### ADR-341 · 2026-10-13 · accepted — The critic's files out of the review's code key (PLAN 5.8q)
 
 - **Found** (the eleventh read): `codeTree` left `critic/` out of its `git add` but not out of

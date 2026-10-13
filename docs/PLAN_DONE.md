@@ -8054,3 +8054,21 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index):
     a critic's report committed after a review unproves it. Out of the key, as the header says.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the
+    industry, and an editor's change that keeps the sum keeps a stale order in a running game
+    that a loaded one does not have. A test first; a key that tells such changes apart.

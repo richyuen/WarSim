@@ -86,3 +86,22 @@ describe('the air AI (PLAN 5.6)', () => {
     for (let i = 1; i < 200; i++) expect(econ[order[i - 1]!]! > econ[order[i]!]! || (econ[order[i - 1]!] === econ[order[i]!] && order[i - 1]! < order[i]!)).toBe(true);
   });
 });
+
+// PLAN 5.8r: `byIndustry` keeps its order while the industry is unchanged. A change that keeps
+// a weighted sum of it (two cells whose weights are equal, their industry swapped) is a change.
+describe('the order of industry kept (PLAN 5.8r)', () => {
+  it('a swap of two cells\' industry that keeps every sum of it is sorted again, as a loaded world sorts it', () => {
+    const w = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) }).world;
+    const econ = w.cells.econ;
+    // The richest cell, and one 9,973 cells on with other industry (given some, before the order is kept).
+    let a = 0;
+    for (let c = 0; c < econ.length; c++) if (econ[c]! > econ[a]!) a = c;
+    const b = a + 9973 < econ.length ? a + 9973 : a - 9973;
+    if (econ[b] === 0 || econ[b] === econ[a]) econ[b] = 1;
+    expect(byIndustry(w)[0]).toBe(a);
+    [econ[a], econ[b]] = [econ[b]!, econ[a]!];
+    const fresh = [...econ.keys()].filter((c) => econ[c]! > 0).sort((x, y) => econ[y]! - econ[x]! || x - y);
+    expect(byIndustry(w)).toEqual(fresh);
+    expect(byIndustry(w)[0]).toBe(b);
+  });
+});

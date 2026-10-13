@@ -145,22 +145,35 @@ function industry(world: World, id: number, n: number, rich: () => readonly numb
 }
 
 /** The cells with industry, richest first (the lower cell first of equals), per world, kept while its industry is unchanged. */
-const ORDER = new WeakMap<Uint32Array, { sum: number; cells: number[] }>();
+const ORDER = new WeakMap<Uint32Array, { cells: number[]; at: Uint32Array; value: Uint32Array }>();
 
 /**
  * The cells of `world` with industry (`cells.econ`), richest first: sorted once, and again only
- * when the industry changed (the editor's cities: PLAN 1.36), told by its sum and weighted sum.
- * A function of the industry alone, so a loaded world has the same order.
+ * when the industry changed (the editor's cities: PLAN 1.36). Told exactly (PLAN 5.8r): the cells
+ * with industry and theirs are kept, in the cells' order, and the industry compared with them;
+ * a sum of it let a change that kept the sum keep a stale order. A function of the industry
+ * alone, so a loaded world has the same order.
  */
 export function byIndustry(world: World): readonly number[] {
   const econ = world.cells.econ;
-  let sum = 0;
-  for (let c = 0; c < econ.length; c++) if (econ[c] !== 0) sum += econ[c]! * ((c % 9973) + 1);
   const kept = ORDER.get(econ);
-  if (kept && kept.sum === sum) return kept.cells;
+  if (kept && same(econ, kept.at, kept.value)) return kept.cells;
   const cells: number[] = [];
   for (let c = 0; c < econ.length; c++) if (econ[c]! > 0) cells.push(c);
+  const at = Uint32Array.from(cells);
+  const value = Uint32Array.from(cells, (c) => econ[c]!);
   cells.sort((a, b) => econ[b]! - econ[a]! || a - b);
-  ORDER.set(econ, { sum, cells });
+  ORDER.set(econ, { cells, at, value });
   return cells;
+}
+
+/** Whether `econ`'s cells with industry are `at`, in order, with `value`. */
+function same(econ: Uint32Array, at: Uint32Array, value: Uint32Array): boolean {
+  let k = 0;
+  for (let c = 0; c < econ.length; c++) {
+    if (econ[c] === 0) continue;
+    if (k === at.length || at[k] !== c || value[k] !== econ[c]) return false;
+    k++;
+  }
+  return k === at.length;
 }

@@ -14978,3 +14978,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at ae18ce8c.
 - **The gate:** green (the related unit tests, 26).
 - **Next:** PLAN 5.8r.
+
+## 2026-10-13 — PLAN 5.8r: the order of industry told exactly (ADR-342)
+
+- **Done:** `byIndustry` keeps the cells with industry and their values, and compares the
+  industry with them; the weighted sum, which a swap of two cells kept, is gone.
+- **Tests:** `airAi1938` (1 more; failed before).
+- **The pin holds** at ae18ce8c.
+- **The gate:** the related unit tests (807 of 810) red only by the three timing tests of
+  BLOCKERS (3,466 ms, 2.44 ms, 31.2 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8s.
