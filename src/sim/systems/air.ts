@@ -12,6 +12,7 @@
 import { EventKind, RejectReason } from '../../shared/events';
 import { airbaseRoom } from '../data/airbases';
 import { airCombat, antiAir, strikes } from './airCombat';
+import { airLift } from './airLift';
 import { airPowerSystem } from './airSuperiority';
 import { repairSystem } from './bombing';
 import { destroyFormation, elementIndex, loopW, wrapDx } from './elements';
@@ -69,6 +70,7 @@ export function airSystem(world: World): void {
   const byZone = world.sorties.size > 0 ? airborne(world, world.tick) : new Map<number, number[]>();
   if (byZone.size > 0 || world.airPower.size > 0) airPowerSystem(world, byZone);
   strikes(world);
+  airLift(world);
   if (byZone.size > 0) airCombat(world, byZone);
   antiAir(world);
 }
@@ -156,9 +158,9 @@ export function airborne(world: World, t: number): Map<number, number[]> {
   return out;
 }
 
-/** A wing's mission (PLAN 5.1e): to patrol about a place or strike it. Read by the scheduler of PLAN 5.2. */
+/** A wing's mission (PLAN 5.1e): to patrol about a place or strike it, or (a transport's, PLAN 5.8u1) to fly supply to it. Read by the scheduler of PLAN 5.2. */
 export interface WingMission {
-  kind: 'patrol' | 'strike';
+  kind: 'patrol' | 'strike' | 'supply';
   x: number;
   y: number;
 }
@@ -198,16 +200,24 @@ const reject = (world: World, id: number, why: RejectReason): RejectReason => {
   return why;
 };
 
+/** Whether wing `id` is of transports: every squadron of its template of class `transport_air` (PLAN 5.8u1). */
+export function isTransport(world: World, id: number): boolean {
+  const rules = world.rules!;
+  return rules.templates[world.formations.cols.template[id]!]!.elements.every((e) => rules.units[e.unit]!.cls === 'transport_air');
+}
+
 /**
- * Orders wing `id` to patrol about or strike (x, y) (PLAN 5.1e): kept as its mission
- * (`world.wingMission`) where the place is within its range of its base, else refused
- * (`MoveRejected`, `OutOfRange`; `NoBase` for a wing with none, its carrier sunk this hour; `NotLand`
- * for no wing). 0 when ordered.
+ * Orders wing `id` to patrol about, strike or (a transport) fly supply to (x, y) (PLAN 5.1e,
+ * 5.8u1): kept as its mission (`world.wingMission`) where the place is within its range of its
+ * base, else refused (`MoveRejected`, `OutOfRange`; `NoBase` for a wing with none, its carrier sunk
+ * this hour; `NotLand` for no wing, or supply by a wing not of transports). 0 when ordered.
  */
 export function orderMission(world: World, id: number, kind: WingMission['kind'], x: number, y: number): 0 | RejectReason {
   if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
   // A carrier sunk this hour leaves its wings no base until the air system loses them (PLAN 5.8j).
   if (!basePlace(world, world.wingBase.get(id)!)) return reject(world, id, RejectReason.NoBase);
+  // Supply is flown by transports alone (PLAN 5.8u1).
+  if (kind === 'supply' && !isTransport(world, id)) return reject(world, id, RejectReason.NotLand);
   if (kmFromBase(world, id, x, y) > wingRange(world, id)) return reject(world, id, RejectReason.OutOfRange);
   world.wingMission.set(id, { kind, x, y });
   return 0;

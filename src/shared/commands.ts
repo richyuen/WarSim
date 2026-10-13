@@ -21,7 +21,7 @@ export type Command =
    */
   | { kind: 'moveFormation'; id: number; x: number; y: number; nation?: number }
   /** An air wing's mission (PLAN 5.1e): patrol about (x, y) or strike it; refused beyond its range from its base. */
-  | { kind: 'wingMission'; id: number; mission: 'patrol' | 'strike'; x: number; y: number; nation?: number }
+  | { kind: 'wingMission'; id: number; mission: 'patrol' | 'strike' | 'supply'; x: number; y: number; nation?: number }
   /** An air wing to another base (PLAN 5.1e): its side's airbase or its nation's carrier at (x, y), in range, with room. */
   | { kind: 'wingRebase'; id: number; x: number; y: number; nation?: number }
   /** Global sim setting (PLAN 1.15): capturing a capital annexes the loser's territory. */

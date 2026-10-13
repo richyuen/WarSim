@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-348 · 2026-10-13 · accepted — Air supply (PLAN 5.8u1)
+
+- **Found** (5.8b): SPEC §6.3 has the transports' missions; a transport wing could only patrol
+  or strike, and struck with nothing.
+- **Decision.** A mission kind `supply` (saved as 2 in `world.wingMission`; the command's
+  `mission`), for a wing of transports alone (`isTransport`: every squadron of class
+  `transport_air`; else `NotLand`). Its sortie flies as a strike's, out and home; at the target
+  in the hour it arrives (`airLift`, after the strikes) it lifts `AIR_LIFT` 1/48 of a
+  formation's supply an aircraft to the formations of its side on the land within `AA_CELLS`
+  of the target whose supply is under 1, the same share each, none past full, by ascending id.
+  A group of 24 lifts a half: the network's four hours. It flies and is fought as any sortie.
+  The air's superiority does not scale it (its bombs' rule, 5.8t3, is a strike's). PLAN 5.8u
+  split: u1 air supply, u2 the paradrop, u3 the AI's use of both.
+- **The pin holds** at 048c4760: no AI flies supply.
+- **Tests.** `airLift1938` (3, new): a German transport group lifts a German division cut off
+  at the target by 24 × 1/48, a Polish one there none, not again the next hour; two short, the
+  same share each, the one nearer full not past it, one full none; a fighter group refused the
+  mission, a transport group's kept and saved, the same game.
+
 ### ADR-347 · 2026-10-13 · accepted — Air superiority on a strike (PLAN 5.8t3)
 
 - **Found** (5.8b): SPEC §6.3 has the air on bombing; a strike struck as hard under the enemy's

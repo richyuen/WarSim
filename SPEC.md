@@ -1792,6 +1792,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.8t3, ADR-347; `strikeFactor`):* a strike's fire on the enemy's elements and
   its tons on industry and ports × (1 + 0.25 × (2s − 1)), s the striker's superiority over its
   target: 1.25 under its side's air, 0.75 under the enemy's.
+- *As built (PLAN 5.8u1, ADR-348; `airLift`):* a transport wing's mission may be `supply` (a
+  wing not of transports is refused it, `NotLand`). Its sortie, at the target in the hour it
+  arrives, lifts 1/48 of a formation's supply an aircraft (a group of 24: a half) to its side's
+  formations on the land within a cell that are short of it, the same share each, none past
+  full. No AI flies it yet (5.8u3).
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about

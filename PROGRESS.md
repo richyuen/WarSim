@@ -15040,3 +15040,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (911 of 913) red only by two timing tests of BLOCKERS
   (2,995 ms, 2.30 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8u.
+
+## 2026-10-13 — PLAN 5.8u1: air supply (ADR-348)
+
+- **Done:** a `supply` mission for transport wings (`isTransport`, saved); `airLift` lifts
+  `AIR_LIFT` an aircraft to its side's formations short of supply at the target. 5.8u split:
+  u2 the paradrop, u3 the AI's transports.
+- **Tests:** `airLift1938` (3, new).
+- **The pin holds** at 048c4760.
+- **The gate:** the related unit tests (923 of 925) red only by two timing tests of BLOCKERS
+  (3,081 ms, 2.35 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u2.

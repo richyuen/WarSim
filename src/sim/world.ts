@@ -396,7 +396,7 @@ class WorldCore implements Stateful {
       // only while there is one, so a world with no sea battle saves and hashes as before.
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
       // The air wings' missions (PLAN 5.1e): [id, kind (0 patrol, 1 strike), x, y] each, only while there is one.
-      ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : 0, m.x, m.y])) }]),
+      ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : m.kind === 'supply' ? 2 : 0, m.x, m.y])) }]),
       // The bombs' damage to industry (PLAN 5.5a): [cell, damage] each, only while there is some.
       ...(w.bombDamage.size === 0 ? [] : [{ name: 'world.bombDamage', dtype: 'f64' as const, data: Float64Array.from([...w.bombDamage].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The bombs' damage to ports (PLAN 5.5b): [port, damage] each, only while there is some.
@@ -472,7 +472,7 @@ class WorldCore implements Stateful {
     }
     w.wingMission = new Map();
     const missions = sections.find((s) => s.name === 'world.wingMission')?.data as Float64Array | undefined;
-    for (let at = 0; missions && at < missions.length; at += 4) w.wingMission.set(missions[at]!, { kind: missions[at + 1] === 1 ? 'strike' : 'patrol', x: missions[at + 2]!, y: missions[at + 3]! });
+    for (let at = 0; missions && at < missions.length; at += 4) w.wingMission.set(missions[at]!, { kind: missions[at + 1] === 1 ? 'strike' : missions[at + 1] === 2 ? 'supply' : 'patrol', x: missions[at + 2]!, y: missions[at + 3]! });
     const wings = sections.find((s) => s.name === 'world.wingBase')?.data as Float64Array | undefined;
     for (let at = 0; wings && at < wings.length; at += 2) w.wingBase.set(wings[at]!, wings[at + 1]!);
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
