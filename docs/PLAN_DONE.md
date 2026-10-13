@@ -7395,3 +7395,21 @@ Of 4.10 (open in PLAN.md):
   - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
   - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the […]
   - [x] 4.10d The AT's specs (above), and the tick of 4.10.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
+  value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
+  together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
+  a flex row for each line, the name cut by an ellipsis, the value never wrapping.
+  AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
+  no value wraps.

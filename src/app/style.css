@@ -319,21 +319,38 @@ body {
   margin-right: 0.35rem;
   opacity: 0.7;
 }
+/* A row is one line (PLAN 4.11, the critic's R4-B6): the name takes what is left and is cut with
+   an ellipsis; the value keeps its width and never wraps under the next row's name. */
 .rank-row {
+  display: flex;
+  align-items: center;
   cursor: pointer;
   line-height: 1.35rem;
+  white-space: nowrap;
 }
 .rank-row .chip-swatch {
   display: inline-block;
+  flex: none;
   margin-right: 0.3rem;
   vertical-align: middle;
+}
+.rank-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .rank-row.selected {
   color: #e9c46a;
   font-weight: 700;
 }
+.rank-pos {
+  flex: none;
+}
 .rank-value {
-  float: right;
+  flex: none;
+  margin-left: 0.4rem;
+  font-variant-numeric: tabular-nums;
 }
 
 /* The ticker (PLAN 3.12c): the major events as they happen, bottom left above the bar. */

@@ -14573,3 +14573,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The AT:** `navalCounter1938`, `seaBattleSeen1938`, `seaLegend1938` together on 5be0ba5: 3 of 3
   (2.0 min). PARITY additions row 3 has them.
 - **Next:** PLAN 4.11.
+
+## 2026-10-13 — PLAN 4.11 done: the ranking's rows hold their names and values (ADR-305)
+
+- **Done:** each ranking row a one-line flex row: the name cut with an ellipsis, the value never
+  wrapping (a long name had pushed the floated value under the next row's name). SPEC §8 says so.
+- **Tests:** `rankingRows1938.spec.ts` (failed first at UI size 0.85, row 11); with
+  `ranking1938.spec.ts` 2 of 2 (38 s).
+- **The pin:** the sim is not changed.
+- **Next:** the critic's blocking issues of run 4 filed under Phase 4 are done (4.9 to 4.11);
+  PLAN 5.1.

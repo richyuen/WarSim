@@ -23,13 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
-  value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
-  together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
-  a flex row for each line, the name cut by an ellipsis, the value never wrapping.
-  AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
-  no value wraps.
-
 ## Phase 5 — Air
 
 - [ ] 5.1 Air wings, airbases, carriers, range; air zones.
@@ -717,3 +710,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
 - [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused […]
 - [x] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter […]
+- [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a […]

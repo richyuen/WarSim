@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-305 · 2026-10-13 · accepted — The ranking's rows hold their names and values (PLAN 4.11)
+
+- **Found** (the critic's R4-B6): the ranking's value floated right of its name; a name too long
+  for the row ("French Equatorial Africa") pushed the value onto the next line, under the next
+  row's name, and from row 11 down each value stood beside the wrong name (row 13 seemed to have
+  two numbers), from the first frame of every game.
+- **Decision.** A row is a one-line flex row: the place and the swatch keep their width, the
+  name takes what is left and is cut with an ellipsis, the value keeps its width (tabular
+  figures) and never wraps.
+- **Tests.** `rankingRows1938.spec.ts`: at every UI size each of the 15 rows is one line, its
+  value on its row and right of its name, its text one number (its `data-value`); it failed
+  before at UI size 0.85, row 11. Picture `ranking.png`. (`ranking1938.spec.ts`, the ranking's
+  AT of PLAN 1.31b, passes as before.)
+
 ### ADR-304 · 2026-10-13 · accepted — The sea-control mode says whose (PLAN 4.10c)
 
 - **Found** (the critic's R4-B4): the sea-control mode's tints did not say whose navy held a
