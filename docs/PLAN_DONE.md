@@ -7984,3 +7984,21 @@ Of 5.8 (open in PLAN.md):
   - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base):
     a wing whose base is held by a nation not of its side rebases to its nation's nearest
     airbase with room, or is lost with none.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next
+    day's first hour (paused: for good), and a pump that steps past a day's first hour skips it:
+    the worker's air fields reset with a load; sent when the day changed.

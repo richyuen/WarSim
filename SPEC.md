@@ -2509,7 +2509,8 @@ on screen.
     name from the map's seeds, sent with the zones; "held by none").
   - *Air superiority* (PLAN 5.7c, ADR-325): the worker sends each air zone's holder daily
     (`airControl`: the nation with superiority 0.6 or more there, contested, or none) with the
-    cells' air zones the first time; the shader (fill mode 4) fades land as the sea-control mode
+    cells' air zones the first time and after a load, at once (at the first look of a day a pump
+    stepped past its first hour in; PLAN 5.8n, ADR-338); the shader (fill mode 4) fades land as the sea-control mode
     does and tints a zone held, land and sea, 0.55 of its holder's colour, a contested one striped.
 - **Map modes still planned**: fallout, supply (with their phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,

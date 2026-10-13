@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-338 · 2026-10-13 · accepted — The air mode after a load, and a day a pump stepped past (PLAN 5.8n)
+
+- **Found** (the eleventh read): the worker sent the air holders only at a look at a day's first
+  hour (`tick % 24 === 0`), and kept what it last sent over a load. A load showed the game
+  before's holders until the next day's first hour, or for good while paused; a pump that
+  stepped past a first hour (several hours a frame at speed) kept the day before's all day.
+- **Decision.** A load and an init forget the zones and holders sent (as the sea mode's);
+  `airShown` outlives a load, so a page shown holders is told all none. The holders are looked
+  at at a day's first hour and at the first look of each day (`airDay`).
+- **The pin holds:** the worker's, no rule.
+- **Tests.** `serverAirControl` (2 more, both failed before): a load at hour 5 of a save with
+  nobody flown sends all none at once; holders changed at hour 23 are sent at hour 25, the next
+  change that day at hour 48.
+
 ### ADR-337 · 2026-10-13 · accepted — A sea battle is no battle of the land (fix)
 
 - **Found** (the gate of PLAN 5.8m): `navalCombat` sets `engaged` on the fleets of a sea battle

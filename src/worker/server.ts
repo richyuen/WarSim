@@ -152,6 +152,8 @@ export class SimServer {
   private airZonesSent: AirZones | null = null;
   private airHoldersSent = '';
   private airShown = false;
+  /** The day the air control was last looked at (PLAN 5.8n): a pump that steps past a day's first hour sends the day's at its first look. */
+  private airDay = -1;
   /**
    * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
    * told. `before`: the order it replaced, which stands again if this one is refused.
@@ -276,6 +278,10 @@ export class SimServer {
         this.unrestVersion = -1;
         this.seaZonesSent = null;
         this.seaHoldersSent = '';
+        // The loaded game's holders, at once (PLAN 5.8n); `airShown` outlives it, as `seaShown`.
+        this.airZonesSent = null;
+        this.airHoldersSent = '';
+        this.airDay = -1;
         this.ordered.clear();
         this.statsTick = -1;
         this.lastStatsMs = -1;
@@ -362,6 +368,9 @@ export class SimServer {
     this.unrestVersion = -1;
     this.seaZonesSent = null;
     this.seaHoldersSent = '';
+    this.airZonesSent = null;
+    this.airHoldersSent = '';
+    this.airDay = -1;
     this.ordered.clear();
     this.statsTick = -1;
     this.lastStatsMs = -1;
@@ -650,10 +659,14 @@ export class SimServer {
         this.seaHoldersSent = key;
       }
     }
-    // Who holds the air of each air zone, for its map mode (PLAN 5.7c): at a day's first hour
-    // when it changed, with the zones of the cells the first time; once more all none where the
-    // page was shown holders and none fly now.
-    if ((world.airPower.size > 0 || this.airShown) && (world.tick % 24 === 0 || this.airZonesSent === null)) {
+    // Who holds the air of each air zone, for its map mode (PLAN 5.7c): at a day's first hour, or
+    // the first look of a day a pump stepped past it in (PLAN 5.8n), when it changed, with the
+    // zones of the cells the first time and after a load; once more all none where the page was
+    // shown holders and none fly now.
+    const day = Math.floor(world.tick / 24);
+    const newDay = day !== this.airDay;
+    this.airDay = day;
+    if ((world.airPower.size > 0 || this.airShown) && (world.tick % 24 === 0 || newDay || this.airZonesSent === null)) {
       const zones = airOf(world);
       const holder = airHolders(world, zones.count);
       const key = holder.join(',');

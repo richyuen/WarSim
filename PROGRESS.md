@@ -14941,3 +14941,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   (2,926 ms, 2.03 ms, 26.1 ms) and that bound, since green alone; the pin, build and parity green
   by hand.
 - **Next:** PLAN 5.8n.
+
+## 2026-10-13 — PLAN 5.8n: the air mode after a load, and a day a pump stepped past (ADR-338)
+
+- **Done:** the worker forgets the air zones and holders sent on a load and an init, and looks
+  at them at the first look of each day as well as its first hour (`airDay`).
+- **Tests:** `serverAirControl` (2 more; both failed before).
+- **The pin holds** at ae18ce8c (the worker's).
+- **The gate:** the related unit tests (122 of 123) red only by `snapshot-perf` of BLOCKERS
+  (2.67 ms); build and parity green by hand.
+- **Next:** PLAN 5.8o.

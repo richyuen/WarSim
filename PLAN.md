@@ -42,9 +42,7 @@ quick sweep as a smoke test.
   - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the […]
   - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships […]
   - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base): […]
-  - [ ] 5.8n The air-superiority mode after a load shows the game before's holders until the next
-    day's first hour (paused: for good), and a pump that steps past a day's first hour skips it:
-    the worker's air fields reset with a load; sent when the day changed.
+  - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next […]
   - [ ] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only):
     refused, as any formation that is not of the land.
   - [ ] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to
