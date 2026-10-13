@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-328 · 2026-10-13 · accepted — SPEC re-read for drift since the last review; three gaps of Phase 5 (PLAN 5.8b)
+
+- **Set right in SPEC §6.3:** the air zones are read (5.1a said by nothing); wings exist from the
+  start and none is built (5.1b said none existed); a wing at its base is not drawn, its sorties
+  are (5.1d said the page drew none); `sortieAt` is in `shared/`; air combat within 150 km
+  (5.3a's text, before 5.7d); the sorties drawn in the hour a snapshot ends; the tactical view's
+  line as built. §9: the air-superiority mode among the modes built, not the planned. §8's T2 row:
+  the sorties at T0 and T1 too.
+- **Drift that is a gap, not text:** SPEC §6.3 has wings built, air superiority acting on supply,
+  naval detection and bombing accuracy, and the transports' missions (paradrop, air supply). None
+  is built. They are Phase 5's (PROMPT step 9: a task out of the review belongs to the phase it
+  reviews): parts 5.8s, 5.8t, 5.8u. Interception is no mission of its own: a patrol meets what
+  comes within 150 km of it; SPEC says so.
+- **ADR-288 to ADR-305** (PLAN 4.8e to 4.11, the gate's review run): each looked for in SPEC.
+  Two were not there and are now: the lane graph built after an init or a load (ADR-288), a place
+  aboard ending with its formation or its transports (ADR-292). The rest are.
+
 ### ADR-327 · 2026-10-13 · accepted — The eleventh independent read: ten findings and a suspicion, parts 5.8i to 5.8r (PLAN 5.8a)
 
 - **The read.** A reader with no part in the code (ADR-74), the 71 files of `src/`, `data/` and

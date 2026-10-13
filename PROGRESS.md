@@ -14849,3 +14849,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   base; the air mode after a load; a wing aboard transports; two of the gate's review run; the
   industry order's key). One on the watch list (paths that wrap on a map that does not loop).
 - **Next:** PLAN 5.8b.
+
+## 2026-10-13 — PLAN 5.8b: SPEC re-read for drift (ADR-328, documents)
+
+- **Done:** SPEC §6.3, §8 and §9 set right for Phase 5 as built (eight places); ADR-288 and
+  ADR-292 written into SPEC (the rest of ADR-288 to 305 were there). Three gaps of SPEC
+  §6.3 not built: wings built, air superiority's other effects, the transports' missions: parts
+  5.8s, 5.8t, 5.8u.
+- **Next:** PLAN 5.8c.

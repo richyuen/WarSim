@@ -7826,3 +7826,20 @@ Of 5.8 (open in PLAN.md):
     changed or why. Each finding is checked against the code here before it is anything; those
     a player can meet become parts 5.8i and on, each with a test that fails first, most severe
     first; the rest go on the watch list.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326)
+    against SPEC's text; what it says that the code does not, or the other way, set right.

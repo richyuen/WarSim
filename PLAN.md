@@ -33,8 +33,7 @@ quick sweep as a smoke test.
   Split 2026-10-13, as 4.8 was: the pass is several causes, one a commit. A part is not a
   numbered task; the last part ticks 5.8 after `npm run check:review` (ADR-297).
   - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and […]
-  - [ ] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326)
-    against SPEC's text; what it says that the code does not, or the other way, set right.
+  - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326) […]
   - [ ] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
     reads, code no path reaches, a rule written twice.
   - [ ] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule
@@ -69,6 +68,15 @@ quick sweep as a smoke test.
   - [ ] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the
     industry, and an editor's change that keeps the sum keeps a stale order in a running game
     that a loaded one does not have. A test first; a key that tells such changes apart.
+  - [ ] 5.8s Wings built (found by 5.8b: SPEC §6.3 has them, the rules refuse them): an air
+    template ordered as a land one is, delivered at an airbase its nation holds with room (none:
+    refused); the economic AI keeps its air force, a share of its army's upkeep. Until then a
+    nation's air force only shrinks.
+  - [ ] 5.8t Air superiority's other effects (SPEC §6.3, found by 5.8b): a formation's supply
+    in a zone the enemy holds the air of, a fleet's detection, a strike's bombs. Each a factor
+    of the zone's superiority, 1 at a half, as the land's fire (ADR-316).
+  - [ ] 5.8u The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut
+    off, a paradrop of a formation from an airbase within range.
   - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
