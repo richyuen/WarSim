@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-332 · 2026-10-13 · accepted — Air superiority summed by nation (PLAN 5.8i)
+
+- **Found** (the eleventh read, ADR-327): `airSuperiority` summed each side's power in the order of
+  the zone's map, the order of first flight in a running game (and an entry that faded out and
+  came back went to the end) and by id after a load (`world.ts` saves it sorted). A float sum is
+  its order's: the same zone gave another superiority, every land shot's `airFactor` another
+  fire, and a saved game played on otherwise. Seed 1, Germany on Poland, saved on day 2: another
+  hash on day 4.
+- **Decision.** The sums by nation id. Nothing else reads the map in its order for a value (the air
+  AI's held zones are a set; the decay and the holders go zone by zone).
+- **The pin moves** 28d6b82d → 77670f43.
+- **Tests.** `airDesync.test.ts`: the same five powers in two orders, 50 times: the same
+  superiority (10 differed); the game saved on day 2 and loaded plays three days as the one left
+  running (day 4 differed). Both failed before.
+
 ### ADR-331 · 2026-10-13 · accepted — Phase 5's tick time (PLAN 5.8e)
 
 - **Measured** (a cloud container, unpinned, one five-year run of seed 99 each, the same hour):

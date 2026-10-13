@@ -7894,3 +7894,23 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's
     systems' share; over the budget of PLAN 7.1, the numbers in BLOCKERS.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority
+    sums each side's power in the order of the zone's map, the nations' order of first flight in
+    a running game and by id after a load (`airSuperiority`; read by every land shot's
+    `airFactor` and by the air AI). The sums in a fixed order. Found by 5.8a, run there: 2,353
+    of 20,000 random four-nation zones differ.

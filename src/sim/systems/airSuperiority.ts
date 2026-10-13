@@ -52,7 +52,9 @@ export function airSuperiority(world: World, n: number, zone: number): number {
   if (!byNation) return 0.5;
   let own = 0;
   let enemy = 0;
-  for (const [m, p] of byNation) {
+  // By nation, not by the map's order: that is the order of first flight in a running game and
+  // by id after a load, and a float sum is its order's (PLAN 5.8i).
+  for (const [m, p] of [...byNation].sort((a, b) => a[0] - b[0])) {
     if (m === n || world.wars.sameSide(n, m)) own += p;
     else if (world.wars.atWar(n, m)) enemy += p;
   }

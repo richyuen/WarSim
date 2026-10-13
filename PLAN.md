@@ -37,11 +37,7 @@ quick sweep as a smoke test.
   - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing […]
   - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule […]
   - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's […]
-  - [ ] 5.8i A saved game plays on otherwise than the same game left running: air superiority
-    sums each side's power in the order of the zone's map, the nations' order of first flight in
-    a running game and by id after a load (`airSuperiority`; read by every land shot's
-    `airFactor` and by the air AI). The sums in a fixed order. Found by 5.8a, run there: 2,353
-    of 20,000 random four-nation zones differ.
+  - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority […]
   - [ ] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until
     `airSystem` runs): `basePlace(0)` is null and is spread. Refused with `NoBase`.
   - [ ] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the

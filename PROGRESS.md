@@ -14880,3 +14880,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Done:** seed 99's five years, 7.971 ms a tick before Phase 5 and 9.390 after (× 1.18, this
   container); the air's systems 0.90 ms of it (9.6 %). In BLOCKERS for PLAN 7.1 (ADR-289).
 - **Next:** PLAN 5.8i (the parts the read found; 5.8g and 5.8h last).
+
+## 2026-10-13 — PLAN 5.8i: air superiority summed by nation (ADR-332)
+
+- **Done:** `airSuperiority` sums by nation id: a saved game plays on as the game left running.
+- **Tests:** `airDesync.test.ts` (2, both failed before).
+- **The pin moves** 28d6b82d → 77670f43.
+- **The gate:** the related unit tests (889 of 892) red only by the three timing tests of
+  BLOCKERS (3,595 ms, 3.12 ms, 26.5 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8j.
