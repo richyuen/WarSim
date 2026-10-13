@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-304 · 2026-10-13 · accepted — The sea-control mode says whose (PLAN 4.10c)
+
+- **Found** (the critic's R4-B4): the sea-control mode's tints did not say whose navy held a
+  zone: the legend had "held" and "open" with no colours.
+- **Decision.** The worker sends each zone's sea's name with the zones (`seaControl.names`, from
+  the map's seeds; '' for a zone no named sea has). The view keeps the zones, the holders and
+  the names, tells the holders with their zone counts (the most first) when they change, and,
+  in the sea-control mode, the zone under the cursor when it changes. The legend lists 8
+  holders in their nation's colours with their zones (and how many more), and the zone under
+  the cursor: "<sea>: held by <nation>" or "held by none".
+- **Tests.** `seaLegend1938.spec.ts`: on the first day of 1938 the holders are listed, the most
+  zones first, the United Kingdom among them; the cursor over Scapa Flow's water names its zone,
+  held by the United Kingdom; over the South Pacific, held by none. Picture
+  `sea-control-legend.png`.
+
 ### ADR-303 · 2026-10-13 · accepted — A sea battle is seen while it lasts (PLAN 4.10b)
 
 - **Found** (the critic's R4-B4; PLAN 4.10's split): on seed 6131 the sim fires at sea and the

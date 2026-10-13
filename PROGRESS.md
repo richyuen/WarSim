@@ -14557,3 +14557,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   with the `seas` of the snapshot, 2.72 to 2.79 ms at HEAD, three runs each); the pin, build and
   parity green by hand.
 - **Next:** PLAN 4.10c.
+
+## 2026-10-13 — PLAN 4.10c: the sea-control mode says whose (ADR-304)
+
+- **Done:** the zones' sea names sent with them; the legend lists the holders in their colours
+  with their zones, and names the zone under the cursor with its holder. SPEC §8 says so.
+- **Tests:** `seaLegend1938.spec.ts` (23 s); by hand `seaControl1938`, `mapModes1938` (2 of 2).
+- **The pin:** the sim is not changed.
+- **The gate:** the related unit tests 284 of 285, red only by `snapshot-perf` of BLOCKERS (the
+  snapshot is not changed here); the pin, build and parity green by hand.
+- **Next:** PLAN 4.10d.

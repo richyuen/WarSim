@@ -69,7 +69,7 @@ export class SimClient {
       return;
     }
     if (msg.type === 'seaControl') {
-      for (const l of this.seaControlListeners) l(msg.holder, msg.zones);
+      for (const l of this.seaControlListeners) l(msg.holder, msg.zones, msg.names);
       return;
     }
     if (msg.type === 'provinceStats') {
@@ -159,9 +159,9 @@ export class SimClient {
   /** Listeners must copy what they need: the snapshot's arrays are returned to the worker on the next frame. */
   /** Province unrest from the worker (PLAN 1.30b); late listeners get the last values at once. */
   unrest: Uint8Array | null = null;
-  private readonly seaControlListeners = new Set<(holder: Uint16Array, zones?: Uint16Array) => void>();
+  private readonly seaControlListeners = new Set<(holder: Uint16Array, zones?: Uint16Array, names?: string[]) => void>();
   /** Sea control for its map mode (PLAN 4.7a): each zone's holder, and the cells' zones when new. */
-  onSeaControl(l: (holder: Uint16Array, zones?: Uint16Array) => void): () => void {
+  onSeaControl(l: (holder: Uint16Array, zones?: Uint16Array, names?: string[]) => void): () => void {
     this.seaControlListeners.add(l);
     return () => this.seaControlListeners.delete(l);
   }

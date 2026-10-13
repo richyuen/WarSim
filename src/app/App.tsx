@@ -269,7 +269,12 @@ export function App({
           }
         />
       ) : null}
-      <MapLegend mode={hud.mapMode.value} selected={hud.selected.value ? nameOf(hud.selected.value) : null} />
+      <MapLegend
+        mode={hud.mapMode.value}
+        selected={hud.selected.value ? nameOf(hud.selected.value) : null}
+        seaHolders={hud.seaHolders.value.map((h) => ({ name: displayName(byId.get(h.id)?.name ?? `#${h.id}`), color: byId.get(h.id)?.color ?? 0x777777, zones: h.zones }))}
+        seaHover={hud.seaHover.value ? { name: hud.seaHover.value.name, holder: hud.seaHover.value.holder ? displayName(byId.get(hud.seaHover.value.holder)?.name ?? `#${hud.seaHover.value.holder}`) : null } : null}
+      />
     </>
   );
 }

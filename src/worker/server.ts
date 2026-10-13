@@ -633,7 +633,9 @@ export class SimServer {
         const holder = holders.slice();
         this.seaShown = holder.some((h) => h !== 0);
         const fresh = zones !== this.seaZonesSent ? zones.zoneOf.slice() : undefined;
-        if (fresh) this.post({ type: 'seaControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
+        // With the zones, each one's sea by name (PLAN 4.10c): the legend names the zone under the cursor.
+        const names = fresh ? Array.from({ length: zones.count + 1 }, (_, k) => (k === 0 ? '' : (world.seaSeeds[zones.seed[k]!]?.name ?? ''))) : undefined;
+        if (fresh) this.post({ type: 'seaControl', holder, zones: fresh, names: names! }, [holder.buffer, fresh.buffer]);
         else this.post({ type: 'seaControl', holder }, [holder.buffer]);
         this.seaZonesSent = zones;
         this.seaHoldersSent = key;

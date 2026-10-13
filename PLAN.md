@@ -40,8 +40,7 @@ quick sweep as a smoke test.
   every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
   - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
   - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
-  - [ ] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the
-    zone under the cursor named with its holder. e2e.
+  - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the […]
   - [ ] 4.10d The AT's specs (above), and the tick of 4.10.
 - [ ] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
   value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run

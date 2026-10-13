@@ -222,6 +222,12 @@ export class MapView {
       return screenToWorld(this.controller.cam, e.clientX - r.left, e.clientY - r.top, canvas.clientWidth, canvas.clientHeight);
     };
     let stroke: { id: number; cx: number; cy: number } | null = null;
+    // The sea zone under the cursor in the sea-control mode (PLAN 4.10c), told when it changes.
+    canvas.addEventListener('pointermove', (e) => {
+      if (this.mapMode !== 'seaControl') return;
+      const [wx, wy] = worldAt(e);
+      this.hoverSea(wx, wy);
+    });
     window.addEventListener('pointermove', (e) => {
       if (!stroke || e.pointerId !== stroke.id) return;
       const [wx, wy] = worldAt(e);
@@ -310,9 +316,18 @@ export class MapView {
       this.scatterKey = '';
       this.dirty = true;
     });
-    sim.onSeaControl((holder, zones) => {
-      if (zones) this.map.setSeaZones(this.geo.w, this.geo.h, zones);
+    sim.onSeaControl((holder, zones, names) => {
+      if (zones) {
+        this.map.setSeaZones(this.geo.w, this.geo.h, zones);
+        this.seaZoneOf = zones.slice();
+        this.seaNames = names ?? [];
+      }
       this.map.setSeaHolders(holder);
+      this.seaHolder = holder.slice();
+      // The holders and their zones, for the legend (PLAN 4.10c), the most first.
+      const count = new Map<number, number>();
+      for (let z = 1; z < this.seaHolder.length; z++) if (this.seaHolder[z]! !== 0) count.set(this.seaHolder[z]!, (count.get(this.seaHolder[z]!) ?? 0) + 1);
+      this.onSeaHolders([...count].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(([id, zones]) => ({ id, zones })));
       this.dirty = true;
     });
     sim.onUnrest((u) => {
@@ -639,6 +654,35 @@ export class MapView {
   onSeaBattles: (battles: SeaBattleView[]) => void = () => {};
   /** Where the sea battles' marks were drawn in the last frame (tests). */
   seaMarks: { x: number; y: number }[] = [];
+
+  /** Sea control (PLAN 4.10c): each cell's zone, each zone's holder and sea's name, as the worker sent them. */
+  private seaZoneOf = new Uint16Array(0);
+  private seaHolder = new Uint16Array(0);
+  private seaNames: string[] = [];
+  private seaHovered = -1;
+  /** The holders of the seas and how many zones each holds, the most first (the legend). */
+  onSeaHolders: (holders: { id: number; zones: number }[]) => void = () => {};
+  /** The zone under the cursor in the sea-control mode, or null off the sea (the legend). */
+  onSeaHover: (zone: { name: string; holder: number } | null) => void = () => {};
+
+  /** The zone at (x, y), in cells, with its sea's name and holder; null where no zone is. */
+  seaZoneAt(x: number, y: number): { zone: number; name: string; holder: number } | null {
+    const { w, h } = this.geo;
+    const cx = ((Math.floor(x) % w) + w) % w;
+    const cy = Math.floor(y);
+    if (cy < 0 || cy >= h || this.seaZoneOf.length !== w * h) return null;
+    const zone = this.seaZoneOf[cy * w + cx]!;
+    return zone === 0 ? null : { zone, name: this.seaNames[zone] ?? '', holder: this.seaHolder[zone] ?? 0 };
+  }
+
+  /** Tells the zone at (x, y) when it is another than the last (PLAN 4.10c; the pointer, tests). */
+  hoverSea(x: number, y: number): void {
+    const at = this.seaZoneAt(x, y);
+    const key = at ? at.zone * 65536 + at.holder : 0;
+    if (key === this.seaHovered) return;
+    this.seaHovered = key;
+    this.onSeaHover(at ? { name: at.name, holder: at.holder } : null);
+  }
 
   /** The sea battles going on, from the last snapshot (PLAN 4.10b). */
   seaBattles(): SeaBattleView[] {

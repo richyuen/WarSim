@@ -61,6 +61,10 @@ export class Hud {
   onShowPlace: (x: number, y: number) => void = () => {};
   /** The sea battles going on (PLAN 4.10b): the ticker lists them, a click flies to both fleets. */
   readonly seaBattles = signal<SeaBattleView[]>([]);
+  /** Who holds the seas, and how many zones each (PLAN 4.10c), the most first; the sea-control legend. */
+  readonly seaHolders = signal<{ id: number; zones: number }[]>([]);
+  /** The sea zone under the cursor in the sea-control mode (PLAN 4.10c), null off the sea. */
+  readonly seaHover = signal<{ name: string; holder: number } | null>(null);
 
   /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
   toBattle(war: number): void {

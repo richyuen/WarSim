@@ -2399,7 +2399,10 @@ on screen.
     sea control yet, as after a load of a save in which no zone is held, is sent all open
     once where the page had holders, PLAN 4.8p); the shader tints a
     zone held with 0.5 of its holder's colour over the sea's, leaves an open one the sea's, and
-    fades the land 0.65 towards grey (fill mode 3).
+    fades the land 0.65 towards grey (fill mode 3). Its legend (PLAN 4.10c, ADR-304) lists the
+    holders in their colours with their zones, the most first (8, and how many more), and names
+    the zone under the cursor with its holder ("Inner Seas: held by United Kingdom"; its sea's
+    name from the map's seeds, sent with the zones; "held by none").
 - **Map modes still planned**: air superiority, fallout, supply (with their phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
   section `world.names`; the empty name gives back the scenario's name or the founding
