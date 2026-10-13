@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-306 · 2026-10-13 · accepted — Air zones: the sea's zones, and the land in regions of whole provinces (PLAN 5.1a)
+
+- **Context.** SPEC §6.3 reckons the air war per zone and hour; the sea has its zones (PLAN 4.1a),
+  the land none.
+- **Decision.** Air zones are the sea zones over water as they are, and over land regions of
+  whole nodes of the province graph (provinces, a strait's body, a run of land no province has)
+  of about `AIR_ZONE_KM2` = 1.5 M km², the sea zones' size: seeds on a lattice of `sqrt(AIR_ZONE_KM2)`
+  km by the grid's km per cell, on land components of at least a third of that (one seed at
+  its lowest node where none falls); every node of those to the seed that reaches it first over
+  the graph by the km between nodes' centres (ties to the lower seed), so a region is joined by
+  its own nodes. A component under a third (an island; at first each was a zone: 192 of 279
+  under 300,000 km²) goes whole to the zone of the seed nearest its lowest node by straight km.
+  Zones 1…land are the land's in the order of their seeds' cells, then the sea's. Derived (`airOf`,
+  cached by the province graph and the sea zones), not saved, not hashed, read by nothing.
+- **On the 1938 map at M:** 86 land zones (0.43 to 4.1 M km², median 1.43 M) and 428 sea zones,
+  in 88 ms.
+- **Tests.** `airZones1938.test.ts`: every cell of a node or a sea zone in one zone and no other,
+  the sea's the sea zones; each land zone within a quarter and three times the target; each in
+  one piece over the graph but for islands under a third; the same zones built again.
+
 ### ADR-305 · 2026-10-13 · accepted — The ranking's rows hold their names and values (PLAN 4.11)
 
 - **Found** (the critic's R4-B6): the ranking's value floated right of its name; a name too long

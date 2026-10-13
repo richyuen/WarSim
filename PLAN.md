@@ -31,11 +31,7 @@ quick sweep as a smoke test.
   types (fighters to transports, range 500 to 3,000 km) and `data/buildings/buildings.json` an
   airbase (50 aircraft a level); no air template, no airbase in the 1938 scenario, no wing in
   the state. One cause a commit:
-  - [ ] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea
-    zones over water as they are, the land in regions of whole provinces of about the same
-    area, by the same spread from seeds. Derived, not saved, not hashed, read by nothing yet.
-    Test: every cell with a province or a sea zone in one air zone, each zone in one piece,
-    their areas within a factor of the target.
+  - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea […]
   - [ ] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber,
     close support, naval bomber and transport groups) in the scenario's rules after the sea
     ones, a template of the air domain; a wing is a formation of one. None exists: the queue

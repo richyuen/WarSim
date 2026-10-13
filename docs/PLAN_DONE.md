@@ -7413,3 +7413,24 @@ Of 4.10 (open in PLAN.md):
   a flex row for each line, the name cut by an ellipsis, the value never wrapping.
   AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
   no value wraps.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea
+    zones over water as they are, the land in regions of whole provinces of about the same
+    area, by the same spread from seeds. Derived, not saved, not hashed, read by nothing yet.
+    Test: every cell with a province or a sea zone in one air zone, each zone in one piece
+    (an island under a third of the target joins the nearest zone), their areas within a
+    factor of the target.

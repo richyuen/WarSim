@@ -6,6 +6,7 @@ import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildLaneGraph, portWaters, seaBasins, type LaneGraph, type SeaBasins, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
+import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
@@ -526,6 +527,18 @@ export function laneOf(world: World): LaneGraph {
 }
 
 const basins = new WeakMap<SeaZones, SeaBasins>();
+const airZones = new WeakMap<ProvinceGraph, WeakMap<SeaZones, AirZones>>();
+
+/** The world's air zones (`buildAirZones`, PLAN 5.1a): built once for its province graph and sea zones, cached by them. */
+export function airOf(world: World): AirZones {
+  const nav = navOf(world);
+  const z = seaOf(world);
+  let bySea = airZones.get(nav.graph);
+  if (!bySea) airZones.set(nav.graph, (bySea = new WeakMap()));
+  let a = bySea.get(z);
+  if (!a) bySea.set(z, (a = buildAirZones(nav.grid, nav.graph, z)));
+  return a;
+}
 
 /** The world's sea basins (`seaBasins`, PLAN 4.8o): built once for its zones, cached by them. */
 export function basinOf(world: World): SeaBasins {

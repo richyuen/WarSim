@@ -1704,6 +1704,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   derived kinematics `(base, target, launchTick, speed)`, so its position is never stored.
   Air combat is at element level between sorties in the same zone. AA from ground
   elements, buildings and ships shoots down planes.
+- *As built (PLAN 5.1a, ADR-306; `src/sim/nav/airZones.ts`, `airOf(world)`):* the air zones are
+  the sea zones over water (428 on the 1938 map) and, over land, regions of whole nodes of the
+  province graph of about 1.5 M km² (`AIR_ZONE_KM2`), 86 in 1938 (0.43 to 4.1 M km²): seeds on
+  a lattice of that side in km, each region grown from its seed over the graph by the km between
+  the nodes' centres; a land mass under a third of the target (an island) joins whole the zone
+  of the nearest seed. Derived, not saved; read by nothing yet.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

@@ -14590,3 +14590,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   air template, airbase or wing in the game. Parts: 5.1a air zones, 5.1b air templates, 5.1c
   airbases, 5.1d the 1938 air forces, 5.1e range and the mission order (the AT).
 - **Next:** PLAN 5.1a.
+
+## 2026-10-13 — PLAN 5.1a: air zones (ADR-306)
+
+- **Done:** `buildAirZones` / `airOf`: the sea zones over water, the land in regions of whole
+  province-graph nodes of about 1.5 M km² grown from a lattice of seeds; islands under a third of
+  that join the nearest zone. 1938: 86 land and 428 sea zones, 88 ms. Read by nothing yet. SPEC §6.3.
+- **Tests:** `airZones1938.test.ts` (4).
+- **The gate:** first red by lint (`Math.hypot` in the sim, not bit-identical: `dmath`'s `sqrt`;
+  two comma expressions in the test); then the related unit tests 831 of 833, red only by two
+  timing tests of BLOCKERS; the pin (unchanged), build and parity green by hand.
+- **Next:** PLAN 5.1b.
