@@ -14748,3 +14748,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (871 of 873) red only by two timing tests of BLOCKERS
   (3,173 ms, 2.48 ms); the pin (a6c4ac55), build and parity green by hand.
 - **Next:** PLAN 5.5.
+
+## 2026-10-13 — PLAN 5.5a: strategic bombing of industry (ADR-320)
+
+- **Done:** PLAN 5.5 split into 5.5a and 5.5b. `bomb_t` in the air units' data and schema;
+  `bombIndustry` (a strike's bombs on the enemy's industry within a cell); `world.bombDamage`
+  saved; the monthly income takes it off; `repairSystem` 2% a day. SPEC §6.3, PARITY.
+- **Tests:** `bombing1938.test.ts` (3), the AT of 5.5.
+- **The pin holds** at a6c4ac55.
+- **The gate:** the unit stage in full (a data file changed): 1,333 of 1,335, red only by two
+  timing tests of BLOCKERS (3,447 ms, 3.02 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.5b.

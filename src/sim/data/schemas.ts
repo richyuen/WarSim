@@ -122,6 +122,8 @@ export const UnitStats = z.strictObject({
   fuelPerHour: nonNeg, supplyPerHour: nonNeg,
   /** A ship's torpedoes (PLAN 4.3b): their damage an hour and their reach, km; its depth charges' damage at a submarine. 0 when left out. */
   torpedo: nonNeg.optional(), torpedo_km: nonNeg.optional(), asw: nonNeg.optional(),
+  /** An aircraft's bomb load, tons (PLAN 5.5a): what a strike drops on industry. 0 when left out. */
+  bomb_t: nonNeg.optional(),
 });
 
 export const UnitTypeDef = z

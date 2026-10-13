@@ -1773,6 +1773,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.4d, ADR-319):* a carrier's wings on board see and strike for its fleet as far
   as a quarter of their range (250 km): its detection and its reach in a sea battle; once in 4
   hours they strike the enemy's surface ships of the battle as a naval strike does.
+- *As built (PLAN 5.5a, ADR-320; `bombIndustry`, `repairSystem`):* a strike on land drops its
+  aircraft's bombs (`bomb_t`) on the enemy's industry within a cell of its target: each cell
+  there out of work by tons × 2 $M over their industry together (at most 0.9); the monthly income
+  takes it off; repaired 2% a day.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

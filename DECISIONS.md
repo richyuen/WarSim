@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-320 · 2026-10-13 · accepted — Strategic bombing of industry, repaired day by day (PLAN 5.5a)
+
+- **Decision.**
+  - *Bombs* are data: `bomb_t` (tons an aircraft carries), a new optional stat of the units
+    (schema; 0 left out): a strategic bomber 2.5, a tactical bomber 1, a naval bomber 0.5, a
+    close support aircraft 0.25, a fighter none. `UnitRule.bombT`.
+  - *A strike on land* (`strikes`, ADR-317) drops its wing's bombs (`bombIndustry`) on the cells
+    within `BOMB_CELLS` (1) of its target that a nation at war with it controls and that have
+    industry (`cells.econ`), whether or not an enemy's formation is there: they share the tons by
+    their industry, so each loses the same share, tons × `BOMB_DAMAGE` (2 $M of a year's output
+    a ton) over their industry together, up to `MAX_DAMAGE` (0.9). `AirStrike` with 0 taken when
+    no formation was hit.
+  - *The damage* is state (`world.bombDamage`, per cell, saved while not empty). The monthly
+    income takes a cell's output × (1 − its damage), after the blockade and the convoys.
+  - *Repair*: at each day's first hour every damaged cell's damage × (1 − `REPAIR_DAILY`, 0.02), a
+    half-life of about 35 days; under `DAMAGE_FLOOR` it is gone (`repairSystem`, first in
+    `airSystem`, every hour).
+- **The figures.** A strategic bomber group (24 aircraft) drops 60 tons: 120 $M of output out of
+  work where it falls, against Germany's 1938 industry of tens of thousands of $M: a raid is a
+  small cut, a campaign of raids a large one.
+- **The pin holds** at a6c4ac55: no one flies a strike in an AI game yet.
+- **Tests.** `bombing1938.test.ts` (the AT of 5.5): a French strategic bomber group's raid on the
+  richest German cell in reach: the damage per cell by the rule; a fighter group, a nation at
+  peace bomb nothing; ten raids cut Germany's monthly income by their share of its land, a day
+  repairs 2%, an hour not the first of a day nothing, 400 days leave none and the income as it
+  was; in the game, a strike ordered on it bombs it, saved, the same game.
+
 ### ADR-319 · 2026-10-13 · accepted — Carrier air groups in fleet battles (PLAN 5.4d)
 
 - **Decision.** In `navalCombat.ts`:

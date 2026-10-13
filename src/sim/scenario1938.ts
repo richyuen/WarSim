@@ -95,7 +95,7 @@ type UnitDef = UnitTypeLite & {
   techReq?: string;
   cost: { gold: number; manpower: number; days: number };
   upkeep: { gold: number };
-  stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; aa: number; defense: number; fuelPerHour: number; speed_kmh: number; range_km: number; detection: number; stealth: number; torpedo?: number; torpedo_km?: number; asw?: number };
+  stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; aa: number; defense: number; fuelPerHour: number; speed_kmh: number; range_km: number; detection: number; stealth: number; torpedo?: number; torpedo_km?: number; asw?: number; bomb_t?: number };
   terrainMods: Partial<Record<TerrainId, { atk: number; def: number; speed: number }>>;
 };
 /** The unit types of the rules, by their index: the land's, then the sea's (PLAN 4.2a), then the air's (PLAN 5.1b). An element is saved with its type's index. */
@@ -181,6 +181,7 @@ export const RULES_1938: ScenarioRules = {
     torpedo: u.stats.torpedo ?? 0,
     torpedoKm: u.stats.torpedo_km ?? 0,
     asw: u.stats.asw ?? 0,
+    bombT: u.stats.bomb_t ?? 0,
     terrainAtk: TERRAIN_IDS.map((t) => u.terrainMods[t]?.atk ?? 1),
     terrainDef: TERRAIN_IDS.map((t) => u.terrainMods[t]?.def ?? 1),
     arm: ARM_OF_CLASS.get(u.class) ?? 0,

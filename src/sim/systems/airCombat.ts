@@ -11,6 +11,7 @@ import { EventKind } from '../../shared/events';
 import { Domain, type UnitRule, type World } from '../world';
 import { applyLoss, elementIndex, settleFormation } from './elements';
 import { seaKm } from './navalCombat';
+import { bombIndustry } from './bombing';
 import { ARMOR_PEN, effectiveness } from './combat';
 import { Leg, legHours, sortieAt } from './sorties';
 
@@ -231,7 +232,12 @@ export function strikes(world: World): void {
       if (dx > AA_CELLS || dy > AA_CELLS) return;
       for (const e of index.get(g) ?? []) if (ec.strength[e]! > 0) targets.push(e);
     });
-    if (targets.length === 0) continue;
+    // Its bombs on the industry there (PLAN 5.5a), whether or not an enemy's formation is.
+    const tons = bombIndustry(world, id, s.tx, s.ty);
+    if (targets.length === 0) {
+      if (tons > 0) world.out.emit(world.tick, EventKind.AirStrike, id, 0, s.tx, s.ty);
+      continue;
+    }
     targets.sort((a, b) => a - b);
     const health = targets.map((t) => ec.strength[t]! * rules.units[ec.unit[t]!]!.hpPerUnit);
     const total = health.reduce((a, b) => a + b, 0);

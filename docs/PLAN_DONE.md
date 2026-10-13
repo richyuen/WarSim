@@ -7693,3 +7693,21 @@ Of 5.4 (open in PLAN.md):
   - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by […]
   - [x] 5.4d Carrier air groups in fleet battles: a carrier's wings strike the fleets it is in
     battle with, and a fleet with aircraft (a carrier's) sees by them (its detection).
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.5 (open in PLAN.md):
+
+  - [x] 5.5a Industry and cities: a strike on the enemy's land drops its aircraft's bombs
+    (`bomb_t`, a new stat of the air units) on the industry within reach: damage per cell (a
+    share of its `econ` out of the month's income), repaired day by day; saved. The AT.

@@ -11,6 +11,7 @@ import { EventKind, RejectReason } from '../../shared/events';
 import { airbaseRoom } from '../data/airbases';
 import { airCombat, antiAir, strikes } from './airCombat';
 import { airPowerSystem } from './airSuperiority';
+import { repairSystem } from './bombing';
 import { destroyFormation } from './elements';
 import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
@@ -18,6 +19,7 @@ import { blocOf } from './supply';
 import { airOf, type World } from '../world';
 
 export function airSystem(world: World): void {
+  repairSystem(world);
   if (world.wingBase.size === 0) return;
   const f = world.formations;
   const c = f.cols;

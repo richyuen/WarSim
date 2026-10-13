@@ -26,7 +26,7 @@
     },
     {
       "id": "bomber_tactical", "nameKey": "unit.bomber_tactical", "class": "bomber_tac", "domain": "air", "elementSize": 8, "mobility": "air",
-      "stats": { "soft": 18, "hard": 6, "defense": 10, "breakthrough": 0, "armor": 0, "piercing": 15, "aa": 4, "range_km": 1200, "speed_kmh": 400, "org": 50, "hpPerUnit": 8, "detection": 12, "stealth": 3, "fuelPerHour": 1.2, "supplyPerHour": 0.35 },
+      "stats": { "soft": 18, "hard": 6, "defense": 10, "breakthrough": 0, "armor": 0, "piercing": 15, "aa": 4, "range_km": 1200, "speed_kmh": 400, "org": 50, "hpPerUnit": 8, "detection": 12, "stealth": 3, "fuelPerHour": 1.2, "bomb_t": 1, "supplyPerHour": 0.35 },
       "cost": { "gold": 36, "industry": 35, "manpower": 40, "days": 75 },
       "upkeep": { "gold": 1.5, "supply": 0.35 },
       "terrainMods": {},
@@ -34,7 +34,7 @@
     },
     {
       "id": "bomber_strategic", "nameKey": "unit.bomber_strategic", "class": "bomber_str", "domain": "air", "elementSize": 6, "mobility": "air",
-      "stats": { "soft": 12, "hard": 3, "defense": 14, "breakthrough": 0, "armor": 0, "piercing": 10, "aa": 6, "range_km": 3000, "speed_kmh": 420, "org": 50, "hpPerUnit": 14, "detection": 10, "stealth": 2, "fuelPerHour": 2.5, "supplyPerHour": 0.6 },
+      "stats": { "soft": 12, "hard": 3, "defense": 14, "breakthrough": 0, "armor": 0, "piercing": 10, "aa": 6, "range_km": 3000, "speed_kmh": 420, "org": 50, "hpPerUnit": 14, "detection": 10, "stealth": 2, "fuelPerHour": 2.5, "bomb_t": 2.5, "supplyPerHour": 0.6 },
       "cost": { "gold": 70, "industry": 75, "manpower": 60, "days": 120 },
       "upkeep": { "gold": 3, "supply": 0.6 },
       "terrainMods": {},
@@ -42,7 +42,7 @@
     },
     {
       "id": "close_air_support", "nameKey": "unit.close_air_support", "class": "cas", "domain": "air", "elementSize": 10, "mobility": "air",
-      "stats": { "soft": 20, "hard": 12, "defense": 8, "breakthrough": 0, "armor": 0, "piercing": 30, "aa": 3, "range_km": 500, "speed_kmh": 350, "org": 50, "hpPerUnit": 5, "detection": 12, "stealth": 4, "fuelPerHour": 0.8, "supplyPerHour": 0.3 },
+      "stats": { "soft": 20, "hard": 12, "defense": 8, "breakthrough": 0, "armor": 0, "piercing": 30, "aa": 3, "range_km": 500, "speed_kmh": 350, "org": 50, "hpPerUnit": 5, "detection": 12, "stealth": 4, "fuelPerHour": 0.8, "bomb_t": 0.25, "supplyPerHour": 0.3 },
       "cost": { "gold": 26, "industry": 25, "manpower": 30, "days": 60 },
       "upkeep": { "gold": 1.1, "supply": 0.3 },
       "terrainMods": {},
@@ -50,7 +50,7 @@
     },
     {
       "id": "naval_bomber", "nameKey": "unit.naval_bomber", "class": "naval_bomber", "domain": "air", "elementSize": 8, "mobility": "air",
-      "stats": { "soft": 2, "hard": 20, "defense": 9, "breakthrough": 0, "armor": 0, "piercing": 70, "aa": 3, "range_km": 1000, "speed_kmh": 380, "org": 50, "hpPerUnit": 7, "detection": 18, "stealth": 4, "fuelPerHour": 1, "supplyPerHour": 0.35 },
+      "stats": { "soft": 2, "hard": 20, "defense": 9, "breakthrough": 0, "armor": 0, "piercing": 70, "aa": 3, "range_km": 1000, "speed_kmh": 380, "org": 50, "hpPerUnit": 7, "detection": 18, "stealth": 4, "fuelPerHour": 1, "bomb_t": 0.5, "supplyPerHour": 0.35 },
       "cost": { "gold": 32, "industry": 32, "manpower": 35, "days": 70 },
       "upkeep": { "gold": 1.4, "supply": 0.35 },
       "terrainMods": {},
