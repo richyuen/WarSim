@@ -7491,3 +7491,30 @@ Of 5.1 (open in PLAN.md):
     (`data/scenarios/1938/air.json`), the carriers' air groups aboard the carriers of the
     fleets; paid from the first month; no rule reads a wing yet. Test: counts by nation; ten
     years, every wing at its base.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.1 Air wings, airbases, carriers, range; air zones.
+  AT: a wing cannot be assigned a mission outside its range (test).
+  Split 2026-10-13, as 4.1 and 4.2 were. Found first: `data/units/air.json` has eight aircraft
+  types (fighters to transports, range 500 to 3,000 km) and `data/buildings/buildings.json` an
+  airbase (50 aircraft a level); no air template, no airbase in the 1938 scenario, no wing in
+  the state. One cause a commit:
+  - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea […]
+  - [x] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber, […]
+  - [x] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and […]
+  - [x] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record […]
+  - [x] 5.1e Range: a wing's base (an airbase, or a carrier, which moves with its fleet) and its
+    range (the least `range_km` of its aircraft); a mission order (an air zone to patrol, a
+    place to strike) refused beyond its range from its base, with its reason (`RejectReason`),
+    and an order to rebase to its side's airbase or carrier in range with room. Saved. The AT.

@@ -142,6 +142,10 @@ export const RejectReason = {
   NoSeaWay: 8,
   /** A fleet's order to a place that is no water and no port. */
   NotWater: 9,
+  /** An air wing's order beyond its range from its base (PLAN 5.1e). */
+  OutOfRange: 10,
+  /** An air wing's rebase: no airbase of its side and no carrier of its nation there with room for it (PLAN 5.1e). */
+  NoBase: 11,
 } as const;
 export type RejectReason = (typeof RejectReason)[keyof typeof RejectReason];
 

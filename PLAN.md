@@ -25,20 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.1 Air wings, airbases, carriers, range; air zones.
-  AT: a wing cannot be assigned a mission outside its range (test).
-  Split 2026-10-13, as 4.1 and 4.2 were. Found first: `data/units/air.json` has eight aircraft
-  types (fighters to transports, range 500 to 3,000 km) and `data/buildings/buildings.json` an
-  airbase (50 aircraft a level); no air template, no airbase in the 1938 scenario, no wing in
-  the state. One cause a commit:
-  - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea […]
-  - [x] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber, […]
-  - [x] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and […]
-  - [x] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record […]
-  - [ ] 5.1e Range: a wing's base (an airbase, or a carrier, which moves with its fleet) and its
-    range (the least `range_km` of its aircraft); a mission order (an air zone to patrol, a
-    place to strike) refused beyond its range from its base, with its reason (`RejectReason`),
-    and an order to rebase to its side's airbase or carrier in range with room. Saved. The AT.
 - [ ] 5.2 Mission scheduler + sorties as derived kinematics.
   AT: the sortie position function is pure (same inputs → same output, property test) and matches the sim's interception points.
 - [ ] 5.3 Air combat, interception, AA; air superiority per zone.
@@ -723,3 +709,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused […]
 - [x] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter […]
 - [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a […]
+- [x] 5.1 Air wings, airbases, carriers, range; air zones. […]

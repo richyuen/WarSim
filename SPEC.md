@@ -1733,6 +1733,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   fleet, which it follows hourly, `airSystem`; it is lost with its carrier). It is paid; it weighs
   nothing in a reckoning of forces yet; no rule of the land reads it (`World.offLand`: afloat or a
   wing); the page draws none yet (left out of the snapshot until PLAN 5.7).
+- *As built (PLAN 5.1e, ADR-310; `orderMission`, `orderRebase`):* a wing's range is the least
+  `range_km` of its aircraft, from its base (a carrier's moves with its fleet). A mission (patrol
+  about a place, strike a place; `world.wingMission`, saved) beyond it is refused with its reason
+  (`OutOfRange`). A wing rebases at once to an airbase of its side (its nation, bloc or allies at
+  war) within range with room for its aircraft, or to a carrier of its nation's with a free deck;
+  else `OutOfRange` or `NoBase`.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

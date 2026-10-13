@@ -20,6 +20,10 @@ export type Command =
    * when the formation is that nation's (a player's order; an id is given out again, PLAN 2.16Rk).
    */
   | { kind: 'moveFormation'; id: number; x: number; y: number; nation?: number }
+  /** An air wing's mission (PLAN 5.1e): patrol about (x, y) or strike it; refused beyond its range from its base. */
+  | { kind: 'wingMission'; id: number; mission: 'patrol' | 'strike'; x: number; y: number; nation?: number }
+  /** An air wing to another base (PLAN 5.1e): its side's airbase or its nation's carrier at (x, y), in range, with room. */
+  | { kind: 'wingRebase'; id: number; x: number; y: number; nation?: number }
   /** Global sim setting (PLAN 1.15): capturing a capital annexes the loser's territory. */
   | { kind: 'setSetting'; key: 'winnerTakesAll'; value: boolean }
   /** PLAN 1.19: revolts take one province or a restless region. */
@@ -122,6 +126,8 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   removeFormation: true,
   queueFormation: true,
   moveFormation: true,
+  wingMission: true,
+  wingRebase: true,
   setSetting: true,
   setEfficiency: true,
   lockEfficiency: true,

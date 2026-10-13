@@ -9,6 +9,7 @@ import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
 import type { Airbase } from './data/airbases';
+import type { WingMission } from './systems/air';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { xxhash32View } from './core/hash';
@@ -388,6 +389,8 @@ class WorldCore implements Stateful {
       // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
       // only while there is one, so a world with no sea battle saves and hashes as before.
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
+      // The air wings' missions (PLAN 5.1e): [id, kind (0 patrol, 1 strike), x, y] each, only while there is one.
+      ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : 0, m.x, m.y])) }]),
       // The air wings' bases (PLAN 5.1d): [id, base] each, only while there is one.
       ...(w.wingBase.size === 0 ? [] : [{ name: 'world.wingBase', dtype: 'f64' as const, data: Float64Array.from([...w.wingBase].sort((a, b) => a[0] - b[0]).flat()) }]),
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
@@ -434,6 +437,9 @@ class WorldCore implements Stateful {
     w.seaLinks = new Map();
     w.seaBound = new Map();
     w.wingBase = new Map();
+    w.wingMission = new Map();
+    const missions = sections.find((s) => s.name === 'world.wingMission')?.data as Float64Array | undefined;
+    for (let at = 0; missions && at < missions.length; at += 4) w.wingMission.set(missions[at]!, { kind: missions[at + 1] === 1 ? 'strike' : 'patrol', x: missions[at + 2]!, y: missions[at + 3]! });
     const wings = sections.find((s) => s.name === 'world.wingBase')?.data as Float64Array | undefined;
     for (let at = 0; wings && at < wings.length; at += 2) w.wingBase.set(wings[at]!, wings[at + 1]!);
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
@@ -921,6 +927,8 @@ export class World {
    * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.
    */
   wingBase = new Map<number, number>();
+  /** The air wings' missions (PLAN 5.1e, `orderMission`): state, saved while not empty; the scheduler of PLAN 5.2 reads them. */
+  wingMission = new Map<number, WingMission>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

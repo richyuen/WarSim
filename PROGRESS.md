@@ -14639,3 +14639,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   1,295 of 1,297, red only by the two timing tests of BLOCKERS (`snapshot-perf` 2.62 to 2.88 ms
   with the change, 2.31 to 3.24 at HEAD); the pin, build and parity green by hand.
 - **Next:** PLAN 5.1e.
+
+## 2026-10-13 — PLAN 5.1e: a wing's range; mission and rebase orders (ADR-310). PLAN 5.1 done
+
+- **Done:** `wingRange` (the least range of its aircraft) from its base (a carrier's from its
+  fleet); `wingMission` and `wingRebase` commands (`orderMission`, `orderRebase`); refusals
+  `OutOfRange` and `NoBase` (new `RejectReason`s); `world.wingMission` saved. SPEC §6.3.
+- **Tests:** `wingRange1938.test.ts` (7), the AT of 5.1.
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by the timing tests of BLOCKERS (the build's
+  3,131 ms, `snapshot-perf` 3.89 ms; one run before also the territory's per-tick cost); the pin,
+  build and parity green by hand.
+- **Next:** PLAN 5.2.

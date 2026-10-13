@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-310 · 2026-10-13 · accepted — A wing's range from its base; mission and rebase orders (PLAN 5.1e)
+
+- **Decision.**
+  - *Range* (`wingRange`): the least `range_km` of a wing's aircraft (a fighter group 800 km, a
+    strategic bomber group 3,000), from its base (`basePlace`: an airbase's land cell, or its
+    carrier's fleet wherever that is), by `seaKm` (the grid's km, east-west wrapped).
+  - *A mission* (`wingMission` command, `orderMission`): to patrol about a place or strike it,
+    kept as state (`world.wingMission`, saved while not empty) where the place is within range,
+    else refused with `MoveRejected` and a new `RejectReason.OutOfRange` (10); a refused order
+    leaves the last one standing. What it does is PLAN 5.2's scheduler.
+  - *A rebase* (`wingRebase` command, `orderRebase`): to an airbase within 2 cells of the place
+    held by its nation, its supply bloc or a nation fighting beside it, with room for its aircraft
+    (`airbaseRoom` less what is based there); or to a fleet of its nation's with a carrier
+    whose deck is free (a wing to a carrier). It must be within range of its base now. The wing is
+    there at once (the flight is PLAN 5.2's) and its mission ends. Refused: `OutOfRange` when the
+    only base that would do is beyond range, else a new `RejectReason.NoBase` (11).
+  - Both commands carry the ordering nation as a move does; another nation's wing is `NoSuch`.
+- **The pin holds** at 1377ab88: no rule or AI gives these orders yet.
+- **Tests.** `wingRange1938.test.ts` (the AT of 5.1): the ranges; Prague in a German fighter
+  group's range, Madrid not (refused, the patrol before kept); a land formation is no wing; a
+  strategic bomber group strikes 1,500 to 3,000 km off; a carrier wing's range moves with its
+  fleet; a rebase to an own airbase in range; a full base, a French one at peace and open sea
+  `NoBase`, Langley to March Field `OutOfRange`; to a carrier with a deck free; the command by its
+  nation, another's refused; a save loads the mission, the same game.
+
 ### ADR-309 · 2026-10-13 · accepted — The 1938 start's air forces at their airbases and on the carriers (PLAN 5.1d)
 
 - **Decision.**
