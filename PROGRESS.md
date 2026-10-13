@@ -14651,3 +14651,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   3,131 ms, `snapshot-perf` 3.89 ms; one run before also the territory's per-tick cost); the pin,
   build and parity green by hand.
 - **Next:** PLAN 5.2.
+
+## 2026-10-13 — PLAN 5.2a: a sortie's flight as a pure function (ADR-311)
+
+- **Done:** PLAN 5.2 split into 5.2a (the sortie) and 5.2b (the scheduler). `sortieAt`,
+  `sortieEnd`, `patrolHours` in `src/sim/systems/sorties.ts`. SPEC §6.3.
+- **Tests:** `sorties.test.ts` (4, property tests over random sorties); it found the end's
+  rounding (the tick a sortie ends read as on its way back).
+- **The pin holds**: nothing calls it yet.
+- **Next:** PLAN 5.2b.

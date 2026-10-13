@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-311 · 2026-10-13 · accepted — A sortie's flight as a pure function (PLAN 5.2a)
+
+- **Decision.** `src/sim/systems/sorties.ts`: a `Sortie` is what it was launched with (its
+  base's and target's places in cells, launch tick, speed in km/h, the km between, hours over
+  the target); `sortieAt(s, t, w)` gives its place and leg (out, over, back, home) at any time,
+  fractional too, on the straight line the short way round a wrapping map, at an even pace by
+  its leg's hours (km ÷ speed). A strike turns at once; a patrol stays over its zone
+  `patrolHours`: what its range leaves it, a range being out and back (2 × (range − km) ÷
+  speed), at most `PATROL_MAX_HOURS` (4). The end is reckoned by one sum (`sortieEnd`), so the
+  tick it ends it is home whatever the rounding (found by the property test).
+- **Why.** SPEC §6.3: a flight's position is never stored. The page's frames and PLAN 5.3's
+  interception read the one function. The line in cells, not the great circle: the zones are
+  coarse (an hour's air war is reckoned by zone) and the cells' km are the grid's.
+- **The pin holds**: nothing calls it yet (PLAN 5.2b).
+- **Tests.** `sorties.test.ts`: over 500 random sorties, the same place for the same inputs and
+  the sortie untouched; home before and after, the legs in order, over the target at it; the
+  share of the way flown is the share of the leg's hours, out and back; patrol hours.
+
 ### ADR-310 · 2026-10-13 · accepted — A wing's range from its base; mission and rebase orders (PLAN 5.1e)
 
 - **Decision.**

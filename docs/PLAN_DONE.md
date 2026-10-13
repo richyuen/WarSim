@@ -7518,3 +7518,22 @@ Of 5.1 (open in PLAN.md):
     range (the least `range_km` of its aircraft); a mission order (an air zone to patrol, a
     place to strike) refused beyond its range from its base, with its reason (`RejectReason`),
     and an order to rebase to its side's airbase or carrier in range with room. Saved. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.2 (open in PLAN.md):
+
+  - [x] 5.2a The sortie: its flight as a pure function of (base, target, launch hour, speed,
+    hours over the target): where it is at any time, fractional hours too, and on which leg
+    (out, over the target, back, home); none of it stored. A strike turns at once; a patrol
+    stays over its zone for the fuel its range leaves it, at most 4 hours. Property test.

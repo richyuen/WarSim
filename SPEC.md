@@ -1739,6 +1739,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   (`OutOfRange`). A wing rebases at once to an airbase of its side (its nation, bloc or allies at
   war) within range with room for its aircraft, or to a carrier of its nation's with a free deck;
   else `OutOfRange` or `NoBase`.
+- *As built (PLAN 5.2a, ADR-311; `src/sim/systems/sorties.ts`):* a sortie is its launch (base,
+  target, launch tick, speed, km, hours over the target); `sortieAt` gives its place and leg at
+  any time by a straight line between base and target at its speed. A strike turns at once; a
+  patrol stays over its zone for the fuel its range leaves it (2 × (range − km) ÷ speed), at
+  most 4 hours.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,
