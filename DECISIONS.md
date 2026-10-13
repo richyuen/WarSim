@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-344 · 2026-10-13 · accepted — The economic AI keeps an air force (PLAN 5.8s2)
+
+- **Found** (5.8b): with wings built (5.8s1) no nation of the AI ordered one; its air force only
+  shrank (seed 99: 216 wings at the start).
+- **Decision.** As a fleet (4.6e1): after the army's orders and a fleet's, a nation not poor
+  with an airfield and no wing in training orders one while its wings' upkeep is under
+  `AIR_SHARE` 0.1 of its army's (the orders in training with it), if its balance stays above
+  the need and its gold covers the price and `RESERVE_MONTHS` of income (`pickWing`): a fighter
+  group while fighters are under half its wings, else a tactical bomber group; the other when
+  it lacks the techs. A share of the army, as PLAN has it, not of the income: the air of 1938
+  was 0.064 of the world's army upkeep, a great power's 0.04 to 0.11. Britain's and the United
+  States', 0.8 with small armies, order none until most of it is gone; the rich nations with
+  room order now, the strategic and naval wings are not replaced. A wing is no longer counted
+  with the army's orders in training.
+- **The pin moves** ae18ce8c → d53a99d4: 42 wings ordered in seed 99's year by 35 nations
+  (Germany, France, Italy, Poland two each), 23 delivered; 157 wings at its end.
+- **Tests.** `airBudget1938` (2, new): France under its share orders a fighter group, one at a
+  time; Britain over it none; the Soviet Union, its books short, none; Germany with its fighters
+  over half its wings a tactical bomber group, and with no airfield none.
+
 ### ADR-343 · 2026-10-13 · accepted — Wings built (PLAN 5.8s1)
 
 - **Found** (5.8b): SPEC §6.3 has wings built; `queueFormation` refused every air template, so a

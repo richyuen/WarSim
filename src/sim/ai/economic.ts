@@ -46,6 +46,9 @@
  *    shipyard and no fleet in training orders one while its navy's upkeep is under NAVY_SHARE
  *    of its income, if its balance stays above the need with the fleet's upkeep and its gold
  *    covers the price and RESERVE_MONTHS of income.
+ *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
+ *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
+ *    a fighter group while fighters are under half its wings, else a tactical bomber group.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -65,7 +68,7 @@ import { TRIBUTE } from '../systems/puppets';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
-import { queueFormation, shipyard } from '../systems/production';
+import { airfield, queueFormation, shipyard } from '../systems/production';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
 import { Domain, navBuilt, seaRangeOf, type World } from '../world';
@@ -115,7 +118,16 @@ export interface BuildMix {
   armour: readonly number[];
   /** The fleets the AI builds (PLAN 4.6e1); none, it builds no fleet. */
   fleets?: { battle: number; cruiser: number; destroyer: number; transport: number };
+  /** The wings the AI builds (PLAN 5.8s2); none, it builds no wing. */
+  wings?: { fighter: number; tactical: number };
 }
+
+/**
+ * The share of its army's upkeep a nation keeps its air force's under (PLAN 5.8s2): it orders a
+ * wing below it. At the start of 1938 the world's is 0.064, a great power's 0.04 to 0.11 (Britain's
+ * and the United States', with small armies, 0.8).
+ */
+export const AIR_SHARE = 0.1;
 
 /** The share of its income a nation keeps its navy's upkeep near (PLAN 4.6e1): it builds below it and lays up above it when short. */
 export const NAVY_SHARE = 0.12;
@@ -145,6 +157,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     /** Per nation: its fleets and their upkeep (PLAN 4.6e1). */
     const fleets = new Map<number, number[]>();
     const navy = new Map<number, number>();
+    /** Per nation: its wings and their upkeep (PLAN 5.8s2). */
+    const wings = new Map<number, number[]>();
+    const air = new Map<number, number>();
     world.formations.forEach((id) => {
       // A fleet is not of the army (PLAN 4.2b): it is not sent home with it, and its upkeep is
       // no part of the share of the income an army may take; it has a share of its own (PLAN
@@ -155,6 +170,15 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         l.push(id);
         fleets.set(n, l);
         navy.set(n, (navy.get(n) ?? 0) + upkeepOf(world, id));
+        return;
+      }
+      // A wing is not of the army either: its air force has a share of the army's (PLAN 5.8s2).
+      if (world.isWing(id)) {
+        const n = f.nation[id]!;
+        const l = wings.get(n) ?? [];
+        l.push(id);
+        wings.set(n, l);
+        air.set(n, (air.get(n) ?? 0) + upkeepOf(world, id));
         return;
       }
       if (world.offLand(id)) return;
@@ -168,13 +192,18 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     });
     const pending = new Map<number, number>();
     const upkeepOfTemplate = (t: number): number => (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0)) || 0;
-    /** Per nation: the fleets in training. */
+    /** Per nation: the fleets in training, and the wings (PLAN 5.8s2). */
     const shipsPending = new Map<number, number>();
+    const wingsPending = new Map<number, number>();
     world.production.forEach((id) => {
       const n = world.production.cols.nation[id]!;
       const t = world.production.cols.template[id]!;
       if (world.rules?.templates[t]?.domain === Domain.sea) {
         shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
+        return;
+      }
+      if (world.rules?.templates[t]?.domain === Domain.air) {
+        wingsPending.set(n, (wingsPending.get(n) ?? 0) + 1);
         return;
       }
       pending.set(n, (pending.get(n) ?? 0) + 1);
@@ -282,6 +311,17 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           balance -= u;
         }
       }
+      // 3c. A wing (PLAN 5.8s2), with what is left: one at a time, while the air force is under
+      // its share of the army's upkeep (the orders in training with it).
+      const wing = mix.wings && income >= POOR_INCOME && (wingsPending.get(n) ?? 0) === 0 && (air.get(n) ?? 0) < AIR_SHARE * upkeep ? pickWing(world, n, mix.wings, wings.get(n) ?? []) : -1;
+      if (wing >= 0 && airfield(world, n, wing) >= 0) {
+        const rule = rules.templates[wing]!;
+        const u = upkeepOfTemplate(wing);
+        if (balance - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, wing) !== 0) {
+          nc.builds[n] = nc.builds[n]! + 1;
+          balance -= u;
+        }
+      }
     });
   };
 }
@@ -360,6 +400,18 @@ function pickFleet(world: World, n: number, income: number, atWar: boolean, kind
   if (atWar && !own.some((id) => f.template[id] === kinds.transport) && !hasFront(world, n)) return pays(kinds.transport) ? kinds.transport : -1;
   const wanted = income >= BATTLE_FLEET_INCOME ? [kinds.battle, kinds.cruiser, kinds.destroyer] : income >= RICH_INCOME ? [kinds.cruiser, kinds.destroyer] : [kinds.destroyer];
   return wanted.find(pays) ?? -1;
+}
+
+/**
+ * The wing nation `n` orders next (PLAN 5.8s2), its air force under its share: a fighter group
+ * while fighters are under half its wings `own`, else a tactical bomber group; the other when it
+ * lacks the techs of that one; -1 when it lacks both.
+ */
+function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>, own: number[]): number {
+  const f = world.formations.cols;
+  const fighters = own.filter((id) => f.template[id] === kinds.fighter).length;
+  const order = 2 * fighters < own.length || own.length === 0 ? [kinds.fighter, kinds.tactical] : [kinds.tactical, kinds.fighter];
+  return order.find((t) => world.rules!.templates[t] !== undefined && knowsTechs(world, n, world.rules!.templates[t]!.techs)) ?? -1;
 }
 
 /** Whether nation `n` holds a cell beside one held by a nation at war with it. */

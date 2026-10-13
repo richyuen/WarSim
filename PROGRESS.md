@@ -14998,3 +14998,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (903 of 906) red only by the three timing tests of
   BLOCKERS (3,825 ms, 3.30 ms, 27.8 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8s2.
+
+## 2026-10-13 — PLAN 5.8s2: the economic AI keeps an air force (ADR-344)
+
+- **Done:** `economicAi` orders a wing a time while the air force's upkeep is under `AIR_SHARE`
+  0.1 of the army's (`pickWing`: fighters to half the wings, else tactical bombers);
+  `BUILD_MIX_1938.wings`.
+- **Tests:** `airBudget1938` (2, new).
+- **The pin moves** ae18ce8c → d53a99d4 (42 wings ordered in the year, 23 delivered).
+- **The gate:** the related unit tests (905 of 908) red only by the three timing tests of
+  BLOCKERS (3,143 ms, 3.26 ms, 27.9 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8t.

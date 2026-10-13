@@ -923,7 +923,12 @@ Element (authoritative unit proxy) {
       its capital, then the first.
     - *The delivery* (`productionSystem`): on its ready day at the airfield, chosen then, its
       base (`wingBase`); with none then the order waits. The spawn command refuses a wing
-      still. The economic AI orders none yet (5.8s2).
+      still. The economic AI keeps its air force (5.8s2, ADR-344, `AIR_SHARE`): a nation not
+      poor, with an airfield and no wing in training, orders one while its wings' upkeep is
+      under a tenth of its army's (with the orders in training), if its balance stays above
+      the need and its gold covers the price and three months of income: a fighter group while
+      fighters are under half its wings, else a tactical bomber group. After the army's orders
+      and a fleet's.
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its

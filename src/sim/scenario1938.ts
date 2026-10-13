@@ -145,6 +145,10 @@ export const BUILD_MIX_1938 = {
     destroyer: TEMPLATES_1938.findIndex((t) => t.id === 'destroyer_flotilla'),
     transport: TEMPLATES_1938.findIndex((t) => t.id === 'transport_group'),
   },
+  wings: {
+    fighter: TEMPLATES_1938.findIndex((t) => t.id === 'fighter_group'),
+    tactical: TEMPLATES_1938.findIndex((t) => t.id === 'tactical_bomber_group'),
+  },
 };
 /**
  * The tech tree (PLAN 3.1a), the files in the order of the schema's categories. A tech's place
