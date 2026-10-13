@@ -11,7 +11,8 @@ import { EventKind } from '../../shared/events';
 import type { World } from '../world';
 import { applyLoss, elementIndex, settleFormation } from './elements';
 import { seaKm } from './navalCombat';
-import { Leg, sortieAt } from './sorties';
+import { effectiveness } from './combat';
+import { Leg, legHours, sortieAt } from './sorties';
 
 /** The share of an aircraft's air attack that is hit points on a target of defence 1 in an hour. */
 export const AIR_FIRE = 0.25;
@@ -174,4 +175,69 @@ export function antiAir(world: World): void {
     hit.add(ec.formation[e]!);
   }
   for (const id of [...hit].sort((a, b) => a - b)) settleFormation(world, id);
+}
+
+/**
+ * Target units an hour of an aircraft per point of its soft or hard attack, a strike's fire
+ * (PLAN 5.4b), before the target's `hpPerUnit`: per aircraft, as its air attack is.
+ */
+export const STRIKE_FIRE = 0.2;
+
+/**
+ * The hour's strikes (PLAN 5.4b, CAS and tactical bombing): a wing on a strike mission whose
+ * sortie reaches its target in this hour (it is there in (tick − 1, tick]) fires once on the
+ * land elements of the formations of nations at war with its own within `AA_CELLS` of the
+ * target (not wings, fleets or what is aboard). Each squadron's fire is its aircraft × its
+ * `effectiveness` on the target (soft, or hard on armour, halved where armour beats piercing)
+ * × `STRIKE_FIRE`, spread over the elements by their health (strength × hp, as a land element
+ * picks its targets), in units lost: ÷ the target's `hpPerUnit`; carried as on the land. Run
+ * before the hour's air fights, so a sortie turned home in them strikes nothing. Emits
+ * `AirStrike` per strike that found a target.
+ */
+export function strikes(world: World): void {
+  if (world.sorties.size === 0) return;
+  const rules = world.rules!;
+  const ec = world.elements.cols;
+  const fc = world.formations.cols;
+  const w = world.cells.w;
+  const h = world.cells.h;
+  const index = elementIndex(world);
+  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+    const m = world.wingMission.get(id);
+    if (!m || m.kind !== 'strike' || s.tx !== m.x || s.ty !== m.y || !world.formations.has(id)) continue;
+    const arrive = s.launch + legHours(s);
+    if (!(arrive > world.tick - 1 && arrive <= world.tick)) continue;
+    const tx = Math.floor(s.tx);
+    const ty = Math.floor(s.ty);
+    const targets: number[] = [];
+    world.formations.forEach((g) => {
+      if (world.offLand(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) return;
+      let dx = Math.abs(Math.floor(fc.x[g]!) - tx);
+      if (dx > w / 2) dx = w - dx;
+      const dy = Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty);
+      if (dx > AA_CELLS || dy > AA_CELLS) return;
+      for (const e of index.get(g) ?? []) if (ec.strength[e]! > 0) targets.push(e);
+    });
+    if (targets.length === 0) continue;
+    targets.sort((a, b) => a - b);
+    const health = targets.map((t) => ec.strength[t]! * rules.units[ec.unit[t]!]!.hpPerUnit);
+    const total = health.reduce((a, b) => a + b, 0);
+    const loss = new Map<number, number>();
+    for (const e of index.get(id) ?? []) {
+      const us = rules.units[ec.unit[e]!]!;
+      targets.forEach((t, k) => {
+        const ut = rules.units[ec.unit[t]!]!;
+        const units = (ec.strength[e]! * effectiveness(us, ut) * STRIKE_FIRE * health[k]!) / total / ut.hpPerUnit;
+        if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
+      });
+    }
+    let took = 0;
+    const hit = new Set<number>();
+    for (const [t, units] of loss) {
+      took += applyLoss(world, t, units);
+      hit.add(ec.formation[t]!);
+    }
+    for (const g of [...hit].sort((a, b) => a - b)) settleFormation(world, g);
+    world.out.emit(world.tick, EventKind.AirStrike, id, took, s.tx, s.ty);
+  }
 }

@@ -9,7 +9,7 @@
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { airbaseRoom } from '../data/airbases';
-import { airCombat, antiAir } from './airCombat';
+import { airCombat, antiAir, strikes } from './airCombat';
 import { airPowerSystem } from './airSuperiority';
 import { destroyFormation } from './elements';
 import { seaKm } from './navalCombat';
@@ -39,6 +39,7 @@ export function airSystem(world: World): void {
   }
   const byZone = world.sorties.size > 0 ? airborne(world, world.tick) : new Map<number, number[]>();
   if (byZone.size > 0 || world.airPower.size > 0) airPowerSystem(world, byZone);
+  strikes(world);
   if (byZone.size > 0) airCombat(world, byZone);
   antiAir(world);
 }

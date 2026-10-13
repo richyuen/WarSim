@@ -14717,3 +14717,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   timing tests of BLOCKERS (3,199 ms, 3.71 ms); the pin, build and parity green by hand. The
   first run stopped at the typecheck on `Terrain.plains` in the new test (`Terrain.Plains`).
 - **Next:** PLAN 5.4b.
+
+## 2026-10-13 — PLAN 5.4b: CAS and tactical bombing (ADR-317)
+
+- **Done:** `strikes`: a strike sortie at its target fires once on the enemy's land elements
+  within a cell by its aircraft's soft or hard attack; `AirStrike` events. SPEC §6.3, PARITY.
+- **Tests:** `airStrike1938.test.ts` (4).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,046 ms,
+  2.04 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.4c.

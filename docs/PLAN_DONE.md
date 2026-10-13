@@ -7633,3 +7633,20 @@ Of 5.4 (open in PLAN.md):
 
   - [x] 5.4a Air superiority in ground combat: a formation's fire × a factor of its nation's
     air superiority in its zone (`data/combat.json`), 1 at a half. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.4 (open in PLAN.md):
+
+  - [x] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land
+    elements there by its aircraft's soft and hard attack; the losses as on the land.

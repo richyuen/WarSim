@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-317 · 2026-10-13 · accepted — CAS and tactical bombing: a strike sortie fires on what it reaches (PLAN 5.4b)
+
+- **Decision.** `strikes`, in `airSystem` before the hour's air fights:
+  - A wing on a strike mission whose sortie reaches its mission's target in this hour (launch +
+    its leg's hours in (tick − 1, tick]) fires once on the land elements of the formations of
+    nations at war with its own within `AA_CELLS` (1) of the target: not wings, fleets (PLAN
+    5.4c) or what is aboard.
+  - A squadron's fire: its aircraft × its `effectiveness` on the target (soft, or hard on armour,
+    halved where armour beats its piercing: the land's own rule) × `STRIKE_FIRE` (0.2), spread
+    over the elements by their health (strength × hp, as a land element draws fire), in units:
+    ÷ the target's `hpPerUnit`; carried and settled as on the land (`applyLoss`,
+    `settleFormation`, casualties counted).
+  - Before the air fights, so a sortie turned home in them (a sortie to the place it turned, not
+    its mission's target) strikes nothing. A patrol does not strike.
+  - `AirStrike` (48): the wing, the whole units it took, its target.
+- **The figures.** A close support group (30 aircraft, soft 20) on an infantry division: about
+  117 men a strike. A wing turns round 2 hours, so a strike near its base comes back every few
+  hours.
+- **Not yet.** The hour's org loss of a strike (`battleLosses`, read by the land's
+  `orgLossSystem` before the air runs); a bomb's damage to a city's buildings (PLAN 5.5).
+- **The pin holds** at 1377ab88: no one flies in an AI game yet.
+- **Tests.** `airStrike1938.test.ts`: a close support group on a Polish infantry division: the
+  loss by the rule, once, the event's whole units; on a panzer division, tanks lost; nothing by a
+  patrol, a sortie turned home, an enemy out of reach, its own, a nation at peace; in the game,
+  a strike ordered 20 cells off strikes at least twice in a day.
+
 ### ADR-316 · 2026-10-13 · accepted — Air superiority in ground combat (PLAN 5.4a)
 
 - **Decision.** A formation's fire in a land battle × `airFactor`: 1 + `AIR_SUPERIORITY` × (2s − 1),

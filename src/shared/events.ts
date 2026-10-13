@@ -121,6 +121,8 @@ export const EventKind = {
   FleetsLaidUp: 46,
   /** An hour's air fight in an air zone (PLAN 5.3a): a = the zone, b = the aircraft lost in it, both sides; (x, y) = a sortie's place in it. */
   AirBattle: 47,
+  /** A strike sortie hit its target (PLAN 5.4b): a = the wing, b = the men, guns and vehicles it took; (x, y) = its target. */
+  AirStrike: 48,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
