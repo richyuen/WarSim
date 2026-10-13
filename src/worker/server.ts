@@ -23,6 +23,8 @@ import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
 import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
+import { aircraftOf } from '../sim/systems/airCombat';
+import { sortieEnd } from '../shared/sorties';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -30,6 +32,7 @@ import {
   type SnapshotElements,
   NATION_STRIDE,
   NationField,
+  SortieRole,
   type FromWorker,
   type SimStatus,
   type Snapshot,
@@ -1279,6 +1282,8 @@ export class SimServer {
         return [b.x, b.y, r, b.a, b.b];
       }),
     );
+    // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.
+    const sorties = sortieSection(world);
     const elements = this.elementSection(world, buffers);
 
     // Events: global ones always, spatial ones only inside the subscribed bbox.
@@ -1318,6 +1323,7 @@ export class SimServer {
       formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
       seas,
+      sorties,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
       fires: { count: fq.length / FIRE_STRIDE, data: fires, dropped: this.droppedFires },
@@ -1325,4 +1331,21 @@ export class SimServer {
     };
     return { snap, transfer: buffers };
   }
+}
+
+/** A wing's role by its aircraft's class (`SortieRole`). */
+const ROLE_OF_CLASS: Record<string, number> = { fighter: SortieRole.fighter, cas: SortieRole.closeSupport, bomber_tac: SortieRole.bomber, bomber_str: SortieRole.heavyBomber, naval_bomber: SortieRole.navalBomber, transport_air: SortieRole.transport };
+
+/** The snapshot's sorties (PLAN 5.7a): those in the air at the tick or within the hour after it, by wing id. */
+export function sortieSection(world: World): Float32Array {
+  const rows: number[] = [];
+  if (world.sorties.size === 0 || !world.rules) return new Float32Array(0);
+  const c = world.formations.cols;
+  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+    if (!world.formations.has(id) || sortieEnd(s) <= world.tick || s.launch > world.tick + 1) continue;
+    const first = world.rules.templates[c.template[id]!]?.elements[0];
+    const role = first ? (ROLE_OF_CLASS[world.rules.units[first.unit]!.cls] ?? SortieRole.fighter) : SortieRole.fighter;
+    rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, c.nation[id]!, aircraftOf(world, id), role);
+  }
+  return Float32Array.from(rows);
 }

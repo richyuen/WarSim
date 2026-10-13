@@ -11,6 +11,7 @@ import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle }
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { drawSeaBattles } from '../render/units/seaBattles';
+import { drawSorties, type PlacedSortie } from '../render/units/sorties';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -436,6 +437,7 @@ export class MapView {
     this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
     this.seas = s.seas.slice();
+    this.sorties = s.sorties.slice();
     // The sea battles going on, for the ticker (PLAN 4.10b): told when the set changes.
     const seaKey = Array.from(this.seas, (v, k) => (k % SEA_STRIDE < 3 ? Math.round(v) : v)).join(',');
     if (seaKey !== this.seaKey) {
@@ -649,11 +651,15 @@ export class MapView {
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private seas = new Float32Array(0);
+  /** The sorties in the air (PLAN 5.7a, SORTIE_STRIDE each), their launches from the snapshot's tick. */
+  private sorties = new Float32Array(0);
   private seaKey = '';
   /** Called when the sea battles going on change (PLAN 4.10b; the ticker's rows). */
   onSeaBattles: (battles: SeaBattleView[]) => void = () => {};
   /** Where the sea battles' marks were drawn in the last frame (tests). */
   seaMarks: { x: number; y: number }[] = [];
+  /** The sorties placed on screen at the last frame (PLAN 5.7a), for tests. */
+  sortieMarks: PlacedSortie[] = [];
 
   /** Sea control (PLAN 4.10c): each cell's zone, each zone's holder and sea's name, as the worker sent them. */
   private seaZoneOf = new Uint16Array(0);
@@ -1257,6 +1263,9 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: counterNation(this.formNation[i]!, this.templates[this.formTemplate[i]!]?.domain === 1), strength: this.formStrength[i]! });
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
+    // The sorties in flight (PLAN 5.7a), at T0 to T2, where they are at this frame's time: under
+    // the counters, which stay readable over them.
+    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now), cam, this.geo, vw, vh, 1 - this.shares.individuals, (n) => hex(n), this.unitScale);
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
     // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
     this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);

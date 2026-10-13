@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-323 · 2026-10-13 · accepted — Sorties drawn where the sim's function has them (PLAN 5.7a)
+
+- **Decision.**
+  - *The function shared.* `sortieAt` and its kin moved from `src/sim/systems/sorties.ts` to
+    `src/shared/sorties.ts` (the sim's file re-exports it): the page may not import the sim's
+    layer (SPEC §2.1), and a sortie's place at a frame is that one function's.
+  - *The snapshot* has `sorties` (`SORTIE_STRIDE` 11: the launch's figures, the launch as hours
+    from the snapshot's tick so that a float keeps it to the second, the wing's nation, aircraft
+    and role, `SortieRole`), those in the air at the tick or within the hour after it
+    (`sortieSection` in the worker).
+  - *Drawn* (`src/render/units/sorties.ts`, in `MapView` under the T0 counters, at T0 to T2):
+    each sortie where `sortieAt` has it at the frame's time (the snapshot's tick plus the share of
+    the tick gone), heading its way out and back; over its target it circles, on a circle of its
+    own (a phase and a radius of 0.7 to 1.3 of 0.6 cells, by its base and launch), no smaller
+    on screen than 26 px; one plane for a few aircraft, up to three in a vee, a bomber's larger;
+    in its nation's colour with a light edge and a shadow (Germany's dark grey on its own land
+    was not seen); smaller further out (0.55 of the size at T0).
+- **Looked at** (`docs/evidence/5.7/`): seed 1, Germany at war with Poland, the third day: at T1
+  28 sorties in view at hour 73, a ring of German planes over the front west of Poznań and
+  groups taking off at Berlin; at T0 small groups over the front, the counters over them.
+  Before: the planes stacked on one point over a target (5 px apart at T1); over the counters at
+  T0.
+- **The pin holds** at 321cd835 (a file moved; nothing of the rules).
+- **Tests.** `sortiesDrawn.test.ts`: the snapshot's row, the page's place the sim's at the tick
+  and between; out and back headings, the circle, home not drawn, the seam the short way, the
+  planes of a wing. `tests/e2e/sortiesSeen1938.spec.ts`: at T1 over Poland, sorties in view in 9
+  of 12 hours, each hour's another; at T0 too.
+
 ### ADR-322 · 2026-10-13 · accepted — The air AI (PLAN 5.6)
 
 - **Decision.** `src/sim/ai/air.ts`, `airAi`, after the naval AI, daily at 00:00, for every nation

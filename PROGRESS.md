@@ -14788,3 +14788,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the second run, the related unit tests (879 of 882) red only by the three
   timing tests of BLOCKERS (3,589 ms, 4.54 ms, 26.7 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.7.
+
+## 2026-10-13 — PLAN 5.7a: sorties drawn (ADR-323)
+
+- **Done:** PLAN 5.7 split into 5.7a–d. `sortieAt` moved to `shared/`; the snapshot's `sorties`;
+  `drawSorties` at T0 to T2 under the counters. Two pictures looked at
+  (`docs/evidence/5.7/`), three changes after them: a light edge, circles spread and with a floor
+  on screen, smaller at T0 and under the counters. SPEC §8 row, PARITY.
+- **Tests:** `sortiesDrawn.test.ts` (2), `sortiesSeen1938.spec.ts` (1).
+- **The pin holds** at 321cd835.
+- **The gate:** the related unit tests (921 of 923) red only by two timing tests of BLOCKERS
+  (3,132 ms, 2.58 ms); the pin, build, the new spec (by hand, three runs) and parity green.
+- **Next:** PLAN 5.7b.

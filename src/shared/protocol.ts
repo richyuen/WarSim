@@ -270,6 +270,13 @@ export interface Snapshot {
    * from it to its furthest fleet, and its two sides' leaders.
    */
   seas: Float32Array;
+  /**
+   * The sorties in the air (PLAN 5.7a), SORTIE_STRIDE each: [bx, by, tx, ty, launch, kmh, km,
+   * over, nation, aircraft, role]: a sortie as `shared/sorties` has it, its launch as hours from
+   * the snapshot's tick (so that a float holds it to the second), its wing's nation and aircraft,
+   * and its role (`SortieRole`). Where it is at a frame is `sortieAt`'s.
+   */
+  sorties: Float32Array;
   events: SnapshotEvents;
   fires: SnapshotFires;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */
@@ -584,3 +591,7 @@ export interface OrderNews {
 
 /** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
 export const SEA_STRIDE = 5;
+/** A sortie in a snapshot (PLAN 5.7a): [bx, by, tx, ty, launch, kmh, km, over, nation, aircraft, role]. */
+export const SORTIE_STRIDE = 11;
+/** A sortie's role, by its aircraft's class (PLAN 5.7a): what the page draws. */
+export const SortieRole = { fighter: 0, closeSupport: 1, bomber: 2, heavyBomber: 3, navalBomber: 4, transport: 5 } as const;
