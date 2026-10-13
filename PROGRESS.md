@@ -14834,3 +14834,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (919 of 922) red only by the three timing tests of
   BLOCKERS (2,884 ms, 3.08 ms, 26.2 ms); the pin, build, the demo (by hand) and parity green.
 - **Next:** PLAN 5.8, the Phase 5 review.
+
+## 2026-10-13 — PLAN 5.8: the Phase 5 review split into its parts (documents)
+
+- **Done:** 5.8a (the eleventh independent read, 71 files since `deafedf`) to 5.8h (the review
+  run, the quick sweep, the tick), as 4.8 was.
+- **Next:** PLAN 5.8a.

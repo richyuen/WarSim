@@ -30,6 +30,27 @@ quick sweep as a smoke test.
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  Split 2026-10-13, as 4.8 was: the pass is several causes, one a commit. A part is not a
+  numbered task; the last part ticks 5.8 after `npm run check:review` (ADR-297).
+  - [ ] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and
+    `tools/` changed since the tenth (`deafedf`: PLAN 4.9 to 5.7 and the gate's review run,
+    4,040 lines added), the new lines first. The same brief: defects only, nothing of what
+    changed or why. Each finding is checked against the code here before it is anything; those
+    a player can meet become parts 5.8i and on, each with a test that fails first, most severe
+    first; the rest go on the watch list.
+  - [ ] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326)
+    against SPEC's text; what it says that the code does not, or the other way, set right.
+  - [ ] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
+    reads, code no path reaches, a rule written twice.
+  - [ ] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule
+    and its save; a gap found is a test added (one that fails first where it finds a defect).
+  - [ ] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's
+    systems' share; over the budget of PLAN 7.1, the numbers in BLOCKERS.
+  - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
+  - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
+    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
+    defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due
+    after a phase review, ADR-59).
 
 ## Phase 6 — Nuclear AI
 
