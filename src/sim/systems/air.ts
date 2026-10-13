@@ -134,10 +134,13 @@ const reject = (world: World, id: number, why: RejectReason): RejectReason => {
 /**
  * Orders wing `id` to patrol about or strike (x, y) (PLAN 5.1e): kept as its mission
  * (`world.wingMission`) where the place is within its range of its base, else refused
- * (`MoveRejected`, `OutOfRange`; `NotLand` for no wing). 0 when ordered.
+ * (`MoveRejected`, `OutOfRange`; `NoBase` for a wing with none, its carrier sunk this hour; `NotLand`
+ * for no wing). 0 when ordered.
  */
 export function orderMission(world: World, id: number, kind: WingMission['kind'], x: number, y: number): 0 | RejectReason {
   if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
+  // A carrier sunk this hour leaves its wings no base until the air system loses them (PLAN 5.8j).
+  if (!basePlace(world, world.wingBase.get(id)!)) return reject(world, id, RejectReason.NoBase);
   if (kmFromBase(world, id, x, y) > wingRange(world, id)) return reject(world, id, RejectReason.OutOfRange);
   world.wingMission.set(id, { kind, x, y });
   return 0;
@@ -153,6 +156,9 @@ export function orderMission(world: World, id: number, kind: WingMission['kind']
  */
 export function orderRebase(world: World, id: number, x: number, y: number): 0 | RejectReason {
   if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
+  // No base to fly from (its carrier sunk this hour, PLAN 5.8j): nowhere it reaches.
+  const from = basePlace(world, world.wingBase.get(id)!);
+  if (!from) return reject(world, id, RejectReason.NoBase);
   const c = world.formations.cols;
   const nation = c.nation[id]!;
   const bloc = blocOf(world, nation);
@@ -173,7 +179,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   let far = false;
   const consider = (base: number, px: number, py: number, room: (u: { aircraft: number; wings: number }) => boolean): void => {
     if (base === world.wingBase.get(id) || !near(px, py) || !room(used(base))) return;
-    if (seaKm(world, ...basePlace(world, world.wingBase.get(id)!)!, px, py) > wingRange(world, id)) {
+    if (seaKm(world, from[0], from[1], px, py) > wingRange(world, id)) {
       far = true;
       return;
     }

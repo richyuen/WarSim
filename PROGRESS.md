@@ -14889,3 +14889,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (889 of 892) red only by the three timing tests of
   BLOCKERS (3,595 ms, 3.12 ms, 26.5 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8j.
+
+## 2026-10-13 — PLAN 5.8j: a wing with no base is refused (ADR-333)
+
+- **Done:** `orderRebase` and `orderMission` refuse a wing whose carrier was sunk this hour
+  (`NoBase`); the rebase threw.
+- **Tests:** `wingRange1938` (1 more, failed before).
+- **The pin holds** at 77670f43.
+- **The gate:** the related unit tests (890 of 893) red only by the three timing tests of
+  BLOCKERS (3,336 ms, 2.25 ms, 25.4 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8k.

@@ -38,8 +38,7 @@ quick sweep as a smoke test.
   - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule […]
   - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's […]
   - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority […]
-  - [ ] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until
-    `airSystem` runs): `basePlace(0)` is null and is spread. Refused with `NoBase`.
+  - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until […]
   - [ ] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the
     air power fades, and a land battle keeps the ± 20% of the last air war. It fades with none.
   - [ ] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships

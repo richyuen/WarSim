@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-333 · 2026-10-13 · accepted — A wing with no base is refused, not thrown at (PLAN 5.8j)
+
+- **Found** (the eleventh read): a carrier sunk in an hour sets its wings' base to 0
+  (`destroyFormation`) until the air system loses them at the next; a `wingRebase` in between
+  spread `basePlace(0)`, null: a TypeError in the tick. A mission was refused `OutOfRange`
+  (Infinity km).
+- **Decision.** Both orders refuse a wing with no base: `NoBase`.
+- **The pin holds** at 77670f43: no AI rebases, and the AI's missions go to land-based wings.
+- **Tests.** `wingRange1938`: a carrier's wing set to base 0: a rebase to its nation's airbase and
+  a mission refused `NoBase`, nothing thrown (it threw before).
+
 ### ADR-332 · 2026-10-13 · accepted — Air superiority summed by nation (PLAN 5.8i)
 
 - **Found** (the eleventh read, ADR-327): `airSuperiority` summed each side's power in the order of

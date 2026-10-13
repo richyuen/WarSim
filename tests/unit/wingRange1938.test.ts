@@ -149,6 +149,22 @@ describe('rebasing (PLAN 5.1e)', () => {
   });
 });
 
+describe('a wing whose carrier was sunk this hour (PLAN 5.8j)', () => {
+  it('its base 0 until the air system loses it: a rebase and a mission are refused for want of a base, and nothing throws', () => {
+    const w = sim().world;
+    w.out.events.length = 0;
+    const [wing] = [...w.wingBase].find(([, b]) => b < 0)!;
+    w.wingBase.set(wing, 0);
+    // An airbase of its nation's with room: Kasumigaura, say, or whichever its nation holds.
+    const own = w.airbases.find((b) => w.cells.controller[b.cell] === w.formations.cols.nation[wing])!;
+    expect(() => orderRebase(w, wing, ...w.cellPoint(own.cell))).not.toThrow();
+    expect(orderRebase(w, wing, ...w.cellPoint(own.cell))).toBe(RejectReason.NoBase);
+    expect(orderMission(w, wing, 'patrol', ...w.cellPoint(own.cell))).toBe(RejectReason.NoBase);
+    expect(w.wingBase.get(wing)).toBe(0);
+    expect(w.wingMission.has(wing)).toBe(false);
+  });
+});
+
 describe('orders by command, and saved (PLAN 5.1e)', () => {
   it('a wing\'s mission by its nation\'s command; another nation\'s is refused; a save loads it, the same game', () => {
     const s = sim();
