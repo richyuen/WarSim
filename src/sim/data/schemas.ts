@@ -78,6 +78,8 @@ export const TerrainFile = z.strictObject({ terrain: z.array(TerrainDef) });
 
 const arm = z.array(z.enum(LAND_CLASSES)).min(1);
 export const CombatFile = z.strictObject({
+  /** PLAN 5.4a: a formation's fire × (1 + `superiority` × (2s − 1)), s its nation's air superiority in its zone. */
+  air: z.strictObject({ comment: z.string().optional(), superiority: z.number().min(0).max(1) }),
   /** PLAN 3.4a: a side of a battle with all three arms alive in it fires × `bonus`. */
   combinedArms: z.strictObject({
     /** The unit classes of each arm. */

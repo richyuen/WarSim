@@ -14705,3 +14705,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,786 ms,
   4.10 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.4.
+
+## 2026-10-13 — PLAN 5.4a: air superiority in ground combat (ADR-316)
+
+- **Done:** PLAN 5.4 split into 5.4a–d. `airFactor` in the land's fire: 1 + 0.2 × (2s − 1)
+  (`air.superiority` of `data/combat.json`, schema). SPEC §6.3, PARITY.
+- **Tests:** `airGround.test.ts` (2), the AT of 5.4: 48 hours of two divisions, the exchange
+  1.01 → 1.54 for the side with the air.
+- **The pin holds** at 1377ab88.
+- **The gate:** the unit stage in full (a data file changed): 1,321 of 1,323, red only by two
+  timing tests of BLOCKERS (3,199 ms, 3.71 ms); the pin, build and parity green by hand. The
+  first run stopped at the typecheck on `Terrain.plains` in the new test (`Terrain.Plains`).
+- **Next:** PLAN 5.4b.

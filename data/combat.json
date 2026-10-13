@@ -1,4 +1,8 @@
 {
+  "air": {
+    "comment": "PLAN 5.4a: a formation's fire × (1 + superiority × (2s − 1)) where s is its nation's air superiority in its air zone, 0 to 1: a half is no change.",
+    "superiority": 0.2
+  },
   "combinedArms": {
     "arms": {
       "infantry": ["inf", "mot", "mech"],

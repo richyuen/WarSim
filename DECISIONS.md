@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-316 · 2026-10-13 · accepted — Air superiority in ground combat (PLAN 5.4a)
+
+- **Decision.** A formation's fire in a land battle × `airFactor`: 1 + `AIR_SUPERIORITY` × (2s − 1),
+  s its nation's air superiority in the air zone of its place (`airSuperiority`, PLAN 5.3c);
+  `AIR_SUPERIORITY` 0.2 (`air.superiority` of `data/combat.json`). Full superiority 1.2, none
+  0.8, a half (no one flew, or only nations outside the war) 1. While no one has flown anywhere
+  (`world.airPower` empty) it is 1 without a lookup.
+- **Why.** SPEC §6.3: air superiority modifies ground combat. On the fire, not on what is taken,
+  so it rides with the other factors of the shooter (supply, org, combined arms) and holds the
+  Lanchester form; the side with the air both hits harder and is hit less, as the enemy's fire is
+  × 0.8. The strike of CAS on the ground itself is PLAN 5.4b.
+- **The figures.** Two infantry divisions on plains for 48 hours: men lost, German/Polish, 1,011
+  /1,022 with no air, 803/1,234 with the air German's, 1,236/796 with it Polish's: the exchange
+  1.01 → 1.54 (× 1.52 for the factors' 1.5).
+- **The pin holds** at 1377ab88: no one flies in an AI game yet, and the factor is 1 then.
+- **Tests.** `airGround.test.ts` (the AT of 5.4): the factor at 1, 0 and a half, and for a nation
+  outside the war; the first hour's fire of each side × exactly its factor, both ways; over 48
+  hours the exchange better by more than 1.4 for the side with the air.
+
 ### ADR-315 · 2026-10-13 · accepted — Air superiority per zone from the air power flown there (PLAN 5.3c)
 
 - **Decision.** `src/sim/systems/airSuperiority.ts`:

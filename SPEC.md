@@ -1760,6 +1760,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   there (a sortie's aircraft × air attack an hour, half-life a day; `world.airPower`, saved); a
   nation's superiority there is its side's share of its side's and its enemies' power, a half
   where neither flew.
+- *As built (PLAN 5.4a, ADR-316; `airFactor` in `combat.ts`):* a formation's fire in a land battle ×
+  (1 + 0.2 × (2s − 1)), s its nation's air superiority in its zone: 1.2 with the air, 0.8
+  without, 1 at a half.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

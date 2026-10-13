@@ -31,6 +31,15 @@ quick sweep as a smoke test.
   enemy sees it first: spotting aircraft (a cruiser's or a carrier's) are to give a fleet
   its detection. A carrier has no weapon in a sea battle and breaks off at once (ADR-256).
   AT: a battle with air superiority has a better outcome by the expected margin.
+  Split 2026-10-13. Found first: air superiority is reckoned per zone (PLAN 5.3c) and nothing
+  reads it; a strike sortie reaches its target and does nothing there. One cause a commit:
+  - [x] 5.4a Air superiority in ground combat: a formation's fire × a factor of its nation's […]
+  - [ ] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land
+    elements there by its aircraft's soft and hard attack; the losses as on the land.
+  - [ ] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by
+    its aircraft's hard attack and piercing against their armour.
+  - [ ] 5.4d Carrier air groups in fleet battles: a carrier's wings strike the fleets it is in
+    battle with, and a fleet with aircraft (a carrier's) sees by them (its detection).
 - [ ] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
   AT: bombed industry produces less until repaired (test).
 - [ ] 5.6 Air AI tasking.

@@ -15,9 +15,11 @@
  * hash32(seed, tick, element) and kept for COOLDOWN hours. Damage in target units is
  *   eff × fullness × FIRE_SCALE × terrainAttack(shooter class and unit type, target cell)
  *       × (0.5 + 0.5 supply) × (ORG_FIRE + (1 − ORG_FIRE) org) of the shooter's formation
- *       × combinedArms(shooter's side) × gunsOnGuns(shooter) × screen(target) × open(shooter, target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
+ *       × combinedArms(shooter's side) × air(shooter's nation, its zone) × gunsOnGuns(shooter) × screen(target) × open(shooter, target) ÷ terrainDefence(target cell and unit type, if holding) ÷ target hpPerUnit
  * where eff = hard vs armoured targets else soft, × ARMOR_PEN when armour beats piercing,
  * combinedArms is COMBINED_ARMS for a side with infantry, artillery and armour alive in the battle,
+ * air is 1 + AIR_SUPERIORITY × (2s − 1), s the shooter's nation's air superiority in its air zone
+ * (PLAN 5.4a; 1 while no one has flown anywhere),
  * gunsOnGuns is SUPPRESSED for an AT gun whose enemy has artillery alive in the battle,
  * screen is UNSCREENED for armour on close ground whose side has no infantry alive in the battle, and
  * open is IN_THE_OPEN for armour firing at a target with no armour on open ground whose side has no AT gun alive in the battle.
@@ -32,7 +34,8 @@ import combatJson from '../../../data/combat.json' with { type: 'json' };
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { hash32, hashToUnit } from '../core/hash';
 import { TERRAIN_IDS } from '../../shared/terrain';
-import { ARM_ALL, ARM_ARMOUR, ARM_ARTILLERY, ARM_AT, ARM_INFANTRY, type UnitRule, type World } from '../world';
+import { airOf, ARM_ALL, ARM_ARMOUR, ARM_ARTILLERY, ARM_AT, ARM_INFANTRY, type UnitRule, type World } from '../world';
+import { airSuperiority } from './airSuperiority';
 import { applyLoss, cellDist as dist, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
@@ -50,6 +53,20 @@ const SALT_TARGET = 0x7a46;
  * at war with, itself among them.
  */
 export const COMBINED_ARMS = combatJson.combinedArms.bonus;
+/**
+ * What full air superiority adds to a formation's fire, and none takes off it (PLAN 5.4a, `air`
+ * of `data/combat.json`): the fire × (1 + this × (2s − 1)), s its nation's superiority in its
+ * air zone (`airSuperiority`).
+ */
+export const AIR_SUPERIORITY = combatJson.air.superiority;
+
+/** The air's factor on formation `fid`'s fire (PLAN 5.4a): 1 where no one has flown. */
+export function airFactor(world: World, fid: number): number {
+  if (world.airPower.size === 0) return 1;
+  const c = world.formations.cols;
+  const zone = airOf(world).zoneOf[Math.floor(c.y[fid]!) * world.cells.w + Math.floor(c.x[fid]!)]!;
+  return 1 + AIR_SUPERIORITY * (2 * airSuperiority(world, c.nation[fid]!, zone) - 1);
+}
 /**
  * What armour takes on close ground (`CLOSE`) when its side has no infantry alive in the battle
  * (PLAN 3.4b, `screen` of `data/combat.json`).
@@ -210,8 +227,8 @@ export function combatSystem(world: World): void {
     for (const sf of battle) {
       const { enemies, hostile } = sides.get(f.nation[sf]!)!;
       const sideArms = sideArmsOf(sf);
-      // What every volley of the formation has: its supply, its org, its side's three arms.
-      const shooterFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1);
+      // What every volley of the formation has: its supply, its org, its side's three arms, the air.
+      const shooterFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1) * airFactor(world, sf);
       let enemyArms = 0;
       for (const o of enemies) enemyArms |= arms.get(o)!;
       const atFire = (enemyArms & ARM_ARTILLERY) !== 0 ? SUPPRESSED : 1;
