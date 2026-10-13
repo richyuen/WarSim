@@ -14868,3 +14868,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (886 of 889) red only by the three timing tests of
   BLOCKERS (3,124 ms, 2.73 ms, 29.1 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8d.
+
+## 2026-10-13 — PLAN 5.8d: missing tests over the phase (ADR-330)
+
+- **Done:** every system of Phase 5 has a test of its rule and its save; the worker's `airControl`
+  had none: `serverAirControl.test.ts` (1). No defect found by it.
+- **Next:** PLAN 5.8e.

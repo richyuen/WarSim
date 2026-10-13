@@ -7860,3 +7860,20 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
     reads, code no path reaches, a rule written twice.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule
+    and its save; a gap found is a test added (one that fails first where it finds a defect).

@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-330 · 2026-10-13 · accepted — Missing tests over Phase 5 (PLAN 5.8d)
+
+- **Looked over:** each system and state of Phase 5 against its tests. A rule's test and a save's
+  each: the air zones (derived), templates, airbases (static), wings (`wings1938`: saved), a
+  wing's mission (`wingRange1938`: saved), sorties (`sortieScheduler1938`: saved mid-flight), air
+  combat and AA (`airCombat1938`, `antiAir1938`; their state is the sorties' and the elements'),
+  air power (`airSuperiority1938`: saved), the land's factor (`airGround`), strikes on land and at
+  sea (`airStrike1938`, `navalStrike1938`), carrier air (`carrierAir1938`), bomb damage to
+  industry and ports (`bombing1938`, `portBombing1938`: saved), the air AI (`airAi1938`, and the
+  year of `airYear`), the page's sorties, effects and mode (`sortiesDrawn`, `airFx`, `airHolders`,
+  four specs).
+- **A gap, filled:** the worker's `airControl` (PLAN 5.7c) had no test: `serverAirControl.test.ts`
+  (nothing while no one flew; the holders with the zones once; the holders alone when they
+  change; nothing again while they do not). It found no defect. Its reset at a load is 5.8n's.
+- **Not a gap here:** a save and load over days of an AI's air war (the desync of 5.8i): that
+  part's test.
+
 ### ADR-329 · 2026-10-13 · accepted — Dead code and refactor debt since the last review: the air's wrap written once (PLAN 5.8c)
 
 - **Dead code:** none. Of the exports of the 71 files changed since `deafedf`, every function and
