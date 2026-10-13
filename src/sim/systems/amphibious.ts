@@ -31,7 +31,7 @@
  *
  * Not here: the bombardment (PLAN 4.5c); the AI's invasions (PLAN 4.6).
  */
-import { EventKind } from '../../shared/events';
+import { EventKind, RejectReason } from '../../shared/events';
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
 import { navOf, portSeaOf, seaOf, type World } from '../world';
@@ -87,13 +87,18 @@ const near = (world: World, a: number, b: number, r: number): boolean => {
  * water near it, or the transports have no way there. Nothing is changed then.
  */
 export function orderLanding(world: World, id: number, x: number, y: number): boolean {
+  return tryLanding(world, id, x, y) === 0;
+}
+
+/** `orderLanding`, with why it refused (`RejectReason`, PLAN 4.9a); 0 when ordered. */
+export function tryLanding(world: World, id: number, x: number, y: number): 0 | RejectReason {
   const f = world.formations;
   const c = f.cols;
-  if (!f.has(id) || world.afloat(id) || !world.rules) return false;
+  if (!f.has(id) || world.afloat(id) || !world.rules) return world.afloat(id) ? RejectReason.Aboard : RejectReason.NotLand;
   const { w, h, terrain } = world.cells;
   const tx = Math.floor(x);
   const ty = Math.floor(y);
-  if (tx < 0 || tx >= w || ty < 0 || ty >= h) return false;
+  if (tx < 0 || tx >= w || ty < 0 || ty >= h) return RejectReason.NotLand;
   const target = ty * w + tx;
   const nation = c.nation[id]!;
   const here = cellOfPlace(world, id);
@@ -103,7 +108,7 @@ export function orderLanding(world: World, id: number, x: number, y: number): bo
   world.ports.forEach((p, i) => {
     if (port < 0 && water[i]! >= 0 && world.cells.controller[p.cell] === nation && near(world, here, water[i]!, AT_PORT_CELLS)) port = i;
   });
-  if (port < 0) return false;
+  if (port < 0) return RejectReason.NoPort;
   // Transports of its nation there, standing, with room.
   const men = c.strength[id]!;
   let fleet = 0;
@@ -112,22 +117,22 @@ export function orderLanding(world: World, id: number, x: number, y: number): bo
     if (!near(world, cellOfPlace(world, o), water[port]!, AT_PORT_CELLS)) return;
     if (transportRoom(world, o) - aboard(world, o) >= men) fleet = o;
   });
-  if (fleet === 0) return false;
+  if (fleet === 0) return RejectReason.NoTransports;
   // The landing: the zoned water nearest the target, and the land of the target's nearest to it.
   const z = seaOf(world);
   const comp = navOf(world).grid.component;
   const targetComp = comp[target]!;
-  if (!isLand(terrain[target]!) || targetComp === 0) return false;
+  if (!isLand(terrain[target]!) || targetComp === 0) return RejectReason.NoLanding;
   const sea = nearestCellWhere((k) => z.zoneOf[k] !== 0 && z.closed[z.zoneOf[k]!] !== 1, tx + 0.5, ty + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
-  if (sea < 0) return false;
+  if (sea < 0) return RejectReason.NoLanding;
   // A cell of a nation's where the target is one's (PLAN 4.6b: a speck of no one's by the water
   // took no beachhead), else any.
   const owner = world.cells.owner;
   const owned = owner[target] !== 0;
   let land = owned ? nearestCellWhere((k) => comp[k] === targetComp && owner[k] !== 0, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap) : -1;
   if (land < 0) land = nearestCellWhere((k) => comp[k] === targetComp, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
-  if (land < 0) return false;
-  if (!orderSail(world, fleet, (sea % w) + 0.5, Math.floor(sea / w) + 0.5)) return false;
+  if (land < 0) return RejectReason.NoLanding;
+  if (!orderSail(world, fleet, (sea % w) + 0.5, Math.floor(sea / w) + 0.5)) return RejectReason.NoSeaWay;
   world.embarked.set(id, { fleet, land, water: sea, target });
   c.moving[id] = 0;
   c.home[id] = 0;
@@ -135,7 +140,7 @@ export function orderLanding(world: World, id: number, x: number, y: number): bo
   c.x[id] = c.x[fleet]!;
   c.y[id] = c.y[fleet]!;
   world.out.emit(world.tick, EventKind.FormationEmbarked, id, nation, c.x[id]!, c.y[id]!);
-  return true;
+  return 0;
 }
 
 /** Lands embarked formation `id` at land cell `cell`. */

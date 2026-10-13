@@ -1100,6 +1100,12 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   a freed id that another nation's formation has taken is not ordered by it.
   - A target unreachable from the formation snaps to the nearest reachable cell within 3;
     otherwise the order is rejected (`MoveRejected`).
+  - Every `MoveRejected` says why in its x (`RejectReason`, PLAN 4.9a, ADR-298; y stays NaN):
+    aboard, no formation of the order's kind or a target off the map, no way by land, a march
+    barred on its way; over the sea: at no port of its nation, no transports there with room,
+    no landing by the target, no way over the water; a fleet's: no water and no port there.
+    An order over the sea that is refused and whose target snaps to this land is a march to
+    that coast (Calais from Portsmouth with no transports: Dover).
   - An order to a formation in the middle of a step leaves it where it stands (PLAN 3.5a1,
     ADR-151): the route begins at the nearer of the step's two cells, and the path with the
     step itself, on along it or back.

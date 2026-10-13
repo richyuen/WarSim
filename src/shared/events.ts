@@ -16,7 +16,7 @@ export const EventKind = {
   ProductionQueued: 5,
   /** a = template index, b = nation: not enough gold or manpower, or no such template (global). */
   ProductionRejected: 6,
-  /** a = formation id, b = nation: no land route to the ordered target (global). */
+  /** a = formation id, b = nation (0 where none is known), x = why (`RejectReason`, PLAN 4.9a), y = NaN (global). */
   MoveRejected: 7,
   /** a = formation id, b = nation, (x, y) = arrival position. */
   FormationArrived: 8,
@@ -121,6 +121,29 @@ export const EventKind = {
   FleetsLaidUp: 46,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
+
+/** Why a formation's order was refused (`MoveRejected`'s x, PLAN 4.9a). */
+export const RejectReason = {
+  /** Aboard transports: it takes no order until it lands. */
+  Aboard: 1,
+  /** No formation of the order's kind (none, a fleet ordered to march, an army to sail), or a target off the map. */
+  NotLand: 2,
+  /** No way by land that keeps off the ground of nations outside its wars. */
+  NoRoute: 3,
+  /** A march barred on its way: the next cell became ground closed to it. */
+  Barred: 4,
+  /** Over the sea: it stands at no port its nation holds. */
+  NoPort: 5,
+  /** Over the sea: no transports of its nation at that port, standing, with room for it. */
+  NoTransports: 6,
+  /** Over the sea: no water near the target, or no land of the target's by it. */
+  NoLanding: 7,
+  /** Over the sea, or a fleet's order: no way over the water (the ice, a shut passage, no lane). */
+  NoSeaWay: 8,
+  /** A fleet's order to a place that is no water and no port. */
+  NotWater: 9,
+} as const;
+export type RejectReason = (typeof RejectReason)[keyof typeof RejectReason];
 
 /** Record layout: [seq, tick, kind, a, b, x, y]. */
 export const EVENT_STRIDE = 7;

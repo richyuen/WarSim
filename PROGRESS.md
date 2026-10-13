@@ -14465,3 +14465,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   ashore in England; no message said so. The parts: 4.9a a reason with every refused order;
   4.9b an order over the sea from inland; 4.9c the page tells it; 4.9d the AT's spec.
 - **Next:** PLAN 4.9a.
+
+## 2026-10-12 — PLAN 4.9a: a refused order says why (ADR-298)
+
+- **Done:** `RejectReason` in `MoveRejected`'s x (y NaN): aboard, no formation of the order's kind,
+  no way by land, a march barred; by sea no port, no transports, no landing, no sea way; a
+  fleet's no water. `tryLanding` gives the landing's reason. SPEC §5 (orders) says so.
+- **Seen:** a refused order over the sea near this land's coast snaps to a march (Calais from
+  Portsmouth with no transports: Dover), silent; for 4.9b and 4.9c.
+- **Tests:** `rejectReasons1938.test.ts` (5).
+- **The pin** holds (events are not state).
+- **The gate:** the related unit tests (129 files, 859 tests), red only by two timing tests of
+  BLOCKERS (`snapshot-perf`, the `scenario1938` build); the pin, build and parity green by hand.
+- **Next:** PLAN 4.9b.

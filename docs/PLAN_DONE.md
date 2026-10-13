@@ -7228,3 +7228,21 @@ Of 4.8 (open in PLAN.md):
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed
     if a defect of Phase 4 caused it, no constant tuned), and the tick of 4.8; then the
     critic (due after a phase review, ADR-59).
+
+<!-- moved 2026-10-12 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.9 (open in PLAN.md):
+
+  - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard,
+    no land formation, no way by land, a march barred on the way; by sea: at no port of its
+    nation, no transports there with room, no water by the target, no way for the transports;
+    a fleet's: no water, no lane). Unit test of each.

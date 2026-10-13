@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-298 · 2026-10-12 · accepted — A refused order says why (PLAN 4.9a)
+
+- **Context** (the critic's R4-B2): a refused order emitted `MoveRejected` with nothing of why,
+  and no code of the page read it: a British division ordered onto Germany with its transports
+  6.5 cells away did nothing for 20 days and said nothing.
+- **Decision.** `RejectReason` (`src/shared/events.ts`) in the event's x, y NaN (a refusal has
+  no place, as before; the history reads a place from both): `Aboard`, `NotLand` (no formation
+  of the order's kind, a target off the map), `NoRoute`, `Barred`, and by sea `NoPort`,
+  `NoTransports`, `NoLanding`, `NoSeaWay`, a fleet's `NotWater`. `tryLanding` gives the
+  landing's reason (`orderLanding` is it, as a boolean, for the AI); an order over the sea
+  that is refused falls to a march as before and, with no way by land, gives the sea's reason.
+  The event's b is the formation's nation where it was 0 aboard. Events are not state: the pin
+  stays 8622df0d.
+- **Seen, for 4.9b and 4.9c:** an order over the sea whose target is near this land's coast
+  snaps to it and is a march (Calais from Portsmouth with no transports goes to Dover): the
+  sea's refusal is not emitted then.
+- **Tests.** `rejectReasons1938.test.ts`: each reason from a 1938 case.
+
 ### ADR-297 · 2026-10-12 · accepted — The phase review's full run is recorded, and judged against a list of known reds (the user's decision)
 
 - **Context.** A phase review's tick runs every stage in full (ADR-293). At PLAN 4.8 the stages

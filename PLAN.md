@@ -39,10 +39,7 @@ quick sweep as a smoke test.
   (`critic/scripts/c4_landing.ts`, seed 2207) work as the rules say: the transports, alone,
   were caught by the German navy off the Weser, broke off (hour 99, `FormationRetreated`) and
   sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
-  - [ ] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard,
-    no land formation, no way by land, a march barred on the way; by sea: at no port of its
-    nation, no transports there with room, no water by the target, no way for the transports;
-    a fleet's: no water, no lane). Unit test of each.
+  - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard, […]
   - [ ] 4.9b An order over the sea from inland: the formation marches to its nation's nearest
     port with transports that have room for it, embarks there and sails (the sea order kept
     as state while it marches, saved). Unit test: London to the German coast; a save loaded
