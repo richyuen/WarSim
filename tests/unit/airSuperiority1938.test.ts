@@ -4,6 +4,7 @@ import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { orderMission } from '../../src/sim/systems/air';
 import { AIR_POWER_DECAY, airPowerSystem, airSuperiority } from '../../src/sim/systems/airSuperiority';
+import { destroyFormation } from '../../src/sim/systems/elements';
 import { airOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -54,6 +55,18 @@ describe('air superiority (PLAN 5.3c)', () => {
     for (let h = 0; h < 24; h++) airPowerSystem(w, new Map());
     expect(w.airPower.get(5)!.get(GER)! / (36 * 25)).toBeCloseTo(0.5, 4);
     for (let h = 0; h < 24 * 11; h++) airPowerSystem(w, new Map());
+    expect(w.airPower.size).toBe(0);
+  });
+
+  it('it fades in a game with no wing left, and leaves the state (PLAN 5.8k)', () => {
+    const s = sim();
+    const w = s.world;
+    for (const [id] of [...w.wingBase]) destroyFormation(w, id);
+    expect(w.wingBase.size).toBe(0);
+    w.airPower.set(5, new Map([[GER, 900]]));
+    s.step(24);
+    expect(w.airPower.get(5)!.get(GER)! / 900).toBeCloseTo(0.5, 3);
+    s.step(24 * 11);
     expect(w.airPower.size).toBe(0);
   });
 

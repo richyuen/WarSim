@@ -20,7 +20,11 @@ import { airOf, type World } from '../world';
 
 export function airSystem(world: World): void {
   repairSystem(world);
-  if (world.wingBase.size === 0) return;
+  if (world.wingBase.size === 0) {
+    // No wing left: what was flown fades all the same (PLAN 5.8k).
+    if (world.airPower.size > 0) airPowerSystem(world, new Map());
+    return;
+  }
   const f = world.formations;
   const c = f.cols;
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {

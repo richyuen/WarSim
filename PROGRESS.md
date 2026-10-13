@@ -14899,3 +14899,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (890 of 893) red only by the three timing tests of
   BLOCKERS (3,336 ms, 2.25 ms, 25.4 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8k.
+
+## 2026-10-13 — PLAN 5.8k: air power fades with no wing left (ADR-334)
+
+- **Done:** `airSystem` fades the air power when no wing is left.
+- **Tests:** `airSuperiority1938` (1 more, failed before).
+- **The pin holds** at 77670f43.
+- **The gate:** the related unit tests (892 of 894) red only by two timing tests of BLOCKERS
+  (3,056 ms, 2.39 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8l.

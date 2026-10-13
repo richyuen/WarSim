@@ -167,6 +167,16 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-334 · 2026-10-13 · accepted — Air power fades with no wing left (PLAN 5.8k)
+
+- **Found** (the eleventh read): `airSystem` returned before the air power faded when no wing was
+  left (no wing is built yet: a long war can lose them all); the last air war's superiority then
+  stood for good, the land's fire × 0.8 to 1.2 by it.
+- **Decision.** With no wing, the air power fades all the same (`airPowerSystem` with no sorties).
+- **The pin holds** at 77670f43: seed 99's year keeps wings.
+- **Tests.** `airSuperiority1938`: every wing gone, 900 flown over a zone: half in a day, gone in
+  twelve (it stayed whole before).
+
 ### ADR-333 · 2026-10-13 · accepted — A wing with no base is refused, not thrown at (PLAN 5.8j)
 
 - **Found** (the eleventh read): a carrier sunk in an hour sets its wings' base to 0

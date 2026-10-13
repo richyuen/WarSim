@@ -7931,3 +7931,20 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until
     `airSystem` runs): `basePlace(0)` is null and is spread. Refused with `NoBase`.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the
+    air power fades, and a land battle keeps the ± 20% of the last air war. It fades with none.
