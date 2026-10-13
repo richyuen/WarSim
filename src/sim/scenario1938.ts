@@ -16,6 +16,7 @@ import combatJson from '../../data/combat.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import fleets1938 from '../../data/scenarios/1938/fleets.json' with { type: 'json' };
 import ports1938 from '../../data/scenarios/1938/ports.json' with { type: 'json' };
+import airbases1938 from '../../data/scenarios/1938/airbases.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
@@ -44,6 +45,7 @@ import { dayOfIso } from '../shared/calendar';
 import type { CityDef, PlacedCity } from './data/cities';
 import { placeFleets, type FleetGroup } from './data/fleets';
 import { placePorts, portWater, type PortRules } from './data/ports';
+import { placeAirbases, type AirbaseRules } from './data/airbases';
 import { templateStrength, type OobGroup, type PlacedFormation, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
@@ -277,6 +279,8 @@ export function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: r
 export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
 /** The ports and naval bases of the 1938 scenario (PLAN 4.1c). */
 export const PORTS_1938 = ports1938 as unknown as PortRules;
+/** The airbases of the 1938 scenario (PLAN 5.1c). */
+export const AIRBASES_1938 = airbases1938 as unknown as AirbaseRules;
 /** The fleets of the 1938 start (PLAN 4.2b). */
 export const FLEETS_1938 = fleets1938.groups as unknown as FleetGroup[];
 
@@ -398,6 +402,7 @@ interface Template1938 {
   bytes: Uint8Array;
   islandCells: readonly number[];
   ports: World['ports'];
+  airbases: World['airbases'];
   /** Per part of the world, the rows a table has room for (-1 for a part that is not a table): a table loaded has room for its rows alone. */
   capacities: number[];
   /** The map's nav caches and seas as the build left them (read only; each world its own grid's searches: `freshGrid`). */
@@ -434,7 +439,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   if (!t) {
     const built = buildWorld1938(seed, assets);
     const b = built.world;
-    byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
+    byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, airbases: b.airbases, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
     return built.world;
   }
   const { w, h } = SIZE_1938;
@@ -442,6 +447,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   staticParts1938(world, assets);
   if (world.landMask) for (const cell of t.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
   world.ports = t.ports;
+  world.airbases = t.airbases;
   world.portReach = PORTS_1938.reachCells;
   world.rules = RULES_1938;
   // The tables with the room the build left them (a held `cols` lasts over as many creates).
@@ -522,6 +528,9 @@ function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; i
   if (placed.unplaced.length) throw new Error(`1938 ports: ${placed.unplaced.map((i) => PORTS_1938.ports[i]!.name).join(', ')} found no land`);
   world.ports = placed.ports;
   world.portReach = PORTS_1938.reachCells;
+  const bases = placeAirbases(AIRBASES_1938, map.cities, tags, map.owner, w, h);
+  if (bases.unplaced.length) throw new Error(`1938 airbases: ${bases.unplaced.map((i) => AIRBASES_1938.bases[i]!.name).join(', ')} found no land`);
+  world.airbases = bases.airbases;
   world.rules = RULES_1938;
   addFormations(world, map.formations);
 

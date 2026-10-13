@@ -1717,6 +1717,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   group (4 × 6). A wing is a formation of an air template. None exists yet: the order to build
   one is refused (no domain but the land's and, with a shipyard, the sea's), as is the spawn
   (`NotOfLand`); the build list leaves them out.
+- *As built (PLAN 5.1c, ADR-308; `src/sim/data/airbases.ts`, `data/scenarios/1938/airbases.json`):*
+  every capital city is an airbase of level 1, a city of size 5 one of level 2, and 23 main air
+  stations of 1938 are listed by hand (Mildenhall, Le Bourget, Tempelhof, Guidonia, Monino,
+  Kasumigaura, Langley Field…, levels 2 and 3): 172 in 1938, every living nation with one. Who
+  holds the cell holds the base; its room is the airbase building's 50 aircraft a level. Static
+  data of the scenario (`world.airbases`), as the ports are; the random world has them too.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

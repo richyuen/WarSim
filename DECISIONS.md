@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-308 · 2026-10-13 · accepted — Airbases: the capitals, the large cities and the main air stations (PLAN 5.1c)
+
+- **Decision.** An airbase is static data of the scenario, as a port is (`world.airbases`,
+  `placeAirbases`): every capital city at `capitalLevel` 1, every city of size `minCitySize` 5 at
+  `sizeLevel` 2 (83 such cities), and the main air stations of the larger air forces of 1938 by
+  hand (23, levels 2 and 3), one in a city base's cell raising its level. Who holds the cell holds
+  the base (`airbaseHolder`); its room is `AIR_PER_LEVEL` = the airbase building's `airCapacity`,
+  50 aircraft, a level (`airbaseRoom`). Not saved, not hashed: a base taken is its cell's
+  taker's. The random world places the cities' bases the same way, its own capitals among them.
+- **Data.** Heliopolis is Egypt's land and Clark Field the Philippines' in the 1938 nations: the
+  stations by hand name the holder of the land, as the ports do.
+- **1938:** 172 airbases (68 of level 1, 97 of 2, 7 of 3); every living nation holds one.
+- **The pin stays** c0a89199.
+- **Tests.** `airbases1938.test.ts`: every living nation holds one, every station by hand on its
+  nation's land; a base taken is the taker's; the room; the data set refuses a level of 6.
+
 ### ADR-307 · 2026-10-13 · accepted — Air wing templates in the rules, after the sea's (PLAN 5.1b)
 
 - **Decision.** The aircraft types (`data/units/air.json`, nine with the ballistic missile of

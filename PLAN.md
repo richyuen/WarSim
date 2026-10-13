@@ -33,10 +33,7 @@ quick sweep as a smoke test.
   the state. One cause a commit:
   - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea […]
   - [x] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber, […]
-  - [ ] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and
-    the cities of the larger nations), with levels; a base is its cell's controller's; its
-    room is `airCapacity` × level aircraft. Test: every nation with an air force in 1938 has
-    one; a base taken is its taker's.
+  - [x] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and […]
   - [ ] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record
     (`data/scenarios/1938/air.json`), the carriers' air groups aboard the carriers of the
     fleets; paid from the first month; no rule reads a wing yet. Test: counts by nation; ten

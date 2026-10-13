@@ -14611,3 +14611,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the unit tests in full (a data file changed): 1,286 of 1,289, red only by the three
   timing tests of BLOCKERS; the pin, build and parity green by hand.
 - **Next:** PLAN 5.1c.
+
+## 2026-10-13 — PLAN 5.1c: airbases (ADR-308)
+
+- **Done:** `placeAirbases`, `data/scenarios/1938/airbases.json`: capitals (level 1), cities of
+  size 5 (level 2), 23 main air stations by hand; 172 in 1938, every living nation with one; held
+  by the cell's controller, 50 aircraft a level. Static, as the ports. SPEC §6.3 says so.
+- **Tests:** `airbases1938.test.ts` (3).
+- **The gate:** the unit tests in full (a data file changed): 1,291 of 1,293, red only by two timing
+  tests of BLOCKERS (the build's: 3,074 ms with this change, 2,552 without, one run each; the
+  airbases' placement itself is under a millisecond: the gap is the container's); the pin
+  (c0a89199), build and parity green by hand.
+- **Next:** PLAN 5.1d.

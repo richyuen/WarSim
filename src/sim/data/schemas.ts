@@ -277,6 +277,23 @@ export const PortsFile = z.strictObject({
   ports: z.array(PortDef),
 });
 
+// ── airbases (data/scenarios/<id>/airbases.json) ─────────────────────────────
+
+/** Airbases (PLAN 5.1c, `src/sim/data/airbases.ts`): the rule for the cities' bases, and the list by hand. */
+export const AirbaseDef = z.strictObject({
+  name: z.string().min(1),
+  lonLat,
+  nation: z.string().regex(/^[A-Z]{3}$/).optional(),
+  level: buildingLevel,
+});
+export const AirbasesFile = z.strictObject({
+  comment: z.string().optional(),
+  capitalLevel: buildingLevel,
+  minCitySize: z.number().int().min(1).max(5),
+  sizeLevel: buildingLevel,
+  bases: z.array(AirbaseDef),
+});
+
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
 
 export const ScenarioSettings = z.strictObject({
@@ -471,6 +488,7 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ports\.json$/, schema: PortsFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/airbases\.json$/, schema: AirbasesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/fleets\.json$/, schema: FleetsFile },
 ];
 

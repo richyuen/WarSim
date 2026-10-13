@@ -8,6 +8,7 @@ import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
+import type { Airbase } from './data/airbases';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { xxhash32View } from './core/hash';
@@ -924,6 +925,11 @@ export class World {
   ports: readonly Port[] = [];
   /** How far from its cell a port's water may be, cells (the scenario's `reachCells`). */
   portReach = 0;
+  /**
+   * The airbases (PLAN 5.1c, `placeAirbases`): static data of the scenario, as the ports are, not
+   * state. Who holds a base is who holds its cell. None on the toy world.
+   */
+  airbases: readonly Airbase[] = [];
   /** Each port's water (`portSeaOf`): a derived cache, dropped where `sea` is. */
   portSea: Int32Array | null = null;
   /** The lane graph: a derived cache, dropped where `sea` is. */

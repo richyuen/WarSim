@@ -7453,3 +7453,22 @@ Of 5.1 (open in PLAN.md):
     close support, naval bomber and transport groups) in the scenario's rules after the sea
     ones, a template of the air domain; a wing is a formation of one. None exists: the queue
     and the spawn refuse one, as the sea's did before 4.2b. Test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and
+    the cities of the larger nations), with levels; a base is its cell's controller's; its
+    room is `airCapacity` × level aircraft. Test: every nation with an air force in 1938 has
+    one; a base taken is its taker's.
