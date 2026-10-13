@@ -18,7 +18,12 @@ const [GER, POL] = ['GER', 'POL'].map(nationId) as [number, number];
 const template = (t: string): number => TEMPLATES_1938.findIndex((x) => x.id === t);
 const [cx, cy] = cellOf(19.0, 52.0, SIZE_1938.w, SIZE_1938.h).map(Math.floor) as [number, number];
 const TARGET: [number, number] = [cx + 0.5, cy + 0.5];
-const sim = (): Sim => new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+/** The 1938 world with the AI off: the missions here are the test's, not the air AI's (PLAN 5.6). */
+const sim = (): Sim => {
+  const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+  s.world.settings.aiEnabled = false;
+  return s;
+};
 const stukas = (w: World): number =>
   [...w.wingBase].find(([id, b]) => w.formations.cols.nation[id] === GER && b > 0 && TEMPLATES_1938[w.formations.cols.template[id]!]!.id === 'close_support_group')![0];
 /** Germany and Poland at war, and no formation within 3 cells of the target. */

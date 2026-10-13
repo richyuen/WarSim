@@ -1780,6 +1780,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.5b, ADR-321; `portShut`):* the bombs damage the enemy's ports within reach by
   tons over 60 × the port's level; repaired as industry; a port damaged by a half or more embarks
   no one and its yard delivers no fleet.
+- *As built (PLAN 5.6, ADR-322; `airAi`):* daily, a nation at war sends its fighters to patrol
+  over its front, its close support and tactical bombers to strike the enemy's, its naval bombers
+  at the enemy's fleets, and its strategic bombers at the enemy's richest industry in range where
+  its side holds the air (superiority 0.6 or more); at peace, no missions.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

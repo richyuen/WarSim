@@ -17,7 +17,12 @@ import { nationId } from '../helpers/sim1938';
 const [GER, FRA] = ['GER', 'FRA'].map(nationId) as [number, number];
 const at = (lon: number, lat: number): [number, number] => cellOf(lon, lat, SIZE_1938.w, SIZE_1938.h);
 const STRASBOURG = at(7.75, 48.58);
-const sim = (): Sim => new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+/** The 1938 world with the AI off: the missions here are the test's, not the air AI's (PLAN 5.6). */
+const sim = (): Sim => {
+  const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+  s.world.settings.aiEnabled = false;
+  return s;
+};
 const wingOf = (w: World, nation: number, t: string, skip = 0): number =>
   [...w.wingBase].filter(([id, b]) => w.formations.cols.nation[id] === nation && b > 0 && TEMPLATES_1938[w.formations.cols.template[id]!]!.id === t)[skip]![0];
 /** Wing `id` over (x, y) on patrol now: a sortie from its base that has just come over its target. */

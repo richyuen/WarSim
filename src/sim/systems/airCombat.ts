@@ -230,7 +230,8 @@ export function strikes(world: World): void {
       if (dx > w / 2) dx = w - dx;
       const dy = Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty);
       if (dx > AA_CELLS || dy > AA_CELLS) return;
-      for (const e of index.get(g) ?? []) if (ec.strength[e]! > 0) targets.push(e);
+      // A submarine is under water: no strike's target, as no gun's (PLAN 5.6 found it sunk from the air).
+      for (const e of index.get(g) ?? []) if (ec.strength[e]! > 0 && rules.units[ec.unit[e]!]!.cls !== 'ss') targets.push(e);
     });
     // Its bombs on the industry there (PLAN 5.5a), whether or not an enemy's formation is.
     const tons = bombIndustry(world, id, s.tx, s.ty);

@@ -58,12 +58,18 @@ describe('the air forces of 1938 (PLAN 5.1d)', () => {
     const t = new Sim({ scenario: '1938', seed: 7, assets: assets1938(SIZE_1938.w) });
     const tw = t.world;
     const start = new Map([...tw.wingBase].map(([id]) => [id, tw.formations.cols.strength[id]!]));
-    t.step(24 * 30);
+    // Since PLAN 5.6 the air AI flies the wings of nations at war: those may be hit in the air.
+    const flew = new Set<number>();
+    const onCarrier = new Set([...tw.wingBase].filter(([, b]) => b < 0).map(([id]) => id));
+    t.step(24 * 30, (ww) => {
+      for (const id of ww.sorties.keys()) flew.add(id);
+    });
     const tc = tw.formations.cols;
     let lost = 0;
     for (const [id, strength] of start) {
       if (!tw.formations.has(id)) {
         lost++;
+        expect(flew.has(id) || onCarrier.has(id), String(id)).toBe(true);
         continue;
       }
       const base = tw.wingBase.get(id)!;
@@ -71,10 +77,12 @@ describe('the air forces of 1938 (PLAN 5.1d)', () => {
       else if (base < 0) expect([tc.x[id], tc.y[id]]).toEqual([tc.x[-base], tc.y[-base]]);
       expect(tc.moving[id]).toBe(0);
       expect(tc.engaged[id]).toBe(0);
-      expect(tc.strength[id]).toBe(strength);
+      if (!flew.has(id)) expect(tc.strength[id]).toBe(strength);
     }
-    // Only a carrier's wing is lost, with its carrier.
-    expect(lost).toBeLessThanOrEqual(4);
+    // A wing that never flew is whole; a carrier's is lost with its carrier, one that flew in the air.
+    expect(flew.size).toBeGreaterThan(0);
+    expect(flew.size).toBeLessThan(start.size);
+    expect(lost).toBeLessThanOrEqual(4 + flew.size);
   });
 
   it('a carrier sunk takes its wings; a save loads with them, the same game', () => {

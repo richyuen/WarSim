@@ -14,7 +14,12 @@ import { nationId } from '../helpers/sim1938';
 // REPAIR_DAILY a day.
 
 const [GER, FRA, SOV] = ['GER', 'FRA', 'SOV'].map(nationId) as [number, number, number];
-const sim = (): Sim => new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+/** The 1938 world with the AI off: the missions here are the test's, not the air AI's (PLAN 5.6). */
+const sim = (): Sim => {
+  const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+  s.world.settings.aiEnabled = false;
+  return s;
+};
 const wingOf = (w: World, nation: number, t: string): number =>
   [...w.wingBase].find(([id, b]) => w.formations.cols.nation[id] === nation && b > 0 && TEMPLATES_1938[w.formations.cols.template[id]!]!.id === t)![0];
 /** The German cell of the most industry within `km` of wing `wing`'s base: its place. */

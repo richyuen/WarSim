@@ -25,8 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.6 Air AI tasking.
-  AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
 - [ ] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
   AT: air battle demo e2e + screenshots viewed.
 - [ ] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
@@ -702,3 +700,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.3 Air combat, interception, AA; air superiority per zone. […]
 - [x] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles. […]
 - [x] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair). […]
+- [x] 5.6 Air AI tasking. […]

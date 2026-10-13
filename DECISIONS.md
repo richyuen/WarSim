@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-322 · 2026-10-13 · accepted — The air AI (PLAN 5.6)
+
+- **Decision.** `src/sim/ai/air.ts`, `airAi`, after the naval AI, daily at 00:00, for every nation
+  at war with its AI on (no stagger: a front moves in a day), its land-based wings (a carrier's
+  stay with its fleet, ADR-319), by the class of their aircraft:
+  - fighters patrol over its own land formation in contact (`engaged`) nearest their base within
+    range;
+  - close support and tactical bombers strike the enemy's formation in contact nearest their base
+    within range;
+  - naval bombers strike the enemy's fleet nearest their base within range, else as tactical;
+  - strategic bombers strike the enemy's cell with the most industry within range in an air zone
+    where its superiority is `BOMB_SUPERIORITY` (0.6) or more; none such, no mission;
+  - transports none. At peace, or with no target in range, a wing's mission is taken off.
+  An order is given only within range, so the AI is never refused; an unchanged one is not
+  given again.
+- **Cost.** A year of seed 99 in this container: `airAi` 0.35 ms a tick (it began at 1.73: the
+  cells of industry were sorted every day; they are sorted once per world now, `byIndustry`,
+  kept while the industry's weighted sum is unchanged, so an editor's city sorts them again and a
+  loaded world has the same order), `air` 0.87 ms, the tick 10.7 ms mean.
+- **The figures** (seed 99, a year): 18,856 strikes, 3,085 by strategic bombers, 3,081 of those
+  where their side's superiority was 0.6 or more at the strike (the median 1: they bomb where the
+  enemy does not fly); 252 zone-days of air flown by both sides of a war, 216 of them over a front
+  (of 1,044 front zone-days).
+- **Found by the first gate, mended:** a strike hit a submarine by its hard attack (ADR-318):
+  Germany's four U-boat flotillas at war with Britain (seed 4606) were all sunk from the air in
+  60 days, 2,724 strikes, and raided no convoy (`navalAi1938`). A submarine is under water: no
+  strike's target, as it is no gun's (`strikes`; a carrier's strike took the surface ships only
+  already).
+- **Tests the air AI's game moved** (the rules of the land the same):
+  - Five tests of PLAN 5.2 to 5.5 order missions by hand and step: the air AI took them off at
+    its first hour. Their worlds have the AI off now (`aiEnabled` false): they test the rules,
+    not the AI.
+  - `wings1938`, a month on: the AI flies the wings of the nations at war in 1938; a wing that
+    never flew is whole, every wing at its base, none moving or engaged, a lost one one that flew
+    or a carrier's.
+  - `warBattle`, 60 days of Germany against Poland: three looks found a war with only allies in
+    contact, and named their battle: ADR-95 allows it; the test now holds that none passed over
+    a leader's formation facing its enemy (0), and neither-leader battles under 1%. Its front's
+    contact comes and goes from hour to hour, none at the last look (hour 1440): a battle at a
+    look of the last day.
+  - `coast1938`: marches over the mask's rivers, steps with no way over land (ADR-246, ADR-285:
+    accepted), 582 of 773,802 hours on 19 steps, where they were 322 of 799,261 on 16: the
+    bound 0.0006 → 0.001. Every hour over water on a step with a way over land is still a
+    failure.
+- **The pin moves** a6c4ac55 → 321cd835.
+- **Tests.** `airAi1938.test.ts`: fighters over its own formation in contact, close support on the
+  enemy's, out of range none, an AI off none; a strategic group none while no zone is held, then
+  the richest enemy cell of the held zone in range, none again when contested to a half; at peace
+  none; the order of `byIndustry`. `tests/sweep/airYear.test.ts` (the AT, a year headless, at the
+  phase review and in `check:full`).
+
 ### ADR-321 · 2026-10-13 · accepted — Ports bombed: shut at a half (PLAN 5.5b)
 
 - **Decision.** A strike's bombs (`bombIndustry`, ADR-320) also fall on the ports within

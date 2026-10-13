@@ -13,7 +13,12 @@ import { nationId } from '../helpers/sim1938';
 
 const [GER, FRA, ITA, ENG, SWE] = ['GER', 'FRA', 'ITA', 'ENG', 'SWE'].map(nationId) as [number, number, number, number, number];
 const STRASBOURG = cellOf(7.75, 48.58, SIZE_1938.w, SIZE_1938.h);
-const sim = (): Sim => new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+/** The 1938 world with the AI off: the missions here are the test's, not the air AI's (PLAN 5.6). */
+const sim = (): Sim => {
+  const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+  s.world.settings.aiEnabled = false;
+  return s;
+};
 const wingOf = (w: World, nation: number, t: string): number =>
   [...w.wingBase].find(([id, b]) => w.formations.cols.nation[id] === nation && b > 0 && TEMPLATES_1938[w.formations.cols.template[id]!]!.id === t)![0];
 const zoneAt = (w: World, [x, y]: readonly number[]): number => airOf(w).zoneOf[Math.floor(y!) * w.cells.w + Math.floor(x!)]!;

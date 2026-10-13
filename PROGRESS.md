@@ -14771,3 +14771,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (877 of 879) red only by two timing tests of BLOCKERS
   (3,016 ms, 3.63 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.6.
+
+## 2026-10-13 — PLAN 5.6: the air AI (ADR-322)
+
+- **Done:** `airAi` (daily: fighters over the front, close support and tactical bombers on the
+  enemy's front, naval bombers on fleets, strategic bombers on industry where its side holds the
+  air); `byIndustry` sorted once. The headless runner's systems: 30. SPEC §6.3, PARITY.
+- **Tests:** `airAi1938.test.ts` (3); `tests/sweep/airYear.test.ts`, the AT (a year of seed 99:
+  18,856 strikes, 3,081 of 3,085 strategic ones at superiority 0.6 or more; 216 zone-days
+  contested over a front), run by hand: green.
+- **Found by the first gate:** a strike sank submarines (all four German flotillas in 60 days):
+  mended, a submarine is no strike's target. Tests the AI's game moved, each in ADR-322: five
+  mechanics tests with the AI off, `wings1938`, `warBattle`, `coast1938` (bound 0.0006 → 0.001).
+- **Cost:** `airAi` 0.35 ms a tick, `air` 0.87 ms, the tick 10.7 ms mean (unpinned, this container).
+- **The pin moves** a6c4ac55 → 321cd835.
+- **The gate:** the second run, the related unit tests (879 of 882) red only by the three
+  timing tests of BLOCKERS (3,589 ms, 4.54 ms, 26.7 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.7.

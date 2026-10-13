@@ -7733,3 +7733,18 @@ Of 5.5 (open in PLAN.md):
   - [x] 5.5b Ports: a bombed port is damaged by its level, repaired as industry is, and while
     damaged by a half or more its transports embark no one and its yard delivers no fleet (no
     rule repairs a ship, so none is barred). Saved. Test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.6 Air AI tasking.
+  AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.

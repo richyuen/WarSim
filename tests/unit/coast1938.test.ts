@@ -112,7 +112,9 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     expect(wrong.slice(0, 5), 'over water on a step with a way over land').toEqual([]);
     expect(march.hours).toBeGreaterThan(500_000);
     // Before PLAN 4.1d2: 1,266 of 774,232 hours over the mask's water by its bit alone, on 77 steps. What is left is steps with no way over land (a river of the mask).
-    expect(march.wet / march.hours).toBeLessThan(0.0006);
+    // Under 0.0006 until PLAN 5.6 (322 of 799,261 hours, on 16 steps); the air AI's game marches
+    // more over those rivers (582 of 773,802, on 19 steps; ADR-322), the rule the same: 0.001.
+    expect(march.wet / march.hours).toBeLessThan(0.001);
   }, 120_000);
 
   it('a step with a way over land (PLAN 4.1d2): every place of it surely land, from the one cell’s point to the other’s, and the same walked back', () => {
