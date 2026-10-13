@@ -43,8 +43,7 @@ quick sweep as a smoke test.
   - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships […]
   - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base): […]
   - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next […]
-  - [ ] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only):
-    refused, as any formation that is not of the land.
+  - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only): […]
   - [ ] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to
     import or throws in a hook (vitest: a failed file with no failed test), a spec that fails to
     load (Playwright's top-level errors), a non-zero exit. Each is red.

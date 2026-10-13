@@ -8002,3 +8002,20 @@ Of 5.8 (open in PLAN.md):
   - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next
     day's first hour (paused: for good), and a pump that steps past a day's first hour skips it:
     the worker's air fields reset with a load; sent when the day changed.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only):
+    refused, as any formation that is not of the land.

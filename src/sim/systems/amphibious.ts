@@ -96,6 +96,8 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   const f = world.formations;
   const c = f.cols;
   if (!f.has(id) || world.afloat(id) || !world.rules) return world.afloat(id) ? RejectReason.Aboard : RejectReason.NotLand;
+  // Transports carry the land's formations alone: no air wing (PLAN 5.8o).
+  if (world.isWing(id)) return RejectReason.NotLand;
   const { w, h, terrain } = world.cells;
   const tx = Math.floor(x);
   const ty = Math.floor(y);

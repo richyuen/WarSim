@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-339 · 2026-10-13 · accepted — No wing aboard transports (PLAN 5.8o)
+
+- **Found** (the eleventh read): `tryLanding` refused only a formation afloat; an air wing at a
+  port of its nation's with transports was put aboard them (a player's order over the sea), and
+  its base and sorties went on as if it stood there.
+- **Decision.** `tryLanding` refuses a wing (`NotLand`), as it does any formation that is not of
+  the land; a fleet stays refused `Aboard`.
+- **The pin holds** at ae18ce8c: the invasion AI orders no wing.
+- **Tests.** `wingAboard1938`: a British wing at Portsmouth is refused a landing at Calais and
+  keeps its base; a division there embarks (it failed before).
+
 ### ADR-338 · 2026-10-13 · accepted — The air mode after a load, and a day a pump stepped past (PLAN 5.8n)
 
 - **Found** (the eleventh read): the worker sent the air holders only at a look at a day's first

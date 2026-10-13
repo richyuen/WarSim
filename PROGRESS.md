@@ -14951,3 +14951,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (122 of 123) red only by `snapshot-perf` of BLOCKERS
   (2.67 ms); build and parity green by hand.
 - **Next:** PLAN 5.8o.
+
+## 2026-10-13 — PLAN 5.8o: no wing aboard transports (ADR-339)
+
+- **Done:** `tryLanding` refuses an air wing (`NotLand`).
+- **Tests:** `wingAboard1938` (1, new; failed before).
+- **The pin holds** at ae18ce8c.
+- **The gate:** the related unit tests (806 of 809) red only by the three timing tests of
+  BLOCKERS (3,240 ms, 2.76 ms, 26.0 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8p.
