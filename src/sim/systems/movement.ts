@@ -370,7 +370,7 @@ export function repatriationSystem(world: World): void {
   // The ground of the day's marches home, by nation.
   const ways = new Map<number, Passage>();
   f.forEach((id) => {
-    if (c.moving[id] === 1 || c.engaged[id] === 1 || !world.rules?.templates[c.template[id]!] || world.afloat(id)) return;
+    if (c.moving[id] === 1 || c.engaged[id] === 1 || !world.rules?.templates[c.template[id]!] || world.offLand(id)) return;
     const nation = c.nation[id]!;
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const holder = controller[cell]!;

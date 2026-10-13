@@ -72,6 +72,11 @@ export class SimClient {
       for (const l of this.seaControlListeners) l(msg.holder, msg.zones, msg.names);
       return;
     }
+    if (msg.type === 'airControl') {
+      this.airControl = { holder: msg.holder, zones: msg.zones ?? this.airControl?.zones };
+      for (const l of this.airControlListeners) l(msg.holder, msg.zones);
+      return;
+    }
     if (msg.type === 'provinceStats') {
       this.unrest = msg.unrest;
       for (const l of this.unrestListeners) l(msg.unrest);
@@ -164,6 +169,15 @@ export class SimClient {
   onSeaControl(l: (holder: Uint16Array, zones?: Uint16Array, names?: string[]) => void): () => void {
     this.seaControlListeners.add(l);
     return () => this.seaControlListeners.delete(l);
+  }
+  private readonly airControlListeners = new Set<(holder: Uint16Array, zones?: Uint16Array) => void>();
+  /** The last air control from the worker (PLAN 5.7c): a late listener gets it at once. */
+  private airControl: { holder: Uint16Array; zones: Uint16Array | undefined } | null = null;
+  /** Who holds the air of each air zone, for its map mode (PLAN 5.7c), and the cells' zones when new. */
+  onAirControl(l: (holder: Uint16Array, zones?: Uint16Array) => void): () => void {
+    this.airControlListeners.add(l);
+    if (this.airControl) l(this.airControl.holder, this.airControl.zones);
+    return () => this.airControlListeners.delete(l);
   }
   private readonly unrestListeners = new Set<(u: Uint8Array) => void>();
   onUnrest(l: (u: Uint8Array) => void): () => void {

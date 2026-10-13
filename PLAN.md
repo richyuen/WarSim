@@ -23,57 +23,43 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
-  is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
-  small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
-  watched running (`critic/c4_b_6131.json`, `critic/c4_b2_6131.json`); the sea-control mode is
-  blocky and its colours do not say whose navy holds a zone. The critic's fix: a ship glyph on
-  a naval counter; both fleets of an engagement in one T2 view with their fire; a sea-control
-  legend.
-  AT: e2e: a fleet's counter at T0 differs from an army's (pixels); on seed 6131's war the
-  first sea battle, followed from its event, draws gunfire within its first hours at T2; the
-  sea-control mode names the holder of the zone under the cursor or in a legend.
-  Split 2026-10-13 into parts, one cause a commit. Found first (seed 6131, the critic's war):
-  the sim fires (28 naval shots in hour 41, 11 to 74 an hour after) and the page receives and
-  draws them (11 to 23 shots in a battle's hour, stepped); at ×1 a sea battle's five hours
-  pass in five seconds, each hour's shots in a part of it, and in this container a sample came
-  every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
-  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
-  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
-  - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the […]
-  - [ ] 4.10d The AT's specs (above), and the tick of 4.10.
-- [ ] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
-  value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
-  together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
-  a flex row for each line, the name cut by an ellipsis, the value never wrapping.
-  AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
-  no value wraps.
-
 ## Phase 5 — Air
 
-- [ ] 5.1 Air wings, airbases, carriers, range; air zones.
-  AT: a wing cannot be assigned a mission outside its range (test).
-- [ ] 5.2 Mission scheduler + sorties as derived kinematics.
-  AT: the sortie position function is pure (same inputs → same output, property test) and matches the sim's interception points.
-- [ ] 5.3 Air combat, interception, AA; air superiority per zone.
-  AT: outcome tests (fighters beat bombers; AA attrition rate).
-- [ ] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
-  From PLAN 4.3 (2026-10-10, ADR-254): a battleship sees 18 km by the units' data, so a
-  battle line sees a cruiser at 17 km and its 32 km guns hold a stand-off only where the
-  enemy sees it first: spotting aircraft (a cruiser's or a carrier's) are to give a fleet
-  its detection. A carrier has no weapon in a sea battle and breaks off at once (ADR-256).
-  AT: a battle with air superiority has a better outcome by the expected margin.
-- [ ] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
-  AT: bombed industry produces less until repaired (test).
-- [ ] 5.6 Air AI tasking.
-  AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
-- [ ] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
-  AT: air battle demo e2e + screenshots viewed.
 - [ ] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
   and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
   smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
   AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
   or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
+  Split 2026-10-13, as 4.8 was: the pass is several causes, one a commit. A part is not a
+  numbered task; the last part ticks 5.8 after `npm run check:review` (ADR-297).
+  - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and […]
+  - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326) […]
+  - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing […]
+  - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule […]
+  - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's […]
+  - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority […]
+  - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until […]
+  - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the […]
+  - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships […]
+  - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base): […]
+  - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next […]
+  - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only): […]
+  - [x] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to […]
+  - [x] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index): […]
+  - [x] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the […]
+  - [x] 5.8s1 Wings built (found by 5.8b: SPEC §6.3 has them, the rules refuse them): an air […]
+  - [x] 5.8s2 The economic AI keeps its air force, a share of its army's upkeep. Until then a […]
+  - [x] 5.8t1 Air superiority's other effects (SPEC §6.3, found by 5.8b), each a factor of the […]
+  - [x] 5.8t2 The same on a fleet's detection.
+  - [x] 5.8t3 The same on a strike's bombs.
+  - [x] 5.8u1 The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut […]
+  - [ ] 5.8u2 A paradrop of a formation from an airbase within range.
+  - [ ] 5.8u3 The air AI's transports: supply to its formations cut off, and its paradrops.
+  - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
+  - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
+    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
+    defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due
+    after a phase review, ADR-59).
 
 ## Phase 6 — Nuclear AI
 
@@ -735,3 +721,12 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.7 Naval visuals: ship sprites, wakes, gunfire, torpedo tracks, sinking; sea-control map mode. […]
 - [x] 4.8 Phase 4 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
 - [x] 4.9 Critic R4-B2 (report of 2026-10-12 on `5e91a56`): a player can invade, and a refused […]
+- [x] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter […]
+- [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a […]
+- [x] 5.1 Air wings, airbases, carriers, range; air zones. […]
+- [x] 5.2 Mission scheduler + sorties as derived kinematics. […]
+- [x] 5.3 Air combat, interception, AA; air superiority per zone. […]
+- [x] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles. […]
+- [x] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair). […]
+- [x] 5.6 Air AI tasking. […]
+- [x] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode. […]

@@ -70,9 +70,12 @@ export function fleetMen(world: World, id: number): number {
   return NAVY_WEIGHT * fleetPower(world, id);
 }
 
-/** Formation `id`'s men in a reckoning of forces: a fleet's weight (`fleetMen`), an army's strength (an embarked one's too). */
+/**
+ * Formation `id`'s men in a reckoning of forces: a fleet's weight (`fleetMen`), an army's strength
+ * (an embarked one's too); an air wing none yet (PLAN 5.1d: the air's weight comes with its war).
+ */
 export function forceMen(world: World, id: number): number {
-  return world.isFleet(id) ? fleetMen(world, id) : world.formations.cols.strength[id]!;
+  return world.isFleet(id) ? fleetMen(world, id) : world.isWing(id) ? 0 : world.formations.cols.strength[id]!;
 }
 
 /** Naval power of each bloc in each zone: zone → (bloc → hit points of armed ships). */

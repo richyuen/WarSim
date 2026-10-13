@@ -37,11 +37,12 @@ describe('ship types and fleet templates in the rules (PLAN 4.2a)', () => {
   it("the land templates and units keep their indices: the sea's stand after them", () => {
     // A formation and an order are saved with their template's index, an element with its unit's.
     expect(TEMPLATES_1938.slice(0, TEMPLATES_LAND.length)).toEqual(TEMPLATES_LAND);
-    expect(TEMPLATES_1938.slice(TEMPLATES_LAND.length).map((t) => t.id)).toEqual(SEA);
+    // The sea's after the land's; the air's after the sea's since PLAN 5.1b (`airTemplates.test.ts`).
+    expect(TEMPLATES_1938.slice(TEMPLATES_LAND.length, TEMPLATES_LAND.length + SEA.length).map((t) => t.id)).toEqual(SEA);
     expect(TEMPLATES_SEA.map((t) => t.id)).toEqual(SEA);
     expect(RULES_1938.templates).toHaveLength(TEMPLATES_1938.length);
     expect(UNIT_IDS_1938.slice(0, unitsLand.types.length)).toEqual(unitsLand.types.map((u) => u.id));
-    expect(UNIT_IDS_1938.slice(unitsLand.types.length)).toEqual(SHIPS);
+    expect(UNIT_IDS_1938.slice(unitsLand.types.length, unitsLand.types.length + SHIPS.length)).toEqual(SHIPS);
     expect(RULES_1938.units).toHaveLength(UNIT_IDS_1938.length);
     for (const t of SEA) expect((en as Record<string, string>)[`template.${t}`], t).toMatch(/\S/);
   });
@@ -51,13 +52,13 @@ describe('ship types and fleet templates in the rules (PLAN 4.2a)', () => {
     RULES_1938.templates.forEach((rule, i) => {
       const id = TEMPLATES_1938[i]!.id;
       const ships = rule.elements.filter((e) => sea.has(UNIT_IDS_1938[e.unit]!)).length;
-      expect(rule.domain, id).toBe(i < TEMPLATES_LAND.length ? Domain.land : Domain.sea);
+      expect(rule.domain, id).toBe(i < TEMPLATES_LAND.length ? Domain.land : i < TEMPLATES_LAND.length + SEA.length ? Domain.sea : Domain.air);
       expect(ships, id).toBe(rule.domain === Domain.sea ? rule.elements.length : 0);
     });
     // Each of the seven ship types is in a template, one ship to an element.
     const used = new Set(TEMPLATES_SEA.flatMap((t) => t.elements.map((e) => e.type)));
     expect([...used].sort()).toEqual([...SHIPS].sort());
-    for (const u of RULES_1938.units.slice(unitsLand.types.length)) expect(u.size).toBe(1);
+    for (const u of RULES_1938.units.slice(unitsLand.types.length, unitsLand.types.length + SHIPS.length)) expect(u.size).toBe(1);
   });
 
   it('a fleet has the pace of its slowest ship, and the cost, days, crew and upkeep of its ships', () => {

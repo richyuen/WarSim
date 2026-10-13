@@ -1,0 +1,400 @@
+{
+ "comment": "The air forces of 1938 (PLAN 5.1d): each nation's wings by template, placed at its airbases, the largest room first (a wing goes to the base with the most room left that holds it). A wing of the start stands for about three of the first-line groups of the record (Germany 28 wings, about 840 aircraft, against some 2,900 first-line in late 1938; the Soviet Union 30, Britain 20, Italy 17, Japan 16, France 15, the United States 15): the tick carries some 250 wings, not the 800 of the record. The carriers' air groups are not here: each carrier of a fleet of the start carries a naval bomber group (addWings).",
+ "groups": [
+  {
+   "nation": "GER",
+   "template": "fighter_group",
+   "count": 12
+  },
+  {
+   "nation": "GER",
+   "template": "tactical_bomber_group",
+   "count": 10
+  },
+  {
+   "nation": "GER",
+   "template": "close_support_group",
+   "count": 4
+  },
+  {
+   "nation": "GER",
+   "template": "air_transport_group",
+   "count": 2
+  },
+  {
+   "nation": "SOV",
+   "template": "fighter_group",
+   "count": 12
+  },
+  {
+   "nation": "SOV",
+   "template": "tactical_bomber_group",
+   "count": 10
+  },
+  {
+   "nation": "SOV",
+   "template": "strategic_bomber_group",
+   "count": 3
+  },
+  {
+   "nation": "SOV",
+   "template": "close_support_group",
+   "count": 3
+  },
+  {
+   "nation": "SOV",
+   "template": "air_transport_group",
+   "count": 2
+  },
+  {
+   "nation": "ENG",
+   "template": "fighter_group",
+   "count": 8
+  },
+  {
+   "nation": "ENG",
+   "template": "tactical_bomber_group",
+   "count": 6
+  },
+  {
+   "nation": "ENG",
+   "template": "strategic_bomber_group",
+   "count": 3
+  },
+  {
+   "nation": "ENG",
+   "template": "naval_bomber_group",
+   "count": 2
+  },
+  {
+   "nation": "ENG",
+   "template": "air_transport_group",
+   "count": 1
+  },
+  {
+   "nation": "ITA",
+   "template": "fighter_group",
+   "count": 7
+  },
+  {
+   "nation": "ITA",
+   "template": "tactical_bomber_group",
+   "count": 7
+  },
+  {
+   "nation": "ITA",
+   "template": "close_support_group",
+   "count": 1
+  },
+  {
+   "nation": "ITA",
+   "template": "naval_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "ITA",
+   "template": "air_transport_group",
+   "count": 1
+  },
+  {
+   "nation": "FRA",
+   "template": "fighter_group",
+   "count": 7
+  },
+  {
+   "nation": "FRA",
+   "template": "tactical_bomber_group",
+   "count": 6
+  },
+  {
+   "nation": "FRA",
+   "template": "strategic_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "FRA",
+   "template": "air_transport_group",
+   "count": 1
+  },
+  {
+   "nation": "JAP",
+   "template": "fighter_group",
+   "count": 6
+  },
+  {
+   "nation": "JAP",
+   "template": "tactical_bomber_group",
+   "count": 6
+  },
+  {
+   "nation": "JAP",
+   "template": "naval_bomber_group",
+   "count": 3
+  },
+  {
+   "nation": "JAP",
+   "template": "air_transport_group",
+   "count": 1
+  },
+  {
+   "nation": "USA",
+   "template": "fighter_group",
+   "count": 5
+  },
+  {
+   "nation": "USA",
+   "template": "tactical_bomber_group",
+   "count": 4
+  },
+  {
+   "nation": "USA",
+   "template": "strategic_bomber_group",
+   "count": 2
+  },
+  {
+   "nation": "USA",
+   "template": "close_support_group",
+   "count": 1
+  },
+  {
+   "nation": "USA",
+   "template": "naval_bomber_group",
+   "count": 2
+  },
+  {
+   "nation": "USA",
+   "template": "air_transport_group",
+   "count": 1
+  },
+  {
+   "nation": "CZS",
+   "template": "fighter_group",
+   "count": 3
+  },
+  {
+   "nation": "CZS",
+   "template": "tactical_bomber_group",
+   "count": 2
+  },
+  {
+   "nation": "POL",
+   "template": "fighter_group",
+   "count": 2
+  },
+  {
+   "nation": "POL",
+   "template": "tactical_bomber_group",
+   "count": 2
+  },
+  {
+   "nation": "NSP",
+   "template": "fighter_group",
+   "count": 2
+  },
+  {
+   "nation": "NSP",
+   "template": "tactical_bomber_group",
+   "count": 2
+  },
+  {
+   "nation": "REP",
+   "template": "fighter_group",
+   "count": 2
+  },
+  {
+   "nation": "REP",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "CHI",
+   "template": "fighter_group",
+   "count": 2
+  },
+  {
+   "nation": "CHI",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "ROM",
+   "template": "fighter_group",
+   "count": 2
+  },
+  {
+   "nation": "ROM",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "YUG",
+   "template": "fighter_group",
+   "count": 2
+  },
+  {
+   "nation": "YUG",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "SWE",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "SWE",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "NED",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "NED",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "BEL",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "BEL",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "TUR",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "TUR",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "HUN",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "HUN",
+   "template": "tactical_bomber_group",
+   "count": 1
+  },
+  {
+   "nation": "MAN",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "CAN",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "AST",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "SAF",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "RAJ",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "BRA",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "ARG",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "FIN",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "GRE",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "POR",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "NOR",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "DEN",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "SWI",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "BUL",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "LIT",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "LAT",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "EST",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "MEX",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "IRN",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "EGY",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "IRQ",
+   "template": "fighter_group",
+   "count": 1
+  },
+  {
+   "nation": "SIA",
+   "template": "fighter_group",
+   "count": 1
+  }
+ ]
+}

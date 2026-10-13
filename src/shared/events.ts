@@ -119,6 +119,12 @@ export const EventKind = {
   LandingRepulsed: 45,
   /** A nation short of money laid up fleets in a month (PLAN 4.6e1): a = nation, b = how many. */
   FleetsLaidUp: 46,
+  /** An hour's air fight in an air zone (PLAN 5.3a): a = the zone, b = the aircraft lost in it, both sides; (x, y) = a sortie's place in it. */
+  AirBattle: 47,
+  /** A strike sortie hit its target (PLAN 5.4b): a = the wing, b = the men, guns and vehicles it took; (x, y) = its target. */
+  AirStrike: 48,
+  /** A sortie fired on by AA in an hour (PLAN 5.7b): a = the wing, b = its nation; (x, y) = its place. Drawn as flak. */
+  FlakFired: 49,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
@@ -142,6 +148,10 @@ export const RejectReason = {
   NoSeaWay: 8,
   /** A fleet's order to a place that is no water and no port. */
   NotWater: 9,
+  /** An air wing's order beyond its range from its base (PLAN 5.1e). */
+  OutOfRange: 10,
+  /** An air wing's rebase: no airbase of its side and no carrier of its nation there with room for it (PLAN 5.1e). */
+  NoBase: 11,
 } as const;
 export type RejectReason = (typeof RejectReason)[keyof typeof RejectReason];
 

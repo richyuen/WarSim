@@ -78,6 +78,8 @@ export const TerrainFile = z.strictObject({ terrain: z.array(TerrainDef) });
 
 const arm = z.array(z.enum(LAND_CLASSES)).min(1);
 export const CombatFile = z.strictObject({
+  /** PLAN 5.4a: a formation's fire × (1 + `superiority` × (2s − 1)), s its nation's air superiority in its zone. */
+  air: z.strictObject({ comment: z.string().optional(), superiority: z.number().min(0).max(1) }),
   /** PLAN 3.4a: a side of a battle with all three arms alive in it fires × `bonus`. */
   combinedArms: z.strictObject({
     /** The unit classes of each arm. */
@@ -120,6 +122,8 @@ export const UnitStats = z.strictObject({
   fuelPerHour: nonNeg, supplyPerHour: nonNeg,
   /** A ship's torpedoes (PLAN 4.3b): their damage an hour and their reach, km; its depth charges' damage at a submarine. 0 when left out. */
   torpedo: nonNeg.optional(), torpedo_km: nonNeg.optional(), asw: nonNeg.optional(),
+  /** An aircraft's bomb load, tons (PLAN 5.5a): what a strike drops on industry. 0 when left out. */
+  bomb_t: nonNeg.optional(),
 });
 
 export const UnitTypeDef = z
@@ -275,6 +279,31 @@ export const PortsFile = z.strictObject({
   reachCells: z.number().int().min(1).max(4),
   levelBySize: z.array(buildingLevel).min(1).max(5),
   ports: z.array(PortDef),
+});
+
+// ── airbases (data/scenarios/<id>/airbases.json) ─────────────────────────────
+
+/** Airbases (PLAN 5.1c, `src/sim/data/airbases.ts`): the rule for the cities' bases, and the list by hand. */
+export const AirbaseDef = z.strictObject({
+  name: z.string().min(1),
+  lonLat,
+  nation: z.string().regex(/^[A-Z]{3}$/).optional(),
+  level: buildingLevel,
+});
+export const AirbasesFile = z.strictObject({
+  comment: z.string().optional(),
+  capitalLevel: buildingLevel,
+  minCitySize: z.number().int().min(1).max(5),
+  sizeLevel: buildingLevel,
+  bases: z.array(AirbaseDef),
+});
+
+// ── air forces (data/scenarios/<id>/air.json) ────────────────────────────────
+
+/** The air forces of the start (PLAN 5.1d, `src/sim/data/wings.ts`): each nation's wings by template. */
+export const AirFile = z.strictObject({
+  comment: z.string().optional(),
+  groups: z.array(z.strictObject({ nation: z.string().regex(/^[A-Z]{3}$/), template: id, count: z.number().int().min(1).max(100) })),
 });
 
 // ── scenarios (data/scenarios/<id>/scenario.json) ────────────────────────────
@@ -471,6 +500,8 @@ export const DATA_FILES: readonly { pattern: RegExp; schema: z.ZodType }[] = [
   { pattern: /^flags\/presets\.json$/, schema: FlagPresetsFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/cities\.json$/, schema: CitiesFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/ports\.json$/, schema: PortsFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/airbases\.json$/, schema: AirbasesFile },
+  { pattern: /^scenarios\/[a-z0-9_]+\/air\.json$/, schema: AirFile },
   { pattern: /^scenarios\/[a-z0-9_]+\/fleets\.json$/, schema: FleetsFile },
 ];
 

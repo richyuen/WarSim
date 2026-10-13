@@ -26,7 +26,8 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
   const sideOf = (nation: number): number => (war.sides[0].includes(nation) ? 0 : war.sides[1].includes(nation) ? 1 : -1);
   const sides: [number[], number[]] = [[], []];
   world.formations.forEach((id) => {
-    const s = c.engaged[id] === 1 ? sideOf(c.nation[id]!) : -1;
+    // A fleet in a sea battle is engaged too: no battle of the land (ADR-337).
+    const s = c.engaged[id] === 1 && !world.offLand(id) ? sideOf(c.nation[id]!) : -1;
     if (s >= 0) sides[s]!.push(id);
   });
   const parent = new Map<number, number>();
@@ -139,7 +140,7 @@ export function warsWithBattle(world: World): Set<number> {
   if (out.size === wars.length) return out;
   const engaged = new Map<number, number[]>();
   world.formations.forEach((id) => {
-    if (c.engaged[id] !== 1) return;
+    if (c.engaged[id] !== 1 || world.offLand(id)) return;
     const list = engaged.get(c.nation[id]!);
     if (list) list.push(id);
     else engaged.set(c.nation[id]!, [id]);

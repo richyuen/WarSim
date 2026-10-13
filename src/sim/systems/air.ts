@@ -1,0 +1,283 @@
+/**
+ * The air wings at their bases (PLAN 5.1d). A wing's base is state (`world.wingBase`): an airbase
+ * (its index + 1) or a carrier's fleet (the fleet's id, negative). Hourly after the movement, a
+ * wing on a carrier is where its fleet is; one whose carrier is gone (`destroyFormation` sets its
+ * base to 0) is lost with it, as are the wings beyond its fleet's live carriers (PLAN 5.8l); one
+ * whose airbase a nation not of its side took falls back to its nation's nearest, or is lost
+ * (PLAN 5.8m). Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
+ * ready on its base, launches one; then the air power flown by zone (`airPowerSystem`, PLAN 5.3c)
+ * and the hour's air fights (`airCombat`, PLAN 5.3a). No rule
+ * of the land reads a wing yet (`World.offLand`).
+ */
+import { EventKind, RejectReason } from '../../shared/events';
+import { airbaseRoom } from '../data/airbases';
+import { airCombat, antiAir, strikes } from './airCombat';
+import { airLift } from './airLift';
+import { airPowerSystem } from './airSuperiority';
+import { repairSystem } from './bombing';
+import { destroyFormation, elementIndex, loopW, wrapDx } from './elements';
+import { seaKm } from './navalCombat';
+import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
+import { blocOf } from './supply';
+import { airOf, type World } from '../world';
+
+export function airSystem(world: World): void {
+  repairSystem(world);
+  if (world.wingBase.size === 0) {
+    // No wing left: what was flown fades all the same (PLAN 5.8k).
+    if (world.airPower.size > 0) airPowerSystem(world, new Map());
+    return;
+  }
+  const f = world.formations;
+  const c = f.cols;
+  // A wing to each live carrier of a fleet, the lowest ids first (PLAN 5.8l).
+  const decks = new Map<number, number>();
+  for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+    if (!f.has(id)) {
+      world.wingBase.delete(id);
+      continue;
+    }
+    if (base === 0) {
+      // Its carrier is gone: lost with it.
+      destroyFormation(world, id);
+      continue;
+    }
+    if (base > 0 && !ofSide(world, c.nation[id]!, world.cells.controller[world.airbases[base - 1]!.cell]!)) {
+      // Its airbase taken (PLAN 5.8m): to its nation's nearest with room, or lost.
+      const to = fallBack(world, id, base);
+      if (to === 0) {
+        destroyFormation(world, id);
+        continue;
+      }
+      world.wingBase.set(id, to);
+      world.wingMission.delete(id);
+      world.sorties.delete(id);
+      [c.x[id], c.y[id]] = basePlace(world, to)!;
+    }
+    if (base < 0) {
+      const left = decks.get(-base) ?? liveCarriers(world, -base);
+      if (left === 0) {
+        // Its carrier sunk, the fleet afloat: lost with it.
+        destroyFormation(world, id);
+        continue;
+      }
+      decks.set(-base, left - 1);
+      c.x[id] = c.x[-base]!;
+      c.y[id] = c.y[-base]!;
+    }
+    schedule(world, id);
+  }
+  const byZone = world.sorties.size > 0 ? airborne(world, world.tick) : new Map<number, number[]>();
+  if (byZone.size > 0 || world.airPower.size > 0) airPowerSystem(world, byZone);
+  strikes(world);
+  airLift(world);
+  if (byZone.size > 0) airCombat(world, byZone);
+  antiAir(world);
+}
+
+/** Whether `holder` is nation `nation` or of its side: its supply bloc, or fighting beside it. */
+function ofSide(world: World, nation: number, holder: number): boolean {
+  return holder === nation || blocOf(world, holder) === blocOf(world, nation) || world.wars.sameSide(nation, holder);
+}
+
+/**
+ * The airbase wing `id` falls back to from airbase `from`, taken (PLAN 5.8m): its nation's
+ * nearest by km with room for it, the lowest index of the nearest; 0 for none.
+ */
+function fallBack(world: World, id: number, from: number): number {
+  const c = world.formations.cols;
+  const nation = c.nation[id]!;
+  const need = wingAircraft(world, c.template[id]!);
+  const used = new Map<number, number>();
+  for (const [o, b] of world.wingBase) if (b > 0 && o !== id) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, c.template[o]!));
+  const [fx, fy] = world.cellPoint(world.airbases[from - 1]!.cell);
+  let best = 0;
+  let bd = Infinity;
+  world.airbases.forEach((b, i) => {
+    if (world.cells.controller[b.cell] !== nation || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
+    const d = seaKm(world, fx, fy, ...world.cellPoint(b.cell));
+    if (d < bd) {
+      bd = d;
+      best = i + 1;
+    }
+  });
+  return best;
+}
+
+/** Fleet `fleet`'s carriers afloat: its live elements of a carrier class (PLAN 5.8l). */
+export function liveCarriers(world: World, fleet: number): number {
+  const els = elementIndex(world).get(fleet);
+  if (!els) return 0;
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  let n = 0;
+  for (const e of els) if (ec.strength[e]! > 0 && units[ec.unit[e]!]!.cls === 'cv') n++;
+  return n;
+}
+
+/** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */
+export const TURNAROUND_HOURS = 2;
+
+/**
+ * The scheduler for wing `id` this hour (PLAN 5.2b): a sortie done and turned round is
+ * forgotten; then a wing with a mission and none, whose target is within its range of its base,
+ * takes off now: a strike turns over its target, a patrol stays `patrolHours`.
+ */
+function schedule(world: World, id: number): void {
+  const s = world.sorties.get(id);
+  if (s) {
+    if (world.tick < sortieEnd(s) + TURNAROUND_HOURS) return;
+    world.sorties.delete(id);
+  }
+  const m = world.wingMission.get(id);
+  const at = m && basePlace(world, world.wingBase.get(id)!);
+  if (!m || !at) return;
+  const km = seaKm(world, at[0], at[1], m.x, m.y);
+  const range = wingRange(world, id);
+  if (km > range) return; // its carrier sailed off: it waits
+  const kmh = world.rules!.templates[world.formations.cols.template[id]!]!.speedKmh;
+  world.sorties.set(id, { bx: at[0], by: at[1], tx: m.x, ty: m.y, launch: world.tick, kmh, km, over: m.kind === 'patrol' ? patrolHours(range, kmh, km) : 0 });
+}
+
+/**
+ * The sorties in the air at time `t` by the air zone they are in (PLAN 5.2b; `airOf`), each zone's
+ * wings by id: where PLAN 5.3's interceptions are reckoned. From `sortieAt`, nothing stored.
+ */
+export function airborne(world: World, t: number): Map<number, number[]> {
+  const zones = airOf(world).zoneOf;
+  const w = world.cells.w;
+  const out = new Map<number, number[]>();
+  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+    const p = sortieAt(s, t, loopW(world));
+    if (p.leg === Leg.Home) continue;
+    const zone = zones[Math.min(world.cells.h - 1, Math.floor(p.y)) * w + Math.floor(p.x)]!;
+    const list = out.get(zone);
+    if (list) list.push(id);
+    else out.set(zone, [id]);
+  }
+  return out;
+}
+
+/** A wing's mission (PLAN 5.1e): to patrol about a place or strike it, or (a transport's, PLAN 5.8u1) to fly supply to it. Read by the scheduler of PLAN 5.2. */
+export interface WingMission {
+  kind: 'patrol' | 'strike' | 'supply';
+  x: number;
+  y: number;
+}
+
+/** How far an airbase or a carrier is from (x, y) and still the place an order names, cells. */
+export const BASE_PICK_CELLS = 2;
+
+/** Wing `id`'s range, km: the least `rangeKm` of its aircraft (PLAN 5.1e). */
+export function wingRange(world: World, id: number): number {
+  const rules = world.rules!;
+  let r = Infinity;
+  for (const e of rules.templates[world.formations.cols.template[id]!]!.elements) r = Math.min(r, rules.units[e.unit]!.rangeKm);
+  return r;
+}
+
+/** The aircraft a wing of template `t` has (its squadrons × their size). */
+export function wingAircraft(world: World, t: number): number {
+  const rules = world.rules!;
+  return rules.templates[t]!.elements.reduce((s, e) => s + e.count * rules.units[e.unit]!.size, 0);
+}
+
+/** Where base `base` (`world.wingBase`'s code) is: an airbase's land cell, or its carrier fleet's place; null for none. */
+export function basePlace(world: World, base: number): [number, number] | null {
+  if (base > 0) return world.cellPoint(world.airbases[base - 1]!.cell);
+  if (base < 0 && world.formations.has(-base)) return [world.formations.cols.x[-base]!, world.formations.cols.y[-base]!];
+  return null;
+}
+
+/** The km from wing `id`'s base to (x, y); Infinity with no base. */
+export function kmFromBase(world: World, id: number, x: number, y: number): number {
+  const at = basePlace(world, world.wingBase.get(id) ?? 0);
+  return at ? seaKm(world, at[0], at[1], x, y) : Infinity;
+}
+
+const reject = (world: World, id: number, why: RejectReason): RejectReason => {
+  world.out.emit(world.tick, EventKind.MoveRejected, id, world.formations.has(id) ? world.formations.cols.nation[id]! : 0, why, NaN);
+  return why;
+};
+
+/** Whether wing `id` is of transports: every squadron of its template of class `transport_air` (PLAN 5.8u1). */
+export function isTransport(world: World, id: number): boolean {
+  const rules = world.rules!;
+  return rules.templates[world.formations.cols.template[id]!]!.elements.every((e) => rules.units[e.unit]!.cls === 'transport_air');
+}
+
+/**
+ * Orders wing `id` to patrol about, strike or (a transport) fly supply to (x, y) (PLAN 5.1e,
+ * 5.8u1): kept as its mission (`world.wingMission`) where the place is within its range of its
+ * base, else refused (`MoveRejected`, `OutOfRange`; `NoBase` for a wing with none, its carrier sunk
+ * this hour; `NotLand` for no wing, or supply by a wing not of transports). 0 when ordered.
+ */
+export function orderMission(world: World, id: number, kind: WingMission['kind'], x: number, y: number): 0 | RejectReason {
+  if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
+  // A carrier sunk this hour leaves its wings no base until the air system loses them (PLAN 5.8j).
+  if (!basePlace(world, world.wingBase.get(id)!)) return reject(world, id, RejectReason.NoBase);
+  // Supply is flown by transports alone (PLAN 5.8u1).
+  if (kind === 'supply' && !isTransport(world, id)) return reject(world, id, RejectReason.NotLand);
+  if (kmFromBase(world, id, x, y) > wingRange(world, id)) return reject(world, id, RejectReason.OutOfRange);
+  world.wingMission.set(id, { kind, x, y });
+  return 0;
+}
+
+/**
+ * Orders wing `id` to the base at (x, y) (PLAN 5.1e): an airbase within `BASE_PICK_CELLS` held by
+ * its nation or a nation of its side (its supply bloc, or one fighting beside it), or a fleet of
+ * its nation's with a carrier there; within its range of its base now, with room for it (an
+ * airbase's `airbaseRoom` in aircraft; a fleet's a wing to each live carrier). The wing is at its new
+ * base at once (the flight is PLAN 5.2's) and its mission ends. Else refused: `OutOfRange`, or
+ * `NoBase`. 0 when ordered.
+ */
+export function orderRebase(world: World, id: number, x: number, y: number): 0 | RejectReason {
+  if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
+  // No base to fly from (its carrier sunk this hour, PLAN 5.8j): nowhere it reaches.
+  const from = basePlace(world, world.wingBase.get(id)!);
+  if (!from) return reject(world, id, RejectReason.NoBase);
+  const c = world.formations.cols;
+  const nation = c.nation[id]!;
+  const near = (px: number, py: number): boolean => Math.abs(wrapDx(world, x, px)) <= BASE_PICK_CELLS && Math.abs(py - y) <= BASE_PICK_CELLS;
+  const need = wingAircraft(world, c.template[id]!);
+  const used = (base: number): { aircraft: number; wings: number } => {
+    let aircraft = 0;
+    let wings = 0;
+    for (const [o, b] of world.wingBase) {
+      if (b !== base || o === id) continue;
+      aircraft += wingAircraft(world, c.template[o]!);
+      wings++;
+    }
+    return { aircraft, wings };
+  };
+  let best = 0;
+  let bd = Infinity;
+  let far = false;
+  const consider = (base: number, px: number, py: number, room: (u: { aircraft: number; wings: number }) => boolean): void => {
+    if (base === world.wingBase.get(id) || !near(px, py) || !room(used(base))) return;
+    if (seaKm(world, from[0], from[1], px, py) > wingRange(world, id)) {
+      far = true;
+      return;
+    }
+    const d = Math.abs(px - x) + Math.abs(py - y);
+    if (d < bd) {
+      bd = d;
+      best = base;
+    }
+  };
+  world.airbases.forEach((b, i) => {
+    if (!ofSide(world, nation, world.cells.controller[b.cell]!)) return;
+    consider(i + 1, ...world.cellPoint(b.cell), (u) => u.aircraft + need <= airbaseRoom(b));
+  });
+  world.formations.forEach((f) => {
+    if (!world.isFleet(f) || c.nation[f] !== nation) return;
+    const cvs = liveCarriers(world, f);
+    if (cvs > 0) consider(-f, c.x[f]!, c.y[f]!, (u) => u.wings + 1 <= cvs);
+  });
+  if (best === 0) return reject(world, id, far ? RejectReason.OutOfRange : RejectReason.NoBase);
+  world.wingBase.set(id, best);
+  world.wingMission.delete(id);
+  world.sorties.delete(id); // the flight there is PLAN 5.3's; it is ready at its new base
+  [c.x[id], c.y[id]] = basePlace(world, best)!;
+  return 0;
+}

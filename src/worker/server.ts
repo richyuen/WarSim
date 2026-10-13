@@ -23,6 +23,8 @@ import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
 import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
+import { aircraftOf } from '../sim/systems/airCombat';
+import { sortieEnd } from '../shared/sorties';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -30,6 +32,7 @@ import {
   type SnapshotElements,
   NATION_STRIDE,
   NationField,
+  SortieRole,
   type FromWorker,
   type SimStatus,
   type Snapshot,
@@ -58,7 +61,9 @@ import { Sim } from '../sim/sim';
 import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
+import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
+import { airHolders } from '../sim/systems/airSuperiority';
+import type { AirZones } from '../sim/nav/airZones';
 import { BufferPool } from './pool';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
@@ -143,6 +148,12 @@ export class SimServer {
   private seaHoldersSent = '';
   /** Whether the page was last sent a zone held by someone: kept over a load, which it outlives. */
   private seaShown = false;
+  /** The air zones and holders last sent (PLAN 5.7c), and whether the page was shown a holder. */
+  private airZonesSent: AirZones | null = null;
+  private airHoldersSent = '';
+  private airShown = false;
+  /** The day the air control was last looked at (PLAN 5.8n): a pump that steps past a day's first hour sends the day's at its first look. */
+  private airDay = -1;
   /**
    * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
    * told. `before`: the order it replaced, which stands again if this one is refused.
@@ -267,6 +278,10 @@ export class SimServer {
         this.unrestVersion = -1;
         this.seaZonesSent = null;
         this.seaHoldersSent = '';
+        // The loaded game's holders, at once (PLAN 5.8n); `airShown` outlives it, as `seaShown`.
+        this.airZonesSent = null;
+        this.airHoldersSent = '';
+        this.airDay = -1;
         this.ordered.clear();
         this.statsTick = -1;
         this.lastStatsMs = -1;
@@ -353,6 +368,9 @@ export class SimServer {
     this.unrestVersion = -1;
     this.seaZonesSent = null;
     this.seaHoldersSent = '';
+    this.airZonesSent = null;
+    this.airHoldersSent = '';
+    this.airDay = -1;
     this.ordered.clear();
     this.statsTick = -1;
     this.lastStatsMs = -1;
@@ -639,6 +657,26 @@ export class SimServer {
         else this.post({ type: 'seaControl', holder }, [holder.buffer]);
         this.seaZonesSent = zones;
         this.seaHoldersSent = key;
+      }
+    }
+    // Who holds the air of each air zone, for its map mode (PLAN 5.7c): at a day's first hour, or
+    // the first look of a day a pump stepped past it in (PLAN 5.8n), when it changed, with the
+    // zones of the cells the first time and after a load; once more all none where the page was
+    // shown holders and none fly now.
+    const day = Math.floor(world.tick / 24);
+    const newDay = day !== this.airDay;
+    this.airDay = day;
+    if ((world.airPower.size > 0 || this.airShown) && (world.tick % 24 === 0 || newDay || this.airZonesSent === null)) {
+      const zones = airOf(world);
+      const holder = airHolders(world, zones.count);
+      const key = holder.join(',');
+      if (zones !== this.airZonesSent || key !== this.airHoldersSent) {
+        this.airShown = holder.some((h) => h !== 0);
+        const fresh = zones !== this.airZonesSent ? zones.zoneOf.slice() : undefined;
+        if (fresh) this.post({ type: 'airControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
+        else this.post({ type: 'airControl', holder }, [holder.buffer]);
+        this.airZonesSent = zones;
+        this.airHoldersSent = key;
       }
     }
     const changed = world.controlChanges !== this.labelVersion || world.namesVersion !== this.labelNames;
@@ -1055,7 +1093,7 @@ export class SimServer {
     const idx = this.wantsElements() && world.rules ? elementIndex(world) : null;
     if (idx) {
       ft.forEach((f) => {
-        if (truncated) return;
+        if (truncated || world.isWing(f)) return; // an air wing is not drawn yet (PLAN 5.1d)
         const list = idx.get(f);
         if (!list) return;
         // By where its block stands: at the formation's place, or deployed against the enemy (PLAN 2.14c1).
@@ -1214,9 +1252,14 @@ export class SimServer {
     for (const war of world.wars.list) for (const a of war.sides[0]) for (const b of war.sides[1]) warPairs.push(a, b);
     const wars = Uint16Array.from(warPairs);
 
-    // Formations (all; elements arrive with Phase 2 when the subscription asks for them).
+    // Formations (all but the air wings, which nothing draws yet: PLAN 5.1d, until the air's
+    // visuals of PLAN 5.7; elements arrive with Phase 2 when the subscription asks for them).
     const ft = world.formations;
-    const fc = ft.count;
+    const shown: number[] = [];
+    ft.forEach((id) => {
+      if (!world.isWing(id)) shown.push(id);
+    });
+    const fc = shown.length;
     const fid = this.view(Uint32Array, fc, buffers);
     const fnat = this.view(Uint16Array, fc, buffers);
     const fx = this.view(Float64Array, fc, buffers);
@@ -1234,7 +1277,7 @@ export class SimServer {
     const fwayStart = this.view(Uint32Array, fc + 1, buffers);
     fwayStart[0] = 0; // (a pooled buffer)
     let j = 0;
-    ft.forEach((id) => {
+    for (const id of shown) {
       fid[j] = id;
       fnat[j] = ft.cols.nation[id]!;
       fx[j] = ft.cols.x[id]!;
@@ -1261,7 +1304,7 @@ export class SimServer {
       ways.push(way);
       fwayStart[j + 1] = fwayStart[j]! + way.length;
       j++;
-    });
+    }
     const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
     for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
@@ -1274,6 +1317,8 @@ export class SimServer {
         return [b.x, b.y, r, b.a, b.b];
       }),
     );
+    // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.
+    const sorties = sortieSection(world);
     const elements = this.elementSection(world, buffers);
 
     // Events: global ones always, spatial ones only inside the subscribed bbox.
@@ -1313,6 +1358,7 @@ export class SimServer {
       formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
       seas,
+      sorties,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
       fires: { count: fq.length / FIRE_STRIDE, data: fires, dropped: this.droppedFires },
@@ -1320,4 +1366,21 @@ export class SimServer {
     };
     return { snap, transfer: buffers };
   }
+}
+
+/** A wing's role by its aircraft's class (`SortieRole`). */
+const ROLE_OF_CLASS: Record<string, number> = { fighter: SortieRole.fighter, cas: SortieRole.closeSupport, bomber_tac: SortieRole.bomber, bomber_str: SortieRole.heavyBomber, naval_bomber: SortieRole.navalBomber, transport_air: SortieRole.transport };
+
+/** The snapshot's sorties (PLAN 5.7a): those in the air in the hour before the tick (the hour the page plays) or at it, by wing id. */
+export function sortieSection(world: World): Float32Array {
+  const rows: number[] = [];
+  if (world.sorties.size === 0 || !world.rules) return new Float32Array(0);
+  const c = world.formations.cols;
+  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+    if (!world.formations.has(id) || sortieEnd(s) <= world.tick - 1 || s.launch > world.tick) continue;
+    const first = world.rules.templates[c.template[id]!]?.elements[0];
+    const role = first ? (ROLE_OF_CLASS[world.rules.units[first.unit]!.cls] ?? SortieRole.fighter) : SortieRole.fighter;
+    rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, c.nation[id]!, aircraftOf(world, id), role);
+  }
+  return Float32Array.from(rows);
 }

@@ -16,6 +16,8 @@ import combatJson from '../../data/combat.json' with { type: 'json' };
 import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import fleets1938 from '../../data/scenarios/1938/fleets.json' with { type: 'json' };
 import ports1938 from '../../data/scenarios/1938/ports.json' with { type: 'json' };
+import airbases1938 from '../../data/scenarios/1938/airbases.json' with { type: 'json' };
+import air1938 from '../../data/scenarios/1938/air.json' with { type: 'json' };
 import nations1938 from '../../data/scenarios/1938/nations.json' with { type: 'json' };
 import oob1938 from '../../data/scenarios/1938/oob.json' with { type: 'json' };
 import ownership1938 from '../../data/scenarios/1938/ownership.json' with { type: 'json' };
@@ -29,8 +31,10 @@ import techNaval from '../../data/tech/naval.json' with { type: 'json' };
 import techNuclear from '../../data/tech/nuclear.json' with { type: 'json' };
 import templatesLand from '../../data/templates/land.json' with { type: 'json' };
 import templatesSea from '../../data/templates/sea.json' with { type: 'json' };
+import templatesAir from '../../data/templates/air.json' with { type: 'json' };
 import unitsLand from '../../data/units/land.json' with { type: 'json' };
 import unitsSea from '../../data/units/sea.json' with { type: 'json' };
+import unitsAir from '../../data/units/air.json' with { type: 'json' };
 import diplomacy1938 from '../../data/scenarios/1938/diplomacy.json' with { type: 'json' };
 import economy1938 from '../../data/scenarios/1938/economy.json' with { type: 'json' };
 import traitsJson from '../../data/traits/traits.json' with { type: 'json' };
@@ -42,6 +46,8 @@ import { dayOfIso } from '../shared/calendar';
 import type { CityDef, PlacedCity } from './data/cities';
 import { placeFleets, type FleetGroup } from './data/fleets';
 import { placePorts, portWater, type PortRules } from './data/ports';
+import { placeAirbases, type AirbaseRules } from './data/airbases';
+import { placeWings, type WingGroup } from './data/wings';
 import { templateStrength, type OobGroup, type PlacedFormation, type TemplateDef, type UnitTypeLite } from './data/oob';
 import type { OwnershipRules } from './data/ownership';
 import { buildPoliticalMap, type PoliticalMapInput } from './data/politicalMap';
@@ -69,8 +75,9 @@ import { freshGrid, World } from './world';
 export const NATIONS_1938 = nations1938.nations as unknown as NationDef[];
 export const TEMPLATES_LAND = templatesLand.templates as TemplateDef[];
 export const TEMPLATES_SEA = templatesSea.templates as TemplateDef[];
-/** Every template of the rules, by its index: the land's, then the sea's (PLAN 4.2a). A formation and an order are saved with it. */
-export const TEMPLATES_1938: readonly TemplateDef[] = [...TEMPLATES_LAND, ...TEMPLATES_SEA];
+export const TEMPLATES_AIR = templatesAir.templates as TemplateDef[];
+/** Every template of the rules, by its index: the land's, then the sea's (PLAN 4.2a), then the air's (PLAN 5.1b). A formation and an order are saved with it. */
+export const TEMPLATES_1938: readonly TemplateDef[] = [...TEMPLATES_LAND, ...TEMPLATES_SEA, ...TEMPLATES_AIR];
 /** Starting treasury in months of gross income (ADR-22). */
 export const START_GOLD_MONTHS = 6;
 /**
@@ -88,11 +95,11 @@ type UnitDef = UnitTypeLite & {
   techReq?: string;
   cost: { gold: number; manpower: number; days: number };
   upkeep: { gold: number };
-  stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; fuelPerHour: number; speed_kmh: number; range_km: number; detection: number; stealth: number; torpedo?: number; torpedo_km?: number; asw?: number };
+  stats: { soft: number; hard: number; armor: number; piercing: number; hpPerUnit: number; aa: number; defense: number; fuelPerHour: number; speed_kmh: number; range_km: number; detection: number; stealth: number; torpedo?: number; torpedo_km?: number; asw?: number; bomb_t?: number };
   terrainMods: Partial<Record<TerrainId, { atk: number; def: number; speed: number }>>;
 };
-/** The unit types of the rules, by their index: the land's, then the sea's (PLAN 4.2a). An element is saved with its type's index. */
-const UNITS: readonly UnitDef[] = [...(unitsLand.types as unknown as UnitDef[]), ...(unitsSea.types as unknown as UnitDef[])];
+/** The unit types of the rules, by their index: the land's, then the sea's (PLAN 4.2a), then the air's (PLAN 5.1b). An element is saved with its type's index. */
+const UNITS: readonly UnitDef[] = [...(unitsLand.types as unknown as UnitDef[]), ...(unitsSea.types as unknown as UnitDef[]), ...(unitsAir.types as unknown as UnitDef[])];
 const unitTypes = new Map(UNITS.map((u) => [u.id, u]));
 const tankTypes = new Set(UNITS.filter((u) => u.class.startsWith('armor')).map((u) => u.id));
 const upkeepOfElements = (t: TemplateDef, only?: ReadonlySet<string>): number => t.elements.reduce((s, e) => s + (only && !only.has(e.type) ? 0 : unitTypes.get(e.type)!.upkeep.gold * e.count), 0);
@@ -138,6 +145,10 @@ export const BUILD_MIX_1938 = {
     destroyer: TEMPLATES_1938.findIndex((t) => t.id === 'destroyer_flotilla'),
     transport: TEMPLATES_1938.findIndex((t) => t.id === 'transport_group'),
   },
+  wings: {
+    fighter: TEMPLATES_1938.findIndex((t) => t.id === 'fighter_group'),
+    tactical: TEMPLATES_1938.findIndex((t) => t.id === 'tactical_bomber_group'),
+  },
 };
 /**
  * The tech tree (PLAN 3.1a), the files in the order of the schema's categories. A tech's place
@@ -165,6 +176,8 @@ export const RULES_1938: ScenarioRules = {
     armor: u.stats.armor,
     piercing: u.stats.piercing,
     hpPerUnit: u.stats.hpPerUnit,
+    aa: u.stats.aa,
+    defense: u.stats.defense,
     fuel: u.stats.fuelPerHour,
     rangeKm: u.stats.range_km,
     detection: u.stats.detection,
@@ -172,6 +185,7 @@ export const RULES_1938: ScenarioRules = {
     torpedo: u.stats.torpedo ?? 0,
     torpedoKm: u.stats.torpedo_km ?? 0,
     asw: u.stats.asw ?? 0,
+    bombT: u.stats.bomb_t ?? 0,
     terrainAtk: TERRAIN_IDS.map((t) => u.terrainMods[t]?.atk ?? 1),
     terrainDef: TERRAIN_IDS.map((t) => u.terrainMods[t]?.def ?? 1),
     arm: ARM_OF_CLASS.get(u.class) ?? 0,
@@ -274,6 +288,12 @@ export function fillEconomy(world: World, meta: readonly Admin1Meta[], cities: r
 export const TAGS_1938 = NATIONS_1938.map((n) => n.tag);
 /** The ports and naval bases of the 1938 scenario (PLAN 4.1c). */
 export const PORTS_1938 = ports1938 as unknown as PortRules;
+/** The airbases of the 1938 scenario (PLAN 5.1c). */
+export const AIRBASES_1938 = airbases1938 as unknown as AirbaseRules;
+/** The air forces of the 1938 start (PLAN 5.1d). */
+export const AIR_1938 = air1938.groups as WingGroup[];
+/** Each carrier of a fleet of the start carries a wing of this template (PLAN 5.1d). */
+export const CARRIER_WING = 'naval_bomber_group';
 /** The fleets of the 1938 start (PLAN 4.2b). */
 export const FLEETS_1938 = fleets1938.groups as unknown as FleetGroup[];
 
@@ -371,6 +391,44 @@ export function addFleets(world: World, groups: readonly FleetGroup[], ports: Po
   }
 }
 
+/**
+ * The air forces of the start as rows of the world, after the fleets (PLAN 5.1d): each wing of
+ * `groups` at its airbase (`placeWings`), at the base's place; and a `CARRIER_WING` for every
+ * carrier of each fleet, based on the fleet. Whole, in supply. It throws for a group that found
+ * no base with room.
+ */
+export function addWings(world: World, groups: readonly WingGroup[], tags: readonly string[]): void {
+  const rules = world.rules!;
+  const templateIndex = new Map(TEMPLATES_1938.map((t, i) => [t.id, i]));
+  const aircraft = (t: string): number => rules.templates[templateIndex.get(t)!]!.elements.reduce((s, e) => s + e.count * rules.units[e.unit]!.size, 0);
+  const placed = placeWings(world.airbases, world.cells.controller, groups, tags, aircraft);
+  if (placed.unplaced.length) throw new Error(`air forces: ${[...new Set(placed.unplaced)].map((i) => `${groups[i]!.nation} ${groups[i]!.template}`).join(', ')} found no airbase with room`);
+  const carrier = UNITS.findIndex((u) => u.class === 'cv');
+  const f = world.formations.cols;
+  const carried: { nation: number; fleet: number }[] = [];
+  world.formations.forEach((id) => {
+    if (!world.isFleet(id)) return;
+    for (const e of rules.templates[f.template[id]!]!.elements) if (e.unit === carrier) for (let k = 0; k < e.count; k++) carried.push({ nation: f.nation[id]!, fleet: id });
+  });
+  world.formations.reserve(world.formations.count + placed.wings.length + carried.length);
+  const make = (nation: number, template: string, x: number, y: number, base: number): void => {
+    const id = world.formations.create();
+    const ti = templateIndex.get(template)!;
+    f.nation[id] = nation;
+    f.x[id] = x;
+    f.y[id] = y;
+    f.facing[id] = 0;
+    f.template[id] = ti;
+    f.supply[id] = 1;
+    f.org[id] = 1;
+    equipFormation(world, id, ti);
+    world.wingBase.set(id, base);
+  };
+  // At its base's land cell (a coastal city's own place may be in the water beside it).
+  for (const p of placed.wings) make(p.nation, p.template, ...world.cellPoint(world.airbases[p.base]!.cell), p.base + 1);
+  for (const c of carried) make(c.nation, CARRIER_WING, f.x[c.fleet]!, f.y[c.fleet]!, -c.fleet);
+}
+
 /** Starting treasury and manpower pool of every nation, from its land and the army it starts with. */
 export function startTreasury(world: World): void {
   const accounts = monthlyAccounts(world, ECONOMY_TABLES_1938);
@@ -395,6 +453,7 @@ interface Template1938 {
   bytes: Uint8Array;
   islandCells: readonly number[];
   ports: World['ports'];
+  airbases: World['airbases'];
   /** Per part of the world, the rows a table has room for (-1 for a part that is not a table): a table loaded has room for its rows alone. */
   capacities: number[];
   /** The map's nav caches and seas as the build left them (read only; each world its own grid's searches: `freshGrid`). */
@@ -431,7 +490,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   if (!t) {
     const built = buildWorld1938(seed, assets);
     const b = built.world;
-    byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
+    byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, airbases: b.airbases, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
     return built.world;
   }
   const { w, h } = SIZE_1938;
@@ -439,6 +498,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
   staticParts1938(world, assets);
   if (world.landMask) for (const cell of t.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
   world.ports = t.ports;
+  world.airbases = t.airbases;
   world.portReach = PORTS_1938.reachCells;
   world.rules = RULES_1938;
   // The tables with the room the build left them (a held `cols` lasts over as many creates).
@@ -519,6 +579,9 @@ function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; i
   if (placed.unplaced.length) throw new Error(`1938 ports: ${placed.unplaced.map((i) => PORTS_1938.ports[i]!.name).join(', ')} found no land`);
   world.ports = placed.ports;
   world.portReach = PORTS_1938.reachCells;
+  const bases = placeAirbases(AIRBASES_1938, map.cities, tags, map.owner, w, h);
+  if (bases.unplaced.length) throw new Error(`1938 airbases: ${bases.unplaced.map((i) => AIRBASES_1938.bases[i]!.name).join(', ')} found no land`);
+  world.airbases = bases.airbases;
   world.rules = RULES_1938;
   addFormations(world, map.formations);
 
@@ -551,6 +614,8 @@ function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; i
   // The fleets (PLAN 4.2b): after the settings, as their water is found on the map as it loops;
   // before the techs (a nation knows what its ships need) and the treasury (a navy is paid).
   addFleets(world, FLEETS_1938, PORTS_1938, tags);
+  // The air forces (PLAN 5.1d): after the fleets, whose carriers carry wings; before the treasury (paid).
+  addWings(world, AIR_1938, tags);
   grantStartTechs(world, GIVEN_TECHS_1938);
   startTreasury(world);
   return { world, islandCells: map.islandCells };

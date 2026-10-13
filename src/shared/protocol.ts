@@ -270,6 +270,14 @@ export interface Snapshot {
    * from it to its furthest fleet, and its two sides' leaders.
    */
   seas: Float32Array;
+  /**
+   * The sorties in the air (PLAN 5.7a), SORTIE_STRIDE each: [bx, by, tx, ty, launch, kmh, km,
+   * over, nation, aircraft, role]: a sortie as `shared/sorties` has it, its launch as hours from
+   * the snapshot's tick (so that a float holds it to the second), its wing's nation and aircraft,
+   * and its role (`SortieRole`). Where it is at a frame is `sortieAt`'s, at −1 + the frame's
+   * share of the tick: the hour the snapshot ends.
+   */
+  sorties: Float32Array;
   events: SnapshotEvents;
   fires: SnapshotFires;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */
@@ -383,6 +391,7 @@ export type FromWorker =
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Sea control for its map mode (PLAN 4.7a): the holder of each zone (index 0 unused), and the zone of each cell when the zones are new to the client; sent when either changes. */
+  | { type: 'airControl'; holder: Uint16Array; zones?: Uint16Array }
   | { type: 'seaControl'; holder: Uint16Array; zones?: Uint16Array; /** With `zones`: each zone's sea's name ('' for none), index 0 unused (PLAN 4.10c). */ names?: string[] }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
@@ -584,3 +593,7 @@ export interface OrderNews {
 
 /** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
 export const SEA_STRIDE = 5;
+/** A sortie in a snapshot (PLAN 5.7a): [bx, by, tx, ty, launch, kmh, km, over, nation, aircraft, role]. */
+export const SORTIE_STRIDE = 11;
+/** A sortie's role, by its aircraft's class (PLAN 5.7a): what the page draws. */
+export const SortieRole = { fighter: 0, closeSupport: 1, bomber: 2, heavyBomber: 3, navalBomber: 4, transport: 5 } as const;

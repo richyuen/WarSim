@@ -1,5 +1,5 @@
 /** Map modes (SPEC §9): palette swaps over the same id textures (SPEC §8). */
-export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts', 'seaControl'] as const;
+export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts', 'seaControl', 'airControl'] as const;
 export type MapMode = (typeof MAP_MODES)[number];
 
 /** Nations outside any alliance (alliance mode) or puppet bloc (puppet mode), 0xRRGGBB. */
@@ -16,6 +16,9 @@ export const INCOME_HIGH = 0x16703a;
 /** Sea control (PLAN 4.7a): how much of its holder's colour a zone held takes over the sea's, and how far the land fades towards grey. */
 export const SEA_HELD_TINT = 0.5;
 export const SEA_LAND_FADE = 0.65;
+/** Air superiority (PLAN 5.7c): how much of its holder's colour an air zone held takes, and the stripes of one contested. */
+export const AIR_HELD_TINT = 0.55;
+export const AIR_CONTESTED_COLOR = 0xe0632a;
 
 export type Relation = 'none' | 'self' | 'ally' | 'enemy' | 'subject' | 'neutral';
 
@@ -56,7 +59,8 @@ const RELATION_COLOR: Record<Exclude<Relation, 'none'>, number> = { self: SELF_C
  * others grey; own colours when nothing is selected). Income: a ramp from pale to deep green.
  * Terrain and revolts modes do not use the palette (the shader colours terrain / province unrest).
  * The sea-control mode (PLAN 4.7a) keeps the nations' colours: the shader fades the land and tints
- * each sea zone held with its holder's.
+ * each sea zone held with its holder's; the air-superiority mode (PLAN 5.7c) the same over the air
+ * zones, land and sea, a contested one striped.
  */
 export const PUPPET_LIGHTEN = 0.45;
 export function modeColor(mode: MapMode, n: NationColors): number {
@@ -98,5 +102,7 @@ export function legendFor(mode: MapMode): [number | null, string][] {
       return [[0xe8e3cf, 'legend.calm'], [0xf0a050, 'legend.mayRevolt'], [0x8e1c10, 'legend.revoltLikely']];
     case 'seaControl':
       return [[null, 'legend.seaHeld'], [null, 'legend.seaOpen']];
+    case 'airControl':
+      return [[null, 'legend.airHeld'], [AIR_CONTESTED_COLOR, 'legend.airContested'], [null, 'legend.airOpen']];
   }
 }

@@ -487,7 +487,9 @@ PLAN 1.3–1.7. Errors read `<file>: <path>: <message>`.
   `crossing` (AoC-style land-unit-walkable lanes, editable).
   *As built (PLAN 4.1b, ADR-243; `src/sim/nav/lanes.ts`, `laneOf(world)`):* derived from the
   zones and the map's passages, as the zones are: not saved, not hashed, dropped where they
-  are. 0.37 s at M. With the world's ports (PLAN 4.1c, below) 0.38 s.
+  are. 0.37 s at M. With the world's ports (PLAN 4.1c, below) 0.38 s. The worker builds it
+  after it answers an init or a load (`warmLanes`, PLAN 4.8e, ADR-288): not in the tick of the
+  game's first sail (1,960 ms there before).
   - *Nodes:* one for each zone, at its seed's cell (node `zone - 1`), then one for each
     strait: a body of crossing cells (4-way) with a cell in a zone, at the middle one of
     those cells. On the 1938 map at M 456: 428 zones and 28 straits (of 29 bodies; the Strait
@@ -913,6 +915,20 @@ Element (authoritative unit proxy) {
     - *The delivery* (`productionSystem`, `dockPoint`): on its ready day at the shipyard's
       water (`portSeaOf`, at the cell's water point), chosen then; with no shipyard then
       the order waits, as a land order with no land does. Bankruptcy stalls it as any.
+  - **A wing is built** (PLAN 5.8s1, ADR-343; `src/sim/systems/production.ts`).
+    - *The order* (`queueFormation`): of an air template, only by a nation with an airfield;
+      else `ProductionRejected`, nothing paid. Gold, manpower and days as a land formation's.
+    - *The airfield* (`airfield`): of the airbases whose cell the nation holds, with room for
+      the wing's aircraft beside those of the wings based there (`airbaseRoom`), the nearest
+      its capital, then the first.
+    - *The delivery* (`productionSystem`): on its ready day at the airfield, chosen then, its
+      base (`wingBase`); with none then the order waits. The spawn command refuses a wing
+      still. The economic AI keeps its air force (5.8s2, ADR-344, `AIR_SHARE`): a nation not
+      poor, with an airfield and no wing in training, orders one while its wings' upkeep is
+      under a tenth of its army's (with the orders in training), if its balance stays above
+      the need and its gold covers the price and three months of income: a fighter group while
+      fighters are under half its wings, else a tactical bomber group. After the army's orders
+      and a fleet's.
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its
@@ -1683,7 +1699,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
   land within 3 cells of its side (its nation's, its bloc's, an ally's in the war) or no one's,
   no one's not where an enemy holds the sea there; else it stays aboard (PLAN 4.8n, ADR-294); sunk, they take it with them. With no port or no room the order
-  is a march as before (PLAN 4.5a, ADR-262). A formation is at a port within 3 cells of its land cell or of its water (London's water is 7.5 cells down the Thames), and embarks at the first such port with transports for it (PLAN 4.9b, ADR-299). A player's order over the sea from where no transports wait marches to the nearest port of its land whose transports have room, and the order is kept (`world.seaBound`, saved) until the march ends: it embarks there and sails, or is refused with its reason; any order ends it. The AI's orders do not do this (its landings are its own, PLAN 4.6b). When the transports reach the landing water and its zone
+  is a march as before (PLAN 4.5a, ADR-262). A place aboard ends with its formation, and the troops its transports carried are lost with them (`destroyFormation`, PLAN 4.8m, ADR-292): a formation given a freed id is not aboard and carries nothing. A formation is at a port within 3 cells of its land cell or of its water (London's water is 7.5 cells down the Thames), and embarks at the first such port with transports for it (PLAN 4.9b, ADR-299). A player's order over the sea from where no transports wait marches to the nearest port of its land whose transports have room, and the order is kept (`world.seaBound`, saved) until the march ends: it embarks there and sails, or is refused with its reason; any order ends it. The AI's orders do not do this (its landings are its own, PLAN 4.6b). When the transports reach the landing water and its zone
   is held by a nation at war with the formation's, the landing is thrown back: they sail for
   their nation's nearest port and it lands there. A landing on an enemy's cell takes that
   cell (the beachhead), from which the front spreads; its disorder (org 0.5, fire 0.625) is
@@ -1704,10 +1720,124 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   derived kinematics `(base, target, launchTick, speed)`, so its position is never stored.
   Air combat is at element level between sorties in the same zone. AA from ground
   elements, buildings and ships shoots down planes.
+- *As built (PLAN 5.1a, ADR-306; `src/sim/nav/airZones.ts`, `airOf(world)`):* the air zones are
+  the sea zones over water (428 on the 1938 map) and, over land, regions of whole nodes of the
+  province graph of about 1.5 M km² (`AIR_ZONE_KM2`), 86 in 1938 (0.43 to 4.1 M km²): seeds on
+  a lattice of that side in km, each region grown from its seed over the graph by the km between
+  the nodes' centres; a land mass under a third of the target (an island) joins whole the zone
+  of the nearest seed. Derived, not saved; the sorties' zones (`airborne`), air superiority and the
+  air AI read it.
+- *As built (PLAN 5.1b, ADR-307):* the nine aircraft types of `data/units/air.json` are in the
+  rules after the ships, and six wing templates (`data/templates/air.json`) after the fleets: a
+  fighter group (3 squadrons of 12), a tactical bomber group (3 × 8), a strategic bomber group
+  (4 × 6), a close support group (3 × 10), a naval bomber group (3 × 8) and an air transport
+  group (4 × 6). A wing is a formation of an air template. The 1938 start has its wings (5.1d);
+  none is built yet: the order to build one is refused (no domain but the land's and, with a
+  shipyard, the sea's), as is the spawn (`NotOfLand`); the build list leaves them out (PLAN 5.8s).
+- *As built (PLAN 5.1c, ADR-308; `src/sim/data/airbases.ts`, `data/scenarios/1938/airbases.json`):*
+  every capital city is an airbase of level 4, a city of size 5 one of level 3, and 27 main air
+  stations of 1938 are listed by hand (Mildenhall, Le Bourget, Tempelhof, Guidonia, Monino,
+  Kasumigaura, Langley Field…, levels 4 and 5; the levels raised at 5.1d to hold the start's air
+  forces): every living nation holds one. Who
+  holds the cell holds the base; its room is the airbase building's 50 aircraft a level. Static
+  data of the scenario (`world.airbases`), as the ports are; the random world has them too.
+- *As built (PLAN 5.1d, ADR-309; `data/scenarios/1938/air.json`, `addWings`, `src/sim/systems/air.ts`):*
+  the 1938 start has 216 air wings: 198 of the nations' air forces by template at their airbases
+  (the base with the most room left that holds the wing; Germany 28, the Soviet Union 30, Britain
+  20, Italy 17, Japan 16, France 15, the United States 15, a few for 33 more nations; a wing of
+  the start stands for about three first-line groups of the record) and a naval bomber group on
+  each of the 18 carriers. A wing's base is state (`world.wingBase`: an airbase, or a carrier's
+  fleet, which it follows hourly, `airSystem`; it is lost with its carrier: a fleet keeps a wing to
+  each of its live carriers, the lowest ids, and a rebase to it counts them, PLAN 5.8l, ADR-335;
+  one whose airbase a nation not of its side took falls back to its nation's nearest airbase with
+  room, its mission ended, or is lost with none, PLAN 5.8m, ADR-336). It is paid; it weighs
+  nothing in a reckoning of forces; no rule of the land's march, supply or fire reads it
+  (`World.offLand`: afloat or a wing); a wing at its base is not drawn (left out of the
+  snapshot's formations), its sorties are (5.7a).
+- *As built (PLAN 5.1e, ADR-310; `orderMission`, `orderRebase`):* a wing's range is the least
+  `range_km` of its aircraft, from its base (a carrier's moves with its fleet). A mission (patrol
+  about a place, strike a place; `world.wingMission`, saved) beyond it is refused with its reason
+  (`OutOfRange`). A wing rebases at once to an airbase of its side (its nation, bloc or allies at
+  war) within range with room for its aircraft, or to a carrier of its nation's with a free deck;
+  else `OutOfRange` or `NoBase`.
+- *As built (PLAN 5.2a, ADR-311; `src/shared/sorties.ts` since 5.7a):* a sortie is its launch (base,
+  target, launch tick, speed, km, hours over the target); `sortieAt` gives its place and leg at
+  any time by a straight line between base and target at its speed. A strike turns at once; a
+  patrol stays over its zone for the fuel its range leaves it (2 × (range − km) ÷ speed), at
+  most 4 hours.
+- *As built (PLAN 5.2b, ADR-312; `airSystem`, `airborne`):* each hour a wing with a mission and
+  no sortie launches one from its base (state: `world.sorties`, saved; the wing's row stays at
+  its base); home, it turns round 2 hours. `airborne` gives the sorties in the air at a time by
+  air zone, from `sortieAt`: where interception is reckoned (PLAN 5.3).
+- *As built (PLAN 5.3a, ADR-313; `airCombat`):* each hour the sorties in one air zone of nations
+  at war fire on each other (since 5.7d those within 150 km of each other): a squadron's aircraft × its air attack × 0.25 over the target's
+  defence, in hit points, the losses in aircraft carried as on the land. A wing with none left is
+  lost; a sortie that lost a quarter in the hour turns home. Fighters beat bombers by the data.
+- *As built (PLAN 5.3b, ADR-314; `antiAir`):* a sortie in the air is fired on by the formations of
+  its enemies within a cell of its place, land and fleets: each element's `aa` per full element
+  × 2, over the aircraft's defence; a tactical bomber group over an infantry division loses
+  1.25% an hour.
+- *As built (PLAN 5.3c, ADR-315; `airSuperiority`):* per air zone per nation the air power flown
+  there (a sortie's aircraft × air attack an hour, half-life a day; `world.airPower`, saved); a
+  nation's superiority there is its side's share of its side's and its enemies' power, a half
+  where neither flew.
+- *As built (PLAN 5.4a, ADR-316; `airFactor` in `combat.ts`):* a formation's fire in a land battle ×
+  (1 + 0.2 × (2s − 1)), s its nation's air superiority in its zone: 1.2 with the air, 0.8
+  without, 1 at a half.
+- *As built (PLAN 5.8t1, ADR-345; `supplySystem`):* a formation fed gains its supply × (1 + 0.5
+  × (2s − 1)) an hour: half the rate under the enemy's air, one and a half under its own.
+- *As built (PLAN 5.8t2, ADR-346; `factsOf` in `navalCombat.ts`):* a fleet's detection (its
+  carriers' wings with it) × (1 + 0.25 × (2s − 1)): 1.25 under its side's air, 0.75 under the
+  enemy's.
+- *As built (PLAN 5.8t3, ADR-347; `strikeFactor`):* a strike's fire on the enemy's elements and
+  its tons on industry and ports × (1 + 0.25 × (2s − 1)), s the striker's superiority over its
+  target: 1.25 under its side's air, 0.75 under the enemy's.
+- *As built (PLAN 5.8u1, ADR-348; `airLift`):* a transport wing's mission may be `supply` (a
+  wing not of transports is refused it, `NotLand`). Its sortie, at the target in the hour it
+  arrives, lifts 1/48 of a formation's supply an aircraft (a group of 24: a half) to its side's
+  formations on the land within a cell that are short of it, the same share each, none past
+  full. No AI flies it yet (5.8u3).
+- *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
+  enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
+  their hp, spread by their health; carried as on the land. A close support group takes about
+  117 men of an infantry division a strike.
+- *As built (PLAN 5.4c, ADR-318):* a strike on enemy ships fires its aircraft's hard attack
+  (halved on armour beyond its piercing) × 1 in hit points over the ships in reach by their
+  health; what is aboard is not struck.
+- *As built (PLAN 5.4d, ADR-319):* a carrier's wings on board see and strike for its fleet as far
+  as a quarter of their range (250 km): its detection and its reach in a sea battle; once in 4
+  hours they strike the enemy's surface ships of the battle as a naval strike does.
+- *As built (PLAN 5.5a, ADR-320; `bombIndustry`, `repairSystem`):* a strike on land drops its
+  aircraft's bombs (`bomb_t`) on the enemy's industry within a cell of its target: each cell
+  there out of work by tons × 2 $M over their industry together (at most 0.9); the monthly income
+  takes it off; repaired 2% a day.
+- *As built (PLAN 5.5b, ADR-321; `portShut`):* the bombs damage the enemy's ports within reach by
+  tons over 60 × the port's level; repaired as industry; a port damaged by a half or more embarks
+  no one and its yard delivers no fleet.
+- *As built (PLAN 5.6, ADR-322; `airAi`):* daily, a nation at war sends its fighters to patrol
+  over its front, its close support and tactical bombers to strike the enemy's, its naval bombers
+  at the enemy's fleets, and its strategic bombers at the enemy's richest industry in range where
+  its side holds the air (superiority 0.6 or more); at peace, no missions.
+- *As built (PLAN 5.7a, ADR-323; `render/units/sorties.ts`):* the snapshot carries the sorties in
+  the air; the page draws each as planes of its nation's colour where `sortieAt` (in `shared/`)
+  has it at the frame's time (in the hour the snapshot ends, as the formations are played: 5.7d),
+  a patrol circling over its target, T0 to T2.
+- *As built (PLAN 5.7b, ADR-324; `render/fx/air.ts`):* an hour's air fight is tracers and flak with
+  smoke trails for the aircraft lost; a strike, bombs bursting about its target; a sortie under
+  AA (`FlakFired`), flak puffs about it; on the render clock, T0 to T2.
+- *As built (PLAN 5.7c, ADR-325):* the air-superiority map mode tints each air zone whose air a
+  nation holds (superiority 0.6 or more) with its colour, stripes a contested one, and fades the
+  rest; daily from the worker.
+- *As built (PLAN 5.7d, ADR-326):* a sortie fights the enemy's sorties of its zone within 150 km of
+  it (an air zone is too wide to be one fight); each meeting is a fight of its own, told between
+  its nearest foes. The air battle demo: `tests/e2e/airDemo1938.spec.ts`.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
-  naval detection and bombing accuracy.
+  naval detection and bombing accuracy. *As built:* ground combat (5.4a); supply, naval
+  detection and bombing accuracy not yet (PLAN 5.8t).
+- *Not built yet* (PLAN 5.8u): the transports' missions (paradrop, air supply); interception is
+  no mission of its own: a patrol meets what comes within 150 km of it (5.7d).
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,
-  flak.
+  flak. *As built:* 5.7a and 5.7b, at T0 to T2.
 
 ### 6.4 AI nuclear weapons
 - **Programme**: tech chain (fission research → enrichment → bomb → thermonuclear →
@@ -1948,7 +2078,7 @@ It was dropped: a camera resting on a curve showed two layers half there.
 |---|---|---|---|
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
 | **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes; the coast from the fine land mask from where a mask pixel is a device pixel (about 1,200 m/px on the 1938 map, all of it from there, none above 2,400: PLAN 4.7g, ADR-284), so a lake the coarse coverage averages away is drawn as at T2 | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows (a fleet's along its way by the points it turns at: PLAN 4.7d, ADR-281), battle markers |
-| **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask, the sea shaded by its depth (the elevation's sea floor, lighter over shallows: PLAN 4.7f, ADR-283) (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight, ships by class with wakes under way (PLAN 4.7b, ADR-276), a sea battle's gunfire on a long arc, torpedo tracks and a ship going down into its slick (PLAN 4.7c, ADR-277) |
+| **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask, the sea shaded by its depth (the elevation's sea floor, lighter over shallows: PLAN 4.7f, ADR-283) (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight (and at T0 and T1, smaller: PLAN 5.7a), ships by class with wakes under way (PLAN 4.7b, ADR-276), a sea battle's gunfire on a long arc, torpedo tracks and a ship going down into its slick (PLAN 4.7c, ADR-277) |
 | **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap] |
 
 *How far out the ground reaches (PLAN 2.11l):* the ground and what stands on it come and go
@@ -2378,7 +2508,8 @@ on screen.
   cell from the enemy's block.
 - **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
-  treasury, manpower) on the right, toggled by the bottom bar's Statistics button; one banner
+  treasury, manpower) on the right, toggled by the bottom bar's Statistics button, each row
+  one line (PLAN 4.11, ADR-305: the name cut with an ellipsis, the value never wrapping); one banner
   per active war (side leaders, ally counts, score bar) above the bottom bar, at most 8 + "+N".
   A click on a banner selects the attackers' leader and, when the war has a battle (gold
   swords; ADR-96), flies the camera to it at 20 m/px (`flight` in `render/camera.ts`: pan and
@@ -2403,7 +2534,12 @@ on screen.
     holders in their colours with their zones, the most first (8, and how many more), and names
     the zone under the cursor with its holder ("Inner Seas: held by United Kingdom"; its sea's
     name from the map's seeds, sent with the zones; "held by none").
-- **Map modes still planned**: air superiority, fallout, supply (with their phases).
+  - *Air superiority* (PLAN 5.7c, ADR-325): the worker sends each air zone's holder daily
+    (`airControl`: the nation with superiority 0.6 or more there, contested, or none) with the
+    cells' air zones the first time and after a load, at once (at the first look of a day a pump
+    stepped past its first hour in; PLAN 5.8n, ADR-338); the shader (fill mode 4) fades land as the sea-control mode
+    does and tints a zone held, land and sea, 0.55 of its holder's colour, a contested one striped.
+- **Map modes still planned**: fallout, supply (with their phases).
 - **God Mode commands** (implemented PLAN 1.32a): `renameNation` (saved in `world.names`,
   section `world.names`; the empty name gives back the scenario's name or the founding
   province's, and is refused for a nation with neither: ADR-124), `declareWar`, `forcePeace`, `createAlliance`, `collapseNation` (God

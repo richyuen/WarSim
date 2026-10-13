@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { dateOfTick } from '../../src/shared/calendar';
 import { xxhash32View } from '../../src/sim/core/hash';
 import type { ScenarioAssets } from '../../src/shared/protocol';
-import { FLEETS_1938, keepWorldTemplates, NATIONS_1938, SIZE_1938, TEMPLATES_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { AIR_1938, FLEETS_1938, keepWorldTemplates, NATIONS_1938, SIZE_1938, TEMPLATES_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { CITIES_1938, assets1938, OOB_1938, politicalMap1938 } from '../helpers/earth';
 
@@ -56,18 +56,22 @@ describe('1938 world (PLAN 1.9a)', () => {
       if (w.cities.cols.capitalOf[id]! > 0) capitals++;
     });
     expect(capitals).toBe(NATIONS_1938.filter((n) => n.alive !== false).length);
-    // The land's order of battle, and after it the fleets (PLAN 4.2b).
+    // The land's order of battle, after it the fleets (PLAN 4.2b), and after them the air wings
+    // (PLAN 5.1d): air.json's and one on each carrier of the fleets.
     const land = OOB_1938.reduce((s, g) => s + g.count, 0);
-    expect(w.formations.count).toBe(land + FLEETS_1938.reduce((s, g) => s + g.count, 0));
+    const fleets = land + FLEETS_1938.reduce((s, g) => s + g.count, 0);
+    expect(w.formations.count).toBe(fleets + AIR_1938.reduce((s, g) => s + g.count, 0) + [...w.wingBase.values()].filter((b) => b < 0).length);
     const f = w.formations.cols;
     w.formations.forEach((id) => {
       expect((id <= land ? TEMPLATES_LAND : TEMPLATES_1938)[f.template[id]!]).toBeDefined();
-      expect(w.afloat(id)).toBe(id > land);
+      expect(w.afloat(id)).toBe(id > land && id <= fleets);
+      expect(w.isWing(id)).toBe(id > fleets);
       expect(f.strength[id]).toBeGreaterThan(0);
-      // On land somebody holds; a fleet on water, which nobody holds.
+      // On land somebody holds; a fleet on water, which nobody holds; a wing at its airbase, or on a carrier's water.
       const holder = w.cells.controller[Math.floor(f.y[id]!) * 2048 + Math.floor(f.x[id]!)]!;
       if (id <= land) expect(holder).toBeGreaterThan(0);
-      else expect(holder).toBe(0);
+      else if (id <= fleets || w.wingBase.get(id)! < 0) expect(holder).toBe(0);
+      else expect(holder).toBe(f.nation[id]);
     });
   });
 

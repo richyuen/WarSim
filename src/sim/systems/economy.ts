@@ -7,7 +7,7 @@
  * a historically sized share of its country's economy.
  *
  * Per nation n each month:
- *   land    = Σ cells.econ over cells n controls; cells it occupies but does not own count
+ *   land    = Σ cells.econ × (1 − its bomb damage, PLAN 5.5a) over cells n controls; cells it occupies but does not own count
  *             OCCUPIED_SHARE ($M)
  *   gross   = land / 1000 × INCOME_PER_BN × incomeMult × (1 + incomeBonus / 100) × (1 + income buffs)
  *   upkeep  = UPKEEP_SCALE × Σ formation upkeep (template gold upkeep × current / full strength)
@@ -113,6 +113,7 @@ export function monthlyAccounts(
   const blockade = blockadedCells(world);
   // Convoys (PLAN 4.4d): what the enemy's submarines take of the income of lands joined by sea.
   const convoys = convoyLosses(world);
+  const damage = world.bombDamage;
   for (let y = 0, c = 0; y < h; y++) {
     const km2 = rowKm2[y]!;
     for (let x = 0; x < w; x++, c++) {
@@ -123,6 +124,8 @@ export function monthlyAccounts(
       const own = owner[c] === n;
       if (v !== 0 && blockade && (blockade.provinces.has(province[c]!) || blockade.cells.has(c))) v *= BLOCKADE_SHARE;
       if (v !== 0 && convoys) v *= convoyShare(world, convoys, n, c);
+      // Bombs (PLAN 5.5a): what is out of work there until it is repaired.
+      if (v !== 0 && damage.size > 0) v *= 1 - (damage.get(c) ?? 0);
       if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
       if (own) population[n]! += pop[c]! * 1000;
     }
@@ -175,6 +178,6 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
   });
   world.formations.forEach((id) => {
     // Through the elements. A fleet keeps its ships (PLAN 4.2b): the rule counts men.
-    if (deserting[fc.nation[id]!] && !world.afloat(id)) bleedFormation(world, id, DESERTION);
+    if (deserting[fc.nation[id]!] && !world.offLand(id)) bleedFormation(world, id, DESERTION);
   });
 }

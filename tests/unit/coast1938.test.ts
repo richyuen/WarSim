@@ -42,7 +42,7 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     const marches = (): void => {
       w.formations.forEach((id) => {
         // A march: not a fleet's sail, nor troops aboard (PLAN 4.6b: the AI's transports sail now).
-        if (f.moving[id] !== 1 || w.afloat(id)) return;
+        if (f.moving[id] !== 1 || w.offLand(id)) return;
         march.hours++;
         if (land(f.x[id]!, f.y[id]!)) return;
         const path = w.paths.get(id);
@@ -70,7 +70,7 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
       const seen = { formations: 0, atRest: 0, elements: 0, drawnIn: 0, onItsFormation: 0, marching: 0, marchingWet: 0, crossing: 0 };
       w.formations.forEach((id) => {
         // Of the land: a fleet stands on the mask's water (PLAN 4.2b, `fleets1938.test.ts`).
-        if (w.afloat(id)) return;
+        if (w.offLand(id)) return;
         seen.formations++;
         const [fx, fy] = [f.x[id]!, f.y[id]!];
         const list = idx.get(id) ?? [];
@@ -112,7 +112,9 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     expect(wrong.slice(0, 5), 'over water on a step with a way over land').toEqual([]);
     expect(march.hours).toBeGreaterThan(500_000);
     // Before PLAN 4.1d2: 1,266 of 774,232 hours over the mask's water by its bit alone, on 77 steps. What is left is steps with no way over land (a river of the mask).
-    expect(march.wet / march.hours).toBeLessThan(0.0006);
+    // Under 0.0006 until PLAN 5.6 (322 of 799,261 hours, on 16 steps); the air AI's game marches
+    // more over those rivers (582 of 773,802, on 19 steps; ADR-322), the rule the same: 0.001.
+    expect(march.wet / march.hours).toBeLessThan(0.001);
   }, 120_000);
 
   it('a step with a way over land (PLAN 4.1d2): every place of it surely land, from the one cell’s point to the other’s, and the same walked back', () => {

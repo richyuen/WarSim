@@ -84,12 +84,13 @@ describe('the fleets of the 1938 start (PLAN 4.2b)', () => {
     const lanes = laneOf(w);
     const want = FLEETS_1938.reduce((s, g) => s + g.count, 0);
     expect(want).toBe(197);
-    const land = w.formations.count - want;
+    // The air wings of the start are the last rows (PLAN 5.1d).
+    const land = w.formations.count - w.wingBase.size - want;
     const fleets: number[] = [];
     w.formations.forEach((id) => {
       if (w.afloat(id)) fleets.push(id);
       // The land's formations keep their ids: the fleets are the rows after them.
-      expect(w.afloat(id), `formation ${id}`).toBe(id > land);
+      expect(w.afloat(id), `formation ${id}`).toBe(id > land && id <= land + want);
     });
     expect(fleets).toHaveLength(want);
     // In the file's order: the groups, each `count` times.
@@ -168,7 +169,7 @@ describe('the fleets of the 1938 start (PLAN 4.2b)', () => {
     w.formations.forEach((id) => {
       if (fc.nation[id] !== eng) return;
       if (w.afloat(id)) crews += fc.strength[id]!;
-      else men += fc.strength[id]!;
+      else if (!w.isWing(id)) men += fc.strength[id]!; // nor a wing's (PLAN 5.1d)
     });
     expect(crews).toBeGreaterThan(100_000);
     statsSystem(w);

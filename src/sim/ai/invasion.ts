@@ -100,7 +100,7 @@ function planLanding(world: World, n: number): void {
   if (target < 0) return;
   const goal = world.ports[target]!.cell;
   const [tx, ty] = world.cellPoint(goal);
-  const free = (id: number): boolean => !world.afloat(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0;
+  const free = (id: number): boolean => !world.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0;
   // Its formations at the port go aboard.
   let sent = 0;
   const atPort: number[] = [];

@@ -14567,3 +14567,487 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests 284 of 285, red only by `snapshot-perf` of BLOCKERS (the
   snapshot is not changed here); the pin, build and parity green by hand.
 - **Next:** PLAN 4.10d.
+
+## 2026-10-13 — PLAN 4.10 done: naval warfare can be seen (4.10d)
+
+- **The AT:** `navalCounter1938`, `seaBattleSeen1938`, `seaLegend1938` together on 5be0ba5: 3 of 3
+  (2.0 min). PARITY additions row 3 has them.
+- **Next:** PLAN 4.11.
+
+## 2026-10-13 — PLAN 4.11 done: the ranking's rows hold their names and values (ADR-305)
+
+- **Done:** each ranking row a one-line flex row: the name cut with an ellipsis, the value never
+  wrapping (a long name had pushed the floated value under the next row's name). SPEC §8 says so.
+- **Tests:** `rankingRows1938.spec.ts` (failed first at UI size 0.85, row 11); with
+  `ranking1938.spec.ts` 2 of 2 (38 s).
+- **The pin:** the sim is not changed.
+- **Next:** the critic's blocking issues of run 4 filed under Phase 4 are done (4.9 to 4.11);
+  PLAN 5.1.
+
+## 2026-10-13 — PLAN 5.1 split into parts (documents)
+
+- **Found:** eight aircraft types in `data/units/air.json` and an airbase building in the data; no
+  air template, airbase or wing in the game. Parts: 5.1a air zones, 5.1b air templates, 5.1c
+  airbases, 5.1d the 1938 air forces, 5.1e range and the mission order (the AT).
+- **Next:** PLAN 5.1a.
+
+## 2026-10-13 — PLAN 5.1a: air zones (ADR-306)
+
+- **Done:** `buildAirZones` / `airOf`: the sea zones over water, the land in regions of whole
+  province-graph nodes of about 1.5 M km² grown from a lattice of seeds; islands under a third of
+  that join the nearest zone. 1938: 86 land and 428 sea zones, 88 ms. Read by nothing yet. SPEC §6.3.
+- **Tests:** `airZones1938.test.ts` (4).
+- **The gate:** first red by lint (`Math.hypot` in the sim, not bit-identical: `dmath`'s `sqrt`;
+  two comma expressions in the test); then the related unit tests 831 of 833, red only by two
+  timing tests of BLOCKERS; the pin (unchanged), build and parity green by hand.
+- **Next:** PLAN 5.1b.
+
+## 2026-10-13 — PLAN 5.1b: air wing templates in the rules (ADR-307)
+
+- **Done:** the aircraft types after the ships, six wing templates after the fleets
+  (`data/templates/air.json`); no wing is built or spawned yet. SPEC §6.3 says so.
+- **Tests:** `airTemplates.test.ts` (3); `seaTemplates.test.ts` reads the sea's own slice now.
+- **The pin** holds (c0a89199).
+- **The gate:** the unit tests in full (a data file changed): 1,286 of 1,289, red only by the three
+  timing tests of BLOCKERS; the pin, build and parity green by hand.
+- **Next:** PLAN 5.1c.
+
+## 2026-10-13 — PLAN 5.1c: airbases (ADR-308)
+
+- **Done:** `placeAirbases`, `data/scenarios/1938/airbases.json`: capitals (level 1), cities of
+  size 5 (level 2), 23 main air stations by hand; 172 in 1938, every living nation with one; held
+  by the cell's controller, 50 aircraft a level. Static, as the ports. SPEC §6.3 says so.
+- **Tests:** `airbases1938.test.ts` (3).
+- **The gate:** the unit tests in full (a data file changed): 1,291 of 1,293, red only by two timing
+  tests of BLOCKERS (the build's: 3,074 ms with this change, 2,552 without, one run each; the
+  airbases' placement itself is under a millisecond: the gap is the container's); the pin
+  (c0a89199), build and parity green by hand.
+- **Next:** PLAN 5.1d.
+
+## 2026-10-13 — PLAN 5.1d: the 1938 start's air forces (ADR-309)
+
+- **Done:** `data/scenarios/1938/air.json` (198 wings by nation and template) placed at the
+  airbases within their room, a naval bomber group on each of the 18 carriers; `world.wingBase`
+  (saved), `airSystem` (a carrier's wings follow it, are lost with it); `World.offLand` for the
+  land's rules; wings paid, weigh nothing, not drawn yet. The airbases' levels raised to hold them
+  (capitals 4, large cities 3, stations 4–5, four stations more). SPEC §6.3.
+- **Tests:** `wings1938.test.ts` (3).
+- **The pin moves** c0a89199 → 1377ab88.
+- **The gate:** the unit stage in full: first 23 red besides the timing tests (a wing on a coastal
+  city's water, a test's stub without templates, the system names; tests that read the army as all
+  not afloat; two whose rolls moved with the ids), each mended or recorded in ADR-309; then
+  1,295 of 1,297, red only by the two timing tests of BLOCKERS (`snapshot-perf` 2.62 to 2.88 ms
+  with the change, 2.31 to 3.24 at HEAD); the pin, build and parity green by hand.
+- **Next:** PLAN 5.1e.
+
+## 2026-10-13 — PLAN 5.1e: a wing's range; mission and rebase orders (ADR-310). PLAN 5.1 done
+
+- **Done:** `wingRange` (the least range of its aircraft) from its base (a carrier's from its
+  fleet); `wingMission` and `wingRebase` commands (`orderMission`, `orderRebase`); refusals
+  `OutOfRange` and `NoBase` (new `RejectReason`s); `world.wingMission` saved. SPEC §6.3.
+- **Tests:** `wingRange1938.test.ts` (7), the AT of 5.1.
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by the timing tests of BLOCKERS (the build's
+  3,131 ms, `snapshot-perf` 3.89 ms; one run before also the territory's per-tick cost); the pin,
+  build and parity green by hand.
+- **Next:** PLAN 5.2.
+
+## 2026-10-13 — PLAN 5.2a: a sortie's flight as a pure function (ADR-311)
+
+- **Done:** PLAN 5.2 split into 5.2a (the sortie) and 5.2b (the scheduler). `sortieAt`,
+  `sortieEnd`, `patrolHours` in `src/sim/systems/sorties.ts`. SPEC §6.3.
+- **Tests:** `sorties.test.ts` (4, property tests over random sorties); it found the end's
+  rounding (the tick a sortie ends read as on its way back).
+- **The pin holds**: nothing calls it yet.
+- **Next:** PLAN 5.2b.
+
+## 2026-10-13 — PLAN 5.2b: the sortie scheduler (ADR-312). PLAN 5.2 done
+
+- **Done:** in `airSystem`, a wing with a mission and no sortie launches one each hour; home, it
+  turns round 2 hours; `world.sorties` saved; `airborne` (the sorties in the air by air zone).
+  A rebase ends a sortie. SPEC §6.3, PARITY.
+- **Tests:** `sortieScheduler1938.test.ts` (3), the AT of 5.2.
+- **The pin holds** at 1377ab88: no AI gives a mission yet.
+- **The gate:** the related unit tests red only by the three timing tests of BLOCKERS (the
+  build's 3,522 ms, `snapshot-perf` 2.28 ms, the territory's 25.5 ms a tick); the pin, build and
+  parity green by hand.
+- **Next:** PLAN 5.3.
+
+## 2026-10-13 — PLAN 5.3a: air combat (ADR-313)
+
+- **Done:** PLAN 5.3 split into 5.3a–c. `airCombat`: sorties of nations at war in one zone fire
+  by air attack against defence; losses carried; a wing at none lost; a sortie that lost a
+  quarter turns home; `AirBattle` events. `aa` and `defense` in the rules' units. SPEC §6.3,
+  PARITY.
+- **Tests:** `airCombat1938.test.ts` (4): fighters beat bombers.
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by the three timing tests of BLOCKERS (3,327 ms,
+  3.81 ms, 25.8 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.3b.
+
+## 2026-10-13 — PLAN 5.3b: AA (ADR-314)
+
+- **Done:** `antiAir`: the formations of a sortie's enemies within a cell fire on it by their
+  elements' `aa` per full element; losses carried. SPEC §6.3, PARITY.
+- **Tests:** `antiAir1938.test.ts` (3): the AA attrition rate (1.25% an hour, a tactical bomber
+  group over an infantry division).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by the three timing tests of BLOCKERS (3,600 ms,
+  2.29 ms, 26.9 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.3c.
+
+## 2026-10-13 — PLAN 5.3c: air superiority per zone (ADR-315). PLAN 5.3 done
+
+- **Done:** `airPowerSystem` (the air power flown per zone per nation, half-life a day,
+  `world.airPower` saved), `airSuperiority` (a side's share, a half unflown). SPEC §6.3, PARITY.
+- **Tests:** `airSuperiority1938.test.ts` (3).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,786 ms,
+  4.10 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.4.
+
+## 2026-10-13 — PLAN 5.4a: air superiority in ground combat (ADR-316)
+
+- **Done:** PLAN 5.4 split into 5.4a–d. `airFactor` in the land's fire: 1 + 0.2 × (2s − 1)
+  (`air.superiority` of `data/combat.json`, schema). SPEC §6.3, PARITY.
+- **Tests:** `airGround.test.ts` (2), the AT of 5.4: 48 hours of two divisions, the exchange
+  1.01 → 1.54 for the side with the air.
+- **The pin holds** at 1377ab88.
+- **The gate:** the unit stage in full (a data file changed): 1,321 of 1,323, red only by two
+  timing tests of BLOCKERS (3,199 ms, 3.71 ms); the pin, build and parity green by hand. The
+  first run stopped at the typecheck on `Terrain.plains` in the new test (`Terrain.Plains`).
+- **Next:** PLAN 5.4b.
+
+## 2026-10-13 — PLAN 5.4b: CAS and tactical bombing (ADR-317)
+
+- **Done:** `strikes`: a strike sortie at its target fires once on the enemy's land elements
+  within a cell by its aircraft's soft or hard attack; `AirStrike` events. SPEC §6.3, PARITY.
+- **Tests:** `airStrike1938.test.ts` (4).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,046 ms,
+  2.04 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.4c.
+
+## 2026-10-13 — PLAN 5.4c: naval strike (ADR-318)
+
+- **Done:** `strikes` fires on the enemy's fleets in reach too: hard attack against armour, in
+  hit points in full (`NAVAL_STRIKE_FIRE` 1). SPEC §6.3, PARITY.
+- **Tests:** `navalStrike1938.test.ts` (3).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,031 ms,
+  3.49 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.4d.
+
+## 2026-10-13 — PLAN 5.4d: carrier air groups in fleet battles (ADR-319). PLAN 5.4 done
+
+- **Done:** a carrier's wings on board are its fleet's detection and reach (a quarter of their
+  range, 250 km) and strike the enemy's surface ships of its battle once in 4 hours. SPEC §6.3,
+  PARITY.
+- **Tests:** `carrierAir1938.test.ts` (2).
+- **The pin moves** 1377ab88 → a6c4ac55.
+- **The gate:** the related unit tests (871 of 873) red only by two timing tests of BLOCKERS
+  (3,173 ms, 2.48 ms); the pin (a6c4ac55), build and parity green by hand.
+- **Next:** PLAN 5.5.
+
+## 2026-10-13 — PLAN 5.5a: strategic bombing of industry (ADR-320)
+
+- **Done:** PLAN 5.5 split into 5.5a and 5.5b. `bomb_t` in the air units' data and schema;
+  `bombIndustry` (a strike's bombs on the enemy's industry within a cell); `world.bombDamage`
+  saved; the monthly income takes it off; `repairSystem` 2% a day. SPEC §6.3, PARITY.
+- **Tests:** `bombing1938.test.ts` (3), the AT of 5.5.
+- **The pin holds** at a6c4ac55.
+- **The gate:** the unit stage in full (a data file changed): 1,333 of 1,335, red only by two
+  timing tests of BLOCKERS (3,447 ms, 3.02 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.5b.
+
+## 2026-10-13 — PLAN 5.5b: ports bombed (ADR-321). PLAN 5.5 done
+
+- **Done:** the bombs damage the enemy's ports within reach by tons over 60 × level
+  (`world.portDamage`, saved, repaired as industry); a port damaged by a half or more embarks no
+  one and delivers no fleet (`portShut` in `tryLanding`, `transportsPort`, `shipyard`). The
+  PLAN's "not repaired there" replaced by the yard: no rule repairs a ship. SPEC §6.3, PARITY.
+- **Tests:** `portBombing1938.test.ts` (3).
+- **The pin holds** at a6c4ac55.
+- **The gate:** the related unit tests (877 of 879) red only by two timing tests of BLOCKERS
+  (3,016 ms, 3.63 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.6.
+
+## 2026-10-13 — PLAN 5.6: the air AI (ADR-322)
+
+- **Done:** `airAi` (daily: fighters over the front, close support and tactical bombers on the
+  enemy's front, naval bombers on fleets, strategic bombers on industry where its side holds the
+  air); `byIndustry` sorted once. The headless runner's systems: 30. SPEC §6.3, PARITY.
+- **Tests:** `airAi1938.test.ts` (3); `tests/sweep/airYear.test.ts`, the AT (a year of seed 99:
+  18,856 strikes, 3,081 of 3,085 strategic ones at superiority 0.6 or more; 216 zone-days
+  contested over a front), run by hand: green.
+- **Found by the first gate:** a strike sank submarines (all four German flotillas in 60 days):
+  mended, a submarine is no strike's target. Tests the AI's game moved, each in ADR-322: five
+  mechanics tests with the AI off, `wings1938`, `warBattle`, `coast1938` (bound 0.0006 → 0.001).
+- **Cost:** `airAi` 0.35 ms a tick, `air` 0.87 ms, the tick 10.7 ms mean (unpinned, this container).
+- **The pin moves** a6c4ac55 → 321cd835.
+- **The gate:** the second run, the related unit tests (879 of 882) red only by the three
+  timing tests of BLOCKERS (3,589 ms, 4.54 ms, 26.7 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.7.
+
+## 2026-10-13 — PLAN 5.7a: sorties drawn (ADR-323)
+
+- **Done:** PLAN 5.7 split into 5.7a–d. `sortieAt` moved to `shared/`; the snapshot's `sorties`;
+  `drawSorties` at T0 to T2 under the counters. Two pictures looked at
+  (`docs/evidence/5.7/`), three changes after them: a light edge, circles spread and with a floor
+  on screen, smaller at T0 and under the counters. SPEC §8 row, PARITY.
+- **Tests:** `sortiesDrawn.test.ts` (2), `sortiesSeen1938.spec.ts` (1).
+- **The pin holds** at 321cd835.
+- **The gate:** the related unit tests (921 of 923) red only by two timing tests of BLOCKERS
+  (3,132 ms, 2.58 ms); the pin, build, the new spec (by hand, three runs) and parity green.
+- **Next:** PLAN 5.7b.
+
+## 2026-10-13 — PLAN 5.7b: the air war's effects (ADR-324)
+
+- **Done:** `FlakFired` events from `antiAir`; `AirFx` (fights, bombs, flak) at T0 to T2. Three
+  pictures looked at (`docs/evidence/5.7/c-air-*.png`). SPEC §6.3, PARITY.
+- **Tests:** `airFx.test.ts` (3), `antiAir1938` (the flak event), `airFx1938.spec.ts` (1).
+- **The pin holds** at 321cd835.
+- **The gate:** the related unit tests (920 of 923) red only by the three timing tests of
+  BLOCKERS (3,829 ms, 4.35 ms, 26.1 ms); the pin, build, the new spec (by hand) and parity green.
+- **Next:** PLAN 5.7c.
+
+## 2026-10-13 — PLAN 5.7c: the air-superiority map mode (ADR-325)
+
+- **Done:** `airHolders`; the worker's `airControl`; the mode `airControl` (shader mode 4,
+  legend, i18n). One picture looked at. SPEC §6.3, PARITY.
+- **Tests:** `airHolders.test.ts` (1), `airControl1938.spec.ts` (1); `mapModes1938` green by hand.
+- **The pin holds** at 321cd835.
+- **The gate:** the related unit tests (1,008 of 1,011) red only by the three timing tests of
+  BLOCKERS (3,280 ms, 3.80 ms, 29.5 ms); the pin, build, the new spec (by hand) and parity green.
+- **Next:** PLAN 5.7d.
+
+## 2026-10-13 — PLAN 5.7d: the air battle demo (ADR-326). PLAN 5.7 done
+
+- **Done:** `airDemo1938.spec.ts`; four pictures looked at (`docs/evidence/5.7/air-demo-*.png`).
+- **Found by the demo, mended:** the sorties drawn an hour ahead (now the hour the snapshot ends);
+  an air fight told at a bystander's place (now between its nearest foes, `fightPlace`); a sortie
+  fighting every enemy sortie of its zone, 600 km apart (now within `INTERCEPT_KM`, 150 km, each
+  meeting a fight). SPEC §6.3, PARITY.
+- **Tests:** `airCombat1938` (2 more), the demo; `airYear` by hand: green (18,060 strikes, 384
+  zone-days contested over a front).
+- **The pin moves** 321cd835 → 28d6b82d.
+- **The gate:** the related unit tests (919 of 922) red only by the three timing tests of
+  BLOCKERS (2,884 ms, 3.08 ms, 26.2 ms); the pin, build, the demo (by hand) and parity green.
+- **Next:** PLAN 5.8, the Phase 5 review.
+
+## 2026-10-13 — PLAN 5.8: the Phase 5 review split into its parts (documents)
+
+- **Done:** 5.8a (the eleventh independent read, 71 files since `deafedf`) to 5.8h (the review
+  run, the quick sweep, the tick), as 4.8 was.
+- **Next:** PLAN 5.8a.
+
+## 2026-10-13 — PLAN 5.8a: the eleventh independent read (ADR-327, documents)
+
+- **Done:** the read of the 71 files since `deafedf`: ten findings and a suspicion, each checked
+  here: parts 5.8i to 5.8r (a desync of air superiority after a load; a throw of `orderRebase`;
+  air power never fading without wings; wings outliving their carriers and flying from a taken
+  base; the air mode after a load; a wing aboard transports; two of the gate's review run; the
+  industry order's key). One on the watch list (paths that wrap on a map that does not loop).
+- **Next:** PLAN 5.8b.
+
+## 2026-10-13 — PLAN 5.8b: SPEC re-read for drift (ADR-328, documents)
+
+- **Done:** SPEC §6.3, §8 and §9 set right for Phase 5 as built (eight places); ADR-288 and
+  ADR-292 written into SPEC (the rest of ADR-288 to 305 were there). Three gaps of SPEC
+  §6.3 not built: wings built, air superiority's other effects, the transports' missions: parts
+  5.8s, 5.8t, 5.8u.
+- **Next:** PLAN 5.8c.
+
+## 2026-10-13 — PLAN 5.8c: dead code and refactor debt (ADR-329)
+
+- **Done:** no dead export found. The air's east–west wrap, hand-rolled in six places (two asking
+  whether the map loops), now `wrapDx`, `cellX` and `loopW`; the watch list's entry of 5.8a mended
+  with it.
+- **Tests:** `airEdges.test.ts` (2).
+- **The pin holds** at 28d6b82d.
+- **The gate:** the related unit tests (886 of 889) red only by the three timing tests of
+  BLOCKERS (3,124 ms, 2.73 ms, 29.1 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8d.
+
+## 2026-10-13 — PLAN 5.8d: missing tests over the phase (ADR-330)
+
+- **Done:** every system of Phase 5 has a test of its rule and its save; the worker's `airControl`
+  had none: `serverAirControl.test.ts` (1). No defect found by it.
+- **Next:** PLAN 5.8e.
+
+## 2026-10-13 — PLAN 5.8e: tick time (ADR-331, documents)
+
+- **Done:** seed 99's five years, 7.971 ms a tick before Phase 5 and 9.390 after (× 1.18, this
+  container); the air's systems 0.90 ms of it (9.6 %). In BLOCKERS for PLAN 7.1 (ADR-289).
+- **Next:** PLAN 5.8i (the parts the read found; 5.8g and 5.8h last).
+
+## 2026-10-13 — PLAN 5.8i: air superiority summed by nation (ADR-332)
+
+- **Done:** `airSuperiority` sums by nation id: a saved game plays on as the game left running.
+- **Tests:** `airDesync.test.ts` (2, both failed before).
+- **The pin moves** 28d6b82d → 77670f43.
+- **The gate:** the related unit tests (889 of 892) red only by the three timing tests of
+  BLOCKERS (3,595 ms, 3.12 ms, 26.5 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8j.
+
+## 2026-10-13 — PLAN 5.8j: a wing with no base is refused (ADR-333)
+
+- **Done:** `orderRebase` and `orderMission` refuse a wing whose carrier was sunk this hour
+  (`NoBase`); the rebase threw.
+- **Tests:** `wingRange1938` (1 more, failed before).
+- **The pin holds** at 77670f43.
+- **The gate:** the related unit tests (890 of 893) red only by the three timing tests of
+  BLOCKERS (3,336 ms, 2.25 ms, 25.4 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8k.
+
+## 2026-10-13 — PLAN 5.8k: air power fades with no wing left (ADR-334)
+
+- **Done:** `airSystem` fades the air power when no wing is left.
+- **Tests:** `airSuperiority1938` (1 more, failed before).
+- **The pin holds** at 77670f43.
+- **The gate:** the related unit tests (892 of 894) red only by two timing tests of BLOCKERS
+  (3,056 ms, 2.39 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8l.
+
+## 2026-10-13 — PLAN 5.8l: wings beyond a fleet's live carriers are lost (ADR-335)
+
+- **Done:** `airSystem` keeps a wing to each live carrier of a fleet (`liveCarriers`), the lowest
+  ids; the rest are lost. `orderRebase` counts live carriers.
+- **Tests:** `carrierLoss1938` (2, new).
+- **The pin moves** 77670f43 → 57c9ae2e.
+- **The gate:** the related unit tests (893 of 896) red only by the three timing tests of
+  BLOCKERS (3,678 ms, 3.59 ms, 36.9 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8m.
+
+## 2026-10-13 — A sea battle is no battle of the land (ADR-337)
+
+- **Done:** found by the gate of PLAN 5.8m (`warBattle` named two fleets): `largestBattle`,
+  `warsWithBattle` and the derived `contactsOf` skip formations off the land.
+- **Tests:** `seaNotLand` (1, new; failed before).
+- **The pin holds** at 57c9ae2e.
+- **The gate:** the related unit tests (894 of 897) red only by the three timing tests of
+  BLOCKERS (3,370 ms, 2.53 ms, 30.3 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8m, its gate again.
+
+## 2026-10-13 — PLAN 5.8m: a wing falls back from an airbase the enemy took (ADR-336)
+
+- **Done:** `airSystem` moves a wing off an airbase held by a nation not of its side to its
+  nation's nearest with room (`fallBack`), or loses it; `ofSide` shared with `orderRebase`.
+- **Tests:** `airbaseLoss1938` (3, new; 2 failed before).
+- **The pin moves** 57c9ae2e → ae18ce8c.
+- **`warBattle`'s bound** of battles of neither leader 1 % → 2 % (7 of 687 now; the rule, no leader
+  passed over, holds at 0; ADR-336).
+- **The gate:** the related unit tests (896 of 900) red by the three timing tests of BLOCKERS
+  (2,926 ms, 2.03 ms, 26.1 ms) and that bound, since green alone; the pin, build and parity green
+  by hand.
+- **Next:** PLAN 5.8n.
+
+## 2026-10-13 — PLAN 5.8n: the air mode after a load, and a day a pump stepped past (ADR-338)
+
+- **Done:** the worker forgets the air zones and holders sent on a load and an init, and looks
+  at them at the first look of each day as well as its first hour (`airDay`).
+- **Tests:** `serverAirControl` (2 more; both failed before).
+- **The pin holds** at ae18ce8c (the worker's).
+- **The gate:** the related unit tests (122 of 123) red only by `snapshot-perf` of BLOCKERS
+  (2.67 ms); build and parity green by hand.
+- **Next:** PLAN 5.8o.
+
+## 2026-10-13 — PLAN 5.8o: no wing aboard transports (ADR-339)
+
+- **Done:** `tryLanding` refuses an air wing (`NotLand`).
+- **Tests:** `wingAboard1938` (1, new; failed before).
+- **The pin holds** at ae18ce8c.
+- **The gate:** the related unit tests (806 of 809) red only by the three timing tests of
+  BLOCKERS (3,240 ms, 2.76 ms, 26.0 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8p.
+
+## 2026-10-13 — PLAN 5.8p: a broken test file is red in the review (ADR-340)
+
+- **Done:** `check:review` takes a file failed with no failed test, Playwright's errors outside
+  every test, and a failed run naming no red as red (`FILE_RED`, `runRed`).
+- **Tests:** `gateReview` (1 more; failed before).
+- **The pin holds** at ae18ce8c.
+- **The gate:** green (the related unit tests, 25).
+- **Next:** PLAN 5.8q.
+
+## 2026-10-13 — PLAN 5.8q: the critic's files out of the review's code key (ADR-341)
+
+- **Done:** `codeTree` removes `critic` from its scratch index with the documents; it takes a
+  repository root.
+- **Tests:** `gateReview` (1 more; failed with the old list).
+- **The pin holds** at ae18ce8c.
+- **The gate:** green (the related unit tests, 26).
+- **Next:** PLAN 5.8r.
+
+## 2026-10-13 — PLAN 5.8r: the order of industry told exactly (ADR-342)
+
+- **Done:** `byIndustry` keeps the cells with industry and their values, and compares the
+  industry with them; the weighted sum, which a swap of two cells kept, is gone.
+- **Tests:** `airAi1938` (1 more; failed before).
+- **The pin holds** at ae18ce8c.
+- **The gate:** the related unit tests (807 of 810) red only by the three timing tests of
+  BLOCKERS (3,466 ms, 2.44 ms, 31.2 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8s.
+
+## 2026-10-13 — PLAN 5.8s1: wings built (ADR-343)
+
+- **Done:** `queueFormation` takes an air template where its nation has an `airfield`; the wing is
+  delivered there, based there. 5.8s split: 5.8s2 the economic AI's air force.
+- **Tests:** `wingsBuilt1938` (2, new); `airTemplates` (the 5.1b refusal now the order taken).
+- **The pin holds** at ae18ce8c.
+- **The gate:** the related unit tests (903 of 906) red only by the three timing tests of
+  BLOCKERS (3,825 ms, 3.30 ms, 27.8 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8s2.
+
+## 2026-10-13 — PLAN 5.8s2: the economic AI keeps an air force (ADR-344)
+
+- **Done:** `economicAi` orders a wing a time while the air force's upkeep is under `AIR_SHARE`
+  0.1 of the army's (`pickWing`: fighters to half the wings, else tactical bombers);
+  `BUILD_MIX_1938.wings`.
+- **Tests:** `airBudget1938` (2, new).
+- **The pin moves** ae18ce8c → d53a99d4 (42 wings ordered in the year, 23 delivered).
+- **The gate:** the related unit tests (905 of 908) red only by the three timing tests of
+  BLOCKERS (3,143 ms, 3.26 ms, 27.9 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8t.
+
+## 2026-10-13 — PLAN 5.8t1: air superiority on supply (ADR-345)
+
+- **Done:** `supplySystem` feeds a formation × (1 + `AIR_SUPPLY` × (2s − 1)), s its side's air
+  superiority in its zone (once a nation and zone an hour). 5.8t split by effect: t2 a fleet's
+  detection, t3 a strike's bombs.
+- **Tests:** `airSupply` (1, new; failed before).
+- **The pin moves** d53a99d4 → acbc49c7.
+- **The gate:** the related unit tests (906 of 909) red only by the three timing tests of
+  BLOCKERS (3,007 ms, 2.18 ms, 25.3 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8t2.
+
+## 2026-10-13 — PLAN 5.8t2: air superiority on a fleet's detection (ADR-346)
+
+- **Done:** `factsOf` takes a fleet's detection × (1 + `AIR_DETECTION` × (2s − 1));
+  `fleetDetection` tells it.
+- **Tests:** `airDetection1938` (2, new).
+- **The pin moves** acbc49c7 → 675ec86f.
+- **The gate:** the related unit tests (908 of 911) red only by the three timing tests of
+  BLOCKERS (2,811 ms, 2.19 ms, 25.6 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8t3.
+
+## 2026-10-13 — PLAN 5.8t3: air superiority on a strike (ADR-347)
+
+- **Done:** `strikes` and `bombIndustry` take the strike's fire and tons × `strikeFactor` (1 +
+  `AIR_STRIKE` × (2s − 1)). PLAN 5.8t done.
+- **Tests:** `airStrikeSuperiority1938` (2, new; failed before).
+- **The pin moves** 675ec86f → 048c4760.
+- **The gate:** the related unit tests (911 of 913) red only by two timing tests of BLOCKERS
+  (2,995 ms, 2.30 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u.
+
+## 2026-10-13 — PLAN 5.8u1: air supply (ADR-348)
+
+- **Done:** a `supply` mission for transport wings (`isTransport`, saved); `airLift` lifts
+  `AIR_LIFT` an aircraft to its side's formations short of supply at the target. 5.8u split:
+  u2 the paradrop, u3 the AI's transports.
+- **Tests:** `airLift1938` (3, new).
+- **The pin holds** at 048c4760.
+- **The gate:** the related unit tests (923 of 925) red only by two timing tests of BLOCKERS
+  (3,081 ms, 2.35 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u2.

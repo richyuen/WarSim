@@ -167,6 +167,870 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-348 · 2026-10-13 · accepted — Air supply (PLAN 5.8u1)
+
+- **Found** (5.8b): SPEC §6.3 has the transports' missions; a transport wing could only patrol
+  or strike, and struck with nothing.
+- **Decision.** A mission kind `supply` (saved as 2 in `world.wingMission`; the command's
+  `mission`), for a wing of transports alone (`isTransport`: every squadron of class
+  `transport_air`; else `NotLand`). Its sortie flies as a strike's, out and home; at the target
+  in the hour it arrives (`airLift`, after the strikes) it lifts `AIR_LIFT` 1/48 of a
+  formation's supply an aircraft to the formations of its side on the land within `AA_CELLS`
+  of the target whose supply is under 1, the same share each, none past full, by ascending id.
+  A group of 24 lifts a half: the network's four hours. It flies and is fought as any sortie.
+  The air's superiority does not scale it (its bombs' rule, 5.8t3, is a strike's). PLAN 5.8u
+  split: u1 air supply, u2 the paradrop, u3 the AI's use of both.
+- **The pin holds** at 048c4760: no AI flies supply.
+- **Tests.** `airLift1938` (3, new): a German transport group lifts a German division cut off
+  at the target by 24 × 1/48, a Polish one there none, not again the next hour; two short, the
+  same share each, the one nearer full not past it, one full none; a fighter group refused the
+  mission, a transport group's kept and saved, the same game.
+
+### ADR-347 · 2026-10-13 · accepted — Air superiority on a strike (PLAN 5.8t3)
+
+- **Found** (5.8b): SPEC §6.3 has the air on bombing; a strike struck as hard under the enemy's
+  air as under its own (only the air battle and the flak read the enemy).
+- **Decision.** A strike's fire on the enemy's elements (land and ships) and its tons on
+  industry and ports × (1 + `AIR_STRIKE` × (2s − 1)) (`strikeFactor`), s its nation's air
+  superiority in the air zone of its target: `AIR_STRIKE` 0.25, so 1.25 under its side's air,
+  0.75 under the enemy's, 1 at a half and where no one flew. What the tons damage is by the tons,
+  capped at `MAX_DAMAGE` a cell as before. This closes PLAN 5.8t (t1 supply, t2 detection).
+- **The pin moves** 675ec86f → 048c4760.
+- **Tests.** `airStrikeSuperiority1938` (2, new; both failed before): a close support group's
+  strike on a Polish division takes × 1.25 under Germany's air, × 0.75 under Poland's, as much
+  under none and Sweden's; a tactical bomber group's tons on industry the same.
+
+### ADR-346 · 2026-10-13 · accepted — Air superiority on a fleet's detection (PLAN 5.8t2)
+
+- **Found** (5.8b): SPEC §6.3 has the air on naval detection; a fleet saw as far under the
+  enemy's air as under its own.
+- **Decision.** A fleet's detection, its carriers' wings with it, × (1 + `AIR_DETECTION` ×
+  (2s − 1)), s its nation's air superiority in its air zone: `AIR_DETECTION` 0.25, so 1.25 under
+  its side's air, 0.75 under the enemy's, 1 at a half and where no one flew. Its stealth, reach
+  and weapons are not the air's. The row bound of 4.8i reads the factored detection, so no pair
+  in sight is skipped. `fleetDetection` tells it.
+- **The pin moves** acbc49c7 → 675ec86f.
+- **Tests.** `airDetection1938` (2, new; `fleetDetection` was not there): a Japanese battle
+  squadron's detection × 1.25 under Japan's air, the American's × 0.75 there, × 1 under none
+  and a bystander's; a pair 10 % beyond what either sees with no air is in battle under either
+  side's air.
+
+### ADR-345 · 2026-10-13 · accepted — Air superiority on supply (PLAN 5.8t1)
+
+- **Found** (5.8b): SPEC §6.3 has the air on supply; only the land's fire read it (ADR-316).
+- **Decision.** A formation fed gains `SUPPLY_RATE` × (1 + `AIR_SUPPLY` × (2s − 1)) an hour,
+  s its nation's air superiority in its air zone (`airSuperiority`, taken once a nation and zone
+  an hour): `AIR_SUPPLY` 0.5, so half the rate under the enemy's air (16 hours to full, not 8),
+  one and a half under its own, the rate at a half and where no one flew. Its loss when cut off
+  is not the air's. PLAN 5.8t split by effect: t1 supply, t2 a fleet's detection, t3 a strike.
+- **The pin moves** d53a99d4 → acbc49c7.
+- **Tests.** `airSupply` (1, new; failed before): a division at a quarter's supply on its own
+  ground an hour on, under no air, a bystander's, the enemy's and its own.
+
+### ADR-344 · 2026-10-13 · accepted — The economic AI keeps an air force (PLAN 5.8s2)
+
+- **Found** (5.8b): with wings built (5.8s1) no nation of the AI ordered one; its air force only
+  shrank (seed 99: 216 wings at the start).
+- **Decision.** As a fleet (4.6e1): after the army's orders and a fleet's, a nation not poor
+  with an airfield and no wing in training orders one while its wings' upkeep is under
+  `AIR_SHARE` 0.1 of its army's (the orders in training with it), if its balance stays above
+  the need and its gold covers the price and `RESERVE_MONTHS` of income (`pickWing`): a fighter
+  group while fighters are under half its wings, else a tactical bomber group; the other when
+  it lacks the techs. A share of the army, as PLAN has it, not of the income: the air of 1938
+  was 0.064 of the world's army upkeep, a great power's 0.04 to 0.11. Britain's and the United
+  States', 0.8 with small armies, order none until most of it is gone; the rich nations with
+  room order now, the strategic and naval wings are not replaced. A wing is no longer counted
+  with the army's orders in training.
+- **The pin moves** ae18ce8c → d53a99d4: 42 wings ordered in seed 99's year by 35 nations
+  (Germany, France, Italy, Poland two each), 23 delivered; 157 wings at its end.
+- **Tests.** `airBudget1938` (2, new): France under its share orders a fighter group, one at a
+  time; Britain over it none; the Soviet Union, its books short, none; Germany with its fighters
+  over half its wings a tactical bomber group, and with no airfield none.
+
+### ADR-343 · 2026-10-13 · accepted — Wings built (PLAN 5.8s1)
+
+- **Found** (5.8b): SPEC §6.3 has wings built; `queueFormation` refused every air template, so a
+  nation's air force only shrank.
+- **Decision.** An air template is ordered as a land formation is (its gold, manpower, techs and
+  days), by a nation with an airfield (`airfield`: an airbase it holds with room for the wing's
+  aircraft beside those based there, the nearest its capital, then the first); else refused. On
+  its ready day the wing stands at the airfield then, its base; with none, the order waits. The
+  spawn command refuses a wing still (a wing has a base, which a spawn has not). PLAN 5.8 split:
+  5.8s1 the building, 5.8s2 the economic AI's air force (one cause each).
+- **The pin holds** at ae18ce8c: the AI orders no wing yet.
+- **Tests.** `wingsBuilt1938` (2, new): a German fighter group delivered at the airfield, based
+  there; with no airbase of its own with room refused, and an order whose airbases were lost
+  waits and is delivered with one again. `airTemplates`: its test of the refusal (5.1b) is now
+  of the order taken, the spawn refused.
+
+### ADR-342 · 2026-10-13 · accepted — The order of industry told exactly (PLAN 5.8r)
+
+- **Found** (the suspicion of 5.8a, now a test): `byIndustry` kept its order while a weighted sum
+  of the industry was unchanged (weights `cell % 9973 + 1`). Two cells 9,973 apart have one
+  weight: their industry swapped kept the sum, and a running game kept the stale order that a
+  loaded one does not have (the richest cell named the old one). Sums past 2^53 lose their low
+  bits as well.
+- **Decision.** The key is the industry itself, sparse: the cells with industry and theirs, in
+  the cells' order, compared in one pass of the map (as the sum was taken). Exact, and a few
+  thousand numbers kept.
+- **The pin holds** at ae18ce8c: the order is the same wherever the sum told.
+- **Tests.** `airAi1938` (1 more; it failed before): the richest cell's industry swapped with
+  the cell's 9,973 on, the order is sorted again, the same as a fresh sort.
+
+### ADR-341 · 2026-10-13 · accepted — The critic's files out of the review's code key (PLAN 5.8q)
+
+- **Found** (the eleventh read): `codeTree` left `critic/` out of its `git add` but not out of
+  the scratch index it copies from the real one: the critic's tracked files stayed in the key,
+  and a report committed after a review unproved it, against the head of `review.ts`.
+- **Decision.** `critic` joins the documents in the `git rm --cached` of the scratch index.
+  `codeTree` takes the repository's root (the working tree's by default), for its test.
+- **The pin holds:** the gate's, no rule.
+- **Tests.** `gateReview` (1 more): in a repository made for it, the key is the same after the
+  critic's report changes, committed or not, and after a document; another after code. With
+  the old list it failed at the critic's commit.
+
+### ADR-340 · 2026-10-13 · accepted — A broken test file is red in the review (PLAN 5.8p)
+
+- **Found** (the eleventh read): `check:review` read red tests alone from the reports. A unit
+  file that failed to import or threw in a hook (vitest: the file failed, no test failed), a
+  spec that failed to load (Playwright: an error outside every test) and a run that exited
+  non-zero with a report naming no red were all green.
+- **Decision.** Such a file is red as `<file> › (the file)` (`FILE_RED`), run again alone as a
+  red test is; an error of Playwright's that names no file is `stage:playwright`; a run that
+  fails and names no red is its stage's red (`runRed`). A stage's red is not run again.
+- **The pin holds:** the gate's, no rule.
+- **Tests.** `gateReview` (1 more; it failed before): the three cases from reports, and a
+  vitest report of a file that fails to import read to be what the rule reads (status
+  `failed`, no test).
+
+### ADR-339 · 2026-10-13 · accepted — No wing aboard transports (PLAN 5.8o)
+
+- **Found** (the eleventh read): `tryLanding` refused only a formation afloat; an air wing at a
+  port of its nation's with transports was put aboard them (a player's order over the sea), and
+  its base and sorties went on as if it stood there.
+- **Decision.** `tryLanding` refuses a wing (`NotLand`), as it does any formation that is not of
+  the land; a fleet stays refused `Aboard`.
+- **The pin holds** at ae18ce8c: the invasion AI orders no wing.
+- **Tests.** `wingAboard1938`: a British wing at Portsmouth is refused a landing at Calais and
+  keeps its base; a division there embarks (it failed before).
+
+### ADR-338 · 2026-10-13 · accepted — The air mode after a load, and a day a pump stepped past (PLAN 5.8n)
+
+- **Found** (the eleventh read): the worker sent the air holders only at a look at a day's first
+  hour (`tick % 24 === 0`), and kept what it last sent over a load. A load showed the game
+  before's holders until the next day's first hour, or for good while paused; a pump that
+  stepped past a first hour (several hours a frame at speed) kept the day before's all day.
+- **Decision.** A load and an init forget the zones and holders sent (as the sea mode's);
+  `airShown` outlives a load, so a page shown holders is told all none. The holders are looked
+  at at a day's first hour and at the first look of each day (`airDay`).
+- **The pin holds:** the worker's, no rule.
+- **Tests.** `serverAirControl` (2 more, both failed before): a load at hour 5 of a save with
+  nobody flown sends all none at once; holders changed at hour 23 are sent at hour 25, the next
+  change that day at hour 48.
+
+### ADR-337 · 2026-10-13 · accepted — A sea battle is no battle of the land (fix)
+
+- **Found** (the gate of PLAN 5.8m): `navalCombat` sets `engaged` on the fleets of a sea battle
+  after `findBattles` set it on the land's. `largestBattle` and `warsWithBattle` read every
+  engaged formation, so two fleets of a war fighting at sea with no land battle larger were named
+  its largest battle, with no block (`deployOf`: they have no contact); and `contactsOf`, worked
+  out after a load, paired fleets that `findBattles` never pairs.
+- **Decision.** The three read only formations on land (`!world.offLand`).
+- **The pin holds** at 57c9ae2e: none of the three is read by a rule.
+- **Tests.** `seaNotLand`: two fleets of a war engaged at one place: no largest battle, no war
+  said to have one, no contact (it failed before).
+
+### ADR-336 · 2026-10-13 · accepted — A wing falls back from an airbase the enemy took (PLAN 5.8m)
+
+- **Found** (the eleventh read): SPEC has who holds the cell hold the base, but a wing flew on
+  from an airbase a nation not of its side had taken.
+- **Decision.** Hourly, `airSystem` moves a wing whose airbase is held by a nation not of its
+  side (`ofSide`: its supply bloc, or fighting beside it; `orderRebase` reads the same) to its own
+  nation's nearest airbase by km with room for it, the lowest index of the nearest; its mission
+  and sortie end, and it stands there at once. With none, it is lost (`destroyFormation`). Its
+  own nation's alone: a base of an ally's is a rebase by order, not a flight from a loss.
+- **The pin moves** 57c9ae2e → ae18ce8c: seed 99's year takes airbases with wings on them.
+- **Tests.** `airbaseLoss1938`: a German airbase held by Poland: its wings at Germany's nearest
+  with room, the mission ended; every German airbase Polish: the wings lost; an Italian holder at
+  war beside Germany: no loss. Two of the three failed before.
+- **A bound of the game moved.** `warBattle`'s 60 days: the battles named of neither leader of
+  their war 7 of 687, over its bound of 1 % (6.87); each is an hour with only allies in contact
+  (a leader passed over: 0, the rule, which stands). The bound is now 2 %: the rare case it is.
+
+### ADR-335 · 2026-10-13 · accepted — Wings beyond a fleet's live carriers are lost (PLAN 5.8l)
+
+- **Found** (the eleventh read): a wing was lost only with its whole fleet. A fleet whose carriers
+  were sunk and whose other ships lived kept its wings, and they flew, saw and struck for it; a
+  rebase to a fleet counted its template's carriers, not the live ones.
+- **Decision.** Hourly, `airSystem` keeps a wing to each live carrier of a fleet (`liveCarriers`:
+  its elements of class `cv` afloat), the lowest wing ids first; the wings beyond them are lost
+  (`destroyFormation`, as with a fleet sunk). `orderRebase` counts the live carriers.
+- **The pin moves** 77670f43 → 57c9ae2e: seed 99's year sinks carriers of fleets that live on.
+- **Tests.** `carrierLoss1938`: one carrier of two sunk, the higher wing lost; the other, the
+  lower; a rebase to a fleet with a deck free by its template and none by its live carriers is
+  refused.
+
+### ADR-334 · 2026-10-13 · accepted — Air power fades with no wing left (PLAN 5.8k)
+
+- **Found** (the eleventh read): `airSystem` returned before the air power faded when no wing was
+  left (no wing is built yet: a long war can lose them all); the last air war's superiority then
+  stood for good, the land's fire × 0.8 to 1.2 by it.
+- **Decision.** With no wing, the air power fades all the same (`airPowerSystem` with no sorties).
+- **The pin holds** at 77670f43: seed 99's year keeps wings.
+- **Tests.** `airSuperiority1938`: every wing gone, 900 flown over a zone: half in a day, gone in
+  twelve (it stayed whole before).
+
+### ADR-333 · 2026-10-13 · accepted — A wing with no base is refused, not thrown at (PLAN 5.8j)
+
+- **Found** (the eleventh read): a carrier sunk in an hour sets its wings' base to 0
+  (`destroyFormation`) until the air system loses them at the next; a `wingRebase` in between
+  spread `basePlace(0)`, null: a TypeError in the tick. A mission was refused `OutOfRange`
+  (Infinity km).
+- **Decision.** Both orders refuse a wing with no base: `NoBase`.
+- **The pin holds** at 77670f43: no AI rebases, and the AI's missions go to land-based wings.
+- **Tests.** `wingRange1938`: a carrier's wing set to base 0: a rebase to its nation's airbase and
+  a mission refused `NoBase`, nothing thrown (it threw before).
+
+### ADR-332 · 2026-10-13 · accepted — Air superiority summed by nation (PLAN 5.8i)
+
+- **Found** (the eleventh read, ADR-327): `airSuperiority` summed each side's power in the order of
+  the zone's map, the order of first flight in a running game (and an entry that faded out and
+  came back went to the end) and by id after a load (`world.ts` saves it sorted). A float sum is
+  its order's: the same zone gave another superiority, every land shot's `airFactor` another
+  fire, and a saved game played on otherwise. Seed 1, Germany on Poland, saved on day 2: another
+  hash on day 4.
+- **Decision.** The sums by nation id. Nothing else reads the map in its order for a value (the air
+  AI's held zones are a set; the decay and the holders go zone by zone).
+- **The pin moves** 28d6b82d → 77670f43.
+- **Tests.** `airDesync.test.ts`: the same five powers in two orders, 50 times: the same
+  superiority (10 differed); the game saved on day 2 and loaded plays three days as the one left
+  running (day 4 differed). Both failed before.
+
+### ADR-331 · 2026-10-13 · accepted — Phase 5's tick time (PLAN 5.8e)
+
+- **Measured** (a cloud container, unpinned, one five-year run of seed 99 each, the same hour):
+  7.971 ms a tick before Phase 5 (`759e1aa`), 9.390 after it (`8075af8`): × 1.18. The air's
+  systems 0.90 ms of it (`air` 0.603, the air AI 0.297; 9.6 %); the rest moved with the game
+  (the operational AI, movement and supply higher, combat lower). The air AI was 1.73 ms before
+  its industry was sorted once (ADR-322).
+- **Decision:** over the budget of PLAN 7.1, as Phase 4's was (ADR-289: the tick's work after
+  Phase 4 is PLAN 7.1's, the user's decision): the numbers in BLOCKERS, nothing tuned here.
+
+### ADR-330 · 2026-10-13 · accepted — Missing tests over Phase 5 (PLAN 5.8d)
+
+- **Looked over:** each system and state of Phase 5 against its tests. A rule's test and a save's
+  each: the air zones (derived), templates, airbases (static), wings (`wings1938`: saved), a
+  wing's mission (`wingRange1938`: saved), sorties (`sortieScheduler1938`: saved mid-flight), air
+  combat and AA (`airCombat1938`, `antiAir1938`; their state is the sorties' and the elements'),
+  air power (`airSuperiority1938`: saved), the land's factor (`airGround`), strikes on land and at
+  sea (`airStrike1938`, `navalStrike1938`), carrier air (`carrierAir1938`), bomb damage to
+  industry and ports (`bombing1938`, `portBombing1938`: saved), the air AI (`airAi1938`, and the
+  year of `airYear`), the page's sorties, effects and mode (`sortiesDrawn`, `airFx`, `airHolders`,
+  four specs).
+- **A gap, filled:** the worker's `airControl` (PLAN 5.7c) had no test: `serverAirControl.test.ts`
+  (nothing while no one flew; the holders with the zones once; the holders alone when they
+  change; nothing again while they do not). It found no defect. Its reset at a load is 5.8n's.
+- **Not a gap here:** a save and load over days of an AI's air war (the desync of 5.8i): that
+  part's test.
+
+### ADR-329 · 2026-10-13 · accepted — Dead code and refactor debt since the last review: the air's wrap written once (PLAN 5.8c)
+
+- **Dead code:** none. Of the exports of the 71 files changed since `deafedf`, every function and
+  constant is read (in its own file, in another, or in a test); exported constants and types read
+  only in their own file are the repository's habit (a rule's figures named and found), left so.
+- **A rule written five times:** the east–west wrap of a cell distance was hand-rolled in the
+  air's code (`strikes`, `antiAir`, `bombIndustry`, `bombPorts`, `orderRebase`, `fightPlace`),
+  and only two of them asked whether the map loops. Now `wrapDx` (elements.ts, already the land's),
+  and beside it `cellX` (a column of the grid, wrapped where the map loops, none off the edge of one
+  that does not) and `loopW` (the width a sortie's flight wraps by: 0 where the map does not loop),
+  given to every `sortieAt` of the sim; the page's sorties wrap by `geo.wrapX`.
+- **The watch list's entry of 5.8a** (bombs, flak and flights wrapping on a map that does not
+  loop) is mended by it and leaves the list.
+- **The pin holds** at 28d6b82d: the 1938 world loops.
+- **Tests.** `airEdges.test.ts`: bombs by the west edge reach the east edge's cells where the map
+  loops and not where it does not (failed before); `cellX` and `loopW` both ways.
+
+### ADR-328 · 2026-10-13 · accepted — SPEC re-read for drift since the last review; three gaps of Phase 5 (PLAN 5.8b)
+
+- **Set right in SPEC §6.3:** the air zones are read (5.1a said by nothing); wings exist from the
+  start and none is built (5.1b said none existed); a wing at its base is not drawn, its sorties
+  are (5.1d said the page drew none); `sortieAt` is in `shared/`; air combat within 150 km
+  (5.3a's text, before 5.7d); the sorties drawn in the hour a snapshot ends; the tactical view's
+  line as built. §9: the air-superiority mode among the modes built, not the planned. §8's T2 row:
+  the sorties at T0 and T1 too.
+- **Drift that is a gap, not text:** SPEC §6.3 has wings built, air superiority acting on supply,
+  naval detection and bombing accuracy, and the transports' missions (paradrop, air supply). None
+  is built. They are Phase 5's (PROMPT step 9: a task out of the review belongs to the phase it
+  reviews): parts 5.8s, 5.8t, 5.8u. Interception is no mission of its own: a patrol meets what
+  comes within 150 km of it; SPEC says so.
+- **ADR-288 to ADR-305** (PLAN 4.8e to 4.11, the gate's review run): each looked for in SPEC.
+  Two were not there and are now: the lane graph built after an init or a load (ADR-288), a place
+  aboard ending with its formation or its transports (ADR-292). The rest are.
+
+### ADR-327 · 2026-10-13 · accepted — The eleventh independent read: ten findings and a suspicion, parts 5.8i to 5.8r (PLAN 5.8a)
+
+- **The read.** A reader with no part in the code (ADR-74), the 71 files of `src/`, `data/` and
+  `tools/` changed since `deafedf` (PLAN 4.9 to 5.7, the gate's review run), defects only.
+- **Checked here against the code, each holds:**
+  1. A desync: `airSuperiority` sums in the zone's map order (first flight in a running game, by
+     id after a load): 5.8i. The reader ran it: 2,353 of 20,000 random zones differ.
+  2. `check:review` green with a file red (an import or a hook's throw, a spec that fails to
+     load, a non-zero exit): 5.8p.
+  3. The review's key holds `critic/` (tracked files stay in the scratch index): 5.8q.
+  4. `orderRebase` throws for a wing of a carrier sunk this hour: 5.8j.
+  5. The air power never fades once no wing is left: 5.8k.
+  6. Wings outlive their carriers in a fleet that lives: 5.8l.
+  7. Wings fly from an airbase the enemy took: 5.8m.
+  8. The air mode's holders stale after a load; a day's first hour skipped by a pump: 5.8n.
+  9. A wing put aboard transports: 5.8o.
+  10. On a map that does not loop, the air's paths wrap: the watch list (BLOCKERS), the 1938
+      world loops.
+  - The suspicion, `byIndustry`'s key: 5.8r, a test first.
+- **Order:** the desync first (it moves every land battle of a game saved and loaded), then what
+  throws, then what a player sees wrong; the gate's two last before its use in 5.8h.
+
+### ADR-326 · 2026-10-13 · accepted — The air battle demo; a sortie meets the enemy's within 150 km (PLAN 5.7d); PLAN 5.7 done
+
+- **The demo** (`tests/e2e/airDemo1938.spec.ts`, the AT of 5.7): Germany declares war on Poland
+  (seed 1); an hour at a time, the first hour with an air fight that has sorties of two nations
+  within 70 px of it at T1; that hour at T0 (4,000 m/px), T1 (1,000), T2 (150) and in the
+  air-superiority mode (2,500), each picture drawn at a set time into the hour's marks (kept by
+  the test before its camera's moves bring other snapshots) with the frame loop held.
+- **Looked at** (`docs/evidence/5.7/air-demo-*.png`), hour 30: at T0 groups of planes over the
+  border east of Berlin, the fight among them; at T1 German groups west of the border and the
+  fight's tracers at it, small, the bombs mostly under the counters; at T2 planes over the border
+  country, bursts and flak about the Polish cavalry brigade struck; in the mode the wide western
+  zone in Italy's colour (Germany's side, Italy flew the most there), Poland's zone faded.
+  Not changed: the fight's tracers at T1 are small, and the counters cover bombs at T1.
+- **Found by the demo, mended:**
+  - *The sorties were drawn an hour ahead.* A snapshot of tick T + 1 is the world after the hour
+    that began at T; the page plays that hour from its arrival (the formations go from where they
+    were to where they are). The sorties were drawn at T + 1 + the share of the tick: an hour after
+    their own fights. Now at T + the share (`tickProgress − 1`); the snapshot holds the sorties in
+    the air in that hour.
+  - *An air fight was told at the zone's last wing's place*, which could be one at peace far off:
+    at the middle of its nearest two foes now (`fightPlace`).
+  - *A sortie fought every enemy sortie of its air zone*, and zone 20 runs from Spain to Poland:
+    German and Polish sorties 600 km apart fought, the fight told in empty sky. A sortie now meets
+    the enemy's within `INTERCEPT_KM` (150 km, about the ground a patrol watches) of it this hour;
+    the wings joined by such meetings are one fight, an `AirBattle` each. Air superiority stays
+    by zone (the power flown).
+- **The figures** (seed 99, a year, `airYear`): 18,060 strikes (18,856 before), 2,393 strategic,
+  2,369 of those at superiority 0.6 or more; 584 zone-days contested, 384 over a front (216).
+- **The pin moves** 321cd835 → 28d6b82d.
+- **Tests.** `airCombat1938`: foes 400 km apart in one zone do not fight, two meetings are two
+  fights at their places; a fight told between its foes, not at a bystander's place; the demo.
+- **PLAN 5.7 done.**
+
+### ADR-325 · 2026-10-13 · accepted — The air-superiority map mode (PLAN 5.7c)
+
+- **Decision.**
+  - *Who holds an air zone's air* (`airHolders`, derived from `world.airPower`): the nation that
+    flew the most there where its superiority is `AIR_HELD` (0.6, the strategic bombers' bar now
+    named once: `BOMB_SUPERIORITY` is it) or more; `AIR_CONTESTED` (65535) where it is less; 0
+    where no one flew.
+  - *The worker* sends it (`airControl`) at a day's first hour when it changed, with the cells'
+    air zones the first time, and once all none where the page was shown holders and none fly;
+    the client keeps the last for a late listener.
+  - *The mode* `airControl` ("Air superiority", the bottom bar's last): the shader's mode 4 fades
+    land as the sea-control mode does, and tints an air zone held, land and sea, with its holder's
+    colour (`AIR_HELD_TINT` 0.55); one contested is striped in `AIR_CONTESTED_COLOR`. A legend of
+    three lines.
+- **Looked at** (`docs/evidence/5.7/d-air-superiority-mode.png`): seed 1, Germany on Poland, day 3:
+  Germany's grey over the zone of the front and of Germany, the Low Countries and France; Britain's
+  red over the North Sea (its war on the Netherlands); Italy's over Italy; the rest faded. Zones
+  show their cells' steps at the edge, as the sea's do.
+- **The pin holds** at 321cd835: derived, sent; nothing of the state.
+- **Tests.** `airHolders.test.ts`: held, contested, an ally's power on its side, a nation outside
+  the war its own, open. `tests/e2e/airControl1938.spec.ts`: Germany's zone's pixel its colour over
+  the faded land by the tint, the open sea the sea, a contested zone striped where there is one
+  (none on day 3 of this game).
+
+### ADR-324 · 2026-10-13 · accepted — The air war's effects from its events (PLAN 5.7b)
+
+- **Decision.**
+  - *A new event*, `FlakFired` (49): a sortie the AA hit in an hour (`antiAir`): the wing, its
+    nation, its place. A picture, not state.
+  - *`AirFx`* (`src/render/fx/air.ts`, on the render clock, cleared with a load): of `AirBattle`
+    tracers crossing about the place for 3.5 s, flak among them, a smoke trail falling for each
+    aircraft lost (up to six); of `AirStrike` six bombs bursting about the target one after
+    another over 2.2 s, a flash and its smoke each; of `FlakFired` five dark puffs with their
+    flashes about the sortie for 2 s. Each mark's picture is seeded by its event, so the same
+    event draws the same. At T0 to T2 with the sorties, sized as they are (`planeZoom`), under the
+    counters; at most 600 held. The view keeps drawing while one lives.
+- **Looked at** (`docs/evidence/5.7/c-air-*.png`): seed 1, Germany on Poland, hour 26 at T1: the
+  bombs round the Polish division the close support groups struck, tracers and flak among the
+  German planes over it. A counter covers part of a burst there (the marks are under the
+  counters at T1 as at T0): left so.
+- **The e2e's clock.** The marks live two to three and a half seconds; the test's steps take
+  seconds: it draws at a set time after the newest mark's arrival (`draw(now)`), and holds the
+  frame loop for its picture.
+- **The pin holds** at 321cd835: an event is no state.
+- **Tests.** `airFx.test.ts` (3): what becomes a mark, how long it lives, the same seed for the
+  same event; `antiAir1938`: the flak event, its wing, nation and place; `tests/e2e/airFx1938.spec.ts`.
+
+### ADR-323 · 2026-10-13 · accepted — Sorties drawn where the sim's function has them (PLAN 5.7a)
+
+- **Decision.**
+  - *The function shared.* `sortieAt` and its kin moved from `src/sim/systems/sorties.ts` to
+    `src/shared/sorties.ts` (the sim's file re-exports it): the page may not import the sim's
+    layer (SPEC §2.1), and a sortie's place at a frame is that one function's.
+  - *The snapshot* has `sorties` (`SORTIE_STRIDE` 11: the launch's figures, the launch as hours
+    from the snapshot's tick so that a float keeps it to the second, the wing's nation, aircraft
+    and role, `SortieRole`), those in the air at the tick or within the hour after it
+    (`sortieSection` in the worker).
+  - *Drawn* (`src/render/units/sorties.ts`, in `MapView` under the T0 counters, at T0 to T2):
+    each sortie where `sortieAt` has it at the frame's time (the snapshot's tick plus the share of
+    the tick gone), heading its way out and back; over its target it circles, on a circle of its
+    own (a phase and a radius of 0.7 to 1.3 of 0.6 cells, by its base and launch), no smaller
+    on screen than 26 px; one plane for a few aircraft, up to three in a vee, a bomber's larger;
+    in its nation's colour with a light edge and a shadow (Germany's dark grey on its own land
+    was not seen); smaller further out (0.55 of the size at T0).
+- **Looked at** (`docs/evidence/5.7/`): seed 1, Germany at war with Poland, the third day: at T1
+  28 sorties in view at hour 73, a ring of German planes over the front west of Poznań and
+  groups taking off at Berlin; at T0 small groups over the front, the counters over them.
+  Before: the planes stacked on one point over a target (5 px apart at T1); over the counters at
+  T0.
+- **The pin holds** at 321cd835 (a file moved; nothing of the rules).
+- **Tests.** `sortiesDrawn.test.ts`: the snapshot's row, the page's place the sim's at the tick
+  and between; out and back headings, the circle, home not drawn, the seam the short way, the
+  planes of a wing. `tests/e2e/sortiesSeen1938.spec.ts`: at T1 over Poland, sorties in view in 9
+  of 12 hours, each hour's another; at T0 too.
+
+### ADR-322 · 2026-10-13 · accepted — The air AI (PLAN 5.6)
+
+- **Decision.** `src/sim/ai/air.ts`, `airAi`, after the naval AI, daily at 00:00, for every nation
+  at war with its AI on (no stagger: a front moves in a day), its land-based wings (a carrier's
+  stay with its fleet, ADR-319), by the class of their aircraft:
+  - fighters patrol over its own land formation in contact (`engaged`) nearest their base within
+    range;
+  - close support and tactical bombers strike the enemy's formation in contact nearest their base
+    within range;
+  - naval bombers strike the enemy's fleet nearest their base within range, else as tactical;
+  - strategic bombers strike the enemy's cell with the most industry within range in an air zone
+    where its superiority is `BOMB_SUPERIORITY` (0.6) or more; none such, no mission;
+  - transports none. At peace, or with no target in range, a wing's mission is taken off.
+  An order is given only within range, so the AI is never refused; an unchanged one is not
+  given again.
+- **Cost.** A year of seed 99 in this container: `airAi` 0.35 ms a tick (it began at 1.73: the
+  cells of industry were sorted every day; they are sorted once per world now, `byIndustry`,
+  kept while the industry's weighted sum is unchanged, so an editor's city sorts them again and a
+  loaded world has the same order), `air` 0.87 ms, the tick 10.7 ms mean.
+- **The figures** (seed 99, a year): 18,856 strikes, 3,085 by strategic bombers, 3,081 of those
+  where their side's superiority was 0.6 or more at the strike (the median 1: they bomb where the
+  enemy does not fly); 252 zone-days of air flown by both sides of a war, 216 of them over a front
+  (of 1,044 front zone-days).
+- **Found by the first gate, mended:** a strike hit a submarine by its hard attack (ADR-318):
+  Germany's four U-boat flotillas at war with Britain (seed 4606) were all sunk from the air in
+  60 days, 2,724 strikes, and raided no convoy (`navalAi1938`). A submarine is under water: no
+  strike's target, as it is no gun's (`strikes`; a carrier's strike took the surface ships only
+  already).
+- **Tests the air AI's game moved** (the rules of the land the same):
+  - Five tests of PLAN 5.2 to 5.5 order missions by hand and step: the air AI took them off at
+    its first hour. Their worlds have the AI off now (`aiEnabled` false): they test the rules,
+    not the AI.
+  - `wings1938`, a month on: the AI flies the wings of the nations at war in 1938; a wing that
+    never flew is whole, every wing at its base, none moving or engaged, a lost one one that flew
+    or a carrier's.
+  - `warBattle`, 60 days of Germany against Poland: three looks found a war with only allies in
+    contact, and named their battle: ADR-95 allows it; the test now holds that none passed over
+    a leader's formation facing its enemy (0), and neither-leader battles under 1%. Its front's
+    contact comes and goes from hour to hour, none at the last look (hour 1440): a battle at a
+    look of the last day.
+  - `coast1938`: marches over the mask's rivers, steps with no way over land (ADR-246, ADR-285:
+    accepted), 582 of 773,802 hours on 19 steps, where they were 322 of 799,261 on 16: the
+    bound 0.0006 → 0.001. Every hour over water on a step with a way over land is still a
+    failure.
+- **The pin moves** a6c4ac55 → 321cd835.
+- **Tests.** `airAi1938.test.ts`: fighters over its own formation in contact, close support on the
+  enemy's, out of range none, an AI off none; a strategic group none while no zone is held, then
+  the richest enemy cell of the held zone in range, none again when contested to a half; at peace
+  none; the order of `byIndustry`. `tests/sweep/airYear.test.ts` (the AT, a year headless, at the
+  phase review and in `check:full`).
+
+### ADR-321 · 2026-10-13 · accepted — Ports bombed: shut at a half (PLAN 5.5b)
+
+- **Decision.** A strike's bombs (`bombIndustry`, ADR-320) also fall on the ports within
+  `BOMB_CELLS` of its target that a nation at war with the bomber holds: each damaged by the tons
+  over `PORT_TONS` (60) × its level (1 to 3), up to `MAX_DAMAGE`; state (`world.portDamage`, by
+  port, saved while not empty), repaired with industry, 2% a day. A port damaged by `PORT_SHUT`
+  (a half) or more is shut (`portShut`): no one embarks there (`tryLanding`, `transportsPort`:
+  the refusal is `NoPort`, or another port of its land), and its yard delivers no fleet
+  (`shipyard` takes the next).
+- **The PLAN's text changed.** It said a damaged port's fleets are not repaired there: no rule
+  repairs a ship (a ship lost is lost, damage carried), so there was nothing to bar. The yard
+  was put in its place.
+- **The figures.** A strategic bomber group's 60 tons shuts a level-1 port at once (0.9) and
+  damages a level-3 port by a third; a shut level-1 port opens again in about 30 days.
+- **The pin holds** at a6c4ac55.
+- **Tests.** `portBombing1938.test.ts`: Portsmouth damaged by the rule, only Britain's ports, none
+  by a nation at peace; shut, the division there is refused (`NoPort`) and a day's repair under
+  the half lets it embark for Calais; Britain's yard moves to another port; saved, the same game.
+
+### ADR-320 · 2026-10-13 · accepted — Strategic bombing of industry, repaired day by day (PLAN 5.5a)
+
+- **Decision.**
+  - *Bombs* are data: `bomb_t` (tons an aircraft carries), a new optional stat of the units
+    (schema; 0 left out): a strategic bomber 2.5, a tactical bomber 1, a naval bomber 0.5, a
+    close support aircraft 0.25, a fighter none. `UnitRule.bombT`.
+  - *A strike on land* (`strikes`, ADR-317) drops its wing's bombs (`bombIndustry`) on the cells
+    within `BOMB_CELLS` (1) of its target that a nation at war with it controls and that have
+    industry (`cells.econ`), whether or not an enemy's formation is there: they share the tons by
+    their industry, so each loses the same share, tons × `BOMB_DAMAGE` (2 $M of a year's output
+    a ton) over their industry together, up to `MAX_DAMAGE` (0.9). `AirStrike` with 0 taken when
+    no formation was hit.
+  - *The damage* is state (`world.bombDamage`, per cell, saved while not empty). The monthly
+    income takes a cell's output × (1 − its damage), after the blockade and the convoys.
+  - *Repair*: at each day's first hour every damaged cell's damage × (1 − `REPAIR_DAILY`, 0.02), a
+    half-life of about 35 days; under `DAMAGE_FLOOR` it is gone (`repairSystem`, first in
+    `airSystem`, every hour).
+- **The figures.** A strategic bomber group (24 aircraft) drops 60 tons: 120 $M of output out of
+  work where it falls, against Germany's 1938 industry of tens of thousands of $M: a raid is a
+  small cut, a campaign of raids a large one.
+- **The pin holds** at a6c4ac55: no one flies a strike in an AI game yet.
+- **Tests.** `bombing1938.test.ts` (the AT of 5.5): a French strategic bomber group's raid on the
+  richest German cell in reach: the damage per cell by the rule; a fighter group, a nation at
+  peace bomb nothing; ten raids cut Germany's monthly income by their share of its land, a day
+  repairs 2%, an hour not the first of a day nothing, 400 days leave none and the income as it
+  was; in the game, a strike ordered on it bombs it, saved, the same game.
+
+### ADR-319 · 2026-10-13 · accepted — Carrier air groups in fleet battles (PLAN 5.4d)
+
+- **Decision.** In `navalCombat.ts`:
+  - *Who flies for a fleet* (`carrierWings`): the wings based on its carriers with aircraft, not
+    in the air on a sortie of their own.
+  - *Sight and reach.* They see and strike for it as far as `CARRIER_SPOT_SHARE` (a quarter) of
+    their range (`wingRange`; a search out and back, and the strike): a naval bomber group 250 km.
+    That is the fleet's detection where it is more than its ships' (a battleship's 18 km), and
+    its reach (`FleetFacts.reach`): the range of its battle is held open by the rule of reaches
+    (ADR-254), the carrier side the longer, as a battle line holds off a cruiser.
+  - *The strike.* Once in `CARRIER_CYCLE` (4) hours of the world's clock, each wing whose reach
+    covers the battle's range strikes the enemy's surface ships of the battle, as a naval strike
+    does (ADR-318): its aircraft × `shipEffectiveness` × `NAVAL_STRIKE_FIRE` × its nation's attack
+    buffs, spread over the ships by their hit points, ÷ the target's defence buffs and hp; with
+    the hour's other fire, before any loss.
+  - *A carrier no longer breaks off at once* (ADR-256): with its wings it has a weapon. With none
+    (lost, or away) it does as before.
+- **Not yet.** The enemy's AA on a carrier's strike, and fighters of a carrier against another's
+  (the sortie's air fight is PLAN 5.3's, a carrier strike is not a sortie); spotting by a
+  cruiser's floatplane: PLAN 7.
+- **The pin moves** 1377ab88 → a6c4ac55: carrier fleets see and fight from 250 km in the year
+  of seed 99.
+- **Tests.** `carrierAir1938.test.ts`: a Japanese carrier group sees an American battle squadron
+  150 km off by its wings, not with them away nor at 300 km; its two wings strike once in 4
+  hours by the rule, the battle squadron's guns out of reach, and it stays in the battle.
+
+### ADR-318 · 2026-10-13 · accepted — Naval strike (PLAN 5.4c)
+
+- **Decision.** `strikes` (ADR-317) takes fleets among its targets: the elements of the formations
+  of nations at war within `AA_CELLS` of the target are the land's and the fleets', not wings nor
+  what is aboard a fleet (`world.embarked`). On a ship a squadron's fire is its aircraft ×
+  `shipEffectiveness` (its hard attack, halved where the ship's armour beats its piercing; a
+  transport and a submarine, armour 0, by it too, not by the soft attack the land's rule would
+  give them) × `NAVAL_STRIKE_FIRE` (1), in hit points, spread over all the elements in reach by
+  their health and ÷ each one's `hpPerUnit`: a fraction of a ship, carried as the sea battle's
+  damage is.
+- **Why** 1 and not the land's 0.2: a bomb or a torpedo on a ship counts in full, where on the
+  land the fire is spread over men in cover. A naval bomber group (24, hard 20, piercing 70) puts
+  480 hp on a fleet: three destroyers' worth, or a quarter of a battleship's (armour 90, halved:
+  240 of 2,000 hp, an eighth).
+- **The pin holds** at 1377ab88.
+- **Tests.** `navalStrike1938.test.ts`: the effectiveness on a destroyer, a battleship, a
+  transport; an Italian naval bomber group on a British fleet by the rule; a transport group hit,
+  the army aboard it not.
+
+### ADR-317 · 2026-10-13 · accepted — CAS and tactical bombing: a strike sortie fires on what it reaches (PLAN 5.4b)
+
+- **Decision.** `strikes`, in `airSystem` before the hour's air fights:
+  - A wing on a strike mission whose sortie reaches its mission's target in this hour (launch +
+    its leg's hours in (tick − 1, tick]) fires once on the land elements of the formations of
+    nations at war with its own within `AA_CELLS` (1) of the target: not wings, fleets (PLAN
+    5.4c) or what is aboard.
+  - A squadron's fire: its aircraft × its `effectiveness` on the target (soft, or hard on armour,
+    halved where armour beats its piercing: the land's own rule) × `STRIKE_FIRE` (0.2), spread
+    over the elements by their health (strength × hp, as a land element draws fire), in units:
+    ÷ the target's `hpPerUnit`; carried and settled as on the land (`applyLoss`,
+    `settleFormation`, casualties counted).
+  - Before the air fights, so a sortie turned home in them (a sortie to the place it turned, not
+    its mission's target) strikes nothing. A patrol does not strike.
+  - `AirStrike` (48): the wing, the whole units it took, its target.
+- **The figures.** A close support group (30 aircraft, soft 20) on an infantry division: about
+  117 men a strike. A wing turns round 2 hours, so a strike near its base comes back every few
+  hours.
+- **Not yet.** The hour's org loss of a strike (`battleLosses`, read by the land's
+  `orgLossSystem` before the air runs); a bomb's damage to a city's buildings (PLAN 5.5).
+- **The pin holds** at 1377ab88: no one flies in an AI game yet.
+- **Tests.** `airStrike1938.test.ts`: a close support group on a Polish infantry division: the
+  loss by the rule, once, the event's whole units; on a panzer division, tanks lost; nothing by a
+  patrol, a sortie turned home, an enemy out of reach, its own, a nation at peace; in the game,
+  a strike ordered 20 cells off strikes at least twice in a day.
+
+### ADR-316 · 2026-10-13 · accepted — Air superiority in ground combat (PLAN 5.4a)
+
+- **Decision.** A formation's fire in a land battle × `airFactor`: 1 + `AIR_SUPERIORITY` × (2s − 1),
+  s its nation's air superiority in the air zone of its place (`airSuperiority`, PLAN 5.3c);
+  `AIR_SUPERIORITY` 0.2 (`air.superiority` of `data/combat.json`). Full superiority 1.2, none
+  0.8, a half (no one flew, or only nations outside the war) 1. While no one has flown anywhere
+  (`world.airPower` empty) it is 1 without a lookup.
+- **Why.** SPEC §6.3: air superiority modifies ground combat. On the fire, not on what is taken,
+  so it rides with the other factors of the shooter (supply, org, combined arms) and holds the
+  Lanchester form; the side with the air both hits harder and is hit less, as the enemy's fire is
+  × 0.8. The strike of CAS on the ground itself is PLAN 5.4b.
+- **The figures.** Two infantry divisions on plains for 48 hours: men lost, German/Polish, 1,011
+  /1,022 with no air, 803/1,234 with the air German's, 1,236/796 with it Polish's: the exchange
+  1.01 → 1.54 (× 1.52 for the factors' 1.5).
+- **The pin holds** at 1377ab88: no one flies in an AI game yet, and the factor is 1 then.
+- **Tests.** `airGround.test.ts` (the AT of 5.4): the factor at 1, 0 and a half, and for a nation
+  outside the war; the first hour's fire of each side × exactly its factor, both ways; over 48
+  hours the exchange better by more than 1.4 for the side with the air.
+
+### ADR-315 · 2026-10-13 · accepted — Air superiority per zone from the air power flown there (PLAN 5.3c)
+
+- **Decision.** `src/sim/systems/airSuperiority.ts`:
+  - *Air power* (`world.airPower`, per air zone per nation, state, saved while not empty): each
+    hour, before the air fights, what was there fades by `AIR_POWER_DECAY` (0.97153, a
+    half-life of 24 hours) and is forgotten under `AIR_POWER_FLOOR` (0.5), so a zone no one flies
+    over leaves the state; each sortie in the air adds its aircraft × their air attack (`aa`) to
+    its nation's power in its zone. A fighter group is 900 an hour, a tactical bomber group 96.
+  - `airSuperiority(world, n, zone)`: the power of `n` and the nations on its side of a war
+    (`sameSide`) over that and the power of the nations at war with it; a half where neither
+    side flew. A nation outside the wars of those flying there reckons them as no one's.
+- **Why.** SPEC §6.3: superiority per zone per side, 0 to 1, read by ground combat, supply,
+  naval detection and bombing (PLAN 5.4, 5.5). From what was flown, not from wings on their
+  bases: a wing that does not fly holds no air. A day's memory: a zone held by patrols stays
+  held between them (a patrol turns round 2 hours).
+- **The pin holds** at 1377ab88: no sortie flies in an AI game yet.
+- **Tests.** `airSuperiority1938.test.ts`: a half unflown; one side alone 1, its ally too, its
+  enemy 0, a nation outside 0.5; allies' power added, two to one; half in a day, gone in
+  twelve; in the game, German fighters over Strasbourg against French bombers: over 0.8; saved,
+  the same game.
+
+### ADR-314 · 2026-10-13 · accepted — AA: what is below a sortie fires on it (PLAN 5.3b)
+
+- **Decision.** `antiAir`, after the hour's air fights: each sortie in the air (out, over its
+  target, back) is fired on by every formation of a nation at war with its own within
+  `AA_CELLS` (1) of its place, a square, the map wrapped east-west: land formations and fleets,
+  not wings and not what is aboard. A formation's AA fire is Σ its elements' `aa` × strength ÷
+  size × `AA_FIRE` (2): per full element, as the land's fire is (`combat.ts`), where an
+  aircraft's air attack is per aircraft. It is spread over the sorties it reaches and their
+  squadrons by aircraft, over the target's defence, in hit points; losses carried; a wing with
+  none left is lost. No break-off for AA.
+- **The figures.** An infantry division's battalions (0.5 each) fire 24 an hour: a tactical
+  bomber group over it loses 1.25% an hour. An AA battery is 30 a full element (60 rifle
+  battalions); a battleship 14. `AA_FIRE` 5 gave 3.1% an hour over riflemen alone, too dear
+  for a sortie's hour over a front; 2 was taken.
+- **Not yet.** The AA building of the data (`aaStrength`), a city's AA: not placed in 1938.
+- **The pin holds** at 1377ab88: no sortie flies in an AI game yet.
+- **Tests.** `antiAir1938.test.ts`: the AT (a French bomber group over a German infantry
+  division: the hour's loss by the rule, 1.25% an hour over 8 hours); its own, out of reach, a
+  wing on a base, an enemy at peace fire none, the corner of the reach does; two sorties share
+  the fire by aircraft; a wing shot down to none is lost with its sortie.
+
+### ADR-313 · 2026-10-13 · accepted — Air combat between sorties in a zone (PLAN 5.3a)
+
+- **Decision.** `src/sim/systems/airCombat.ts`, at the end of `airSystem` each hour over
+  `airborne`'s zones:
+  - A wing fights the wings in its zone of nations at war with its own. A squadron's fire is its
+    aircraft × its air attack (`aa`, now in the rules' units with `defense`) × `AIR_FIRE`
+    (0.25), spread over the enemy wings by their aircraft and within a wing over its squadrons
+    by theirs; it is hit points over the target's `defense`, and aircraft lost are those ÷ its
+    `hpPerUnit`, carried as on the land (`applyLoss`). All fire of the hour is reckoned before
+    any loss, so the order of the wings is nothing.
+  - A wing with no aircraft left is lost (`settleFormation`). A sortie out or over its target
+    that lost `BREAK_OFF` (a quarter) of its aircraft in the hour turns home from where it is: a
+    new sortie to here with no time over, launched so that now is its turn (still a function of
+    its launch).
+  - `AirBattle` (47) per zone fought in: the zone, the aircraft lost, a sortie's place.
+- **The figures.** A fighter group (36 fighters, air attack 25) on a tactical bomber group (24,
+  defence 10, 8 hp each) takes 2.8 bombers an hour and loses 0.5 fighters (air attack 4 against
+  defence 12, 4 hp): fighters beat bombers by the unit data alone. Two fighter groups lose 4.7
+  fighters each an hour (36 × 25 × 0.25 ÷ 12 ÷ 4).
+- **Not yet.** Detection (a sortie that does not see its enemy), escorts that shield bombers,
+  a wing's losses made good: later parts or PLAN 7.
+- **The pin holds** at 1377ab88: no AI gives a mission yet.
+- **Tests.** `airCombat1938.test.ts`: the hour's losses by the formula; 8 hours: the bombers
+  under a quarter, the fighters over 85%; fighters against fighters alike; no fight at peace or
+  alone; four fighter groups turn a bomber sortie home from Strasbourg, and then destroy it; in
+  the game, German fighters and French bombers on patrol over Strasbourg for 48 hours.
+
+### ADR-312 · 2026-10-13 · accepted — The sortie scheduler; the hour's sorties by air zone (PLAN 5.2b)
+
+- **Decision.**
+  - *The scheduler*, in `airSystem` after a carrier's wing is set at its fleet, by wing id: a
+    wing with a mission (`world.wingMission`) and no sortie launches one this hour from its
+    base's place now (a carrier's sortie flies from where the fleet was at its launch and back
+    there), at its template's speed, a patrol staying `patrolHours`. Home, it turns round
+    `TURNAROUND_HOURS` (2) before the next. A target beyond its range (a carrier sailed off)
+    launches nothing; the wing waits. One sortie a wing: the wing flies whole (its strength by
+    its elements is PLAN 5.3's).
+  - *State*: `world.sorties` (saved while not empty, by wing: its launch); the wing's own row
+    stays at its base. A rebase ends its sortie (it is ready at its new base); a wing destroyed
+    loses it.
+  - `airborne(world, t)`: the sorties in the air at `t` by the air zone of their place
+    (`sortieAt`, `airOf`), each zone's wings by id: where PLAN 5.3 reckons interception.
+- **The pin holds** at 1377ab88: no AI gives a mission yet (PLAN 5.6).
+- **Tests.** `sortieScheduler1938.test.ts`: no mission, no sortie; a strike flies out and back,
+  turns round, flies again, the wing's row at its base throughout; a patrol's hours over; a
+  carrier's sortie from where its fleet was; the AT: 30 German wings over a day, `airborne` at
+  each hour and half hour the function's places by zone; saved mid-flight, the same hash and
+  sorties 10 hours on.
+
+### ADR-311 · 2026-10-13 · accepted — A sortie's flight as a pure function (PLAN 5.2a)
+
+- **Decision.** `src/sim/systems/sorties.ts`: a `Sortie` is what it was launched with (its
+  base's and target's places in cells, launch tick, speed in km/h, the km between, hours over
+  the target); `sortieAt(s, t, w)` gives its place and leg (out, over, back, home) at any time,
+  fractional too, on the straight line the short way round a wrapping map, at an even pace by
+  its leg's hours (km ÷ speed). A strike turns at once; a patrol stays over its zone
+  `patrolHours`: what its range leaves it, a range being out and back (2 × (range − km) ÷
+  speed), at most `PATROL_MAX_HOURS` (4). The end is reckoned by one sum (`sortieEnd`), so the
+  tick it ends it is home whatever the rounding (found by the property test).
+- **Why.** SPEC §6.3: a flight's position is never stored. The page's frames and PLAN 5.3's
+  interception read the one function. The line in cells, not the great circle: the zones are
+  coarse (an hour's air war is reckoned by zone) and the cells' km are the grid's.
+- **The pin holds**: nothing calls it yet (PLAN 5.2b).
+- **Tests.** `sorties.test.ts`: over 500 random sorties, the same place for the same inputs and
+  the sortie untouched; home before and after, the legs in order, over the target at it; the
+  share of the way flown is the share of the leg's hours, out and back; patrol hours.
+
+### ADR-310 · 2026-10-13 · accepted — A wing's range from its base; mission and rebase orders (PLAN 5.1e)
+
+- **Decision.**
+  - *Range* (`wingRange`): the least `range_km` of a wing's aircraft (a fighter group 800 km, a
+    strategic bomber group 3,000), from its base (`basePlace`: an airbase's land cell, or its
+    carrier's fleet wherever that is), by `seaKm` (the grid's km, east-west wrapped).
+  - *A mission* (`wingMission` command, `orderMission`): to patrol about a place or strike it,
+    kept as state (`world.wingMission`, saved while not empty) where the place is within range,
+    else refused with `MoveRejected` and a new `RejectReason.OutOfRange` (10); a refused order
+    leaves the last one standing. What it does is PLAN 5.2's scheduler.
+  - *A rebase* (`wingRebase` command, `orderRebase`): to an airbase within 2 cells of the place
+    held by its nation, its supply bloc or a nation fighting beside it, with room for its aircraft
+    (`airbaseRoom` less what is based there); or to a fleet of its nation's with a carrier
+    whose deck is free (a wing to a carrier). It must be within range of its base now. The wing is
+    there at once (the flight is PLAN 5.2's) and its mission ends. Refused: `OutOfRange` when the
+    only base that would do is beyond range, else a new `RejectReason.NoBase` (11).
+  - Both commands carry the ordering nation as a move does; another nation's wing is `NoSuch`.
+- **The pin holds** at 1377ab88: no rule or AI gives these orders yet.
+- **Tests.** `wingRange1938.test.ts` (the AT of 5.1): the ranges; Prague in a German fighter
+  group's range, Madrid not (refused, the patrol before kept); a land formation is no wing; a
+  strategic bomber group strikes 1,500 to 3,000 km off; a carrier wing's range moves with its
+  fleet; a rebase to an own airbase in range; a full base, a French one at peace and open sea
+  `NoBase`, Langley to March Field `OutOfRange`; to a carrier with a deck free; the command by its
+  nation, another's refused; a save loads the mission, the same game.
+
+### ADR-309 · 2026-10-13 · accepted — The 1938 start's air forces at their airbases and on the carriers (PLAN 5.1d)
+
+- **Decision.**
+  - *The wings.* `data/scenarios/1938/air.json` gives each nation's wings by template (198);
+    `placeWings` puts each at an airbase its nation holds, the one with the most room left that
+    holds it (ties to the lower base), in the file's order; a wing no base holds is an error of
+    the data. Each carrier of the start's fleets carries a naval bomber group (`CARRIER_WING`; 18).
+    A wing of the start stands for about three first-line groups of the record (Germany 28
+    wings, about 840 aircraft, against some 2,900 first-line in late 1938): the tick carries some
+    250 wings, not the 800 of the record.
+  - *The base* is state (`world.wingBase`, saved while not empty): an airbase's index + 1, or a
+    carrier's fleet negated. `airSystem`, hourly after the movement, keeps a carrier's wing at its
+    fleet; `destroyFormation` of the fleet marks its wings (base 0), and `airSystem` loses them.
+  - *Off the land.* `World.isWing`, `World.offLand` (afloat or a wing): the land's rules that
+    left a fleet alone (the march, supply, contact and fire, the ground held, a garrison, a major
+    battle's armies, the army's men and upkeep in the economic AI, the operational and the
+    invasion AI's orders) leave a wing alone too; `forceMen` gives a wing 0 (the air's weight
+    comes with its war). The naval uses keep `afloat`.
+  - *Not drawn yet.* The snapshot leaves the wings out (and their elements) until the air's
+    visuals (PLAN 5.7): the renderers have no aircraft yet.
+  - *The airbases' levels* (ADR-308) did not hold the forces (Germany's four bases 450 aircraft
+    for 840): a capital is now of level 4, a city of size 5 of 3, a station by hand of 4 or 5,
+    and four stations more (Jüterbog, Gütersloh, Aviano, Lipetsk).
+- **The pin moves** c0a89199 → 1377ab88 (the wings are rows of the formations' table and paid).
+- **Found by the full unit stage, mended:**
+  - A wing stood at its airbase's place, which for a coastal city can be the water beside its
+    land cell: a wing now stands at its base's land cell (`cellPoint`).
+  - `isWing` and `isFleet` read rules with no templates (a test's stub) as none.
+  - The headless runner's names of the systems: `air` after `amphibious`.
+- **Tests that read the army as all that is not afloat** now read it as not off the land (a wing
+  is no part of it, as a fleet is not): `startArmies`, `armourWorth` (the Soviet cut, 49 → 42
+  others: the wings' upkeep is paid as well), `stats`, `coast1938`, the movement test of 55 days,
+  `navyWeight1938`, `fleets1938` (the wings are the last rows; the statistics' men), `economy`
+  (19 nations start with a year of their army's costs, 18 before), `scenario1938` (the rows: the
+  land's, the fleets, the wings), `headless` (29 systems).
+- **Tests whose rolls moved with the ids** (a hit is rolled by its shooter's element id, and the
+  wings shift the ids of what a test makes after the start): `navalBattle1938`'s world from seed
+  4301 to 4302 (4302 to 4306 all pass; on 4301 a flotilla went from 4 destroyers to none in one
+  hour, and a submarine flotilla lost none in 3); `terrainCombat`'s forest-against-plains
+  comparison over 96 hours, not 48 (the same band: 0.7108 at 48 was its noise; 0.722 to 0.725
+  over 72 to 144).
+- **Tests.** `wings1938.test.ts`: the counts by nation and template, every wing at a base of its
+  nation's within its room, a group on each carrier, the templates' upkeep; a month on, every
+  wing at its base, whole, never moving or engaged; a carrier sunk takes its wings; a save loads
+  with the same hash.
+
+### ADR-308 · 2026-10-13 · accepted — Airbases: the capitals, the large cities and the main air stations (PLAN 5.1c)
+
+- **Decision.** An airbase is static data of the scenario, as a port is (`world.airbases`,
+  `placeAirbases`): every capital city at `capitalLevel` 1, every city of size `minCitySize` 5 at
+  `sizeLevel` 2 (83 such cities), and the main air stations of the larger air forces of 1938 by
+  hand (23, levels 2 and 3), one in a city base's cell raising its level. Who holds the cell holds
+  the base (`airbaseHolder`); its room is `AIR_PER_LEVEL` = the airbase building's `airCapacity`,
+  50 aircraft, a level (`airbaseRoom`). Not saved, not hashed: a base taken is its cell's
+  taker's. The random world places the cities' bases the same way, its own capitals among them.
+- **Data.** Heliopolis is Egypt's land and Clark Field the Philippines' in the 1938 nations: the
+  stations by hand name the holder of the land, as the ports do.
+- **1938:** 172 airbases (68 of level 1, 97 of 2, 7 of 3); every living nation holds one.
+- **The pin stays** c0a89199.
+- **Tests.** `airbases1938.test.ts`: every living nation holds one, every station by hand on its
+  nation's land; a base taken is the taker's; the room; the data set refuses a level of 6.
+
+### ADR-307 · 2026-10-13 · accepted — Air wing templates in the rules, after the sea's (PLAN 5.1b)
+
+- **Decision.** The aircraft types (`data/units/air.json`, nine with the ballistic missile of
+  Phase 6) stand in the rules after the ships, and six wing templates (`data/templates/air.json`)
+  after the fleets: a formation, an order and an element are saved by their index, so the land's
+  and the sea's keep theirs and an old save loads as before. A wing is a group of squadrons of
+  one type, an element a squadron of `elementSize` aircraft: fighter 3 × 12, tactical bomber
+  3 × 8, strategic bomber 4 × 6, close support 3 × 10, naval bomber 3 × 8, air transport 4 × 6.
+  Our own round figures for the groupings of 1938 air forces. No wing exists: the build order
+  refuses the air domain and the spawn refuses any template not of the land, as for fleets
+  before PLAN 4.2b; the page's build list leaves the air out.
+- **The pin stays** c0a89199 (the rules are not state).
+- **Tests.** `airTemplates.test.ts`: the indices; each air template of aircraft alone, every wing
+  class in one, a fighter group's range 800 km and a strategic bomber group's 3,000; no order or
+  spawn of one. `seaTemplates.test.ts` (PLAN 4.2a) read the sea's as the last of the rules: it
+  now reads their own slice, the same claims.
+
+### ADR-306 · 2026-10-13 · accepted — Air zones: the sea's zones, and the land in regions of whole provinces (PLAN 5.1a)
+
+- **Context.** SPEC §6.3 reckons the air war per zone and hour; the sea has its zones (PLAN 4.1a),
+  the land none.
+- **Decision.** Air zones are the sea zones over water as they are, and over land regions of
+  whole nodes of the province graph (provinces, a strait's body, a run of land no province has)
+  of about `AIR_ZONE_KM2` = 1.5 M km², the sea zones' size: seeds on a lattice of `sqrt(AIR_ZONE_KM2)`
+  km by the grid's km per cell, on land components of at least a third of that (one seed at
+  its lowest node where none falls); every node of those to the seed that reaches it first over
+  the graph by the km between nodes' centres (ties to the lower seed), so a region is joined by
+  its own nodes. A component under a third (an island; at first each was a zone: 192 of 279
+  under 300,000 km²) goes whole to the zone of the seed nearest its lowest node by straight km.
+  Zones 1…land are the land's in the order of their seeds' cells, then the sea's. Derived (`airOf`,
+  cached by the province graph and the sea zones), not saved, not hashed, read by nothing.
+- **On the 1938 map at M:** 86 land zones (0.43 to 4.1 M km², median 1.43 M) and 428 sea zones,
+  in 88 ms.
+- **Tests.** `airZones1938.test.ts`: every cell of a node or a sea zone in one zone and no other,
+  the sea's the sea zones; each land zone within a quarter and three times the target; each in
+  one piece over the graph but for islands under a third; the same zones built again.
+
+### ADR-305 · 2026-10-13 · accepted — The ranking's rows hold their names and values (PLAN 4.11)
+
+- **Found** (the critic's R4-B6): the ranking's value floated right of its name; a name too long
+  for the row ("French Equatorial Africa") pushed the value onto the next line, under the next
+  row's name, and from row 11 down each value stood beside the wrong name (row 13 seemed to have
+  two numbers), from the first frame of every game.
+- **Decision.** A row is a one-line flex row: the place and the swatch keep their width, the
+  name takes what is left and is cut with an ellipsis, the value keeps its width (tabular
+  figures) and never wraps.
+- **Tests.** `rankingRows1938.spec.ts`: at every UI size each of the 15 rows is one line, its
+  value on its row and right of its name, its text one number (its `data-value`); it failed
+  before at UI size 0.85, row 11. Picture `ranking.png`. (`ranking1938.spec.ts`, the ranking's
+  AT of PLAN 1.31b, passes as before.)
+
 ### ADR-304 · 2026-10-13 · accepted — The sea-control mode says whose (PLAN 4.10c)
 
 - **Found** (the critic's R4-B4): the sea-control mode's tints did not say whose navy held a

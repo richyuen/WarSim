@@ -116,6 +116,16 @@ export interface Deployment {
  * East-west distance from a to b, the short way: over the seam where the map loops
  * (`settings.loopingMap`), and never on a map with edges (PLAN 3.12Rs).
  */
+/** The width a map wraps by east–west: its cells' where it loops, 0 where it does not (`sortieAt`'s `w`). */
+export const loopW = (world: World): number => (world.settings.loopingMap ? world.cells.w : 0);
+
+/** Column `x` of the grid: wrapped where the map loops; null off the edge of one that does not. */
+export function cellX(world: World, x: number): number | null {
+  const w = world.cells.w;
+  if (world.settings.loopingMap) return ((x % w) + w) % w;
+  return x < 0 || x >= w ? null : x;
+}
+
 export function wrapDx(world: World, ax: number, bx: number): number {
   const w = world.cells.w;
   let dx = bx - ax;
@@ -145,7 +155,8 @@ export function contactsOf(world: World): Map<number, number> {
   const c = world.formations.cols;
   const engaged: number[] = [];
   world.formations.forEach((id) => {
-    if (c.engaged[id] === 1) engaged.push(id);
+    // Of the land: a fleet in a sea battle is engaged too, and `findBattles` pairs none (ADR-337).
+    if (c.engaged[id] === 1 && !world.offLand(id)) engaged.push(id);
   });
   const near = new Map<number, [number, number]>();
   const note = (a: number, b: number, d: number): void => {
@@ -647,4 +658,10 @@ export function destroyFormation(world: World, fid: number): void {
   world.embarked.delete(fid);
   for (const e of world.embarked.values()) if (e.fleet === fid) e.fleet = -1;
   world.seaBound.delete(fid);
+  // A wing's base goes with it; the wings a carrier's fleet carried are lost with it at the air
+  // system's hour (PLAN 5.1d), and a formation given the id again carries none.
+  world.wingBase.delete(fid);
+  world.wingMission.delete(fid);
+  world.sorties.delete(fid);
+  for (const [wing, base] of world.wingBase) if (base === -fid) world.wingBase.set(wing, 0);
 }

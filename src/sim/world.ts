@@ -6,7 +6,11 @@ import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildLaneGraph, portWaters, seaBasins, type LaneGraph, type SeaBasins, type SeaPassage } from './nav/lanes';
 import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
+import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
+import type { Airbase } from './data/airbases';
+import type { WingMission } from './systems/air';
+import type { Sortie } from './systems/sorties';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
 import type { EventKind } from '../shared/events';
 import { xxhash32View } from './core/hash';
@@ -149,6 +153,11 @@ export interface UnitRule {
   armor: number;
   piercing: number;
   hpPerUnit: number;
+  /** Its fire at aircraft and its defence against them, a unit's (`aa`, `defense` of the unit data; read in the air, PLAN 5.3a). */
+  aa: number;
+  defense: number;
+  /** An aircraft's bomb load, tons (`bomb_t` of the unit data, PLAN 5.5a); 0 for none. */
+  bombT: number;
   /** Fuel an element of it burns in an hour on the march (`fuelPerHour` of the unit data). */
   fuel: number;
   /** Its guns' reach, km; how far it sees, km; how hard it is to see, 0..100 (`range_km`, `detection`, `stealth`; read at sea, PLAN 4.3a). */
@@ -386,6 +395,18 @@ class WorldCore implements Stateful {
       // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
       // only while there is one, so a world with no sea battle saves and hashes as before.
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
+      // The air wings' missions (PLAN 5.1e): [id, kind (0 patrol, 1 strike), x, y] each, only while there is one.
+      ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : m.kind === 'supply' ? 2 : 0, m.x, m.y])) }]),
+      // The bombs' damage to industry (PLAN 5.5a): [cell, damage] each, only while there is some.
+      ...(w.bombDamage.size === 0 ? [] : [{ name: 'world.bombDamage', dtype: 'f64' as const, data: Float64Array.from([...w.bombDamage].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The bombs' damage to ports (PLAN 5.5b): [port, damage] each, only while there is some.
+      ...(w.portDamage.size === 0 ? [] : [{ name: 'world.portDamage', dtype: 'f64' as const, data: Float64Array.from([...w.portDamage].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The air power flown by zone (PLAN 5.3c): [zone, nation, power] each, only while there is some.
+      ...(w.airPower.size === 0 ? [] : [{ name: 'world.airPower', dtype: 'f64' as const, data: Float64Array.from([...w.airPower].sort((a, b) => a[0] - b[0]).flatMap(([z, m]) => [...m].sort((a, b) => a[0] - b[0]).flatMap(([n, p]) => [z, n, p]))) }]),
+      // The air wings' sorties (PLAN 5.2b): [id, bx, by, tx, ty, launch, kmh, km, over] each, only while there is one.
+      ...(w.sorties.size === 0 ? [] : [{ name: 'world.sorties', dtype: 'f64' as const, data: Float64Array.from([...w.sorties].sort((a, b) => a[0] - b[0]).flatMap(([id, o]) => [id, o.bx, o.by, o.tx, o.ty, o.launch, o.kmh, o.km, o.over])) }]),
+      // The air wings' bases (PLAN 5.1d): [id, base] each, only while there is one.
+      ...(w.wingBase.size === 0 ? [] : [{ name: 'world.wingBase', dtype: 'f64' as const, data: Float64Array.from([...w.wingBase].sort((a, b) => a[0] - b[0]).flat()) }]),
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
       ...(w.seaBound.size === 0 ? [] : [{ name: 'world.seaBound', dtype: 'f64' as const, data: Float64Array.from([...w.seaBound].sort((a, b) => a[0] - b[0]).flat()) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
@@ -429,6 +450,31 @@ class WorldCore implements Stateful {
     w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
     w.seaLinks = new Map();
     w.seaBound = new Map();
+    w.wingBase = new Map();
+    w.bombDamage = new Map();
+    const damage = sections.find((s) => s.name === 'world.bombDamage')?.data as Float64Array | undefined;
+    for (let at = 0; damage && at < damage.length; at += 2) w.bombDamage.set(damage[at]!, damage[at + 1]!);
+    w.portDamage = new Map();
+    const shut = sections.find((s) => s.name === 'world.portDamage')?.data as Float64Array | undefined;
+    for (let at = 0; shut && at < shut.length; at += 2) w.portDamage.set(shut[at]!, shut[at + 1]!);
+    w.airPower = new Map();
+    const power = sections.find((s) => s.name === 'world.airPower')?.data as Float64Array | undefined;
+    for (let at = 0; power && at < power.length; at += 3) {
+      const z = power[at]!;
+      if (!w.airPower.has(z)) w.airPower.set(z, new Map());
+      w.airPower.get(z)!.set(power[at + 1]!, power[at + 2]!);
+    }
+    w.sorties = new Map();
+    const sorties = sections.find((s) => s.name === 'world.sorties')?.data as Float64Array | undefined;
+    for (let at = 0; sorties && at < sorties.length; at += 9) {
+      const v = sorties;
+      w.sorties.set(v[at]!, { bx: v[at + 1]!, by: v[at + 2]!, tx: v[at + 3]!, ty: v[at + 4]!, launch: v[at + 5]!, kmh: v[at + 6]!, km: v[at + 7]!, over: v[at + 8]! });
+    }
+    w.wingMission = new Map();
+    const missions = sections.find((s) => s.name === 'world.wingMission')?.data as Float64Array | undefined;
+    for (let at = 0; missions && at < missions.length; at += 4) w.wingMission.set(missions[at]!, { kind: missions[at + 1] === 1 ? 'strike' : missions[at + 1] === 2 ? 'supply' : 'patrol', x: missions[at + 2]!, y: missions[at + 3]! });
+    const wings = sections.find((s) => s.name === 'world.wingBase')?.data as Float64Array | undefined;
+    for (let at = 0; wings && at < wings.length; at += 2) w.wingBase.set(wings[at]!, wings[at + 1]!);
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
     for (let at = 0; bound && at < bound.length; at += 2) w.seaBound.set(bound[at]!, bound[at + 1]!);
     w.embarked = new Map();
@@ -526,6 +572,18 @@ export function laneOf(world: World): LaneGraph {
 }
 
 const basins = new WeakMap<SeaZones, SeaBasins>();
+const airZones = new WeakMap<ProvinceGraph, WeakMap<SeaZones, AirZones>>();
+
+/** The world's air zones (`buildAirZones`, PLAN 5.1a): built once for its province graph and sea zones, cached by them. */
+export function airOf(world: World): AirZones {
+  const nav = navOf(world);
+  const z = seaOf(world);
+  let bySea = airZones.get(nav.graph);
+  if (!bySea) airZones.set(nav.graph, (bySea = new WeakMap()));
+  let a = bySea.get(z);
+  if (!a) bySea.set(z, (a = buildAirZones(nav.grid, nav.graph, z)));
+  return a;
+}
 
 /** The world's sea basins (`seaBasins`, PLAN 4.8o): built once for its zones, cached by them. */
 export function basinOf(world: World): SeaBasins {
@@ -801,9 +859,23 @@ export class World {
     return this.isFleet(id) || this.embarked.has(id);
   }
 
+  /** A formation of an air template (PLAN 5.1b): an air wing, at its base (`wingBase`, PLAN 5.1d). */
+  isWing(id: number): boolean {
+    return this.rules?.templates?.[this.formations.cols.template[id]!]?.domain === Domain.air;
+  }
+
+  /**
+   * Off the land (PLAN 5.1d): afloat (a fleet, or an army aboard one), or an air wing. No rule of
+   * the land (the march, supply, contact and fire, the ground held, a garrison, the army's men and
+   * upkeep, the AI's orders) reads it.
+   */
+  offLand(id: number): boolean {
+    return this.afloat(id) || this.isWing(id);
+  }
+
   /** A formation of a sea template (PLAN 4.2a). */
   isFleet(id: number): boolean {
-    return this.rules?.templates[this.formations.cols.template[id]!]?.domain === Domain.sea;
+    return this.rules?.templates?.[this.formations.cols.template[id]!]?.domain === Domain.sea;
   }
 
   /**
@@ -883,6 +955,25 @@ export class World {
    * of the march.
    */
   seaBound = new Map<number, number>();
+  /**
+   * The air wings' bases (PLAN 5.1d), by wing: an airbase's index + 1, or a carrier's fleet as its
+   * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.
+   */
+  wingBase = new Map<number, number>();
+  /** The air wings' missions (PLAN 5.1e, `orderMission`): state, saved while not empty; the scheduler of PLAN 5.2 reads them. */
+  wingMission = new Map<number, WingMission>();
+  /**
+   * The air wings' sorties (PLAN 5.2b, `airSystem`), by wing: in the air, or home and turning
+   * round until `sortieEnd` + `TURNAROUND_HOURS`. State, saved while not empty; where one is is
+   * `sortieAt`'s, never stored.
+   */
+  sorties = new Map<number, Sortie>();
+  /** Per air zone, per nation, the air power it flew there, fading (PLAN 5.3c, `airPowerSystem`): state, saved while not empty. */
+  airPower = new Map<number, Map<number, number>>();
+  /** Per cell, the share of its industry bombs put out of work (PLAN 5.5a, `bombIndustry`): state, saved while not empty; repaired day by day. */
+  bombDamage = new Map<number, number>();
+  /** Per port (index in `ports`), the bombs' damage to it (PLAN 5.5b, `bombPorts`): state, saved while not empty; shut at a half. */
+  portDamage = new Map<number, number>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */
@@ -911,6 +1002,11 @@ export class World {
   ports: readonly Port[] = [];
   /** How far from its cell a port's water may be, cells (the scenario's `reachCells`). */
   portReach = 0;
+  /**
+   * The airbases (PLAN 5.1c, `placeAirbases`): static data of the scenario, as the ports are, not
+   * state. Who holds a base is who holds its cell. None on the toy world.
+   */
+  airbases: readonly Airbase[] = [];
   /** Each port's water (`portSeaOf`): a derived cache, dropped where `sea` is. */
   portSea: Int32Array | null = null;
   /** The lane graph: a derived cache, dropped where `sea` is. */

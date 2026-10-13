@@ -119,7 +119,7 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
   const free = new Uint32Array(world.nations.highWater);
   world.formations.forEach((id) => {
     // A fleet is sent to no front (PLAN 4.2b): the naval AI is PLAN 4.6.
-    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && !world.afloat(id)) free[f.nation[id]!]!++;
+    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && !world.offLand(id)) free[f.nation[id]!]!++;
   });
   const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0 && free[n]! > 0).sort((a, b) => a - b);
   if (actors.length === 0) return;
@@ -201,7 +201,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   /** n's formations, free or not. */
   const all: number[] = [];
   world.formations.forEach((id) => {
-    if (world.afloat(id)) return; // neither one of its own to send nor an enemy's strength in a sector (PLAN 4.2b)
+    if (world.offLand(id)) return; // neither one of its own to send nor an enemy's strength in a sector (PLAN 4.2b)
     const m = f.nation[id]!;
     if (m === n) {
       all.push(id);

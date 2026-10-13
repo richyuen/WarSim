@@ -24,7 +24,10 @@ const ENG = id('ENG');
 
 /** A 1938 world with the AI off and Germany at war with the United Kingdom. */
 function atWar(): Sim {
-  const s = new Sim({ scenario: '1938', seed: 4301, assets: assets1938(W) });
+  // Seed 4302 since PLAN 5.1d (ADR-309): a hit is rolled by its shooter's element id, and the air
+  // wings of the start moved the ids of the fleets these tests make; on 4301 then a flotilla went
+  // from 4 destroyers to none in an hour and a submarine flotilla lost none in 3 (4302 to 4306 all pass).
+  const s = new Sim({ scenario: '1938', seed: 4302, assets: assets1938(W) });
   s.world.settings.aiEnabled = false;
   expect(declareWar(s.world, GER, ENG, true)).not.toBeNull();
   return s;

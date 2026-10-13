@@ -11,6 +11,8 @@ import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle }
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { drawSeaBattles } from '../render/units/seaBattles';
+import { drawSorties, planeZoom, type PlacedSortie } from '../render/units/sorties';
+import { AirFx } from '../render/fx/air';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -316,6 +318,16 @@ export class MapView {
       this.scatterKey = '';
       this.dirty = true;
     });
+    // Who holds the air of each air zone (PLAN 5.7c), for its map mode.
+    sim.onAirControl((holder, zones) => {
+      if (zones) {
+        this.map.setAirZones(this.geo.w, this.geo.h, zones);
+        this.airZoneOf = zones.slice();
+      }
+      this.map.setAirHolders(holder);
+      this.airHolder = holder.slice();
+      this.dirty = true;
+    });
     sim.onSeaControl((holder, zones, names) => {
       if (zones) {
         this.map.setSeaZones(this.geo.w, this.geo.h, zones);
@@ -436,6 +448,7 @@ export class MapView {
     this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
     this.seas = s.seas.slice();
+    this.sorties = s.sorties.slice();
     // The sea battles going on, for the ticker (PLAN 4.10b): told when the set changes.
     const seaKey = Array.from(this.seas, (v, k) => (k % SEA_STRIDE < 3 ? Math.round(v) : v)).join(',');
     if (seaKey !== this.seaKey) {
@@ -499,6 +512,7 @@ export class MapView {
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
+    this.airFx.add(s.events.count, s.events.data, arrived);
     // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
     // records only of the shots with an end in the box (PLAN 3.6e5). What a battalion, a battery
     // and a half-track company lose lies there too (PLAN 3.11d).
@@ -519,6 +533,7 @@ export class MapView {
     this.loaded = true;
     this.hulls.clear();
     this.wrecks.clear();
+    this.airFx.clear();
     this.fire.clear();
     this.turretAims.clear();
     this.dirty = true;
@@ -537,7 +552,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
-    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : 0;
+    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : mode === 'airControl' ? 4 : 0;
     this.applyPalette();
     this.dirty = true;
   }
@@ -649,11 +664,21 @@ export class MapView {
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private seas = new Float32Array(0);
+  /** Who holds each air zone's air, by zone (PLAN 5.7c; 0 none, `AIR_CONTESTED`). */
+  airHolder = new Uint16Array(0);
+  /** The air zone of each cell (PLAN 5.7c), as the worker sent it. */
+  airZoneOf = new Uint16Array(0);
+  /** The sorties in the air (PLAN 5.7a, SORTIE_STRIDE each), their launches from the snapshot's tick. */
+  private sorties = new Float32Array(0);
   private seaKey = '';
   /** Called when the sea battles going on change (PLAN 4.10b; the ticker's rows). */
   onSeaBattles: (battles: SeaBattleView[]) => void = () => {};
   /** Where the sea battles' marks were drawn in the last frame (tests). */
   seaMarks: { x: number; y: number }[] = [];
+  /** The sorties placed on screen at the last frame (PLAN 5.7a), for tests. */
+  sortieMarks: PlacedSortie[] = [];
+  /** The air's fights, bombs and flak (PLAN 5.7b). */
+  airFx = new AirFx();
 
   /** Sea control (PLAN 4.10c): each cell's zone, each zone's holder and sea's name, as the worker sent them. */
   private seaZoneOf = new Uint16Array(0);
@@ -728,7 +753,7 @@ export class MapView {
    */
   unitsAnimating(now = performance.now()): boolean {
     const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
-    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now);
+    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now) || this.airFx.animating(now);
   }
 
   /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
@@ -1257,6 +1282,14 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: counterNation(this.formNation[i]!, this.templates[this.formTemplate[i]!]?.domain === 1), strength: this.formStrength[i]! });
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
+    // The sorties in flight (PLAN 5.7a), at T0 to T2, where they are at this frame's time: under
+    // the counters, which stay readable over them. A snapshot of tick T + 1 is the world after the
+    // hour that began at T, which the page plays from its arrival (the formations go from where
+    // they were to where they are): the frame's time is T + its share of the tick (PLAN 5.7d: it
+    // was T + 1 + the share, the sorties an hour ahead of all else and of their own fights).
+    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1 - this.shares.individuals, (n) => hex(n), this.unitScale);
+    // The air's fights, bombs and flak (PLAN 5.7b), with the sorties.
+    this.airFx.draw(ctx, cam, this.geo, vw, vh, now, 1 - this.shares.individuals, this.unitScale * planeZoom(cam.scale));
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
     // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
     this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);

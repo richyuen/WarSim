@@ -7364,3 +7364,781 @@ Of 4.10 (open in PLAN.md):
 
   - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the
     zone under the cursor named with its holder. e2e.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
+  is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
+  small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
+  watched running (`critic/c4_b_6131.json`, `critic/c4_b2_6131.json`); the sea-control mode is
+  blocky and its colours do not say whose navy holds a zone. The critic's fix: a ship glyph on
+  a naval counter; both fleets of an engagement in one T2 view with their fire; a sea-control
+  legend.
+  AT: e2e: a fleet's counter at T0 differs from an army's (pixels); on seed 6131's war the
+  first sea battle, followed from its event, draws gunfire within its first hours at T2; the
+  sea-control mode names the holder of the zone under the cursor or in a legend.
+  Split 2026-10-13 into parts, one cause a commit. Found first (seed 6131, the critic's war):
+  the sim fires (28 naval shots in hour 41, 11 to 74 an hour after) and the page receives and
+  draws them (11 to 23 shots in a battle's hour, stepped); at ×1 a sea battle's five hours
+  pass in five seconds, each hour's shots in a part of it, and in this container a sample came
+  every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
+  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
+  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
+  - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the […]
+  - [x] 4.10d The AT's specs (above), and the tick of 4.10.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.11 Critic R4-B6: the ranking's rows hold their names and values. From row 11 down a
+  value is drawn against the wrong name (a float wraps), and row 13 shows two numbers run
+  together, on screen from the first frame (`critic/shots/c4a_01_boot.png`). The critic's fix:
+  a flex row for each line, the name cut by an ellipsis, the value never wrapping.
+  AT: e2e: at every UI size, each ranking row's value is on its name's line (boxes compared) and
+  no value wraps.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea
+    zones over water as they are, the land in regions of whole provinces of about the same
+    area, by the same spread from seeds. Derived, not saved, not hashed, read by nothing yet.
+    Test: every cell with a province or a sea zone in one air zone, each zone in one piece
+    (an island under a third of the target joins the nearest zone), their areas within a
+    factor of the target.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber,
+    close support, naval bomber and transport groups) in the scenario's rules after the sea
+    ones, a template of the air domain; a wing is a formation of one. None exists: the queue
+    and the spawn refuse one, as the sea's did before 4.2b. Test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and
+    the cities of the larger nations), with levels; a base is its cell's controller's; its
+    room is `airCapacity` × level aircraft. Test: every nation with an air force in 1938 has
+    one; a base taken is its taker's.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.1 (open in PLAN.md):
+
+  - [x] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record
+    (`data/scenarios/1938/air.json`), the carriers' air groups aboard the carriers of the
+    fleets; paid from the first month; no rule reads a wing yet. Test: counts by nation; ten
+    years, every wing at its base.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.1 Air wings, airbases, carriers, range; air zones.
+  AT: a wing cannot be assigned a mission outside its range (test).
+  Split 2026-10-13, as 4.1 and 4.2 were. Found first: `data/units/air.json` has eight aircraft
+  types (fighters to transports, range 500 to 3,000 km) and `data/buildings/buildings.json` an
+  airbase (50 aircraft a level); no air template, no airbase in the 1938 scenario, no wing in
+  the state. One cause a commit:
+  - [x] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea […]
+  - [x] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber, […]
+  - [x] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and […]
+  - [x] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record […]
+  - [x] 5.1e Range: a wing's base (an airbase, or a carrier, which moves with its fleet) and its
+    range (the least `range_km` of its aircraft); a mission order (an air zone to patrol, a
+    place to strike) refused beyond its range from its base, with its reason (`RejectReason`),
+    and an order to rebase to its side's airbase or carrier in range with room. Saved. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.2 (open in PLAN.md):
+
+  - [x] 5.2a The sortie: its flight as a pure function of (base, target, launch hour, speed,
+    hours over the target): where it is at any time, fractional hours too, and on which leg
+    (out, over the target, back, home); none of it stored. A strike turns at once; a patrol
+    stays over its zone for the fuel its range leaves it, at most 4 hours. Property test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.2 Mission scheduler + sorties as derived kinematics.
+  AT: the sortie position function is pure (same inputs → same output, property test) and matches the sim's interception points.
+  Split 2026-10-13. Found first: a wing has a mission (PLAN 5.1e) and nothing flies it. One
+  cause a commit:
+  - [x] 5.2a The sortie: its flight as a pure function of (base, target, launch hour, speed, […]
+  - [x] 5.2b The scheduler: each hour a wing with a mission and none in the air, ready on its
+    base, launches a sortie (state, saved: its launch and its target); home, it turns round
+    for some hours. The hour's sorties by air zone, from the sortie function: the points of
+    PLAN 5.3's interception, the same as the function's. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.3 (open in PLAN.md):
+
+  - [x] 5.3a Air combat: the sorties of nations at war in one air zone in an hour fire on each
+    other by their aircraft's air attack against the target's defence, losses in aircraft
+    (carried, as on the land); a wing with none left is lost; a sortie that lost a quarter of
+    its aircraft in the hour turns home. Logged. Outcome test: fighters beat bombers.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.3 (open in PLAN.md):
+
+  - [x] 5.3b AA: a sortie over an enemy's ground or fleet is fired on by the AA of what is
+    below it (land elements' and ships' `aa`). AA attrition rate test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.3 Air combat, interception, AA; air superiority per zone.
+  AT: outcome tests (fighters beat bombers; AA attrition rate).
+  Split 2026-10-13. Found first: sorties fly (PLAN 5.2) and nothing meets them; the aircraft's
+  `aa` (air attack) and `defense` are in the unit data and not in the rules. One cause a commit:
+  - [x] 5.3a Air combat: the sorties of nations at war in one air zone in an hour fire on each […]
+  - [x] 5.3b AA: a sortie over an enemy's ground or fleet is fired on by the AA of what is […]
+  - [x] 5.3c Air superiority per zone per side (0–1), from the air power each side flew there,
+    kept for the rules of PLAN 5.4 and 5.5 to read; saved. Test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.4 (open in PLAN.md):
+
+  - [x] 5.4a Air superiority in ground combat: a formation's fire × a factor of its nation's
+    air superiority in its zone (`data/combat.json`), 1 at a half. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.4 (open in PLAN.md):
+
+  - [x] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land
+    elements there by its aircraft's soft and hard attack; the losses as on the land.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.4 (open in PLAN.md):
+
+  - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by
+    its aircraft's hard attack and piercing against their armour.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
+  From PLAN 4.3 (2026-10-10, ADR-254): a battleship sees 18 km by the units' data, so a
+  battle line sees a cruiser at 17 km and its 32 km guns hold a stand-off only where the
+  enemy sees it first: spotting aircraft (a cruiser's or a carrier's) are to give a fleet
+  its detection. A carrier has no weapon in a sea battle and breaks off at once (ADR-256).
+  AT: a battle with air superiority has a better outcome by the expected margin.
+  Split 2026-10-13. Found first: air superiority is reckoned per zone (PLAN 5.3c) and nothing
+  reads it; a strike sortie reaches its target and does nothing there. One cause a commit:
+  - [x] 5.4a Air superiority in ground combat: a formation's fire × a factor of its nation's […]
+  - [x] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land […]
+  - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by […]
+  - [x] 5.4d Carrier air groups in fleet battles: a carrier's wings strike the fleets it is in
+    battle with, and a fleet with aircraft (a carrier's) sees by them (its detection).
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.5 (open in PLAN.md):
+
+  - [x] 5.5a Industry and cities: a strike on the enemy's land drops its aircraft's bombs
+    (`bomb_t`, a new stat of the air units) on the industry within reach: damage per cell (a
+    share of its `econ` out of the month's income), repaired day by day; saved. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
+  AT: bombed industry produces less until repaired (test).
+  Split 2026-10-13. Found first: a cell's industry is its `econ`, fixed, read by the monthly
+  income alone; a port is static data, read by the sea's rules (embarking, a fleet's base, the
+  blockade); the aircraft have no bomb load in the data. One cause a commit:
+  - [x] 5.5a Industry and cities: a strike on the enemy's land drops its aircraft's bombs […]
+  - [x] 5.5b Ports: a bombed port is damaged by its level, repaired as industry is, and while
+    damaged by a half or more its transports embark no one and its yard delivers no fleet (no
+    rule repairs a ship, so none is barred). Saved. Test.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.6 Air AI tasking.
+  AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.7 (open in PLAN.md):
+
+  - [x] 5.7a Sorties drawn: the snapshot carries the sorties in the air (their launches, nation,
+    aircraft, role); the page draws each as planes of its nation's colour where `sortieAt` has
+    them at the frame's time, heading its way, a patrol circling over its zone; T0 to T2.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.7 (open in PLAN.md):
+
+  - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb
+    bursts at a strike's target (`AirStrike`), and flak bursts about a sortie fired on by AA.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
+  AT: air battle demo e2e + screenshots viewed.
+  Split 2026-10-13. Found first: the snapshot leaves the wings out (PLAN 5.1d); a sortie is a
+  function of its launch (`sortieAt`, in the sim's layer, which the page may not import); the
+  air's events (`AirBattle`, `AirStrike`) have no picture. One cause a commit:
+  - [x] 5.7a Sorties drawn: the snapshot carries the sorties in the air (their launches, nation, […]
+  - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb […]
+  - [x] 5.7c The air superiority map mode: each air zone by the side that holds its air.
+  - [x] 5.7d The air battle demo e2e, its pictures looked at: the AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and
+    `tools/` changed since the tenth (`deafedf`: PLAN 4.9 to 5.7 and the gate's review run,
+    4,040 lines added), the new lines first. The same brief: defects only, nothing of what
+    changed or why. Each finding is checked against the code here before it is anything; those
+    a player can meet become parts 5.8i and on, each with a test that fails first, most severe
+    first; the rest go on the watch list.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326)
+    against SPEC's text; what it says that the code does not, or the other way, set right.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing
+    reads, code no path reaches, a rule written twice.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule
+    and its save; a gap found is a test added (one that fails first where it finds a defect).
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's
+    systems' share; over the budget of PLAN 7.1, the numbers in BLOCKERS.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority
+    sums each side's power in the order of the zone's map, the nations' order of first flight in
+    a running game and by id after a load (`airSuperiority`; read by every land shot's
+    `airFactor` and by the air AI). The sums in a fixed order. Found by 5.8a, run there: 2,353
+    of 20,000 random four-nation zones differ.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until
+    `airSystem` runs): `basePlace(0)` is null and is spread. Refused with `NoBase`.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the
+    air power fades, and a land battle keeps the ± 20% of the last air war. It fades with none.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships
+    live keeps its wings, and they fly, see and strike for it; a rebase counts the template's
+    carriers, not the live ones. The wings beyond its live carriers are lost.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base):
+    a wing whose base is held by a nation not of its side rebases to its nation's nearest
+    airbase with room, or is lost with none.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next
+    day's first hour (paused: for good), and a pump that steps past a day's first hour skips it:
+    the worker's air fields reset with a load; sent when the day changed.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only):
+    refused, as any formation that is not of the land.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to
+    import or throws in a hook (vitest: a failed file with no failed test), a spec that fails to
+    load (Playwright's top-level errors), a non-zero exit. Each is red.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index):
+    a critic's report committed after a review unproves it. Out of the key, as the header says.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the
+    industry, and an editor's change that keeps the sum keeps a stale order in a running game
+    that a loaded one does not have. A test first; a key that tells such changes apart.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8s1 Wings built (found by 5.8b: SPEC §6.3 has them, the rules refuse them): an air
+    template ordered as a land one is, delivered at an airbase its nation holds with room (none:
+    refused).
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8s2 The economic AI keeps its air force, a share of its army's upkeep. Until then a
+    nation's air force only shrinks.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8t1 Air superiority's other effects (SPEC §6.3, found by 5.8b), each a factor of the
+    zone's superiority, 1 at a half, as the land's fire (ADR-316): a formation's supply in a zone
+    the enemy holds the air of.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8u1 The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut
+    off.
