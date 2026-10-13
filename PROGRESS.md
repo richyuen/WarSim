@@ -14544,3 +14544,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin:** the sim is not changed.
 - **The gate:** green (the related unit tests, 20 of 20; the new spec).
 - **Next:** PLAN 4.10b.
+
+## 2026-10-13 — PLAN 4.10b: a sea battle is seen while it lasts (ADR-303)
+
+- **Done:** the snapshot's `seas`; a mark for each sea battle at T0 to T2 (disc, crossed guns,
+  a ring round its fleets); the ticker lists the battles going on, a click flies to both fleets
+  at T2. SPEC §8 says so.
+- **Tests:** `seaBattleSeen1938.spec.ts` (1.5 min, by hand); by hand `seaBattle1938`, `ticker1938`,
+  `navalDemo1938`, 5 of 6, red only by the ticker's 1,100 px test of BLOCKERS.
+- **The pin:** the sim is not changed.
+- **The gate:** the related unit tests 284 of 285, red only by `snapshot-perf` (2.05 to 2.38 ms
+  with the `seas` of the snapshot, 2.72 to 2.79 ms at HEAD, three runs each); the pin, build and
+  parity green by hand.
+- **Next:** PLAN 4.10c.

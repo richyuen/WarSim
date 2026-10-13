@@ -7330,3 +7330,21 @@ Of 4.10 (open in PLAN.md):
   - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a
     ship glyph and the navy's colour of frame. e2e: pixels of a fleet's counter differ from an
     army's at the same zoom.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.10 (open in PLAN.md):
+
+  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed
+    guns on the water) for every battle of `world.seaBattles`, and its row in the ticker flies
+    to a view of both fleets. e2e: the first battle of seed 6131's war is marked through its
+    hours, and the view from its row has both fleets and draws their fire within its hours.

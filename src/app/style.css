@@ -841,3 +841,7 @@ body {
   color: #f4d58d;
   font-size: 0.78rem;
 }
+/* The sea battles going on (PLAN 4.10b). */
+.ticker-row.sea-battle {
+  border-left-color: #8ec5ff;
+}

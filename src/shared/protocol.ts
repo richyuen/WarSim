@@ -265,6 +265,11 @@ export interface Snapshot {
   elements: SnapshotElements;
   /** Active Major Battles as flat [x, y, …] (battle markers, PLAN 2.1). */
   majors: Float32Array;
+  /**
+   * The sea battles going on (PLAN 4.10b), SEA_STRIDE each: [x, y, r, a, b]: its place, the cells
+   * from it to its furthest fleet, and its two sides' leaders.
+   */
+  seas: Float32Array;
   events: SnapshotEvents;
   fires: SnapshotFires;
   /** Every pooled buffer backing the arrays above, transferred to main and returned on ack. */
@@ -576,3 +581,6 @@ export interface OrderNews {
   y: number;
   tick: number;
 }
+
+/** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
+export const SEA_STRIDE = 5;

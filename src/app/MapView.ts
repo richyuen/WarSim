@@ -10,6 +10,7 @@ import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, streng
 import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
+import { drawSeaBattles } from '../render/units/seaBattles';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -34,7 +35,7 @@ import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, t
 import { t, type MessageKey } from '../ui/i18n';
 import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
-import { NATION_STRIDE, NationField, type Snapshot } from '../shared/protocol';
+import { NATION_STRIDE, NationField, SEA_STRIDE, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
@@ -419,6 +420,13 @@ export class MapView {
     this.formWayStart = f.wayStart.slice(0, f.count + 1);
     this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
+    this.seas = s.seas.slice();
+    // The sea battles going on, for the ticker (PLAN 4.10b): told when the set changes.
+    const seaKey = Array.from(this.seas, (v, k) => (k % SEA_STRIDE < 3 ? Math.round(v) : v)).join(',');
+    if (seaKey !== this.seaKey) {
+      this.seaKey = seaKey;
+      this.onSeaBattles(this.seaBattles());
+    }
     // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk).
     let dropped = false;
     for (const id of this.selectedFormations) {
@@ -625,6 +633,19 @@ export class MapView {
   private formWayStart = new Uint32Array(1);
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
+  private seas = new Float32Array(0);
+  private seaKey = '';
+  /** Called when the sea battles going on change (PLAN 4.10b; the ticker's rows). */
+  onSeaBattles: (battles: SeaBattleView[]) => void = () => {};
+  /** Where the sea battles' marks were drawn in the last frame (tests). */
+  seaMarks: { x: number; y: number }[] = [];
+
+  /** The sea battles going on, from the last snapshot (PLAN 4.10b). */
+  seaBattles(): SeaBattleView[] {
+    const out: SeaBattleView[] = [];
+    for (let i = 0; i + SEA_STRIDE <= this.seas.length; i += SEA_STRIDE) out.push({ x: this.seas[i]!, y: this.seas[i + 1]!, r: this.seas[i + 2]!, a: this.seas[i + 3]!, b: this.seas[i + 4]! });
+    return out;
+  }
   private templates: TemplateInfo[] = [];
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
   markerRects: PlacedMarker[] = [];
@@ -1193,6 +1214,8 @@ export class MapView {
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
+    // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
+    this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);
     if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) {
       // No markers: the next ones take their places in their stacks at once.
       this.markerStacks.clear();
@@ -1725,4 +1748,13 @@ export class MapView {
     cancelAnimationFrame(this.raf);
     this.controller.dispose();
   }
+}
+
+/** A sea battle going on, as the page has it (PLAN 4.10b): its place, the cells to its furthest fleet, its two sides' leaders. */
+export interface SeaBattleView {
+  x: number;
+  y: number;
+  r: number;
+  a: number;
+  b: number;
 }

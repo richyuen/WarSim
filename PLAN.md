@@ -39,10 +39,7 @@ quick sweep as a smoke test.
   pass in five seconds, each hour's shots in a part of it, and in this container a sample came
   every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
   - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
-  - [ ] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed
-    guns on the water) for every battle of `world.seaBattles`, and its row in the ticker flies
-    to a view of both fleets. e2e: the first battle of seed 6131's war is marked through its
-    hours, and the view from its row has both fleets and draws their fire within its hours.
+  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
   - [ ] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the
     zone under the cursor named with its holder. e2e.
   - [ ] 4.10d The AT's specs (above), and the tick of 4.10.

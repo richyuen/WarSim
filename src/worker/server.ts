@@ -1263,6 +1263,15 @@ export class SimServer {
     const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
     for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
+    // The sea battles (PLAN 4.10b): the place, the cells to the furthest fleet, the two sides.
+    const fc0 = world.formations.cols;
+    const seas = Float32Array.from(
+      world.seaBattles.flatMap((b) => {
+        let r = 0;
+        for (const f of b.fleets) if (world.formations.has(f)) r = Math.max(r, Math.hypot(wrapDx(world, b.x, fc0.x[f]!), fc0.y[f]! - b.y));
+        return [b.x, b.y, r, b.a, b.b];
+      }),
+    );
     const elements = this.elementSection(world, buffers);
 
     // Events: global ones always, spatial ones only inside the subscribed bbox.
@@ -1301,6 +1310,7 @@ export class SimServer {
       wars,
       formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
+      seas,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },
       fires: { count: fq.length / FIRE_STRIDE, data: fires, dropped: this.droppedFires },

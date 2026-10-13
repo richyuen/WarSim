@@ -2031,7 +2031,10 @@ flag that would cover a counter stands just above it instead (up to 40 px from i
 else it is left out), so no counter's number is hidden (PLAN 1.45c). A nation's fleets are
 counters of their own (PLAN 4.10a, ADR-302): clustered and folded among themselves apart from
 its armies (as another nation's would be, `NAVAL` added to the nation), and drawn as a navy's,
-a sea-blue box and frame with a hull under the strength, the nation's flag in the chip. A destroyed nation has no
+a sea-blue box and frame with a hull under the strength, the nation's flag in the chip. A sea
+battle going on is marked at its place at T0 to T2 (PLAN 4.10b, ADR-303; `seas` of the snapshot:
+place, cells to its furthest fleet, its sides): a navy-blue disc with crossed guns over a wave,
+and a dashed ring round the water its fleets are on; it is gone with the figures of T3. A destroyed nation has no
 flag: the snapshot says which nations live (PLAN 2.7g).
 
 *T0 implemented (PLAN 2.2, `src/render/units/counters.ts`, ADR-45):* counters per nation per
@@ -2570,6 +2573,9 @@ on screen.
     division aboard keeps its voyage; ADR-301). The page keeps the last 4 (beside a panel the
     last one); a click flies to the formation and forgets the row; the formation's panel shows
     its last (`formation-notice`).
+  - Before the orders, the sea battles going on (PLAN 4.10b, ADR-303): "Sea battle: <side>
+    against <side>" from each snapshot's `seas`; a click flies to a T2 view of both fleets
+    (`showBattle`, the span the cells across them).
   - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
     last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at

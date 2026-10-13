@@ -11,6 +11,7 @@ import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/sp
 import type { Command } from '../shared/commands';
 import type { NationStats, SimClient } from './simClient';
 import type { FormationDetail, OrderNews, TechInfo, TemplateInfo } from '../shared/protocol';
+import type { SeaBattleView } from './MapView';
 import type { EditorState } from '../shared/editorState';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
@@ -58,6 +59,8 @@ export class Hud {
 
   /** Brings the place of an event into view (a click on a row of the ticker, PLAN 3.12c); main wires it to the map view. */
   onShowPlace: (x: number, y: number) => void = () => {};
+  /** The sea battles going on (PLAN 4.10b): the ticker lists them, a click flies to both fleets. */
+  readonly seaBattles = signal<SeaBattleView[]>([]);
 
   /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
   toBattle(war: number): void {

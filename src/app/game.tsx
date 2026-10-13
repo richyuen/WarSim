@@ -47,6 +47,8 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     hud.onSelectNation = (id) => view.select(id);
     hud.onShowBattle = (x, y, span, fight) => view.showBattle(x, y, span, fight);
     hud.onShowPlace = (x, y) => view.showPlace(x, y);
+    // The sea battles going on, for the ticker (PLAN 4.10b).
+    view.onSeaBattles = (b) => (hud.seaBattles.value = b);
     // The formation whose panel is open is marked on the map (PLAN 2.14f3), however the panel
     // was closed: a click on ground, its button, the nation's chip, or the formation's end.
     effect(() => {

@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-303 · 2026-10-13 · accepted — A sea battle is seen while it lasts (PLAN 4.10b)
+
+- **Found** (the critic's R4-B4; PLAN 4.10's split): on seed 6131 the sim fires at sea and the
+  page draws the shots, but a five-hour battle is five seconds at ×1, its shots are small and
+  each hour's last a part of its second; nothing stood for a sea battle on the map.
+- **Decision.** The snapshot carries the sea battles going on (`seas`, `SEA_STRIDE` 5: place,
+  cells to the furthest fleet, the two sides). The map marks each at T0 to T2 (a navy-blue disc
+  with crossed guns over a wave, a dashed ring round its fleets' water; faded with the figures of
+  T3). The ticker lists them before the orders' news ("Sea battle: <side> against <side>"), from
+  the view's set when it changes; a click flies to a T2 view of both fleets (`showBattle`'s span).
+- **Not done:** a sea battle's row stays only while it goes on: its end is in the history log
+  (`SeaBattle`), as before.
+- **Tests.** `seaBattleSeen1938.spec.ts`: the critic's war, seed 6131: the first battle marked at
+  T0 and listed; its row flies over it; marked in its hours there, and its fire drawn. Pictures
+  `sea-battle-mark-t0.png`, `sea-battle-t2.png`.
+
 ### ADR-302 · 2026-10-13 · accepted — A fleet's counter at T0 is a navy's (PLAN 4.10a)
 
 - **Found** (the critic's R4-B4): at T0 a fleet's counter was drawn as an army's, and a

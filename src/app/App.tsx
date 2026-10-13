@@ -5,7 +5,7 @@ import { HistoryPanel } from '../ui/HistoryPanel';
 import { StatsChart } from '../ui/StatsChart';
 import { EditorPanel } from '../ui/EditorPanel';
 import { dateOfTick } from '../shared/calendar';
-import { t, type MessageKey } from '../ui/i18n';
+import { displayName, t, type MessageKey } from '../ui/i18n';
 import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
@@ -67,6 +67,10 @@ export function App({
   const orderNews = hud.orderNews.value;
   const orderName = (id: number): string => (view ? view.formationTitle(id)?.name : undefined) ?? t('order.aFormation');
   const orders = orderNews.map((n) => ({ seq: n.seq, kind: n.kind, text: orderNewsText(n, orderName(n.id)) }));
+  // The sea battles going on (PLAN 4.10b), each by its two sides' names.
+  const seaBattles = hud.seaBattles.value;
+  const seaKey = (b: { x: number; y: number; a: number; b: number }): string => `${b.a}-${b.b}-${Math.round(b.x)}-${Math.round(b.y)}`;
+  const seas = seaBattles.map((b) => ({ key: seaKey(b), text: t('ticker.seaBattle', { a: displayName(byId.get(b.a)?.name ?? '?'), b: displayName(byId.get(b.b)?.name ?? '?') }) }));
   const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;
   return (
     <>
@@ -99,6 +103,12 @@ export function App({
           startDay={hud.startDay}
           onPlace={(x, y) => hud.onShowPlace(x, y)}
           orders={orders}
+          seas={seas}
+          onSea={(key) => {
+            const b = seaBattles.find((s) => seaKey(s) === key);
+            // A view of both fleets, within T2 (`showBattle`'s span: the cells across them).
+            if (b) hud.onShowBattle(b.x, b.y, [2 * b.r + 2, 2 * b.r + 2]);
+          }}
           onOrder={(seq) => {
             const n = orderNews.find((o) => o.seq === seq);
             hud.dismissOrderNews(seq);

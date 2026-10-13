@@ -23,6 +23,8 @@ export function Ticker({
   onPlace,
   orders = [],
   onOrder = () => {},
+  seas = [],
+  onSea = () => {},
 }: {
   rows: TickerRow[];
   short: boolean;
@@ -31,6 +33,9 @@ export function Ticker({
   /** What became of the player's orders (PLAN 4.9c), after the events: beside a panel the last only. */
   orders?: { seq: number; kind: string; text: string }[];
   onOrder?: (seq: number) => void;
+  /** The sea battles going on (PLAN 4.10b), before the orders: beside a panel the first only. */
+  seas?: { key: string; text: string }[];
+  onSea?: (key: string) => void;
 }) {
   return (
     <div class={short ? 'ticker short' : 'ticker'} data-testid="ticker" role="log" aria-live="polite" aria-label={t('ticker.title')}>
@@ -47,6 +52,13 @@ export function Ticker({
             </li>
           );
         })}
+        {(short ? seas.slice(0, 1) : seas).map((b) => (
+          <li key={`sea-${b.key}`}>
+            <button type="button" class="ticker-row sea-battle" data-testid="sea-battle-row" title={t('ticker.toSeaBattle')} onClick={() => onSea(b.key)}>
+              <span class="ticker-line">{'⚓'} {b.text}</span>
+            </button>
+          </li>
+        ))}
         {(short ? orders.slice(-1) : orders).map((o) => (
           <li key={`order-${o.seq}`}>
             <button type="button" class="ticker-row order-news" data-testid="order-news" data-order={o.kind} title={t('order.toFormation')} onClick={() => onOrder(o.seq)}>
