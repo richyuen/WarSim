@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-300 · 2026-10-13 · accepted — The page says what became of a player's order (PLAN 4.9c)
+
+- **Context** (the critic's R4-B2): a refused order, a landing thrown back and troops brought
+  back by transports that broke off reached no screen: the critic's division sailed to Germany
+  and came ashore in England with no word.
+- **Decision.** The worker keeps the formations a player's order names (`moveFormation` with its
+  nation) with the order's cell, and from each tick's events posts `orderNews` at once, not with
+  the stats (a refusal after a click must not wait for them, and the stats do not come while
+  paused): `refused` (with the `RejectReason`), `repulsed` (`LandingRepulsed`), `landedAway`
+  (`FormationLanded` more than `AT_PORT_CELLS` from the order's cell). It forgets an order when
+  refused, at a landing, at an arrival on land with no order over the sea kept, at the
+  formation's end, and at a new game or a load. The page keeps the last 4 in the ticker below
+  its events (the last one beside a panel), in words with the formation's name; a click flies
+  to the formation and forgets the row; the formation's panel shows its last. An AI's order
+  and God Mode's spawn tell nothing.
+- **Tests.** `serverOrderNews.test.ts`: a player's refused order is told at once with its
+  reason, an order with no nation is not; the critic's landing of seed 2207 is told thrown back,
+  then ashore away. `orderNews1938.spec.ts`: Switzerland, played, orders a division to London:
+  the ticker says "no port" within a second, the panel too, a click forgets the row.
+
 ### ADR-299 · 2026-10-13 · accepted — A player's order over the sea from inland goes by a port; a formation is at a port by its city too (PLAN 4.9b)
 
 - **Found** (the critic's R4-B2): a British division in London ordered onto Germany did nothing:

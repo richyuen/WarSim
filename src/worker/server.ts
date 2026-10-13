@@ -22,6 +22,7 @@ import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
+import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -41,6 +42,7 @@ import {
   type Inspection,
   type WarBattle,
   type WarStat,
+  type OrderNews,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
@@ -141,6 +143,8 @@ export class SimServer {
   private seaHoldersSent = '';
   /** Whether the page was last sent a zone held by someone: kept over a load, which it outlives. */
   private seaShown = false;
+  /** The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is told. */
+  private ordered = new Map<number, number>();
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -201,6 +205,8 @@ export class SimServer {
           console.warn(`sim worker: refused a command of an unknown kind: ${JSON.stringify(msg.cmd)?.slice(0, 120)}`);
           break;
         }
+        // A player's order of a formation (it names its nation): what becomes of it is told (PLAN 4.9c).
+        if (msg.cmd.kind === 'moveFormation' && msg.cmd.nation !== undefined) this.ordered.set(msg.cmd.id, Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x));
         // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
         // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
         if (msg.now) {
@@ -256,6 +262,7 @@ export class SimServer {
         this.unrestVersion = -1;
         this.seaZonesSent = null;
         this.seaHoldersSent = '';
+        this.ordered.clear();
         this.statsTick = -1;
         this.lastStatsMs = -1;
         this.resetStreams();
@@ -341,6 +348,7 @@ export class SimServer {
     this.unrestVersion = -1;
     this.seaZonesSent = null;
     this.seaHoldersSent = '';
+    this.ordered.clear();
     this.statsTick = -1;
     this.lastStatsMs = -1;
     this.flagsSent = -1;
@@ -937,6 +945,7 @@ export class SimServer {
       // A refusal goes to the page at once and whatever it looks at: the panel that sent the
       // command says why (PLAN 2.17a).
       if (ev[i + 1] === EventKind.CommandRefused) this.post({ type: 'refused', reason: b }, []);
+      if (this.ordered.size > 0) this.orderNews(world, ev, i);
       if (ev[i + 1] === EventKind.ElementDestroyed) {
         // The end of an element is for a view that draws elements (PLAN 2.4b); it gets what the
         // unit leaves behind in place of the unit.
@@ -951,6 +960,37 @@ export class SimServer {
     if (over > 0) {
       this.eventQueue.splice(0, over * EVENT_STRIDE);
       this.droppedEvents += over;
+    }
+  }
+
+  /**
+   * What became of a player's order (PLAN 4.9c), told at once: a refusal with its reason, a
+   * landing thrown back, troops ashore more than `AT_PORT_CELLS` from the order's cell. The order
+   * is forgotten when refused, at a landing, at an arrival on land and at the formation's end.
+   */
+  private orderNews(world: World, ev: number[], i: number): void {
+    const kind = ev[i + 1]!;
+    const id = ev[i + 2]!;
+    const target = this.ordered.get(id);
+    if (target === undefined) return;
+    const c = world.formations.cols;
+    const w = world.cells.w;
+    const tell = (k: OrderNews['kind'], reason: number): void => {
+      const has = world.formations.has(id);
+      this.post({ type: 'orderNews', news: { kind: k, id, nation: has ? c.nation[id]! : ev[i + 3]!, reason, x: has ? c.x[id]! : ev[i + 4]!, y: has ? c.y[id]! : ev[i + 5]!, tick: ev[i]! } }, []);
+    };
+    if (kind === EventKind.MoveRejected) {
+      tell('refused', ev[i + 4]!);
+      this.ordered.delete(id);
+    } else if (kind === EventKind.LandingRepulsed) {
+      tell('repulsed', 0);
+    } else if (kind === EventKind.FormationLanded) {
+      const dx = Math.abs(Math.floor(ev[i + 4]!) - (target % w));
+      const dy = Math.abs(Math.floor(ev[i + 5]!) - Math.floor(target / w));
+      if (Math.min(dx, w - dx) > AT_PORT_CELLS || dy > AT_PORT_CELLS) tell('landedAway', 0);
+      this.ordered.delete(id);
+    } else if (kind === EventKind.FormationDestroyed || (kind === EventKind.FormationArrived && !world.seaBound.has(id) && !world.afloat(id))) {
+      this.ordered.delete(id);
     }
   }
 

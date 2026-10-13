@@ -19,6 +19,7 @@ function hudOnStub(): { hud: Hud; stats: (living: number[], dead: number[]) => v
     onMapLayers: on,
     onLoad: on,
     onSnapshotReceived: on,
+    onOrderNews: on,
     onRefused: (l: (reason: number) => void) => {
       refused = l;
       return () => undefined;

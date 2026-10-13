@@ -7264,3 +7264,20 @@ Of 4.9 (open in PLAN.md):
     port with transports that have room for it, embarks there and sails (the sea order kept
     as state while it marches, saved). Unit test: London to the German coast; a save loaded
     on the march.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.9 (open in PLAN.md):
+
+  - [x] 4.9c The page says what became of an order: a refused one's reason by the formation
+    and in the ticker within a second; a landing thrown back; transports that broke off and
+    brought their troops ashore elsewhere. e2e.

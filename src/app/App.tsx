@@ -10,6 +10,7 @@ import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
 import { Ticker } from '../ui/Ticker';
+import { orderNewsText } from '../ui/orderNewsText';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
 import type { PlayerControl } from './player';
@@ -62,6 +63,11 @@ export function App({
   const nation = byId.get(hud.selected.value) ?? null;
   // The formation panel (PLAN 2.14b) stands in the nation panel's place while a formation is picked.
   const formationTitle = view && hud.formation.value !== 0 ? view.formationTitle(hud.formation.value) : null;
+  // What became of the player's orders (PLAN 4.9c), in words, with the formation's name as its tag has it.
+  const orderNews = hud.orderNews.value;
+  const orderName = (id: number): string => (view ? view.formationTitle(id)?.name : undefined) ?? t('order.aFormation');
+  const orders = orderNews.map((n) => ({ seq: n.seq, kind: n.kind, text: orderNewsText(n, orderName(n.id)) }));
+  const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;
   return (
     <>
       <TopBar />
@@ -86,7 +92,20 @@ export function App({
         playing={player && player.nation.value !== 0 ? { name: nameOf(player.nation.value) ?? `#${player.nation.value}`, selected: player.selectedCount.value } : null}
       />
       {/* Before the panels of the centre, which are drawn over a row of banners that reaches them (PLAN 3.12Rh5). */}
-      {stats ? <Ticker rows={stats.ticker} short={formationTitle !== null || nation !== null} startDay={hud.startDay} onPlace={(x, y) => hud.onShowPlace(x, y)} /> : null}
+      {stats ? (
+        <Ticker
+          rows={stats.ticker}
+          short={formationTitle !== null || nation !== null}
+          startDay={hud.startDay}
+          onPlace={(x, y) => hud.onShowPlace(x, y)}
+          orders={orders}
+          onOrder={(seq) => {
+            const n = orderNews.find((o) => o.seq === seq);
+            hud.dismissOrderNews(seq);
+            if (n) hud.onShowPlace(n.x, n.y);
+          }}
+        />
+      ) : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {hud.showSettings.value ? (
         <SettingsPanel
@@ -201,6 +220,7 @@ export function App({
           }}
           onFight={() => hud.toFight()}
           onClose={() => hud.selectFormation(0)}
+          notice={lastOrder ? orderNewsText(lastOrder, formationTitle.name) : null}
         />
       ) : nation ? (
         <NationPanel

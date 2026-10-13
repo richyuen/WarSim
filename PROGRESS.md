@@ -14493,3 +14493,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   by sea: its march is now ordered as the AI's (still refused), and the command checked to go by
   a port (ADR-299); the file then 34 of 34; the pin, lint, build and parity green by hand.
 - **Next:** PLAN 4.9c.
+
+## 2026-10-13 — PLAN 4.9c: the page says what became of a player's order (ADR-300)
+
+- **Done:** the worker's `orderNews` (at once, for the formations a player ordered): a refusal
+  with its reason, a landing thrown back, troops ashore away from the target. The ticker shows
+  the last 4 below its events (a click flies to the formation and forgets the row), the
+  formation's panel its last. SPEC §8 (the ticker) says so.
+- **Tests:** `serverOrderNews.test.ts` (2), `orderNews1938.spec.ts` (1, run by hand: 28 s).
+- **The pin:** the sim is not changed.
+- **The gate:** first red by the two HUD tests' stub clients, which lacked the new listener
+  (`onOrderNews` added to both; no assertion changed); then the related unit tests 284 of 285, red
+  only by `snapshot-perf` of BLOCKERS; the pin, build, the new spec and parity green by hand. By
+  hand too: `ticker1938` and `formationPanel1938`, 7 of 8, red only by the ticker's 1,100 px test
+  of BLOCKERS.
+- **Next:** PLAN 4.9d.

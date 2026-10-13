@@ -331,6 +331,12 @@ export type FromWorker =
   | { type: 'snapshot'; snap: Snapshot }
   /** A command was not carried out; `reason` is a `Refusal` (shared/commands; PLAN 2.17a). */
   | { type: 'refused'; reason: number }
+  /**
+   * What became of a player's order of a formation (PLAN 4.9c), at once: `refused` (`reason`, a
+   * `RejectReason`), a landing thrown back (`repulsed`), or troops ashore away from the order's
+   * target (`landedAway`: their transports broke off). (`x`, `y`): the formation's place then.
+   */
+  | { type: 'orderNews'; news: OrderNews }
   | { type: 'provinces'; reqId: number; result: ProvinceBuildResult }
   | { type: 'terrain'; reqId: number; result: TerrainBuildResult }
   | { type: 'political'; reqId: number; result: PoliticalBuildResult }
@@ -557,4 +563,16 @@ export interface WarStat {
    * ADR-96; `warsWithBattle`). True where `warBattle` has an answer, as of this message's tick.
    */
   battle: boolean;
+}
+
+/** What became of a player's order (PLAN 4.9c; `orderNews`). */
+export interface OrderNews {
+  kind: 'refused' | 'repulsed' | 'landedAway';
+  id: number;
+  nation: number;
+  /** A `RejectReason` for `refused`, else 0. */
+  reason: number;
+  x: number;
+  y: number;
+  tick: number;
 }

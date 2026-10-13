@@ -13,8 +13,25 @@ const TICKER_SHORT = 2;
  * `short` (a panel stands above it on the left): the last TICKER_SHORT rows only, each of two
  * lines at most (PLAN 3.12Rh): the panel leaves the room of two rows of two lines, and a long
  * name would put a third over the panel's foot.
+ * Below the events, what became of the player's orders of formations (PLAN 4.9c): a click flies
+ * to the formation and forgets the row.
  */
-export function Ticker({ rows, short, startDay, onPlace }: { rows: TickerRow[]; short: boolean; startDay: number; onPlace: (x: number, y: number) => void }) {
+export function Ticker({
+  rows,
+  short,
+  startDay,
+  onPlace,
+  orders = [],
+  onOrder = () => {},
+}: {
+  rows: TickerRow[];
+  short: boolean;
+  startDay: number;
+  onPlace: (x: number, y: number) => void;
+  /** What became of the player's orders (PLAN 4.9c), after the events: beside a panel the last only. */
+  orders?: { seq: number; kind: string; text: string }[];
+  onOrder?: (seq: number) => void;
+}) {
   return (
     <div class={short ? 'ticker short' : 'ticker'} data-testid="ticker" role="log" aria-live="polite" aria-label={t('ticker.title')}>
       <ol>
@@ -30,6 +47,13 @@ export function Ticker({ rows, short, startDay, onPlace }: { rows: TickerRow[]; 
             </li>
           );
         })}
+        {(short ? orders.slice(-1) : orders).map((o) => (
+          <li key={`order-${o.seq}`}>
+            <button type="button" class="ticker-row order-news" data-testid="order-news" data-order={o.kind} title={t('order.toFormation')} onClick={() => onOrder(o.seq)}>
+              <span class="ticker-line">{o.text}</span>
+            </button>
+          </li>
+        ))}
       </ol>
     </div>
   );

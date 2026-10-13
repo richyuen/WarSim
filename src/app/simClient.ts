@@ -22,6 +22,7 @@ import type {
   Subscription,
   TerrainBuildResult,
   ToWorker,
+  OrderNews,
 } from '../shared/protocol';
 
 /** Static map layers sent by the worker (PLAN 1.28b). */
@@ -116,6 +117,10 @@ export class SimClient {
     }
     if (msg.type === 'refused') {
       for (const l of this.refusedListeners) l(msg.reason);
+      return;
+    }
+    if (msg.type === 'orderNews') {
+      for (const l of this.orderNewsListeners) l(msg.news);
       return;
     }
     const p = this.pending.get(msg.reqId);
@@ -290,6 +295,13 @@ export class SimClient {
     const r = await this.request({ type: 'buildPolitical', assetBase, w, h });
     if (!('political' in r)) throw new Error('unexpected reply to buildPolitical');
     return r.political;
+  }
+
+  private readonly orderNewsListeners = new Set<(news: OrderNews) => void>();
+  /** What became of a player's order of a formation (PLAN 4.9c). */
+  onOrderNews(l: (news: OrderNews) => void): () => void {
+    this.orderNewsListeners.add(l);
+    return () => this.orderNewsListeners.delete(l);
   }
 
   private readonly refusedListeners = new Set<(reason: number) => void>();

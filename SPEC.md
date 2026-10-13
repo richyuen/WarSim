@@ -2559,6 +2559,12 @@ on screen.
   (`TICKER_KINDS`: a war declared, a peace, a war ended by a bond, a capital taken, a nation
   destroyed, collapsed, annexed or returned) as they happen, bottom left above the bar, the newest last, a live
   region (`role="log"`).
+  - Below the events, what became of the player's orders of formations (PLAN 4.9c, ADR-300):
+    the worker remembers each formation a player's `moveFormation` names and tells the page at
+    once (`orderNews`, not with the stats) a refusal with its reason (`RejectReason`), a landing
+    thrown back, and troops ashore more than 3 cells from the order's cell (their transports
+    broke off). The page keeps the last 4 (beside a panel the last one); a click flies to the
+    formation and forgets the row; the formation's panel shows its last (`formation-notice`).
   - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
     last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at

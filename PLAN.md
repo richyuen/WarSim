@@ -41,9 +41,7 @@ quick sweep as a smoke test.
   sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
   - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard, […]
   - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest […]
-  - [ ] 4.9c The page says what became of an order: a refused one's reason by the formation
-    and in the ticker within a second; a landing thrown back; transports that broke off and
-    brought their troops ashore elsewhere. e2e.
+  - [x] 4.9c The page says what became of an order: a refused one's reason by the formation […]
   - [ ] 4.9d The AT's spec (above), and the tick of 4.9.
 - [ ] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
   is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few

@@ -26,6 +26,7 @@ export function FormationPanel({
   onNation,
   onFight,
   onClose,
+  notice = null,
 }: {
   /** Null while the first answer is on its way. */
   info: FormationDetail | null;
@@ -38,6 +39,8 @@ export function FormationPanel({
   /** To where it fights (PLAN 3.11b): the button stands by the status of a formation in contact. */
   onFight: () => void;
   onClose: () => void;
+  /** What became of the player's last order of it (PLAN 4.9c), or null. */
+  notice?: string | null;
 }) {
   const row = (label: MessageKey, value: string, testid: string) => (
     <div class="panel-row">
@@ -90,6 +93,11 @@ export function FormationPanel({
               ) : null}
             </span>
           </div>
+          {notice ? (
+            <div class="panel-row formation-notice" data-testid="formation-notice" role="status">
+              {notice}
+            </div>
+          ) : null}
           <div class="panel-sub">{t('formation.elements')}</div>
           <table class="formation-units" data-testid="formation-units">
             <tbody>
