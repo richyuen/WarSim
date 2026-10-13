@@ -14960,3 +14960,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (806 of 809) red only by the three timing tests of
   BLOCKERS (3,240 ms, 2.76 ms, 26.0 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8p.
+
+## 2026-10-13 — PLAN 5.8p: a broken test file is red in the review (ADR-340)
+
+- **Done:** `check:review` takes a file failed with no failed test, Playwright's errors outside
+  every test, and a failed run naming no red as red (`FILE_RED`, `runRed`).
+- **Tests:** `gateReview` (1 more; failed before).
+- **The pin holds** at ae18ce8c.
+- **The gate:** green (the related unit tests, 25).
+- **Next:** PLAN 5.8q.

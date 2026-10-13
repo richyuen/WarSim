@@ -67,12 +67,17 @@ export function outOfKey(file: string): boolean {
   return file.endsWith('.md') || file.startsWith('docs/') || file.startsWith('critic/') || file === KNOWN;
 }
 
-/** The ids of the tests red in a vitest JSON report: `<file> › <full name>`. */
-export function vitestRed(report: { testResults?: { name: string; assertionResults?: { fullName: string; status: string }[] }[] }): string[] {
+/** A file red with no test of it red (it failed to load, or a hook threw): its id is `<file> › (the file)` (PLAN 5.8p). */
+export const FILE_RED = '(the file)';
+
+/** The ids of the tests red in a vitest JSON report: `<file> › <full name>`; a file failed with no failed test, `<file> › (the file)`. */
+export function vitestRed(report: { testResults?: { name: string; status?: string; assertionResults?: { fullName: string; status: string }[] }[] }): string[] {
   const out: string[] = [];
   for (const f of report.testResults ?? []) {
     const file = path.relative(ROOT, f.name).split(path.sep).join('/');
+    const before = out.length;
     for (const a of f.assertionResults ?? []) if (a.status === 'failed') out.push(`${file} › ${a.fullName}`);
+    if (out.length === before && f.status === 'failed') out.push(`${file} › ${FILE_RED}`);
   }
   return out;
 }
@@ -84,8 +89,12 @@ interface PwSuite {
   specs?: { title: string; ok: boolean; file: string }[];
 }
 
-/** The ids of the tests red in a Playwright JSON report: `tests/e2e/<file> › <describe › … › title>`. */
-export function playwrightRed(report: { suites?: PwSuite[] }): string[] {
+/**
+ * The ids of the tests red in a Playwright JSON report: `tests/e2e/<file> › <describe › … › title>`;
+ * an error of the run outside every test (a spec that fails to load), `tests/e2e/<file> › (the
+ * file)` where it names its file, else `stage:playwright` (PLAN 5.8p).
+ */
+export function playwrightRed(report: { suites?: PwSuite[]; errors?: { location?: { file?: string } }[] }): string[] {
   const out: string[] = [];
   const walk = (s: PwSuite, titles: string[]): void => {
     for (const spec of s.specs ?? []) if (!spec.ok) out.push(`tests/e2e/${spec.file} › ${[...titles, spec.title].join(' › ')}`);
@@ -93,7 +102,17 @@ export function playwrightRed(report: { suites?: PwSuite[] }): string[] {
   };
   // A file's suite is titled by its path: not a title of the test.
   for (const f of report.suites ?? []) walk(f, []);
+  for (const e of report.errors ?? []) {
+    const at = e.location?.file;
+    const id = at ? `${path.relative(ROOT, path.resolve(ROOT, 'tests/e2e', at)).split(path.sep).join('/')} › ${FILE_RED}` : 'stage:playwright';
+    if (!out.includes(id)) out.push(id);
+  }
   return out;
+}
+
+/** A run's red ids, with one for the run itself where it failed and named no red (PLAN 5.8p: a non-zero exit is red). */
+export function runRed(red: string[], ok: boolean, stage: string): string[] {
+  return ok || red.length > 0 ? red : [`stage:${stage}`];
 }
 
 /** The file of a test id. */
@@ -169,27 +188,28 @@ function readJson<T>(file: string): T | null {
 }
 
 /** A vitest run (`config` '' for the unit tests) of `files` (all when empty): its red ids, or null when it wrote no report. */
-function vitest(config: string, files: string[]): string[] | null {
+function vitest(config: string, files: string[], stage: string): string[] | null {
   const out = path.join(DIR, 'vitest.json');
   rmSync(out, { force: true });
-  run(`npx vitest run ${config} --reporter=default --reporter=json --outputFile=${out} ${files.join(' ')}`);
+  const ok = run(`npx vitest run ${config} --reporter=default --reporter=json --outputFile=${out} ${files.join(' ')}`);
   const r = readJson<Parameters<typeof vitestRed>[0]>(out);
-  return r === null ? null : vitestRed(r);
+  return r === null ? null : runRed(vitestRed(r), ok, stage);
 }
 
 /** A Playwright run: its red ids, or null when it wrote no report. */
-function playwright(args: string): string[] | null {
+function playwright(args: string, stage: string): string[] | null {
   const out = path.join(DIR, 'playwright.json');
   rmSync(out, { force: true });
-  run(`npx playwright test ${args} --reporter=line,json`, { PLAYWRIGHT_JSON_OUTPUT_NAME: out });
+  const ok = run(`npx playwright test ${args} --reporter=line,json`, { PLAYWRIGHT_JSON_OUTPUT_NAME: out });
   const r = readJson<Parameters<typeof playwrightRed>[0]>(out);
-  return r === null ? null : playwrightRed(r);
+  return r === null ? null : runRed(playwrightRed(r), ok, stage);
 }
 
 /** Red twice: the ids of `first` still red when each of their files is run again alone. */
 function again(first: string[], rerun: (file: string) => string[] | null): string[] {
-  const red: string[] = [];
-  for (const file of [...new Set(first.map(fileOf))]) {
+  // A run's own failure is no file's to run again: red as it stands.
+  const red: string[] = first.filter((t) => t.startsWith('stage:'));
+  for (const file of [...new Set(first.filter((t) => !t.startsWith('stage:')).map(fileOf))]) {
     const second = rerun(file);
     for (const id of first.filter((t) => fileOf(t) === file)) if (second === null || second.includes(id)) red.push(id);
   }
@@ -200,19 +220,19 @@ function step(name: string, specs: string[]): string[] {
   if (['typecheck', 'lint', 'build', 'parity'].includes(name)) return run(`npm run ${name}`) ? [] : [`stage:${name}`];
   if (name === 'test' || name === 'test:sweep') {
     const config = name === 'test' ? '' : '--config vitest.sweep.config.ts';
-    const first = vitest(config, []);
+    const first = vitest(config, [], name);
     if (first === null) return [`stage:${name}`];
-    return again(first, (f) => vitest(config, [f]));
+    return again(first, (f) => vitest(config, [f], name));
   }
   if (name === 'e2e:perf') {
-    const first = playwright('--project=perf --no-deps');
+    const first = playwright('--project=perf --no-deps', name);
     return first === null ? ['stage:e2e:perf'] : first;
   }
   const i = Number(name.slice(4)) - 1;
   const chunk = specs.slice(i * E2E_CHUNK, (i + 1) * E2E_CHUNK);
-  const first = playwright(`--project=chromium ${chunk.join(' ')}`);
+  const first = playwright(`--project=chromium ${chunk.join(' ')}`, name);
   if (first === null) return [`stage:${name}`];
-  return again(first, (f) => playwright(`--project=chromium --workers=1 ${f}`));
+  return again(first, (f) => playwright(`--project=chromium --workers=1 ${f}`, name));
 }
 
 function main(): void {

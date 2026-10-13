@@ -8019,3 +8019,21 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only):
     refused, as any formation that is not of the land.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to
+    import or throws in a hook (vitest: a failed file with no failed test), a spec that fails to
+    load (Playwright's top-level errors), a non-zero exit. Each is red.

@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-340 · 2026-10-13 · accepted — A broken test file is red in the review (PLAN 5.8p)
+
+- **Found** (the eleventh read): `check:review` read red tests alone from the reports. A unit
+  file that failed to import or threw in a hook (vitest: the file failed, no test failed), a
+  spec that failed to load (Playwright: an error outside every test) and a run that exited
+  non-zero with a report naming no red were all green.
+- **Decision.** Such a file is red as `<file> › (the file)` (`FILE_RED`), run again alone as a
+  red test is; an error of Playwright's that names no file is `stage:playwright`; a run that
+  fails and names no red is its stage's red (`runRed`). A stage's red is not run again.
+- **The pin holds:** the gate's, no rule.
+- **Tests.** `gateReview` (1 more; it failed before): the three cases from reports, and a
+  vitest report of a file that fails to import read to be what the rule reads (status
+  `failed`, no test).
+
 ### ADR-339 · 2026-10-13 · accepted — No wing aboard transports (PLAN 5.8o)
 
 - **Found** (the eleventh read): `tryLanding` refused only a formation afloat; an air wing at a

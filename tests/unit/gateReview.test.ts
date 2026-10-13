@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { E2E_CHUNK, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, vitestRed, type ReviewRecord } from '../../tools/gate/review';
+import { E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestRed, type ReviewRecord } from '../../tools/gate/review';
 
 // ADR-297 (the user's decision): the phase review's full run is recorded by `npm run check:review`
 // under a code key, and judged against a list of known reds, so that the commit that ticks the
@@ -56,6 +56,28 @@ describe('npm run check:review (ADR-297)', () => {
       ],
     });
     expect(p).toEqual(['tests/e2e/b.spec.ts › top', 'tests/e2e/b.spec.ts › group › inner']);
+  });
+
+  it('a file red with no test red, a spec that fails to load, a run failed with no red named: each red (PLAN 5.8p)', () => {
+    // A unit file that fails to import, or throws in a hook: failed, no failed test.
+    const v = vitestRed({
+      testResults: [
+        { name: path.join(ROOT, 'tests/unit/broken.test.ts'), status: 'failed', assertionResults: [] },
+        { name: path.join(ROOT, 'tests/unit/hook.test.ts'), status: 'failed', assertionResults: [{ fullName: 'skipped one', status: 'skipped' }] },
+        { name: path.join(ROOT, 'tests/unit/one.test.ts'), status: 'failed', assertionResults: [{ fullName: 'it', status: 'failed' }] },
+        { name: path.join(ROOT, 'tests/unit/fine.test.ts'), status: 'passed', assertionResults: [{ fullName: 'it', status: 'passed' }] },
+      ],
+    });
+    expect(v).toEqual([`tests/unit/broken.test.ts › ${FILE_RED}`, `tests/unit/hook.test.ts › ${FILE_RED}`, 'tests/unit/one.test.ts › it']);
+    // Playwright's errors outside every test: by the file they name, else the run's.
+    const p = playwrightRed({ suites: [], errors: [{ location: { file: path.join(ROOT, 'tests/e2e/c.spec.ts') } }, { location: { file: 'd.spec.ts' } }, {}] });
+    expect(p).toEqual([`tests/e2e/c.spec.ts › ${FILE_RED}`, `tests/e2e/d.spec.ts › ${FILE_RED}`, 'stage:playwright']);
+    // A non-zero exit with no red named is the stage's red; with reds, those; a clean exit, none.
+    expect(runRed([], false, 'test')).toEqual(['stage:test']);
+    expect(runRed(['a › t'], false, 'test')).toEqual(['a › t']);
+    expect(runRed([], true, 'test')).toEqual([]);
+    // And none of these is green against an empty list of known reds.
+    expect(judge(record({ lint: [], test: v, 'e2e:1': p }), []).green).toBe(false);
   });
 
   it('the list of known reds: each test once, of a file that exists, with why it is there', () => {
