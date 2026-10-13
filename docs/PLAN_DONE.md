@@ -7650,3 +7650,20 @@ Of 5.4 (open in PLAN.md):
 
   - [x] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land
     elements there by its aircraft's soft and hard attack; the losses as on the land.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.4 (open in PLAN.md):
+
+  - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by
+    its aircraft's hard attack and piercing against their armour.

@@ -8,10 +8,10 @@
  * `antiAir`): what is below a sortie of an enemy's fires on it.
  */
 import { EventKind } from '../../shared/events';
-import type { World } from '../world';
+import { Domain, type UnitRule, type World } from '../world';
 import { applyLoss, elementIndex, settleFormation } from './elements';
 import { seaKm } from './navalCombat';
-import { effectiveness } from './combat';
+import { ARMOR_PEN, effectiveness } from './combat';
 import { Leg, legHours, sortieAt } from './sorties';
 
 /** The share of an aircraft's air attack that is hit points on a target of defence 1 in an hour. */
@@ -182,14 +182,26 @@ export function antiAir(world: World): void {
  * (PLAN 5.4b), before the target's `hpPerUnit`: per aircraft, as its air attack is.
  */
 export const STRIKE_FIRE = 0.2;
+/**
+ * Hit points an hour of an aircraft per point of its hard attack on a ship, a naval strike's
+ * fire (PLAN 5.4c): a bomb or torpedo on a ship counts in full, where on the land the fire is
+ * spread over men in cover (`STRIKE_FIRE`).
+ */
+export const NAVAL_STRIKE_FIRE = 1;
+
+/** An aircraft's fire on a ship, per point of `NAVAL_STRIKE_FIRE`: its hard attack, halved where the ship's armour beats its piercing. */
+export function shipEffectiveness(us: UnitRule, ut: UnitRule): number {
+  return ut.armor > us.piercing ? us.hard * ARMOR_PEN : us.hard;
+}
 
 /**
  * The hour's strikes (PLAN 5.4b, CAS and tactical bombing): a wing on a strike mission whose
  * sortie reaches its target in this hour (it is there in (tick − 1, tick]) fires once on the
- * land elements of the formations of nations at war with its own within `AA_CELLS` of the
- * target (not wings, fleets or what is aboard). Each squadron's fire is its aircraft × its
+ * elements of the formations of nations at war with its own within `AA_CELLS` of the target:
+ * the land's and fleets' (PLAN 5.4c), not wings, nor what is aboard. Each squadron's fire is its aircraft × its
  * `effectiveness` on the target (soft, or hard on armour, halved where armour beats piercing)
- * × `STRIKE_FIRE`, spread over the elements by their health (strength × hp, as a land element
+ * × `STRIKE_FIRE`, on a ship its `shipEffectiveness` × `NAVAL_STRIKE_FIRE`, spread over the
+ * elements by their health (strength × hp, as a land element
  * picks its targets), in units lost: ÷ the target's `hpPerUnit`; carried as on the land. Run
  * before the hour's air fights, so a sortie turned home in them strikes nothing. Emits
  * `AirStrike` per strike that found a target.
@@ -211,7 +223,8 @@ export function strikes(world: World): void {
     const ty = Math.floor(s.ty);
     const targets: number[] = [];
     world.formations.forEach((g) => {
-      if (world.offLand(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) return;
+      // The land's formations, and fleets (PLAN 5.4c); not wings, nor what is aboard a fleet.
+      if (world.isWing(g) || world.embarked.has(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) return;
       let dx = Math.abs(Math.floor(fc.x[g]!) - tx);
       if (dx > w / 2) dx = w - dx;
       const dy = Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty);
@@ -227,7 +240,8 @@ export function strikes(world: World): void {
       const us = rules.units[ec.unit[e]!]!;
       targets.forEach((t, k) => {
         const ut = rules.units[ec.unit[t]!]!;
-        const units = (ec.strength[e]! * effectiveness(us, ut) * STRIKE_FIRE * health[k]!) / total / ut.hpPerUnit;
+        const fire = ut.domain === Domain.sea ? shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE : effectiveness(us, ut) * STRIKE_FIRE;
+        const units = (ec.strength[e]! * fire * health[k]!) / total / ut.hpPerUnit;
         if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
       });
     }

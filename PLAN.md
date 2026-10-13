@@ -35,8 +35,7 @@ quick sweep as a smoke test.
   reads it; a strike sortie reaches its target and does nothing there. One cause a commit:
   - [x] 5.4a Air superiority in ground combat: a formation's fire × a factor of its nation's […]
   - [x] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land […]
-  - [ ] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by
-    its aircraft's hard attack and piercing against their armour.
+  - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by […]
   - [ ] 5.4d Carrier air groups in fleet battles: a carrier's wings strike the fleets it is in
     battle with, and a fleet with aircraft (a carrier's) sees by them (its detection).
 - [ ] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).

@@ -1767,6 +1767,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about
   117 men of an infantry division a strike.
+- *As built (PLAN 5.4c, ADR-318):* a strike on enemy ships fires its aircraft's hard attack
+  (halved on armour beyond its piercing) × 1 in hit points over the ships in reach by their
+  health; what is aboard is not struck.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

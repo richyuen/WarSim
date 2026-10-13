@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-318 · 2026-10-13 · accepted — Naval strike (PLAN 5.4c)
+
+- **Decision.** `strikes` (ADR-317) takes fleets among its targets: the elements of the formations
+  of nations at war within `AA_CELLS` of the target are the land's and the fleets', not wings nor
+  what is aboard a fleet (`world.embarked`). On a ship a squadron's fire is its aircraft ×
+  `shipEffectiveness` (its hard attack, halved where the ship's armour beats its piercing; a
+  transport and a submarine, armour 0, by it too, not by the soft attack the land's rule would
+  give them) × `NAVAL_STRIKE_FIRE` (1), in hit points, spread over all the elements in reach by
+  their health and ÷ each one's `hpPerUnit`: a fraction of a ship, carried as the sea battle's
+  damage is.
+- **Why** 1 and not the land's 0.2: a bomb or a torpedo on a ship counts in full, where on the
+  land the fire is spread over men in cover. A naval bomber group (24, hard 20, piercing 70) puts
+  480 hp on a fleet: three destroyers' worth, or a quarter of a battleship's (armour 90, halved:
+  240 of 2,000 hp, an eighth).
+- **The pin holds** at 1377ab88.
+- **Tests.** `navalStrike1938.test.ts`: the effectiveness on a destroyer, a battleship, a
+  transport; an Italian naval bomber group on a British fleet by the rule; a transport group hit,
+  the army aboard it not.
+
 ### ADR-317 · 2026-10-13 · accepted — CAS and tactical bombing: a strike sortie fires on what it reaches (PLAN 5.4b)
 
 - **Decision.** `strikes`, in `airSystem` before the hour's air fights:

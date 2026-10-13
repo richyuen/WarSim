@@ -14727,3 +14727,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,046 ms,
   2.04 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.4c.
+
+## 2026-10-13 — PLAN 5.4c: naval strike (ADR-318)
+
+- **Done:** `strikes` fires on the enemy's fleets in reach too: hard attack against armour, in
+  hit points in full (`NAVAL_STRIKE_FIRE` 1). SPEC §6.3, PARITY.
+- **Tests:** `navalStrike1938.test.ts` (3).
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,031 ms,
+  3.49 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.4d.
