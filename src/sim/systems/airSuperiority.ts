@@ -61,6 +61,12 @@ export function airSuperiority(world: World, n: number, zone: number): number {
   return own + enemy === 0 ? 0.5 : own / (own + enemy);
 }
 
+/**
+ * The air's factor on a formation's supply (PLAN 5.8t1): a fed formation gains
+ * `SUPPLY_RATE` × (1 + AIR_SUPPLY × (2s − 1)) an hour, s its nation's superiority in its air zone.
+ */
+export const AIR_SUPPLY = 0.5;
+
 /** An air zone's holder in `airHolders` where two sides at war fly and neither holds it. */
 export const AIR_CONTESTED = 0xffff;
 /** A nation holds the air of a zone where its superiority is this or more (the strategic bombers' bar, PLAN 5.6). */

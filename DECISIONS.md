@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-345 · 2026-10-13 · accepted — Air superiority on supply (PLAN 5.8t1)
+
+- **Found** (5.8b): SPEC §6.3 has the air on supply; only the land's fire read it (ADR-316).
+- **Decision.** A formation fed gains `SUPPLY_RATE` × (1 + `AIR_SUPPLY` × (2s − 1)) an hour,
+  s its nation's air superiority in its air zone (`airSuperiority`, taken once a nation and zone
+  an hour): `AIR_SUPPLY` 0.5, so half the rate under the enemy's air (16 hours to full, not 8),
+  one and a half under its own, the rate at a half and where no one flew. Its loss when cut off
+  is not the air's. PLAN 5.8t split by effect: t1 supply, t2 a fleet's detection, t3 a strike.
+- **The pin moves** d53a99d4 → acbc49c7.
+- **Tests.** `airSupply` (1, new; failed before): a division at a quarter's supply on its own
+  ground an hour on, under no air, a bystander's, the enemy's and its own.
+
 ### ADR-344 · 2026-10-13 · accepted — The economic AI keeps an air force (PLAN 5.8s2)
 
 - **Found** (5.8b): with wings built (5.8s1) no nation of the AI ordered one; its air force only

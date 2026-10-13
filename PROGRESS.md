@@ -15009,3 +15009,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (905 of 908) red only by the three timing tests of
   BLOCKERS (3,143 ms, 3.26 ms, 27.9 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8t.
+
+## 2026-10-13 — PLAN 5.8t1: air superiority on supply (ADR-345)
+
+- **Done:** `supplySystem` feeds a formation × (1 + `AIR_SUPPLY` × (2s − 1)), s its side's air
+  superiority in its zone (once a nation and zone an hour). 5.8t split by effect: t2 a fleet's
+  detection, t3 a strike's bombs.
+- **Tests:** `airSupply` (1, new; failed before).
+- **The pin moves** d53a99d4 → acbc49c7.
+- **The gate:** the related unit tests (906 of 909) red only by the three timing tests of
+  BLOCKERS (3,007 ms, 2.18 ms, 25.3 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8t2.

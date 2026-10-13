@@ -8107,3 +8107,21 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8s2 The economic AI keeps its air force, a share of its army's upkeep. Until then a
     nation's air force only shrinks.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8t1 Air superiority's other effects (SPEC §6.3, found by 5.8b), each a factor of the
+    zone's superiority, 1 at a half, as the land's fire (ADR-316): a formation's supply in a zone
+    the enemy holds the air of.

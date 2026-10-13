@@ -1784,6 +1784,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.4a, ADR-316; `airFactor` in `combat.ts`):* a formation's fire in a land battle ×
   (1 + 0.2 × (2s − 1)), s its nation's air superiority in its zone: 1.2 with the air, 0.8
   without, 1 at a half.
+- *As built (PLAN 5.8t1, ADR-345; `supplySystem`):* a formation fed gains its supply × (1 + 0.5
+  × (2s − 1)) an hour: half the rate under the enemy's air, one and a half under its own.
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about

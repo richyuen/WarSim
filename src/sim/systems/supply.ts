@@ -21,7 +21,8 @@
  * bloc fighting on its side of a war (PLAN 1.42b: allies feed each other's armies while they
  * fight together), or on a cell that is not its side's with such a network within SUPPLY_REACH
  * cells (PLAN 3.4Rf; over the east and west edges only on a map that loops, PLAN 3.12Rsb),
- * gains SUPPLY_RATE per hour towards 1; otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
+ * gains SUPPLY_RATE per hour towards 1 (× 1 + AIR_SUPPLY × (2s − 1), s its side's air superiority
+ * there, PLAN 5.8t1); otherwise it loses SUPPLY_RATE towards 0, and on the march MARCH_BURN × its
  * template's fuel besides (PLAN 3.2b). At 0 it attrits: (BASE_ATTRITION_PER_DAY +
  * terrain supplyAttrition) of its strength per day, applied hourly; and one that moves on
  * engines loses ORG_RATE of its org per hour there (PLAN 3.2c). Every formation that is fed and
@@ -32,7 +33,8 @@
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { Terrain } from '../../shared/terrain';
 import { Mobility } from '../nav/grid';
-import { navOf, type World } from '../world';
+import { airOf, navOf, type World } from '../world';
+import { AIR_SUPPLY, airSuperiority } from './airSuperiority';
 import { bleedFormation, breakDown } from './elements';
 import { markSeaLinks, seaLinkedAll } from './seaSupply';
 
@@ -416,6 +418,16 @@ export function supplySystem(world: World): void {
   let bloc = 0;
   /** Whether the network `net` feeds the formation at hand. */
   const feeds = (net: number): boolean => net !== 0 && (net === bloc || world.wars.sameSide(net, bloc) || world.wars.sameSide(net, nation));
+  // A nation's air superiority by air zone, this hour (PLAN 5.8t1): the same for each of its formations there.
+  const zones = world.airPower.size > 0 ? airOf(world).zoneOf : null;
+  const superiority = new Map<number, number>();
+  const airOver = (n: number, cell: number): number => {
+    const zone = zones![cell]!;
+    const key = n * 65536 + zone;
+    let s = superiority.get(key);
+    if (s === undefined) superiority.set(key, (s = airSuperiority(world, n, zone)));
+    return s;
+  };
   f.forEach((id) => {
     if (world.offLand(id)) return; // a fleet is not fed over land: it keeps what it has (PLAN 4.2b; the sea's supply is PLAN 4.4)
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
@@ -453,7 +465,9 @@ export function supplySystem(world: World): void {
     const s = c.supply[id]!;
     const rule = world.rules?.templates[c.template[id]!];
     const burn = c.moving[id] === 1 && c.engaged[id] !== 1 ? MARCH_BURN * (rule?.fuel ?? 0) : 0;
-    c.supply[id] = inSupply ? Math.min(1, s + SUPPLY_RATE) : Math.max(0, s - SUPPLY_RATE - burn);
+    // Under the enemy's air it is fed slower, under its own faster (PLAN 5.8t1).
+    const gain = inSupply && world.airPower.size > 0 ? SUPPLY_RATE * (1 + AIR_SUPPLY * (2 * airOver(nation, cell) - 1)) : SUPPLY_RATE;
+    c.supply[id] = inSupply ? Math.min(1, s + gain) : Math.max(0, s - SUPPLY_RATE - burn);
     // Not in contact (PLAN 3.5a): a formation gets its order back out of the fight.
     if (inSupply && c.engaged[id] !== 1) c.org[id] = Math.min(1, c.org[id]! + ORG_RATE);
     if (c.supply[id] === 0) {
