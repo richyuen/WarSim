@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-343 · 2026-10-13 · accepted — Wings built (PLAN 5.8s1)
+
+- **Found** (5.8b): SPEC §6.3 has wings built; `queueFormation` refused every air template, so a
+  nation's air force only shrank.
+- **Decision.** An air template is ordered as a land formation is (its gold, manpower, techs and
+  days), by a nation with an airfield (`airfield`: an airbase it holds with room for the wing's
+  aircraft beside those based there, the nearest its capital, then the first); else refused. On
+  its ready day the wing stands at the airfield then, its base; with none, the order waits. The
+  spawn command refuses a wing still (a wing has a base, which a spawn has not). PLAN 5.8 split:
+  5.8s1 the building, 5.8s2 the economic AI's air force (one cause each).
+- **The pin holds** at ae18ce8c: the AI orders no wing yet.
+- **Tests.** `wingsBuilt1938` (2, new): a German fighter group delivered at the airfield, based
+  there; with no airbase of its own with room refused, and an order whose airbases were lost
+  waits and is delivered with one again. `airTemplates`: its test of the refusal (5.1b) is now
+  of the order taken, the spawn refused.
+
 ### ADR-342 · 2026-10-13 · accepted — The order of industry told exactly (PLAN 5.8r)
 
 - **Found** (the suspicion of 5.8a, now a test): `byIndustry` kept its order while a weighted sum

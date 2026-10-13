@@ -915,6 +915,15 @@ Element (authoritative unit proxy) {
     - *The delivery* (`productionSystem`, `dockPoint`): on its ready day at the shipyard's
       water (`portSeaOf`, at the cell's water point), chosen then; with no shipyard then
       the order waits, as a land order with no land does. Bankruptcy stalls it as any.
+  - **A wing is built** (PLAN 5.8s1, ADR-343; `src/sim/systems/production.ts`).
+    - *The order* (`queueFormation`): of an air template, only by a nation with an airfield;
+      else `ProductionRejected`, nothing paid. Gold, manpower and days as a land formation's.
+    - *The airfield* (`airfield`): of the airbases whose cell the nation holds, with room for
+      the wing's aircraft beside those of the wings based there (`airbaseRoom`), the nearest
+      its capital, then the first.
+    - *The delivery* (`productionSystem`): on its ready day at the airfield, chosen then, its
+      base (`wingBase`); with none then the order waits. The spawn command refuses a wing
+      still. The economic AI orders none yet (5.8s2).
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its

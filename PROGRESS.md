@@ -14988,3 +14988,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (807 of 810) red only by the three timing tests of
   BLOCKERS (3,466 ms, 2.44 ms, 31.2 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8s.
+
+## 2026-10-13 — PLAN 5.8s1: wings built (ADR-343)
+
+- **Done:** `queueFormation` takes an air template where its nation has an `airfield`; the wing is
+  delivered there, based there. 5.8s split: 5.8s2 the economic AI's air force.
+- **Tests:** `wingsBuilt1938` (2, new); `airTemplates` (the 5.1b refusal now the order taken).
+- **The pin holds** at ae18ce8c.
+- **The gate:** the related unit tests (903 of 906) red only by the three timing tests of
+  BLOCKERS (3,825 ms, 3.30 ms, 27.8 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8s2.

@@ -47,9 +47,8 @@ quick sweep as a smoke test.
   - [x] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to […]
   - [x] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index): […]
   - [x] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the […]
-  - [ ] 5.8s Wings built (found by 5.8b: SPEC §6.3 has them, the rules refuse them): an air
-    template ordered as a land one is, delivered at an airbase its nation holds with room (none:
-    refused); the economic AI keeps its air force, a share of its army's upkeep. Until then a
+  - [x] 5.8s1 Wings built (found by 5.8b: SPEC §6.3 has them, the rules refuse them): an air […]
+  - [ ] 5.8s2 The economic AI keeps its air force, a share of its army's upkeep. Until then a
     nation's air force only shrinks.
   - [ ] 5.8t Air superiority's other effects (SPEC §6.3, found by 5.8b): a formation's supply
     in a zone the enemy holds the air of, a fleet's detection, a strike's bombs. Each a factor

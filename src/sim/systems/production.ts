@@ -25,8 +25,14 @@
  * waits. The water is by the zones, not the lane graph's edges (PLAN 4.2f: the page asks
  * every nation's shipyard). A fleet takes its slowest ship's own days (`SHIP_TIME_SCALE`), and
  * its gold is by the land's scale.
+ *
+ * Wings (PLAN 5.8s1): an air wing is queued only by a nation with an airbase it holds with room
+ * for the wing's aircraft beside the wings based there (`airfield`), and is delivered there, its
+ * base, on its ready day; with none then, the order waits.
  */
-import { equipFormation } from './elements';
+import { airbaseRoom } from '../data/airbases';
+import { wingAircraft } from './air';
+import { equipFormation, wrapDx } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
@@ -84,8 +90,12 @@ export function shipyard(world: World, nation: number): number {
 export function queueFormation(world: World, nation: number, template: number): number {
   const rule = world.rules?.templates[template];
   const nc = world.nations.cols;
-  // A fleet only where the nation has a port (PLAN 4.2e); no air formation yet.
-  const ok = rule !== undefined && (rule.domain === Domain.land || (rule.domain === Domain.sea && world.nations.has(nation) && shipyard(world, nation) >= 0));
+  // A fleet only where the nation has a port (PLAN 4.2e); a wing where it has an airbase with room (PLAN 5.8s1).
+  const ok =
+    rule !== undefined &&
+    (rule.domain === Domain.land ||
+      (rule.domain === Domain.sea && world.nations.has(nation) && shipyard(world, nation) >= 0) ||
+      (rule.domain === Domain.air && world.nations.has(nation) && airfield(world, nation, template) >= 0));
   if (!rule || !ok || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.gold[nation]! < rule.gold || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) {
     world.out.emit(world.tick, EventKind.ProductionRejected, template, nation, NaN, NaN);
     return 0;
@@ -173,6 +183,33 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
   return best !== 0 ? cityStand(world, best) : world.cellPoint(front);
 }
 
+/**
+ * The airbase where a new wing of template `t` of `nation` is delivered (index in
+ * `world.airbases`), or -1: of the airbases whose cell the nation holds, with room for the wing's
+ * aircraft beside those of the wings based there (`airbaseRoom`), the nearest its capital, then
+ * the first.
+ */
+export function airfield(world: World, nation: number, t: number): number {
+  const need = wingAircraft(world, t);
+  const used = new Map<number, number>();
+  for (const [o, b] of world.wingBase) if (b > 0) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, world.formations.cols.template[o]!));
+  const nc = world.nations.cols;
+  const [cx, cy] = [nc.capitalX[nation]!, nc.capitalY[nation]!];
+  let best = -1;
+  let bd = Infinity;
+  world.airbases.forEach((b, i) => {
+    if (world.cells.controller[b.cell] !== nation || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
+    const [x, y] = world.cellPoint(b.cell);
+    const dx = wrapDx(world, cx, x);
+    const d = dx * dx + (y - cy) * (y - cy);
+    if (d < bd) {
+      bd = d;
+      best = i;
+    }
+  });
+  return best;
+}
+
 /** Where a new fleet of `nation` is delivered: the water of its `shipyard`; null with none. */
 export function dockPoint(world: World, nation: number): [number, number] | null {
   const port = shipyard(world, nation);
@@ -196,8 +233,10 @@ export function productionSystem(world: World): void {
     }
     if (today < p.cols.readyDay[id]!) continue;
     const t = p.cols.template[id]!;
-    const at = rules.templates[t]!.domain === Domain.sea ? dockPoint(world, nation) : musterPoint(world, nation);
-    if (!at) continue; // no land to raise it on, or no port: the order waits
+    const domain = rules.templates[t]!.domain;
+    const field = domain === Domain.air ? airfield(world, nation, t) : -1;
+    const at = domain === Domain.sea ? dockPoint(world, nation) : domain === Domain.air ? (field >= 0 ? world.cellPoint(world.airbases[field]!.cell) : null) : musterPoint(world, nation);
+    if (!at) continue; // no land to raise it on, no port, or no airbase with room: the order waits
     const f = world.formations;
     const fid = f.create();
     f.cols.nation[fid] = nation;
@@ -207,6 +246,7 @@ export function productionSystem(world: World): void {
     f.cols.supply[fid] = 1;
     f.cols.org[fid] = 1;
     equipFormation(world, fid, t); // elements + strength
+    if (field >= 0) world.wingBase.set(fid, field + 1);
     p.remove(id);
     world.out.emit(world.tick, EventKind.FormationSpawned, fid, nation, at[0], at[1]);
   }

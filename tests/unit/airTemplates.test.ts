@@ -13,8 +13,8 @@ import { assets1938 } from '../helpers/earth';
 import { runEvents } from '../helpers/sim1938';
 
 // PLAN 5.1b: the aircraft types and six air wing templates in the scenario's rules, after the
-// sea's. A wing is a formation of an air template; none exists yet: an order to build one and a
-// spawn of one are refused, as a fleet's were before PLAN 4.2b.
+// sea's. A wing is a formation of an air template. An order to build one is taken since PLAN
+// 5.8s1 (wingsBuilt1938 has its delivery); a spawn of one is refused.
 
 const AIR = ['fighter_group', 'tactical_bomber_group', 'strategic_bomber_group', 'close_support_group', 'naval_bomber_group', 'air_transport_group'];
 const template = (t: string): number => TEMPLATES_1938.findIndex((x) => x.id === t);
@@ -47,19 +47,21 @@ describe('air wing templates in the rules (PLAN 5.1b)', () => {
     expect(range('strategic_bomber_group')).toBe(3000);
   });
 
-  it('no wing is built or spawned yet: the order and the spawn are refused, nothing is made', () => {
+  it('a wing is ordered as a land formation is (PLAN 5.8s1, before it refused), but not spawned: the spawn is refused, nothing is made', () => {
     const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
     const w = s.world;
     w.settings.aiEnabled = false;
     const ger = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
     w.nations.cols.gold[ger] = 1e7;
     w.nations.cols.manpower[ger] = 1e7;
+    w.nations.cols.tech0[ger] = 0xffffffff;
+    w.nations.cols.tech1[ger] = 0xffffffff;
     for (const t of AIR) {
       w.out.events.length = 0;
-      expect(queueFormation(w, ger, template(t)), t).toBe(0);
-      expect(w.out.events.filter((v, i) => i % 6 === 1 && v === EventKind.ProductionRejected), t).toHaveLength(1);
+      expect(queueFormation(w, ger, template(t)), t).toBeGreaterThan(0);
+      expect(w.out.events.filter((v, i) => i % 6 === 1 && v === EventKind.ProductionRejected), t).toHaveLength(0);
     }
-    expect(w.production.count).toBe(0);
+    expect(w.production.count).toBe(AIR.length);
     const formations = w.formations.count;
     const send = (cmd: Command): number[] => {
       s.command(cmd);
