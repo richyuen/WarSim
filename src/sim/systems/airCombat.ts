@@ -4,7 +4,8 @@
  * `AIR_FIRE`, over the target's defence (`defense`), in hit points; the target's squadrons lose
  * that ÷ their `hpPerUnit` in aircraft, carried as on the land (`applyLoss`). All fire of the
  * hour is reckoned before any loss. A wing with no aircraft left is lost; a sortie that lost a
- * quarter of its aircraft in the hour turns home from where it is.
+ * quarter of its aircraft in the hour turns home from where it is. Then AA (PLAN 5.3b,
+ * `antiAir`): what is below a sortie of an enemy's fires on it.
  */
 import { EventKind } from '../../shared/events';
 import type { World } from '../world';
@@ -95,4 +96,82 @@ function turnHome(world: World, id: number): void {
   const p = sortieAt(s, world.tick, world.cells.w);
   const km = seaKm(world, s.bx, s.by, p.x, p.y);
   world.sorties.set(id, { bx: s.bx, by: s.by, tx: p.x, ty: p.y, launch: world.tick - (s.kmh > 0 ? km / s.kmh : 0), kmh: s.kmh, km, over: 0 });
+}
+
+/**
+ * AA hit points an hour of a full land or sea element per point of its `aa` (PLAN 5.3b), on a
+ * target of defence 1. Its fire is `aa` × its strength ÷ its size × this, as a land element's
+ * fire is (combat.ts): per full element, where an aircraft's is per aircraft.
+ */
+export const AA_FIRE = 2;
+/** How far, cells, the AA of a formation reaches a sortie overhead (each way, a square). */
+export const AA_CELLS = 1;
+
+/**
+ * The hour's AA (PLAN 5.3b): each sortie in the air (out, over its target or back) is fired on by
+ * the elements of the formations of nations at war with its own within `AA_CELLS` of its place,
+ * land and fleets alike (not other wings, not what is aboard a fleet). A formation's fire is
+ * spread over the sorties it reaches by their aircraft, and within a wing over its squadrons, as
+ * in the air. Losses carried; a wing with none left is lost.
+ */
+export function antiAir(world: World): void {
+  if (world.sorties.size === 0) return;
+  const rules = world.rules!;
+  const ec = world.elements.cols;
+  const fc = world.formations.cols;
+  const w = world.cells.w;
+  const h = world.cells.h;
+  const index = elementIndex(world);
+  // The sorties overhead by cell.
+  const above = new Map<number, number[]>();
+  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+    if (!world.formations.has(id)) continue;
+    const p = sortieAt(s, world.tick, w);
+    if (p.leg === Leg.Home) continue;
+    const cell = Math.min(h - 1, Math.floor(p.y)) * w + Math.floor(p.x);
+    const list = above.get(cell);
+    if (list) list.push(id);
+    else above.set(cell, [id]);
+  }
+  if (above.size === 0) return;
+  const loss = new Map<number, number>();
+  world.formations.forEach((g) => {
+    if (world.isWing(g) || world.embarked.has(g)) return;
+    const gx = Math.floor(fc.x[g]!);
+    const gy = Math.floor(fc.y[g]!);
+    const targets: number[] = [];
+    for (let dy = -AA_CELLS; dy <= AA_CELLS; dy++) {
+      const y = gy + dy;
+      if (y < 0 || y >= h) continue;
+      for (let dx = -AA_CELLS; dx <= AA_CELLS; dx++) {
+        const x = (((gx + dx) % w) + w) % w;
+        for (const id of above.get(y * w + x) ?? []) if (world.wars.atWar(fc.nation[g]!, fc.nation[id]!)) targets.push(id);
+      }
+    }
+    if (targets.length === 0) return;
+    let fire = 0;
+    for (const e of index.get(g) ?? []) {
+      const u = rules.units[ec.unit[e]!]!;
+      fire += (u.aa * ec.strength[e]! * AA_FIRE) / u.size;
+    }
+    if (fire === 0) return;
+    targets.sort((a, b) => a - b);
+    const total = targets.reduce((s, id) => s + aircraftOf(world, id), 0);
+    if (total === 0) return;
+    targets.forEach((id) => {
+      for (const t of index.get(id) ?? []) {
+        if (ec.strength[t] === 0) continue;
+        const u = rules.units[ec.unit[t]!]!;
+        const hp = (fire * ec.strength[t]!) / total / Math.max(1, u.defense);
+        loss.set(t, (loss.get(t) ?? 0) + hp / u.hpPerUnit);
+      }
+    });
+  });
+  if (loss.size === 0) return;
+  const hit = new Set<number>();
+  for (const [e, units] of [...loss].sort((a, b) => a[0] - b[0])) {
+    applyLoss(world, e, units);
+    hit.add(ec.formation[e]!);
+  }
+  for (const id of [...hit].sort((a, b) => a - b)) settleFormation(world, id);
 }

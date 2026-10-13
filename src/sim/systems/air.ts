@@ -8,7 +8,7 @@
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { airbaseRoom } from '../data/airbases';
-import { airCombat } from './airCombat';
+import { airCombat, antiAir } from './airCombat';
 import { destroyFormation } from './elements';
 import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
@@ -36,6 +36,7 @@ export function airSystem(world: World): void {
     schedule(world, id);
   }
   if (world.sorties.size > 0) airCombat(world, airborne(world, world.tick));
+  antiAir(world);
 }
 
 /** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */

@@ -7578,3 +7578,20 @@ Of 5.3 (open in PLAN.md):
     other by their aircraft's air attack against the target's defence, losses in aircraft
     (carried, as on the land); a wing with none left is lost; a sortie that lost a quarter of
     its aircraft in the hour turns home. Logged. Outcome test: fighters beat bombers.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.3 (open in PLAN.md):
+
+  - [x] 5.3b AA: a sortie over an enemy's ground or fleet is fired on by the AA of what is
+    below it (land elements' and ships' `aa`). AA attrition rate test.

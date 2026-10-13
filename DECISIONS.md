@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-314 · 2026-10-13 · accepted — AA: what is below a sortie fires on it (PLAN 5.3b)
+
+- **Decision.** `antiAir`, after the hour's air fights: each sortie in the air (out, over its
+  target, back) is fired on by every formation of a nation at war with its own within
+  `AA_CELLS` (1) of its place, a square, the map wrapped east-west: land formations and fleets,
+  not wings and not what is aboard. A formation's AA fire is Σ its elements' `aa` × strength ÷
+  size × `AA_FIRE` (2): per full element, as the land's fire is (`combat.ts`), where an
+  aircraft's air attack is per aircraft. It is spread over the sorties it reaches and their
+  squadrons by aircraft, over the target's defence, in hit points; losses carried; a wing with
+  none left is lost. No break-off for AA.
+- **The figures.** An infantry division's battalions (0.5 each) fire 24 an hour: a tactical
+  bomber group over it loses 1.25% an hour. An AA battery is 30 a full element (60 rifle
+  battalions); a battleship 14. `AA_FIRE` 5 gave 3.1% an hour over riflemen alone, too dear
+  for a sortie's hour over a front; 2 was taken.
+- **Not yet.** The AA building of the data (`aaStrength`), a city's AA: not placed in 1938.
+- **The pin holds** at 1377ab88: no sortie flies in an AI game yet.
+- **Tests.** `antiAir1938.test.ts`: the AT (a French bomber group over a German infantry
+  division: the hour's loss by the rule, 1.25% an hour over 8 hours); its own, out of reach, a
+  wing on a base, an enemy at peace fire none, the corner of the reach does; two sorties share
+  the fire by aircraft; a wing shot down to none is lost with its sortie.
+
 ### ADR-313 · 2026-10-13 · accepted — Air combat between sorties in a zone (PLAN 5.3a)
 
 - **Decision.** `src/sim/systems/airCombat.ts`, at the end of `airSystem` each hour over

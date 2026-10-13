@@ -1752,6 +1752,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   at war fire on each other: a squadron's aircraft × its air attack × 0.25 over the target's
   defence, in hit points, the losses in aircraft carried as on the land. A wing with none left is
   lost; a sortie that lost a quarter in the hour turns home. Fighters beat bombers by the data.
+- *As built (PLAN 5.3b, ADR-314; `antiAir`):* a sortie in the air is fired on by the formations of
+  its enemies within a cell of its place, land and fleets: each element's `aa` per full element
+  × 2, over the aircraft's defence; a tactical bomber group over an infantry division loses
+  1.25% an hour.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,
