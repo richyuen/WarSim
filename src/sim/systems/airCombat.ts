@@ -175,7 +175,12 @@ export function antiAir(world: World): void {
     applyLoss(world, e, units);
     hit.add(ec.formation[e]!);
   }
-  for (const id of [...hit].sort((a, b) => a - b)) settleFormation(world, id);
+  for (const id of [...hit].sort((a, b) => a - b)) {
+    // Its flak, where it flies (PLAN 5.7b: a picture, not state).
+    const p = sortieAt(world.sorties.get(id)!, world.tick, w);
+    world.out.emit(world.tick, EventKind.FlakFired, id, fc.nation[id]!, p.x, p.y);
+    settleFormation(world, id);
+  }
 }
 
 /**

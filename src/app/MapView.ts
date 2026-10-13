@@ -11,7 +11,8 @@ import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle }
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { drawSeaBattles } from '../render/units/seaBattles';
-import { drawSorties, type PlacedSortie } from '../render/units/sorties';
+import { drawSorties, planeZoom, type PlacedSortie } from '../render/units/sorties';
+import { AirFx } from '../render/fx/air';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -501,6 +502,7 @@ export class MapView {
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
+    this.airFx.add(s.events.count, s.events.data, arrived);
     // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
     // records only of the shots with an end in the box (PLAN 3.6e5). What a battalion, a battery
     // and a half-track company lose lies there too (PLAN 3.11d).
@@ -521,6 +523,7 @@ export class MapView {
     this.loaded = true;
     this.hulls.clear();
     this.wrecks.clear();
+    this.airFx.clear();
     this.fire.clear();
     this.turretAims.clear();
     this.dirty = true;
@@ -660,6 +663,8 @@ export class MapView {
   seaMarks: { x: number; y: number }[] = [];
   /** The sorties placed on screen at the last frame (PLAN 5.7a), for tests. */
   sortieMarks: PlacedSortie[] = [];
+  /** The air's fights, bombs and flak (PLAN 5.7b). */
+  airFx = new AirFx();
 
   /** Sea control (PLAN 4.10c): each cell's zone, each zone's holder and sea's name, as the worker sent them. */
   private seaZoneOf = new Uint16Array(0);
@@ -734,7 +739,7 @@ export class MapView {
    */
   unitsAnimating(now = performance.now()): boolean {
     const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
-    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now);
+    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now) || this.airFx.animating(now);
   }
 
   /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
@@ -1266,6 +1271,8 @@ export class MapView {
     // The sorties in flight (PLAN 5.7a), at T0 to T2, where they are at this frame's time: under
     // the counters, which stay readable over them.
     this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now), cam, this.geo, vw, vh, 1 - this.shares.individuals, (n) => hex(n), this.unitScale);
+    // The air's fights, bombs and flak (PLAN 5.7b), with the sorties.
+    this.airFx.draw(ctx, cam, this.geo, vw, vh, now, 1 - this.shares.individuals, this.unitScale * planeZoom(cam.scale));
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
     // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
     this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);

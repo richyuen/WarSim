@@ -20,6 +20,9 @@ export const ORBIT_MIN_PX = 26;
 export const ZOOM_FULL = 6;
 export const ZOOM_LEAST = 0.55;
 
+/** The planes' size at zoom `scale` (px a cell): 1 from `ZOOM_FULL` in, down to `ZOOM_LEAST` further out. */
+export const planeZoom = (scale: number): number => Math.min(1, Math.max(ZOOM_LEAST, scale / ZOOM_FULL));
+
 /** A placed sortie (for tests): its place on screen, its heading (rad, screen), its leg. */
 export interface PlacedSortie {
   x: number;
@@ -102,7 +105,7 @@ export function drawSorties(
   if (alpha <= 0.01 || rows.length === 0) return out;
   const offs = wrapOffsets(cam, geo, vw);
   // Smaller the further out: at T0 (a cell a px or two) a plane is half its T1 size.
-  size *= Math.min(1, Math.max(ZOOM_LEAST, cam.scale / ZOOM_FULL));
+  size *= planeZoom(cam.scale);
   ctx.save();
   ctx.globalAlpha = alpha;
   // A light edge and a shadow: a plane is seen over its own nation's land, of its own colour.

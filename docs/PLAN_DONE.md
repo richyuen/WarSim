@@ -7766,3 +7766,20 @@ Of 5.7 (open in PLAN.md):
   - [x] 5.7a Sorties drawn: the snapshot carries the sorties in the air (their launches, nation,
     aircraft, role); the page draws each as planes of its nation's colour where `sortieAt` has
     them at the frame's time, heading its way, a patrol circling over its zone; T0 to T2.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.7 (open in PLAN.md):
+
+  - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb
+    bursts at a strike's target (`AirStrike`), and flak bursts about a sortie fired on by AA.

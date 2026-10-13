@@ -14800,3 +14800,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (921 of 923) red only by two timing tests of BLOCKERS
   (3,132 ms, 2.58 ms); the pin, build, the new spec (by hand, three runs) and parity green.
 - **Next:** PLAN 5.7b.
+
+## 2026-10-13 — PLAN 5.7b: the air war's effects (ADR-324)
+
+- **Done:** `FlakFired` events from `antiAir`; `AirFx` (fights, bombs, flak) at T0 to T2. Three
+  pictures looked at (`docs/evidence/5.7/c-air-*.png`). SPEC §6.3, PARITY.
+- **Tests:** `airFx.test.ts` (3), `antiAir1938` (the flak event), `airFx1938.spec.ts` (1).
+- **The pin holds** at 321cd835.
+- **The gate:** the related unit tests (920 of 923) red only by the three timing tests of
+  BLOCKERS (3,829 ms, 4.35 ms, 26.1 ms); the pin, build, the new spec (by hand) and parity green.
+- **Next:** PLAN 5.7c.

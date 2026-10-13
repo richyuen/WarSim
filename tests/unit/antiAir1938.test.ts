@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -64,6 +65,10 @@ describe('AA (PLAN 5.3b)', () => {
     antiAir(w);
     // One target: all the fire on it; a tactical bomber has defence 10 and 8 hp.
     expect(b0 - left(w, b)).toBeCloseTo(fire / 10 / 8, 9);
+    // Its flak, where it flies (PLAN 5.7b).
+    const flak: number[][] = [];
+    for (let i = 0; i < w.out.events.length; i += 6) if (w.out.events[i + 1] === EventKind.FlakFired) flak.push(w.out.events.slice(i + 2, i + 6));
+    expect(flak).toEqual([[b, FRA, PLACE[0], PLACE[1]]]);
     for (let h = 1; h < 8; h++) {
       w.tick++;
       overhead(w, b, PLACE);

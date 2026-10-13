@@ -1787,6 +1787,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.7a, ADR-323; `render/units/sorties.ts`):* the snapshot carries the sorties in
   the air; the page draws each as planes of its nation's colour where `sortieAt` (in `shared/`)
   has it at the frame's time, a patrol circling over its target, T0 to T2.
+- *As built (PLAN 5.7b, ADR-324; `render/fx/air.ts`):* an hour's air fight is tracers and flak with
+  smoke trails for the aircraft lost; a strike, bombs bursting about its target; a sortie under
+  AA (`FlakFired`), flak puffs about it; on the render clock, T0 to T2.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-324 · 2026-10-13 · accepted — The air war's effects from its events (PLAN 5.7b)
+
+- **Decision.**
+  - *A new event*, `FlakFired` (49): a sortie the AA hit in an hour (`antiAir`): the wing, its
+    nation, its place. A picture, not state.
+  - *`AirFx`* (`src/render/fx/air.ts`, on the render clock, cleared with a load): of `AirBattle`
+    tracers crossing about the place for 3.5 s, flak among them, a smoke trail falling for each
+    aircraft lost (up to six); of `AirStrike` six bombs bursting about the target one after
+    another over 2.2 s, a flash and its smoke each; of `FlakFired` five dark puffs with their
+    flashes about the sortie for 2 s. Each mark's picture is seeded by its event, so the same
+    event draws the same. At T0 to T2 with the sorties, sized as they are (`planeZoom`), under the
+    counters; at most 600 held. The view keeps drawing while one lives.
+- **Looked at** (`docs/evidence/5.7/c-air-*.png`): seed 1, Germany on Poland, hour 26 at T1: the
+  bombs round the Polish division the close support groups struck, tracers and flak among the
+  German planes over it. A counter covers part of a burst there (the marks are under the
+  counters at T1 as at T0): left so.
+- **The e2e's clock.** The marks live two to three and a half seconds; the test's steps take
+  seconds: it draws at a set time after the newest mark's arrival (`draw(now)`), and holds the
+  frame loop for its picture.
+- **The pin holds** at 321cd835: an event is no state.
+- **Tests.** `airFx.test.ts` (3): what becomes a mark, how long it lives, the same seed for the
+  same event; `antiAir1938`: the flak event, its wing, nation and place; `tests/e2e/airFx1938.spec.ts`.
+
 ### ADR-323 · 2026-10-13 · accepted — Sorties drawn where the sim's function has them (PLAN 5.7a)
 
 - **Decision.**
