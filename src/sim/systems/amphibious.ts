@@ -38,6 +38,7 @@ import { navOf, portSeaOf, seaOf, type World } from '../world';
 import { destroyFormation, elementIndex } from './elements';
 import { AT_PORT_CELLS, sailHome } from './navalCombat';
 import { orderMove } from './movement';
+import { portShut } from './bombing';
 import { orderSail } from './sail';
 import { seaHolder } from './seaControl';
 import { blocOf } from './supply';
@@ -108,7 +109,7 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   // the Thames). Of the ports it stands at, the first with transports for it.
   const at: number[] = [];
   world.ports.forEach((p, i) => {
-    if (water[i]! >= 0 && world.cells.controller[p.cell] === nation && (near(world, here, p.cell, AT_PORT_CELLS) || near(world, here, water[i]!, AT_PORT_CELLS))) at.push(i);
+    if (water[i]! >= 0 && world.cells.controller[p.cell] === nation && !portShut(world, i) && (near(world, here, p.cell, AT_PORT_CELLS) || near(world, here, water[i]!, AT_PORT_CELLS))) at.push(i);
   });
   if (at.length === 0) return RejectReason.NoPort;
   // Transports of its nation there, standing, with room.
@@ -171,7 +172,7 @@ export function transportsPort(world: World, id: number, withTransports = true):
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
-    if (water[i]! < 0 || world.cells.controller[p.cell] !== nation || comp[p.cell] !== comp[here]) return;
+    if (water[i]! < 0 || world.cells.controller[p.cell] !== nation || comp[p.cell] !== comp[here] || portShut(world, i)) return;
     if (withTransports && !fleets.some((o) => near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS))) return;
     let dx = Math.abs((p.cell % w) - (here % w));
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;

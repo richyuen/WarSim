@@ -7711,3 +7711,25 @@ Of 5.5 (open in PLAN.md):
   - [x] 5.5a Industry and cities: a strike on the enemy's land drops its aircraft's bombs
     (`bomb_t`, a new stat of the air units) on the industry within reach: damage per cell (a
     share of its `econ` out of the month's income), repaired day by day; saved. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
+  AT: bombed industry produces less until repaired (test).
+  Split 2026-10-13. Found first: a cell's industry is its `econ`, fixed, read by the monthly
+  income alone; a port is static data, read by the sea's rules (embarking, a fleet's base, the
+  blockade); the aircraft have no bomb load in the data. One cause a commit:
+  - [x] 5.5a Industry and cities: a strike on the enemy's land drops its aircraft's bombs […]
+  - [x] 5.5b Ports: a bombed port is damaged by its level, repaired as industry is, and while
+    damaged by a half or more its transports embark no one and its yard delivers no fleet (no
+    rule repairs a ship, so none is barred). Saved. Test.

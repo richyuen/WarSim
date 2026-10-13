@@ -399,6 +399,8 @@ class WorldCore implements Stateful {
       ...(w.wingMission.size === 0 ? [] : [{ name: 'world.wingMission', dtype: 'f64' as const, data: Float64Array.from([...w.wingMission].sort((a, b) => a[0] - b[0]).flatMap(([id, m]) => [id, m.kind === 'strike' ? 1 : 0, m.x, m.y])) }]),
       // The bombs' damage to industry (PLAN 5.5a): [cell, damage] each, only while there is some.
       ...(w.bombDamage.size === 0 ? [] : [{ name: 'world.bombDamage', dtype: 'f64' as const, data: Float64Array.from([...w.bombDamage].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The bombs' damage to ports (PLAN 5.5b): [port, damage] each, only while there is some.
+      ...(w.portDamage.size === 0 ? [] : [{ name: 'world.portDamage', dtype: 'f64' as const, data: Float64Array.from([...w.portDamage].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The air power flown by zone (PLAN 5.3c): [zone, nation, power] each, only while there is some.
       ...(w.airPower.size === 0 ? [] : [{ name: 'world.airPower', dtype: 'f64' as const, data: Float64Array.from([...w.airPower].sort((a, b) => a[0] - b[0]).flatMap(([z, m]) => [...m].sort((a, b) => a[0] - b[0]).flatMap(([n, p]) => [z, n, p]))) }]),
       // The air wings' sorties (PLAN 5.2b): [id, bx, by, tx, ty, launch, kmh, km, over] each, only while there is one.
@@ -452,6 +454,9 @@ class WorldCore implements Stateful {
     w.bombDamage = new Map();
     const damage = sections.find((s) => s.name === 'world.bombDamage')?.data as Float64Array | undefined;
     for (let at = 0; damage && at < damage.length; at += 2) w.bombDamage.set(damage[at]!, damage[at + 1]!);
+    w.portDamage = new Map();
+    const shut = sections.find((s) => s.name === 'world.portDamage')?.data as Float64Array | undefined;
+    for (let at = 0; shut && at < shut.length; at += 2) w.portDamage.set(shut[at]!, shut[at + 1]!);
     w.airPower = new Map();
     const power = sections.find((s) => s.name === 'world.airPower')?.data as Float64Array | undefined;
     for (let at = 0; power && at < power.length; at += 3) {
@@ -967,6 +972,8 @@ export class World {
   airPower = new Map<number, Map<number, number>>();
   /** Per cell, the share of its industry bombs put out of work (PLAN 5.5a, `bombIndustry`): state, saved while not empty; repaired day by day. */
   bombDamage = new Map<number, number>();
+  /** Per port (index in `ports`), the bombs' damage to it (PLAN 5.5b, `bombPorts`): state, saved while not empty; shut at a half. */
+  portDamage = new Map<number, number>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

@@ -14759,3 +14759,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the unit stage in full (a data file changed): 1,333 of 1,335, red only by two
   timing tests of BLOCKERS (3,447 ms, 3.02 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.5b.
+
+## 2026-10-13 — PLAN 5.5b: ports bombed (ADR-321). PLAN 5.5 done
+
+- **Done:** the bombs damage the enemy's ports within reach by tons over 60 × level
+  (`world.portDamage`, saved, repaired as industry); a port damaged by a half or more embarks no
+  one and delivers no fleet (`portShut` in `tryLanding`, `transportsPort`, `shipyard`). The
+  PLAN's "not repaired there" replaced by the yard: no rule repairs a ship. SPEC §6.3, PARITY.
+- **Tests:** `portBombing1938.test.ts` (3).
+- **The pin holds** at a6c4ac55.
+- **The gate:** the related unit tests (877 of 879) red only by two timing tests of BLOCKERS
+  (3,016 ms, 3.63 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.6.

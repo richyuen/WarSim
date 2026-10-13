@@ -25,14 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair).
-  AT: bombed industry produces less until repaired (test).
-  Split 2026-10-13. Found first: a cell's industry is its `econ`, fixed, read by the monthly
-  income alone; a port is static data, read by the sea's rules (embarking, a fleet's base, the
-  blockade); the aircraft have no bomb load in the data. One cause a commit:
-  - [x] 5.5a Industry and cities: a strike on the enemy's land drops its aircraft's bombs […]
-  - [ ] 5.5b Ports: a bombed port is damaged as industry is, and while damaged under a half
-    its fleets are not repaired there and its transports embark no one.
 - [ ] 5.6 Air AI tasking.
   AT: headless run: air superiority contested over active fronts; strategic bombing appears when superiority is high.
 - [ ] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode.
@@ -709,3 +701,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.2 Mission scheduler + sorties as derived kinematics. […]
 - [x] 5.3 Air combat, interception, AA; air superiority per zone. […]
 - [x] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles. […]
+- [x] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair). […]

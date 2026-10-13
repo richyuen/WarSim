@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-321 · 2026-10-13 · accepted — Ports bombed: shut at a half (PLAN 5.5b)
+
+- **Decision.** A strike's bombs (`bombIndustry`, ADR-320) also fall on the ports within
+  `BOMB_CELLS` of its target that a nation at war with the bomber holds: each damaged by the tons
+  over `PORT_TONS` (60) × its level (1 to 3), up to `MAX_DAMAGE`; state (`world.portDamage`, by
+  port, saved while not empty), repaired with industry, 2% a day. A port damaged by `PORT_SHUT`
+  (a half) or more is shut (`portShut`): no one embarks there (`tryLanding`, `transportsPort`:
+  the refusal is `NoPort`, or another port of its land), and its yard delivers no fleet
+  (`shipyard` takes the next).
+- **The PLAN's text changed.** It said a damaged port's fleets are not repaired there: no rule
+  repairs a ship (a ship lost is lost, damage carried), so there was nothing to bar. The yard
+  was put in its place.
+- **The figures.** A strategic bomber group's 60 tons shuts a level-1 port at once (0.9) and
+  damages a level-3 port by a third; a shut level-1 port opens again in about 30 days.
+- **The pin holds** at a6c4ac55.
+- **Tests.** `portBombing1938.test.ts`: Portsmouth damaged by the rule, only Britain's ports, none
+  by a nation at peace; shut, the division there is refused (`NoPort`) and a day's repair under
+  the half lets it embark for Calais; Britain's yard moves to another port; saved, the same game.
+
 ### ADR-320 · 2026-10-13 · accepted — Strategic bombing of industry, repaired day by day (PLAN 5.5a)
 
 - **Decision.**

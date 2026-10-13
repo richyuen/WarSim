@@ -1777,6 +1777,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   aircraft's bombs (`bomb_t`) on the enemy's industry within a cell of its target: each cell
   there out of work by tons × 2 $M over their industry together (at most 0.9); the monthly income
   takes it off; repaired 2% a day.
+- *As built (PLAN 5.5b, ADR-321; `portShut`):* the bombs damage the enemy's ports within reach by
+  tons over 60 × the port's level; repaired as industry; a port damaged by a half or more embarks
+  no one and its yard delivers no fleet.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

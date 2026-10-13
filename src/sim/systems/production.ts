@@ -32,6 +32,7 @@ import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
 import { knowsTechs } from '../tech';
 import { basinOf, Domain, navOf, portSeaOf, seaOf, type World } from '../world';
+import { portShut } from './bombing';
 import { waterOf } from './sail';
 import { frontierOf } from './territory';
 
@@ -65,7 +66,8 @@ export function shipyard(world: World, nation: number): number {
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
-    if (controller[p.cell] !== nation || water[i]! < 0 || basin[sea.zoneOf[water[i]!]!] !== ocean) return;
+    // A port shut by bombs (PLAN 5.5b) delivers no fleet.
+    if (controller[p.cell] !== nation || water[i]! < 0 || basin[sea.zoneOf[water[i]!]!] !== ocean || portShut(world, i)) return;
     let dx = Math.abs(p.x - cx);
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const d = dx * dx + (p.y - cy) * (p.y - cy);

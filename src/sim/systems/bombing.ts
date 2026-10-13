@@ -6,6 +6,11 @@
  * over their industry together, up to `MAX_DAMAGE`. The damage is state (`world.bombDamage`, by
  * cell, saved while not empty); the monthly income takes it off a cell's output; it is repaired
  * day by day, `REPAIR_DAILY` of it.
+ *
+ * Ports (PLAN 5.5b): the ports within reach that a nation at war with the bomber holds are
+ * damaged by the tons over `PORT_TONS` a level of the port, up to `MAX_DAMAGE`, and repaired as
+ * industry is (`world.portDamage`, by port, saved). A port damaged by `PORT_SHUT` or more is shut
+ * (`portShut`): its transports embark no one, its yard delivers no fleet.
  */
 import type { World } from '../world';
 import { elementIndex } from './elements';
@@ -20,6 +25,15 @@ export const REPAIR_DAILY = 0.02;
 export const DAMAGE_FLOOR = 0.001;
 /** How far, cells, a strike's bombs fall about its target (each way, a square). */
 export const BOMB_CELLS = 1;
+/** Tons of bombs that put a port of level 1 wholly out of work (a level 3 port takes three times as many). */
+export const PORT_TONS = 60;
+/** A port damaged by this or more is shut. */
+export const PORT_SHUT = 0.5;
+
+/** Whether port `i` (index in `world.ports`) is shut by bombs (PLAN 5.5b). */
+export function portShut(world: World, i: number): boolean {
+  return (world.portDamage.get(i) ?? 0) >= PORT_SHUT;
+}
 
 /**
  * The bombs of wing `wing` on the industry about (tx, ty): its aircraft's tons, shared as the
@@ -33,6 +47,7 @@ export function bombIndustry(world: World, wing: number, tx: number, ty: number)
   if (tons === 0) return 0;
   const { w, h, controller, econ } = world.cells;
   const nation = world.formations.cols.nation[wing]!;
+  bombPorts(world, nation, tons, tx, ty);
   const cells: number[] = [];
   let total = 0;
   const cx = Math.floor(tx);
@@ -53,12 +68,28 @@ export function bombIndustry(world: World, wing: number, tx: number, ty: number)
   return tons;
 }
 
-/** A day's repair, at its first hour: each damaged cell's damage × (1 − REPAIR_DAILY). */
+/** The ports within `BOMB_CELLS` of (tx, ty) held by nations at war with `nation`: each damaged by `tons` ÷ (PORT_TONS × its level). */
+function bombPorts(world: World, nation: number, tons: number, tx: number, ty: number): void {
+  const { w, controller } = world.cells;
+  const cx = Math.floor(tx);
+  const cy = Math.floor(ty);
+  world.ports.forEach((p, i) => {
+    let dx = Math.abs((p.cell % w) - cx);
+    if (dx > w / 2) dx = w - dx;
+    if (dx > BOMB_CELLS || Math.abs(Math.floor(p.cell / w) - cy) > BOMB_CELLS) return;
+    if (!world.wars.atWar(nation, controller[p.cell]!)) return;
+    world.portDamage.set(i, Math.min(MAX_DAMAGE, (world.portDamage.get(i) ?? 0) + tons / (PORT_TONS * Math.max(1, p.port))));
+  });
+}
+
+/** A day's repair, at its first hour: each damaged cell's and port's damage × (1 − REPAIR_DAILY). */
 export function repairSystem(world: World): void {
-  if (world.bombDamage.size === 0 || world.tick % 24 !== 0) return;
-  for (const [c, d] of [...world.bombDamage]) {
-    const left = d * (1 - REPAIR_DAILY);
-    if (left < DAMAGE_FLOOR) world.bombDamage.delete(c);
-    else world.bombDamage.set(c, left);
+  if (world.tick % 24 !== 0) return;
+  for (const damage of [world.bombDamage, world.portDamage]) {
+    for (const [k, d] of [...damage]) {
+      const left = d * (1 - REPAIR_DAILY);
+      if (left < DAMAGE_FLOOR) damage.delete(k);
+      else damage.set(k, left);
+    }
   }
 }
